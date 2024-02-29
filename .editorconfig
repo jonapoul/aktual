@@ -1,0 +1,31 @@
+# EditorConfig: http://editorconfig.org
+root = true
+
+[*]
+max_line_length = 120
+insert_final_newline = true
+charset = utf-8
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.{yml,json}]
+indent_size = 2
+
+[*.{kt,kts,java}]
+ij_kotlin_code_style_defaults = KOTLIN_OFFICIAL
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+ij_kotlin_imports_layout = *,java.**,javax.**,kotlin.**,^
+ij_kotlin_line_comment_add_space = true
+ij_kotlin_name_count_to_use_star_import = 999
+ij_kotlin_name_count_to_use_star_import_for_members = 999
+indent_size = 2
+
+# noinspection EditorConfigKeyCorrectness
+[*.kt]
+ktlint_standard_function-signature = disabled
+ktlint_standard_multiline-expression-wrapping = disabled
+ktlint_standard_string-template-indent = disabled
+ktlint_function_naming_ignore_when_annotated_with = Composable
+ktlint_standard_annotation = disabled
