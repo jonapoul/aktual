@@ -66,7 +66,6 @@ dependencies {
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.activity.core)
   implementation(libs.androidx.annotation)
-  implementation(libs.androidx.compose.animation.full)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
