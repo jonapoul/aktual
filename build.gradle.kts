@@ -1,3 +1,4 @@
+import com.autonomousapps.extension.Issue
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
@@ -22,17 +23,27 @@ plugins {
   id("convention-test")
 }
 
-dependencyAnalysis {
-  issues {
-    structure {
-      ignoreKtx(ignore = true)
-      bundle(name = "kotlin-stdlib") { includeGroup(group = "org.jetbrains.kotlin") }
-    }
+fun Issue.failExcept(vararg ignore: String) {
+  severity(value = "fail")
+  exclude(*ignore)
+}
 
+dependencyAnalysis {
+  structure {
+    ignoreKtx(ignore = true)
+    bundle(name = "kotlin-stdlib") { includeGroup(group = "org.jetbrains.kotlin") }
+    bundle(name = "modules") { include("^:.*\$".toRegex()) }
+  }
+  issues {
     all {
-      onAny {
-        severity(value = "fail")
-      }
+      // Failure
+      onRedundantPlugins { failExcept() }
+      onUnusedAnnotationProcessors { failExcept() }
+      onUsedTransitiveDependencies { failExcept("modules") }
+
+      // Ignore
+      onModuleStructure { severity(value = "ignore") }
+      onIncorrectConfiguration { severity(value = "ignore") }
     }
   }
 }
