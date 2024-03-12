@@ -75,6 +75,7 @@ androidx-activity-core = { module = "androidx.activity:activity", version.ref = 
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }
 androidx-compose-animation-core = { module = "androidx.compose.animation:animation-core" }
+androidx-compose-animation-full = { module = "androidx.compose.animation:animation" }
 androidx-compose-foundation-core = { module = "androidx.compose.foundation:foundation" }
 androidx-compose-foundation-layout = { module = "androidx.compose.foundation:foundation-layout" }
 androidx-compose-hilt = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "androidx-compose-hilt" }
