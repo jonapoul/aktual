@@ -1,0 +1,72 @@
+name: CI
+
+on:
+  # Run on every commit in a PR, in any branch
+  pull_request:
+    branches:
+
+  workflow_dispatch:
+
+  # Run when a commit has been made on the primary branch, which should be after a PR
+  push:
+    branches: [ "main" ]
+
+env:
+  CI: true
+
+permissions:
+  contents: write
+  checks: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: "zulu"
+
+      - name: Add permissions
+        run: chmod +x ./gradlew
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          generate-job-summary: false
+          dependency-graph: generate-and-submit
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+
+      - name: Assemble
+        run: ./gradlew app:assemble
+
+      - name: Check
+        run: ./gradlew check koverHtmlReport
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v3
+        if: success()
+        with:
+          name: apks
+          path: ./app/build/outputs/apk
+          if-no-files-found: error
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: reports
+          path: |
+            ./*/build/reports
+            ./build/reports
+          if-no-files-found: error
+
+      - name: Publish test reports
+        uses: mikepenz/action-junit-report@v3
+        if: always()
+        with:
+          report_paths: "**/build/test-results/*/TEST-*.xml"
