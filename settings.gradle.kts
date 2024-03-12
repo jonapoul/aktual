@@ -32,3 +32,8 @@ include(":app")
 include(":modules:core:di")
 include(":modules:core:ui")
 include(":modules:core:res")
+
+include(":modules:login:ui")
+include(":modules:login:vm")
+
+include(":modules:nav")

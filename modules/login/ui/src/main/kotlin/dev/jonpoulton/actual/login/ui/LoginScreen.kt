@@ -1,4 +1,4 @@
-package dev.jonpoulton.actual.app
+package dev.jonpoulton.actual.login.ui
 
 import alakazam.android.ui.compose.PreviewThemes
 import androidx.compose.foundation.layout.padding
@@ -18,21 +18,23 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import dev.jonpoulton.actual.core.ui.PreviewActual
+import dev.jonpoulton.actual.login.vm.LoginViewModel
 
+@Suppress("UnusedParameter")
 @Composable
-fun HomeScreen(
-  viewModel: HomeViewModel = hiltViewModel(),
+fun LoginScreen(
+  navController: NavHostController,
+  viewModel: LoginViewModel = hiltViewModel(),
 ) {
-  // TBC: remove
-  viewModel.viewModelScope
-
-  HomeScreenImpl()
+  LoginScreenImpl(
+    // TBC
+  )
 }
 
 @Composable
-private fun HomeScreenImpl(
+private fun LoginScreenImpl(
   // TBC
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -82,5 +84,5 @@ private fun HomeScreenImpl(
 @PreviewThemes
 @Composable
 private fun Preview() = PreviewActual {
-  HomeScreenImpl()
+  LoginScreenImpl()
 }

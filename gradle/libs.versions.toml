@@ -81,7 +81,6 @@ androidx-compose-hilt = { module = "androidx.hilt:hilt-navigation-compose", vers
 androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
 androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
 androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
-androidx-compose-navigation = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
 androidx-compose-ui-core = { module = "androidx.compose.ui:ui" }
 androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
@@ -91,10 +90,12 @@ androidx-compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-
 androidx-compose-ui-unit = { module = "androidx.compose.ui:ui-unit" }
 androidx-coreKtx = { module = "androidx.core:core-ktx", version.ref = "androidx-coreKtx" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx-fragment" }
+androidx-lifecycle-viewmodel-core = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
 androidx-navigation-commonKtx = { module = "androidx.navigation:navigation-common-ktx", version.ref = "androidx-navigation" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
 dagger-core = { module = "com.google.dagger:dagger", version.ref = "hilt" }
 hilt-core = { module = "com.google.dagger:hilt-core", version.ref = "hilt" }
