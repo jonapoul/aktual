@@ -11,9 +11,15 @@ plugins {
 }
 
 val excludeClasses = listOf(
+  // Generated
+  "*_Factory*",
+  "*_HiltModules*",
+  "*BuildConfig*",
+  "*ComposableSingletons*",
+  "*hilt_aggregated_deps*",
+
   // DI
   "*.di.*",
-  "*_Factory*",
 
   // UI Classes
   "*Activity*",
