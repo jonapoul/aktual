@@ -31,6 +31,9 @@ jobs:
           java-version: 17
           distribution: "zulu"
 
+      - name: Add permissions
+        run: chmod +x ./gradlew
+
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v3
         with:
