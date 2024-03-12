@@ -5,7 +5,6 @@ plugins {
   id("convention-android-base")
   id("convention-licensee")
   id("convention-spotless")
-  id("convention-test")
 }
 
 android {

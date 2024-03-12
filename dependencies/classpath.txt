@@ -54,6 +54,7 @@ com.diffplug.durian:durian-collect:1.2.0
 com.diffplug.durian:durian-core:1.2.0
 com.diffplug.durian:durian-io:1.2.0
 com.diffplug.durian:durian-swt.os:4.2.2
+com.diffplug.spotless:com.diffplug.spotless.gradle.plugin:6.25.0
 com.diffplug.spotless:spotless-lib-extra:2.45.0
 com.diffplug.spotless:spotless-lib:2.45.0
 com.diffplug.spotless:spotless-plugin-gradle:6.25.0
@@ -111,6 +112,7 @@ dev.equo.ide:solstice:1.7.5
 dev.zacsweers.moshix:moshi-sealed-reflect:0.19.0
 dev.zacsweers.moshix:moshi-sealed-runtime:0.19.0
 io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.5
+io.gitlab.arturbosch.detekt:io.gitlab.arturbosch.detekt.gradle.plugin:1.23.5
 io.grpc:grpc-api:1.45.1
 io.grpc:grpc-context:1.45.1
 io.grpc:grpc-core:1.45.1
@@ -195,6 +197,7 @@ org.jetbrains.kotlin:kotlin-stdlib:1.9.20
 org.jetbrains.kotlin:kotlin-tooling-core:1.9.22
 org.jetbrains.kotlin:kotlin-util-io:1.9.22
 org.jetbrains.kotlin:kotlin-util-klib:1.9.22
+org.jetbrains.kotlinx.kover:org.jetbrains.kotlinx.kover.gradle.plugin:0.7.6
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.5.0
 org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.8.0
 org.jetbrains.kotlinx:kotlinx-serialization-bom:1.6.2

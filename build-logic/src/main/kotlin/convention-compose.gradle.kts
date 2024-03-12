@@ -36,11 +36,7 @@ tasks.withType(KotlinCompile::class.java) {
 }
 
 val implementation by configurations
-val debugImplementation by configurations
 
 dependencies {
   implementation(platform(libs.androidx.compose.bom))
-  implementation(libs.androidx.compose.uiToolingPreview)
-  implementation(libs.androidx.compose.material3)
-  debugImplementation(libs.androidx.compose.uiTooling)
 }

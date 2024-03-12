@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import dagger.hilt.android.AndroidEntryPoint
-import dev.jonpoulton.actual.core.theme.ActualTheme
+import dev.jonpoulton.actual.core.ui.ActualTheme
 
 @AndroidEntryPoint
 class ActualActivity : ComponentActivity() {

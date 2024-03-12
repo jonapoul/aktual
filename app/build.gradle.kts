@@ -1,12 +1,11 @@
 plugins {
   kotlin("android")
   alias(libs.plugins.agp.app)
-  alias(libs.plugins.hilt)
-  alias(libs.plugins.ksp)
   id("convention-compose")
   id("convention-desugaring")
+  id("com.google.dagger.hilt.android")
+  id("convention-hilt")
   id("convention-style")
-  id("convention-test")
   alias(libs.plugins.dependencyGuard)
 }
 
@@ -55,21 +54,39 @@ android {
 
   buildFeatures {
     buildConfig = true
-    resValues = true
   }
 }
 
 dependencies {
-  implementation(projects.modules.core.theme)
-  implementation(projects.modules.di)
+  implementation(projects.modules.core.di)
+  implementation(projects.modules.core.res)
+  implementation(projects.modules.core.ui)
   implementation(libs.alakazam.android.compose)
-  implementation(libs.alakazam.di.hilt)
-  implementation(libs.androidx.compose.activity)
+  implementation(libs.alakazam.android.core)
+  implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.activity.core)
+  implementation(libs.androidx.annotation)
+  implementation(libs.androidx.compose.animation.core)
+  implementation(libs.androidx.compose.foundation.core)
+  implementation(libs.androidx.compose.foundation.layout)
   implementation(libs.androidx.compose.hilt)
+  implementation(libs.androidx.compose.material.icons.core)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.navigation)
-  debugImplementation(libs.androidx.compose.uiToolingPreview)
+  implementation(libs.androidx.compose.runtime)
+  implementation(libs.androidx.compose.ui.core)
+  implementation(libs.androidx.compose.ui.text)
+  implementation(libs.androidx.fragment.ktx)
+  implementation(libs.androidx.lifecycle.viewmodel.compose)
+  implementation(libs.androidx.lifecycle.viewmodel.ktx)
+  implementation(libs.androidx.lifecycle.viewmodel.savedstate)
   implementation(libs.androidx.navigation.commonKtx)
+  implementation(libs.androidx.navigation.runtime)
+  implementation(libs.dagger.core)
   implementation(libs.hilt.android)
-  ksp(libs.hilt.compiler)
+  implementation(libs.javax.inject)
+  implementation(libs.kotlin.stdlib)
+  implementation(libs.kotlinx.coroutines)
+  implementation(libs.kotlinx.datetime)
+  implementation(libs.timber)
 }
