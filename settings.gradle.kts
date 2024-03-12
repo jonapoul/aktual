@@ -29,6 +29,5 @@ include(":app")
 include(":modules:api:client")
 include(":modules:api:model")
 
-
-include(":modules:di")
 include(":modules:core:ui")
+include(":modules:core:di")

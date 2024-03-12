@@ -60,7 +60,7 @@ android {
 }
 
 dependencies {
-  implementation(projects.modules.di)
+  implementation(projects.modules.core.di)
   implementation(projects.modules.core.ui)
   implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.di.hilt)
