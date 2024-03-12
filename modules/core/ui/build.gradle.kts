@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-  namespace = "dev.jonpoulton.actual.core.theme"
+  namespace = "dev.jonpoulton.actual.core.ui"
 }
 
 dependencies {

@@ -19,7 +19,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewModelScope
-import dev.jonpoulton.actual.core.theme.PreviewActual
+import dev.jonpoulton.actual.core.ui.PreviewActual
 
 @Composable
 fun HomeScreen(

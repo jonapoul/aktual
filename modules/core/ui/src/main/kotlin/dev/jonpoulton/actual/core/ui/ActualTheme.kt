@@ -1,4 +1,4 @@
-package dev.jonpoulton.actual.core.theme
+package dev.jonpoulton.actual.core.ui
 
 import android.app.Activity
 import android.os.Build

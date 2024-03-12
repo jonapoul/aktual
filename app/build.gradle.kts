@@ -60,8 +60,8 @@ android {
 }
 
 dependencies {
-  implementation(projects.modules.core.theme)
   implementation(projects.modules.di)
+  implementation(projects.modules.core.ui)
   implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.di.hilt)
   implementation(libs.androidx.compose.activity)

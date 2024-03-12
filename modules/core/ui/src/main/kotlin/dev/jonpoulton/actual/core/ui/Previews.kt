@@ -1,4 +1,4 @@
-package dev.jonpoulton.actual.core.theme
+package dev.jonpoulton.actual.core.ui
 
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
