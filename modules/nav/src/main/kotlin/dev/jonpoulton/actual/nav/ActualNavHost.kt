@@ -1,4 +1,4 @@
-package dev.jonpoulton.actual.app
+package dev.jonpoulton.actual.nav
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -9,8 +9,8 @@ fun ActualNavHost() {
   val navController = rememberNavController()
   NavHost(
     navController = navController,
-    startDestination = "",
+    startDestination = NavDestination.Login.route,
   ) {
-    // TBC
+    composable(navController, NavDestination.Login)
   }
 }

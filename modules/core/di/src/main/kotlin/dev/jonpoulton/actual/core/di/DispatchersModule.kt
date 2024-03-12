@@ -11,6 +11,7 @@ import kotlinx.coroutines.Dispatchers
 import javax.inject.Singleton
 
 @Module
+@Suppress("InjectDispatcher")
 @InstallIn(SingletonComponent::class)
 internal class DispatchersModule {
   @Provides
