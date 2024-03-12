@@ -9,6 +9,11 @@ android {
 }
 
 dependencies {
-  implementation(libs.alakazam.kotlin.core)
-  implementation(libs.kotlinx.datetime)
+  api(libs.alakazam.kotlin.core)
+  api(libs.dagger.core)
+  api(libs.kotlinx.datetime)
+  implementation(libs.hilt.core)
+  implementation(libs.javax.inject)
+  implementation(libs.kotlin.stdlib)
+  implementation(libs.kotlinx.coroutines)
 }

@@ -18,10 +18,3 @@ extensions.configure<JavaPluginExtension> {
   sourceCompatibility = JavaVersion.VERSION_17
   targetCompatibility = JavaVersion.VERSION_17
 }
-
-val libs = the<LibrariesForLibs>()
-val implementation by configurations
-
-dependencies {
-  implementation(libs.kotlin.stdlib)
-}
