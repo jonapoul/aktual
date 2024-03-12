@@ -15,13 +15,13 @@ import javax.inject.Singleton
 internal class DispatchersModule {
   @Provides
   @Singleton
-  fun io(): IODispatcher = IODispatcher(Dispatchers.IO)
+  fun ioDispatcher(): IODispatcher = IODispatcher(Dispatchers.IO)
 
   @Provides
   @Singleton
-  fun default(): DefaultDispatcher = DefaultDispatcher(Dispatchers.Default)
+  fun defaultDispatcher(): DefaultDispatcher = DefaultDispatcher(Dispatchers.Default)
 
   @Provides
   @Singleton
-  fun main(): MainDispatcher = MainDispatcher(Dispatchers.Main)
+  fun mainDispatcher(): MainDispatcher = MainDispatcher(Dispatchers.Main)
 }
