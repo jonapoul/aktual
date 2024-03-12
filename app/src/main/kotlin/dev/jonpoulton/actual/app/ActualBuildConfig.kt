@@ -13,7 +13,9 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import dev.jonpoulton.actual.core.res.R as ResR
 
-internal class ActualBuildConfig @Inject constructor(@ApplicationContext context: Context) : IBuildConfig {
+internal class ActualBuildConfig @Inject constructor(
+  @ApplicationContext context: Context,
+) : IBuildConfig {
   override val debug = BuildConfig.DEBUG
   override val applicationId = BuildConfig.APPLICATION_ID
   override val versionCode = BuildConfig.VERSION_CODE
