@@ -83,4 +83,5 @@ object ActualColors {
   val white = Color(color = 0xFFffffff)
   val hover = Color(color = 0xFFfafafa)
   val black = Color(color = 0xFF000000)
+  val transparent = Color(color = 0x00000000)
 }

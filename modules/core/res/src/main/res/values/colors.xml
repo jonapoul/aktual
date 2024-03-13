@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="pageBackgroundLineTop">#FFFFFF</color> <!-- white -->
+    <color name="pageBackgroundLineMid">#E8ECF0</color> <!-- navy100 -->
+    <color name="pageBackgroundLineBottom">#B3D9FF</color> <!-- blue150 -->
+</resources>
