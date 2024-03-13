@@ -5,6 +5,11 @@
     <string name="server_url_title">Where\'s the server?</string>
     <string name="server_url_message">Existing sessions will be logged out and you will log in to this server. We will validate that Actual is running at this URL.</string>
 
+    <string name="server_url_version_app_null">App: Unknown</string>
+    <string name="server_url_version_app">App: %1$s</string>
+    <string name="server_url_version_server_null">Server: Unknown</string>
+    <string name="server_url_version_server">Server: %1$s</string>
+
     <string name="login_toolbar">Login</string>
     <string name="login_about">About</string>
 
