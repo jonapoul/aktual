@@ -100,7 +100,7 @@ private fun Content(
       modifier = Modifier
         .wrapContentWidth()
         .wrapContentHeight()
-        .padding(32.dp),
+        .padding(16.dp),
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.Start,
     ) {
