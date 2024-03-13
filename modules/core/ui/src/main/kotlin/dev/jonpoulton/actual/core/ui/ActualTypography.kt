@@ -11,14 +11,11 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.TextUnit
 import dev.jonpoulton.actual.core.res.R as ResR
 
 // TODO: Create custom text styles here
@@ -58,13 +55,13 @@ val ActualFontFamily = FontFamily(
   Font(ResR.font.inter_black, FontWeight.W900),
 )
 
-private fun FontFamily.textStyle(color: Color, fontWeight: FontWeight, fontSize: TextUnit): TextStyle =
-  TextStyle(
-    color = color,
-    fontSize = fontSize,
-    fontWeight = fontWeight,
-    fontFamily = this,
-  )
+// private fun FontFamily.textStyle(color: Color, fontWeight: FontWeight, fontSize: TextUnit): TextStyle =
+//   TextStyle(
+//     color = color,
+//     fontSize = fontSize,
+//     fontWeight = fontWeight,
+//     fontFamily = this,
+//   )
 
 @PreviewThemes
 @Composable

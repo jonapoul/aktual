@@ -36,6 +36,7 @@ import dev.jonpoulton.actual.core.ui.PreviewActual
 import dev.jonpoulton.actual.serverurl.vm.ServerUrlViewModel
 import dev.jonpoulton.actual.core.res.R as ResR
 
+@Suppress("UnusedParameter")
 @Composable
 fun ServerUrlScreen(
   navController: NavHostController,
