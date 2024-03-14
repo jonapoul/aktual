@@ -12,6 +12,7 @@ dependencies {
   implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.coreKtx)
   implementation(libs.androidx.compose.foundation.core)
+  implementation(libs.androidx.compose.foundation.layout)
   implementation(libs.androidx.compose.ui.core)
   implementation(libs.androidx.compose.ui.graphics)
   implementation(libs.androidx.compose.ui.text)

@@ -71,6 +71,7 @@ androidx.lifecycle:lifecycle-livedata-core-ktx:2.7.0
 androidx.lifecycle:lifecycle-livedata-core:2.7.0
 androidx.lifecycle:lifecycle-livedata:2.7.0
 androidx.lifecycle:lifecycle-process:2.7.0
+androidx.lifecycle:lifecycle-runtime-compose:2.7.0
 androidx.lifecycle:lifecycle-runtime-ktx:2.7.0
 androidx.lifecycle:lifecycle-runtime:2.7.0
 androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0
