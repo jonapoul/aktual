@@ -22,11 +22,10 @@ import dev.jonpoulton.actual.core.ui.PreviewActual
 internal fun CancelButton(onClick: () -> Unit) {
   val interactionSource = remember { MutableInteractionSource() }
   val isPressed by interactionSource.collectIsPressedAsState()
-  val backgroundColor = if (isPressed) Color(color = 0x4DC8C8C8) else ActualColors.transparent
+  val backgroundColor = if (isPressed) Color(color = 0x4DC8C8C8) else Color.Transparent
 
   TextButton(
-    modifier = Modifier
-      .widthIn(min = 1.dp),
+    modifier = Modifier.widthIn(min = 1.dp),
     onClick = onClick,
     shape = RoundedCornerShape(size = 4.dp),
     colors = ButtonDefaults.buttonColors(

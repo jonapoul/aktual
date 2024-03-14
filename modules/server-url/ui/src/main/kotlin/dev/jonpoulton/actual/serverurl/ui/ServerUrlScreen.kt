@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
@@ -23,16 +22,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import dev.jonpoulton.actual.core.ui.ActualColors
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
 import dev.jonpoulton.actual.core.ui.PreviewActual
+import dev.jonpoulton.actual.core.ui.VerticalSpacer
 import dev.jonpoulton.actual.serverurl.vm.ServerUrlViewModel
 import dev.jonpoulton.actual.core.res.R as ResR
 
@@ -42,19 +40,24 @@ fun ServerUrlScreen(
   navController: NavHostController,
   viewModel: ServerUrlViewModel = hiltViewModel(),
 ) {
-  val appVersion by viewModel.appVersion.collectAsStateWithLifecycle(initialValue = null)
+  val appVersion by viewModel.appVersion.collectAsStateWithLifecycle()
   val serverVersion by viewModel.serverVersion.collectAsStateWithLifecycle(initialValue = null)
+  val enteredUrl by viewModel.enteredUrl.collectAsStateWithLifecycle()
 
   ServerUrlScreenImpl(
+    url = enteredUrl,
     appVersion = appVersion,
     serverVersion = serverVersion,
+    onUrlEntered = viewModel::onUrlEntered,
   )
 }
 
 @Composable
 private fun ServerUrlScreenImpl(
+  url: String,
   appVersion: String?,
   serverVersion: String?,
+  onUrlEntered: (String) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   Scaffold(
@@ -63,7 +66,7 @@ private fun ServerUrlScreenImpl(
       TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
           containerColor = MaterialTheme.colorScheme.primaryContainer,
-          titleContentColor = MaterialTheme.colorScheme.primary,
+          titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
         ),
         title = {
           Text(
@@ -78,8 +81,10 @@ private fun ServerUrlScreenImpl(
   ) { innerPadding ->
     Content(
       modifier = Modifier.padding(innerPadding),
+      url = url,
       appVersion = appVersion,
       serverVersion = serverVersion,
+      onUrlEntered = onUrlEntered,
     )
   }
 }
@@ -87,8 +92,10 @@ private fun ServerUrlScreenImpl(
 @Composable
 private fun Content(
   modifier: Modifier,
+  url: String,
   appVersion: String?,
   serverVersion: String?,
+  onUrlEntered: (String) -> Unit,
 ) {
   Box(
     modifier = modifier
@@ -99,19 +106,16 @@ private fun Content(
     Column(
       modifier = Modifier
         .wrapContentWidth()
-        .wrapContentHeight()
-        .padding(16.dp),
+        .wrapContentHeight(),
       verticalArrangement = Arrangement.Center,
       horizontalAlignment = Alignment.Start,
     ) {
       Text(
-        modifier = Modifier.padding(bottom = 15.dp),
         text = stringResource(id = ResR.string.server_url_title),
-        fontFamily = ActualFontFamily,
-        fontWeight = FontWeight.W700,
-        color = ActualColors.purple200,
-        fontSize = 25.sp,
+        style = MaterialTheme.typography.displayLarge,
       )
+
+      VerticalSpacer(height = 15.dp)
 
       Text(
         text = stringResource(id = ResR.string.server_url_message),
@@ -119,20 +123,17 @@ private fun Content(
         color = ActualColors.navy150,
       )
 
-      TextField(
-        modifier = Modifier
-          .fillMaxWidth()
-          .wrapContentHeight()
-          .padding(vertical = 20.dp),
-        value = "",
-        placeholder = { Text(text = "https://example.com") },
-        onValueChange = { /* TODO: Handle input */ },
+      VerticalSpacer(height = 20.dp)
+
+      ServerUrlTextField(
+        url = url,
+        onUrlEntered = onUrlEntered,
       )
 
+      VerticalSpacer(height = 20.dp)
+
       Row(
-        modifier = Modifier
-          .fillMaxWidth()
-          .wrapContentHeight(),
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
       ) {
@@ -144,8 +145,8 @@ private fun Content(
 
     VersionsText(
       modifier = Modifier.align(Alignment.BottomEnd),
-      appVersion,
-      serverVersion,
+      appVersion = appVersion,
+      serverVersion = serverVersion,
     )
   }
 }
@@ -154,7 +155,9 @@ private fun Content(
 @Composable
 private fun Preview() = PreviewActual {
   ServerUrlScreenImpl(
+    url = "",
     serverVersion = "v24.3.0",
     appVersion = "v1.2.3",
+    onUrlEntered = {},
   )
 }
