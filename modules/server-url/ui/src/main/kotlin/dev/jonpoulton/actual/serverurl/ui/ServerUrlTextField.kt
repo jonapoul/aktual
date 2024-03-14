@@ -19,7 +19,7 @@ internal fun ServerUrlTextField(
   url: String,
   onUrlEntered: (String) -> Unit,
 ) {
-  val textColor = MaterialTheme.colorScheme.onPrimaryContainer
+  val textColor = MaterialTheme.colorScheme.onBackground
   val hintColor = textColor.copy(alpha = 0.5f)
   TextField(
     modifier = Modifier
@@ -37,7 +37,6 @@ internal fun ServerUrlTextField(
       unfocusedIndicatorColor = Color.Transparent,
       disabledIndicatorColor = Color.Transparent,
     ),
-
     onValueChange = onUrlEntered,
   )
 }
