@@ -1,7 +1,6 @@
 plugins {
   id("module-android")
   id("convention-hilt")
-  id("convention-test")
 }
 
 android {
