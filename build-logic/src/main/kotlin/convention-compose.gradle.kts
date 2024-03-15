@@ -11,7 +11,7 @@ plugins {
 
 val libs = the<LibrariesForLibs>()
 
-val ext: CommonExtension<*, *, *, *, *> = extensions.findByType<BaseAppModuleExtension>()
+val ext: CommonExtension<*, *, *, *, *, *> = extensions.findByType<BaseAppModuleExtension>()
   ?: extensions.findByType<LibraryExtension>()
   ?: error("No android extension found in $path")
 

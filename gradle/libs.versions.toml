@@ -1,6 +1,6 @@
 [versions]
 # Plugins
-agp = "8.2.2"
+agp = "8.3.0"
 dependencyAnalysis = "1.30.0"
 dependencyGuard = "0.5.0"
 dependencyVersions = "0.51.0"
