@@ -25,7 +25,7 @@ val ActualTypography: Typography
   @Composable
   @ReadOnlyComposable
   get() {
-    val colors = LocalActualColorScheme.current
+//     val colors = LocalActualColorScheme.current
     return Typography(
       displayLarge = ActualFontFamily.textStyle(FontWeight.W700, fontSize = 30.sp),
       displayMedium = ActualFontFamily.textStyle(FontWeight.W600, fontSize = 25.sp),
