@@ -35,5 +35,5 @@ jobs:
 
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          commit_message: Bump Cocoapods Packages
+          commit_message: Update dependency guard baseline
           branch: ${{ github.head_ref }}
