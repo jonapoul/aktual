@@ -4,7 +4,6 @@ import alakazam.android.ui.compose.PreviewThemes
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -17,18 +16,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
-fun ActualTextInput(
+fun ActualTextField(
   value: String,
   onValueChange: (String) -> Unit,
   placeholderText: String,
   modifier: Modifier = Modifier,
-  fontSize: TextUnit = TextUnit.Unspecified,
+  shape: Shape = ActualTextFieldShape,
   showBorder: Boolean = true,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
@@ -39,39 +36,39 @@ fun ActualTextInput(
 
   if (showBorder) {
     val borderColor = if (isFocused) colorScheme.formInputBorderSelected else colorScheme.formInputBackgroundSelected
-    fieldModifier = fieldModifier.border(width = 1.dp, color = borderColor, shape = ActualTextInputShape)
+    fieldModifier = fieldModifier.border(1.dp, borderColor, shape)
   }
 
   if (isFocused) {
-    fieldModifier = fieldModifier.shadow(4.dp, ActualTextInputShape, ambientColor = colorScheme.formInputShadowSelected)
+    fieldModifier = fieldModifier.shadow(4.dp, shape, ambientColor = colorScheme.formInputShadowSelected)
   }
 
   TextField(
     modifier = fieldModifier,
     value = value,
     placeholder = { Text(text = placeholderText, fontFamily = ActualFontFamily) },
-    shape = ActualTextInputShape,
+    shape = shape,
     colors = colorScheme.textField(),
     interactionSource = interactionSource,
-    textStyle = TextStyle.Default.copy(fontSize = fontSize),
     onValueChange = onValueChange,
   )
 }
 
 @Composable
-fun BigActualTextInput(
+fun BigActualTextField(
   value: String,
   onValueChange: (String) -> Unit,
   placeholderText: String,
   modifier: Modifier = Modifier,
+  shape: Shape = ActualTextFieldShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
 ) {
-  ActualTextInput(
+  ActualTextField(
     value = value,
     onValueChange = onValueChange,
     placeholderText = placeholderText,
-    modifier = modifier.padding(all = 10.dp),
-    fontSize = 15.sp,
+    modifier = modifier,
+    shape = shape,
     showBorder = false,
     interactionSource = interactionSource,
   )
@@ -82,7 +79,7 @@ fun BigActualTextInput(
 private fun ActualColorScheme.textField(): TextFieldColors = TextFieldDefaults.colors(
   focusedTextColor = formInputText,
   unfocusedTextColor = formInputText,
-  focusedPlaceholderColor = formInputTextPlaceholderSelected,
+  focusedPlaceholderColor = formInputTextPlaceholder,
   unfocusedPlaceholderColor = formInputTextPlaceholder,
   focusedIndicatorColor = Color.Transparent,
   unfocusedIndicatorColor = Color.Transparent,
@@ -92,12 +89,12 @@ private fun ActualColorScheme.textField(): TextFieldColors = TextFieldDefaults.c
   cursorColor = formInputText,
 )
 
-private val ActualTextInputShape = RoundedCornerShape(size = 4.dp)
+private val ActualTextFieldShape = RoundedCornerShape(size = 4.dp)
 
 @PreviewThemes
 @Composable
-private fun PreviewEmptyTextInput() = PreviewActual {
-  ActualTextInput(
+private fun PreviewEmptyTextField() = PreviewActual {
+  ActualTextField(
     value = "",
     onValueChange = {},
     placeholderText = "I'm empty",
@@ -106,8 +103,8 @@ private fun PreviewEmptyTextInput() = PreviewActual {
 
 @PreviewThemes
 @Composable
-private fun PreviewFilledTextInput() = PreviewActual {
-  ActualTextInput(
+private fun PreviewFilledTextField() = PreviewActual {
+  ActualTextField(
     value = "I'm full",
     onValueChange = {},
     placeholderText = "Hello world",
@@ -116,8 +113,8 @@ private fun PreviewFilledTextInput() = PreviewActual {
 
 @PreviewThemes
 @Composable
-private fun PreviewEmptyBigTextInput() = PreviewActual {
-  BigActualTextInput(
+private fun PreviewEmptyBigTextField() = PreviewActual {
+  BigActualTextField(
     value = "",
     onValueChange = {},
     placeholderText = "I'm empty",
@@ -126,8 +123,8 @@ private fun PreviewEmptyBigTextInput() = PreviewActual {
 
 @PreviewThemes
 @Composable
-private fun PreviewFilledBigTextInput() = PreviewActual {
-  BigActualTextInput(
+private fun PreviewFilledBigTextField() = PreviewActual {
+  BigActualTextField(
     value = "I'm full",
     onValueChange = {},
     placeholderText = "Hello world",
