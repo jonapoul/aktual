@@ -42,7 +42,7 @@ jobs:
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
       - name: Assemble
-        run: ./gradlew app:assemble
+        run: ./gradlew app:assembleDebug
 
       - name: Check
         run: ./gradlew check koverHtmlReport

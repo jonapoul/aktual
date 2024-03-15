@@ -8,6 +8,7 @@ android {
 
 dependencies {
   api(projects.modules.login.ui)
+  api(projects.modules.serverUrl.ui)
   api(libs.androidx.compose.runtime)
   api(libs.androidx.navigation.runtime)
   implementation(projects.modules.login.vm)

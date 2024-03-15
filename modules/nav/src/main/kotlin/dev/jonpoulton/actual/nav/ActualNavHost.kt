@@ -9,8 +9,9 @@ fun ActualNavHost() {
   val navController = rememberNavController()
   NavHost(
     navController = navController,
-    startDestination = NavDestination.Login.route,
+    startDestination = NavDestination.ServerUrl.route,
   ) {
+    composable(navController, NavDestination.ServerUrl)
     composable(navController, NavDestination.Login)
   }
 }
