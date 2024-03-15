@@ -30,7 +30,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
-import dev.jonpoulton.actual.core.ui.BigActualTextInput
+import dev.jonpoulton.actual.core.ui.BigActualTextField
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.PreviewActual
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
@@ -134,7 +134,7 @@ private fun Content(
 
       VerticalSpacer(height = 20.dp)
 
-      BigActualTextInput(
+      BigActualTextField(
         modifier = Modifier.fillMaxWidth(),
         value = url,
         onValueChange = onUrlEntered,
@@ -149,7 +149,7 @@ private fun Content(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         PrimaryActualTextButtonWithLoading(
-          text = stringResource(id = android.R.string.ok),
+          text = "Confirm",
           isLoading = false, // TODO: implement
           onClick = {},
         )
