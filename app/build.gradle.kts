@@ -58,7 +58,6 @@ android {
 }
 
 dependencies {
-  implementation(projects.modules.core.di)
   implementation(projects.modules.core.res)
   implementation(projects.modules.core.ui)
   implementation(projects.modules.nav)
