@@ -4,14 +4,12 @@ import alakazam.android.ui.compose.PreviewThemes
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -27,23 +25,23 @@ val ActualTypography: Typography
   @Composable
   @ReadOnlyComposable
   get() {
-    val colors = MaterialTheme.colorScheme
+    val colors = LocalActualColorScheme.current
     return Typography(
-      displayLarge = ActualFontFamily.textStyle(colors.primary, FontWeight.W700, fontSize = 30.sp),
-      displayMedium = ActualFontFamily.textStyle(colors.primary, FontWeight.W600, fontSize = 25.sp),
-      displaySmall = ActualFontFamily.textStyle(colors.primary, FontWeight.W500, fontSize = 20.sp),
-// headlineLarge = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// headlineMedium = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// headlineSmall = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// titleLarge = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// titleMedium = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// titleSmall = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// bodyLarge = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// bodyMedium = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// bodySmall = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// labelLarge = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// labelMedium = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
-// labelSmall = ActualFontFamily.textStyle(ActualColors., FontWeight.W, fontSize = .sp),
+      displayLarge = ActualFontFamily.textStyle(FontWeight.W700, fontSize = 30.sp),
+      displayMedium = ActualFontFamily.textStyle(FontWeight.W600, fontSize = 25.sp),
+      displaySmall = ActualFontFamily.textStyle(FontWeight.W500, fontSize = 20.sp),
+// headlineLarge = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// headlineMedium = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// headlineSmall = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// titleLarge = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// titleMedium = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// titleSmall = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// bodyLarge = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// bodyMedium = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// bodySmall = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// labelLarge = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// labelMedium = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
+// labelSmall = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
     )
   }
 
@@ -59,9 +57,8 @@ val ActualFontFamily = FontFamily(
   Font(ResR.font.inter_black, FontWeight.W900),
 )
 
-private fun FontFamily.textStyle(color: Color, fontWeight: FontWeight, fontSize: TextUnit): TextStyle =
+private fun FontFamily.textStyle(fontWeight: FontWeight, fontSize: TextUnit): TextStyle =
   TextStyle(
-    color = color,
     fontSize = fontSize,
     fontWeight = fontWeight,
     fontFamily = this,
