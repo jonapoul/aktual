@@ -1,0 +1,39 @@
+name: Update Dependabot PR
+
+on:
+  push:
+    branches:
+      - dependabot/gradle/**
+  pull_request:
+    branches:
+      - dependabot/gradle/**
+
+jobs:
+  update-dependabot-prs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: "zulu"
+
+      - name: Add permissions
+        run: chmod +x ./gradlew
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          generate-job-summary: false
+          cache-read-only: true
+
+      - name: Assemble
+        run: ./gradlew dependencyGuardBaseline
+
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Bump Cocoapods Packages
+          branch: ${{ github.head_ref }}
