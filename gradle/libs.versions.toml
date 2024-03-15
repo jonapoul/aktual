@@ -46,7 +46,7 @@ test-androidx-junit = "1.1.5"
 test-androidx-rules = "1.5.0"
 test-androidx-runner = "1.5.2"
 test-junit = "4.13.2"
-test-mockk = "1.13.7"
+test-mockk = "1.13.10"
 test-robolectric = "4.11.1"
 test-turbine = "1.1.0"
 
