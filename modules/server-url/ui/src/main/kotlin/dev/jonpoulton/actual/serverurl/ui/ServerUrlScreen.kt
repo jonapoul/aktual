@@ -28,7 +28,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
 import dev.jonpoulton.actual.core.ui.BigActualTextField
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
@@ -41,7 +40,7 @@ import dev.jonpoulton.actual.core.res.R as ResR
 @Suppress("UnusedParameter")
 @Composable
 fun ServerUrlScreen(
-  navController: NavHostController,
+  navigator: ServerUrlNavigator,
   viewModel: ServerUrlViewModel = hiltViewModel(),
 ) {
   val appVersion by viewModel.appVersion.collectAsStateWithLifecycle()
@@ -101,6 +100,8 @@ private fun Content(
   url: String,
   appVersion: String?,
   serverVersion: String?,
+  isLoading: Boolean,
+  onClickConfirm: () -> Unit,
   onUrlEntered: (String) -> Unit,
 ) {
   val colorScheme = LocalActualColorScheme.current
