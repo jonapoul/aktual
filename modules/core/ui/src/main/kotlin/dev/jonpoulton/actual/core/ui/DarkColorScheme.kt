@@ -185,13 +185,13 @@ internal object DarkColorScheme : ActualColorScheme {
   override val formInputBackground = ActualColors.navy800
   override val formInputBackgroundSelected = ActualColors.navy700
   override val formInputBackgroundSelection = ActualColors.purple400
-  override val formInputBorder = ActualColors.navy600
+  override val formInputBorder = ActualColors.navy500
   override val formInputTextReadOnlySelection = ActualColors.navy800
   override val formInputBorderSelected = ActualColors.purple400
   override val formInputText = ActualColors.navy150
   override val formInputTextSelected = ActualColors.black
-  override val formInputTextPlaceholder = ActualColors.navy150
-  override val formInputTextPlaceholderSelected = ActualColors.navy100
+  override val formInputTextPlaceholder = ActualColors.navy500
+  override val formInputTextPlaceholderSelected = ActualColors.navy600
   override val formInputTextSelection = ActualColors.navy800
   override val formInputShadowSelected = ActualColors.purple200
   override val formInputTextHighlight = ActualColors.purple400
