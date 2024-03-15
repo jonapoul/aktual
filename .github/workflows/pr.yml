@@ -1,4 +1,4 @@
-name: PR
+name: PR Check
 
 on:
   pull_request:
@@ -28,7 +28,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           generate-job-summary: false
-          dependency-graph: generate-and-submit
           cache-read-only: true
 
       - name: Check
