@@ -4,8 +4,11 @@ import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.the
 
 plugins {
-  id("module-android")
+  id("convention-android-library")
   id("convention-hilt")
+  id("convention-style")
+  id("convention-test")
+  id("com.dropbox.dependency-guard")
 }
 
 val libs = the<LibrariesForLibs>()
@@ -17,4 +20,11 @@ dependencies {
   api(libs.dagger.core)
   api(libs.javax.inject)
   implementation(libs.hilt.android)
+}
+
+dependencyGuard {
+  configuration("debugCompileClasspath")
+  configuration("debugRuntimeClasspath")
+  configuration("releaseCompileClasspath")
+  configuration("releaseRuntimeClasspath")
 }
