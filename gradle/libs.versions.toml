@@ -48,7 +48,7 @@ test-androidx-runner = "1.5.2"
 test-junit = "4.13.2"
 test-mockk = "1.13.7"
 test-robolectric = "4.11.1"
-test-turbine = "1.0.0"
+test-turbine = "1.1.0"
 
 [libraries]
 # Plugins
