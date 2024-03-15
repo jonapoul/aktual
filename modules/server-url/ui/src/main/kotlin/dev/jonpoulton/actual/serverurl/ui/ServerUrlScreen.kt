@@ -30,8 +30,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
+import dev.jonpoulton.actual.core.ui.BigActualTextInput
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.PreviewActual
+import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
 import dev.jonpoulton.actual.core.ui.VerticalSpacer
 import dev.jonpoulton.actual.serverurl.vm.ServerUrlViewModel
 import dev.jonpoulton.actual.core.res.R as ResR
@@ -132,9 +134,11 @@ private fun Content(
 
       VerticalSpacer(height = 20.dp)
 
-      ServerUrlTextField(
-        url = url,
-        onUrlEntered = onUrlEntered,
+      BigActualTextInput(
+        modifier = Modifier.fillMaxWidth(),
+        value = url,
+        onValueChange = onUrlEntered,
+        placeholderText = EXAMPLE_URL,
       )
 
       VerticalSpacer(height = 20.dp)
@@ -144,7 +148,9 @@ private fun Content(
         horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        OkButton(
+        PrimaryActualTextButtonWithLoading(
+          text = stringResource(id = android.R.string.ok),
+          isLoading = false, // TODO: implement
           onClick = {},
         )
       }
@@ -157,6 +163,8 @@ private fun Content(
     )
   }
 }
+
+private const val EXAMPLE_URL = "https://example.com"
 
 @PreviewThemes
 @Composable
