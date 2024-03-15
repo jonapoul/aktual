@@ -1,6 +1,7 @@
 package dev.jonpoulton.actual.serverurl.ui
 
 import alakazam.android.ui.compose.PreviewThemes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +30,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import dev.jonpoulton.actual.core.ui.ActualColors
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
+import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.PreviewActual
 import dev.jonpoulton.actual.core.ui.VerticalSpacer
 import dev.jonpoulton.actual.serverurl.vm.ServerUrlViewModel
@@ -60,13 +62,14 @@ private fun ServerUrlScreenImpl(
   onUrlEntered: (String) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
+  val colorScheme = LocalActualColorScheme.current
   Scaffold(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(
-          containerColor = MaterialTheme.colorScheme.primaryContainer,
-          titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+          containerColor = colorScheme.mobileHeaderBackground,
+          titleContentColor = colorScheme.mobileHeaderText,
         ),
         title = {
           Text(
@@ -97,8 +100,10 @@ private fun Content(
   serverVersion: String?,
   onUrlEntered: (String) -> Unit,
 ) {
+  val colorScheme = LocalActualColorScheme.current
   Box(
     modifier = modifier
+      .background(colorScheme.pageBackground)
       .fillMaxSize()
       .padding(16.dp),
     contentAlignment = Alignment.Center,
@@ -113,6 +118,7 @@ private fun Content(
       Text(
         text = stringResource(id = ResR.string.server_url_title),
         style = MaterialTheme.typography.displayLarge,
+        color = colorScheme.pageTextPositive,
       )
 
       VerticalSpacer(height = 15.dp)
@@ -120,7 +126,7 @@ private fun Content(
       Text(
         text = stringResource(id = ResR.string.server_url_message),
         fontFamily = ActualFontFamily,
-        color = ActualColors.navy150,
+        color = colorScheme.pageText,
       )
 
       VerticalSpacer(height = 20.dp)
