@@ -1,11 +1,15 @@
-name: Build
+name: Update Dependabot PR
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - dependabot/gradle/**
+  pull_request:
+    branches:
+      - dependabot/gradle/**
 
 jobs:
-  main:
+  update-dependabot-prs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -24,16 +28,12 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           generate-job-summary: false
-          dependency-graph: generate-and-submit
-          cache-read-only: false
+          cache-read-only: true
 
       - name: Assemble
-        run: ./gradlew app:assemble
+        run: ./gradlew dependencyGuardBaseline
 
-      - name: Upload APKs
-        uses: actions/upload-artifact@v4
-        if: success()
+      - uses: stefanzweifel/git-auto-commit-action@v5
         with:
-          name: apks
-          path: ./app/build/outputs/apk
-          if-no-files-found: error
+          commit_message: Update dependency guard baseline
+          branch: ${{ github.head_ref }}
