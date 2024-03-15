@@ -8,6 +8,9 @@ on:
     branches:
       - dependabot/gradle/**
 
+permissions:
+  contents: write
+
 jobs:
   update-dependabot-prs:
     runs-on: ubuntu-latest
