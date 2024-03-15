@@ -9,7 +9,7 @@ permissions:
   checks: write
 
 jobs:
-  check:
+  pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -29,7 +29,7 @@ jobs:
         with:
           generate-job-summary: false
           dependency-graph: generate-and-submit
-          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+          cache-read-only: true
 
       - name: Check
         run: ./gradlew check koverHtmlReport
