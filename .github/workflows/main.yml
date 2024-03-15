@@ -1,4 +1,4 @@
-name: Build
+name: Build APKs
 
 on:
   push:
@@ -24,7 +24,6 @@ jobs:
         uses: gradle/actions/setup-gradle@v3
         with:
           generate-job-summary: false
-          dependency-graph: generate-and-submit
           cache-read-only: false
 
       - name: Assemble
