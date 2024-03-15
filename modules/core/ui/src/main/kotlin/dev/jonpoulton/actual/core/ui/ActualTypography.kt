@@ -68,7 +68,7 @@ private fun FontFamily.textStyle(fontWeight: FontWeight, fontSize: TextUnit): Te
 @Composable
 private fun PreviewTypography() = ActualTheme {
   val width: Dp
-  val height: D
+  val height: Dp
   with(LocalDensity.current) {
     width = 1080.toDp()
     height = 2280.toDp()
