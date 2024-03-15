@@ -43,8 +43,8 @@ androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0
 androidx.lifecycle:lifecycle-viewmodel-savedstate:2.7.0
 androidx.lifecycle:lifecycle-viewmodel:2.7.0
 androidx.loader:loader:1.0.0
-androidx.navigation:navigation-common:2.7.0
-androidx.navigation:navigation-runtime:2.7.0
+androidx.navigation:navigation-common:2.7.7
+androidx.navigation:navigation-runtime:2.7.7
 androidx.savedstate:savedstate-ktx:1.2.1
 androidx.savedstate:savedstate:1.2.1
 androidx.versionedparcelable:versionedparcelable:1.1.1
