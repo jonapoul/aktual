@@ -6,6 +6,8 @@ android {
   namespace = "dev.jonpoulton.actual.serverurl.ui"
 }
 
+optIn(className = "androidx.compose.material3.ExperimentalMaterial3Api")
+
 dependencies {
   api(projects.modules.serverUrl.vm)
   api(libs.androidx.compose.foundation.layout)
