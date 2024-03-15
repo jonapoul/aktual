@@ -1,18 +1,8 @@
-name: CI
+name: PR
 
 on:
-  # Run on every commit in a PR, in any branch
   pull_request:
     branches:
-
-  workflow_dispatch:
-
-  # Run when a commit has been made on the primary branch, which should be after a PR
-  push:
-    branches: [ "main" ]
-
-env:
-  CI: true
 
 permissions:
   contents: write
@@ -26,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: 17
           distribution: "zulu"
@@ -41,22 +31,11 @@ jobs:
           dependency-graph: generate-and-submit
           cache-read-only: ${{ github.ref != 'refs/heads/main' }}
 
-      - name: Assemble
-        run: ./gradlew app:assembleDebug
-
       - name: Check
         run: ./gradlew check koverHtmlReport
 
-      - name: Upload APKs
-        uses: actions/upload-artifact@v3
-        if: success()
-        with:
-          name: apks
-          path: ./app/build/outputs/apk
-          if-no-files-found: error
-
       - name: Upload reports
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: reports
@@ -66,7 +45,7 @@ jobs:
           if-no-files-found: error
 
       - name: Publish test reports
-        uses: mikepenz/action-junit-report@v3
+        uses: mikepenz/action-junit-report@v4
         if: always()
         with:
           report_paths: "**/build/test-results/*/TEST-*.xml"

@@ -1,0 +1,39 @@
+name: Build
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-apks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: "zulu"
+
+      - name: Add permissions
+        run: chmod +x ./gradlew
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          generate-job-summary: false
+          dependency-graph: generate-and-submit
+          cache-read-only: false
+
+      - name: Assemble
+        run: ./gradlew app:assemble
+
+      - name: Upload APKs
+        uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: apks
+          path: ./app/build/outputs/apk
+          if-no-files-found: error
