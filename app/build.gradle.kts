@@ -62,6 +62,7 @@ dependencies {
   implementation(projects.modules.core.ui)
   implementation(projects.modules.nav)
   implementation(libs.alakazam.android.core)
+  implementation(libs.alakazam.kotlin.core)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.activity.core)
   implementation(libs.androidx.annotation)
@@ -73,6 +74,7 @@ dependencies {
   implementation(libs.hilt.android)
   implementation(libs.javax.inject)
   implementation(libs.kotlin.stdlib)
+  implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.datetime)
   implementation(libs.timber)
 }

@@ -32,7 +32,6 @@ internal class ClockModule {
 @Suppress("InjectDispatcher")
 @InstallIn(SingletonComponent::class)
 internal class DispatchersModule {
-
   @Provides
   @Singleton
   fun ioDispatcher(): IODispatcher = IODispatcher(Dispatchers.IO)

@@ -22,7 +22,6 @@ alakazam = "4.4.0"
 android-desugaring = "1.1.5"
 androidx-activity = "1.8.2"
 androidx-annotation = "1.7.1"
-androidx-appcompat = "1.6.1"
 androidx-compose-bom = "2024.02.02"
 androidx-compose-compiler = "1.5.10"
 androidx-compose-hilt = "1.0.0"
@@ -74,7 +73,6 @@ android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.re
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-activity-core = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
-androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }
 androidx-compose-animation-core = { module = "androidx.compose.animation:animation-core" }
 androidx-compose-animation-full = { module = "androidx.compose.animation:animation" }
