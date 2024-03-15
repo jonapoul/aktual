@@ -39,18 +39,18 @@ fun ActualTextInput(
 
   if (showBorder) {
     val borderColor = if (isFocused) colorScheme.formInputBorderSelected else colorScheme.formInputBackgroundSelected
-    fieldModifier = fieldModifier.border(width = 1.dp, color = borderColor, shape = TextFieldShape)
+    fieldModifier = fieldModifier.border(width = 1.dp, color = borderColor, shape = ActualTextInputShape)
   }
 
   if (isFocused) {
-    fieldModifier = fieldModifier.shadow(4.dp, TextFieldShape, ambientColor = colorScheme.formInputShadowSelected)
+    fieldModifier = fieldModifier.shadow(4.dp, ActualTextInputShape, ambientColor = colorScheme.formInputShadowSelected)
   }
 
   TextField(
     modifier = fieldModifier,
     value = value,
     placeholder = { Text(text = placeholderText, fontFamily = ActualFontFamily) },
-    shape = TextFieldShape,
+    shape = ActualTextInputShape,
     colors = colorScheme.textField(),
     interactionSource = interactionSource,
     textStyle = TextStyle.Default.copy(fontSize = fontSize),
@@ -92,7 +92,7 @@ private fun ActualColorScheme.textField(): TextFieldColors = TextFieldDefaults.c
   cursorColor = formInputText,
 )
 
-private val TextFieldShape = RoundedCornerShape(size = 8.dp)
+private val ActualTextInputShape = RoundedCornerShape(size = 4.dp)
 
 @PreviewThemes
 @Composable
