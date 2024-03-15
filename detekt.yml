@@ -1,12 +1,16 @@
 ---
 complexity:
   LongParameterList:
+    functionThreshold: 10
+    constructorThreshold: 10
     ignoreDefaultParameters: true
   TooManyFunctions:
     thresholdInObjects: 20
     thresholdInClasses: 20
     thresholdInInterfaces: 20
     ignorePrivate: true
+  LongMethod:
+    threshold: 100
 exceptions:
   TooGenericExceptionCaught:
     active: false

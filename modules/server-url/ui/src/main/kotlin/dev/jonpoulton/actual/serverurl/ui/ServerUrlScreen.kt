@@ -24,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -37,7 +38,6 @@ import dev.jonpoulton.actual.core.ui.VerticalSpacer
 import dev.jonpoulton.actual.serverurl.vm.ServerUrlViewModel
 import dev.jonpoulton.actual.core.res.R as ResR
 
-@Suppress("UnusedParameter")
 @Composable
 fun ServerUrlScreen(
   navigator: ServerUrlNavigator,
@@ -46,11 +46,21 @@ fun ServerUrlScreen(
   val appVersion by viewModel.appVersion.collectAsStateWithLifecycle()
   val serverVersion by viewModel.serverVersion.collectAsStateWithLifecycle(initialValue = null)
   val enteredUrl by viewModel.enteredUrl.collectAsStateWithLifecycle()
+  val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+  val shouldNavigate by viewModel.shouldNavigate.collectAsStateWithLifecycle(initialValue = false)
+  val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle(initialValue = null)
+
+  if (shouldNavigate) {
+    navigator.navigateToLogin()
+  }
 
   ServerUrlScreenImpl(
     url = enteredUrl,
     appVersion = appVersion,
     serverVersion = serverVersion,
+    isLoading = isLoading,
+    errorMessage = errorMessage,
+    onClickConfirm = viewModel::onClickConfirm,
     onUrlEntered = viewModel::onUrlEntered,
   )
 }
@@ -60,6 +70,9 @@ private fun ServerUrlScreenImpl(
   url: String,
   appVersion: String?,
   serverVersion: String?,
+  isLoading: Boolean,
+  errorMessage: String?,
+  onClickConfirm: () -> Unit,
   onUrlEntered: (String) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -88,6 +101,9 @@ private fun ServerUrlScreenImpl(
       url = url,
       appVersion = appVersion,
       serverVersion = serverVersion,
+      isLoading = isLoading,
+      errorMessage = errorMessage,
+      onClickConfirm = onClickConfirm,
       onUrlEntered = onUrlEntered,
     )
   }
@@ -101,6 +117,7 @@ private fun Content(
   appVersion: String?,
   serverVersion: String?,
   isLoading: Boolean,
+  errorMessage: String?,
   onClickConfirm: () -> Unit,
   onUrlEntered: (String) -> Unit,
 ) {
@@ -151,17 +168,32 @@ private fun Content(
       ) {
         PrimaryActualTextButtonWithLoading(
           text = "Confirm",
-          isLoading = false, // TODO: implement
-          onClick = {},
+          isLoading = isLoading,
+          onClick = onClickConfirm,
         )
       }
     }
 
-    VersionsText(
-      modifier = Modifier.align(Alignment.BottomEnd),
-      appVersion = appVersion,
-      serverVersion = serverVersion,
-    )
+    Column(
+      modifier = Modifier
+        .fillMaxWidth()
+        .align(Alignment.BottomCenter),
+    ) {
+      if (errorMessage != null) {
+        Text(
+          text = errorMessage,
+          fontFamily = ActualFontFamily,
+          color = colorScheme.errorText,
+          textAlign = TextAlign.Center,
+        )
+      }
+
+      VersionsText(
+        modifier = Modifier.align(Alignment.End),
+        appVersion = appVersion,
+        serverVersion = serverVersion,
+      )
+    }
   }
 }
 
@@ -172,8 +204,25 @@ private const val EXAMPLE_URL = "https://example.com"
 private fun Preview() = PreviewActual {
   ServerUrlScreenImpl(
     url = "",
-    serverVersion = "v24.3.0",
     appVersion = "v1.2.3",
+    serverVersion = "v24.3.0",
+    isLoading = false,
+    onClickConfirm = {},
     onUrlEntered = {},
+    errorMessage = null,
+  )
+}
+
+@PreviewThemes
+@Composable
+private fun PreviewWithErrorMessage() = PreviewActual {
+  ServerUrlScreenImpl(
+    url = "",
+    appVersion = "v1.2.3",
+    serverVersion = "v24.3.0",
+    isLoading = false,
+    onClickConfirm = {},
+    onUrlEntered = {},
+    errorMessage = "Hello this is an error message, split over multiple lines so you can see how it behaves",
   )
 }
