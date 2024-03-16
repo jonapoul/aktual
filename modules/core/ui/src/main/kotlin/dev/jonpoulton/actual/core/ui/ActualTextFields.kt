@@ -174,6 +174,7 @@ private fun ActualColorScheme.exposedDropDownMenu(): TextFieldColors = textField
   focusedTrailingIconColor = formInputText,
   unfocusedTrailingIconColor = formInputText,
 )
+
 @Stable
 @Composable
 private fun ActualColorScheme.dropDownMenuItem(): MenuItemColors = MenuDefaults.itemColors().copy(

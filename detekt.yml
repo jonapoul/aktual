@@ -32,3 +32,5 @@ style:
     - "PreviewThemes"
   ForbiddenComment:
     active: false
+  UnnecessaryAbstractClass:
+    active: false

@@ -47,13 +47,16 @@ internal class OkHttpModule {
 internal class PreferencesModule {
   @Provides
   @Singleton
-  fun sharedPrefs(@ApplicationContext context: Context): SharedPreferences =
-    context.getSharedPreferences("actual", Context.MODE_PRIVATE)
+  fun sharedPrefs(
+    @ApplicationContext context: Context,
+  ): SharedPreferences = context.getSharedPreferences("actual", Context.MODE_PRIVATE)
 
   @Provides
   @Singleton
-  fun flowPrefs(prefs: SharedPreferences, io: IODispatcher): FlowSharedPreferences =
-    FlowSharedPreferences(prefs, io)
+  fun flowPrefs(
+    prefs: SharedPreferences,
+    io: IODispatcher,
+  ): FlowSharedPreferences = FlowSharedPreferences(prefs, io)
 }
 
 @Module

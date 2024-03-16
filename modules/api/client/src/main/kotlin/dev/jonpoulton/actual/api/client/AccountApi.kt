@@ -12,5 +12,7 @@ interface AccountApi {
   suspend fun needsBootstrap(): NeedsBootstrapResponse
 
   @POST("account/bootstrap")
-  suspend fun bootstrap(@Body body: BootstrapRequest): BootstrapResponse
+  suspend fun bootstrap(
+    @Body body: BootstrapRequest,
+  ): BootstrapResponse
 }

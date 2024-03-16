@@ -13,5 +13,4 @@ data class Build(
   @SerialName("name") val name: String,
   @SerialName("description") val description: String,
   @SerialName("version") val version: String,
-
-  )
+)

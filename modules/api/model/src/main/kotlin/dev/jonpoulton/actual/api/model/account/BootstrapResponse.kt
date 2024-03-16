@@ -26,4 +26,3 @@ sealed interface BootstrapResponse : Response {
     val bootstrapped: Boolean,
   )
 }
-

@@ -13,6 +13,8 @@ dependencies {
   api(libs.retrofit.core)
   implementation(projects.modules.api.json)
   implementation(libs.javax.inject)
+  implementation(libs.kotlinx.serialization.core)
+  implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.logging)
   implementation(libs.retrofit.serialization)
   implementation(libs.timber)

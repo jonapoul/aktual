@@ -5,7 +5,8 @@ import androidx.compose.runtime.Immutable
 @Immutable
 enum class Protocol(private val value: String) {
   Http("http"),
-  Https("https");
+  Https("https"),
+  ;
 
   override fun toString(): String = value
 
