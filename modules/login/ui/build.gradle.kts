@@ -6,6 +6,8 @@ android {
   namespace = "dev.jonpoulton.actual.login.ui"
 }
 
+optIn(className = "androidx.compose.material3.ExperimentalMaterial3Api")
+
 dependencies {
   api(projects.modules.login.vm)
   api(libs.androidx.compose.foundation.layout)

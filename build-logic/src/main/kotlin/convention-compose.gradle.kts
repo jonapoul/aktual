@@ -27,12 +27,6 @@ ext.apply {
 
 tasks.withType(KotlinCompile::class.java) {
   kotlinOptions {
-    freeCompilerArgs += listOf(
-      "-opt-in=androidx.compose.foundation.ExperimentalFoundationApi",
-      "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
-      "-opt-in=androidx.compose.ui.ExperimentalComposeUiApi",
-    )
-
     // From https://chrisbanes.me/posts/composable-metrics/
     val propertyRoot = "plugin:androidx.compose.compiler.plugins.kotlin"
     val metricReportDir = project.layout.buildDirectory.dir("compose_metrics").get().asFile

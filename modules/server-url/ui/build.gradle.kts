@@ -6,11 +6,12 @@ android {
   namespace = "dev.jonpoulton.actual.serverurl.ui"
 }
 
+optIn(className = "androidx.compose.material3.ExperimentalMaterial3Api")
+
 dependencies {
   api(projects.modules.serverUrl.vm)
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
-  api(libs.androidx.navigation.runtime)
   implementation(projects.modules.core.res)
   implementation(projects.modules.core.ui)
   implementation(libs.alakazam.android.compose)
@@ -27,5 +28,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.kotlinx.coroutines)
+  implementation(libs.kotlinx.immutable)
   debugImplementation(libs.androidx.compose.ui.tooling)
 }

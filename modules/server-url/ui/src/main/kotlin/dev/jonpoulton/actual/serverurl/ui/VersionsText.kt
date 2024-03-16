@@ -48,17 +48,17 @@ private fun PreviewBothNull() = PreviewActual {
 @PreviewThemes
 @Composable
 private fun PreviewAppNull() = PreviewActual {
-  VersionsText(appVersion = null, serverVersion = "v1.2.3")
+  VersionsText(appVersion = null, serverVersion = "1.2.3")
 }
 
 @PreviewThemes
 @Composable
 private fun PreviewServerNull() = PreviewActual {
-  VersionsText(appVersion = "v1.2.3", serverVersion = null)
+  VersionsText(appVersion = "1.2.3", serverVersion = null)
 }
 
 @PreviewThemes
 @Composable
 private fun PreviewBothVersions() = PreviewActual {
-  VersionsText(appVersion = "v1.2.3", serverVersion = "2.3.4")
+  VersionsText(appVersion = "1.2.3", serverVersion = "2.3.4")
 }

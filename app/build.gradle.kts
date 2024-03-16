@@ -58,6 +58,7 @@ android {
 }
 
 dependencies {
+  implementation(projects.modules.api.client)
   implementation(projects.modules.core.res)
   implementation(projects.modules.core.ui)
   implementation(projects.modules.nav)
@@ -71,10 +72,12 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
   implementation(libs.dagger.core)
+  implementation(libs.flowpreferences)
   implementation(libs.hilt.android)
   implementation(libs.javax.inject)
   implementation(libs.kotlin.stdlib)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.datetime)
+  implementation(libs.okhttp.core)
   implementation(libs.timber)
 }
