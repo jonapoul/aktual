@@ -23,14 +23,13 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -69,6 +68,8 @@ fun ServerUrlScreen(
     navigator.navigateToLogin()
   }
 
+  val focusManager = LocalFocusManager.current
+
   ServerUrlScreenImpl(
     url = enteredUrl,
     protocol = protocol,
@@ -77,7 +78,10 @@ fun ServerUrlScreen(
     serverVersion = serverVersion,
     isLoading = isLoading,
     errorMessage = errorMessage,
-    onClickConfirm = viewModel::onClickConfirm,
+    onClickConfirm = {
+      viewModel.onClickConfirm()
+      focusManager.clearFocus()
+    },
     onUrlEntered = viewModel::onUrlEntered,
     onProtocolSelected = viewModel::onProtocolSelected,
   )
@@ -154,7 +158,7 @@ private fun Content(
       .background(colorScheme.pageBackground)
       .fillMaxSize()
       .padding(16.dp),
-    contentAlignment = Alignment.Center,
+    contentAlignment = Alignment.TopCenter,
   ) {
     Column(
       modifier = Modifier
@@ -187,7 +191,7 @@ private fun Content(
         ActualExposedDropDownMenu(
           modifier = Modifier.width(110.dp),
           value = protocol.toString(),
-          options = protocols ,
+          options = protocols,
           onValueChange = { onProtocolSelected(Protocol.fromString(it)) },
           showBorder = false,
         )
@@ -197,10 +201,11 @@ private fun Content(
         BigActualTextField(
           modifier = Modifier.weight(1f),
           value = url,
-          onValueChange = onUrlEntered,
+          onValueChange = { onUrlEntered(it.lowercase()) },
           placeholderText = EXAMPLE_URL,
           keyboardOptions = KeyboardOptions(
             autoCorrect = false,
+            capitalization = KeyboardCapitalization.None,
             keyboardType = KeyboardType.Uri,
             imeAction = ImeAction.Go,
           ),
@@ -251,7 +256,7 @@ private const val EXAMPLE_URL = "example.com"
 
 @PreviewThemes
 @Composable
-private fun Preview() = PreviewActual {
+private fun Regular() = PreviewActual {
   ServerUrlScreenImpl(
     url = "",
     protocol = Protocol.Https,
@@ -268,14 +273,14 @@ private fun Preview() = PreviewActual {
 
 @PreviewThemes
 @Composable
-private fun PreviewWithErrorMessage() = PreviewActual {
+private fun WithErrorMessage() = PreviewActual {
   ServerUrlScreenImpl(
-    url = "",
+    url = "my.server.com:1234/path",
     protocol = Protocol.Http,
     protocols = persistentListOf("http", "https"),
     appVersion = "v1.2.3",
     serverVersion = "v24.3.0",
-    isLoading = false,
+    isLoading = true,
     onClickConfirm = {},
     onUrlEntered = {},
     onProtocolSelected = {},

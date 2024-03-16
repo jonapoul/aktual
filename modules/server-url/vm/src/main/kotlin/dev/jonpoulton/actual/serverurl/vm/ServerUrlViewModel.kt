@@ -71,8 +71,10 @@ class ServerUrlViewModel @Inject internal constructor(
     Timber.d("onClickConfirm")
     mutableIsLoading.update { true }
     viewModelScope.launch {
-      val serverUrl = mutableEnteredUrl.value
-      checkIfNeedsBootstrap(serverUrl)
+      val protocol = mutableProtocol.value
+      val server = mutableEnteredUrl.value
+      val fullUrl = "$protocol://$server"
+      checkIfNeedsBootstrap(fullUrl)
       mutableIsLoading.update { false }
     }
   }
