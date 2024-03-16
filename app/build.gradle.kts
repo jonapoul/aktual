@@ -72,6 +72,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
   implementation(libs.dagger.core)
+  implementation(libs.flowpreferences)
   implementation(libs.hilt.android)
   implementation(libs.javax.inject)
   implementation(libs.kotlin.stdlib)

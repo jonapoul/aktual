@@ -30,6 +30,7 @@ class ServerUrlViewModel @Inject internal constructor(
   private val io: IODispatcher,
   private val okHttpClient: OkHttpClient,
   private val apiStateHolder: ActualApisStateHolder,
+  private val prefs: ServerUrlPreferences,
   private val serverVersionFetcher: ServerVersionFetcher,
 ) : ViewModel() {
   private val mutableIsLoading = MutableStateFlow(value = false)
@@ -66,36 +67,50 @@ class ServerUrlViewModel @Inject internal constructor(
     viewModelScope.launch {
       serverVersionFetcher.startFetching()
     }
+
+    viewModelScope.launch {
+      val savedUrl = prefs.serverUrl.get()
+      if (savedUrl != null) {
+        mutableEnteredUrl.update { savedUrl }
+      }
+
+      val savedProtocol = prefs.protocol.get()
+      if (savedProtocol != null) {
+        mutableProtocol.update { savedProtocol }
+      }
+    }
   }
 
   fun onUrlEntered(url: String) {
-    Timber.d("onUrlEntered $url")
+    Timber.v("onUrlEntered $url")
     mutableEnteredUrl.update { url }
     mutableConfirmResult.update { null }
   }
 
   fun onProtocolSelected(protocol: Protocol) {
+    Timber.v("onProtocolSelected $protocol")
     mutableProtocol.update { protocol }
   }
 
   fun onClickConfirm() {
-    Timber.d("onClickConfirm")
+    Timber.v("onClickConfirm")
     mutableIsLoading.update { true }
     viewModelScope.launch {
       val protocol = mutableProtocol.value
       val server = mutableEnteredUrl.value
-      val fullUrl = "$protocol://$server"
-      checkIfNeedsBootstrap(fullUrl)
+      prefs.serverUrl.set(server)
+      prefs.protocol.set(protocol)
+      checkIfNeedsBootstrap(fullUrl = "$protocol://$server")
       mutableIsLoading.update { false }
     }
   }
 
-  private suspend fun checkIfNeedsBootstrap(serverUrl: String) = try {
-    val apis = apiStateHolder.getIfMatches(serverUrl) ?: run {
-      val retrofit = buildRetrofit(okHttpClient, serverUrl)
+  private suspend fun checkIfNeedsBootstrap(fullUrl: String) = try {
+    val apis = apiStateHolder.getIfMatches(fullUrl) ?: run {
+      val retrofit = buildRetrofit(okHttpClient, fullUrl)
       buildApis(retrofit)
     }
-    Timber.v("checkIfNeedsBootstrap $apis $serverUrl")
+    Timber.v("checkIfNeedsBootstrap $apis")
     val response = withContext(io) { apis.account.needsBootstrap() }
     Timber.v("response=$response")
 
@@ -111,7 +126,7 @@ class ServerUrlViewModel @Inject internal constructor(
     mutableConfirmResult.update { confirmResult }
     apiStateHolder.set(apis)
   } catch (e: Exception) {
-    Timber.w(e, "Failed checking bootstrap for $serverUrl")
+    Timber.w(e, "Failed checking bootstrap for $fullUrl")
     apiStateHolder.reset()
     mutableConfirmResult.update {
       ConfirmResult.Failed(reason = e.requireMessage())

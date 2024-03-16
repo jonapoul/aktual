@@ -85,6 +85,7 @@ androidx.startup:startup-runtime:1.1.1
 androidx.tracing:tracing:1.0.0
 androidx.versionedparcelable:versionedparcelable:1.1.1
 androidx.viewpager:viewpager:1.0.0
+com.fredporciuncula:flow-preferences:1.9.1
 com.google.code.findbugs:jsr305:3.0.2
 com.google.dagger:dagger-lint-aar:2.51
 com.google.dagger:dagger:2.51

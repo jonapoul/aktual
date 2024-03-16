@@ -30,6 +30,7 @@ androidx-coreKtx = "1.12.0"
 androidx-fragment = "1.6.2"
 androidx-lifecycle = "2.7.0"
 androidx-navigation = "2.7.7"
+flowpreferences = "1.9.1"
 java-inject = "1"
 kotlinx-coroutines = "1.8.0"
 kotlinx-datetime = "0.5.0"
@@ -104,6 +105,7 @@ androidx-navigation-commonKtx = { module = "androidx.navigation:navigation-commo
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
 dagger-core = { module = "com.google.dagger:dagger", version.ref = "hilt" }
+flowpreferences = { module = "com.fredporciuncula:flow-preferences", version.ref = "flowpreferences" }
 hilt-core = { module = "com.google.dagger:hilt-core", version.ref = "hilt" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
