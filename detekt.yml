@@ -1,9 +1,7 @@
 ---
 complexity:
   LongParameterList:
-    functionThreshold: 10
-    constructorThreshold: 10
-    ignoreDefaultParameters: true
+    active: false
   TooManyFunctions:
     thresholdInObjects: 20
     thresholdInClasses: 20

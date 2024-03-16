@@ -26,8 +26,9 @@ includeBuild("build-logic")
 
 include(":app")
 
-// include(":modules:api:client")
-// include(":modules:api:model")
+include(":modules:api:client")
+include(":modules:api:json")
+include(":modules:api:model")
 
 include(":modules:core:ui")
 include(":modules:core:res")

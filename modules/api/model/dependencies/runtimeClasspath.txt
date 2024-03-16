@@ -1,0 +1,9 @@
+dev.jonpoulton.alakazam:kotlin-serialization:4.4.0
+org.jetbrains.kotlin:kotlin-stdlib-common:1.9.22
+org.jetbrains.kotlin:kotlin-stdlib:1.9.22
+org.jetbrains.kotlinx:kotlinx-serialization-bom:1.6.3
+org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3
+org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3
+org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3
+org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3
+org.jetbrains:annotations:13.0

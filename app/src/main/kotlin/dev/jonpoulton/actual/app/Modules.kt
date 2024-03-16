@@ -9,8 +9,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import dev.jonpoulton.actual.api.client.buildOkHttp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.datetime.Clock
+import okhttp3.OkHttpClient
 import javax.inject.Singleton
 
 @Module
@@ -26,6 +28,14 @@ internal interface BuildConfigModule {
 internal class ClockModule {
   @Provides
   fun clock(): Clock = Clock.System
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal class OkHttpModule {
+  @Provides
+  @Singleton
+  fun client(): OkHttpClient = buildOkHttp()
 }
 
 @Module

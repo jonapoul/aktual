@@ -6,9 +6,12 @@ android {
   namespace = "dev.jonpoulton.actual.core.ui"
 }
 
+optIn(className = "androidx.compose.material3.ExperimentalMaterial3Api")
+
 dependencies {
   api(projects.modules.core.res)
   api(libs.androidx.compose.runtime)
+  api(libs.kotlinx.immutable)
   implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.coreKtx)
   implementation(libs.androidx.compose.foundation.core)

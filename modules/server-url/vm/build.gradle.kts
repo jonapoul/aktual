@@ -8,8 +8,10 @@ android {
 
 dependencies {
   api(libs.kotlinx.coroutines)
+  api(libs.kotlinx.immutable)
+  implementation(projects.modules.api.client)
   implementation(libs.alakazam.android.core)
-  implementation(libs.alakazam.kotlin.compose.annotations)
   implementation(libs.hilt.android)
   implementation(libs.timber)
+  compileOnly(libs.alakazam.kotlin.compose.annotations)
 }
