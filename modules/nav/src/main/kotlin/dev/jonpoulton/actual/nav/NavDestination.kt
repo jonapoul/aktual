@@ -14,6 +14,13 @@ sealed class NavDestination(
     composable = { ServerUrlScreen(ServerUrlNavigator(it)) },
   )
 
+  data object Bootstrap : NavDestination(
+    route = "bootstrap",
+    composable = {
+      // TODO: Implement
+    },
+  )
+
   data object Login : NavDestination(
     route = "login",
     composable = { LoginScreen(it) },

@@ -8,5 +8,5 @@ internal sealed interface ConfirmResult {
   data class Failed(val reason: String) : ConfirmResult
 
   @Immutable
-  data object Succeeded : ConfirmResult
+  data class Succeeded(val isBootstrapped: Boolean) : ConfirmResult
 }

@@ -47,6 +47,7 @@ import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
 import dev.jonpoulton.actual.core.ui.VerticalSpacer
 import dev.jonpoulton.actual.serverurl.vm.Protocol
 import dev.jonpoulton.actual.serverurl.vm.ServerUrlViewModel
+import dev.jonpoulton.actual.serverurl.vm.ShouldNavigate
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import dev.jonpoulton.actual.core.res.R as ResR
@@ -64,8 +65,9 @@ fun ServerUrlScreen(
   val shouldNavigate by viewModel.shouldNavigate.collectAsStateWithLifecycle(initialValue = false)
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle(initialValue = null)
 
-  if (shouldNavigate) {
-    navigator.navigateToLogin()
+  when (shouldNavigate) {
+    is ShouldNavigate.ToBootstrap -> navigator.navigateToBootstrap()
+    is ShouldNavigate.ToLogin -> navigator.navigateToLogin()
   }
 
   val focusManager = LocalFocusManager.current

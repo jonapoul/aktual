@@ -44,7 +44,18 @@ class ServerUrlViewModel @Inject internal constructor(
   val protocol: StateFlow<Protocol> = mutableProtocol.asStateFlow()
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
 
-  val shouldNavigate: Flow<Boolean> = mutableConfirmResult.map { value -> value is ConfirmResult.Succeeded }
+  val shouldNavigate: Flow<ShouldNavigate?> = mutableConfirmResult.map { value ->
+    if (value is ConfirmResult.Succeeded) {
+      if (value.isBootstrapped) {
+        ShouldNavigate.ToLogin
+      } else {
+        ShouldNavigate.ToBootstrap
+      }
+    } else {
+      null
+    }
+  }
+
   val errorMessage: Flow<String?> = mutableConfirmResult.map { value ->
     if (value is ConfirmResult.Failed) "Failed: ${value.reason}" else null
   }
@@ -90,7 +101,7 @@ class ServerUrlViewModel @Inject internal constructor(
 
     val confirmResult = when (response) {
       is NeedsBootstrapResponse.Ok -> {
-        ConfirmResult.Succeeded
+        ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
       }
 
       is NeedsBootstrapResponse.Error -> {
