@@ -50,8 +50,17 @@ androidx.savedstate:savedstate-ktx:1.2.1
 androidx.savedstate:savedstate:1.2.1
 androidx.versionedparcelable:versionedparcelable:1.1.1
 com.google.dagger:dagger:2.51
+com.squareup.okhttp3:okhttp:4.12.0
+com.squareup.okio:okio-jvm:3.6.0
+com.squareup.okio:okio:3.6.0
+dev.jonpoulton.alakazam:kotlin-core:4.4.0
 javax.inject:javax.inject:1
+org.jetbrains.kotlin:kotlin-stdlib-common:1.9.22
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10
 org.jetbrains.kotlin:kotlin-stdlib:1.9.22
+org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.7
+org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.7
 org.jetbrains.kotlinx:kotlinx-coroutines-android:1.8.0
 org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.8.0
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0

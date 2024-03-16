@@ -24,6 +24,7 @@ indent_size = 2
 
 # noinspection EditorConfigKeyCorrectness
 [*.kt]
+ktlint_standard_blank-line-before-declaration = disabled
 ktlint_standard_function-signature = disabled
 ktlint_standard_multiline-expression-wrapping = disabled
 ktlint_standard_string-template-indent = disabled

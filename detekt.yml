@@ -1,12 +1,14 @@
 ---
 complexity:
   LongParameterList:
-    ignoreDefaultParameters: true
+    active: false
   TooManyFunctions:
     thresholdInObjects: 20
     thresholdInClasses: 20
     thresholdInInterfaces: 20
     ignorePrivate: true
+  LongMethod:
+    threshold: 100
 exceptions:
   TooGenericExceptionCaught:
     active: false
@@ -29,4 +31,6 @@ style:
     - "PreviewDark"
     - "PreviewThemes"
   ForbiddenComment:
+    active: false
+  UnnecessaryAbstractClass:
     active: false

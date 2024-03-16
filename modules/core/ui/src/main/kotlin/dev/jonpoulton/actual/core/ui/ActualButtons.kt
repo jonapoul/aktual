@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 fun PrimaryActualTextButton(
   text: String,
   modifier: Modifier = Modifier,
+  isEnabled: Boolean = true,
   contentPadding: PaddingValues = ActualButtonPadding,
   shape: Shape = ActualButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -44,6 +45,7 @@ fun PrimaryActualTextButton(
   BasicActualTextButton(
     text = text,
     modifier = modifier,
+    isEnabled = isEnabled,
     contentPadding = contentPadding,
     shape = shape,
     interactionSource = interactionSource,
@@ -73,6 +75,7 @@ fun PrimaryActualTextButtonWithLoading(
   PrimaryActualTextButton(
     text = text,
     modifier = modifier,
+    isEnabled = !isLoading,
     contentPadding = contentPadding,
     shape = shape,
     interactionSource = interactionSource,
@@ -137,6 +140,7 @@ fun BareActualTextButton(
 fun BasicActualTextButton(
   text: String,
   modifier: Modifier = Modifier,
+  isEnabled: Boolean = true,
   contentPadding: PaddingValues = ActualButtonPadding,
   shape: Shape = ActualButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -152,6 +156,7 @@ fun BasicActualTextButton(
 
   TextButton(
     modifier = modifier.widthIn(min = 1.dp),
+    enabled = isEnabled,
     shape = shape,
     colors = colors(colorScheme, isPressed),
     contentPadding = contentPadding,
