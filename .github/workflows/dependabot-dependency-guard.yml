@@ -33,7 +33,7 @@ jobs:
           generate-job-summary: false
           cache-read-only: true
 
-      - name: Assemble
+      - name: Re-baseline
         run: ./gradlew dependencyGuardBaseline
 
       - uses: stefanzweifel/git-auto-commit-action@v5
