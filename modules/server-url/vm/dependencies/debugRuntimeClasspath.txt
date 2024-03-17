@@ -31,7 +31,6 @@ com.google.dagger:dagger:2.51
 com.google.dagger:hilt-android:2.51
 com.google.dagger:hilt-core:2.51
 com.google.guava:listenablefuture:1.0
-com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0
 com.jakewharton.timber:timber:5.0.1
 com.squareup.okhttp3:logging-interceptor:4.12.0
 com.squareup.okhttp3:okhttp:4.12.0

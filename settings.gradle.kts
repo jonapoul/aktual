@@ -36,6 +36,8 @@ include(":modules:core:res")
 include(":modules:login:ui")
 include(":modules:login:vm")
 
+include(":modules:server-url:model")
+include(":modules:server-url:prefs")
 include(":modules:server-url:ui")
 include(":modules:server-url:vm")
 
