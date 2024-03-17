@@ -74,7 +74,7 @@ dependencies {
   implementation(libs.dagger.core)
   implementation(libs.flowpreferences)
   implementation(libs.hilt.android)
-  implementation(libs.javax.inject)
+  implementation(libs.javaxInject)
   implementation(libs.kotlin.stdlib)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.datetime)

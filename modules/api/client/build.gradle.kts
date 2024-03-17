@@ -12,7 +12,7 @@ dependencies {
   api(libs.okhttp.core)
   api(libs.retrofit.core)
   implementation(projects.modules.api.json)
-  implementation(libs.javax.inject)
+  implementation(libs.javaxInject)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.logging)
