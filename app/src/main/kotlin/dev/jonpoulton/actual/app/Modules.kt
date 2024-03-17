@@ -14,7 +14,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.jonpoulton.actual.api.client.buildOkHttp
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.datetime.Clock
 import okhttp3.OkHttpClient
 import javax.inject.Singleton
@@ -74,4 +76,12 @@ internal class DispatchersModule {
   @Provides
   @Singleton
   fun mainDispatcher(): MainDispatcher = MainDispatcher(Dispatchers.Main)
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal class ScopeModule {
+  @Provides
+  @Singleton
+  fun scope(): CoroutineScope = CoroutineScope(SupervisorJob())
 }
