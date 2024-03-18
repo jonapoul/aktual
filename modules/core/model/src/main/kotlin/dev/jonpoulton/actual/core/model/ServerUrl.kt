@@ -1,0 +1,28 @@
+package dev.jonpoulton.actual.core.model
+
+import androidx.compose.runtime.Immutable
+
+@Immutable
+data class ServerUrl(val protocol: Protocol, val baseUrl: String) {
+  init {
+    require(baseUrl.isNotBlank()) { "Base URL is blank" }
+  }
+
+  override fun toString(): String = "$protocol://$baseUrl"
+}
+
+fun ServerUrl(string: String): ServerUrl {
+  val split = string.split("://")
+  require(split.size == 2) { "Need a URL in format 'PROTOCOL://BASE_URL', got $string" }
+  val protocol = Protocol.fromString(split[0])
+  val baseUrl = split[1]
+  return ServerUrl(protocol, baseUrl)
+}
+
+fun serverUrlOrNull(protocol: Protocol?, baseUrl: String?): ServerUrl? {
+  return if (protocol == null || baseUrl.isNullOrBlank()) {
+    null
+  } else {
+    ServerUrl(protocol, baseUrl)
+  }
+}

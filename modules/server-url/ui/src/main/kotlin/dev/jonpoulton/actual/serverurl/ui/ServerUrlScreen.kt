@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.jonpoulton.actual.core.model.Protocol
 import dev.jonpoulton.actual.core.ui.ActualExposedDropDownMenu
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
 import dev.jonpoulton.actual.core.ui.BigActualTextField
@@ -45,7 +46,6 @@ import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.PreviewActual
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
 import dev.jonpoulton.actual.core.ui.VerticalSpacer
-import dev.jonpoulton.actual.serverurl.vm.Protocol
 import dev.jonpoulton.actual.serverurl.vm.ServerUrlViewModel
 import dev.jonpoulton.actual.serverurl.vm.ShouldNavigate
 import kotlinx.collections.immutable.ImmutableList
@@ -59,7 +59,7 @@ fun ServerUrlScreen(
 ) {
   val appVersion by viewModel.appVersion.collectAsStateWithLifecycle()
   val serverVersion by viewModel.serverVersion.collectAsStateWithLifecycle(initialValue = null)
-  val enteredUrl by viewModel.enteredUrl.collectAsStateWithLifecycle()
+  val enteredUrl by viewModel.baseUrl.collectAsStateWithLifecycle()
   val protocol by viewModel.protocol.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val shouldNavigate by viewModel.shouldNavigate.collectAsStateWithLifecycle(initialValue = false)

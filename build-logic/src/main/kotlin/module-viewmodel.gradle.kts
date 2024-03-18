@@ -18,7 +18,7 @@ val implementation by configurations
 dependencies {
   api(libs.androidx.lifecycle.viewmodel.ktx)
   api(libs.dagger.core)
-  api(libs.javax.inject)
+  api(libs.javaxInject)
   implementation(libs.hilt.android)
 }
 

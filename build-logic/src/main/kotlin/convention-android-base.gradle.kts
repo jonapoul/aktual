@@ -37,7 +37,6 @@ extensions.getByType(CommonExtension::class).apply {
     unitTests {
       isIncludeAndroidResources = true
       isReturnDefaultValues = true
-      all { it.jvmArgs("-noverify") }
     }
   }
 }

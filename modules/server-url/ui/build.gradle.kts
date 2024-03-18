@@ -12,6 +12,7 @@ dependencies {
   api(projects.modules.serverUrl.vm)
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
+  implementation(projects.modules.core.model)
   implementation(projects.modules.core.res)
   implementation(projects.modules.core.ui)
   implementation(libs.alakazam.android.compose)
