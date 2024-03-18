@@ -25,7 +25,6 @@ import org.robolectric.RobolectricTestRunner
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlViewModelTest {
