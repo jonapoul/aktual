@@ -58,7 +58,7 @@ android {
 }
 
 dependencies {
-  implementation(projects.modules.api.client)
+  implementation(projects.modules.core.connection)
   implementation(projects.modules.core.res)
   implementation(projects.modules.core.ui)
   implementation(projects.modules.nav)
@@ -78,6 +78,5 @@ dependencies {
   implementation(libs.kotlin.stdlib)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.okhttp.core)
   implementation(libs.timber)
 }

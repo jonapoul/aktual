@@ -100,6 +100,7 @@ dependencies {
       testImplementation(libs.test.androidx.runner)
       testImplementation(libs.test.mockk.android)
       testImplementation(libs.test.robolectric)
+      testImplementation(libs.test.timber)
     }
   }
 }

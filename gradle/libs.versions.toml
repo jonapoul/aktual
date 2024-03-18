@@ -50,6 +50,7 @@ test-androidx-runner = "1.5.2"
 test-junit = "4.13.2"
 test-mockk = "1.13.10"
 test-robolectric = "4.11.1"
+test-timber = "1.0.1"
 test-turbine = "1.1.0"
 
 [libraries]
@@ -137,6 +138,7 @@ test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 test-mockk-core = { module = "io.mockk:mockk", version.ref = "test-mockk" }
 test-mockk-android = { module = "io.mockk:mockk-android", version.ref = "test-mockk" }
 test-robolectric = { module = "org.robolectric:robolectric", version.ref = "test-robolectric" }
+test-timber = { module = "net.lachlanmckee:timber-junit-rule", version.ref = "test-timber" }
 test-turbine = { module = "app.cash.turbine:turbine", version.ref = "test-turbine" }
 
 [plugins]

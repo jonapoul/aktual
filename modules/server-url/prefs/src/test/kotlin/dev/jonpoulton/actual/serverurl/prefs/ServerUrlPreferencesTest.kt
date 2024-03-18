@@ -1,11 +1,10 @@
 package dev.jonpoulton.actual.serverurl.prefs
 
 import alakazam.test.core.CoroutineRule
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
-import com.fredporciuncula.flow.preferences.FlowSharedPreferences
-import dev.jonpoulton.actual.serverurl.model.Protocol
+import dev.jonpoulton.actual.core.model.Protocol
+import dev.jonpoulton.actual.core.model.ServerUrl
+import dev.jonpoulton.actual.test.buildFlowPreferences
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -24,46 +23,35 @@ class ServerUrlPreferencesTest {
 
   @Before
   fun before() {
-    val context = ApplicationProvider.getApplicationContext<Context>()
-    val sharedPrefs = context.getSharedPreferences("actual", Context.MODE_PRIVATE)
-    val flowPrefs = FlowSharedPreferences(sharedPrefs, coroutineRule.dispatcher)
+    val flowPrefs = buildFlowPreferences(coroutineRule.dispatcher)
     preferences = ServerUrlPreferences(flowPrefs)
   }
 
   @Test
-  fun `Null initial states`() {
-    assertNull(preferences.url.get())
-    assertNull(preferences.protocol.get())
-  }
-
-  @Test
-  fun `Emit URL`() = runTest {
+  fun `Emit URLs`() = runTest {
     preferences.url.asFlow().test {
       // Given
       assertNull(awaitItem())
 
       // When
-      val url = "website.com"
-      preferences.url.set(url)
+      val url1 = ServerUrl(protocol = Protocol.Https, baseUrl = "website.com")
+      preferences.url.set(url1)
 
       // Then
-      assertEquals(expected = url, actual = awaitItem())
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
-  fun `Emit protocol`() = runTest {
-    preferences.protocol.asFlow().test {
-      // Given
-      assertNull(awaitItem())
+      assertEquals(expected = url1, actual = awaitItem())
 
       // When
-      val protocol = Protocol.Https
-      preferences.protocol.set(protocol)
+      val url2 = ServerUrl(protocol = Protocol.Http, baseUrl = "some.other.domain.co.uk")
+      preferences.url.set(url2)
 
       // Then
-      assertEquals(expected = protocol, actual = awaitItem())
+      assertEquals(expected = url2, actual = awaitItem())
+
+      // When
+      preferences.url.delete()
+
+      // Then
+      assertNull(awaitItem())
       cancelAndIgnoreRemainingEvents()
     }
   }
