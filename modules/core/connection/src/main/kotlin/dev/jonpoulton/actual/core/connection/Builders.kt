@@ -1,6 +1,5 @@
 package dev.jonpoulton.actual.core.connection
 
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dev.jonpoulton.actual.api.client.ActualApis
 import dev.jonpoulton.actual.api.json.ActualJson
 import dev.jonpoulton.actual.core.model.ServerUrl
@@ -8,6 +7,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.create
 import timber.log.Timber
 
