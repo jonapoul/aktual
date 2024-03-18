@@ -7,7 +7,7 @@ dependencyVersions = "0.51.0"
 detekt = "1.23.5"
 doctor = "0.9.2"
 hilt = "2.51"
-javax-inject = "1"
+javaxInject = "1"
 kotlin = "1.9.22"
 kover = "0.7.6"
 ksp = "1.9.22-1.0.17"
@@ -50,6 +50,7 @@ test-androidx-runner = "1.5.2"
 test-junit = "4.13.2"
 test-mockk = "1.13.10"
 test-robolectric = "4.11.1"
+test-timber = "1.0.1"
 test-turbine = "1.1.0"
 
 [libraries]
@@ -109,7 +110,7 @@ flowpreferences = { module = "com.fredporciuncula:flow-preferences", version.ref
 hilt-core = { module = "com.google.dagger:hilt-core", version.ref = "hilt" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt" }
-javax-inject = { module = "javax.inject:javax.inject", version.ref = "javax-inject" }
+javaxInject = { module = "javax.inject:javax.inject", version.ref = "javaxInject" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
@@ -137,6 +138,7 @@ test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 test-mockk-core = { module = "io.mockk:mockk", version.ref = "test-mockk" }
 test-mockk-android = { module = "io.mockk:mockk-android", version.ref = "test-mockk" }
 test-robolectric = { module = "org.robolectric:robolectric", version.ref = "test-robolectric" }
+test-timber = { module = "net.lachlanmckee:timber-junit-rule", version.ref = "test-timber" }
 test-turbine = { module = "app.cash.turbine:turbine", version.ref = "test-turbine" }
 
 [plugins]

@@ -9,13 +9,11 @@ android {
 dependencies {
   api(projects.modules.api.model)
   api(libs.alakazam.kotlin.core)
-  api(libs.okhttp.core)
   api(libs.retrofit.core)
   implementation(projects.modules.api.json)
-  implementation(libs.javax.inject)
+  implementation(projects.modules.core.model)
+  implementation(libs.javaxInject)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
-  implementation(libs.okhttp.logging)
-  implementation(libs.retrofit.serialization)
   implementation(libs.timber)
 }

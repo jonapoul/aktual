@@ -1,4 +1,4 @@
-package dev.jonpoulton.actual.serverurl.vm
+package dev.jonpoulton.actual.core.model
 
 import androidx.compose.runtime.Immutable
 
