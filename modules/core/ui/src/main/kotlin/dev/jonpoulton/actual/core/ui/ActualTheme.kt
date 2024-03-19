@@ -13,8 +13,6 @@ fun ActualTheme(
   schemeType: ActualColorSchemeType = ActualColorSchemeType.System,
   content: @Composable () -> Unit,
 ) {
-  // TODO: Handle user preferences here
-
   val systemDarkTheme = isSystemInDarkTheme()
 
   val colorScheme = when (schemeType) {
