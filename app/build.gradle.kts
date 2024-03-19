@@ -72,6 +72,7 @@ dependencies {
   implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+  implementation(libs.androidx.preference.ktx)
   implementation(libs.dagger.core)
   implementation(libs.flowpreferences)
   implementation(libs.hilt.android)

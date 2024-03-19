@@ -1,15 +1,15 @@
 package dev.jonpoulton.actual.serverurl.ui
 
-import alakazam.android.ui.compose.PreviewThemes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
-import dev.jonpoulton.actual.core.ui.PreviewActual
+import dev.jonpoulton.actual.core.ui.PreviewActualColumn
 import dev.jonpoulton.actual.core.res.R as ResR
 
 @Composable
@@ -39,26 +39,26 @@ internal fun VersionsText(
   )
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewBothNull() = PreviewActual {
+private fun PreviewBothNull() = PreviewActualColumn {
   VersionsText(appVersion = null, serverVersion = null)
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewAppNull() = PreviewActual {
+private fun PreviewAppNull() = PreviewActualColumn {
   VersionsText(appVersion = null, serverVersion = "1.2.3")
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewServerNull() = PreviewActual {
+private fun PreviewServerNull() = PreviewActualColumn {
   VersionsText(appVersion = "1.2.3", serverVersion = null)
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewBothVersions() = PreviewActual {
+private fun PreviewBothVersions() = PreviewActualColumn {
   VersionsText(appVersion = "1.2.3", serverVersion = "2.3.4")
 }

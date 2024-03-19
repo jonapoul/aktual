@@ -30,6 +30,7 @@ androidx-coreKtx = "1.12.0"
 androidx-fragment = "1.6.2"
 androidx-lifecycle = "2.7.0"
 androidx-navigation = "2.7.7"
+androidx-preference = "1.2.0"
 flowpreferences = "1.9.1"
 java-inject = "1"
 kotlinx-coroutines = "1.8.0"
@@ -106,6 +107,7 @@ androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecyc
 androidx-navigation-commonKtx = { module = "androidx.navigation:navigation-common-ktx", version.ref = "androidx-navigation" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
+androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
 dagger-core = { module = "com.google.dagger:dagger", version.ref = "hilt" }
 flowpreferences = { module = "com.fredporciuncula:flow-preferences", version.ref = "flowpreferences" }
 hilt-core = { module = "com.google.dagger:hilt-core", version.ref = "hilt" }

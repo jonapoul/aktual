@@ -49,7 +49,6 @@ sealed interface ActualColorScheme {
   val tableRowHeaderText: Color
 
   val sidebarBackground: Color
-  val sidebarItemBackgroundPending: Color
   val sidebarItemBackgroundPositive: Color
   val sidebarItemBackgroundFailed: Color
   val sidebarItemBackgroundHover: Color
