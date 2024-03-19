@@ -137,6 +137,7 @@ test-kotlin-common = { module = "org.jetbrains.kotlin:kotlin-test-common", versi
 test-kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 test-mockk-core = { module = "io.mockk:mockk", version.ref = "test-mockk" }
+test-mockk-dsl = { module = "io.mockk:mockk-dsl", version.ref = "test-mockk" }
 test-mockk-android = { module = "io.mockk:mockk-android", version.ref = "test-mockk" }
 test-robolectric = { module = "org.robolectric:robolectric", version.ref = "test-robolectric" }
 test-timber = { module = "net.lachlanmckee:timber-junit-rule", version.ref = "test-timber" }

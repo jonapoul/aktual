@@ -1,4 +1,3 @@
-import com.autonomousapps.extension.Issue
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
@@ -24,27 +23,43 @@ plugins {
   id("convention-test")
 }
 
-fun Issue.failExcept(vararg ignore: String) {
-  severity(value = "fail")
-  exclude(*ignore)
-}
-
 dependencyAnalysis {
   structure {
     ignoreKtx(ignore = true)
     bundle(name = "kotlin-stdlib") { includeGroup(group = "org.jetbrains.kotlin") }
     bundle(name = "modules") { include("^:.*\$".toRegex()) }
   }
+
   issues {
     all {
       // Failure
-      onRedundantPlugins { failExcept() }
-      onUnusedAnnotationProcessors { failExcept() }
-      onUsedTransitiveDependencies { failExcept("modules") }
+      onRedundantPlugins { severity(value = "fail") }
+      onUnusedAnnotationProcessors { severity(value = "fail") }
+      onUsedTransitiveDependencies {
+        severity(value = "fail")
+        exclude("modules")
+      }
+      onUnusedDependencies {
+        severity(value = "fail")
+        exclude(
+          libs.kotlinx.coroutines,
+          libs.test.alakazam.core,
+          libs.test.androidx.arch,
+          libs.test.androidx.junit,
+          libs.test.androidx.rules,
+          libs.test.androidx.runner,
+          libs.test.junit,
+          libs.test.mockk.android,
+          libs.test.robolectric,
+          libs.test.timber,
+          libs.test.turbine,
+        )
+      }
 
       // Ignore
       onModuleStructure { severity(value = "ignore") }
       onIncorrectConfiguration { severity(value = "ignore") }
+      onRuntimeOnly { severity(value = "ignore") }
     }
   }
 }
