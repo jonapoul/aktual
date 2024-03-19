@@ -8,6 +8,7 @@ import alakazam.kotlin.core.LoopController
 import alakazam.kotlin.core.MainDispatcher
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import com.fredporciuncula.flow.preferences.FlowSharedPreferences
 import dagger.Binds
 import dagger.Module
@@ -43,7 +44,7 @@ internal class PreferencesModule {
   @Singleton
   fun sharedPrefs(
     @ApplicationContext context: Context,
-  ): SharedPreferences = context.getSharedPreferences("actual", Context.MODE_PRIVATE)
+  ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
   @Provides
   @Singleton
