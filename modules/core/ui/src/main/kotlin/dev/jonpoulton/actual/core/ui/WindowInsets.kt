@@ -12,7 +12,7 @@ import androidx.core.view.WindowCompat
 @Composable
 fun SetStatusBarColors(
   statusBarColor: ActualColorScheme.() -> Color = { mobileHeaderBackground },
-  navigationBarColor: ActualColorScheme.() -> Color = { mobileNavBackground },
+  navigationBarColor: ActualColorScheme.() -> Color = { pageBackground },
   darkTheme: Boolean = isSystemInDarkTheme(),
 ) {
   val view = LocalView.current
@@ -27,4 +27,3 @@ fun SetStatusBarColors(
     }
   }
 }
-
