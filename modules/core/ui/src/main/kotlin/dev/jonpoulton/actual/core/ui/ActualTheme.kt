@@ -6,28 +6,37 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun ActualTheme(
-  darkTheme: Boolean = isSystemInDarkTheme(),
+  schemeType: ActualColorSchemeType = ActualColorSchemeType.System,
   content: @Composable () -> Unit,
 ) {
-  // TODO: Handle user preferences here
-  // TODO: Support midnight colours
-  val colorScheme = when {
-    darkTheme -> DarkColorScheme
-    else -> LightColorScheme
+  val systemDarkTheme = isSystemInDarkTheme()
+
+  val colorScheme = when (schemeType) {
+    ActualColorSchemeType.System -> if (systemDarkTheme) DarkColorScheme else LightColorScheme
+    ActualColorSchemeType.Dark -> DarkColorScheme
+    ActualColorSchemeType.Light -> LightColorScheme
+    ActualColorSchemeType.Midnight -> MidnightColorScheme
   }
 
   CompositionLocalProvider(
     LocalActualColorScheme provides colorScheme,
   ) {
     SetStatusBarColors(
-      darkTheme = darkTheme,
+      darkTheme = systemDarkTheme,
     )
 
+    val materialColorScheme = when (colorScheme) {
+      LightColorScheme -> lightColorScheme()
+      DarkColorScheme -> darkColorScheme()
+      MidnightColorScheme -> darkColorScheme(surface = Color.Black)
+    }
+
     MaterialTheme(
-      colorScheme = if (darkTheme) darkColorScheme() else lightColorScheme(),
+      colorScheme = materialColorScheme,
       typography = ActualTypography,
       content = content,
     )

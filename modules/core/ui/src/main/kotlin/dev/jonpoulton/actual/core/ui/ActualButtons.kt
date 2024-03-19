@@ -1,6 +1,5 @@
 package dev.jonpoulton.actual.core.ui
 
-import alakazam.android.ui.compose.PreviewThemes
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
@@ -24,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 
@@ -205,27 +205,27 @@ private fun ActualColorScheme.bareButton(isPressed: Boolean): ButtonColors = But
   disabledContentColor = buttonBareDisabledText,
 )
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewBareButton() = PreviewActual {
+private fun PreviewBareButton() = PreviewActualColumn {
   BareActualTextButton(
     text = "Cancel",
     onClick = {},
   )
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewPrimaryButton() = PreviewActual {
+private fun PreviewPrimaryButton() = PreviewActualColumn {
   PrimaryActualTextButton(
     text = "OK",
     onClick = {},
   )
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewPrimaryWithLoadingNotLoadingButton() = PreviewActual {
+private fun PreviewPrimaryWithLoadingNotLoadingButton() = PreviewActualColumn {
   PrimaryActualTextButtonWithLoading(
     text = "OK",
     isLoading = false,
@@ -233,9 +233,9 @@ private fun PreviewPrimaryWithLoadingNotLoadingButton() = PreviewActual {
   )
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewPrimaryWithLoadingButton() = PreviewActual {
+private fun PreviewPrimaryWithLoadingButton() = PreviewActualColumn {
   PrimaryActualTextButtonWithLoading(
     text = "OK",
     isLoading = true,

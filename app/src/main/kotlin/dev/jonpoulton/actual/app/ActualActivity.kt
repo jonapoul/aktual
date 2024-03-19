@@ -17,9 +17,11 @@ class ActualActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     viewModel.start()
 
+    val colorSchemeType = viewModel.colorSchemeType
+
     enableEdgeToEdge()
     setContent {
-      ActualTheme {
+      ActualTheme(colorSchemeType) {
         ActualNavHost()
       }
     }

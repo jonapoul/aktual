@@ -1,6 +1,5 @@
 package dev.jonpoulton.actual.login.ui
 
-import alakazam.android.ui.compose.PreviewThemes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -23,7 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import dev.jonpoulton.actual.core.ui.PreviewActual
+import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.login.vm.LoginViewModel
 import dev.jonpoulton.actual.core.res.R as ResR
 
@@ -79,9 +78,9 @@ private fun LoginScreenImpl(
   }
 }
 
-@PreviewThemes
+@PreviewActualScreen
 @Composable
-private fun Preview() = PreviewActual {
+private fun Preview() = PreviewActualScreen {
   LoginScreenImpl(
     onClickAbout = {},
   )

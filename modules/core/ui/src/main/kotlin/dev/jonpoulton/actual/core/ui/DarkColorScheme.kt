@@ -63,7 +63,6 @@ internal object DarkColorScheme : ActualColorScheme {
   override val tableRowHeaderText = ActualColors.navy150
 
   override val sidebarBackground = ActualColors.navy900
-  override val sidebarItemBackgroundPending = ActualColors.orange200
   override val sidebarItemBackgroundPositive = ActualColors.green500
   override val sidebarItemBackgroundFailed = ActualColors.red300
   override val sidebarItemAccentSelected = ActualColors.purple200

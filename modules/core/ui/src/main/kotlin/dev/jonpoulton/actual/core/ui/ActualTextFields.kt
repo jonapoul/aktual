@@ -1,6 +1,5 @@
 package dev.jonpoulton.actual.core.ui
 
-import alakazam.android.ui.compose.PreviewThemes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -28,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -183,9 +183,9 @@ private fun ActualColorScheme.dropDownMenuItem(): MenuItemColors = MenuDefaults.
 
 private val ActualTextFieldShape = RoundedCornerShape(size = 4.dp)
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewEmptyTextField() = PreviewActual {
+private fun PreviewEmptyTextField() = PreviewActualColumn {
   ActualTextField(
     value = "",
     onValueChange = {},
@@ -193,9 +193,9 @@ private fun PreviewEmptyTextField() = PreviewActual {
   )
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewFilledTextField() = PreviewActual {
+private fun PreviewFilledTextField() = PreviewActualColumn {
   ActualTextField(
     value = "I'm full",
     onValueChange = {},
@@ -203,9 +203,9 @@ private fun PreviewFilledTextField() = PreviewActual {
   )
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewEmptyBigTextField() = PreviewActual {
+private fun PreviewEmptyBigTextField() = PreviewActualColumn {
   BigActualTextField(
     value = "",
     onValueChange = {},
@@ -213,9 +213,9 @@ private fun PreviewEmptyBigTextField() = PreviewActual {
   )
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewFilledBigTextField() = PreviewActual {
+private fun PreviewFilledBigTextField() = PreviewActualColumn {
   BigActualTextField(
     value = "I'm full",
     onValueChange = {},
@@ -223,9 +223,9 @@ private fun PreviewFilledBigTextField() = PreviewActual {
   )
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewDropDownMenu() = PreviewActual {
+private fun PreviewDropDownMenu() = PreviewActualColumn {
   var value by remember { mutableStateOf("B") }
   val options = persistentListOf("A", "B", "C", "D")
   ActualExposedDropDownMenu(
@@ -235,9 +235,9 @@ private fun PreviewDropDownMenu() = PreviewActual {
   )
 }
 
-@PreviewThemes
+@Preview
 @Composable
-private fun PreviewDropDownMenuForcedWidth() = PreviewActual {
+private fun PreviewDropDownMenuForcedWidth() = PreviewActualColumn {
   var value by remember { mutableStateOf("B") }
   val options = persistentListOf("A", "B", "C", "D")
   ActualExposedDropDownMenu(

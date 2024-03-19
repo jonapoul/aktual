@@ -60,7 +60,6 @@ internal object LightColorScheme : ActualColorScheme {
   override val tableRowHeaderText = ActualColors.navy800
 
   override val sidebarBackground = ActualColors.navy900
-  override val sidebarItemBackgroundPending = ActualColors.orange200
   override val sidebarItemBackgroundPositive = ActualColors.green500
   override val sidebarItemBackgroundFailed = ActualColors.red300
   override val sidebarItemBackgroundHover = ActualColors.navy800

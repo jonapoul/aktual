@@ -19,7 +19,8 @@ dependencies {
   implementation(libs.androidx.compose.ui.core)
   implementation(libs.androidx.compose.ui.graphics)
   implementation(libs.androidx.compose.ui.text)
+  implementation(libs.androidx.compose.ui.tooling)
+  implementation(libs.androidx.compose.ui.toolingPreview)
   implementation(libs.androidx.compose.ui.unit)
   implementation(libs.androidx.compose.material3)
-  debugImplementation(libs.androidx.compose.ui.tooling)
 }
