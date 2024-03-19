@@ -38,11 +38,11 @@ dependencyAnalysis {
       onUsedTransitiveDependencies {
         severity(value = "fail")
         exclude("modules")
+        exclude(libs.kotlinx.coroutines)
       }
       onUnusedDependencies {
         severity(value = "fail")
         exclude(
-          libs.kotlinx.coroutines,
           libs.test.alakazam.core,
           libs.test.androidx.arch,
           libs.test.androidx.junit,
