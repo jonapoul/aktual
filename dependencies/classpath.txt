@@ -72,10 +72,10 @@ com.google.crypto.tink:tink:1.7.0
 com.google.dagger.hilt.android:com.google.dagger.hilt.android.gradle.plugin:2.51
 com.google.dagger:dagger:2.28.3
 com.google.dagger:hilt-android-gradle-plugin:2.51
-com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.9.22-1.0.17
-com.google.devtools.ksp:symbol-processing-api:1.9.22-1.0.17
-com.google.devtools.ksp:symbol-processing-common-deps:1.9.22-1.0.17
-com.google.devtools.ksp:symbol-processing-gradle-plugin:1.9.22-1.0.17
+com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:1.9.23-1.0.19
+com.google.devtools.ksp:symbol-processing-api:1.9.23-1.0.19
+com.google.devtools.ksp:symbol-processing-common-deps:1.9.23-1.0.19
+com.google.devtools.ksp:symbol-processing-gradle-plugin:1.9.23-1.0.19
 com.google.errorprone:error_prone_annotations:2.18.0
 com.google.flatbuffers:flatbuffers-java:1.12.0
 com.google.guava:failureaccess:1.0.1
