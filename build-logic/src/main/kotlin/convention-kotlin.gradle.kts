@@ -1,20 +1,18 @@
 @file:Suppress("UnstableApiUsage")
 
-import org.gradle.accessors.dm.LibrariesForLibs
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 tasks.withType<KotlinCompile> {
   kotlinOptions {
-    jvmTarget = "17"
+    jvmTarget = "19"
     freeCompilerArgs += listOf(
       "-Xjvm-default=all-compatibility",
       "-opt-in=kotlin.RequiresOptIn",
-      "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
     )
   }
 }
 
 extensions.configure<JavaPluginExtension> {
-  sourceCompatibility = JavaVersion.VERSION_17
-  targetCompatibility = JavaVersion.VERSION_17
+  sourceCompatibility = JavaVersion.VERSION_19
+  targetCompatibility = JavaVersion.VERSION_19
 }
