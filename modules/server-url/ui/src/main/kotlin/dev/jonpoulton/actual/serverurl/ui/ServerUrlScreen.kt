@@ -1,6 +1,5 @@
 package dev.jonpoulton.actual.serverurl.ui
 
-import alakazam.android.ui.compose.PreviewThemes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -43,7 +42,7 @@ import dev.jonpoulton.actual.core.ui.ActualFontFamily
 import dev.jonpoulton.actual.core.ui.BigActualTextField
 import dev.jonpoulton.actual.core.ui.HorizontalSpacer
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
-import dev.jonpoulton.actual.core.ui.PreviewActual
+import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
 import dev.jonpoulton.actual.core.ui.VerticalSpacer
 import dev.jonpoulton.actual.serverurl.vm.ServerUrlViewModel
@@ -256,15 +255,15 @@ private fun Content(
 
 private const val EXAMPLE_URL = "example.com"
 
-@PreviewThemes
+@PreviewActualScreen
 @Composable
-private fun Regular() = PreviewActual {
+private fun Regular() = PreviewActualScreen {
   ServerUrlScreenImpl(
     url = "",
     protocol = Protocol.Https,
     protocols = persistentListOf("http", "https"),
-    appVersion = "v1.2.3",
-    serverVersion = "v24.3.0",
+    appVersion = "1.2.3",
+    serverVersion = "24.3.0",
     isLoading = false,
     onClickConfirm = {},
     onUrlEntered = {},
@@ -273,15 +272,15 @@ private fun Regular() = PreviewActual {
   )
 }
 
-@PreviewThemes
+@PreviewActualScreen
 @Composable
-private fun WithErrorMessage() = PreviewActual {
+private fun WithErrorMessage() = PreviewActualScreen {
   ServerUrlScreenImpl(
     url = "my.server.com:1234/path",
     protocol = Protocol.Http,
     protocols = persistentListOf("http", "https"),
-    appVersion = "v1.2.3",
-    serverVersion = "v24.3.0",
+    appVersion = "1.2.3",
+    serverVersion = "24.3.0",
     isLoading = true,
     onClickConfirm = {},
     onUrlEntered = {},
