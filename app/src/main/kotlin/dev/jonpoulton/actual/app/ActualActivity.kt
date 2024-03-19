@@ -3,6 +3,7 @@ package dev.jonpoulton.actual.app
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import dagger.hilt.android.AndroidEntryPoint
 import dev.jonpoulton.actual.core.ui.ActualTheme
@@ -16,6 +17,7 @@ class ActualActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     viewModel.start()
 
+    enableEdgeToEdge()
     setContent {
       ActualTheme {
         ActualNavHost()
