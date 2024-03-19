@@ -66,6 +66,7 @@ dependencies {
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.activity.core)
+  implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.annotation)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.fragment.ktx)
