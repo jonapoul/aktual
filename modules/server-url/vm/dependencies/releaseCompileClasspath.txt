@@ -29,7 +29,7 @@ com.google.dagger:hilt-core:2.51
 com.jakewharton.timber:timber:5.0.1
 com.squareup.okhttp3:okhttp:3.14.9
 com.squareup.okio:okio:1.17.2
-com.squareup.retrofit2:retrofit:2.9.0
+com.squareup.retrofit2:retrofit:2.10.0
 dev.jonpoulton.alakazam:android-core:4.4.0
 dev.jonpoulton.alakazam:kotlin-compose-annotations:4.4.0
 dev.jonpoulton.alakazam:kotlin-core:4.4.0
