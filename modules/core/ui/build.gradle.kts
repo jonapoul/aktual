@@ -9,6 +9,7 @@ android {
 optIn(className = "androidx.compose.material3.ExperimentalMaterial3Api")
 
 dependencies {
+  api(projects.modules.core.model)
   api(projects.modules.core.res)
   api(libs.androidx.compose.runtime)
   api(libs.kotlinx.immutable)
