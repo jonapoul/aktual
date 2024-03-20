@@ -1,9 +1,9 @@
 com.fredporciuncula:flow-preferences:1.9.1
 javax.inject:javax.inject:1
-org.jetbrains.kotlin:kotlin-stdlib-common:1.9.22
+org.jetbrains.kotlin:kotlin-stdlib-common:1.9.23
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.20
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.20
-org.jetbrains.kotlin:kotlin-stdlib:1.9.22
+org.jetbrains.kotlin:kotlin-stdlib:1.9.23
 org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
 org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4
