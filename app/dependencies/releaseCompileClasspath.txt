@@ -56,8 +56,8 @@ androidx.loader:loader:1.0.0
 androidx.localbroadcastmanager:localbroadcastmanager:1.0.0
 androidx.navigation:navigation-common:2.7.7
 androidx.navigation:navigation-runtime:2.7.7
-androidx.preference:preference-ktx:1.2.0
-androidx.preference:preference:1.2.0
+androidx.preference:preference-ktx:1.2.1
+androidx.preference:preference:1.2.1
 androidx.print:print:1.0.0
 androidx.recyclerview:recyclerview:1.0.0
 androidx.savedstate:savedstate-ktx:1.2.1
