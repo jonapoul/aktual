@@ -12,7 +12,8 @@ fun ActualNavHost() {
     startDestination = NavDestination.ServerUrl.route,
   ) {
     composable(navController, NavDestination.ServerUrl)
-    composable(navController, NavDestination.Bootstrap)
     composable(navController, NavDestination.Login)
+    composable(navController, NavDestination.Bootstrap)
+    composable(navController, NavDestination.SyncBudget)
   }
 }

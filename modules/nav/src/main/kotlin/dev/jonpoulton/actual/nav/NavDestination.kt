@@ -14,15 +14,22 @@ sealed class NavDestination(
     composable = { ServerUrlScreen(ServerUrlNavigator(it)) },
   )
 
+  data object Login : NavDestination(
+    route = "login",
+    composable = { LoginScreen(LoginNavigator(it)) },
+  )
+
+  data object SyncBudget : NavDestination(
+    route = "syncBudget",
+    composable = {
+      // TODO: implement
+    },
+  )
+
   data object Bootstrap : NavDestination(
     route = "bootstrap",
     composable = {
       // TODO: Implement
     },
-  )
-
-  data object Login : NavDestination(
-    route = "login",
-    composable = { LoginScreen(it) },
   )
 }

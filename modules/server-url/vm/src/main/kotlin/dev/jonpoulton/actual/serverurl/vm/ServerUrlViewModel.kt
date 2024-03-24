@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.jonpoulton.actual.api.client.ActualApisStateHolder
 import dev.jonpoulton.actual.api.model.account.NeedsBootstrapResponse
+import dev.jonpoulton.actual.core.model.ActualVersions
 import dev.jonpoulton.actual.core.model.Protocol
 import dev.jonpoulton.actual.core.model.ServerUrl
 import dev.jonpoulton.actual.serverurl.prefs.ServerUrlPreferences
@@ -15,12 +16,14 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -29,7 +32,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ServerUrlViewModel @Inject internal constructor(
-  buildConfig: IBuildConfig,
+  private val buildConfig: IBuildConfig,
   private val io: IODispatcher,
   private val apiStateHolder: ActualApisStateHolder,
   private val prefs: ServerUrlPreferences,
@@ -40,8 +43,9 @@ class ServerUrlViewModel @Inject internal constructor(
   private val mutableProtocol = MutableStateFlow(Protocol.Https)
   private val mutableConfirmResult = MutableStateFlow<ConfirmResult?>(value = null)
 
-  val serverVersion: StateFlow<String?> = serverVersionFetcher.serverVersion
-  val appVersion: StateFlow<String> = MutableStateFlow(buildConfig.versionName)
+  val versions: StateFlow<ActualVersions> = serverVersionFetcher.serverVersion
+    .map { serverVersion -> versions(serverVersion) }
+    .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = versions(serverVersion = null))
 
   val baseUrl: StateFlow<String> = mutableBaseUrl.asStateFlow()
   val protocol: StateFlow<Protocol> = mutableProtocol.asStateFlow()
@@ -130,4 +134,6 @@ class ServerUrlViewModel @Inject internal constructor(
       ConfirmResult.Failed(reason = e.requireMessage())
     }
   }
+
+  private fun versions(serverVersion: String?) = ActualVersions(app = buildConfig.versionName, serverVersion)
 }

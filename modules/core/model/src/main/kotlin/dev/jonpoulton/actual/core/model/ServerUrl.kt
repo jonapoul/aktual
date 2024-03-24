@@ -9,6 +9,10 @@ data class ServerUrl(val protocol: Protocol, val baseUrl: String) {
   }
 
   override fun toString(): String = "$protocol://$baseUrl"
+
+  companion object {
+    val Demo = ServerUrl(protocol = Protocol.Https, baseUrl = "demo.actualbudget.org")
+  }
 }
 
 fun ServerUrl(string: String): ServerUrl {
@@ -17,12 +21,4 @@ fun ServerUrl(string: String): ServerUrl {
   val protocol = Protocol.fromString(split[0])
   val baseUrl = split[1]
   return ServerUrl(protocol, baseUrl)
-}
-
-fun serverUrlOrNull(protocol: Protocol?, baseUrl: String?): ServerUrl? {
-  return if (protocol == null || baseUrl.isNullOrBlank()) {
-    null
-  } else {
-    ServerUrl(protocol, baseUrl)
-  }
 }

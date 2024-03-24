@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
@@ -39,23 +40,19 @@ fun ActualTextField(
   placeholderText: String?,
   modifier: Modifier = Modifier,
   shape: Shape = ActualTextFieldShape,
-  showBorder: Boolean = true,
   readOnly: Boolean = false,
   trailingIcon: @Composable (() -> Unit)? = null,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  visualTransformation: VisualTransformation = VisualTransformation.None,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActions = KeyboardActions.Default,
   colors: TextFieldColors? = null,
 ) {
   val colorScheme = LocalActualColorScheme.current
   val isFocused by interactionSource.collectIsFocusedAsState()
+  val borderColor = if (isFocused) colorScheme.formInputBorderSelected else colorScheme.formInputBackgroundSelected
 
-  var fieldModifier = modifier
-
-  if (showBorder) {
-    val borderColor = if (isFocused) colorScheme.formInputBorderSelected else colorScheme.formInputBackgroundSelected
-    fieldModifier = fieldModifier.border(1.dp, borderColor, shape)
-  }
+  var fieldModifier = modifier.border(1.dp, borderColor, shape)
 
   if (isFocused) {
     fieldModifier = fieldModifier.shadow(4.dp, shape, ambientColor = colorScheme.formInputShadowSelected)
@@ -74,33 +71,10 @@ fun ActualTextField(
     readOnly = readOnly,
     trailingIcon = trailingIcon,
     interactionSource = interactionSource,
+    visualTransformation = visualTransformation,
     keyboardOptions = keyboardOptions,
     keyboardActions = keyboardActions,
     onValueChange = onValueChange,
-  )
-}
-
-@Composable
-fun BigActualTextField(
-  value: String,
-  onValueChange: (String) -> Unit,
-  placeholderText: String,
-  modifier: Modifier = Modifier,
-  shape: Shape = ActualTextFieldShape,
-  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-  keyboardActions: KeyboardActions = KeyboardActions.Default,
-) {
-  ActualTextField(
-    value = value,
-    onValueChange = onValueChange,
-    placeholderText = placeholderText,
-    modifier = modifier,
-    shape = shape,
-    showBorder = false,
-    interactionSource = interactionSource,
-    keyboardOptions = keyboardOptions,
-    keyboardActions = keyboardActions,
   )
 }
 
@@ -110,7 +84,6 @@ fun ActualExposedDropDownMenu(
   onValueChange: (String) -> Unit,
   options: ImmutableList<String>,
   modifier: Modifier = Modifier,
-  showBorder: Boolean = true,
 ) {
   var expanded by remember { mutableStateOf(false) }
   var selectedOptionText by remember { mutableStateOf(value) }
@@ -124,7 +97,6 @@ fun ActualExposedDropDownMenu(
       modifier = modifier.menuAnchor(),
       readOnly = true,
       placeholderText = null,
-      showBorder = showBorder,
       value = selectedOptionText,
       onValueChange = onValueChange,
       trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -197,26 +169,6 @@ private fun PreviewEmptyTextField() = PreviewActualColumn {
 @Composable
 private fun PreviewFilledTextField() = PreviewActualColumn {
   ActualTextField(
-    value = "I'm full",
-    onValueChange = {},
-    placeholderText = "Hello world",
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewEmptyBigTextField() = PreviewActualColumn {
-  BigActualTextField(
-    value = "",
-    onValueChange = {},
-    placeholderText = "I'm empty",
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewFilledBigTextField() = PreviewActualColumn {
-  BigActualTextField(
     value = "I'm full",
     onValueChange = {},
     placeholderText = "Hello world",
