@@ -1,9 +1,10 @@
-package dev.jonpoulton.actual.serverurl.vm
+package dev.jonpoulton.actual.core.connection
 
 import alakazam.kotlin.core.IODispatcher
 import alakazam.kotlin.core.LoopController
 import dev.jonpoulton.actual.api.client.ActualApis
 import dev.jonpoulton.actual.api.client.ActualApisStateHolder
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,7 +16,7 @@ import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-internal class ServerVersionFetcher @Inject constructor(
+class ServerVersionFetcher @Inject constructor(
   private val io: IODispatcher,
   private val apisStateHolder: ActualApisStateHolder,
   private val loopController: LoopController,
@@ -39,6 +40,8 @@ internal class ServerVersionFetcher @Inject constructor(
         Timber.v("Fetched $response")
         mutableServerVersion.update { response.build.version }
         break
+      } catch (e: CancellationException) {
+        Timber.v("Coroutine cancelled")
       } catch (e: Exception) {
         Timber.w(e, "Failed fetching server info")
         delay(RETRY_DELAY)

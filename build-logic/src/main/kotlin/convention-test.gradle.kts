@@ -90,6 +90,7 @@ dependencies {
     testImplementation(libs.test.kotlin.junit)
     testImplementation(libs.test.kotlinx.coroutines)
     testImplementation(libs.test.mockk.core)
+    testImplementation(libs.test.mockk.dsl)
     testImplementation(libs.test.turbine)
 
     if (isAndroid) {

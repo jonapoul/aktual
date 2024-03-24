@@ -7,6 +7,7 @@ import dev.jonpoulton.actual.api.client.AccountApi
 import dev.jonpoulton.actual.api.client.ActualApis
 import dev.jonpoulton.actual.api.client.ActualApisStateHolder
 import dev.jonpoulton.actual.api.model.account.NeedsBootstrapResponse
+import dev.jonpoulton.actual.core.connection.ServerVersionFetcher
 import dev.jonpoulton.actual.core.model.Protocol
 import dev.jonpoulton.actual.core.model.ServerUrl
 import dev.jonpoulton.actual.serverurl.prefs.ServerUrlPreferences
