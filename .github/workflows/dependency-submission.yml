@@ -11,10 +11,17 @@ jobs:
   dependency-submission:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
         with:
           java-version: 19
           distribution: "zulu"
-      - run: chmod +x ./gradlew
-      - uses: gradle/actions/dependency-submission@v3
+
+      - name: Add permissions
+        run: chmod +x ./gradlew
+
+      - name: Submit dependencies
+        uses: gradle/actions/dependency-submission@v3

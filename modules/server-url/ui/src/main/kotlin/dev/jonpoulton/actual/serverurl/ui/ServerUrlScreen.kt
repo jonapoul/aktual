@@ -36,14 +36,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.jonpoulton.actual.core.model.ActualVersions
 import dev.jonpoulton.actual.core.model.Protocol
 import dev.jonpoulton.actual.core.ui.ActualExposedDropDownMenu
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
-import dev.jonpoulton.actual.core.ui.BigActualTextField
+import dev.jonpoulton.actual.core.ui.ActualTextField
 import dev.jonpoulton.actual.core.ui.HorizontalSpacer
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
+import dev.jonpoulton.actual.core.ui.VersionsText
 import dev.jonpoulton.actual.core.ui.VerticalSpacer
 import dev.jonpoulton.actual.serverurl.vm.ServerUrlViewModel
 import dev.jonpoulton.actual.serverurl.vm.ShouldNavigate
@@ -56,8 +58,7 @@ fun ServerUrlScreen(
   navigator: ServerUrlNavigator,
   viewModel: ServerUrlViewModel = hiltViewModel(),
 ) {
-  val appVersion by viewModel.appVersion.collectAsStateWithLifecycle()
-  val serverVersion by viewModel.serverVersion.collectAsStateWithLifecycle(initialValue = null)
+  val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredUrl by viewModel.baseUrl.collectAsStateWithLifecycle()
   val protocol by viewModel.protocol.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
@@ -75,8 +76,7 @@ fun ServerUrlScreen(
     url = enteredUrl,
     protocol = protocol,
     protocols = viewModel.protocols,
-    appVersion = appVersion,
-    serverVersion = serverVersion,
+    versions = versions,
     isLoading = isLoading,
     errorMessage = errorMessage,
     onClickConfirm = {
@@ -93,8 +93,7 @@ private fun ServerUrlScreenImpl(
   url: String,
   protocol: Protocol,
   protocols: ImmutableList<String>,
-  appVersion: String?,
-  serverVersion: String?,
+  versions: ActualVersions,
   isLoading: Boolean,
   errorMessage: String?,
   onClickConfirm: () -> Unit,
@@ -127,8 +126,7 @@ private fun ServerUrlScreenImpl(
       url = url,
       protocol = protocol,
       protocols = protocols,
-      appVersion = appVersion,
-      serverVersion = serverVersion,
+      versions = versions,
       isLoading = isLoading,
       errorMessage = errorMessage,
       onClickConfirm = onClickConfirm,
@@ -145,8 +143,7 @@ private fun Content(
   url: String,
   protocol: Protocol,
   protocols: ImmutableList<String>,
-  appVersion: String?,
-  serverVersion: String?,
+  versions: ActualVersions,
   isLoading: Boolean,
   errorMessage: String?,
   onClickConfirm: () -> Unit,
@@ -180,7 +177,7 @@ private fun Content(
       Text(
         text = stringResource(id = ResR.string.server_url_message),
         fontFamily = ActualFontFamily,
-        fontSize = 13.sp,
+        fontSize = 16.sp,
         color = colorScheme.pageText,
       )
 
@@ -194,12 +191,11 @@ private fun Content(
           value = protocol.toString(),
           options = protocols,
           onValueChange = { onProtocolSelected(Protocol.fromString(it)) },
-          showBorder = false,
         )
 
         HorizontalSpacer(width = 5.dp)
 
-        BigActualTextField(
+        ActualTextField(
           modifier = Modifier.weight(1f),
           value = url,
           onValueChange = { onUrlEntered(it.lowercase()) },
@@ -228,28 +224,24 @@ private fun Content(
           onClick = onClickConfirm,
         )
       }
-    }
 
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .align(Alignment.BottomCenter),
-    ) {
       if (errorMessage != null) {
+        VerticalSpacer(20.dp)
+
         Text(
+          modifier = Modifier.fillMaxWidth(),
           text = errorMessage,
           fontFamily = ActualFontFamily,
           color = colorScheme.errorText,
           textAlign = TextAlign.Center,
         )
       }
-
-      VersionsText(
-        modifier = Modifier.align(Alignment.End),
-        appVersion = appVersion,
-        serverVersion = serverVersion,
-      )
     }
+
+    VersionsText(
+      modifier = Modifier.align(Alignment.BottomEnd),
+      versions = versions,
+    )
   }
 }
 
@@ -262,8 +254,7 @@ private fun Regular() = PreviewActualScreen {
     url = "",
     protocol = Protocol.Https,
     protocols = persistentListOf("http", "https"),
-    appVersion = "1.2.3",
-    serverVersion = "24.3.0",
+    versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     isLoading = false,
     onClickConfirm = {},
     onUrlEntered = {},
@@ -279,8 +270,7 @@ private fun WithErrorMessage() = PreviewActualScreen {
     url = "my.server.com:1234/path",
     protocol = Protocol.Http,
     protocols = persistentListOf("http", "https"),
-    appVersion = "1.2.3",
-    serverVersion = "24.3.0",
+    versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     isLoading = true,
     onClickConfirm = {},
     onUrlEntered = {},
