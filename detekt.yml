@@ -12,6 +12,9 @@ complexity:
 exceptions:
   TooGenericExceptionCaught:
     active: false
+  SwallowedException:
+    ignoredExceptionTypes:
+      - "CancellationException"
 naming:
   FunctionNaming:
     functionPattern: "[a-zA-Z][a-zA-Z0-9]*"
