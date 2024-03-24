@@ -19,5 +19,4 @@ dependencies {
   implementation(libs.timber)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   testImplementation(projects.modules.test.android)
-  testImplementation(libs.test.mockk.dsl)
 }

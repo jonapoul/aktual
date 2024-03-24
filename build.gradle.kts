@@ -50,6 +50,7 @@ dependencyAnalysis {
           libs.test.androidx.runner,
           libs.test.junit,
           libs.test.mockk.android,
+          libs.test.mockk.dsl,
           libs.test.robolectric,
           libs.test.timber,
           libs.test.turbine,
