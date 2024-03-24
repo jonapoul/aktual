@@ -54,6 +54,7 @@ dependencyAnalysis {
           libs.test.timber,
           libs.test.turbine,
         )
+        exclude(libs.androidx.compose.ui.toolingPreview)
       }
 
       // Ignore

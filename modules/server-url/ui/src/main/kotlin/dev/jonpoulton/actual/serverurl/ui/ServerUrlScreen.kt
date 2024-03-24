@@ -40,7 +40,7 @@ import dev.jonpoulton.actual.core.model.ActualVersions
 import dev.jonpoulton.actual.core.model.Protocol
 import dev.jonpoulton.actual.core.ui.ActualExposedDropDownMenu
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
-import dev.jonpoulton.actual.core.ui.BigActualTextField
+import dev.jonpoulton.actual.core.ui.ActualTextField
 import dev.jonpoulton.actual.core.ui.HorizontalSpacer
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.PreviewActualScreen
@@ -177,7 +177,7 @@ private fun Content(
       Text(
         text = stringResource(id = ResR.string.server_url_message),
         fontFamily = ActualFontFamily,
-        fontSize = 13.sp,
+        fontSize = 16.sp,
         color = colorScheme.pageText,
       )
 
@@ -191,12 +191,11 @@ private fun Content(
           value = protocol.toString(),
           options = protocols,
           onValueChange = { onProtocolSelected(Protocol.fromString(it)) },
-          showBorder = false,
         )
 
         HorizontalSpacer(width = 5.dp)
 
-        BigActualTextField(
+        ActualTextField(
           modifier = Modifier.weight(1f),
           value = url,
           onValueChange = { onUrlEntered(it.lowercase()) },
@@ -225,27 +224,24 @@ private fun Content(
           onClick = onClickConfirm,
         )
       }
-    }
 
-    Column(
-      modifier = Modifier
-        .fillMaxWidth()
-        .align(Alignment.BottomCenter),
-    ) {
       if (errorMessage != null) {
+        VerticalSpacer(20.dp)
+
         Text(
+          modifier = Modifier.fillMaxWidth(),
           text = errorMessage,
           fontFamily = ActualFontFamily,
           color = colorScheme.errorText,
           textAlign = TextAlign.Center,
         )
       }
-
-      VersionsText(
-        modifier = Modifier.align(Alignment.End),
-        versions = versions,
-      )
     }
+
+    VersionsText(
+      modifier = Modifier.align(Alignment.BottomEnd),
+      versions = versions,
+    )
   }
 }
 
