@@ -1,4 +1,4 @@
-package dev.jonpoulton.actual.serverurl.vm
+package dev.jonpoulton.actual.core.connection
 
 import alakazam.kotlin.core.IODispatcher
 import alakazam.kotlin.core.LoopController

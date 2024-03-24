@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.jonpoulton.actual.api.client.ActualApisStateHolder
 import dev.jonpoulton.actual.api.model.account.NeedsBootstrapResponse
+import dev.jonpoulton.actual.core.connection.ServerVersionFetcher
 import dev.jonpoulton.actual.core.model.ActualVersions
 import dev.jonpoulton.actual.core.model.Protocol
 import dev.jonpoulton.actual.core.model.ServerUrl
@@ -29,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class ServerUrlViewModel @Inject internal constructor(
@@ -128,6 +130,8 @@ class ServerUrlViewModel @Inject internal constructor(
       }
     }
     mutableConfirmResult.update { confirmResult }
+  } catch (e: CancellationException) {
+    Timber.v("Coroutine cancelled")
   } catch (e: Exception) {
     Timber.w(e, "Failed checking bootstrap for $url")
     mutableConfirmResult.update {
