@@ -36,7 +36,7 @@ android {
   }
 
   kotlinOptions {
-    jvmTarget = "19"
+    jvmTarget = "21"
   }
 
   packaging {
