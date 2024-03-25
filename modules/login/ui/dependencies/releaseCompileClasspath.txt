@@ -1,6 +1,6 @@
-androidx.activity:activity-compose:1.7.0
-androidx.activity:activity-ktx:1.7.0
-androidx.activity:activity:1.7.0
+androidx.activity:activity-compose:1.8.0
+androidx.activity:activity-ktx:1.8.0
+androidx.activity:activity:1.8.0
 androidx.annotation:annotation-experimental:1.4.0
 androidx.annotation:annotation-jvm:1.7.0
 androidx.annotation:annotation:1.7.0
@@ -47,7 +47,7 @@ androidx.compose.ui:ui:1.6.4
 androidx.compose:compose-bom:2024.03.00
 androidx.core:core-ktx:1.12.0
 androidx.core:core:1.12.0
-androidx.customview:customview:1.0.0
+androidx.customview:customview:1.1.0
 androidx.fragment:fragment:1.5.1
 androidx.hilt:hilt-navigation-compose:1.2.0
 androidx.hilt:hilt-navigation:1.2.0
