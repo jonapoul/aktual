@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,6 +44,14 @@ class LoginViewModel @Inject constructor(
     viewModelScope.launch {
       serverVersionFetcher.startFetching()
     }
+  }
+
+  fun clearState() {
+    // TODO
+  }
+
+  fun onPasswordEntered(password: String) {
+    mutableEnteredPassword.update { Password(password) }
   }
 
   fun onClickSignIn() {

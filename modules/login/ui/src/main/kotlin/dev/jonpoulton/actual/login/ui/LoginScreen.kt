@@ -17,8 +17,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -42,6 +46,7 @@ import dev.jonpoulton.actual.core.ui.ActualTextField
 import dev.jonpoulton.actual.core.ui.BareActualTextButton
 import dev.jonpoulton.actual.core.ui.HorizontalSpacer
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
+import dev.jonpoulton.actual.core.ui.OnDispose
 import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
 import dev.jonpoulton.actual.core.ui.VersionsText
@@ -58,10 +63,20 @@ fun LoginScreen(
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
   val url by viewModel.serverUrl.collectAsStateWithLifecycle()
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
-  val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle(initialValue = false)
 
+  val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle(initialValue = false)
   if (shouldStartSyncing) {
-    navigator.syncBudget()
+    LaunchedEffect(Unit) { navigator.syncBudget() }
+  }
+
+  var navToSyncScreen by remember { mutableStateOf(false) }
+  if (navToSyncScreen) {
+    LaunchedEffect(Unit) { navigator.changeServer() }
+  }
+
+  OnDispose {
+    navToSyncScreen = false
+    viewModel.clearState()
   }
 
   LoginScreenImpl(
@@ -69,8 +84,9 @@ fun LoginScreen(
     enteredPassword = enteredPassword,
     url = url,
     errorMessage = errorMessage,
+    onPasswordEntered = viewModel::onPasswordEntered,
     onClickSignIn = viewModel::onClickSignIn,
-    onClickChangeServer = { navigator.changeServer() },
+    onClickChangeServer = { navToSyncScreen = true },
   )
 }
 
@@ -80,6 +96,7 @@ private fun LoginScreenImpl(
   enteredPassword: Password,
   url: ServerUrl,
   errorMessage: String?,
+  onPasswordEntered: (String) -> Unit,
   onClickSignIn: () -> Unit,
   onClickChangeServer: () -> Unit,
 ) {
@@ -110,6 +127,7 @@ private fun LoginScreenImpl(
       enteredPassword = enteredPassword,
       url = url,
       errorMessage = errorMessage,
+      onPasswordEntered = onPasswordEntered,
       onClickSignIn = onClickSignIn,
       onClickChangeServer = onClickChangeServer,
     )
@@ -124,6 +142,7 @@ private fun Content(
   enteredPassword: Password,
   url: ServerUrl,
   errorMessage: String?,
+  onPasswordEntered: (String) -> Unit,
   onClickSignIn: () -> Unit,
   onClickChangeServer: () -> Unit,
 ) {
@@ -144,6 +163,7 @@ private fun Content(
       Text(
         text = stringResource(id = ResR.string.login_title),
         style = MaterialTheme.typography.displayLarge,
+        fontFamily = ActualFontFamily,
         fontSize = 25.sp,
         color = colorScheme.pageTextPositive,
       )
@@ -162,7 +182,7 @@ private fun Content(
       ActualTextField(
         modifier = Modifier.fillMaxWidth(1f),
         value = enteredPassword.toString(),
-        onValueChange = { },
+        onValueChange = onPasswordEntered,
         placeholderText = stringResource(id = ResR.string.login_password_hint),
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
@@ -263,6 +283,7 @@ private fun Regular() = PreviewActualScreen {
     enteredPassword = Password.Empty,
     url = ServerUrl.Demo,
     errorMessage = null,
+    onPasswordEntered = {},
     onClickSignIn = {},
     onClickChangeServer = {},
   )
@@ -276,6 +297,7 @@ private fun WithErrorMessage() = PreviewActualScreen {
     enteredPassword = Password("abcd1234"),
     url = ServerUrl.Demo,
     errorMessage = "Something broke, idiot",
+    onPasswordEntered = {},
     onClickSignIn = {},
     onClickChangeServer = {},
   )
