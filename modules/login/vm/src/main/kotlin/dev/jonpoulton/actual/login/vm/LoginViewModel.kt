@@ -45,6 +45,10 @@ class LoginViewModel @Inject constructor(
     }
   }
 
+  fun clearState() {
+    // TODO
+  }
+
   fun onClickSignIn() {
     // TODO: implement
   }

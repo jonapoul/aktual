@@ -17,8 +17,12 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -42,6 +46,7 @@ import dev.jonpoulton.actual.core.ui.ActualTextField
 import dev.jonpoulton.actual.core.ui.BareActualTextButton
 import dev.jonpoulton.actual.core.ui.HorizontalSpacer
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
+import dev.jonpoulton.actual.core.ui.OnDispose
 import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
 import dev.jonpoulton.actual.core.ui.VersionsText
@@ -58,10 +63,20 @@ fun LoginScreen(
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
   val url by viewModel.serverUrl.collectAsStateWithLifecycle()
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
-  val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle(initialValue = false)
 
+  val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle(initialValue = false)
   if (shouldStartSyncing) {
-    navigator.syncBudget()
+    LaunchedEffect(Unit) { navigator.syncBudget() }
+  }
+
+  var navToSyncScreen by remember { mutableStateOf(false) }
+  if (navToSyncScreen) {
+    LaunchedEffect(Unit) { navigator.changeServer() }
+  }
+
+  OnDispose {
+    navToSyncScreen = false
+    viewModel.clearState()
   }
 
   LoginScreenImpl(
@@ -70,7 +85,7 @@ fun LoginScreen(
     url = url,
     errorMessage = errorMessage,
     onClickSignIn = viewModel::onClickSignIn,
-    onClickChangeServer = { navigator.changeServer() },
+    onClickChangeServer = { navToSyncScreen = true },
   )
 }
 
