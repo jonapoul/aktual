@@ -20,6 +20,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -43,6 +44,7 @@ import dev.jonpoulton.actual.core.ui.ActualFontFamily
 import dev.jonpoulton.actual.core.ui.ActualTextField
 import dev.jonpoulton.actual.core.ui.HorizontalSpacer
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
+import dev.jonpoulton.actual.core.ui.OnDispose
 import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
 import dev.jonpoulton.actual.core.ui.VersionsText
@@ -65,9 +67,11 @@ fun ServerUrlScreen(
   val shouldNavigate by viewModel.shouldNavigate.collectAsStateWithLifecycle(initialValue = false)
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle(initialValue = null)
 
+  OnDispose { viewModel.clearState() }
+
   when (shouldNavigate) {
-    is ShouldNavigate.ToBootstrap -> navigator.navigateToBootstrap()
-    is ShouldNavigate.ToLogin -> navigator.navigateToLogin()
+    is ShouldNavigate.ToBootstrap -> LaunchedEffect(Unit) { navigator.navigateToBootstrap() }
+    is ShouldNavigate.ToLogin -> LaunchedEffect(Unit) { navigator.navigateToLogin() }
   }
 
   val focusManager = LocalFocusManager.current
@@ -168,6 +172,7 @@ private fun Content(
       Text(
         text = stringResource(id = ResR.string.server_url_title),
         style = MaterialTheme.typography.displayLarge,
+        fontFamily = ActualFontFamily,
         fontSize = 25.sp,
         color = colorScheme.pageTextPositive,
       )

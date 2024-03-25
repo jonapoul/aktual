@@ -16,4 +16,5 @@ dependencies {
   implementation(libs.androidx.compose.ui.core)
   implementation(libs.androidx.navigation.commonKtx)
   implementation(libs.androidx.navigation.compose)
+  implementation(libs.timber)
 }

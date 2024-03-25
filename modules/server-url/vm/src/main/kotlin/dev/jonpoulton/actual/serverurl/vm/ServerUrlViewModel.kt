@@ -9,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.jonpoulton.actual.api.client.ActualApisStateHolder
 import dev.jonpoulton.actual.api.model.account.NeedsBootstrapResponse
 import dev.jonpoulton.actual.core.connection.ServerVersionFetcher
+import dev.jonpoulton.actual.core.coroutines.ResettableStateFlow
 import dev.jonpoulton.actual.core.model.ActualVersions
 import dev.jonpoulton.actual.core.model.Protocol
 import dev.jonpoulton.actual.core.model.ServerUrl
@@ -40,10 +41,10 @@ class ServerUrlViewModel @Inject internal constructor(
   private val prefs: ServerUrlPreferences,
   private val serverVersionFetcher: ServerVersionFetcher,
 ) : ViewModel() {
-  private val mutableIsLoading = MutableStateFlow(value = false)
+  private val mutableIsLoading = ResettableStateFlow(value = false)
   private val mutableBaseUrl = MutableStateFlow(value = "")
   private val mutableProtocol = MutableStateFlow(Protocol.Https)
-  private val mutableConfirmResult = MutableStateFlow<ConfirmResult?>(value = null)
+  private val mutableConfirmResult = ResettableStateFlow<ConfirmResult?>(value = null)
 
   val versions: StateFlow<ActualVersions> = serverVersionFetcher.serverVersion
     .map { serverVersion -> versions(serverVersion) }
@@ -83,6 +84,11 @@ class ServerUrlViewModel @Inject internal constructor(
         mutableProtocol.update { savedUrl.protocol }
       }
     }
+  }
+
+  fun clearState() {
+    mutableIsLoading.reset()
+    mutableConfirmResult.reset()
   }
 
   fun onUrlEntered(url: String) {
