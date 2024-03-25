@@ -12,6 +12,7 @@ dependencies {
   api(libs.kotlinx.immutable)
   implementation(projects.modules.api.client)
   implementation(projects.modules.core.connection)
+  implementation(projects.modules.core.coroutines)
   implementation(projects.modules.core.model)
   implementation(projects.modules.serverUrl.prefs)
   implementation(libs.alakazam.android.core)

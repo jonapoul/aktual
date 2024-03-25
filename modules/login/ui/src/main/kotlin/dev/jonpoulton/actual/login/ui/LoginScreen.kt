@@ -144,6 +144,7 @@ private fun Content(
       Text(
         text = stringResource(id = ResR.string.login_title),
         style = MaterialTheme.typography.displayLarge,
+        fontFamily = ActualFontFamily,
         fontSize = 25.sp,
         color = colorScheme.pageTextPositive,
       )

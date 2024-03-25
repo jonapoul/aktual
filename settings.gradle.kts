@@ -31,6 +31,7 @@ include(":modules:api:json")
 include(":modules:api:model")
 
 include(":modules:core:connection")
+include(":modules:core:coroutines")
 include(":modules:core:model")
 include(":modules:core:ui")
 include(":modules:core:res")
