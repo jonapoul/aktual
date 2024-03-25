@@ -84,6 +84,7 @@ fun LoginScreen(
     enteredPassword = enteredPassword,
     url = url,
     errorMessage = errorMessage,
+    onPasswordEntered = viewModel::onPasswordEntered,
     onClickSignIn = viewModel::onClickSignIn,
     onClickChangeServer = { navToSyncScreen = true },
   )
@@ -95,6 +96,7 @@ private fun LoginScreenImpl(
   enteredPassword: Password,
   url: ServerUrl,
   errorMessage: String?,
+  onPasswordEntered: (String) -> Unit,
   onClickSignIn: () -> Unit,
   onClickChangeServer: () -> Unit,
 ) {
@@ -125,6 +127,7 @@ private fun LoginScreenImpl(
       enteredPassword = enteredPassword,
       url = url,
       errorMessage = errorMessage,
+      onPasswordEntered = onPasswordEntered,
       onClickSignIn = onClickSignIn,
       onClickChangeServer = onClickChangeServer,
     )
@@ -139,6 +142,7 @@ private fun Content(
   enteredPassword: Password,
   url: ServerUrl,
   errorMessage: String?,
+  onPasswordEntered: (String) -> Unit,
   onClickSignIn: () -> Unit,
   onClickChangeServer: () -> Unit,
 ) {
@@ -178,7 +182,7 @@ private fun Content(
       ActualTextField(
         modifier = Modifier.fillMaxWidth(1f),
         value = enteredPassword.toString(),
-        onValueChange = { },
+        onValueChange = onPasswordEntered,
         placeholderText = stringResource(id = ResR.string.login_password_hint),
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
@@ -279,6 +283,7 @@ private fun Regular() = PreviewActualScreen {
     enteredPassword = Password.Empty,
     url = ServerUrl.Demo,
     errorMessage = null,
+    onPasswordEntered = {},
     onClickSignIn = {},
     onClickChangeServer = {},
   )
@@ -292,6 +297,7 @@ private fun WithErrorMessage() = PreviewActualScreen {
     enteredPassword = Password("abcd1234"),
     url = ServerUrl.Demo,
     errorMessage = "Something broke, idiot",
+    onPasswordEntered = {},
     onClickSignIn = {},
     onClickChangeServer = {},
   )
