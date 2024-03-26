@@ -6,7 +6,9 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-val LocalActualColorScheme = staticCompositionLocalOf<ActualColorScheme> { LightColorScheme }
+val LocalActualColorScheme = staticCompositionLocalOf<ActualColorScheme> {
+  error("CompositionLocal ActualColorScheme not present")
+}
 
 @Immutable
 sealed interface ActualColorScheme {

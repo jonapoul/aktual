@@ -23,7 +23,7 @@ private val TableBorder = ActualColors.navy600
 private val TableText = ActualColors.navy150
 
 @Immutable
-internal object DarkColorScheme : ActualColorScheme {
+internal class DarkColorScheme : ActualColorScheme {
   override val pageBackground = ActualColors.gray900
   override val pageBackgroundModalActive = ActualColors.gray800
   override val pageBackgroundTopLeft = ActualColors.navy800

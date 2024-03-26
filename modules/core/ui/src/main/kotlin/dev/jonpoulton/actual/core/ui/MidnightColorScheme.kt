@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
-internal object MidnightColorScheme : ActualColorScheme {
+internal class MidnightColorScheme : ActualColorScheme {
   override val pageBackground = ActualColors.gray600
   override val pageBackgroundModalActive = ActualColors.gray700
   override val pageBackgroundTopLeft = ActualColors.gray800
