@@ -5,11 +5,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 
 @Composable
-fun ActualNavHost() {
+fun ActualNavHost(
+  isServerUrlSet: Boolean,
+) {
   val navController = rememberNavController()
   NavHost(
     navController = navController,
-    startDestination = NavDestination.ServerUrl.route,
+    startDestination = when {
+      isServerUrlSet -> NavDestination.Login.route
+      else -> NavDestination.ServerUrl.route
+    },
   ) {
     composable(navController, NavDestination.ServerUrl)
     composable(navController, NavDestination.Login)
