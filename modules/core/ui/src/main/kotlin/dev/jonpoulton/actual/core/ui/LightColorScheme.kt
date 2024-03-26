@@ -20,7 +20,7 @@ private val PageText = Color(color = 0xFF272630)
 private val TableBackground = ActualColors.white
 
 @Immutable
-internal object LightColorScheme : ActualColorScheme {
+internal class LightColorScheme : ActualColorScheme {
   override val pageBackground = ActualColors.navy100
   override val pageBackgroundModalActive = ActualColors.navy200
   override val pageBackgroundTopLeft = ActualColors.navy100
