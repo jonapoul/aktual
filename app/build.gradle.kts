@@ -9,9 +9,6 @@ plugins {
   alias(libs.plugins.dependencyGuard)
 }
 
-val gitHash = gitVersionName()
-val semVer = stringPropertyOrThrow(key = "actual.app.versionName")
-
 dependencyGuard {
   configuration("debugCompileClasspath")
   configuration("debugRuntimeClasspath")
@@ -26,8 +23,8 @@ android {
     applicationId = "dev.jonpoulton.actual.app"
     targetSdk = intPropertyOrThrow(key = "actual.android.targetSdk")
     versionCode = (System.currentTimeMillis() / 1000L).toInt()
-    versionName = "$semVer ($gitHash)"
-    buildConfigField("String", "GIT_HASH", "\"$gitHash\"")
+    versionName = stringPropertyOrThrow(key = "actual.app.versionName")
+    buildConfigField("String", "GIT_HASH", "\"${gitVersionName()}\"")
     buildConfigField(
       "kotlinx.datetime.Instant",
       "BUILD_TIME",
@@ -61,6 +58,7 @@ dependencies {
   implementation(projects.modules.core.connection)
   implementation(projects.modules.core.res)
   implementation(projects.modules.core.ui)
+  implementation(projects.modules.serverUrl.prefs)
   implementation(projects.modules.nav)
   implementation(libs.alakazam.android.core)
   implementation(libs.alakazam.kotlin.core)
