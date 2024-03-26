@@ -16,10 +16,10 @@ fun ActualTheme(
   val systemDarkTheme = isSystemInDarkTheme()
 
   val colorScheme = when (schemeType) {
-    ActualColorSchemeType.System -> if (systemDarkTheme) DarkColorScheme else LightColorScheme
-    ActualColorSchemeType.Dark -> DarkColorScheme
-    ActualColorSchemeType.Light -> LightColorScheme
-    ActualColorSchemeType.Midnight -> MidnightColorScheme
+    ActualColorSchemeType.System -> if (systemDarkTheme) DarkColorScheme() else LightColorScheme()
+    ActualColorSchemeType.Dark -> DarkColorScheme()
+    ActualColorSchemeType.Light -> LightColorScheme()
+    ActualColorSchemeType.Midnight -> MidnightColorScheme()
   }
 
   CompositionLocalProvider(
@@ -30,9 +30,9 @@ fun ActualTheme(
     )
 
     val materialColorScheme = when (colorScheme) {
-      LightColorScheme -> lightColorScheme()
-      DarkColorScheme -> darkColorScheme()
-      MidnightColorScheme -> darkColorScheme(surface = Color.Black)
+      is LightColorScheme -> lightColorScheme()
+      is DarkColorScheme -> darkColorScheme()
+      is MidnightColorScheme -> darkColorScheme(surface = Color.Black)
     }
 
     MaterialTheme(
