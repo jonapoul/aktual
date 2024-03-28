@@ -42,6 +42,7 @@ import dev.jonpoulton.actual.core.model.ActualVersions
 import dev.jonpoulton.actual.core.model.Password
 import dev.jonpoulton.actual.core.model.ServerUrl
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
+import dev.jonpoulton.actual.core.ui.ActualScreenPreview
 import dev.jonpoulton.actual.core.ui.ActualTextField
 import dev.jonpoulton.actual.core.ui.BareActualTextButton
 import dev.jonpoulton.actual.core.ui.HorizontalSpacer
@@ -275,7 +276,7 @@ private fun UsingServer(
   }
 }
 
-@PreviewActualScreen
+@ActualScreenPreview
 @Composable
 private fun Regular() = PreviewActualScreen {
   LoginScreenImpl(
@@ -289,7 +290,7 @@ private fun Regular() = PreviewActualScreen {
   )
 }
 
-@PreviewActualScreen
+@ActualScreenPreview
 @Composable
 private fun WithErrorMessage() = PreviewActualScreen {
   LoginScreenImpl(

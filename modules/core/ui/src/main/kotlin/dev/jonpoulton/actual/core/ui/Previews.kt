@@ -60,7 +60,7 @@ private fun PreviewWithColorScheme(schemeType: ActualColorSchemeType, content: @
   widthDp = 3 * MY_PHONE_WIDTH_DP,
   heightDp = MY_PHONE_HEIGHT_DP,
 )
-annotation class PreviewActualScreen
+annotation class ActualScreenPreview
 
 private const val MY_PHONE_DPI = 400
 private const val MY_PHONE_WIDTH_DP = 1080 / (MY_PHONE_DPI / 160)
