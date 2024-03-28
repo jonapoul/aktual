@@ -1,0 +1,4 @@
+<lint>
+    <!-- https://slackhq.github.io/compose-lints/rules/ -->
+    <issue id="ComposeM2Api" severity="error"/>
+</lint>
