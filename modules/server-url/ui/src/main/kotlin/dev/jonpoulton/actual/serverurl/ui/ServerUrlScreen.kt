@@ -172,19 +172,16 @@ private fun Content(
     ) {
       Text(
         text = stringResource(id = ResR.string.server_url_title),
-        style = MaterialTheme.typography.displayLarge,
-        fontFamily = ActualFontFamily,
-        fontSize = 25.sp,
-        color = colorScheme.pageTextPositive,
+        style = MaterialTheme.typography.headlineLarge,
       )
 
       VerticalSpacer(height = 15.dp)
 
       Text(
         text = stringResource(id = ResR.string.server_url_message),
-        fontFamily = ActualFontFamily,
-        fontSize = 16.sp,
-        color = colorScheme.pageText,
+        color = colorScheme.tableRowHeaderText,
+        style = MaterialTheme.typography.bodyLarge,
+        lineHeight = 24.sp,
       )
 
       VerticalSpacer(height = 20.dp)

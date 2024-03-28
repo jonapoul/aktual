@@ -163,19 +163,14 @@ private fun Content(
     ) {
       Text(
         text = stringResource(id = ResR.string.login_title),
-        style = MaterialTheme.typography.displayLarge,
-        fontFamily = ActualFontFamily,
-        fontSize = 25.sp,
-        color = colorScheme.pageTextPositive,
+        style = MaterialTheme.typography.headlineLarge,
       )
 
       VerticalSpacer(15.dp)
 
       Text(
         text = stringResource(id = ResR.string.login_message),
-        fontFamily = ActualFontFamily,
-        fontSize = 16.sp,
-        color = colorScheme.pageText,
+        style = MaterialTheme.typography.bodyLarge,
       )
 
       VerticalSpacer(20.dp)
@@ -296,7 +291,7 @@ private fun WithErrorMessage() = PreviewActualScreen {
   LoginScreenImpl(
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     enteredPassword = Password("abcd1234"),
-    url = ServerUrl.Demo,
+    url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
     errorMessage = "Something broke, idiot",
     onPasswordEntered = {},
     onClickSignIn = {},
