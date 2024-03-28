@@ -1,22 +1,18 @@
 package dev.jonpoulton.actual.core.ui
 
-import alakazam.android.ui.compose.PreviewThemes
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.jonpoulton.actual.core.res.R as ResR
 
@@ -64,37 +60,36 @@ private fun FontFamily.textStyle(fontWeight: FontWeight, fontSize: TextUnit): Te
     fontFamily = this,
   )
 
-@PreviewThemes
+@ActualScreenPreview
 @Composable
-private fun PreviewTypography() = ActualTheme {
-  val width: Dp
-  val height: Dp
-  with(LocalDensity.current) {
-    width = 1080.toDp()
-    height = 2280.toDp()
-  }
-  Surface(modifier = Modifier.size(width, height)) {
-    val typography = ActualTypography
-    val styles = listOf(
-      typography.displayLarge,
-      typography.displayMedium,
-      typography.displaySmall,
-      typography.headlineLarge,
-      typography.headlineMedium,
-      typography.headlineSmall,
-      typography.titleLarge,
-      typography.titleMedium,
-      typography.titleSmall,
-      typography.bodyLarge,
-      typography.bodyMedium,
-      typography.bodySmall,
-      typography.labelLarge,
-      typography.labelMedium,
-      typography.labelSmall,
-    )
-    LazyColumn {
-      items(styles) { style ->
-        Text(text = "Quick brown fox ${style.color}", style = style)
+private fun PreviewTypography() {
+  val typography = ActualTypography
+  val styles = listOf(
+    typography.displayLarge,
+    typography.displayMedium,
+    typography.displaySmall,
+    typography.headlineLarge,
+    typography.headlineMedium,
+    typography.headlineSmall,
+    typography.titleLarge,
+    typography.titleMedium,
+    typography.titleSmall,
+    typography.bodyLarge,
+    typography.bodyMedium,
+    typography.bodySmall,
+    typography.labelLarge,
+    typography.labelMedium,
+    typography.labelSmall,
+  )
+
+  PreviewActualScreen {
+    Column {
+      styles.forEach { style ->
+        Text(
+          modifier = Modifier.padding(8.dp),
+          text = "Quick brown fox? Jumped over the lazy dog!",
+          style = style,
+        )
       }
     }
   }

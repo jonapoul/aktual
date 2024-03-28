@@ -1,5 +1,8 @@
+@file:SuppressLint("ComposeModifierMissing")
+
 package dev.jonpoulton.actual.core.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width

@@ -26,12 +26,12 @@ style:
     ignoreCompanionObjectPropertyDeclaration: true
     ignoreAnnotated:
     - "Preview"
-    - "PreviewActualScreen"
+    - "ActualScreenPreview"
     - "PreviewThemes"
   UnusedPrivateMember:
     ignoreAnnotated:
     - "Preview"
-    - "PreviewActualScreen"
+    - "ActualScreenPreview"
     - "PreviewThemes"
   ForbiddenComment:
     active: false

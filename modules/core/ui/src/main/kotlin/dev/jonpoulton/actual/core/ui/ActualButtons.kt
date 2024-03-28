@@ -139,6 +139,7 @@ fun BareActualTextButton(
 @Composable
 fun BasicActualTextButton(
   text: String,
+  colors: @Composable (scheme: ActualColorScheme, isPressed: Boolean) -> ButtonColors,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
   contentPadding: PaddingValues = ActualButtonPadding,
@@ -147,7 +148,6 @@ fun BasicActualTextButton(
   style: TextStyle = LocalTextStyle.current,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
-  colors: @Composable (scheme: ActualColorScheme, isPressed: Boolean) -> ButtonColors,
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
   onClick: () -> Unit,
 ) {

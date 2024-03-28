@@ -41,6 +41,7 @@ import dev.jonpoulton.actual.core.model.ActualVersions
 import dev.jonpoulton.actual.core.model.Protocol
 import dev.jonpoulton.actual.core.ui.ActualExposedDropDownMenu
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
+import dev.jonpoulton.actual.core.ui.ActualScreenPreview
 import dev.jonpoulton.actual.core.ui.ActualTextField
 import dev.jonpoulton.actual.core.ui.HorizontalSpacer
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
@@ -143,7 +144,6 @@ private fun ServerUrlScreenImpl(
 @Stable
 @Composable
 private fun Content(
-  modifier: Modifier,
   url: String,
   protocol: Protocol,
   protocols: ImmutableList<String>,
@@ -153,6 +153,7 @@ private fun Content(
   onClickConfirm: () -> Unit,
   onUrlEntered: (String) -> Unit,
   onProtocolSelected: (Protocol) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val colorScheme = LocalActualColorScheme.current
   Box(
@@ -252,7 +253,7 @@ private fun Content(
 
 private const val EXAMPLE_URL = "example.com"
 
-@PreviewActualScreen
+@ActualScreenPreview
 @Composable
 private fun Regular() = PreviewActualScreen {
   ServerUrlScreenImpl(
@@ -268,7 +269,7 @@ private fun Regular() = PreviewActualScreen {
   )
 }
 
-@PreviewActualScreen
+@ActualScreenPreview
 @Composable
 private fun WithErrorMessage() = PreviewActualScreen {
   ServerUrlScreenImpl(
