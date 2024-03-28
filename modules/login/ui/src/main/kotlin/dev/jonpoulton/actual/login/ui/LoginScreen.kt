@@ -138,7 +138,6 @@ private fun LoginScreenImpl(
 @Stable
 @Composable
 private fun Content(
-  modifier: Modifier,
   versions: ActualVersions,
   enteredPassword: Password,
   url: ServerUrl,
@@ -146,6 +145,7 @@ private fun Content(
   onPasswordEntered: (String) -> Unit,
   onClickSignIn: () -> Unit,
   onClickChangeServer: () -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val colorScheme = LocalActualColorScheme.current
   Column(

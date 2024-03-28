@@ -144,7 +144,6 @@ private fun ServerUrlScreenImpl(
 @Stable
 @Composable
 private fun Content(
-  modifier: Modifier,
   url: String,
   protocol: Protocol,
   protocols: ImmutableList<String>,
@@ -154,6 +153,7 @@ private fun Content(
   onClickConfirm: () -> Unit,
   onUrlEntered: (String) -> Unit,
   onProtocolSelected: (Protocol) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val colorScheme = LocalActualColorScheme.current
   Box(
