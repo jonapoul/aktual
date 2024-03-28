@@ -29,8 +29,14 @@ extensions.getByType(CommonExtension::class).apply {
   }
 
   lint {
+    abortOnError = true
+    checkGeneratedSources = false
     checkReleaseBuilds = false
-    abortOnError = false
+    checkTestSources = true
+    explainIssues = true
+    htmlReport = true
+    xmlReport = true
+    lintConfig = rootProject.file("lint.xml")
   }
 
   testOptions {
