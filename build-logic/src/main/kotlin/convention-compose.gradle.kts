@@ -36,7 +36,9 @@ tasks.withType(KotlinCompile::class.java) {
 }
 
 val implementation by configurations
+val lintChecks by configurations
 
 dependencies {
   implementation(platform(libs.androidx.compose.bom))
+  lintChecks(libs.androidx.compose.lint)
 }
