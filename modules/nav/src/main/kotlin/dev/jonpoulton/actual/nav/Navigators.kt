@@ -24,8 +24,6 @@ internal fun LoginNavigator(navController: NavHostController): LoginNavigator {
   return object : LoginNavigator {
     override fun changeServer() {
       navController.printBackStack()
-
-      // Go to server URL screen and forget the previous backstack
       navController.navigate(NavDestination.ServerUrl.route) {
         popUpTo(NavDestination.Login.route) {
           inclusive = true
@@ -35,7 +33,11 @@ internal fun LoginNavigator(navController: NavHostController): LoginNavigator {
 
     override fun syncBudget() {
       navController.printBackStack()
-      navController.navigate(route = NavDestination.SyncBudget.route)
+      navController.navigate(NavDestination.SyncBudget.route) {
+        popUpTo(NavDestination.Login.route) {
+          inclusive = true
+        }
+      }
     }
   }
 }
