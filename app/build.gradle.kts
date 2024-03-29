@@ -77,6 +77,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
   implementation(libs.androidx.navigation.runtime)
   implementation(libs.androidx.preference.ktx)
+  implementation(libs.androidx.splash)
   implementation(libs.dagger.core)
   implementation(libs.flowpreferences)
   implementation(libs.hilt.android)

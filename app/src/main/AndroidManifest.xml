@@ -18,7 +18,7 @@
             android:name=".ActualActivity"
             android:exported="true"
             android:launchMode="singleInstance"
-            android:theme="@style/Theme.Actual">
+            android:theme="@style/Theme.Actual.SplashScreen">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

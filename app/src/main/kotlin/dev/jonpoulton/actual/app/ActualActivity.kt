@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import dev.jonpoulton.actual.core.ui.ActualTheme
 import dev.jonpoulton.actual.nav.ActualNavHost
@@ -17,7 +18,9 @@ class ActualActivity : ComponentActivity() {
     super.onCreate(savedInstanceState)
     viewModel.start()
 
+    installSplashScreen()
     enableEdgeToEdge()
+
     setContent {
       ActualTheme(viewModel.colorSchemeType) {
         ActualNavHost(
