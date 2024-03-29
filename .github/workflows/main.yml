@@ -32,6 +32,11 @@ jobs:
       - name: Assemble
         run: ./gradlew app:assemble
 
+      - name: Generate coverage report
+        run: |
+          ./gradlew koverXmlReport
+          echo "COVERAGE=$(./gradlew -q printInstructionCoverage)" >> $GITHUB_ENV
+
       - name: Upload APKs
         uses: actions/upload-artifact@v4
         if: success()
@@ -39,3 +44,15 @@ jobs:
           name: apks
           path: ./app/build/outputs/apk
           if-no-files-found: error
+
+      - name: Update dynamic badge gist
+        uses: schneegans/dynamic-badges-action@v1.7.0
+        with:
+          auth: ${{ secrets.GIST_SECRET }}
+          gistID: 771fc7b1a375f223a36f740c5c2695d3
+          filename: actual-coverage-badge.json
+          label: coverage
+          message: ${{ env.COVERAGE }}%
+          valColorRange: ${{ env.COVERAGE }}
+          minColorRange: 0
+          maxColorRange: 100
