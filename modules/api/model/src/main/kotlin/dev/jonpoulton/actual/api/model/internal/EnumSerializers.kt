@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package dev.jonpoulton.actual.api.model.internal
 
 import alakazam.kotlin.serialization.enumStringSerializer
