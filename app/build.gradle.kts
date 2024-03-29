@@ -78,5 +78,4 @@ dependencies {
   implementation(libs.kotlin.stdlib)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.timber)
 }
