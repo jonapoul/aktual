@@ -181,7 +181,6 @@ private fun Content(
         text = stringResource(id = ResR.string.server_url_message),
         color = colorScheme.tableRowHeaderText,
         style = MaterialTheme.typography.bodyLarge,
-        lineHeight = 24.sp,
       )
 
       VerticalSpacer(height = 20.dp)

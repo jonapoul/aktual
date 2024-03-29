@@ -21,20 +21,20 @@ import dev.jonpoulton.actual.core.res.R as ResR
 @ReadOnlyComposable
 fun actualTypography(colors: ActualColorScheme = LocalActualColorScheme.current): Typography {
   return Typography(
-    displayLarge = textStyle(FontWeight.W700, fontSize = 30.sp),
-    displayMedium = textStyle(FontWeight.W600, fontSize = 25.sp),
-    displaySmall = textStyle(FontWeight.W500, fontSize = 20.sp),
-    headlineLarge = textStyle(FontWeight.W700, colors.pageTextPositive, 30.sp),
-//     headlineMedium =
+    displayLarge = actualTextStyle(fontWeight = FontWeight.W700, fontSize = 30.sp),
+    displayMedium = actualTextStyle(fontWeight = FontWeight.W600, fontSize = 25.sp),
+    displaySmall = actualTextStyle(fontWeight = FontWeight.W500, fontSize = 20.sp),
+    headlineLarge = actualTextStyle(fontWeight = FontWeight.W700, color = colors.pageTextPositive, fontSize = 30.sp),
+    headlineMedium = actualTextStyle(fontWeight = FontWeight.W600, color = colors.pageText, fontSize = 25.sp),
 //     headlineSmall =
 //     titleLarge =
 //     titleMedium =
 //     titleSmall =
-    bodyLarge = textStyle(fontWeight = null, colors.pageText, fontSize = 16.sp, lineHeight = 24.sp),
+    bodyLarge = actualTextStyle(color = colors.pageTextDark, fontSize = 16.sp, lineHeight = 22.4.sp),
 //     bodyMedium =
 //     bodySmall =
 //     labelLarge =
-    labelMedium = textStyle(fontWeight = null, colors.pageTextSubdued, fontSize = 13.sp),
+    labelMedium = actualTextStyle(color = colors.pageTextSubdued, fontSize = 13.sp),
 //     labelSmall =
   )
 }
@@ -51,8 +51,8 @@ val ActualFontFamily = FontFamily(
   Font(ResR.font.inter_black, FontWeight.W900),
 )
 
-private fun textStyle(
-  fontWeight: FontWeight?,
+fun actualTextStyle(
+  fontWeight: FontWeight? = null,
   color: Color = Color.Unspecified,
   fontSize: TextUnit = TextUnit.Unspecified,
   lineHeight: TextUnit = TextUnit.Unspecified,
@@ -74,7 +74,7 @@ private fun PreviewTypography() {
         displayMedium,
         displaySmall,
         headlineLarge,
-//         headlineMedium,
+        headlineMedium,
 //         headlineSmall,
 //         titleLarge,
 //         titleMedium,
