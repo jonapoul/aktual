@@ -37,6 +37,7 @@ include(":modules:core:prefs")
 include(":modules:core:ui")
 include(":modules:core:res")
 
+include(":modules:login:prefs")
 include(":modules:login:ui")
 include(":modules:login:vm")
 
