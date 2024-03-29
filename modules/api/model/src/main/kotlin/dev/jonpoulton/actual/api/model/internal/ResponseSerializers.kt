@@ -3,6 +3,7 @@ package dev.jonpoulton.actual.api.model.internal
 import dev.jonpoulton.actual.api.model.Response
 import dev.jonpoulton.actual.api.model.ResponseStatus
 import dev.jonpoulton.actual.api.model.account.BootstrapResponse
+import dev.jonpoulton.actual.api.model.account.LoginResponse
 import dev.jonpoulton.actual.api.model.account.NeedsBootstrapResponse
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
@@ -17,6 +18,12 @@ internal object BootstrapResponseSerializer :
     okSerializer = BootstrapResponse.Ok.serializer(),
     errorSerializer = BootstrapResponse.Error.serializer(),
   )
+
+internal object LoginResponseSerializer : ResponseSerializer<LoginResponse, LoginResponse.Ok, LoginResponse.Error>(
+  responseClass = LoginResponse::class,
+  okSerializer = LoginResponse.Ok.serializer(),
+  errorSerializer = LoginResponse.Error.serializer(),
+)
 
 internal object NeedsBootstrapResponseSerializer :
   ResponseSerializer<NeedsBootstrapResponse, NeedsBootstrapResponse.Ok, NeedsBootstrapResponse.Error>(

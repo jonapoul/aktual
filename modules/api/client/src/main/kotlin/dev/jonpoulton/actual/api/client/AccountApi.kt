@@ -2,6 +2,8 @@ package dev.jonpoulton.actual.api.client
 
 import dev.jonpoulton.actual.api.model.account.BootstrapRequest
 import dev.jonpoulton.actual.api.model.account.BootstrapResponse
+import dev.jonpoulton.actual.api.model.account.LoginRequest
+import dev.jonpoulton.actual.api.model.account.LoginResponse
 import dev.jonpoulton.actual.api.model.account.NeedsBootstrapResponse
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -15,4 +17,9 @@ interface AccountApi {
   suspend fun bootstrap(
     @Body body: BootstrapRequest,
   ): BootstrapResponse
+
+  @POST("account/login")
+  suspend fun login(
+    @Body body: LoginRequest,
+  ): LoginResponse
 }
