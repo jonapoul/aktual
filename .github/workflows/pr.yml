@@ -33,12 +33,6 @@ jobs:
       - name: Check
         run: ./gradlew check koverHtmlReport
 
-      - name: Generate coverage report
-        run: ./gradlew koverXmlReport
-
-      - name: Read coverage
-        run: echo "COVERAGE=$(./gradlew -q printInstructionCoverage)" >> $GITHUB_ENV
-
       - name: Upload reports
         uses: actions/upload-artifact@v4
         if: always()
@@ -54,15 +48,3 @@ jobs:
         if: always()
         with:
           report_paths: "**/build/test-results/*/TEST-*.xml"
-
-      - name: Update dynamic badge gist
-        uses: schneegans/dynamic-badges-action@v1.7.0
-        with:
-          auth: ${{ secrets.GIST_SECRET }}
-          gistID: 771fc7b1a375f223a36f740c5c2695d3
-          filename: actual-coverage-badge.json
-          label: coverage
-          message: ${{ env.COVERAGE }}%
-          valColorRange: ${{ env.COVERAGE }}
-          minColorRange: 0
-          maxColorRange: 100
