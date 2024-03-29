@@ -33,9 +33,7 @@ jobs:
         run: ./gradlew app:assemble
 
       - name: Generate coverage report
-        run: |
-          ./gradlew koverXmlReport
-          echo "COVERAGE=$(./gradlew -q printInstructionCoverage)" >> $GITHUB_ENV
+        run: echo "COVERAGE=$(./gradlew -q printInstructionCoverage)" >> $GITHUB_ENV
 
       - name: Upload APKs
         uses: actions/upload-artifact@v4
