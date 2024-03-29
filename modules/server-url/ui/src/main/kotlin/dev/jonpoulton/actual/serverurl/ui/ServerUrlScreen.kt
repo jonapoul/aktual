@@ -136,7 +136,6 @@ private fun ServerUrlScreenImpl(
             )
           }
         },
-
         title = {
           Text(
             text = stringResource(id = ResR.string.server_url_toolbar),
