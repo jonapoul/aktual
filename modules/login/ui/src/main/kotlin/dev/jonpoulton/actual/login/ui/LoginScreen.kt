@@ -17,7 +17,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,12 +67,12 @@ fun LoginScreen(
 
   val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle(initialValue = false)
   if (shouldStartSyncing) {
-    LaunchedEffect(Unit) { navigator.syncBudget() }
+    SideEffect { navigator.syncBudget() }
   }
 
   var navToSyncScreen by remember { mutableStateOf(false) }
   if (navToSyncScreen) {
-    LaunchedEffect(Unit) { navigator.changeServer() }
+    SideEffect { navigator.changeServer() }
   }
 
   OnDispose {
