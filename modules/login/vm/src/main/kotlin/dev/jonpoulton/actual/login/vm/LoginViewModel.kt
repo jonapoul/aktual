@@ -79,6 +79,7 @@ class LoginViewModel @Inject internal constructor(
   fun onClickSignIn() {
     Timber.v("onClickSignIn")
     mutableIsLoading.update { true }
+    mutableLoginFailure.reset()
     viewModelScope.launch {
       val password = mutableEnteredPassword.value
       val result = loginRequester.logIn(password)
@@ -86,9 +87,8 @@ class LoginViewModel @Inject internal constructor(
       Timber.d("Login result = $result")
       mutableIsLoading.update { false }
 
-      when (result) {
-        is LoginResult.Success -> mutableLoginFailure.reset()
-        is LoginResult.Failure -> mutableLoginFailure.update { result }
+      if (result is LoginResult.Failure) {
+        mutableLoginFailure.update { result }
       }
     }
   }

@@ -54,6 +54,11 @@ android {
   }
 }
 
+hilt {
+  enableAggregatingTask = true
+  enableExperimentalClasspathAggregation = true
+}
+
 dependencies {
   implementation(projects.modules.core.connection)
   implementation(projects.modules.core.res)
