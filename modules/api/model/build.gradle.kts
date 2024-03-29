@@ -5,6 +5,7 @@ plugins {
 }
 
 dependencies {
+  api(projects.modules.core.model)
   api(libs.kotlinx.serialization.core)
   implementation(libs.alakazam.kotlin.serialization)
   implementation(libs.kotlinx.serialization.json)

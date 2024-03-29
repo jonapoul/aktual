@@ -137,6 +137,7 @@ test-androidx-coreKtx = { module = "androidx.test:core-ktx", version.ref = "test
 test-androidx-junit = { module = "androidx.test.ext:junit", version.ref = "test-androidx-junit" }
 test-androidx-rules = { module = "androidx.test:rules", version.ref = "test-androidx-rules" }
 test-androidx-runner = { module = "androidx.test:runner", version.ref = "test-androidx-runner" }
+test-hilt = { module = "com.google.dagger:hilt-android-testing", version.ref = "hilt" }
 test-junit = { module = "junit:junit", version.ref = "test-junit" }
 test-kotlin-common = { module = "org.jetbrains.kotlin:kotlin-test-common", version.ref = "kotlin" }
 test-kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -144,6 +145,7 @@ test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-t
 test-mockk-core = { module = "io.mockk:mockk", version.ref = "test-mockk" }
 test-mockk-dsl = { module = "io.mockk:mockk-dsl", version.ref = "test-mockk" }
 test-mockk-android = { module = "io.mockk:mockk-android", version.ref = "test-mockk" }
+test-okhttp = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "okhttp" }
 test-robolectric = { module = "org.robolectric:robolectric", version.ref = "test-robolectric" }
 test-timber = { module = "net.lachlanmckee:timber-junit-rule", version.ref = "test-timber" }
 test-turbine = { module = "app.cash.turbine:turbine", version.ref = "test-turbine" }

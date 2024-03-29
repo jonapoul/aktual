@@ -18,6 +18,7 @@ dependencies {
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
   implementation(libs.androidx.compose.hilt)
+  implementation(libs.androidx.compose.material.icons.core)
   implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.ui.core)
   implementation(libs.androidx.compose.ui.graphics)

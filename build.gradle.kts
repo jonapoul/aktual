@@ -48,6 +48,7 @@ dependencyAnalysis {
           libs.test.androidx.junit,
           libs.test.androidx.rules,
           libs.test.androidx.runner,
+          libs.test.hilt,
           libs.test.junit,
           libs.test.mockk.android,
           libs.test.mockk.dsl,
@@ -56,6 +57,7 @@ dependencyAnalysis {
           libs.test.turbine,
         )
         exclude(libs.androidx.compose.ui.toolingPreview)
+        exclude(libs.timber)
       }
 
       // Ignore

@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import com.android.build.api.dsl.CommonExtension
+import org.gradle.accessors.dm.LibrariesForLibs
 
 extensions.getByType(CommonExtension::class).apply {
   compileSdk = intPropertyOrThrow(key = "actual.android.compileSdk")
@@ -45,4 +46,11 @@ extensions.getByType(CommonExtension::class).apply {
       isReturnDefaultValues = true
     }
   }
+}
+
+val libs = the<LibrariesForLibs>()
+val implementation by configurations
+
+dependencies {
+  implementation(libs.timber)
 }

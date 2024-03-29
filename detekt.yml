@@ -37,3 +37,5 @@ style:
     active: false
   UnnecessaryAbstractClass:
     active: false
+  ReturnCount:
+    max: 5
