@@ -48,6 +48,7 @@ androidx.core:core:1.12.0
 androidx.lifecycle:lifecycle-common:2.6.1
 androidx.lifecycle:lifecycle-runtime:2.6.1
 androidx.versionedparcelable:versionedparcelable:1.1.1
+com.jakewharton.timber:timber:5.0.1
 dev.jonpoulton.alakazam:android-ui-compose:4.4.0
 org.jetbrains.kotlin:kotlin-stdlib-common:1.9.23
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22

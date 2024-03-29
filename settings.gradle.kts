@@ -48,3 +48,4 @@ include(":modules:server-url:vm")
 include(":modules:nav")
 
 include(":modules:test:android")
+include(":modules:test:http")

@@ -16,4 +16,5 @@ dependencies {
   implementation(projects.modules.serverUrl.prefs)
   implementation(libs.alakazam.android.core)
   testImplementation(projects.modules.test.android)
+  testImplementation(projects.modules.test.http)
 }

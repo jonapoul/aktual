@@ -7,8 +7,6 @@ import dev.jonpoulton.actual.api.model.account.LoginRequest
 import dev.jonpoulton.actual.api.model.account.LoginResponse
 import dev.jonpoulton.actual.core.model.Password
 import dev.jonpoulton.actual.login.prefs.LoginPreferences
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import timber.log.Timber
@@ -18,10 +16,10 @@ import javax.inject.Inject
 internal class LoginRequester @Inject constructor(
   private val io: IODispatcher,
   private val apisStateHolder: ActualApisStateHolder,
-  private val prefs: LoginPreferences,
+  private val loginPreferences: LoginPreferences,
 ) {
   suspend fun logIn(password: Password): LoginResult {
-    val apis = apisStateHolder.state.filterNotNull().first()
+    val apis = apisStateHolder.peek() ?: return LoginResult.OtherFailure(reason = "URL not configured")
 
     val request = LoginRequest(password)
     val response = try {
@@ -45,7 +43,7 @@ internal class LoginRequester @Inject constructor(
 
     if (response is LoginResponse.Ok) {
       // Cache the token
-      prefs.token.set(response.data.token)
+      loginPreferences.token.set(response.data.token)
     }
 
     return result
