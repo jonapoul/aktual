@@ -17,7 +17,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -67,12 +67,12 @@ fun LoginScreen(
 
   val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle(initialValue = false)
   if (shouldStartSyncing) {
-    LaunchedEffect(Unit) { navigator.syncBudget() }
+    SideEffect { navigator.syncBudget() }
   }
 
   var navToSyncScreen by remember { mutableStateOf(false) }
   if (navToSyncScreen) {
-    LaunchedEffect(Unit) { navigator.changeServer() }
+    SideEffect { navigator.changeServer() }
   }
 
   OnDispose {
@@ -163,19 +163,14 @@ private fun Content(
     ) {
       Text(
         text = stringResource(id = ResR.string.login_title),
-        style = MaterialTheme.typography.displayLarge,
-        fontFamily = ActualFontFamily,
-        fontSize = 25.sp,
-        color = colorScheme.pageTextPositive,
+        style = MaterialTheme.typography.headlineLarge,
       )
 
       VerticalSpacer(15.dp)
 
       Text(
         text = stringResource(id = ResR.string.login_message),
-        fontFamily = ActualFontFamily,
-        fontSize = 16.sp,
-        color = colorScheme.pageText,
+        style = MaterialTheme.typography.bodyLarge,
       )
 
       VerticalSpacer(20.dp)
@@ -296,7 +291,7 @@ private fun WithErrorMessage() = PreviewActualScreen {
   LoginScreenImpl(
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     enteredPassword = Password("abcd1234"),
-    url = ServerUrl.Demo,
+    url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
     errorMessage = "Something broke, idiot",
     onPasswordEntered = {},
     onClickSignIn = {},

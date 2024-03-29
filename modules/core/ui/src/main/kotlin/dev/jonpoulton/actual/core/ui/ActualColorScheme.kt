@@ -2,12 +2,10 @@
 
 package dev.jonpoulton.actual.core.ui
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-@SuppressLint("ComposeCompositionLocalUsage")
 val LocalActualColorScheme = staticCompositionLocalOf<ActualColorScheme> {
   error("CompositionLocal ActualColorScheme not present")
 }
