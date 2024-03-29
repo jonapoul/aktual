@@ -1,5 +1,6 @@
 # TODO
 
+- Show back button in scaffold toolbar
 - Splash screen
 - Module diagrams
 - Support demo public app?

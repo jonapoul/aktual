@@ -1,5 +1,6 @@
 package dev.jonpoulton.actual.serverurl.ui
 
+import android.app.Activity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +14,10 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -20,12 +25,16 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -34,7 +43,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.jonpoulton.actual.core.model.ActualVersions
@@ -67,15 +75,21 @@ fun ServerUrlScreen(
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val shouldNavigate by viewModel.shouldNavigate.collectAsStateWithLifecycle(initialValue = false)
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle(initialValue = null)
+  var clickedBack by remember { mutableStateOf(false) }
 
-  OnDispose { viewModel.clearState() }
-
-  when (shouldNavigate) {
-    is ShouldNavigate.ToBootstrap -> LaunchedEffect(Unit) { navigator.navigateToBootstrap() }
-    is ShouldNavigate.ToLogin -> LaunchedEffect(Unit) { navigator.navigateToLogin() }
+  OnDispose {
+    viewModel.clearState()
+    clickedBack = false
   }
 
-  val focusManager = LocalFocusManager.current
+  val context = LocalContext.current
+  val activity = remember { context as? Activity ?: error("$context isn't an activity?") }
+
+  when {
+    clickedBack -> SideEffect { activity.finish() }
+    shouldNavigate is ShouldNavigate.ToBootstrap -> SideEffect { navigator.navigateToBootstrap() }
+    shouldNavigate is ShouldNavigate.ToLogin -> SideEffect { navigator.navigateToLogin() }
+  }
 
   ServerUrlScreenImpl(
     url = enteredUrl,
@@ -84,10 +98,8 @@ fun ServerUrlScreen(
     versions = versions,
     isLoading = isLoading,
     errorMessage = errorMessage,
-    onClickConfirm = {
-      viewModel.onClickConfirm()
-      focusManager.clearFocus()
-    },
+    onClickBack = { clickedBack = true },
+    onClickConfirm = viewModel::onClickConfirm,
     onUrlEntered = viewModel::onUrlEntered,
     onProtocolSelected = viewModel::onProtocolSelected,
   )
@@ -101,6 +113,7 @@ private fun ServerUrlScreenImpl(
   versions: ActualVersions,
   isLoading: Boolean,
   errorMessage: String?,
+  onClickBack: () -> Unit,
   onClickConfirm: () -> Unit,
   onUrlEntered: (String) -> Unit,
   onProtocolSelected: (Protocol) -> Unit,
@@ -115,6 +128,14 @@ private fun ServerUrlScreenImpl(
           containerColor = colorScheme.mobileHeaderBackground,
           titleContentColor = colorScheme.mobileHeaderText,
         ),
+        navigationIcon = {
+          IconButton(onClick = onClickBack) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              contentDescription = "Localized description",
+            )
+          }
+        },
         title = {
           Text(
             text = stringResource(id = ResR.string.server_url_toolbar),
@@ -172,19 +193,15 @@ private fun Content(
     ) {
       Text(
         text = stringResource(id = ResR.string.server_url_title),
-        style = MaterialTheme.typography.displayLarge,
-        fontFamily = ActualFontFamily,
-        fontSize = 25.sp,
-        color = colorScheme.pageTextPositive,
+        style = MaterialTheme.typography.headlineLarge,
       )
 
       VerticalSpacer(height = 15.dp)
 
       Text(
         text = stringResource(id = ResR.string.server_url_message),
-        fontFamily = ActualFontFamily,
-        fontSize = 16.sp,
-        color = colorScheme.pageText,
+        color = colorScheme.tableRowHeaderText,
+        style = MaterialTheme.typography.bodyLarge,
       )
 
       VerticalSpacer(height = 20.dp)
@@ -201,6 +218,8 @@ private fun Content(
 
         HorizontalSpacer(width = 5.dp)
 
+        val focusManager = LocalFocusManager.current
+
         ActualTextField(
           modifier = Modifier.weight(1f),
           value = url,
@@ -213,7 +232,10 @@ private fun Content(
             imeAction = ImeAction.Go,
           ),
           keyboardActions = KeyboardActions(
-            onGo = { onClickConfirm() },
+            onGo = {
+              focusManager.clearFocus()
+              onClickConfirm()
+            },
           ),
         )
       }
@@ -262,6 +284,7 @@ private fun Regular() = PreviewActualScreen {
     protocols = persistentListOf("http", "https"),
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     isLoading = false,
+    onClickBack = {},
     onClickConfirm = {},
     onUrlEntered = {},
     onProtocolSelected = {},
@@ -278,6 +301,7 @@ private fun WithErrorMessage() = PreviewActualScreen {
     protocols = persistentListOf("http", "https"),
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     isLoading = true,
+    onClickBack = {},
     onClickConfirm = {},
     onUrlEntered = {},
     onProtocolSelected = {},

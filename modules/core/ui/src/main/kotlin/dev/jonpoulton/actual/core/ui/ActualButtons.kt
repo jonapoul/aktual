@@ -1,3 +1,5 @@
+@file:Suppress("UnusedReceiverParameter")
+
 package dev.jonpoulton.actual.core.ui
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -12,9 +14,12 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -26,6 +31,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Stable
 @Composable
@@ -36,7 +42,7 @@ fun PrimaryActualTextButton(
   contentPadding: PaddingValues = ActualButtonPadding,
   shape: Shape = ActualButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = LocalTextStyle.current,
+  style: TextStyle = MaterialTheme.typography.buttonPrimary,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
@@ -67,7 +73,7 @@ fun PrimaryActualTextButtonWithLoading(
   contentPadding: PaddingValues = ActualButtonPadding,
   shape: Shape = ActualButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = LocalTextStyle.current,
+  style: TextStyle = MaterialTheme.typography.buttonPrimary,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   onClick: () -> Unit,
@@ -114,7 +120,7 @@ fun BareActualTextButton(
   contentPadding: PaddingValues = ActualButtonPadding,
   shape: Shape = ActualButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = LocalTextStyle.current,
+  style: TextStyle = MaterialTheme.typography.buttonBare,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
@@ -204,6 +210,16 @@ private fun ActualColorScheme.bareButton(isPressed: Boolean): ButtonColors = But
   contentColor = if (isPressed) buttonBareText else buttonBareTextHover,
   disabledContentColor = buttonBareDisabledText,
 )
+
+private val Typography.buttonPrimary: TextStyle
+  @Composable
+  @ReadOnlyComposable
+  get() = actualTextStyle(fontSize = 15.sp, color = LocalActualColorScheme.current.buttonPrimaryText)
+
+private val Typography.buttonBare: TextStyle
+  @Composable
+  @ReadOnlyComposable
+  get() = actualTextStyle(fontSize = 15.sp, color = LocalActualColorScheme.current.buttonBareText)
 
 @Preview
 @Composable

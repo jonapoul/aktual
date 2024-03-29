@@ -7,6 +7,7 @@ import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -16,30 +17,27 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.jonpoulton.actual.core.res.R as ResR
 
-// TODO: Create custom text styles here
-val ActualTypography: Typography
-  @Composable
-  @ReadOnlyComposable
-  get() {
-//     val colors = LocalActualColorScheme.current
-    return Typography(
-      displayLarge = ActualFontFamily.textStyle(FontWeight.W700, fontSize = 30.sp),
-      displayMedium = ActualFontFamily.textStyle(FontWeight.W600, fontSize = 25.sp),
-      displaySmall = ActualFontFamily.textStyle(FontWeight.W500, fontSize = 20.sp),
-// headlineLarge = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// headlineMedium = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// headlineSmall = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// titleLarge = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// titleMedium = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// titleSmall = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// bodyLarge = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// bodyMedium = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// bodySmall = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// labelLarge = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// labelMedium = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-// labelSmall = ActualFontFamily.textStyle(FontWeight.W, fontSize = .sp),
-    )
-  }
+@Composable
+@ReadOnlyComposable
+fun actualTypography(colors: ActualColorScheme = LocalActualColorScheme.current): Typography {
+  return Typography(
+    displayLarge = actualTextStyle(fontWeight = FontWeight.W700, fontSize = 30.sp),
+    displayMedium = actualTextStyle(fontWeight = FontWeight.W600, fontSize = 25.sp),
+    displaySmall = actualTextStyle(fontWeight = FontWeight.W500, fontSize = 20.sp),
+    headlineLarge = actualTextStyle(fontWeight = FontWeight.W700, color = colors.pageTextPositive, fontSize = 30.sp),
+    headlineMedium = actualTextStyle(fontWeight = FontWeight.W600, color = colors.pageText, fontSize = 25.sp),
+//     headlineSmall =
+//     titleLarge =
+//     titleMedium =
+//     titleSmall =
+    bodyLarge = actualTextStyle(color = colors.pageTextDark, fontSize = 16.sp, lineHeight = 22.4.sp),
+//     bodyMedium =
+//     bodySmall =
+//     labelLarge =
+    labelMedium = actualTextStyle(color = colors.pageTextSubdued, fontSize = 13.sp),
+//     labelSmall =
+  )
+}
 
 val ActualFontFamily = FontFamily(
   Font(ResR.font.inter_thin, FontWeight.W100),
@@ -53,36 +51,42 @@ val ActualFontFamily = FontFamily(
   Font(ResR.font.inter_black, FontWeight.W900),
 )
 
-private fun FontFamily.textStyle(fontWeight: FontWeight, fontSize: TextUnit): TextStyle =
-  TextStyle(
-    fontSize = fontSize,
-    fontWeight = fontWeight,
-    fontFamily = this,
-  )
+fun actualTextStyle(
+  fontWeight: FontWeight? = null,
+  color: Color = Color.Unspecified,
+  fontSize: TextUnit = TextUnit.Unspecified,
+  lineHeight: TextUnit = TextUnit.Unspecified,
+): TextStyle = TextStyle(
+  fontSize = fontSize,
+  fontWeight = fontWeight,
+  fontFamily = ActualFontFamily,
+  color = color,
+  lineHeight = lineHeight,
+)
 
 @ActualScreenPreview
 @Composable
 private fun PreviewTypography() {
-  val typography = ActualTypography
-  val styles = listOf(
-    typography.displayLarge,
-    typography.displayMedium,
-    typography.displaySmall,
-    typography.headlineLarge,
-    typography.headlineMedium,
-    typography.headlineSmall,
-    typography.titleLarge,
-    typography.titleMedium,
-    typography.titleSmall,
-    typography.bodyLarge,
-    typography.bodyMedium,
-    typography.bodySmall,
-    typography.labelLarge,
-    typography.labelMedium,
-    typography.labelSmall,
-  )
-
   PreviewActualScreen {
+    val styles = with(actualTypography()) {
+      listOf(
+        displayLarge,
+        displayMedium,
+        displaySmall,
+        headlineLarge,
+        headlineMedium,
+//         headlineSmall,
+//         titleLarge,
+//         titleMedium,
+//         titleSmall,
+        bodyLarge,
+//         bodyMedium,
+//         bodySmall,
+//         labelLarge,
+        labelMedium,
+//         labelSmall,
+      )
+    }
     Column {
       styles.forEach { style ->
         Text(

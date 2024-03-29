@@ -1,26 +1,7 @@
-@file:Suppress("ConvertObjectToDataObject")
-
 package dev.jonpoulton.actual.core.ui
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-
-private val ButtonBareBackground = Color.Transparent
-private val ButtonMenuSelectedBackground = ActualColors.orange200
-private val ButtonMenuText = ActualColors.navy200
-private val ButtonNormalDisabledText = ActualColors.navy500
-private val ButtonNormalSelectedBackground = ActualColors.purple600
-private val ButtonNormalText = ActualColors.navy150
-private val ButtonPrimaryBackground = ActualColors.purple400
-private val ButtonPrimaryDisabledBackground = ActualColors.navy400
-private val ButtonPrimaryText = ActualColors.white
-private val CardShadow = ActualColors.navy700
-private val ErrorTextDark = ActualColors.red150
-private val MobileHeaderBackground = ActualColors.purple800
-private val PageText = ActualColors.navy150
-private val PillBorder = ActualColors.navy700
-private val TableBorder = ActualColors.navy600
-private val TableText = ActualColors.navy150
 
 @Immutable
 internal class DarkColorScheme : ActualColorScheme {
@@ -31,7 +12,7 @@ internal class DarkColorScheme : ActualColorScheme {
   override val pageBackgroundLineTop = ActualColors.purple400
   override val pageBackgroundLineMid = ActualColors.navy900
   override val pageBackgroundLineBottom = ActualColors.navy150
-  override val pageText = PageText
+  override val pageText = ActualColors.navy150
   override val pageTextLight = ActualColors.navy300
   override val pageTextSubdued = ActualColors.navy500
   override val pageTextDark = ActualColors.navy100
@@ -41,11 +22,11 @@ internal class DarkColorScheme : ActualColorScheme {
 
   override val cardBackground = ActualColors.gray800
   override val cardBorder = ActualColors.purple400
-  override val cardShadow = CardShadow
+  override val cardShadow = ActualColors.navy700
 
   override val tableBackground = ActualColors.navy800
   override val tableRowBackgroundHover = ActualColors.navy700
-  override val tableText = TableText
+  override val tableText = ActualColors.navy150
   override val tableTextLight = tableText
   override val tableTextSubdued = ActualColors.navy500
   override val tableTextSelected = ActualColors.navy150
@@ -53,7 +34,7 @@ internal class DarkColorScheme : ActualColorScheme {
   override val tableTextInactive = ActualColors.navy500
   override val tableHeaderText = ActualColors.navy300
   override val tableHeaderBackground = ActualColors.navy700
-  override val tableBorder = TableBorder
+  override val tableBorder = ActualColors.navy600
   override val tableBorderSelected = ActualColors.purple400
   override val tableBorderHover = ActualColors.purple300
   override val tableBorderSeparator = ActualColors.navy400
@@ -87,7 +68,7 @@ internal class DarkColorScheme : ActualColorScheme {
 
   override val modalBackground = ActualColors.gray800
   override val modalBorder = ActualColors.navy600
-  override val mobileHeaderBackground = MobileHeaderBackground
+  override val mobileHeaderBackground = ActualColors.purple800
   override val mobileHeaderText = ActualColors.navy150
   override val mobileHeaderTextSubdued = ActualColors.gray200
   override val mobileHeaderTextHover = Color(color = 0x26C8C8C8)
@@ -109,36 +90,36 @@ internal class DarkColorScheme : ActualColorScheme {
   override val markdownLight = ActualColors.purple800
 
   // Button
-  override val buttonMenuText = ButtonMenuText
+  override val buttonMenuText = ActualColors.navy200
   override val buttonMenuTextHover = buttonMenuText
   override val buttonMenuBackground = Color.Transparent
   override val buttonMenuBackgroundHover = Color(color = 0x40C8C8C8)
   override val buttonMenuBorder = ActualColors.navy500
   override val buttonMenuSelectedText = ActualColors.green800
   override val buttonMenuSelectedTextHover = ActualColors.orange800
-  override val buttonMenuSelectedBackground = ButtonMenuSelectedBackground
+  override val buttonMenuSelectedBackground = ActualColors.orange200
   override val buttonMenuSelectedBackgroundHover = ActualColors.orange300
   override val buttonMenuSelectedBorder = buttonMenuSelectedBackground
 
-  override val buttonPrimaryText = ButtonPrimaryText
+  override val buttonPrimaryText = ActualColors.white
   override val buttonPrimaryTextHover = buttonPrimaryText
-  override val buttonPrimaryBackground = ButtonPrimaryBackground
+  override val buttonPrimaryBackground = ActualColors.purple400
   override val buttonPrimaryBackgroundHover = ActualColors.purple600
   override val buttonPrimaryBorder = buttonPrimaryBackground
   override val buttonPrimaryShadow = Color(color = 0x99000000)
   override val buttonPrimaryDisabledText = ActualColors.navy700
-  override val buttonPrimaryDisabledBackground = ButtonPrimaryDisabledBackground
+  override val buttonPrimaryDisabledBackground = ActualColors.navy400
   override val buttonPrimaryDisabledBorder = buttonPrimaryDisabledBackground
 
-  override val buttonNormalText = ButtonNormalText
+  override val buttonNormalText = ActualColors.navy150
   override val buttonNormalTextHover = ActualColors.navy150
   override val buttonNormalBackground = ActualColors.navy800
   override val buttonNormalBackgroundHover = ActualColors.navy600
   override val buttonNormalBorder = ActualColors.navy300
   override val buttonNormalShadow = Color(color = 0x66000000)
   override val buttonNormalSelectedText = ActualColors.white
-  override val buttonNormalSelectedBackground = ButtonNormalSelectedBackground
-  override val buttonNormalDisabledText = ButtonNormalDisabledText
+  override val buttonNormalSelectedBackground = ActualColors.purple600
+  override val buttonNormalDisabledText = ActualColors.navy500
   override val buttonNormalDisabledBackground = ActualColors.navy800
   override val buttonNormalDisabledBorder = ActualColors.navy500
 
@@ -150,7 +131,7 @@ internal class DarkColorScheme : ActualColorScheme {
 
   override val buttonBareText = buttonNormalText
   override val buttonBareTextHover = buttonNormalText
-  override val buttonBareBackground = ButtonBareBackground
+  override val buttonBareBackground = Color.Transparent
   override val buttonBareBackgroundHover = Color(color = 0x4DC8C8C8)
   override val buttonBareBackgroundActive = Color(color = 0x80C8C8C8)
   override val buttonBareDisabledText = buttonNormalDisabledText
@@ -171,7 +152,7 @@ internal class DarkColorScheme : ActualColorScheme {
   override val warningBorder = ActualColors.orange500
   override val errorBackground = ActualColors.red800
   override val errorText = ActualColors.red200
-  override val errorTextDark = ErrorTextDark
+  override val errorTextDark = ActualColors.red150
   override val errorTextDarker = errorTextDark
   override val errorTextMenu = ActualColors.red500
   override val errorBorder = ActualColors.red500
@@ -204,7 +185,7 @@ internal class DarkColorScheme : ActualColorScheme {
   override val pillBackgroundLight = ActualColors.navy900
   override val pillText = ActualColors.navy200
   override val pillTextHighlighted = ActualColors.purple200
-  override val pillBorder = PillBorder
+  override val pillBorder = ActualColors.navy700
   override val pillBorderDark = pillBorder
   override val pillBackgroundSelected = ActualColors.purple600
   override val pillTextSelected = ActualColors.navy150

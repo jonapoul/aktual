@@ -1,5 +1,3 @@
-@file:Suppress("ConvertObjectToDataObject")
-
 package dev.jonpoulton.actual.core.ui
 
 import androidx.compose.runtime.Immutable
