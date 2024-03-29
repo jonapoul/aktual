@@ -37,7 +37,7 @@ fun ActualTheme(
 
     MaterialTheme(
       colorScheme = materialColorScheme,
-      typography = actualTypography(),
+      typography = actualTypography(colorScheme),
       content = content,
     )
   }
