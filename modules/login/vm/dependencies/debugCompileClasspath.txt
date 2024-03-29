@@ -28,7 +28,7 @@ com.google.dagger:hilt-core:2.51
 com.squareup.okhttp3:okhttp:4.12.0
 com.squareup.okio:okio-jvm:3.6.0
 com.squareup.okio:okio:3.6.0
-com.squareup.retrofit2:retrofit:2.10.0
+com.squareup.retrofit2:retrofit:2.11.0
 dev.jonpoulton.alakazam:android-core:4.4.0
 dev.jonpoulton.alakazam:kotlin-core:4.4.0
 javax.inject:javax.inject:1
