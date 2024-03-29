@@ -7,5 +7,6 @@ android {
 }
 
 dependencies {
+  implementation(libs.androidx.splash)
   implementation(libs.material)
 }
