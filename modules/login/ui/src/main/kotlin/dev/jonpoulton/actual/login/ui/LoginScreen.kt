@@ -59,7 +59,7 @@ fun LoginScreen(
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
 
-  val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle(initialValue = false)
+  val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle()
   if (shouldStartSyncing) {
     SideEffect { navigator.syncBudget() }
   }

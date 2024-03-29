@@ -39,6 +39,6 @@ sealed interface LoginResponse : Response {
       @SerialName("token")
       @Serializable(TokenSerializer::class)
       override val token: LoginToken? = null,
-    ): Data
+    ) : Data
   }
 }

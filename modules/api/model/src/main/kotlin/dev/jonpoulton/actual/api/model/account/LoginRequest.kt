@@ -11,4 +11,3 @@ data class LoginRequest(
   @Serializable(with = PasswordSerializer::class)
   val password: Password,
 )
-

@@ -11,7 +11,6 @@ import dev.jonpoulton.actual.core.model.Password
 import dev.jonpoulton.actual.core.model.ServerUrl
 import dev.jonpoulton.actual.login.prefs.LoginPreferences
 import dev.jonpoulton.actual.serverurl.prefs.ServerUrlPreferences
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,7 +54,11 @@ class LoginViewModel @Inject internal constructor(
     combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
       .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
-  val shouldStartSyncing: Flow<Boolean> = loginPrefs.token.asFlow().map { it != null }
+  val shouldStartSyncing: StateFlow<Boolean> = loginPrefs
+    .token
+    .asFlow()
+    .map { it != null }
+    .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
 
   init {
     viewModelScope.launch {
@@ -66,6 +69,7 @@ class LoginViewModel @Inject internal constructor(
   fun clearState() {
     mutableEnteredPassword.reset()
     mutableIsLoading.reset()
+    mutableLoginFailure.reset()
   }
 
   fun onPasswordEntered(password: String) {
