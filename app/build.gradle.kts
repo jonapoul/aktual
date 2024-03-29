@@ -54,6 +54,11 @@ android {
   }
 }
 
+hilt {
+  enableAggregatingTask = true
+  enableExperimentalClasspathAggregation = true
+}
+
 dependencies {
   implementation(projects.modules.core.connection)
   implementation(projects.modules.core.res)
@@ -70,6 +75,7 @@ dependencies {
   implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
+  implementation(libs.androidx.navigation.runtime)
   implementation(libs.androidx.preference.ktx)
   implementation(libs.dagger.core)
   implementation(libs.flowpreferences)
@@ -78,5 +84,4 @@ dependencies {
   implementation(libs.kotlin.stdlib)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.datetime)
-  implementation(libs.timber)
 }

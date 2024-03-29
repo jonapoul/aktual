@@ -14,12 +14,10 @@ androidx.compose.foundation:foundation-layout:1.6.4
 androidx.compose.foundation:foundation:1.6.4
 androidx.compose.material3:material3-android:1.2.1
 androidx.compose.material3:material3:1.2.1
-androidx.compose.material:material-android:1.6.4
 androidx.compose.material:material-icons-core-android:1.6.4
 androidx.compose.material:material-icons-core:1.6.4
 androidx.compose.material:material-ripple-android:1.6.4
 androidx.compose.material:material-ripple:1.6.4
-androidx.compose.material:material:1.6.4
 androidx.compose.runtime:runtime-android:1.6.4
 androidx.compose.runtime:runtime-saveable-android:1.6.4
 androidx.compose.runtime:runtime-saveable:1.6.4
@@ -48,7 +46,7 @@ androidx.core:core:1.12.0
 androidx.lifecycle:lifecycle-common:2.6.1
 androidx.lifecycle:lifecycle-runtime:2.6.1
 androidx.versionedparcelable:versionedparcelable:1.1.1
-dev.jonpoulton.alakazam:android-ui-compose:4.4.0
+com.jakewharton.timber:timber:5.0.1
 org.jetbrains.kotlin:kotlin-stdlib-common:1.9.23
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22

@@ -3,7 +3,6 @@ package dev.jonpoulton.actual.login.ui
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -27,31 +26,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.jonpoulton.actual.core.model.ActualVersions
 import dev.jonpoulton.actual.core.model.Password
 import dev.jonpoulton.actual.core.model.ServerUrl
-import dev.jonpoulton.actual.core.ui.ActualFontFamily
 import dev.jonpoulton.actual.core.ui.ActualScreenPreview
 import dev.jonpoulton.actual.core.ui.ActualTextField
-import dev.jonpoulton.actual.core.ui.BareActualTextButton
-import dev.jonpoulton.actual.core.ui.HorizontalSpacer
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.OnDispose
 import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
 import dev.jonpoulton.actual.core.ui.VersionsText
 import dev.jonpoulton.actual.core.ui.VerticalSpacer
+import dev.jonpoulton.actual.login.vm.LoginResult
 import dev.jonpoulton.actual.login.vm.LoginViewModel
 import dev.jonpoulton.actual.core.res.R as ResR
 
@@ -63,9 +56,10 @@ fun LoginScreen(
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
   val url by viewModel.serverUrl.collectAsStateWithLifecycle()
-  val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
+  val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+  val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
 
-  val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle(initialValue = false)
+  val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle()
   if (shouldStartSyncing) {
     SideEffect { navigator.syncBudget() }
   }
@@ -84,7 +78,8 @@ fun LoginScreen(
     versions = versions,
     enteredPassword = enteredPassword,
     url = url,
-    errorMessage = errorMessage,
+    isLoading = isLoading,
+    loginFailure = loginFailure,
     onPasswordEntered = viewModel::onPasswordEntered,
     onClickSignIn = viewModel::onClickSignIn,
     onClickChangeServer = { navToSyncScreen = true },
@@ -96,7 +91,8 @@ private fun LoginScreenImpl(
   versions: ActualVersions,
   enteredPassword: Password,
   url: ServerUrl,
-  errorMessage: String?,
+  isLoading: Boolean,
+  loginFailure: LoginResult.Failure?,
   onPasswordEntered: (String) -> Unit,
   onClickSignIn: () -> Unit,
   onClickChangeServer: () -> Unit,
@@ -127,7 +123,8 @@ private fun LoginScreenImpl(
       versions = versions,
       enteredPassword = enteredPassword,
       url = url,
-      errorMessage = errorMessage,
+      isLoading = isLoading,
+      loginFailure = loginFailure,
       onPasswordEntered = onPasswordEntered,
       onClickSignIn = onClickSignIn,
       onClickChangeServer = onClickChangeServer,
@@ -141,7 +138,8 @@ private fun Content(
   versions: ActualVersions,
   enteredPassword: Password,
   url: ServerUrl,
-  errorMessage: String?,
+  isLoading: Boolean,
+  loginFailure: LoginResult.Failure?,
   onPasswordEntered: (String) -> Unit,
   onClickSignIn: () -> Unit,
   onClickChangeServer: () -> Unit,
@@ -196,19 +194,16 @@ private fun Content(
       PrimaryActualTextButtonWithLoading(
         modifier = Modifier.align(Alignment.End),
         text = stringResource(id = ResR.string.login_sign_in),
-        isLoading = false,
+        isLoading = isLoading,
         onClick = onClickSignIn,
       )
 
-      if (errorMessage != null) {
+      if (loginFailure != null) {
         VerticalSpacer(20.dp)
 
-        Text(
+        LoginFailureText(
           modifier = Modifier.fillMaxWidth(),
-          text = errorMessage,
-          fontFamily = ActualFontFamily,
-          color = colorScheme.errorText,
-          textAlign = TextAlign.Center,
+          result = loginFailure,
         )
       }
     }
@@ -230,47 +225,6 @@ private fun Content(
   }
 }
 
-@Stable
-@Composable
-private fun UsingServer(
-  url: ServerUrl,
-  onClickChange: () -> Unit,
-  modifier: Modifier = Modifier,
-  fontSize: TextUnit = 16.sp,
-) {
-  Column(
-    modifier = modifier,
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    Row(
-      verticalAlignment = Alignment.CenterVertically,
-      horizontalArrangement = Arrangement.Center,
-    ) {
-      val colorScheme = LocalActualColorScheme.current
-
-      Text(
-        text = stringResource(id = ResR.string.login_using_server),
-        fontSize = fontSize,
-        color = colorScheme.pageText,
-      )
-
-      HorizontalSpacer(width = 5.dp)
-
-      Text(
-        text = url.toString(),
-        fontSize = fontSize,
-        color = colorScheme.pageText,
-        fontWeight = FontWeight.Bold,
-      )
-    }
-
-    BareActualTextButton(
-      text = stringResource(id = ResR.string.login_server_change),
-      onClick = onClickChange,
-    )
-  }
-}
-
 @ActualScreenPreview
 @Composable
 private fun Regular() = PreviewActualScreen {
@@ -278,7 +232,8 @@ private fun Regular() = PreviewActualScreen {
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     enteredPassword = Password.Empty,
     url = ServerUrl.Demo,
-    errorMessage = null,
+    isLoading = false,
+    loginFailure = null,
     onPasswordEntered = {},
     onClickSignIn = {},
     onClickChangeServer = {},
@@ -290,9 +245,10 @@ private fun Regular() = PreviewActualScreen {
 private fun WithErrorMessage() = PreviewActualScreen {
   LoginScreenImpl(
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
-    enteredPassword = Password("abcd1234"),
+    enteredPassword = Password(value = "abcd1234"),
     url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
-    errorMessage = "Something broke, idiot",
+    isLoading = true,
+    loginFailure = LoginResult.InvalidPassword,
     onPasswordEntered = {},
     onClickSignIn = {},
     onClickChangeServer = {},

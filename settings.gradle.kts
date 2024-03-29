@@ -33,9 +33,11 @@ include(":modules:api:model")
 include(":modules:core:connection")
 include(":modules:core:coroutines")
 include(":modules:core:model")
+include(":modules:core:prefs")
 include(":modules:core:ui")
 include(":modules:core:res")
 
+include(":modules:login:prefs")
 include(":modules:login:ui")
 include(":modules:login:vm")
 
@@ -46,3 +48,4 @@ include(":modules:server-url:vm")
 include(":modules:nav")
 
 include(":modules:test:android")
+include(":modules:test:http")

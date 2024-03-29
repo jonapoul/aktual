@@ -12,7 +12,8 @@ import retrofit2.create
 import timber.log.Timber
 
 internal fun buildOkHttp(): OkHttpClient {
-  val logger = HttpLoggingInterceptor { Timber.v(it) }
+  val logger = HttpLoggingInterceptor { Timber.tag("ACTUAL HTTP").v(it) }
+  logger.setLevel(HttpLoggingInterceptor.Level.BODY)
   return OkHttpClient.Builder()
     .addInterceptor(logger)
     .build()

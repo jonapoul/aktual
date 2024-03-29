@@ -21,5 +21,5 @@ dependencies {
   implementation(libs.okhttp.logging)
   implementation(libs.retrofit.core)
   implementation(libs.retrofit.serialization)
-  implementation(libs.timber)
+  testImplementation(projects.modules.test.android)
 }
