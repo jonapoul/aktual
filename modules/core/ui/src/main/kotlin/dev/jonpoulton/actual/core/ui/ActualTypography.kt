@@ -20,6 +20,9 @@ import dev.jonpoulton.actual.core.res.R as ResR
 @Composable
 @ReadOnlyComposable
 fun actualTypography(colors: ActualColorScheme = LocalActualColorScheme.current): Typography {
+  /**
+   * WARNING: DON'T SET A COLOUR FOR bodyLarge - IT'LL OVERRIDE THOSE SET IN TEXT FIELDS
+   */
   return Typography(
     displayLarge = actualTextStyle(fontWeight = FontWeight.W700, fontSize = 30.sp),
     displayMedium = actualTextStyle(fontWeight = FontWeight.W600, fontSize = 25.sp),
@@ -30,7 +33,7 @@ fun actualTypography(colors: ActualColorScheme = LocalActualColorScheme.current)
 //     titleLarge =
 //     titleMedium =
 //     titleSmall =
-    bodyLarge = actualTextStyle(color = colors.pageTextDark, fontSize = 16.sp, lineHeight = 22.4.sp),
+    bodyLarge = actualTextStyle(fontSize = 16.sp, lineHeight = 22.4.sp),
 //     bodyMedium =
 //     bodySmall =
 //     labelLarge =

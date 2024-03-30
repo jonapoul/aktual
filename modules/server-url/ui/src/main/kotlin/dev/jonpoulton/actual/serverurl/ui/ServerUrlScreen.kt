@@ -73,6 +73,7 @@ fun ServerUrlScreen(
   val enteredUrl by viewModel.baseUrl.collectAsStateWithLifecycle()
   val protocol by viewModel.protocol.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+  val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
   val shouldNavigate by viewModel.shouldNavigate.collectAsStateWithLifecycle(initialValue = false)
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle(initialValue = null)
   var clickedBack by remember { mutableStateOf(false) }
@@ -96,6 +97,7 @@ fun ServerUrlScreen(
     protocol = protocol,
     protocols = viewModel.protocols,
     versions = versions,
+    isEnabled = isEnabled,
     isLoading = isLoading,
     errorMessage = errorMessage,
     onClickBack = { clickedBack = true },
@@ -111,6 +113,7 @@ private fun ServerUrlScreenImpl(
   protocol: Protocol,
   protocols: ImmutableList<String>,
   versions: ActualVersions,
+  isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
   onClickBack: () -> Unit,
@@ -153,6 +156,7 @@ private fun ServerUrlScreenImpl(
       protocol = protocol,
       protocols = protocols,
       versions = versions,
+      isEnabled = isEnabled,
       isLoading = isLoading,
       errorMessage = errorMessage,
       onClickConfirm = onClickConfirm,
@@ -169,6 +173,7 @@ private fun Content(
   protocol: Protocol,
   protocols: ImmutableList<String>,
   versions: ActualVersions,
+  isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
   onClickConfirm: () -> Unit,
@@ -249,6 +254,7 @@ private fun Content(
         PrimaryActualTextButtonWithLoading(
           text = stringResource(id = ResR.string.server_url_confirm),
           isLoading = isLoading,
+          isEnabled = isEnabled,
           onClick = onClickConfirm,
         )
       }
@@ -283,6 +289,7 @@ private fun Regular() = PreviewActualScreen {
     protocol = Protocol.Https,
     protocols = persistentListOf("http", "https"),
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
+    isEnabled = true,
     isLoading = false,
     onClickBack = {},
     onClickConfirm = {},
@@ -300,6 +307,7 @@ private fun WithErrorMessage() = PreviewActualScreen {
     protocol = Protocol.Http,
     protocols = persistentListOf("http", "https"),
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
+    isEnabled = true,
     isLoading = true,
     onClickBack = {},
     onClickConfirm = {},
