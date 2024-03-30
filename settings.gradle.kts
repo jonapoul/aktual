@@ -29,6 +29,9 @@ include(":modules:api:client")
 include(":modules:api:json")
 include(":modules:api:model")
 
+include(":modules:budget:list:ui")
+include(":modules:budget:list:vm")
+
 include(":modules:core:connection")
 include(":modules:core:coroutines")
 include(":modules:core:icons")
@@ -37,9 +40,6 @@ include(":modules:core:prefs")
 include(":modules:core:state")
 include(":modules:core:ui")
 include(":modules:core:res")
-
-include(":modules:list-budgets:ui")
-include(":modules:list-budgets:vm")
 
 include(":modules:login:prefs")
 include(":modules:login:ui")
