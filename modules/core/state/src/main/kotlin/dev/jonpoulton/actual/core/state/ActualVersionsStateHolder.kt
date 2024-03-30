@@ -14,4 +14,6 @@ class ActualVersionsStateHolder @Inject constructor(
     val versions = ActualVersions(app = buildConfig.versionName, server = serverVersion)
     set(versions)
   }
+
+  fun empty(): ActualVersions = ActualVersions(buildConfig.versionName, server = null)
 }
