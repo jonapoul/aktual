@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Actual Budget</string>
 
+    <string name="nav_back">Navigate back</string>
+
     <string name="server_url_toolbar">Actual Budget</string>
     <string name="server_url_title">Where\'s the server?</string>
     <string name="server_url_message">Existing sessions will be logged out and you will log in to this server. We will validate that Actual is running at this URL.</string>

@@ -22,6 +22,11 @@ internal fun ServerUrlNavigator(navController: NavHostController): ServerUrlNavi
 
 internal fun LoginNavigator(navController: NavHostController): LoginNavigator {
   return object : LoginNavigator {
+    override fun navBack() {
+      navController.printBackStack()
+      navController.popBackStack()
+    }
+
     override fun changeServer() {
       navController.printBackStack()
       navController.navigate(NavDestination.ServerUrl.route) {
