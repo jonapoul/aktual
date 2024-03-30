@@ -168,6 +168,7 @@ private fun Content(
 
       Text(
         text = stringResource(id = ResR.string.login_message),
+        color = colorScheme.tableRowHeaderText,
         style = MaterialTheme.typography.bodyLarge,
       )
 
