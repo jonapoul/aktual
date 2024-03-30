@@ -170,7 +170,7 @@ internal class MidnightColorScheme : ActualColorScheme {
   override val formInputBorderSelected = ActualColors.purple300
   override val formInputText = ActualColors.gray150
   override val formInputTextSelected = ActualColors.black
-  override val formInputTextPlaceholder = ActualColors.gray150
+  override val formInputTextPlaceholder = ActualColors.gray400
   override val formInputTextPlaceholderSelected = ActualColors.gray100
   override val formInputTextSelection = ActualColors.gray800
   override val formInputShadowSelected = ActualColors.purple400
