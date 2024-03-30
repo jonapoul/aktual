@@ -44,6 +44,7 @@ fun PrimaryActualTextButton(
   style: TextStyle = MaterialTheme.typography.buttonPrimary,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
+  colors: @Composable (ActualColorScheme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primary(pressed) },
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
   onClick: () -> Unit,
 ) {
@@ -58,7 +59,7 @@ fun PrimaryActualTextButton(
     fontSize = fontSize,
     prefix = prefix,
     onClick = onClick,
-    colors = { scheme, isPressed -> scheme.primaryButton(isPressed) },
+    colors = colors,
     content = content,
   )
 }
@@ -76,6 +77,7 @@ fun PrimaryActualTextButtonWithLoading(
   style: TextStyle = MaterialTheme.typography.buttonPrimary,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
+  colors: @Composable (ActualColorScheme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primary(pressed) },
   onClick: () -> Unit,
 ) {
   PrimaryActualTextButton(
@@ -88,6 +90,7 @@ fun PrimaryActualTextButtonWithLoading(
     style = style,
     fontSize = fontSize,
     prefix = prefix,
+    colors = colors,
     onClick = onClick,
     content = {
       // Using opacity here so we don't adjust the size bounds of the containing box
@@ -124,6 +127,7 @@ fun BareActualTextButton(
   style: TextStyle = MaterialTheme.typography.buttonBare,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
+  colors: @Composable (ActualColorScheme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.bare(pressed) },
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
   onClick: () -> Unit,
 ) {
@@ -137,9 +141,9 @@ fun BareActualTextButton(
     style = style,
     fontSize = fontSize,
     prefix = prefix,
-    colors = { scheme, isPressed -> scheme.bareButton(isPressed) },
-    content = content,
     onClick = onClick,
+    colors = colors,
+    content = content,
   )
 }
 
@@ -194,7 +198,7 @@ private fun RowScope.DefaultTextButtonContent(
 
 @Stable
 @Composable
-private fun ActualColorScheme.primaryButton(isPressed: Boolean) = ButtonDefaults.buttonColors(
+private fun ActualColorScheme.primary(isPressed: Boolean) = ButtonDefaults.buttonColors(
   containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
   disabledContainerColor = buttonPrimaryDisabledBackground,
   contentColor = if (isPressed) buttonPrimaryText else buttonPrimaryTextHover,
@@ -203,7 +207,7 @@ private fun ActualColorScheme.primaryButton(isPressed: Boolean) = ButtonDefaults
 
 @Stable
 @Composable
-private fun ActualColorScheme.bareButton(isPressed: Boolean) = ButtonDefaults.buttonColors(
+private fun ActualColorScheme.bare(isPressed: Boolean) = ButtonDefaults.buttonColors(
   containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
   disabledContainerColor = buttonBareDisabledBackground,
   contentColor = if (isPressed) buttonBareText else buttonBareTextHover,
