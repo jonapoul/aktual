@@ -1,12 +1,15 @@
 package dev.jonpoulton.actual.app
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.jonpoulton.actual.core.connection.ConnectionMonitor
+import dev.jonpoulton.actual.core.connection.ServerVersionFetcher
 import dev.jonpoulton.actual.core.ui.ActualColorSchemeType
 import dev.jonpoulton.actual.serverurl.prefs.ServerUrlPreferences
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -14,6 +17,7 @@ import javax.inject.Inject
 internal class ActualActivityViewModel @Inject constructor(
   private val scope: CoroutineScope,
   private val connectionMonitor: ConnectionMonitor,
+  private val serverVersionFetcher: ServerVersionFetcher,
   colorSchemePrefs: ColorSchemePreferences,
   serverUrlPreferences: ServerUrlPreferences,
 ) : ViewModel() {
@@ -22,6 +26,9 @@ internal class ActualActivityViewModel @Inject constructor(
 
   fun start() {
     connectionMonitor.start()
+    viewModelScope.launch {
+      serverVersionFetcher.startFetching()
+    }
   }
 
   override fun onCleared() {

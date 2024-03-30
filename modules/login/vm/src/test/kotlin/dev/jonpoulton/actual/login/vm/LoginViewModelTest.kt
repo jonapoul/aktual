@@ -2,10 +2,10 @@ package dev.jonpoulton.actual.login.vm
 
 import alakazam.test.core.CoroutineRule
 import app.cash.turbine.test
-import dev.jonpoulton.actual.core.connection.ServerVersionFetcher
 import dev.jonpoulton.actual.core.model.LoginToken
 import dev.jonpoulton.actual.core.model.Protocol
 import dev.jonpoulton.actual.core.model.ServerUrl
+import dev.jonpoulton.actual.core.state.ActualVersionsStateHolder
 import dev.jonpoulton.actual.login.prefs.LoginPreferences
 import dev.jonpoulton.actual.serverurl.prefs.ServerUrlPreferences
 import dev.jonpoulton.actual.test.TestBuildConfig
@@ -34,9 +34,9 @@ internal class LoginViewModelTest {
   private lateinit var serverUrlPrefs: ServerUrlPreferences
   private lateinit var loginPrefs: LoginPreferences
   private lateinit var viewModel: LoginViewModel
+  private lateinit var versionsStateHolder: ActualVersionsStateHolder
 
   // mock
-  private lateinit var serverVersionFetcher: ServerVersionFetcher
   private lateinit var loginRequester: LoginRequester
 
   @Before
@@ -45,12 +45,11 @@ internal class LoginViewModelTest {
     serverUrlPrefs = ServerUrlPreferences(prefs)
     loginPrefs = LoginPreferences(prefs)
 
-    serverVersionFetcher = mockk(relaxed = true)
+    versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
 
     viewModel = LoginViewModel(
-      buildConfig = TestBuildConfig,
-      serverVersionFetcher = serverVersionFetcher,
+      versionsStateHolder = versionsStateHolder,
       loginRequester = loginRequester,
       serverUrlPrefs = serverUrlPrefs,
       loginPrefs = loginPrefs,

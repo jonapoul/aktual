@@ -1,14 +1,13 @@
 package dev.jonpoulton.actual.login.vm
 
-import alakazam.android.core.IBuildConfig
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.jonpoulton.actual.core.connection.ServerVersionFetcher
 import dev.jonpoulton.actual.core.coroutines.ResettableStateFlow
 import dev.jonpoulton.actual.core.model.ActualVersions
 import dev.jonpoulton.actual.core.model.Password
 import dev.jonpoulton.actual.core.model.ServerUrl
+import dev.jonpoulton.actual.core.state.ActualVersionsStateHolder
 import dev.jonpoulton.actual.login.prefs.LoginPreferences
 import dev.jonpoulton.actual.serverurl.prefs.ServerUrlPreferences
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,9 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject internal constructor(
-  private val buildConfig: IBuildConfig,
-  private val serverVersionFetcher: ServerVersionFetcher,
   private val loginRequester: LoginRequester,
+  versionsStateHolder: ActualVersionsStateHolder,
   serverUrlPrefs: ServerUrlPreferences,
   loginPrefs: LoginPreferences,
 ) : ViewModel() {
@@ -37,10 +35,7 @@ class LoginViewModel @Inject internal constructor(
 
   val enteredPassword: StateFlow<Password> = mutableEnteredPassword.asStateFlow()
 
-  val versions: StateFlow<ActualVersions> = serverVersionFetcher
-    .serverVersion
-    .map(::versions)
-    .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = versions(serverVersion = null))
+  val versions: StateFlow<ActualVersions> = versionsStateHolder.state
 
   val serverUrl: StateFlow<ServerUrl> = serverUrlPrefs
     .url
@@ -59,12 +54,6 @@ class LoginViewModel @Inject internal constructor(
     .asFlow()
     .map { it != null }
     .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
-
-  init {
-    viewModelScope.launch {
-      serverVersionFetcher.startFetching()
-    }
-  }
 
   fun clearState() {
     mutableEnteredPassword.reset()
@@ -92,6 +81,4 @@ class LoginViewModel @Inject internal constructor(
       }
     }
   }
-
-  private fun versions(serverVersion: String?) = ActualVersions(app = buildConfig.versionName, serverVersion)
 }
