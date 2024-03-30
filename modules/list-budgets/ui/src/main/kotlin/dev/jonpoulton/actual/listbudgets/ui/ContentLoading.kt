@@ -22,7 +22,7 @@ internal fun ContentLoading(
     contentAlignment = Alignment.Center,
   ) {
     CircularProgressIndicator(
-      modifier = Modifier.size(100.dp),
+      modifier = Modifier.size(50.dp),
       color = colors.buttonPrimaryBackground,
     )
   }
