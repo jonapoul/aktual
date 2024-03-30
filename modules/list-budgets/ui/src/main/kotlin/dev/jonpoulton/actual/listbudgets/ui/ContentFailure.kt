@@ -17,6 +17,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.jonpoulton.actual.core.icons.ActualIcons
+import dev.jonpoulton.actual.core.icons.CloudWarning
 import dev.jonpoulton.actual.core.ui.ActualColorScheme
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
 import dev.jonpoulton.actual.core.ui.ActualScreenPreview
@@ -24,7 +26,6 @@ import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButton
 import dev.jonpoulton.actual.core.ui.VerticalSpacer
-import dev.jonpoulton.actual.listbudgets.ui.icons.CloudWarning
 import dev.jonpoulton.actual.core.res.R as ResR
 
 @Composable
@@ -45,7 +46,7 @@ internal fun ContentFailure(
     ) {
       Icon(
         modifier = Modifier.size(100.dp),
-        imageVector = CloudWarning,
+        imageVector = ActualIcons.CloudWarning,
         tint = colors.warningText,
         contentDescription = stringResource(ResR.string.budget_failure_desc),
       )

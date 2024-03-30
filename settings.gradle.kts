@@ -31,6 +31,7 @@ include(":modules:api:model")
 
 include(":modules:core:connection")
 include(":modules:core:coroutines")
+include(":modules:core:icons")
 include(":modules:core:model")
 include(":modules:core:prefs")
 include(":modules:core:state")

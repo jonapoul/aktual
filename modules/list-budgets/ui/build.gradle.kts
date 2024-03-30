@@ -12,6 +12,7 @@ dependencies {
   api(projects.modules.listBudgets.vm)
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
+  implementation(projects.modules.core.icons)
   implementation(projects.modules.core.res)
   implementation(projects.modules.core.ui)
   implementation(libs.alakazam.kotlin.core)

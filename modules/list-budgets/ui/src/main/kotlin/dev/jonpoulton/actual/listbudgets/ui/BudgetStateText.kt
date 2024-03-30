@@ -19,16 +19,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.jonpoulton.actual.core.icons.ActualIcons
+import dev.jonpoulton.actual.core.icons.CloudCheck
+import dev.jonpoulton.actual.core.icons.CloudDownload
+import dev.jonpoulton.actual.core.icons.CloudUnknown
+import dev.jonpoulton.actual.core.icons.CloudWarning
+import dev.jonpoulton.actual.core.icons.FileDouble
 import dev.jonpoulton.actual.core.ui.ActualColorScheme
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
 import dev.jonpoulton.actual.core.ui.HorizontalSpacer
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.PreviewActualRow
-import dev.jonpoulton.actual.listbudgets.ui.icons.CloudCheck
-import dev.jonpoulton.actual.listbudgets.ui.icons.CloudDownload
-import dev.jonpoulton.actual.listbudgets.ui.icons.CloudUnknown
-import dev.jonpoulton.actual.listbudgets.ui.icons.CloudWarning
-import dev.jonpoulton.actual.listbudgets.ui.icons.FileDouble
 import dev.jonpoulton.actual.listbudgets.vm.BudgetState
 import dev.jonpoulton.actual.core.res.R as ResR
 
@@ -80,13 +81,13 @@ private fun stateText(state: BudgetState): String = when (state) {
 @Composable
 @ReadOnlyComposable
 private fun stateIcon(state: BudgetState): ImageVector = when (state) {
-  BudgetState.Local -> FileDouble
-  BudgetState.Remote -> CloudDownload
-  BudgetState.Synced -> CloudCheck
+  BudgetState.Local -> ActualIcons.FileDouble
+  BudgetState.Remote -> ActualIcons.CloudDownload
+  BudgetState.Synced -> ActualIcons.CloudCheck
   BudgetState.Syncing -> Icons.Filled.Sync
-  BudgetState.Detached -> CloudWarning
-  BudgetState.Broken -> CloudWarning
-  BudgetState.Unknown -> CloudUnknown
+  BudgetState.Detached -> ActualIcons.CloudWarning
+  BudgetState.Broken -> ActualIcons.CloudWarning
+  BudgetState.Unknown -> ActualIcons.CloudUnknown
 }
 
 @Stable
