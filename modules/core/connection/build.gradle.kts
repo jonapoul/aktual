@@ -10,6 +10,7 @@ dependencies {
   api(projects.modules.api.client)
   implementation(projects.modules.api.json)
   implementation(projects.modules.core.model)
+  implementation(projects.modules.core.state)
   implementation(projects.modules.serverUrl.prefs)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.flowpreferences)

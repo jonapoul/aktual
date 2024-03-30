@@ -135,7 +135,7 @@ private fun ServerUrlScreenImpl(
           IconButton(onClick = onClickBack) {
             Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = "Localized description",
+              contentDescription = stringResource(id = ResR.string.nav_back),
             )
           }
         },

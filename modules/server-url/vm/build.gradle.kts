@@ -14,6 +14,7 @@ dependencies {
   implementation(projects.modules.core.connection)
   implementation(projects.modules.core.coroutines)
   implementation(projects.modules.core.model)
+  implementation(projects.modules.core.state)
   implementation(projects.modules.serverUrl.prefs)
   implementation(libs.alakazam.android.core)
   implementation(libs.flowpreferences)

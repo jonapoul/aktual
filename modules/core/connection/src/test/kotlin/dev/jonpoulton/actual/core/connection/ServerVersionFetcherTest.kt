@@ -11,6 +11,8 @@ import dev.jonpoulton.actual.api.client.ActualApisStateHolder
 import dev.jonpoulton.actual.api.client.BaseApi
 import dev.jonpoulton.actual.api.model.base.Build
 import dev.jonpoulton.actual.api.model.base.InfoResponse
+import dev.jonpoulton.actual.core.state.ActualVersionsStateHolder
+import dev.jonpoulton.actual.test.TestBuildConfig
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -22,7 +24,6 @@ import org.junit.Rule
 import org.junit.Test
 import java.io.IOException
 import kotlin.test.assertEquals
-import kotlin.test.assertNull
 import kotlin.time.Duration.Companion.seconds
 
 class ServerVersionFetcherTest {
@@ -35,6 +36,7 @@ class ServerVersionFetcherTest {
   // real
   private lateinit var fetcher: ServerVersionFetcher
   private lateinit var apisStateHolder: ActualApisStateHolder
+  private lateinit var versionsStateHolder: ActualVersionsStateHolder
 
   // mock
   private lateinit var apis: ActualApis
@@ -48,6 +50,8 @@ class ServerVersionFetcherTest {
     apisStateHolder = ActualApisStateHolder()
     apisStateHolder.set(apis)
 
+    versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
+
     build()
   }
 
@@ -57,6 +61,7 @@ class ServerVersionFetcherTest {
     fetcher = ServerVersionFetcher(
       io = IODispatcher(coroutineRule.dispatcher),
       apisStateHolder = apisStateHolder,
+      versionsStateHolder = versionsStateHolder,
       loopController = loopController,
     )
   }
@@ -71,9 +76,12 @@ class ServerVersionFetcherTest {
     val fetchJob = launch { fetcher.startFetching() }
 
     coroutineRule.advanceUntilIdle()
-    fetcher.serverVersion.test {
+    versionsStateHolder.state.test {
       // Then
-      assertNull(awaitItem())
+      assertEquals(expected = versionsStateHolder.empty(), actual = awaitItem())
+      coroutineRule.advanceUntilIdle()
+
+      expectNoEvents()
       cancelAndIgnoreRemainingEvents()
       fetchJob.cancel()
     }
@@ -91,13 +99,13 @@ class ServerVersionFetcherTest {
     )
 
     // When
-    fetcher.serverVersion.test {
-      assertNull(awaitItem())
+    versionsStateHolder.state.test {
+      assertEquals(expected = versionsStateHolder.empty(), actual = awaitItem())
 
       val fetchJob = launch { fetcher.startFetching() }
 
       // Then
-      assertEquals(expected = "1.2.3", actual = awaitItem())
+      assertEquals(expected = "1.2.3", actual = awaitItem().server)
       cancelAndIgnoreRemainingEvents()
       fetchJob.cancel()
     }
@@ -117,13 +125,13 @@ class ServerVersionFetcherTest {
     build(loopController)
 
     // When
-    fetcher.serverVersion.test {
-      assertNull(awaitItem())
+    versionsStateHolder.state.test {
+      assertEquals(expected = versionsStateHolder.empty(), actual = awaitItem())
 
       val fetchJob = launch { fetcher.startFetching() }
 
       // Then
-      assertEquals(expected = "1.2.3", actual = awaitItem())
+      assertEquals(expected = "1.2.3", actual = awaitItem().server)
       cancelAndIgnoreRemainingEvents()
       fetchJob.cancel()
     }

@@ -7,7 +7,6 @@ pluginManagement {
     google()
     mavenCentral()
     gradlePluginPortal()
-    mavenLocal()
   }
 }
 
@@ -34,8 +33,12 @@ include(":modules:core:connection")
 include(":modules:core:coroutines")
 include(":modules:core:model")
 include(":modules:core:prefs")
+include(":modules:core:state")
 include(":modules:core:ui")
 include(":modules:core:res")
+
+include(":modules:list-budgets:ui")
+include(":modules:list-budgets:vm")
 
 include(":modules:login:prefs")
 include(":modules:login:ui")

@@ -7,9 +7,9 @@ import dev.jonpoulton.actual.api.client.AccountApi
 import dev.jonpoulton.actual.api.client.ActualApis
 import dev.jonpoulton.actual.api.client.ActualApisStateHolder
 import dev.jonpoulton.actual.api.model.account.NeedsBootstrapResponse
-import dev.jonpoulton.actual.core.connection.ServerVersionFetcher
 import dev.jonpoulton.actual.core.model.Protocol
 import dev.jonpoulton.actual.core.model.ServerUrl
+import dev.jonpoulton.actual.core.state.ActualVersionsStateHolder
 import dev.jonpoulton.actual.serverurl.prefs.ServerUrlPreferences
 import dev.jonpoulton.actual.test.TestBuildConfig
 import dev.jonpoulton.actual.test.buildFlowPreferences
@@ -39,9 +39,9 @@ class ServerUrlViewModelTest {
   private lateinit var preferences: ServerUrlPreferences
   private lateinit var viewModel: ServerUrlViewModel
   private lateinit var apisStateHolder: ActualApisStateHolder
+  private lateinit var versionsStateHolder: ActualVersionsStateHolder
 
   // Mock
-  private lateinit var serverVersionFetcher: ServerVersionFetcher
   private lateinit var apis: ActualApis
   private lateinit var accountApi: AccountApi
 
@@ -49,6 +49,7 @@ class ServerUrlViewModelTest {
   fun before() {
     val flowPrefs = buildFlowPreferences(coroutineRule.dispatcher)
     preferences = ServerUrlPreferences(flowPrefs)
+    versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
 
     accountApi = mockk()
     apis = mockk {
@@ -57,17 +58,14 @@ class ServerUrlViewModelTest {
     }
     apisStateHolder = ActualApisStateHolder()
     apisStateHolder.set(apis)
-
-    serverVersionFetcher = mockk(relaxed = true)
   }
 
   private fun buildViewModel() {
     viewModel = ServerUrlViewModel(
-      buildConfig = TestBuildConfig,
       io = IODispatcher(coroutineRule.dispatcher),
       apiStateHolder = apisStateHolder,
       prefs = preferences,
-      serverVersionFetcher = serverVersionFetcher,
+      versionsStateHolder = versionsStateHolder,
     )
   }
 

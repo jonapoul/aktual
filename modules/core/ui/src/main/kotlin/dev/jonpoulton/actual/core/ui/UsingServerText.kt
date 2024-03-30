@@ -1,4 +1,4 @@
-package dev.jonpoulton.actual.login.ui
+package dev.jonpoulton.actual.core.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,15 +15,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.jonpoulton.actual.core.model.ServerUrl
 import dev.jonpoulton.actual.core.res.R
-import dev.jonpoulton.actual.core.ui.ActualScreenPreview
-import dev.jonpoulton.actual.core.ui.BareActualTextButton
-import dev.jonpoulton.actual.core.ui.HorizontalSpacer
-import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
-import dev.jonpoulton.actual.core.ui.PreviewActualColumn
 
 @Stable
 @Composable
-internal fun UsingServer(
+fun UsingServerText(
   url: ServerUrl,
   onClickChange: () -> Unit,
   modifier: Modifier = Modifier,
@@ -65,7 +60,7 @@ internal fun UsingServer(
 @ActualScreenPreview
 @Composable
 private fun PreviewUsingServer() = PreviewActualColumn {
-  UsingServer(
+  UsingServerText(
     url = ServerUrl.Demo,
     onClickChange = {},
   )
