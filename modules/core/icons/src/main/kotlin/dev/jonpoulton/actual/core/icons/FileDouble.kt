@@ -1,6 +1,6 @@
-@file:Suppress("BooleanLiteralArgument", "UnsafeCallOnNullableType")
+@file:Suppress("BooleanLiteralArgument", "UnsafeCallOnNullableType", "UnusedReceiverParameter")
 
-package dev.jonpoulton.actual.listbudgets.ui.icons
+package dev.jonpoulton.actual.core.icons
 
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -16,7 +16,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.jonpoulton.actual.core.ui.PreviewActualRow
 
-internal val FileDouble: ImageVector
+val ActualIcons.FileDouble: ImageVector
   get() {
     if (icon != null) {
       return icon!!
@@ -97,7 +97,7 @@ private var icon: ImageVector? = null
 @Composable
 private fun Preview() = PreviewActualRow {
   Icon(
-    imageVector = FileDouble,
+    imageVector = ActualIcons.FileDouble,
     contentDescription = null,
   )
 }
