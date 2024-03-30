@@ -42,6 +42,7 @@ import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.OnDispose
 import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
+import dev.jonpoulton.actual.core.ui.UsingServerText
 import dev.jonpoulton.actual.core.ui.VersionsText
 import dev.jonpoulton.actual.core.ui.VerticalSpacer
 import dev.jonpoulton.actual.login.vm.LoginResult
@@ -211,7 +212,7 @@ private fun Content(
 
     VerticalSpacer(20.dp)
 
-    UsingServer(
+    UsingServerText(
       modifier = Modifier.fillMaxWidth(),
       url = url,
       onClickChange = onClickChangeServer,
