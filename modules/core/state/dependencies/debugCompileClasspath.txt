@@ -1,9 +1,6 @@
 com.jakewharton.timber:timber:5.0.1
-com.squareup.okhttp3:okhttp:3.14.9
-com.squareup.okio:okio:1.17.2
-com.squareup.retrofit2:retrofit:2.11.0
+dev.jonpoulton.alakazam:android-core:4.4.1
 dev.jonpoulton.alakazam:kotlin-core:4.4.1
-dev.jonpoulton.alakazam:kotlin-serialization:4.4.1
 javax.inject:javax.inject:1
 org.jetbrains.kotlin:kotlin-stdlib-common:1.9.23
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0
@@ -12,9 +9,6 @@ org.jetbrains.kotlin:kotlin-stdlib:1.9.23
 org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.6.4
 org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4
-org.jetbrains.kotlinx:kotlinx-serialization-bom:1.6.3
-org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.6.3
-org.jetbrains.kotlinx:kotlinx-serialization-core:1.6.3
-org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3
-org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.3
+org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.4.0
+org.jetbrains.kotlinx:kotlinx-datetime:0.4.0
 org.jetbrains:annotations:20.1.0
