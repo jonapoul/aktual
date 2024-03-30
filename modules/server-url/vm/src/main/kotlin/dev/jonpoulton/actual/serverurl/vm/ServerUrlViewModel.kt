@@ -54,6 +54,10 @@ class ServerUrlViewModel @Inject internal constructor(
   val protocol: StateFlow<Protocol> = mutableProtocol.asStateFlow()
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
 
+  val isEnabled: StateFlow<Boolean> = baseUrl
+    .map { it.isNotBlank() }
+    .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
+
   val shouldNavigate: Flow<ShouldNavigate?> = mutableConfirmResult.map { value ->
     if (value is ConfirmResult.Succeeded) {
       if (value.isBootstrapped) {

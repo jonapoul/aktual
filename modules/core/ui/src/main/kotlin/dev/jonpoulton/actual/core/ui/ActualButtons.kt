@@ -70,6 +70,7 @@ fun PrimaryActualTextButtonWithLoading(
   text: String,
   isLoading: Boolean,
   modifier: Modifier = Modifier,
+  isEnabled: Boolean = true,
   contentPadding: PaddingValues = ActualButtonPadding,
   shape: Shape = ActualButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -81,7 +82,7 @@ fun PrimaryActualTextButtonWithLoading(
   PrimaryActualTextButton(
     text = text,
     modifier = modifier,
-    isEnabled = !isLoading,
+    isEnabled = isEnabled && !isLoading,
     contentPadding = contentPadding,
     shape = shape,
     interactionSource = interactionSource,
@@ -117,6 +118,7 @@ fun PrimaryActualTextButtonWithLoading(
 fun BareActualTextButton(
   text: String,
   modifier: Modifier = Modifier,
+  isEnabled: Boolean = true,
   contentPadding: PaddingValues = ActualButtonPadding,
   shape: Shape = ActualButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
@@ -129,6 +131,7 @@ fun BareActualTextButton(
   BasicActualTextButton(
     text = text,
     modifier = modifier,
+    isEnabled = isEnabled,
     contentPadding = contentPadding,
     shape = shape,
     interactionSource = interactionSource,
