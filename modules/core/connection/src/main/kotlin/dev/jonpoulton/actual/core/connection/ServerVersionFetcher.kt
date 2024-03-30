@@ -4,13 +4,10 @@ import alakazam.kotlin.core.IODispatcher
 import alakazam.kotlin.core.LoopController
 import dev.jonpoulton.actual.api.client.ActualApis
 import dev.jonpoulton.actual.api.client.ActualApisStateHolder
+import dev.jonpoulton.actual.core.state.ActualVersionsStateHolder
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import javax.inject.Inject
@@ -19,11 +16,9 @@ import kotlin.time.Duration.Companion.seconds
 class ServerVersionFetcher @Inject constructor(
   private val io: IODispatcher,
   private val apisStateHolder: ActualApisStateHolder,
+  private val versionsStateHolder: ActualVersionsStateHolder,
   private val loopController: LoopController,
 ) {
-  private val mutableServerVersion = MutableStateFlow<String?>(value = null)
-  val serverVersion: StateFlow<String?> = mutableServerVersion.asStateFlow()
-
   suspend fun startFetching() {
     apisStateHolder.state.collectLatest { apis ->
       if (apis != null) {
@@ -38,7 +33,7 @@ class ServerVersionFetcher @Inject constructor(
       try {
         val response = withContext(io) { apis.base.info() }
         Timber.v("Fetched $response")
-        mutableServerVersion.update { response.build.version }
+        versionsStateHolder.set(response.build.version)
         break
       } catch (e: CancellationException) {
         Timber.v("Coroutine cancelled")

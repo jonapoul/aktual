@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -193,12 +192,9 @@ private fun RowScope.DefaultTextButtonContent(
   )
 }
 
-private val ActualButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
-private val ActualButtonShape = RoundedCornerShape(size = 4.dp)
-
 @Stable
 @Composable
-private fun ActualColorScheme.primaryButton(isPressed: Boolean): ButtonColors = ButtonDefaults.buttonColors(
+private fun ActualColorScheme.primaryButton(isPressed: Boolean) = ButtonDefaults.buttonColors(
   containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
   disabledContainerColor = buttonPrimaryDisabledBackground,
   contentColor = if (isPressed) buttonPrimaryText else buttonPrimaryTextHover,
@@ -207,7 +203,7 @@ private fun ActualColorScheme.primaryButton(isPressed: Boolean): ButtonColors = 
 
 @Stable
 @Composable
-private fun ActualColorScheme.bareButton(isPressed: Boolean): ButtonColors = ButtonDefaults.buttonColors(
+private fun ActualColorScheme.bareButton(isPressed: Boolean) = ButtonDefaults.buttonColors(
   containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
   disabledContainerColor = buttonBareDisabledBackground,
   contentColor = if (isPressed) buttonBareText else buttonBareTextHover,

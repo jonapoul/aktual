@@ -9,6 +9,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -42,6 +46,7 @@ import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.OnDispose
 import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.core.ui.PrimaryActualTextButtonWithLoading
+import dev.jonpoulton.actual.core.ui.UsingServerText
 import dev.jonpoulton.actual.core.ui.VersionsText
 import dev.jonpoulton.actual.core.ui.VerticalSpacer
 import dev.jonpoulton.actual.login.vm.LoginResult
@@ -59,18 +64,23 @@ fun LoginScreen(
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
 
-  val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle()
-  if (shouldStartSyncing) {
-    SideEffect { navigator.syncBudget() }
+  val navToBudgetList by viewModel.navToBudgetList.collectAsStateWithLifecycle()
+  if (navToBudgetList) {
+    SideEffect { navigator.listBudgets() }
   }
 
-  var navToSyncScreen by remember { mutableStateOf(false) }
-  if (navToSyncScreen) {
+  var navToServerUrl by remember { mutableStateOf(false) }
+  if (navToServerUrl) {
     SideEffect { navigator.changeServer() }
   }
 
+  var clickedBack by remember { mutableStateOf(false) }
+  if (clickedBack) {
+    SideEffect { navigator.navBack() }
+  }
+
   OnDispose {
-    navToSyncScreen = false
+    navToServerUrl = false
     viewModel.clearState()
   }
 
@@ -80,9 +90,10 @@ fun LoginScreen(
     url = url,
     isLoading = isLoading,
     loginFailure = loginFailure,
+    onClickBack = { clickedBack = true },
     onPasswordEntered = viewModel::onPasswordEntered,
     onClickSignIn = viewModel::onClickSignIn,
-    onClickChangeServer = { navToSyncScreen = true },
+    onClickChangeServer = { navToServerUrl = true },
   )
 }
 
@@ -93,6 +104,7 @@ private fun LoginScreenImpl(
   url: ServerUrl,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
+  onClickBack: () -> Unit,
   onPasswordEntered: (String) -> Unit,
   onClickSignIn: () -> Unit,
   onClickChangeServer: () -> Unit,
@@ -107,6 +119,14 @@ private fun LoginScreenImpl(
           containerColor = colorScheme.mobileHeaderBackground,
           titleContentColor = colorScheme.mobileHeaderText,
         ),
+        navigationIcon = {
+          IconButton(onClick = onClickBack) {
+            Icon(
+              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              contentDescription = stringResource(id = ResR.string.nav_back),
+            )
+          }
+        },
         title = {
           Text(
             text = stringResource(id = ResR.string.login_toolbar),
@@ -211,7 +231,7 @@ private fun Content(
 
     VerticalSpacer(20.dp)
 
-    UsingServer(
+    UsingServerText(
       modifier = Modifier.fillMaxWidth(),
       url = url,
       onClickChange = onClickChangeServer,
@@ -235,6 +255,7 @@ private fun Regular() = PreviewActualScreen {
     url = ServerUrl.Demo,
     isLoading = false,
     loginFailure = null,
+    onClickBack = {},
     onPasswordEntered = {},
     onClickSignIn = {},
     onClickChangeServer = {},
@@ -250,6 +271,7 @@ private fun WithErrorMessage() = PreviewActualScreen {
     url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
     isLoading = true,
     loginFailure = LoginResult.InvalidPassword,
+    onClickBack = {},
     onPasswordEntered = {},
     onClickSignIn = {},
     onClickChangeServer = {},

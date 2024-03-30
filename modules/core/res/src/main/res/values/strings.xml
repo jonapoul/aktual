@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Actual Budget</string>
 
+    <string name="nav_back">Navigate back</string>
+
     <string name="server_url_toolbar">Actual Budget</string>
     <string name="server_url_title">Where\'s the server?</string>
     <string name="server_url_message">Existing sessions will be logged out and you will log in to this server. We will validate that Actual is running at this URL.</string>
@@ -21,4 +23,30 @@
     <string name="login_failure_http">Server error - %1$d: %2$s</string>
     <string name="login_failure_network">Network error - %1$s</string>
     <string name="login_failure_other">An unknown error occurred - %1$s</string>
+
+    <string name="list_budgets_toolbar">Budgets</string>
+    <string name="list_budgets_encrypted_without_key">This file is encrypted and you have the key to access it.</string>
+    <string name="list_budgets_encrypted_with_key">This file is encrypted and you do not have the key for it.</string>
+    <string name="list_budgets_offline">This is a cloud-based file but its state is unknown because you are offline.</string>
+
+    <string name="budget_state_local">Local</string>
+    <string name="budget_state_remote">Remote</string>
+    <string name="budget_state_synced">Synced</string>
+    <string name="budget_state_syncing">Syncing</string>
+    <string name="budget_state_detached">Detached</string>
+    <string name="budget_state_broken">Broken</string>
+    <string name="budget_state_unknown">Unknown</string>
+    <string name="budget_delete">Delete</string>
+    <string name="budget_delete_dialog_dismiss">Dismiss</string>
+    <string name="budget_delete_dialog_title">Delete %1$s</string>
+    <string name="budget_delete_dialog_hosted_txt">This is a hosted file which means it is stored on your server to make it available for download on any device. You can delete it from the server, which will also remove it from all of your devices.</string>
+    <string name="budget_delete_dialog_hosted_button">Delete from all devices</string>
+    <string name="budget_delete_dialog_local_txt">You can also delete just the local copy. This will remove all local data and the file will be listed as available for download.</string>
+    <string name="budget_delete_dialog_local_button">Delete file locally</string>
+    <string name="budget_success_empty">No budgets found</string>
+    <string name="budget_success_empty_second">Creating new budgets isn\'t currently supported in this app - you\'ll need to do this from the browser.</string>
+    <string name="budget_success_empty_launch">Open Browser</string>
+    <string name="budget_failure_desc">Failure</string>
+    <string name="budget_failure_message">Failed syncing the list of budgets</string>
+    <string name="budget_failure_retry">Retry</string>
 </resources>
