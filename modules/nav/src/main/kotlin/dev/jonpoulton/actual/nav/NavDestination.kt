@@ -2,6 +2,7 @@ package dev.jonpoulton.actual.nav
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import dev.jonpoulton.actual.listbudgets.ui.ListBudgetsScreen
 import dev.jonpoulton.actual.login.ui.LoginScreen
 import dev.jonpoulton.actual.serverurl.ui.ServerUrlScreen
 
@@ -21,9 +22,7 @@ sealed class NavDestination(
 
   data object ListBudgets : NavDestination(
     route = "listBudgets",
-    composable = {
-      // TODO: implement
-    },
+    composable = { ListBudgetsScreen(ListBudgetsNavigator(it)) },
   )
 
   data object Bootstrap : NavDestination(

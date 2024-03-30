@@ -2,6 +2,7 @@ package dev.jonpoulton.actual.nav
 
 import android.annotation.SuppressLint
 import androidx.navigation.NavHostController
+import dev.jonpoulton.actual.listbudgets.ui.ListBudgetsNavigator
 import dev.jonpoulton.actual.login.ui.LoginNavigator
 import dev.jonpoulton.actual.serverurl.ui.ServerUrlNavigator
 import timber.log.Timber
@@ -43,6 +44,31 @@ internal fun LoginNavigator(navController: NavHostController): LoginNavigator {
           inclusive = true
         }
       }
+    }
+  }
+}
+
+internal fun ListBudgetsNavigator(navController: NavHostController): ListBudgetsNavigator {
+  return object : ListBudgetsNavigator {
+    override fun changeServer() {
+      navController.printBackStack()
+      navController.navigate(NavDestination.ServerUrl.route) {
+        popUpTo(NavDestination.ListBudgets.route) { inclusive = true }
+      }
+    }
+
+    override fun logOut() {
+      navController.printBackStack()
+      navController.navigate(NavDestination.Login.route) {
+        popUpTo(NavDestination.ListBudgets.route) {
+          inclusive = true
+        }
+      }
+    }
+
+    override fun openBudget() {
+      navController.printBackStack()
+      // TODO: IMPLEMENT
     }
   }
 }
