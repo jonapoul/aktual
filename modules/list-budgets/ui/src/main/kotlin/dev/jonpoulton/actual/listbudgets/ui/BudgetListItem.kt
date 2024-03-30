@@ -30,13 +30,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.jonpoulton.actual.core.icons.ActualIcons
+import dev.jonpoulton.actual.core.icons.Key
 import dev.jonpoulton.actual.core.ui.ActualColorScheme
 import dev.jonpoulton.actual.core.ui.ActualFontFamily
 import dev.jonpoulton.actual.core.ui.BareActualIconButton
 import dev.jonpoulton.actual.core.ui.HorizontalSpacer
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
 import dev.jonpoulton.actual.core.ui.PreviewActualColumn
-import dev.jonpoulton.actual.listbudgets.ui.icons.Key
 import dev.jonpoulton.actual.listbudgets.vm.Budget
 import dev.jonpoulton.actual.listbudgets.vm.BudgetState
 import dev.jonpoulton.actual.core.res.R as ResR
@@ -82,7 +83,7 @@ internal fun BudgetListItem(
     ) {
       Icon(
         modifier = Modifier.size(13.dp),
-        imageVector = Key,
+        imageVector = ActualIcons.Key,
         contentDescription = budgetDescription(budget),
         tint = if (budget.hasKey) colors.formLabelText else colors.buttonNormalDisabledText,
       )

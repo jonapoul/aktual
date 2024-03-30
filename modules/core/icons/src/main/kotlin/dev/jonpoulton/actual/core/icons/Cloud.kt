@@ -1,6 +1,6 @@
-@file:Suppress("BooleanLiteralArgument", "UnsafeCallOnNullableType")
+@file:Suppress("BooleanLiteralArgument", "UnsafeCallOnNullableType", "UnusedReceiverParameter")
 
-package dev.jonpoulton.actual.listbudgets.ui.icons
+package dev.jonpoulton.actual.core.icons
 
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -16,13 +16,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.jonpoulton.actual.core.ui.PreviewActualRow
 
-internal val CloudUpload: ImageVector
+val ActualIcons.Cloud: ImageVector
   get() {
     if (icon != null) {
       return icon!!
     }
     icon = Builder(
-      name = "CloudUpload",
+      name = "Cloud",
       defaultWidth = 20.0.dp,
       defaultHeight = 20.0.dp,
       viewportWidth = 20.0f,
@@ -46,15 +46,6 @@ internal val CloudUpload: ImageVector
         arcTo(4.98f, 4.98f, 0.0f, false, true, 17.0f, 8.0f)
         curveToRelative(0.0f, 0.38f, -0.04f, 0.74f, -0.12f, 1.1f)
         close()
-        moveTo(11.0f, 11.0f)
-        horizontalLineToRelative(3.0f)
-        lineToRelative(-4.0f, -4.0f)
-        lineToRelative(-4.0f, 4.0f)
-        horizontalLineToRelative(3.0f)
-        verticalLineToRelative(3.0f)
-        horizontalLineToRelative(2.0f)
-        verticalLineToRelative(-3.0f)
-        close()
       }
     }
       .build()
@@ -67,7 +58,7 @@ private var icon: ImageVector? = null
 @Composable
 private fun Preview() = PreviewActualRow {
   Icon(
-    imageVector = CloudUpload,
+    imageVector = ActualIcons.Cloud,
     contentDescription = null,
   )
 }
