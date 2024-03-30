@@ -150,7 +150,7 @@ internal class LightColorScheme : ActualColorScheme {
   override val warningTextLight = ActualColors.orange500
   override val warningTextDark = ActualColors.orange900
   override val warningBorder = ActualColors.orange500
-  override val errorBackground = ActualColors.red100
+  override val errorBackground = ActualColors.red200
   override val errorText = ActualColors.red500
   override val errorTextDark = ActualColors.red700
   override val errorTextDarker = ActualColors.red900

@@ -23,4 +23,5 @@ dependencies {
   implementation(libs.retrofit.core)
   implementation(libs.retrofit.serialization)
   testImplementation(projects.modules.test.android)
+  testImplementation(libs.alakazam.android.core)
 }

@@ -11,18 +11,18 @@ import androidx.core.view.WindowCompat
 
 @Composable
 fun SetStatusBarColors(
-  statusBarColor: ActualColorScheme.() -> Color = { mobileHeaderBackground },
-  navigationBarColor: ActualColorScheme.() -> Color = { pageBackground },
+  colors: ActualColorScheme = LocalActualColorScheme.current,
+  statusBarColor: Color = colors.mobileHeaderBackground,
+  navigationBarColor: Color = colors.pageBackground,
   darkTheme: Boolean = isSystemInDarkTheme(),
 ) {
   val view = LocalView.current
-  val colorScheme = LocalActualColorScheme.current
 
   if (!view.isInEditMode) {
     SideEffect {
       val window = (view.context as Activity).window
-      window.navigationBarColor = colorScheme.navigationBarColor().toArgb()
-      window.statusBarColor = colorScheme.statusBarColor().toArgb()
+      window.navigationBarColor = navigationBarColor.toArgb()
+      window.statusBarColor = statusBarColor.toArgb()
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
     }
   }

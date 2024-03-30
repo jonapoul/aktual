@@ -26,6 +26,7 @@ fun ActualTheme(
     LocalActualColorScheme provides colorScheme,
   ) {
     SetStatusBarColors(
+      colors = colorScheme,
       darkTheme = systemDarkTheme,
     )
 
