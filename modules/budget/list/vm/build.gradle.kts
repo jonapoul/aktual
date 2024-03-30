@@ -3,7 +3,7 @@ plugins {
 }
 
 android {
-  namespace = "dev.jonpoulton.actual.listbudgets.vm"
+  namespace = "dev.jonpoulton.actual.budget.list.vm"
 }
 
 dependencies {

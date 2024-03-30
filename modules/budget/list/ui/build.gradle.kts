@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-  namespace = "dev.jonpoulton.actual.listbudgets.ui"
+  namespace = "dev.jonpoulton.actual.budget.list.ui"
 }
 
 optIn(className = "androidx.compose.material3.ExperimentalMaterial3Api")
 
 dependencies {
-  api(projects.modules.listBudgets.vm)
+  api(projects.modules.budget.list.vm)
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
   implementation(projects.modules.core.icons)

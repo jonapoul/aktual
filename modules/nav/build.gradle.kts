@@ -7,7 +7,7 @@ android {
 }
 
 dependencies {
-  api(projects.modules.listBudgets.ui)
+  api(projects.modules.budget.list.ui)
   api(projects.modules.login.ui)
   api(projects.modules.serverUrl.ui)
   api(libs.androidx.compose.runtime)
