@@ -68,7 +68,7 @@ internal fun ContentFailure(
         color = colors.warningTextDark,
         fontFamily = ActualFontFamily,
         fontSize = 16.sp,
-        textAlign = TextAlign.Start,
+        textAlign = TextAlign.Center,
       )
 
       VerticalSpacer(30.dp)
@@ -91,4 +91,3 @@ private fun Failure() = PreviewActualScreen {
     onClickRetry = {},
   )
 }
-

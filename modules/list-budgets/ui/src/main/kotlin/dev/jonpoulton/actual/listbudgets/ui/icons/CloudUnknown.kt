@@ -1,4 +1,4 @@
-@file:Suppress("BooleanLiteralArgument")
+@file:Suppress("BooleanLiteralArgument", "UnsafeCallOnNullableType")
 
 package dev.jonpoulton.actual.listbudgets.ui.icons
 
@@ -22,12 +22,19 @@ internal val CloudUnknown: ImageVector
       return icon!!
     }
     icon = Builder(
-      name = "CloudUnknown", defaultWidth = 24.0.dp, defaultHeight = 24.0.dp,
-      viewportWidth = 24.0f, viewportHeight = 24.0f,
+      name = "CloudUnknown",
+      defaultWidth = 24.0.dp,
+      defaultHeight = 24.0.dp,
+      viewportWidth = 24.0f,
+      viewportHeight = 24.0f,
     ).apply {
       path(
-        fill = SolidColor(Color.Black), stroke = null, strokeLineWidth = 0.0f,
-        strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+        fill = SolidColor(Color.Black),
+        stroke = null,
+        strokeLineWidth = 0.0f,
+        strokeLineCap = Butt,
+        strokeLineJoin = Miter,
+        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(3.566f, 15.457f)
@@ -57,8 +64,12 @@ internal val CloudUnknown: ImageVector
         close()
       }
       path(
-        fill = SolidColor(Color.Black), stroke = null, strokeLineWidth = 0.0f,
-        strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+        fill = SolidColor(Color.Black),
+        stroke = null,
+        strokeLineWidth = 0.0f,
+        strokeLineCap = Butt,
+        strokeLineJoin = Miter,
+        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(18.5f, 15.8f)

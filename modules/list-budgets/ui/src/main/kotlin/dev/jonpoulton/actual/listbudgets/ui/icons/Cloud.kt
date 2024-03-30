@@ -1,4 +1,4 @@
-@file:Suppress("BooleanLiteralArgument")
+@file:Suppress("BooleanLiteralArgument", "UnsafeCallOnNullableType")
 
 package dev.jonpoulton.actual.listbudgets.ui.icons
 
@@ -22,12 +22,19 @@ internal val Cloud: ImageVector
       return icon!!
     }
     icon = Builder(
-      name = "Cloud", defaultWidth = 20.0.dp, defaultHeight = 20.0.dp,
-      viewportWidth = 20.0f, viewportHeight = 20.0f,
+      name = "Cloud",
+      defaultWidth = 20.0.dp,
+      defaultHeight = 20.0.dp,
+      viewportWidth = 20.0f,
+      viewportHeight = 20.0f,
     ).apply {
       path(
-        fill = SolidColor(Color.Black), stroke = null, strokeLineWidth = 0.0f,
-        strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+        fill = SolidColor(Color.Black),
+        stroke = null,
+        strokeLineWidth = 0.0f,
+        strokeLineCap = Butt,
+        strokeLineJoin = Miter,
+        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(16.88f, 9.1f)
@@ -46,7 +53,6 @@ internal val Cloud: ImageVector
   }
 
 private var icon: ImageVector? = null
-
 
 @Preview
 @Composable

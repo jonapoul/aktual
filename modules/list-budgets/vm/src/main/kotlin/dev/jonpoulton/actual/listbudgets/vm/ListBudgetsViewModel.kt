@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
+// TODO: Remove suppression
+@Suppress("UnusedParameter", "UNUSED_PARAMETER")
 @HiltViewModel
 class ListBudgetsViewModel @Inject internal constructor(
   serverUrlPrefs: ServerUrlPreferences,

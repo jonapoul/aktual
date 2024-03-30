@@ -9,9 +9,7 @@ import javax.inject.Singleton
 @Singleton
 class ActualVersionsStateHolder @Inject constructor(
   private val buildConfig: IBuildConfig,
-) : StateHolder<ActualVersions>(
-  initialState = ActualVersions(app = buildConfig.versionName, server = null),
-) {
+) : StateHolder<ActualVersions>(initialState = ActualVersions(app = buildConfig.versionName, server = null)) {
   fun set(serverVersion: String?) {
     val versions = ActualVersions(app = buildConfig.versionName, server = serverVersion)
     set(versions)

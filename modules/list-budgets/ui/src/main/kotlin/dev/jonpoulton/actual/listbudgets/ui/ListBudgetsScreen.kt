@@ -46,6 +46,8 @@ import dev.jonpoulton.actual.listbudgets.vm.ListBudgetsViewModel
 import kotlinx.collections.immutable.persistentListOf
 import dev.jonpoulton.actual.core.res.R as ResR
 
+// TODO: Remove suppression
+@Suppress("UnusedParameter", "UNUSED_PARAMETER")
 @Composable
 fun ListBudgetsScreen(
   navigator: ListBudgetsNavigator,

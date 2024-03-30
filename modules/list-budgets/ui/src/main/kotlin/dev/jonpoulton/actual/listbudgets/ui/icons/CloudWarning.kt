@@ -1,4 +1,4 @@
-@file:Suppress("BooleanLiteralArgument")
+@file:Suppress("BooleanLiteralArgument", "UnsafeCallOnNullableType")
 
 package dev.jonpoulton.actual.listbudgets.ui.icons
 
@@ -22,14 +22,19 @@ internal val CloudWarning: ImageVector
       return icon!!
     }
     icon = Builder(
-      name = "CloudWarning", defaultWidth = 24.0.dp,
-      defaultHeight =
-      24.0.dp,
-      viewportWidth = 24.0f, viewportHeight = 24.0f,
+      name = "CloudWarning",
+      defaultWidth = 24.0.dp,
+      defaultHeight = 24.0.dp,
+      viewportWidth = 24.0f,
+      viewportHeight = 24.0f,
     ).apply {
       path(
-        fill = SolidColor(Color.Black), stroke = null, strokeLineWidth = 0.0f,
-        strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+        fill = SolidColor(Color.Black),
+        stroke = null,
+        strokeLineWidth = 0.0f,
+        strokeLineCap = Butt,
+        strokeLineJoin = Miter,
+        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(3.924f, 17.376f)
@@ -63,8 +68,12 @@ internal val CloudWarning: ImageVector
         close()
       }
       path(
-        fill = SolidColor(Color.Black), stroke = null, strokeLineWidth = 0.0f,
-        strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+        fill = SolidColor(Color.Black),
+        stroke = null,
+        strokeLineWidth = 0.0f,
+        strokeLineCap = Butt,
+        strokeLineJoin = Miter,
+        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(13.281f, 10.2f)

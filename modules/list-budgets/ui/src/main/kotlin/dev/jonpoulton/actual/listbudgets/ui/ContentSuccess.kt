@@ -56,4 +56,3 @@ private fun Multiple() = PreviewActualScreen {
     onClickDelete = {},
   )
 }
-

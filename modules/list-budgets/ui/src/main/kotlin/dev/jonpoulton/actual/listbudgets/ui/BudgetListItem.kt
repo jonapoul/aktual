@@ -163,4 +163,3 @@ private fun Warning() = PreviewActualColumn {
     onClickDelete = {},
   )
 }
-

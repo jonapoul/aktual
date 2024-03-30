@@ -1,4 +1,4 @@
-@file:Suppress("BooleanLiteralArgument")
+@file:Suppress("BooleanLiteralArgument", "UnsafeCallOnNullableType")
 
 package dev.jonpoulton.actual.listbudgets.ui.icons
 
@@ -22,14 +22,19 @@ internal val Key: ImageVector
       return icon!!
     }
     icon = Builder(
-      name = "Key", defaultWidth = 24.0.dp, defaultHeight = 24.0.dp,
-      viewportWidth
-      = 24.0f,
+      name = "Key",
+      defaultWidth = 24.0.dp,
+      defaultHeight = 24.0.dp,
+      viewportWidth = 24.0f,
       viewportHeight = 24.0f,
     ).apply {
       path(
-        fill = SolidColor(Color.Black), stroke = null, strokeLineWidth = 0.0f,
-        strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+        fill = SolidColor(Color.Black),
+        stroke = null,
+        strokeLineWidth = 0.0f,
+        strokeLineCap = Butt,
+        strokeLineJoin = Miter,
+        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(23.113f, 5.954f)

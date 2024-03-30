@@ -1,4 +1,4 @@
-@file:Suppress("BooleanLiteralArgument")
+@file:Suppress("BooleanLiteralArgument", "UnsafeCallOnNullableType")
 
 package dev.jonpoulton.actual.listbudgets.ui.icons
 
@@ -22,14 +22,19 @@ internal val CloudCheck: ImageVector
       return icon!!
     }
     icon = Builder(
-      name = "CloudCheck", defaultWidth = 24.0.dp,
-      defaultHeight =
-      24.0.dp,
-      viewportWidth = 24.0f, viewportHeight = 24.0f,
+      name = "CloudCheck",
+      defaultWidth = 24.0.dp,
+      defaultHeight = 24.0.dp,
+      viewportWidth = 24.0f,
+      viewportHeight = 24.0f,
     ).apply {
       path(
-        fill = SolidColor(Color.Black), stroke = null, strokeLineWidth = 0.0f,
-        strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+        fill = SolidColor(Color.Black),
+        stroke = null,
+        strokeLineWidth = 0.0f,
+        strokeLineCap = Butt,
+        strokeLineJoin = Miter,
+        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(24.0f, 11.113f)
@@ -62,8 +67,12 @@ internal val CloudCheck: ImageVector
         close()
       }
       path(
-        fill = SolidColor(Color.Black), stroke = null, strokeLineWidth = 0.0f,
-        strokeLineCap = Butt, strokeLineJoin = Miter, strokeLineMiter = 4.0f,
+        fill = SolidColor(Color.Black),
+        stroke = null,
+        strokeLineWidth = 0.0f,
+        strokeLineCap = Butt,
+        strokeLineJoin = Miter,
+        strokeLineMiter = 4.0f,
         pathFillType = NonZero,
       ) {
         moveTo(12.231f, 9.7f)
