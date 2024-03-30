@@ -54,7 +54,7 @@ class LoginViewModel @Inject internal constructor(
     combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
       .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
-  val shouldStartSyncing: StateFlow<Boolean> = loginPrefs
+  val navToBudgetList: StateFlow<Boolean> = loginPrefs
     .token
     .asFlow()
     .map { it != null }

@@ -5,5 +5,5 @@ import androidx.compose.runtime.Immutable
 @Immutable
 interface LoginNavigator {
   fun changeServer()
-  fun syncBudget()
+  fun listBudgets()
 }

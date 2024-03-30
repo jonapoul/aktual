@@ -31,9 +31,9 @@ internal fun LoginNavigator(navController: NavHostController): LoginNavigator {
       }
     }
 
-    override fun syncBudget() {
+    override fun listBudgets() {
       navController.printBackStack()
-      navController.navigate(NavDestination.SyncBudget.route) {
+      navController.navigate(NavDestination.ListBudgets.route) {
         popUpTo(NavDestination.Login.route) {
           inclusive = true
         }

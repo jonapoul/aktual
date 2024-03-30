@@ -19,8 +19,8 @@ sealed class NavDestination(
     composable = { LoginScreen(LoginNavigator(it)) },
   )
 
-  data object SyncBudget : NavDestination(
-    route = "syncBudget",
+  data object ListBudgets : NavDestination(
+    route = "listBudgets",
     composable = {
       // TODO: implement
     },

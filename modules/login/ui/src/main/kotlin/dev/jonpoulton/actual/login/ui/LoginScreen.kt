@@ -59,18 +59,18 @@ fun LoginScreen(
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
 
-  val shouldStartSyncing by viewModel.shouldStartSyncing.collectAsStateWithLifecycle()
-  if (shouldStartSyncing) {
-    SideEffect { navigator.syncBudget() }
+  val navToBudgetList by viewModel.navToBudgetList.collectAsStateWithLifecycle()
+  if (navToBudgetList) {
+    SideEffect { navigator.listBudgets() }
   }
 
-  var navToSyncScreen by remember { mutableStateOf(false) }
-  if (navToSyncScreen) {
+  var navToServerUrl by remember { mutableStateOf(false) }
+  if (navToServerUrl) {
     SideEffect { navigator.changeServer() }
   }
 
   OnDispose {
-    navToSyncScreen = false
+    navToServerUrl = false
     viewModel.clearState()
   }
 
@@ -82,7 +82,7 @@ fun LoginScreen(
     loginFailure = loginFailure,
     onPasswordEntered = viewModel::onPasswordEntered,
     onClickSignIn = viewModel::onClickSignIn,
-    onClickChangeServer = { navToSyncScreen = true },
+    onClickChangeServer = { navToServerUrl = true },
   )
 }
 

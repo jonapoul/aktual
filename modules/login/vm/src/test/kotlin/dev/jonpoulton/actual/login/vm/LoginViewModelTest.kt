@@ -122,8 +122,8 @@ internal class LoginViewModelTest {
   }
 
   @Test
-  fun `Should start syncing`() = runTest {
-    viewModel.shouldStartSyncing.test {
+  fun `Should nav to budget list`() = runTest {
+    viewModel.navToBudgetList.test {
       assertFalse(awaitItem())
 
       loginPrefs.token.set(LoginToken(value = "abc123"))
