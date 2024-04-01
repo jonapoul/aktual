@@ -35,7 +35,6 @@ import dev.jonpoulton.actual.core.model.ServerUrl
 import dev.jonpoulton.actual.core.ui.ActualColorScheme
 import dev.jonpoulton.actual.core.ui.ActualScreenPreview
 import dev.jonpoulton.actual.core.ui.LocalActualColorScheme
-import dev.jonpoulton.actual.core.ui.OnDispose
 import dev.jonpoulton.actual.core.ui.PreviewActualScreen
 import dev.jonpoulton.actual.core.ui.UsingServerText
 import dev.jonpoulton.actual.core.ui.VersionsText
@@ -46,8 +45,6 @@ import dev.jonpoulton.actual.listbudgets.vm.ListBudgetsViewModel
 import kotlinx.collections.immutable.persistentListOf
 import dev.jonpoulton.actual.core.res.R as ResR
 
-// TODO: Remove suppression
-@Suppress("UnusedParameter", "UNUSED_PARAMETER")
 @Composable
 fun ListBudgetsScreen(
   navigator: ListBudgetsNavigator,
@@ -56,10 +53,6 @@ fun ListBudgetsScreen(
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
-
-  OnDispose {
-    viewModel.clearState()
-  }
 
   var launchBrowser by remember { mutableStateOf(false) }
   if (launchBrowser) {

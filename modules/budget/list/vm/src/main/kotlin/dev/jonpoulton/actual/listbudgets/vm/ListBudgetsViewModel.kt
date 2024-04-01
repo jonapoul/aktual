@@ -15,13 +15,12 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-// TODO: Remove suppression
-@Suppress("UnusedParameter", "UNUSED_PARAMETER")
 @HiltViewModel
 class ListBudgetsViewModel @Inject internal constructor(
   serverUrlPrefs: ServerUrlPreferences,
   loginPrefs: LoginPreferences,
   versionsStateHolder: ActualVersionsStateHolder,
+  private val budgetsFetcher: BudgetsFetcher,
 ) : ViewModel() {
   val versions: StateFlow<ActualVersions> = versionsStateHolder.state
 
@@ -33,8 +32,4 @@ class ListBudgetsViewModel @Inject internal constructor(
 
   val state: StateFlow<ListBudgetsState> = flowOf(ListBudgetsState.Loading)
     .stateIn(viewModelScope, SharingStarted.Eagerly, ListBudgetsState.Loading)
-
-  fun clearState() {
-    // TBC
-  }
 }

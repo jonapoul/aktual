@@ -33,5 +33,6 @@ internal fun buildApis(retrofit: Retrofit, url: ServerUrl): ActualApis {
     serverUrl = url,
     account = retrofit.create(),
     base = retrofit.create(),
+    sync = retrofit.create(),
   )
 }

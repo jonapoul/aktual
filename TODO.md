@@ -5,6 +5,7 @@
   - Doesn't support bootstrapping, probably other things too
 - Optional themes
 - Periodic health checks to determine connection
+  - Validate login token
 - Cloud backups?
 - Use proper error messages for server URL screen
 
@@ -15,4 +16,3 @@
 
 - Add background gradient per theme
 - split strings/resources into modules
-- create compose icons module
