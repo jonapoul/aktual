@@ -41,6 +41,9 @@ include(":modules:core:state")
 include(":modules:core:ui")
 include(":modules:core:res")
 
+include(":modules:db:api")
+include(":modules:db:impl")
+
 include(":modules:login:prefs")
 include(":modules:login:ui")
 include(":modules:login:vm")

@@ -63,6 +63,8 @@ dependencies {
   implementation(projects.modules.core.connection)
   implementation(projects.modules.core.res)
   implementation(projects.modules.core.ui)
+  implementation(projects.modules.db.api)
+  implementation(projects.modules.db.impl)
   implementation(projects.modules.serverUrl.prefs)
   implementation(projects.modules.nav)
   implementation(libs.alakazam.android.core)

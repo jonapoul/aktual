@@ -16,6 +16,8 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import dev.jonpoulton.actual.db.ActualDatabase
+import dev.jonpoulton.actual.db.buildDatabase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -85,4 +87,12 @@ internal class LoopControllerModule {
   @Provides
   @Singleton
   fun loopController(): LoopController = InfiniteLoopController
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal class DatabaseModule {
+  @Provides
+  @Singleton
+  fun database(@ApplicationContext context: Context): ActualDatabase = buildDatabase(context)
 }

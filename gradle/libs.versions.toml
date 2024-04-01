@@ -32,6 +32,7 @@ androidx-fragment = "1.6.2"
 androidx-lifecycle = "2.7.0"
 androidx-navigation = "2.7.7"
 androidx-preference = "1.2.1"
+androidx-room = "2.6.1"
 androidx-splash = "1.0.1"
 flowpreferences = "1.9.1"
 java-inject = "1"
@@ -111,6 +112,9 @@ androidx-navigation-commonKtx = { module = "androidx.navigation:navigation-commo
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
 androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidx-room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidx-room" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidx-room" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splash" }
 dagger-core = { module = "com.google.dagger:dagger", version.ref = "hilt" }
 flowpreferences = { module = "com.fredporciuncula:flow-preferences", version.ref = "flowpreferences" }
@@ -168,5 +172,6 @@ kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
 licensee = { id = "app.cash.licensee", version.ref = "licensee" }
+room = { id = "androidx.room", version.ref = "androidx-room" }
 sekret = { id = "net.afanasev.sekret", version.ref = "sekret" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
