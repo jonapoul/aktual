@@ -42,6 +42,7 @@ kotlinx-serialization = "1.6.3"
 material = "1.11.0"
 okhttp = "4.12.0"
 retrofit = "2.11.0"
+sqldelight = "2.0.1"
 timber = "5.0.1"
 
 # Testing
@@ -130,6 +131,8 @@ okhttp-logging = { module = "com.squareup.okhttp3:logging-interceptor", version.
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 retrofit-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 sekret = { module = "net.afanasev:sekret-annotation", version.ref = "sekret" }
+sqldelight-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 # Testing
@@ -170,3 +173,4 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
 licensee = { id = "app.cash.licensee", version.ref = "licensee" }
 sekret = { id = "net.afanasev.sekret", version.ref = "sekret" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
