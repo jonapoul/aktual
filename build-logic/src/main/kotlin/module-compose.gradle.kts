@@ -7,8 +7,6 @@ plugins {
 }
 
 dependencyGuard {
-  configuration("debugCompileClasspath")
-  configuration("debugRuntimeClasspath")
   configuration("releaseCompileClasspath")
   configuration("releaseRuntimeClasspath")
 }
