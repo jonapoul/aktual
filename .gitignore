@@ -8,5 +8,5 @@ local.properties
 
 # Ignore all IDEA files, except those excluded below
 .idea/*
-# Detekt plugin configuration (Tools -> Detekt)
+!.idea/codeInsightSettings.xml
 !.idea/detekt.xml
