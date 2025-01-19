@@ -8,7 +8,6 @@ plugins {
   id("convention-hilt")
   id("convention-style")
   id("convention-test")
-  id("com.dropbox.dependency-guard")
 }
 
 val libs = the<LibrariesForLibs>()
@@ -20,11 +19,4 @@ dependencies {
   api(libs.dagger.core)
   api(libs.javaxInject)
   implementation(libs.hilt.android)
-}
-
-dependencyGuard {
-  configuration("debugCompileClasspath")
-  configuration("debugRuntimeClasspath")
-  configuration("releaseCompileClasspath")
-  configuration("releaseRuntimeClasspath")
 }
