@@ -5,8 +5,3 @@ plugins {
   id("convention-test")
   id("com.dropbox.dependency-guard")
 }
-
-dependencyGuard {
-  configuration("compileClasspath")
-  configuration("runtimeClasspath")
-}
