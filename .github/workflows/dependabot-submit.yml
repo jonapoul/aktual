@@ -1,4 +1,4 @@
-name: Submit Dependency Graph
+name: Dependabot Submit
 
 on:
   push:
@@ -17,11 +17,11 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 19
+          java-version: 21
           distribution: "zulu"
 
       - name: Add permissions
         run: chmod +x ./gradlew
 
       - name: Submit dependencies
-        uses: gradle/actions/dependency-submission@v3
+        uses: gradle/actions/dependency-submission@v4

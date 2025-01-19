@@ -1,55 +1,50 @@
-name: Build APKs
+name: Main
 
 on:
   push:
     branches: [ "main" ]
+  workflow_dispatch:
 
 permissions:
   contents: write
   checks: write
 
 jobs:
-  main:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 19
+          java-version: 21
           distribution: "zulu"
 
       - name: Add permissions
         run: chmod +x ./gradlew
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
-          generate-job-summary: false
-          cache-read-only: false
+          add-job-summary: on-failure
 
-      - name: Assemble
-        run: ./gradlew app:assemble
-
-      - name: Generate coverage report
-        run: echo "COVERAGE=$(./gradlew -q printInstructionCoverage)" >> $GITHUB_ENV
-
-      - name: Upload APKs
-        uses: actions/upload-artifact@v4
-        if: success()
-        with:
-          name: apks
-          path: ./app/build/outputs/apk
-          if-no-files-found: error
+      - name: Generate test coverage
+        shell: bash
+        run: |
+          COVERAGE=$(./gradlew :koverLog | grep "application line coverage:" | tail -n1 | cut -d ":" -f 2 | tr -d '[:space:]%')
+          echo "COVERAGE=$(echo $COVERAGE)" >> $GITHUB_ENV
 
       - name: Update dynamic badge gist
         uses: schneegans/dynamic-badges-action@v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
-          gistID: 771fc7b1a375f223a36f740c5c2695d3
-          filename: actual-coverage-badge.json
+          gistID: 6bf1b7a292bc61bcca966bee22e8b456
+          filename: coverage-badge.json
           label: coverage
           message: ${{ env.COVERAGE }}%
           valColorRange: ${{ env.COVERAGE }}

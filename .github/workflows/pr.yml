@@ -1,50 +1,32 @@
-name: PR Check
+name: PR
 
 on:
   pull_request:
-    branches:
-
-permissions:
-  contents: write
-  checks: write
+  workflow_dispatch:
 
 jobs:
-  pr:
+  check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
 
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 19
+          java-version: 21
           distribution: "zulu"
 
       - name: Add permissions
         run: chmod +x ./gradlew
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
         with:
-          generate-job-summary: false
-          cache-read-only: true
+          add-job-summary: on-failure
 
       - name: Check
-        run: ./gradlew check koverHtmlReport
-
-      - name: Upload reports
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: reports
-          path: |
-            ./*/build/reports
-            ./build/reports
-          if-no-files-found: error
-
-      - name: Publish test reports
-        uses: mikepenz/action-junit-report@v4
-        if: always()
-        with:
-          report_paths: "**/build/test-results/*/TEST-*.xml"
+        run: ./gradlew check
