@@ -20,7 +20,7 @@ turtle = "0.9.0"
 
 # Libraries
 alakazam = "4.4.1"
-android-desugaring = "2.0.4"
+android-desugaring = "2.1.4"
 androidx-activity = "1.8.2"
 androidx-annotation = "1.7.1"
 androidx-compose-bom = "2024.03.00"
