@@ -13,7 +13,6 @@ kotlin {
 
 dependencies {
   implementation(libs.plugin.agp)
-  implementation(libs.plugin.dependencyGuard)
   implementation(libs.plugin.detekt)
   implementation(libs.plugin.hilt)
   implementation(libs.plugin.kotlin)
