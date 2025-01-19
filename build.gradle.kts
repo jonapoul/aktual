@@ -1,5 +1,4 @@
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
-import javax.xml.parsers.DocumentBuilderFactory
 
 plugins {
   alias(libs.plugins.agp.app) apply false
@@ -81,34 +80,8 @@ dependencyGuard {
   configuration("classpath")
 }
 
-tasks.withType(DependencyUpdatesTask::class.java) {
+tasks.withType<DependencyUpdatesTask> {
   rejectVersionIf { !candidate.version.isStable() && currentVersion.isStable() }
 }
 
-private fun String.isStable(): Boolean = listOf("alpha", "beta", "rc").none { lowercase().contains(it) }
-
-// From https://bitspittle.dev/blog/2022/kover-badge
-tasks.register("printInstructionCoverage") {
-  group = "verification"
-  dependsOn(tasks.koverXmlReport)
-  doLast {
-    val report = file("${layout.buildDirectory.get()}/reports/kover/report.xml")
-    val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(report)
-    val rootNode = doc.firstChild
-    var childNode = rootNode.firstChild
-    var coveragePercent = 0.0
-    while (childNode != null) {
-      if (childNode.nodeName == "counter") {
-        val typeAttr = childNode.attributes.getNamedItem("type")
-        if (typeAttr.textContent == "INSTRUCTION") {
-          val missed = childNode.attributes.getNamedItem("missed").textContent.toLong()
-          val covered = childNode.attributes.getNamedItem("covered").textContent.toLong()
-          coveragePercent = (covered * 100.0) / (missed + covered)
-          break
-        }
-      }
-      childNode = childNode.nextSibling
-    }
-    println("%.1f".format(coveragePercent))
-  }
-}
+private fun String.isStable(): Boolean = listOf("alpha", "beta", "rc").none { contains(it, ignoreCase = true) }
