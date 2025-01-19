@@ -10,3 +10,5 @@ local.properties
 .idea/*
 !.idea/codeInsightSettings.xml
 !.idea/detekt.xml
+!.idea/icon.png
+!.idea/icon_dark.png
