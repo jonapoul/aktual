@@ -24,4 +24,4 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Submit dependencies
-        uses: gradle/actions/dependency-submission@v3
+        uses: gradle/actions/dependency-submission@v4
