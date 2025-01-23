@@ -21,7 +21,7 @@ turtle = "0.10.0"
 # Libraries
 alakazam = "4.4.1"
 android-desugaring = "2.0.4"
-androidx-activity = "1.8.2"
+androidx-activity = "1.10.0"
 androidx-annotation = "1.7.1"
 androidx-compose-bom = "2024.03.00"
 androidx-compose-compiler = "1.5.11"
