@@ -47,7 +47,7 @@ timber = "5.0.1"
 # Testing
 test-androidx-arch = "2.2.0"
 test-androidx-coreKtx = "1.5.0"
-test-androidx-junit = "1.1.5"
+test-androidx-junit = "1.2.1"
 test-androidx-rules = "1.5.0"
 test-androidx-runner = "1.5.2"
 test-junit = "4.13.2"
