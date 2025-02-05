@@ -7,5 +7,4 @@ dependencies {
   api(libs.javaxInject)
   api(libs.retrofit.core)
   api(projects.api.model)
-  implementation(projects.core.model)
 }

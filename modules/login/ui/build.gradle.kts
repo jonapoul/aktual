@@ -22,6 +22,5 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.kotlinx.coroutines)
-  implementation(projects.core.res)
   implementation(projects.core.ui)
 }

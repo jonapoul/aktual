@@ -1,0 +1,9 @@
+digraph {
+edge ["dir"="forward"]
+graph ["dpi"="100","label"=":test:compose","labelloc"="t","fontsize"="30","ranksep"="2.5","rankdir"="TB"]
+node ["style"="filled"]
+{
+edge ["dir"="none"]
+graph ["rank"="same"]
+}
+}
