@@ -1,12 +1,9 @@
 plugins {
-  id("module-resources")
-}
-
-android {
-  namespace = "dev.jonpoulton.actual.core.res"
+  alias(libs.plugins.module.resources)
 }
 
 dependencies {
+  api(libs.androidx.compose.runtime)
   implementation(libs.androidx.splash)
   implementation(libs.material)
 }

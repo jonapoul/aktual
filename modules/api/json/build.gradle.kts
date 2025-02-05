@@ -1,8 +1,7 @@
 plugins {
-  id("module-kotlin")
+  alias(libs.plugins.module.kotlin)
 }
 
 dependencies {
   api(libs.kotlinx.serialization.json)
-  testImplementation(projects.modules.api.json)
 }

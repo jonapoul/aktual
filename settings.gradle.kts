@@ -1,55 +1,61 @@
-@file:Suppress("UnstableApiUsage")
+@file:Suppress("UnstableApiUsage", "HasPlatformType")
 
 rootProject.name = "actual-android"
 
 pluginManagement {
+  includeBuild("build-logic")
   repositories {
-    google()
+    google {
+      mavenContent {
+        includeGroupByRegex(".*android.*")
+        includeGroupByRegex(".*google.*")
+      }
+    }
     mavenCentral()
     gradlePluginPortal()
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
+    mavenLocal()
   }
 }
 
 dependencyResolutionManagement {
-  repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
   repositories {
-    google()
+    google {
+      mavenContent {
+        includeGroupByRegex(".*android.*")
+        includeGroupByRegex(".*google.*")
+      }
+    }
     mavenCentral()
+    maven("https://jitpack.io")
   }
 }
 
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-includeBuild("build-logic")
-
 include(":app")
 
-include(":modules:api:client")
-include(":modules:api:json")
-include(":modules:api:model")
+private val File.gradleModuleDescendants: Sequence<File>
+  get() = listFiles()
+    ?.asSequence()
+    ?.filter { it.isDirectory }
+    ?.flatMap { dir -> dir.subDescendants }
+    ?: emptySequence()
 
-include(":modules:budget:list:ui")
-include(":modules:budget:list:vm")
+private val File.subDescendants: Sequence<File>
+  get() = if (File(this, "build.gradle.kts").exists()) {
+    sequenceOf(this)
+  } else {
+    gradleModuleDescendants
+  }
 
-include(":modules:core:connection")
-include(":modules:core:coroutines")
-include(":modules:core:icons")
-include(":modules:core:model")
-include(":modules:core:prefs")
-include(":modules:core:state")
-include(":modules:core:ui")
-include(":modules:core:res")
+val modulesDir = rootProject.projectDir.resolve("modules")
+val modulesPath = modulesDir.toPath()
 
-include(":modules:login:prefs")
-include(":modules:login:ui")
-include(":modules:login:vm")
-
-include(":modules:server-url:prefs")
-include(":modules:server-url:ui")
-include(":modules:server-url:vm")
-
-include(":modules:nav")
-
-include(":modules:test:android")
-include(":modules:test:http")
+modulesDir.gradleModuleDescendants.forEach { dir ->
+  val path = dir.toPath()
+  val relative = modulesPath.relativize(path).toString().replace(File.separator, ":")
+  include(relative)
+  project(":$relative").projectDir = dir
+}

@@ -1,25 +1,20 @@
 plugins {
-  id("module-viewmodel")
-}
-
-android {
-  namespace = "dev.jonpoulton.actual.budget.list.vm"
+  alias(libs.plugins.module.viewmodel)
 }
 
 dependencies {
-  api(projects.modules.core.model)
   api(libs.alakazam.kotlin.core)
+  api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
+  api(projects.core.model)
+  implementation(libs.androidx.compose.runtime)
+  implementation(libs.preferences.core)
+  implementation(projects.core.connection)
+  implementation(projects.core.state)
+  implementation(projects.login.prefs)
+  implementation(projects.serverUrl.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
-  implementation(projects.modules.core.connection)
-  implementation(projects.modules.core.coroutines)
-  implementation(projects.modules.core.state)
-  implementation(projects.modules.login.prefs)
-  implementation(projects.modules.serverUrl.prefs)
-  implementation(libs.alakazam.android.core)
-  implementation(libs.flowpreferences)
-  implementation(libs.retrofit.core)
-  testImplementation(projects.modules.test.android)
-  testImplementation(projects.modules.test.http)
+  testImplementation(projects.test.android)
+  testImplementation(projects.test.http)
 }

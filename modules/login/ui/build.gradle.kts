@@ -1,19 +1,11 @@
 plugins {
-  id("module-compose")
+  alias(libs.plugins.module.compose)
 }
-
-android {
-  namespace = "dev.jonpoulton.actual.login.ui"
-}
-
-optIn(className = "androidx.compose.material3.ExperimentalMaterial3Api")
 
 dependencies {
-  api(projects.modules.login.vm)
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
-  implementation(projects.modules.core.res)
-  implementation(projects.modules.core.ui)
+  api(projects.login.vm)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
   implementation(libs.androidx.compose.hilt)
@@ -30,4 +22,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.kotlinx.coroutines)
+  implementation(projects.core.res)
+  implementation(projects.core.ui)
 }

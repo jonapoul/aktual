@@ -1,15 +1,11 @@
 plugins {
-  id("module-android")
-}
-
-android {
-  namespace = "dev.jonpoulton.actual.api.client"
+  alias(libs.plugins.module.kotlin)
 }
 
 dependencies {
-  api(projects.modules.api.model)
   api(libs.alakazam.kotlin.core)
+  api(libs.javaxInject)
   api(libs.retrofit.core)
-  implementation(projects.modules.core.model)
-  implementation(libs.javaxInject)
+  api(projects.api.model)
+  implementation(projects.core.model)
 }

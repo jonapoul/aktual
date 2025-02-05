@@ -1,69 +1,83 @@
+import blueprint.core.rootLocalPropertiesOrNull
 import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 
 plugins {
   alias(libs.plugins.agp.app) apply false
   alias(libs.plugins.agp.lib) apply false
+  alias(libs.plugins.androidx.room) apply false
+  alias(libs.plugins.androidCacheFix) apply false
+  alias(libs.plugins.buildconfig) apply false
+  alias(libs.plugins.catalog) apply false
+  alias(libs.plugins.dependencyGraph) apply false
   alias(libs.plugins.detekt) apply false
   alias(libs.plugins.hilt) apply false
   alias(libs.plugins.kotlin.android) apply false
+  alias(libs.plugins.kotlin.compose) apply false
   alias(libs.plugins.kotlin.jvm) apply false
+  alias(libs.plugins.kotlin.multiplatform) apply false
+  alias(libs.plugins.kotlin.powerAssert) apply false
   alias(libs.plugins.kotlin.serialization) apply false
-  alias(libs.plugins.kover) apply false
   alias(libs.plugins.ksp) apply false
   alias(libs.plugins.ktlint) apply false
   alias(libs.plugins.licensee) apply false
-  alias(libs.plugins.sekret) apply false
+  alias(libs.plugins.licenses) apply false
   alias(libs.plugins.spotless) apply false
 
   alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.dependencyGuard)
+  alias(libs.plugins.dependencySort)
   alias(libs.plugins.dependencyVersions)
   alias(libs.plugins.doctor)
+  alias(libs.plugins.kover)
 
-  id("convention-test")
+  alias(libs.plugins.convention.kover)
+}
+
+// Place all local properties in the project-level gradle properties map
+rootLocalPropertiesOrNull()?.forEach { (key, value) ->
+  ext[key.toString()] = value.toString()
 }
 
 dependencyAnalysis {
   structure {
     ignoreKtx(ignore = true)
-    bundle(name = "kotlin-stdlib") { includeGroup(group = "org.jetbrains.kotlin") }
+    bundle(name = "kotlin") { includeGroup("org.jetbrains.kotlin:*") }
     bundle(name = "modules") { include("^:.*\$".toRegex()) }
+    bundle(name = "okhttp") { includeGroup(group = "com.squareup.okhttp3") }
+    bundle(name = "viewModel") { include(regex = "androidx.lifecycle:lifecycle-viewmodel.*".toRegex()) }
+  }
+
+  abi {
+    exclusions {
+      ignoreInternalPackages()
+      ignoreGeneratedCode()
+    }
   }
 
   issues {
     all {
-      // Failure
-      onRedundantPlugins { severity(value = "fail") }
-      onUnusedAnnotationProcessors { severity(value = "fail") }
-      onUsedTransitiveDependencies {
-        severity(value = "fail")
-        exclude("modules")
-        exclude(libs.kotlinx.coroutines)
-      }
-      onUnusedDependencies {
-        severity(value = "fail")
-        exclude(
-          libs.test.alakazam.core,
-          libs.test.androidx.arch,
-          libs.test.androidx.junit,
-          libs.test.androidx.rules,
-          libs.test.androidx.runner,
-          libs.test.hilt,
-          libs.test.junit,
-          libs.test.mockk.android,
-          libs.test.mockk.dsl,
-          libs.test.robolectric,
-          libs.test.timber,
-          libs.test.turbine,
-        )
-        exclude(libs.androidx.compose.ui.toolingPreview)
-        exclude(libs.timber)
+      onAny { severity(value = "fail") }
+
+      onRuntimeOnly { severity(value = "ignore") }
+
+      onIncorrectConfiguration {
+        recursiveSubProjects().forEach { exclude(it.path) }
       }
 
-      // Ignore
-      onModuleStructure { severity(value = "ignore") }
-      onIncorrectConfiguration { severity(value = "ignore") }
-      onRuntimeOnly { severity(value = "ignore") }
+      onUnusedDependencies {
+        exclude(
+          libs.androidx.compose.ui.tooling,
+          libs.androidx.compose.ui.toolingPreview,
+          libs.hilt.core,
+          libs.test.androidx.monitor,
+          libs.timber,
+        )
+      }
+
+      ignoreSourceSet(
+        "androidTest",
+        "testFixtures",
+      )
     }
   }
 }
@@ -85,3 +99,8 @@ tasks.withType<DependencyUpdatesTask> {
 }
 
 private fun String.isStable(): Boolean = listOf("alpha", "beta", "rc").none { contains(it, ignoreCase = true) }
+
+private fun recursiveSubProjects(): Sequence<Project> = subprojects
+  .asSequence()
+  .flatMap { project -> project.subprojects + project }
+  .distinctBy { project -> project.path }

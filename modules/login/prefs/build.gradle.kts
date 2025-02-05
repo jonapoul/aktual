@@ -1,14 +1,9 @@
 plugins {
-  id("module-android")
-}
-
-android {
-  namespace = "dev.jonpoulton.actual.login.prefs"
+  alias(libs.plugins.module.kotlin)
 }
 
 dependencies {
-  api(projects.modules.core.model)
-  api(libs.flowpreferences)
-  implementation(projects.modules.core.prefs)
-  implementation(libs.javaxInject)
+  api(libs.javaxInject)
+  api(libs.preferences.core)
+  api(projects.core.model)
 }
