@@ -27,6 +27,5 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(projects.core.icons)
-  implementation(projects.core.res)
   implementation(projects.core.ui)
 }

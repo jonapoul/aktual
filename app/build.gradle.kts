@@ -112,10 +112,6 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.datetime)
   implementation(libs.preferences.android)
-  implementation(projects.core.connection)
-  implementation(projects.core.coroutines)
-  implementation(projects.core.res)
-  implementation(projects.core.ui)
   implementation(projects.nav)
   implementation(projects.serverUrl.prefs)
 }

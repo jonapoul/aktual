@@ -10,5 +10,4 @@ dependencies {
   implementation(libs.androidx.compose.ui.tooling)
   implementation(libs.androidx.compose.ui.toolingPreview)
   implementation(libs.androidx.compose.ui.unit)
-  implementation(projects.core.ui)
 }

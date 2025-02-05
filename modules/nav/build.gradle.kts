@@ -13,5 +13,4 @@ dependencies {
   implementation(libs.androidx.navigation.commonKtx)
   implementation(libs.androidx.navigation.compose)
   implementation(libs.kotlinx.coroutines)
-  implementation(projects.login.vm)
 }
