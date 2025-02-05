@@ -1,23 +1,40 @@
 ---
 complexity:
   LongParameterList:
-    active: false
+    ignoreDefaultParameters: true
+    functionThreshold: 10
+    constructorThreshold: 10
   TooManyFunctions:
     thresholdInObjects: 20
     thresholdInClasses: 20
     thresholdInInterfaces: 20
+    thresholdInFiles: 20
     ignorePrivate: true
   LongMethod:
     threshold: 100
+  CyclomaticComplexMethod:
+    ignoreSingleWhenExpression: true
+    threshold: 20
+
+coroutines:
+  SuspendFunSwallowedCancellation:
+    active: true
+
+# https://mrmans0n.github.io/compose-rules/detekt/
+Compose:
+  Material2:
+    active: true
+  UnstableCollections:
+    active: true
+
 exceptions:
   TooGenericExceptionCaught:
     active: false
-  SwallowedException:
-    ignoredExceptionTypes:
-      - "CancellationException"
+
 naming:
   FunctionNaming:
     functionPattern: "[a-zA-Z][a-zA-Z0-9]*"
+
 style:
   MaxLineLength:
     maxLineLength: 120
@@ -25,14 +42,14 @@ style:
     ignorePropertyDeclaration: true
     ignoreCompanionObjectPropertyDeclaration: true
     ignoreAnnotated:
-    - "Preview"
-    - "ActualScreenPreview"
-    - "PreviewThemes"
+      - "Preview"
+      - "PreviewThemes"
+      - "ActualScreenPreview"
   UnusedPrivateMember:
     ignoreAnnotated:
-    - "Preview"
-    - "ActualScreenPreview"
-    - "PreviewThemes"
+      - "Preview"
+      - "PreviewThemes"
+      - "ActualScreenPreview"
   ForbiddenComment:
     active: false
   UnnecessaryAbstractClass:

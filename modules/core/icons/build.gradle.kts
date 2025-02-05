@@ -1,18 +1,14 @@
 plugins {
-  id("module-compose")
-}
-
-android {
-  namespace = "dev.jonpoulton.actual.core.icons"
+  alias(libs.plugins.module.compose)
 }
 
 dependencies {
   api(libs.androidx.compose.runtime)
-  implementation(projects.modules.core.ui)
-  implementation(libs.androidx.compose.ui.core)
+  api(libs.androidx.compose.ui.core)
+  implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.ui.graphics)
   implementation(libs.androidx.compose.ui.tooling)
   implementation(libs.androidx.compose.ui.toolingPreview)
   implementation(libs.androidx.compose.ui.unit)
-  implementation(libs.androidx.compose.material3)
+  implementation(projects.core.ui)
 }

@@ -1,27 +1,26 @@
 plugins {
-  id("module-android")
-}
-
-android {
-  namespace = "dev.jonpoulton.actual.core.connection"
+  alias(libs.plugins.module.android)
 }
 
 dependencies {
-  api(projects.modules.api.client)
-  implementation(projects.modules.api.json)
-  implementation(projects.modules.core.model)
-  implementation(projects.modules.core.state)
-  implementation(projects.modules.serverUrl.prefs)
-  implementation(libs.alakazam.kotlin.core)
-  implementation(libs.flowpreferences)
-  implementation(libs.javaxInject)
+  api(libs.alakazam.kotlin.core)
+  api(libs.javaxInject)
+  api(projects.api.client)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)
   implementation(libs.okhttp.logging)
+  implementation(libs.preferences.core)
   implementation(libs.retrofit.core)
   implementation(libs.retrofit.serialization)
-  testImplementation(projects.modules.test.android)
+  implementation(projects.api.json)
+  implementation(projects.core.coroutines)
+  implementation(projects.core.model)
+  implementation(projects.core.state)
+  implementation(projects.serverUrl.prefs)
+  testImplementation(testFixtures(projects.core.coroutines))
   testImplementation(libs.alakazam.android.core)
+  testImplementation(projects.test.android)
+  testImplementation(projects.test.prefs)
 }

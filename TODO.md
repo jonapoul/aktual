@@ -1,5 +1,9 @@
 # TODO
 
+- Fix dialog buttons
+- Move to molecule in VMs
+- Multiplatform
+- Extract navigators to their own modules
 - Module diagrams
 - Support demo public app?
   - Doesn't support bootstrapping, probably other things too

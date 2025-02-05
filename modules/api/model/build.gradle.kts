@@ -1,14 +1,14 @@
 plugins {
-  id("module-kotlin")
-  kotlin("plugin.serialization")
+  alias(libs.plugins.module.kotlin)
+  alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.sekret)
 }
 
 dependencies {
-  api(projects.modules.core.model)
+  api(libs.alakazam.kotlin.serialization)
   api(libs.kotlinx.serialization.core)
-  implementation(libs.alakazam.kotlin.serialization)
+  api(projects.core.model)
   implementation(libs.kotlinx.serialization.json)
   compileOnly(libs.sekret)
-  testImplementation(projects.modules.api.json)
+  testImplementation(projects.api.json)
 }
