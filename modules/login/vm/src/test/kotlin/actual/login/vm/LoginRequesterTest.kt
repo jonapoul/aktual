@@ -12,12 +12,14 @@ import actual.serverurl.prefs.ServerUrlPreferences
 import actual.test.MockWebServerRule
 import actual.test.buildPreferences
 import alakazam.test.core.MainDispatcherRule
+import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Rule
@@ -27,6 +29,7 @@ import org.robolectric.RobolectricTestRunner
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 internal class LoginRequesterTest {
@@ -52,7 +55,7 @@ internal class LoginRequesterTest {
     apisStateHolder = ActualApisStateHolder()
 
     connectionMonitor = ConnectionMonitor(
-      scope = this,
+      scope = backgroundScope,
       apiStateHolder = apisStateHolder,
       serverUrlPreferences = serverUrlPreferences,
     )
@@ -70,18 +73,24 @@ internal class LoginRequesterTest {
 
     // Given a URL is set
     serverUrlPreferences.url.set(webServerRule.serverUrl())
+
+    // and we have a non-null api
     connectionMonitor.start()
-    advanceUntilIdle()
+    apisStateHolder.filterNotNull().first()
 
-    // When we log in with a successful response
-    val body = """{ "status": "ok", "data": { "token": "$EXAMPLE_TOKEN" } } """
-    webServerRule.enqueue(body)
-    val result = loginRequester.logIn(EXAMPLE_PASSWORD)
-    advanceUntilIdle()
+    loginPreferences.token.asFlow().test {
+      assertNull(awaitItem())
 
-    // Then a success response was parsed, and the token was stored in prefs
-    assertEquals(expected = LoginResult.Success, actual = result)
-    assertEquals(expected = EXAMPLE_TOKEN, actual = loginPreferences.token.get())
+      // When we log in with a successful response
+      val body = """{ "status": "ok", "data": { "token": "$EXAMPLE_TOKEN" } } """
+      webServerRule.enqueue(body)
+      val result = loginRequester.logIn(EXAMPLE_PASSWORD)
+
+      // Then a success response was parsed, and the token was stored in prefs
+      assertEquals(expected = LoginResult.Success, actual = result)
+      assertEquals(expected = EXAMPLE_TOKEN, actual = awaitItem())
+      cancelAndIgnoreRemainingEvents()
+    }
   }
 
   @Test
@@ -98,7 +107,6 @@ internal class LoginRequesterTest {
 
     // When we log in
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
-    advanceUntilIdle()
 
     // Then we get a failure result
     assertEquals(expected = LoginResult.NetworkFailure(errorMessage), actual = result)
@@ -110,14 +118,15 @@ internal class LoginRequesterTest {
 
     // Given a URL is set
     serverUrlPreferences.url.set(webServerRule.serverUrl())
+
+    // and we have a non-null api
     connectionMonitor.start()
-    advanceUntilIdle()
+    apisStateHolder.filterNotNull().first()
 
     // When we log in with a successful response, but a null token
     val body = """{ "status": "ok", "data": { "token": null } } """
     webServerRule.enqueue(body)
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
-    advanceUntilIdle()
 
     // Then a success result was parsed, and the token was stored in prefs
     assertEquals(expected = LoginResult.InvalidPassword, actual = result)
@@ -129,14 +138,15 @@ internal class LoginRequesterTest {
 
     // Given a URL is set
     serverUrlPreferences.url.set(webServerRule.serverUrl())
+
+    // and we have a non-null api
     connectionMonitor.start()
-    advanceUntilIdle()
+    apisStateHolder.filterNotNull().first()
 
     // When we log in with a failed response
     val httpMsg = "Internal error"
     webServerRule.enqueue(code = 500, body = httpMsg)
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
-    advanceUntilIdle()
 
     // Then a HTTP result
     assertIs<LoginResult.HttpFailure>(result)

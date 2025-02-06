@@ -7,6 +7,7 @@ import actual.core.coroutines.CoroutineContexts
 import actual.core.model.Password
 import actual.login.prefs.LoginPreferences
 import alakazam.kotlin.core.requireMessage
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import timber.log.Timber
@@ -24,6 +25,8 @@ internal class LoginRequester @Inject constructor(
     val request = LoginRequest(password)
     val response = try {
       withContext(contexts.io) { apis.account.login(request) }
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       Timber.w(e, "Failed logging in with $password")
       return when (e) {
