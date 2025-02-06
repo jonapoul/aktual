@@ -19,4 +19,8 @@
 
 - Add background gradient per theme
 - split strings/resources into modules
-- create compose icons module
+
+- Use wacky SVG wave thing as background
+  - https://github.com/actualbudget/actual/blob/master/packages/desktop-client/src/components/Background.tsx
+
+- Use action interfaces for each screen, not callback lambdas

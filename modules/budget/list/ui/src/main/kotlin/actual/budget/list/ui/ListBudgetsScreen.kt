@@ -220,6 +220,23 @@ private fun Content(
 
 @ActualScreenPreview
 @Composable
+private fun Success() = PreviewActualScreen {
+  ListBudgetsScreenImpl(
+    versions = PreviewVersions,
+    serverUrl = ServerUrl.Demo,
+    state = ListBudgetsState.Success(
+      budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken),
+    ),
+    onClickChangeServer = {},
+    onClickReload = {},
+    onCreateBudgetInBrowser = {},
+    onClickOpen = {},
+    onClickDelete = {},
+  )
+}
+
+@ActualScreenPreview
+@Composable
 private fun Loading() = PreviewActualScreen {
   ListBudgetsScreenImpl(
     versions = PreviewVersions,
@@ -240,21 +257,6 @@ private fun Failure() = PreviewActualScreen {
     versions = PreviewVersions,
     serverUrl = ServerUrl.Demo,
     state = ListBudgetsState.Failure(reason = "Something broke lol"),
-    onClickChangeServer = {},
-    onClickReload = {},
-    onCreateBudgetInBrowser = {},
-    onClickOpen = {},
-    onClickDelete = {},
-  )
-}
-
-@ActualScreenPreview
-@Composable
-private fun Success() = PreviewActualScreen {
-  ListBudgetsScreenImpl(
-    versions = PreviewVersions,
-    serverUrl = ServerUrl.Demo,
-    state = ListBudgetsState.Success(budgets = persistentListOf(PreviewBudget, PreviewBudget, PreviewBudget)),
     onClickChangeServer = {},
     onClickReload = {},
     onCreateBudgetInBrowser = {},
