@@ -5,9 +5,9 @@ import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.core.model.ActualVersions
 import actual.core.model.ServerUrl
-import actual.core.ui.PreviewActualScreen
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
+import actual.core.ui.PreviewActualScreen
 import actual.core.ui.Theme
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
