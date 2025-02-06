@@ -7,23 +7,22 @@ node ["style"="filled"]
 ":api:client" ["fillcolor"="#BB00FF","shape"="box"]
 ":api:model" ["fillcolor"="#BB00FF","shape"="box"]
 ":core:model" ["fillcolor"="#BB00FF","shape"="box"]
+":api:json" ["fillcolor"="#BB00FF","shape"="box"]
 ":core:coroutines" ["fillcolor"="#BB00FF","shape"="box"]
 ":core:state" ["fillcolor"="#55FF55","shape"="box"]
-":api:json" ["fillcolor"="#BB00FF","shape"="box"]
 ":serverUrl:prefs" ["fillcolor"="#55FF55","shape"="box"]
 ":login:prefs" ["fillcolor"="#BB00FF","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":login:vm" -> ":core:connection" ["style"="dotted"]
-":login:vm" -> ":login:prefs" ["style"="dotted"]
-":login:vm" -> ":serverUrl:prefs" ["style"="dotted"]
+":login:vm" -> ":core:connection"
+":login:vm" -> ":login:prefs"
 ":core:connection" -> ":api:client"
+":core:connection" -> ":api:json"
 ":core:connection" -> ":core:coroutines"
 ":core:connection" -> ":core:state"
-":core:connection" -> ":api:json" ["style"="dotted"]
-":core:connection" -> ":serverUrl:prefs" ["style"="dotted"]
+":core:connection" -> ":serverUrl:prefs"
 ":api:client" -> ":api:model"
 ":api:model" -> ":core:model"
 ":core:state" -> ":core:model"

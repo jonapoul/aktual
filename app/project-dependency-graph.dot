@@ -10,9 +10,9 @@ node ["style"="filled"]
 ":api:client" ["fillcolor"="#BB00FF","shape"="box"]
 ":api:model" ["fillcolor"="#BB00FF","shape"="box"]
 ":core:model" ["fillcolor"="#BB00FF","shape"="box"]
+":api:json" ["fillcolor"="#BB00FF","shape"="box"]
 ":core:coroutines" ["fillcolor"="#BB00FF","shape"="box"]
 ":core:state" ["fillcolor"="#55FF55","shape"="box"]
-":api:json" ["fillcolor"="#BB00FF","shape"="box"]
 ":serverUrl:prefs" ["fillcolor"="#55FF55","shape"="box"]
 ":login:prefs" ["fillcolor"="#BB00FF","shape"="box"]
 ":core:icons" ["fillcolor"="#FFFF55","shape"="box"]
@@ -28,38 +28,35 @@ graph ["rank"="same"]
 ":app"
 }
 ":app" -> ":nav" ["style"="dotted"]
-":app" -> ":serverUrl:prefs" ["style"="dotted"]
 ":nav" -> ":budget:list:ui"
 ":nav" -> ":login:ui"
 ":nav" -> ":serverUrl:ui"
 ":budget:list:ui" -> ":budget:list:vm"
-":budget:list:ui" -> ":core:icons" ["style"="dotted"]
-":budget:list:ui" -> ":core:ui" ["style"="dotted"]
-":budget:list:vm" -> ":core:connection" ["style"="dotted"]
-":budget:list:vm" -> ":login:prefs" ["style"="dotted"]
-":budget:list:vm" -> ":serverUrl:prefs" ["style"="dotted"]
+":budget:list:ui" -> ":core:icons"
+":budget:list:ui" -> ":core:ui"
+":budget:list:vm" -> ":core:connection"
+":budget:list:vm" -> ":login:prefs"
+":budget:list:vm" -> ":serverUrl:prefs"
 ":core:connection" -> ":api:client"
+":core:connection" -> ":api:json"
 ":core:connection" -> ":core:coroutines"
 ":core:connection" -> ":core:state"
-":core:connection" -> ":api:json" ["style"="dotted"]
-":core:connection" -> ":serverUrl:prefs" ["style"="dotted"]
+":core:connection" -> ":serverUrl:prefs"
 ":api:client" -> ":api:model"
 ":api:model" -> ":core:model"
 ":core:state" -> ":core:model"
 ":serverUrl:prefs" -> ":core:model"
 ":login:prefs" -> ":core:model"
+":core:icons" -> ":core:ui"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res"
+":login:ui" -> ":core:ui"
 ":login:ui" -> ":login:vm"
-":login:ui" -> ":core:ui" ["style"="dotted"]
-":login:vm" -> ":core:connection" ["style"="dotted"]
-":login:vm" -> ":login:prefs" ["style"="dotted"]
-":login:vm" -> ":serverUrl:prefs" ["style"="dotted"]
+":login:vm" -> ":core:connection"
+":login:vm" -> ":login:prefs"
+":serverUrl:ui" -> ":core:ui"
 ":serverUrl:ui" -> ":serverUrl:vm"
-":serverUrl:ui" -> ":core:ui" ["style"="dotted"]
-":serverUrl:vm" -> ":api:client" ["style"="dotted"]
-":serverUrl:vm" -> ":core:connection" ["style"="dotted"]
-":serverUrl:vm" -> ":serverUrl:prefs" ["style"="dotted"]
+":serverUrl:vm" -> ":core:connection"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
