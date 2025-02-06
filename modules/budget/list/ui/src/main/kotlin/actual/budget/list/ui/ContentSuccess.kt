@@ -41,7 +41,7 @@ internal fun ContentSuccess(
 @Composable
 private fun One() = PreviewActualScreen {
   ContentSuccess(
-    budgets = persistentListOf(PreviewBudget),
+    budgets = persistentListOf(PreviewBudgetSynced),
     onClickOpen = {},
     onClickDelete = {},
   )
@@ -51,7 +51,7 @@ private fun One() = PreviewActualScreen {
 @Composable
 private fun Multiple() = PreviewActualScreen {
   ContentSuccess(
-    budgets = persistentListOf(PreviewBudget, PreviewBudget, PreviewBudget),
+    budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
     onClickOpen = {},
     onClickDelete = {},
   )

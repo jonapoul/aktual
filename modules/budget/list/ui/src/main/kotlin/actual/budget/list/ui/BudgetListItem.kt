@@ -141,7 +141,7 @@ private fun budgetDescription(budget: Budget): String? = if (budget.encryptKeyId
 private fun Synced() = PreviewActualColumn {
   BudgetListItem(
     modifier = Modifier.fillMaxWidth(),
-    budget = PreviewBudget,
+    budget = PreviewBudgetSynced,
     onClickOpen = {},
     onClickDelete = {},
   )
@@ -152,7 +152,7 @@ private fun Synced() = PreviewActualColumn {
 private fun Warning() = PreviewActualColumn {
   BudgetListItem(
     modifier = Modifier.fillMaxWidth(),
-    budget = PreviewBudget.copy(state = BudgetState.Broken, hasKey = false),
+    budget = PreviewBudgetSynced.copy(state = BudgetState.Broken, hasKey = false),
     onClickOpen = {},
     onClickDelete = {},
   )

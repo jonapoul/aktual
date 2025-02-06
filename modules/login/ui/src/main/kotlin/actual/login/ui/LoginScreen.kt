@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -208,14 +209,16 @@ private fun Content(
           imeAction = ImeAction.Go,
         ),
         keyboardActions = KeyboardActions(
-          onGo = { },
+          onGo = { onClickSignIn() },
         ),
       )
 
       VerticalSpacer(20.dp)
 
       PrimaryActualTextButtonWithLoading(
-        modifier = Modifier.align(Alignment.End),
+        modifier = Modifier
+          .align(Alignment.CenterHorizontally)
+          .width(170.dp),
         text = CoreStrings.loginSignIn,
         isLoading = isLoading,
         onClick = onClickSignIn,
