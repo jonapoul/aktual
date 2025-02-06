@@ -119,6 +119,7 @@ private fun LoginScreenImpl(
         colors = TopAppBarDefaults.topAppBarColors(
           containerColor = theme.mobileHeaderBackground,
           titleContentColor = theme.mobileHeaderText,
+          navigationIconContentColor = theme.mobileHeaderText,
         ),
         navigationIcon = {
           IconButton(onClick = onClickBack) {
