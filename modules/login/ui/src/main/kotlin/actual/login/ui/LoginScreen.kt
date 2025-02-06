@@ -3,6 +3,7 @@ package actual.login.ui
 import actual.core.model.ActualVersions
 import actual.core.model.Password
 import actual.core.model.ServerUrl
+import actual.core.res.CoreStrings
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.ActualTextField
 import actual.core.ui.LocalTheme
@@ -43,7 +44,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -51,7 +51,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import actual.core.res.R as CoreR
 
 @Composable
 fun LoginScreen(
@@ -125,13 +124,13 @@ private fun LoginScreenImpl(
           IconButton(onClick = onClickBack) {
             Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = stringResource(id = CoreR.string.nav_back),
+              contentDescription = CoreStrings.navBack,
             )
           }
         },
         title = {
           Text(
-            text = stringResource(id = CoreR.string.login_toolbar),
+            text = CoreStrings.loginToolbar,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
           )
@@ -182,14 +181,14 @@ private fun Content(
       horizontalAlignment = Alignment.Start,
     ) {
       Text(
-        text = stringResource(id = CoreR.string.login_title),
+        text = CoreStrings.loginTitle,
         style = MaterialTheme.typography.headlineLarge,
       )
 
       VerticalSpacer(15.dp)
 
       Text(
-        text = stringResource(id = CoreR.string.login_message),
+        text = CoreStrings.loginMessage,
         color = theme.tableRowHeaderText,
         style = MaterialTheme.typography.bodyLarge,
       )
@@ -200,7 +199,7 @@ private fun Content(
         modifier = Modifier.fillMaxWidth(1f),
         value = enteredPassword.toString(),
         onValueChange = onEnterPassword,
-        placeholderText = stringResource(id = CoreR.string.login_password_hint),
+        placeholderText = CoreStrings.loginPasswordHint,
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
           autoCorrectEnabled = false,
@@ -216,7 +215,7 @@ private fun Content(
 
       PrimaryActualTextButtonWithLoading(
         modifier = Modifier.align(Alignment.End),
-        text = stringResource(id = CoreR.string.login_sign_in),
+        text = CoreStrings.loginSignIn,
         isLoading = isLoading,
         onClick = onClickSignIn,
       )

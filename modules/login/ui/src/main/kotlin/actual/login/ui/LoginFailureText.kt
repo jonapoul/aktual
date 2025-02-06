@@ -1,5 +1,6 @@
 package actual.login.ui
 
+import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualColumn
@@ -8,10 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import actual.core.res.R as CoreR
 
 @Stable
 @Composable
@@ -20,10 +19,10 @@ internal fun LoginFailureText(
   modifier: Modifier = Modifier,
 ) {
   val errorMessage = when (result) {
-    is LoginResult.InvalidPassword -> stringResource(id = CoreR.string.login_failure_password)
-    is LoginResult.HttpFailure -> stringResource(id = CoreR.string.login_failure_http, result.code, result.message)
-    is LoginResult.NetworkFailure -> stringResource(id = CoreR.string.login_failure_network, result.reason)
-    is LoginResult.OtherFailure -> stringResource(id = CoreR.string.login_failure_other, result.reason)
+    is LoginResult.InvalidPassword -> CoreStrings.loginFailurePassword
+    is LoginResult.HttpFailure -> CoreStrings.loginFailureHttp(result.code, result.message)
+    is LoginResult.NetworkFailure -> CoreStrings.loginFailureNetwork(result.reason)
+    is LoginResult.OtherFailure -> CoreStrings.loginFailureOther(result.reason)
   }
 
   val theme = LocalTheme.current
