@@ -6,9 +6,7 @@ import dev.jonpoulton.preferences.core.Preferences
 import dev.jonpoulton.preferences.core.SimpleNullableStringSerializer
 import javax.inject.Inject
 
-class ServerUrlPreferences @Inject constructor(
-  prefs: Preferences,
-) {
+class ServerUrlPreferences @Inject constructor(prefs: Preferences) {
   val url: Preference<ServerUrl?> = prefs
     .getNullableObject(key = "serverUrl", default = null, serializer = ServerUrlSerializer)
 

@@ -26,6 +26,7 @@ graph ["rank"="same"]
 ":core:connection" -> ":api:json" ["style"="dotted"]
 ":core:connection" -> ":serverUrl:prefs" ["style"="dotted"]
 ":core:state" -> ":core:model"
+":serverUrl:prefs" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
