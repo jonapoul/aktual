@@ -113,5 +113,4 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.preferences.android)
   implementation(projects.nav)
-  implementation(projects.serverUrl.prefs)
 }

@@ -5,6 +5,7 @@ plugins {
 dependencies {
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
+  api(projects.core.ui)
   api(projects.serverUrl.vm)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
@@ -23,5 +24,4 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
-  implementation(projects.core.ui)
 }

@@ -32,6 +32,7 @@
       </option>
       <option name="taskNames">
         <list>
+          <option value="app:dependencyGuardBaseline" />
           <option value=":dependencyGuardBaseline" />
         </list>
       </option>
