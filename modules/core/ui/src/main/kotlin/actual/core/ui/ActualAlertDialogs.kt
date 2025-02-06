@@ -26,12 +26,12 @@ import androidx.compose.ui.window.DialogProperties
 @Composable
 fun ActualAlertDialog(
   title: String,
-  content: @Composable () -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
   buttons: (@Composable () -> Unit)? = null,
   theme: Theme = LocalTheme.current,
   properties: DialogProperties = DialogProperties(),
+  content: @Composable () -> Unit,
 ) {
   BasicAlertDialog(
     onDismissRequest = onDismissRequest,
@@ -74,11 +74,11 @@ fun ActualAlertDialog(
 @Composable
 fun ActualAlertDialogContent(
   title: String,
-  content: @Composable () -> Unit,
   modifier: Modifier = Modifier,
   buttons: (@Composable () -> Unit)? = null,
   theme: Theme = LocalTheme.current,
   tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
+  content: @Composable () -> Unit,
 ) {
   Surface(
     modifier = modifier,
@@ -136,8 +136,8 @@ fun ActualAlertDialogContent(
 }
 
 private val ActualDialogShape = RoundedCornerShape(size = 4.dp)
-private val ButtonsMainAxisSpacing = 8.dp
-private val ButtonsCrossAxisSpacing = 12.dp
+// private val ButtonsMainAxisSpacing = 8.dp
+// private val ButtonsCrossAxisSpacing = 12.dp
 
 @Preview
 @Composable

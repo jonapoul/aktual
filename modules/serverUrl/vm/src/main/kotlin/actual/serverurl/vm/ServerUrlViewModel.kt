@@ -87,13 +87,13 @@ class ServerUrlViewModel @Inject internal constructor(
     mutableConfirmResult.reset()
   }
 
-  fun onUrlEntered(url: String) {
+  fun onEnterUrl(url: String) {
     Timber.v("onUrlEntered %s", url)
     mutableBaseUrl.update { url }
     mutableConfirmResult.update { null }
   }
 
-  fun onProtocolSelected(protocol: Protocol) {
+  fun onSelectProtocol(protocol: Protocol) {
     Timber.v("onProtocolSelected %s", protocol)
     mutableProtocol.update { protocol }
   }

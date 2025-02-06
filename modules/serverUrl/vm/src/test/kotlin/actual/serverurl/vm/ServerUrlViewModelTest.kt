@@ -80,8 +80,8 @@ class ServerUrlViewModelTest {
       setBootstrapResponse(bootstrapped = true)
 
       // When
-      viewModel.onProtocolSelected(EXAMPLE_URL.protocol)
-      viewModel.onUrlEntered(EXAMPLE_URL.baseUrl)
+      viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
+      viewModel.onEnterUrl(EXAMPLE_URL.baseUrl)
       viewModel.onClickConfirm()
 
       // Then
@@ -99,8 +99,8 @@ class ServerUrlViewModelTest {
       setBootstrapResponse(bootstrapped = false)
 
       // When
-      viewModel.onProtocolSelected(EXAMPLE_URL.protocol)
-      viewModel.onUrlEntered(EXAMPLE_URL.baseUrl)
+      viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
+      viewModel.onEnterUrl(EXAMPLE_URL.baseUrl)
       viewModel.onClickConfirm()
 
       // Then
@@ -135,8 +135,8 @@ class ServerUrlViewModelTest {
       coEvery { accountApi.needsBootstrap() } returns NeedsBootstrapResponse.Error(reason = reason)
 
       // When
-      viewModel.onProtocolSelected(EXAMPLE_URL.protocol)
-      viewModel.onUrlEntered(EXAMPLE_URL.baseUrl)
+      viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
+      viewModel.onEnterUrl(EXAMPLE_URL.baseUrl)
       viewModel.onClickConfirm()
 
       // Then
@@ -160,8 +160,8 @@ class ServerUrlViewModelTest {
       coEvery { accountApi.needsBootstrap() } throws IOException(reason)
 
       // When
-      viewModel.onProtocolSelected(EXAMPLE_URL.protocol)
-      viewModel.onUrlEntered(EXAMPLE_URL.baseUrl)
+      viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
+      viewModel.onEnterUrl(EXAMPLE_URL.baseUrl)
       viewModel.onClickConfirm()
 
       // Then

@@ -5,10 +5,9 @@ import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.core.model.ActualVersions
 import actual.core.model.ServerUrl
+import actual.core.ui.PreviewActualScreen
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
-import actual.core.ui.OnDispose
-import actual.core.ui.PreviewActualScreen
 import actual.core.ui.Theme
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
@@ -28,6 +27,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -57,8 +57,10 @@ fun ListBudgetsScreen(
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
 
-  OnDispose {
-    viewModel.clearState()
+  DisposableEffect(Unit) {
+    onDispose {
+      viewModel.clearState()
+    }
   }
 
   var launchBrowser by remember { mutableStateOf(false) }

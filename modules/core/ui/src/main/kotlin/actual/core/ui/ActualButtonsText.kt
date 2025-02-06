@@ -1,4 +1,4 @@
-@file:Suppress("UnusedReceiverParameter")
+@file:Suppress("UnusedReceiverParameter", "ContentTrailingLambda")
 
 package actual.core.ui
 
@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun PrimaryActualTextButton(
   text: String,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
   contentPadding: PaddingValues = ActualButtonPadding,
@@ -46,7 +47,6 @@ fun PrimaryActualTextButton(
   prefix: (@Composable () -> Unit)? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primary(pressed) },
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
-  onClick: () -> Unit,
 ) {
   BasicActualTextButton(
     text = text,
@@ -69,6 +69,7 @@ fun PrimaryActualTextButton(
 fun PrimaryActualTextButtonWithLoading(
   text: String,
   isLoading: Boolean,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
   contentPadding: PaddingValues = ActualButtonPadding,
@@ -78,7 +79,6 @@ fun PrimaryActualTextButtonWithLoading(
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primary(pressed) },
-  onClick: () -> Unit,
 ) {
   PrimaryActualTextButton(
     text = text,
@@ -119,6 +119,7 @@ fun PrimaryActualTextButtonWithLoading(
 @Composable
 fun BareActualTextButton(
   text: String,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
   contentPadding: PaddingValues = ActualButtonPadding,
@@ -129,7 +130,6 @@ fun BareActualTextButton(
   prefix: (@Composable () -> Unit)? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { theme, pressed -> theme.bare(pressed) },
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
-  onClick: () -> Unit,
 ) {
   BasicActualTextButton(
     text = text,
@@ -152,6 +152,7 @@ fun BareActualTextButton(
 fun BasicActualTextButton(
   text: String,
   colors: @Composable (theme: Theme, isPressed: Boolean) -> ButtonColors,
+  onClick: () -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
   contentPadding: PaddingValues = ActualButtonPadding,
@@ -161,7 +162,6 @@ fun BasicActualTextButton(
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
-  onClick: () -> Unit,
 ) {
   val theme = LocalTheme.current
   val isPressed by interactionSource.collectIsPressedAsState()
