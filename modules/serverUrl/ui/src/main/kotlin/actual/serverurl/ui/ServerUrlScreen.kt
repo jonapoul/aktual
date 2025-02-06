@@ -1,15 +1,16 @@
+@file:Suppress("LongParameterList")
+
 package actual.serverurl.ui
 
 import actual.core.model.ActualVersions
 import actual.core.model.Protocol
 import actual.core.ui.ActualExposedDropDownMenu
 import actual.core.ui.ActualFontFamily
+import actual.core.ui.PreviewActualScreen
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.ActualTextField
 import actual.core.ui.HorizontalSpacer
 import actual.core.ui.LocalTheme
-import actual.core.ui.OnDispose
-import actual.core.ui.PreviewActualScreen
 import actual.core.ui.PrimaryActualTextButtonWithLoading
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
@@ -40,6 +41,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -78,9 +80,11 @@ fun ServerUrlScreen(
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle(initialValue = null)
   var clickedBack by remember { mutableStateOf(false) }
 
-  OnDispose {
-    viewModel.clearState()
-    clickedBack = false
+  DisposableEffect(Unit) {
+    onDispose {
+      viewModel.clearState()
+      clickedBack = false
+    }
   }
 
   val context = LocalContext.current
@@ -102,8 +106,8 @@ fun ServerUrlScreen(
     errorMessage = errorMessage,
     onClickBack = { clickedBack = true },
     onClickConfirm = viewModel::onClickConfirm,
-    onUrlEntered = viewModel::onUrlEntered,
-    onProtocolSelected = viewModel::onProtocolSelected,
+    onEnterUrl = viewModel::onEnterUrl,
+    onSelectProtocol = viewModel::onSelectProtocol,
   )
 }
 
@@ -118,8 +122,8 @@ private fun ServerUrlScreenImpl(
   errorMessage: String?,
   onClickBack: () -> Unit,
   onClickConfirm: () -> Unit,
-  onUrlEntered: (String) -> Unit,
-  onProtocolSelected: (Protocol) -> Unit,
+  onEnterUrl: (String) -> Unit,
+  onSelectProtocol: (Protocol) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
@@ -161,8 +165,8 @@ private fun ServerUrlScreenImpl(
       isLoading = isLoading,
       errorMessage = errorMessage,
       onClickConfirm = onClickConfirm,
-      onUrlEntered = onUrlEntered,
-      onProtocolSelected = onProtocolSelected,
+      onEnterUrl = onEnterUrl,
+      onSelectProtocol = onSelectProtocol,
     )
   }
 }
@@ -178,8 +182,8 @@ private fun Content(
   isLoading: Boolean,
   errorMessage: String?,
   onClickConfirm: () -> Unit,
-  onUrlEntered: (String) -> Unit,
-  onProtocolSelected: (Protocol) -> Unit,
+  onEnterUrl: (String) -> Unit,
+  onSelectProtocol: (Protocol) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val theme = LocalTheme.current
@@ -220,7 +224,7 @@ private fun Content(
           modifier = Modifier.width(110.dp),
           value = protocol.toString(),
           options = protocols,
-          onValueChange = { onProtocolSelected(Protocol.fromString(it)) },
+          onValueChange = { onSelectProtocol(Protocol.fromString(it)) },
         )
 
         HorizontalSpacer(width = 5.dp)
@@ -230,7 +234,7 @@ private fun Content(
         ActualTextField(
           modifier = Modifier.weight(1f),
           value = url,
-          onValueChange = { onUrlEntered(it.lowercase()) },
+          onValueChange = { onEnterUrl(it.lowercase()) },
           placeholderText = EXAMPLE_URL,
           keyboardOptions = KeyboardOptions(
             autoCorrectEnabled = false,
@@ -295,8 +299,8 @@ private fun Regular() = PreviewActualScreen {
     isLoading = false,
     onClickBack = {},
     onClickConfirm = {},
-    onUrlEntered = {},
-    onProtocolSelected = {},
+    onEnterUrl = {},
+    onSelectProtocol = {},
     errorMessage = null,
   )
 }
@@ -313,8 +317,8 @@ private fun WithErrorMessage() = PreviewActualScreen {
     isLoading = true,
     onClickBack = {},
     onClickConfirm = {},
-    onUrlEntered = {},
-    onProtocolSelected = {},
+    onEnterUrl = {},
+    onSelectProtocol = {},
     errorMessage = "Hello this is an error message, split over multiple lines so you can see how it behaves",
   )
 }

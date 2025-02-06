@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
@@ -90,11 +91,12 @@ fun ActualExposedDropDownMenu(
   val theme = LocalTheme.current
 
   ExposedDropdownMenuBox(
+    modifier = modifier,
     expanded = expanded,
     onExpandedChange = { expanded = it },
   ) {
     ActualTextField(
-      modifier = modifier.menuAnchor(),
+      modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true),
       readOnly = true,
       placeholderText = null,
       value = selectedOptionText,

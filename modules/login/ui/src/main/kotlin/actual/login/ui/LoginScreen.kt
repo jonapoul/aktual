@@ -3,11 +3,10 @@ package actual.login.ui
 import actual.core.model.ActualVersions
 import actual.core.model.Password
 import actual.core.model.ServerUrl
+import actual.core.ui.PreviewActualScreen
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.ActualTextField
 import actual.core.ui.LocalTheme
-import actual.core.ui.OnDispose
-import actual.core.ui.PreviewActualScreen
 import actual.core.ui.PrimaryActualTextButtonWithLoading
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
@@ -34,6 +33,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -79,9 +79,11 @@ fun LoginScreen(
     SideEffect { navigator.navBack() }
   }
 
-  OnDispose {
-    navToServerUrl = false
-    viewModel.clearState()
+  DisposableEffect(Unit) {
+    onDispose {
+      navToServerUrl = false
+      viewModel.clearState()
+    }
   }
 
   LoginScreenImpl(
@@ -91,7 +93,7 @@ fun LoginScreen(
     isLoading = isLoading,
     loginFailure = loginFailure,
     onClickBack = { clickedBack = true },
-    onPasswordEntered = viewModel::onPasswordEntered,
+    onEnterPassword = viewModel::onEnterPassword,
     onClickSignIn = viewModel::onClickSignIn,
     onClickChangeServer = { navToServerUrl = true },
   )
@@ -105,7 +107,7 @@ private fun LoginScreenImpl(
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
   onClickBack: () -> Unit,
-  onPasswordEntered: (String) -> Unit,
+  onEnterPassword: (String) -> Unit,
   onClickSignIn: () -> Unit,
   onClickChangeServer: () -> Unit,
 ) {
@@ -145,7 +147,7 @@ private fun LoginScreenImpl(
       url = url,
       isLoading = isLoading,
       loginFailure = loginFailure,
-      onPasswordEntered = onPasswordEntered,
+      onEnterPassword = onEnterPassword,
       onClickSignIn = onClickSignIn,
       onClickChangeServer = onClickChangeServer,
     )
@@ -160,7 +162,7 @@ private fun Content(
   url: ServerUrl,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
-  onPasswordEntered: (String) -> Unit,
+  onEnterPassword: (String) -> Unit,
   onClickSignIn: () -> Unit,
   onClickChangeServer: () -> Unit,
   modifier: Modifier = Modifier,
@@ -197,7 +199,7 @@ private fun Content(
       ActualTextField(
         modifier = Modifier.fillMaxWidth(1f),
         value = enteredPassword.toString(),
-        onValueChange = onPasswordEntered,
+        onValueChange = onEnterPassword,
         placeholderText = stringResource(id = CoreR.string.login_password_hint),
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
@@ -256,7 +258,7 @@ private fun Regular() = PreviewActualScreen {
     isLoading = false,
     loginFailure = null,
     onClickBack = {},
-    onPasswordEntered = {},
+    onEnterPassword = {},
     onClickSignIn = {},
     onClickChangeServer = {},
   )
@@ -272,7 +274,7 @@ private fun WithErrorMessage() = PreviewActualScreen {
     isLoading = true,
     loginFailure = LoginResult.InvalidPassword,
     onClickBack = {},
-    onPasswordEntered = {},
+    onEnterPassword = {},
     onClickSignIn = {},
     onClickChangeServer = {},
   )

@@ -61,7 +61,7 @@ class LoginViewModel @Inject internal constructor(
     mutableLoginFailure.reset()
   }
 
-  fun onPasswordEntered(password: String) {
+  fun onEnterPassword(password: String) {
     mutableEnteredPassword.update { Password(password) }
   }
 

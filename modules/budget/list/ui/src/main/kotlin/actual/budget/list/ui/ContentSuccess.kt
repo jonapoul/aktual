@@ -1,9 +1,9 @@
 package actual.budget.list.ui
 
 import actual.budget.list.vm.Budget
+import actual.core.ui.PreviewActualScreen
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualScreen
 import actual.core.ui.Theme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn

@@ -1,4 +1,5 @@
 @file:SuppressLint("ComposeModifierMissing")
+@file:Suppress("ModifierMissing")
 
 package actual.core.ui
 

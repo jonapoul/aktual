@@ -61,7 +61,7 @@ internal class LoginViewModelTest {
     viewModel.enteredPassword.test {
       assertEquals(expected = "", actual = awaitItem().toString())
 
-      viewModel.onPasswordEntered(password = "hello world")
+      viewModel.onEnterPassword(password = "hello world")
       assertEquals(expected = "hello world", actual = awaitItem().toString())
 
       viewModel.clearState()
