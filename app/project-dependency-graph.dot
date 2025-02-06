@@ -46,6 +46,7 @@ graph ["rank"="same"]
 ":api:client" -> ":api:model"
 ":api:model" -> ":core:model"
 ":core:state" -> ":core:model"
+":serverUrl:prefs" -> ":core:model"
 ":login:prefs" -> ":core:model"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res"

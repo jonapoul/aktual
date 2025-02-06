@@ -31,6 +31,7 @@ graph ["rank"="same"]
 ":core:connection" -> ":api:json" ["style"="dotted"]
 ":core:connection" -> ":serverUrl:prefs" ["style"="dotted"]
 ":core:state" -> ":core:model"
+":serverUrl:prefs" -> ":core:model"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res"
 subgraph "cluster_legend" {
