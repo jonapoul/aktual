@@ -15,6 +15,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
+import kotlin.time.Duration.Companion.seconds
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
@@ -31,7 +32,7 @@ class ConnectionMonitorTest {
     apiStateHolder = ActualApisStateHolder()
 
     connectionMonitor = ConnectionMonitor(
-      scope = this,
+      scope = backgroundScope,
       apiStateHolder = apiStateHolder,
       serverUrlPreferences = serverUrlPreferences,
     )
@@ -84,16 +85,20 @@ class ConnectionMonitorTest {
   }
 
   @Test
-  fun `Remove APIs when URL is cleared`() = runTest {
+  fun `Remove APIs when URL is cleared`() = runTest(timeout = 10.seconds) {
     before()
 
     // Given we've set a URL and started
     serverUrlPreferences.url.set(ServerUrl.Demo)
-    connectionMonitor.start()
-    advanceUntilIdle()
 
     apiStateHolder.test {
-      // and an API is built and emitted
+      // Nothing initially
+      assertNull(awaitItem())
+
+      // when the monitor starts
+      connectionMonitor.start()
+
+      // then an API is built and emitted
       assertNotNull(awaitItem())
 
       // When the URL is cleared
@@ -114,11 +119,15 @@ class ConnectionMonitorTest {
 
     // Given we've set a URL and started
     serverUrlPreferences.url.set(ServerUrl.Demo)
-    connectionMonitor.start()
-    advanceUntilIdle()
 
     apiStateHolder.test {
-      // and an API is built and emitted
+      // Nothing initially
+      assertNull(awaitItem())
+
+      // when the monitor starts
+      connectionMonitor.start()
+
+      // then an API is built and emitted
       assertNotNull(awaitItem())
 
       // When the monitor is stopped
