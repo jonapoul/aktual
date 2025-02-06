@@ -9,17 +9,36 @@ class NeedsBootstrapResponseTest {
   fun `Deserialize ok`() {
     val json = """
       {
-          "status": "ok",
-          "data": {
-              "bootstrapped": true
-          }
+        "status": "ok",
+        "data": {
+          "bootstrapped": true,
+          "loginMethod": "password",
+          "availableLoginMethods": [
+            {
+              "method": "password",
+              "active": 1,
+              "displayName": "Password"
+            }
+          ],
+          "multiuser": false
+        }
       }
     """.trimIndent()
 
     assertEquals(
       actual = ActualJson.decodeFromString<NeedsBootstrapResponse>(json),
       expected = NeedsBootstrapResponse.Ok(
-        data = NeedsBootstrapResponse.Data(bootstrapped = true),
+        data = NeedsBootstrapResponse.Data(
+          bootstrapped = true,
+          loginMethod = LoginMethod.Password,
+          availableLoginMethods = listOf(
+            NeedsBootstrapResponse.AvailableLoginMethod(
+              method = LoginMethod.Password,
+              active = 1,
+              displayName = "Password",
+            )
+          )
+        ),
       ),
     )
   }

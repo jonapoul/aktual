@@ -136,8 +136,10 @@ class ServerUrlViewModel @Inject internal constructor(
     throw e
   } catch (e: Exception) {
     Timber.w(e, "Failed checking bootstrap for %s", url)
-    mutableConfirmResult.update {
-      ConfirmResult.Failed(reason = e.requireMessage())
-    }
+
+    // hit an error, we can't use this URL?
+    prefs.url.deleteAndCommit()
+
+    mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
   }
 }
