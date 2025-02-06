@@ -4,6 +4,7 @@ package actual.serverurl.ui
 
 import actual.core.model.ActualVersions
 import actual.core.model.Protocol
+import actual.core.res.CoreStrings
 import actual.core.ui.ActualExposedDropDownMenu
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.ActualScreenPreview
@@ -53,7 +54,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -64,7 +64,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import actual.core.res.R as CoreR
 
 @Composable
 fun ServerUrlScreen(
@@ -140,13 +139,13 @@ private fun ServerUrlScreenImpl(
           IconButton(onClick = onClickBack) {
             Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = stringResource(id = CoreR.string.nav_back),
+              contentDescription = CoreStrings.navBack,
             )
           }
         },
         title = {
           Text(
-            text = stringResource(id = CoreR.string.server_url_toolbar),
+            text = CoreStrings.serverUrlToolbar,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
           )
@@ -203,14 +202,14 @@ private fun Content(
       horizontalAlignment = Alignment.Start,
     ) {
       Text(
-        text = stringResource(id = CoreR.string.server_url_title),
+        text = CoreStrings.serverUrlTitle,
         style = MaterialTheme.typography.headlineLarge,
       )
 
       VerticalSpacer(height = 15.dp)
 
       Text(
-        text = stringResource(id = CoreR.string.server_url_message),
+        text = CoreStrings.serverUrlMessage,
         color = theme.tableRowHeaderText,
         style = MaterialTheme.typography.bodyLarge,
       )
@@ -258,7 +257,7 @@ private fun Content(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         PrimaryActualTextButtonWithLoading(
-          text = stringResource(id = CoreR.string.server_url_confirm),
+          text = CoreStrings.serverUrlConfirm,
           isLoading = isLoading,
           isEnabled = isEnabled,
           onClick = onClickConfirm,

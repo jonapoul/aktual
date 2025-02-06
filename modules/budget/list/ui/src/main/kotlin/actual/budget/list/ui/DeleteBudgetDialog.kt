@@ -1,6 +1,7 @@
 package actual.budget.list.ui
 
 import actual.budget.list.vm.Budget
+import actual.core.res.CoreStrings
 import actual.core.ui.ActualAlertDialog
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.BareActualTextButton
@@ -15,14 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
-import actual.core.res.R as CoreR
 
 @Composable
 internal fun DeleteBudgetDialog(
@@ -34,12 +33,12 @@ internal fun DeleteBudgetDialog(
 ) {
   ActualAlertDialog(
     modifier = modifier,
-    title = stringResource(id = CoreR.string.budget_delete_dialog_title, budget.name),
+    title = CoreStrings.budgetDeleteDialogTitle(budget.name),
     onDismissRequest = onDismiss,
     buttons = {
       TextButton(onClick = onDismiss) {
         Text(
-          text = stringResource(id = CoreR.string.budget_delete_dialog_dismiss),
+          text = CoreStrings.budgetDeleteDialogDismiss,
           fontFamily = ActualFontFamily,
         )
       }
@@ -75,19 +74,19 @@ private fun Content(
     )
 
     BareActualTextButton(
-      text = stringResource(id = CoreR.string.budget_delete_dialog_hosted_button),
+      text = CoreStrings.budgetDeleteDialogHostedButton,
       colors = { theme, pressed -> theme.errorPrimary(pressed) },
       onClick = onDeleteRemote,
       isEnabled = false,
     )
 
     Text(
-      text = stringResource(id = CoreR.string.budget_delete_dialog_local_txt),
+      text = CoreStrings.budgetDeleteDialogLocalTxt,
       fontSize = 14.sp,
     )
 
     BareActualTextButton(
-      text = stringResource(id = CoreR.string.budget_delete_dialog_local_button),
+      text = CoreStrings.budgetDeleteDialogLocalButton,
       colors = { theme, pressed -> theme.errorBare(pressed) },
       onClick = onDeleteLocal,
     )
@@ -97,13 +96,13 @@ private fun Content(
 @Stable
 @Composable
 fun annotatedString() = buildAnnotatedString {
-  append(stringResource(id = CoreR.string.budget_delete_dialog_hosted_txt_1))
+  append(CoreStrings.budgetDeleteDialogHostedTxt1)
   append(" ")
   withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-    append(stringResource(id = CoreR.string.budget_delete_dialog_hosted_txt_2))
+    append(CoreStrings.budgetDeleteDialogHostedTxt2)
   }
   append(" ")
-  append(stringResource(id = CoreR.string.budget_delete_dialog_hosted_txt_3))
+  append(CoreStrings.budgetDeleteDialogHostedTxt3)
 }
 
 @Stable

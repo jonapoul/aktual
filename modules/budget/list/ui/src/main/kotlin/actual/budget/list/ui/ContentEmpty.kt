@@ -1,5 +1,6 @@
 package actual.budget.list.ui
 
+import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
@@ -17,11 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import actual.core.res.R as CoreR
 
 @Stable
 @Composable
@@ -38,7 +37,7 @@ internal fun ContentEmpty(
     verticalArrangement = Arrangement.Center,
   ) {
     Text(
-      text = stringResource(id = CoreR.string.budget_success_empty),
+      text = CoreStrings.budgetSuccessEmpty,
       textAlign = TextAlign.Center,
       style = MaterialTheme.typography.headlineLarge,
     )
@@ -46,7 +45,7 @@ internal fun ContentEmpty(
     VerticalSpacer(20.dp)
 
     Text(
-      text = stringResource(id = CoreR.string.budget_success_empty_second),
+      text = CoreStrings.budgetSuccessEmptySecond,
       color = theme.pageText,
       textAlign = TextAlign.Center,
       fontFamily = ActualFontFamily,
@@ -56,7 +55,7 @@ internal fun ContentEmpty(
     VerticalSpacer(30.dp)
 
     PrimaryActualTextButton(
-      text = stringResource(id = CoreR.string.budget_success_empty_launch),
+      text = CoreStrings.budgetSuccessEmptyLaunch,
       onClick = onCreateBudgetInBrowser,
     )
   }

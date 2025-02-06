@@ -4,6 +4,7 @@ import actual.budget.list.vm.Budget
 import actual.budget.list.vm.BudgetState
 import actual.core.icons.ActualIcons
 import actual.core.icons.Key
+import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.BareActualIconButton
 import actual.core.ui.HorizontalSpacer
@@ -35,12 +36,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import actual.core.res.R as CoreR
 
 @Stable
 @Composable
@@ -94,7 +93,7 @@ internal fun BudgetListItem(
 
       BareActualIconButton(
         imageVector = Icons.Filled.MoreVert,
-        contentDescription = stringResource(id = CoreR.string.nav_back),
+        contentDescription = CoreStrings.navBack,
         onClick = { showDeleteMenu = true },
       )
 
@@ -117,7 +116,7 @@ private fun DeleteMenu(
     expanded = expanded,
     onDismissRequest = onDismiss,
   ) {
-    val deleteText = stringResource(id = CoreR.string.budget_delete)
+    val deleteText = CoreStrings.budgetDelete
     DropdownMenuItem(
       text = { Text(deleteText, fontFamily = ActualFontFamily) },
       leadingIcon = { Icon(imageVector = Icons.Filled.DeleteForever, contentDescription = deleteText) },
@@ -132,11 +131,7 @@ private val RowShape = RoundedCornerShape(size = 6.dp)
 @Composable
 @ReadOnlyComposable
 private fun budgetDescription(budget: Budget): String? = if (budget.encryptKeyId != null) {
-  if (budget.hasKey) {
-    stringResource(id = CoreR.string.list_budgets_encrypted_with_key)
-  } else {
-    stringResource(id = CoreR.string.list_budgets_encrypted_without_key)
-  }
+  if (budget.hasKey) CoreStrings.listBudgetsEncryptedWithKey else CoreStrings.listBudgetsEncryptedWithoutKey
 } else {
   null
 }

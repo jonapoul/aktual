@@ -7,6 +7,7 @@ import actual.core.icons.CloudDownload
 import actual.core.icons.CloudUnknown
 import actual.core.icons.CloudWarning
 import actual.core.icons.FileDouble
+import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.HorizontalSpacer
 import actual.core.ui.LocalTheme
@@ -27,11 +28,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import actual.core.res.R as CoreR
 
 @Stable
 @Composable
@@ -68,13 +67,13 @@ internal fun BudgetStateText(
 @Composable
 @ReadOnlyComposable
 private fun BudgetState.text(): String = when (this) {
-  BudgetState.Local -> stringResource(id = CoreR.string.budget_state_local)
-  BudgetState.Remote -> stringResource(id = CoreR.string.budget_state_remote)
-  BudgetState.Synced -> stringResource(id = CoreR.string.budget_state_synced)
-  BudgetState.Syncing -> stringResource(id = CoreR.string.budget_state_syncing)
-  BudgetState.Detached -> stringResource(id = CoreR.string.budget_state_detached)
-  BudgetState.Broken -> stringResource(id = CoreR.string.budget_state_broken)
-  BudgetState.Unknown -> stringResource(id = CoreR.string.budget_state_unknown)
+  BudgetState.Local -> CoreStrings.budgetStateLocal
+  BudgetState.Remote -> CoreStrings.budgetStateRemote
+  BudgetState.Synced -> CoreStrings.budgetStateSynced
+  BudgetState.Syncing -> CoreStrings.budgetStateSyncing
+  BudgetState.Detached -> CoreStrings.budgetStateDetached
+  BudgetState.Broken -> CoreStrings.budgetStateBroken
+  BudgetState.Unknown -> CoreStrings.budgetStateUnknown
 }
 
 @Stable

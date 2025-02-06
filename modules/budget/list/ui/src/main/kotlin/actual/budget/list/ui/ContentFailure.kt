@@ -2,6 +2,7 @@ package actual.budget.list.ui
 
 import actual.core.icons.ActualIcons
 import actual.core.icons.CloudWarning
+import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
@@ -21,12 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import actual.core.res.R as CoreR
 
 @Composable
 internal fun ContentFailure(
@@ -48,13 +47,13 @@ internal fun ContentFailure(
         modifier = Modifier.size(100.dp),
         imageVector = ActualIcons.CloudWarning,
         tint = theme.warningText,
-        contentDescription = stringResource(CoreR.string.budget_failure_desc),
+        contentDescription = CoreStrings.budgetFailureDesc,
       )
 
       VerticalSpacer(30.dp)
 
       Text(
-        text = stringResource(id = CoreR.string.budget_failure_message),
+        text = CoreStrings.budgetFailureMessage,
         color = theme.warningText,
         fontFamily = ActualFontFamily,
         textAlign = TextAlign.Center,
@@ -74,7 +73,7 @@ internal fun ContentFailure(
 
       VerticalSpacer(30.dp)
 
-      val retryText = stringResource(id = CoreR.string.budget_failure_retry)
+      val retryText = CoreStrings.budgetFailureRetry
       PrimaryActualTextButton(
         prefix = { Icon(imageVector = Icons.Filled.Refresh, contentDescription = retryText) },
         text = retryText,

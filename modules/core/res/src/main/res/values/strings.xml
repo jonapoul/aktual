@@ -5,7 +5,7 @@
 
     <string name="server_url_toolbar">Actual Budget</string>
     <string name="server_url_title">Where\'s the server?</string>
-    <string name="server_url_message">Existing sessions will be logged out and you will log in to this server. We will validate that Actual is running at this URL.</string>
+    <string name="server_url_message">There is no server configured. After running the server, specify the URL here to use the app. You can always change this later. We will validate that Actual is running at this URL.</string>
     <string name="server_url_confirm">Confirm</string>
     <string name="server_url_version_app_null">App: Unknown</string>
     <string name="server_url_version_app">App: v%1$s</string>

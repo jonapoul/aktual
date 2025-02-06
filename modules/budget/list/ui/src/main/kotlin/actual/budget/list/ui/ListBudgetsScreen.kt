@@ -5,6 +5,7 @@ import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.core.model.ActualVersions
 import actual.core.model.ServerUrl
+import actual.core.res.CoreStrings
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualScreen
@@ -38,13 +39,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.persistentListOf
-import actual.core.res.R as CoreR
 
 // TODO: Remove suppression
 @Suppress("UNUSED_PARAMETER")
@@ -119,7 +118,7 @@ private fun ListBudgetsScreenImpl(
         ),
         title = {
           Text(
-            text = stringResource(id = CoreR.string.list_budgets_toolbar),
+            text = CoreStrings.listBudgetsToolbar,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
           )
