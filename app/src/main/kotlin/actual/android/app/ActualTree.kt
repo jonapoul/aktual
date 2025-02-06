@@ -7,6 +7,5 @@ internal class ActualTree : Timber.DebugTree() {
     super.log(priority, tag, "ACTUAL: $message", t)
   }
 
-  override fun createStackElementTag(element: StackTraceElement) =
-    "(${element.fileName}:${element.lineNumber})#${element.methodName}"
+  override fun createStackElementTag(element: StackTraceElement) = "${element.fileName}:${element.lineNumber}"
 }
