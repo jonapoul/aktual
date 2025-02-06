@@ -53,8 +53,8 @@ fun PreviewActualScreen(
     items(SchemeTypes, key = { it }) { schemeType ->
       PreviewWithColorScheme(
         modifier = modifier
-            .width(MY_PHONE_WIDTH_DP.dp)
-            .height(MY_PHONE_HEIGHT_DP.dp),
+          .width(MY_PHONE_WIDTH_DP.dp)
+          .height(MY_PHONE_HEIGHT_DP.dp),
         schemeType = schemeType,
         content = content,
       )
