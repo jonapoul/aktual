@@ -13,6 +13,7 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualColumn
 import actual.core.ui.Theme
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -42,6 +44,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+/**
+ * actual/packages/desktop-client/src/components/manager/BudgetList.tsx
+ */
 @Stable
 @Composable
 internal fun BudgetListItem(
@@ -55,11 +60,14 @@ internal fun BudgetListItem(
     modifier = modifier
       .padding(5.dp)
       .background(theme.buttonNormalBackground, RowShape)
+      .border(1.dp, theme.buttonNormalBorder, RowShape)
       .padding(horizontal = 15.dp, vertical = 12.dp)
       .clickable(onClick = onClickOpen),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
   ) {
+    val description = budgetDescription(budget)
+
     Column(
       modifier = Modifier.weight(1f),
     ) {
@@ -68,13 +76,23 @@ internal fun BudgetListItem(
         fontSize = 16.sp,
         fontFamily = ActualFontFamily,
         fontWeight = FontWeight.W700,
-        color = theme.pageText,
+        color = theme.buttonNormalText,
       )
 
       BudgetStateText(
         state = budget.state,
         theme = theme,
       )
+
+      if (description != null) {
+        Text(
+          modifier = Modifier.padding(top = 4.dp),
+          text = description,
+          style = MaterialTheme.typography.bodySmall,
+          color = theme.buttonNormalText,
+          fontSize = 10.sp,
+        )
+      }
     }
 
     Row(
@@ -84,7 +102,7 @@ internal fun BudgetListItem(
       Icon(
         modifier = Modifier.size(13.dp),
         imageVector = ActualIcons.Key,
-        contentDescription = budgetDescription(budget),
+        contentDescription = description,
         tint = if (budget.hasKey) theme.formLabelText else theme.buttonNormalDisabledText,
       )
 
