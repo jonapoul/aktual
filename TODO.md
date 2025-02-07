@@ -3,8 +3,6 @@
 - Fix dialog buttons
 - Move to molecule in VMs
 - Multiplatform
-- Extract navigators to their own modules
-- Module diagrams
 - Support demo public app?
   - Doesn't support bootstrapping, probably other things too
 - Optional themes
@@ -25,3 +23,5 @@
   - https://github.com/actualbudget/actual/blob/master/packages/desktop-client/src/components/Background.tsx
 
 - Use action interfaces for each screen, not callback lambdas
+
+- auto change theme based on time of day

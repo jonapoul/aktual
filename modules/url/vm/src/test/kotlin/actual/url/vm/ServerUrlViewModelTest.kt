@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package actual.url.vm
 
 import actual.api.client.AccountApi
@@ -5,6 +7,7 @@ import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.LoginMethod
 import actual.api.model.account.NeedsBootstrapResponse
+import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.versions.ActualVersionsStateHolder
 import actual.log.EmptyLogger
 import actual.test.TestBuildConfig
@@ -18,6 +21,7 @@ import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -36,7 +40,8 @@ class ServerUrlViewModelTest {
   val mainDispatcherRule = MainDispatcherRule()
 
   // Real
-  private lateinit var preferences: ServerUrlPreferences
+  private lateinit var serverUrlPreferences: ServerUrlPreferences
+  private lateinit var colorSchemePreferences: ColorSchemePreferences
   private lateinit var viewModel: ServerUrlViewModel
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var versionsStateHolder: ActualVersionsStateHolder
@@ -48,7 +53,8 @@ class ServerUrlViewModelTest {
   @Before
   fun before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
-    preferences = ServerUrlPreferences(prefs)
+    serverUrlPreferences = ServerUrlPreferences(prefs)
+    colorSchemePreferences = ColorSchemePreferences(prefs)
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
 
     accountApi = mockk()
@@ -65,7 +71,8 @@ class ServerUrlViewModelTest {
       logger = EmptyLogger,
       contexts = TestCoroutineContexts(mainDispatcherRule),
       apiStateHolder = apisStateHolder,
-      prefs = preferences,
+      serverUrlPreferences = serverUrlPreferences,
+      colorSchemePreferences = colorSchemePreferences,
       versionsStateHolder = versionsStateHolder,
     )
   }
@@ -111,7 +118,7 @@ class ServerUrlViewModelTest {
   @Test
   fun `Set initial parameters based on preferences`() = runTest {
     // Given
-    preferences.url.set(EXAMPLE_URL)
+    serverUrlPreferences.url.set(EXAMPLE_URL)
 
     // When
     buildViewModel()

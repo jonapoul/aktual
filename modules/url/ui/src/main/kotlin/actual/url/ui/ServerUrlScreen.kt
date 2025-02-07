@@ -1,10 +1,12 @@
 package actual.url.ui
 
+import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualExposedDropDownMenu
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.ActualTextField
+import actual.core.ui.AppThemeChooser
 import actual.core.ui.HorizontalSpacer
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualScreen
@@ -24,7 +26,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -79,6 +81,7 @@ fun ServerUrlScreen(
   val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
   val shouldNavigate by viewModel.shouldNavigate.collectAsStateWithLifecycle(initialValue = false)
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle(initialValue = null)
+  val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   var clickedBack by remember { mutableStateOf(false) }
 
   DisposableEffect(Unit) {
@@ -97,7 +100,7 @@ fun ServerUrlScreen(
     shouldNavigate is ShouldNavigate.ToLogin -> SideEffect { navController.debugNavigate(LoginNavRoute) }
   }
 
-  ServerUrlScreenImpl(
+  ServerUrlScaffold(
     url = enteredUrl,
     protocol = protocol,
     protocols = viewModel.protocols,
@@ -105,19 +108,21 @@ fun ServerUrlScreen(
     isEnabled = isEnabled,
     isLoading = isLoading,
     errorMessage = errorMessage,
+    themeType = themeType,
     onAction = { action ->
       when (action) {
         ServerUrlAction.ConfirmUrl -> viewModel.onClickConfirm()
         ServerUrlAction.NavBack -> clickedBack = true
         is ServerUrlAction.EnterUrl -> viewModel.onEnterUrl(action.url)
         is ServerUrlAction.SelectProtocol -> viewModel.onSelectProtocol(action.protocol)
+        is ServerUrlAction.SetTheme -> viewModel.onSetTheme(action.type)
       }
     },
   )
 }
 
 @Composable
-private fun ServerUrlScreenImpl(
+private fun ServerUrlScaffold(
   url: String,
   protocol: Protocol,
   protocols: ImmutableList<String>,
@@ -125,6 +130,7 @@ private fun ServerUrlScreenImpl(
   isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
+  themeType: ColorSchemeType,
   onAction: (ServerUrlAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -157,7 +163,7 @@ private fun ServerUrlScreenImpl(
       )
     },
   ) { innerPadding ->
-    Content(
+    ServerUrlContent(
       modifier = Modifier.padding(innerPadding),
       url = url,
       protocol = protocol,
@@ -166,6 +172,7 @@ private fun ServerUrlScreenImpl(
       isEnabled = isEnabled,
       isLoading = isLoading,
       errorMessage = errorMessage,
+      themeType = themeType,
       onAction = onAction,
     )
   }
@@ -173,7 +180,7 @@ private fun ServerUrlScreenImpl(
 
 @Stable
 @Composable
-private fun Content(
+private fun ServerUrlContent(
   url: String,
   protocol: Protocol,
   protocols: ImmutableList<String>,
@@ -181,105 +188,113 @@ private fun Content(
   isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
+  themeType: ColorSchemeType,
   onAction: (ServerUrlAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val theme = LocalTheme.current
 
-  Box(
+  Column(
     modifier = modifier
       .background(theme.pageBackground)
-      .fillMaxSize()
-      .padding(16.dp),
-    contentAlignment = Alignment.TopCenter,
+      .padding(16.dp)
+      .wrapContentWidth()
+      .wrapContentHeight(),
+    verticalArrangement = Arrangement.Center,
+    horizontalAlignment = Alignment.Start,
   ) {
-    Column(
-      modifier = Modifier
-        .wrapContentWidth()
-        .wrapContentHeight(),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.Start,
+    Text(
+      text = ServerUrlStrings.serverUrlTitle,
+      style = MaterialTheme.typography.headlineLarge,
+    )
+
+    VerticalSpacer(height = 15.dp)
+
+    Text(
+      text = ServerUrlStrings.serverUrlMessage,
+      color = theme.tableRowHeaderText,
+      style = MaterialTheme.typography.bodyLarge,
+    )
+
+    VerticalSpacer(height = 20.dp)
+
+    Row(
+      modifier = Modifier.fillMaxWidth(),
     ) {
-      Text(
-        text = ServerUrlStrings.serverUrlTitle,
-        style = MaterialTheme.typography.headlineLarge,
+      ActualExposedDropDownMenu(
+        modifier = Modifier.width(110.dp),
+        value = protocol.toString(),
+        options = protocols,
+        onValueChange = { onAction(ServerUrlAction.SelectProtocol(Protocol.fromString(it))) },
       )
 
-      VerticalSpacer(height = 15.dp)
+      HorizontalSpacer(width = 5.dp)
 
-      Text(
-        text = ServerUrlStrings.serverUrlMessage,
-        color = theme.tableRowHeaderText,
-        style = MaterialTheme.typography.bodyLarge,
+      val focusManager = LocalFocusManager.current
+
+      ActualTextField(
+        modifier = Modifier.weight(1f),
+        value = url,
+        onValueChange = { onAction(ServerUrlAction.EnterUrl(it.lowercase())) },
+        placeholderText = EXAMPLE_URL,
+        keyboardOptions = KeyboardOptions(
+          autoCorrectEnabled = false,
+          capitalization = KeyboardCapitalization.None,
+          keyboardType = KeyboardType.Uri,
+          imeAction = ImeAction.Go,
+        ),
+        keyboardActions = KeyboardActions(
+          onGo = {
+            focusManager.clearFocus()
+            onAction(ServerUrlAction.ConfirmUrl)
+          },
+        ),
       )
+    }
+    VerticalSpacer(height = 20.dp)
 
-      VerticalSpacer(height = 20.dp)
-
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-      ) {
-        ActualExposedDropDownMenu(
-          modifier = Modifier.width(110.dp),
-          value = protocol.toString(),
-          options = protocols,
-          onValueChange = { onAction(ServerUrlAction.SelectProtocol(Protocol.fromString(it))) },
-        )
-
-        HorizontalSpacer(width = 5.dp)
-
-        val focusManager = LocalFocusManager.current
-
-        ActualTextField(
-          modifier = Modifier.weight(1f),
-          value = url,
-          onValueChange = { onAction(ServerUrlAction.EnterUrl(it.lowercase())) },
-          placeholderText = EXAMPLE_URL,
-          keyboardOptions = KeyboardOptions(
-            autoCorrectEnabled = false,
-            capitalization = KeyboardCapitalization.None,
-            keyboardType = KeyboardType.Uri,
-            imeAction = ImeAction.Go,
-          ),
-          keyboardActions = KeyboardActions(
-            onGo = {
-              focusManager.clearFocus()
-              onAction(ServerUrlAction.ConfirmUrl)
-            },
-          ),
-        )
-      }
-      VerticalSpacer(height = 20.dp)
-
-      Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        PrimaryActualTextButtonWithLoading(
-          text = ServerUrlStrings.serverUrlConfirm,
-          isLoading = isLoading,
-          isEnabled = isEnabled,
-          onClick = { onAction(ServerUrlAction.ConfirmUrl) },
-        )
-      }
-
-      if (errorMessage != null) {
-        VerticalSpacer(20.dp)
-
-        Text(
-          modifier = Modifier.fillMaxWidth(),
-          text = errorMessage,
-          fontFamily = ActualFontFamily,
-          color = theme.errorText,
-          textAlign = TextAlign.Center,
-        )
-      }
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.End,
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      PrimaryActualTextButtonWithLoading(
+        text = ServerUrlStrings.serverUrlConfirm,
+        isLoading = isLoading,
+        isEnabled = isEnabled,
+        onClick = { onAction(ServerUrlAction.ConfirmUrl) },
+      )
     }
 
-    VersionsText(
-      modifier = Modifier.align(Alignment.BottomEnd),
-      versions = versions,
+    if (errorMessage != null) {
+      VerticalSpacer(20.dp)
+
+      Text(
+        modifier = Modifier.fillMaxWidth(),
+        text = errorMessage,
+        fontFamily = ActualFontFamily,
+        color = theme.errorText,
+        textAlign = TextAlign.Center,
+      )
+    }
+
+    Spacer(
+      modifier = Modifier.weight(1f),
     )
+
+    AppThemeChooser(
+      selected = themeType,
+      onSelect = { type -> onAction(ServerUrlAction.SetTheme(type)) },
+    )
+
+    Box(
+      modifier = Modifier.fillMaxWidth(),
+    ) {
+      VersionsText(
+        modifier = Modifier.align(Alignment.BottomEnd),
+        versions = versions,
+      )
+    }
   }
 }
 
@@ -287,14 +302,15 @@ private const val EXAMPLE_URL = "example.com"
 
 @ActualScreenPreview
 @Composable
-private fun Regular() = PreviewActualScreen {
-  ServerUrlScreenImpl(
+private fun Regular() = PreviewActualScreen { type ->
+  ServerUrlScaffold(
     url = "",
     protocol = Protocol.Https,
     protocols = persistentListOf("http", "https"),
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     isEnabled = true,
     isLoading = false,
+    themeType = type,
     onAction = {},
     errorMessage = null,
   )
@@ -302,14 +318,15 @@ private fun Regular() = PreviewActualScreen {
 
 @ActualScreenPreview
 @Composable
-private fun WithErrorMessage() = PreviewActualScreen {
-  ServerUrlScreenImpl(
+private fun WithErrorMessage() = PreviewActualScreen { type ->
+  ServerUrlScaffold(
     url = "my.server.com:1234/path",
     protocol = Protocol.Http,
     protocols = persistentListOf("http", "https"),
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     isEnabled = true,
     isLoading = true,
+    themeType = type,
     onAction = {},
     errorMessage = "Hello this is an error message, split over multiple lines so you can see how it behaves",
   )

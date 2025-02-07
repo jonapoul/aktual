@@ -2,6 +2,7 @@
 
 package actual.core.ui
 
+import actual.core.colorscheme.ColorSchemeType
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height
@@ -19,7 +20,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 fun PreviewActualColumn(
   modifier: Modifier = Modifier,
-  content: @Composable () -> Unit,
+  content: @Composable (ColorSchemeType) -> Unit,
 ) {
   LazyColumn {
     items(SchemeTypes, key = { it }) { schemeType ->
@@ -33,7 +34,7 @@ fun PreviewActualColumn(
 @Composable
 fun PreviewActualRow(
   modifier: Modifier = Modifier,
-  content: @Composable () -> Unit,
+  content: @Composable (ColorSchemeType) -> Unit,
 ) {
   LazyRow {
     items(SchemeTypes, key = { it }) { schemeType ->
@@ -47,7 +48,7 @@ fun PreviewActualRow(
 @Composable
 fun PreviewActualScreen(
   modifier: Modifier = Modifier,
-  content: @Composable () -> Unit,
+  content: @Composable (ColorSchemeType) -> Unit,
 ) {
   LazyRow {
     items(SchemeTypes, key = { it }) { schemeType ->
@@ -56,7 +57,7 @@ fun PreviewActualScreen(
           .width(MY_PHONE_WIDTH_DP.dp)
           .height(MY_PHONE_HEIGHT_DP.dp),
         schemeType = schemeType,
-        content = content,
+        content = { content(schemeType) },
       )
     }
   }
@@ -66,11 +67,11 @@ fun PreviewActualScreen(
 private fun PreviewWithColorScheme(
   schemeType: ColorSchemeType,
   modifier: Modifier = Modifier,
-  content: @Composable () -> Unit,
+  content: @Composable (ColorSchemeType) -> Unit,
 ) {
   ActualTheme(schemeType) {
     Surface(modifier = modifier) {
-      content()
+      content(schemeType)
     }
   }
 }

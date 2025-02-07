@@ -1,4 +1,4 @@
-package actual.core.ui
+package actual.core.colorscheme
 
 import androidx.compose.runtime.Immutable
 

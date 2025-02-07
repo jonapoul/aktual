@@ -117,6 +117,7 @@ dependencies {
   implementation(libs.timber)
   implementation(projects.budget.list.ui)
   implementation(projects.core.buildconfig)
+  implementation(projects.core.colorscheme)
   implementation(projects.core.coroutines)
   implementation(projects.core.log)
   implementation(projects.login.ui)
