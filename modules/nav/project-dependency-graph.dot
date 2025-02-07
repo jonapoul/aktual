@@ -1,27 +1,31 @@
 digraph {
 edge ["dir"="forward"]
-graph ["dpi"="100","label"=":nav","labelloc"="t","fontsize"="30","ranksep"="2.5","rankdir"="TB"]
+graph ["dpi"="100","label"=":nav","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":nav" ["fillcolor"="#FFFF55","shape"="box"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":budget:list:vm" ["fillcolor"="#F5A6A6","shape"="box"]
-":core:connection" ["fillcolor"="#55FF55","shape"="box"]
-":api:client" ["fillcolor"="#BB00FF","shape"="box"]
-":api:model" ["fillcolor"="#BB00FF","shape"="box"]
+":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
+":api:client" ["fillcolor"="#9D8DF1","shape"="box"]
+":api:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":login:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:json" ["fillcolor"="#BB00FF","shape"="box"]
-":core:coroutines" ["fillcolor"="#BB00FF","shape"="box"]
+":api:json" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
-":url:prefs" ["fillcolor"="#55FF55","shape"="box"]
-":login:prefs" ["fillcolor"="#BB00FF","shape"="box"]
+":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
+":login:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
+":budget:list:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":login:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":login:vm" ["fillcolor"="#F5A6A6","shape"="box"]
+":login:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":url:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":url:vm" ["fillcolor"="#F5A6A6","shape"="box"]
+":url:res" ["fillcolor"="#00FFFF","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -31,37 +35,56 @@ graph ["rank"="same"]
 ":nav" -> ":url:ui"
 ":budget:list:ui" -> ":budget:list:vm"
 ":budget:list:ui" -> ":core:ui"
+":budget:list:ui" -> ":budget:list:res" ["style"="dotted"]
+":budget:list:ui" -> ":core:res" ["style"="dotted"]
 ":budget:list:vm" -> ":core:connection"
-":budget:list:vm" -> ":login:prefs"
 ":budget:list:vm" -> ":url:model"
+":budget:list:vm" -> ":core:versions" ["style"="dotted"]
+":budget:list:vm" -> ":login:prefs" ["style"="dotted"]
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
-":core:connection" -> ":api:client"
-":core:connection" -> ":api:json"
-":core:connection" -> ":core:coroutines"
-":core:connection" -> ":core:versions"
-":core:connection" -> ":url:model"
-":core:connection" -> ":url:prefs"
-":core:connection" -> ":core:buildconfig" ["style"="dotted"]
+":core:connection" -> ":core:buildconfig"
+":core:connection" -> ":api:client" ["style"="dotted"]
+":core:connection" -> ":api:json" ["style"="dotted"]
+":core:connection" -> ":core:coroutines" ["style"="dotted"]
+":core:connection" -> ":core:log" ["style"="dotted"]
+":core:connection" -> ":core:versions" ["style"="dotted"]
+":core:connection" -> ":url:model" ["style"="dotted"]
+":core:connection" -> ":url:prefs" ["style"="dotted"]
 ":api:client" -> ":api:model"
 ":api:client" -> ":url:model"
 ":api:model" -> ":login:model"
 ":core:versions" -> ":core:buildconfig"
 ":url:prefs" -> ":url:model"
 ":login:prefs" -> ":login:model"
-":core:ui" -> ":core:res"
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
+":core:ui" -> ":core:res" ["style"="dotted"]
 ":login:ui" -> ":core:ui"
 ":login:ui" -> ":login:vm"
+":login:ui" -> ":core:res" ["style"="dotted"]
+":login:ui" -> ":login:res" ["style"="dotted"]
 ":login:vm" -> ":core:connection"
 ":login:vm" -> ":login:model"
 ":login:vm" -> ":url:model"
 ":login:vm" -> ":api:client" ["style"="dotted"]
+":login:vm" -> ":api:model" ["style"="dotted"]
+":login:vm" -> ":core:coroutines" ["style"="dotted"]
+":login:vm" -> ":core:log" ["style"="dotted"]
+":login:vm" -> ":core:versions" ["style"="dotted"]
 ":login:vm" -> ":login:prefs" ["style"="dotted"]
+":login:vm" -> ":url:prefs" ["style"="dotted"]
 ":url:ui" -> ":core:ui"
 ":url:ui" -> ":url:vm"
+":url:ui" -> ":core:res" ["style"="dotted"]
+":url:ui" -> ":url:res" ["style"="dotted"]
 ":url:vm" -> ":core:connection"
 ":url:vm" -> ":url:model"
+":url:vm" -> ":api:client" ["style"="dotted"]
+":url:vm" -> ":api:model" ["style"="dotted"]
+":url:vm" -> ":core:coroutines" ["style"="dotted"]
+":url:vm" -> ":core:log" ["style"="dotted"]
+":url:vm" -> ":core:versions" ["style"="dotted"]
+":url:vm" -> ":url:prefs" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
@@ -69,13 +92,11 @@ graph ["label"="Legend","fontsize"="20"]
 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
 <TR><TD>App</TD><TD BGCOLOR="#FF5555">module-name</TD></TR>
 <TR><TD>ViewModel</TD><TD BGCOLOR="#F5A6A6">module-name</TD></TR>
-<TR><TD>Hilt</TD><TD BGCOLOR="#FCB103">module-name</TD></TR>
 <TR><TD>Compose</TD><TD BGCOLOR="#FFFF55">module-name</TD></TR>
 <TR><TD>Android</TD><TD BGCOLOR="#55FF55">module-name</TD></TR>
 <TR><TD>Resources</TD><TD BGCOLOR="#00FFFF">module-name</TD></TR>
 <TR><TD>Navigation</TD><TD BGCOLOR="#5555FF">module-name</TD></TR>
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
-<TR><TD>JVM</TD><TD BGCOLOR="#BB00FF">module-name</TD></TR>
 </TABLE>
 >]
 } -> ":nav" ["style"="invis"]

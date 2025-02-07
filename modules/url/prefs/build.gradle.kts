@@ -1,11 +1,17 @@
+import actual.gradle.androidUnitTestDependencies
+import actual.gradle.commonMainDependencies
+
 plugins {
-  alias(libs.plugins.module.android)
+  alias(libs.plugins.module.multiplatform)
 }
 
-dependencies {
+commonMainDependencies {
   api(libs.javaxInject)
   api(libs.preferences.core)
   api(projects.url.model)
-  testImplementation(projects.test.buildconfig)
-  testImplementation(projects.test.prefs)
+}
+
+androidUnitTestDependencies {
+  implementation(projects.test.buildconfig)
+  implementation(projects.test.prefs)
 }

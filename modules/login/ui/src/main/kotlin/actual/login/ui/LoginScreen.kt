@@ -11,6 +11,7 @@ import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.versions.ActualVersions
 import actual.login.model.Password
+import actual.login.res.LoginStrings
 import actual.login.vm.LoginResult
 import actual.login.vm.LoginViewModel
 import actual.url.model.ServerUrl
@@ -132,7 +133,7 @@ private fun LoginScreenImpl(
         },
         title = {
           Text(
-            text = CoreStrings.loginToolbar,
+            text = LoginStrings.toolbar,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
           )
@@ -183,14 +184,14 @@ private fun Content(
       horizontalAlignment = Alignment.Start,
     ) {
       Text(
-        text = CoreStrings.loginTitle,
+        text = LoginStrings.title,
         style = MaterialTheme.typography.headlineLarge,
       )
 
       VerticalSpacer(15.dp)
 
       Text(
-        text = CoreStrings.loginMessage,
+        text = LoginStrings.message,
         color = theme.tableRowHeaderText,
         style = MaterialTheme.typography.bodyLarge,
       )
@@ -201,7 +202,7 @@ private fun Content(
         modifier = Modifier.fillMaxWidth(1f),
         value = enteredPassword.toString(),
         onValueChange = onEnterPassword,
-        placeholderText = CoreStrings.loginPasswordHint,
+        placeholderText = LoginStrings.passwordHint,
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
           autoCorrectEnabled = false,
@@ -219,7 +220,7 @@ private fun Content(
         modifier = Modifier
           .align(Alignment.CenterHorizontally)
           .width(170.dp),
-        text = CoreStrings.loginSignIn,
+        text = LoginStrings.signIn,
         isLoading = isLoading,
         onClick = onClickSignIn,
       )

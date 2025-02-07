@@ -2,6 +2,7 @@ package actual.android.app
 
 import actual.core.coroutines.CoroutineContexts
 import actual.core.coroutines.DefaultCoroutineContexts
+import actual.log.Logger
 import alakazam.kotlin.core.InfiniteLoopController
 import alakazam.kotlin.core.LoopController
 import android.content.Context
@@ -93,4 +94,12 @@ internal class PreferencesModule {
     prefs: SharedPreferences,
     contexts: CoroutineContexts,
   ): Preferences = AndroidSharedPreferences(prefs, contexts.io)
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal interface LoggerModule {
+  @Binds
+  @Singleton
+  fun logger(impl: ActualLogger): Logger
 }

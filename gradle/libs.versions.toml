@@ -232,7 +232,6 @@ convention-test = { id = "actual.convention.test" }
 module-android = { id = "actual.module.android" }
 module-compose = { id = "actual.module.compose" }
 module-hilt = { id = "actual.module.hilt" }
-module-kotlin = { id = "actual.module.kotlin" }
 module-multiplatform = { id = "actual.module.multiplatform" }
 module-navigation = { id = "actual.module.navigation" }
 module-resources = { id = "actual.module.resources" }

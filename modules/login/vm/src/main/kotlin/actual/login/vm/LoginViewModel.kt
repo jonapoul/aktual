@@ -3,6 +3,7 @@ package actual.login.vm
 import actual.core.coroutines.ResettableStateFlow
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
+import actual.log.Logger
 import actual.login.model.Password
 import actual.login.prefs.LoginPreferences
 import actual.url.model.ServerUrl
@@ -19,11 +20,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject internal constructor(
+  private val logger: Logger,
   private val loginRequester: LoginRequester,
   versionsStateHolder: ActualVersionsStateHolder,
   serverUrlPrefs: ServerUrlPreferences,
@@ -66,14 +67,14 @@ class LoginViewModel @Inject internal constructor(
   }
 
   fun onClickSignIn() {
-    Timber.v("onClickSignIn")
+    logger.v("onClickSignIn")
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
     viewModelScope.launch {
       val password = mutableEnteredPassword.value
       val result = loginRequester.logIn(password)
 
-      Timber.d("Login result = %s", result)
+      logger.d("Login result = %s", result)
       mutableIsLoading.update { false }
 
       if (result is LoginResult.Failure) {

@@ -1,7 +1,9 @@
+import actual.gradle.commonMainDependencies
+
 plugins {
-  alias(libs.plugins.module.kotlin)
+  alias(libs.plugins.module.multiplatform)
 }
 
-dependencies {
+commonMainDependencies {
   implementation(libs.test.alakazam.core)
 }

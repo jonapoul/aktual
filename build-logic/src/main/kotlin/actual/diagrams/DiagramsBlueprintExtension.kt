@@ -55,7 +55,7 @@ open class DiagramsBlueprintExtension @Inject constructor(
 
   val rankSeparation: Property<Double> = objects
     .property(Double::class.java)
-    .convention(2.5)
+    .convention(1.5)
 
   val topLevelProject: Property<String> = objects
     .property(String::class.java)

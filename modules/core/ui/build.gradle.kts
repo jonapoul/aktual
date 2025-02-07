@@ -5,7 +5,6 @@ plugins {
 dependencies {
   api(libs.androidx.compose.runtime)
   api(libs.kotlinx.immutable)
-  api(projects.core.res)
   api(projects.core.versions)
   api(projects.url.model)
   implementation(libs.androidx.compose.foundation.core)
@@ -19,4 +18,5 @@ dependencies {
   implementation(libs.androidx.compose.ui.toolingPreview)
   implementation(libs.androidx.compose.ui.unit)
   implementation(libs.androidx.coreKtx)
+  implementation(projects.core.res)
 }

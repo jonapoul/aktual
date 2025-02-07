@@ -6,6 +6,7 @@ import actual.core.coroutines.CoroutineContexts
 import actual.core.coroutines.ResettableStateFlow
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
+import actual.log.Logger
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
@@ -28,12 +29,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 import javax.inject.Inject
 import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class ServerUrlViewModel @Inject internal constructor(
+  private val logger: Logger,
   private val contexts: CoroutineContexts,
   private val apiStateHolder: ActualApisStateHolder,
   private val prefs: ServerUrlPreferences,
@@ -88,18 +89,18 @@ class ServerUrlViewModel @Inject internal constructor(
   }
 
   fun onEnterUrl(url: String) {
-    Timber.v("onUrlEntered %s", url)
+    logger.v("onUrlEntered %s", url)
     mutableBaseUrl.update { url }
     mutableConfirmResult.update { null }
   }
 
   fun onSelectProtocol(protocol: Protocol) {
-    Timber.v("onProtocolSelected %s", protocol)
+    logger.v("onProtocolSelected %s", protocol)
     mutableProtocol.update { protocol }
   }
 
   fun onClickConfirm() {
-    Timber.v("onClickConfirm")
+    logger.v("onClickConfirm")
     mutableIsLoading.update { true }
     viewModelScope.launch {
       val protocol = mutableProtocol.value
@@ -112,15 +113,15 @@ class ServerUrlViewModel @Inject internal constructor(
   }
 
   private suspend fun checkIfNeedsBootstrap(url: ServerUrl) = try {
-    Timber.v("checkIfNeedsBootstrap %s", url)
+    logger.v("checkIfNeedsBootstrap %s", url)
     val apis = apiStateHolder
       .filterNotNull()
       .filter { it.serverUrl == url }
       .first()
 
-    Timber.v("apis = %s", apis)
+    logger.v("apis = %s", apis)
     val response = withContext(contexts.io) { apis.account.needsBootstrap() }
-    Timber.v("response = %s", response)
+    logger.v("response = %s", response)
 
     val confirmResult = when (response) {
       is NeedsBootstrapResponse.Ok -> {
@@ -135,7 +136,7 @@ class ServerUrlViewModel @Inject internal constructor(
   } catch (e: CancellationException) {
     throw e
   } catch (e: Exception) {
-    Timber.w(e, "Failed checking bootstrap for %s", url)
+    logger.w(e, "Failed checking bootstrap for %s", url)
 
     // hit an error, we can't use this URL?
     prefs.url.deleteAndCommit()

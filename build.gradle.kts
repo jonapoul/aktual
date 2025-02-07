@@ -76,7 +76,6 @@ dependencyAnalysis {
 
       ignoreSourceSet(
         "androidTest",
-        "testFixtures",
       )
     }
   }

@@ -5,9 +5,9 @@ import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.LoginMethod
 import actual.api.model.account.NeedsBootstrapResponse
-import actual.core.coroutines.TestCoroutineContexts
 import actual.core.versions.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
+import actual.test.TestCoroutineContexts
 import actual.test.buildPreferences
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl

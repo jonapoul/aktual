@@ -4,17 +4,18 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
 import actual.core.coroutines.CoroutineContexts
+import actual.log.Logger
 import actual.login.model.Password
 import actual.login.prefs.LoginPreferences
 import alakazam.kotlin.core.requireMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
-import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
 internal class LoginRequester @Inject internal constructor(
+  private val logger: Logger,
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
   private val loginPreferences: LoginPreferences,
@@ -28,7 +29,7 @@ internal class LoginRequester @Inject internal constructor(
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
-      Timber.w(e, "Failed logging in with $password")
+      logger.w(e, "Failed logging in with $password")
       return when (e) {
         is HttpException -> LoginResult.HttpFailure(e.code(), e.message())
         is IOException -> LoginResult.NetworkFailure(e.requireMessage())

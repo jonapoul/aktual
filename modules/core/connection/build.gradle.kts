@@ -1,15 +1,13 @@
+import actual.gradle.androidUnitTestDependencies
+import actual.gradle.commonMainDependencies
+
 plugins {
-  alias(libs.plugins.module.android)
+  alias(libs.plugins.module.multiplatform)
 }
 
-dependencies {
+commonMainDependencies {
   api(libs.javaxInject)
-  api(projects.api.client)
-  api(projects.api.json)
-  api(projects.core.coroutines)
-  api(projects.core.versions)
-  api(projects.url.model)
-  api(projects.url.prefs)
+  api(projects.core.buildconfig)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.serialization.core)
@@ -19,9 +17,18 @@ dependencies {
   implementation(libs.preferences.core)
   implementation(libs.retrofit.core)
   implementation(libs.retrofit.serialization)
-  implementation(projects.core.buildconfig)
-  testImplementation(libs.alakazam.android.core)
-  testImplementation(testFixtures(projects.core.coroutines))
-  testImplementation(projects.test.buildconfig)
-  testImplementation(projects.test.prefs)
+  implementation(projects.api.client)
+  implementation(projects.api.json)
+  implementation(projects.core.coroutines)
+  implementation(projects.core.log)
+  implementation(projects.core.versions)
+  implementation(projects.url.model)
+  implementation(projects.url.prefs)
+}
+
+androidUnitTestDependencies {
+  implementation(libs.alakazam.android.core)
+  implementation(projects.test.buildconfig)
+  implementation(projects.test.coroutines)
+  implementation(projects.test.prefs)
 }
