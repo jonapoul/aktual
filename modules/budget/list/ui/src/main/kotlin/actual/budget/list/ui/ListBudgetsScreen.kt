@@ -8,11 +8,9 @@ import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualScreen
 import actual.core.ui.Theme
-import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.versions.ActualVersions
-import actual.url.model.ServerUrl
 import alakazam.kotlin.core.exhaustive
 import android.content.Intent
 import android.net.Uri
@@ -20,7 +18,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -88,9 +85,8 @@ fun ListBudgetsScreen(
     )
   }
 
-  ListBudgetsScreenImpl(
+  ListBudgetsScaffold(
     versions = versions,
-    serverUrl = serverUrl,
     state = state,
     onAction = { action ->
       when (action) {
@@ -105,9 +101,8 @@ fun ListBudgetsScreen(
 }
 
 @Composable
-private fun ListBudgetsScreenImpl(
+private fun ListBudgetsScaffold(
   versions: ActualVersions,
-  serverUrl: ServerUrl,
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
 ) {
@@ -117,36 +112,41 @@ private fun ListBudgetsScreenImpl(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-          containerColor = theme.mobileHeaderBackground,
-          titleContentColor = theme.mobileHeaderText,
-        ),
-        title = {
-          Text(
-            text = BudgetListStrings.listBudgetsToolbar,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-          )
-        },
+        colors = theme.scaffoldColors(),
+        title = { ScaffoldTitle() },
         scrollBehavior = scrollBehavior,
       )
     },
   ) { innerPadding ->
-    Content(
+    ListBudgetsContent(
       modifier = Modifier.padding(innerPadding),
       versions = versions,
-      serverUrl = serverUrl,
       state = state,
       onAction = onAction,
+      theme = theme,
     )
   }
 }
 
 @Stable
 @Composable
-private fun Content(
+private fun Theme.scaffoldColors() = TopAppBarDefaults.topAppBarColors(
+  containerColor = mobileHeaderBackground,
+  titleContentColor = mobileHeaderText,
+)
+
+@Stable
+@Composable
+private fun ScaffoldTitle() = Text(
+  text = BudgetListStrings.listBudgetsToolbar,
+  maxLines = 1,
+  overflow = TextOverflow.Ellipsis,
+)
+
+@Stable
+@Composable
+private fun ListBudgetsContent(
   versions: ActualVersions,
-  serverUrl: ServerUrl,
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
   modifier: Modifier = Modifier,
@@ -198,14 +198,6 @@ private fun Content(
       }.exhaustive
     }
 
-    VerticalSpacer(20.dp)
-
-    UsingServerText(
-      modifier = Modifier.fillMaxWidth(),
-      url = serverUrl,
-      onClickChange = { onAction(ListBudgetsAction.ChangeServer) },
-    )
-
     VerticalSpacer()
 
     VersionsText(
@@ -218,9 +210,8 @@ private fun Content(
 @ActualScreenPreview
 @Composable
 private fun Success() = PreviewActualScreen {
-  ListBudgetsScreenImpl(
+  ListBudgetsScaffold(
     versions = PreviewVersions,
-    serverUrl = ServerUrl.Demo,
     state = ListBudgetsState.Success(
       budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken),
     ),
@@ -231,9 +222,8 @@ private fun Success() = PreviewActualScreen {
 @ActualScreenPreview
 @Composable
 private fun Loading() = PreviewActualScreen {
-  ListBudgetsScreenImpl(
+  ListBudgetsScaffold(
     versions = PreviewVersions,
-    serverUrl = ServerUrl.Demo,
     state = ListBudgetsState.Loading,
     onAction = {},
   )
@@ -242,9 +232,8 @@ private fun Loading() = PreviewActualScreen {
 @ActualScreenPreview
 @Composable
 private fun Failure() = PreviewActualScreen {
-  ListBudgetsScreenImpl(
+  ListBudgetsScaffold(
     versions = PreviewVersions,
-    serverUrl = ServerUrl.Demo,
     state = ListBudgetsState.Failure(reason = "Something broke lol"),
     onAction = {},
   )
