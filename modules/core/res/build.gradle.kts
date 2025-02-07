@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-  api(libs.androidx.compose.runtime)
   implementation(libs.androidx.splash)
   implementation(libs.material)
 }

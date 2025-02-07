@@ -1,7 +1,7 @@
 package actual.budget.list.ui
 
+import actual.budget.list.res.BudgetListStrings
 import actual.budget.list.vm.Budget
-import actual.core.res.CoreStrings
 import actual.core.ui.ActualAlertDialog
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.BareActualTextButton
@@ -33,12 +33,12 @@ internal fun DeleteBudgetDialog(
 ) {
   ActualAlertDialog(
     modifier = modifier,
-    title = CoreStrings.budgetDeleteDialogTitle(budget.name),
+    title = BudgetListStrings.budgetDeleteDialogTitle(budget.name),
     onDismissRequest = onDismiss,
     buttons = {
       TextButton(onClick = onDismiss) {
         Text(
-          text = CoreStrings.budgetDeleteDialogDismiss,
+          text = BudgetListStrings.budgetDeleteDialogDismiss,
           fontFamily = ActualFontFamily,
         )
       }
@@ -74,19 +74,19 @@ private fun Content(
     )
 
     BareActualTextButton(
-      text = CoreStrings.budgetDeleteDialogHostedButton,
+      text = BudgetListStrings.budgetDeleteDialogHostedButton,
       colors = { theme, pressed -> theme.errorPrimary(pressed) },
       onClick = onDeleteRemote,
       isEnabled = false,
     )
 
     Text(
-      text = CoreStrings.budgetDeleteDialogLocalTxt,
+      text = BudgetListStrings.budgetDeleteDialogLocalTxt,
       fontSize = 14.sp,
     )
 
     BareActualTextButton(
-      text = CoreStrings.budgetDeleteDialogLocalButton,
+      text = BudgetListStrings.budgetDeleteDialogLocalButton,
       colors = { theme, pressed -> theme.errorBare(pressed) },
       onClick = onDeleteLocal,
     )
@@ -96,13 +96,13 @@ private fun Content(
 @Stable
 @Composable
 fun annotatedString() = buildAnnotatedString {
-  append(CoreStrings.budgetDeleteDialogHostedTxt1)
+  append(BudgetListStrings.budgetDeleteDialogHostedTxt1)
   append(" ")
   withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-    append(CoreStrings.budgetDeleteDialogHostedTxt2)
+    append(BudgetListStrings.budgetDeleteDialogHostedTxt2)
   }
   append(" ")
-  append(CoreStrings.budgetDeleteDialogHostedTxt3)
+  append(BudgetListStrings.budgetDeleteDialogHostedTxt3)
 }
 
 @Stable

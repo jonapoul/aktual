@@ -1,6 +1,6 @@
 package actual.budget.list.ui
 
-import actual.core.res.CoreStrings
+import actual.budget.list.res.BudgetListStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
@@ -37,7 +37,7 @@ internal fun ContentEmpty(
     verticalArrangement = Arrangement.Center,
   ) {
     Text(
-      text = CoreStrings.budgetSuccessEmpty,
+      text = BudgetListStrings.budgetSuccessEmpty,
       textAlign = TextAlign.Center,
       style = MaterialTheme.typography.headlineLarge,
     )
@@ -45,7 +45,7 @@ internal fun ContentEmpty(
     VerticalSpacer(20.dp)
 
     Text(
-      text = CoreStrings.budgetSuccessEmptySecond,
+      text = BudgetListStrings.budgetSuccessEmptySecond,
       color = theme.pageText,
       textAlign = TextAlign.Center,
       fontFamily = ActualFontFamily,
@@ -55,7 +55,7 @@ internal fun ContentEmpty(
     VerticalSpacer(30.dp)
 
     PrimaryActualTextButton(
-      text = CoreStrings.budgetSuccessEmptyLaunch,
+      text = BudgetListStrings.budgetSuccessEmptyLaunch,
       onClick = onCreateBudgetInBrowser,
     )
   }

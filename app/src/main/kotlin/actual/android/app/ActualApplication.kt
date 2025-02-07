@@ -1,5 +1,6 @@
 package actual.android.app
 
+import actual.log.Logger
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber
@@ -11,12 +12,15 @@ class ActualApplication : Application() {
   @Inject
   lateinit var bc: ActualBuildConfig
 
+  @Inject
+  lateinit var logger: Logger
+
   override fun onCreate() {
     super.onCreate()
     Timber.plant(ActualTree())
 
-    Timber.i("onCreate")
-    Timber.d("name=${bc.versionName} code=${bc.versionCode} time=${bc.buildTime}")
-    Timber.d("manufacturer=${bc.manufacturer} model=${bc.model} os=${bc.os} platform=${bc.platform}")
+    logger.i("onCreate")
+    logger.d("name=${bc.versionName} code=${bc.versionCode} time=${bc.buildTime}")
+    logger.d("manufacturer=${bc.manufacturer} model=${bc.model} os=${bc.os} platform=${bc.platform}")
   }
 }

@@ -27,4 +27,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
+  implementation(projects.budget.list.res)
+  implementation(projects.core.res)
 }

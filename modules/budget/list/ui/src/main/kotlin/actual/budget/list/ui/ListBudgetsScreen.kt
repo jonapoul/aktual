@@ -1,9 +1,9 @@
 package actual.budget.list.ui
 
+import actual.budget.list.res.BudgetListStrings
 import actual.budget.list.vm.Budget
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
-import actual.core.res.CoreStrings
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualScreen
@@ -118,7 +118,7 @@ private fun ListBudgetsScreenImpl(
         ),
         title = {
           Text(
-            text = CoreStrings.listBudgetsToolbar,
+            text = BudgetListStrings.listBudgetsToolbar,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
           )

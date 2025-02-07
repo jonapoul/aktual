@@ -6,8 +6,8 @@ import actual.budget.list.ui.ListBudgetsNavigator
 import actual.login.ui.LoginNavigator
 import actual.url.ui.ServerUrlNavigator
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.navigation.NavHostController
-import timber.log.Timber
 
 internal fun ServerUrlNavigator(navController: NavHostController) = object : ServerUrlNavigator {
   override fun navigateToLogin() {
@@ -73,5 +73,5 @@ internal fun ListBudgetsNavigator(navController: NavHostController) = object : L
 private fun NavHostController.printBackStack() {
   val backstack = currentBackStack.value
   val str = backstack.joinToString { it.destination.toString() }
-  Timber.v("backstack = $str")
+  Log.v("printBackStack", "backstack = $str")
 }

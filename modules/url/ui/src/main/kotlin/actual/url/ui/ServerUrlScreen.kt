@@ -15,6 +15,7 @@ import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.versions.ActualVersions
 import actual.url.model.Protocol
+import actual.url.res.ServerUrlStrings
 import actual.url.vm.ServerUrlViewModel
 import actual.url.vm.ShouldNavigate
 import android.app.Activity
@@ -145,7 +146,7 @@ private fun ServerUrlScreenImpl(
         },
         title = {
           Text(
-            text = CoreStrings.serverUrlToolbar,
+            text = ServerUrlStrings.serverUrlToolbar,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
           )
@@ -202,14 +203,14 @@ private fun Content(
       horizontalAlignment = Alignment.Start,
     ) {
       Text(
-        text = CoreStrings.serverUrlTitle,
+        text = ServerUrlStrings.serverUrlTitle,
         style = MaterialTheme.typography.headlineLarge,
       )
 
       VerticalSpacer(height = 15.dp)
 
       Text(
-        text = CoreStrings.serverUrlMessage,
+        text = ServerUrlStrings.serverUrlMessage,
         color = theme.tableRowHeaderText,
         style = MaterialTheme.typography.bodyLarge,
       )
@@ -257,7 +258,7 @@ private fun Content(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         PrimaryActualTextButtonWithLoading(
-          text = CoreStrings.serverUrlConfirm,
+          text = ServerUrlStrings.serverUrlConfirm,
           isLoading = isLoading,
           isEnabled = isEnabled,
           onClick = onClickConfirm,

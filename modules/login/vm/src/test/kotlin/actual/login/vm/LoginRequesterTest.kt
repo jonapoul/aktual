@@ -4,11 +4,13 @@ import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
-import actual.core.coroutines.TestCoroutineContexts
+import actual.log.EmptyLogger
 import actual.login.model.LoginToken
 import actual.login.model.Password
 import actual.login.prefs.LoginPreferences
 import actual.test.MockWebServerRule
+import actual.test.TestBuildConfig
+import actual.test.TestCoroutineContexts
 import actual.test.buildPreferences
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.MainDispatcherRule
@@ -56,8 +58,10 @@ internal class LoginRequesterTest {
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,
+      buildConfig = TestBuildConfig,
       apiStateHolder = apisStateHolder,
       serverUrlPreferences = serverUrlPreferences,
+      logger = EmptyLogger,
     )
 
     loginRequester = LoginRequester(
