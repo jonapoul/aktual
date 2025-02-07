@@ -3,10 +3,8 @@ package actual.login.ui
 import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualScreenPreview
-import actual.core.ui.ActualTextField
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualScreen
-import actual.core.ui.PrimaryActualTextButtonWithLoading
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
@@ -25,10 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -47,9 +42,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -190,31 +182,11 @@ private fun Content(
 
       VerticalSpacer(20.dp)
 
-      ActualTextField(
-        modifier = Modifier.fillMaxWidth(1f),
-        value = enteredPassword.toString(),
-        onValueChange = { password -> onAction(LoginAction.EnterPassword(password)) },
-        placeholderText = LoginStrings.passwordHint,
-        visualTransformation = PasswordVisualTransformation(),
-        keyboardOptions = KeyboardOptions(
-          autoCorrectEnabled = false,
-          keyboardType = KeyboardType.Password,
-          imeAction = ImeAction.Go,
-        ),
-        keyboardActions = KeyboardActions(
-          onGo = { onAction(LoginAction.SignIn) },
-        ),
-      )
-
-      VerticalSpacer(20.dp)
-
-      PrimaryActualTextButtonWithLoading(
-        modifier = Modifier
-          .align(Alignment.CenterHorizontally)
-          .width(170.dp),
-        text = LoginStrings.signIn,
+      PasswordLogin(
+        modifier = Modifier.fillMaxWidth(),
         isLoading = isLoading,
-        onClick = { onAction(LoginAction.SignIn) },
+        enteredPassword = enteredPassword,
+        onAction = onAction,
       )
 
       if (loginFailure != null) {
@@ -262,7 +234,7 @@ private fun Regular() = PreviewActualScreen {
 private fun WithErrorMessage() = PreviewActualScreen {
   LoginScreenImpl(
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
-    enteredPassword = Password(value = "abcd1234"),
+    enteredPassword = Password.Dummy,
     url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
     isLoading = true,
     loginFailure = LoginResult.InvalidPassword,

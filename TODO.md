@@ -25,3 +25,5 @@
 - Use action interfaces for each screen, not callback lambdas
 
 - auto change theme based on time of day
+
+- support multiple LoginMethods on LoginScreen

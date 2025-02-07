@@ -2,12 +2,9 @@ package actual.url.ui
 
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
-import actual.core.ui.ActualExposedDropDownMenu
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.ActualScreenPreview
-import actual.core.ui.ActualTextField
 import actual.core.ui.AppThemeChooser
-import actual.core.ui.HorizontalSpacer
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualScreen
 import actual.core.ui.PrimaryActualTextButtonWithLoading
@@ -25,15 +22,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
@@ -56,18 +49,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ServerUrlScreen(
@@ -103,7 +90,6 @@ fun ServerUrlScreen(
   ServerUrlScaffold(
     url = enteredUrl,
     protocol = protocol,
-    protocols = viewModel.protocols,
     versions = versions,
     isEnabled = isEnabled,
     isLoading = isLoading,
@@ -125,7 +111,6 @@ fun ServerUrlScreen(
 private fun ServerUrlScaffold(
   url: String,
   protocol: Protocol,
-  protocols: ImmutableList<String>,
   versions: ActualVersions,
   isEnabled: Boolean,
   isLoading: Boolean,
@@ -167,7 +152,6 @@ private fun ServerUrlScaffold(
       modifier = Modifier.padding(innerPadding),
       url = url,
       protocol = protocol,
-      protocols = protocols,
       versions = versions,
       isEnabled = isEnabled,
       isLoading = isLoading,
@@ -183,7 +167,6 @@ private fun ServerUrlScaffold(
 private fun ServerUrlContent(
   url: String,
   protocol: Protocol,
-  protocols: ImmutableList<String>,
   versions: ActualVersions,
   isEnabled: Boolean,
   isLoading: Boolean,
@@ -218,53 +201,24 @@ private fun ServerUrlContent(
 
     VerticalSpacer(height = 20.dp)
 
-    Row(
+    InputFields(
       modifier = Modifier.fillMaxWidth(),
-    ) {
-      ActualExposedDropDownMenu(
-        modifier = Modifier.width(110.dp),
-        value = protocol.toString(),
-        options = protocols,
-        onValueChange = { onAction(ServerUrlAction.SelectProtocol(Protocol.fromString(it))) },
-      )
+      url = url,
+      protocol = protocol,
+      onAction = onAction,
+    )
 
-      HorizontalSpacer(width = 5.dp)
-
-      val focusManager = LocalFocusManager.current
-
-      ActualTextField(
-        modifier = Modifier.weight(1f),
-        value = url,
-        onValueChange = { onAction(ServerUrlAction.EnterUrl(it.lowercase())) },
-        placeholderText = EXAMPLE_URL,
-        keyboardOptions = KeyboardOptions(
-          autoCorrectEnabled = false,
-          capitalization = KeyboardCapitalization.None,
-          keyboardType = KeyboardType.Uri,
-          imeAction = ImeAction.Go,
-        ),
-        keyboardActions = KeyboardActions(
-          onGo = {
-            focusManager.clearFocus()
-            onAction(ServerUrlAction.ConfirmUrl)
-          },
-        ),
-      )
-    }
     VerticalSpacer(height = 20.dp)
 
-    Row(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalArrangement = Arrangement.End,
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      PrimaryActualTextButtonWithLoading(
-        text = ServerUrlStrings.serverUrlConfirm,
-        isLoading = isLoading,
-        isEnabled = isEnabled,
-        onClick = { onAction(ServerUrlAction.ConfirmUrl) },
-      )
-    }
+    PrimaryActualTextButtonWithLoading(
+      modifier = Modifier
+        .wrapContentWidth()
+        .align(Alignment.End),
+      text = ServerUrlStrings.serverUrlConfirm,
+      isLoading = isLoading,
+      isEnabled = isEnabled,
+      onClick = { onAction(ServerUrlAction.ConfirmUrl) },
+    )
 
     if (errorMessage != null) {
       VerticalSpacer(20.dp)
@@ -298,15 +252,12 @@ private fun ServerUrlContent(
   }
 }
 
-private const val EXAMPLE_URL = "example.com"
-
 @ActualScreenPreview
 @Composable
 private fun Regular() = PreviewActualScreen { type ->
   ServerUrlScaffold(
     url = "",
     protocol = Protocol.Https,
-    protocols = persistentListOf("http", "https"),
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     isEnabled = true,
     isLoading = false,
@@ -322,7 +273,6 @@ private fun WithErrorMessage() = PreviewActualScreen { type ->
   ServerUrlScaffold(
     url = "my.server.com:1234/path",
     protocol = Protocol.Http,
-    protocols = persistentListOf("http", "https"),
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     isEnabled = true,
     isLoading = true,
