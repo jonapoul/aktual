@@ -1,6 +1,6 @@
 [versions]
 # Plugins
-agp = "8.7.3"
+agp = "8.7.3" # TODO: bump to 8.8.0
 androidCacheFix = "3.0.1"
 blueprint = "0.11.0"
 buildconfig = "5.5.1"
