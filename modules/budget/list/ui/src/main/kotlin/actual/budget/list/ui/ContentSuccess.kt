@@ -5,6 +5,7 @@ import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualScreen
 import actual.core.ui.Theme
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -39,18 +40,9 @@ internal fun ContentSuccess(
 
 @ActualScreenPreview
 @Composable
-private fun One() = PreviewActualScreen {
+private fun Three() = PreviewActualScreen {
   ContentSuccess(
-    budgets = persistentListOf(PreviewBudgetSynced),
-    onClickOpen = {},
-    onClickDelete = {},
-  )
-}
-
-@ActualScreenPreview
-@Composable
-private fun Multiple() = PreviewActualScreen {
-  ContentSuccess(
+    modifier = Modifier.background(LocalTheme.current.pageBackground),
     budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
     onClickOpen = {},
     onClickDelete = {},

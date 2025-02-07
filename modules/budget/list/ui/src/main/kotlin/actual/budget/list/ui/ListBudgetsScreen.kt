@@ -183,6 +183,7 @@ private fun ListBudgetsContent(
           if (state.budgets.isEmpty()) {
             ContentEmpty(
               modifier = Modifier.fillMaxSize(),
+              theme = theme,
               onCreateBudgetInBrowser = { onAction(ListBudgetsAction.OpenInBrowser) },
             )
           } else {
