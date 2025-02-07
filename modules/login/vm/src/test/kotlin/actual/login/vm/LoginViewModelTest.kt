@@ -1,5 +1,6 @@
 package actual.login.vm
 
+import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.versions.ActualVersionsStateHolder
 import actual.log.EmptyLogger
 import actual.login.model.LoginToken
@@ -34,6 +35,7 @@ internal class LoginViewModelTest {
   // real
   private lateinit var serverUrlPrefs: ServerUrlPreferences
   private lateinit var loginPrefs: LoginPreferences
+  private lateinit var colorSchemePreferences: ColorSchemePreferences
   private lateinit var viewModel: LoginViewModel
   private lateinit var versionsStateHolder: ActualVersionsStateHolder
 
@@ -45,6 +47,7 @@ internal class LoginViewModelTest {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     serverUrlPrefs = ServerUrlPreferences(prefs)
     loginPrefs = LoginPreferences(prefs)
+    colorSchemePreferences = ColorSchemePreferences(prefs)
 
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
@@ -55,6 +58,7 @@ internal class LoginViewModelTest {
       loginRequester = loginRequester,
       serverUrlPrefs = serverUrlPrefs,
       loginPrefs = loginPrefs,
+      colorSchemePreferences = colorSchemePreferences,
     )
   }
 

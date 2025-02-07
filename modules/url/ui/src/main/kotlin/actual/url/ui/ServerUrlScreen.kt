@@ -8,8 +8,10 @@ import actual.core.ui.AppThemeChooser
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualScreen
 import actual.core.ui.PrimaryActualTextButtonWithLoading
+import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
+import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.versions.ActualVersions
 import actual.login.nav.LoginNavRoute
@@ -18,7 +20,6 @@ import actual.url.res.ServerUrlStrings
 import actual.url.vm.ServerUrlViewModel
 import actual.url.vm.ShouldNavigate
 import android.app.Activity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -148,17 +149,22 @@ private fun ServerUrlScaffold(
       )
     },
   ) { innerPadding ->
-    ServerUrlContent(
-      modifier = Modifier.padding(innerPadding),
-      url = url,
-      protocol = protocol,
-      versions = versions,
-      isEnabled = isEnabled,
-      isLoading = isLoading,
-      errorMessage = errorMessage,
-      themeType = themeType,
-      onAction = onAction,
-    )
+    Box {
+      WavyBackground(themeType)
+
+      ServerUrlContent(
+        modifier = Modifier.padding(innerPadding),
+        url = url,
+        protocol = protocol,
+        versions = versions,
+        isEnabled = isEnabled,
+        isLoading = isLoading,
+        errorMessage = errorMessage,
+        themeType = themeType,
+        onAction = onAction,
+        theme = theme,
+      )
+    }
   }
 }
 
@@ -174,12 +180,10 @@ private fun ServerUrlContent(
   themeType: ColorSchemeType,
   onAction: (ServerUrlAction) -> Unit,
   modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
-  val theme = LocalTheme.current
-
   Column(
     modifier = modifier
-      .background(theme.pageBackground)
       .padding(16.dp)
       .wrapContentWidth()
       .wrapContentHeight(),

@@ -4,6 +4,7 @@ plugins {
 
 dependencies {
   api(libs.javaxInject)
+  api(projects.core.colorscheme)
   api(projects.core.connection)
   api(projects.login.model)
   api(projects.url.model)

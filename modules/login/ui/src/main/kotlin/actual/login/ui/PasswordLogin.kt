@@ -26,7 +26,7 @@ internal fun PasswordLogin(
   isLoading: Boolean,
   enteredPassword: Password,
   onAction: (LoginAction) -> Unit,
-  modifier: Modifier = Modifier
+  modifier: Modifier = Modifier,
 ) {
   Column(
     modifier = modifier,

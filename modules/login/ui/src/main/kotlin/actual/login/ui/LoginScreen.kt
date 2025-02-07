@@ -1,6 +1,7 @@
 package actual.login.ui
 
 import actual.budget.list.nav.ListBudgetsNavRoute
+import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
@@ -8,6 +9,7 @@ import actual.core.ui.PreviewActualScreen
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
+import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.versions.ActualVersions
 import actual.login.model.Password
@@ -17,8 +19,8 @@ import actual.login.vm.LoginResult
 import actual.login.vm.LoginViewModel
 import actual.url.model.ServerUrl
 import actual.url.nav.ServerUrlNavRoute
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -57,6 +59,7 @@ fun LoginScreen(
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
   val url by viewModel.serverUrl.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+  val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
 
   val navToBudgetList by viewModel.navToBudgetList.collectAsStateWithLifecycle()
@@ -73,6 +76,7 @@ fun LoginScreen(
     enteredPassword = enteredPassword,
     url = url,
     isLoading = isLoading,
+    themeType = themeType,
     loginFailure = loginFailure,
     onAction = { action ->
       when (action) {
@@ -97,6 +101,7 @@ private fun LoginScreenImpl(
   enteredPassword: Password,
   url: ServerUrl,
   isLoading: Boolean,
+  themeType: ColorSchemeType,
   loginFailure: LoginResult.Failure?,
   onAction: (LoginAction) -> Unit,
 ) {
@@ -130,15 +135,19 @@ private fun LoginScreenImpl(
       )
     },
   ) { innerPadding ->
-    Content(
-      modifier = Modifier.padding(innerPadding),
-      versions = versions,
-      enteredPassword = enteredPassword,
-      url = url,
-      isLoading = isLoading,
-      loginFailure = loginFailure,
-      onAction = onAction,
-    )
+    Box {
+      WavyBackground(themeType)
+
+      Content(
+        modifier = Modifier.padding(innerPadding),
+        versions = versions,
+        enteredPassword = enteredPassword,
+        url = url,
+        isLoading = isLoading,
+        loginFailure = loginFailure,
+        onAction = onAction,
+      )
+    }
   }
 }
 
@@ -156,7 +165,6 @@ private fun Content(
   val theme = LocalTheme.current
   Column(
     modifier = modifier
-      .background(theme.pageBackground)
       .fillMaxSize()
       .padding(16.dp),
   ) {
@@ -218,26 +226,28 @@ private fun Content(
 
 @ActualScreenPreview
 @Composable
-private fun Regular() = PreviewActualScreen {
+private fun Regular() = PreviewActualScreen { type ->
   LoginScreenImpl(
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     enteredPassword = Password.Empty,
     url = ServerUrl.Demo,
     isLoading = false,
     loginFailure = null,
+    themeType = type,
     onAction = {},
   )
 }
 
 @ActualScreenPreview
 @Composable
-private fun WithErrorMessage() = PreviewActualScreen {
+private fun WithErrorMessage() = PreviewActualScreen { type ->
   LoginScreenImpl(
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     enteredPassword = Password.Dummy,
     url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
     isLoading = true,
     loginFailure = LoginResult.InvalidPassword,
+    themeType = type,
     onAction = {},
   )
 }

@@ -3,6 +3,7 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":url:vm","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":url:vm" ["fillcolor"="#F5A6A6","shape"="box"]
+":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:client" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -14,16 +15,15 @@ node ["style"="filled"]
 ":core:log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
+":url:vm" -> ":core:colorscheme"
 ":url:vm" -> ":core:connection"
 ":url:vm" -> ":url:model"
 ":url:vm" -> ":api:client" ["style"="dotted"]
 ":url:vm" -> ":api:model" ["style"="dotted"]
-":url:vm" -> ":core:colorscheme" ["style"="dotted"]
 ":url:vm" -> ":core:coroutines" ["style"="dotted"]
 ":url:vm" -> ":core:log" ["style"="dotted"]
 ":url:vm" -> ":core:versions" ["style"="dotted"]

@@ -39,6 +39,7 @@ graph ["rank"="same"]
 ":core:ui" -> ":url:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:versions" -> ":core:buildconfig"
+":login:vm" -> ":core:colorscheme"
 ":login:vm" -> ":core:connection"
 ":login:vm" -> ":login:model"
 ":login:vm" -> ":url:model"
