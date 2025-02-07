@@ -43,13 +43,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import kotlinx.collections.immutable.persistentListOf
 
 // TODO: Remove suppression
 @Suppress("UNUSED_PARAMETER")
 @Composable
 fun ListBudgetsScreen(
-  navigator: ListBudgetsNavigator,
+  navController: NavHostController,
   viewModel: ListBudgetsViewModel = hiltViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
@@ -77,9 +78,13 @@ fun ListBudgetsScreen(
   budgetToDelete?.let { budget ->
     DeleteBudgetDialog(
       budget = budget,
-      onDeleteLocal = { /* TODO */ },
-      onDeleteRemote = { /* TODO */ },
-      onDismiss = { budgetToDelete = null },
+      onAction = { action ->
+        when (action) {
+          DeleteDialogAction.DeleteLocal -> TODO()
+          DeleteDialogAction.DeleteRemote -> TODO()
+          DeleteDialogAction.Dismiss -> budgetToDelete = null
+        }
+      },
     )
   }
 
@@ -87,11 +92,15 @@ fun ListBudgetsScreen(
     versions = versions,
     serverUrl = serverUrl,
     state = state,
-    onClickChangeServer = { /* TODO */ },
-    onClickReload = { /* TODO */ },
-    onCreateBudgetInBrowser = { launchBrowser = true },
-    onClickOpen = { /* TODO */ },
-    onClickDelete = { budgetToDelete = it },
+    onAction = { action ->
+      when (action) {
+        ListBudgetsAction.ChangeServer -> TODO()
+        ListBudgetsAction.OpenInBrowser -> launchBrowser = true
+        ListBudgetsAction.Reload -> TODO()
+        is ListBudgetsAction.Delete -> budgetToDelete = action.budget
+        is ListBudgetsAction.Open -> TODO()
+      }
+    },
   )
 }
 
@@ -100,11 +109,7 @@ private fun ListBudgetsScreenImpl(
   versions: ActualVersions,
   serverUrl: ServerUrl,
   state: ListBudgetsState,
-  onClickChangeServer: () -> Unit,
-  onClickReload: () -> Unit,
-  onCreateBudgetInBrowser: () -> Unit,
-  onClickOpen: (Budget) -> Unit,
-  onClickDelete: (Budget) -> Unit,
+  onAction: (ListBudgetsAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
@@ -132,11 +137,7 @@ private fun ListBudgetsScreenImpl(
       versions = versions,
       serverUrl = serverUrl,
       state = state,
-      onClickChangeServer = onClickChangeServer,
-      onClickReload = onClickReload,
-      onCreateBudgetInBrowser = onCreateBudgetInBrowser,
-      onClickOpen = onClickOpen,
-      onClickDelete = onClickDelete,
+      onAction = onAction,
     )
   }
 }
@@ -147,11 +148,7 @@ private fun Content(
   versions: ActualVersions,
   serverUrl: ServerUrl,
   state: ListBudgetsState,
-  onClickChangeServer: () -> Unit,
-  onClickReload: () -> Unit,
-  onCreateBudgetInBrowser: () -> Unit,
-  onClickOpen: (Budget) -> Unit,
-  onClickDelete: (Budget) -> Unit,
+  onAction: (ListBudgetsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -177,7 +174,7 @@ private fun Content(
           ContentFailure(
             modifier = Modifier.fillMaxSize(),
             reason = state.reason,
-            onClickRetry = onClickReload,
+            onClickRetry = { onAction(ListBudgetsAction.Reload) },
             theme = theme,
           )
         }
@@ -186,15 +183,15 @@ private fun Content(
           if (state.budgets.isEmpty()) {
             ContentEmpty(
               modifier = Modifier.fillMaxSize(),
-              onCreateBudgetInBrowser = onCreateBudgetInBrowser,
+              onCreateBudgetInBrowser = { onAction(ListBudgetsAction.OpenInBrowser) },
             )
           } else {
             ContentSuccess(
               modifier = Modifier.fillMaxSize(),
               budgets = state.budgets,
               theme = theme,
-              onClickOpen = onClickOpen,
-              onClickDelete = onClickDelete,
+              onClickOpen = { budget -> onAction(ListBudgetsAction.Open(budget)) },
+              onClickDelete = { budget -> onAction(ListBudgetsAction.Delete(budget)) },
             )
           }
         }
@@ -206,7 +203,7 @@ private fun Content(
     UsingServerText(
       modifier = Modifier.fillMaxWidth(),
       url = serverUrl,
-      onClickChange = onClickChangeServer,
+      onClickChange = { onAction(ListBudgetsAction.ChangeServer) },
     )
 
     VerticalSpacer()
@@ -227,11 +224,7 @@ private fun Success() = PreviewActualScreen {
     state = ListBudgetsState.Success(
       budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken),
     ),
-    onClickChangeServer = {},
-    onClickReload = {},
-    onCreateBudgetInBrowser = {},
-    onClickOpen = {},
-    onClickDelete = {},
+    onAction = {},
   )
 }
 
@@ -242,11 +235,7 @@ private fun Loading() = PreviewActualScreen {
     versions = PreviewVersions,
     serverUrl = ServerUrl.Demo,
     state = ListBudgetsState.Loading,
-    onClickChangeServer = {},
-    onClickReload = {},
-    onCreateBudgetInBrowser = {},
-    onClickOpen = {},
-    onClickDelete = {},
+    onAction = {},
   )
 }
 
@@ -257,10 +246,6 @@ private fun Failure() = PreviewActualScreen {
     versions = PreviewVersions,
     serverUrl = ServerUrl.Demo,
     state = ListBudgetsState.Failure(reason = "Something broke lol"),
-    onClickChangeServer = {},
-    onClickReload = {},
-    onCreateBudgetInBrowser = {},
-    onClickOpen = {},
-    onClickDelete = {},
+    onAction = {},
   )
 }

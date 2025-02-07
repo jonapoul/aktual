@@ -26,17 +26,15 @@ import androidx.compose.ui.unit.sp
 @Composable
 internal fun DeleteBudgetDialog(
   budget: Budget,
-  onDeleteLocal: () -> Unit,
-  onDeleteRemote: () -> Unit,
-  onDismiss: () -> Unit,
+  onAction: (DeleteDialogAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   ActualAlertDialog(
     modifier = modifier,
     title = BudgetListStrings.budgetDeleteDialogTitle(budget.name),
-    onDismissRequest = onDismiss,
+    onDismissRequest = { onAction(DeleteDialogAction.Dismiss) },
     buttons = {
-      TextButton(onClick = onDismiss) {
+      TextButton(onClick = { onAction(DeleteDialogAction.Dismiss) }) {
         Text(
           text = BudgetListStrings.budgetDeleteDialogDismiss,
           fontFamily = ActualFontFamily,
@@ -46,12 +44,12 @@ internal fun DeleteBudgetDialog(
     content = {
       Content(
         onDeleteLocal = {
-          onDeleteLocal()
-          onDismiss()
+          onAction(DeleteDialogAction.DeleteLocal)
+          onAction(DeleteDialogAction.Dismiss)
         },
         onDeleteRemote = {
-          onDeleteRemote()
-          onDismiss()
+          onAction(DeleteDialogAction.DeleteRemote)
+          onAction(DeleteDialogAction.Dismiss)
         },
       )
     },

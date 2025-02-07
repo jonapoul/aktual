@@ -17,7 +17,7 @@ class ConventionTestDependencies : Plugin<Project> {
     dependencies {
       testImplementation?.let { testImplementation ->
         testLibraries.forEach { lib -> testImplementation(lib) }
-//         testImplementation(project(":test:resources"))
+        testImplementation(project(":test:resources"))
 
         if (isAndroid) {
           testImplementation(libs.getLibrary("test.androidx.arch"))
@@ -27,11 +27,10 @@ class ConventionTestDependencies : Plugin<Project> {
           testImplementation(libs.getLibrary("test.androidx.runner"))
           testImplementation(libs.getLibrary("test.mockk.android"))
           testImplementation(libs.getLibrary("test.robolectric"))
-          testImplementation(libs.getLibrary("test.timber"))
 
           val debugImplementation by configurations
           debugImplementation(libs.getLibrary("test.androidx.monitor"))
-//           debugImplementation(project(":test:hilt"))
+          debugImplementation(project(":test:hilt"))
 
           val androidTestImplementation by configurations
           androidTestImplementation(libs.getLibrary("test.alakazam.core"))
@@ -45,9 +44,8 @@ class ConventionTestDependencies : Plugin<Project> {
           androidTestImplementation(libs.getLibrary("test.androidx.runner"))
           androidTestImplementation(libs.getLibrary("test.kotlin.common"))
           androidTestImplementation(libs.getLibrary("test.kotlinx.coroutines"))
-          androidTestImplementation(libs.getLibrary("test.timber"))
           androidTestImplementation(libs.getLibrary("test.turbine"))
-//           androidTestImplementation(project(":test:resources"))
+          androidTestImplementation(project(":test:resources"))
         }
       }
     }

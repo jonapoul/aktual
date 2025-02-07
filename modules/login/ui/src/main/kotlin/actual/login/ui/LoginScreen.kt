@@ -1,5 +1,6 @@
 package actual.login.ui
 
+import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.ActualTextField
@@ -9,12 +10,15 @@ import actual.core.ui.PrimaryActualTextButtonWithLoading
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
+import actual.core.ui.debugNavigate
 import actual.core.versions.ActualVersions
 import actual.login.model.Password
+import actual.login.nav.LoginNavRoute
 import actual.login.res.LoginStrings
 import actual.login.vm.LoginResult
 import actual.login.vm.LoginViewModel
 import actual.url.model.ServerUrl
+import actual.url.nav.ServerUrlNavRoute
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -40,9 +44,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -53,10 +54,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 
 @Composable
 fun LoginScreen(
-  navigator: LoginNavigator,
+  navController: NavHostController,
   viewModel: LoginViewModel = hiltViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
@@ -67,24 +69,11 @@ fun LoginScreen(
 
   val navToBudgetList by viewModel.navToBudgetList.collectAsStateWithLifecycle()
   if (navToBudgetList) {
-    SideEffect { navigator.listBudgets() }
-  }
-
-  var navToServerUrl by remember { mutableStateOf(false) }
-  if (navToServerUrl) {
-    SideEffect { navigator.changeServer() }
-  }
-
-  var clickedBack by remember { mutableStateOf(false) }
-  if (clickedBack) {
-    SideEffect { navigator.navBack() }
+    SideEffect { navController.listBudgets() }
   }
 
   DisposableEffect(Unit) {
-    onDispose {
-      navToServerUrl = false
-      viewModel.clearState()
-    }
+    onDispose { viewModel.clearState() }
   }
 
   LoginScreenImpl(
@@ -93,12 +82,22 @@ fun LoginScreen(
     url = url,
     isLoading = isLoading,
     loginFailure = loginFailure,
-    onClickBack = { clickedBack = true },
-    onEnterPassword = viewModel::onEnterPassword,
-    onClickSignIn = viewModel::onClickSignIn,
-    onClickChangeServer = { navToServerUrl = true },
+    onAction = { action ->
+      when (action) {
+        LoginAction.ChangeServer -> navController.openUrlScreen()
+        LoginAction.NavBack -> navController.popBackStack()
+        LoginAction.SignIn -> viewModel.onClickSignIn()
+        is LoginAction.EnterPassword -> viewModel.onEnterPassword(action.password)
+      }
+    },
   )
 }
+
+private fun NavHostController.openUrlScreen() =
+  debugNavigate(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
+
+private fun NavHostController.listBudgets() =
+  debugNavigate(ListBudgetsNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
 
 @Composable
 private fun LoginScreenImpl(
@@ -107,10 +106,7 @@ private fun LoginScreenImpl(
   url: ServerUrl,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
-  onClickBack: () -> Unit,
-  onEnterPassword: (String) -> Unit,
-  onClickSignIn: () -> Unit,
-  onClickChangeServer: () -> Unit,
+  onAction: (LoginAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
@@ -124,7 +120,7 @@ private fun LoginScreenImpl(
           navigationIconContentColor = theme.mobileHeaderText,
         ),
         navigationIcon = {
-          IconButton(onClick = onClickBack) {
+          IconButton(onClick = { onAction(LoginAction.NavBack) }) {
             Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
               contentDescription = CoreStrings.navBack,
@@ -149,9 +145,7 @@ private fun LoginScreenImpl(
       url = url,
       isLoading = isLoading,
       loginFailure = loginFailure,
-      onEnterPassword = onEnterPassword,
-      onClickSignIn = onClickSignIn,
-      onClickChangeServer = onClickChangeServer,
+      onAction = onAction,
     )
   }
 }
@@ -164,9 +158,7 @@ private fun Content(
   url: ServerUrl,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
-  onEnterPassword: (String) -> Unit,
-  onClickSignIn: () -> Unit,
-  onClickChangeServer: () -> Unit,
+  onAction: (LoginAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val theme = LocalTheme.current
@@ -201,7 +193,7 @@ private fun Content(
       ActualTextField(
         modifier = Modifier.fillMaxWidth(1f),
         value = enteredPassword.toString(),
-        onValueChange = onEnterPassword,
+        onValueChange = { password -> onAction(LoginAction.EnterPassword(password)) },
         placeholderText = LoginStrings.passwordHint,
         visualTransformation = PasswordVisualTransformation(),
         keyboardOptions = KeyboardOptions(
@@ -210,7 +202,7 @@ private fun Content(
           imeAction = ImeAction.Go,
         ),
         keyboardActions = KeyboardActions(
-          onGo = { onClickSignIn() },
+          onGo = { onAction(LoginAction.SignIn) },
         ),
       )
 
@@ -222,7 +214,7 @@ private fun Content(
           .width(170.dp),
         text = LoginStrings.signIn,
         isLoading = isLoading,
-        onClick = onClickSignIn,
+        onClick = { onAction(LoginAction.SignIn) },
       )
 
       if (loginFailure != null) {
@@ -240,7 +232,7 @@ private fun Content(
     UsingServerText(
       modifier = Modifier.fillMaxWidth(),
       url = url,
-      onClickChange = onClickChangeServer,
+      onClickChange = { onAction(LoginAction.ChangeServer) },
     )
 
     VerticalSpacer()
@@ -261,10 +253,7 @@ private fun Regular() = PreviewActualScreen {
     url = ServerUrl.Demo,
     isLoading = false,
     loginFailure = null,
-    onClickBack = {},
-    onEnterPassword = {},
-    onClickSignIn = {},
-    onClickChangeServer = {},
+    onAction = {},
   )
 }
 
@@ -277,9 +266,6 @@ private fun WithErrorMessage() = PreviewActualScreen {
     url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
     isLoading = true,
     loginFailure = LoginResult.InvalidPassword,
-    onClickBack = {},
-    onEnterPassword = {},
-    onClickSignIn = {},
-    onClickChangeServer = {},
+    onAction = {},
   )
 }

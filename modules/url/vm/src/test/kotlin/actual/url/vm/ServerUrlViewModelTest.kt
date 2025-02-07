@@ -6,6 +6,7 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.LoginMethod
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.versions.ActualVersionsStateHolder
+import actual.log.EmptyLogger
 import actual.test.TestBuildConfig
 import actual.test.TestCoroutineContexts
 import actual.test.buildPreferences
@@ -20,7 +21,6 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -34,9 +34,6 @@ import kotlin.test.assertNull
 class ServerUrlViewModelTest {
   @get:Rule
   val mainDispatcherRule = MainDispatcherRule()
-
-  @get:Rule
-  val timberRule = TimberTestRule.logAllWhenTestFails()!!
 
   // Real
   private lateinit var preferences: ServerUrlPreferences
@@ -65,6 +62,7 @@ class ServerUrlViewModelTest {
 
   private fun buildViewModel() {
     viewModel = ServerUrlViewModel(
+      logger = EmptyLogger,
       contexts = TestCoroutineContexts(mainDispatcherRule),
       apiStateHolder = apisStateHolder,
       prefs = preferences,

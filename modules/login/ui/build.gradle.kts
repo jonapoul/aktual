@@ -6,6 +6,7 @@ dependencies {
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
   api(projects.core.ui)
+  api(projects.login.nav)
   api(projects.login.vm)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
@@ -23,6 +24,8 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.kotlinx.coroutines)
+  implementation(projects.budget.list.nav)
   implementation(projects.core.res)
   implementation(projects.login.res)
+  implementation(projects.url.nav)
 }

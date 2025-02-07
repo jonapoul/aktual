@@ -6,6 +6,7 @@ import actual.api.client.BaseApi
 import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
 import actual.core.versions.ActualVersionsStateHolder
+import actual.log.EmptyLogger
 import actual.test.TestBuildConfig
 import actual.test.TestCoroutineContexts
 import alakazam.kotlin.core.LoopController
@@ -20,7 +21,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -31,9 +31,6 @@ import kotlin.time.Duration.Companion.seconds
 class ServerVersionFetcherTest {
   @get:Rule
   val mainDispatcherRule = MainDispatcherRule()
-
-  @get:Rule
-  val timberRule = TimberTestRule.logAllWhenTestFails()!!
 
   // real
   private lateinit var fetcher: ServerVersionFetcher
@@ -61,6 +58,7 @@ class ServerVersionFetcherTest {
     loopController: LoopController = SingleLoopController(),
   ) {
     fetcher = ServerVersionFetcher(
+      logger = EmptyLogger,
       contexts = TestCoroutineContexts(mainDispatcherRule),
       apisStateHolder = apisStateHolder,
       versionsStateHolder = versionsStateHolder,
