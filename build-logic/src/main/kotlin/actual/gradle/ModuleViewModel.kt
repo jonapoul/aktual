@@ -17,7 +17,7 @@ class ModuleViewModel : Plugin<Project> {
       apply(ConventionCompose::class.java)
       apply(ConventionDiagrams::class.java)
       apply(ConventionHilt::class.java)
-      apply(ConventionKotlin::class.java)
+      apply(ConventionKotlinJvm::class.java)
       apply(ConventionKover::class.java)
       apply(ConventionStyle::class.java)
       apply(ConventionTest::class.java)

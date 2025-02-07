@@ -6,12 +6,10 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class ModuleMultiplatform : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
@@ -33,12 +31,6 @@ class ModuleMultiplatform : Plugin<Project> {
 
     commonTestDependencies {
       testLibraries.forEach { lib -> implementation(lib) }
-    }
-
-    tasks.withType<KotlinCompile> {
-      compilerOptions {
-        freeCompilerArgs.addAll(COMPILER_ARGS)
-      }
     }
   }
 }

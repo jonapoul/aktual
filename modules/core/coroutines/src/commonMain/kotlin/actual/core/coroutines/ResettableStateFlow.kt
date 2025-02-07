@@ -1,10 +1,8 @@
 package actual.core.coroutines
 
-import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 
-@OptIn(ExperimentalForInheritanceCoroutinesApi::class, ExperimentalSubclassOptIn::class)
 interface ResettableStateFlow<T> : MutableStateFlow<T> {
   fun reset()
 }

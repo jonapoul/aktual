@@ -10,12 +10,15 @@ import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-class ConventionKotlin : Plugin<Project> {
+class ConventionKotlinJvm : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
+    with(pluginManager) {
+      apply(ConventionKotlinBase::class.java)
+    }
+
     tasks.withType<KotlinCompile> {
       compilerOptions {
         jvmTarget.set(JvmTarget.fromTarget(javaVersionString()))
-        freeCompilerArgs.addAll(COMPILER_ARGS)
       }
     }
 

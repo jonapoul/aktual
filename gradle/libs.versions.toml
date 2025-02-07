@@ -222,7 +222,8 @@ convention-android-library = { id = "actual.convention.android.library" }
 convention-compose = { id = "actual.convention.compose" }
 convention-diagrams = { id = "actual.convention.diagrams" }
 convention-hilt = { id = "actual.convention.hilt" }
-convention-kotlin = { id = "actual.convention.kotlin" }
+convention-kotlin-base = { id = "actual.convention.kotlin.base" }
+convention-kotlin-jvm = { id = "actual.convention.kotlin.jvm" }
 convention-kover = { id = "actual.convention.kover" }
 convention-style = { id = "actual.convention.style" }
 convention-test = { id = "actual.convention.test" }
