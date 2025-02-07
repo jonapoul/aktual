@@ -1,5 +1,7 @@
 package actual.login.vm
 
+import actual.core.colorscheme.ColorSchemePreferences
+import actual.core.colorscheme.ColorSchemeType
 import actual.core.coroutines.ResettableStateFlow
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
@@ -29,6 +31,7 @@ class LoginViewModel @Inject internal constructor(
   versionsStateHolder: ActualVersionsStateHolder,
   serverUrlPrefs: ServerUrlPreferences,
   loginPrefs: LoginPreferences,
+  colorSchemePreferences: ColorSchemePreferences,
 ) : ViewModel() {
   private val mutableEnteredPassword = ResettableStateFlow(Password.Empty)
   private val mutableIsLoading = ResettableStateFlow(false)
@@ -37,6 +40,11 @@ class LoginViewModel @Inject internal constructor(
   val enteredPassword: StateFlow<Password> = mutableEnteredPassword.asStateFlow()
 
   val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()
+
+  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences
+    .colorSchemeType
+    .asFlow()
+    .stateIn(viewModelScope, SharingStarted.Eagerly, colorSchemePreferences.colorSchemeType.default)
 
   val serverUrl: StateFlow<ServerUrl> = serverUrlPrefs
     .url

@@ -37,11 +37,11 @@ graph ["rank"="same"]
 ":core:ui" -> ":url:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:versions" -> ":core:buildconfig"
+":url:vm" -> ":core:colorscheme"
 ":url:vm" -> ":core:connection"
 ":url:vm" -> ":url:model"
 ":url:vm" -> ":api:client" ["style"="dotted"]
 ":url:vm" -> ":api:model" ["style"="dotted"]
-":url:vm" -> ":core:colorscheme" ["style"="dotted"]
 ":url:vm" -> ":core:coroutines" ["style"="dotted"]
 ":url:vm" -> ":core:log" ["style"="dotted"]
 ":url:vm" -> ":core:versions" ["style"="dotted"]

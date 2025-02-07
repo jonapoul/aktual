@@ -7,6 +7,7 @@ dependencies {
   api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
+  api(projects.core.colorscheme)
   api(projects.core.connection)
   api(projects.url.model)
   implementation(libs.androidx.compose.runtime)

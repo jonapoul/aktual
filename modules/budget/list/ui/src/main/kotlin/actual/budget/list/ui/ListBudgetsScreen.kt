@@ -4,17 +4,18 @@ import actual.budget.list.res.BudgetListStrings
 import actual.budget.list.vm.Budget
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
+import actual.core.colorscheme.ColorSchemeType
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualScreen
 import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
+import actual.core.ui.WavyBackground
 import actual.core.versions.ActualVersions
 import alakazam.kotlin.core.exhaustive
 import android.content.Intent
 import android.net.Uri
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -52,6 +53,7 @@ fun ListBudgetsScreen(
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
+  val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   DisposableEffect(Unit) {
@@ -88,6 +90,7 @@ fun ListBudgetsScreen(
   ListBudgetsScaffold(
     versions = versions,
     state = state,
+    themeType = themeType,
     onAction = { action ->
       when (action) {
         ListBudgetsAction.ChangeServer -> TODO()
@@ -104,6 +107,7 @@ fun ListBudgetsScreen(
 private fun ListBudgetsScaffold(
   versions: ActualVersions,
   state: ListBudgetsState,
+  themeType: ColorSchemeType,
   onAction: (ListBudgetsAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -118,13 +122,17 @@ private fun ListBudgetsScaffold(
       )
     },
   ) { innerPadding ->
-    ListBudgetsContent(
-      modifier = Modifier.padding(innerPadding),
-      versions = versions,
-      state = state,
-      onAction = onAction,
-      theme = theme,
-    )
+    Box {
+      WavyBackground(themeType)
+
+      ListBudgetsContent(
+        modifier = Modifier.padding(innerPadding),
+        versions = versions,
+        state = state,
+        onAction = onAction,
+        theme = theme,
+      )
+    }
   }
 }
 
@@ -154,7 +162,6 @@ private fun ListBudgetsContent(
 ) {
   Column(
     modifier = modifier
-      .background(theme.pageBackground)
       .fillMaxSize()
       .padding(16.dp),
   ) {
@@ -210,9 +217,10 @@ private fun ListBudgetsContent(
 
 @ActualScreenPreview
 @Composable
-private fun Success() = PreviewActualScreen {
+private fun Success() = PreviewActualScreen { type ->
   ListBudgetsScaffold(
     versions = PreviewVersions,
+    themeType = type,
     state = ListBudgetsState.Success(
       budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken),
     ),
@@ -222,9 +230,10 @@ private fun Success() = PreviewActualScreen {
 
 @ActualScreenPreview
 @Composable
-private fun Loading() = PreviewActualScreen {
+private fun Loading() = PreviewActualScreen { type ->
   ListBudgetsScaffold(
     versions = PreviewVersions,
+    themeType = type,
     state = ListBudgetsState.Loading,
     onAction = {},
   )
@@ -232,9 +241,10 @@ private fun Loading() = PreviewActualScreen {
 
 @ActualScreenPreview
 @Composable
-private fun Failure() = PreviewActualScreen {
+private fun Failure() = PreviewActualScreen { type ->
   ListBudgetsScaffold(
     versions = PreviewVersions,
+    themeType = type,
     state = ListBudgetsState.Failure(reason = "Something broke lol"),
     onAction = {},
   )
