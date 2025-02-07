@@ -2,13 +2,16 @@ package actual.android.app
 
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
-import actual.core.ui.ActualColorSchemeType
+import actual.core.ui.ColorSchemeType
 import actual.url.prefs.ServerUrlPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -21,7 +24,11 @@ internal class ActualActivityViewModel @Inject constructor(
   colorSchemePrefs: ColorSchemePreferences,
   serverUrlPreferences: ServerUrlPreferences,
 ) : ViewModel() {
-  val colorSchemeType: ActualColorSchemeType = colorSchemePrefs.colorSchemeType
+  val colorSchemeType: StateFlow<ColorSchemeType> = colorSchemePrefs
+    .colorSchemeType
+    .asFlow()
+    .stateIn(viewModelScope, SharingStarted.Eagerly, ColorSchemeType.System)
+
   val isServerUrlSet: Boolean = serverUrlPreferences.url.isSet()
 
   fun start() {

@@ -1,17 +1,17 @@
 package actual.android.app
 
-import actual.core.ui.ActualColorSchemeType
+import actual.core.ui.ColorSchemeType
+import dev.jonpoulton.preferences.android.map
+import dev.jonpoulton.preferences.core.Preference
 import dev.jonpoulton.preferences.core.Preferences
-import timber.log.Timber
 import javax.inject.Inject
 
-internal class ColorSchemePreferences @Inject constructor(
-  private val prefs: Preferences,
-) {
-  val colorSchemeType: ActualColorSchemeType
+internal class ColorSchemePreferences @Inject constructor(private val prefs: Preferences) {
+  val colorSchemeType: Preference<ColorSchemeType>
     get() = prefs
       .getInt(key = "colorSchemeType", default = -1)
-      .get()
-      .let { int -> if (int == -1) ActualColorSchemeType.System else ActualColorSchemeType.entries[int] }
-      .also { type -> Timber.v("Got ActualColorSchemeType %s from preferences", type) }
+      .map(
+        mapper = { int -> if (int == -1) ColorSchemeType.System else ColorSchemeType.entries[int] },
+        reverse = { type -> type.ordinal },
+      )
 }

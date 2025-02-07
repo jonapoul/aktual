@@ -18,5 +18,6 @@ dependencies {
   implementation(libs.androidx.compose.ui.toolingPreview)
   implementation(libs.androidx.compose.ui.unit)
   implementation(libs.androidx.coreKtx)
+  implementation(libs.androidx.navigation.runtime)
   implementation(projects.core.res)
 }

@@ -64,7 +64,7 @@ fun PreviewActualScreen(
 
 @Composable
 private fun PreviewWithColorScheme(
-  schemeType: ActualColorSchemeType,
+  schemeType: ColorSchemeType,
   modifier: Modifier = Modifier,
   content: @Composable () -> Unit,
 ) {
@@ -90,7 +90,7 @@ const val MY_PHONE_WIDTH_DP = 1080 / (MY_PHONE_DPI / 160)
 const val MY_PHONE_HEIGHT_DP = 2280 / (MY_PHONE_DPI / 160)
 
 val SchemeTypes = persistentListOf(
-  ActualColorSchemeType.Light,
-  ActualColorSchemeType.Dark,
-  ActualColorSchemeType.Midnight,
+  ColorSchemeType.Light,
+  ColorSchemeType.Dark,
+  ColorSchemeType.Midnight,
 )

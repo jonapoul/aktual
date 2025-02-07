@@ -1,6 +1,7 @@
 package actual.login.vm
 
 import actual.core.versions.ActualVersionsStateHolder
+import actual.log.EmptyLogger
 import actual.login.model.LoginToken
 import actual.login.prefs.LoginPreferences
 import actual.test.TestBuildConfig
@@ -49,6 +50,7 @@ internal class LoginViewModelTest {
     loginRequester = mockk(relaxed = true)
 
     viewModel = LoginViewModel(
+      logger = EmptyLogger,
       versionsStateHolder = versionsStateHolder,
       loginRequester = loginRequester,
       serverUrlPrefs = serverUrlPrefs,

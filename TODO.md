@@ -13,6 +13,7 @@
 - Use proper error messages for server URL screen
 
 - Screens
+  - bootstrap
   - Change password
   - Add new budget
   - Import

@@ -10,16 +10,16 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun ActualTheme(
-  schemeType: ActualColorSchemeType = ActualColorSchemeType.System,
+  schemeType: ColorSchemeType,
   content: @Composable () -> Unit,
 ) {
   val systemDarkTheme = isSystemInDarkTheme()
 
   val colorScheme = when (schemeType) {
-    ActualColorSchemeType.System -> if (systemDarkTheme) DarkTheme() else LightTheme()
-    ActualColorSchemeType.Dark -> DarkTheme()
-    ActualColorSchemeType.Light -> LightTheme()
-    ActualColorSchemeType.Midnight -> MidnightTheme()
+    ColorSchemeType.System -> if (systemDarkTheme) DarkTheme() else LightTheme()
+    ColorSchemeType.Dark -> DarkTheme()
+    ColorSchemeType.Light -> LightTheme()
+    ColorSchemeType.Midnight -> MidnightTheme()
   }
 
   CompositionLocalProvider(

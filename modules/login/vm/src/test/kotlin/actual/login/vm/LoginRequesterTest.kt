@@ -23,7 +23,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -40,9 +39,6 @@ internal class LoginRequesterTest {
 
   @get:Rule
   val webServerRule = MockWebServerRule()
-
-  @get:Rule
-  val timberRule = TimberTestRule.logAllWhenTestFails()!!
 
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: ActualApisStateHolder
@@ -65,6 +61,7 @@ internal class LoginRequesterTest {
     )
 
     loginRequester = LoginRequester(
+      logger = EmptyLogger,
       contexts = TestCoroutineContexts(mainDispatcherRule),
       apisStateHolder = apisStateHolder,
       loginPreferences = loginPreferences,

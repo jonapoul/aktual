@@ -1,5 +1,3 @@
-@file:Suppress("LongParameterList")
-
 package actual.url.ui
 
 import actual.core.res.CoreStrings
@@ -13,7 +11,9 @@ import actual.core.ui.PreviewActualScreen
 import actual.core.ui.PrimaryActualTextButtonWithLoading
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
+import actual.core.ui.debugNavigate
 import actual.core.versions.ActualVersions
+import actual.login.nav.LoginNavRoute
 import actual.url.model.Protocol
 import actual.url.res.ServerUrlStrings
 import actual.url.vm.ServerUrlViewModel
@@ -63,12 +63,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavHostController
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ServerUrlScreen(
-  navigator: ServerUrlNavigator,
+  navController: NavHostController,
   viewModel: ServerUrlViewModel = hiltViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
@@ -92,8 +93,8 @@ fun ServerUrlScreen(
 
   when {
     clickedBack -> SideEffect { activity.finish() }
-    shouldNavigate is ShouldNavigate.ToBootstrap -> SideEffect { navigator.navigateToBootstrap() }
-    shouldNavigate is ShouldNavigate.ToLogin -> SideEffect { navigator.navigateToLogin() }
+    shouldNavigate is ShouldNavigate.ToBootstrap -> SideEffect { /* TODO */ }
+    shouldNavigate is ShouldNavigate.ToLogin -> SideEffect { navController.debugNavigate(LoginNavRoute) }
   }
 
   ServerUrlScreenImpl(
@@ -104,10 +105,14 @@ fun ServerUrlScreen(
     isEnabled = isEnabled,
     isLoading = isLoading,
     errorMessage = errorMessage,
-    onClickBack = { clickedBack = true },
-    onClickConfirm = viewModel::onClickConfirm,
-    onEnterUrl = viewModel::onEnterUrl,
-    onSelectProtocol = viewModel::onSelectProtocol,
+    onAction = { action ->
+      when (action) {
+        ServerUrlAction.ConfirmUrl -> viewModel.onClickConfirm()
+        ServerUrlAction.NavBack -> clickedBack = true
+        is ServerUrlAction.EnterUrl -> viewModel.onEnterUrl(action.url)
+        is ServerUrlAction.SelectProtocol -> viewModel.onSelectProtocol(action.protocol)
+      }
+    },
   )
 }
 
@@ -120,10 +125,7 @@ private fun ServerUrlScreenImpl(
   isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
-  onClickBack: () -> Unit,
-  onClickConfirm: () -> Unit,
-  onEnterUrl: (String) -> Unit,
-  onSelectProtocol: (Protocol) -> Unit,
+  onAction: (ServerUrlAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
@@ -137,7 +139,7 @@ private fun ServerUrlScreenImpl(
           titleContentColor = theme.mobileHeaderText,
         ),
         navigationIcon = {
-          IconButton(onClick = onClickBack) {
+          IconButton(onClick = { onAction(ServerUrlAction.NavBack) }) {
             Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
               contentDescription = CoreStrings.navBack,
@@ -164,9 +166,7 @@ private fun ServerUrlScreenImpl(
       isEnabled = isEnabled,
       isLoading = isLoading,
       errorMessage = errorMessage,
-      onClickConfirm = onClickConfirm,
-      onEnterUrl = onEnterUrl,
-      onSelectProtocol = onSelectProtocol,
+      onAction = onAction,
     )
   }
 }
@@ -181,9 +181,7 @@ private fun Content(
   isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
-  onClickConfirm: () -> Unit,
-  onEnterUrl: (String) -> Unit,
-  onSelectProtocol: (Protocol) -> Unit,
+  onAction: (ServerUrlAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val theme = LocalTheme.current
@@ -224,7 +222,7 @@ private fun Content(
           modifier = Modifier.width(110.dp),
           value = protocol.toString(),
           options = protocols,
-          onValueChange = { onSelectProtocol(Protocol.fromString(it)) },
+          onValueChange = { onAction(ServerUrlAction.SelectProtocol(Protocol.fromString(it))) },
         )
 
         HorizontalSpacer(width = 5.dp)
@@ -234,7 +232,7 @@ private fun Content(
         ActualTextField(
           modifier = Modifier.weight(1f),
           value = url,
-          onValueChange = { onEnterUrl(it.lowercase()) },
+          onValueChange = { onAction(ServerUrlAction.EnterUrl(it.lowercase())) },
           placeholderText = EXAMPLE_URL,
           keyboardOptions = KeyboardOptions(
             autoCorrectEnabled = false,
@@ -245,7 +243,7 @@ private fun Content(
           keyboardActions = KeyboardActions(
             onGo = {
               focusManager.clearFocus()
-              onClickConfirm()
+              onAction(ServerUrlAction.ConfirmUrl)
             },
           ),
         )
@@ -261,7 +259,7 @@ private fun Content(
           text = ServerUrlStrings.serverUrlConfirm,
           isLoading = isLoading,
           isEnabled = isEnabled,
-          onClick = onClickConfirm,
+          onClick = { onAction(ServerUrlAction.ConfirmUrl) },
         )
       }
 
@@ -297,10 +295,7 @@ private fun Regular() = PreviewActualScreen {
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     isEnabled = true,
     isLoading = false,
-    onClickBack = {},
-    onClickConfirm = {},
-    onEnterUrl = {},
-    onSelectProtocol = {},
+    onAction = {},
     errorMessage = null,
   )
 }
@@ -315,10 +310,7 @@ private fun WithErrorMessage() = PreviewActualScreen {
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     isEnabled = true,
     isLoading = true,
-    onClickBack = {},
-    onClickConfirm = {},
-    onEnterUrl = {},
-    onSelectProtocol = {},
+    onAction = {},
     errorMessage = "Hello this is an error message, split over multiple lines so you can see how it behaves",
   )
 }
