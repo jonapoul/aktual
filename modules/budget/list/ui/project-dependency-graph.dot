@@ -13,7 +13,6 @@ node ["style"="filled"]
 ":core:state" ["fillcolor"="#55FF55","shape"="box"]
 ":serverUrl:prefs" ["fillcolor"="#55FF55","shape"="box"]
 ":login:prefs" ["fillcolor"="#BB00FF","shape"="box"]
-":core:icons" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 {
@@ -21,7 +20,6 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":budget:list:ui" -> ":budget:list:vm"
-":budget:list:ui" -> ":core:icons"
 ":budget:list:ui" -> ":core:ui"
 ":budget:list:vm" -> ":core:connection"
 ":budget:list:vm" -> ":login:prefs"
@@ -36,7 +34,6 @@ graph ["rank"="same"]
 ":core:state" -> ":core:model"
 ":serverUrl:prefs" -> ":core:model"
 ":login:prefs" -> ":core:model"
-":core:icons" -> ":core:ui"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res"
 subgraph "cluster_legend" {
