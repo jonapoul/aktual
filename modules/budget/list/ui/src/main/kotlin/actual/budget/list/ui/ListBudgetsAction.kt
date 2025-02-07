@@ -4,7 +4,7 @@ import actual.budget.list.vm.Budget
 import androidx.compose.runtime.Immutable
 
 @Immutable
-sealed interface ListBudgetsAction {
+internal sealed interface ListBudgetsAction {
   data object Reload : ListBudgetsAction
   data object ChangeServer : ListBudgetsAction
   data object OpenInBrowser : ListBudgetsAction

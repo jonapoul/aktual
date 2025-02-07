@@ -1,6 +1,7 @@
 package actual.url.model
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 
 @Immutable
 data class ServerUrl(
@@ -11,6 +12,7 @@ data class ServerUrl(
     require(baseUrl.isNotBlank()) { "Base URL is blank" }
   }
 
+  @Stable
   override fun toString(): String = "$protocol://$baseUrl"
 
   companion object {
