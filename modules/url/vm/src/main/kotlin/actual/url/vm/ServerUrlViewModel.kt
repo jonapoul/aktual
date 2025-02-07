@@ -16,8 +16,6 @@ import alakazam.kotlin.core.requireMessage
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -78,8 +76,6 @@ class ServerUrlViewModel @Inject internal constructor(
   val errorMessage: Flow<String?> = mutableConfirmResult.map { value ->
     if (value is ConfirmResult.Failed) "Failed: ${value.reason}" else null
   }
-
-  val protocols: ImmutableList<String> = Protocol.entries.map { it.toString() }.toImmutableList()
 
   init {
     viewModelScope.launch {

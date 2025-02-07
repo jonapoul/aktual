@@ -1,6 +1,7 @@
 package actual.url.model
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 
 @Immutable
 enum class Protocol(private val value: String) {
@@ -8,6 +9,7 @@ enum class Protocol(private val value: String) {
   Https("https"),
   ;
 
+  @Stable
   override fun toString(): String = value
 
   companion object {
