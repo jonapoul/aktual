@@ -49,6 +49,33 @@ fun PrimaryActualIconButton(
 
 @Stable
 @Composable
+fun NormalActualIconButton(
+  imageVector: ImageVector,
+  contentDescription: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  size: Dp? = null,
+  enabled: Boolean = true,
+  shape: Shape = ActualButtonShape,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  content: @Composable () -> Unit = { DefaultIconButtonContent(imageVector, contentDescription, size) },
+) {
+  BasicActualIconButton(
+    imageVector = imageVector,
+    contentDescription = contentDescription,
+    onClick = onClick,
+    colors = { scheme, isPressed -> scheme.normal(isPressed) },
+    modifier = modifier,
+    size = size,
+    enabled = enabled,
+    shape = shape,
+    interactionSource = interactionSource,
+    content = content,
+  )
+}
+
+@Stable
+@Composable
 fun BareActualIconButton(
   imageVector: ImageVector,
   contentDescription: String,
@@ -127,6 +154,15 @@ private fun Theme.primary(isPressed: Boolean) = IconButtonDefaults.filledIconBut
 
 @Stable
 @Composable
+private fun Theme.normal(isPressed: Boolean) = IconButtonDefaults.filledIconButtonColors(
+  containerColor = if (isPressed) buttonNormalBackground else buttonNormalBackgroundHover,
+  disabledContainerColor = buttonNormalDisabledBackground,
+  contentColor = if (isPressed) buttonNormalText else buttonNormalTextHover,
+  disabledContentColor = buttonNormalDisabledText,
+)
+
+@Stable
+@Composable
 private fun Theme.bare(isPressed: Boolean) = IconButtonDefaults.filledIconButtonColors(
   containerColor = if (isPressed) buttonBareBackgroundHover else buttonBareBackground,
   disabledContainerColor = buttonBareDisabledBackground,
@@ -138,6 +174,16 @@ private fun Theme.bare(isPressed: Boolean) = IconButtonDefaults.filledIconButton
 @Composable
 private fun Bare() = PreviewActualColumn {
   BareActualIconButton(
+    imageVector = Icons.Filled.Check,
+    contentDescription = "Cancel",
+    onClick = {},
+  )
+}
+
+@Preview
+@Composable
+private fun Normal() = PreviewActualColumn {
+  NormalActualIconButton(
     imageVector = Icons.Filled.Check,
     contentDescription = "Cancel",
     onClick = {},
