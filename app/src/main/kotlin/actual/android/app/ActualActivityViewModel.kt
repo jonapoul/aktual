@@ -3,7 +3,7 @@ package actual.android.app
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
 import actual.core.ui.ActualColorSchemeType
-import actual.serverurl.prefs.ServerUrlPreferences
+import actual.url.prefs.ServerUrlPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel

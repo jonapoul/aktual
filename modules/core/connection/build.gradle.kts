@@ -3,13 +3,14 @@ plugins {
 }
 
 dependencies {
-  api(libs.alakazam.kotlin.core)
   api(libs.javaxInject)
   api(projects.api.client)
   api(projects.api.json)
   api(projects.core.coroutines)
-  api(projects.core.state)
-  api(projects.serverUrl.prefs)
+  api(projects.core.versions)
+  api(projects.url.model)
+  api(projects.url.prefs)
+  implementation(libs.alakazam.kotlin.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
@@ -18,8 +19,9 @@ dependencies {
   implementation(libs.preferences.core)
   implementation(libs.retrofit.core)
   implementation(libs.retrofit.serialization)
-  testImplementation(testFixtures(projects.core.coroutines))
+  implementation(projects.core.buildconfig)
   testImplementation(libs.alakazam.android.core)
-  testImplementation(projects.test.android)
+  testImplementation(testFixtures(projects.core.coroutines))
+  testImplementation(projects.test.buildconfig)
   testImplementation(projects.test.prefs)
 }

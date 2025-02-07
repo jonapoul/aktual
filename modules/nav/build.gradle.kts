@@ -7,7 +7,7 @@ dependencies {
   api(libs.androidx.navigation.runtime)
   api(projects.budget.list.ui)
   api(projects.login.ui)
-  api(projects.serverUrl.ui)
+  api(projects.url.ui)
   implementation(libs.androidx.compose.animation.full)
   implementation(libs.androidx.compose.ui.core)
   implementation(libs.androidx.navigation.commonKtx)

@@ -3,12 +3,12 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":login:prefs","labelloc"="t","fontsize"="30","ranksep"="2.5","rankdir"="TB"]
 node ["style"="filled"]
 ":login:prefs" ["fillcolor"="#BB00FF","shape"="box"]
-":core:model" ["fillcolor"="#BB00FF","shape"="box"]
+":login:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":login:prefs" -> ":core:model"
+":login:prefs" -> ":login:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

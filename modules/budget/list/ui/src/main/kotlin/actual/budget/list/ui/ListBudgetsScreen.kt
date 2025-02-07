@@ -3,8 +3,6 @@ package actual.budget.list.ui
 import actual.budget.list.vm.Budget
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
-import actual.core.model.ActualVersions
-import actual.core.model.ServerUrl
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
@@ -13,6 +11,8 @@ import actual.core.ui.Theme
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
+import actual.core.versions.ActualVersions
+import actual.url.model.ServerUrl
 import alakazam.kotlin.core.exhaustive
 import android.content.Intent
 import android.net.Uri

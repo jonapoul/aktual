@@ -9,10 +9,11 @@ dependencies {
   api(libs.kotlinx.immutable)
   api(projects.core.connection)
   api(projects.login.prefs)
-  api(projects.serverUrl.prefs)
+  api(projects.url.model)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.preferences.core)
+  implementation(projects.url.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
-  testImplementation(projects.test.android)
+  testImplementation(projects.test.buildconfig)
   testImplementation(projects.test.http)
 }

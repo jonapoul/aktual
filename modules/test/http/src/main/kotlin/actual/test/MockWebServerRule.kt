@@ -1,6 +1,6 @@
 package actual.test
 
-import actual.core.model.ServerUrl
+import actual.url.model.ServerUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.rules.TestWatcher

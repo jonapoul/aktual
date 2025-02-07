@@ -45,7 +45,10 @@ private val File.gradleModuleDescendants: Sequence<File>
 
 private val File.subDescendants: Sequence<File>
   get() = if (File(this, "build.gradle.kts").exists()) {
-    sequenceOf(this)
+    sequence {
+      yield(this@subDescendants)
+      listFiles()?.forEach { yieldAll(it.subDescendants) }
+    }
   } else {
     gradleModuleDescendants
   }

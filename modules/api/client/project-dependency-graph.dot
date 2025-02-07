@@ -4,13 +4,15 @@ graph ["dpi"="100","label"=":api:client","labelloc"="t","fontsize"="30","ranksep
 node ["style"="filled"]
 ":api:client" ["fillcolor"="#BB00FF","shape"="box"]
 ":api:model" ["fillcolor"="#BB00FF","shape"="box"]
-":core:model" ["fillcolor"="#BB00FF","shape"="box"]
+":login:model" ["fillcolor"="#9D8DF1","shape"="box"]
+":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":api:client" -> ":api:model"
-":api:model" -> ":core:model"
+":api:client" -> ":url:model"
+":api:model" -> ":login:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

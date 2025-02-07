@@ -7,11 +7,13 @@ node ["style"="filled"]
 ":core:connection" ["fillcolor"="#55FF55","shape"="box"]
 ":api:client" ["fillcolor"="#BB00FF","shape"="box"]
 ":api:model" ["fillcolor"="#BB00FF","shape"="box"]
-":core:model" ["fillcolor"="#BB00FF","shape"="box"]
+":login:model" ["fillcolor"="#9D8DF1","shape"="box"]
+":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:json" ["fillcolor"="#BB00FF","shape"="box"]
 ":core:coroutines" ["fillcolor"="#BB00FF","shape"="box"]
-":core:state" ["fillcolor"="#55FF55","shape"="box"]
-":serverUrl:prefs" ["fillcolor"="#55FF55","shape"="box"]
+":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
+":url:prefs" ["fillcolor"="#55FF55","shape"="box"]
 ":login:prefs" ["fillcolor"="#BB00FF","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
@@ -23,19 +25,24 @@ graph ["rank"="same"]
 ":budget:list:ui" -> ":core:ui"
 ":budget:list:vm" -> ":core:connection"
 ":budget:list:vm" -> ":login:prefs"
-":budget:list:vm" -> ":serverUrl:prefs"
+":budget:list:vm" -> ":url:model"
+":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
 ":core:connection" -> ":api:client"
 ":core:connection" -> ":api:json"
 ":core:connection" -> ":core:coroutines"
-":core:connection" -> ":core:state"
-":core:connection" -> ":serverUrl:prefs"
+":core:connection" -> ":core:versions"
+":core:connection" -> ":url:model"
+":core:connection" -> ":url:prefs"
+":core:connection" -> ":core:buildconfig" ["style"="dotted"]
 ":api:client" -> ":api:model"
-":api:model" -> ":core:model"
-":core:state" -> ":core:model"
-":serverUrl:prefs" -> ":core:model"
-":login:prefs" -> ":core:model"
-":core:ui" -> ":core:model"
+":api:client" -> ":url:model"
+":api:model" -> ":login:model"
+":core:versions" -> ":core:buildconfig"
+":url:prefs" -> ":url:model"
+":login:prefs" -> ":login:model"
 ":core:ui" -> ":core:res"
+":core:ui" -> ":core:versions"
+":core:ui" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

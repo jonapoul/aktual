@@ -1,7 +1,7 @@
 package actual.api.model.account
 
 import actual.api.json.ActualJson
-import actual.core.model.LoginToken
+import actual.login.model.LoginToken
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -5,12 +5,12 @@ import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
 import actual.core.coroutines.TestCoroutineContexts
-import actual.core.model.LoginToken
-import actual.core.model.Password
+import actual.login.model.LoginToken
+import actual.login.model.Password
 import actual.login.prefs.LoginPreferences
-import actual.serverurl.prefs.ServerUrlPreferences
 import actual.test.MockWebServerRule
 import actual.test.buildPreferences
+import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
 import io.mockk.coEvery

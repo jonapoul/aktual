@@ -7,7 +7,7 @@ plugins {
 dependencies {
   api(libs.alakazam.kotlin.serialization)
   api(libs.kotlinx.serialization.core)
-  api(projects.core.model)
+  api(projects.login.model)
   implementation(libs.kotlinx.serialization.json)
   compileOnly(libs.sekret)
   testImplementation(projects.api.json)

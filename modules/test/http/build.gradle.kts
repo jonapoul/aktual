@@ -5,6 +5,6 @@ plugins {
 dependencies {
   api(libs.test.junit)
   api(libs.test.okhttp)
-  api(projects.core.model)
+  api(projects.url.model)
   implementation(libs.okhttp.core)
 }

@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-  api(libs.javaxInject)
   api(libs.preferences.core)
-  api(projects.core.model)
+  api(projects.login.model)
+  implementation(libs.javaxInject)
 }
