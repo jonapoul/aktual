@@ -6,7 +6,7 @@ import actual.api.client.BaseApi
 import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
 import actual.core.coroutines.TestCoroutineContexts
-import actual.core.state.ActualVersionsStateHolder
+import actual.core.versions.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
 import alakazam.kotlin.core.LoopController
 import alakazam.test.core.FiniteLoopController

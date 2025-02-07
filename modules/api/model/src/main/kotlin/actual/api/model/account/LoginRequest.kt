@@ -1,7 +1,7 @@
 package actual.api.model.account
 
 import actual.api.model.internal.PasswordSerializer
-import actual.core.model.Password
+import actual.login.model.Password
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

@@ -36,8 +36,8 @@ class NeedsBootstrapResponseTest {
               method = LoginMethod.Password,
               active = 1,
               displayName = "Password",
-            )
-          )
+            ),
+          ),
         ),
       ),
     )

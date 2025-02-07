@@ -5,7 +5,7 @@ import actual.api.model.ResponseStatus
 import actual.api.model.internal.LoginResponseDataSerializer
 import actual.api.model.internal.LoginResponseSerializer
 import actual.api.model.internal.TokenSerializer
-import actual.core.model.LoginToken
+import actual.login.model.LoginToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

@@ -2,7 +2,7 @@ package actual.nav
 
 import actual.budget.list.ui.ListBudgetsScreen
 import actual.login.ui.LoginScreen
-import actual.serverurl.ui.ServerUrlScreen
+import actual.url.ui.ServerUrlScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 

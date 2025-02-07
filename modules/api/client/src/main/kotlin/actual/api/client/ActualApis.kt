@@ -1,6 +1,6 @@
 package actual.api.client
 
-import actual.core.model.ServerUrl
+import actual.url.model.ServerUrl
 
 data class ActualApis(
   val serverUrl: ServerUrl,

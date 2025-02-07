@@ -4,7 +4,7 @@ package actual.nav
 
 import actual.budget.list.ui.ListBudgetsNavigator
 import actual.login.ui.LoginNavigator
-import actual.serverurl.ui.ServerUrlNavigator
+import actual.url.ui.ServerUrlNavigator
 import android.annotation.SuppressLint
 import androidx.navigation.NavHostController
 import timber.log.Timber

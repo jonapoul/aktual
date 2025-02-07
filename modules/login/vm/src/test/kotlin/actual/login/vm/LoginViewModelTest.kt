@@ -1,13 +1,13 @@
 package actual.login.vm
 
-import actual.core.model.LoginToken
-import actual.core.model.Protocol
-import actual.core.model.ServerUrl
-import actual.core.state.ActualVersionsStateHolder
+import actual.core.versions.ActualVersionsStateHolder
+import actual.login.model.LoginToken
 import actual.login.prefs.LoginPreferences
-import actual.serverurl.prefs.ServerUrlPreferences
 import actual.test.TestBuildConfig
 import actual.test.buildPreferences
+import actual.url.model.Protocol
+import actual.url.model.ServerUrl
+import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
 import io.mockk.coEvery

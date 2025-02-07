@@ -3,14 +3,18 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":core:ui","labelloc"="t","fontsize"="30","ranksep"="2.5","rankdir"="TB"]
 node ["style"="filled"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
-":core:model" ["fillcolor"="#BB00FF","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
+":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
+":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res"
+":core:ui" -> ":core:versions"
+":core:ui" -> ":url:model"
+":core:versions" -> ":core:buildconfig"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

@@ -53,10 +53,10 @@ fun Project.commonMainDependencies(handler: KotlinDependencyHandler.() -> Unit) 
   }
 }
 
-fun Project.jvmMainDependencies(handler: KotlinDependencyHandler.() -> Unit) {
+fun Project.androidMainDependencies(handler: KotlinDependencyHandler.() -> Unit) {
   kotlin {
     sourceSets {
-      jvmMain {
+      androidMain {
         dependencies(handler)
       }
     }

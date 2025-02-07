@@ -1,9 +1,9 @@
 package actual.core.connection
 
 import actual.api.client.ActualApisStateHolder
-import actual.core.model.ServerUrl
-import actual.serverurl.prefs.ServerUrlPreferences
 import actual.test.buildPreferences
+import actual.url.model.ServerUrl
+import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
 import kotlinx.coroutines.test.TestScope

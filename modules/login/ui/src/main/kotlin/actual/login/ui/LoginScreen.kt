@@ -1,8 +1,5 @@
 package actual.login.ui
 
-import actual.core.model.ActualVersions
-import actual.core.model.Password
-import actual.core.model.ServerUrl
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualScreenPreview
 import actual.core.ui.ActualTextField
@@ -12,8 +9,11 @@ import actual.core.ui.PrimaryActualTextButtonWithLoading
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
+import actual.core.versions.ActualVersions
+import actual.login.model.Password
 import actual.login.vm.LoginResult
 import actual.login.vm.LoginViewModel
+import actual.url.model.ServerUrl
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -1,8 +1,9 @@
 package actual.core.connection
 
 import actual.api.client.ActualApisStateHolder
-import actual.core.model.ServerUrl
-import actual.serverurl.prefs.ServerUrlPreferences
+import actual.core.config.BuildConfig
+import actual.url.model.ServerUrl
+import actual.url.prefs.ServerUrlPreferences
 import alakazam.kotlin.core.collectFlow
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -15,6 +16,7 @@ import javax.inject.Singleton
 @Singleton
 class ConnectionMonitor @Inject constructor(
   private val scope: CoroutineScope,
+  private val buildConfig: BuildConfig,
   private val apiStateHolder: ActualApisStateHolder,
   private val serverUrlPreferences: ServerUrlPreferences,
 ) {
@@ -33,7 +35,7 @@ class ConnectionMonitor @Inject constructor(
   }
 
   private fun tryToBuildApis(url: ServerUrl) = try {
-    val client = buildOkHttp()
+    val client = buildOkHttp(isDebug = buildConfig.debug)
     val retrofit = buildRetrofit(client, url)
     val apis = buildApis(retrofit, url)
     apiStateHolder.update { apis }

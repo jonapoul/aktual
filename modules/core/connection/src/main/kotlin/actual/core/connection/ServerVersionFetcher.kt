@@ -3,7 +3,7 @@ package actual.core.connection
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.core.coroutines.CoroutineContexts
-import actual.core.state.ActualVersionsStateHolder
+import actual.core.versions.ActualVersionsStateHolder
 import alakazam.kotlin.core.LoopController
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
@@ -13,7 +13,7 @@ import timber.log.Timber
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-class ServerVersionFetcher @Inject constructor(
+class ServerVersionFetcher @Inject internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
   private val versionsStateHolder: ActualVersionsStateHolder,

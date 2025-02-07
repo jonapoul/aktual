@@ -1,10 +1,10 @@
 package actual.budget.list.vm
 
-import actual.core.model.ActualVersions
-import actual.core.model.ServerUrl
-import actual.core.state.ActualVersionsStateHolder
+import actual.core.versions.ActualVersions
+import actual.core.versions.ActualVersionsStateHolder
 import actual.login.prefs.LoginPreferences
-import actual.serverurl.prefs.ServerUrlPreferences
+import actual.url.model.ServerUrl
+import actual.url.prefs.ServerUrlPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel

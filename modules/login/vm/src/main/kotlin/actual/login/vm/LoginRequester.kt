@@ -4,7 +4,7 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
 import actual.core.coroutines.CoroutineContexts
-import actual.core.model.Password
+import actual.login.model.Password
 import actual.login.prefs.LoginPreferences
 import alakazam.kotlin.core.requireMessage
 import kotlinx.coroutines.CancellationException
@@ -14,7 +14,7 @@ import timber.log.Timber
 import java.io.IOException
 import javax.inject.Inject
 
-internal class LoginRequester @Inject constructor(
+internal class LoginRequester @Inject internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
   private val loginPreferences: LoginPreferences,
