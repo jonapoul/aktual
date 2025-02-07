@@ -1,8 +1,9 @@
 package actual.android.app
 
+import actual.core.colorscheme.ColorSchemePreferences
+import actual.core.colorscheme.ColorSchemeType
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
-import actual.core.ui.ColorSchemeType
 import actual.url.prefs.ServerUrlPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

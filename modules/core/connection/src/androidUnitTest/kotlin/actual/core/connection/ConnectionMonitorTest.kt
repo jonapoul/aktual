@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package actual.core.connection
 
 import actual.api.client.ActualApisStateHolder
@@ -8,6 +10,7 @@ import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest

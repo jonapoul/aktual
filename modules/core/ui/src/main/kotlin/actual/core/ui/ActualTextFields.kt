@@ -184,7 +184,7 @@ private fun PreviewDropDownMenu() = PreviewActualColumn {
   val options = persistentListOf("A", "B", "C", "D")
   ActualExposedDropDownMenu(
     value = value,
-    onValueChange = { value = it },
+    onValueChange = { newValue -> value = newValue },
     options = options,
   )
 }
@@ -197,7 +197,7 @@ private fun PreviewDropDownMenuForcedWidth() = PreviewActualColumn {
   ActualExposedDropDownMenu(
     modifier = Modifier.width(100.dp),
     value = value,
-    onValueChange = { value = it },
+    onValueChange = { newValue -> value = newValue },
     options = options,
   )
 }

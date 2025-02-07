@@ -4,6 +4,7 @@ graph ["dpi"="100","label"=":url:ui","labelloc"="t","fontsize"="30","ranksep"="1
 node ["style"="filled"]
 ":url:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
+":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -27,9 +28,11 @@ graph ["rank"="same"]
 ":url:ui" -> ":core:ui"
 ":url:ui" -> ":url:nav"
 ":url:ui" -> ":url:vm"
+":url:ui" -> ":core:colorscheme" ["style"="dotted"]
 ":url:ui" -> ":core:res" ["style"="dotted"]
 ":url:ui" -> ":login:nav" ["style"="dotted"]
 ":url:ui" -> ":url:res" ["style"="dotted"]
+":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
@@ -38,6 +41,7 @@ graph ["rank"="same"]
 ":url:vm" -> ":url:model"
 ":url:vm" -> ":api:client" ["style"="dotted"]
 ":url:vm" -> ":api:model" ["style"="dotted"]
+":url:vm" -> ":core:colorscheme" ["style"="dotted"]
 ":url:vm" -> ":core:coroutines" ["style"="dotted"]
 ":url:vm" -> ":core:log" ["style"="dotted"]
 ":url:vm" -> ":core:versions" ["style"="dotted"]

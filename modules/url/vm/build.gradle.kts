@@ -14,6 +14,7 @@ dependencies {
   implementation(libs.preferences.core)
   implementation(projects.api.client)
   implementation(projects.api.model)
+  implementation(projects.core.colorscheme)
   implementation(projects.core.coroutines)
   implementation(projects.core.log)
   implementation(projects.core.versions)

@@ -2,6 +2,8 @@ package actual.url.vm
 
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.NeedsBootstrapResponse
+import actual.core.colorscheme.ColorSchemePreferences
+import actual.core.colorscheme.ColorSchemeType
 import actual.core.coroutines.CoroutineContexts
 import actual.core.coroutines.ResettableStateFlow
 import actual.core.versions.ActualVersions
@@ -37,7 +39,8 @@ class ServerUrlViewModel @Inject internal constructor(
   private val logger: Logger,
   private val contexts: CoroutineContexts,
   private val apiStateHolder: ActualApisStateHolder,
-  private val prefs: ServerUrlPreferences,
+  private val serverUrlPreferences: ServerUrlPreferences,
+  private val colorSchemePreferences: ColorSchemePreferences,
   versionsStateHolder: ActualVersionsStateHolder,
 ) : ViewModel() {
   private val mutableIsLoading = ResettableStateFlow(value = false)
@@ -50,6 +53,11 @@ class ServerUrlViewModel @Inject internal constructor(
   val baseUrl: StateFlow<String> = mutableBaseUrl.asStateFlow()
   val protocol: StateFlow<Protocol> = mutableProtocol.asStateFlow()
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
+
+  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences
+    .colorSchemeType
+    .asFlow()
+    .stateIn(viewModelScope, SharingStarted.Eagerly, colorSchemePreferences.colorSchemeType.default)
 
   val isEnabled: StateFlow<Boolean> = baseUrl
     .map { it.isNotBlank() }
@@ -75,7 +83,7 @@ class ServerUrlViewModel @Inject internal constructor(
 
   init {
     viewModelScope.launch {
-      val savedUrl = prefs.url.get()
+      val savedUrl = serverUrlPreferences.url.get()
       if (savedUrl != null) {
         mutableBaseUrl.update { savedUrl.baseUrl }
         mutableProtocol.update { savedUrl.protocol }
@@ -99,6 +107,11 @@ class ServerUrlViewModel @Inject internal constructor(
     mutableProtocol.update { protocol }
   }
 
+  fun onSetTheme(type: ColorSchemeType) {
+    logger.v("onSetTheme %s", type)
+    colorSchemePreferences.colorSchemeType.set(type)
+  }
+
   fun onClickConfirm() {
     logger.v("onClickConfirm")
     mutableIsLoading.update { true }
@@ -106,7 +119,7 @@ class ServerUrlViewModel @Inject internal constructor(
       val protocol = mutableProtocol.value
       val baseUrl = mutableBaseUrl.value
       val url = ServerUrl(protocol, baseUrl)
-      prefs.url.set(url)
+      serverUrlPreferences.url.set(url)
       checkIfNeedsBootstrap(url)
       mutableIsLoading.update { false }
     }
@@ -139,7 +152,7 @@ class ServerUrlViewModel @Inject internal constructor(
     logger.w(e, "Failed checking bootstrap for %s", url)
 
     // hit an error, we can't use this URL?
-    prefs.url.deleteAndCommit()
+    serverUrlPreferences.url.deleteAndCommit()
 
     mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
   }

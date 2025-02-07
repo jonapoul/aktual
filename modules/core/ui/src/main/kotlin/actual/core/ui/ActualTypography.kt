@@ -34,8 +34,8 @@ fun actualTypography(theme: Theme = LocalTheme.current): Typography {
 //     titleMedium =
 //     titleSmall =
     bodyLarge = actualTextStyle(fontSize = 16.sp, lineHeight = 22.4.sp),
-//     bodyMedium =
-//     bodySmall =
+    bodyMedium = actualTextStyle(fontSize = 15.sp, lineHeight = 21.4.sp),
+    bodySmall = actualTextStyle(fontSize = 14.sp, lineHeight = 20.4.sp),
 //     labelLarge =
     labelMedium = actualTextStyle(color = theme.pageTextSubdued, fontSize = 13.sp),
 //     labelSmall =
@@ -83,8 +83,8 @@ private fun PreviewTypography() {
 //         titleMedium,
 //         titleSmall,
         bodyLarge,
-//         bodyMedium,
-//         bodySmall,
+        bodyMedium,
+        bodySmall,
 //         labelLarge,
         labelMedium,
 //         labelSmall,
