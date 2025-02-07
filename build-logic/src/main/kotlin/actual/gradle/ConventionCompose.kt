@@ -17,7 +17,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 class ConventionCompose : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
     with(pluginManager) {
-      apply(ConventionKotlin::class.java)
+      apply(ConventionKotlinJvm::class.java)
       apply(ConventionAndroidBase::class.java)
       apply(ComposeCompilerGradleSubplugin::class.java)
     }
