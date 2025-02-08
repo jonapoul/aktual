@@ -12,7 +12,7 @@ import androidx.compose.ui.graphics.Color
 @Composable
 fun ActualTheme(
   schemeType: ColorSchemeType,
-  content: @Composable () -> Unit,
+  content: ComposableLambda,
 ) {
   val systemDarkTheme = isSystemInDarkTheme()
 

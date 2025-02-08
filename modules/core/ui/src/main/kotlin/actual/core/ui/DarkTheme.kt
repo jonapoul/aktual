@@ -160,6 +160,7 @@ internal class DarkTheme : Theme {
   override val upcomingBackground = ActualColors.purple700
   override val upcomingText = ActualColors.purple100
   override val upcomingBorder = tableBorder
+  override val successText = ActualColors.green500
 
   override val formLabelText = ActualColors.purple150
   override val formLabelBackground = ActualColors.blue900

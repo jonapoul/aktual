@@ -160,6 +160,7 @@ internal class MidnightTheme : Theme {
   override val upcomingBackground = ActualColors.purple800
   override val upcomingText = ActualColors.purple200
   override val upcomingBorder = tableBorder
+  override val successText = ActualColors.green400
 
   override val formLabelText = ActualColors.purple150
   override val formLabelBackground = ActualColors.blue900

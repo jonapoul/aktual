@@ -1,10 +1,14 @@
 package actual.android.app
 
+import actual.about.data.GithubJson
+import actual.api.core.buildOkHttp
+import actual.api.core.buildRetrofit
 import actual.core.coroutines.CoroutineContexts
 import actual.core.coroutines.DefaultCoroutineContexts
 import actual.licenses.data.AndroidAssetsProvider
 import actual.licenses.data.AssetsProvider
 import actual.log.Logger
+import actual.url.model.ServerUrl
 import alakazam.android.core.UrlOpener
 import alakazam.kotlin.core.InfiniteLoopController
 import alakazam.kotlin.core.LoopController
@@ -16,13 +20,16 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.jonpoulton.preferences.android.AndroidSharedPreferences
 import dev.jonpoulton.preferences.core.Preferences
+import github.api.client.GithubApi
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.datetime.Clock
+import retrofit2.create
 import javax.inject.Singleton
 import actual.core.res.R as CoreR
 
@@ -125,4 +132,18 @@ internal interface LicensesModule {
 internal class AlakazamModule {
   @Provides
   fun urlOpener(context: Context) = UrlOpener(context)
+}
+
+@Module
+@InstallIn(ViewModelComponent::class)
+internal class GithubModule {
+  @Provides
+  fun api(
+    logger: Logger,
+    buildConfig: ActualBuildConfig,
+  ): GithubApi = buildRetrofit(
+    client = buildOkHttp(logger, buildConfig.debug, tag = "GITHUB"),
+    url = ServerUrl("https://api.github.com"),
+    json = GithubJson,
+  ).create()
 }

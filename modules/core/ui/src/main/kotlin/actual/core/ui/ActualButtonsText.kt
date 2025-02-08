@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonColors
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -44,8 +43,8 @@ fun PrimaryActualTextButton(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = MaterialTheme.typography.buttonPrimary,
   fontSize: TextUnit = TextUnit.Unspecified,
-  prefix: (@Composable () -> Unit)? = null,
-  colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primary(pressed) },
+  prefix: ComposableLambda? = null,
+  colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primaryButton(pressed) },
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
 ) {
   BasicActualTextButton(
@@ -77,8 +76,8 @@ fun PrimaryActualTextButtonWithLoading(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = MaterialTheme.typography.buttonPrimary,
   fontSize: TextUnit = TextUnit.Unspecified,
-  prefix: (@Composable () -> Unit)? = null,
-  colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primary(pressed) },
+  prefix: ComposableLambda? = null,
+  colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primaryButton(pressed) },
 ) {
   PrimaryActualTextButton(
     text = text,
@@ -117,6 +116,38 @@ fun PrimaryActualTextButtonWithLoading(
 
 @Stable
 @Composable
+fun NormalActualTextButton(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  isEnabled: Boolean = true,
+  contentPadding: PaddingValues = ActualButtonPadding,
+  shape: Shape = ActualButtonShape,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  style: TextStyle = MaterialTheme.typography.buttonPrimary,
+  fontSize: TextUnit = TextUnit.Unspecified,
+  prefix: ComposableLambda? = null,
+  colors: @Composable (Theme, Boolean) -> ButtonColors = { t, pressed -> t.normalButton(pressed) },
+  content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
+) {
+  BareActualTextButton(
+    text = text,
+    modifier = modifier,
+    isEnabled = isEnabled,
+    contentPadding = contentPadding,
+    shape = shape,
+    interactionSource = interactionSource,
+    style = style,
+    fontSize = fontSize,
+    prefix = prefix,
+    onClick = onClick,
+    colors = colors,
+    content = content,
+  )
+}
+
+@Stable
+@Composable
 fun BareActualTextButton(
   text: String,
   onClick: () -> Unit,
@@ -127,8 +158,8 @@ fun BareActualTextButton(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = MaterialTheme.typography.buttonBare,
   fontSize: TextUnit = TextUnit.Unspecified,
-  prefix: (@Composable () -> Unit)? = null,
-  colors: @Composable (Theme, Boolean) -> ButtonColors = { theme, pressed -> theme.bare(pressed) },
+  prefix: ComposableLambda? = null,
+  colors: @Composable (Theme, Boolean) -> ButtonColors = { theme, pressed -> theme.bareButton(pressed) },
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
 ) {
   BasicActualTextButton(
@@ -160,7 +191,7 @@ fun BasicActualTextButton(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = LocalTextStyle.current,
   fontSize: TextUnit = TextUnit.Unspecified,
-  prefix: (@Composable () -> Unit)? = null,
+  prefix: ComposableLambda? = null,
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
 ) {
   val theme = LocalTheme.current
@@ -184,7 +215,7 @@ private fun RowScope.DefaultTextButtonContent(
   text: String,
   style: TextStyle,
   fontSize: TextUnit,
-  prefix: (@Composable () -> Unit)?,
+  prefix: ComposableLambda?,
 ) {
   prefix?.invoke()
 
@@ -195,24 +226,6 @@ private fun RowScope.DefaultTextButtonContent(
     fontSize = fontSize,
   )
 }
-
-@Stable
-@Composable
-private fun Theme.primary(isPressed: Boolean) = ButtonDefaults.buttonColors(
-  containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
-  disabledContainerColor = buttonPrimaryDisabledBackground,
-  contentColor = if (isPressed) buttonPrimaryText else buttonPrimaryTextHover,
-  disabledContentColor = buttonPrimaryDisabledText,
-)
-
-@Stable
-@Composable
-private fun Theme.bare(isPressed: Boolean) = ButtonDefaults.buttonColors(
-  containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
-  disabledContainerColor = buttonBareDisabledBackground,
-  contentColor = if (isPressed) buttonBareText else buttonBareTextHover,
-  disabledContentColor = buttonBareDisabledText,
-)
 
 private val Typography.buttonPrimary: TextStyle
   @Composable
@@ -228,7 +241,7 @@ private val Typography.buttonBare: TextStyle
 @Composable
 private fun PreviewBareButton() = PreviewActualColumn {
   BareActualTextButton(
-    text = "Cancel",
+    text = "Bare",
     onClick = {},
   )
 }
@@ -237,7 +250,16 @@ private fun PreviewBareButton() = PreviewActualColumn {
 @Composable
 private fun PreviewPrimaryButton() = PreviewActualColumn {
   PrimaryActualTextButton(
-    text = "OK",
+    text = "Primary",
+    onClick = {},
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewNormalButton() = PreviewActualColumn {
+  NormalActualTextButton(
+    text = "Normal",
     onClick = {},
   )
 }

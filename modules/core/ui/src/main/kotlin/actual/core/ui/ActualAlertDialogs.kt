@@ -28,10 +28,10 @@ fun ActualAlertDialog(
   title: String,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-  buttons: (@Composable () -> Unit)? = null,
+  buttons: ComposableLambda? = null,
   theme: Theme = LocalTheme.current,
   properties: DialogProperties = DialogProperties(),
-  content: @Composable () -> Unit,
+  content: ComposableLambda,
 ) {
   BasicAlertDialog(
     onDismissRequest = onDismissRequest,
@@ -53,7 +53,7 @@ fun ActualAlertDialog(
   text: String,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-  buttons: (@Composable () -> Unit)? = null,
+  buttons: ComposableLambda? = null,
   theme: Theme = LocalTheme.current,
   properties: DialogProperties = DialogProperties(),
 ) {
@@ -75,10 +75,10 @@ fun ActualAlertDialog(
 fun ActualAlertDialogContent(
   title: String,
   modifier: Modifier = Modifier,
-  buttons: (@Composable () -> Unit)? = null,
+  buttons: ComposableLambda? = null,
   theme: Theme = LocalTheme.current,
   tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
-  content: @Composable () -> Unit,
+  content: ComposableLambda,
 ) {
   Surface(
     modifier = modifier,
@@ -154,7 +154,7 @@ private fun ExampleContentWithButtons() = PreviewActualColumn {
         Text("This is some text with even more text here to show how it behaves when splitting over lines")
         PrimaryActualTextButton(text = "Click me", onClick = {})
         Text("This is some text")
-        PrimaryActualTextButton(text = "Click me", onClick = {})
+        NormalActualTextButton(text = "Click me", onClick = {})
       }
     },
   )
@@ -171,7 +171,7 @@ private fun ExampleContentWithoutButtons() = PreviewActualColumn {
         Text("This is some text")
         PrimaryActualTextButton(text = "Click me", onClick = {})
         Text("This is some text")
-        PrimaryActualTextButton(text = "Click me", onClick = {})
+        NormalActualTextButton(text = "Click me", onClick = {})
       }
     },
   )
