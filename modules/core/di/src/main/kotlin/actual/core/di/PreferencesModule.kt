@@ -1,0 +1,28 @@
+package actual.core.di
+
+import actual.core.coroutines.CoroutineContexts
+import android.content.Context
+import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dev.jonpoulton.preferences.android.AndroidSharedPreferences
+import dev.jonpoulton.preferences.core.Preferences
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+class PreferencesModule {
+  @Provides
+  @Singleton
+  fun sharedPrefs(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+
+  @Provides
+  @Singleton
+  fun prefs(
+    prefs: SharedPreferences,
+    contexts: CoroutineContexts,
+  ): Preferences = AndroidSharedPreferences(prefs, contexts.io)
+}

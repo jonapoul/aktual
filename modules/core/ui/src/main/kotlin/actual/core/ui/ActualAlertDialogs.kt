@@ -31,7 +31,7 @@ fun ActualAlertDialog(
   buttons: ComposableLambda? = null,
   theme: Theme = LocalTheme.current,
   properties: DialogProperties = DialogProperties(),
-  content: ComposableLambda,
+  content: @Composable () -> Unit,
 ) {
   BasicAlertDialog(
     onDismissRequest = onDismissRequest,
@@ -78,7 +78,7 @@ fun ActualAlertDialogContent(
   buttons: ComposableLambda? = null,
   theme: Theme = LocalTheme.current,
   tonalElevation: Dp = AlertDialogDefaults.TonalElevation,
-  content: ComposableLambda,
+  content: @Composable () -> Unit,
 ) {
   Surface(
     modifier = modifier,
