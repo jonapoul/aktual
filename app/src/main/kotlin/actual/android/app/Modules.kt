@@ -25,6 +25,14 @@ import actual.core.res.R as CoreR
 
 @Module
 @InstallIn(SingletonComponent::class)
+internal class ContextModule {
+  @Provides
+  @Singleton
+  fun context(@ApplicationContext app: Context): Context = app
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
 internal class ScopeModule {
   @Provides
   @Singleton
@@ -59,9 +67,7 @@ internal class ClockModule {
 internal class BuildConfigModule {
   @Provides
   @Singleton
-  fun buildConfig(
-    @ApplicationContext context: Context,
-  ) = ActualBuildConfig(
+  fun buildConfig(context: Context) = ActualBuildConfig(
     debug = BuildConfig.DEBUG,
     applicationId = BuildConfig.APPLICATION_ID,
     versionCode = BuildConfig.VERSION_CODE,
@@ -84,9 +90,7 @@ private const val REPO_NAME = "jonapoul/actual-android"
 internal class PreferencesModule {
   @Provides
   @Singleton
-  fun sharedPrefs(
-    @ApplicationContext context: Context,
-  ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+  fun sharedPrefs(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
   @Provides
   @Singleton
