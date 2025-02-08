@@ -4,18 +4,18 @@ graph ["dpi"="100","label"=":core:ui","labelloc"="t","fontsize"="30","ranksep"="
 node ["style"="filled"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":core:ui" -> ":core:colorscheme"
-":core:ui" -> ":core:res"
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
+":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:versions" -> ":core:buildconfig"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

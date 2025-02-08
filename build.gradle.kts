@@ -60,10 +60,6 @@ dependencyAnalysis {
 
       onRuntimeOnly { severity(value = "ignore") }
 
-      onIncorrectConfiguration {
-        recursiveSubProjects().forEach { exclude(it.path) }
-      }
-
       onUnusedDependencies {
         exclude(
           libs.androidx.compose.ui.tooling,
@@ -98,8 +94,3 @@ tasks.withType<DependencyUpdatesTask> {
 }
 
 private fun String.isStable(): Boolean = listOf("alpha", "beta", "rc").none { contains(it, ignoreCase = true) }
-
-private fun recursiveSubProjects(): Sequence<Project> = subprojects
-  .asSequence()
-  .flatMap { project -> project.subprojects + project }
-  .distinctBy { project -> project.path }

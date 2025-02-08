@@ -30,6 +30,7 @@ graph ["rank"="same"]
 ":budget:list:ui" -> ":budget:list:vm"
 ":budget:list:ui" -> ":core:ui"
 ":budget:list:ui" -> ":budget:list:res" ["style"="dotted"]
+":budget:list:ui" -> ":core:res" ["style"="dotted"]
 ":budget:list:ui" -> ":login:nav" ["style"="dotted"]
 ":budget:list:ui" -> ":url:nav" ["style"="dotted"]
 ":budget:list:vm" -> ":core:colorscheme"
@@ -54,9 +55,9 @@ graph ["rank"="same"]
 ":url:prefs" -> ":url:model"
 ":login:prefs" -> ":login:model"
 ":core:ui" -> ":core:colorscheme"
-":core:ui" -> ":core:res"
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
+":core:ui" -> ":core:res" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

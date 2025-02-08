@@ -3,8 +3,8 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":app","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":app" ["shape"="box","fillcolor"="#FF5555"]
-":budget:list:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="box"]
+":budget:list:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":budget:list:vm" ["fillcolor"="#F5A6A6","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -24,8 +24,8 @@ node ["style"="filled"]
 ":login:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":url:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":licenses:data" ["fillcolor"="#9D8DF1","shape"="box"]
-":licenses:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":licenses:nav" ["fillcolor"="#5555FF","shape"="box"]
+":licenses:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":licenses:vm" ["fillcolor"="#F5A6A6","shape"="box"]
 ":licenses:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":login:ui" ["fillcolor"="#FFFF55","shape"="box"]
@@ -39,20 +39,25 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 ":app"
 }
+":app" -> ":budget:list:nav" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
 ":app" -> ":core:buildconfig" ["style"="dotted"]
 ":app" -> ":core:colorscheme" ["style"="dotted"]
 ":app" -> ":core:coroutines" ["style"="dotted"]
 ":app" -> ":core:log" ["style"="dotted"]
 ":app" -> ":licenses:data" ["style"="dotted"]
+":app" -> ":licenses:nav" ["style"="dotted"]
 ":app" -> ":licenses:ui" ["style"="dotted"]
+":app" -> ":login:nav" ["style"="dotted"]
 ":app" -> ":login:ui" ["style"="dotted"]
 ":app" -> ":url:prefs" ["style"="dotted"]
+":app" -> ":url:nav" ["style"="dotted"]
 ":app" -> ":url:ui" ["style"="dotted"]
 ":budget:list:ui" -> ":budget:list:nav"
 ":budget:list:ui" -> ":budget:list:vm"
 ":budget:list:ui" -> ":core:ui"
 ":budget:list:ui" -> ":budget:list:res" ["style"="dotted"]
+":budget:list:ui" -> ":core:res" ["style"="dotted"]
 ":budget:list:ui" -> ":login:nav" ["style"="dotted"]
 ":budget:list:ui" -> ":url:nav" ["style"="dotted"]
 ":budget:list:vm" -> ":core:colorscheme"
@@ -77,46 +82,43 @@ graph ["rank"="same"]
 ":url:prefs" -> ":url:model"
 ":login:prefs" -> ":login:model"
 ":core:ui" -> ":core:colorscheme"
-":core:ui" -> ":core:res"
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
+":core:ui" -> ":core:res" ["style"="dotted"]
 ":licenses:data" -> ":core:coroutines" ["style"="dotted"]
 ":licenses:ui" -> ":core:ui"
-":licenses:ui" -> ":licenses:nav"
 ":licenses:ui" -> ":licenses:vm"
+":licenses:ui" -> ":core:res" ["style"="dotted"]
 ":licenses:ui" -> ":licenses:res" ["style"="dotted"]
+":licenses:vm" -> ":core:log"
 ":licenses:vm" -> ":licenses:data"
-":licenses:vm" -> ":core:log" ["style"="dotted"]
 ":login:ui" -> ":core:ui"
-":login:ui" -> ":login:nav"
 ":login:ui" -> ":login:vm"
 ":login:ui" -> ":budget:list:nav" ["style"="dotted"]
 ":login:ui" -> ":core:res" ["style"="dotted"]
+":login:ui" -> ":login:nav" ["style"="dotted"]
 ":login:ui" -> ":login:res" ["style"="dotted"]
 ":login:ui" -> ":url:nav" ["style"="dotted"]
 ":login:vm" -> ":core:colorscheme"
-":login:vm" -> ":core:connection"
+":login:vm" -> ":core:coroutines"
+":login:vm" -> ":core:log"
 ":login:vm" -> ":login:model"
 ":login:vm" -> ":url:model"
 ":login:vm" -> ":api:actual" ["style"="dotted"]
-":login:vm" -> ":core:coroutines" ["style"="dotted"]
-":login:vm" -> ":core:log" ["style"="dotted"]
 ":login:vm" -> ":core:versions" ["style"="dotted"]
 ":login:vm" -> ":login:prefs" ["style"="dotted"]
 ":login:vm" -> ":url:prefs" ["style"="dotted"]
+":url:ui" -> ":core:colorscheme"
 ":url:ui" -> ":core:ui"
-":url:ui" -> ":url:nav"
 ":url:ui" -> ":url:vm"
-":url:ui" -> ":core:colorscheme" ["style"="dotted"]
 ":url:ui" -> ":core:res" ["style"="dotted"]
 ":url:ui" -> ":login:nav" ["style"="dotted"]
 ":url:ui" -> ":url:res" ["style"="dotted"]
 ":url:vm" -> ":core:colorscheme"
-":url:vm" -> ":core:connection"
+":url:vm" -> ":core:coroutines"
+":url:vm" -> ":core:log"
 ":url:vm" -> ":url:model"
 ":url:vm" -> ":api:actual" ["style"="dotted"]
-":url:vm" -> ":core:coroutines" ["style"="dotted"]
-":url:vm" -> ":core:log" ["style"="dotted"]
 ":url:vm" -> ":core:versions" ["style"="dotted"]
 ":url:vm" -> ":url:prefs" ["style"="dotted"]
 subgraph "cluster_legend" {

@@ -61,6 +61,7 @@ class ModuleResources : Plugin<Project> {
     dependencies {
       // Required for resource accessor generation
       implementation(platform(libs.getLibrary("androidx.compose.bom")))
+      api(libs.getLibrary("androidx.compose.runtime"))
       api(libs.getLibrary("androidx.compose.ui.core"))
     }
   }

@@ -27,3 +27,5 @@
 - auto change theme based on time of day
 
 - support multiple LoginMethods on LoginScreen
+
+- About screen, licenses, etc
