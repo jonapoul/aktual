@@ -29,7 +29,6 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(projects.budget.list.res)
-  implementation(projects.core.res)
   implementation(projects.login.nav)
   implementation(projects.url.nav)
 }

@@ -38,13 +38,8 @@ class LoginViewModel @Inject internal constructor(
   private val mutableLoginFailure = ResettableStateFlow<LoginResult.Failure?>(null)
 
   val enteredPassword: StateFlow<Password> = mutableEnteredPassword.asStateFlow()
-
   val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()
-
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences
-    .colorSchemeType
-    .asFlow()
-    .stateIn(viewModelScope, SharingStarted.Eagerly, colorSchemePreferences.colorSchemeType.default)
+  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.stateFlow(viewModelScope)
 
   val serverUrl: StateFlow<ServerUrl> = serverUrlPrefs
     .url

@@ -1,0 +1,70 @@
+[
+  {
+    "project": "Alakazam Android Core",
+    "description": "A set of useful functions and extensions for Android development.",
+    "version": "4.5.0",
+    "developers": [
+      "Jon Poulton"
+    ],
+    "url": "https://github.com/jonapoul/alakazam",
+    "year": "2021",
+    "licenses": [
+      {
+        "license": "The Apache Software License, Version 2.0",
+        "license_url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
+      }
+    ],
+    "dependency": "dev.jonpoulton.alakazam:android-core:4.5.0"
+  },
+  {
+    "project": "Compose Material Ripple",
+    "description": "Material ripple used to build interactive components",
+    "version": "1.6.4",
+    "developers": [
+      "The Android Open Source Project"
+    ],
+    "url": "https://developer.android.com/jetpack/androidx/releases/compose-material#1.6.4",
+    "year": "2020",
+    "licenses": [
+      {
+        "license": "The Apache Software License, Version 2.0",
+        "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+      }
+    ],
+    "dependency": "androidx.compose.material:material-ripple-android:1.6.4"
+  },
+  {
+    "project": "Fragment Kotlin Extensions",
+    "description": "Kotlin extensions for 'fragment' artifact",
+    "version": "1.6.2",
+    "developers": [
+      "The Android Open Source Project"
+    ],
+    "url": "https://developer.android.com/jetpack/androidx/releases/fragment#1.6.2",
+    "year": "2018",
+    "licenses": [
+      {
+        "license": "The Apache Software License, Version 2.0",
+        "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
+      }
+    ],
+    "dependency": "androidx.fragment:fragment-ktx:1.6.2"
+  },
+  {
+    "project": "VoyagerScreenModel",
+    "description": "A pragmatic navigation library for Jetpack Compose",
+    "version": "1.1.0-alpha04",
+    "developers": [
+      "Adriel Cafe"
+    ],
+    "url": "https://github.com/adrielcafe/voyager",
+    "year": "2021",
+    "licenses": [
+      {
+        "license": "The MIT License",
+        "license_url": "https://opensource.org/licenses/MIT"
+      }
+    ],
+    "dependency": "cafe.adriel.voyager:voyager-screenmodel-android:1.1.0-alpha04"
+  }
+]

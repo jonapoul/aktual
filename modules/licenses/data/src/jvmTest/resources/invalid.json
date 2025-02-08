@@ -1,0 +1,13 @@
+[
+  {
+    "project": "Activity",
+    "description": "Provides the base Activity subclass and the relevant hooks to build a composable structure on top.",
+    "version": "1.8.2",
+    "developers": [
+      "The Android Open Source Project"
+    ],
+    "url": "https://developer.android.com/jetpack/androidx/releases/activity#1.8.2",
+    "year": "2018",
+    "dependency": "androidx.activity:activity:1.8.2"
+  }
+]

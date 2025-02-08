@@ -35,10 +35,7 @@ class ListBudgetsViewModel @Inject internal constructor(
     .filterNotNull()
     .stateIn(viewModelScope, SharingStarted.Eagerly, ServerUrl.Demo)
 
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences
-    .colorSchemeType
-    .asFlow()
-    .stateIn(viewModelScope, SharingStarted.Eagerly, colorSchemePreferences.colorSchemeType.default)
+  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.stateFlow(viewModelScope)
 
   val state: StateFlow<ListBudgetsState> = flowOf(ListBudgetsState.Loading)
     .stateIn(viewModelScope, SharingStarted.Eagerly, ListBudgetsState.Loading)

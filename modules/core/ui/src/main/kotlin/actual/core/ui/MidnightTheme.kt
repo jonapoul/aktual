@@ -69,6 +69,7 @@ internal class MidnightTheme : Theme {
   override val modalBackground = ActualColors.gray700
   override val modalBorder = ActualColors.gray200
   override val mobileHeaderBackground = ActualColors.gray900
+  override val mobileHeaderBackgroundSubdued = ActualColors.gray800
   override val mobileHeaderText = ActualColors.purple200
   override val mobileHeaderTextSubdued = ActualColors.gray200
   override val mobileHeaderTextHover = Color(color = 0x26C8C8C8)
@@ -195,4 +196,16 @@ internal class MidnightTheme : Theme {
   override val reportsBlue = ActualColors.blue400
   override val reportsLabel = pageText
   override val reportsInnerLabel = ActualColors.navy800
+
+  override val scrollbar = ActualColors.blue400
+  override val scrollbarSelected = ActualColors.blue100
+
+  override val sliderThumb = ActualColors.blue300
+  override val sliderActiveTrack = ActualColors.blue600
+  override val sliderActiveTick = ActualColors.blue600
+  override val sliderInactiveTrack = ActualColors.gray700
+  override val sliderInactiveTick = ActualColors.gray800
+
+  override val dialogBackground = ActualColors.gray700
+  override val dialogProgressWheelTrack = ActualColors.gray700
 }

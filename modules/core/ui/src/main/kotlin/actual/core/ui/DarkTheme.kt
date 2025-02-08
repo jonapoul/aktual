@@ -69,6 +69,7 @@ internal class DarkTheme : Theme {
   override val modalBackground = ActualColors.gray800
   override val modalBorder = ActualColors.navy600
   override val mobileHeaderBackground = ActualColors.purple800
+  override val mobileHeaderBackgroundSubdued = ActualColors.purple900
   override val mobileHeaderText = ActualColors.navy150
   override val mobileHeaderTextSubdued = ActualColors.gray200
   override val mobileHeaderTextHover = Color(color = 0x26C8C8C8)
@@ -195,4 +196,16 @@ internal class DarkTheme : Theme {
   override val reportsBlue = ActualColors.blue400
   override val reportsLabel = pageText
   override val reportsInnerLabel = ActualColors.navy800
+
+  override val scrollbar = ActualColors.blue400
+  override val scrollbarSelected = ActualColors.blue100
+
+  override val sliderThumb = ActualColors.blue400
+  override val sliderActiveTrack = ActualColors.blue800
+  override val sliderActiveTick = ActualColors.blue600
+  override val sliderInactiveTrack = ActualColors.gray800
+  override val sliderInactiveTick = ActualColors.gray900
+
+  override val dialogBackground = ActualColors.gray600
+  override val dialogProgressWheelTrack = ActualColors.gray600
 }

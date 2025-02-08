@@ -4,6 +4,7 @@ import blueprint.core.javaVersionString
 import blueprint.core.rootLocalPropertiesOrNull
 import blueprint.core.runGitCommandOrNull
 import blueprint.core.stringProperty
+import org.gradle.internal.extensions.stdlib.capitalized
 import java.time.LocalDate
 
 plugins {
@@ -91,6 +92,34 @@ hilt {
   enableExperimentalClasspathAggregation = true
 }
 
+// Used to populate the licenses screen in-app
+licenseReport {
+  // Generate JSON and place in app assets
+  generateJsonReport = true
+  copyJsonReportToAssets = true
+
+  // Disable other report outputs
+  generateHtmlReport = false
+  generateCsvReport = false
+  generateTextReport = false
+}
+
+fun registerLicenseTask(suffix: String) {
+  val capitalized = suffix.capitalized()
+  val assemble = tasks.getByName("assemble$capitalized")
+  val license = tasks.getByName("license${capitalized}Report")
+  assemble.dependsOn(license)
+  license.doFirst {
+    val file = project.file("src/main/assets/open_source_licenses.json")
+    file.delete()
+  }
+}
+
+afterEvaluate {
+  registerLicenseTask(suffix = "debug")
+  registerLicenseTask(suffix = "release")
+}
+
 dependencies {
   implementation(libs.alakazam.android.core)
   implementation(libs.alakazam.kotlin.core)
@@ -120,6 +149,8 @@ dependencies {
   implementation(projects.core.colorscheme)
   implementation(projects.core.coroutines)
   implementation(projects.core.log)
+  implementation(projects.licenses.data)
+  implementation(projects.licenses.ui)
   implementation(projects.login.ui)
   implementation(projects.url.prefs)
   implementation(projects.url.ui)

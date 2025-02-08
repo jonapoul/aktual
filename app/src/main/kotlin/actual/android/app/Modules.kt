@@ -2,7 +2,10 @@ package actual.android.app
 
 import actual.core.coroutines.CoroutineContexts
 import actual.core.coroutines.DefaultCoroutineContexts
+import actual.licenses.data.AndroidAssetsProvider
+import actual.licenses.data.AssetsProvider
 import actual.log.Logger
+import alakazam.android.core.UrlOpener
 import alakazam.kotlin.core.InfiniteLoopController
 import alakazam.kotlin.core.LoopController
 import android.content.Context
@@ -28,7 +31,9 @@ import actual.core.res.R as CoreR
 internal class ContextModule {
   @Provides
   @Singleton
-  fun context(@ApplicationContext app: Context): Context = app
+  fun context(
+    @ApplicationContext app: Context,
+  ): Context = app
 }
 
 @Module
@@ -106,4 +111,18 @@ internal interface LoggerModule {
   @Binds
   @Singleton
   fun logger(impl: ActualLogger): Logger
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal interface LicensesModule {
+  @Binds
+  fun assets(impl: AndroidAssetsProvider): AssetsProvider
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+internal class AlakazamModule {
+  @Provides
+  fun urlOpener(context: Context) = UrlOpener(context)
 }

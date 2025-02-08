@@ -2,6 +2,8 @@ package actual.android.app
 
 import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.budget.list.ui.ListBudgetsScreen
+import actual.licenses.nav.LicensesNavRoute
+import actual.licenses.ui.LicensesScreen
 import actual.login.nav.LoginNavRoute
 import actual.login.ui.LoginScreen
 import actual.url.nav.ServerUrlNavRoute
@@ -24,8 +26,9 @@ internal fun ActualNavHost(
       else -> ServerUrlNavRoute
     },
   ) {
-    composable<ServerUrlNavRoute> { ServerUrlScreen(navController) }
+    composable<LicensesNavRoute> { LicensesScreen(navController) }
     composable<ListBudgetsNavRoute> { ListBudgetsScreen(navController) }
     composable<LoginNavRoute> { LoginScreen(navController) }
+    composable<ServerUrlNavRoute> { ServerUrlScreen(navController) }
   }
 }
