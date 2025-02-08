@@ -12,6 +12,7 @@ import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
+import actual.core.ui.topAppBarColors
 import actual.core.versions.ActualVersions
 import alakazam.kotlin.core.exhaustive
 import android.content.Intent
@@ -116,7 +117,7 @@ private fun ListBudgetsScaffold(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
-        colors = theme.scaffoldColors(),
+        colors = theme.topAppBarColors(),
         title = { ScaffoldTitle() },
         scrollBehavior = scrollBehavior,
       )
@@ -135,13 +136,6 @@ private fun ListBudgetsScaffold(
     }
   }
 }
-
-@Stable
-@Composable
-private fun Theme.scaffoldColors() = TopAppBarDefaults.topAppBarColors(
-  containerColor = mobileHeaderBackground,
-  titleContentColor = mobileHeaderText,
-)
 
 @Stable
 @Composable
