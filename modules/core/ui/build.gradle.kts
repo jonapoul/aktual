@@ -5,7 +5,9 @@ plugins {
 dependencies {
   api(libs.androidx.compose.runtime)
   api(libs.kotlinx.immutable)
+  api(libs.lazycolumn.scrollbar)
   api(projects.core.colorscheme)
+  api(projects.core.res)
   api(projects.core.versions)
   api(projects.url.model)
   implementation(libs.androidx.compose.foundation.core)
@@ -21,5 +23,4 @@ dependencies {
   implementation(libs.androidx.compose.ui.unit)
   implementation(libs.androidx.coreKtx)
   implementation(libs.androidx.navigation.runtime)
-  implementation(projects.core.res)
 }

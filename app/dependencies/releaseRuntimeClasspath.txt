@@ -122,6 +122,7 @@ androidx.viewpager:viewpager:1.0.0
 androidx.window:window:1.0.0
 app.cash.molecule:molecule-runtime-android:2.0.0
 app.cash.molecule:molecule-runtime:2.0.0
+com.github.nanihadesuka:LazyColumnScrollbar:2.2.0
 com.google.android.material:material:1.12.0
 com.google.code.findbugs:jsr305:3.0.2
 com.google.dagger:dagger-lint-aar:2.55
@@ -138,6 +139,7 @@ com.squareup.okio:okio:3.6.0
 com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0
 com.squareup.retrofit2:retrofit:2.11.0
 dev.jonpoulton.alakazam:android-core:4.7.1
+dev.jonpoulton.alakazam:android-ui-compose:4.7.1
 dev.jonpoulton.alakazam:kotlin-core:4.7.1
 dev.jonpoulton.alakazam:kotlin-serialization:4.7.1
 dev.jonpoulton.preferences:android:2.1.0

@@ -74,6 +74,7 @@ sealed interface Theme {
   val modalBackground: Color
   val modalBorder: Color
   val mobileHeaderBackground: Color
+  val mobileHeaderBackgroundSubdued: Color
   val mobileHeaderText: Color
   val mobileHeaderTextSubdued: Color
   val mobileHeaderTextHover: Color
@@ -200,4 +201,16 @@ sealed interface Theme {
   val reportsBlue: Color
   val reportsLabel: Color
   val reportsInnerLabel: Color
+
+  val scrollbar: Color
+  val scrollbarSelected: Color
+
+  val sliderThumb: Color
+  val sliderActiveTrack: Color
+  val sliderActiveTick: Color
+  val sliderInactiveTrack: Color
+  val sliderInactiveTick: Color
+
+  val dialogBackground: Color
+  val dialogProgressWheelTrack: Color
 }

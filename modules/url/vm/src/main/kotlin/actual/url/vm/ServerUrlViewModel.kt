@@ -51,11 +51,7 @@ class ServerUrlViewModel @Inject internal constructor(
   val baseUrl: StateFlow<String> = mutableBaseUrl.asStateFlow()
   val protocol: StateFlow<Protocol> = mutableProtocol.asStateFlow()
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
-
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences
-    .colorSchemeType
-    .asFlow()
-    .stateIn(viewModelScope, SharingStarted.Eagerly, colorSchemePreferences.colorSchemeType.default)
+  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.stateFlow(viewModelScope)
 
   val isEnabled: StateFlow<Boolean> = baseUrl
     .map { it.isNotBlank() }

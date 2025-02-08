@@ -1,5 +1,6 @@
 package actual.core.ui
 
+import actual.core.res.CoreStrings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -8,18 +9,18 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,12 +43,14 @@ fun ActualTextField(
   modifier: Modifier = Modifier,
   shape: Shape = ActualTextFieldShape,
   readOnly: Boolean = false,
-  trailingIcon: @Composable (() -> Unit)? = null,
+  leadingIcon: ComposableLambda? = null,
+  trailingIcon: ComposableLambda? = null,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   visualTransformation: VisualTransformation = VisualTransformation.None,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActions = KeyboardActions.Default,
   colors: TextFieldColors? = null,
+  clearable: Boolean = false,
   theme: Theme = LocalTheme.current,
 ) {
   val isFocused by interactionSource.collectIsFocusedAsState()
@@ -57,6 +60,17 @@ fun ActualTextField(
 
   if (isFocused) {
     fieldModifier = fieldModifier.shadow(4.dp, shape, ambientColor = theme.formInputShadowSelected)
+  }
+
+  val clearButton = if (clearable && value.isNotEmpty()) {
+    ComposableLambda {
+      ClearButton(
+        tint = colors?.focusedTrailingIconColor ?: theme.pageText,
+        onClick = { onValueChange("") },
+      )
+    }
+  } else {
+    null
   }
 
   TextField(
@@ -70,13 +84,32 @@ fun ActualTextField(
     shape = shape,
     colors = colors ?: theme.textField(),
     readOnly = readOnly,
-    trailingIcon = trailingIcon,
+    leadingIcon = leadingIcon,
+    trailingIcon = trailingIcon ?: clearButton,
     interactionSource = interactionSource,
     visualTransformation = visualTransformation,
     keyboardOptions = keyboardOptions,
     keyboardActions = keyboardActions,
     onValueChange = onValueChange,
   )
+}
+
+@Composable
+private fun ClearButton(
+  tint: Color,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  IconButton(
+    modifier = modifier,
+    onClick = onClick,
+  ) {
+    Icon(
+      imageVector = Icons.Default.Clear,
+      contentDescription = CoreStrings.inputClear,
+      tint = tint,
+    )
+  }
 }
 
 @Composable
@@ -127,34 +160,6 @@ fun ActualExposedDropDownMenu(
   }
 }
 
-@Stable
-@Composable
-private fun Theme.textField(): TextFieldColors = TextFieldDefaults.colors(
-  focusedTextColor = formInputText,
-  unfocusedTextColor = formInputText,
-  focusedPlaceholderColor = formInputTextPlaceholder,
-  unfocusedPlaceholderColor = formInputTextPlaceholder,
-  focusedIndicatorColor = Color.Transparent,
-  unfocusedIndicatorColor = Color.Transparent,
-  disabledIndicatorColor = Color.Transparent,
-  focusedContainerColor = tableBackground,
-  unfocusedContainerColor = tableBackground,
-  cursorColor = formInputText,
-)
-
-@Stable
-@Composable
-private fun Theme.exposedDropDownMenu(): TextFieldColors = textField().copy(
-  focusedTrailingIconColor = formInputText,
-  unfocusedTrailingIconColor = formInputText,
-)
-
-@Stable
-@Composable
-private fun Theme.dropDownMenuItem(): MenuItemColors = MenuDefaults.itemColors().copy(
-  textColor = formInputText,
-)
-
 private val ActualTextFieldShape = RoundedCornerShape(size = 4.dp)
 
 @Preview
@@ -174,6 +179,17 @@ private fun PreviewFilledTextField() = PreviewActualColumn {
     value = "I'm full",
     onValueChange = {},
     placeholderText = "Hello world",
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewFilledClearable() = PreviewActualColumn {
+  ActualTextField(
+    value = "I'm full",
+    onValueChange = {},
+    placeholderText = "Hello world",
+    clearable = true,
   )
 }
 

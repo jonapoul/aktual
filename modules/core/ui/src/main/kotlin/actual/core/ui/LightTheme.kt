@@ -69,6 +69,7 @@ internal class LightTheme : Theme {
   override val modalBackground = ActualColors.white
   override val modalBorder = ActualColors.white
   override val mobileHeaderBackground = ActualColors.purple400
+  override val mobileHeaderBackgroundSubdued = ActualColors.purple300
   override val mobileHeaderText = ActualColors.navy50
   override val mobileHeaderTextSubdued = ActualColors.gray200
   override val mobileHeaderTextHover = Color(color = 0x26C8C8C8)
@@ -195,4 +196,16 @@ internal class LightTheme : Theme {
   override val reportsBlue = ActualColors.blue400
   override val reportsLabel = ActualColors.navy900
   override val reportsInnerLabel = ActualColors.navy800
+
+  override val scrollbar = ActualColors.blue900
+  override val scrollbarSelected = ActualColors.blue400
+
+  override val sliderThumb = ActualColors.blue500
+  override val sliderActiveTrack = ActualColors.blue200
+  override val sliderActiveTick = ActualColors.blue400
+  override val sliderInactiveTrack = ActualColors.gray200
+  override val sliderInactiveTick = ActualColors.gray400
+
+  override val dialogBackground = ActualColors.white
+  override val dialogProgressWheelTrack = ActualColors.gray100
 }
