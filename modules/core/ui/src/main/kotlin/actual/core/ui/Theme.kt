@@ -165,6 +165,7 @@ sealed interface Theme {
   val upcomingBackground: Color
   val upcomingText: Color
   val upcomingBorder: Color
+  val successText: Color
 
   val formLabelText: Color
   val formLabelBackground: Color

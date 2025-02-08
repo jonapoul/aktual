@@ -9,7 +9,6 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -37,7 +36,7 @@ fun PrimaryActualIconButton(
     imageVector = imageVector,
     contentDescription = contentDescription,
     onClick = onClick,
-    colors = { scheme, isPressed -> scheme.primary(isPressed) },
+    colors = { scheme, isPressed -> scheme.primaryIconButton(isPressed) },
     modifier = modifier,
     size = size,
     enabled = enabled,
@@ -64,7 +63,7 @@ fun NormalActualIconButton(
     imageVector = imageVector,
     contentDescription = contentDescription,
     onClick = onClick,
-    colors = { scheme, isPressed -> scheme.normal(isPressed) },
+    colors = { scheme, isPressed -> scheme.normalIconButton(isPressed) },
     modifier = modifier,
     size = size,
     enabled = enabled,
@@ -91,7 +90,7 @@ fun BareActualIconButton(
     imageVector = imageVector,
     contentDescription = contentDescription,
     onClick = onClick,
-    colors = { scheme, isPressed -> scheme.bare(isPressed) },
+    colors = { scheme, isPressed -> scheme.bareIconButton(isPressed) },
     modifier = modifier,
     size = size,
     enabled = enabled,
@@ -142,33 +141,6 @@ private fun DefaultIconButtonContent(
     contentDescription = contentDescription,
   )
 }
-
-@Stable
-@Composable
-private fun Theme.primary(isPressed: Boolean) = IconButtonDefaults.filledIconButtonColors(
-  containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
-  disabledContainerColor = buttonPrimaryDisabledBackground,
-  contentColor = if (isPressed) buttonPrimaryText else buttonPrimaryTextHover,
-  disabledContentColor = buttonPrimaryDisabledText,
-)
-
-@Stable
-@Composable
-private fun Theme.normal(isPressed: Boolean) = IconButtonDefaults.filledIconButtonColors(
-  containerColor = if (isPressed) buttonNormalBackground else buttonNormalBackgroundHover,
-  disabledContainerColor = buttonNormalDisabledBackground,
-  contentColor = if (isPressed) buttonNormalText else buttonNormalTextHover,
-  disabledContentColor = buttonNormalDisabledText,
-)
-
-@Stable
-@Composable
-private fun Theme.bare(isPressed: Boolean) = IconButtonDefaults.filledIconButtonColors(
-  containerColor = if (isPressed) buttonBareBackgroundHover else buttonBareBackground,
-  disabledContainerColor = buttonBareDisabledBackground,
-  contentColor = if (isPressed) buttonBareTextHover else buttonBareText,
-  disabledContentColor = buttonBareDisabledText,
-)
 
 @Preview
 @Composable

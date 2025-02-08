@@ -1,0 +1,32 @@
+<resources>
+  <string name="about_toolbar_back">Back</string>
+  <string name="about_toolbar_title">About</string>
+  <string name="about_launch">Launch</string>
+
+  <string name="about_version">Version</string>
+  <string name="about_date">Build Time</string>
+  <string name="about_repo">Source Code</string>
+
+  <string name="about_subtitle1">Jon Poulton, %1$d</string>
+  <string name="about_subtitle2">Apache 2.0 License</string>
+
+  <string name="about_check_updates">Check for updates</string>
+  <string name="about_report_issues">Report issues</string>
+  <string name="about_licenses">Third party licenses</string>
+
+  <string name="about_checking_updates_cancel">Cancel</string>
+  <string name="about_checking_updates_loading">Checking for updates…</string>
+
+  <string name="about_no_update_title">No New Updates</string>
+  <string name="about_no_update_message">You currently have the latest version of Actual Android installed.</string>
+  <string name="about_no_update_ok">OK</string>
+
+  <string name="about_check_failed_title">Update Check Failed</string>
+  <string name="about_check_failed_ok">OK</string>
+
+  <string name="about_update_found_title">Update Released</string>
+  <string name="about_update_found_installed">Installed version:</string>
+  <string name="about_update_found_latest">Latest version:</string>
+  <string name="about_update_found_dismiss">Dismiss</string>
+  <string name="about_update_found_view">Download</string>
+</resources>

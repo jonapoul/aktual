@@ -114,8 +114,8 @@ internal class LightTheme : Theme {
 
   override val buttonNormalText = ActualColors.navy900
   override val buttonNormalTextHover = buttonNormalText
-  override val buttonNormalBackground = ActualColors.white
-  override val buttonNormalBackgroundHover = buttonNormalBackground
+  override val buttonNormalBackground = ActualColors.navy500
+  override val buttonNormalBackgroundHover = ActualColors.navy400
   override val buttonNormalBorder = ActualColors.navy150
   override val buttonNormalShadow = Color(color = 0x33000000)
   override val buttonNormalSelectedText = ActualColors.white
@@ -160,6 +160,7 @@ internal class LightTheme : Theme {
   override val upcomingBackground = ActualColors.purple100
   override val upcomingText = ActualColors.purple700
   override val upcomingBorder = ActualColors.purple500
+  override val successText = ActualColors.green900
 
   override val formLabelText = ActualColors.blue600
   override val formLabelBackground = ActualColors.blue200
