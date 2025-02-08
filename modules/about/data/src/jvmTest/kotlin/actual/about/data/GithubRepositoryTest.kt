@@ -7,6 +7,7 @@ import actual.test.TestCoroutineContexts
 import actual.test.getResourceAsText
 import alakazam.test.core.standardDispatcher
 import github.api.client.GithubApi
+import github.api.client.GithubJson
 import github.api.model.GithubRelease
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest

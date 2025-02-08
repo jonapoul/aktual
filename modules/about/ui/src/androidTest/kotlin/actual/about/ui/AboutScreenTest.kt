@@ -3,8 +3,6 @@ package actual.about.ui
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.config.BuildConfig
 import actual.core.ui.ActualTheme
-import actual.log.EmptyLogger
-import actual.log.Logger
 import actual.test.ActualTestActivity
 import actual.test.TestBuildConfig
 import actual.test.runTest
@@ -44,14 +42,10 @@ class AboutScreenTest {
   @BindValue
   lateinit var githubApi: GithubApi
 
-  @BindValue
-  lateinit var logger: Logger
-
   @Before
   fun before() {
     buildConfig = TestBuildConfig
     githubApi = TestGithubApi()
-    logger = EmptyLogger
 
     hiltRule.inject()
     Intents.init()

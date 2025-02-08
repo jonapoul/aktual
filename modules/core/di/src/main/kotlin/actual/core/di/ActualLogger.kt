@@ -1,4 +1,4 @@
-package actual.android.app
+package actual.core.di
 
 import actual.log.Logger
 import timber.log.Timber

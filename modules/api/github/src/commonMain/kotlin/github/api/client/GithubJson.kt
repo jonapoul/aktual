@@ -1,4 +1,4 @@
-package actual.about.data
+package github.api.client
 
 import kotlinx.serialization.json.Json
 

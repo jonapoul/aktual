@@ -32,5 +32,6 @@ dependencies {
   implementation(projects.about.res)
   implementation(projects.core.res)
   implementation(projects.licenses.nav)
+  androidTestImplementation(projects.core.di)
   androidTestImplementation(projects.test.buildconfig)
 }

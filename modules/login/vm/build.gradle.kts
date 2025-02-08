@@ -19,6 +19,7 @@ dependencies {
   implementation(projects.login.prefs)
   implementation(projects.url.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
+  testImplementation(projects.core.connection)
   testImplementation(projects.test.buildconfig)
   testImplementation(projects.test.coroutines)
   testImplementation(projects.test.http)

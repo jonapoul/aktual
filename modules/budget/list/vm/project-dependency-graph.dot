@@ -47,6 +47,7 @@ graph ["label"="Legend","fontsize"="20"]
 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
 <TR><TD>App</TD><TD BGCOLOR="#FF5555">module-name</TD></TR>
 <TR><TD>ViewModel</TD><TD BGCOLOR="#F5A6A6">module-name</TD></TR>
+<TR><TD>Hilt</TD><TD BGCOLOR="#FCB103">module-name</TD></TR>
 <TR><TD>Compose</TD><TD BGCOLOR="#FFFF55">module-name</TD></TR>
 <TR><TD>Android</TD><TD BGCOLOR="#55FF55">module-name</TD></TR>
 <TR><TD>Resources</TD><TD BGCOLOR="#00FFFF">module-name</TD></TR>
