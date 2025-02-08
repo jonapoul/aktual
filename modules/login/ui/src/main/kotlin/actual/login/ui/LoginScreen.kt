@@ -11,6 +11,7 @@ import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
+import actual.core.ui.topAppBarColors
 import actual.core.versions.ActualVersions
 import actual.login.model.Password
 import actual.login.nav.LoginNavRoute
@@ -111,11 +112,7 @@ private fun LoginScreenImpl(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
-        colors = TopAppBarDefaults.topAppBarColors(
-          containerColor = theme.mobileHeaderBackground,
-          titleContentColor = theme.mobileHeaderText,
-          navigationIconContentColor = theme.mobileHeaderText,
-        ),
+        colors = theme.topAppBarColors(),
         navigationIcon = {
           IconButton(onClick = { onAction(LoginAction.NavBack) }) {
             Icon(
