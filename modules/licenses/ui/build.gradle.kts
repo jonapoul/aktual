@@ -7,7 +7,6 @@ dependencies {
   api(libs.androidx.lifecycle.viewmodel.core)
   api(libs.androidx.navigation.runtime)
   api(projects.core.ui)
-  api(projects.licenses.nav)
   api(projects.licenses.vm)
   implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.kotlin.core)
@@ -32,5 +31,6 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(libs.lazycolumn.scrollbar)
+  implementation(projects.core.res)
   implementation(projects.licenses.res)
 }
