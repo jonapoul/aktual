@@ -209,4 +209,6 @@ internal class DarkTheme : Theme {
 
   override val dialogBackground = ActualColors.gray600
   override val dialogProgressWheelTrack = ActualColors.gray600
+
+  override val budgetItemBackground = buttonNormalBackground
 }

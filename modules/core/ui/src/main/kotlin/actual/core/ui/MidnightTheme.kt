@@ -209,4 +209,6 @@ internal class MidnightTheme : Theme {
 
   override val dialogBackground = ActualColors.gray700
   override val dialogProgressWheelTrack = ActualColors.gray700
+
+  override val budgetItemBackground = buttonNormalBackground
 }

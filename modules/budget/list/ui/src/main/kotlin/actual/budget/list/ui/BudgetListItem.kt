@@ -59,7 +59,7 @@ internal fun BudgetListItem(
   Row(
     modifier = modifier
       .padding(5.dp)
-      .background(theme.buttonNormalBackground, RowShape)
+      .background(theme.budgetItemBackground, RowShape)
       .border(1.dp, theme.buttonNormalBorder, RowShape)
       .padding(horizontal = 15.dp, vertical = 12.dp)
       .clickable(onClick = onClickOpen),
