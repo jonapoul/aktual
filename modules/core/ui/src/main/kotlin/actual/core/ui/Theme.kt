@@ -214,4 +214,6 @@ sealed interface Theme {
 
   val dialogBackground: Color
   val dialogProgressWheelTrack: Color
+
+  val budgetItemBackground: Color
 }

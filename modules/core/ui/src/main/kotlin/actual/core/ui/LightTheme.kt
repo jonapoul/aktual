@@ -209,4 +209,6 @@ internal class LightTheme : Theme {
 
   override val dialogBackground = ActualColors.white
   override val dialogProgressWheelTrack = ActualColors.gray100
+
+  override val budgetItemBackground = ActualColors.white
 }
