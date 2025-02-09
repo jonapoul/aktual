@@ -2,7 +2,7 @@ package actual.about.ui
 
 import actual.about.res.AboutStrings
 import actual.about.vm.BuildState
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.PreviewColumn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,7 +51,7 @@ private val ItemMargin = PaddingValues(horizontal = 6.dp, vertical = 3.dp)
 
 @Preview
 @Composable
-private fun PreviewBuildState() = PreviewActualColumn(
+private fun PreviewBuildState() = PreviewColumn(
   modifier = Modifier.fillMaxWidth(),
 ) {
   AboutBuildState(

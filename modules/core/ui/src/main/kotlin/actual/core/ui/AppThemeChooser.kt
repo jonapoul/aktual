@@ -87,7 +87,7 @@ private fun TypeButton(
     modifier = modifier
       .height(80.dp)
       .padding(PADDING)
-      .background(background, ActualButtonShape),
+      .background(background, ButtonShape),
     onClick = onClick,
     enabled = true,
     colors = buttonColors,

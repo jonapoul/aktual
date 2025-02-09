@@ -3,9 +3,9 @@ package actual.login.ui
 import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
-import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualScreen
+import actual.core.ui.PreviewScreen
+import actual.core.ui.ScreenPreview
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
@@ -221,9 +221,9 @@ private fun Content(
   }
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun Regular() = PreviewActualScreen { type ->
+private fun Regular() = PreviewScreen { type ->
   LoginScreenImpl(
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     enteredPassword = Password.Empty,
@@ -235,9 +235,9 @@ private fun Regular() = PreviewActualScreen { type ->
   )
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun WithErrorMessage() = PreviewActualScreen { type ->
+private fun WithErrorMessage() = PreviewScreen { type ->
   LoginScreenImpl(
     versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
     enteredPassword = Password.Dummy,

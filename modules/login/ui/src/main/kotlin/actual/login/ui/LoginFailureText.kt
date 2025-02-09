@@ -2,7 +2,7 @@ package actual.login.ui
 
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.PreviewColumn
 import actual.login.res.LoginStrings
 import actual.login.vm.LoginResult
 import androidx.compose.material3.Text
@@ -38,24 +38,24 @@ internal fun LoginFailureText(
 
 @Preview
 @Composable
-private fun PreviewInvalidPassword() = PreviewActualColumn {
+private fun PreviewInvalidPassword() = PreviewColumn {
   LoginFailureText(LoginResult.InvalidPassword)
 }
 
 @Preview
 @Composable
-private fun PreviewHttpFailure() = PreviewActualColumn {
+private fun PreviewHttpFailure() = PreviewColumn {
   LoginFailureText(LoginResult.HttpFailure(code = 404, message = "Resource not found"))
 }
 
 @Preview
 @Composable
-private fun PreviewNetworkFailure() = PreviewActualColumn {
+private fun PreviewNetworkFailure() = PreviewColumn {
   LoginFailureText(LoginResult.NetworkFailure(reason = "Network problem"))
 }
 
 @Preview
 @Composable
-private fun PreviewOtherFailure() = PreviewActualColumn {
+private fun PreviewOtherFailure() = PreviewColumn {
   LoginFailureText(LoginResult.OtherFailure("Something broke"))
 }

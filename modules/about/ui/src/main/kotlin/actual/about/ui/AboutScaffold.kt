@@ -1,9 +1,9 @@
 package actual.about.ui
 
 import actual.about.vm.BuildState
-import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualScreen
+import actual.core.ui.PreviewScreen
+import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.background
@@ -83,9 +83,9 @@ private fun AboutScreenContent(
   }
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun PreviewAbout() = PreviewActualScreen {
+private fun PreviewAbout() = PreviewScreen {
   AboutScaffold(
     buildState = PreviewBuildState,
     onAction = {},

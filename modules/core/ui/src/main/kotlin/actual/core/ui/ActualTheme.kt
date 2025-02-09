@@ -7,6 +7,7 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.Color
 
 @Composable
@@ -16,11 +17,13 @@ fun ActualTheme(
 ) {
   val systemDarkTheme = isSystemInDarkTheme()
 
-  val colorScheme = when (schemeType) {
-    ColorSchemeType.System -> if (systemDarkTheme) DarkTheme() else LightTheme()
-    ColorSchemeType.Dark -> DarkTheme()
-    ColorSchemeType.Light -> LightTheme()
-    ColorSchemeType.Midnight -> MidnightTheme()
+  val colorScheme = remember(schemeType, systemDarkTheme) {
+    when (schemeType) {
+      ColorSchemeType.System -> if (systemDarkTheme) DarkTheme() else LightTheme()
+      ColorSchemeType.Dark -> DarkTheme()
+      ColorSchemeType.Light -> LightTheme()
+      ColorSchemeType.Midnight -> MidnightTheme()
+    }
   }
 
   CompositionLocalProvider(
@@ -39,7 +42,7 @@ fun ActualTheme(
 
     MaterialTheme(
       colorScheme = materialColorScheme,
-      typography = actualTypography(colorScheme),
+      typography = typography(colorScheme),
       content = content,
     )
   }

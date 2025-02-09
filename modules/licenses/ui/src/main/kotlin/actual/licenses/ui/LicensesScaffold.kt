@@ -1,11 +1,11 @@
 package actual.licenses.ui
 
 import actual.core.res.CoreDimens
-import actual.core.ui.ActualScreenPreview
-import actual.core.ui.ActualTextField
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualColumn
-import actual.core.ui.PrimaryActualTextButton
+import actual.core.ui.PreviewColumn
+import actual.core.ui.PrimaryTextButton
+import actual.core.ui.ScreenPreview
+import actual.core.ui.TextField
 import actual.core.ui.Theme
 import actual.core.ui.keyboardFocusRequester
 import actual.core.ui.scrollbarSettings
@@ -121,7 +121,7 @@ private fun LicensesSearchInput(
         .background(theme.mobileHeaderBackgroundSubdued),
       horizontalAlignment = Alignment.End,
     ) {
-      ActualTextField(
+      TextField(
         modifier = Modifier
           .fillMaxWidth()
           .focusRequester(keyboardFocusRequester(keyboard)),
@@ -269,16 +269,16 @@ private fun ErrorContent(
 
     VerticalSpacer(CoreDimens.large)
 
-    PrimaryActualTextButton(
+    PrimaryTextButton(
       text = LicensesStrings.failedRetry,
       onClick = { onAction(LicensesAction.Reload) },
     )
   }
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun PreviewLoading() = PreviewActualColumn {
+private fun PreviewLoading() = PreviewColumn {
   LicensesScaffold(
     state = LicensesState.Loading,
     searchBarState = SearchBarState.Gone,
@@ -286,9 +286,9 @@ private fun PreviewLoading() = PreviewActualColumn {
   )
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun PreviewNoneFound() = PreviewActualColumn {
+private fun PreviewNoneFound() = PreviewColumn {
   LicensesScaffold(
     state = LicensesState.NoneFound,
     searchBarState = SearchBarState.Gone,
@@ -296,9 +296,9 @@ private fun PreviewNoneFound() = PreviewActualColumn {
   )
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun PreviewLoaded() = PreviewActualColumn {
+private fun PreviewLoaded() = PreviewColumn {
   LicensesScaffold(
     state = LicensesState.Loaded(
       libraries = persistentListOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, VoyagerScreenModel),
@@ -308,9 +308,9 @@ private fun PreviewLoaded() = PreviewActualColumn {
   )
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun PreviewError() = PreviewActualColumn {
+private fun PreviewError() = PreviewColumn {
   LicensesScaffold(
     state = LicensesState.Error(errorMessage = "Something broke lol! Here's some more shite to show how it looks"),
     searchBarState = SearchBarState.Gone,

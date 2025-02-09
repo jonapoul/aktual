@@ -21,18 +21,18 @@ import androidx.compose.ui.unit.Dp
 
 @Stable
 @Composable
-fun PrimaryActualIconButton(
+fun PrimaryIconButton(
   imageVector: ImageVector,
   contentDescription: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   size: Dp? = null,
   enabled: Boolean = true,
-  shape: Shape = ActualButtonShape,
+  shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   content: @Composable () -> Unit = { DefaultIconButtonContent(imageVector, contentDescription, size) },
 ) {
-  BasicActualIconButton(
+  BasicIconButton(
     imageVector = imageVector,
     contentDescription = contentDescription,
     onClick = onClick,
@@ -48,18 +48,18 @@ fun PrimaryActualIconButton(
 
 @Stable
 @Composable
-fun NormalActualIconButton(
+fun NormalIconButton(
   imageVector: ImageVector,
   contentDescription: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   size: Dp? = null,
   enabled: Boolean = true,
-  shape: Shape = ActualButtonShape,
+  shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   content: @Composable () -> Unit = { DefaultIconButtonContent(imageVector, contentDescription, size) },
 ) {
-  BasicActualIconButton(
+  BasicIconButton(
     imageVector = imageVector,
     contentDescription = contentDescription,
     onClick = onClick,
@@ -75,18 +75,18 @@ fun NormalActualIconButton(
 
 @Stable
 @Composable
-fun BareActualIconButton(
+fun BareIconButton(
   imageVector: ImageVector,
   contentDescription: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   size: Dp? = null,
   enabled: Boolean = true,
-  shape: Shape = ActualButtonShape,
+  shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   content: @Composable () -> Unit = { DefaultIconButtonContent(imageVector, contentDescription, size) },
 ) {
-  BasicActualIconButton(
+  BasicIconButton(
     imageVector = imageVector,
     contentDescription = contentDescription,
     onClick = onClick,
@@ -102,7 +102,7 @@ fun BareActualIconButton(
 
 @Stable
 @Composable
-fun BasicActualIconButton(
+fun BasicIconButton(
   imageVector: ImageVector,
   contentDescription: String,
   onClick: () -> Unit,
@@ -110,7 +110,7 @@ fun BasicActualIconButton(
   modifier: Modifier = Modifier,
   size: Dp? = null,
   enabled: Boolean = true,
-  shape: Shape = ActualButtonShape,
+  shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   content: @Composable () -> Unit = { DefaultIconButtonContent(imageVector, contentDescription, size) },
 ) {
@@ -144,8 +144,8 @@ private fun DefaultIconButtonContent(
 
 @Preview
 @Composable
-private fun Bare() = PreviewActualColumn {
-  BareActualIconButton(
+private fun Bare() = PreviewColumn {
+  BareIconButton(
     imageVector = Icons.Filled.Check,
     contentDescription = "Cancel",
     onClick = {},
@@ -154,8 +154,8 @@ private fun Bare() = PreviewActualColumn {
 
 @Preview
 @Composable
-private fun Normal() = PreviewActualColumn {
-  NormalActualIconButton(
+private fun Normal() = PreviewColumn {
+  NormalIconButton(
     imageVector = Icons.Filled.Check,
     contentDescription = "Cancel",
     onClick = {},
@@ -164,8 +164,8 @@ private fun Normal() = PreviewActualColumn {
 
 @Preview
 @Composable
-private fun Primary() = PreviewActualColumn {
-  PrimaryActualIconButton(
+private fun Primary() = PreviewColumn {
+  PrimaryIconButton(
     imageVector = Icons.Filled.Check,
     contentDescription = "OK",
     onClick = {},

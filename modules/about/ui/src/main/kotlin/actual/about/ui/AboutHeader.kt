@@ -3,7 +3,7 @@ package actual.about.ui
 import actual.about.res.AboutStrings
 import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
@@ -70,6 +70,6 @@ internal fun AboutHeader(
 
 @Preview
 @Composable
-private fun PreviewHeader() = PreviewActualColumn {
+private fun PreviewHeader() = PreviewColumn {
   AboutHeader(year = 2024)
 }

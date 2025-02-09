@@ -1,6 +1,5 @@
 # TODO
 
-- Fix dialog buttons
 - Move to molecule in VMs
 - Multiplatform
 - Support demo public app?
@@ -16,16 +15,10 @@
   - Add new budget
   - Import
 
-- Add background gradient per theme
-- split strings/resources into modules
-
-- Use wacky SVG wave thing as background
-  - https://github.com/actualbudget/actual/blob/master/packages/desktop-client/src/components/Background.tsx
-
 - Use action interfaces for each screen, not callback lambdas
 
 - auto change theme based on time of day
 
 - support multiple LoginMethods on LoginScreen
 
-- About screen, licenses, etc
+- Nav to about screen, licenses, etc

@@ -3,7 +3,7 @@ package actual.about.ui
 import actual.about.res.AboutStrings
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -94,7 +94,7 @@ private fun TextContent(
 
 @Preview
 @Composable
-private fun PreviewContent() = PreviewActualColumn {
+private fun PreviewContent() = PreviewColumn {
   UpdateFoundDialogContent(
     currentVersion = "v1.2.3",
     latestVersion = "v2.3.4",

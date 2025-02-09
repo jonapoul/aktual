@@ -3,11 +3,11 @@ package actual.url.ui
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
-import actual.core.ui.ActualScreenPreview
 import actual.core.ui.AppThemeChooser
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualScreen
-import actual.core.ui.PrimaryActualTextButtonWithLoading
+import actual.core.ui.PreviewScreen
+import actual.core.ui.PrimaryTextButtonWithLoading
+import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
@@ -212,7 +212,7 @@ private fun ServerUrlContent(
 
     VerticalSpacer(height = 20.dp)
 
-    PrimaryActualTextButtonWithLoading(
+    PrimaryTextButtonWithLoading(
       modifier = Modifier
         .wrapContentWidth()
         .align(Alignment.End),
@@ -254,9 +254,9 @@ private fun ServerUrlContent(
   }
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun Regular() = PreviewActualScreen { type ->
+private fun Regular() = PreviewScreen { type ->
   ServerUrlScaffold(
     url = "",
     protocol = Protocol.Https,
@@ -269,9 +269,9 @@ private fun Regular() = PreviewActualScreen { type ->
   )
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun WithErrorMessage() = PreviewActualScreen { type ->
+private fun WithErrorMessage() = PreviewScreen { type ->
   ServerUrlScaffold(
     url = "my.server.com:1234/path",
     protocol = Protocol.Http,

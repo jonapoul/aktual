@@ -3,8 +3,8 @@ package actual.licenses.ui
 import actual.core.res.CoreDimens
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.NormalActualIconButton
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.NormalIconButton
+import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.licenses.data.LibraryModel
 import actual.licenses.res.LicensesStrings
@@ -63,7 +63,7 @@ internal fun LibraryItem(
 
     val url = library.url
     if (url != null) {
-      NormalActualIconButton(
+      NormalIconButton(
         imageVector = Icons.AutoMirrored.Filled.OpenInNew,
         contentDescription = LicensesStrings.itemLaunch,
         onClick = { onLaunchUrl.invoke(url) },
@@ -126,7 +126,7 @@ private val TextSize = 12.sp
 
 @Preview
 @Composable
-private fun PreviewItem() = PreviewActualColumn {
+private fun PreviewItem() = PreviewColumn {
   LibraryItem(
     library = AlakazamAndroidCore,
     onLaunchUrl = {},

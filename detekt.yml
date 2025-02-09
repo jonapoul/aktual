@@ -43,13 +43,11 @@ style:
     ignoreCompanionObjectPropertyDeclaration: true
     ignoreAnnotated:
       - "Preview"
-      - "PreviewThemes"
-      - "ActualScreenPreview"
+      - "ScreenPreview"
   UnusedPrivateMember:
     ignoreAnnotated:
       - "Preview"
-      - "PreviewThemes"
-      - "ActualScreenPreview"
+      - "ScreenPreview"
   ForbiddenComment:
     active: false
   UnnecessaryAbstractClass:

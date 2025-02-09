@@ -25,12 +25,12 @@ fun VersionsText(
 
 @Preview
 @Composable
-private fun PreviewServerNull() = PreviewActualColumn {
+private fun PreviewServerNull() = PreviewColumn {
   VersionsText(ActualVersions(app = "1.2.3", server = null))
 }
 
 @Preview
 @Composable
-private fun PreviewBothVersions() = PreviewActualColumn {
+private fun PreviewBothVersions() = PreviewColumn {
   VersionsText(ActualVersions(app = "1.2.3", server = "2.3.4"))
 }

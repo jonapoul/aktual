@@ -40,11 +40,11 @@ private fun ColorSchemeType.backgroundImage() = painterResource(
 
 @Preview
 @Composable
-private fun BackgroundImage() = PreviewActualColumn { type ->
+private fun BackgroundImage() = PreviewColumn { type ->
   WavyBackground(type)
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
 private fun Scaled() = PreviewActualRow { type ->
   WavyBackground(

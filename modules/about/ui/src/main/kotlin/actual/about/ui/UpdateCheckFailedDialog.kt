@@ -3,7 +3,7 @@ package actual.about.ui
 import actual.about.res.AboutStrings
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
@@ -61,7 +61,7 @@ private fun UpdateCheckFailedDialogContent(
 
 @Preview
 @Composable
-private fun PreviewContent() = PreviewActualColumn {
+private fun PreviewContent() = PreviewColumn {
   UpdateCheckFailedDialogContent(
     cause = "Something broke lol. And here's some other rubbish to show how the text looks when wrapping lines",
     onDismiss = {},

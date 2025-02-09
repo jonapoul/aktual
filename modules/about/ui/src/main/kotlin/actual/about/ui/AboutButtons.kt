@@ -1,8 +1,8 @@
 package actual.about.ui
 
 import actual.about.res.AboutStrings
-import actual.core.ui.NormalActualTextButton
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.NormalTextButton
+import actual.core.ui.PreviewColumn
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
@@ -24,17 +24,17 @@ internal fun AboutButtons(
   ) {
     val buttonModifier = Modifier.fillMaxWidth()
 
-    NormalActualTextButton(
+    NormalTextButton(
       modifier = buttonModifier.testTag(Tags.CheckUpdatesButton),
       text = AboutStrings.checkUpdates,
       onClick = { onAction(AboutAction.CheckUpdates) },
     )
-    NormalActualTextButton(
+    NormalTextButton(
       modifier = buttonModifier.testTag(Tags.ReportButton),
       text = AboutStrings.reportIssues,
       onClick = { onAction(AboutAction.ReportIssue) },
     )
-    NormalActualTextButton(
+    NormalTextButton(
       modifier = buttonModifier.testTag(Tags.LicensesButton),
       text = AboutStrings.licenses,
       onClick = { onAction(AboutAction.ViewLicenses) },
@@ -44,7 +44,7 @@ internal fun AboutButtons(
 
 @Preview
 @Composable
-private fun PreviewAboutButtons() = PreviewActualColumn {
+private fun PreviewAboutButtons() = PreviewColumn {
   AboutButtons(
     modifier = Modifier.width(300.dp),
     onAction = {},

@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-fun PreviewActualColumn(
+fun PreviewColumn(
   modifier: Modifier = Modifier,
   content: @Composable (ColorSchemeType) -> Unit,
 ) {
@@ -46,7 +46,7 @@ fun PreviewActualRow(
 }
 
 @Composable
-fun PreviewActualScreen(
+fun PreviewScreen(
   modifier: Modifier = Modifier,
   content: @Composable (ColorSchemeType) -> Unit,
 ) {
@@ -84,7 +84,7 @@ private fun PreviewWithColorScheme(
   widthDp = 3 * MY_PHONE_WIDTH_DP,
   heightDp = MY_PHONE_HEIGHT_DP,
 )
-annotation class ActualScreenPreview
+annotation class ScreenPreview
 
 private const val MY_PHONE_DPI = 400
 const val MY_PHONE_WIDTH_DP = 1080 / (MY_PHONE_DPI / 160)

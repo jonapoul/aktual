@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -36,12 +35,12 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-fun ActualTextField(
+fun TextField(
   value: String,
   onValueChange: (String) -> Unit,
   placeholderText: String?,
   modifier: Modifier = Modifier,
-  shape: Shape = ActualTextFieldShape,
+  shape: Shape = TextFieldShape,
   readOnly: Boolean = false,
   leadingIcon: ComposableLambda? = null,
   trailingIcon: ComposableLambda? = null,
@@ -113,7 +112,7 @@ private fun ClearButton(
 }
 
 @Composable
-fun ActualExposedDropDownMenu(
+fun ExposedDropDownMenu(
   value: String,
   onValueChange: (String) -> Unit,
   options: ImmutableList<String>,
@@ -128,7 +127,7 @@ fun ActualExposedDropDownMenu(
     expanded = expanded,
     onExpandedChange = { expanded = it },
   ) {
-    ActualTextField(
+    TextField(
       modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true),
       readOnly = true,
       placeholderText = null,
@@ -160,12 +159,10 @@ fun ActualExposedDropDownMenu(
   }
 }
 
-private val ActualTextFieldShape = RoundedCornerShape(size = 4.dp)
-
 @Preview
 @Composable
-private fun PreviewEmptyTextField() = PreviewActualColumn {
-  ActualTextField(
+private fun PreviewEmptyTextField() = PreviewColumn {
+  TextField(
     value = "",
     onValueChange = {},
     placeholderText = "I'm empty",
@@ -174,8 +171,8 @@ private fun PreviewEmptyTextField() = PreviewActualColumn {
 
 @Preview
 @Composable
-private fun PreviewFilledTextField() = PreviewActualColumn {
-  ActualTextField(
+private fun PreviewFilledTextField() = PreviewColumn {
+  TextField(
     value = "I'm full",
     onValueChange = {},
     placeholderText = "Hello world",
@@ -184,8 +181,8 @@ private fun PreviewFilledTextField() = PreviewActualColumn {
 
 @Preview
 @Composable
-private fun PreviewFilledClearable() = PreviewActualColumn {
-  ActualTextField(
+private fun PreviewFilledClearable() = PreviewColumn {
+  TextField(
     value = "I'm full",
     onValueChange = {},
     placeholderText = "Hello world",
@@ -195,10 +192,10 @@ private fun PreviewFilledClearable() = PreviewActualColumn {
 
 @Preview
 @Composable
-private fun PreviewDropDownMenu() = PreviewActualColumn {
+private fun PreviewDropDownMenu() = PreviewColumn {
   var value by remember { mutableStateOf("B") }
   val options = persistentListOf("A", "B", "C", "D")
-  ActualExposedDropDownMenu(
+  ExposedDropDownMenu(
     value = value,
     onValueChange = { newValue -> value = newValue },
     options = options,
@@ -207,10 +204,10 @@ private fun PreviewDropDownMenu() = PreviewActualColumn {
 
 @Preview
 @Composable
-private fun PreviewDropDownMenuForcedWidth() = PreviewActualColumn {
+private fun PreviewDropDownMenuForcedWidth() = PreviewColumn {
   var value by remember { mutableStateOf("B") }
   val options = persistentListOf("A", "B", "C", "D")
-  ActualExposedDropDownMenu(
+  ExposedDropDownMenu(
     modifier = Modifier.width(100.dp),
     value = value,
     onValueChange = { newValue -> value = newValue },
