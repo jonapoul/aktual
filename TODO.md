@@ -22,3 +22,5 @@
 - support multiple LoginMethods on LoginScreen
 
 - Nav to about screen, licenses, etc
+
+- database column enums. e.g. conditions_op, graph_type, etc
