@@ -32,6 +32,8 @@ node ["style"="filled"]
 ":login:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":url:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":core:di" ["fillcolor"="#FCB103","shape"="box"]
+":db:di" ["fillcolor"="#FCB103","shape"="box"]
+":db:impl" ["fillcolor"="#9D8DF1","shape"="box"]
 ":licenses:data" ["fillcolor"="#9D8DF1","shape"="box"]
 ":licenses:di" ["fillcolor"="#FCB103","shape"="box"]
 ":licenses:ui" ["fillcolor"="#FFFF55","shape"="box"]
@@ -60,6 +62,7 @@ graph ["rank"="same"]
 ":app" -> ":core:coroutines" ["style"="dotted"]
 ":app" -> ":core:di" ["style"="dotted"]
 ":app" -> ":core:log" ["style"="dotted"]
+":app" -> ":db:di" ["style"="dotted"]
 ":app" -> ":licenses:data" ["style"="dotted"]
 ":app" -> ":licenses:di" ["style"="dotted"]
 ":app" -> ":licenses:nav" ["style"="dotted"]
@@ -119,6 +122,8 @@ graph ["rank"="same"]
 ":login:prefs" -> ":login:model"
 ":core:di" -> ":core:coroutines"
 ":core:di" -> ":core:log"
+":db:di" -> ":core:coroutines"
+":db:di" -> ":db:impl"
 ":licenses:data" -> ":core:coroutines" ["style"="dotted"]
 ":licenses:di" -> ":licenses:data"
 ":licenses:ui" -> ":core:ui"

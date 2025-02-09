@@ -156,6 +156,7 @@ dependencies {
   implementation(projects.core.coroutines)
   implementation(projects.core.di)
   implementation(projects.core.log)
+  implementation(projects.db.di)
   implementation(projects.licenses.data)
   implementation(projects.licenses.di)
   implementation(projects.licenses.nav)
