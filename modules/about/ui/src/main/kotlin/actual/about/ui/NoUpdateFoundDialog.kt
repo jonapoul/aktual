@@ -3,7 +3,7 @@ package actual.about.ui
 import actual.about.res.AboutStrings
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Text
@@ -56,7 +56,7 @@ private fun NoUpdateFoundDialogContent(
 
 @Preview
 @Composable
-private fun PreviewContent() = PreviewActualColumn {
+private fun PreviewContent() = PreviewColumn {
   NoUpdateFoundDialogContent(
     onDismiss = {},
   )

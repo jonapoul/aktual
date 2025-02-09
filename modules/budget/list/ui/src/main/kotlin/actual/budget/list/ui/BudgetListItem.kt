@@ -7,10 +7,11 @@ import actual.core.icons.ActualIcons
 import actual.core.icons.Key
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
-import actual.core.ui.BareActualIconButton
+import actual.core.ui.BareIconButton
 import actual.core.ui.HorizontalSpacer
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.PreviewColumn
+import actual.core.ui.RowShape
 import actual.core.ui.Theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,7 +22,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.MoreVert
@@ -110,7 +110,7 @@ internal fun BudgetListItem(
 
       var showDeleteMenu by remember { mutableStateOf(false) }
 
-      BareActualIconButton(
+      BareIconButton(
         imageVector = Icons.Filled.MoreVert,
         contentDescription = CoreStrings.navBack,
         onClick = { showDeleteMenu = true },
@@ -144,8 +144,6 @@ private fun DeleteMenu(
   }
 }
 
-private val RowShape = RoundedCornerShape(size = 6.dp)
-
 @Stable
 @Composable
 @ReadOnlyComposable
@@ -161,7 +159,7 @@ private fun budgetDescription(budget: Budget): String? = if (budget.encryptKeyId
 
 @Preview
 @Composable
-private fun Synced() = PreviewActualColumn {
+private fun Synced() = PreviewColumn {
   BudgetListItem(
     modifier = Modifier.fillMaxWidth(),
     budget = PreviewBudgetSynced,
@@ -172,7 +170,7 @@ private fun Synced() = PreviewActualColumn {
 
 @Preview
 @Composable
-private fun Warning() = PreviewActualColumn {
+private fun Warning() = PreviewColumn {
   BudgetListItem(
     modifier = Modifier.fillMaxWidth(),
     budget = PreviewBudgetSynced.copy(state = BudgetState.Broken, hasKey = false),

@@ -5,7 +5,7 @@ import androidx.compose.ui.graphics.Color
 /**
  * actual/packages/desktop-client/src/style/palette.ts
  */
-object ActualColors {
+internal object ActualColors {
   val gray50 = Color(color = 0xFFF6F8FA)
   val gray80 = Color(color = 0xFFF0F4F6)
   val gray100 = Color(color = 0xFFE8ECF0)

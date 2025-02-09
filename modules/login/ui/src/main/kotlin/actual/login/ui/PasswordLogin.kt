@@ -1,8 +1,8 @@
 package actual.login.ui
 
-import actual.core.ui.ActualTextField
-import actual.core.ui.PreviewActualColumn
-import actual.core.ui.PrimaryActualTextButtonWithLoading
+import actual.core.ui.PreviewColumn
+import actual.core.ui.PrimaryTextButtonWithLoading
+import actual.core.ui.TextField
 import actual.core.ui.VerticalSpacer
 import actual.login.model.Password
 import actual.login.res.LoginStrings
@@ -31,7 +31,7 @@ internal fun PasswordLogin(
   Column(
     modifier = modifier,
   ) {
-    ActualTextField(
+    TextField(
       modifier = Modifier.fillMaxWidth(1f),
       value = enteredPassword.toString(),
       onValueChange = { password -> onAction(LoginAction.EnterPassword(password)) },
@@ -50,7 +50,7 @@ internal fun PasswordLogin(
 
     VerticalSpacer(20.dp)
 
-    PrimaryActualTextButtonWithLoading(
+    PrimaryTextButtonWithLoading(
       modifier = Modifier
         .align(Alignment.End)
         .width(170.dp),
@@ -63,7 +63,7 @@ internal fun PasswordLogin(
 
 @Preview
 @Composable
-private fun Loading() = PreviewActualColumn {
+private fun Loading() = PreviewColumn {
   PasswordLogin(
     isLoading = true,
     enteredPassword = Password.Dummy,
@@ -73,7 +73,7 @@ private fun Loading() = PreviewActualColumn {
 
 @Preview
 @Composable
-private fun Filled() = PreviewActualColumn {
+private fun Filled() = PreviewColumn {
   PasswordLogin(
     isLoading = false,
     enteredPassword = Password.Dummy,
@@ -83,7 +83,7 @@ private fun Filled() = PreviewActualColumn {
 
 @Preview
 @Composable
-private fun Empty() = PreviewActualColumn {
+private fun Empty() = PreviewColumn {
   PasswordLogin(
     isLoading = false,
     enteredPassword = Password.Empty,

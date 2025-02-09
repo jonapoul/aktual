@@ -5,9 +5,9 @@ import actual.budget.list.vm.Budget
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.core.colorscheme.ColorSchemeType
-import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualScreen
+import actual.core.ui.PreviewScreen
+import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
@@ -209,9 +209,9 @@ private fun ListBudgetsContent(
   }
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun Success() = PreviewActualScreen { type ->
+private fun Success() = PreviewScreen { type ->
   ListBudgetsScaffold(
     versions = PreviewVersions,
     themeType = type,
@@ -222,9 +222,9 @@ private fun Success() = PreviewActualScreen { type ->
   )
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun Loading() = PreviewActualScreen { type ->
+private fun Loading() = PreviewScreen { type ->
   ListBudgetsScaffold(
     versions = PreviewVersions,
     themeType = type,
@@ -233,9 +233,9 @@ private fun Loading() = PreviewActualScreen { type ->
   )
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun Failure() = PreviewActualScreen { type ->
+private fun Failure() = PreviewScreen { type ->
   ListBudgetsScaffold(
     versions = PreviewVersions,
     themeType = type,

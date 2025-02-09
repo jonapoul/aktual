@@ -42,7 +42,7 @@ fun UsingServerText(
       textAlign = TextAlign.Center,
     )
 
-    BareActualTextButton(
+    BareTextButton(
       text = CoreStrings.loginServerChange,
       onClick = onClickChange,
     )
@@ -51,7 +51,7 @@ fun UsingServerText(
 
 @Preview
 @Composable
-private fun PreviewUsingServer() = PreviewActualColumn {
+private fun PreviewUsingServer() = PreviewColumn {
   UsingServerText(
     url = ServerUrl.Demo,
     onClickChange = {},

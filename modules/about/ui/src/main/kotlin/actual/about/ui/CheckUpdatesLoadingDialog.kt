@@ -3,7 +3,7 @@ package actual.about.ui
 import actual.about.res.AboutStrings
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Arrangement
@@ -81,7 +81,7 @@ private fun CheckUpdatesLoadingDialogContent(
 
 @Preview
 @Composable
-private fun PreviewContent() = PreviewActualColumn {
+private fun PreviewContent() = PreviewColumn {
   CheckUpdatesLoadingDialogContent(
     onCancel = {},
   )

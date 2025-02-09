@@ -2,10 +2,10 @@ package actual.budget.list.ui
 
 import actual.budget.list.res.BudgetListStrings
 import actual.budget.list.vm.Budget
-import actual.core.ui.ActualAlertDialog
 import actual.core.ui.ActualFontFamily
-import actual.core.ui.BareActualTextButton
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.AlertDialog
+import actual.core.ui.BareTextButton
+import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -29,7 +29,7 @@ internal fun DeleteBudgetDialog(
   onAction: (DeleteDialogAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  ActualAlertDialog(
+  AlertDialog(
     modifier = modifier,
     title = BudgetListStrings.budgetDeleteDialogTitle(budget.name),
     onDismissRequest = { onAction(DeleteDialogAction.Dismiss) },
@@ -71,7 +71,7 @@ private fun Content(
       fontSize = 14.sp,
     )
 
-    BareActualTextButton(
+    BareTextButton(
       text = BudgetListStrings.budgetDeleteDialogHostedButton,
       colors = { theme, pressed -> theme.errorPrimary(pressed) },
       onClick = onDeleteRemote,
@@ -83,7 +83,7 @@ private fun Content(
       fontSize = 14.sp,
     )
 
-    BareActualTextButton(
+    BareTextButton(
       text = BudgetListStrings.budgetDeleteDialogLocalButton,
       colors = { theme, pressed -> theme.errorBare(pressed) },
       onClick = onDeleteLocal,
@@ -119,7 +119,7 @@ private fun Theme.errorBare(isPressed: Boolean) = ButtonDefaults.outlinedButtonC
 
 @Preview
 @Composable
-private fun PreviewContent() = PreviewActualColumn {
+private fun PreviewContent() = PreviewColumn {
   Content(
     onDeleteLocal = {},
     onDeleteRemote = {},

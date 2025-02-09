@@ -1,8 +1,8 @@
 package actual.budget.list.ui
 
-import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualScreen
+import actual.core.ui.PreviewScreen
+import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -28,8 +28,8 @@ internal fun ContentLoading(
   }
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun Loading() = PreviewActualScreen {
+private fun Loading() = PreviewScreen {
   ContentLoading()
 }

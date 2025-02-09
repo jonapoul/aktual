@@ -19,25 +19,25 @@ import actual.core.res.R as CoreR
 
 @Composable
 @ReadOnlyComposable
-fun actualTypography(theme: Theme = LocalTheme.current): Typography {
+fun typography(theme: Theme = LocalTheme.current): Typography {
   /**
    * WARNING: DON'T SET A COLOUR FOR bodyLarge - IT'LL OVERRIDE THOSE SET IN TEXT FIELDS
    */
   return Typography(
-    displayLarge = actualTextStyle(fontWeight = FontWeight.W700, fontSize = 30.sp),
-    displayMedium = actualTextStyle(fontWeight = FontWeight.W600, fontSize = 25.sp),
-    displaySmall = actualTextStyle(fontWeight = FontWeight.W500, fontSize = 20.sp),
-    headlineLarge = actualTextStyle(fontWeight = FontWeight.W700, color = theme.pageTextPositive, fontSize = 30.sp),
-    headlineMedium = actualTextStyle(fontWeight = FontWeight.W600, color = theme.pageText, fontSize = 25.sp),
+    displayLarge = textStyle(fontWeight = FontWeight.W700, fontSize = 30.sp),
+    displayMedium = textStyle(fontWeight = FontWeight.W600, fontSize = 25.sp),
+    displaySmall = textStyle(fontWeight = FontWeight.W500, fontSize = 20.sp),
+    headlineLarge = textStyle(fontWeight = FontWeight.W700, color = theme.pageTextPositive, fontSize = 30.sp),
+    headlineMedium = textStyle(fontWeight = FontWeight.W600, color = theme.pageText, fontSize = 25.sp),
 //     headlineSmall =
 //     titleLarge =
 //     titleMedium =
 //     titleSmall =
-    bodyLarge = actualTextStyle(fontSize = 16.sp, lineHeight = 22.4.sp),
-    bodyMedium = actualTextStyle(fontSize = 15.sp, lineHeight = 21.4.sp),
-    bodySmall = actualTextStyle(fontSize = 14.sp, lineHeight = 20.4.sp),
+    bodyLarge = textStyle(fontSize = 16.sp, lineHeight = 22.4.sp),
+    bodyMedium = textStyle(fontSize = 15.sp, lineHeight = 21.4.sp),
+    bodySmall = textStyle(fontSize = 14.sp, lineHeight = 20.4.sp),
 //     labelLarge =
-    labelMedium = actualTextStyle(color = theme.pageTextSubdued, fontSize = 13.sp),
+    labelMedium = textStyle(color = theme.pageTextSubdued, fontSize = 13.sp),
 //     labelSmall =
   )
 }
@@ -54,7 +54,7 @@ val ActualFontFamily = FontFamily(
   Font(CoreR.font.inter_black, FontWeight.W900),
 )
 
-fun actualTextStyle(
+fun textStyle(
   fontWeight: FontWeight? = null,
   color: Color = Color.Unspecified,
   fontSize: TextUnit = TextUnit.Unspecified,
@@ -67,11 +67,11 @@ fun actualTextStyle(
   lineHeight = lineHeight,
 )
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
 private fun PreviewTypography() {
-  PreviewActualScreen {
-    val styles = with(actualTypography()) {
+  PreviewScreen {
+    val styles = with(typography()) {
       listOf(
         displayLarge,
         displayMedium,

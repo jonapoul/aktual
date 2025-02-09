@@ -1,9 +1,9 @@
 package actual.url.ui
 
-import actual.core.ui.ActualExposedDropDownMenu
-import actual.core.ui.ActualTextField
+import actual.core.ui.ExposedDropDownMenu
 import actual.core.ui.HorizontalSpacer
-import actual.core.ui.PreviewActualColumn
+import actual.core.ui.PreviewColumn
+import actual.core.ui.TextField
 import actual.url.model.Protocol
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +30,7 @@ internal fun InputFields(
   Row(
     modifier = modifier.fillMaxWidth(),
   ) {
-    ActualExposedDropDownMenu(
+    ExposedDropDownMenu(
       modifier = Modifier.width(110.dp),
       value = protocol.toString(),
       options = PROTOCOLS,
@@ -41,7 +41,7 @@ internal fun InputFields(
 
     val focusManager = LocalFocusManager.current
 
-    ActualTextField(
+    TextField(
       modifier = Modifier.weight(1f),
       value = url,
       onValueChange = { onAction(ServerUrlAction.EnterUrl(it.lowercase())) },
@@ -68,7 +68,7 @@ private const val EXAMPLE_URL = "example.com"
 
 @Preview
 @Composable
-private fun Empty() = PreviewActualColumn {
+private fun Empty() = PreviewColumn {
   InputFields(
     url = "",
     protocol = Protocol.Http,
@@ -78,7 +78,7 @@ private fun Empty() = PreviewActualColumn {
 
 @Preview
 @Composable
-private fun Filled() = PreviewActualColumn {
+private fun Filled() = PreviewColumn {
   InputFields(
     url = "my.server.com:1234/path",
     protocol = Protocol.Http,

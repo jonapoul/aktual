@@ -1,9 +1,9 @@
 package actual.budget.list.ui
 
 import actual.budget.list.vm.Budget
-import actual.core.ui.ActualScreenPreview
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualScreen
+import actual.core.ui.PreviewScreen
+import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,9 +38,9 @@ internal fun ContentSuccess(
   }
 }
 
-@ActualScreenPreview
+@ScreenPreview
 @Composable
-private fun Three() = PreviewActualScreen {
+private fun Three() = PreviewScreen {
   ContentSuccess(
     modifier = Modifier.background(LocalTheme.current.pageBackground),
     budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
