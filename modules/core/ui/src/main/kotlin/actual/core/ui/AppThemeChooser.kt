@@ -120,17 +120,17 @@ private fun Theme.colors(
   isSelected: Boolean,
 ) = IconButtonDefaults.filledIconButtonColors(
   containerColor = when {
-    isPressed -> buttonNormalBackgroundHover
-    isSelected -> buttonNormalSelectedBackground
+    isPressed -> buttonPrimaryBackgroundHover
+    isSelected -> buttonPrimaryBackground
     else -> buttonNormalBackground
   },
   contentColor = when {
-    isPressed -> buttonNormalTextHover
-    isSelected -> buttonNormalSelectedText
+    isPressed -> buttonPrimaryTextHover
+    isSelected -> buttonPrimaryText
     else -> buttonNormalText
   },
-  disabledContainerColor = buttonNormalDisabledBackground,
-  disabledContentColor = buttonNormalDisabledText,
+  disabledContainerColor = buttonPrimaryDisabledBackground,
+  disabledContentColor = buttonPrimaryDisabledText,
 )
 
 @Composable

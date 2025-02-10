@@ -112,7 +112,7 @@ internal class LightTheme : Theme {
   override val buttonPrimaryDisabledBackground = ActualColors.navy300
   override val buttonPrimaryDisabledBorder = buttonPrimaryDisabledBackground
 
-  override val buttonNormalText = ActualColors.navy900
+  override val buttonNormalText = ActualColors.white
   override val buttonNormalTextHover = buttonNormalText
   override val buttonNormalBackground = ActualColors.navy500
   override val buttonNormalBackgroundHover = ActualColors.navy400
@@ -130,8 +130,8 @@ internal class LightTheme : Theme {
   override val calendarItemBackground = ActualColors.navy800
   override val calendarSelectedBackground = ActualColors.navy500
 
-  override val buttonBareText = buttonNormalText
-  override val buttonBareTextHover = buttonNormalText
+  override val buttonBareText = ActualColors.navy900
+  override val buttonBareTextHover = buttonBareText
   override val buttonBareBackground = Color.Transparent
   override val buttonBareBackgroundHover = Color(color = 0x26646464)
   override val buttonBareBackgroundActive = Color(color = 0x40646464)
