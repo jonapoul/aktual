@@ -34,6 +34,7 @@ node ["style"="filled"]
 ":core:di" ["fillcolor"="#FCB103","shape"="box"]
 ":db:di" ["fillcolor"="#FCB103","shape"="box"]
 ":db:impl" ["fillcolor"="#9D8DF1","shape"="box"]
+":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":licenses:data" ["fillcolor"="#9D8DF1","shape"="box"]
 ":licenses:di" ["fillcolor"="#FCB103","shape"="box"]
 ":licenses:ui" ["fillcolor"="#FFFF55","shape"="box"]
@@ -124,6 +125,7 @@ graph ["rank"="same"]
 ":core:di" -> ":core:log"
 ":db:di" -> ":core:coroutines"
 ":db:di" -> ":db:impl"
+":db:impl" -> ":budget:model"
 ":licenses:data" -> ":core:coroutines" ["style"="dotted"]
 ":licenses:di" -> ":licenses:data"
 ":licenses:ui" -> ":core:ui"

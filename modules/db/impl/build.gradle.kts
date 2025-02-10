@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.module.multiplatform)
   alias(libs.plugins.androidx.room)
   alias(libs.plugins.ksp)
+  alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.buildconfig)
 }
 
@@ -38,8 +39,11 @@ kotlin {
 commonMainDependencies {
   api(libs.androidx.room.runtime)
   api(libs.javaxInject)
+  api(libs.kotlinx.serialization.core)
+  api(projects.budget.model)
   implementation(libs.androidx.room.common)
   implementation(libs.kotlinx.datetime)
+  implementation(libs.kotlinx.serialization.json)
 }
 
 commonTestDependencies {

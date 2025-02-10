@@ -1,6 +1,8 @@
 package actual.db
 
-import actual.db.converter.ConditionConverter
+import actual.db.converters.EnumConverters
+import actual.db.converters.OtherConverters
+import actual.db.converters.ValueClassConverters
 import actual.db.dao.SpreadsheetCellDao
 import actual.db.dao.TransactionDao
 import actual.db.entity.AccountEntity
@@ -77,7 +79,7 @@ import androidx.room.migration.Migration
 import kotlin.coroutines.CoroutineContext
 
 @Database(
-  version = ActualDatabase.VERSION,
+  version = BudgetDatabase.VERSION,
   exportSchema = true,
   entities = [
     AccountEntity::class,
@@ -109,11 +111,13 @@ import kotlin.coroutines.CoroutineContext
     ZeroBudgetMonthEntity::class,
   ],
 )
-@ConstructedBy(ActualDatabaseConstructor::class)
+@ConstructedBy(BudgetDatabaseConstructor::class)
 @TypeConverters(
-  ConditionConverter::class,
+  EnumConverters::class,
+  OtherConverters::class,
+  ValueClassConverters::class,
 )
-abstract class ActualDatabase : RoomDatabase() {
+abstract class BudgetDatabase : RoomDatabase() {
   abstract fun spreadsheetCells(): SpreadsheetCellDao
   abstract fun transactions(): TransactionDao
 
@@ -167,9 +171,9 @@ abstract class ActualDatabase : RoomDatabase() {
     )
 
     @Suppress("SpreadOperator")
-    fun Builder<ActualDatabase>.build(
+    fun Builder<BudgetDatabase>.build(
       context: CoroutineContext,
-    ): ActualDatabase = fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
+    ): BudgetDatabase = fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
       .setQueryCoroutineContext(context)
       .addMigrations(*migrations().toTypedArray())
       .build()

@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1738491452,
-    "identityHash": "09af2a4f4d75e8ca53bd6c05cbbcad47",
+    "identityHash": "faad85ac1c6d36e83c0af9c702e6fea8",
     "entities": [
       {
         "tableName": "accounts",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `account_id` TEXT, `name` TEXT, `balance_current` INTEGER, `balance_available` INTEGER, `balance_limit` INTEGER, `mask` TEXT, `official_name` TEXT, `subtype` TEXT, `bank` TEXT, `offbudget` INTEGER, `closed` INTEGER, `tombstone` INTEGER, `sort_order` REAL, `type` TEXT, `account_sync_source` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `account_id` TEXT, `name` TEXT, `balance_current` INTEGER, `balance_available` INTEGER, `balance_limit` INTEGER, `mask` TEXT, `official_name` TEXT, `subtype` TEXT, `bank` TEXT, `offbudget` INTEGER NOT NULL, `closed` INTEGER NOT NULL, `tombstone` INTEGER NOT NULL, `sort_order` REAL, `type` TEXT, `account_sync_source` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -62,17 +62,20 @@
           {
             "fieldPath": "offBudget",
             "columnName": "offbudget",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "closed",
             "columnName": "closed",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "sortOrder",
@@ -99,7 +102,7 @@
       },
       {
         "tableName": "banks",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `bank_id` TEXT, `name` TEXT, `tombstone` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `bank_id` TEXT, `name` TEXT, `tombstone` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -120,7 +123,8 @@
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -132,7 +136,7 @@
       },
       {
         "tableName": "categories",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `is_income` INTEGER, `cat_group` TEXT, `sort_order` REAL, `tombstone` INTEGER, `hidden` INTEGER NOT NULL, `goal_def` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `is_income` INTEGER NOT NULL, `cat_group` TEXT, `sort_order` REAL, `tombstone` INTEGER NOT NULL, `hidden` INTEGER NOT NULL, `goal_def` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`cat_group`) REFERENCES `category_groups`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -148,7 +152,8 @@
           {
             "fieldPath": "isIncome",
             "columnName": "is_income",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "categoryGroup",
@@ -163,7 +168,8 @@
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "isHidden",
@@ -182,11 +188,35 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_categories_cat_group",
+            "unique": false,
+            "columnNames": [
+              "cat_group"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_categories_cat_group` ON `${TABLE_NAME}` (`cat_group`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "category_groups",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "cat_group"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "category_groups",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `is_income` INTEGER, `sort_order` REAL, `tombstone` INTEGER, `hidden` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `is_income` INTEGER NOT NULL, `sort_order` REAL, `tombstone` INTEGER NOT NULL, `hidden` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -202,7 +232,8 @@
           {
             "fieldPath": "isIncome",
             "columnName": "is_income",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "sortOrder",
@@ -212,7 +243,8 @@
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "isHidden",
@@ -271,7 +303,7 @@
       },
       {
         "tableName": "custom_reports",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `start_date` TEXT, `end_date` TEXT, `date_static` INTEGER, `date_range` TEXT, `mode` TEXT, `group_by` TEXT, `balance_type` TEXT, `show_empty` INTEGER, `show_offbudget` INTEGER, `show_hidden` INTEGER, `show_uncategorized` INTEGER, `selected_categories` TEXT, `graph_type` TEXT, `conditions` TEXT, `conditions_op` TEXT, `metadata` TEXT, `interval` TEXT, `color_scheme` TEXT, `tombstone` INTEGER, `include_current` INTEGER, `sort_by` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `start_date` TEXT, `end_date` TEXT, `date_static` INTEGER NOT NULL, `date_range` TEXT NOT NULL, `mode` TEXT NOT NULL, `group_by` TEXT NOT NULL, `balance_type` TEXT NOT NULL, `show_empty` INTEGER NOT NULL, `show_offbudget` INTEGER NOT NULL, `show_hidden` INTEGER NOT NULL, `show_uncategorized` INTEGER NOT NULL, `selected_categories` TEXT, `graph_type` TEXT NOT NULL, `conditions` TEXT NOT NULL, `conditions_op` TEXT, `metadata` TEXT, `interval` TEXT, `color_scheme` TEXT, `tombstone` INTEGER NOT NULL, `include_current` INTEGER, `sort_by` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -297,47 +329,56 @@
           {
             "fieldPath": "dateStatic",
             "columnName": "date_static",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "dateRange",
             "columnName": "date_range",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "mode",
             "columnName": "mode",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "groupBy",
             "columnName": "group_by",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "balanceType",
             "columnName": "balance_type",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "showEmpty",
             "columnName": "show_empty",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "showOffBudget",
             "columnName": "show_offbudget",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "showHidden",
             "columnName": "show_hidden",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "showUncategorized",
             "columnName": "show_uncategorized",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "selectedCategories",
@@ -347,12 +388,14 @@
           {
             "fieldPath": "graphType",
             "columnName": "graph_type",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "conditions",
             "columnName": "conditions",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "conditionsOp",
@@ -377,7 +420,8 @@
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "includeCurrent",
@@ -594,7 +638,7 @@
       },
       {
         "tableName": "payees",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `category` TEXT, `tombstone` INTEGER, `transfer_acct` TEXT, `favorite` INTEGER, `learn_categories` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `category` TEXT, `tombstone` INTEGER NOT NULL, `transfer_acct` TEXT, `favorite` INTEGER, `learn_categories` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`transfer_acct`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -615,7 +659,8 @@
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "transferAccount",
@@ -638,7 +683,40 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_payees_transfer_acct",
+            "unique": false,
+            "columnNames": [
+              "transfer_acct"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_payees_transfer_acct` ON `${TABLE_NAME}` (`transfer_acct`)"
+          },
+          {
+            "name": "index_payees_category",
+            "unique": false,
+            "columnNames": [
+              "category"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_payees_category` ON `${TABLE_NAME}` (`category`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "accounts",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "transfer_acct"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "payee_mapping",
@@ -750,7 +828,7 @@
       },
       {
         "tableName": "reflect_budgets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `month` INTEGER, `category` TEXT, `amount` INTEGER, `carryover` INTEGER, `goal` INTEGER, `long_goal` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `month` INTEGER, `category` TEXT, `amount` INTEGER, `carryover` INTEGER, `goal` INTEGER, `long_goal` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`category`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -794,11 +872,35 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_reflect_budgets_category",
+            "unique": false,
+            "columnNames": [
+              "category"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_reflect_budgets_category` ON `${TABLE_NAME}` (`category`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "categories",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "category"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "rules",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `stage` TEXT, `conditions` TEXT, `actions` INTEGER, `tombstone` INTEGER, `conditions_op` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `stage` TEXT, `conditions` TEXT NOT NULL, `actions` INTEGER, `tombstone` INTEGER NOT NULL, `conditions_op` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -814,7 +916,8 @@
           {
             "fieldPath": "conditions",
             "columnName": "conditions",
-            "affinity": "TEXT"
+            "affinity": "TEXT",
+            "notNull": true
           },
           {
             "fieldPath": "actions",
@@ -824,7 +927,8 @@
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "conditionsOp",
@@ -841,7 +945,7 @@
       },
       {
         "tableName": "schedules",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `rule` TEXT, `name` TEXT, `active` INTEGER, `completed` INTEGER, `posts_transaction` INTEGER, `tombstone` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `rule` TEXT, `name` TEXT, `active` INTEGER, `completed` INTEGER, `posts_transaction` INTEGER, `tombstone` INTEGER NOT NULL, PRIMARY KEY(`id`), FOREIGN KEY(`rule`) REFERENCES `rules`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -877,7 +981,8 @@
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -885,7 +990,31 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_schedules_rule",
+            "unique": false,
+            "columnNames": [
+              "rule"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_schedules_rule` ON `${TABLE_NAME}` (`rule`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "rules",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "rule"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "schedules_json_paths",
@@ -927,7 +1056,7 @@
       },
       {
         "tableName": "schedules_next_date",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `schedule_id` TEXT, `local_next_date` INTEGER, `local_next_date_ts` INTEGER, `base_next_date` INTEGER, `base_next_date_ts` INTEGER, `tombstone` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `schedule_id` TEXT, `local_next_date` INTEGER, `local_next_date_ts` INTEGER, `base_next_date` INTEGER, `base_next_date_ts` INTEGER, `tombstone` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -946,7 +1075,7 @@
             "affinity": "INTEGER"
           },
           {
-            "fieldPath": "localNextDateTs",
+            "fieldPath": "localNextInstant",
             "columnName": "local_next_date_ts",
             "affinity": "INTEGER"
           },
@@ -956,14 +1085,15 @@
             "affinity": "INTEGER"
           },
           {
-            "fieldPath": "baseNextDateTs",
+            "fieldPath": "baseNextInstant",
             "columnName": "base_next_date_ts",
             "affinity": "INTEGER"
           },
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -975,7 +1105,7 @@
       },
       {
         "tableName": "transactions",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `isParent` INTEGER, `isChild` INTEGER, `acct` TEXT, `category` TEXT, `amount` INTEGER, `description` TEXT, `notes` TEXT, `date` INTEGER, `financial_id` INTEGER, `type` TEXT, `location` TEXT, `error` TEXT, `imported_description` TEXT, `starting_balance_flag` INTEGER, `transferred_id` TEXT, `sort_order` REAL, `tombstone` INTEGER, `cleared` INTEGER, `pending` INTEGER, `parent_id` TEXT, `schedule` TEXT, `reconciled` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `isParent` INTEGER, `isChild` INTEGER, `acct` TEXT, `category` TEXT, `amount` INTEGER, `description` TEXT, `notes` TEXT, `date` INTEGER, `financial_id` INTEGER, `type` TEXT, `location` TEXT, `error` TEXT, `imported_description` TEXT, `starting_balance_flag` INTEGER, `transferred_id` TEXT, `sort_order` REAL, `tombstone` INTEGER NOT NULL, `cleared` INTEGER, `pending` INTEGER, `parent_id` TEXT, `schedule` TEXT, `reconciled` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`acct`) REFERENCES `accounts`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION , FOREIGN KEY(`category`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -1009,7 +1139,7 @@
             "affinity": "INTEGER"
           },
           {
-            "fieldPath": "description",
+            "fieldPath": "payee",
             "columnName": "description",
             "affinity": "TEXT"
           },
@@ -1044,12 +1174,12 @@
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "importedDescription",
+            "fieldPath": "importedPayee",
             "columnName": "imported_description",
             "affinity": "TEXT"
           },
           {
-            "fieldPath": "startingBalanceFlag",
+            "fieldPath": "isStartingBalance",
             "columnName": "starting_balance_flag",
             "affinity": "INTEGER"
           },
@@ -1066,7 +1196,8 @@
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           },
           {
             "fieldPath": "isCleared",
@@ -1154,12 +1285,45 @@
               "ASC"
             ],
             "createSql": "CREATE INDEX IF NOT EXISTS `trans_sorted` ON `${TABLE_NAME}` (`date` DESC, `starting_balance_flag` ASC, `sort_order` DESC, `id` ASC)"
+          },
+          {
+            "name": "index_transactions_acct",
+            "unique": false,
+            "columnNames": [
+              "acct"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_transactions_acct` ON `${TABLE_NAME}` (`acct`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "accounts",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "acct"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          },
+          {
+            "table": "categories",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "category"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
           }
         ]
       },
       {
         "tableName": "transaction_filters",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `conditions` TEXT, `conditions_op` TEXT, `tombstone` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `conditions` TEXT, `conditions_op` TEXT, `tombstone` INTEGER NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -1185,7 +1349,8 @@
           {
             "fieldPath": "tombstone",
             "columnName": "tombstone",
-            "affinity": "INTEGER"
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -1197,7 +1362,7 @@
       },
       {
         "tableName": "zero_budgets",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `month` INTEGER, `category` TEXT, `amount` INTEGER, `carryover` INTEGER, `goal` INTEGER, `long_goal` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `month` INTEGER, `category` TEXT, `amount` INTEGER, `carryover` INTEGER, `goal` INTEGER, `long_goal` INTEGER, PRIMARY KEY(`id`), FOREIGN KEY(`category`) REFERENCES `categories`(`id`) ON UPDATE NO ACTION ON DELETE NO ACTION )",
         "fields": [
           {
             "fieldPath": "id",
@@ -1241,7 +1406,31 @@
           "columnNames": [
             "id"
           ]
-        }
+        },
+        "indices": [
+          {
+            "name": "index_zero_budgets_category",
+            "unique": false,
+            "columnNames": [
+              "category"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_zero_budgets_category` ON `${TABLE_NAME}` (`category`)"
+          }
+        ],
+        "foreignKeys": [
+          {
+            "table": "categories",
+            "onDelete": "NO ACTION",
+            "onUpdate": "NO ACTION",
+            "columns": [
+              "category"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "zero_budget_months",
@@ -1269,7 +1458,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '09af2a4f4d75e8ca53bd6c05cbbcad47')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'faad85ac1c6d36e83c0af9c702e6fea8')"
     ]
   }
 }

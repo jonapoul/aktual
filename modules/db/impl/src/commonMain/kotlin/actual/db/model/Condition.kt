@@ -1,30 +1,54 @@
 package actual.db.model
 
-enum class Condition(private val value: String) {
-  And(value = "and"),
-  Contains(value = "contains"),
-  DoesNotContains(value = "doesNotContain"),
-  Gt(value = "gt"),
-  Gte(value = "gte"),
-  HasTags(value = "hasTags"),
-  Is(value = "is"),
-  IsApprox(value = "isapprox"),
-  IsBetween(value = "isbetween"),
-  IsNot(value = "isNot"),
-  Lt(value = "lt"),
-  Lte(value = "lte"),
-  Matches(value = "matches"),
-  NotOneOf(value = "notOneOf"),
-  OffBudget(value = "offBudget"),
-  OnBudget(value = "onBudget"),
-  OneOf(value = "oneOf"),
-  ;
+import actual.budget.model.ConditionOperator
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.PolymorphicKind
+import kotlinx.serialization.descriptors.buildSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonDecoder
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
-  override fun toString(): String = value
+@Serializable(ConditionSerializer::class)
+data class Condition(
+  val field: String,
+  val operator: ConditionOperator,
+  val type: String,
+  val values: List<String>,
+)
 
-  companion object {
-    fun fromString(string: String): Condition = entries
-      .firstOrNull { it.value == string }
-      ?: error("No Condition matching $string")
+private object ConditionSerializer : KSerializer<Condition> {
+  @OptIn(InternalSerializationApi::class, ExperimentalSerializationApi::class)
+  override val descriptor = buildSerialDescriptor("ConditionsSerializer", PolymorphicKind.SEALED)
+
+  override fun serialize(encoder: Encoder, value: Condition) =
+    throw SerializationException("Serialization not supported! value=$value")
+
+  private fun JsonObject.getOrThrow(key: String): JsonElement =
+    get(key) ?: throw SerializationException("No $key in $this")
+
+  private val JsonElement.string: String
+    get() = with(jsonPrimitive) { if (isString) content else error("Not a string: $this") }
+
+  override fun deserialize(decoder: Decoder): Condition {
+    val input = decoder as? JsonDecoder ?: error("Need JsonDecoder, got $decoder")
+    val jsonObject = input.decodeJsonElement().jsonObject
+    val field = jsonObject.getOrThrow(key = "field").string
+    val operator = jsonObject.getOrThrow(key = "op").string.let(ConditionOperator::fromString)
+    val type = jsonObject.getOrThrow(key = "type").string
+    return when (val value = jsonObject.getOrThrow(key = "value")) {
+      is JsonPrimitive -> Condition(field, operator, type, listOf(value.string))
+      is JsonArray -> Condition(field, operator, type, value.map { it.string })
+      else -> throw SerializationException("Unexpected value $value in $jsonObject")
+    }
   }
 }

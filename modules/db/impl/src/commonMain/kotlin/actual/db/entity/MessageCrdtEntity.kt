@@ -1,5 +1,6 @@
 package actual.db.entity
 
+import actual.budget.model.Timestamp
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
@@ -16,7 +17,7 @@ import androidx.room.PrimaryKey
 )
 data class MessageCrdtEntity(
   @PrimaryKey @ColumnInfo("id") val id: Int,
-  @ColumnInfo("timestamp") val timestamp: String,
+  @ColumnInfo("timestamp") val timestamp: Timestamp,
   @ColumnInfo("dataset") val dataset: String,
   @ColumnInfo("row") val row: String,
   @ColumnInfo("column") val column: String,
