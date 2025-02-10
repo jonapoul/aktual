@@ -9,8 +9,8 @@ import org.junit.Rule
 import org.junit.Test
 import java.io.File
 
-class ActualDatabaseMigrationTest {
-  private lateinit var db: ActualDatabase
+class BudgetDatabaseMigrationTest {
+  private lateinit var db: BudgetDatabase
   private val dbFile = File.createTempFile("migration-test", ".db")
 
   init {
@@ -22,7 +22,7 @@ class ActualDatabaseMigrationTest {
     schemaDirectoryPath = TestBuildConfig.SCHEMAS_PATH.toPath(),
     databasePath = dbFile.toPath(),
     driver = BundledSQLiteDriver(),
-    databaseClass = ActualDatabase::class,
+    databaseClass = BudgetDatabase::class,
   )
 
   @After
@@ -38,7 +38,7 @@ class ActualDatabaseMigrationTest {
     helper.createDatabase(version = 1)
 
     // Run all migrations
-    helper.runMigrationsAndValidate(version = 1, ActualDatabase.migrations())
+    helper.runMigrationsAndValidate(version = 1, BudgetDatabase.migrations())
 
     // Wrap in a DB object - Room will validate the tables internally
     db = buildDatabase(dbFile, standardDispatcher)

@@ -1,12 +1,14 @@
 package actual.db.entity
 
+import actual.budget.model.AccountId
+import actual.budget.model.AccountSyncSource
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "accounts")
 data class AccountEntity(
-  @PrimaryKey @ColumnInfo("id") val id: String,
+  @PrimaryKey @ColumnInfo("id") val id: AccountId,
   @ColumnInfo("account_id") val accountId: String?,
   @ColumnInfo("name") val name: String?,
   @ColumnInfo("balance_current") val balanceCurrent: Int?,
@@ -16,10 +18,10 @@ data class AccountEntity(
   @ColumnInfo("official_name") val officialName: String?,
   @ColumnInfo("subtype") val subtype: String?,
   @ColumnInfo("bank") val bank: String?,
-  @ColumnInfo("offbudget") val offBudget: Int? = 0,
-  @ColumnInfo("closed") val closed: Int? = 0,
-  @ColumnInfo("tombstone") val tombstone: Boolean? = false,
+  @ColumnInfo("offbudget") val offBudget: Boolean = false,
+  @ColumnInfo("closed") val closed: Boolean = false,
+  @ColumnInfo("tombstone") val tombstone: Boolean = false,
   @ColumnInfo("sort_order") val sortOrder: Float?,
   @ColumnInfo("type") val type: String?,
-  @ColumnInfo("account_sync_source") val syncSource: String?,
+  @ColumnInfo("account_sync_source") val syncSource: AccountSyncSource?,
 )
