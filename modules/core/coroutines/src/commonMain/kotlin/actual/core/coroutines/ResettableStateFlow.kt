@@ -1,3 +1,5 @@
+@file:Suppress("warnings", "ALL")
+
 package actual.core.coroutines
 
 import kotlinx.coroutines.flow.MutableStateFlow
