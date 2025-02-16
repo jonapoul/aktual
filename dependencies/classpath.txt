@@ -48,10 +48,10 @@ com.android.tools:sdk-common:31.7.3
 com.android.tools:sdklib:31.7.3
 com.android:signflinger:8.7.3
 com.android:zipflinger:8.7.3
-com.autonomousapps.dependency-analysis:com.autonomousapps.dependency-analysis.gradle.plugin:2.8.0
+com.autonomousapps.dependency-analysis:com.autonomousapps.dependency-analysis.gradle.plugin:2.8.2
 com.autonomousapps:antlr:4.13.2.0
 com.autonomousapps:asm-relocated:9.7.1.0
-com.autonomousapps:dependency-analysis-gradle-plugin:2.8.0
+com.autonomousapps:dependency-analysis-gradle-plugin:2.8.2
 com.autonomousapps:graph-support:0.5
 com.autonomousapps:kotlin-editor-relocated:0.18.0
 com.diffplug.durian:durian-collect:1.2.0
@@ -78,10 +78,10 @@ com.google.crypto.tink:tink:1.7.0
 com.google.dagger.hilt.android:com.google.dagger.hilt.android.gradle.plugin:2.55
 com.google.dagger:dagger:2.28.3
 com.google.dagger:hilt-android-gradle-plugin:2.55
-com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.1.10-1.0.29
-com.google.devtools.ksp:symbol-processing-api:2.1.10-1.0.29
-com.google.devtools.ksp:symbol-processing-common-deps:2.1.10-1.0.29
-com.google.devtools.ksp:symbol-processing-gradle-plugin:2.1.10-1.0.29
+com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.1.10-1.0.30
+com.google.devtools.ksp:symbol-processing-api:2.1.10-1.0.30
+com.google.devtools.ksp:symbol-processing-common-deps:2.1.10-1.0.30
+com.google.devtools.ksp:symbol-processing-gradle-plugin:2.1.10-1.0.30
 com.google.errorprone:error_prone_annotations:2.28.0
 com.google.flatbuffers:flatbuffers-java:1.12.0
 com.google.guava:failureaccess:1.0.2
