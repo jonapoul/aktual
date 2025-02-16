@@ -68,8 +68,8 @@ fun ServerUrlScreen(
   val protocol by viewModel.protocol.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
-  val shouldNavigate by viewModel.shouldNavigate.collectAsStateWithLifecycle(initialValue = false)
-  val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle(initialValue = null)
+  val shouldNavigate by viewModel.shouldNavigate.collectAsStateWithLifecycle()
+  val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
   val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   var clickedBack by remember { mutableStateOf(false) }
 

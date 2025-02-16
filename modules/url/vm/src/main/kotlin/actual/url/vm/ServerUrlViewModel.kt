@@ -13,10 +13,14 @@ import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.kotlin.core.requireMessage
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.cash.molecule.RecompositionMode.Immediate
+import app.cash.molecule.launchMolecule
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +34,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
-import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class ServerUrlViewModel @Inject internal constructor(
@@ -57,20 +60,24 @@ class ServerUrlViewModel @Inject internal constructor(
     .map { it.isNotBlank() }
     .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
 
-  val shouldNavigate: Flow<ShouldNavigate?> = mutableConfirmResult.map { value ->
-    if (value is ConfirmResult.Succeeded) {
-      if (value.isBootstrapped) {
-        ShouldNavigate.ToLogin
-      } else {
-        ShouldNavigate.ToBootstrap
-      }
-    } else {
-      null
+  val shouldNavigate: StateFlow<ShouldNavigate?> = viewModelScope.launchMolecule(Immediate) {
+    val confirmResult by mutableConfirmResult.collectAsState()
+    when (val result = confirmResult) {
+      is ConfirmResult.Succeeded ->
+        if (result.isBootstrapped) ShouldNavigate.ToLogin else ShouldNavigate.ToBootstrap
+
+      else -> null
     }
   }
 
-  val errorMessage: Flow<String?> = mutableConfirmResult.map { value ->
-    if (value is ConfirmResult.Failed) "Failed: ${value.reason}" else null
+  val errorMessage: StateFlow<String?> = viewModelScope.launchMolecule(Immediate) {
+    val confirmResult by mutableConfirmResult.collectAsState()
+    val result = confirmResult
+    if (result is ConfirmResult.Failed) {
+      "Failed: ${result.reason}"
+    } else {
+      null
+    }
   }
 
   init {
