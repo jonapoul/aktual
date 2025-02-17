@@ -211,4 +211,6 @@ internal class MidnightTheme : Theme {
   override val dialogProgressWheelTrack = ActualColors.gray700
 
   override val budgetItemBackground = buttonNormalBackground
+  override val budgetItemTextPrimary = buttonNormalText
+  override val budgetItemTextSecondary = pageTextLight
 }

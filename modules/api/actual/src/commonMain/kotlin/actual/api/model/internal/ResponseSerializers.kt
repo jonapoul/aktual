@@ -5,12 +5,20 @@ import actual.api.model.ResponseStatus
 import actual.api.model.account.BootstrapResponse
 import actual.api.model.account.LoginResponse
 import actual.api.model.account.NeedsBootstrapResponse
+import actual.api.model.sync.ListUserFilesResponse
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import kotlin.reflect.KClass
+
+internal object ListUserFileSerializer :
+  ResponseSerializer<ListUserFilesResponse, ListUserFilesResponse.Ok, ListUserFilesResponse.Error>(
+    responseClass = ListUserFilesResponse::class,
+    okSerializer = ListUserFilesResponse.Ok.serializer(),
+    errorSerializer = ListUserFilesResponse.Error.serializer(),
+  )
 
 internal object BootstrapResponseSerializer :
   ResponseSerializer<BootstrapResponse, BootstrapResponse.Ok, BootstrapResponse.Error>(

@@ -211,4 +211,6 @@ internal class DarkTheme : Theme {
   override val dialogProgressWheelTrack = ActualColors.gray600
 
   override val budgetItemBackground = buttonNormalBackground
+  override val budgetItemTextPrimary = buttonNormalText
+  override val budgetItemTextSecondary = pageTextLight
 }

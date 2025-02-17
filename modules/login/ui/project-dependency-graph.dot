@@ -49,6 +49,7 @@ graph ["rank"="same"]
 ":api:actual" -> ":url:model"
 ":login:prefs" -> ":login:model"
 ":url:prefs" -> ":url:model"
+":budget:list:nav" -> ":login:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

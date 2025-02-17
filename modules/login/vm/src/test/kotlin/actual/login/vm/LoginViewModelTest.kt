@@ -24,6 +24,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -127,15 +128,15 @@ internal class LoginViewModelTest {
   }
 
   @Test
-  fun `Should nav to budget list`() = runTest {
-    viewModel.navToBudgetList.test {
-      assertFalse(awaitItem())
+  fun `Login token`() = runTest {
+    viewModel.token.test {
+      assertNull(awaitItem())
 
       loginPrefs.token.set(LoginToken(value = "abc123"))
-      assertTrue(awaitItem())
+      assertNotNull(awaitItem())
 
       loginPrefs.token.delete()
-      assertFalse(awaitItem())
+      assertNull(awaitItem())
 
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()

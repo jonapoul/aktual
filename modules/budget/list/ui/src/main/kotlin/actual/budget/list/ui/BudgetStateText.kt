@@ -57,7 +57,7 @@ internal fun BudgetStateText(
     Text(
       text = text,
       fontFamily = ActualFontFamily,
-      color = theme.pageText,
+      color = theme.budgetItemTextSecondary,
       fontSize = 13.sp,
     )
   }

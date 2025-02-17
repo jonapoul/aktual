@@ -13,6 +13,7 @@ import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.ui.topAppBarColors
 import actual.core.versions.ActualVersions
+import actual.login.model.LoginToken
 import actual.login.model.Password
 import actual.login.nav.LoginNavRoute
 import actual.login.res.LoginStrings
@@ -63,9 +64,9 @@ fun LoginScreen(
   val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
 
-  val navToBudgetList by viewModel.navToBudgetList.collectAsStateWithLifecycle()
-  if (navToBudgetList) {
-    SideEffect { navController.listBudgets() }
+  val token by viewModel.token.collectAsStateWithLifecycle()
+  token?.let {
+    SideEffect { navController.listBudgets(it) }
   }
 
   DisposableEffect(Unit) {
@@ -93,8 +94,8 @@ fun LoginScreen(
 private fun NavHostController.openUrlScreen() =
   debugNavigate(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
 
-private fun NavHostController.listBudgets() =
-  debugNavigate(ListBudgetsNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
+private fun NavHostController.listBudgets(token: LoginToken) =
+  debugNavigate(ListBudgetsNavRoute(token)) { popUpTo(LoginNavRoute) { inclusive = true } }
 
 @Composable
 private fun LoginScreenImpl(

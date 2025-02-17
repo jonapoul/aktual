@@ -8,6 +8,7 @@ dependencies {
   api(projects.budget.list.nav)
   api(projects.budget.list.vm)
   api(projects.core.ui)
+  api(projects.login.model)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)

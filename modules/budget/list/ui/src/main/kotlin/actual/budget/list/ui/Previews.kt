@@ -7,7 +7,6 @@ import actual.core.versions.ActualVersions
 internal val PreviewBudgetSynced = Budget(
   name = "Main Budget",
   state = BudgetState.Synced,
-  hasKey = true,
   encryptKeyId = "abc123",
   groupId = "abc123",
   cloudFileId = "abc123",
@@ -16,14 +15,12 @@ internal val PreviewBudgetSynced = Budget(
 internal val PreviewBudgetSyncing = PreviewBudgetSynced.copy(
   name = "Syncing Budget",
   state = BudgetState.Syncing,
-  hasKey = false,
   encryptKeyId = null,
 )
 
 internal val PreviewBudgetBroken = PreviewBudgetSynced.copy(
   name = "Broken Budget",
   state = BudgetState.Broken,
-  hasKey = false,
   encryptKeyId = null,
 )
 
