@@ -1,9 +1,12 @@
 package actual.login.model
 
 import androidx.compose.runtime.Immutable
+import kotlinx.serialization.Serializable
+import java.io.Serializable as JavaIoSerializable
 
 @Immutable
+@Serializable
 @JvmInline
-value class LoginToken(private val value: String) {
+value class LoginToken(val value: String) : JavaIoSerializable {
   override fun toString(): String = value
 }

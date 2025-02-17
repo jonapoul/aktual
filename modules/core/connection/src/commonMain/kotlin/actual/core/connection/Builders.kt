@@ -27,4 +27,5 @@ internal fun buildApis(
   serverUrl = url,
   account = retrofit.create(),
   base = retrofit.create(),
+  sync = retrofit.create(),
 )

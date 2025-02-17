@@ -20,6 +20,7 @@
 
   <string name="budget_failure_desc">Failure</string>
   <string name="budget_failure_message">Failed syncing the list of budgets</string>
+  <string name="budget_failure_default_message">Unknown reason</string>
   <string name="budget_failure_retry">Retry</string>
 
   <string name="budget_delete_dialog_dismiss">Dismiss</string>

@@ -6,4 +6,5 @@ data class ActualApis(
   val serverUrl: ServerUrl,
   val account: AccountApi,
   val base: BaseApi,
+  val sync: SyncApi,
 )

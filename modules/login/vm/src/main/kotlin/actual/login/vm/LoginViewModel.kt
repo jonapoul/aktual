@@ -6,6 +6,7 @@ import actual.core.coroutines.ResettableStateFlow
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
 import actual.log.Logger
+import actual.login.model.LoginToken
 import actual.login.model.Password
 import actual.login.prefs.LoginPreferences
 import actual.url.model.ServerUrl
@@ -18,7 +19,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -53,11 +53,10 @@ class LoginViewModel @Inject internal constructor(
     combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
       .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
-  val navToBudgetList: StateFlow<Boolean> = loginPrefs
+  val token: StateFlow<LoginToken?> = loginPrefs
     .token
     .asFlow()
-    .map { it != null }
-    .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
+    .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
   fun clearState() {
     mutableEnteredPassword.reset()

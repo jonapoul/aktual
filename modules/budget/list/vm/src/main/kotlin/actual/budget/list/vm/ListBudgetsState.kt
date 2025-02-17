@@ -10,7 +10,7 @@ sealed interface ListBudgetsState {
   ) : ListBudgetsState
 
   data class Failure(
-    val reason: String,
+    val reason: String?,
   ) : ListBudgetsState
 
   data object Loading : ListBudgetsState

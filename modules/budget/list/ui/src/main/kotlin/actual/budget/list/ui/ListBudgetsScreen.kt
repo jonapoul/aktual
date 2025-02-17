@@ -14,6 +14,7 @@ import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
 import actual.core.ui.topAppBarColors
 import actual.core.versions.ActualVersions
+import actual.login.model.LoginToken
 import alakazam.kotlin.core.exhaustive
 import android.content.Intent
 import android.net.Uri
@@ -27,7 +28,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -45,23 +45,19 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import kotlinx.collections.immutable.persistentListOf
 
-// TODO: Remove suppression
 @Suppress("UNUSED_PARAMETER")
 @Composable
 fun ListBudgetsScreen(
   navController: NavHostController,
-  viewModel: ListBudgetsViewModel = hiltViewModel(),
+  token: LoginToken,
+  viewModel: ListBudgetsViewModel = hiltViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory>(
+    creationCallback = { factory -> factory.create(token.value) },
+  ),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
   val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
-
-  DisposableEffect(Unit) {
-    onDispose {
-      viewModel.clearState()
-    }
-  }
 
   var launchBrowser by remember { mutableStateOf(false) }
   val context = LocalContext.current
@@ -96,7 +92,7 @@ fun ListBudgetsScreen(
       when (action) {
         ListBudgetsAction.ChangeServer -> TODO()
         ListBudgetsAction.OpenInBrowser -> launchBrowser = true
-        ListBudgetsAction.Reload -> TODO()
+        ListBudgetsAction.Reload -> viewModel.retry()
         is ListBudgetsAction.Delete -> budgetToDelete = action.budget
         is ListBudgetsAction.Open -> TODO()
       }

@@ -3,6 +3,7 @@ package actual.budget.list.ui
 import actual.budget.list.res.BudgetListStrings
 import actual.budget.list.vm.Budget
 import actual.budget.list.vm.BudgetState
+import actual.budget.list.vm.hasKey
 import actual.core.icons.ActualIcons
 import actual.core.icons.Key
 import actual.core.res.CoreStrings
@@ -58,7 +59,6 @@ internal fun BudgetListItem(
 ) {
   Row(
     modifier = modifier
-      .padding(5.dp)
       .background(theme.budgetItemBackground, RowShape)
       .border(1.dp, theme.buttonNormalBorder, RowShape)
       .padding(horizontal = 15.dp, vertical = 12.dp)
@@ -76,7 +76,7 @@ internal fun BudgetListItem(
         fontSize = 16.sp,
         fontFamily = ActualFontFamily,
         fontWeight = FontWeight.W700,
-        color = theme.buttonNormalText,
+        color = theme.budgetItemTextPrimary,
       )
 
       BudgetStateText(
@@ -89,7 +89,7 @@ internal fun BudgetListItem(
           modifier = Modifier.padding(top = 4.dp),
           text = description,
           style = MaterialTheme.typography.bodySmall,
-          color = theme.buttonNormalText,
+          color = theme.budgetItemTextSecondary,
           fontSize = 10.sp,
         )
       }
@@ -147,14 +147,10 @@ private fun DeleteMenu(
 @Stable
 @Composable
 @ReadOnlyComposable
-private fun budgetDescription(budget: Budget): String? = if (budget.encryptKeyId != null) {
-  if (budget.hasKey) {
-    BudgetListStrings.listBudgetsEncryptedWithKey
-  } else {
-    BudgetListStrings.listBudgetsEncryptedWithoutKey
-  }
+private fun budgetDescription(budget: Budget): String? = if (budget.hasKey) {
+  BudgetListStrings.listBudgetsEncryptedWithKey
 } else {
-  null
+  BudgetListStrings.listBudgetsEncryptedWithoutKey
 }
 
 @Preview
@@ -173,7 +169,7 @@ private fun Synced() = PreviewColumn {
 private fun Warning() = PreviewColumn {
   BudgetListItem(
     modifier = Modifier.fillMaxWidth(),
-    budget = PreviewBudgetSynced.copy(state = BudgetState.Broken, hasKey = false),
+    budget = PreviewBudgetSynced.copy(state = BudgetState.Broken, encryptKeyId = null),
     onClickOpen = {},
     onClickDelete = {},
   )

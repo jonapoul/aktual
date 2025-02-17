@@ -3,10 +3,12 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":budget:list:nav","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="box"]
+":login:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
+":budget:list:nav" -> ":login:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

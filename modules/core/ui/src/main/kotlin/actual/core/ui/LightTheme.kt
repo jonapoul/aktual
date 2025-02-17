@@ -211,4 +211,6 @@ internal class LightTheme : Theme {
   override val dialogProgressWheelTrack = ActualColors.gray100
 
   override val budgetItemBackground = ActualColors.white
+  override val budgetItemTextPrimary = pageText
+  override val budgetItemTextSecondary = pageTextLight
 }

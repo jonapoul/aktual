@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun ContentFailure(
-  reason: String,
+  reason: String?,
   onClickRetry: () -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -64,7 +64,7 @@ internal fun ContentFailure(
       VerticalSpacer(15.dp)
 
       Text(
-        text = reason,
+        text = reason ?: BudgetListStrings.budgetFailureDefaultMessage,
         color = theme.warningTextDark,
         fontFamily = ActualFontFamily,
         fontSize = 16.sp,
@@ -88,6 +88,15 @@ internal fun ContentFailure(
 private fun Failure() = PreviewScreen {
   ContentFailure(
     reason = "Failed to do the thing, here's a bit more text to show how it behaves when wrapping",
+    onClickRetry = {},
+  )
+}
+
+@ScreenPreview
+@Composable
+private fun NoReason() = PreviewScreen {
+  ContentFailure(
+    reason = null,
     onClickRetry = {},
   )
 }
