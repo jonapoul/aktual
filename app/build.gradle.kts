@@ -157,6 +157,7 @@ dependencies {
   implementation(projects.budget.list.ui)
   implementation(projects.core.buildconfig)
   implementation(projects.core.colorscheme)
+  implementation(projects.core.connection)
   implementation(projects.core.coroutines)
   implementation(projects.core.di)
   implementation(projects.core.log)

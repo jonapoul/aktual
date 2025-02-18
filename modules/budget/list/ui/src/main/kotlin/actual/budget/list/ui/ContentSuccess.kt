@@ -5,10 +5,11 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
+import actual.core.ui.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
@@ -27,13 +28,17 @@ internal fun ContentSuccess(
   LazyColumn(
     modifier = modifier.fillMaxWidth(),
   ) {
-    items(budgets) { budget ->
+    itemsIndexed(budgets) { index, budget ->
       BudgetListItem(
         budget = budget,
         theme = theme,
         onClickOpen = { onClickOpen(budget) },
         onClickDelete = { onClickDelete(budget) },
       )
+
+      if (index < budgets.lastIndex) {
+        VerticalSpacer()
+      }
     }
   }
 }

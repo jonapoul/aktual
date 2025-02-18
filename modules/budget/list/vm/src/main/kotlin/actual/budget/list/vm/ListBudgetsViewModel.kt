@@ -8,6 +8,7 @@ import actual.log.Logger
 import actual.login.model.LoginToken
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
+import alakazam.kotlin.core.launchInfiniteLoop
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
@@ -15,6 +16,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,6 +25,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel(assistedFactory = ListBudgetsViewModel.Factory::class)
 class ListBudgetsViewModel @AssistedInject constructor(
@@ -53,16 +56,27 @@ class ListBudgetsViewModel @AssistedInject constructor(
 
   init {
     logger.d("init")
-    fetchState()
+    viewModelScope.launchInfiniteLoop {
+      val currentState = mutableState.value
+      val isFailure = currentState is ListBudgetsState.Failure
+      if (!isFailure) {
+        val alreadyFetched = currentState is ListBudgetsState.Success
+        fetchState(setLoading = !alreadyFetched)
+      }
+      delay(RETRY_PERIOD)
+    }
   }
 
   fun retry() {
     logger.d("retry")
-    fetchState()
+    fetchState(setLoading = true)
   }
 
-  private fun fetchState() {
-    mutableState.update { ListBudgetsState.Loading }
+  private fun fetchState(setLoading: Boolean) {
+    if (setLoading) {
+      mutableState.update { ListBudgetsState.Loading }
+    }
+
     viewModelScope.launch {
       val result = budgetListFetcher.fetchBudgets(token)
       logger.d("Fetch budgets result = %s", result)
@@ -77,5 +91,9 @@ class ListBudgetsViewModel @AssistedInject constructor(
   @AssistedFactory
   interface Factory {
     fun create(tokenString: String): ListBudgetsViewModel
+  }
+
+  private companion object {
+    val RETRY_PERIOD = 5.seconds
   }
 }
