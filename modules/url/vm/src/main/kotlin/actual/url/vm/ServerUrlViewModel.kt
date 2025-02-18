@@ -9,6 +9,7 @@ import actual.core.coroutines.ResettableStateFlow
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
 import actual.log.Logger
+import actual.login.prefs.LoginPreferences
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
@@ -42,6 +43,7 @@ class ServerUrlViewModel @Inject internal constructor(
   private val apiStateHolder: ActualApisStateHolder,
   private val serverUrlPreferences: ServerUrlPreferences,
   private val colorSchemePreferences: ColorSchemePreferences,
+  private val loginPreferences: LoginPreferences,
   versionsStateHolder: ActualVersionsStateHolder,
 ) : ViewModel() {
   private val mutableIsLoading = ResettableStateFlow(value = false)
@@ -118,6 +120,14 @@ class ServerUrlViewModel @Inject internal constructor(
       val protocol = mutableProtocol.value
       val baseUrl = mutableBaseUrl.value
       val url = ServerUrl(protocol, baseUrl)
+      val previousUrl = serverUrlPreferences.url.get()
+
+      if (url != previousUrl) {
+        // saving a new URL, so the existing token and API objects are invalidated
+        apiStateHolder.update { null }
+        loginPreferences.token.deleteAndCommit()
+      }
+
       serverUrlPreferences.url.set(url)
       checkIfNeedsBootstrap(url)
       mutableIsLoading.update { false }

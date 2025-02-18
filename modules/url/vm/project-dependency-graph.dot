@@ -11,6 +11,7 @@ node ["style"="filled"]
 ":login:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
+":login:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
@@ -22,10 +23,12 @@ graph ["rank"="same"]
 ":url:vm" -> ":url:model"
 ":url:vm" -> ":api:actual" ["style"="dotted"]
 ":url:vm" -> ":core:versions" ["style"="dotted"]
+":url:vm" -> ":login:prefs" ["style"="dotted"]
 ":url:vm" -> ":url:prefs" ["style"="dotted"]
 ":api:actual" -> ":login:model"
 ":api:actual" -> ":url:model"
 ":core:versions" -> ":core:buildconfig"
+":login:prefs" -> ":login:model"
 ":url:prefs" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

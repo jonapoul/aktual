@@ -10,8 +10,11 @@ import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.versions.ActualVersionsStateHolder
 import actual.log.EmptyLogger
+import actual.login.model.LoginToken
+import actual.login.prefs.LoginPreferences
 import actual.test.TestBuildConfig
 import actual.test.TestCoroutineContexts
+import actual.test.assertEmitted
 import actual.test.buildPreferences
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
@@ -32,6 +35,7 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
@@ -42,6 +46,7 @@ class ServerUrlViewModelTest {
   // Real
   private lateinit var serverUrlPreferences: ServerUrlPreferences
   private lateinit var colorSchemePreferences: ColorSchemePreferences
+  private lateinit var loginPreferences: LoginPreferences
   private lateinit var viewModel: ServerUrlViewModel
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var versionsStateHolder: ActualVersionsStateHolder
@@ -54,7 +59,9 @@ class ServerUrlViewModelTest {
   fun before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     serverUrlPreferences = ServerUrlPreferences(prefs)
+    serverUrlPreferences.url.set(EXAMPLE_URL)
     colorSchemePreferences = ColorSchemePreferences(prefs)
+    loginPreferences = LoginPreferences(prefs)
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
 
     accountApi = mockk()
@@ -73,6 +80,7 @@ class ServerUrlViewModelTest {
       apiStateHolder = apisStateHolder,
       serverUrlPreferences = serverUrlPreferences,
       colorSchemePreferences = colorSchemePreferences,
+      loginPreferences = loginPreferences,
       versionsStateHolder = versionsStateHolder,
     )
   }
@@ -177,6 +185,35 @@ class ServerUrlViewModelTest {
         actual = emitted?.contains(reason),
         message = "Received $emitted",
       )
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Clear saved token if the confirmed URL is different from previously-saved`() = runTest {
+    buildViewModel()
+    loginPreferences.token.asFlow().test {
+      // Given no token initially saved
+      assertNull(awaitItem())
+
+      // when we save a token and a URL
+      val initialUrl = ServerUrl(Protocol.Https, "website.com")
+      serverUrlPreferences.url.setAndCommit(initialUrl)
+      val token = LoginToken("abc-123")
+      loginPreferences.token.setAndCommit(token)
+
+      // then the token has been saved
+      assertEmitted(token)
+
+      // when we enter a different url and click confirm
+      val secondUrl = ServerUrl(Protocol.Http, "some.other.website.com")
+      assertNotEquals(initialUrl, secondUrl)
+      viewModel.onSelectProtocol(secondUrl.protocol)
+      viewModel.onEnterUrl(secondUrl.baseUrl)
+      viewModel.onClickConfirm()
+
+      // then the saved token is cleared
+      assertNull(awaitItem())
       cancelAndIgnoreRemainingEvents()
     }
   }

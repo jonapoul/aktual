@@ -15,6 +15,7 @@ dependencies {
   implementation(libs.preferences.core)
   implementation(projects.api.actual)
   implementation(projects.core.versions)
+  implementation(projects.login.prefs)
   implementation(projects.url.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   testImplementation(projects.test.buildconfig)

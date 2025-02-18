@@ -4,6 +4,8 @@ import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
+import actual.login.model.LoginToken
+import actual.login.prefs.LoginPreferences
 import actual.url.prefs.ServerUrlPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -22,10 +24,13 @@ internal class ActualActivityViewModel @Inject constructor(
   private val serverVersionFetcher: ServerVersionFetcher,
   colorSchemePrefs: ColorSchemePreferences,
   serverUrlPreferences: ServerUrlPreferences,
+  loginPreferences: LoginPreferences,
 ) : ViewModel() {
   val colorSchemeType: StateFlow<ColorSchemeType> = colorSchemePrefs.stateFlow(viewModelScope)
 
   val isServerUrlSet: Boolean = serverUrlPreferences.url.isSet()
+
+  val loginToken: LoginToken? = loginPreferences.token.get()
 
   fun start() {
     connectionMonitor.start()

@@ -9,18 +9,24 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
+import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
+import actual.core.ui.debugNavigate
 import actual.core.ui.topAppBarColors
 import actual.core.versions.ActualVersions
 import actual.login.model.LoginToken
+import actual.login.nav.LoginNavRoute
+import actual.url.model.ServerUrl
+import actual.url.nav.ServerUrlNavRoute
 import alakazam.kotlin.core.exhaustive
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -45,7 +51,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import kotlinx.collections.immutable.persistentListOf
 
-@Suppress("UNUSED_PARAMETER")
 @Composable
 fun ListBudgetsScreen(
   navController: NavHostController,
@@ -87,10 +92,11 @@ fun ListBudgetsScreen(
   ListBudgetsScaffold(
     versions = versions,
     state = state,
+    url = serverUrl,
     themeType = themeType,
     onAction = { action ->
       when (action) {
-        ListBudgetsAction.ChangeServer -> TODO()
+        ListBudgetsAction.ChangeServer -> navController.openUrlScreen()
         ListBudgetsAction.OpenInBrowser -> launchBrowser = true
         ListBudgetsAction.Reload -> viewModel.retry()
         is ListBudgetsAction.Delete -> budgetToDelete = action.budget
@@ -100,10 +106,14 @@ fun ListBudgetsScreen(
   )
 }
 
+private fun NavHostController.openUrlScreen() =
+  debugNavigate(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
+
 @Composable
 private fun ListBudgetsScaffold(
   versions: ActualVersions,
   state: ListBudgetsState,
+  url: ServerUrl,
   themeType: ColorSchemeType,
   onAction: (ListBudgetsAction) -> Unit,
 ) {
@@ -126,6 +136,7 @@ private fun ListBudgetsScaffold(
         modifier = Modifier.padding(innerPadding),
         versions = versions,
         state = state,
+        url = url,
         onAction = onAction,
         theme = theme,
       )
@@ -146,6 +157,7 @@ private fun ScaffoldTitle() = Text(
 private fun ListBudgetsContent(
   versions: ActualVersions,
   state: ListBudgetsState,
+  url: ServerUrl,
   onAction: (ListBudgetsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -196,6 +208,14 @@ private fun ListBudgetsContent(
       }.exhaustive
     }
 
+    VerticalSpacer(20.dp)
+
+    UsingServerText(
+      modifier = Modifier.fillMaxWidth(),
+      url = url,
+      onClickChange = { onAction(ListBudgetsAction.ChangeServer) },
+    )
+
     VerticalSpacer()
 
     VersionsText(
@@ -211,6 +231,7 @@ private fun Success() = PreviewScreen { type ->
   ListBudgetsScaffold(
     versions = PreviewVersions,
     themeType = type,
+    url = ServerUrl.Demo,
     state = ListBudgetsState.Success(
       budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken),
     ),
@@ -224,6 +245,7 @@ private fun Loading() = PreviewScreen { type ->
   ListBudgetsScaffold(
     versions = PreviewVersions,
     themeType = type,
+    url = ServerUrl.Demo,
     state = ListBudgetsState.Loading,
     onAction = {},
   )
@@ -235,6 +257,7 @@ private fun Failure() = PreviewScreen { type ->
   ListBudgetsScaffold(
     versions = PreviewVersions,
     themeType = type,
+    url = ServerUrl.Demo,
     state = ListBudgetsState.Failure(reason = "Something broke lol"),
     onAction = {},
   )

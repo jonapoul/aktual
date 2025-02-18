@@ -28,11 +28,13 @@ import kotlin.reflect.typeOf
 @Composable
 internal fun ActualNavHost(
   isServerUrlSet: Boolean,
+  loginToken: LoginToken?,
   navController: NavHostController = rememberNavController(),
 ) {
   NavHost(
     navController = navController,
     startDestination = when {
+      loginToken != null && isServerUrlSet -> ListBudgetsNavRoute(loginToken)
       isServerUrlSet -> LoginNavRoute
       else -> ServerUrlNavRoute
     },
