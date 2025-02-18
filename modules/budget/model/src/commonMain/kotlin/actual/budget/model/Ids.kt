@@ -13,6 +13,12 @@ value class BankId(private val value: String) : Comparable<BankId> {
 }
 
 @JvmInline
+value class BudgetId(private val value: String) : Comparable<BudgetId> {
+  override fun toString(): String = value
+  override fun compareTo(other: BudgetId) = value.compareTo(other.value)
+}
+
+@JvmInline
 value class CategoryId(private val value: String) : Comparable<CategoryId> {
   override fun toString(): String = value
   override fun compareTo(other: CategoryId) = value.compareTo(other.value)

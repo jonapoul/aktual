@@ -3,6 +3,7 @@ package actual.budget.list.vm
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.model.sync.ListUserFilesResponse
+import actual.budget.model.BudgetId
 import actual.core.coroutines.CoroutineContexts
 import actual.log.Logger
 import actual.login.model.LoginToken
@@ -35,7 +36,7 @@ class BudgetListFetcher @Inject internal constructor(
                 state = BudgetState.Unknown,
                 encryptKeyId = item.encryptKeyId,
                 groupId = item.groupId,
-                cloudFileId = item.fileId,
+                cloudFileId = BudgetId(item.fileId),
               )
             },
           )

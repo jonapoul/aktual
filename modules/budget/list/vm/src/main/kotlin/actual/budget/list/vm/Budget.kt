@@ -1,5 +1,6 @@
 package actual.budget.list.vm
 
+import actual.budget.model.BudgetId
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 
@@ -9,7 +10,7 @@ data class Budget(
   val state: BudgetState,
   val encryptKeyId: String?,
   val groupId: String,
-  val cloudFileId: String,
+  val cloudFileId: BudgetId,
 )
 
 @get:Stable
