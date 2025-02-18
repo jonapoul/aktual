@@ -29,6 +29,7 @@ node ["style"="filled"]
 ":budget:list:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":login:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":url:nav" ["fillcolor"="#5555FF","shape"="box"]
+":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:di" ["fillcolor"="#FCB103","shape"="box"]
 ":db:di" ["fillcolor"="#FCB103","shape"="box"]
 ":db:impl" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -59,6 +60,7 @@ graph ["rank"="same"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
 ":app" -> ":core:buildconfig" ["style"="dotted"]
 ":app" -> ":core:colorscheme" ["style"="dotted"]
+":app" -> ":core:connection" ["style"="dotted"]
 ":app" -> ":core:coroutines" ["style"="dotted"]
 ":app" -> ":core:di" ["style"="dotted"]
 ":app" -> ":core:log" ["style"="dotted"]
@@ -116,6 +118,14 @@ graph ["rank"="same"]
 ":api:actual" -> ":login:model"
 ":api:actual" -> ":url:model"
 ":url:prefs" -> ":url:model"
+":core:connection" -> ":core:buildconfig"
+":core:connection" -> ":api:actual" ["style"="dotted"]
+":core:connection" -> ":api:core" ["style"="dotted"]
+":core:connection" -> ":core:coroutines" ["style"="dotted"]
+":core:connection" -> ":core:log" ["style"="dotted"]
+":core:connection" -> ":core:versions" ["style"="dotted"]
+":core:connection" -> ":url:model" ["style"="dotted"]
+":core:connection" -> ":url:prefs" ["style"="dotted"]
 ":core:di" -> ":core:coroutines"
 ":core:di" -> ":core:log"
 ":db:di" -> ":core:coroutines"

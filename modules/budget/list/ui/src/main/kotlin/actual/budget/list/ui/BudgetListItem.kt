@@ -23,6 +23,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.MoreVert
@@ -61,8 +62,8 @@ internal fun BudgetListItem(
     modifier = modifier
       .background(theme.budgetItemBackground, RowShape)
       .border(1.dp, theme.buttonNormalBorder, RowShape)
-      .padding(horizontal = 15.dp, vertical = 12.dp)
-      .clickable(onClick = onClickOpen),
+      .clickable(onClick = onClickOpen)
+      .padding(horizontal = 15.dp, vertical = 12.dp),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -91,6 +92,7 @@ internal fun BudgetListItem(
           style = MaterialTheme.typography.bodySmall,
           color = theme.budgetItemTextSecondary,
           fontSize = 10.sp,
+          lineHeight = 12.sp,
         )
       }
     }
@@ -158,6 +160,17 @@ private fun budgetDescription(budget: Budget): String? = if (budget.hasKey) {
 private fun Synced() = PreviewColumn {
   BudgetListItem(
     modifier = Modifier.fillMaxWidth(),
+    budget = PreviewBudgetSynced,
+    onClickOpen = {},
+    onClickDelete = {},
+  )
+}
+
+@Preview
+@Composable
+private fun SyncedThinner() = PreviewColumn {
+  BudgetListItem(
+    modifier = Modifier.width(300.dp),
     budget = PreviewBudgetSynced,
     onClickOpen = {},
     onClickDelete = {},
