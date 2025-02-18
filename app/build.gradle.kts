@@ -166,6 +166,7 @@ dependencies {
   implementation(projects.licenses.nav)
   implementation(projects.licenses.ui)
   implementation(projects.login.nav)
+  implementation(projects.login.prefs)
   implementation(projects.login.ui)
   implementation(projects.url.nav)
   implementation(projects.url.prefs)

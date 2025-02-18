@@ -25,7 +25,10 @@ class ActualActivity : ComponentActivity() {
     setContent {
       val scheme by viewModel.colorSchemeType.collectAsStateWithLifecycle()
       ActualTheme(scheme) {
-        ActualNavHost(isServerUrlSet = viewModel.isServerUrlSet)
+        ActualNavHost(
+          isServerUrlSet = viewModel.isServerUrlSet,
+          loginToken = viewModel.loginToken,
+        )
       }
     }
   }
