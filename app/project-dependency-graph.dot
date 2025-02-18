@@ -32,8 +32,9 @@ node ["style"="filled"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:di" ["fillcolor"="#FCB103","shape"="box"]
 ":db:di" ["fillcolor"="#FCB103","shape"="box"]
-":db:impl" ["fillcolor"="#9D8DF1","shape"="box"]
+":db:api" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
+":db:impl" ["fillcolor"="#9D8DF1","shape"="box"]
 ":licenses:data" ["fillcolor"="#9D8DF1","shape"="box"]
 ":licenses:di" ["fillcolor"="#FCB103","shape"="box"]
 ":licenses:ui" ["fillcolor"="#FFFF55","shape"="box"]
@@ -129,8 +130,11 @@ graph ["rank"="same"]
 ":core:di" -> ":core:coroutines"
 ":core:di" -> ":core:log"
 ":db:di" -> ":core:coroutines"
+":db:di" -> ":db:api"
 ":db:di" -> ":db:impl"
+":db:api" -> ":budget:model"
 ":db:impl" -> ":budget:model"
+":db:impl" -> ":db:api"
 ":licenses:data" -> ":core:coroutines" ["style"="dotted"]
 ":licenses:di" -> ":licenses:data"
 ":licenses:ui" -> ":core:ui"

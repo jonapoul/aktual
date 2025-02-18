@@ -4,16 +4,20 @@ graph ["dpi"="100","label"=":db:di","labelloc"="t","fontsize"="30","ranksep"="1.
 node ["style"="filled"]
 ":db:di" ["shape"="box","fillcolor"="#FCB103"]
 ":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
-":db:impl" ["fillcolor"="#9D8DF1","shape"="box"]
+":db:api" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
+":db:impl" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 ":db:di"
 }
 ":db:di" -> ":core:coroutines"
+":db:di" -> ":db:api"
 ":db:di" -> ":db:impl"
+":db:api" -> ":budget:model"
 ":db:impl" -> ":budget:model"
+":db:impl" -> ":db:api"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

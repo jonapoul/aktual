@@ -41,6 +41,7 @@ commonMainDependencies {
   api(libs.javaxInject)
   api(libs.kotlinx.serialization.core)
   api(projects.budget.model)
+  api(projects.db.api)
   implementation(libs.androidx.room.common)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.json)
