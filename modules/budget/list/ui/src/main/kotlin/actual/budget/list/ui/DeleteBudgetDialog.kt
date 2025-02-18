@@ -75,7 +75,6 @@ private fun Content(
       text = BudgetListStrings.budgetDeleteDialogHostedButton,
       colors = { theme, pressed -> theme.errorPrimary(pressed) },
       onClick = onDeleteRemote,
-      isEnabled = false,
     )
 
     Text(
