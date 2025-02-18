@@ -2,50 +2,47 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":about:ui","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
+":about:data" ["fillcolor"="#9D8DF1","shape"="box"]
+":about:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":about:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":about:vm" ["fillcolor"="#F5A6A6","shape"="box"]
-":about:data" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:log" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
-":about:res" ["fillcolor"="#00FFFF","shape"="box"]
+":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
+":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":licenses:nav" ["fillcolor"="#5555FF","shape"="box"]
+":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":about:ui" -> ":about:vm"
-":about:ui" -> ":core:ui"
+":about:data" -> ":api:github"
+":about:data" -> ":core:buildconfig"
+":about:data" -> ":core:coroutines"
 ":about:ui" -> ":about:res" ["style"="dotted"]
+":about:ui" -> ":about:vm"
 ":about:ui" -> ":core:res" ["style"="dotted"]
+":about:ui" -> ":core:ui"
 ":about:ui" -> ":licenses:nav" ["style"="dotted"]
 ":about:vm" -> ":about:data"
 ":about:vm" -> ":core:buildconfig"
 ":about:vm" -> ":core:log"
-":about:data" -> ":api:github"
-":about:data" -> ":core:buildconfig"
-":about:data" -> ":core:coroutines"
 ":core:ui" -> ":core:colorscheme"
+":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
-":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:versions" -> ":core:buildconfig"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
 "Legend" ["style"="filled","fillcolor"="#bbbbbb","shape"="none","margin"="0","fontsize"="15","label"=<
 <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-<TR><TD>App</TD><TD BGCOLOR="#FF5555">module-name</TD></TR>
 <TR><TD>ViewModel</TD><TD BGCOLOR="#F5A6A6">module-name</TD></TR>
-<TR><TD>Hilt</TD><TD BGCOLOR="#FCB103">module-name</TD></TR>
 <TR><TD>Compose</TD><TD BGCOLOR="#FFFF55">module-name</TD></TR>
-<TR><TD>Android</TD><TD BGCOLOR="#55FF55">module-name</TD></TR>
 <TR><TD>Resources</TD><TD BGCOLOR="#00FFFF">module-name</TD></TR>
 <TR><TD>Navigation</TD><TD BGCOLOR="#5555FF">module-name</TD></TR>
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
