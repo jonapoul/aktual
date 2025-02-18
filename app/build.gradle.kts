@@ -1,8 +1,6 @@
-import blueprint.core.gitVersionCode
 import blueprint.core.intProperty
 import blueprint.core.javaVersionString
 import blueprint.core.rootLocalPropertiesOrNull
-import blueprint.core.runGitCommandOrNull
 import blueprint.core.stringProperty
 import org.gradle.internal.extensions.stdlib.capitalized
 import java.time.LocalDate
@@ -27,9 +25,15 @@ dependencyGuard {
   configuration("releaseRuntimeClasspath")
 }
 
-val gitCommitHash =
-  runGitCommandOrNull(args = listOf("rev-parse", "--short=8", "HEAD"))
-    ?: error("Failed getting git version from ${project.path}")
+fun execCommand(vararg args: String): String = providers
+  .exec { commandLine(*args) }
+  .standardOutput
+  .asText
+  .get()
+  .trim('\n', ' ')
+
+val gitCommitHash = execCommand("git", "rev-parse", "--short=8", "HEAD")
+val gitCode = execCommand("git", "show", "-s", "--format=%ct")
 
 fun versionName(): String = with(LocalDate.now()) { "%04d.%02d.%02d".format(year, monthValue, dayOfMonth) }
 
@@ -41,7 +45,7 @@ android {
     applicationId = "dev.jonpoulton.actual.app"
     minSdk = intProperty(key = "blueprint.android.minSdk")
     targetSdk = intProperty(key = "blueprint.android.targetSdk")
-    versionCode = gitVersionCode()
+    versionCode = gitCode.toInt()
     versionName = versionName()
     multiDexEnabled = true
     setProperty("archivesBaseName", "$applicationId-$versionName")
