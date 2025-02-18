@@ -24,6 +24,7 @@ class ModuleResources : Plugin<Project> {
       apply(ConventionAndroidLibrary::class.java)
       apply(ConventionCompose::class.java)
       apply(ConventionDiagrams::class.java)
+      apply(ConventionIdea::class.java)
       apply(ConventionLicensee::class.java)
       apply(ConventionSpotless::class.java)
       apply(CatalogPlugin::class.java)

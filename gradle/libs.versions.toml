@@ -209,6 +209,7 @@ dependencyVersions = { id = "com.github.ben-manes.versions", version.ref = "depe
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
+idea = { id = "idea" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -228,6 +229,7 @@ convention-android-library = { id = "actual.convention.android.library" }
 convention-compose = { id = "actual.convention.compose" }
 convention-diagrams = { id = "actual.convention.diagrams" }
 convention-hilt = { id = "actual.convention.hilt" }
+convention-idea = { id = "actual.convention.idea" }
 convention-kotlin-base = { id = "actual.convention.kotlin.base" }
 convention-kotlin-jvm = { id = "actual.convention.kotlin.jvm" }
 convention-kover = { id = "actual.convention.kover" }

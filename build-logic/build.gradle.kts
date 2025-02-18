@@ -61,6 +61,7 @@ gradlePlugin {
     create(id = "actual.convention.kotlin.jvm", impl = "actual.gradle.ConventionKotlinJvm")
     create(id = "actual.convention.kover", impl = "actual.gradle.ConventionKover")
     create(id = "actual.convention.ktlint", impl = "actual.gradle.ConventionKtlint")
+    create(id = "actual.convention.idea", impl = "actual.gradle.ConventionIdea")
     create(id = "actual.convention.licensee", impl = "actual.gradle.ConventionLicensee")
     create(id = "actual.convention.sortdependencies", impl = "actual.gradle.ConventionSortDependencies")
     create(id = "actual.convention.spotless", impl = "actual.gradle.ConventionSpotless")

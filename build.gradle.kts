@@ -30,6 +30,7 @@ plugins {
   alias(libs.plugins.doctor)
   alias(libs.plugins.kover)
 
+  alias(libs.plugins.convention.idea)
   alias(libs.plugins.convention.kover)
 }
 

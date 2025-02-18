@@ -13,6 +13,7 @@ class ModuleAndroid : Plugin<Project> {
       apply(ConventionDiagrams::class.java)
       apply(ConventionKover::class.java)
       apply(ConventionKotlinJvm::class.java)
+      apply(ConventionIdea::class.java)
       apply(ConventionStyle::class.java)
       apply(ConventionTest::class.java)
       apply(DependencyAnalysisPlugin::class.java)
