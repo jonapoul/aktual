@@ -5,5 +5,6 @@ plugins {
 dependencies {
   api(libs.javaxInject)
   api(projects.core.coroutines)
+  api(projects.db.api)
   api(projects.db.impl)
 }

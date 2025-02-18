@@ -3,8 +3,9 @@ package actual.db
 import actual.db.converters.EnumConverters
 import actual.db.converters.OtherConverters
 import actual.db.converters.ValueClassConverters
-import actual.db.dao.SpreadsheetCellDao
-import actual.db.dao.TransactionDao
+import actual.db.dao.RoomPreferencesDao
+import actual.db.dao.RoomSpreadsheetCellDao
+import actual.db.dao.RoomTransactionDao
 import actual.db.entity.AccountEntity
 import actual.db.entity.BankEntity
 import actual.db.entity.CategoryEntity
@@ -79,7 +80,7 @@ import androidx.room.migration.Migration
 import kotlin.coroutines.CoroutineContext
 
 @Database(
-  version = BudgetDatabase.VERSION,
+  version = RoomBudgetDatabase.VERSION,
   exportSchema = true,
   entities = [
     AccountEntity::class,
@@ -111,15 +112,16 @@ import kotlin.coroutines.CoroutineContext
     ZeroBudgetMonthEntity::class,
   ],
 )
-@ConstructedBy(BudgetDatabaseConstructor::class)
+@ConstructedBy(RoomBudgetDatabaseConstructor::class)
 @TypeConverters(
   EnumConverters::class,
   OtherConverters::class,
   ValueClassConverters::class,
 )
-abstract class BudgetDatabase : RoomDatabase() {
-  abstract fun spreadsheetCells(): SpreadsheetCellDao
-  abstract fun transactions(): TransactionDao
+abstract class RoomBudgetDatabase : RoomDatabase() {
+  abstract fun preferences(): RoomPreferencesDao
+  abstract fun spreadsheetCell(): RoomSpreadsheetCellDao
+  abstract fun transactions(): RoomTransactionDao
 
   companion object {
     // Grab the first 9 digits from the migration timestamp, from the filenames in:
@@ -171,9 +173,9 @@ abstract class BudgetDatabase : RoomDatabase() {
     )
 
     @Suppress("SpreadOperator")
-    fun Builder<BudgetDatabase>.build(
+    fun Builder<RoomBudgetDatabase>.build(
       context: CoroutineContext,
-    ): BudgetDatabase = fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
+    ): RoomBudgetDatabase = fallbackToDestructiveMigrationOnDowngrade(dropAllTables = true)
       .setQueryCoroutineContext(context)
       .addMigrations(*migrations().toTypedArray())
       .build()

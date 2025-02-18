@@ -1,7 +1,7 @@
 package actual.db.di
 
 import actual.core.coroutines.CoroutineContexts
-import actual.db.BudgetDatabase
+import actual.db.RoomBudgetDatabase
 import actual.db.buildDatabase
 import android.content.Context
 import dagger.Module
@@ -18,5 +18,5 @@ class DatabaseModule {
   fun db(
     context: Context,
     contexts: CoroutineContexts,
-  ): BudgetDatabase = buildDatabase(context, contexts.io)
+  ): RoomBudgetDatabase = buildDatabase(context, contexts.io)
 }
