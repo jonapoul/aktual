@@ -6,6 +6,7 @@ dependencies {
   api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
+  api(projects.budget.model)
   api(projects.core.colorscheme)
   api(projects.core.coroutines)
   api(projects.core.log)

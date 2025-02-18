@@ -3,6 +3,7 @@ package actual.budget.list.vm
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.SyncApi
+import actual.budget.model.BudgetId
 import actual.log.EmptyLogger
 import actual.login.model.LoginToken
 import actual.test.MockWebServerRule
@@ -65,7 +66,7 @@ class BudgetListFetcherTest {
             state = BudgetState.Unknown,
             encryptKeyId = "7fe20d96-ab62-43bc-b69c-53f55a26cbbf",
             groupId = "16f9c400-cdf5-43ae-983f-4dbcccb10ccf",
-            cloudFileId = "525fecc4-5080-4d01-b2ea-6032e5ee25c1",
+            cloudFileId = BudgetId("525fecc4-5080-4d01-b2ea-6032e5ee25c1"),
           ),
         ),
       ),
