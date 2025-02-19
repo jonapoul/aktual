@@ -2,6 +2,7 @@ package actual.budget.list.ui
 
 import actual.account.login.nav.LoginNavRoute
 import actual.account.model.LoginToken
+import actual.account.password.nav.ChangePasswordNavRoute
 import actual.budget.list.res.BudgetListStrings
 import actual.budget.list.vm.Budget
 import actual.budget.list.vm.ListBudgetsState
@@ -32,6 +33,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -101,6 +108,7 @@ fun ListBudgetsScreen(
     onAction = { action ->
       when (action) {
         ListBudgetsAction.ChangeServer -> navController.openUrlScreen()
+        ListBudgetsAction.ChangePassword -> navController.debugNavigate(ChangePasswordNavRoute)
         ListBudgetsAction.OpenInBrowser -> launchBrowser = true
         ListBudgetsAction.Reload -> viewModel.retry()
         is ListBudgetsAction.Delete -> budgetToDelete = action.budget
@@ -123,6 +131,8 @@ private fun ListBudgetsScaffold(
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
+  var showMenu by remember { mutableStateOf(false) }
+
   Scaffold(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
@@ -130,7 +140,35 @@ private fun ListBudgetsScaffold(
         colors = theme.topAppBarColors(),
         title = { ScaffoldTitle() },
         scrollBehavior = scrollBehavior,
-        actions = { TopAppBarActions(state, onAction) },
+        actions = {
+          if (state is ListBudgetsState.Success) {
+            BasicIconButton(
+              onClick = { onAction(ListBudgetsAction.Reload) },
+              imageVector = ActualIcons.Refresh,
+              contentDescription = BudgetListStrings.budgetFailureRetry,
+              colors = { scheme, isPressed -> scheme.topAppBarIconButton(isPressed) },
+            )
+          }
+
+          BasicIconButton(
+            onClick = { showMenu = !showMenu },
+            imageVector = Icons.Filled.MoreVert,
+            contentDescription = BudgetListStrings.listBudgetsMenu,
+            colors = { scheme, isPressed -> scheme.topAppBarIconButton(isPressed) },
+          )
+
+          DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false },
+          ) {
+            val passwordText = BudgetListStrings.listBudgetsChangePassword
+            DropdownMenuItem(
+              text = { Text(passwordText) },
+              onClick = { onAction(ListBudgetsAction.ChangePassword) },
+              leadingIcon = { Icon(Icons.Filled.Key, contentDescription = passwordText) },
+            )
+          }
+        },
       )
     },
   ) { innerPadding ->
@@ -146,23 +184,6 @@ private fun ListBudgetsScaffold(
         theme = theme,
       )
     }
-  }
-}
-
-@Composable
-private fun TopAppBarActions(
-  state: ListBudgetsState,
-  onAction: (ListBudgetsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  if (state is ListBudgetsState.Success) {
-    BasicIconButton(
-      modifier = modifier,
-      onClick = { onAction(ListBudgetsAction.Reload) },
-      imageVector = ActualIcons.Refresh,
-      contentDescription = BudgetListStrings.budgetFailureRetry,
-      colors = { scheme, isPressed -> scheme.topAppBarIconButton(isPressed) },
-    )
   }
 }
 

@@ -3,6 +3,7 @@ package actual.api.model.internal
 import actual.api.model.Response
 import actual.api.model.ResponseStatus
 import actual.api.model.account.BootstrapResponse
+import actual.api.model.account.ChangePasswordResponse
 import actual.api.model.account.LoginResponse
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.api.model.sync.ListUserFilesResponse
@@ -25,6 +26,13 @@ internal object BootstrapResponseSerializer :
     responseClass = BootstrapResponse::class,
     okSerializer = BootstrapResponse.Ok.serializer(),
     errorSerializer = BootstrapResponse.Error.serializer(),
+  )
+
+internal object ChangePasswordResponseSerializer :
+  ResponseSerializer<ChangePasswordResponse, ChangePasswordResponse.Ok, ChangePasswordResponse.Error>(
+    responseClass = ChangePasswordResponse::class,
+    okSerializer = ChangePasswordResponse.Ok.serializer(),
+    errorSerializer = ChangePasswordResponse.Error.serializer(),
   )
 
 internal object LoginResponseSerializer : ResponseSerializer<LoginResponse, LoginResponse.Ok, LoginResponse.Error>(

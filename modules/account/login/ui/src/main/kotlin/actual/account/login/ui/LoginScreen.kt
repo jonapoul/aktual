@@ -1,8 +1,8 @@
 package actual.account.login.ui
 
+import actual.account.login.domain.LoginResult
 import actual.account.login.nav.LoginNavRoute
 import actual.account.login.res.LoginStrings
-import actual.account.login.vm.LoginResult
 import actual.account.login.vm.LoginViewModel
 import actual.account.model.LoginToken
 import actual.account.model.Password
@@ -156,7 +156,7 @@ private fun Content(
   enteredPassword: Password,
   url: ServerUrl,
   isLoading: Boolean,
-  loginFailure: LoginResult.Failure?,
+  loginFailure: actual.account.login.domain.LoginResult.Failure?,
   onAction: (LoginAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -226,7 +226,7 @@ private fun Content(
 @Composable
 private fun Regular() = PreviewScreen { type ->
   LoginScreenImpl(
-    versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
+    versions = ActualVersions.Dummy,
     enteredPassword = Password.Empty,
     url = ServerUrl.Demo,
     isLoading = false,
@@ -240,11 +240,11 @@ private fun Regular() = PreviewScreen { type ->
 @Composable
 private fun WithErrorMessage() = PreviewScreen { type ->
   LoginScreenImpl(
-    versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
+    versions = ActualVersions.Dummy,
     enteredPassword = Password.Dummy,
     url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
     isLoading = true,
-    loginFailure = LoginResult.InvalidPassword,
+    loginFailure = actual.account.login.domain.LoginResult.InvalidPassword,
     themeType = type,
     onAction = {},
   )

@@ -1,0 +1,14 @@
+<resources>
+  <string name="password_title">Change Password</string>
+  <string name="password_message">This will change the password for this server instance. All existing sessions will stay logged in.</string>
+  <string name="password_input">Password</string>
+  <string name="password_input_confirm">Confirm password</string>
+  <string name="password_show">Show password</string>
+  <string name="password_confirm">OK</string>
+  <string name="password_success">Password successfully changed</string>
+  <string name="password_failure_empty">Password cannot be empty</string>
+  <string name="password_failure_match">Passwords do not match</string>
+  <string name="password_failure_network">Unable to contact the server</string>
+  <string name="password_failure_other">Internal error</string>
+  <string name="password_failure_logged_out">Can\'t change password - logged out</string>
+</resources>

@@ -1,7 +1,7 @@
 package actual.account.login.ui
 
+import actual.account.login.domain.LoginResult
 import actual.account.login.res.LoginStrings
-import actual.account.login.vm.LoginResult
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn

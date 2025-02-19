@@ -14,4 +14,8 @@ data class ActualVersions(
     this.startsWith(prefix = "v") -> this
     else -> "v$this"
   }
+
+  companion object {
+    val Dummy = ActualVersions(app = "1.2.3", server = "24.3.0")
+  }
 }

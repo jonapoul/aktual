@@ -5,7 +5,6 @@ import actual.api.model.Response
 import actual.api.model.ResponseStatus
 import actual.api.model.internal.LoginResponseDataSerializer
 import actual.api.model.internal.LoginResponseSerializer
-import actual.api.model.internal.TokenSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -30,14 +29,12 @@ sealed interface LoginResponse : Response {
     @Serializable
     data class Valid(
       @SerialName("token")
-      @Serializable(TokenSerializer::class)
       override val token: LoginToken,
     ) : Data
 
     @Serializable
     data class Invalid(
       @SerialName("token")
-      @Serializable(TokenSerializer::class)
       override val token: LoginToken? = null,
     ) : Data
   }

@@ -25,6 +25,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.androidx.navigation.common)
   implementation(libs.kotlinx.coroutines)
+  implementation(projects.account.login.domain)
   implementation(projects.account.login.nav)
   implementation(projects.account.login.res)
   implementation(projects.budget.list.nav)

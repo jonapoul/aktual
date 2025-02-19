@@ -32,7 +32,9 @@ dependencies {
   implementation(libs.kotlinx.immutable)
   implementation(projects.account.login.nav)
   implementation(projects.account.model)
+  implementation(projects.account.password.nav)
   implementation(projects.budget.list.res)
+  implementation(projects.budget.model)
   implementation(projects.core.res)
   implementation(projects.url.nav)
 }

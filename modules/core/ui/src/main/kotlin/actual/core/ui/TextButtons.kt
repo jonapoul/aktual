@@ -232,16 +232,16 @@ private val ButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
 private val Typography.buttonPrimary: TextStyle
   @Composable
   @ReadOnlyComposable
-  get() = textStyle(fontSize = 15.sp, color = LocalTheme.current.buttonPrimaryText)
+  get() = textStyle(fontSize = 15.sp)
 
 private val Typography.buttonBare: TextStyle
   @Composable
   @ReadOnlyComposable
-  get() = textStyle(fontSize = 15.sp, color = LocalTheme.current.buttonBareText)
+  get() = textStyle(fontSize = 15.sp)
 
 @Preview
 @Composable
-private fun PreviewBareButton() = PreviewColumn {
+private fun Bare() = PreviewColumn {
   BareTextButton(
     text = "Bare",
     onClick = {},
@@ -250,7 +250,17 @@ private fun PreviewBareButton() = PreviewColumn {
 
 @Preview
 @Composable
-private fun PreviewPrimaryButton() = PreviewColumn {
+private fun BareDisabled() = PreviewColumn {
+  BareTextButton(
+    text = "Bare",
+    onClick = {},
+    isEnabled = false,
+  )
+}
+
+@Preview
+@Composable
+private fun Primary() = PreviewColumn {
   PrimaryTextButton(
     text = "Primary",
     onClick = {},
@@ -259,7 +269,17 @@ private fun PreviewPrimaryButton() = PreviewColumn {
 
 @Preview
 @Composable
-private fun PreviewNormalButton() = PreviewColumn {
+private fun PrimaryDisabled() = PreviewColumn {
+  PrimaryTextButton(
+    text = "Primary",
+    onClick = {},
+    isEnabled = false,
+  )
+}
+
+@Preview
+@Composable
+private fun Normal() = PreviewColumn {
   NormalTextButton(
     text = "Normal",
     onClick = {},
@@ -268,7 +288,17 @@ private fun PreviewNormalButton() = PreviewColumn {
 
 @Preview
 @Composable
-private fun PreviewPrimaryWithLoadingNotLoadingButton() = PreviewColumn {
+private fun NormalDisabled() = PreviewColumn {
+  NormalTextButton(
+    text = "Normal",
+    onClick = {},
+    isEnabled = false,
+  )
+}
+
+@Preview
+@Composable
+private fun PrimaryWithLoadingNotLoading() = PreviewColumn {
   PrimaryTextButtonWithLoading(
     text = "OK",
     isLoading = false,
@@ -278,7 +308,7 @@ private fun PreviewPrimaryWithLoadingNotLoadingButton() = PreviewColumn {
 
 @Preview
 @Composable
-private fun PreviewPrimaryWithLoadingButton() = PreviewColumn {
+private fun PrimaryWithLoading() = PreviewColumn {
   PrimaryTextButtonWithLoading(
     text = "OK",
     isLoading = true,
