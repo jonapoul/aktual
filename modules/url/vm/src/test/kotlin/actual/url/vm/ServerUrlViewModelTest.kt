@@ -2,6 +2,8 @@
 
 package actual.url.vm
 
+import actual.account.login.prefs.LoginPreferences
+import actual.account.model.LoginToken
 import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
@@ -10,8 +12,6 @@ import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.versions.ActualVersionsStateHolder
 import actual.log.EmptyLogger
-import actual.login.model.LoginToken
-import actual.login.prefs.LoginPreferences
 import actual.test.TestBuildConfig
 import actual.test.TestCoroutineContexts
 import actual.test.assertEmitted

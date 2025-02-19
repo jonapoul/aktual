@@ -27,16 +27,18 @@ enum class ActualModuleType(override val string: String, override val color: Str
 
   companion object {
     val Finder = ModuleType.Finder { project ->
-      when {
-        project.plugins.hasPlugin("com.android.application") -> AndroidApp
-        project.plugins.hasPlugin("actual.module.viewmodel") -> AndroidViewModel
-        project.plugins.hasPlugin("actual.module.hilt") -> AndroidHilt
-        project.plugins.hasPlugin("actual.module.compose") -> AndroidCompose
-        project.plugins.hasPlugin("actual.module.android") -> AndroidLibrary
-        project.plugins.hasPlugin("actual.module.resources") -> AndroidResources
-        project.plugins.hasPlugin("actual.module.navigation") -> Navigation
-        project.plugins.hasPlugin("actual.module.multiplatform") -> Multiplatform
-        else -> error("Unknown module type for ${project.path}")
+      with(project.plugins) {
+        when {
+          hasPlugin("com.android.application") -> AndroidApp
+          hasPlugin("actual.module.viewmodel") -> AndroidViewModel
+          hasPlugin("actual.module.hilt") -> AndroidHilt
+          hasPlugin("actual.module.compose") -> AndroidCompose
+          hasPlugin("actual.module.android") -> AndroidLibrary
+          hasPlugin("actual.module.resources") -> AndroidResources
+          hasPlugin("actual.module.navigation") -> Navigation
+          hasPlugin("actual.module.multiplatform") -> Multiplatform
+          else -> error("Unknown module type for ${project.path}")
+        }
       }
     }
   }

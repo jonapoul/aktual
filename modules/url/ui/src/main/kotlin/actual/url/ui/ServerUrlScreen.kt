@@ -1,5 +1,6 @@
 package actual.url.ui
 
+import actual.account.login.nav.LoginNavRoute
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
@@ -15,7 +16,6 @@ import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.ui.topAppBarColors
 import actual.core.versions.ActualVersions
-import actual.login.nav.LoginNavRoute
 import actual.url.model.Protocol
 import actual.url.res.ServerUrlStrings
 import actual.url.vm.ServerUrlViewModel

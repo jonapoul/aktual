@@ -1,5 +1,6 @@
 package actual.url.vm
 
+import actual.account.login.prefs.LoginPreferences
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.colorscheme.ColorSchemePreferences
@@ -9,7 +10,6 @@ import actual.core.coroutines.ResettableStateFlow
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
 import actual.log.Logger
-import actual.login.prefs.LoginPreferences
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
