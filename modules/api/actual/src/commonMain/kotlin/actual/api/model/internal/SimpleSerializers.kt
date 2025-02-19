@@ -1,7 +1,7 @@
 package actual.api.model.internal
 
-import actual.login.model.LoginToken
-import actual.login.model.Password
+import actual.account.model.LoginToken
+import actual.account.model.Password
 import alakazam.kotlin.serialization.SimpleSerializer
 
 internal object PasswordSerializer : SimpleSerializer<Password>(serialName = "Password", ::Password)

@@ -1,11 +1,11 @@
 package actual.api.model.account
 
+import actual.account.model.LoginToken
 import actual.api.model.Response
 import actual.api.model.ResponseStatus
 import actual.api.model.internal.LoginResponseDataSerializer
 import actual.api.model.internal.LoginResponseSerializer
 import actual.api.model.internal.TokenSerializer
-import actual.login.model.LoginToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

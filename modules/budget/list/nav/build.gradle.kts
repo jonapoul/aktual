@@ -5,5 +5,5 @@ plugins {
 }
 
 commonMainDependencies {
-  api(projects.login.model)
+  api(projects.account.model)
 }

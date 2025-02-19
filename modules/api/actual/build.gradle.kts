@@ -12,7 +12,7 @@ commonMainDependencies {
   api(libs.javaxInject)
   api(libs.kotlinx.serialization.json)
   api(libs.retrofit.core)
-  api(projects.login.model)
+  api(projects.account.model)
   api(projects.url.model)
   compileOnly(libs.sekret)
 }

@@ -26,7 +26,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
+  implementation(projects.account.login.nav)
   implementation(projects.core.res)
-  implementation(projects.login.nav)
   implementation(projects.url.res)
 }

@@ -1,11 +1,11 @@
 package actual.budget.list.vm
 
+import actual.account.model.LoginToken
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.SyncApi
 import actual.budget.model.BudgetId
 import actual.log.EmptyLogger
-import actual.login.model.LoginToken
 import actual.test.MockWebServerRule
 import actual.test.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher

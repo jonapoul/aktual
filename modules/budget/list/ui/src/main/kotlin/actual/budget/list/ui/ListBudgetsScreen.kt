@@ -1,5 +1,7 @@
 package actual.budget.list.ui
 
+import actual.account.login.nav.LoginNavRoute
+import actual.account.model.LoginToken
 import actual.budget.list.res.BudgetListStrings
 import actual.budget.list.vm.Budget
 import actual.budget.list.vm.ListBudgetsState
@@ -20,8 +22,6 @@ import actual.core.ui.debugNavigate
 import actual.core.ui.topAppBarColors
 import actual.core.ui.topAppBarIconButton
 import actual.core.versions.ActualVersions
-import actual.login.model.LoginToken
-import actual.login.nav.LoginNavRoute
 import actual.url.model.ServerUrl
 import actual.url.nav.ServerUrlNavRoute
 import alakazam.kotlin.core.exhaustive
@@ -130,7 +130,7 @@ private fun ListBudgetsScaffold(
         colors = theme.topAppBarColors(),
         title = { ScaffoldTitle() },
         scrollBehavior = scrollBehavior,
-        actions = { TopAppBarActions(state, onAction) }
+        actions = { TopAppBarActions(state, onAction) },
       )
     },
   ) { innerPadding ->
@@ -186,8 +186,8 @@ private fun ListBudgetsContent(
 ) {
   Column(
     modifier = modifier
-        .fillMaxSize()
-        .padding(16.dp),
+      .fillMaxSize()
+      .padding(16.dp),
   ) {
     Box(
       modifier = Modifier.weight(1f),

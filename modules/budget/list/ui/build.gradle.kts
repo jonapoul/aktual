@@ -30,9 +30,9 @@ dependencies {
   implementation(libs.hilt.android)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
+  implementation(projects.account.login.nav)
+  implementation(projects.account.model)
   implementation(projects.budget.list.res)
   implementation(projects.core.res)
-  implementation(projects.login.model)
-  implementation(projects.login.nav)
   implementation(projects.url.nav)
 }

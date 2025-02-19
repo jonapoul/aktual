@@ -2,13 +2,13 @@ package actual.android.app
 
 import actual.about.nav.AboutNavRoute
 import actual.about.ui.AboutScreen
+import actual.account.login.nav.LoginNavRoute
+import actual.account.login.ui.LoginScreen
+import actual.account.model.LoginToken
 import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.budget.list.ui.ListBudgetsScreen
 import actual.licenses.nav.LicensesNavRoute
 import actual.licenses.ui.LicensesScreen
-import actual.login.model.LoginToken
-import actual.login.nav.LoginNavRoute
-import actual.login.ui.LoginScreen
 import actual.url.nav.ServerUrlNavRoute
 import actual.url.ui.ServerUrlScreen
 import androidx.compose.animation.AnimatedContentScope

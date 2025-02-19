@@ -1,8 +1,8 @@
 package actual.api.client
 
+import actual.account.model.LoginToken
 import actual.api.model.internal.ActualHeaders
 import actual.api.model.sync.ListUserFilesResponse
-import actual.login.model.LoginToken
 import retrofit2.http.GET
 import retrofit2.http.Header
 

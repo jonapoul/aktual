@@ -1,11 +1,11 @@
 package actual.budget.list.vm
 
+import actual.account.model.LoginToken
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
 import actual.log.Logger
-import actual.login.model.LoginToken
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import androidx.lifecycle.ViewModel
