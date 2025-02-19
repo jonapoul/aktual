@@ -15,10 +15,14 @@ import my.nanihadesuka.compose.ScrollbarSettings
 
 @Stable
 @Composable
-fun Theme.topAppBarColors() = TopAppBarDefaults.topAppBarColors(
-  containerColor = mobileHeaderBackground,
-  titleContentColor = mobileHeaderText,
-  navigationIconContentColor = mobileHeaderText,
+fun Theme.topAppBarColors(
+  containerColor: Color = mobileHeaderBackground,
+  titleContentColor: Color = mobileHeaderText,
+  navigationIconContentColor: Color = mobileHeaderText,
+) = TopAppBarDefaults.topAppBarColors(
+  containerColor = containerColor,
+  titleContentColor = titleContentColor,
+  navigationIconContentColor = navigationIconContentColor,
 )
 
 @Stable

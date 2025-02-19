@@ -4,6 +4,7 @@ graph ["dpi"="100","label"=":budget:list:ui","labelloc"="t","fontsize"="30","ran
 node ["style"="filled"]
 ":account:login:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
+":account:password:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":budget:list:res" ["fillcolor"="#00FFFF","shape"="box"]
@@ -29,15 +30,17 @@ graph ["rank"="same"]
 ":budget:list:nav" -> ":account:model"
 ":budget:list:ui" -> ":account:login:nav" ["style"="dotted"]
 ":budget:list:ui" -> ":account:model" ["style"="dotted"]
+":budget:list:ui" -> ":account:password:nav" ["style"="dotted"]
 ":budget:list:ui" -> ":budget:list:nav"
 ":budget:list:ui" -> ":budget:list:res" ["style"="dotted"]
 ":budget:list:ui" -> ":budget:list:vm"
+":budget:list:ui" -> ":budget:model" ["style"="dotted"]
 ":budget:list:ui" -> ":core:res" ["style"="dotted"]
 ":budget:list:ui" -> ":core:ui"
 ":budget:list:ui" -> ":url:nav" ["style"="dotted"]
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
-":budget:list:vm" -> ":budget:model"
+":budget:list:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:list:vm" -> ":core:colorscheme"
 ":budget:list:vm" -> ":core:coroutines"
 ":budget:list:vm" -> ":core:log"

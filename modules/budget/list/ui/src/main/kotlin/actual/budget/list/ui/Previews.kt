@@ -25,4 +25,4 @@ internal val PreviewBudgetBroken = PreviewBudgetSynced.copy(
   encryptKeyId = null,
 )
 
-internal val PreviewVersions = ActualVersions(app = "1.2.3", server = "24.3.0")
+internal val PreviewVersions = ActualVersions.Dummy

@@ -21,7 +21,7 @@ graph ["rank"="same"]
 ":api:actual" -> ":url:model"
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
-":budget:list:vm" -> ":budget:model"
+":budget:list:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:list:vm" -> ":core:colorscheme"
 ":budget:list:vm" -> ":core:coroutines"
 ":budget:list:vm" -> ":core:log"

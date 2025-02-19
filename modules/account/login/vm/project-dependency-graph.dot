@@ -2,6 +2,7 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":account:login:vm","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
+":account:login:domain" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:login:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:login:vm" ["fillcolor"="#F5A6A6","shape"="box"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -17,12 +18,16 @@ node ["style"="filled"]
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
+":account:login:domain" -> ":account:login:prefs" ["style"="dotted"]
+":account:login:domain" -> ":account:model"
+":account:login:domain" -> ":api:actual" ["style"="dotted"]
+":account:login:domain" -> ":core:coroutines"
 ":account:login:prefs" -> ":account:model"
+":account:login:vm" -> ":account:login:domain"
 ":account:login:vm" -> ":account:login:prefs" ["style"="dotted"]
 ":account:login:vm" -> ":account:model"
-":account:login:vm" -> ":api:actual" ["style"="dotted"]
 ":account:login:vm" -> ":core:colorscheme"
-":account:login:vm" -> ":core:coroutines"
+":account:login:vm" -> ":core:coroutines" ["style"="dotted"]
 ":account:login:vm" -> ":core:log"
 ":account:login:vm" -> ":core:versions" ["style"="dotted"]
 ":account:login:vm" -> ":url:model"

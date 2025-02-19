@@ -260,7 +260,7 @@ private fun Regular() = PreviewScreen { type ->
   ServerUrlScaffold(
     url = "",
     protocol = Protocol.Https,
-    versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
+    versions = ActualVersions.Dummy,
     isEnabled = true,
     isLoading = false,
     themeType = type,
@@ -275,7 +275,7 @@ private fun WithErrorMessage() = PreviewScreen { type ->
   ServerUrlScaffold(
     url = "my.server.com:1234/path",
     protocol = Protocol.Http,
-    versions = ActualVersions(app = "1.2.3", server = "24.3.0"),
+    versions = ActualVersions.Dummy,
     isEnabled = true,
     isLoading = true,
     themeType = type,

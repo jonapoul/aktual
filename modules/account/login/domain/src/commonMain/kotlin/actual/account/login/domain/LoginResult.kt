@@ -1,10 +1,13 @@
-package actual.account.login.vm
+package actual.account.login.domain
 
+import actual.account.model.LoginToken
 import androidx.compose.runtime.Immutable
 
 @Immutable
 sealed interface LoginResult {
-  data object Success : LoginResult
+  data class Success(
+    val token: LoginToken,
+  ) : LoginResult
 
   sealed interface Failure : LoginResult
 

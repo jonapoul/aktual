@@ -1,8 +1,6 @@
-package actual.account.login.vm
+package actual.account.login.domain
 
 import actual.account.login.prefs.LoginPreferences
-import actual.account.login.vm.LoginRequester
-import actual.account.login.vm.LoginResult
 import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.api.client.AccountApi
@@ -63,7 +61,6 @@ internal class LoginRequesterTest {
     )
 
     loginRequester = LoginRequester(
-      logger = EmptyLogger,
       contexts = TestCoroutineContexts(mainDispatcherRule),
       apisStateHolder = apisStateHolder,
       loginPreferences = loginPreferences,
@@ -90,7 +87,7 @@ internal class LoginRequesterTest {
       val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
       // Then a success response was parsed, and the token was stored in prefs
-      assertEquals(expected = LoginResult.Success, actual = result)
+      assertIs<LoginResult.Success>(result)
       assertEquals(expected = EXAMPLE_TOKEN, actual = awaitItem())
       cancelAndIgnoreRemainingEvents()
     }

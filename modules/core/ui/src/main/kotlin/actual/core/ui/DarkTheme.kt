@@ -108,7 +108,7 @@ internal class DarkTheme : Theme {
   override val buttonPrimaryBackgroundHover = ActualColors.purple600
   override val buttonPrimaryBorder = buttonPrimaryBackground
   override val buttonPrimaryShadow = Color(color = 0x99000000)
-  override val buttonPrimaryDisabledText = ActualColors.navy700
+  override val buttonPrimaryDisabledText = ActualColors.navy200
   override val buttonPrimaryDisabledBackground = ActualColors.navy400
   override val buttonPrimaryDisabledBorder = buttonPrimaryDisabledBackground
 

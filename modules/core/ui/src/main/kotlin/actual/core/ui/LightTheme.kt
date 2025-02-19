@@ -108,7 +108,7 @@ internal class LightTheme : Theme {
   override val buttonPrimaryBackgroundHover = ActualColors.purple300
   override val buttonPrimaryBorder = buttonPrimaryBackground
   override val buttonPrimaryShadow = Color(color = 0x4D000000)
-  override val buttonPrimaryDisabledText = ActualColors.white
+  override val buttonPrimaryDisabledText = ActualColors.navy100
   override val buttonPrimaryDisabledBackground = ActualColors.navy300
   override val buttonPrimaryDisabledBorder = buttonPrimaryDisabledBackground
 

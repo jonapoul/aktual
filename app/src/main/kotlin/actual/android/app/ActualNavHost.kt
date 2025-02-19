@@ -5,6 +5,8 @@ import actual.about.ui.AboutScreen
 import actual.account.login.nav.LoginNavRoute
 import actual.account.login.ui.LoginScreen
 import actual.account.model.LoginToken
+import actual.account.password.nav.ChangePasswordNavRoute
+import actual.account.password.ui.ChangePasswordScreen
 import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.budget.list.ui.ListBudgetsScreen
 import actual.licenses.nav.LicensesNavRoute
@@ -35,10 +37,12 @@ internal fun ActualNavHost(
     navController = navController,
     startDestination = when {
       loginToken != null && isServerUrlSet -> ListBudgetsNavRoute(loginToken)
-      isServerUrlSet -> LoginNavRoute
+      isServerUrlSet -> ChangePasswordNavRoute
       else -> ServerUrlNavRoute
     },
   ) {
+    composable<ChangePasswordNavRoute> { ChangePasswordScreen(navController) }
+
     composable<AboutNavRoute> { AboutScreen(navController) }
 
     composable<LicensesNavRoute> { LicensesScreen(navController) }
