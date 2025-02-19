@@ -5,6 +5,9 @@ import actual.budget.list.vm.Budget
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.core.colorscheme.ColorSchemeType
+import actual.core.icons.ActualIcons
+import actual.core.icons.Refresh
+import actual.core.ui.BasicIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
@@ -15,6 +18,7 @@ import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.ui.topAppBarColors
+import actual.core.ui.topAppBarIconButton
 import actual.core.versions.ActualVersions
 import actual.login.model.LoginToken
 import actual.login.nav.LoginNavRoute
@@ -126,6 +130,7 @@ private fun ListBudgetsScaffold(
         colors = theme.topAppBarColors(),
         title = { ScaffoldTitle() },
         scrollBehavior = scrollBehavior,
+        actions = { TopAppBarActions(state, onAction) }
       )
     },
   ) { innerPadding ->
@@ -141,6 +146,23 @@ private fun ListBudgetsScaffold(
         theme = theme,
       )
     }
+  }
+}
+
+@Composable
+private fun TopAppBarActions(
+  state: ListBudgetsState,
+  onAction: (ListBudgetsAction) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  if (state is ListBudgetsState.Success) {
+    BasicIconButton(
+      modifier = modifier,
+      onClick = { onAction(ListBudgetsAction.Reload) },
+      imageVector = ActualIcons.Refresh,
+      contentDescription = BudgetListStrings.budgetFailureRetry,
+      colors = { scheme, isPressed -> scheme.topAppBarIconButton(isPressed) },
+    )
   }
 }
 
@@ -164,8 +186,8 @@ private fun ListBudgetsContent(
 ) {
   Column(
     modifier = modifier
-      .fillMaxSize()
-      .padding(16.dp),
+        .fillMaxSize()
+        .padding(16.dp),
   ) {
     Box(
       modifier = Modifier.weight(1f),

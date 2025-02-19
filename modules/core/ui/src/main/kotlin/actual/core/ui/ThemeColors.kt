@@ -140,3 +140,11 @@ fun Theme.bareIconButton(isPressed: Boolean) = IconButtonDefaults.filledIconButt
   contentColor = if (isPressed) buttonBareTextHover else buttonBareText,
   disabledContentColor = buttonBareDisabledText,
 )
+
+@Stable
+@Composable
+fun Theme.topAppBarIconButton(isPressed: Boolean) = primaryIconButton(isPressed).copy(
+  containerColor = mobileHeaderBackground,
+  contentColor = mobileHeaderText,
+  disabledContentColor = mobileHeaderTextSubdued,
+)
