@@ -6,6 +6,8 @@ import actual.core.ui.ActualTheme
 import actual.test.ActualTestActivity
 import actual.test.TestBuildConfig
 import actual.test.runTest
+import alakazam.kotlin.core.CoroutineContexts
+import alakazam.test.core.TestCoroutineContexts
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
@@ -22,6 +24,7 @@ import dagger.hilt.android.testing.BindValue
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import github.api.client.GithubApi
+import kotlinx.coroutines.Dispatchers
 import org.hamcrest.Matchers
 import org.junit.After
 import org.junit.Before
@@ -42,10 +45,15 @@ class AboutScreenTest {
   @BindValue
   lateinit var githubApi: GithubApi
 
+  @BindValue
+  lateinit var coroutineContexts: CoroutineContexts
+
   @Before
+  @Suppress("InjectDispatcher")
   fun before() {
     buildConfig = TestBuildConfig
     githubApi = TestGithubApi()
+    coroutineContexts = TestCoroutineContexts(Dispatchers.Unconfined)
 
     hiltRule.inject()
     Intents.init()

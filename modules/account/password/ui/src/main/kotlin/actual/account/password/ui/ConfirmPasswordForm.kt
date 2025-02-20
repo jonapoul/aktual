@@ -4,7 +4,6 @@ import actual.account.model.Password
 import actual.account.password.res.PasswordStrings
 import actual.account.password.vm.ChangePasswordState
 import actual.core.ui.PreviewColumn
-import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButtonWithLoading
 import actual.core.ui.VerticalSpacer
 import actual.core.ui.keyboardFocusRequester
@@ -20,8 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,8 +39,7 @@ internal fun ConfirmPasswordForm(
   modifier: Modifier = Modifier,
 ) {
   val keyboard = LocalSoftwareKeyboardController.current
-  val keyboardRequester = keyboardFocusRequester(keyboard)
-
+  val focusManager = LocalFocusManager.current
   val isLoading = state is ChangePasswordState.Loading
 
   if (state is ChangePasswordState.Success) {
@@ -51,11 +52,13 @@ internal fun ConfirmPasswordForm(
     PasswordEntryText(
       modifier = Modifier
         .fillMaxWidth()
-        .focusRequester(keyboardRequester),
+        .focusRequester(keyboardFocusRequester(keyboard)),
       password = inputPassword1,
       placeholderText = PasswordStrings.input,
       showPassword = showPasswords,
+      imeAction = ImeAction.Next,
       onValueChange = { pw -> onAction(PasswordAction.SetPassword1(pw)) },
+      onGo = { focusManager.moveFocus(FocusDirection.Next) },
     )
 
     VerticalSpacer(10.dp)
@@ -65,6 +68,7 @@ internal fun ConfirmPasswordForm(
       password = inputPassword2,
       placeholderText = PasswordStrings.inputConfirm,
       showPassword = showPasswords,
+      imeAction = ImeAction.Go,
       onValueChange = { pw -> onAction(PasswordAction.SetPassword2(pw)) },
       onGo = {
         if (passwordsMatch) onAction(PasswordAction.Submit)
@@ -139,7 +143,7 @@ private fun ShowPasswords() = PreviewColumn {
 
 @Preview
 @Composable
-private fun Loading() = PreviewScreen {
+private fun Loading() = PreviewColumn {
   ConfirmPasswordForm(
     inputPassword1 = Password.Dummy,
     inputPassword2 = Password.Dummy,

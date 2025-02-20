@@ -30,4 +30,4 @@ fun keyboardFocusRequester(
   return focusRequester
 }
 
-private val KEYBOARD_SHOW_DELAY = 500.milliseconds
+private val KEYBOARD_SHOW_DELAY = 1000.milliseconds
