@@ -5,8 +5,8 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.model.sync.ListUserFilesResponse
 import actual.budget.model.BudgetId
-import actual.core.coroutines.CoroutineContexts
-import actual.log.Logger
+import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.core.Logger
 import alakazam.kotlin.core.requireMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext

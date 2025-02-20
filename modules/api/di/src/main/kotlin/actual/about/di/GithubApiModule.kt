@@ -3,8 +3,8 @@ package actual.about.di
 import actual.api.core.buildOkHttp
 import actual.api.core.buildRetrofit
 import actual.core.config.BuildConfig
-import actual.log.Logger
 import actual.url.model.ServerUrl
+import alakazam.kotlin.core.Logger
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

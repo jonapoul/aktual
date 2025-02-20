@@ -126,6 +126,7 @@ afterEvaluate {
 
 dependencies {
   implementation(libs.alakazam.android.core)
+  implementation(libs.alakazam.di.hilt)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.activity.core)
@@ -163,9 +164,7 @@ dependencies {
   implementation(projects.core.buildconfig)
   implementation(projects.core.colorscheme)
   implementation(projects.core.connection)
-  implementation(projects.core.coroutines)
   implementation(projects.core.di)
-  implementation(projects.core.log)
   implementation(projects.db.di)
   implementation(projects.licenses.data)
   implementation(projects.licenses.di)

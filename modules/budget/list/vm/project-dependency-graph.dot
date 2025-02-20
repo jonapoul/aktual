@@ -8,8 +8,6 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -23,8 +21,6 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:list:vm" -> ":core:colorscheme"
-":budget:list:vm" -> ":core:coroutines"
-":budget:list:vm" -> ":core:log"
 ":budget:list:vm" -> ":core:versions" ["style"="dotted"]
 ":budget:list:vm" -> ":url:model"
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]

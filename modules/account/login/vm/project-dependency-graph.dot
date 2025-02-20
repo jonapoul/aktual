@@ -9,8 +9,6 @@ node ["style"="filled"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -21,14 +19,11 @@ graph ["rank"="same"]
 ":account:login:domain" -> ":account:login:prefs" ["style"="dotted"]
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
-":account:login:domain" -> ":core:coroutines"
 ":account:login:prefs" -> ":account:model"
 ":account:login:vm" -> ":account:login:domain"
 ":account:login:vm" -> ":account:login:prefs" ["style"="dotted"]
 ":account:login:vm" -> ":account:model"
 ":account:login:vm" -> ":core:colorscheme"
-":account:login:vm" -> ":core:coroutines" ["style"="dotted"]
-":account:login:vm" -> ":core:log"
 ":account:login:vm" -> ":core:versions" ["style"="dotted"]
 ":account:login:vm" -> ":url:model"
 ":account:login:vm" -> ":url:prefs" ["style"="dotted"]

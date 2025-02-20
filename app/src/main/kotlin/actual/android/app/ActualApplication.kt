@@ -1,6 +1,6 @@
 package actual.android.app
 
-import actual.log.Logger
+import alakazam.kotlin.core.Logger
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 import timber.log.Timber

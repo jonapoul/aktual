@@ -2,9 +2,9 @@ package actual.core.connection
 
 import actual.api.client.ActualApisStateHolder
 import actual.core.config.BuildConfig
-import actual.log.Logger
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
+import alakazam.kotlin.core.Logger
 import alakazam.kotlin.core.collectFlow
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope

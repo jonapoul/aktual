@@ -1,6 +1,6 @@
 package actual.licenses.data
 
-import actual.core.coroutines.CoroutineContexts
+import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext

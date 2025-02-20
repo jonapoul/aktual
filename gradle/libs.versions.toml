@@ -26,7 +26,7 @@ spotless = "7.0.2"
 turtle = "0.10.0"
 
 # Libraries
-alakazam = "4.7.1"
+alakazam = "5.0.0"
 android-desugaring = "2.1.4"
 androidx-activity = "1.10.0"
 androidx-annotation = "1.9.1"
@@ -96,6 +96,7 @@ plugin-turtle = { module = "com.lordcodes.turtle:turtle", version.ref = "turtle"
 # Libraries
 alakazam-android-compose = { module = "dev.jonpoulton.alakazam:android-ui-compose", version.ref = "alakazam" }
 alakazam-android-core = { module = "dev.jonpoulton.alakazam:android-core", version.ref = "alakazam" }
+alakazam-di-hilt = { module = "dev.jonpoulton.alakazam:di-hilt", version.ref = "alakazam" }
 alakazam-kotlin-compose-annotations = { module = "dev.jonpoulton.alakazam:kotlin-compose-annotations", version.ref = "alakazam" }
 alakazam-kotlin-core = { module = "dev.jonpoulton.alakazam:kotlin-core", version.ref = "alakazam" }
 alakazam-kotlin-serialization = { module = "dev.jonpoulton.alakazam:kotlin-serialization", version.ref = "alakazam" }

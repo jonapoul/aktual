@@ -6,19 +6,16 @@ node ["style"="filled"]
 ":api:di" ["shape"="box","fillcolor"="#FCB103"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 ":api:di"
 }
-":api:core" -> ":core:log"
 ":api:core" -> ":url:model"
 ":api:di" -> ":api:core" ["style"="dotted"]
 ":api:di" -> ":api:github"
 ":api:di" -> ":core:buildconfig"
-":api:di" -> ":core:log"
 ":api:di" -> ":url:model" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]

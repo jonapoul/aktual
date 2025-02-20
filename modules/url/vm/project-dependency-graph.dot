@@ -7,8 +7,6 @@ node ["style"="filled"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -25,8 +23,6 @@ graph ["rank"="same"]
 ":url:vm" -> ":account:login:prefs" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
 ":url:vm" -> ":core:colorscheme"
-":url:vm" -> ":core:coroutines"
-":url:vm" -> ":core:log"
 ":url:vm" -> ":core:versions" ["style"="dotted"]
 ":url:vm" -> ":url:model"
 ":url:vm" -> ":url:prefs" ["style"="dotted"]

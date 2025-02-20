@@ -3,7 +3,6 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":db:di","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
 ":db:api" ["fillcolor"="#9D8DF1","shape"="box"]
 ":db:di" ["shape"="box","fillcolor"="#FCB103"]
 ":db:impl" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -13,7 +12,6 @@ graph ["rank"="same"]
 ":db:di"
 }
 ":db:api" -> ":budget:model"
-":db:di" -> ":core:coroutines"
 ":db:di" -> ":db:api"
 ":db:di" -> ":db:impl"
 ":db:impl" -> ":budget:model"

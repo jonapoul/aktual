@@ -4,8 +4,8 @@ import actual.api.client.ActualApis
 import actual.api.client.ActualJson
 import actual.api.core.buildOkHttp
 import actual.api.core.buildRetrofit
-import actual.log.Logger
 import actual.url.model.ServerUrl
+import alakazam.kotlin.core.Logger
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 import retrofit2.create

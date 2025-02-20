@@ -2,7 +2,6 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":licenses:di","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
 ":licenses:data" ["fillcolor"="#9D8DF1","shape"="box"]
 ":licenses:di" ["shape"="box","fillcolor"="#FCB103"]
 {
@@ -10,7 +9,6 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 ":licenses:di"
 }
-":licenses:data" -> ":core:coroutines" ["style"="dotted"]
 ":licenses:di" -> ":licenses:data"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

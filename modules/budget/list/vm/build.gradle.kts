@@ -3,14 +3,12 @@ plugins {
 }
 
 dependencies {
+  api(libs.alakazam.kotlin.core)
   api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
   api(projects.core.colorscheme)
-  api(projects.core.coroutines)
-  api(projects.core.log)
   api(projects.url.model)
-  implementation(libs.alakazam.kotlin.core)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)

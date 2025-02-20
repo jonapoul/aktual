@@ -4,8 +4,6 @@ graph ["dpi"="100","label"=":licenses:ui","labelloc"="t","fontsize"="30","rankse
 node ["style"="filled"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -23,12 +21,10 @@ graph ["rank"="same"]
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
 ":core:versions" -> ":core:buildconfig"
-":licenses:data" -> ":core:coroutines" ["style"="dotted"]
 ":licenses:ui" -> ":core:res" ["style"="dotted"]
 ":licenses:ui" -> ":core:ui"
 ":licenses:ui" -> ":licenses:res" ["style"="dotted"]
 ":licenses:ui" -> ":licenses:vm"
-":licenses:vm" -> ":core:log"
 ":licenses:vm" -> ":licenses:data"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
