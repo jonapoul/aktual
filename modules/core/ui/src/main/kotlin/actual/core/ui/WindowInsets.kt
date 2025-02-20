@@ -3,7 +3,7 @@ package actual.core.ui
 import android.app.Activity
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
@@ -24,7 +24,7 @@ fun SetStatusBarColors(
   val view = LocalView.current
 
   if (!view.isInEditMode) {
-    SideEffect {
+    LaunchedEffect(Unit) {
       val window = (view.context as Activity).window
       window.navigationBarColor = navigationBarColor.toArgb()
       window.statusBarColor = statusBarColor.toArgb()

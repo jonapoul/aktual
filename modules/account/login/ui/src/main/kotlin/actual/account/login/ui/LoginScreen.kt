@@ -40,7 +40,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -65,8 +65,8 @@ fun LoginScreen(
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
 
   val token by viewModel.token.collectAsStateWithLifecycle()
-  token?.let {
-    SideEffect { navController.listBudgets(it) }
+  LaunchedEffect(token) {
+    token?.let { navController.listBudgets(it) }
   }
 
   DisposableEffect(Unit) {

@@ -8,11 +8,13 @@ import androidx.navigation.navOptions
 
 fun <T : Any> NavHostController.debugNavigate(route: T, builder: NavOptionsBuilder.() -> Unit) {
   printBackStack()
+  Log.v("debugNavigate", "debugNavigate to $route with builder")
   navigate(route, navOptions(builder))
 }
 
 fun <T : Any> NavHostController.debugNavigate(route: T) {
   printBackStack()
+  Log.v("debugNavigate", "debugNavigate to $route")
   navigate(route)
 }
 
