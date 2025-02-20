@@ -4,7 +4,6 @@ import actual.account.login.nav.LoginNavRoute
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
-import actual.core.ui.AppThemeChooser
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButtonWithLoading
@@ -14,7 +13,7 @@ import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
-import actual.core.ui.topAppBarColors
+import actual.core.ui.transparentTopAppBarColors
 import actual.core.versions.ActualVersions
 import actual.url.model.Protocol
 import actual.url.res.ServerUrlStrings
@@ -41,7 +40,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,11 +51,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @Composable
 fun ServerUrlScreen(
@@ -72,6 +71,7 @@ fun ServerUrlScreen(
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
   val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   var clickedBack by remember { mutableStateOf(false) }
+  val navStackEntry by navController.currentBackStackEntryAsState()
 
   DisposableEffect(Unit) {
     onDispose {
@@ -84,9 +84,9 @@ fun ServerUrlScreen(
   val activity = remember { context as? Activity ?: error("$context isn't an activity?") }
 
   when {
-    clickedBack -> SideEffect { activity.finish() }
-    shouldNavigate is ShouldNavigate.ToBootstrap -> SideEffect { /* TODO */ }
-    shouldNavigate is ShouldNavigate.ToLogin -> SideEffect { navController.debugNavigate(LoginNavRoute) }
+    clickedBack -> LaunchedEffect(Unit) { activity.finish() }
+    shouldNavigate is ShouldNavigate.ToBootstrap -> LaunchedEffect(Unit) { /* TODO */ }
+    shouldNavigate is ShouldNavigate.ToLogin -> LaunchedEffect(Unit) { navController.debugNavigate(LoginNavRoute) }
   }
 
   ServerUrlScaffold(
@@ -95,6 +95,7 @@ fun ServerUrlScreen(
     versions = versions,
     isEnabled = isEnabled,
     isLoading = isLoading,
+    showBackButton = navStackEntry != null,
     errorMessage = errorMessage,
     themeType = themeType,
     onAction = { action ->
@@ -103,7 +104,6 @@ fun ServerUrlScreen(
         ServerUrlAction.NavBack -> clickedBack = true
         is ServerUrlAction.EnterUrl -> viewModel.onEnterUrl(action.url)
         is ServerUrlAction.SelectProtocol -> viewModel.onSelectProtocol(action.protocol)
-        is ServerUrlAction.SetTheme -> viewModel.onSetTheme(action.type)
       }
     },
   )
@@ -116,6 +116,7 @@ private fun ServerUrlScaffold(
   versions: ActualVersions,
   isEnabled: Boolean,
   isLoading: Boolean,
+  showBackButton: Boolean,
   errorMessage: String?,
   themeType: ColorSchemeType,
   onAction: (ServerUrlAction) -> Unit,
@@ -127,22 +128,18 @@ private fun ServerUrlScaffold(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
-        colors = theme.topAppBarColors(),
+        colors = theme.transparentTopAppBarColors(),
         navigationIcon = {
-          IconButton(onClick = { onAction(ServerUrlAction.NavBack) }) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = CoreStrings.navBack,
-            )
+          if (showBackButton) {
+            IconButton(onClick = { onAction(ServerUrlAction.NavBack) }) {
+              Icon(
+                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = CoreStrings.navBack,
+              )
+            }
           }
         },
-        title = {
-          Text(
-            text = ServerUrlStrings.serverUrlToolbar,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-          )
-        },
+        title = { },
         scrollBehavior = scrollBehavior,
       )
     },
@@ -158,7 +155,6 @@ private fun ServerUrlScaffold(
         isEnabled = isEnabled,
         isLoading = isLoading,
         errorMessage = errorMessage,
-        themeType = themeType,
         onAction = onAction,
         theme = theme,
       )
@@ -175,7 +171,6 @@ private fun ServerUrlContent(
   isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
-  themeType: ColorSchemeType,
   onAction: (ServerUrlAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -238,11 +233,6 @@ private fun ServerUrlContent(
       modifier = Modifier.weight(1f),
     )
 
-    AppThemeChooser(
-      selected = themeType,
-      onSelect = { type -> onAction(ServerUrlAction.SetTheme(type)) },
-    )
-
     Box(
       modifier = Modifier.fillMaxWidth(),
     ) {
@@ -263,6 +253,7 @@ private fun Regular() = PreviewScreen { type ->
     versions = ActualVersions.Dummy,
     isEnabled = true,
     isLoading = false,
+    showBackButton = true,
     themeType = type,
     onAction = {},
     errorMessage = null,
@@ -278,6 +269,7 @@ private fun WithErrorMessage() = PreviewScreen { type ->
     versions = ActualVersions.Dummy,
     isEnabled = true,
     isLoading = true,
+    showBackButton = false,
     themeType = type,
     onAction = {},
     errorMessage = "Hello this is an error message, split over multiple lines so you can see how it behaves",

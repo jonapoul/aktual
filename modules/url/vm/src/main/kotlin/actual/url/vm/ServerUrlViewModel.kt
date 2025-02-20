@@ -42,8 +42,8 @@ class ServerUrlViewModel @Inject internal constructor(
   private val contexts: CoroutineContexts,
   private val apiStateHolder: ActualApisStateHolder,
   private val serverUrlPreferences: ServerUrlPreferences,
-  private val colorSchemePreferences: ColorSchemePreferences,
   private val loginPreferences: LoginPreferences,
+  colorSchemePreferences: ColorSchemePreferences,
   versionsStateHolder: ActualVersionsStateHolder,
 ) : ViewModel() {
   private val mutableIsLoading = ResettableStateFlow(value = false)
@@ -89,6 +89,9 @@ class ServerUrlViewModel @Inject internal constructor(
         mutableBaseUrl.update { savedUrl.baseUrl }
         mutableProtocol.update { savedUrl.protocol }
       }
+
+      // Also clear any previous login state
+      loginPreferences.token.deleteAndCommit()
     }
   }
 
@@ -106,11 +109,6 @@ class ServerUrlViewModel @Inject internal constructor(
   fun onSelectProtocol(protocol: Protocol) {
     logger.v("onProtocolSelected %s", protocol)
     mutableProtocol.update { protocol }
-  }
-
-  fun onSetTheme(type: ColorSchemeType) {
-    logger.v("onSetTheme %s", type)
-    colorSchemePreferences.colorSchemeType.set(type)
   }
 
   fun onClickConfirm() {

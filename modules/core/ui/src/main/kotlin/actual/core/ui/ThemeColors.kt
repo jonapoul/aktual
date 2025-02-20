@@ -27,6 +27,13 @@ fun Theme.topAppBarColors(
 
 @Stable
 @Composable
+fun Theme.transparentTopAppBarColors() = topAppBarColors(
+  containerColor = Color.Transparent,
+  navigationIconContentColor = pageText,
+)
+
+@Stable
+@Composable
 fun Theme.dropDownMenuItem() = MenuDefaults.itemColors(
   textColor = formInputText,
 )

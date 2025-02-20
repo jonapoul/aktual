@@ -4,6 +4,7 @@ import actual.core.ui.ExposedDropDownMenu
 import actual.core.ui.HorizontalSpacer
 import actual.core.ui.PreviewColumn
 import actual.core.ui.TextField
+import actual.core.ui.keyboardFocusRequester
 import actual.url.model.Protocol
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +13,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -39,10 +41,12 @@ internal fun InputFields(
 
     HorizontalSpacer(width = 5.dp)
 
-    val focusManager = LocalFocusManager.current
+    val keyboard = LocalSoftwareKeyboardController.current
 
     TextField(
-      modifier = Modifier.weight(1f),
+      modifier = Modifier
+        .weight(1f)
+        .focusRequester(keyboardFocusRequester(keyboard)),
       value = url,
       onValueChange = { onAction(ServerUrlAction.EnterUrl(it.lowercase())) },
       placeholderText = EXAMPLE_URL,
@@ -54,7 +58,7 @@ internal fun InputFields(
       ),
       keyboardActions = KeyboardActions(
         onGo = {
-          focusManager.clearFocus()
+          keyboard?.hide()
           onAction(ServerUrlAction.ConfirmUrl)
         },
       ),
@@ -62,7 +66,10 @@ internal fun InputFields(
   }
 }
 
-private val PROTOCOLS = Protocol.entries.map { it.toString() }.toImmutableList()
+private val PROTOCOLS = Protocol
+  .entries
+  .map { it.toString() }
+  .toImmutableList()
 
 private const val EXAMPLE_URL = "example.com"
 
@@ -81,7 +88,7 @@ private fun Empty() = PreviewColumn {
 private fun Filled() = PreviewColumn {
   InputFields(
     url = "my.server.com:1234/path",
-    protocol = Protocol.Http,
+    protocol = Protocol.Https,
     onAction = {},
   )
 }

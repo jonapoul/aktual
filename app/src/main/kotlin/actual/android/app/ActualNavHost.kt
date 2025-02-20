@@ -37,7 +37,7 @@ internal fun ActualNavHost(
     navController = navController,
     startDestination = when {
       loginToken != null && isServerUrlSet -> ListBudgetsNavRoute(loginToken)
-      isServerUrlSet -> ChangePasswordNavRoute
+      isServerUrlSet -> LoginNavRoute
       else -> ServerUrlNavRoute
     },
   ) {
