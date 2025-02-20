@@ -21,6 +21,7 @@ internal fun PasswordEntryText(
   showPassword: Boolean,
   onValueChange: (Password) -> Unit,
   modifier: Modifier = Modifier,
+  imeAction: ImeAction = ImeAction.Go,
   onGo: (() -> Unit)? = null,
 ) {
   TextField(
@@ -33,7 +34,7 @@ internal fun PasswordEntryText(
       autoCorrectEnabled = false,
       capitalization = KeyboardCapitalization.None,
       keyboardType = KeyboardType.Password,
-      imeAction = ImeAction.Go,
+      imeAction = imeAction,
     ),
     keyboardActions = if (onGo == null) KeyboardActions.Default else KeyboardActions(onGo = { onGo() }),
   )

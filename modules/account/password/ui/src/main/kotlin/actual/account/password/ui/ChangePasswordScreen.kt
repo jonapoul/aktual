@@ -15,7 +15,7 @@ import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
-import actual.core.ui.topAppBarColors
+import actual.core.ui.transparentTopAppBarColors
 import actual.core.versions.ActualVersions
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -41,7 +41,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -104,7 +103,7 @@ private fun ChangePasswordScaffold(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
-        colors = theme.topAppBarColors(containerColor = Color.Transparent, navigationIconContentColor = theme.pageText),
+        colors = theme.transparentTopAppBarColors(),
         navigationIcon = {
           IconButton(onClick = { onAction(PasswordAction.NavBack) }) {
             Icon(
@@ -176,20 +175,6 @@ private fun ChangePasswordContent(
 
       VerticalSpacer(30.dp)
 
-      when (state) {
-        is ChangePasswordState.Failure -> {
-          Text(text = state.errorMessage(), color = theme.errorText)
-          VerticalSpacer(30.dp)
-        }
-
-        ChangePasswordState.Success -> {
-          Text(text = PasswordStrings.success, color = theme.successText)
-          VerticalSpacer(30.dp)
-        }
-
-        else -> Unit
-      }
-
       ConfirmPasswordForm(
         modifier = Modifier.fillMaxWidth(),
         inputPassword1 = inputPassword1,
@@ -199,6 +184,14 @@ private fun ChangePasswordContent(
         passwordsMatch = passwordsMatch,
         onAction = onAction,
       )
+
+      VerticalSpacer(20.dp)
+
+      when (state) {
+        is ChangePasswordState.Failure -> Text(text = state.errorMessage(), color = theme.errorText)
+        ChangePasswordState.Success -> Text(text = PasswordStrings.success, color = theme.successText)
+        else -> Unit
+      }
     }
 
     VerticalSpacer(20.dp)
