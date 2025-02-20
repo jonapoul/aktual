@@ -1,6 +1,6 @@
 package actual.licenses.data
 
-import actual.test.TestCoroutineContexts
+import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.getResourceAsStream
 import alakazam.test.core.standardDispatcher
 import kotlinx.coroutines.test.TestScope

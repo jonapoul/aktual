@@ -8,7 +8,6 @@ plugins {
 commonMainDependencies {
   api(libs.javaxInject)
   api(projects.account.model)
-  api(projects.core.coroutines)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.preferences.core)

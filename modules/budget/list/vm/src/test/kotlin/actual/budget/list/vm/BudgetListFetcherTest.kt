@@ -5,9 +5,9 @@ import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.SyncApi
 import actual.budget.model.BudgetId
-import actual.log.EmptyLogger
 import actual.test.MockWebServerRule
-import actual.test.TestCoroutineContexts
+import alakazam.kotlin.core.EmptyLogger
+import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher
 import io.mockk.coEvery
 import io.mockk.every

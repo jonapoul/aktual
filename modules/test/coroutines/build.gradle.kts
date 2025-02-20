@@ -9,5 +9,4 @@ commonMainDependencies {
   api(libs.test.alakazam.core)
   api(libs.test.kotlin.common)
   api(libs.test.turbine)
-  api(projects.core.coroutines)
 }

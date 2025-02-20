@@ -1,9 +1,7 @@
 package actual.core.di
 
-import actual.core.coroutines.CoroutineContexts
-import android.content.Context
+import alakazam.kotlin.core.CoroutineContexts
 import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,10 +13,6 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 class PreferencesModule {
-  @Provides
-  @Singleton
-  fun sharedPrefs(context: Context): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
-
   @Provides
   @Singleton
   fun prefs(

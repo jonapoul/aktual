@@ -1,16 +1,17 @@
 package actual.core.di
 
-import actual.log.Logger
-import dagger.Binds
+import alakazam.android.core.TimberLogger
+import alakazam.kotlin.core.Logger
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface LoggerModule {
-  @Binds
+class LoggerModule {
+  @Provides
   @Singleton
-  fun logger(impl: ActualLogger): Logger
+  fun logger(): Logger = TimberLogger
 }

@@ -33,7 +33,6 @@ class ModuleViewModel : Plugin<Project> {
       api(libs.getLibrary("androidx.lifecycle.viewmodel.core"))
       api(libs.getLibrary("dagger.core"))
       implementation(libs.getLibrary("hilt.android"))
-      implementation(libs.getLibrary("molecule"))
     }
   }
 }

@@ -8,8 +8,6 @@ commonMainDependencies {
   api(libs.javaxInject)
   api(projects.account.login.domain)
   api(projects.account.model)
-  api(projects.core.coroutines)
-  api(projects.core.log)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.preferences.core)

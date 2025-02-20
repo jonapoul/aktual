@@ -9,8 +9,6 @@ node ["style"="filled"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -22,7 +20,6 @@ graph ["rank"="same"]
 }
 ":about:data" -> ":api:github"
 ":about:data" -> ":core:buildconfig"
-":about:data" -> ":core:coroutines"
 ":about:ui" -> ":about:res" ["style"="dotted"]
 ":about:ui" -> ":about:vm"
 ":about:ui" -> ":core:res" ["style"="dotted"]
@@ -30,7 +27,6 @@ graph ["rank"="same"]
 ":about:ui" -> ":licenses:nav" ["style"="dotted"]
 ":about:vm" -> ":about:data"
 ":about:vm" -> ":core:buildconfig"
-":about:vm" -> ":core:log"
 ":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:ui" -> ":core:versions"

@@ -6,7 +6,6 @@ node ["style"="filled"]
 ":account:login:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
@@ -15,7 +14,6 @@ graph ["rank"="same"]
 ":account:login:domain" -> ":account:login:prefs" ["style"="dotted"]
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
-":account:login:domain" -> ":core:coroutines"
 ":account:login:prefs" -> ":account:model"
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":url:model"

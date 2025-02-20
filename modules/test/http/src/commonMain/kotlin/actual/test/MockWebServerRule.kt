@@ -2,9 +2,9 @@ package actual.test
 
 import actual.api.core.buildOkHttp
 import actual.api.core.buildRetrofit
-import actual.log.EmptyLogger
-import actual.log.Logger
 import actual.url.model.ServerUrl
+import alakazam.kotlin.core.EmptyLogger
+import alakazam.kotlin.core.Logger
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse

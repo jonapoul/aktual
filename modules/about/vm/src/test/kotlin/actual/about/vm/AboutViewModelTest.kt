@@ -2,11 +2,11 @@ package actual.about.vm
 
 import actual.about.data.GithubRepository
 import actual.about.data.LatestReleaseState
-import actual.log.EmptyLogger
 import actual.test.TestBuildConfig
 import actual.test.TestInstant
 import actual.test.assertEmitted
 import alakazam.android.core.UrlOpener
+import alakazam.kotlin.core.EmptyLogger
 import app.cash.turbine.test
 import github.api.model.GithubRelease
 import io.mockk.coEvery

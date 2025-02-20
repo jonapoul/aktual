@@ -5,14 +5,12 @@ node ["style"="filled"]
 ":about:data" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:coroutines" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":about:data" -> ":api:github"
 ":about:data" -> ":core:buildconfig"
-":about:data" -> ":core:coroutines"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

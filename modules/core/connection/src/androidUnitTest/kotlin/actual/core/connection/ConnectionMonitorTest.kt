@@ -3,11 +3,11 @@
 package actual.core.connection
 
 import actual.api.client.ActualApisStateHolder
-import actual.log.EmptyLogger
 import actual.test.TestBuildConfig
 import actual.test.buildPreferences
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
+import alakazam.kotlin.core.EmptyLogger
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi

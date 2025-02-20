@@ -2,9 +2,9 @@ package actual.core.connection
 
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
-import actual.core.coroutines.CoroutineContexts
 import actual.core.versions.ActualVersionsStateHolder
-import actual.log.Logger
+import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.core.Logger
 import alakazam.kotlin.core.LoopController
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay

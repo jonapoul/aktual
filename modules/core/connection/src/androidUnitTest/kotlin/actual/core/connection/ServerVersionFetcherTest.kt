@@ -8,13 +8,13 @@ import actual.api.client.BaseApi
 import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
 import actual.core.versions.ActualVersionsStateHolder
-import actual.log.EmptyLogger
 import actual.test.TestBuildConfig
-import actual.test.TestCoroutineContexts
+import alakazam.kotlin.core.EmptyLogger
 import alakazam.kotlin.core.LoopController
 import alakazam.test.core.FiniteLoopController
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.SingleLoopController
+import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.every

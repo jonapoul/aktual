@@ -1,7 +1,7 @@
 package actual.about.data
 
 import actual.core.config.BuildConfig
-import actual.core.coroutines.CoroutineContexts
+import alakazam.kotlin.core.CoroutineContexts
 import github.api.client.GithubApi
 import github.api.model.GithubRelease
 import github.api.model.GithubReleases

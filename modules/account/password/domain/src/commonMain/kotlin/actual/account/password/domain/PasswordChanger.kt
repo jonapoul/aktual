@@ -6,8 +6,8 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.model.account.ChangePasswordRequest
 import actual.api.model.account.ChangePasswordResponse
-import actual.core.coroutines.CoroutineContexts
-import actual.log.Logger
+import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.core.Logger
 import alakazam.kotlin.core.requireMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext

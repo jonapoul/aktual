@@ -9,7 +9,6 @@ commonMainDependencies {
   api(libs.kotlinx.serialization.json)
   api(libs.okhttp.core)
   api(libs.retrofit.core)
-  api(projects.core.log)
   api(projects.url.model)
   implementation(libs.okhttp.logging)
   implementation(libs.retrofit.serialization)

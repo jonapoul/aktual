@@ -1,8 +1,8 @@
 package actual.db.di
 
-import actual.core.coroutines.CoroutineContexts
 import actual.db.RoomBudgetDatabase
 import actual.db.buildDatabase
+import alakazam.kotlin.core.CoroutineContexts
 import android.content.Context
 import dagger.Module
 import dagger.Provides

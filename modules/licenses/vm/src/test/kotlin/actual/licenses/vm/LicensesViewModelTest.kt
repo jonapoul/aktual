@@ -4,9 +4,9 @@ import actual.licenses.data.LibraryModel
 import actual.licenses.data.LicenseModel
 import actual.licenses.data.LicensesLoadState
 import actual.licenses.data.LicensesRepository
-import actual.log.EmptyLogger
 import actual.test.assertEmitted
 import alakazam.android.core.UrlOpener
+import alakazam.kotlin.core.EmptyLogger
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
 import io.mockk.coEvery
