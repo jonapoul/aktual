@@ -1,6 +1,5 @@
 <resources>
-  <string name="login_toolbar">Login</string>
-  <string name="login_title">Sign in to this Actual instance</string>
+=  <string name="login_title">Sign in to this Actual instance</string>
   <string name="login_message">If you lost your password, you likely still have access to your server to manually reset it.</string>
   <string name="login_password_hint">Password</string>
   <string name="login_sign_in">Sign In</string>

@@ -133,8 +133,8 @@ internal class LightTheme : Theme {
   override val buttonBareText = ActualColors.navy900
   override val buttonBareTextHover = buttonBareText
   override val buttonBareBackground = Color.Transparent
-  override val buttonBareBackgroundHover = Color(color = 0x26646464)
-  override val buttonBareBackgroundActive = Color(color = 0x40646464)
+  override val buttonBareBackgroundHover = Color(color = 0xFFE7E1E8)
+  override val buttonBareBackgroundActive = Color(color = 0xFFD8D2D8)
   override val buttonBareDisabledText = buttonNormalDisabledText
   override val buttonBareDisabledBackground = buttonBareBackground
 
