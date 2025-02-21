@@ -1,4 +1,5 @@
 import actual.gradle.commonMainDependencies
+import actual.gradle.commonTestDependencies
 
 plugins {
   alias(libs.plugins.module.multiplatform)
@@ -15,4 +16,10 @@ commonMainDependencies {
   api(projects.account.model)
   api(projects.url.model)
   compileOnly(libs.sekret)
+}
+
+commonTestDependencies {
+  implementation(projects.test.coroutines)
+  implementation(projects.test.http)
+  implementation(projects.test.resources)
 }
