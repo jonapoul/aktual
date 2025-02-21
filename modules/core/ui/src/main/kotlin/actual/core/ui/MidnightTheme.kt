@@ -133,8 +133,8 @@ internal class MidnightTheme : Theme {
   override val buttonBareText = buttonNormalText
   override val buttonBareTextHover = buttonNormalText
   override val buttonBareBackground = Color.Transparent
-  override val buttonBareBackgroundHover = Color(color = 0x4DC8C8C8)
-  override val buttonBareBackgroundActive = Color(color = 0x80C8C8C8)
+  override val buttonBareBackgroundHover = Color(color = 0xFF3C3C3C)
+  override val buttonBareBackgroundActive = Color(color = 0xFF646464)
   override val buttonBareDisabledText = buttonNormalDisabledText
   override val buttonBareDisabledBackground = buttonBareBackground
 

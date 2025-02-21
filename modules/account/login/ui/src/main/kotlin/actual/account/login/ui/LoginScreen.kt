@@ -17,7 +17,7 @@ import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
-import actual.core.ui.topAppBarColors
+import actual.core.ui.transparentTopAppBarColors
 import actual.core.versions.ActualVersions
 import actual.url.model.ServerUrl
 import actual.url.nav.ServerUrlNavRoute
@@ -46,7 +46,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -113,7 +112,7 @@ private fun LoginScreenImpl(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
-        colors = theme.topAppBarColors(),
+        colors = theme.transparentTopAppBarColors(),
         navigationIcon = {
           IconButton(onClick = { onAction(LoginAction.NavBack) }) {
             Icon(
@@ -122,13 +121,7 @@ private fun LoginScreenImpl(
             )
           }
         },
-        title = {
-          Text(
-            text = LoginStrings.toolbar,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-          )
-        },
+        title = { },
         scrollBehavior = scrollBehavior,
       )
     },
@@ -156,7 +149,7 @@ private fun Content(
   enteredPassword: Password,
   url: ServerUrl,
   isLoading: Boolean,
-  loginFailure: actual.account.login.domain.LoginResult.Failure?,
+  loginFailure: LoginResult.Failure?,
   onAction: (LoginAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -244,7 +237,7 @@ private fun WithErrorMessage() = PreviewScreen { type ->
     enteredPassword = Password.Dummy,
     url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
     isLoading = true,
-    loginFailure = actual.account.login.domain.LoginResult.InvalidPassword,
+    loginFailure = LoginResult.InvalidPassword,
     themeType = type,
     onAction = {},
   )
