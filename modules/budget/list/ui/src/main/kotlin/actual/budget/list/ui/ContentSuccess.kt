@@ -10,11 +10,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import my.nanihadesuka.compose.LazyColumnScrollbar
+import my.nanihadesuka.compose.ScrollbarSettings
 
 @Stable
 @Composable
@@ -25,19 +28,26 @@ internal fun ContentSuccess(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  LazyColumn(
-    modifier = modifier.fillMaxWidth(),
+  val listState = rememberLazyListState()
+  LazyColumnScrollbar(
+    state = listState,
+    settings = ScrollbarSettings.Default
   ) {
-    itemsIndexed(budgets) { index, budget ->
-      BudgetListItem(
-        budget = budget,
-        theme = theme,
-        onClickOpen = { onClickOpen(budget) },
-        onClickDelete = { onClickDelete(budget) },
-      )
+    LazyColumn(
+      state = listState,
+      modifier = modifier.fillMaxWidth(),
+    ) {
+      itemsIndexed(budgets) { index, budget ->
+        BudgetListItem(
+          budget = budget,
+          theme = theme,
+          onClickOpen = { onClickOpen(budget) },
+          onClickDelete = { onClickDelete(budget) },
+        )
 
-      if (index < budgets.lastIndex) {
-        VerticalSpacer()
+        if (index < budgets.lastIndex) {
+          VerticalSpacer()
+        }
       }
     }
   }

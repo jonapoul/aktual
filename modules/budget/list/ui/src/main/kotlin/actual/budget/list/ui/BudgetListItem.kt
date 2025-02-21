@@ -102,7 +102,9 @@ internal fun BudgetListItem(
       horizontalArrangement = Arrangement.Center,
     ) {
       Icon(
-        modifier = Modifier.size(13.dp),
+        modifier = Modifier
+          .padding(10.dp)
+          .size(13.dp),
         imageVector = ActualIcons.Key,
         contentDescription = description,
         tint = if (budget.hasKey) theme.formLabelText else theme.buttonNormalDisabledText,
@@ -149,7 +151,7 @@ private fun DeleteMenu(
 @Stable
 @Composable
 @ReadOnlyComposable
-private fun budgetDescription(budget: Budget): String? = if (budget.hasKey) {
+private fun budgetDescription(budget: Budget) = if (budget.hasKey) {
   BudgetListStrings.listBudgetsEncryptedWithKey
 } else {
   BudgetListStrings.listBudgetsEncryptedWithoutKey
