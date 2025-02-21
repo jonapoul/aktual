@@ -30,6 +30,7 @@ dependencies {
   implementation(libs.hilt.android)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
+  implementation(libs.lazycolumn.scrollbar)
   implementation(projects.account.login.nav)
   implementation(projects.account.model)
   implementation(projects.account.password.nav)

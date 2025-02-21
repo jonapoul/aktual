@@ -19,9 +19,12 @@ import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
+import actual.core.ui.bareIconButton
 import actual.core.ui.debugNavigate
+import actual.core.ui.normalIconButton
 import actual.core.ui.topAppBarColors
 import actual.core.ui.topAppBarIconButton
+import actual.core.ui.transparentTopAppBarColors
 import actual.core.versions.ActualVersions
 import actual.url.model.ServerUrl
 import actual.url.nav.ServerUrlNavRoute
@@ -66,9 +69,7 @@ import kotlinx.collections.immutable.persistentListOf
 fun ListBudgetsScreen(
   navController: NavHostController,
   token: LoginToken,
-  viewModel: ListBudgetsViewModel = hiltViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory>(
-    creationCallback = { factory -> factory.create(token.value) },
-  ),
+  viewModel: ListBudgetsViewModel = hiltViewModel(token),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
@@ -118,6 +119,11 @@ fun ListBudgetsScreen(
   )
 }
 
+@Composable
+private fun hiltViewModel(token: LoginToken) = hiltViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory>(
+  creationCallback = { factory -> factory.create(token.value) },
+)
+
 private fun NavHostController.openUrlScreen() =
   debugNavigate(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
 
@@ -137,24 +143,26 @@ private fun ListBudgetsScaffold(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
-        colors = theme.topAppBarColors(),
-        title = { ScaffoldTitle() },
+        colors = theme.transparentTopAppBarColors(),
+        title = { ScaffoldTitle(theme) },
         scrollBehavior = scrollBehavior,
         actions = {
           if (state is ListBudgetsState.Success) {
             BasicIconButton(
+              modifier = Modifier.padding(horizontal = 5.dp),
               onClick = { onAction(ListBudgetsAction.Reload) },
               imageVector = ActualIcons.Refresh,
               contentDescription = BudgetListStrings.budgetFailureRetry,
-              colors = { scheme, isPressed -> scheme.topAppBarIconButton(isPressed) },
+              colors = { scheme, isPressed -> scheme.normalIconButton(isPressed) },
             )
           }
 
           BasicIconButton(
+            modifier = Modifier.padding(horizontal = 5.dp),
             onClick = { showMenu = !showMenu },
             imageVector = Icons.Filled.MoreVert,
             contentDescription = BudgetListStrings.listBudgetsMenu,
-            colors = { scheme, isPressed -> scheme.topAppBarIconButton(isPressed) },
+            colors = { scheme, isPressed -> scheme.normalIconButton(isPressed) },
           )
 
           DropdownMenu(
@@ -189,10 +197,11 @@ private fun ListBudgetsScaffold(
 
 @Stable
 @Composable
-private fun ScaffoldTitle() = Text(
+private fun ScaffoldTitle(theme: Theme) = Text(
   text = BudgetListStrings.listBudgetsToolbar,
   maxLines = 1,
   overflow = TextOverflow.Ellipsis,
+  color = theme.pageText,
 )
 
 @Stable
