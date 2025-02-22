@@ -5,7 +5,9 @@ import kotlinx.kover.gradle.plugin.KoverGradlePlugin
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
+import kotlinx.kover.gradle.plugin.dsl.KoverReportFilter
 import kotlinx.kover.gradle.plugin.dsl.KoverReportsConfig
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.assign
@@ -34,11 +36,6 @@ class ConventionKover : Plugin<Project> {
     total {
       filters {
         excludes {
-          packages(
-            // themes, composables, etc.
-            "actual.core.ui",
-          )
-
           classes(
             "*Activity*",
             "*Application*",
@@ -76,6 +73,18 @@ class ConventionKover : Plugin<Project> {
           minValue = project.intProperty(key = "blueprint.kover.minCoverage")
           coverageUnits = CoverageUnit.INSTRUCTION
           aggregationForGroup = AggregationType.COVERED_PERCENTAGE
+        }
+      }
+    }
+  }
+}
+
+fun Project.koverExcludes(config: Action<KoverReportFilter>) {
+  extensions.configure<KoverProjectExtension> {
+    reports {
+      total {
+        filters {
+          excludes(config)
         }
       }
     }

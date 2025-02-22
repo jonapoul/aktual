@@ -6,6 +6,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
@@ -83,6 +84,17 @@ fun Project.androidUnitTestDependencies(handler: KotlinDependencyHandler.() -> U
         dependencies(handler)
       }
     }
+  }
+}
+
+fun Project.kspAllConfigs(dependency: Any) {
+  dependencies {
+    configurations
+      .map { config -> config.name }
+      .filter { name -> name.startsWith("ksp") && name != "ksp" }
+      .ifEmpty { error("No KSP configurations found in $path") }
+      .onEach { name -> logger.info("Applying $dependency to config $name") }
+      .forEach { name -> add(name, dependency) }
   }
 }
 

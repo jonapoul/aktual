@@ -2,7 +2,7 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":api:di","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
+":api:builder" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:di" ["shape"="box","fillcolor"="#FCB103"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -12,8 +12,8 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 ":api:di"
 }
-":api:core" -> ":url:model"
-":api:di" -> ":api:core" ["style"="dotted"]
+":api:builder" -> ":url:model"
+":api:di" -> ":api:builder" ["style"="dotted"]
 ":api:di" -> ":api:github"
 ":api:di" -> ":core:buildconfig"
 ":api:di" -> ":url:model" ["style"="dotted"]

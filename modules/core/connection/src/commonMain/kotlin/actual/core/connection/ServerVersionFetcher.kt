@@ -33,8 +33,13 @@ class ServerVersionFetcher @Inject internal constructor(
       logger.v("fetchVersion %s", apis)
       try {
         val response = withContext(contexts.io) { apis.base.info() }
-        logger.v("Fetched %s", response)
-        versionsStateHolder.set(response.build.version)
+        val body = response.body()
+        if (response.isSuccessful && body != null) {
+          logger.v("Fetched %s", body)
+          versionsStateHolder.set(body.build.version)
+        } else {
+          logger.e("Failure response fetching server info: $response")
+        }
         break
       } catch (e: CancellationException) {
         throw e

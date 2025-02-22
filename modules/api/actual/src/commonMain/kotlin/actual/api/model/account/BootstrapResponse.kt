@@ -1,23 +1,17 @@
 package actual.api.model.account
 
-import actual.api.model.Response
-import actual.api.model.ResponseStatus
-import actual.api.model.internal.BootstrapResponseSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable(BootstrapResponseSerializer::class)
-sealed interface BootstrapResponse : Response {
+sealed interface BootstrapResponse {
   @Serializable
-  data class Ok(
+  data class Success(
     @SerialName("data") val data: Data,
-    @SerialName("status") override val status: ResponseStatus = ResponseStatus.Ok,
   ) : BootstrapResponse
 
   @Serializable
-  data class Error(
+  data class Failure(
     @SerialName("reason") val reason: String,
-    @SerialName("status") override val status: ResponseStatus = ResponseStatus.Error,
   ) : BootstrapResponse
 
   @Serializable

@@ -6,6 +6,7 @@ node ["style"="filled"]
 ":account:login:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
+":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
@@ -22,6 +23,7 @@ graph ["rank"="same"]
 }
 ":account:login:prefs" -> ":account:model"
 ":api:actual" -> ":account:model"
+":api:actual" -> ":api:core"
 ":api:actual" -> ":url:model"
 ":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:res" ["style"="dotted"]

@@ -1,7 +1,5 @@
 # TODO
 
-- Move to molecule in VMs
-- Multiplatform
 - Support demo public app?
   - Doesn't support bootstrapping, probably other things too
 - Optional themes
@@ -11,11 +9,8 @@
 
 - Screens
   - bootstrap
-  - Change password
   - Add new budget
   - Import
-
-- Use action interfaces for each screen, not callback lambdas
 
 - auto change theme based on time of day
 

@@ -1,7 +1,7 @@
 package actual.about.di
 
-import actual.api.core.buildOkHttp
-import actual.api.core.buildRetrofit
+import actual.api.builder.buildOkHttp
+import actual.api.builder.buildRetrofit
 import actual.core.config.BuildConfig
 import actual.url.model.ServerUrl
 import alakazam.kotlin.core.Logger

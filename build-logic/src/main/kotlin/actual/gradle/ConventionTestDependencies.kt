@@ -17,7 +17,6 @@ class ConventionTestDependencies : Plugin<Project> {
     dependencies {
       testImplementation?.let { testImplementation ->
         testLibraries.forEach { lib -> testImplementation(lib) }
-        testImplementation(project(":test:resources"))
 
         if (isAndroid) {
           testImplementation(libs.getLibrary("test.androidx.arch"))
@@ -45,7 +44,6 @@ class ConventionTestDependencies : Plugin<Project> {
           androidTestImplementation(libs.getLibrary("test.kotlin.common"))
           androidTestImplementation(libs.getLibrary("test.kotlinx.coroutines"))
           androidTestImplementation(libs.getLibrary("test.turbine"))
-          androidTestImplementation(project(":test:resources"))
         }
       }
     }

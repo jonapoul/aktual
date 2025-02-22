@@ -3,8 +3,8 @@ package actual.about.ui
 import actual.about.res.AboutStrings
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
+import actual.core.ui.NormalIconButton
 import actual.core.ui.PreviewColumn
-import actual.core.ui.PrimaryIconButton
 import actual.core.ui.Theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -76,7 +76,7 @@ internal fun AboutBuildStateItem(
     }
 
     if (onClick != null) {
-      PrimaryIconButton(
+      NormalIconButton(
         modifier = Modifier.padding(ItemPadding),
         imageVector = Icons.AutoMirrored.Filled.Launch,
         contentDescription = AboutStrings.launch,

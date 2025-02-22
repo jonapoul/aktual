@@ -17,6 +17,7 @@ dependencies {
   implementation(libs.retrofit.core)
   implementation(projects.account.model)
   implementation(projects.api.actual)
+  implementation(projects.api.builder)
   implementation(projects.budget.model)
   implementation(projects.core.versions)
   implementation(projects.url.prefs)

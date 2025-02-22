@@ -19,11 +19,8 @@ import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
-import actual.core.ui.bareIconButton
 import actual.core.ui.debugNavigate
 import actual.core.ui.normalIconButton
-import actual.core.ui.topAppBarColors
-import actual.core.ui.topAppBarIconButton
 import actual.core.ui.transparentTopAppBarColors
 import actual.core.versions.ActualVersions
 import actual.url.model.ServerUrl

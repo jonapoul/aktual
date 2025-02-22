@@ -4,6 +4,7 @@ graph ["dpi"="100","label"=":core:connection","labelloc"="t","fontsize"="30","ra
 node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
+":api:builder" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -15,10 +16,11 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":api:actual" -> ":account:model"
+":api:actual" -> ":api:core"
 ":api:actual" -> ":url:model"
-":api:core" -> ":url:model"
+":api:builder" -> ":url:model"
 ":core:connection" -> ":api:actual" ["style"="dotted"]
-":core:connection" -> ":api:core" ["style"="dotted"]
+":core:connection" -> ":api:builder" ["style"="dotted"]
 ":core:connection" -> ":core:buildconfig"
 ":core:connection" -> ":core:versions" ["style"="dotted"]
 ":core:connection" -> ":url:model" ["style"="dotted"]

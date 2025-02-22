@@ -1,7 +1,7 @@
 package actual.test
 
-import actual.api.core.buildOkHttp
-import actual.api.core.buildRetrofit
+import actual.api.builder.buildOkHttp
+import actual.api.builder.buildRetrofit
 import actual.url.model.ServerUrl
 import alakazam.kotlin.core.EmptyLogger
 import alakazam.kotlin.core.Logger

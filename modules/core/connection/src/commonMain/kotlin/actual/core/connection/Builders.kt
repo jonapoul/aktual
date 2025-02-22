@@ -1,9 +1,9 @@
 package actual.core.connection
 
+import actual.api.builder.buildOkHttp
+import actual.api.builder.buildRetrofit
 import actual.api.client.ActualApis
 import actual.api.client.ActualJson
-import actual.api.core.buildOkHttp
-import actual.api.core.buildRetrofit
 import actual.url.model.ServerUrl
 import alakazam.kotlin.core.Logger
 import okhttp3.OkHttpClient

@@ -124,7 +124,12 @@ internal class LoginRequesterTest {
     apisStateHolder.filterNotNull().first()
 
     // When we log in with a successful response, but a null token
-    val body = """{ "status": "ok", "data": { "token": null } } """
+    val body = """
+      {
+        "status": "ok",
+        "data": { "token": null }
+      }
+    """.trimIndent()
     webServerRule.enqueue(body)
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
@@ -144,12 +149,17 @@ internal class LoginRequesterTest {
     apisStateHolder.filterNotNull().first()
 
     // When we log in with a failed response
-    val httpMsg = "Internal error"
-    webServerRule.enqueue(code = 500, body = httpMsg)
+    val body = """
+      {
+        "status": "error",
+        "reason": "Some error"
+      }
+    """.trimIndent()
+    webServerRule.enqueue(code = 500, body = body)
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
     // Then a HTTP result
-    assertIs<LoginResult.HttpFailure>(result)
+    assertIs<LoginResult.HttpFailure>(result, result.toString())
   }
 
   private companion object {

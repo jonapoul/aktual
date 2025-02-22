@@ -1,3 +1,5 @@
+import actual.gradle.koverExcludes
+
 plugins {
   alias(libs.plugins.module.compose)
 }
@@ -27,4 +29,11 @@ dependencies {
   implementation(libs.androidx.coreKtx)
   implementation(libs.kotlinx.coroutines)
   implementation(projects.core.res)
+}
+
+koverExcludes {
+  packages(
+    "actual.core.icons",
+    "actual.core.ui",
+  )
 }
