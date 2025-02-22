@@ -8,15 +8,18 @@ import actual.core.ui.Theme
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,11 +41,21 @@ internal fun AboutHeader(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     val appName = CoreStrings.appName
-    Image(
+
+    Box(
       modifier = Modifier.size(80.dp),
-      painter = painterResource(id = CoreR.mipmap.ic_launcher_round),
-      contentDescription = appName,
-    )
+    ) {
+      Image(
+        modifier = Modifier.clip(CircleShape),
+        painter = painterResource(id = CoreR.mipmap.ic_launcher_round_background),
+        contentDescription = appName,
+      )
+
+      Image(
+        painter = painterResource(id = CoreR.mipmap.ic_launcher_round_foreground),
+        contentDescription = appName,
+      )
+    }
 
     HorizontalSpacer(10.dp)
 
