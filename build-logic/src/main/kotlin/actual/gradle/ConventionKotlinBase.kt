@@ -12,6 +12,7 @@ class ConventionKotlinBase : Plugin<Project> {
         freeCompilerArgs.addAll(
           "-Xjvm-default=all-compatibility",
           "-opt-in=kotlin.RequiresOptIn",
+          "-opt-in=kotlin.uuid.ExperimentalUuidApi",
         )
       }
     }
