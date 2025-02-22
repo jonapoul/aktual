@@ -31,7 +31,7 @@ internal fun ContentSuccess(
   val listState = rememberLazyListState()
   LazyColumnScrollbar(
     state = listState,
-    settings = ScrollbarSettings.Default
+    settings = ScrollbarSettings.Default,
   ) {
     LazyColumn(
       state = listState,

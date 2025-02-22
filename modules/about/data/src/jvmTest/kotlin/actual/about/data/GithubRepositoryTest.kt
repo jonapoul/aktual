@@ -3,8 +3,8 @@ package actual.about.data
 import actual.core.config.BuildConfig
 import actual.test.MockWebServerRule
 import actual.test.TestBuildConfig
-import actual.test.getResourceAsText
 import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.core.getResourceAsText
 import alakazam.test.core.standardDispatcher
 import github.api.client.GithubApi
 import github.api.client.GithubJson

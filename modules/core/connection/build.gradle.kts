@@ -18,7 +18,7 @@ commonMainDependencies {
   implementation(libs.retrofit.core)
   implementation(libs.retrofit.serialization)
   implementation(projects.api.actual)
-  implementation(projects.api.core)
+  implementation(projects.api.builder)
   implementation(projects.core.versions)
   implementation(projects.url.model)
   implementation(projects.url.prefs)

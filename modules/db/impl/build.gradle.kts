@@ -1,6 +1,7 @@
 import actual.gradle.commonMainDependencies
 import actual.gradle.commonTestDependencies
 import actual.gradle.jvmMainDependencies
+import actual.gradle.kspAllConfigs
 
 plugins {
   alias(libs.plugins.module.multiplatform)
@@ -57,12 +58,4 @@ jvmMainDependencies {
   implementation(libs.androidx.sqlite.bundled)
 }
 
-dependencies {
-  listOf(
-    "kspAndroid",
-    "kspAndroidTest",
-    "kspCommonMainMetadata",
-    "kspJvm",
-    "kspJvmTest",
-  ).forEach { config -> add(config, libs.androidx.room.compiler) }
-}
+kspAllConfigs(libs.androidx.room.compiler)

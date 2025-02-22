@@ -3,6 +3,7 @@ package actual.budget.list.vm
 import actual.account.model.LoginToken
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
+import actual.api.client.ActualJson
 import actual.api.client.SyncApi
 import actual.budget.model.BudgetId
 import actual.test.MockWebServerRule
@@ -101,7 +102,7 @@ class BudgetListFetcherTest {
 
     // given
     val syncApi = mockk<SyncApi> {
-      coEvery { listUserFiles(TOKEN) } throws NoRouteToHostException()
+      coEvery { fetchUserFiles(TOKEN) } throws NoRouteToHostException()
     }
     apisStateHolder.update { buildApis(syncApi) }
     webServerRule.enqueue(VALID_RESPONSE, code = 200)
@@ -138,7 +139,7 @@ class BudgetListFetcherTest {
   }
 
   private fun buildApis(
-    syncApi: SyncApi = webServerRule.buildApi(),
+    syncApi: SyncApi = webServerRule.buildApi(ActualJson),
   ) = mockk<ActualApis> { every { sync } returns syncApi }
 
   private companion object {

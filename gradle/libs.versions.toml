@@ -163,7 +163,6 @@ okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 preferences-android = { module = "dev.jonpoulton.preferences:android", version.ref = "preferences" }
 preferences-core = { module = "dev.jonpoulton.preferences:core", version.ref = "preferences" }
 retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
-retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 retrofit-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 sekret = { module = "net.afanasev:sekret-annotation", version.ref = "sekret" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

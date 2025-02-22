@@ -2,6 +2,7 @@ package actual.url.vm
 
 import actual.account.login.prefs.LoginPreferences
 import actual.api.client.ActualApisStateHolder
+import actual.api.client.needsBoostrapAdapted
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
@@ -143,17 +144,12 @@ class ServerUrlViewModel @Inject internal constructor(
       .first()
 
     logger.v("apis = %s", apis)
-    val response = withContext(contexts.io) { apis.account.needsBootstrap() }
+    val response = withContext(contexts.io) { apis.account.needsBoostrapAdapted() }
     logger.v("response = %s", response)
 
-    val confirmResult = when (response) {
-      is NeedsBootstrapResponse.Ok -> {
-        ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
-      }
-
-      is NeedsBootstrapResponse.Error -> {
-        ConfirmResult.Failed(reason = response.reason)
-      }
+    val confirmResult = when (val body = response.body) {
+      is NeedsBootstrapResponse.Success -> ConfirmResult.Succeeded(isBootstrapped = body.data.bootstrapped)
+      is NeedsBootstrapResponse.Failure -> ConfirmResult.Failed(reason = body.reason)
     }
     mutableConfirmResult.update { confirmResult }
   } catch (e: CancellationException) {

@@ -1,25 +1,19 @@
 package actual.api.model.account
 
 import actual.account.model.LoginToken
-import actual.api.model.Response
-import actual.api.model.ResponseStatus
 import actual.api.model.internal.LoginResponseDataSerializer
-import actual.api.model.internal.LoginResponseSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable(LoginResponseSerializer::class)
-sealed interface LoginResponse : Response {
+sealed interface LoginResponse {
   @Serializable
-  data class Ok(
+  data class Success(
     @SerialName("data") val data: Data,
-    @SerialName("status") override val status: ResponseStatus = ResponseStatus.Ok,
   ) : LoginResponse
 
   @Serializable
-  data class Error(
+  data class Failure(
     @SerialName("reason") val reason: String,
-    @SerialName("status") override val status: ResponseStatus = ResponseStatus.Error,
   ) : LoginResponse
 
   @Serializable(LoginResponseDataSerializer::class)

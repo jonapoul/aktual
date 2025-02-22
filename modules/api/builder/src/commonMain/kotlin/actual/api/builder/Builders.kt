@@ -1,4 +1,4 @@
-package actual.api.core
+package actual.api.builder
 
 import actual.url.model.ServerUrl
 import alakazam.kotlin.core.Logger

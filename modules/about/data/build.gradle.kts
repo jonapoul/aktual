@@ -21,5 +21,4 @@ commonTestDependencies {
   implementation(projects.test.buildconfig)
   implementation(projects.test.coroutines)
   implementation(projects.test.http)
-  implementation(projects.test.resources)
 }

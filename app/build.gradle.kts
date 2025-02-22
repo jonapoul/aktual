@@ -164,7 +164,7 @@ dependencies {
   implementation(projects.account.login.ui)
   implementation(projects.account.password.nav)
   implementation(projects.account.password.ui)
-  implementation(projects.api.core)
+  implementation(projects.api.builder)
   implementation(projects.api.di)
   implementation(projects.budget.list.nav)
   implementation(projects.budget.list.ui)

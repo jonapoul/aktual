@@ -1,26 +1,20 @@
 package actual.api.model.account
 
-import actual.api.model.Response
-import actual.api.model.ResponseStatus
-import actual.api.model.internal.NeedsBootstrapResponseSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /**
  * https://github.com/actualbudget/actual-server/blob/master/src/app-account.js#L31-L41
  */
-@Serializable(NeedsBootstrapResponseSerializer::class)
-sealed interface NeedsBootstrapResponse : Response {
+sealed interface NeedsBootstrapResponse {
   @Serializable
-  data class Ok(
+  data class Success(
     @SerialName("data") val data: Data,
-    @SerialName("status") override val status: ResponseStatus = ResponseStatus.Ok,
   ) : NeedsBootstrapResponse
 
   @Serializable
-  data class Error(
+  data class Failure(
     @SerialName("reason") val reason: String,
-    @SerialName("status") override val status: ResponseStatus = ResponseStatus.Error,
   ) : NeedsBootstrapResponse
 
   @Serializable

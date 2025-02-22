@@ -5,6 +5,7 @@ package actual.core.connection
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.BaseApi
+import actual.api.core.RetrofitResponse
 import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
 import actual.core.versions.ActualVersionsStateHolder
@@ -93,12 +94,8 @@ class ServerVersionFetcherTest {
   @Test
   fun `Valid fetch response`() = runTest(timeout = 5.seconds) {
     // Given
-    coEvery { baseApi.info() } returns InfoResponse(
-      build = Build(
-        name = "ABC",
-        description = "XYZ",
-        version = "1.2.3",
-      ),
+    coEvery { baseApi.info() } returns RetrofitResponse.success(
+      InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3")),
     )
 
     // When
@@ -117,8 +114,9 @@ class ServerVersionFetcherTest {
   @Test
   fun `Failed then successful fetch response`() = runTest(timeout = 5.seconds) {
     // Given
-    val validResponse =
-      InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
+    val validResponse = RetrofitResponse.success(
+      InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3")),
+    )
     val failureReason = "SOMETHING BROKE"
     coEvery { baseApi.info() } answers {
       coEvery { baseApi.info() } returns validResponse

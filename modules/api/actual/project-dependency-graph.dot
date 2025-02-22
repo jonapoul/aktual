@@ -4,12 +4,14 @@ graph ["dpi"="100","label"=":api:actual","labelloc"="t","fontsize"="30","ranksep
 node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
+":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":api:actual" -> ":account:model"
+":api:actual" -> ":api:core"
 ":api:actual" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

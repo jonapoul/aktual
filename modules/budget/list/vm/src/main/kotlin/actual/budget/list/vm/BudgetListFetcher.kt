@@ -2,7 +2,7 @@ package actual.budget.list.vm
 
 import actual.account.model.LoginToken
 import actual.api.client.ActualApisStateHolder
-import actual.api.client.ActualJson
+import actual.api.client.fetchUserFilesAdapted
 import actual.api.model.sync.ListUserFilesResponse
 import actual.budget.model.BudgetId
 import alakazam.kotlin.core.CoroutineContexts
@@ -11,7 +11,6 @@ import alakazam.kotlin.core.requireMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
-import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
@@ -23,35 +22,16 @@ class BudgetListFetcher @Inject internal constructor(
   suspend fun fetchBudgets(token: LoginToken): FetchBudgetsResult {
     val apis = apisStateHolder.value ?: return FetchBudgetsResult.NotLoggedIn
     return try {
-      val response = withContext(contexts.io) { apis.sync.listUserFiles(token) }
-      when (response) {
-        is ListUserFilesResponse.Error ->
-          FetchBudgetsResult.OtherFailure(response.reason)
-
-        is ListUserFilesResponse.Ok ->
-          FetchBudgetsResult.Success(
-            budgets = response.data.map { item ->
-              Budget(
-                name = item.name,
-                state = BudgetState.Unknown,
-                encryptKeyId = item.encryptKeyId,
-                groupId = item.groupId,
-                cloudFileId = BudgetId(item.fileId),
-              )
-            },
-          )
+      val response = withContext(contexts.io) { apis.sync.fetchUserFilesAdapted(token) }
+      val result = when (val body = response.body) {
+        is ListUserFilesResponse.Failure -> FetchBudgetsResult.FailureResponse(body.reason)
+        is ListUserFilesResponse.Success -> FetchBudgetsResult.Success(body.data.map(::toBudget))
       }
+
+      logger.i("Fetched budgets: %s", result)
+      result
     } catch (e: CancellationException) {
       throw e
-    } catch (e: HttpException) {
-      logger.e(e, "HTTP failure fetching budgets")
-      val response = e.response()
-      val failureReason = response
-        ?.errorBody()
-        ?.string()
-        ?.let { ActualJson.decodeFromString(ListUserFilesResponse.Error.serializer(), it) }
-        ?.reason
-      FetchBudgetsResult.FailureResponse(reason = failureReason ?: response?.message())
     } catch (e: SerializationException) {
       logger.e(e, "JSON failure fetching budgets")
       FetchBudgetsResult.InvalidResponse(e.requireMessage())
@@ -63,4 +43,12 @@ class BudgetListFetcher @Inject internal constructor(
       FetchBudgetsResult.OtherFailure(e.requireMessage())
     }
   }
+
+  private fun toBudget(item: ListUserFilesResponse.Item) = Budget(
+    name = item.name,
+    state = BudgetState.Unknown,
+    encryptKeyId = item.encryptKeyId,
+    groupId = item.groupId,
+    cloudFileId = BudgetId(item.fileId),
+  )
 }

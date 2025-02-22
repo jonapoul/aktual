@@ -7,6 +7,8 @@ import actual.account.model.LoginToken
 import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
+import actual.api.client.ActualJson
+import actual.api.core.RetrofitResponse
 import actual.api.model.account.LoginMethod
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.colorscheme.ColorSchemePreferences
@@ -28,6 +30,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import okhttp3.ResponseBody.Companion.toResponseBody
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -147,7 +150,10 @@ class ServerUrlViewModelTest {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
       assertNull(awaitItem())
       val reason = "SOMETHING BROKE"
-      coEvery { accountApi.needsBootstrap() } returns NeedsBootstrapResponse.Error(reason = reason)
+      val errorBody = ActualJson
+        .encodeToString(NeedsBootstrapResponse.Failure(reason))
+        .toResponseBody()
+      coEvery { accountApi.needsBootstrap() } returns RetrofitResponse.error(400, errorBody)
 
       // When
       viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
@@ -220,11 +226,13 @@ class ServerUrlViewModelTest {
   }
 
   private fun setBootstrapResponse(bootstrapped: Boolean) {
-    coEvery { accountApi.needsBootstrap() } returns NeedsBootstrapResponse.Ok(
-      data = NeedsBootstrapResponse.Data(
-        bootstrapped = bootstrapped,
-        loginMethod = LoginMethod.Password,
-        availableLoginMethods = emptyList(),
+    coEvery { accountApi.needsBootstrap() } returns RetrofitResponse.success(
+      NeedsBootstrapResponse.Success(
+        data = NeedsBootstrapResponse.Data(
+          bootstrapped = bootstrapped,
+          loginMethod = LoginMethod.Password,
+          availableLoginMethods = emptyList(),
+        ),
       ),
     )
   }

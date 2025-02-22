@@ -3,7 +3,7 @@ package actual.api.client
 import actual.account.model.LoginToken
 import actual.api.model.sync.ListUserFilesResponse
 import actual.test.MockWebServerRule
-import actual.test.getResourceAsText
+import alakazam.test.core.getResourceAsText
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -18,7 +18,7 @@ class SyncApiTest {
 
   @Before
   fun before() {
-    syncApi = webServerRule.buildApi()
+    syncApi = webServerRule.buildApi(ActualJson)
   }
 
   @Test
@@ -28,7 +28,7 @@ class SyncApiTest {
     webServerRule.enqueue(json)
 
     // when
-    syncApi.listUserFiles(TOKEN)
+    syncApi.fetchUserFiles(TOKEN)
     val request = webServerRule.server.takeRequest()
 
     // then
@@ -45,12 +45,12 @@ class SyncApiTest {
     webServerRule.enqueue(json, code = 200)
 
     // when
-    val response = syncApi.listUserFiles(TOKEN)
+    val response = syncApi.fetchUserFilesAdapted(TOKEN)
 
     // then
     assertEquals(
-      actual = response,
-      expected = ListUserFilesResponse.Ok(
+      actual = response.body,
+      expected = ListUserFilesResponse.Success(
         data = listOf(
           ListUserFilesResponse.Item(
             deleted = 0,
@@ -74,10 +74,10 @@ class SyncApiTest {
                 displayName = "",
                 userName = "",
                 isOwner = true,
-              )
+              ),
             ),
           ),
-        )
+        ),
       ),
     )
   }
@@ -89,12 +89,12 @@ class SyncApiTest {
     webServerRule.enqueue(json, code = 400)
 
     // when
-    val response = syncApi.listUserFiles(TOKEN)
+    val response = syncApi.fetchUserFilesAdapted(TOKEN)
 
     // then
     assertEquals(
-      actual = response,
-      expected = ListUserFilesResponse.Error(reason = "Something broke"),
+      actual = response.body,
+      expected = ListUserFilesResponse.Failure(reason = "Something broke"),
     )
   }
 
