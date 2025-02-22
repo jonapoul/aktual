@@ -3,13 +3,13 @@
 package actual.url.vm
 
 import actual.account.login.prefs.LoginPreferences
+import actual.account.model.LoginMethod
 import actual.account.model.LoginToken
 import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.core.RetrofitResponse
-import actual.api.model.account.LoginMethod
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.versions.ActualVersionsStateHolder
