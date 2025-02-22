@@ -48,6 +48,11 @@ dependencyAnalysis {
     bundle(name = "viewModel") { include(regex = "androidx.lifecycle:lifecycle-viewmodel.*".toRegex()) }
   }
 
+  reporting {
+    printBuildHealth(true)
+    onlyOnFailure(true)
+  }
+
   abi {
     exclusions {
       ignoreInternalPackages()
