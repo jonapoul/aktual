@@ -1,6 +1,7 @@
 package actual.account.login.domain
 
 import actual.account.model.LoginToken
+import actual.api.model.account.FailureReason
 import androidx.compose.runtime.Immutable
 
 @Immutable
@@ -19,10 +20,10 @@ sealed interface LoginResult {
   ) : Failure
 
   data class NetworkFailure(
-    val reason: String,
+    val reason: FailureReason,
   ) : Failure
 
   data class OtherFailure(
-    val reason: String,
+    val reason: FailureReason,
   ) : Failure
 }
