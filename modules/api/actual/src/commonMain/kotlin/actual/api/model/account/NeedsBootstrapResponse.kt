@@ -15,7 +15,7 @@ sealed interface NeedsBootstrapResponse {
 
   @Serializable
   data class Failure(
-    @SerialName("reason") val reason: String,
+    @SerialName("reason") val reason: FailureReason,
   ) : NeedsBootstrapResponse
 
   @Serializable

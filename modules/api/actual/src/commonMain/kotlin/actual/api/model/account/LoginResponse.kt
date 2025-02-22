@@ -13,7 +13,7 @@ sealed interface LoginResponse {
 
   @Serializable
   data class Failure(
-    @SerialName("reason") val reason: String,
+    @SerialName("reason") val reason: FailureReason,
   ) : LoginResponse
 
   @Serializable(LoginResponseDataSerializer::class)
