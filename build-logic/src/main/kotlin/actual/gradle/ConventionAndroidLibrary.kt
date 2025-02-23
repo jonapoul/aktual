@@ -28,12 +28,12 @@ class ConventionAndroidLibrary : Plugin<Project> {
       }
 
       buildTypes {
-        getByName("debug") {
+        debug {
           enableUnitTestCoverage = true
           enableAndroidTestCoverage = true
         }
 
-        getByName("release") {
+        release {
           enableUnitTestCoverage = false
           enableAndroidTestCoverage = false
         }

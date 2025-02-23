@@ -3,6 +3,7 @@ import blueprint.core.javaVersionString
 import blueprint.core.rootLocalPropertiesOrNull
 import blueprint.core.stringProperty
 import blueprint.core.stringPropertyOrNull
+import com.android.build.api.dsl.ApkSigningConfig
 import org.gradle.internal.extensions.stdlib.capitalized
 import java.time.LocalDate
 
@@ -54,12 +55,6 @@ android {
     val kotlinTime = "kotlinx.datetime.Instant.Companion.fromEpochMilliseconds(${System.currentTimeMillis()}L)"
     buildConfigField("kotlinx.datetime.Instant", "BUILD_TIME", kotlinTime)
     buildConfigField("String", "GIT_HASH", "\"${gitCommitHash}\"")
-
-    val defaultUrl = stringPropertyOrNull("actual.defaultUrl")
-    buildConfigField("String", "DEFAULT_URL", if (defaultUrl == null) "null" else "\"${defaultUrl}\"")
-
-    val defaultPassword = stringPropertyOrNull("actual.defaultPassword")
-    buildConfigField("String", "DEFAULT_PASSWORD", if (defaultPassword == null) "null" else "\"${defaultPassword}\"")
   }
 
   kotlinOptions {
@@ -84,16 +79,35 @@ android {
   }
 
   signingConfigs {
+    val debug by getting
+    val release by creating
+
     val localProps = rootLocalPropertiesOrNull()
     if (localProps != null) {
-      create("release") {
+      release.apply {
         storeFile = rootProject.file(stringProperty(key = "actual.keyFile"))
         storePassword = stringProperty(key = "actual.keyFilePassword")
         keyAlias = stringProperty(key = "actual.keyAlias")
         keyPassword = stringProperty(key = "actual.keyPassword")
       }
     } else {
-      logger.error("No local.properties found - skipping signing configs")
+      logger.warn("No local.properties found - skipping signing configs")
+    }
+  }
+
+  buildTypes {
+    debug {
+      signingConfig = signingConfigs.findByName("debug")
+      val defaultUrl = stringPropertyOrNull(key = "actual.defaultUrl")
+      val defaultPassword = stringPropertyOrNull(key = "actual.defaultPassword")
+      buildConfigField("String", "DEFAULT_URL", if (defaultUrl == null) "null" else "\"${defaultUrl}\"")
+      buildConfigField("String", "DEFAULT_PASSWORD", if (defaultPassword == null) "null" else "\"${defaultPassword}\"")
+    }
+
+    release {
+      signingConfig = signingConfigs.findByName("release")
+      buildConfigField("String", "DEFAULT_URL", "null")
+      buildConfigField("String", "DEFAULT_PASSWORD", "null")
     }
   }
 }
@@ -168,6 +182,8 @@ dependencies {
   implementation(projects.api.di)
   implementation(projects.budget.list.nav)
   implementation(projects.budget.list.ui)
+  implementation(projects.budget.sync.nav)
+  implementation(projects.budget.sync.ui)
   implementation(projects.core.buildconfig)
   implementation(projects.core.colorscheme)
   implementation(projects.core.connection)
