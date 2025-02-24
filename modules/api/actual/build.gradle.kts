@@ -10,13 +10,11 @@ plugins {
 
 commonMainDependencies {
   api(libs.alakazam.kotlin.core)
-  api(libs.alakazam.kotlin.serialization)
   api(libs.javaxInject)
   api(libs.kotlinx.serialization.json)
   api(libs.retrofit.core)
   api(projects.account.model)
   api(projects.budget.model)
-  api(projects.api.core)
   api(projects.url.model)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   compileOnly(libs.sekret)

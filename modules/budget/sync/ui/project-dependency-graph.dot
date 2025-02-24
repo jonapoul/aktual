@@ -2,13 +2,9 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":budget:sync:ui","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":account:login:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":account:password:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:builder" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:download" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:sync:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":budget:sync:res" ["fillcolor"="#00FFFF","shape"="box"]
@@ -20,45 +16,29 @@ node ["style"="filled"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":url:nav" ["fillcolor"="#5555FF","shape"="box"]
-":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core"
+":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
-":api:builder" -> ":url:model"
-":api:download" -> ":api:core" ["style"="dotted"]
-":api:download" -> ":budget:model"
 ":budget:sync:nav" -> ":account:model"
-":budget:sync:ui" -> ":account:login:nav" ["style"="dotted"]
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
-":budget:sync:ui" -> ":account:password:nav" ["style"="dotted"]
-":budget:sync:ui" -> ":budget:model" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:nav"
 ":budget:sync:ui" -> ":budget:sync:res" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"
-":budget:sync:ui" -> ":core:res" ["style"="dotted"]
 ":budget:sync:ui" -> ":core:ui"
-":budget:sync:ui" -> ":url:nav" ["style"="dotted"]
 ":budget:sync:vm" -> ":account:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
-":budget:sync:vm" -> ":api:builder" ["style"="dotted"]
-":budget:sync:vm" -> ":api:download"
-":budget:sync:vm" -> ":budget:model"
+":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":core:colorscheme"
-":budget:sync:vm" -> ":core:versions" ["style"="dotted"]
-":budget:sync:vm" -> ":url:model"
-":budget:sync:vm" -> ":url:prefs" ["style"="dotted"]
 ":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
 ":core:versions" -> ":core:buildconfig"
-":url:prefs" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

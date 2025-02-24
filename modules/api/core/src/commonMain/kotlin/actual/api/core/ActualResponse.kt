@@ -3,6 +3,7 @@ package actual.api.core
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.StringFormat
 import okhttp3.Headers
+import retrofit2.Response as RetrofitResponse
 
 data class ActualResponse<T : Any>(
   val body: T,
@@ -11,8 +12,6 @@ data class ActualResponse<T : Any>(
   val headers: Headers,
   val isSuccessful: Boolean,
 )
-
-typealias RetrofitResponse<T> = retrofit2.Response<T>
 
 fun <Base : Any, Success : Base, Failure : Base> RetrofitResponse<Success>.adapted(
   format: StringFormat,

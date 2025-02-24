@@ -2,14 +2,12 @@
 
 package actual.url.vm
 
-import actual.account.login.prefs.LoginPreferences
+import actual.account.login.domain.LoginPreferences
 import actual.account.model.LoginMethod
 import actual.account.model.LoginToken
 import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
-import actual.api.client.ActualJson
-import actual.api.core.RetrofitResponse
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.versions.ActualVersionsStateHolder
@@ -36,6 +34,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import retrofit2.Response
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -85,7 +84,7 @@ class ServerUrlViewModelTest {
       colorSchemePreferences = colorSchemePreferences,
       loginPreferences = loginPreferences,
       versionsStateHolder = versionsStateHolder,
-      urlProvider = ServerUrl.Provider { null },
+      urlProvider = { null },
     )
   }
 
@@ -150,10 +149,13 @@ class ServerUrlViewModelTest {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
       assertNull(awaitItem())
       val reason = "SOMETHING BROKE"
-      val errorBody = ActualJson
-        .encodeToString(NeedsBootstrapResponse.Failure(reason))
-        .toResponseBody()
-      coEvery { accountApi.needsBootstrap() } returns RetrofitResponse.error(400, errorBody)
+      val body = """
+        {
+          "status": "error",
+          "reason": "$reason"
+        }
+      """.trimIndent()
+      coEvery { accountApi.needsBootstrap() } returns Response.error(400, body.toResponseBody())
 
       // When
       viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
@@ -226,7 +228,7 @@ class ServerUrlViewModelTest {
   }
 
   private fun setBootstrapResponse(bootstrapped: Boolean) {
-    coEvery { accountApi.needsBootstrap() } returns RetrofitResponse.success(
+    coEvery { accountApi.needsBootstrap() } returns Response.success(
       NeedsBootstrapResponse.Success(
         data = NeedsBootstrapResponse.Data(
           bootstrapped = bootstrapped,

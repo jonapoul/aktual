@@ -1,4 +1,4 @@
-package actual.account.login.prefs
+package actual.account.login.domain
 
 import actual.account.model.LoginToken
 import dev.jonpoulton.preferences.core.Preference

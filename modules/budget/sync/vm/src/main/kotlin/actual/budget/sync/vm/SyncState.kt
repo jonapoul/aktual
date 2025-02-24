@@ -1,7 +1,5 @@
 package actual.budget.sync.vm
 
-import actual.api.download.Bytes
-import actual.api.download.Percent
 import androidx.compose.runtime.Immutable
 
 @Immutable

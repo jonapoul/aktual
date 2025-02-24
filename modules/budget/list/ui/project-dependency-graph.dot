@@ -6,7 +6,6 @@ node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:password:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:builder" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":budget:list:res" ["fillcolor"="#00FFFF","shape"="box"]
@@ -27,10 +26,9 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core"
+":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
-":api:builder" -> ":url:model"
 ":budget:list:nav" -> ":account:model"
 ":budget:list:ui" -> ":account:login:nav" ["style"="dotted"]
 ":budget:list:ui" -> ":account:model" ["style"="dotted"]
@@ -45,8 +43,8 @@ graph ["rank"="same"]
 ":budget:list:ui" -> ":url:nav" ["style"="dotted"]
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
-":budget:list:vm" -> ":api:builder" ["style"="dotted"]
-":budget:list:vm" -> ":budget:model" ["style"="dotted"]
+":budget:list:vm" -> ":api:core" ["style"="dotted"]
+":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:colorscheme"
 ":budget:list:vm" -> ":core:versions" ["style"="dotted"]
 ":budget:list:vm" -> ":url:model"

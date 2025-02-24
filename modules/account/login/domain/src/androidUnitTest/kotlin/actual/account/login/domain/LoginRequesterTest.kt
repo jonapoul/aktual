@@ -1,6 +1,5 @@
 package actual.account.login.domain
 
-import actual.account.login.prefs.LoginPreferences
 import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.api.client.AccountApi

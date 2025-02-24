@@ -1,6 +1,6 @@
 package actual.android.app
 
-import actual.account.login.prefs.LoginPreferences
+import actual.account.login.domain.LoginPreferences
 import actual.account.model.LoginToken
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType

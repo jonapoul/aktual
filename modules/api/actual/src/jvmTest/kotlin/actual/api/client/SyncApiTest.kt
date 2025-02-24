@@ -1,6 +1,8 @@
 package actual.api.client
 
 import actual.account.model.LoginToken
+import actual.api.core.adapted
+import actual.api.model.account.FailureReason
 import actual.api.model.sync.ListUserFilesResponse
 import actual.test.MockWebServerRule
 import alakazam.test.core.getResourceAsText
@@ -45,7 +47,7 @@ class SyncApiTest {
     webServerRule.enqueue(json, code = 200)
 
     // when
-    val response = syncApi.fetchUserFilesAdapted(TOKEN)
+    val response = fetchUserFiles()
 
     // then
     assertEquals(
@@ -89,14 +91,18 @@ class SyncApiTest {
     webServerRule.enqueue(json, code = 400)
 
     // when
-    val response = syncApi.fetchUserFilesAdapted(TOKEN)
+    val response = fetchUserFiles()
 
     // then
     assertEquals(
       actual = response.body,
-      expected = ListUserFilesResponse.Failure(reason = "Something broke"),
+      expected = ListUserFilesResponse.Failure(reason = FailureReason.Other("Something broke")),
     )
   }
+
+  private suspend fun fetchUserFiles() = syncApi
+    .fetchUserFiles(TOKEN)
+    .adapted(ActualJson, ListUserFilesResponse.Failure.serializer())
 
   private companion object {
     val TOKEN = LoginToken("abc-123")

@@ -7,13 +7,13 @@ plugins {
 
 commonMainDependencies {
   api(libs.javaxInject)
+  api(libs.preferences.core)
   api(projects.account.model)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.kotlinx.coroutines)
-  implementation(libs.preferences.core)
   implementation(libs.retrofit.core)
-  implementation(projects.account.login.prefs)
   implementation(projects.api.actual)
+  implementation(projects.api.core)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
 }
 

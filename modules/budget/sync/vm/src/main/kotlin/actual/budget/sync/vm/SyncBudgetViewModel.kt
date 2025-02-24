@@ -23,6 +23,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
   // Necessary because trying to pass a value class through dagger's assisted injection results in a KSP build failure.
   // See https://github.com/google/dagger/issues/4613
   // TODO: Rework to pass the token in directly when they fix it
+  @Suppress("UnusedPrivateProperty")
   private val token = LoginToken(tokenString)
 
   val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.stateFlow(viewModelScope)

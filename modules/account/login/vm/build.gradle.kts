@@ -12,7 +12,7 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.preferences.core)
-  implementation(projects.account.login.prefs)
+  implementation(projects.account.login.domain)
   implementation(projects.core.versions)
   implementation(projects.url.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)

@@ -5,12 +5,10 @@ import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.client.SyncApi
-import actual.api.download.DownloadState.Done
-import actual.api.download.DownloadState.Failed
-import actual.api.download.DownloadState.InProgress
-import actual.api.download.FileStore
-import actual.api.download.bytes
 import actual.budget.model.BudgetId
+import actual.budget.sync.vm.DownloadState.Done
+import actual.budget.sync.vm.DownloadState.Failed
+import actual.budget.sync.vm.DownloadState.InProgress
 import actual.test.MockWebServerRule
 import alakazam.kotlin.core.EmptyLogger
 import alakazam.test.core.MainDispatcherRule

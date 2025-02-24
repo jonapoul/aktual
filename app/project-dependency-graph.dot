@@ -9,7 +9,6 @@ node ["style"="filled"]
 ":about:vm" ["fillcolor"="#F5A6A6","shape"="box"]
 ":account:login:domain" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:login:nav" ["fillcolor"="#5555FF","shape"="box"]
-":account:login:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:login:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":account:login:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":account:login:vm" ["fillcolor"="#F5A6A6","shape"="box"]
@@ -23,7 +22,6 @@ node ["style"="filled"]
 ":api:builder" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:di" ["fillcolor"="#FCB103","shape"="box"]
-":api:download" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="box"]
 ":app" ["shape"="box","fillcolor"="#FF5555"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="box"]
@@ -71,10 +69,9 @@ graph ["rank"="same"]
 ":about:ui" -> ":licenses:nav" ["style"="dotted"]
 ":about:vm" -> ":about:data"
 ":about:vm" -> ":core:buildconfig"
-":account:login:domain" -> ":account:login:prefs" ["style"="dotted"]
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
-":account:login:prefs" -> ":account:model"
+":account:login:domain" -> ":api:core" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:domain" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:nav" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:res" ["style"="dotted"]
@@ -84,16 +81,15 @@ graph ["rank"="same"]
 ":account:login:ui" -> ":core:ui"
 ":account:login:ui" -> ":url:nav" ["style"="dotted"]
 ":account:login:vm" -> ":account:login:domain"
-":account:login:vm" -> ":account:login:prefs" ["style"="dotted"]
 ":account:login:vm" -> ":account:model"
 ":account:login:vm" -> ":core:colorscheme"
 ":account:login:vm" -> ":core:versions" ["style"="dotted"]
 ":account:login:vm" -> ":url:model"
 ":account:login:vm" -> ":url:prefs" ["style"="dotted"]
 ":account:password:domain" -> ":account:login:domain"
-":account:password:domain" -> ":account:login:prefs" ["style"="dotted"]
 ":account:password:domain" -> ":account:model"
 ":account:password:domain" -> ":api:actual" ["style"="dotted"]
+":account:password:domain" -> ":api:core" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:domain" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:res" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:vm"
@@ -106,7 +102,7 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":core:colorscheme"
 ":account:password:vm" -> ":core:versions" ["style"="dotted"]
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core"
+":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 ":api:builder" -> ":url:model"
@@ -114,17 +110,14 @@ graph ["rank"="same"]
 ":api:di" -> ":api:github"
 ":api:di" -> ":core:buildconfig"
 ":api:di" -> ":url:model" ["style"="dotted"]
-":api:download" -> ":api:core" ["style"="dotted"]
-":api:download" -> ":budget:model"
 ":app" -> ":about:data" ["style"="dotted"]
 ":app" -> ":about:nav" ["style"="dotted"]
 ":app" -> ":about:ui" ["style"="dotted"]
+":app" -> ":account:login:domain" ["style"="dotted"]
 ":app" -> ":account:login:nav" ["style"="dotted"]
-":app" -> ":account:login:prefs" ["style"="dotted"]
 ":app" -> ":account:login:ui" ["style"="dotted"]
 ":app" -> ":account:password:nav" ["style"="dotted"]
 ":app" -> ":account:password:ui" ["style"="dotted"]
-":app" -> ":api:builder" ["style"="dotted"]
 ":app" -> ":api:di" ["style"="dotted"]
 ":app" -> ":budget:list:nav" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
@@ -156,32 +149,22 @@ graph ["rank"="same"]
 ":budget:list:ui" -> ":url:nav" ["style"="dotted"]
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
-":budget:list:vm" -> ":api:builder" ["style"="dotted"]
-":budget:list:vm" -> ":budget:model" ["style"="dotted"]
+":budget:list:vm" -> ":api:core" ["style"="dotted"]
+":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:colorscheme"
 ":budget:list:vm" -> ":core:versions" ["style"="dotted"]
 ":budget:list:vm" -> ":url:model"
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
 ":budget:sync:nav" -> ":account:model"
-":budget:sync:ui" -> ":account:login:nav" ["style"="dotted"]
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
-":budget:sync:ui" -> ":account:password:nav" ["style"="dotted"]
-":budget:sync:ui" -> ":budget:model" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:nav"
 ":budget:sync:ui" -> ":budget:sync:res" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"
-":budget:sync:ui" -> ":core:res" ["style"="dotted"]
 ":budget:sync:ui" -> ":core:ui"
-":budget:sync:ui" -> ":url:nav" ["style"="dotted"]
 ":budget:sync:vm" -> ":account:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
-":budget:sync:vm" -> ":api:builder" ["style"="dotted"]
-":budget:sync:vm" -> ":api:download"
-":budget:sync:vm" -> ":budget:model"
+":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":core:colorscheme"
-":budget:sync:vm" -> ":core:versions" ["style"="dotted"]
-":budget:sync:vm" -> ":url:model"
-":budget:sync:vm" -> ":url:prefs" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:builder" ["style"="dotted"]
 ":core:connection" -> ":core:buildconfig"
@@ -211,8 +194,9 @@ graph ["rank"="same"]
 ":url:ui" -> ":core:ui"
 ":url:ui" -> ":url:res" ["style"="dotted"]
 ":url:ui" -> ":url:vm"
-":url:vm" -> ":account:login:prefs" ["style"="dotted"]
+":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
+":url:vm" -> ":api:core" ["style"="dotted"]
 ":url:vm" -> ":core:colorscheme"
 ":url:vm" -> ":core:versions" ["style"="dotted"]
 ":url:vm" -> ":url:model"

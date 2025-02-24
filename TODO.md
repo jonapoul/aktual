@@ -19,3 +19,6 @@
 - Nav to about screen, licenses, etc
 
 - handle token-expired reason on responses
+
+- viewmodel build script -> multiplatform
+- ui build script -> multiplatform

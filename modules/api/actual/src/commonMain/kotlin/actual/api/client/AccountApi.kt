@@ -1,7 +1,6 @@
 package actual.api.client
 
 import actual.account.model.LoginToken
-import actual.api.core.RetrofitResponse
 import actual.api.model.account.BootstrapRequest
 import actual.api.model.account.BootstrapResponse
 import actual.api.model.account.ChangePasswordRequest
@@ -11,6 +10,7 @@ import actual.api.model.account.LoginResponse
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.api.model.account.ValidateResponse
 import actual.api.model.internal.ActualHeaders
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
@@ -18,26 +18,26 @@ import retrofit2.http.POST
 
 interface AccountApi {
   @GET("account/needs-bootstrap")
-  suspend fun needsBootstrap(): RetrofitResponse<NeedsBootstrapResponse.Success>
+  suspend fun needsBootstrap(): Response<NeedsBootstrapResponse.Success>
 
   @POST("account/bootstrap")
   suspend fun bootstrap(
     @Body body: BootstrapRequest,
-  ): RetrofitResponse<BootstrapResponse.Success>
+  ): Response<BootstrapResponse.Success>
 
   @POST("account/login")
   suspend fun login(
     @Body body: LoginRequest,
-  ): RetrofitResponse<LoginResponse.Success>
+  ): Response<LoginResponse.Success>
 
   @POST("account/change-password")
   suspend fun changePassword(
     @Body body: ChangePasswordRequest,
     @Header(ActualHeaders.TOKEN) token: LoginToken = body.token,
-  ): RetrofitResponse<ChangePasswordResponse.Success>
+  ): Response<ChangePasswordResponse.Success>
 
   @POST("account/validate")
   suspend fun validate(
     @Header(ActualHeaders.TOKEN) token: LoginToken,
-  ): RetrofitResponse<ValidateResponse.Success>
+  ): Response<ValidateResponse.Success>
 }

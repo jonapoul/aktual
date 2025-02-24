@@ -1,6 +1,6 @@
 package actual.account.password.domain
 
-import actual.account.login.prefs.LoginPreferences
+import actual.account.login.domain.LoginPreferences
 import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson

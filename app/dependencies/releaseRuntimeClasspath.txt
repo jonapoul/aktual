@@ -143,8 +143,8 @@ com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0
 com.jakewharton.timber:timber:5.0.1
 com.squareup.okhttp3:logging-interceptor:4.12.0
 com.squareup.okhttp3:okhttp:4.12.0
-com.squareup.okio:okio-jvm:3.6.0
-com.squareup.okio:okio:3.6.0
+com.squareup.okio:okio-jvm:3.10.2
+com.squareup.okio:okio:3.10.2
 com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0
 com.squareup.retrofit2:converter-scalars:2.11.0
 com.squareup.retrofit2:retrofit:2.11.0
@@ -162,8 +162,8 @@ javax.inject:javax.inject:1
 org.jetbrains.compose.runtime:runtime:1.6.10
 org.jetbrains.kotlin:kotlin-bom:1.8.22
 org.jetbrains.kotlin:kotlin-stdlib-common:2.1.10
-org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.10
-org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.10
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22
 org.jetbrains.kotlin:kotlin-stdlib:2.1.10
 org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.8
 org.jetbrains.kotlinx:kotlinx-collections-immutable:0.3.8

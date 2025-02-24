@@ -1,6 +1,6 @@
 package actual.url.vm
 
-import actual.account.login.prefs.LoginPreferences
+import actual.account.login.domain.LoginPreferences
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.core.adapted

@@ -3,7 +3,6 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":account:login:domain","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":account:login:domain" ["fillcolor"="#9D8DF1","shape"="box"]
-":account:login:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -13,12 +12,11 @@ node ["style"="filled"]
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":account:login:domain" -> ":account:login:prefs" ["style"="dotted"]
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
-":account:login:prefs" -> ":account:model"
+":account:login:domain" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core"
+":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 subgraph "cluster_legend" {
