@@ -5,7 +5,6 @@ package actual.core.connection
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.BaseApi
-import actual.api.core.RetrofitResponse
 import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
 import actual.core.versions.ActualVersionsStateHolder
@@ -28,6 +27,7 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import retrofit2.Response
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
@@ -94,7 +94,7 @@ class ServerVersionFetcherTest {
   @Test
   fun `Valid fetch response`() = runTest(timeout = 5.seconds) {
     // Given
-    coEvery { baseApi.info() } returns RetrofitResponse.success(
+    coEvery { baseApi.info() } returns Response.success(
       InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3")),
     )
 
@@ -114,7 +114,7 @@ class ServerVersionFetcherTest {
   @Test
   fun `Failed then successful fetch response`() = runTest(timeout = 5.seconds) {
     // Given
-    val validResponse = RetrofitResponse.success(
+    val validResponse = Response.success(
       InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3")),
     )
     val failureReason = "SOMETHING BROKE"

@@ -4,7 +4,6 @@ graph ["dpi"="100","label"=":budget:list:vm","labelloc"="t","fontsize"="30","ran
 node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:builder" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:list:vm" ["fillcolor"="#F5A6A6","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -18,14 +17,13 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core"
+":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
-":api:builder" -> ":url:model"
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
-":budget:list:vm" -> ":api:builder" ["style"="dotted"]
-":budget:list:vm" -> ":budget:model" ["style"="dotted"]
+":budget:list:vm" -> ":api:core" ["style"="dotted"]
+":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:colorscheme"
 ":budget:list:vm" -> ":core:versions" ["style"="dotted"]
 ":budget:list:vm" -> ":url:model"

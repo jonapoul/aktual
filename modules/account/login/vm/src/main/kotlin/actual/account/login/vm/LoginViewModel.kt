@@ -1,8 +1,8 @@
 package actual.account.login.vm
 
+import actual.account.login.domain.LoginPreferences
 import actual.account.login.domain.LoginRequester
 import actual.account.login.domain.LoginResult
-import actual.account.login.prefs.LoginPreferences
 import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.core.colorscheme.ColorSchemePreferences

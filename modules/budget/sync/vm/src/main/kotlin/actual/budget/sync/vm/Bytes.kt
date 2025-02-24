@@ -1,4 +1,4 @@
-package actual.api.download
+package actual.budget.sync.vm
 
 @JvmInline
 value class Bytes(val numBytes: Long) : Comparable<Bytes> {

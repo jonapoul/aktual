@@ -2,8 +2,8 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":url:ui","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
+":account:login:domain" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:login:nav" ["fillcolor"="#5555FF","shape"="box"]
-":account:login:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -22,9 +22,11 @@ node ["style"="filled"]
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":account:login:prefs" -> ":account:model"
+":account:login:domain" -> ":account:model"
+":account:login:domain" -> ":api:actual" ["style"="dotted"]
+":account:login:domain" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core"
+":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 ":core:ui" -> ":core:colorscheme"
@@ -39,8 +41,9 @@ graph ["rank"="same"]
 ":url:ui" -> ":core:ui"
 ":url:ui" -> ":url:res" ["style"="dotted"]
 ":url:ui" -> ":url:vm"
-":url:vm" -> ":account:login:prefs" ["style"="dotted"]
+":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
+":url:vm" -> ":api:core" ["style"="dotted"]
 ":url:vm" -> ":core:colorscheme"
 ":url:vm" -> ":core:versions" ["style"="dotted"]
 ":url:vm" -> ":url:model"

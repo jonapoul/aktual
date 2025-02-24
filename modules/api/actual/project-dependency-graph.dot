@@ -12,7 +12,7 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core"
+":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 subgraph "cluster_legend" {

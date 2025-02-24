@@ -11,8 +11,6 @@ commonMainDependencies {
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.preferences.core)
-  implementation(libs.retrofit.core)
-  implementation(projects.account.login.prefs)
   implementation(projects.api.actual)
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
+  implementation(projects.api.core)
 }

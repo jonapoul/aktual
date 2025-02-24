@@ -1,11 +1,11 @@
 package actual.budget.sync.ui
 
 import actual.account.model.LoginToken
-import actual.api.download.bytes
-import actual.api.download.percent
 import actual.budget.sync.res.BudgetSyncStrings
 import actual.budget.sync.vm.SyncBudgetViewModel
 import actual.budget.sync.vm.SyncState
+import actual.budget.sync.vm.bytes
+import actual.budget.sync.vm.percent
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 
+@Suppress("UnusedParameter")
 @Composable
 fun SyncBudgetScreen(
   navController: NavHostController,

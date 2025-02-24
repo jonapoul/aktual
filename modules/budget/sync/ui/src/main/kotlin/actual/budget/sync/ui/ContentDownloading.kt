@@ -1,10 +1,10 @@
 package actual.budget.sync.ui
 
-import actual.api.download.Bytes
-import actual.api.download.Percent
-import actual.api.download.bytes
-import actual.api.download.percent
 import actual.budget.sync.res.BudgetSyncStrings
+import actual.budget.sync.vm.Bytes
+import actual.budget.sync.vm.Percent
+import actual.budget.sync.vm.bytes
+import actual.budget.sync.vm.percent
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable

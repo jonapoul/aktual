@@ -4,7 +4,7 @@
   <string name="sync_state_validating">Validating…</string>
 
   <string name="sync_downloading_title">Downloading database…</string>
-  <string name="sync_downloading_progress">%s / %s</string>
+  <string name="sync_downloading_progress">%1$s / %2$s</string>
 
   <string name="sync_success">Success!</string>
 
