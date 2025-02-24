@@ -4,6 +4,7 @@ import actual.account.login.domain.LoginRequester
 import actual.account.login.domain.LoginResult
 import actual.account.login.prefs.LoginPreferences
 import actual.account.model.LoginToken
+import actual.account.model.Password
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.versions.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
@@ -62,6 +63,7 @@ internal class LoginViewModelTest {
       serverUrlPrefs = serverUrlPrefs,
       loginPrefs = loginPrefs,
       colorSchemePreferences = colorSchemePreferences,
+      passwordProvider = Password.Provider { Password.Empty },
     )
   }
 

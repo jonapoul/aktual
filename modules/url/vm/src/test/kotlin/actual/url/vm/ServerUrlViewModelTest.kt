@@ -82,6 +82,7 @@ class ServerUrlViewModelTest {
       colorSchemePreferences = colorSchemePreferences,
       loginPreferences = loginPreferences,
       versionsStateHolder = versionsStateHolder,
+      urlProvider = ServerUrl.Provider { null },
     )
   }
 

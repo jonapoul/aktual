@@ -34,8 +34,9 @@ class LoginViewModel @Inject internal constructor(
   serverUrlPrefs: ServerUrlPreferences,
   loginPrefs: LoginPreferences,
   colorSchemePreferences: ColorSchemePreferences,
+  passwordProvider: Password.Provider,
 ) : ViewModel() {
-  private val mutableEnteredPassword = ResettableStateFlow(Password.Empty)
+  private val mutableEnteredPassword = ResettableStateFlow(passwordProvider.default())
   private val mutableIsLoading = ResettableStateFlow(false)
   private val mutableLoginFailure = ResettableStateFlow<LoginResult.Failure?>(null)
 
