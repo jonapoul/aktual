@@ -26,7 +26,6 @@ class ModuleResources : Plugin<Project> {
       apply(ConventionDiagrams::class.java)
       apply(ConventionIdea::class.java)
       apply(ConventionLicensee::class.java)
-      apply(ConventionSpotless::class.java)
       apply(CatalogPlugin::class.java)
       apply(DependencyAnalysisPlugin::class.java)
       apply(ConventionSortDependencies::class.java)

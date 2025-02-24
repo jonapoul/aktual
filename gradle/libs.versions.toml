@@ -22,7 +22,6 @@ licensee = "1.12.0"
 licenses = "0.9.8"
 molecule = "2.0.0"
 sekret = "0.1.5"
-spotless = "7.0.2"
 turtle = "0.10.0"
 
 # Libraries
@@ -90,7 +89,6 @@ plugin-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.r
 plugin-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 plugin-ktlint = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint-gradle" }
 plugin-licensee = { module = "app.cash.licensee:licensee-gradle-plugin", version.ref = "licensee" }
-plugin-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" }
 plugin-turtle = { module = "com.lordcodes.turtle:turtle", version.ref = "turtle" }
 
 # Libraries
@@ -223,7 +221,6 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
 licensee = { id = "app.cash.licensee", version.ref = "licensee" }
 licenses = { id = "com.jaredsburrows.license", version.ref = "licenses" }
 sekret = { id = "net.afanasev.sekret", version.ref = "sekret" }
-spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
 
 convention-android-base = { id = "actual.convention.android.base" }
 convention-android-library = { id = "actual.convention.android.library" }

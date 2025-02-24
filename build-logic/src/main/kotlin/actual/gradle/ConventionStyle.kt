@@ -9,7 +9,6 @@ class ConventionStyle : Plugin<Project> {
       apply(ConventionDetekt::class.java)
       apply(ConventionKtlint::class.java)
       apply(ConventionLicensee::class.java)
-      apply(ConventionSpotless::class.java)
     }
   }
 }
