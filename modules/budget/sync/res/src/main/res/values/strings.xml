@@ -1,0 +1,15 @@
+<resources>
+  <string name="sync_state_talking_server">Talking to server…</string>
+
+  <string name="sync_state_validating">Validating…</string>
+
+  <string name="sync_downloading_title">Downloading database…</string>
+  <string name="sync_downloading_progress">%s / %s</string>
+
+  <string name="sync_success">Success!</string>
+
+  <string name="sync_failure_desc">Failure</string>
+  <string name="sync_failure_message">Failed downloading</string>
+  <string name="sync_failure_default_message">Unknown reason</string>
+  <string name="sync_failure_retry">Retry</string>
+</resources>

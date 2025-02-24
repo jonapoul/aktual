@@ -5,7 +5,9 @@ import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.client.SyncApi
+import actual.budget.model.Budget
 import actual.budget.model.BudgetId
+import actual.budget.model.BudgetState
 import actual.test.MockWebServerRule
 import alakazam.kotlin.core.EmptyLogger
 import alakazam.test.core.TestCoroutineContexts

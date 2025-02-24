@@ -1,6 +1,5 @@
-package actual.budget.list.vm
+package actual.budget.model
 
-import actual.budget.model.BudgetId
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 

@@ -6,6 +6,7 @@ node ["style"="filled"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:builder" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
+":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -17,6 +18,7 @@ graph ["rank"="same"]
 }
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":api:core"
+":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 ":api:builder" -> ":url:model"
 ":core:connection" -> ":api:actual" ["style"="dotted"]

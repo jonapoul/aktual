@@ -2,7 +2,6 @@ package actual.api.client
 
 import actual.account.model.LoginToken
 import actual.api.core.RetrofitResponse
-import actual.api.core.adapted
 import actual.api.model.account.BootstrapRequest
 import actual.api.model.account.BootstrapResponse
 import actual.api.model.account.ChangePasswordRequest
@@ -10,6 +9,7 @@ import actual.api.model.account.ChangePasswordResponse
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
 import actual.api.model.account.NeedsBootstrapResponse
+import actual.api.model.account.ValidateResponse
 import actual.api.model.internal.ActualHeaders
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -35,16 +35,9 @@ interface AccountApi {
     @Body body: ChangePasswordRequest,
     @Header(ActualHeaders.TOKEN) token: LoginToken = body.token,
   ): RetrofitResponse<ChangePasswordResponse.Success>
+
+  @POST("account/validate")
+  suspend fun validate(
+    @Header(ActualHeaders.TOKEN) token: LoginToken,
+  ): RetrofitResponse<ValidateResponse.Success>
 }
-
-suspend fun AccountApi.needsBoostrapAdapted() =
-  needsBootstrap().adapted(ActualJson, NeedsBootstrapResponse.Failure.serializer())
-
-suspend fun AccountApi.bootstrapAdapted(body: BootstrapRequest) =
-  bootstrap(body).adapted(ActualJson, BootstrapResponse.Failure.serializer())
-
-suspend fun AccountApi.loginAdapted(body: LoginRequest) =
-  login(body).adapted(ActualJson, LoginResponse.Failure.serializer())
-
-suspend fun AccountApi.changePasswordAdapted(body: ChangePasswordRequest, token: LoginToken = body.token) =
-  changePassword(body, token).adapted(ActualJson, ChangePasswordResponse.Failure.serializer())

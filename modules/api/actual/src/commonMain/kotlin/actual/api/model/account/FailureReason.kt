@@ -1,12 +1,13 @@
 package actual.api.model.account
 
 import actual.api.model.internal.FailureReasonSerializer
-import alakazam.kotlin.core.requireMessage
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
 /**
  * See validateSession() in actual-server/src/util/validate-user.js
  */
+@Immutable
 @Serializable(FailureReasonSerializer::class)
 sealed interface FailureReason {
   val reason: String
@@ -23,7 +24,3 @@ sealed interface FailureReason {
     override val reason: String,
   ) : FailureReason
 }
-
-fun String.toFailureReason() = FailureReason.Other(this)
-
-fun Exception.toFailureReason() = FailureReason.Other(requireMessage())

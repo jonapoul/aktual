@@ -1,8 +1,8 @@
 package actual.budget.list.ui
 
-import actual.budget.list.vm.Budget
-import actual.budget.list.vm.BudgetState
+import actual.budget.model.Budget
 import actual.budget.model.BudgetId
+import actual.budget.model.BudgetState
 import actual.core.versions.ActualVersions
 
 internal val PreviewBudgetSynced = Budget(
