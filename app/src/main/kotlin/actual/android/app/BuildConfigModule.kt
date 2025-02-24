@@ -1,5 +1,7 @@
 package actual.android.app
 
+import actual.account.model.Password
+import actual.url.model.ServerUrl
 import android.content.Context
 import android.os.Build
 import dagger.Module
@@ -9,6 +11,7 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 import actual.core.res.R as CoreR
 
+@Suppress("UnnecessarySafeCall", "UnreachableCode")
 @Module
 @InstallIn(SingletonComponent::class)
 internal class BuildConfigModule {
@@ -28,6 +31,18 @@ internal class BuildConfigModule {
     repoName = REPO_NAME,
     repoUrl = "https://github.com/$REPO_NAME",
   )
+
+  @Provides
+  @Singleton
+  fun password() = Password.Provider {
+    BuildConfig.DEFAULT_PASSWORD?.let(::Password) ?: Password.Empty
+  }
+
+  @Provides
+  @Singleton
+  fun url() = ServerUrl.Provider {
+    BuildConfig.DEFAULT_URL?.let(::ServerUrl)
+  }
 }
 
 private const val REPO_NAME = "jonapoul/actual-android"

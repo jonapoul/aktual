@@ -45,10 +45,13 @@ class ServerUrlViewModel @Inject internal constructor(
   private val loginPreferences: LoginPreferences,
   colorSchemePreferences: ColorSchemePreferences,
   versionsStateHolder: ActualVersionsStateHolder,
+  urlProvider: ServerUrl.Provider,
 ) : ViewModel() {
+  private val defaultUrl = urlProvider.default()
+
   private val mutableIsLoading = ResettableStateFlow(value = false)
-  private val mutableBaseUrl = MutableStateFlow(value = "")
-  private val mutableProtocol = MutableStateFlow(Protocol.Https)
+  private val mutableBaseUrl = MutableStateFlow(defaultUrl?.baseUrl.orEmpty())
+  private val mutableProtocol = MutableStateFlow(defaultUrl?.protocol ?: Protocol.Https)
   private val mutableConfirmResult = ResettableStateFlow<ConfirmResult?>(value = null)
 
   val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()

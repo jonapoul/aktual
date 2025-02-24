@@ -2,6 +2,7 @@ import blueprint.core.intProperty
 import blueprint.core.javaVersionString
 import blueprint.core.rootLocalPropertiesOrNull
 import blueprint.core.stringProperty
+import blueprint.core.stringPropertyOrNull
 import org.gradle.internal.extensions.stdlib.capitalized
 import java.time.LocalDate
 
@@ -53,6 +54,12 @@ android {
     val kotlinTime = "kotlinx.datetime.Instant.Companion.fromEpochMilliseconds(${System.currentTimeMillis()}L)"
     buildConfigField("kotlinx.datetime.Instant", "BUILD_TIME", kotlinTime)
     buildConfigField("String", "GIT_HASH", "\"${gitCommitHash}\"")
+
+    val defaultUrl = stringPropertyOrNull("actual.defaultUrl")
+    buildConfigField("String", "DEFAULT_URL", if (defaultUrl == null) "null" else "\"${defaultUrl}\"")
+
+    val defaultPassword = stringPropertyOrNull("actual.defaultPassword")
+    buildConfigField("String", "DEFAULT_PASSWORD", if (defaultPassword == null) "null" else "\"${defaultPassword}\"")
   }
 
   kotlinOptions {
