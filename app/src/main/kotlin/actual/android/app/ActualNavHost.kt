@@ -9,6 +9,8 @@ import actual.account.password.nav.ChangePasswordNavRoute
 import actual.account.password.ui.ChangePasswordScreen
 import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.budget.list.ui.ListBudgetsScreen
+import actual.budget.sync.nav.SyncBudgetsNavRoute
+import actual.budget.sync.ui.SyncBudgetScreen
 import actual.licenses.nav.LicensesNavRoute
 import actual.licenses.ui.LicensesScreen
 import actual.url.nav.ServerUrlNavRoute
@@ -47,13 +49,17 @@ internal fun ActualNavHost(
 
     composable<LicensesNavRoute> { LicensesScreen(navController) }
 
-    composableWithArg<ListBudgetsNavRoute>(
-      extraTypes = mapOf(typeMapEntry<LoginToken>(::LoginToken)),
-    ) { route, _ -> ListBudgetsScreen(navController, route.token) }
+    composableWithArg<ListBudgetsNavRoute>(mapOf(LoginTokenType)) { route, _ ->
+      ListBudgetsScreen(navController, route.token)
+    }
 
     composable<LoginNavRoute> { LoginScreen(navController) }
 
     composable<ServerUrlNavRoute> { ServerUrlScreen(navController) }
+
+    composableWithArg<SyncBudgetsNavRoute>(mapOf(LoginTokenType)) { route, _ ->
+      SyncBudgetScreen(navController, route.token)
+    }
   }
 }
 
@@ -77,3 +83,5 @@ private class WorkingSerializableType<T : Serializable>(
   // Not an unsupported operation!
   override fun parseValue(value: String): T = valueParser?.invoke(value) ?: super.parseValue(value)
 }
+
+private val LoginTokenType = typeMapEntry<LoginToken>(::LoginToken)

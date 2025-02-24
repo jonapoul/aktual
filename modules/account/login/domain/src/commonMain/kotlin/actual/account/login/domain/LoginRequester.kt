@@ -3,11 +3,12 @@ package actual.account.login.domain
 import actual.account.login.prefs.LoginPreferences
 import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
-import actual.api.client.loginAdapted
+import actual.api.client.ActualJson
+import actual.api.core.adapted
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
-import actual.api.model.account.toFailureReason
 import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.core.requireMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -19,17 +20,21 @@ class LoginRequester @Inject internal constructor(
   private val loginPreferences: LoginPreferences,
 ) {
   suspend fun logIn(password: Password): LoginResult {
-    val apis = apisStateHolder.value ?: return LoginResult.OtherFailure("URL not configured".toFailureReason())
+    val apis = apisStateHolder.value ?: return LoginResult.OtherFailure("URL not configured")
 
     val request = LoginRequest(password)
     val response = try {
-      withContext(contexts.io) { apis.account.loginAdapted(request) }
+      withContext(contexts.io) {
+        apis.account
+          .login(request)
+          .adapted(ActualJson, LoginResponse.Failure.serializer())
+      }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
       return when (e) {
-        is IOException -> LoginResult.NetworkFailure(e.toFailureReason())
-        else -> LoginResult.OtherFailure(e.toFailureReason())
+        is IOException -> LoginResult.NetworkFailure(e.requireMessage())
+        else -> LoginResult.OtherFailure(e.requireMessage())
       }
     }
 
@@ -39,7 +44,7 @@ class LoginRequester @Inject internal constructor(
 
     val body = response.body
     val result = when (body) {
-      is LoginResponse.Failure -> LoginResult.OtherFailure(body.reason)
+      is LoginResponse.Failure -> LoginResult.OtherFailure(body.reason.reason)
       is LoginResponse.Success -> when (val data = body.data) {
         is LoginResponse.Data.Invalid -> LoginResult.InvalidPassword
         is LoginResponse.Data.Valid -> LoginResult.Success(data.token)

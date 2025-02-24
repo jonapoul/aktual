@@ -1,7 +1,7 @@
 package actual.budget.list.ui
 
 import actual.budget.list.res.BudgetListStrings
-import actual.budget.list.vm.BudgetState
+import actual.budget.model.BudgetState
 import actual.core.icons.ActualIcons
 import actual.core.icons.CloudCheck
 import actual.core.icons.CloudDownload

@@ -4,9 +4,10 @@ import actual.account.login.nav.LoginNavRoute
 import actual.account.model.LoginToken
 import actual.account.password.nav.ChangePasswordNavRoute
 import actual.budget.list.res.BudgetListStrings
-import actual.budget.list.vm.Budget
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
+import actual.budget.model.Budget
+import actual.budget.sync.nav.SyncBudgetsNavRoute
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.icons.ActualIcons
 import actual.core.icons.Refresh
@@ -110,7 +111,7 @@ fun ListBudgetsScreen(
         ListBudgetsAction.OpenInBrowser -> launchBrowser = true
         ListBudgetsAction.Reload -> viewModel.retry()
         is ListBudgetsAction.Delete -> budgetToDelete = action.budget
-        is ListBudgetsAction.Open -> TODO()
+        is ListBudgetsAction.Open -> navController.debugNavigate(SyncBudgetsNavRoute(token))
       }
     },
   )

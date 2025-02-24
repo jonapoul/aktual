@@ -1,6 +1,6 @@
 package actual.budget.list.ui
 
-import actual.budget.list.vm.Budget
+import actual.budget.model.Budget
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview

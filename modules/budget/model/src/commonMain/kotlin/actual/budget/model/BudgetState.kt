@@ -1,4 +1,4 @@
-package actual.budget.list.vm
+package actual.budget.model
 
 import androidx.compose.runtime.Immutable
 

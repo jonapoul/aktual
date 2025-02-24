@@ -7,5 +7,6 @@ plugins {
 
 commonMainDependencies {
   compileOnly(libs.alakazam.kotlin.compose.annotations)
+  implementation(libs.alakazam.kotlin.serialization)
   implementation(libs.kotlinx.serialization.core)
 }

@@ -3,7 +3,6 @@ import blueprint.core.javaVersionString
 import blueprint.core.rootLocalPropertiesOrNull
 import blueprint.core.stringProperty
 import blueprint.core.stringPropertyOrNull
-import com.android.build.api.dsl.ApkSigningConfig
 import org.gradle.internal.extensions.stdlib.capitalized
 import java.time.LocalDate
 

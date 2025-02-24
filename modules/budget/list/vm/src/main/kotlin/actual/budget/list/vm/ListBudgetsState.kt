@@ -1,5 +1,6 @@
 package actual.budget.list.vm
 
+import actual.budget.model.Budget
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 

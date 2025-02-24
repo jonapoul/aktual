@@ -9,6 +9,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.kotlinx.serialization.asConverterFactory
+import retrofit2.converter.scalars.ScalarsConverterFactory
 
 fun buildOkHttp(
   logger: Logger,
@@ -16,17 +17,8 @@ fun buildOkHttp(
   tag: String,
 ) = OkHttpClient
   .Builder()
-  .ifTrue(isDebug) { addInterceptor(logger, tag) }
+  .ifTrue(isDebug) { addLogger(logger, tag) }
   .build()
-
-private fun OkHttpClient.Builder.addInterceptor(
-  logger: Logger,
-  tag: String,
-): OkHttpClient.Builder {
-  val interceptor = HttpLoggingInterceptor { logger.tag(tag).v(it) }
-  interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-  return addInterceptor(interceptor)
-}
 
 fun buildRetrofit(
   client: OkHttpClient,
@@ -36,8 +28,15 @@ fun buildRetrofit(
   val contentType = "application/json".toMediaType()
   return Retrofit
     .Builder()
+    .addConverterFactory(ScalarsConverterFactory.create())
     .addConverterFactory(json.asConverterFactory(contentType))
     .client(client)
     .baseUrl(url.toString())
     .build()
+}
+
+private fun OkHttpClient.Builder.addLogger(logger: Logger, tag: String): OkHttpClient.Builder {
+  val interceptor = HttpLoggingInterceptor { logger.tag(tag).v(it) }
+  interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
+  return addInterceptor(interceptor)
 }

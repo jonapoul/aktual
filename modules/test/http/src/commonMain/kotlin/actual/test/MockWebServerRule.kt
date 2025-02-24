@@ -9,6 +9,8 @@ import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okio.Buffer
+import okio.buffer
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import retrofit2.create
@@ -30,6 +32,13 @@ class MockWebServerRule : TestWatcher() {
 
   fun enqueue(body: String, code: Int = 200) = enqueue {
     setBody(body)
+    setResponseCode(code)
+  }
+
+  fun enqueue(body: ByteArray, code: Int = 200) = enqueue {
+    val buffer = Buffer()
+    buffer.write(body)
+    setBody(buffer)
     setResponseCode(code)
   }
 

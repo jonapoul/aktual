@@ -12,6 +12,7 @@ node ["style"="filled"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="box"]
+":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
@@ -45,6 +46,7 @@ graph ["rank"="same"]
 ":account:login:vm" -> ":url:prefs" ["style"="dotted"]
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":api:core"
+":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 ":budget:list:nav" -> ":account:model"
 ":core:ui" -> ":core:colorscheme"

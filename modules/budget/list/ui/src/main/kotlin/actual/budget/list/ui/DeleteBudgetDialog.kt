@@ -1,7 +1,7 @@
 package actual.budget.list.ui
 
 import actual.budget.list.res.BudgetListStrings
-import actual.budget.list.vm.Budget
+import actual.budget.model.Budget
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.AlertDialog
 import actual.core.ui.BareTextButton

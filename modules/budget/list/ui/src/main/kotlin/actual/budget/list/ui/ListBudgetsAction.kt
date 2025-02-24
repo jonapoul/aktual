@@ -1,6 +1,6 @@
 package actual.budget.list.ui
 
-import actual.budget.list.vm.Budget
+import actual.budget.model.Budget
 import androidx.compose.runtime.Immutable
 
 @Immutable
