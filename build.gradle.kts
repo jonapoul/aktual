@@ -21,7 +21,6 @@ plugins {
   alias(libs.plugins.ktlint) apply false
   alias(libs.plugins.licensee) apply false
   alias(libs.plugins.licenses) apply false
-  alias(libs.plugins.spotless) apply false
 
   alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.dependencyGuard)
