@@ -2,7 +2,9 @@
 
 - Support demo public app?
   - Doesn't support bootstrapping, probably other things too
-- Optional themes
+- Settings screen
+  - Themes
+  - Notifications?
 - Periodic health checks to determine connection
 - Cloud backups?
 - Use proper error messages for server URL screen
@@ -22,3 +24,5 @@
 
 - viewmodel build script -> multiplatform
 - ui build script -> multiplatform
+- merge model modules into one?
+- merge api modules into one?
