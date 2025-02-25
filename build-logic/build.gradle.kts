@@ -38,7 +38,6 @@ dependencies {
   compileOnly(libs.plugin.licensee)
   implementation(libs.plugin.blueprint.core)
   implementation(libs.plugin.blueprint.recipes)
-  implementation(libs.plugin.turtle)
 }
 
 tasks {
