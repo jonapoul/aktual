@@ -9,6 +9,7 @@ import actual.core.ui.VerticalSpacer
 import actual.core.ui.keyboardFocusRequester
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -62,8 +63,8 @@ internal fun PasswordLogin(
 
     PrimaryTextButtonWithLoading(
       modifier = Modifier
-        .align(Alignment.End)
-        .width(170.dp),
+        .padding(5.dp)
+        .fillMaxWidth(),
       text = LoginStrings.signIn,
       isLoading = isLoading,
       onClick = { onAction(LoginAction.SignIn) },

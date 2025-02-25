@@ -81,7 +81,7 @@ fun PrimaryTextButtonWithLoading(
 ) {
   PrimaryTextButton(
     text = text,
-    modifier = modifier,
+//    modifier = modifier,
     isEnabled = isEnabled && !isLoading,
     contentPadding = contentPadding,
     shape = shape,
@@ -93,7 +93,10 @@ fun PrimaryTextButtonWithLoading(
     onClick = onClick,
     content = {
       // Using opacity here so we don't adjust the size bounds of the containing box
-      Box(contentAlignment = Alignment.Center) {
+      Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+      ) {
         CircularProgressIndicator(
           modifier = Modifier
             .alpha(if (isLoading) 1f else 0f)

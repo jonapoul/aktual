@@ -209,8 +209,8 @@ private fun ServerUrlContent(
 
     PrimaryTextButtonWithLoading(
       modifier = Modifier
-        .wrapContentWidth()
-        .align(Alignment.End),
+        .padding(5.dp)
+        .fillMaxWidth(),
       text = ServerUrlStrings.serverUrlConfirm,
       isLoading = isLoading,
       isEnabled = isEnabled,
