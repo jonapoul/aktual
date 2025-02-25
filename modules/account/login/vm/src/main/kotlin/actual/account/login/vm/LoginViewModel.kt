@@ -9,9 +9,9 @@ import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
+import actual.log.Logger
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
-import alakazam.kotlin.core.Logger
 import alakazam.kotlin.core.ResettableStateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,7 +28,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject internal constructor(
-  private val logger: Logger,
   private val loginRequester: LoginRequester,
   versionsStateHolder: ActualVersionsStateHolder,
   serverUrlPrefs: ServerUrlPreferences,
@@ -72,14 +71,14 @@ class LoginViewModel @Inject internal constructor(
   }
 
   fun onClickSignIn() {
-    logger.v("onClickSignIn")
+    Logger.v("onClickSignIn")
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
     viewModelScope.launch {
       val password = mutableEnteredPassword.value
       val result = loginRequester.logIn(password)
 
-      logger.d("Login result = %s", result)
+      Logger.d("Login result = %s", result)
       mutableIsLoading.update { false }
 
       if (result is LoginResult.Failure) {

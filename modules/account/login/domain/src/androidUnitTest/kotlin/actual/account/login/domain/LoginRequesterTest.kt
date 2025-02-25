@@ -56,7 +56,6 @@ internal class LoginRequesterTest {
       buildConfig = TestBuildConfig,
       apiStateHolder = apisStateHolder,
       serverUrlPreferences = serverUrlPreferences,
-      logger = EmptyLogger,
     )
 
     loginRequester = LoginRequester(

@@ -53,7 +53,6 @@ okhttp = "4.12.0"
 okio = "3.10.2"
 preferences = "2.1.0"
 retrofit = "2.11.0"
-timber = "5.0.1"
 
 # Testing
 test-androidx-arch = "2.2.0"
@@ -162,7 +161,6 @@ retrofit-core = { module = "com.squareup.retrofit2:retrofit", version.ref = "ret
 retrofit-scalars = { module = "com.squareup.retrofit2:converter-scalars", version.ref = "retrofit" }
 retrofit-serialization = { module = "com.squareup.retrofit2:converter-kotlinx-serialization", version.ref = "retrofit" }
 sekret = { module = "net.afanasev:sekret-annotation", version.ref = "sekret" }
-timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 # Testing
 test-alakazam-core = { module = "dev.jonpoulton.alakazam:testing-core", version.ref = "alakazam" }

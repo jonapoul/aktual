@@ -9,7 +9,6 @@ import actual.budget.model.Budget
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetState
 import actual.test.MockWebServerRule
-import alakazam.kotlin.core.EmptyLogger
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher
 import io.mockk.coEvery
@@ -36,7 +35,6 @@ class BudgetListFetcherTest {
     budgetListFetcher = BudgetListFetcher(
       contexts = TestCoroutineContexts(standardDispatcher),
       apisStateHolder = apisStateHolder,
-      logger = EmptyLogger,
     )
   }
 

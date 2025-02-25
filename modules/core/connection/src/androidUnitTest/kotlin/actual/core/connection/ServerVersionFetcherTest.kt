@@ -62,7 +62,6 @@ class ServerVersionFetcherTest {
     loopController: LoopController = SingleLoopController(),
   ) {
     fetcher = ServerVersionFetcher(
-      logger = EmptyLogger,
       contexts = TestCoroutineContexts(mainDispatcherRule),
       apisStateHolder = apisStateHolder,
       versionsStateHolder = versionsStateHolder,

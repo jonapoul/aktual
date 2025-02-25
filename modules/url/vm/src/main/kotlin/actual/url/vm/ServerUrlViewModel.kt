@@ -8,11 +8,11 @@ import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
+import actual.log.Logger
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.Logger
 import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.core.requireMessage
 import androidx.compose.runtime.collectAsState
@@ -39,7 +39,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ServerUrlViewModel @Inject internal constructor(
-  private val logger: Logger,
   private val contexts: CoroutineContexts,
   private val apiStateHolder: ActualApisStateHolder,
   private val serverUrlPreferences: ServerUrlPreferences,
@@ -105,18 +104,18 @@ class ServerUrlViewModel @Inject internal constructor(
   }
 
   fun onEnterUrl(url: String) {
-    logger.v("onUrlEntered %s", url)
+    Logger.v("onUrlEntered %s", url)
     mutableBaseUrl.update { url }
     mutableConfirmResult.update { null }
   }
 
   fun onSelectProtocol(protocol: Protocol) {
-    logger.v("onProtocolSelected %s", protocol)
+    Logger.v("onProtocolSelected %s", protocol)
     mutableProtocol.update { protocol }
   }
 
   fun onClickConfirm() {
-    logger.v("onClickConfirm")
+    Logger.v("onClickConfirm")
     mutableIsLoading.update { true }
     viewModelScope.launch {
       val protocol = mutableProtocol.value
@@ -137,19 +136,19 @@ class ServerUrlViewModel @Inject internal constructor(
   }
 
   private suspend fun checkIfNeedsBootstrap(url: ServerUrl) = try {
-    logger.v("checkIfNeedsBootstrap %s", url)
+    Logger.v("checkIfNeedsBootstrap %s", url)
     val apis = apiStateHolder
       .filterNotNull()
       .filter { it.serverUrl == url }
       .first()
 
-    logger.v("apis = %s", apis)
+    Logger.v("apis = %s", apis)
     val response = withContext(contexts.io) {
       apis.account
         .needsBootstrap()
         .adapted(NeedsBootstrapResponse.Failure.serializer())
     }
-    logger.v("response = %s", response)
+    Logger.v("response = %s", response)
 
     val confirmResult = when (val body = response.body) {
       is NeedsBootstrapResponse.Success -> ConfirmResult.Succeeded(isBootstrapped = body.data.bootstrapped)
@@ -159,7 +158,7 @@ class ServerUrlViewModel @Inject internal constructor(
   } catch (e: CancellationException) {
     throw e
   } catch (e: Exception) {
-    logger.w(e, "Failed checking bootstrap for %s", url)
+    Logger.w(e, "Failed checking bootstrap for %s", url)
 
     // hit an error, we can't use this URL?
     serverUrlPreferences.url.deleteAndCommit()

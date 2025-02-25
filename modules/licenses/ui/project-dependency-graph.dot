@@ -11,6 +11,7 @@ node ["style"="filled"]
 ":licenses:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":licenses:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":licenses:vm" ["fillcolor"="#F5A6A6","shape"="box"]
+":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
@@ -26,6 +27,7 @@ graph ["rank"="same"]
 ":licenses:ui" -> ":licenses:res" ["style"="dotted"]
 ":licenses:ui" -> ":licenses:vm"
 ":licenses:vm" -> ":licenses:data"
+":licenses:vm" -> ":log" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

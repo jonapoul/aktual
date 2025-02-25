@@ -3,7 +3,7 @@ package actual.budget.sync.vm
 import actual.account.model.LoginToken
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
-import alakazam.kotlin.core.Logger
+import actual.log.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
@@ -18,7 +18,6 @@ import kotlinx.coroutines.flow.asStateFlow
 class SyncBudgetViewModel @AssistedInject constructor(
   @Assisted tokenString: String,
   colorSchemePreferences: ColorSchemePreferences,
-  private val logger: Logger,
 ) : ViewModel() {
   // Necessary because trying to pass a value class through dagger's assisted injection results in a KSP build failure.
   // See https://github.com/google/dagger/issues/4613
@@ -32,11 +31,11 @@ class SyncBudgetViewModel @AssistedInject constructor(
   val state: StateFlow<SyncState> = mutableState.asStateFlow()
 
   init {
-    logger.d("init")
+    Logger.d("init")
   }
 
   fun retry() {
-    logger.d("retry")
+    Logger.d("retry")
   }
 
   @AssistedFactory

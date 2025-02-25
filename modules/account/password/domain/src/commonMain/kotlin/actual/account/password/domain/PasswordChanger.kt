@@ -6,8 +6,8 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.client.adapted
 import actual.api.model.account.ChangePasswordRequest
 import actual.api.model.account.ChangePasswordResponse
+import actual.log.Logger
 import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.Logger
 import alakazam.kotlin.core.requireMessage
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
@@ -18,7 +18,6 @@ class PasswordChanger @Inject internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
   private val loginPreferences: LoginPreferences,
-  private val logger: Logger,
 ) {
   suspend fun submit(password: Password): ChangePasswordResult {
     val apis = apisStateHolder.value
@@ -41,10 +40,10 @@ class PasswordChanger @Inject internal constructor(
     } catch (e: CancellationException) {
       throw e
     } catch (e: IOException) {
-      logger.e(e, "Network failure changing password")
+      Logger.e(e, "Network failure changing password")
       ChangePasswordResult.NetworkFailure
     } catch (e: Exception) {
-      logger.e(e, "Failed changing password")
+      Logger.e(e, "Failed changing password")
       ChangePasswordResult.OtherFailure(e.requireMessage())
     }
   }

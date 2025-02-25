@@ -1,8 +1,8 @@
 package actual.android.app
 
-import timber.log.Timber
+import actual.log.DebugAndroidBranch
 
-internal class ActualTree : Timber.DebugTree() {
+internal class ActualBranch : DebugAndroidBranch() {
   override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
     super.log(priority, tag, "ACTUAL: $message", t)
   }

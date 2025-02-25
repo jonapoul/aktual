@@ -10,7 +10,7 @@ import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
-import alakazam.kotlin.core.Logger
+import actual.log.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,7 +34,6 @@ import kotlin.time.Duration.Companion.seconds
 class ChangePasswordViewModel @Inject internal constructor(
   versionsStateHolder: ActualVersionsStateHolder,
   colorSchemePreferences: ColorSchemePreferences,
-  private val logger: Logger,
   private val passwordChanger: PasswordChanger,
   private val loginRequester: LoginRequester,
 ) : ViewModel() {
@@ -66,7 +65,7 @@ class ChangePasswordViewModel @Inject internal constructor(
   fun submit() {
     val password = mutablePassword1.value
     val password2 = mutablePassword2.value
-    logger.d("submit %s %s", password, password2)
+    Logger.d("submit %s %s", password, password2)
     if (password2 != password) {
       mutableState.update { ChangePasswordState.PasswordsDontMatch }
       return
@@ -75,7 +74,7 @@ class ChangePasswordViewModel @Inject internal constructor(
     mutableState.update { ChangePasswordState.Loading }
     viewModelScope.launch {
       val changePasswordResult = passwordChanger.submit(password)
-      logger.d("result = %s", changePasswordResult)
+      Logger.d("result = %s", changePasswordResult)
       val newState = when (changePasswordResult) {
         ChangePasswordResult.Success -> ChangePasswordState.Success
         ChangePasswordResult.InvalidPassword -> ChangePasswordState.InvalidPassword
@@ -86,7 +85,7 @@ class ChangePasswordViewModel @Inject internal constructor(
       mutableState.update { newState }
 
       if (changePasswordResult is ChangePasswordResult.Success) {
-        logger.d("Logging in...")
+        Logger.d("Logging in...")
         val loginResult = loginRequester.logIn(password)
         handleLoginResult(loginResult)
       }
@@ -94,7 +93,7 @@ class ChangePasswordViewModel @Inject internal constructor(
   }
 
   private suspend fun handleLoginResult(loginResult: LoginResult) {
-    logger.d("loginResult = %s", loginResult)
+    Logger.d("loginResult = %s", loginResult)
     if (loginResult is LoginResult.Success) {
       // wait for a second before triggering the navigation, so the user gets the success message
       delay(SUCCESS_DELAY)

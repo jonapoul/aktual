@@ -3,8 +3,8 @@ package actual.about.vm
 import actual.about.data.GithubRepository
 import actual.about.data.LatestReleaseState
 import actual.core.config.BuildConfig
+import actual.log.Logger
 import alakazam.android.core.UrlOpener
-import alakazam.kotlin.core.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -24,7 +24,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AboutViewModel @Inject internal constructor(
-  private val logger: Logger,
   private val buildConfig: BuildConfig,
   private val githubRepository: GithubRepository,
   private val urlOpener: UrlOpener,
@@ -49,12 +48,12 @@ class AboutViewModel @Inject internal constructor(
   }
 
   fun openUrl(url: String) {
-    logger.d("openUrl $url")
+    Logger.d("openUrl $url")
     urlOpener.openUrl(url)
   }
 
   fun fetchLatestRelease() {
-    logger.d("fetchLatestRelease")
+    Logger.d("fetchLatestRelease")
     checkUpdatesJob?.cancel()
     mutableCheckUpdatesState.update { CheckUpdatesState.Checking }
 
@@ -76,7 +75,7 @@ class AboutViewModel @Inject internal constructor(
   }
 
   fun cancelUpdateCheck() {
-    logger.d("cancelUpdateCheck")
+    Logger.d("cancelUpdateCheck")
     checkUpdatesJob?.cancel()
     checkUpdatesJob = null
     mutableCheckUpdatesState.update { CheckUpdatesState.Inactive }

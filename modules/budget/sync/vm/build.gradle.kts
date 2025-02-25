@@ -14,6 +14,7 @@ dependencies {
   implementation(projects.account.model)
   implementation(projects.api.actual)
   implementation(projects.budget.model)
+  implementation(projects.log)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   testImplementation(projects.test.buildconfig)
   testImplementation(projects.test.coroutines)
