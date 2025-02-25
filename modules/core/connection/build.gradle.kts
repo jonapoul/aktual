@@ -20,6 +20,7 @@ commonMainDependencies {
   implementation(projects.api.actual)
   implementation(projects.api.builder)
   implementation(projects.core.versions)
+  implementation(projects.log)
   implementation(projects.url.model)
   implementation(projects.url.prefs)
 }

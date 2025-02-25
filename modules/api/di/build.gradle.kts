@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-  api(libs.alakazam.kotlin.core)
   api(libs.javaxInject)
   api(projects.api.github)
   api(projects.core.buildconfig)

@@ -4,7 +4,6 @@ import actual.api.builder.buildOkHttp
 import actual.api.builder.buildRetrofit
 import actual.core.config.BuildConfig
 import actual.url.model.ServerUrl
-import alakazam.kotlin.core.Logger
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,10 +17,9 @@ import retrofit2.create
 class GithubApiModule {
   @Provides
   fun api(
-    logger: Logger,
     buildConfig: BuildConfig,
   ): GithubApi = buildRetrofit(
-    client = buildOkHttp(logger, buildConfig.debug, tag = "GITHUB"),
+    client = buildOkHttp(buildConfig.debug, tag = "GITHUB"),
     url = ServerUrl("https://api.github.com"),
     json = GithubJson,
   ).create()

@@ -2,8 +2,8 @@ package actual.licenses.vm
 
 import actual.licenses.data.LicensesLoadState
 import actual.licenses.data.LicensesRepository
+import actual.log.Logger
 import alakazam.android.core.UrlOpener
-import alakazam.kotlin.core.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -22,7 +22,6 @@ import javax.inject.Inject
 class LicensesViewModel @Inject internal constructor(
   private val licensesRepository: LicensesRepository,
   private val urlOpener: UrlOpener,
-  private val logger: Logger,
 ) : ViewModel() {
   private val mutableState = MutableStateFlow<LicensesState>(LicensesState.Loading)
   private val showSearchBar = MutableStateFlow(value = false)
@@ -51,7 +50,7 @@ class LicensesViewModel @Inject internal constructor(
   }
 
   fun load() {
-    logger.d("load")
+    Logger.d("load")
     mutableState.update { LicensesState.Loading }
     viewModelScope.launch {
       val licensesState = when (val loadState = licensesRepository.loadLicenses()) {
@@ -70,17 +69,17 @@ class LicensesViewModel @Inject internal constructor(
   }
 
   fun openUrl(url: String) {
-    logger.d("openUrl %s", url)
+    Logger.d("openUrl %s", url)
     urlOpener.openUrl(url)
   }
 
   fun toggleSearchBar() {
-    logger.d("toggleSearchBar existing=%s", showSearchBar.value)
+    Logger.d("toggleSearchBar existing=%s", showSearchBar.value)
     showSearchBar.update { alreadyVisible -> !alreadyVisible }
   }
 
   fun setSearchText(text: String) {
-    logger.d("setSearchText %s", text)
+    Logger.d("setSearchText %s", text)
     searchTerm.update { text }
   }
 }

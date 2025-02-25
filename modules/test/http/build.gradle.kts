@@ -5,7 +5,6 @@ plugins {
 }
 
 commonMainDependencies {
-  api(libs.alakazam.kotlin.core)
   api(libs.kotlinx.serialization.json)
   api(libs.okhttp.core)
   api(libs.retrofit.core)

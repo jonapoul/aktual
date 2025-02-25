@@ -49,7 +49,6 @@ class BudgetFileDownloaderTest {
 
     budgetFileDownloader = BudgetFileDownloader(
       contexts = TestCoroutineContexts(mainDispatcherRule),
-      logger = EmptyLogger,
       fileStore = fileStore,
       apisStateHolder = apisStateHolder,
     )

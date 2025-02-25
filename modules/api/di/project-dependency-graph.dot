@@ -6,12 +6,14 @@ node ["style"="filled"]
 ":api:di" ["shape"="box","fillcolor"="#FCB103"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
+":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 ":api:di"
 }
+":api:builder" -> ":log" ["style"="dotted"]
 ":api:builder" -> ":url:model"
 ":api:di" -> ":api:builder" ["style"="dotted"]
 ":api:di" -> ":api:github"

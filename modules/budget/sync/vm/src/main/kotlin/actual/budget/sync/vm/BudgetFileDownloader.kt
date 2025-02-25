@@ -8,8 +8,8 @@ import actual.budget.sync.vm.Bytes.Companion.Zero
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failed
 import actual.budget.sync.vm.DownloadState.InProgress
+import actual.log.Logger
 import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.Logger
 import alakazam.kotlin.core.requireMessage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -26,7 +26,6 @@ import javax.inject.Inject
 
 class BudgetFileDownloader @Inject internal constructor(
   private val contexts: CoroutineContexts,
-  private val logger: Logger,
   private val fileStore: FileStore,
   private val apisStateHolder: ActualApisStateHolder,
 ) {
@@ -40,7 +39,7 @@ class BudgetFileDownloader @Inject internal constructor(
     val response = try {
       apis.sync.downloadUserFile(token, id)
     } catch (e: IOException) {
-      logger.e(e, "Failed downloading $id with $token")
+      Logger.e(e, "Failed downloading $id with $token")
       emit(Failed(e.requireMessage(), Zero))
       return
     }
@@ -50,7 +49,7 @@ class BudgetFileDownloader @Inject internal constructor(
       val budgetFile = fileStore.budgetFile(id)
       saveFile(body, budgetFile)
     } else {
-      logger.e("Failed: $response")
+      Logger.e("Failed: $response")
       emit(Failed(response.message(), Zero))
     }
   }
@@ -80,9 +79,9 @@ class BudgetFileDownloader @Inject internal constructor(
         }
       }
       emit(Done(outputFile, responseLength))
-      logger.i("Successfully downloaded $responseLength to $outputFile")
+      Logger.i("Successfully downloaded $responseLength to $outputFile")
     } catch (e: IOException) {
-      logger.e(e, "Failed downloading $responseLength to $outputFile")
+      Logger.e(e, "Failed downloading $responseLength to $outputFile")
       emit(Failed(e.requireMessage(), responseLength))
     }
   }

@@ -12,6 +12,7 @@ node ["style"="filled"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
+":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:res" ["fillcolor"="#00FFFF","shape"="box"]
@@ -42,6 +43,7 @@ graph ["rank"="same"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
 ":url:vm" -> ":core:colorscheme"
 ":url:vm" -> ":core:versions" ["style"="dotted"]
+":url:vm" -> ":log" ["style"="dotted"]
 ":url:vm" -> ":url:model"
 ":url:vm" -> ":url:prefs" ["style"="dotted"]
 subgraph "cluster_legend" {

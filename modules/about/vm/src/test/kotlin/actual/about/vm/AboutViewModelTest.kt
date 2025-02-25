@@ -6,7 +6,6 @@ import actual.test.TestBuildConfig
 import actual.test.TestInstant
 import actual.test.assertEmitted
 import alakazam.android.core.UrlOpener
-import alakazam.kotlin.core.EmptyLogger
 import app.cash.turbine.test
 import github.api.model.GithubRelease
 import io.mockk.coEvery
@@ -33,7 +32,6 @@ class AboutViewModelTest {
     repository = mockk()
     urlOpener = mockk(relaxed = true)
     viewModel = AboutViewModel(
-      logger = EmptyLogger,
       buildConfig = TestBuildConfig,
       githubRepository = repository,
       urlOpener = urlOpener,

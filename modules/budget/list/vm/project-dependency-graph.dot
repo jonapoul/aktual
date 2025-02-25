@@ -9,6 +9,7 @@ node ["style"="filled"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
+":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 {
@@ -23,6 +24,7 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:colorscheme"
 ":budget:list:vm" -> ":core:versions" ["style"="dotted"]
+":budget:list:vm" -> ":log" ["style"="dotted"]
 ":budget:list:vm" -> ":url:model"
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
 ":core:versions" -> ":core:buildconfig"

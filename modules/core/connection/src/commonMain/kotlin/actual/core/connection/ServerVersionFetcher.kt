@@ -3,8 +3,8 @@ package actual.core.connection
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.core.versions.ActualVersionsStateHolder
+import actual.log.Logger
 import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.Logger
 import alakazam.kotlin.core.LoopController
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
@@ -18,7 +18,6 @@ class ServerVersionFetcher @Inject internal constructor(
   private val apisStateHolder: ActualApisStateHolder,
   private val versionsStateHolder: ActualVersionsStateHolder,
   private val loopController: LoopController,
-  private val logger: Logger,
 ) {
   suspend fun startFetching() {
     apisStateHolder.collectLatest { apis ->
@@ -30,21 +29,21 @@ class ServerVersionFetcher @Inject internal constructor(
 
   private suspend fun fetchVersion(apis: ActualApis) {
     while (loopController.shouldLoop()) {
-      logger.v("fetchVersion %s", apis)
+      Logger.v("fetchVersion %s", apis)
       try {
         val response = withContext(contexts.io) { apis.base.info() }
         val body = response.body()
         if (response.isSuccessful && body != null) {
-          logger.v("Fetched %s", body)
+          Logger.v("Fetched %s", body)
           versionsStateHolder.set(body.build.version)
         } else {
-          logger.e("Failure response fetching server info: $response")
+          Logger.e("Failure response fetching server info: $response")
         }
         break
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {
-        logger.w(e, "Failed fetching server info")
+        Logger.w(e, "Failed fetching server info")
         delay(RETRY_DELAY)
       }
     }

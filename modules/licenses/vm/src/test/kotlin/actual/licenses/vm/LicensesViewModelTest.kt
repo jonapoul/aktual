@@ -6,7 +6,6 @@ import actual.licenses.data.LicensesLoadState
 import actual.licenses.data.LicensesRepository
 import actual.test.assertEmitted
 import alakazam.android.core.UrlOpener
-import alakazam.kotlin.core.EmptyLogger
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -170,7 +169,6 @@ class LicensesViewModelTest {
     viewModel = LicensesViewModel(
       licensesRepository = repository,
       urlOpener = urlOpener,
-      logger = EmptyLogger,
     )
   }
 

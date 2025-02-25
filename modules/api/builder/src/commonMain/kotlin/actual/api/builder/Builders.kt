@@ -1,7 +1,7 @@
 package actual.api.builder
 
+import actual.log.Logger
 import actual.url.model.ServerUrl
-import alakazam.kotlin.core.Logger
 import alakazam.kotlin.core.ifTrue
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -12,12 +12,11 @@ import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 
 fun buildOkHttp(
-  logger: Logger,
   isDebug: Boolean,
   tag: String,
 ) = OkHttpClient
   .Builder()
-  .ifTrue(isDebug) { addLogger(logger, tag) }
+  .ifTrue(isDebug) { addLogger(tag) }
   .build()
 
 fun buildRetrofit(
@@ -35,8 +34,8 @@ fun buildRetrofit(
     .build()
 }
 
-private fun OkHttpClient.Builder.addLogger(logger: Logger, tag: String): OkHttpClient.Builder {
-  val interceptor = HttpLoggingInterceptor { logger.tag(tag).v(it) }
+private fun OkHttpClient.Builder.addLogger(tag: String): OkHttpClient.Builder {
+  val interceptor = HttpLoggingInterceptor { Logger.tag(tag).v(it) }
   interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
   return addInterceptor(interceptor)
 }

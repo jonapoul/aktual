@@ -6,6 +6,7 @@ import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
+import actual.log.Logger
 import actual.url.prefs.ServerUrlPreferences
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -14,7 +15,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -40,7 +40,7 @@ internal class ActualActivityViewModel @Inject constructor(
   }
 
   override fun onCleared() {
-    Timber.v("onCleared")
+    Logger.v("onCleared")
     super.onCleared()
     connectionMonitor.stop()
     scope.cancel()

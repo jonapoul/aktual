@@ -17,7 +17,6 @@ import actual.test.buildPreferences
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
-import alakazam.kotlin.core.EmptyLogger
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
@@ -77,7 +76,6 @@ class ServerUrlViewModelTest {
 
   private fun buildViewModel() {
     viewModel = ServerUrlViewModel(
-      logger = EmptyLogger,
       contexts = TestCoroutineContexts(mainDispatcherRule),
       apiStateHolder = apisStateHolder,
       serverUrlPreferences = serverUrlPreferences,

@@ -3,11 +3,13 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":api:builder","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":api:builder" ["fillcolor"="#9D8DF1","shape"="box"]
+":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
+":api:builder" -> ":log" ["style"="dotted"]
 ":api:builder" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

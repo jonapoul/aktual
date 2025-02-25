@@ -12,7 +12,6 @@ import actual.test.buildPreferences
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
-import alakazam.kotlin.core.EmptyLogger
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -57,7 +56,6 @@ internal class LoginViewModelTest {
     loginRequester = mockk(relaxed = true)
 
     viewModel = LoginViewModel(
-      logger = EmptyLogger,
       versionsStateHolder = versionsStateHolder,
       loginRequester = loginRequester,
       serverUrlPrefs = serverUrlPrefs,

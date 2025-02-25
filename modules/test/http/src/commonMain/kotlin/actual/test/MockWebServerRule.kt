@@ -3,14 +3,11 @@ package actual.test
 import actual.api.builder.buildOkHttp
 import actual.api.builder.buildRetrofit
 import actual.url.model.ServerUrl
-import alakazam.kotlin.core.EmptyLogger
-import alakazam.kotlin.core.Logger
 import kotlinx.serialization.json.Json
 import okhttp3.OkHttpClient
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import okio.Buffer
-import okio.buffer
 import org.junit.rules.TestWatcher
 import org.junit.runner.Description
 import retrofit2.create
@@ -48,9 +45,8 @@ class MockWebServerRule : TestWatcher() {
 
   inline fun <reified T : Any> buildApi(
     json: Json = Json,
-    logger: Logger = EmptyLogger,
     tag: String = "TEST",
-    client: OkHttpClient = buildOkHttp(logger, isDebug = true, tag),
+    client: OkHttpClient = buildOkHttp(isDebug = true, tag),
   ): T {
     val retrofit = buildRetrofit(
       client = client,

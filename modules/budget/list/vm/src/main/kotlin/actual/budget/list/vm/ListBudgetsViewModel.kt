@@ -5,9 +5,9 @@ import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
+import actual.log.Logger
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
-import alakazam.kotlin.core.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
@@ -31,7 +31,6 @@ class ListBudgetsViewModel @AssistedInject constructor(
   versionsStateHolder: ActualVersionsStateHolder,
   colorSchemePreferences: ColorSchemePreferences,
   private val budgetListFetcher: BudgetListFetcher,
-  private val logger: Logger,
 ) : ViewModel() {
   // Necessary because trying to pass a value class through dagger's assisted injection results in a KSP build failure.
   // See https://github.com/google/dagger/issues/4613
@@ -52,12 +51,12 @@ class ListBudgetsViewModel @AssistedInject constructor(
   val state: StateFlow<ListBudgetsState> = mutableState.asStateFlow()
 
   init {
-    logger.d("init")
+    Logger.d("init")
     fetchState()
   }
 
   fun retry() {
-    logger.d("retry")
+    Logger.d("retry")
     fetchState()
   }
 
@@ -65,7 +64,7 @@ class ListBudgetsViewModel @AssistedInject constructor(
     mutableState.update { ListBudgetsState.Loading }
     viewModelScope.launch {
       val result = budgetListFetcher.fetchBudgets(token)
-      logger.d("Fetch budgets result = %s", result)
+      Logger.d("Fetch budgets result = %s", result)
       val newState = when (result) {
         is FetchBudgetsResult.Failure -> ListBudgetsState.Failure(result.reason)
         is FetchBudgetsResult.Success -> ListBudgetsState.Success(result.budgets.toImmutableList())

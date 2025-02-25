@@ -71,7 +71,6 @@ dependencyAnalysis {
           libs.androidx.compose.ui.toolingPreview,
           libs.hilt.core,
           libs.test.androidx.monitor,
-          libs.timber,
         )
       }
 

@@ -13,4 +13,5 @@ commonMainDependencies {
   implementation(libs.okhttp.logging)
   implementation(libs.retrofit.scalars)
   implementation(libs.retrofit.serialization)
+  implementation(projects.log)
 }
