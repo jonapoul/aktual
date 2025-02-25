@@ -6,5 +6,4 @@ plugins {
 
 commonMainDependencies {
   api(libs.kotlinx.datetime)
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
 }

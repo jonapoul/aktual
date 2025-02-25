@@ -9,7 +9,6 @@ node ["style"="filled"]
 ":account:login:vm" ["fillcolor"="#F5A6A6","shape"="box"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -26,7 +25,6 @@ graph ["rank"="same"]
 }
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
-":account:login:domain" -> ":api:core" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:domain" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:nav" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:res" ["style"="dotted"]
@@ -42,7 +40,6 @@ graph ["rank"="same"]
 ":account:login:vm" -> ":url:model"
 ":account:login:vm" -> ":url:prefs" ["style"="dotted"]
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 ":budget:list:nav" -> ":account:model"

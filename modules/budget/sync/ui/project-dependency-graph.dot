@@ -4,7 +4,6 @@ graph ["dpi"="100","label"=":budget:sync:ui","labelloc"="t","fontsize"="30","ran
 node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:sync:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":budget:sync:res" ["fillcolor"="#00FFFF","shape"="box"]
@@ -21,7 +20,6 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 ":budget:sync:nav" -> ":account:model"

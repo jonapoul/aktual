@@ -12,7 +12,6 @@ commonMainDependencies {
   implementation(libs.javaxInject)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.serialization.json)
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
 }
 
 commonTestDependencies {

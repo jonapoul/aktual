@@ -1,8 +1,5 @@
 package actual.core.versions
 
-import androidx.compose.runtime.Immutable
-
-@Immutable
 data class ActualVersions(
   val app: String,
   val server: String?,

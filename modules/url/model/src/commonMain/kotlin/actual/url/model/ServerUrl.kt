@@ -1,9 +1,5 @@
 package actual.url.model
 
-import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.Stable
-
-@Immutable
 data class ServerUrl(
   val protocol: Protocol,
   val baseUrl: String,
@@ -12,7 +8,6 @@ data class ServerUrl(
     require(baseUrl.isNotBlank()) { "Base URL is blank" }
   }
 
-  @Stable
   override fun toString(): String = "$protocol://$baseUrl"
 
   fun interface Provider {

@@ -17,7 +17,6 @@ dependencies {
   implementation(libs.retrofit.core)
   implementation(projects.account.login.domain)
   implementation(projects.api.actual)
-  implementation(projects.api.core)
   implementation(projects.core.versions)
   implementation(projects.url.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)

@@ -1,9 +1,8 @@
-package actual.api.core
+package actual.api.client
 
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.StringFormat
 import okhttp3.Headers
-import retrofit2.Response as RetrofitResponse
+import retrofit2.Response
 
 data class ActualResponse<T : Any>(
   val body: T,
@@ -13,19 +12,18 @@ data class ActualResponse<T : Any>(
   val isSuccessful: Boolean,
 )
 
-fun <Base : Any, Success : Base, Failure : Base> RetrofitResponse<Success>.adapted(
-  format: StringFormat,
+fun <Base : Any, Success : Base, Failure : Base> Response<Success>.adapted(
   failureSerializer: KSerializer<Failure>,
 ): ActualResponse<Base> = if (isSuccessful) {
   adapt(body())
 } else {
   val failure = errorBody()
     ?.string()
-    ?.let { format.decodeFromString(failureSerializer, it) }
+    ?.let { ActualJson.decodeFromString(failureSerializer, it) }
   adapt(failure)
 }
 
-private fun <T : Any> RetrofitResponse<*>.adapt(body: T?) = ActualResponse(
+private fun <T : Any> Response<*>.adapt(body: T?) = ActualResponse(
   body = body ?: error("Null body in $this"),
   code = code(),
   message = message(),

@@ -5,7 +5,6 @@ node ["style"="filled"]
 ":account:login:domain" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -19,16 +18,13 @@ graph ["rank"="same"]
 }
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
-":account:login:domain" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 ":core:versions" -> ":core:buildconfig"
 ":url:prefs" -> ":url:model"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
-":url:vm" -> ":api:core" ["style"="dotted"]
 ":url:vm" -> ":core:colorscheme"
 ":url:vm" -> ":core:versions" ["style"="dotted"]
 ":url:vm" -> ":url:model"

@@ -8,7 +8,6 @@ plugins {
 commonMainDependencies {
   api(libs.javaxInject)
   api(libs.preferences.core)
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
 }
 
 androidUnitTestDependencies {

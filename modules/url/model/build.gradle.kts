@@ -5,5 +5,4 @@ plugins {
 }
 
 commonMainDependencies {
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
 }

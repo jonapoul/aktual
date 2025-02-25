@@ -6,7 +6,6 @@ node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:password:domain" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
@@ -15,13 +14,10 @@ graph ["rank"="same"]
 }
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
-":account:login:domain" -> ":api:core" ["style"="dotted"]
 ":account:password:domain" -> ":account:login:domain"
 ":account:password:domain" -> ":account:model"
 ":account:password:domain" -> ":api:actual" ["style"="dotted"]
-":account:password:domain" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 subgraph "cluster_legend" {

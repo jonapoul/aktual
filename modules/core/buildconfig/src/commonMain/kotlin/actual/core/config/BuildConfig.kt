@@ -1,9 +1,7 @@
 package actual.core.config
 
-import androidx.compose.runtime.Immutable
 import kotlinx.datetime.Instant
 
-@Immutable
 data class BuildConfig(
   val debug: Boolean, // BuildConfig.DEBUG
   val versionName: String, // BuildConfig.VERSION_NAME

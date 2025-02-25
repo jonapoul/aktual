@@ -3,7 +3,6 @@ package actual.budget.list.ui
 import actual.budget.list.res.BudgetListStrings
 import actual.budget.model.Budget
 import actual.budget.model.BudgetState
-import actual.budget.model.hasKey
 import actual.core.icons.ActualIcons
 import actual.core.icons.Key
 import actual.core.res.CoreStrings

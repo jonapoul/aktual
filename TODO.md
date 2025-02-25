@@ -22,7 +22,4 @@
 
 - handle token-expired reason on responses
 
-- viewmodel build script -> multiplatform
-- ui build script -> multiplatform
-- merge model modules into one?
 - merge api modules into one?
