@@ -8,6 +8,5 @@ commonMainDependencies {
   api(libs.alakazam.kotlin.core)
   api(libs.javaxInject)
   api(projects.core.buildconfig)
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
   implementation(libs.kotlinx.coroutines)
 }

@@ -9,7 +9,6 @@ node ["style"="filled"]
 ":account:password:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":account:password:vm" ["fillcolor"="#F5A6A6","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:core" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -24,11 +23,9 @@ graph ["rank"="same"]
 }
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
-":account:login:domain" -> ":api:core" ["style"="dotted"]
 ":account:password:domain" -> ":account:login:domain"
 ":account:password:domain" -> ":account:model"
 ":account:password:domain" -> ":api:actual" ["style"="dotted"]
-":account:password:domain" -> ":api:core" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:domain" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:res" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:vm"
@@ -41,7 +38,6 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":core:colorscheme"
 ":account:password:vm" -> ":core:versions" ["style"="dotted"]
 ":api:actual" -> ":account:model"
-":api:actual" -> ":api:core" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 ":budget:list:nav" -> ":account:model"

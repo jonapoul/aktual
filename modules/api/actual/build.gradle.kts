@@ -16,9 +16,7 @@ commonMainDependencies {
   api(projects.account.model)
   api(projects.budget.model)
   api(projects.url.model)
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
   compileOnly(libs.sekret)
-  implementation(projects.api.core)
 }
 
 commonTestDependencies {

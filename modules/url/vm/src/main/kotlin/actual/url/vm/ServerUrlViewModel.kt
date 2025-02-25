@@ -2,8 +2,7 @@ package actual.url.vm
 
 import actual.account.login.domain.LoginPreferences
 import actual.api.client.ActualApisStateHolder
-import actual.api.client.ActualJson
-import actual.api.core.adapted
+import actual.api.client.adapted
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
@@ -148,7 +147,7 @@ class ServerUrlViewModel @Inject internal constructor(
     val response = withContext(contexts.io) {
       apis.account
         .needsBootstrap()
-        .adapted(ActualJson, NeedsBootstrapResponse.Failure.serializer())
+        .adapted(NeedsBootstrapResponse.Failure.serializer())
     }
     logger.v("response = %s", response)
 

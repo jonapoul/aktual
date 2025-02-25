@@ -1,7 +1,6 @@
 package actual.api.client
 
 import actual.account.model.LoginToken
-import actual.api.core.adapted
 import actual.api.model.account.FailureReason
 import actual.api.model.sync.ListUserFilesResponse
 import actual.test.MockWebServerRule
@@ -102,7 +101,7 @@ class SyncApiTest {
 
   private suspend fun fetchUserFiles() = syncApi
     .fetchUserFiles(TOKEN)
-    .adapted(ActualJson, ListUserFilesResponse.Failure.serializer())
+    .adapted(ListUserFilesResponse.Failure.serializer())
 
   private companion object {
     val TOKEN = LoginToken("abc-123")

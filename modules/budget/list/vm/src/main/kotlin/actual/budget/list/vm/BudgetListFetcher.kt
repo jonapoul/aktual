@@ -2,8 +2,7 @@ package actual.budget.list.vm
 
 import actual.account.model.LoginToken
 import actual.api.client.ActualApisStateHolder
-import actual.api.client.ActualJson
-import actual.api.core.adapted
+import actual.api.client.adapted
 import actual.api.model.sync.ListUserFilesResponse
 import actual.budget.model.Budget
 import actual.budget.model.BudgetId
@@ -28,7 +27,7 @@ class BudgetListFetcher @Inject internal constructor(
       val response = withContext(contexts.io) {
         apis.sync
           .fetchUserFiles(token)
-          .adapted(ActualJson, ListUserFilesResponse.Failure.serializer())
+          .adapted(ListUserFilesResponse.Failure.serializer())
       }
       val result = when (val body = response.body) {
         is ListUserFilesResponse.Failure -> FetchBudgetsResult.FailureResponse(body.reason.reason)

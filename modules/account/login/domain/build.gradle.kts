@@ -13,7 +13,6 @@ commonMainDependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.retrofit.core)
   implementation(projects.api.actual)
-  implementation(projects.api.core)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
 }
 

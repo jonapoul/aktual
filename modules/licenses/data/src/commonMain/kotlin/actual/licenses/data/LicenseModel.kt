@@ -1,10 +1,8 @@
 package actual.licenses.data
 
-import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Immutable
 @Serializable
 data class LicenseModel(
   @SerialName(value = "license") val license: String,

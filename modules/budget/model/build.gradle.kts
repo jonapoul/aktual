@@ -9,5 +9,4 @@ commonMainDependencies {
   api(libs.alakazam.kotlin.serialization)
   api(libs.kotlinx.datetime)
   api(libs.kotlinx.serialization.core)
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
 }
