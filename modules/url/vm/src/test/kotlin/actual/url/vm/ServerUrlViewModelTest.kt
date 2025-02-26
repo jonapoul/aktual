@@ -24,6 +24,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -89,9 +90,10 @@ class ServerUrlViewModelTest {
   @Test
   fun `Nav to login when typing and clicking confirm if already bootstrapped`() = runTest {
     buildViewModel()
-    viewModel.shouldNavigate.test {
+    viewModel.navDestination.receiveAsFlow().test {
       // Given we're currently not navigating, and the API returns that we're bootstrapped
-      assertNull(awaitItem())
+      advanceUntilIdle()
+      ensureAllEventsConsumed()
       setBootstrapResponse(bootstrapped = true)
 
       // When
@@ -100,7 +102,9 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertEquals(expected = ShouldNavigate.ToLogin, actual = awaitItem())
+      assertEquals(expected = NavDestination.ToLogin, actual = awaitItem())
+      advanceUntilIdle()
+      ensureAllEventsConsumed()
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -108,9 +112,10 @@ class ServerUrlViewModelTest {
   @Test
   fun `Nav to bootstrap when typing and clicking confirm if not bootstrapped`() = runTest {
     buildViewModel()
-    viewModel.shouldNavigate.test {
+    viewModel.navDestination.receiveAsFlow().test {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
-      assertNull(awaitItem())
+      advanceUntilIdle()
+      ensureAllEventsConsumed()
       setBootstrapResponse(bootstrapped = false)
 
       // When
@@ -119,7 +124,9 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertEquals(expected = ShouldNavigate.ToBootstrap, actual = awaitItem())
+      assertEquals(expected = NavDestination.ToBootstrap, actual = awaitItem())
+      advanceUntilIdle()
+      ensureAllEventsConsumed()
       cancelAndIgnoreRemainingEvents()
     }
   }

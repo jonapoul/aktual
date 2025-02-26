@@ -16,6 +16,7 @@ import alakazam.kotlin.core.ResettableStateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -55,10 +56,10 @@ class LoginViewModel @Inject internal constructor(
     combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
       .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
-  val token: StateFlow<LoginToken?> = loginPrefs
+  val token: Flow<LoginToken> = loginPrefs
     .token
     .asFlow()
-    .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
+    .filterNotNull()
 
   fun clearState() {
     mutableEnteredPassword.reset()

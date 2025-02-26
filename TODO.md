@@ -1,7 +1,5 @@
 # TODO
 
-- Support demo public app?
-  - Doesn't support bootstrapping, probably other things too
 - Settings screen
   - Themes
   - Notifications?
