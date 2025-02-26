@@ -37,6 +37,7 @@ graph ["rank"="same"]
 ":url:ui" -> ":core:colorscheme"
 ":url:ui" -> ":core:res" ["style"="dotted"]
 ":url:ui" -> ":core:ui"
+":url:ui" -> ":log" ["style"="dotted"]
 ":url:ui" -> ":url:res" ["style"="dotted"]
 ":url:ui" -> ":url:vm"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]

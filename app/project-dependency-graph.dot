@@ -2,11 +2,17 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":app","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":about:data" ["fillcolor"="#9D8DF1","shape"="box"]
-":about:nav" ["fillcolor"="#5555FF","shape"="box"]
-":about:res" ["fillcolor"="#00FFFF","shape"="box"]
-":about:ui" ["fillcolor"="#FFFF55","shape"="box"]
-":about:vm" ["fillcolor"="#F5A6A6","shape"="box"]
+":about:info:data" ["fillcolor"="#9D8DF1","shape"="box"]
+":about:info:nav" ["fillcolor"="#5555FF","shape"="box"]
+":about:info:res" ["fillcolor"="#00FFFF","shape"="box"]
+":about:info:ui" ["fillcolor"="#FFFF55","shape"="box"]
+":about:info:vm" ["fillcolor"="#F5A6A6","shape"="box"]
+":about:licenses:data" ["fillcolor"="#9D8DF1","shape"="box"]
+":about:licenses:di" ["fillcolor"="#FCB103","shape"="box"]
+":about:licenses:nav" ["fillcolor"="#5555FF","shape"="box"]
+":about:licenses:res" ["fillcolor"="#00FFFF","shape"="box"]
+":about:licenses:ui" ["fillcolor"="#FFFF55","shape"="box"]
+":about:licenses:vm" ["fillcolor"="#F5A6A6","shape"="box"]
 ":account:login:domain" ["fillcolor"="#9D8DF1","shape"="box"]
 ":account:login:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":account:login:res" ["fillcolor"="#00FFFF","shape"="box"]
@@ -42,12 +48,6 @@ node ["style"="filled"]
 ":db:api" ["fillcolor"="#9D8DF1","shape"="box"]
 ":db:di" ["fillcolor"="#FCB103","shape"="box"]
 ":db:impl" ["fillcolor"="#9D8DF1","shape"="box"]
-":licenses:data" ["fillcolor"="#9D8DF1","shape"="box"]
-":licenses:di" ["fillcolor"="#FCB103","shape"="box"]
-":licenses:nav" ["fillcolor"="#5555FF","shape"="box"]
-":licenses:res" ["fillcolor"="#00FFFF","shape"="box"]
-":licenses:ui" ["fillcolor"="#FFFF55","shape"="box"]
-":licenses:vm" ["fillcolor"="#F5A6A6","shape"="box"]
 ":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:nav" ["fillcolor"="#5555FF","shape"="box"]
@@ -60,16 +60,23 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 ":app"
 }
-":about:data" -> ":api:github"
-":about:data" -> ":core:buildconfig"
-":about:ui" -> ":about:res" ["style"="dotted"]
-":about:ui" -> ":about:vm"
-":about:ui" -> ":core:res" ["style"="dotted"]
-":about:ui" -> ":core:ui"
-":about:ui" -> ":licenses:nav" ["style"="dotted"]
-":about:vm" -> ":about:data"
-":about:vm" -> ":core:buildconfig"
-":about:vm" -> ":log" ["style"="dotted"]
+":about:info:data" -> ":api:github"
+":about:info:data" -> ":core:buildconfig"
+":about:info:ui" -> ":about:info:res" ["style"="dotted"]
+":about:info:ui" -> ":about:info:vm"
+":about:info:ui" -> ":about:licenses:nav" ["style"="dotted"]
+":about:info:ui" -> ":core:res" ["style"="dotted"]
+":about:info:ui" -> ":core:ui"
+":about:info:vm" -> ":about:info:data"
+":about:info:vm" -> ":core:buildconfig"
+":about:info:vm" -> ":log" ["style"="dotted"]
+":about:licenses:di" -> ":about:licenses:data"
+":about:licenses:ui" -> ":about:licenses:res" ["style"="dotted"]
+":about:licenses:ui" -> ":about:licenses:vm"
+":about:licenses:ui" -> ":core:res" ["style"="dotted"]
+":about:licenses:ui" -> ":core:ui"
+":about:licenses:vm" -> ":about:licenses:data"
+":about:licenses:vm" -> ":log" ["style"="dotted"]
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:domain" ["style"="dotted"]
@@ -112,9 +119,11 @@ graph ["rank"="same"]
 ":api:di" -> ":api:github"
 ":api:di" -> ":core:buildconfig"
 ":api:di" -> ":url:model" ["style"="dotted"]
-":app" -> ":about:data" ["style"="dotted"]
-":app" -> ":about:nav" ["style"="dotted"]
-":app" -> ":about:ui" ["style"="dotted"]
+":app" -> ":about:info:nav" ["style"="dotted"]
+":app" -> ":about:info:ui" ["style"="dotted"]
+":app" -> ":about:licenses:di" ["style"="dotted"]
+":app" -> ":about:licenses:nav" ["style"="dotted"]
+":app" -> ":about:licenses:ui" ["style"="dotted"]
 ":app" -> ":account:login:domain" ["style"="dotted"]
 ":app" -> ":account:login:nav" ["style"="dotted"]
 ":app" -> ":account:login:ui" ["style"="dotted"]
@@ -130,10 +139,6 @@ graph ["rank"="same"]
 ":app" -> ":core:connection" ["style"="dotted"]
 ":app" -> ":core:di" ["style"="dotted"]
 ":app" -> ":db:di" ["style"="dotted"]
-":app" -> ":licenses:data" ["style"="dotted"]
-":app" -> ":licenses:di" ["style"="dotted"]
-":app" -> ":licenses:nav" ["style"="dotted"]
-":app" -> ":licenses:ui" ["style"="dotted"]
 ":app" -> ":log" ["style"="dotted"]
 ":app" -> ":url:nav" ["style"="dotted"]
 ":app" -> ":url:prefs" ["style"="dotted"]
@@ -186,18 +191,12 @@ graph ["rank"="same"]
 ":db:di" -> ":db:impl"
 ":db:impl" -> ":budget:model"
 ":db:impl" -> ":db:api"
-":licenses:di" -> ":licenses:data"
-":licenses:ui" -> ":core:res" ["style"="dotted"]
-":licenses:ui" -> ":core:ui"
-":licenses:ui" -> ":licenses:res" ["style"="dotted"]
-":licenses:ui" -> ":licenses:vm"
-":licenses:vm" -> ":licenses:data"
-":licenses:vm" -> ":log" ["style"="dotted"]
 ":url:prefs" -> ":url:model"
 ":url:ui" -> ":account:login:nav" ["style"="dotted"]
 ":url:ui" -> ":core:colorscheme"
 ":url:ui" -> ":core:res" ["style"="dotted"]
 ":url:ui" -> ":core:ui"
+":url:ui" -> ":log" ["style"="dotted"]
 ":url:ui" -> ":url:res" ["style"="dotted"]
 ":url:ui" -> ":url:vm"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]

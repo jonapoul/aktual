@@ -9,7 +9,6 @@ import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
 import actual.core.versions.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
-import alakazam.kotlin.core.EmptyLogger
 import alakazam.kotlin.core.LoopController
 import alakazam.test.core.FiniteLoopController
 import alakazam.test.core.MainDispatcherRule

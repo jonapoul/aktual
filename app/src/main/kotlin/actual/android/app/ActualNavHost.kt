@@ -1,7 +1,9 @@
 package actual.android.app
 
-import actual.about.nav.AboutNavRoute
-import actual.about.ui.AboutScreen
+import actual.about.info.nav.InfoNavRoute
+import actual.about.info.ui.InfoScreen
+import actual.about.licenses.nav.LicensesNavRoute
+import actual.about.licenses.ui.LicensesScreen
 import actual.account.login.nav.LoginNavRoute
 import actual.account.login.ui.LoginScreen
 import actual.account.model.LoginToken
@@ -11,8 +13,6 @@ import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.budget.list.ui.ListBudgetsScreen
 import actual.budget.sync.nav.SyncBudgetsNavRoute
 import actual.budget.sync.ui.SyncBudgetScreen
-import actual.licenses.nav.LicensesNavRoute
-import actual.licenses.ui.LicensesScreen
 import actual.url.nav.ServerUrlNavRoute
 import actual.url.ui.ServerUrlScreen
 import androidx.compose.animation.AnimatedContentScope
@@ -45,7 +45,7 @@ internal fun ActualNavHost(
   ) {
     composable<ChangePasswordNavRoute> { ChangePasswordScreen(navController) }
 
-    composable<AboutNavRoute> { AboutScreen(navController) }
+    composable<InfoNavRoute> { InfoScreen(navController) }
 
     composable<LicensesNavRoute> { LicensesScreen(navController) }
 
