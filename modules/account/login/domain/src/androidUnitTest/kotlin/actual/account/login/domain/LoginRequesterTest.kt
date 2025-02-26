@@ -10,7 +10,6 @@ import actual.test.MockWebServerRule
 import actual.test.TestBuildConfig
 import actual.test.buildPreferences
 import actual.url.prefs.ServerUrlPreferences
-import alakazam.kotlin.core.EmptyLogger
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
