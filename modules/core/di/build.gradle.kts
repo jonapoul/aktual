@@ -8,5 +8,6 @@ dependencies {
   api(libs.hilt.android)
   api(libs.javaxInject)
   api(libs.preferences.core)
+  api(projects.core.files)
   implementation(libs.preferences.android)
 }

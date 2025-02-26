@@ -8,6 +8,7 @@ import actual.budget.sync.vm.Bytes.Companion.Zero
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failed
 import actual.budget.sync.vm.DownloadState.InProgress
+import actual.core.files.FileSystem
 import actual.log.Logger
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
@@ -26,7 +27,7 @@ import javax.inject.Inject
 
 class BudgetFileDownloader @Inject internal constructor(
   private val contexts: CoroutineContexts,
-  private val fileStore: FileStore,
+  private val fileSystem: FileSystem,
   private val apisStateHolder: ActualApisStateHolder,
 ) {
   fun download(token: LoginToken, budgetId: BudgetId): Flow<DownloadState> {
@@ -46,7 +47,7 @@ class BudgetFileDownloader @Inject internal constructor(
 
     val body = response.body()
     if (response.isSuccessful && body != null) {
-      val budgetFile = fileStore.budgetFile(id)
+      val budgetFile = fileSystem.budgetFile(id.value)
       saveFile(body, budgetFile)
     } else {
       Logger.e("Failed: $response")

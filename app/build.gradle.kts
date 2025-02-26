@@ -170,7 +170,6 @@ dependencies {
   implementation(libs.preferences.android)
   implementation(projects.about.info.nav)
   implementation(projects.about.info.ui)
-  implementation(projects.about.licenses.di)
   implementation(projects.about.licenses.nav)
   implementation(projects.about.licenses.ui)
   implementation(projects.account.login.domain)
