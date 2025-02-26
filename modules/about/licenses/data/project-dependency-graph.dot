@@ -3,10 +3,12 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":about:licenses:data","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":about:licenses:data" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:files" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
+":about:licenses:data" -> ":core:files" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

@@ -7,6 +7,7 @@ dependencies {
   api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(projects.core.colorscheme)
+  api(projects.core.files)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.okhttp.core)
   implementation(libs.okio)

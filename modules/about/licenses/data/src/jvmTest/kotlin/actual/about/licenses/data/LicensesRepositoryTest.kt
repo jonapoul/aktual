@@ -1,5 +1,6 @@
 package actual.about.licenses.data
 
+import actual.core.files.Assets
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.getResourceAsStream
 import alakazam.test.core.standardDispatcher
@@ -11,7 +12,7 @@ import kotlin.test.assertIs
 
 class LicensesRepositoryTest {
   private lateinit var licensesRepository: LicensesRepository
-  private lateinit var assetsProvider: AssetsProvider
+  private lateinit var assets: Assets
 
   @Test
   fun `Parse valid JSON`() = runTest {
@@ -89,9 +90,9 @@ class LicensesRepositoryTest {
   }
 
   private fun TestScope.buildRepo(assetResource: String) {
-    assetsProvider = AssetsProvider { getResourceAsStream(assetResource) }
+    assets = Assets { getResourceAsStream(assetResource) }
     licensesRepository = LicensesRepository(
-      assetsProvider = assetsProvider,
+      assets = assets,
       contexts = TestCoroutineContexts(standardDispatcher),
     )
   }

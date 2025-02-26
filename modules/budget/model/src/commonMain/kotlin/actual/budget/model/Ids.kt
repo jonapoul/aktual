@@ -13,10 +13,9 @@ value class BankId(private val value: String) : Comparable<BankId> {
 }
 
 @JvmInline
-value class BudgetId(private val value: String) : Comparable<BudgetId> {
+value class BudgetId(val value: String) : Comparable<BudgetId> {
   override fun toString(): String = value
   override fun compareTo(other: BudgetId) = value.compareTo(other.value)
-  fun filename(): String = "$value.sqlite"
 }
 
 @JvmInline

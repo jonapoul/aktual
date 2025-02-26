@@ -24,8 +24,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
-  implementation(libs.androidx.navigation.common)
-  implementation(libs.androidx.navigation.compose)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(projects.account.login.nav)

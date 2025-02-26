@@ -132,14 +132,12 @@ internal class LoginViewModelTest {
   @Test
   fun `Login token`() = runTest {
     viewModel.token.test {
-      assertNull(awaitItem())
+      expectNoEvents()
 
       loginPrefs.token.set(LoginToken(value = "abc123"))
       assertNotNull(awaitItem())
 
       loginPrefs.token.delete()
-      assertNull(awaitItem())
-
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }

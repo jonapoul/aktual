@@ -9,6 +9,7 @@ import actual.budget.model.BudgetId
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failed
 import actual.budget.sync.vm.DownloadState.InProgress
+import actual.core.files.FileSystem
 import actual.test.MockWebServerRule
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
@@ -38,17 +39,17 @@ class BudgetFileDownloaderTest {
   val webServerRule = MockWebServerRule()
 
   private lateinit var budgetFileDownloader: BudgetFileDownloader
-  private lateinit var fileStore: FileStore
+  private lateinit var fileSystem: FileSystem
   private lateinit var apisStateHolder: ActualApisStateHolder
 
   @Before
   fun before() {
-    fileStore = TestFileStore(temporaryFolder)
+    fileSystem = TestFileSystem(temporaryFolder)
     apisStateHolder = ActualApisStateHolder()
 
     budgetFileDownloader = BudgetFileDownloader(
       contexts = TestCoroutineContexts(mainDispatcherRule),
-      fileStore = fileStore,
+      fileSystem = fileSystem,
       apisStateHolder = apisStateHolder,
     )
   }
