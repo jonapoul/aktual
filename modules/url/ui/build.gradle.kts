@@ -30,5 +30,6 @@ dependencies {
   implementation(libs.kotlinx.immutable)
   implementation(projects.account.login.nav)
   implementation(projects.core.res)
+  implementation(projects.log)
   implementation(projects.url.res)
 }

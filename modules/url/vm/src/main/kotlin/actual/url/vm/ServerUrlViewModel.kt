@@ -14,6 +14,7 @@ import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.ResettableStateFlow
+import alakazam.kotlin.core.collectFlow
 import alakazam.kotlin.core.requireMessage
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,6 +24,8 @@ import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -53,6 +56,7 @@ class ServerUrlViewModel @Inject internal constructor(
   private val mutableBaseUrl = MutableStateFlow(defaultUrl?.baseUrl.orEmpty())
   private val mutableProtocol = MutableStateFlow(defaultUrl?.protocol ?: Protocol.Https)
   private val mutableConfirmResult = ResettableStateFlow<ConfirmResult?>(value = null)
+  private val mutableNavDestination = Channel<NavDestination>()
 
   val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()
 
@@ -65,15 +69,7 @@ class ServerUrlViewModel @Inject internal constructor(
     .map { it.isNotBlank() }
     .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
 
-  val shouldNavigate: StateFlow<ShouldNavigate?> = viewModelScope.launchMolecule(Immediate) {
-    val confirmResult by mutableConfirmResult.collectAsState()
-    when (val result = confirmResult) {
-      is ConfirmResult.Succeeded ->
-        if (result.isBootstrapped) ShouldNavigate.ToLogin else ShouldNavigate.ToBootstrap
-
-      else -> null
-    }
-  }
+  val navDestination: ReceiveChannel<NavDestination> = mutableNavDestination
 
   val errorMessage: StateFlow<String?> = viewModelScope.launchMolecule(Immediate) {
     val confirmResult by mutableConfirmResult.collectAsState()
@@ -96,6 +92,11 @@ class ServerUrlViewModel @Inject internal constructor(
       // Also clear any previous login state
       loginPreferences.token.deleteAndCommit()
     }
+
+    viewModelScope.collectFlow(mutableConfirmResult) { result ->
+      val navDestination = result.navDestination()
+      if (navDestination != null) mutableNavDestination.send(navDestination)
+    }
   }
 
   fun clearState() {
@@ -106,6 +107,14 @@ class ServerUrlViewModel @Inject internal constructor(
   fun onEnterUrl(url: String) {
     Logger.v("onUrlEntered %s", url)
     mutableBaseUrl.update { url }
+    mutableConfirmResult.update { null }
+  }
+
+  fun onUseDemoServer() {
+    Logger.v("onUseDemoServer")
+    val demo = ServerUrl.Demo
+    mutableBaseUrl.update { demo.baseUrl }
+    mutableProtocol.update { demo.protocol }
     mutableConfirmResult.update { null }
   }
 
@@ -133,6 +142,10 @@ class ServerUrlViewModel @Inject internal constructor(
       checkIfNeedsBootstrap(url)
       mutableIsLoading.update { false }
     }
+  }
+
+  fun onClickBack() {
+    mutableNavDestination.trySend(NavDestination.Back)
   }
 
   private suspend fun checkIfNeedsBootstrap(url: ServerUrl) = try {
@@ -164,5 +177,17 @@ class ServerUrlViewModel @Inject internal constructor(
     serverUrlPreferences.url.deleteAndCommit()
 
     mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
+  }
+
+  private fun ConfirmResult?.navDestination(): NavDestination? = when (this) {
+    null -> null
+    is ConfirmResult.Failed -> null
+    is ConfirmResult.Succeeded -> {
+      if (isBootstrapped) {
+        NavDestination.ToLogin
+      } else {
+        NavDestination.ToBootstrap
+      }
+    }
   }
 }

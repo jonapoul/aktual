@@ -63,9 +63,10 @@ fun LoginScreen(
   val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
 
-  val token by viewModel.token.collectAsStateWithLifecycle()
-  LaunchedEffect(token) {
-    token?.let { navController.listBudgets(it) }
+  LaunchedEffect(Unit) {
+    viewModel.token.collect { token ->
+      navController.listBudgets(token)
+    }
   }
 
   DisposableEffect(Unit) {
