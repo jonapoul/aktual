@@ -10,10 +10,4 @@ enum class AllocationMethod(private val value: String) {
   ;
 
   override fun toString(): String = value
-
-  companion object {
-    fun fromString(string: String): AllocationMethod = entries
-      .firstOrNull { it.value == string }
-      ?: error("No AllocationMethod matching $string")
-  }
 }

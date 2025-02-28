@@ -1,0 +1,85 @@
+import actual.budget.model.CategoryGroupId;
+import actual.budget.model.CategoryId;
+import kotlin.Boolean;
+import kotlinx.serialization.json.JsonObject;
+
+CREATE TABLE IF NOT EXISTS categories(
+  id TEXT AS CategoryId PRIMARY KEY,
+  name TEXT,
+  is_income INTEGER AS Boolean DEFAULT 0,
+  cat_group TEXT AS CategoryGroupId,
+  sort_order REAL,
+  tombstone INTEGER AS Boolean DEFAULT 0,
+  hidden INTEGER AS Boolean NOT NULL DEFAULT 0,
+  goal_def TEXT AS JsonObject DEFAULT NULL
+);
+
+CREATE VIEW IF NOT EXISTS v_categories AS
+  SELECT
+    id,
+    name,
+    is_income,
+    hidden,
+    cat_group AS "group",
+    sort_order,
+    tombstone
+  FROM categories;
+
+isIncome:
+  SELECT is_income
+    FROM categories
+    WHERE id = ?;
+
+idsMatchingGroup:
+  SELECT id
+    FROM categories
+    WHERE cat_group = ? AND tombstone = 0;
+
+matchingGroup:
+  SELECT *
+    FROM categories
+    WHERE tombstone = 0 AND cat_group = ?;
+
+clearGoalDef:
+  UPDATE categories
+    SET goal_def = NULL
+    WHERE id NOT IN (
+      SELECT n.id
+      FROM notes n
+      WHERE lower(note) LIKE '%#template%'
+      OR lower(note) LIKE '%#goal%'
+    );
+
+categoriesWithTemplateNotes:
+  SELECT c.id AS id, c.name AS name, n.note AS note
+    FROM notes n
+    JOIN categories c ON n.id = c.id
+    WHERE c.id = n.id
+    AND c.tombstone = 0
+    AND (
+      LOWER(note) LIKE '%#template%'
+      OR LOWER(note) LIKE '%#goal%'
+    );
+
+categories:
+  SELECT *
+    FROM categories
+    WHERE tombstone = 0
+    ORDER BY sort_order, id;
+
+categoriesWithIds:
+  SELECT *
+    FROM categories
+    WHERE id IN :ids AND tombstone = 0
+    ORDER BY sort_order, id;
+
+categoriesInGroup:
+  SELECT *
+    FROM categories
+    WHERE cat_group IN :ids AND tombstone = 0
+    ORDER BY sort_order, id;
+
+delete:
+  DELETE
+    FROM categories
+    WHERE id = ?;

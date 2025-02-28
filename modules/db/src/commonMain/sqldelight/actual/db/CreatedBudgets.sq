@@ -1,0 +1,5 @@
+import actual.budget.model.YearAndMonth;
+
+CREATE TABLE IF NOT EXISTS created_budgets (
+  month TEXT AS YearAndMonth PRIMARY KEY
+);

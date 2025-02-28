@@ -5,4 +5,5 @@ plugins {
 }
 
 commonMainDependencies {
+  implementation(projects.core.model)
 }

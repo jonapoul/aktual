@@ -1,6 +1,6 @@
 package actual.budget.model
 
-enum class GraphType(val value: String) {
+enum class GraphType(private val value: String) {
   AreaGraph(value = "AreaGraph"),
   BarGraph(value = "BarGraph"),
   DonutGraph(value = "DonutGraph"),
@@ -10,10 +10,4 @@ enum class GraphType(val value: String) {
   ;
 
   override fun toString(): String = value
-
-  companion object {
-    fun fromString(string: String): GraphType = entries
-      .firstOrNull { it.value == string }
-      ?: error("No GraphType matching $string")
-  }
 }

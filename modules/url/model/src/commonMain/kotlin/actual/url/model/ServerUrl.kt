@@ -1,5 +1,7 @@
 package actual.url.model
 
+import actual.core.model.parse
+
 data class ServerUrl(
   val protocol: Protocol,
   val baseUrl: String,
@@ -22,7 +24,7 @@ data class ServerUrl(
 fun ServerUrl(string: String): ServerUrl {
   val split = string.split("://")
   require(split.size == 2) { "Need a URL in format 'PROTOCOL://BASE_URL', got $string" }
-  val protocol = Protocol.fromString(split[0])
+  val protocol = Protocol::class.parse(split[0])
   val baseUrl = split[1]
   return ServerUrl(protocol, baseUrl)
 }

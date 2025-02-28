@@ -12,7 +12,14 @@ interface ModuleType {
   }
 }
 
-fun ModuleType.Finder.color(project: Project): Color = Color.rgb(find(project).color).fill()
+@Suppress("MagicNumber")
+fun ModuleType.Finder.color(project: Project): Color {
+  val found = find(project).color
+  if (found.length != 7 || found.first() != '#') {
+    error("Invalid colour found for ${project.path}: '$found'")
+  }
+  return Color.rgb(found).fill()
+}
 
 enum class ActualModuleType(override val string: String, override val color: String) : ModuleType {
   AndroidApp(string = "App", color = "#FF5555"), // red
@@ -23,6 +30,7 @@ enum class ActualModuleType(override val string: String, override val color: Str
   AndroidResources(string = "Resources", color = "#00FFFF"), // cyan
   Navigation(string = "Navigation", color = "#5555FF"), // blue
   Multiplatform(string = "Multiplatform", color = "#9D8DF1"), // indigo
+  Jvm(string = "JVM", color = "#8000FF"), // violet
   ;
 
   companion object {
@@ -37,6 +45,7 @@ enum class ActualModuleType(override val string: String, override val color: Str
           hasPlugin("actual.module.resources") -> AndroidResources
           hasPlugin("actual.module.navigation") -> Navigation
           hasPlugin("actual.module.multiplatform") -> Multiplatform
+          hasPlugin("actual.module.jvm") -> Jvm
           else -> error("Unknown module type for ${project.path}")
         }
       }

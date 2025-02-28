@@ -10,6 +10,7 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -33,6 +34,7 @@ graph ["rank"="same"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
 ":core:versions" -> ":core:buildconfig"
+":url:model" -> ":core:model" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

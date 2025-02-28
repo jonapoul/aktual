@@ -1,12 +1,6 @@
 package actual.budget.model
 
-import alakazam.kotlin.serialization.SerializableByString
-import alakazam.kotlin.serialization.enumStringSerializer
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-
-@Serializable(ConditionOperator.Serializer::class)
-enum class ConditionOperator(override val value: String) : SerializableByString {
+enum class ConditionOperator(private val value: String) {
   And(value = "and"),
   Contains(value = "contains"),
   DoesNotContains(value = "doesNotContain"),
@@ -27,12 +21,4 @@ enum class ConditionOperator(override val value: String) : SerializableByString 
   ;
 
   override fun toString(): String = value
-
-  internal object Serializer : KSerializer<ConditionOperator> by enumStringSerializer()
-
-  companion object {
-    fun fromString(string: String): ConditionOperator = entries
-      .firstOrNull { it.value == string }
-      ?: error("No Condition matching $string")
-  }
 }

@@ -42,12 +42,11 @@ node ["style"="filled"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:di" ["fillcolor"="#FCB103","shape"="box"]
 ":core:files" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
-":db:api" ["fillcolor"="#9D8DF1","shape"="box"]
-":db:di" ["fillcolor"="#FCB103","shape"="box"]
-":db:impl" ["fillcolor"="#9D8DF1","shape"="box"]
+":db" ["fillcolor"="#9D8DF1","shape"="box"]
 ":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:nav" ["fillcolor"="#5555FF","shape"="box"]
@@ -137,7 +136,7 @@ graph ["rank"="same"]
 ":app" -> ":core:colorscheme" ["style"="dotted"]
 ":app" -> ":core:connection" ["style"="dotted"]
 ":app" -> ":core:di" ["style"="dotted"]
-":app" -> ":db:di" ["style"="dotted"]
+":app" -> ":db" ["style"="dotted"]
 ":app" -> ":log" ["style"="dotted"]
 ":app" -> ":url:nav" ["style"="dotted"]
 ":app" -> ":url:prefs" ["style"="dotted"]
@@ -182,19 +181,20 @@ graph ["rank"="same"]
 ":core:connection" -> ":url:model" ["style"="dotted"]
 ":core:connection" -> ":url:prefs" ["style"="dotted"]
 ":core:di" -> ":core:files"
+":core:files" -> ":budget:model"
 ":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
 ":core:versions" -> ":core:buildconfig"
-":db:api" -> ":budget:model"
-":db:di" -> ":db:api"
-":db:di" -> ":db:impl"
-":db:impl" -> ":budget:model"
-":db:impl" -> ":db:api"
+":db" -> ":budget:model"
+":db" -> ":core:model" ["style"="dotted"]
+":db" -> ":log" ["style"="dotted"]
+":url:model" -> ":core:model" ["style"="dotted"]
 ":url:prefs" -> ":url:model"
 ":url:ui" -> ":account:login:nav" ["style"="dotted"]
 ":url:ui" -> ":core:colorscheme"
+":url:ui" -> ":core:model" ["style"="dotted"]
 ":url:ui" -> ":core:res" ["style"="dotted"]
 ":url:ui" -> ":core:ui"
 ":url:ui" -> ":log" ["style"="dotted"]

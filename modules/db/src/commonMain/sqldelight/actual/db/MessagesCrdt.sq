@@ -1,0 +1,35 @@
+import actual.budget.model.Timestamp;
+
+CREATE TABLE IF NOT EXISTS messages_crdt(
+  id INTEGER PRIMARY KEY,
+  timestamp TEXT AS Timestamp NOT NULL UNIQUE,
+  dataset TEXT NOT NULL,
+  row TEXT NOT NULL,
+  column TEXT NOT NULL,
+  value BLOB NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS messages_crdt_search ON messages_crdt(dataset, row, column, timestamp);
+
+getDatasetAfterTime:
+  SELECT DISTINCT dataset
+    FROM messages_crdt
+    WHERE timestamp > ?;
+
+clear:
+  DELETE
+    FROM messages_crdt;
+
+getTimestamp:
+  SELECT timestamp
+    FROM messages_crdt
+    WHERE dataset = ? AND row = ? AND column = ? AND timestamp >= ?;
+
+getTimestamps:
+  SELECT timestamp
+    FROM messages_crdt;
+
+insert:
+  INSERT
+    INTO messages_crdt (timestamp, dataset, row, column, value)
+    VALUES (?, ?, ?, ?, ?);

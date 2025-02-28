@@ -2,6 +2,7 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":core:di","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
+":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:di" ["shape"="box","fillcolor"="#FCB103"]
 ":core:files" ["fillcolor"="#9D8DF1","shape"="box"]
 {
@@ -10,6 +11,7 @@ graph ["rank"="same"]
 ":core:di"
 }
 ":core:di" -> ":core:files"
+":core:files" -> ":budget:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

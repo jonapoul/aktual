@@ -2,12 +2,14 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":url:prefs","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
+":url:model" -> ":core:model" ["style"="dotted"]
 ":url:prefs" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

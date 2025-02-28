@@ -186,7 +186,7 @@ dependencies {
   implementation(projects.core.colorscheme)
   implementation(projects.core.connection)
   implementation(projects.core.di)
-  implementation(projects.db.di)
+  implementation(projects.db)
   implementation(projects.log)
   implementation(projects.url.nav)
   implementation(projects.url.prefs)

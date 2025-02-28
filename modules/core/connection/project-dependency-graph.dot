@@ -8,6 +8,7 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -29,6 +30,7 @@ graph ["rank"="same"]
 ":core:connection" -> ":url:model" ["style"="dotted"]
 ":core:connection" -> ":url:prefs" ["style"="dotted"]
 ":core:versions" -> ":core:buildconfig"
+":url:model" -> ":core:model" ["style"="dotted"]
 ":url:prefs" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

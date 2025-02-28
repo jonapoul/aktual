@@ -10,10 +10,4 @@ enum class BalanceType(private val value: String) {
   ;
 
   override fun toString(): String = value
-
-  companion object {
-    fun fromString(string: String): BalanceType = entries
-      .firstOrNull { it.value == string }
-      ?: error("No BalanceType matching $string")
-  }
 }

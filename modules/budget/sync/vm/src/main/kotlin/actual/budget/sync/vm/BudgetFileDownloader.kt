@@ -47,7 +47,7 @@ class BudgetFileDownloader @Inject internal constructor(
 
     val body = response.body()
     if (response.isSuccessful && body != null) {
-      val budgetFile = fileSystem.budgetFile(id.value)
+      val budgetFile = fileSystem.budgetDatabase(id)
       saveFile(body, budgetFile)
     } else {
       Logger.e("Failed: $response")
