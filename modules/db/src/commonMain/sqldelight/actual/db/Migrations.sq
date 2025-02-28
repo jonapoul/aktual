@@ -1,0 +1,18 @@
+CREATE TABLE IF NOT EXISTS __migrations__ (
+  id INTEGER PRIMARY KEY NOT NULL
+);
+
+delete:
+  DELETE
+    FROM __migrations__
+    WHERE id = ?;
+
+insert:
+  INSERT
+    INTO __migrations__ (id)
+    VALUES (?);
+
+getAll:
+  SELECT *
+    FROM __migrations__
+    ORDER BY id ASC;

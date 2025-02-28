@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS preferences(
+  id TEXT PRIMARY KEY,
+  value TEXT
+);
+
+getValue:
+  SELECT value
+    FROM preferences
+    WHERE id = ?;
+
+setValue:
+  INSERT OR REPLACE
+    INTO preferences(id, value)
+    VALUES (?, ?);
+
+getAll:
+  SELECT * FROM preferences;

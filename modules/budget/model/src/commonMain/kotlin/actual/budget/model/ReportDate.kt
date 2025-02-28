@@ -5,11 +5,17 @@ import kotlinx.datetime.LocalDate
 sealed interface ReportDate {
   val date: LocalDate
 
+  /**
+   * Like "2011-10"
+   */
   data class Month(val yearAndMonth: YearAndMonth) : ReportDate {
     override val date = yearAndMonth.date
     override fun toString() = yearAndMonth.toString()
   }
 
+  /**
+   * Like "2023-11-01"
+   */
   data class Date(override val date: LocalDate) : ReportDate {
     override fun toString() = date.toString()
   }

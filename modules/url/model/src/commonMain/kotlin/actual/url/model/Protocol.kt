@@ -6,10 +6,4 @@ enum class Protocol(private val value: String) {
   ;
 
   override fun toString(): String = value
-
-  companion object {
-    fun fromString(value: String): Protocol = entries
-      .firstOrNull { it.value == value }
-      ?: error("No protocol matching $value")
-  }
 }

@@ -9,10 +9,4 @@ enum class GroupBy(private val value: String) {
   ;
 
   override fun toString(): String = value
-
-  companion object {
-    fun fromString(string: String): GroupBy = entries
-      .firstOrNull { it.value == string }
-      ?: error("No GroupBy matching $string")
-  }
 }

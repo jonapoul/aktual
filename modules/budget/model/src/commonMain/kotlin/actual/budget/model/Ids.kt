@@ -31,6 +31,12 @@ value class CategoryGroupId(private val value: String) : Comparable<CategoryGrou
 }
 
 @JvmInline
+value class CustomReportId(private val value: String) : Comparable<CustomReportId> {
+  override fun toString(): String = value
+  override fun compareTo(other: CustomReportId) = value.compareTo(other.value)
+}
+
+@JvmInline
 value class PayeeId(private val value: String) : Comparable<PayeeId> {
   override fun toString(): String = value
   override fun compareTo(other: PayeeId) = value.compareTo(other.value)
@@ -64,6 +70,12 @@ value class TransactionId(private val value: String) : Comparable<TransactionId>
 value class TransactionFilterId(private val value: String) : Comparable<TransactionFilterId> {
   override fun toString(): String = value
   override fun compareTo(other: TransactionFilterId) = value.compareTo(other.value)
+}
+
+@JvmInline
+value class WidgetId(private val value: String) : Comparable<WidgetId> {
+  override fun toString(): String = value
+  override fun compareTo(other: WidgetId) = value.compareTo(other.value)
 }
 
 @JvmInline

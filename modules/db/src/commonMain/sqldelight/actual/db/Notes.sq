@@ -1,0 +1,19 @@
+CREATE TABLE IF NOT EXISTS notes(
+  id TEXT PRIMARY KEY,
+  note TEXT
+);
+
+getById:
+  SELECT note
+    FROM notes
+    WHERE id = ?;
+
+insert:
+  INSERT OR REPLACE
+    INTO notes (id, note)
+    VALUES (?, ?);
+
+getCleanupNotes:
+  SELECT *
+    FROM notes
+    WHERE lower(note) LIKE '%#cleanup %';

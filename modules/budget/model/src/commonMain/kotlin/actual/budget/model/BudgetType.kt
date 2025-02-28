@@ -9,10 +9,4 @@ enum class BudgetType(private val value: String) {
   ;
 
   override fun toString(): String = value
-
-  companion object {
-    fun fromString(string: String): BudgetType = entries
-      .firstOrNull { it.value == string }
-      ?: error("No BudgetType matching $string")
-  }
 }

@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS kvcache(
+  key TEXT PRIMARY KEY,
+  value TEXT
+);
+
+insert:
+  INSERT OR REPLACE
+    INTO kvcache (key, value)
+    VALUES (?, ?);
+
+getAll:
+  SELECT * FROM kvcache;
+
+getCount:
+  SELECT COUNT(*) FROM kvcache;

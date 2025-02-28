@@ -9,12 +9,14 @@ class ConventionKotlinBase : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     tasks.withType<KotlinCompile> {
       compilerOptions {
-        freeCompilerArgs.addAll(
-          "-Xjvm-default=all-compatibility",
-          "-opt-in=kotlin.RequiresOptIn",
-          "-opt-in=kotlin.uuid.ExperimentalUuidApi",
-        )
+        freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
       }
     }
   }
 }
+
+val FREE_COMPILER_ARGS = listOf(
+  "-Xjvm-default=all-compatibility",
+  "-opt-in=kotlin.RequiresOptIn",
+  "-opt-in=kotlin.uuid.ExperimentalUuidApi",
+)

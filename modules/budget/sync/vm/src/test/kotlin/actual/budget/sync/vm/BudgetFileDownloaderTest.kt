@@ -106,7 +106,8 @@ class BudgetFileDownloaderTest {
 
       // and no files were created
       assertContentEquals(
-        actual = temporaryFolder.root
+        actual = fileSystem
+          .databaseDirectory()
           .listFiles()
           .orEmpty()
           .toList(),

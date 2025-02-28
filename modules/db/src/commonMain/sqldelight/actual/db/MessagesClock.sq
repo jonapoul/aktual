@@ -1,0 +1,23 @@
+import kotlinx.serialization.json.JsonObject;
+
+/**
+ * For the format of [clock], see packages/crdt/src/crdt/timestamp.ts#serializeClock. It's a ridiculous massive JSON
+ * blob
+ */
+CREATE TABLE IF NOT EXISTS messages_clock (
+  id INTEGER PRIMARY KEY,
+  clock TEXT AS JsonObject
+);
+
+clear:
+  DELETE FROM messages_clock;
+
+insert:
+  INSERT OR REPLACE
+    INTO messages_clock (id, clock)
+    VALUES (1, ?);
+
+getFirst:
+  SELECT *
+    FROM messages_clock
+    LIMIT 1;

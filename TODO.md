@@ -21,3 +21,8 @@
 - handle token-expired reason on responses
 
 - merge api modules into one?
+
+- Fix `v_schedules` in database, specifically JSON_EXTRACT
+  - is it a limitation with sqldelight, or sql 3.38?
+  - should be included with that dialect: https://www.sqlite.org/json1.html:
+    - *The JSON functions and operators are built into SQLite by default, as of SQLite version 3.38.0 (2022-02-22).*

@@ -1,5 +1,6 @@
 package actual.url.ui
 
+import actual.core.model.parse
 import actual.core.ui.ExposedDropDownMenu
 import actual.core.ui.HorizontalSpacer
 import actual.core.ui.PreviewColumn
@@ -36,7 +37,7 @@ internal fun InputFields(
       modifier = Modifier.width(110.dp),
       value = protocol.toString(),
       options = PROTOCOLS,
-      onValueChange = { onAction(ServerUrlAction.SelectProtocol(Protocol.fromString(it))) },
+      onValueChange = { onAction(ServerUrlAction.SelectProtocol(Protocol::class.parse(it))) },
     )
 
     HorizontalSpacer(width = 5.dp)

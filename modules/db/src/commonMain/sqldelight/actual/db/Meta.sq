@@ -1,0 +1,14 @@
+CREATE TABLE IF NOT EXISTS __meta__(
+  key TEXT PRIMARY KEY,
+  value TEXT
+);
+
+insert:
+INSERT OR REPLACE
+  INTO __meta__(key, value)
+  VALUES (?, ?);
+
+getValue:
+SELECT value
+  FROM __meta__
+  WHERE key = ?;

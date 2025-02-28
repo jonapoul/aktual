@@ -4,7 +4,6 @@ import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
 plugins {
   alias(libs.plugins.agp.app) apply false
   alias(libs.plugins.agp.lib) apply false
-  alias(libs.plugins.androidx.room) apply false
   alias(libs.plugins.androidCacheFix) apply false
   alias(libs.plugins.buildconfig) apply false
   alias(libs.plugins.catalog) apply false
@@ -21,6 +20,7 @@ plugins {
   alias(libs.plugins.ktlint) apply false
   alias(libs.plugins.licensee) apply false
   alias(libs.plugins.licenses) apply false
+  alias(libs.plugins.sqldelight) apply false
 
   alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.dependencyGuard)

@@ -18,7 +18,6 @@ class ModuleMultiplatform : Plugin<Project> {
       apply(KotlinMultiplatformPluginWrapper::class.java)
       apply(ConventionAndroidLibrary::class.java)
       apply(ConventionDiagrams::class.java)
-      apply(ConventionKotlinBase::class.java)
       apply(ConventionKover::class.java)
       apply(ConventionIdea::class.java)
       apply(ConventionStyle::class.java)
@@ -28,6 +27,10 @@ class ModuleMultiplatform : Plugin<Project> {
     }
 
     kotlin {
+      compilerOptions {
+        freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
+      }
+
       jvm()
       androidTarget()
     }

@@ -14,10 +14,4 @@ enum class DateRangeType(private val value: String) {
   ;
 
   override fun toString(): String = value
-
-  companion object {
-    fun fromString(string: String): DateRangeType = entries
-      .firstOrNull { it.value == string }
-      ?: error("No DateRangeType matching $string")
-  }
 }

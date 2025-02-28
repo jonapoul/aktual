@@ -67,6 +67,7 @@ gradlePlugin {
     create(id = "actual.module.android", impl = "actual.gradle.ModuleAndroid")
     create(id = "actual.module.compose", impl = "actual.gradle.ModuleCompose")
     create(id = "actual.module.hilt", impl = "actual.gradle.ModuleHilt")
+    create(id = "actual.module.jvm", impl = "actual.gradle.ModuleJvm")
     create(id = "actual.module.multiplatform", impl = "actual.gradle.ModuleMultiplatform")
     create(id = "actual.module.navigation", impl = "actual.gradle.ModuleNavigation")
     create(id = "actual.module.resources", impl = "actual.gradle.ModuleResources")

@@ -1,0 +1,17 @@
+CREATE TABLE IF NOT EXISTS kvcache_key(
+  id INTEGER PRIMARY KEY,
+  key REAL
+);
+
+clear:
+  DELETE FROM kvcache_key;
+
+set:
+  INSERT OR REPLACE
+    INTO kvcache_key (id, key)
+    VALUES (1, ?);
+
+get:
+  SELECT key
+    FROM kvcache_key
+    WHERE id = 1;

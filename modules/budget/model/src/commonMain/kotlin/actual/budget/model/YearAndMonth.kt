@@ -7,7 +7,10 @@ import kotlinx.datetime.Month
  * [value] has format like "2025-02"
  */
 @JvmInline
-value class YearAndMonth(private val value: String) {
+value class YearAndMonth(private val value: String) : Comparable<YearAndMonth> {
+  // Comes like "202402" -> Feb 2024
+  constructor(long: Long) : this(long.toLocalDate())
+
   constructor(year: Int, month: Month) : this(LocalDate(year, month, dayOfMonth = 1))
 
   constructor(date: LocalDate) : this(
@@ -35,7 +38,19 @@ value class YearAndMonth(private val value: String) {
 
   override fun toString(): String = value
 
+  override fun compareTo(other: YearAndMonth): Int = value.compareTo(other.value)
+
+  fun toLong(): Long = (year * FACTOR.toLong()) + month.value
+
   companion object {
     private const val SEPARATOR = "-"
+
+    private const val FACTOR = 100
+
+    private fun Long.toLocalDate(): LocalDate {
+      val month = Month.of(toInt() % FACTOR)
+      val year = toInt() / FACTOR
+      return LocalDate(year, month, dayOfMonth = 1)
+    }
   }
 }
