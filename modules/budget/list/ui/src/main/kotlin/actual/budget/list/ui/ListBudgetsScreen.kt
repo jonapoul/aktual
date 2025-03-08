@@ -28,11 +28,10 @@ import actual.url.model.ServerUrl
 import actual.url.nav.ServerUrlNavRoute
 import alakazam.kotlin.core.exhaustive
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Key
@@ -58,9 +57,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
@@ -79,7 +81,7 @@ fun ListBudgetsScreen(
   LaunchedEffect(launchBrowser) {
     if (launchBrowser) {
       val intent = Intent(Intent.ACTION_VIEW)
-      intent.data = Uri.parse(serverUrl.toString())
+      intent.data = serverUrl.toString().toUri()
       context.startActivity(intent, null)
       launchBrowser = false
     }
@@ -135,7 +137,6 @@ private fun ListBudgetsScaffold(
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
-  var showMenu by remember { mutableStateOf(false) }
 
   Scaffold(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -144,50 +145,65 @@ private fun ListBudgetsScaffold(
         colors = theme.transparentTopAppBarColors(),
         title = { ScaffoldTitle(theme) },
         scrollBehavior = scrollBehavior,
-        actions = {
-          if (state is ListBudgetsState.Success) {
-            BasicIconButton(
-              modifier = Modifier.padding(horizontal = 5.dp),
-              onClick = { onAction(ListBudgetsAction.Reload) },
-              imageVector = ActualIcons.Refresh,
-              contentDescription = BudgetListStrings.budgetFailureRetry,
-              colors = { scheme, isPressed -> scheme.normalIconButton(isPressed) },
-            )
-          }
-
-          BasicIconButton(
-            modifier = Modifier.padding(horizontal = 5.dp),
-            onClick = { showMenu = !showMenu },
-            imageVector = Icons.Filled.MoreVert,
-            contentDescription = BudgetListStrings.listBudgetsMenu,
-            colors = { scheme, isPressed -> scheme.normalIconButton(isPressed) },
-          )
-
-          DropdownMenu(
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false },
-          ) {
-            val passwordText = BudgetListStrings.listBudgetsChangePassword
-            DropdownMenuItem(
-              text = { Text(passwordText) },
-              onClick = { onAction(ListBudgetsAction.ChangePassword) },
-              leadingIcon = { Icon(Icons.Filled.Key, contentDescription = passwordText) },
-            )
-          }
-        },
+        actions = { TopBarActions(state, onAction) },
       )
     },
   ) { innerPadding ->
     Box {
-      WavyBackground(themeType)
+      val hazeState = remember { HazeState() }
+
+      WavyBackground(
+        modifier = Modifier.hazeSource(hazeState),
+        schemeType = themeType,
+      )
 
       ListBudgetsContent(
         modifier = Modifier.padding(innerPadding),
         versions = versions,
         state = state,
         url = url,
+        hazeState = hazeState,
         onAction = onAction,
         theme = theme,
+      )
+    }
+  }
+}
+
+@Composable
+private inline fun TopBarActions(
+  state: ListBudgetsState,
+  crossinline onAction: (ListBudgetsAction) -> Unit,
+) {
+  Row {
+    if (state is ListBudgetsState.Success) {
+      BasicIconButton(
+        modifier = Modifier.padding(horizontal = 5.dp),
+        onClick = { onAction(ListBudgetsAction.Reload) },
+        imageVector = ActualIcons.Refresh,
+        contentDescription = BudgetListStrings.budgetFailureRetry,
+        colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+      )
+    }
+
+    var showMenu by remember { mutableStateOf(false) }
+    BasicIconButton(
+      modifier = Modifier.padding(horizontal = 5.dp),
+      onClick = { showMenu = !showMenu },
+      imageVector = Icons.Filled.MoreVert,
+      contentDescription = BudgetListStrings.listBudgetsMenu,
+      colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+    )
+
+    DropdownMenu(
+      expanded = showMenu,
+      onDismissRequest = { showMenu = false },
+    ) {
+      val passwordText = BudgetListStrings.listBudgetsChangePassword
+      DropdownMenuItem(
+        text = { Text(passwordText) },
+        onClick = { onAction(ListBudgetsAction.ChangePassword) },
+        leadingIcon = { Icon(Icons.Filled.Key, contentDescription = passwordText) },
       )
     }
   }
@@ -208,6 +224,7 @@ private fun ListBudgetsContent(
   versions: ActualVersions,
   state: ListBudgetsState,
   url: ServerUrl,
+  hazeState: HazeState,
   onAction: (ListBudgetsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -216,6 +233,7 @@ private fun ListBudgetsContent(
     modifier = modifier
       .fillMaxSize()
       .padding(16.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Box(
       modifier = Modifier.weight(1f),
@@ -261,7 +279,7 @@ private fun ListBudgetsContent(
     VerticalSpacer(20.dp)
 
     UsingServerText(
-      modifier = Modifier.fillMaxWidth(),
+      hazeState = hazeState,
       url = url,
       onClickChange = { onAction(ListBudgetsAction.ChangeServer) },
     )

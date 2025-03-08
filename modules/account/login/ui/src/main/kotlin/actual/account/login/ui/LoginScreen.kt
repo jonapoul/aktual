@@ -43,6 +43,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -50,6 +51,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun LoginScreen(
@@ -128,7 +131,12 @@ private fun LoginScreenImpl(
     },
   ) { innerPadding ->
     Box {
-      WavyBackground(themeType)
+      val hazeState = remember { HazeState() }
+
+      WavyBackground(
+        modifier = Modifier.hazeSource(hazeState),
+        schemeType = themeType,
+      )
 
       Content(
         modifier = Modifier.padding(innerPadding),
@@ -137,6 +145,7 @@ private fun LoginScreenImpl(
         url = url,
         isLoading = isLoading,
         loginFailure = loginFailure,
+        hazeState = hazeState,
         onAction = onAction,
       )
     }
@@ -151,6 +160,7 @@ private fun Content(
   url: ServerUrl,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
+  hazeState: HazeState,
   onAction: (LoginAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -159,6 +169,7 @@ private fun Content(
     modifier = modifier
       .fillMaxSize()
       .padding(16.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Column(
       modifier = Modifier
@@ -202,8 +213,8 @@ private fun Content(
     VerticalSpacer(20.dp)
 
     UsingServerText(
-      modifier = Modifier.fillMaxWidth(),
       url = url,
+      hazeState = hazeState,
       onClickChange = { onAction(LoginAction.ChangeServer) },
     )
 
