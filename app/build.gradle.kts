@@ -11,6 +11,7 @@ plugins {
   alias(libs.plugins.agp.app)
   alias(libs.plugins.hilt)
   alias(libs.plugins.licenses)
+  alias(libs.plugins.manifestLock)
   alias(libs.plugins.convention.kotlin.jvm)
   alias(libs.plugins.convention.android.base)
   alias(libs.plugins.convention.compose)
@@ -107,6 +108,19 @@ android {
       signingConfig = signingConfigs.findByName("release")
       buildConfigField("String", "DEFAULT_URL", "null")
       buildConfigField("String", "DEFAULT_PASSWORD", "null")
+    }
+  }
+
+  manifestLock {
+    failOnLockChange = true
+    content {
+      sdkVersion = true
+      configurations = true
+      permissions = true
+      features = true
+      libraries = true
+      nativeLibraries = true
+      exports = true
     }
   }
 }
