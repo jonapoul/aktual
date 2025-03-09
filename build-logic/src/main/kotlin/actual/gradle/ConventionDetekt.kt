@@ -1,6 +1,7 @@
 package actual.gradle
 
 import blueprint.core.getLibrary
+import blueprint.core.libs
 import blueprint.recipes.DetektAll
 import blueprint.recipes.detektBlueprint
 import org.gradle.api.Plugin

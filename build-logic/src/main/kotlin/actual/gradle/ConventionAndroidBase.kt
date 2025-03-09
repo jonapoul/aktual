@@ -3,6 +3,7 @@
 package actual.gradle
 
 import blueprint.core.getVersion
+import blueprint.core.libs
 import blueprint.recipes.androidBaseBlueprint
 import blueprint.recipes.androidDesugaringBlueprint
 import com.android.build.api.dsl.CommonExtension

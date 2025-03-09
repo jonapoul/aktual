@@ -1,6 +1,7 @@
 package actual.gradle
 
 import blueprint.core.getLibrary
+import blueprint.core.libs
 import blueprint.core.stringProperty
 import com.android.build.api.dsl.LibraryExtension
 import com.autonomousapps.DependencyAnalysisPlugin

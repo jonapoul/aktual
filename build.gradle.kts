@@ -1,5 +1,5 @@
 import blueprint.core.rootLocalPropertiesOrNull
-import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+import blueprint.recipes.dependencyVersionsBlueprint
 
 plugins {
   alias(libs.plugins.agp.app) apply false
@@ -94,8 +94,4 @@ dependencyGuard {
   configuration("classpath")
 }
 
-tasks.withType<DependencyUpdatesTask> {
-  rejectVersionIf { !candidate.version.isStable() && currentVersion.isStable() }
-}
-
-private fun String.isStable(): Boolean = listOf("alpha", "beta", "rc").none { contains(it, ignoreCase = true) }
+dependencyVersionsBlueprint()

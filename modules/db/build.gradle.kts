@@ -1,7 +1,7 @@
-import actual.gradle.androidMainDependencies
-import actual.gradle.commonMainDependencies
-import actual.gradle.commonTestDependencies
+import blueprint.core.androidMainDependencies
 import blueprint.core.boolProperty
+import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins {
   alias(libs.plugins.module.multiplatform)
@@ -30,24 +30,26 @@ buildConfig {
   buildConfigField(name = "FOREIGN_KEY_CONSTRAINTS", value = boolProperty(key = "actual.db.foreignKeyConstraints"))
 }
 
-commonMainDependencies {
-  api(projects.budget.model)
-  implementation(libs.kotlinx.serialization.json)
-  implementation(libs.sqldelight.coroutines)
-  implementation(libs.sqldelight.driver.sqlite)
-  implementation(libs.sqldelight.primitive)
-  implementation(libs.sqldelight.runtime)
-  implementation(projects.core.model)
-  implementation(projects.log)
-}
+kotlin {
+  commonMainDependencies {
+    api(projects.budget.model)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.sqldelight.coroutines)
+    implementation(libs.sqldelight.driver.sqlite)
+    implementation(libs.sqldelight.primitive)
+    implementation(libs.sqldelight.runtime)
+    implementation(projects.core.model)
+    implementation(projects.log)
+  }
 
-commonTestDependencies {
-  implementation(libs.test.alakazam.core)
-  implementation(projects.core.files)
-  implementation(projects.test.coroutines)
-  implementation(projects.test.db)
-}
+  commonTestDependencies {
+    implementation(libs.test.alakazam.core)
+    implementation(projects.core.files)
+    implementation(projects.test.coroutines)
+    implementation(projects.test.db)
+  }
 
-androidMainDependencies {
-  implementation(libs.sqldelight.driver.android)
+  androidMainDependencies {
+    implementation(libs.sqldelight.driver.android)
+  }
 }

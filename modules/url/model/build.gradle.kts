@@ -1,9 +1,11 @@
-import actual.gradle.commonMainDependencies
+import blueprint.core.commonMainDependencies
 
 plugins {
   alias(libs.plugins.module.multiplatform)
 }
 
-commonMainDependencies {
-  implementation(projects.core.model)
+kotlin {
+  commonMainDependencies {
+    implementation(projects.core.model)
+  }
 }

@@ -1,16 +1,18 @@
-import actual.gradle.androidUnitTestDependencies
-import actual.gradle.commonMainDependencies
+import blueprint.core.androidUnitTestDependencies
+import blueprint.core.commonMainDependencies
 
 plugins {
   alias(libs.plugins.module.multiplatform)
 }
 
-commonMainDependencies {
-  api(libs.javaxInject)
-  api(libs.preferences.core)
-}
+kotlin {
+  commonMainDependencies {
+    api(libs.javaxInject)
+    api(libs.preferences.core)
+  }
 
-androidUnitTestDependencies {
-  implementation(projects.test.coroutines)
-  implementation(projects.test.prefs)
+  androidUnitTestDependencies {
+    implementation(projects.test.coroutines)
+    implementation(projects.test.prefs)
+  }
 }
