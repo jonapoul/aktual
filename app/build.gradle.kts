@@ -1,3 +1,5 @@
+import blueprint.core.gitVersionCode
+import blueprint.core.gitVersionHash
 import blueprint.core.intProperty
 import blueprint.core.javaVersionString
 import blueprint.core.rootLocalPropertiesOrNull
@@ -27,15 +29,8 @@ dependencyGuard {
   configuration("releaseRuntimeClasspath")
 }
 
-fun execCommand(vararg args: String): String = providers
-  .exec { commandLine(*args) }
-  .standardOutput
-  .asText
-  .get()
-  .trim('\n', ' ')
-
-val gitCommitHash = execCommand("git", "rev-parse", "--short=8", "HEAD")
-val gitCode = execCommand("git", "show", "-s", "--format=%ct")
+val gitCommitHash = project.gitVersionHash()
+val gitCode = project.gitVersionCode()
 
 fun versionName(): String = with(LocalDate.now()) { "%04d.%02d.%02d".format(year, monthValue, dayOfMonth) }
 

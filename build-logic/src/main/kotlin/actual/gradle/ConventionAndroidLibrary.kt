@@ -1,7 +1,6 @@
 package actual.gradle
 
 import com.android.build.api.dsl.LibraryExtension
-import com.android.build.api.variant.LibraryAndroidComponentsExtension
 import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -37,13 +36,6 @@ class ConventionAndroidLibrary : Plugin<Project> {
           enableUnitTestCoverage = false
           enableAndroidTestCoverage = false
         }
-      }
-    }
-
-    extensions.configure<LibraryAndroidComponentsExtension> {
-      // disable instrumented tests if androidTest folder doesn't exist
-      beforeVariants {
-        it.enableAndroidTest = it.enableAndroidTest && projectDir.resolve("src/androidTest").exists()
       }
     }
   }

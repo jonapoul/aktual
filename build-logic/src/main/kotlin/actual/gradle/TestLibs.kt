@@ -1,6 +1,7 @@
 package actual.gradle
 
 import blueprint.core.getLibrary
+import blueprint.core.libs
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.provider.Provider

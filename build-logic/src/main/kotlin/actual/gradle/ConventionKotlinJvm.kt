@@ -1,13 +1,12 @@
 package actual.gradle
 
 import blueprint.core.javaVersion
-import blueprint.core.javaVersionString
+import blueprint.core.jvmTarget
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class ConventionKotlinJvm : Plugin<Project> {
@@ -18,7 +17,7 @@ class ConventionKotlinJvm : Plugin<Project> {
 
     tasks.withType<KotlinCompile> {
       compilerOptions {
-        jvmTarget.set(JvmTarget.fromTarget(javaVersionString()))
+        jvmTarget.set(project.jvmTarget())
       }
     }
 

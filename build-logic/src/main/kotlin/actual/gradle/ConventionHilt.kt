@@ -1,6 +1,7 @@
 package actual.gradle
 
 import blueprint.core.getLibrary
+import blueprint.core.libs
 import com.google.devtools.ksp.gradle.KspGradleSubplugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project

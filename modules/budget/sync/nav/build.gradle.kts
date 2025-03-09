@@ -1,9 +1,11 @@
-import actual.gradle.commonMainDependencies
+import blueprint.core.commonMainDependencies
 
 plugins {
   alias(libs.plugins.module.navigation)
 }
 
-commonMainDependencies {
-  api(projects.account.model)
+kotlin {
+  commonMainDependencies {
+    api(projects.account.model)
+  }
 }

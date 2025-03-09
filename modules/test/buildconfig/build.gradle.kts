@@ -1,10 +1,12 @@
-import actual.gradle.commonMainDependencies
+import blueprint.core.commonMainDependencies
 
 plugins {
   alias(libs.plugins.module.multiplatform)
 }
 
-commonMainDependencies {
-  api(projects.core.buildconfig)
-  api(libs.kotlinx.datetime)
+kotlin {
+  commonMainDependencies {
+    api(projects.core.buildconfig)
+    api(libs.kotlinx.datetime)
+  }
 }
