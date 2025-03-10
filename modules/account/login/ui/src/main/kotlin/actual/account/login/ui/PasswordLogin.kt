@@ -5,8 +5,8 @@ import actual.account.model.Password
 import actual.core.ui.PreviewColumn
 import actual.core.ui.PrimaryTextButtonWithLoading
 import actual.core.ui.TextField
-import actual.core.ui.VerticalSpacer
 import actual.core.ui.keyboardFocusRequester
+import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

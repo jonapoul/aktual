@@ -1,20 +1,20 @@
 package actual.about.info.ui
 
 import actual.core.colorscheme.ColorSchemeType
-import actual.core.config.BuildConfig
 import actual.core.ui.ActualTheme
 import actual.test.ActualTestActivity
 import actual.test.TestBuildConfig
 import actual.test.runTest
+import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
 import android.content.Intent
-import android.net.Uri
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.core.net.toUri
 import androidx.navigation.compose.ComposeNavigator
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.espresso.intent.Intents
@@ -75,7 +75,7 @@ class AboutScreenTest {
     // Then
     val expectedIntent = Matchers.allOf(
       hasAction(Intent.ACTION_VIEW),
-      hasData(Uri.parse("${TestBuildConfig.repoUrl}/issues/new")),
+      hasData("${TestBuildConfig.repoUrl}/issues/new".toUri()),
     )
     Intents.intended(expectedIntent)
   }

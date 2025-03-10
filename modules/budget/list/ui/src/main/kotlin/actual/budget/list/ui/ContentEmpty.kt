@@ -7,7 +7,7 @@ import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButton
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
-import actual.core.ui.VerticalSpacer
+import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

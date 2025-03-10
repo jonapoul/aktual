@@ -9,9 +9,9 @@ import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failed
 import actual.budget.sync.vm.DownloadState.InProgress
 import actual.core.files.FileSystem
-import actual.log.Logger
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import alakazam.kotlin.logging.Logger
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow

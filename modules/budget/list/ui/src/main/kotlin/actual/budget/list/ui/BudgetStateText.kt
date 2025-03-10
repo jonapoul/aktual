@@ -9,10 +9,10 @@ import actual.core.icons.CloudUnknown
 import actual.core.icons.CloudWarning
 import actual.core.icons.FileDouble
 import actual.core.ui.ActualFontFamily
-import actual.core.ui.HorizontalSpacer
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualRow
 import actual.core.ui.Theme
+import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn

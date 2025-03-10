@@ -5,11 +5,11 @@ import actual.api.builder.buildRetrofit
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
-import actual.core.config.BuildConfig
-import actual.log.Logger
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
+import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.core.collectFlow
+import alakazam.kotlin.logging.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job

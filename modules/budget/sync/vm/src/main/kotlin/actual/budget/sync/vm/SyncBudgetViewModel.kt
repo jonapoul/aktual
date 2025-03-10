@@ -3,7 +3,7 @@ package actual.budget.sync.vm
 import actual.account.model.LoginToken
 import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
-import actual.log.Logger
+import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted

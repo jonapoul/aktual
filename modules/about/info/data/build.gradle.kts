@@ -10,8 +10,7 @@ kotlin {
   commonMainDependencies {
     api(libs.retrofit.core)
     api(projects.api.github)
-    api(projects.core.buildconfig)
-    implementation(libs.alakazam.kotlin.core)
+    api(libs.alakazam.kotlin.core)
     implementation(libs.javaxInject)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.serialization.core)

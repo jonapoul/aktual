@@ -37,17 +37,14 @@ node ["style"="filled"]
 ":budget:sync:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":budget:sync:vm" ["fillcolor"="#F5A6A6","shape"="box"]
-":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:di" ["fillcolor"="#FCB103","shape"="box"]
 ":core:files" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":db" ["fillcolor"="#9D8DF1","shape"="box"]
-":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -60,22 +57,18 @@ graph ["rank"="same"]
 ":app"
 }
 ":about:info:data" -> ":api:github"
-":about:info:data" -> ":core:buildconfig"
 ":about:info:ui" -> ":about:info:res" ["style"="dotted"]
 ":about:info:ui" -> ":about:info:vm"
 ":about:info:ui" -> ":about:licenses:nav" ["style"="dotted"]
 ":about:info:ui" -> ":core:res" ["style"="dotted"]
 ":about:info:ui" -> ":core:ui"
 ":about:info:vm" -> ":about:info:data"
-":about:info:vm" -> ":core:buildconfig"
-":about:info:vm" -> ":log" ["style"="dotted"]
 ":about:licenses:data" -> ":core:files" ["style"="dotted"]
 ":about:licenses:ui" -> ":about:licenses:res" ["style"="dotted"]
 ":about:licenses:ui" -> ":about:licenses:vm"
 ":about:licenses:ui" -> ":core:res" ["style"="dotted"]
 ":about:licenses:ui" -> ":core:ui"
 ":about:licenses:vm" -> ":about:licenses:data"
-":about:licenses:vm" -> ":log" ["style"="dotted"]
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:domain" ["style"="dotted"]
@@ -90,13 +83,11 @@ graph ["rank"="same"]
 ":account:login:vm" -> ":account:model"
 ":account:login:vm" -> ":core:colorscheme"
 ":account:login:vm" -> ":core:versions" ["style"="dotted"]
-":account:login:vm" -> ":log" ["style"="dotted"]
 ":account:login:vm" -> ":url:model"
 ":account:login:vm" -> ":url:prefs" ["style"="dotted"]
 ":account:password:domain" -> ":account:login:domain"
 ":account:password:domain" -> ":account:model"
 ":account:password:domain" -> ":api:actual" ["style"="dotted"]
-":account:password:domain" -> ":log" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:domain" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:res" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:vm"
@@ -108,15 +99,12 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":account:password:domain"
 ":account:password:vm" -> ":core:colorscheme"
 ":account:password:vm" -> ":core:versions" ["style"="dotted"]
-":account:password:vm" -> ":log" ["style"="dotted"]
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
-":api:builder" -> ":log" ["style"="dotted"]
 ":api:builder" -> ":url:model"
 ":api:di" -> ":api:builder" ["style"="dotted"]
 ":api:di" -> ":api:github"
-":api:di" -> ":core:buildconfig"
 ":api:di" -> ":url:model" ["style"="dotted"]
 ":app" -> ":about:info:nav" ["style"="dotted"]
 ":app" -> ":about:info:ui" ["style"="dotted"]
@@ -132,12 +120,10 @@ graph ["rank"="same"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
 ":app" -> ":budget:sync:nav" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
-":app" -> ":core:buildconfig" ["style"="dotted"]
 ":app" -> ":core:colorscheme" ["style"="dotted"]
 ":app" -> ":core:connection" ["style"="dotted"]
 ":app" -> ":core:di" ["style"="dotted"]
 ":app" -> ":db" ["style"="dotted"]
-":app" -> ":log" ["style"="dotted"]
 ":app" -> ":url:nav" ["style"="dotted"]
 ":app" -> ":url:prefs" ["style"="dotted"]
 ":app" -> ":url:ui" ["style"="dotted"]
@@ -158,7 +144,6 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:colorscheme"
 ":budget:list:vm" -> ":core:versions" ["style"="dotted"]
-":budget:list:vm" -> ":log" ["style"="dotted"]
 ":budget:list:vm" -> ":url:model"
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
 ":budget:sync:nav" -> ":account:model"
@@ -172,12 +157,9 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":core:colorscheme"
 ":budget:sync:vm" -> ":core:files"
-":budget:sync:vm" -> ":log" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:builder" ["style"="dotted"]
-":core:connection" -> ":core:buildconfig"
 ":core:connection" -> ":core:versions" ["style"="dotted"]
-":core:connection" -> ":log" ["style"="dotted"]
 ":core:connection" -> ":url:model" ["style"="dotted"]
 ":core:connection" -> ":url:prefs" ["style"="dotted"]
 ":core:di" -> ":core:files"
@@ -186,25 +168,18 @@ graph ["rank"="same"]
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
-":core:versions" -> ":core:buildconfig"
 ":db" -> ":budget:model"
-":db" -> ":core:model" ["style"="dotted"]
-":db" -> ":log" ["style"="dotted"]
-":url:model" -> ":core:model" ["style"="dotted"]
 ":url:prefs" -> ":url:model"
 ":url:ui" -> ":account:login:nav" ["style"="dotted"]
 ":url:ui" -> ":core:colorscheme"
-":url:ui" -> ":core:model" ["style"="dotted"]
 ":url:ui" -> ":core:res" ["style"="dotted"]
 ":url:ui" -> ":core:ui"
-":url:ui" -> ":log" ["style"="dotted"]
 ":url:ui" -> ":url:res" ["style"="dotted"]
 ":url:ui" -> ":url:vm"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
 ":url:vm" -> ":core:colorscheme"
 ":url:vm" -> ":core:versions" ["style"="dotted"]
-":url:vm" -> ":log" ["style"="dotted"]
 ":url:vm" -> ":url:model"
 ":url:vm" -> ":url:prefs" ["style"="dotted"]
 subgraph "cluster_legend" {

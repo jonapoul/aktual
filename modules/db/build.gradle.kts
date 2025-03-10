@@ -26,24 +26,24 @@ buildConfig {
   packageName("actual.db")
   className("DatabaseBuildConfig")
   useKotlinOutput { internalVisibility = true }
-
   buildConfigField(name = "FOREIGN_KEY_CONSTRAINTS", value = boolProperty(key = "actual.db.foreignKeyConstraints"))
 }
 
 kotlin {
   commonMainDependencies {
     api(projects.budget.model)
+    implementation(libs.alakazam.db.sqldelight)
+    implementation(libs.alakazam.kotlin.logging)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.coroutines)
     implementation(libs.sqldelight.driver.sqlite)
     implementation(libs.sqldelight.primitive)
     implementation(libs.sqldelight.runtime)
-    implementation(projects.core.model)
-    implementation(projects.log)
   }
 
   commonTestDependencies {
     implementation(libs.test.alakazam.core)
+    implementation(libs.test.alakazam.sqldelight)
     implementation(projects.core.files)
     implementation(projects.test.coroutines)
     implementation(projects.test.db)

@@ -1,11 +1,11 @@
 package actual.test
 
-import actual.core.config.BuildConfig
+import alakazam.kotlin.core.BasicBuildConfig
 import kotlinx.datetime.Instant
 
 val TestInstant = Instant.fromEpochMilliseconds(1710786854286L) // Mon Mar 18 2024 18:34:14
 
-val TestBuildConfig = BuildConfig(
+val TestBuildConfig = BasicBuildConfig(
   applicationId = "dev.jonpoulton.actual.app",
   buildTime = TestInstant,
   debug = false,

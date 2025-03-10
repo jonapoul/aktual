@@ -11,6 +11,7 @@ kotlin {
     api(libs.test.androidx.coreKtx)
     api(libs.test.kotlinx.coroutines)
     api(projects.db)
+    implementation(libs.alakazam.db.sqldelight)
     implementation(libs.sqldelight.driver.sqlite)
   }
 

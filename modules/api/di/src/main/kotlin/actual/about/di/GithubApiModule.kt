@@ -2,8 +2,8 @@ package actual.about.di
 
 import actual.api.builder.buildOkHttp
 import actual.api.builder.buildRetrofit
-import actual.core.config.BuildConfig
 import actual.url.model.ServerUrl
+import alakazam.kotlin.core.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

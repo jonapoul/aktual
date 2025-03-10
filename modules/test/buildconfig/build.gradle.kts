@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(projects.core.buildconfig)
+    api(libs.alakazam.kotlin.core)
     api(libs.kotlinx.datetime)
   }
 }

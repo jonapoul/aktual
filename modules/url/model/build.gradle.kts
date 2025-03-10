@@ -6,6 +6,6 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    implementation(projects.core.model)
+    implementation(libs.alakazam.kotlin.core)
   }
 }

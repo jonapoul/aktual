@@ -8,11 +8,11 @@ import actual.core.icons.Key
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.BareIconButton
-import actual.core.ui.HorizontalSpacer
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.RowShape
 import actual.core.ui.Theme
+import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

@@ -9,6 +9,7 @@ dependencies {
   api(projects.budget.sync.nav)
   api(projects.budget.sync.vm)
   api(projects.core.ui)
+  implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.compose.foundation.core)
   implementation(libs.androidx.compose.hilt)
   implementation(libs.androidx.compose.material.icons.core)

@@ -7,11 +7,8 @@ node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
-":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 {
@@ -24,14 +21,11 @@ graph ["rank"="same"]
 ":account:login:vm" -> ":account:model"
 ":account:login:vm" -> ":core:colorscheme"
 ":account:login:vm" -> ":core:versions" ["style"="dotted"]
-":account:login:vm" -> ":log" ["style"="dotted"]
 ":account:login:vm" -> ":url:model"
 ":account:login:vm" -> ":url:prefs" ["style"="dotted"]
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
-":core:versions" -> ":core:buildconfig"
-":url:model" -> ":core:model" ["style"="dotted"]
 ":url:prefs" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

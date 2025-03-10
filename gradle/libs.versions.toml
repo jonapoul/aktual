@@ -25,7 +25,7 @@ molecule = "2.0.0"
 sekret = "0.1.5"
 
 # Libraries
-alakazam = "5.0.0"
+alakazam = "6.0.0"
 android-desugaring = "2.1.5"
 androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
@@ -93,8 +93,10 @@ plugin-licensee = { module = "app.cash.licensee:licensee-gradle-plugin", version
 alakazam-android-compose = { module = "dev.jonpoulton.alakazam:android-ui-compose", version.ref = "alakazam" }
 alakazam-android-core = { module = "dev.jonpoulton.alakazam:android-core", version.ref = "alakazam" }
 alakazam-di-hilt = { module = "dev.jonpoulton.alakazam:di-hilt", version.ref = "alakazam" }
+alakazam-db-sqldelight = { module = "dev.jonpoulton.alakazam:db-sqldelight", version.ref = "alakazam" }
 alakazam-kotlin-compose-annotations = { module = "dev.jonpoulton.alakazam:kotlin-compose-annotations", version.ref = "alakazam" }
 alakazam-kotlin-core = { module = "dev.jonpoulton.alakazam:kotlin-core", version.ref = "alakazam" }
+alakazam-kotlin-logging = { module = "dev.jonpoulton.alakazam:kotlin-logging", version.ref = "alakazam" }
 alakazam-kotlin-serialization = { module = "dev.jonpoulton.alakazam:kotlin-serialization", version.ref = "alakazam" }
 alakazam-kotlin-time = { module = "dev.jonpoulton.alakazam:kotlin-time", version.ref = "alakazam" }
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugaring" }
@@ -170,6 +172,8 @@ sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sq
 
 # Testing
 test-alakazam-core = { module = "dev.jonpoulton.alakazam:testing-core", version.ref = "alakazam" }
+test-alakazam-logging = { module = "dev.jonpoulton.alakazam:testing-logging", version.ref = "alakazam" }
+test-alakazam-sqldelight = { module = "dev.jonpoulton.alakazam:testing-sqldelight", version.ref = "alakazam" }
 test-androidx-arch = { module = "androidx.arch.core:core-testing", version.ref = "test-androidx-arch" }
 test-androidx-compose-ui-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
 test-androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }

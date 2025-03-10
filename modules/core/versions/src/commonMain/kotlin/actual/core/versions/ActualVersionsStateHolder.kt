@@ -1,6 +1,6 @@
 package actual.core.versions
 
-import actual.core.config.BuildConfig
+import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.core.StateHolder
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject

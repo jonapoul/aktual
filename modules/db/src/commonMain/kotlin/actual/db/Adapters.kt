@@ -28,47 +28,20 @@ import actual.budget.model.WidgetId
 import actual.budget.model.WidgetType
 import actual.budget.model.YearAndMonth
 import actual.budget.model.ZeroBudgetMonthId
-import actual.core.model.parse
+import alakazam.db.sqldelight.enumStringAdapter
+import alakazam.db.sqldelight.longAdapter
+import alakazam.db.sqldelight.stringAdapter
 import app.cash.sqldelight.ColumnAdapter
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
 import kotlin.uuid.Uuid
 
-private fun <T : Any> longAdapter(
-  decode: (Long) -> T,
-  encode: (T) -> Long,
-) = object : ColumnAdapter<T, Long> {
-  override fun encode(value: T): Long = encode.invoke(value)
-  override fun decode(databaseValue: Long): T = decode.invoke(databaseValue)
-}
-
-private fun <T : Any> stringAdapter(
-  decode: (String) -> T,
-  encode: (T) -> String,
-): ColumnAdapter<T, String> = object : ColumnAdapter<T, String> {
-  override fun encode(value: T): String = encode.invoke(value)
-  override fun decode(databaseValue: String): T = decode.invoke(databaseValue)
-}
-
-private fun <T : Any> stringAdapter(
-  decode: (String) -> T,
-): ColumnAdapter<T, String> = stringAdapter(decode, encode = { it.toString() })
-
-private inline fun <reified E : Enum<E>> enumStringAdapter() = stringAdapter { E::class.parse(it) }
-
 private val jsonObject = object : ColumnAdapter<JsonObject, String> {
   override fun encode(value: JsonObject): String = Json.encodeToString(value)
   override fun decode(databaseValue: String): JsonObject = Json.parseToJsonElement(databaseValue).jsonObject
-}
-
-@Suppress("unused")
-private fun <T : Any> jsonObjectAdapter(serializer: KSerializer<T>) = object : ColumnAdapter<T, String> {
-  override fun encode(value: T): String = Json.encodeToString(serializer, value)
-  override fun decode(databaseValue: String): T = Json.decodeFromString(serializer, databaseValue)
 }
 
 private val localDate = longAdapter(

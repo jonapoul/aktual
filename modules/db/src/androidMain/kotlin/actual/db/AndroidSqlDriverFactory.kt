@@ -1,7 +1,7 @@
 package actual.db
 
 import actual.budget.model.BudgetId
-import actual.log.Logger
+import alakazam.kotlin.logging.Logger
 import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.async.coroutines.synchronous

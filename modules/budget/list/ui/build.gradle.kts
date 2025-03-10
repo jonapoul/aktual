@@ -9,6 +9,7 @@ dependencies {
   api(projects.budget.list.nav)
   api(projects.budget.list.vm)
   api(projects.core.ui)
+  implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)

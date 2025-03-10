@@ -1,6 +1,8 @@
 package actual.core.ui
 
 import actual.core.res.CoreDimens
+import alakazam.android.ui.compose.HorizontalSpacer
+import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

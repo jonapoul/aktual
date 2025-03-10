@@ -1,8 +1,8 @@
 package actual.about.info.data
 
-import actual.core.config.BuildConfig
 import actual.test.MockWebServerRule
 import actual.test.TestBuildConfig
+import alakazam.kotlin.core.BuildConfig
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.getResourceAsText
 import alakazam.test.core.standardDispatcher

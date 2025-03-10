@@ -3,9 +3,9 @@ plugins {
 }
 
 dependencies {
+  api(libs.alakazam.kotlin.core)
   api(libs.javaxInject)
   api(projects.api.github)
-  api(projects.core.buildconfig)
   implementation(libs.hilt.android)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.okhttp.core)

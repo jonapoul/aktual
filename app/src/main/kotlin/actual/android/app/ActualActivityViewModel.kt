@@ -6,8 +6,8 @@ import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
-import actual.log.Logger
 import actual.url.prefs.ServerUrlPreferences
+import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
