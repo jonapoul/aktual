@@ -66,8 +66,8 @@ com.dropbox.dependency-guard:dependency-guard:0.5.0
 com.github.ben-manes.caffeine:caffeine:3.1.8
 com.github.ben-manes.versions:com.github.ben-manes.versions.gradle.plugin:0.52.0
 com.github.ben-manes:gradle-versions-plugin:0.52.0
-com.github.gmazzo.buildconfig:com.github.gmazzo.buildconfig.gradle.plugin:5.5.1
-com.github.gmazzo.buildconfig:plugin:5.5.1
+com.github.gmazzo.buildconfig:com.github.gmazzo.buildconfig.gradle.plugin:5.5.2
+com.github.gmazzo.buildconfig:plugin:5.5.2
 com.google.android:annotations:4.1.1.4
 com.google.api.grpc:proto-google-common-protos:2.17.0
 com.google.auto.value:auto-value-annotations:1.6.2
@@ -107,8 +107,8 @@ com.squareup.okio:okio:3.10.2
 com.squareup.sort-dependencies:com.squareup.sort-dependencies.gradle.plugin:0.14
 com.squareup:javapoet:1.13.0
 com.squareup:javawriter:2.5.0
-com.squareup:kotlinpoet-jvm:2.0.0
-com.squareup:kotlinpoet:2.0.0
+com.squareup:kotlinpoet-jvm:2.1.0
+com.squareup:kotlinpoet:2.1.0
 com.squareup:sort-dependencies-gradle-plugin:0.14
 com.sun.activation:javax.activation:1.2.0
 com.sun.istack:istack-commons-runtime:3.0.8
