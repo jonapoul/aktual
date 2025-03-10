@@ -1,8 +1,8 @@
 package actual.android.app
 
-import actual.log.DebugAndroidBranch
+import alakazam.kotlin.logging.DebugAndroidTree
 
-internal class ActualBranch : DebugAndroidBranch() {
+internal class ActualTree : DebugAndroidTree() {
   override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
     super.log(priority, tag, "ACTUAL: $message", t)
   }

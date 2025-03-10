@@ -6,6 +6,10 @@ import org.gradle.api.Project
 
 class ConventionLicensee : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
-    licenseeBlueprint()
+    licenseeBlueprint(
+      allowedUrls = listOf(
+        "https://opensource.org/license/mit", // slf4j
+      )
+    )
   }
 }

@@ -8,7 +8,6 @@ import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
-import actual.log.Logger
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
@@ -16,6 +15,7 @@ import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.core.collectFlow
 import alakazam.kotlin.core.requireMessage
+import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel

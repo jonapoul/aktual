@@ -21,6 +21,7 @@ class ConventionCompose : Plugin<Project> {
       composeBomVersion = libs.getVersion("androidx.compose.bom"),
       composeLintVersion = libs.getVersion("androidx.compose.lint"),
       writeMetrics = true,
+      experimentalApis = emptyList(),
     )
 
     val androidTestImplementation by configurations

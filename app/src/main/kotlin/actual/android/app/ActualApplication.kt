@@ -1,7 +1,7 @@
 package actual.android.app
 
-import actual.core.config.BuildConfig
-import actual.log.Logger
+import alakazam.kotlin.core.BuildConfig
+import alakazam.kotlin.logging.Logger
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
@@ -13,7 +13,7 @@ class ActualApplication : Application() {
 
   override fun onCreate() {
     super.onCreate()
-    Logger.plant(ActualBranch())
+    Logger.plant(ActualTree())
     Logger.i("onCreate")
     Logger.d("buildConfig = $buildConfig")
   }

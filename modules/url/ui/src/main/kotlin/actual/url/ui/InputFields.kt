@@ -1,12 +1,12 @@
 package actual.url.ui
 
-import actual.core.model.parse
 import actual.core.ui.ExposedDropDownMenu
-import actual.core.ui.HorizontalSpacer
 import actual.core.ui.PreviewColumn
 import actual.core.ui.TextField
 import actual.core.ui.keyboardFocusRequester
 import actual.url.model.Protocol
+import alakazam.android.ui.compose.HorizontalSpacer
+import alakazam.kotlin.core.parse
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width

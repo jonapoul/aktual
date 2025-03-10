@@ -2,8 +2,8 @@ package actual.about.licenses.vm
 
 import actual.about.licenses.data.LicensesLoadState
 import actual.about.licenses.data.LicensesRepository
-import actual.log.Logger
 import alakazam.android.core.UrlOpener
+import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel

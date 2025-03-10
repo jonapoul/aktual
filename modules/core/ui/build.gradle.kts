@@ -14,6 +14,7 @@ dependencies {
   api(projects.core.colorscheme)
   api(projects.core.versions)
   api(projects.url.model)
+  implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
   implementation(libs.androidx.compose.foundation.layout)

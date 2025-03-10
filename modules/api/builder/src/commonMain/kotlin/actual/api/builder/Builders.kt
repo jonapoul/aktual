@@ -1,8 +1,8 @@
 package actual.api.builder
 
-import actual.log.Logger
 import actual.url.model.ServerUrl
 import alakazam.kotlin.core.ifTrue
+import alakazam.kotlin.logging.Logger
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient

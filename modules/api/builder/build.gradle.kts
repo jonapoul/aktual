@@ -11,9 +11,9 @@ kotlin {
     api(libs.okhttp.core)
     api(libs.retrofit.core)
     api(projects.url.model)
+    implementation(libs.alakazam.kotlin.logging)
     implementation(libs.okhttp.logging)
     implementation(libs.retrofit.scalars)
     implementation(libs.retrofit.serialization)
-    implementation(projects.log)
   }
 }

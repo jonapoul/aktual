@@ -1,6 +1,6 @@
 package actual.about.info.data
 
-import actual.core.config.BuildConfig
+import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.core.CoroutineContexts
 import github.api.client.GithubApi
 import github.api.model.GithubRelease

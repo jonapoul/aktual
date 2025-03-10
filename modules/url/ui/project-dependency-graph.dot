@@ -7,13 +7,10 @@ node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
-":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:res" ["fillcolor"="#00FFFF","shape"="box"]
@@ -32,22 +29,17 @@ graph ["rank"="same"]
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
-":core:versions" -> ":core:buildconfig"
-":url:model" -> ":core:model" ["style"="dotted"]
 ":url:prefs" -> ":url:model"
 ":url:ui" -> ":account:login:nav" ["style"="dotted"]
 ":url:ui" -> ":core:colorscheme"
-":url:ui" -> ":core:model" ["style"="dotted"]
 ":url:ui" -> ":core:res" ["style"="dotted"]
 ":url:ui" -> ":core:ui"
-":url:ui" -> ":log" ["style"="dotted"]
 ":url:ui" -> ":url:res" ["style"="dotted"]
 ":url:ui" -> ":url:vm"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
 ":url:vm" -> ":core:colorscheme"
 ":url:vm" -> ":core:versions" ["style"="dotted"]
-":url:vm" -> ":log" ["style"="dotted"]
 ":url:vm" -> ":url:model"
 ":url:vm" -> ":url:prefs" ["style"="dotted"]
 subgraph "cluster_legend" {

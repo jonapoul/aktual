@@ -18,7 +18,6 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
-import actual.core.ui.VerticalSpacer
 import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.ui.normalIconButton
@@ -26,6 +25,7 @@ import actual.core.ui.transparentTopAppBarColors
 import actual.core.versions.ActualVersions
 import actual.url.model.ServerUrl
 import actual.url.nav.ServerUrlNavRoute
+import alakazam.android.ui.compose.VerticalSpacer
 import alakazam.kotlin.core.exhaustive
 import android.content.Intent
 import androidx.compose.foundation.layout.Box

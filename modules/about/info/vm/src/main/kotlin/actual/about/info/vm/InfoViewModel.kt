@@ -2,9 +2,9 @@ package actual.about.info.vm
 
 import actual.about.info.data.GithubRepository
 import actual.about.info.data.LatestReleaseState
-import actual.core.config.BuildConfig
-import actual.log.Logger
 import alakazam.android.core.UrlOpener
+import alakazam.kotlin.core.BuildConfig
+import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel

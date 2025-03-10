@@ -11,13 +11,10 @@ node ["style"="filled"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:buildconfig" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
-":log" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
 edge ["dir"="none"]
@@ -28,7 +25,6 @@ graph ["rank"="same"]
 ":account:password:domain" -> ":account:login:domain"
 ":account:password:domain" -> ":account:model"
 ":account:password:domain" -> ":api:actual" ["style"="dotted"]
-":account:password:domain" -> ":log" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:domain" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:res" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:vm"
@@ -40,7 +36,6 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":account:password:domain"
 ":account:password:vm" -> ":core:colorscheme"
 ":account:password:vm" -> ":core:versions" ["style"="dotted"]
-":account:password:vm" -> ":log" ["style"="dotted"]
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"
@@ -49,8 +44,6 @@ graph ["rank"="same"]
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:ui" -> ":core:versions"
 ":core:ui" -> ":url:model"
-":core:versions" -> ":core:buildconfig"
-":url:model" -> ":core:model" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

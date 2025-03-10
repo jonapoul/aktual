@@ -5,7 +5,7 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
-import actual.core.ui.VerticalSpacer
+import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn

@@ -8,8 +8,8 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.javaxInject)
-    api(projects.core.buildconfig)
-    implementation(libs.alakazam.kotlin.core)
+    api(libs.alakazam.kotlin.core)
+    implementation(libs.alakazam.kotlin.logging)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
@@ -21,7 +21,6 @@ kotlin {
     implementation(projects.api.actual)
     implementation(projects.api.builder)
     implementation(projects.core.versions)
-    implementation(projects.log)
     implementation(projects.url.model)
     implementation(projects.url.prefs)
   }

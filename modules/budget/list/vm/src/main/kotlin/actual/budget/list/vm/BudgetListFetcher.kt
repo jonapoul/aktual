@@ -7,9 +7,9 @@ import actual.api.model.sync.ListUserFilesResponse
 import actual.budget.model.Budget
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetState
-import actual.log.Logger
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import alakazam.kotlin.logging.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
