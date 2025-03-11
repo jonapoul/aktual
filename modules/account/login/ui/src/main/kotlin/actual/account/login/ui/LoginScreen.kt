@@ -104,7 +104,7 @@ private fun NavHostController.listBudgets(token: LoginToken) =
 private fun LoginScreenImpl(
   versions: ActualVersions,
   enteredPassword: Password,
-  url: ServerUrl,
+  url: ServerUrl?,
   isLoading: Boolean,
   themeType: ColorSchemeType,
   loginFailure: LoginResult.Failure?,
@@ -157,7 +157,7 @@ private fun LoginScreenImpl(
 private fun Content(
   versions: ActualVersions,
   enteredPassword: Password,
-  url: ServerUrl,
+  url: ServerUrl?,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
   hazeState: HazeState,

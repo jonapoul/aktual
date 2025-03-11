@@ -14,13 +14,11 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -38,14 +36,8 @@ class ListBudgetsViewModel @AssistedInject constructor(
   private val token = LoginToken(tokenString)
 
   val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()
-
-  val serverUrl: StateFlow<ServerUrl> = serverUrlPrefs
-    .url
-    .asFlow()
-    .filterNotNull()
-    .stateIn(viewModelScope, SharingStarted.Eagerly, ServerUrl.Demo)
-
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.stateFlow(viewModelScope)
+  val serverUrl: StateFlow<ServerUrl?> = serverUrlPrefs.url.asStateFlow(viewModelScope)
+  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.type.asStateFlow(viewModelScope)
 
   private val mutableState = MutableStateFlow<ListBudgetsState>(ListBudgetsState.Loading)
   val state: StateFlow<ListBudgetsState> = mutableState.asStateFlow()

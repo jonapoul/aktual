@@ -23,6 +23,7 @@ import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -63,7 +64,7 @@ class ServerUrlViewModel @Inject internal constructor(
   val baseUrl: StateFlow<String> = mutableBaseUrl.asStateFlow()
   val protocol: StateFlow<Protocol> = mutableProtocol.asStateFlow()
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.stateFlow(viewModelScope)
+  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.type.asStateFlow(viewModelScope)
 
   val isEnabled: StateFlow<Boolean> = baseUrl
     .map { it.isNotBlank() }
