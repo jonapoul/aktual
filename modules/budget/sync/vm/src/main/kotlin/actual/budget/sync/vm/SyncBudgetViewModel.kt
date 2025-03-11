@@ -10,6 +10,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,7 +26,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
   @Suppress("UnusedPrivateProperty")
   private val token = LoginToken(tokenString)
 
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.stateFlow(viewModelScope)
+  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.type.asStateFlow(viewModelScope)
 
   private val mutableState = MutableStateFlow<SyncState>(SyncState.TalkingToServer)
   val state: StateFlow<SyncState> = mutableState.asStateFlow()

@@ -29,7 +29,7 @@ class ColorSchemePreferencesTest {
 
   @Test
   fun `Emit types`() = runTest {
-    with(preferences.colorSchemeType) {
+    with(preferences.type) {
       asFlow().test {
         // Given
         assertEmitted(System)

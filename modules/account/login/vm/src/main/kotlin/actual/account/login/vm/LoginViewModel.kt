@@ -16,6 +16,7 @@ import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -42,14 +43,8 @@ class LoginViewModel @Inject internal constructor(
 
   val enteredPassword: StateFlow<Password> = mutableEnteredPassword.asStateFlow()
   val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.stateFlow(viewModelScope)
-
-  val serverUrl: StateFlow<ServerUrl> = serverUrlPrefs
-    .url
-    .asFlow()
-    .filterNotNull()
-    .stateIn(viewModelScope, SharingStarted.Eagerly, ServerUrl.Demo)
-
+  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.type.asStateFlow(viewModelScope)
+  val serverUrl: StateFlow<ServerUrl?> = serverUrlPrefs.url.asStateFlow(viewModelScope)
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
 
   val loginFailure: StateFlow<LoginResult.Failure?> =

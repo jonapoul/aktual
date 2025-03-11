@@ -25,7 +25,7 @@ import dev.chrisbanes.haze.hazeEffect
 @Stable
 @Composable
 fun UsingServerText(
-  url: ServerUrl,
+  url: ServerUrl?,
   onClickChange: () -> Unit,
   modifier: Modifier = Modifier,
   fontSize: TextUnit = 16.sp,
@@ -48,7 +48,7 @@ fun UsingServerText(
     )
 
     Text(
-      text = url.toString(),
+      text = url?.toString().orEmpty(),
       fontSize = fontSize,
       color = theme.pageText,
       fontWeight = FontWeight.Bold,
@@ -64,9 +64,18 @@ fun UsingServerText(
 
 @Preview
 @Composable
-private fun UsingServer() = PreviewColumn {
+private fun DemoServer() = PreviewColumn {
   UsingServerText(
     url = ServerUrl.Demo,
+    onClickChange = {},
+  )
+}
+
+@Preview
+@Composable
+private fun NoServer() = PreviewColumn {
+  UsingServerText(
+    url = null,
     onClickChange = {},
   )
 }

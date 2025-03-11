@@ -84,7 +84,7 @@ internal class LoginViewModelTest {
   @Test
   fun `Server URL`() = runTest {
     viewModel.serverUrl.test {
-      assertEquals(expected = ServerUrl.Demo, actual = awaitItem())
+      assertNull(awaitItem())
 
       val url = ServerUrl(Protocol.Https, baseUrl = "url.for.my.server.com")
       serverUrlPrefs.url.set(url)

@@ -81,7 +81,7 @@ fun ListBudgetsScreen(
   LaunchedEffect(launchBrowser) {
     if (launchBrowser) {
       val intent = Intent(Intent.ACTION_VIEW)
-      intent.data = serverUrl.toString().toUri()
+      intent.data = serverUrl?.toString()?.toUri()
       context.startActivity(intent, null)
       launchBrowser = false
     }
@@ -131,7 +131,7 @@ private fun NavHostController.openUrlScreen() =
 private fun ListBudgetsScaffold(
   versions: ActualVersions,
   state: ListBudgetsState,
-  url: ServerUrl,
+  url: ServerUrl?,
   themeType: ColorSchemeType,
   onAction: (ListBudgetsAction) -> Unit,
 ) {
@@ -223,7 +223,7 @@ private fun ScaffoldTitle(theme: Theme) = Text(
 private fun ListBudgetsContent(
   versions: ActualVersions,
   state: ListBudgetsState,
-  url: ServerUrl,
+  url: ServerUrl?,
   hazeState: HazeState,
   onAction: (ListBudgetsAction) -> Unit,
   modifier: Modifier = Modifier,

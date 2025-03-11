@@ -11,6 +11,7 @@ import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +27,7 @@ internal class ActualActivityViewModel @Inject constructor(
   serverUrlPreferences: ServerUrlPreferences,
   loginPreferences: LoginPreferences,
 ) : ViewModel() {
-  val colorSchemeType: StateFlow<ColorSchemeType> = colorSchemePrefs.stateFlow(viewModelScope)
+  val colorSchemeType: StateFlow<ColorSchemeType> = colorSchemePrefs.type.asStateFlow(viewModelScope)
 
   val isServerUrlSet: Boolean = serverUrlPreferences.url.isSet()
 
