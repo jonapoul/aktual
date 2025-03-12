@@ -64,7 +64,7 @@ fun PreviewScreen(
 }
 
 @Composable
-private fun PreviewWithColorScheme(
+fun PreviewWithColorScheme(
   schemeType: ColorSchemeType,
   modifier: Modifier = Modifier,
   content: @Composable (ColorSchemeType) -> Unit,

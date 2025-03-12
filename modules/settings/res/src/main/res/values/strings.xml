@@ -1,0 +1,4 @@
+<resources>
+  <string name="settings_toolbar">App Settings</string>
+  <string name="settings_theme">App Theme</string>
+</resources>

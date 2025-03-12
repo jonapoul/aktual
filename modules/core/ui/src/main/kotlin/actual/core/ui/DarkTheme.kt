@@ -71,6 +71,7 @@ internal class DarkTheme : Theme {
   override val mobileHeaderBackground = ActualColors.purple800
   override val mobileHeaderBackgroundSubdued = ActualColors.purple900
   override val mobileHeaderText = ActualColors.navy150
+  override val mobileHeaderTextTransparent = ActualColors.navy150
   override val mobileHeaderTextSubdued = ActualColors.gray200
   override val mobileHeaderTextHover = Color(color = 0x26C8C8C8)
   override val mobilePageBackground = ActualColors.navy700

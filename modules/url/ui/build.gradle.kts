@@ -10,6 +10,7 @@ dependencies {
   api(projects.core.ui)
   api(projects.url.vm)
   implementation(libs.alakazam.android.compose)
+  implementation(libs.alakazam.kotlin.core)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)

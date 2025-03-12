@@ -196,6 +196,8 @@ dependencies {
   implementation(projects.core.connection)
   implementation(projects.core.di)
   implementation(projects.db)
+  implementation(projects.settings.nav)
+  implementation(projects.settings.ui)
   implementation(projects.url.nav)
   implementation(projects.url.prefs)
   implementation(projects.url.ui)

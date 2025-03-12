@@ -9,6 +9,7 @@ internal sealed interface ListBudgetsAction {
   data object ChangePassword : ListBudgetsAction
   data object ChangeServer : ListBudgetsAction
   data object OpenInBrowser : ListBudgetsAction
+  data object OpenSettings : ListBudgetsAction
   data class Open(val budget: Budget) : ListBudgetsAction
   data class Delete(val budget: Budget) : ListBudgetsAction
 }

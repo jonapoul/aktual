@@ -71,6 +71,7 @@ internal class MidnightTheme : Theme {
   override val mobileHeaderBackground = ActualColors.gray900
   override val mobileHeaderBackgroundSubdued = ActualColors.gray800
   override val mobileHeaderText = ActualColors.purple200
+  override val mobileHeaderTextTransparent = ActualColors.purple200
   override val mobileHeaderTextSubdued = ActualColors.gray200
   override val mobileHeaderTextHover = Color(color = 0x26C8C8C8)
   override val mobilePageBackground = ActualColors.gray900

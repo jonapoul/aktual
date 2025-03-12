@@ -28,3 +28,7 @@
     - *The JSON functions and operators are built into SQLite by default, as of SQLite version 3.38.0 (2022-02-22).*
 
 - log to file
+
+- check server version on about screen
+  - next to app version?
+  - link to release notes

@@ -29,7 +29,8 @@ fun Theme.topAppBarColors(
 @Composable
 fun Theme.transparentTopAppBarColors() = topAppBarColors(
   containerColor = Color.Transparent,
-  navigationIconContentColor = pageText,
+  navigationIconContentColor = mobileHeaderTextTransparent,
+  titleContentColor = mobileHeaderTextTransparent,
 )
 
 @Stable

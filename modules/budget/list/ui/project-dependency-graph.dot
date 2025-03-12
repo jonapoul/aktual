@@ -16,6 +16,7 @@ node ["style"="filled"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
+":settings:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:nav" ["fillcolor"="#5555FF","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -37,12 +38,13 @@ graph ["rank"="same"]
 ":budget:list:ui" -> ":budget:sync:nav" ["style"="dotted"]
 ":budget:list:ui" -> ":core:res" ["style"="dotted"]
 ":budget:list:ui" -> ":core:ui"
+":budget:list:ui" -> ":settings:nav" ["style"="dotted"]
 ":budget:list:ui" -> ":url:nav" ["style"="dotted"]
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:colorscheme"
-":budget:list:vm" -> ":core:versions" ["style"="dotted"]
+":budget:list:vm" -> ":core:versions"
 ":budget:list:vm" -> ":url:model"
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
 ":budget:sync:nav" -> ":account:model"
