@@ -23,6 +23,7 @@ dependencies {
   implementation(libs.androidx.compose.ui.tooling)
   implementation(libs.androidx.compose.ui.toolingPreview)
   implementation(libs.androidx.compose.ui.unit)
+  implementation(libs.androidx.coreKtx)
   implementation(libs.androidx.lifecycle.common)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -40,5 +41,6 @@ dependencies {
   implementation(projects.budget.model)
   implementation(projects.budget.sync.nav)
   implementation(projects.core.res)
+  implementation(projects.settings.nav)
   implementation(projects.url.nav)
 }

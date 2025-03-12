@@ -12,6 +12,7 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.okhttp.core)
   implementation(libs.okio)
+  implementation(libs.preferences.core)
   implementation(libs.retrofit.core)
   implementation(projects.account.model)
   implementation(projects.api.actual)

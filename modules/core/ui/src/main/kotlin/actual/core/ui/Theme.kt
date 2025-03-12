@@ -76,6 +76,7 @@ sealed interface Theme {
   val mobileHeaderBackground: Color
   val mobileHeaderBackgroundSubdued: Color
   val mobileHeaderText: Color
+  val mobileHeaderTextTransparent: Color
   val mobileHeaderTextSubdued: Color
   val mobileHeaderTextHover: Color
   val mobilePageBackground: Color

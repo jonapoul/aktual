@@ -24,7 +24,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.hilt.android)
   implementation(libs.kotlinx.coroutines)
   implementation(projects.account.model)

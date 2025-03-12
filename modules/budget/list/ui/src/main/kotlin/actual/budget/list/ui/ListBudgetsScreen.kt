@@ -23,6 +23,7 @@ import actual.core.ui.debugNavigate
 import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
 import actual.core.versions.ActualVersions
+import actual.settings.nav.SettingsNavRoute
 import actual.url.model.ServerUrl
 import actual.url.nav.ServerUrlNavRoute
 import alakazam.android.ui.compose.VerticalSpacer
@@ -36,6 +37,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -110,6 +112,7 @@ fun ListBudgetsScreen(
       when (action) {
         ListBudgetsAction.ChangeServer -> navController.openUrlScreen()
         ListBudgetsAction.ChangePassword -> navController.debugNavigate(ChangePasswordNavRoute)
+        ListBudgetsAction.OpenSettings -> navController.debugNavigate(SettingsNavRoute)
         ListBudgetsAction.OpenInBrowser -> launchBrowser = true
         ListBudgetsAction.Reload -> viewModel.retry()
         is ListBudgetsAction.Delete -> budgetToDelete = action.budget
@@ -185,6 +188,14 @@ private inline fun TopBarActions(
         colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
       )
     }
+
+    BasicIconButton(
+      modifier = Modifier.padding(horizontal = 5.dp),
+      onClick = { onAction(ListBudgetsAction.OpenSettings) },
+      imageVector = Icons.Filled.Settings,
+      contentDescription = BudgetListStrings.listBudgetsSettings,
+      colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+    )
 
     var showMenu by remember { mutableStateOf(false) }
     BasicIconButton(

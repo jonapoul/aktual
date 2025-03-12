@@ -35,7 +35,7 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":account:model"
 ":account:password:vm" -> ":account:password:domain"
 ":account:password:vm" -> ":core:colorscheme"
-":account:password:vm" -> ":core:versions" ["style"="dotted"]
+":account:password:vm" -> ":core:versions"
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":url:model"

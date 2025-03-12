@@ -13,6 +13,8 @@ import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.budget.list.ui.ListBudgetsScreen
 import actual.budget.sync.nav.SyncBudgetsNavRoute
 import actual.budget.sync.ui.SyncBudgetScreen
+import actual.settings.nav.SettingsNavRoute
+import actual.settings.ui.SettingsScreen
 import actual.url.nav.ServerUrlNavRoute
 import actual.url.ui.ServerUrlScreen
 import androidx.compose.animation.AnimatedContentScope
@@ -56,6 +58,8 @@ internal fun ActualNavHost(
     composable<LoginNavRoute> { LoginScreen(navController) }
 
     composable<ServerUrlNavRoute> { ServerUrlScreen(navController) }
+
+    composable<SettingsNavRoute> { SettingsScreen(navController) }
 
     composableWithArg<SyncBudgetsNavRoute>(mapOf(LoginTokenType)) { route, _ ->
       SyncBudgetScreen(navController, route.token)

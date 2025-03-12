@@ -71,6 +71,7 @@ internal class LightTheme : Theme {
   override val mobileHeaderBackground = ActualColors.purple400
   override val mobileHeaderBackgroundSubdued = ActualColors.purple300
   override val mobileHeaderText = ActualColors.navy50
+  override val mobileHeaderTextTransparent = ActualColors.navy900
   override val mobileHeaderTextSubdued = ActualColors.gray200
   override val mobileHeaderTextHover = Color(color = 0x26C8C8C8)
   override val mobilePageBackground = ActualColors.navy50
