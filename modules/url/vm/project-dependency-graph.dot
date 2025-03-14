@@ -6,7 +6,6 @@ node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
@@ -23,7 +22,6 @@ graph ["rank"="same"]
 ":url:prefs" -> ":url:model"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
-":url:vm" -> ":core:colorscheme"
 ":url:vm" -> ":core:versions"
 ":url:vm" -> ":url:model"
 ":url:vm" -> ":url:prefs" ["style"="dotted"]

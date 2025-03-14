@@ -18,15 +18,6 @@ import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WbTwilight
 import androidx.compose.material3.ButtonDefaults
-<<<<<<< HEAD
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-||||||| parent of 79b5423 (Added settings screen)
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
-=======
->>>>>>> 79b5423 (Added settings screen)
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -185,19 +176,7 @@ private fun PreviewThemed(
   ) {
     ThemePreferenceItem(
       value = selected,
-<<<<<<< HEAD
-      onChange = { selected = it },
-||||||| parent of 79b5423 (Added settings screen)
-  ActualTheme(selected) {
-    Surface(modifier = modifier) {
-      AppThemeChooser(
-        selected = selected,
-        onSelect = { selected = it },
-      )
-    }
-=======
       onChange = { newValue -> selected = newValue },
->>>>>>> 79b5423 (Added settings screen)
     )
   }
 }

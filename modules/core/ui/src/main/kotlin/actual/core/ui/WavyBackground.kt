@@ -1,3 +1,5 @@
+@file:Suppress("CompositionLocalAllowlist")
+
 package actual.core.ui
 
 import actual.core.colorscheme.ColorSchemeType
@@ -7,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -14,10 +17,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import actual.core.res.R as CoreR
 
+val LocalColorSchemeType = compositionLocalOf<ColorSchemeType> { error("No ColorSchemeType defined!") }
+
 @Composable
 fun WavyBackground(
-  schemeType: ColorSchemeType,
   modifier: Modifier = Modifier,
+  schemeType: ColorSchemeType = LocalColorSchemeType.current,
 ) {
   Image(
     modifier = modifier.fillMaxSize(),
@@ -41,7 +46,7 @@ private fun ColorSchemeType.backgroundImage() = painterResource(
 @Preview
 @Composable
 private fun BackgroundImage() = PreviewColumn { type ->
-  WavyBackground(type)
+  WavyBackground(schemeType = type)
 }
 
 @ScreenPreview

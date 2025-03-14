@@ -6,7 +6,6 @@ dependencies {
   api(libs.javaxInject)
   api(projects.account.login.domain)
   api(projects.account.model)
-  api(projects.core.colorscheme)
   api(projects.core.versions)
   api(projects.url.model)
   implementation(libs.alakazam.kotlin.core)

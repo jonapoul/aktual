@@ -6,15 +6,12 @@ import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.account.password.domain.ChangePasswordResult
 import actual.account.password.domain.PasswordChanger
-import actual.core.colorscheme.ColorSchemePreferences
-import actual.core.colorscheme.ColorSchemeType
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
 import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -34,7 +31,6 @@ import kotlin.time.Duration.Companion.seconds
 @HiltViewModel
 class ChangePasswordViewModel @Inject internal constructor(
   versionsStateHolder: ActualVersionsStateHolder,
-  colorSchemePreferences: ColorSchemePreferences,
   private val passwordChanger: PasswordChanger,
   private val loginRequester: LoginRequester,
 ) : ViewModel() {
@@ -45,7 +41,6 @@ class ChangePasswordViewModel @Inject internal constructor(
   private val mutableLoginToken = Channel<LoginToken?>()
 
   val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.type.asStateFlow(viewModelScope)
 
   val inputPassword1: StateFlow<Password> = mutablePassword1.asStateFlow()
   val inputPassword2: StateFlow<Password> = mutablePassword2.asStateFlow()

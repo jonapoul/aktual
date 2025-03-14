@@ -8,7 +8,6 @@ import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.budget.model.Budget
 import actual.budget.sync.nav.SyncBudgetsNavRoute
-import actual.core.colorscheme.ColorSchemeType
 import actual.core.icons.ActualIcons
 import actual.core.icons.Refresh
 import actual.core.ui.BasicIconButton
@@ -75,7 +74,6 @@ fun ListBudgetsScreen(
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
-  val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   var launchBrowser by remember { mutableStateOf(false) }
@@ -107,7 +105,6 @@ fun ListBudgetsScreen(
     versions = versions,
     state = state,
     url = serverUrl,
-    themeType = themeType,
     onAction = { action ->
       when (action) {
         ListBudgetsAction.ChangeServer -> navController.openUrlScreen()
@@ -135,7 +132,6 @@ private fun ListBudgetsScaffold(
   versions: ActualVersions,
   state: ListBudgetsState,
   url: ServerUrl?,
-  themeType: ColorSchemeType,
   onAction: (ListBudgetsAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -157,7 +153,6 @@ private fun ListBudgetsScaffold(
 
       WavyBackground(
         modifier = Modifier.hazeSource(hazeState),
-        schemeType = themeType,
       )
 
       ListBudgetsContent(
@@ -306,10 +301,9 @@ private fun ListBudgetsContent(
 
 @ScreenPreview
 @Composable
-private fun Success() = PreviewScreen { type ->
+private fun Success() = PreviewScreen {
   ListBudgetsScaffold(
     versions = PreviewVersions,
-    themeType = type,
     url = ServerUrl.Demo,
     state = ListBudgetsState.Success(
       budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken),
@@ -320,10 +314,9 @@ private fun Success() = PreviewScreen { type ->
 
 @ScreenPreview
 @Composable
-private fun Loading() = PreviewScreen { type ->
+private fun Loading() = PreviewScreen {
   ListBudgetsScaffold(
     versions = PreviewVersions,
-    themeType = type,
     url = ServerUrl.Demo,
     state = ListBudgetsState.Loading,
     onAction = {},
@@ -332,10 +325,9 @@ private fun Loading() = PreviewScreen { type ->
 
 @ScreenPreview
 @Composable
-private fun Failure() = PreviewScreen { type ->
+private fun Failure() = PreviewScreen {
   ListBudgetsScaffold(
     versions = PreviewVersions,
-    themeType = type,
     url = ServerUrl.Demo,
     state = ListBudgetsState.Failure(reason = "Something broke lol"),
     onAction = {},

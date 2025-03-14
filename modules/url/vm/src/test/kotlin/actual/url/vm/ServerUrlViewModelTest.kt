@@ -9,7 +9,6 @@ import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.NeedsBootstrapResponse
-import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.versions.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
 import actual.test.assertEmitted
@@ -47,7 +46,6 @@ class ServerUrlViewModelTest {
 
   // Real
   private lateinit var serverUrlPreferences: ServerUrlPreferences
-  private lateinit var colorSchemePreferences: ColorSchemePreferences
   private lateinit var loginPreferences: LoginPreferences
   private lateinit var viewModel: ServerUrlViewModel
   private lateinit var apisStateHolder: ActualApisStateHolder
@@ -62,7 +60,6 @@ class ServerUrlViewModelTest {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     serverUrlPreferences = ServerUrlPreferences(prefs)
     serverUrlPreferences.url.set(EXAMPLE_URL)
-    colorSchemePreferences = ColorSchemePreferences(prefs)
     loginPreferences = LoginPreferences(prefs)
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
 
@@ -80,7 +77,6 @@ class ServerUrlViewModelTest {
       contexts = TestCoroutineContexts(mainDispatcherRule),
       apiStateHolder = apisStateHolder,
       serverUrlPreferences = serverUrlPreferences,
-      colorSchemePreferences = colorSchemePreferences,
       loginPreferences = loginPreferences,
       versionsStateHolder = versionsStateHolder,
       urlProvider = { null },

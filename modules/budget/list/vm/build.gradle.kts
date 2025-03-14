@@ -8,7 +8,6 @@ dependencies {
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
   api(projects.budget.model)
-  api(projects.core.colorscheme)
   api(projects.core.versions)
   api(projects.url.model)
   implementation(libs.alakazam.kotlin.logging)

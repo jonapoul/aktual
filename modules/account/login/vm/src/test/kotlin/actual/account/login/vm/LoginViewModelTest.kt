@@ -5,7 +5,6 @@ import actual.account.login.domain.LoginRequester
 import actual.account.login.domain.LoginResult
 import actual.account.model.LoginToken
 import actual.account.model.Password
-import actual.core.colorscheme.ColorSchemePreferences
 import actual.core.versions.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
 import actual.test.buildPreferences
@@ -38,7 +37,6 @@ internal class LoginViewModelTest {
   // real
   private lateinit var serverUrlPrefs: ServerUrlPreferences
   private lateinit var loginPrefs: LoginPreferences
-  private lateinit var colorSchemePreferences: ColorSchemePreferences
   private lateinit var viewModel: LoginViewModel
   private lateinit var versionsStateHolder: ActualVersionsStateHolder
 
@@ -50,7 +48,6 @@ internal class LoginViewModelTest {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     serverUrlPrefs = ServerUrlPreferences(prefs)
     loginPrefs = LoginPreferences(prefs)
-    colorSchemePreferences = ColorSchemePreferences(prefs)
 
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
@@ -60,7 +57,6 @@ internal class LoginViewModelTest {
       loginRequester = loginRequester,
       serverUrlPrefs = serverUrlPrefs,
       loginPrefs = loginPrefs,
-      colorSchemePreferences = colorSchemePreferences,
       passwordProvider = { Password.Empty },
     )
   }

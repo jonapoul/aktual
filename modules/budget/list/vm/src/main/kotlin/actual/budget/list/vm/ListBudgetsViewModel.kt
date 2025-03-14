@@ -1,8 +1,6 @@
 package actual.budget.list.vm
 
 import actual.account.model.LoginToken
-import actual.core.colorscheme.ColorSchemePreferences
-import actual.core.colorscheme.ColorSchemeType
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
 import actual.url.model.ServerUrl
@@ -27,7 +25,6 @@ class ListBudgetsViewModel @AssistedInject constructor(
   @Assisted tokenString: String,
   serverUrlPrefs: ServerUrlPreferences,
   versionsStateHolder: ActualVersionsStateHolder,
-  colorSchemePreferences: ColorSchemePreferences,
   private val budgetListFetcher: BudgetListFetcher,
 ) : ViewModel() {
   // Necessary because trying to pass a value class through dagger's assisted injection results in a KSP build failure.
@@ -37,7 +34,6 @@ class ListBudgetsViewModel @AssistedInject constructor(
 
   val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()
   val serverUrl: StateFlow<ServerUrl?> = serverUrlPrefs.url.asStateFlow(viewModelScope)
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.type.asStateFlow(viewModelScope)
 
   private val mutableState = MutableStateFlow<ListBudgetsState>(ListBudgetsState.Loading)
   val state: StateFlow<ListBudgetsState> = mutableState.asStateFlow()

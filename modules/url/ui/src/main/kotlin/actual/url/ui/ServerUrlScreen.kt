@@ -1,7 +1,6 @@
 package actual.url.ui
 
 import actual.account.login.nav.LoginNavRoute
-import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.LocalTheme
@@ -67,7 +66,6 @@ fun ServerUrlScreen(
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
-  val themeType by viewModel.themeType.collectAsStateWithLifecycle()
 
   DisposableEffect(Unit) {
     onDispose {
@@ -95,7 +93,6 @@ fun ServerUrlScreen(
     isEnabled = isEnabled,
     isLoading = isLoading,
     errorMessage = errorMessage,
-    themeType = themeType,
     onAction = { action ->
       when (action) {
         ServerUrlAction.ConfirmUrl -> viewModel.onClickConfirm()
@@ -116,7 +113,6 @@ private fun ServerUrlScaffold(
   isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
-  themeType: ColorSchemeType,
   onAction: (ServerUrlAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -141,7 +137,7 @@ private fun ServerUrlScaffold(
     },
   ) { innerPadding ->
     Box {
-      WavyBackground(themeType)
+      WavyBackground()
 
       ServerUrlContent(
         modifier = Modifier.padding(innerPadding),
@@ -242,14 +238,13 @@ private fun ServerUrlContent(
 
 @ScreenPreview
 @Composable
-private fun Regular() = PreviewScreen { type ->
+private fun Regular() = PreviewScreen {
   ServerUrlScaffold(
     url = "",
     protocol = Protocol.Https,
     versions = ActualVersions.Dummy,
     isEnabled = true,
     isLoading = false,
-    themeType = type,
     onAction = {},
     errorMessage = null,
   )
@@ -257,14 +252,13 @@ private fun Regular() = PreviewScreen { type ->
 
 @ScreenPreview
 @Composable
-private fun WithErrorMessage() = PreviewScreen { type ->
+private fun WithErrorMessage() = PreviewScreen {
   ServerUrlScaffold(
     url = "my.server.com:1234/path",
     protocol = Protocol.Http,
     versions = ActualVersions.Dummy,
     isEnabled = true,
     isLoading = true,
-    themeType = type,
     onAction = {},
     errorMessage = "Hello this is an error message, split over multiple lines so you can see how it behaves",
   )

@@ -43,7 +43,6 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
-":budget:list:vm" -> ":core:colorscheme"
 ":budget:list:vm" -> ":core:versions"
 ":budget:list:vm" -> ":url:model"
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]

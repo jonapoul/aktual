@@ -6,7 +6,6 @@ import actual.budget.sync.vm.SyncBudgetViewModel
 import actual.budget.sync.vm.SyncState
 import actual.budget.sync.vm.bytes
 import actual.budget.sync.vm.percent
-import actual.core.colorscheme.ColorSchemeType
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
@@ -36,19 +35,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 
-@Suppress("UnusedParameter")
+@Suppress("unused")
 @Composable
 fun SyncBudgetScreen(
   navController: NavHostController,
   token: LoginToken,
   viewModel: SyncBudgetViewModel = hiltViewModel(token),
 ) {
-  val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   SyncBudgetScaffold(
     state = state,
-    themeType = themeType,
     onAction = { action ->
       //      when (action) {
       // TBC
@@ -65,7 +62,6 @@ private fun hiltViewModel(token: LoginToken) = hiltViewModel<SyncBudgetViewModel
 @Composable
 private fun SyncBudgetScaffold(
   state: SyncState,
-  themeType: ColorSchemeType,
   onAction: (SyncBudgetAction) -> Unit,
 ) {
   val theme = LocalTheme.current
@@ -79,7 +75,7 @@ private fun SyncBudgetScaffold(
     },
   ) { innerPadding ->
     Box {
-      WavyBackground(themeType)
+      WavyBackground()
 
       ListBudgetsContent(
         modifier = Modifier.padding(innerPadding),
@@ -166,9 +162,8 @@ private fun SyncState.titleString() = when (this) {
 
 @ScreenPreview
 @Composable
-private fun TalkingToServer() = PreviewScreen { type ->
+private fun TalkingToServer() = PreviewScreen {
   SyncBudgetScaffold(
-    themeType = type,
     state = SyncState.TalkingToServer,
     onAction = {},
   )
@@ -176,9 +171,8 @@ private fun TalkingToServer() = PreviewScreen { type ->
 
 @ScreenPreview
 @Composable
-private fun Downloading() = PreviewScreen { type ->
+private fun Downloading() = PreviewScreen {
   SyncBudgetScaffold(
-    themeType = type,
     state = SyncState.Downloading(100.bytes, 50.percent),
     onAction = {},
   )
@@ -186,9 +180,8 @@ private fun Downloading() = PreviewScreen { type ->
 
 @ScreenPreview
 @Composable
-private fun Validating() = PreviewScreen { type ->
+private fun Validating() = PreviewScreen {
   SyncBudgetScaffold(
-    themeType = type,
     state = SyncState.Validating,
     onAction = {},
   )
@@ -196,9 +189,8 @@ private fun Validating() = PreviewScreen { type ->
 
 @ScreenPreview
 @Composable
-private fun Success() = PreviewScreen { type ->
+private fun Success() = PreviewScreen {
   SyncBudgetScaffold(
-    themeType = type,
     state = SyncState.Success,
     onAction = {},
   )
@@ -206,9 +198,8 @@ private fun Success() = PreviewScreen { type ->
 
 @ScreenPreview
 @Composable
-private fun Failure() = PreviewScreen { type ->
+private fun Failure() = PreviewScreen {
   SyncBudgetScaffold(
-    themeType = type,
     state = SyncState.Failure(reason = "Something broke"),
     onAction = {},
   )

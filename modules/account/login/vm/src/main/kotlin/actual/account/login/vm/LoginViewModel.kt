@@ -5,8 +5,6 @@ import actual.account.login.domain.LoginRequester
 import actual.account.login.domain.LoginResult
 import actual.account.model.LoginToken
 import actual.account.model.Password
-import actual.core.colorscheme.ColorSchemePreferences
-import actual.core.colorscheme.ColorSchemeType
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
 import actual.url.model.ServerUrl
@@ -34,7 +32,6 @@ class LoginViewModel @Inject internal constructor(
   versionsStateHolder: ActualVersionsStateHolder,
   serverUrlPrefs: ServerUrlPreferences,
   loginPrefs: LoginPreferences,
-  colorSchemePreferences: ColorSchemePreferences,
   passwordProvider: Password.Provider,
 ) : ViewModel() {
   private val mutableEnteredPassword = ResettableStateFlow(passwordProvider.default())
@@ -43,7 +40,6 @@ class LoginViewModel @Inject internal constructor(
 
   val enteredPassword: StateFlow<Password> = mutableEnteredPassword.asStateFlow()
   val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.type.asStateFlow(viewModelScope)
   val serverUrl: StateFlow<ServerUrl?> = serverUrlPrefs.url.asStateFlow(viewModelScope)
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
 
