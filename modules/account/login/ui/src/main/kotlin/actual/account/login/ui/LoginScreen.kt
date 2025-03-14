@@ -7,7 +7,6 @@ import actual.account.login.vm.LoginViewModel
 import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.budget.list.nav.ListBudgetsNavRoute
-import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
@@ -63,7 +62,6 @@ fun LoginScreen(
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
   val url by viewModel.serverUrl.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
-  val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
 
   LaunchedEffect(Unit) {
@@ -81,7 +79,6 @@ fun LoginScreen(
     enteredPassword = enteredPassword,
     url = url,
     isLoading = isLoading,
-    themeType = themeType,
     loginFailure = loginFailure,
     onAction = { action ->
       when (action) {
@@ -106,7 +103,6 @@ private fun LoginScreenImpl(
   enteredPassword: Password,
   url: ServerUrl?,
   isLoading: Boolean,
-  themeType: ColorSchemeType,
   loginFailure: LoginResult.Failure?,
   onAction: (LoginAction) -> Unit,
 ) {
@@ -135,7 +131,6 @@ private fun LoginScreenImpl(
 
       WavyBackground(
         modifier = Modifier.hazeSource(hazeState),
-        schemeType = themeType,
       )
 
       Content(
@@ -229,28 +224,26 @@ private fun Content(
 
 @ScreenPreview
 @Composable
-private fun Regular() = PreviewScreen { type ->
+private fun Regular() = PreviewScreen {
   LoginScreenImpl(
     versions = ActualVersions.Dummy,
     enteredPassword = Password.Empty,
     url = ServerUrl.Demo,
     isLoading = false,
     loginFailure = null,
-    themeType = type,
     onAction = {},
   )
 }
 
 @ScreenPreview
 @Composable
-private fun WithErrorMessage() = PreviewScreen { type ->
+private fun WithErrorMessage() = PreviewScreen {
   LoginScreenImpl(
     versions = ActualVersions.Dummy,
     enteredPassword = Password.Dummy,
     url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
     isLoading = true,
     loginFailure = LoginResult.InvalidPassword,
-    themeType = type,
     onAction = {},
   )
 }

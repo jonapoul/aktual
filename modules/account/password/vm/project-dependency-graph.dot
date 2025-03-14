@@ -8,7 +8,6 @@ node ["style"="filled"]
 ":account:password:vm" ["fillcolor"="#F5A6A6","shape"="box"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="box"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
 {
@@ -23,7 +22,6 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":account:login:domain" ["style"="dotted"]
 ":account:password:vm" -> ":account:model"
 ":account:password:vm" -> ":account:password:domain"
-":account:password:vm" -> ":core:colorscheme"
 ":account:password:vm" -> ":core:versions"
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"

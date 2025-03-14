@@ -5,7 +5,6 @@ import actual.account.password.res.PasswordStrings
 import actual.account.password.vm.ChangePasswordState
 import actual.account.password.vm.ChangePasswordViewModel
 import actual.budget.list.nav.ListBudgetsNavRoute
-import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
@@ -53,7 +52,6 @@ fun ChangePasswordScreen(
   viewModel: ChangePasswordViewModel = hiltViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
-  val themeType by viewModel.themeType.collectAsStateWithLifecycle()
   val inputPassword1 by viewModel.inputPassword1.collectAsStateWithLifecycle()
   val inputPassword2 by viewModel.inputPassword2.collectAsStateWithLifecycle()
   val showPasswords by viewModel.showPasswords.collectAsStateWithLifecycle()
@@ -73,7 +71,6 @@ fun ChangePasswordScreen(
     passwordsMatch = passwordsMatch,
     state = state,
     versions = versions,
-    themeType = themeType,
     onAction = { action ->
       when (action) {
         PasswordAction.NavBack -> navController.popBackStack()
@@ -94,7 +91,6 @@ private fun ChangePasswordScaffold(
   passwordsMatch: Boolean,
   state: ChangePasswordState?,
   versions: ActualVersions,
-  themeType: ColorSchemeType,
   onAction: (PasswordAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -118,7 +114,7 @@ private fun ChangePasswordScaffold(
     },
   ) { innerPadding ->
     Box {
-      WavyBackground(themeType)
+      WavyBackground()
 
       ChangePasswordContent(
         modifier = Modifier.padding(innerPadding),
@@ -215,7 +211,7 @@ private fun ChangePasswordState.Failure.errorMessage(): String = when (this) {
 
 @ScreenPreview
 @Composable
-private fun Regular() = PreviewScreen { type ->
+private fun Regular() = PreviewScreen {
   ChangePasswordScaffold(
     inputPassword1 = Password.Empty,
     inputPassword2 = Password.Empty,
@@ -223,14 +219,13 @@ private fun Regular() = PreviewScreen { type ->
     passwordsMatch = false,
     state = null,
     versions = ActualVersions.Dummy,
-    themeType = type,
     onAction = {},
   )
 }
 
 @ScreenPreview
 @Composable
-private fun Loading() = PreviewScreen { type ->
+private fun Loading() = PreviewScreen {
   ChangePasswordScaffold(
     inputPassword1 = Password.Empty,
     inputPassword2 = Password.Empty,
@@ -238,14 +233,13 @@ private fun Loading() = PreviewScreen { type ->
     passwordsMatch = false,
     state = ChangePasswordState.Loading,
     versions = ActualVersions.Dummy,
-    themeType = type,
     onAction = {},
   )
 }
 
 @ScreenPreview
 @Composable
-private fun Success() = PreviewScreen { type ->
+private fun Success() = PreviewScreen {
   ChangePasswordScaffold(
     inputPassword1 = Password.Empty,
     inputPassword2 = Password.Empty,
@@ -253,14 +247,13 @@ private fun Success() = PreviewScreen { type ->
     passwordsMatch = false,
     state = ChangePasswordState.Success,
     versions = ActualVersions.Dummy,
-    themeType = type,
     onAction = {},
   )
 }
 
 @ScreenPreview
 @Composable
-private fun Failure() = PreviewScreen { type ->
+private fun Failure() = PreviewScreen {
   ChangePasswordScaffold(
     inputPassword1 = Password.Dummy,
     inputPassword2 = Password.Dummy,
@@ -268,7 +261,6 @@ private fun Failure() = PreviewScreen { type ->
     passwordsMatch = true,
     state = ChangePasswordState.NetworkFailure,
     versions = ActualVersions.Dummy,
-    themeType = type,
     onAction = {},
   )
 }

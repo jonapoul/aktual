@@ -4,8 +4,6 @@ import actual.account.login.domain.LoginPreferences
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.adapted
 import actual.api.model.account.NeedsBootstrapResponse
-import actual.core.colorscheme.ColorSchemePreferences
-import actual.core.colorscheme.ColorSchemeType
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
 import actual.url.model.Protocol
@@ -23,7 +21,6 @@ import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -47,7 +44,6 @@ class ServerUrlViewModel @Inject internal constructor(
   private val apiStateHolder: ActualApisStateHolder,
   private val serverUrlPreferences: ServerUrlPreferences,
   private val loginPreferences: LoginPreferences,
-  colorSchemePreferences: ColorSchemePreferences,
   versionsStateHolder: ActualVersionsStateHolder,
   urlProvider: ServerUrl.Provider,
 ) : ViewModel() {
@@ -64,7 +60,6 @@ class ServerUrlViewModel @Inject internal constructor(
   val baseUrl: StateFlow<String> = mutableBaseUrl.asStateFlow()
   val protocol: StateFlow<Protocol> = mutableProtocol.asStateFlow()
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
-  val themeType: StateFlow<ColorSchemeType> = colorSchemePreferences.type.asStateFlow(viewModelScope)
 
   val isEnabled: StateFlow<Boolean> = baseUrl
     .map { it.isNotBlank() }
