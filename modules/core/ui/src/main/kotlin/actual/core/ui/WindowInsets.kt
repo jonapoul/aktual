@@ -1,7 +1,6 @@
 package actual.core.ui
 
 import android.app.Activity
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
@@ -19,16 +18,15 @@ fun SetStatusBarColors(
   theme: Theme = LocalTheme.current,
   statusBarColor: Color = theme.mobileHeaderBackground,
   navigationBarColor: Color = theme.pageBackground,
-  darkTheme: Boolean = isSystemInDarkTheme(),
 ) {
   val view = LocalView.current
 
   if (!view.isInEditMode) {
-    LaunchedEffect(Unit) {
+    LaunchedEffect(theme) {
       val window = (view.context as Activity).window
       window.navigationBarColor = navigationBarColor.toArgb()
       window.statusBarColor = statusBarColor.toArgb()
-      WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+      WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = theme.isLight()
     }
   }
 }

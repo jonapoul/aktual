@@ -17,7 +17,7 @@ fun ActualTheme(
 ) {
   val systemDarkTheme = isSystemInDarkTheme()
 
-  val colorScheme = remember(schemeType, systemDarkTheme) {
+  val theme = remember(schemeType, systemDarkTheme) {
     when (schemeType) {
       ColorSchemeType.System -> if (systemDarkTheme) DarkTheme() else LightTheme()
       ColorSchemeType.Dark -> DarkTheme()
@@ -27,14 +27,13 @@ fun ActualTheme(
   }
 
   CompositionLocalProvider(
-    LocalTheme provides colorScheme,
+    LocalTheme provides theme,
   ) {
     SetStatusBarColors(
-      theme = colorScheme,
-      darkTheme = systemDarkTheme,
+      theme = theme,
     )
 
-    val materialColorScheme = when (colorScheme) {
+    val materialColorScheme = when (theme) {
       is LightTheme -> lightColorScheme()
       is DarkTheme -> darkColorScheme()
       is MidnightTheme -> darkColorScheme(surface = Color.Black)
@@ -42,7 +41,7 @@ fun ActualTheme(
 
     MaterialTheme(
       colorScheme = materialColorScheme,
-      typography = typography(colorScheme),
+      typography = typography(theme),
       content = content,
     )
   }

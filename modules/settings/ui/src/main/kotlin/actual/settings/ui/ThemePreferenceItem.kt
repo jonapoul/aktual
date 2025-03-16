@@ -10,7 +10,8 @@ import actual.settings.res.SettingsStrings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DarkMode
@@ -33,7 +34,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
 import dev.chrisbanes.haze.HazeState
 import kotlinx.collections.immutable.toImmutableList
@@ -67,12 +67,14 @@ private fun AppThemePicker(
   onSelect: (ColorSchemeType) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Row(
+  Column(
     modifier = modifier,
   ) {
     TYPES.fastForEach { type ->
       TypeButton(
-        modifier = Modifier.weight(1f),
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(1.dp),
         type = type,
         isSelected = selected == type,
         onClick = { onSelect(type) },
@@ -97,9 +99,7 @@ private fun TypeButton(
   val background = buttonColors.containerColor
 
   TextButton(
-    modifier = modifier
-      .padding(2.dp)
-      .background(background, ButtonShape),
+    modifier = modifier.background(background, ButtonShape),
     onClick = onClick,
     enabled = true,
     colors = buttonColors,
@@ -108,7 +108,6 @@ private fun TypeButton(
       text = type.string(),
       textAlign = TextAlign.Center,
       style = MaterialTheme.typography.bodySmall,
-      fontSize = 11.sp,
     )
   }
 }
