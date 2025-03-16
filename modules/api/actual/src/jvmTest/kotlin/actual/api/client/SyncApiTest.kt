@@ -2,7 +2,10 @@ package actual.api.client
 
 import actual.account.model.LoginToken
 import actual.api.model.account.FailureReason
+import actual.api.model.sync.GetUserKeyRequest
+import actual.api.model.sync.GetUserKeyResponse
 import actual.api.model.sync.ListUserFilesResponse
+import actual.budget.model.BudgetId
 import actual.test.MockWebServerRule
 import alakazam.test.core.getResourceAsText
 import kotlinx.coroutines.test.runTest
@@ -10,6 +13,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.uuid.Uuid
 
 class SyncApiTest {
   @get:Rule
@@ -22,8 +26,16 @@ class SyncApiTest {
     syncApi = webServerRule.buildApi(ActualJson)
   }
 
+  private suspend fun fetchUserFiles() = syncApi
+    .fetchUserFiles(TOKEN)
+    .adapted(ListUserFilesResponse.Failure.serializer())
+
+  private suspend fun fetchUserKey(body: GetUserKeyRequest) = syncApi
+    .fetchUserKey(TOKEN, body)
+    .adapted(GetUserKeyResponse.Failure.serializer())
+
   @Test
-  fun `Token included in header`() = runTest {
+  fun `List budgets token included in header`() = runTest {
     // given
     val json = getResourceAsText("sync-list-budgets-success.json")
     webServerRule.enqueue(json)
@@ -40,7 +52,7 @@ class SyncApiTest {
   }
 
   @Test
-  fun `Parse success response`() = runTest {
+  fun `List budgets success response`() = runTest {
     // given
     val json = getResourceAsText("sync-list-budgets-success.json")
     webServerRule.enqueue(json, code = 200)
@@ -55,7 +67,7 @@ class SyncApiTest {
         data = listOf(
           ListUserFilesResponse.Item(
             deleted = 0,
-            fileId = "b328186c-c919-4333-959b-04e676c1ee46",
+            fileId = BudgetId("b328186c-c919-4333-959b-04e676c1ee46"),
             groupId = "afb25fc0-a294-4f71-ae8f-ce1e3a8fec10",
             name = "Main Budget",
             encryptKeyId = "2a66f4de-c530-4c06-8103-a48e26a0ce44",
@@ -64,7 +76,7 @@ class SyncApiTest {
           ),
           ListUserFilesResponse.Item(
             deleted = 0,
-            fileId = "cf2b43ee-8067-48ed-ab5b-4e4e5531056e",
+            fileId = BudgetId("cf2b43ee-8067-48ed-ab5b-4e4e5531056e"),
             groupId = "ee90358a-f73e-4aa5-a922-653190fd31b7",
             name = "Other Budget",
             encryptKeyId = null,
@@ -84,7 +96,7 @@ class SyncApiTest {
   }
 
   @Test
-  fun `Parse failure response`() = runTest {
+  fun `List budgets failure response`() = runTest {
     // given
     val json = getResourceAsText("sync-list-budgets-failure.json")
     webServerRule.enqueue(json, code = 400)
@@ -99,11 +111,41 @@ class SyncApiTest {
     )
   }
 
-  private suspend fun fetchUserFiles() = syncApi
-    .fetchUserFiles(TOKEN)
-    .adapted(ListUserFilesResponse.Failure.serializer())
+  @Test
+  fun `Get user key success`() = runTest {
+    // given
+    val json = getResourceAsText("get-user-key-success.json")
+    webServerRule.enqueue(json, code = 200)
+
+    // when
+    val body = GetUserKeyRequest(BUDGET_ID)
+    val response = fetchUserKey(body)
+
+    // then
+    val keyId = Uuid.parse("2a66f4de-c530-4c06-8103-a48e26a0ce44")
+    assertEquals(
+      actual = response.body,
+      expected = GetUserKeyResponse.Success(
+        data = GetUserKeyResponse.Data(
+          id = keyId,
+          salt = "PpZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=",
+          test = GetUserKeyResponse.Test(
+            value = "nrhpJgUnl8lZvWxSRMIT0aTRKCOHeddlIuGPfNw0NQR/d81m/ZYRqaOjMwoQHpduSzuAivfVZZEslZihl8WhOs7GVkdghw" +
+              "Cjqr083G0261M464wHvQl2v5sB+l8f0/mQE2fco7zUagbA7Q==",
+            meta = GetUserKeyResponse.Meta(
+              keyId = keyId,
+              algorithm = "aes-256-gcm",
+              iv = "whBQQkPM88iFsLVk",
+              authTag = "X/JX1lWCchd0Ekjthlxuzg==",
+            ),
+          ),
+        ),
+      ),
+    )
+  }
 
   private companion object {
     val TOKEN = LoginToken("abc-123")
+    val BUDGET_ID = BudgetId("xyz-789")
   }
 }

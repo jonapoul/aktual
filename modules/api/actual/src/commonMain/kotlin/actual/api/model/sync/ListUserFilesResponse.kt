@@ -1,6 +1,7 @@
 package actual.api.model.sync
 
 import actual.api.model.account.FailureReason
+import actual.budget.model.BudgetId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -18,7 +19,7 @@ sealed interface ListUserFilesResponse {
   @Serializable
   data class Item(
     @SerialName("deleted") val deleted: Int,
-    @SerialName("fileId") val fileId: String,
+    @SerialName("fileId") val fileId: BudgetId,
     @SerialName("groupId") val groupId: String,
     @SerialName("name") val name: String,
     @SerialName("encryptKeyId") val encryptKeyId: String?,
