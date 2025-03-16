@@ -4,7 +4,6 @@ plugins {
 
 dependencies {
   api(libs.alakazam.kotlin.core)
-  api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(projects.core.files)
   implementation(libs.alakazam.kotlin.logging)
