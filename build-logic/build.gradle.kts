@@ -5,9 +5,7 @@ plugins {
 }
 
 // Pull java version property from project's root properties file, since build-logic doesn't have access to it
-val propsFile = file("../gradle.properties")
-if (!propsFile.exists()) error("No file found at ${propsFile.absolutePath}")
-val props = Properties().also { it.load(propsFile.reader()) }
+val props = Properties().also { it.load(file("../gradle.properties").reader()) }
 val javaInt = props["blueprint.javaVersion"]?.toString()?.toInt() ?: error("Failed getting java version from $props")
 val javaVersion = JavaVersion.toVersion(javaInt)
 
