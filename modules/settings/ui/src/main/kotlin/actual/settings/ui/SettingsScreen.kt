@@ -6,6 +6,7 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
+import actual.core.ui.WavyBackground
 import actual.core.ui.scrollbarSettings
 import actual.core.ui.transparentTopAppBarColors
 import actual.settings.res.SettingsStrings
@@ -31,10 +32,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import my.nanihadesuka.compose.LazyColumnScrollbar
@@ -83,12 +87,21 @@ private fun SettingsScaffold(
       )
     },
   ) { innerPadding ->
-    SettingsContent(
-      modifier = Modifier.padding(innerPadding),
-      values = values,
-      onAction = onAction,
-      theme = theme,
-    )
+    Box {
+      val hazeState = remember { HazeState() }
+
+      WavyBackground(
+        modifier = Modifier.hazeSource(hazeState),
+      )
+
+      SettingsContent(
+        modifier = Modifier.padding(innerPadding),
+        values = values,
+        hazeState = hazeState,
+        onAction = onAction,
+        theme = theme,
+      )
+    }
   }
 }
 
@@ -96,6 +109,7 @@ private fun SettingsScaffold(
 @Composable
 private fun SettingsContent(
   values: ImmutableList<PreferenceValue>,
+  hazeState: HazeState,
   onAction: (SettingsAction) -> Unit,
   theme: Theme,
   modifier: Modifier = Modifier,
@@ -115,6 +129,7 @@ private fun SettingsContent(
         PreferenceItem(
           modifier = Modifier.fillMaxWidth(),
           value = value,
+          hazeState = hazeState,
           onChange = { onAction(SettingsAction.PreferenceChange(it)) },
         )
       }
@@ -125,6 +140,7 @@ private fun SettingsContent(
 @Composable
 private fun PreferenceItem(
   value: PreferenceValue,
+  hazeState: HazeState,
   onChange: (PreferenceValue) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -134,6 +150,7 @@ private fun PreferenceItem(
     when (value) {
       is PreferenceValue.Theme -> ThemePreferenceItem(
         value = value.type,
+        hazeState = hazeState,
         onChange = { onChange(PreferenceValue.Theme(it)) },
       )
     }

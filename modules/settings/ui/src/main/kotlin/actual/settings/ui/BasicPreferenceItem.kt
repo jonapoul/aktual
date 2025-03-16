@@ -4,6 +4,7 @@ import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.core.ui.defaultHazeStyle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -22,12 +23,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.hazeEffect
 
 @Composable
 internal fun BasicPreferenceItem(
@@ -38,6 +43,8 @@ internal fun BasicPreferenceItem(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  hazeState: HazeState = remember { HazeState() },
+  hazeStyle: HazeStyle = defaultHazeStyle(theme),
   content: (@Composable () -> Unit)? = null,
 ) {
   val clickableModifier = when (clickability) {
@@ -52,8 +59,9 @@ internal fun BasicPreferenceItem(
 
   Row(
     modifier = modifier
+      .hazeEffect(hazeState, hazeStyle)
       .padding(5.dp)
-      .background(theme.cardBackground, CardShape)
+      .background(Color.Transparent, CardShape)
       then clickableModifier,
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
