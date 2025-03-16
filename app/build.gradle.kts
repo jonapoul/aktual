@@ -5,7 +5,6 @@ import blueprint.core.javaVersionString
 import blueprint.core.rootLocalPropertiesOrNull
 import blueprint.core.stringProperty
 import blueprint.core.stringPropertyOrNull
-import org.gradle.internal.extensions.stdlib.capitalized
 import java.time.LocalDate
 
 plugins {
@@ -137,21 +136,22 @@ licenseReport {
   generateTextReport = false
 }
 
-fun registerLicenseTask(suffix: String) {
-  val capitalized = suffix.capitalized()
-  val assemble = tasks.getByName("assemble$capitalized")
-  val license = tasks.getByName("license${capitalized}Report")
-  assemble.dependsOn(license)
-  license.doFirst {
-    val file = project.file("src/main/assets/open_source_licenses.json")
-    file.delete()
-  }
-}
-
-afterEvaluate {
-  registerLicenseTask(suffix = "debug")
-  registerLicenseTask(suffix = "release")
-}
+// TODO: re-enable once https://github.com/jaredsburrows/gradle-license-plugin/issues/368 is fixed
+// fun registerLicenseTask(suffix: String) {
+//   val capitalized = suffix.capitalized()
+//   val assemble = tasks.getByName("assemble$capitalized")
+//   val license = tasks.getByName("license${capitalized}Report")
+//   assemble.dependsOn(license)
+//   license.doFirst {
+//     val file = project.file("src/main/assets/open_source_licenses.json")
+//     file.delete()
+//   }
+// }
+//
+// afterEvaluate {
+//   registerLicenseTask(suffix = "debug")
+//   registerLicenseTask(suffix = "release")
+// }
 
 dependencies {
   implementation(libs.alakazam.android.core)
