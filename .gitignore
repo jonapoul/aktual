@@ -13,5 +13,3 @@ local.properties
 !.idea/detekt.xml
 !.idea/icon.png
 !.idea/icon_dark.png
-
-app/src/main/assets/open_source_licenses.json

@@ -33,7 +33,10 @@ jobs:
       - run: git log
 
       - name: Run baseline
-        run: ./gradlew dependencyGuardBaseline :dependencyGuardBaseline
+        run: ./gradlew dependencyGuardBaseline :dependencyGuardBaseline --no-configuration-cache
+
+      - name: Update licenses file
+        run: bash ${GITHUB_WORKSPACE}/app/refresh-license-report.sh
 
       - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v5
