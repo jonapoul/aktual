@@ -35,6 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
+import dev.chrisbanes.haze.HazeState
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -42,6 +43,7 @@ internal fun ThemePreferenceItem(
   value: ColorSchemeType,
   onChange: (ColorSchemeType) -> Unit,
   modifier: Modifier = Modifier,
+  hazeState: HazeState = remember { HazeState() },
 ) {
   BasicPreferenceItem(
     modifier = modifier,
@@ -49,6 +51,7 @@ internal fun ThemePreferenceItem(
     subtitle = null,
     icon = value.icon(),
     clickability = NotClickable,
+    hazeState = hazeState,
   ) {
     AppThemePicker(
       modifier = Modifier.padding(2.dp),
