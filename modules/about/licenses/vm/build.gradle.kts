@@ -6,7 +6,6 @@ dependencies {
   api(libs.alakazam.android.core)
   api(libs.androidx.lifecycle.viewmodel.core)
   api(libs.dagger.core)
-  api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(projects.about.licenses.data)
   implementation(libs.alakazam.kotlin.logging)

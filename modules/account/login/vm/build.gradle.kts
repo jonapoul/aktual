@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-  api(libs.javaxInject)
   api(projects.account.login.domain)
   api(projects.account.model)
   api(projects.core.versions)
@@ -11,7 +10,6 @@ dependencies {
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
-  implementation(libs.kotlinx.coroutines)
   implementation(libs.preferences.core)
   implementation(projects.account.login.domain)
   implementation(projects.url.prefs)

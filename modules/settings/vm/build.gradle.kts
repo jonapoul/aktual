@@ -3,7 +3,6 @@ plugins {
 }
 
 dependencies {
-  api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
   api(projects.core.colorscheme)
