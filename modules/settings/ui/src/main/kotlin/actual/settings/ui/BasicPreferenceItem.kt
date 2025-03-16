@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -86,8 +87,7 @@ internal fun BasicPreferenceItem(
         text = title,
         fontWeight = FontWeight.Bold,
         textAlign = TextAlign.Start,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
+        style = MaterialTheme.typography.bodyLarge,
       )
 
       if (subtitle != null) {
@@ -95,8 +95,7 @@ internal fun BasicPreferenceItem(
           text = subtitle,
           fontWeight = FontWeight.Light,
           textAlign = TextAlign.Start,
-          fontSize = 10.sp,
-          lineHeight = 14.sp,
+          style = MaterialTheme.typography.bodyMedium,
         )
       }
 

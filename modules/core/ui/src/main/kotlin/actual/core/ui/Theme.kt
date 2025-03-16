@@ -3,10 +3,14 @@
 package actual.core.ui
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
 val LocalTheme = compositionLocalOf<Theme> { error("CompositionLocal Theme not present") }
+
+@Stable
+fun Theme.isLight(): Boolean = this is LightTheme
 
 @Immutable
 sealed interface Theme {
