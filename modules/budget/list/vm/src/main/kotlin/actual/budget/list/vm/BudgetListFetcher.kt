@@ -5,7 +5,6 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.client.adapted
 import actual.api.model.sync.ListUserFilesResponse
 import actual.budget.model.Budget
-import actual.budget.model.BudgetId
 import actual.budget.model.BudgetState
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
@@ -54,6 +53,6 @@ class BudgetListFetcher @Inject internal constructor(
     state = BudgetState.Unknown,
     encryptKeyId = item.encryptKeyId,
     groupId = item.groupId,
-    cloudFileId = BudgetId(item.fileId),
+    cloudFileId = item.fileId,
   )
 }
