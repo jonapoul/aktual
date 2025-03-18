@@ -13,3 +13,6 @@ local.properties
 !.idea/detekt.xml
 !.idea/icon.png
 !.idea/icon_dark.png
+
+# CI
+dependency-graph-reports/

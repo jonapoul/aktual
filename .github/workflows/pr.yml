@@ -2,10 +2,16 @@ name: PR
 
 on:
   pull_request:
-  workflow_dispatch:
+
+env:
+  CI: true
+
+permissions:
+  contents: write
+  checks: write
 
 jobs:
-  check:
+  pr-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -28,5 +34,32 @@ jobs:
         with:
           add-job-summary: on-failure
 
+      - name: Run baseline
+        run: ./gradlew dependencyGuardBaseline :dependencyGuardBaseline --no-configuration-cache
+
+      - name: Update licenses file
+        run: bash ${GITHUB_WORKSPACE}/app/refresh-license-report.sh
+
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Baseline dependencies
+
       - name: Check
         run: ./gradlew check
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: check-reports
+          path: |
+            ./*/build/reports
+            ./build/reports
+          if-no-files-found: warn
+
+      - name: Publish test reports
+        uses: mikepenz/action-junit-report@v5
+        if: always()
+        with:
+          report_paths: "**/build/test-results/*/TEST-*.xml"

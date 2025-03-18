@@ -3,14 +3,13 @@ name: Main
 on:
   push:
     branches: [ "main" ]
-  workflow_dispatch:
 
 permissions:
   contents: write
   checks: write
 
 jobs:
-  check:
+  main-check:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
