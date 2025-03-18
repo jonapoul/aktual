@@ -2,7 +2,7 @@ package actual.url.vm
 
 import actual.account.login.domain.LoginPreferences
 import actual.api.client.ActualApisStateHolder
-import actual.api.client.adapted
+import actual.api.client.needsBootstrapAdapted
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
@@ -152,11 +152,7 @@ class ServerUrlViewModel @Inject internal constructor(
       .first()
 
     Logger.v("apis = %s", apis)
-    val response = withContext(contexts.io) {
-      apis.account
-        .needsBootstrap()
-        .adapted(NeedsBootstrapResponse.Failure.serializer())
-    }
+    val response = withContext(contexts.io) { apis.account.needsBootstrapAdapted() }
     Logger.v("response = %s", response)
 
     val confirmResult = when (val body = response.body) {

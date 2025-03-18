@@ -3,7 +3,7 @@ package actual.account.password.domain
 import actual.account.login.domain.LoginPreferences
 import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
-import actual.api.client.adapted
+import actual.api.client.changePasswordAdapted
 import actual.api.model.account.ChangePasswordRequest
 import actual.api.model.account.ChangePasswordResponse
 import alakazam.kotlin.core.CoroutineContexts
@@ -28,11 +28,7 @@ class PasswordChanger @Inject internal constructor(
 
     return try {
       val request = ChangePasswordRequest(token, password)
-      val response = withContext(contexts.io) {
-        apis.account
-          .changePassword(request)
-          .adapted(ChangePasswordResponse.Failure.serializer())
-      }
+      val response = withContext(contexts.io) { apis.account.changePasswordAdapted(request, token) }
       when (val body = response.body) {
         is ChangePasswordResponse.Failure -> ChangePasswordResult.OtherFailure(body.reason.reason)
         is ChangePasswordResponse.Success -> ChangePasswordResult.Success

@@ -2,6 +2,7 @@ package actual.api.client
 
 import actual.account.model.LoginToken
 import actual.api.model.account.FailureReason
+import actual.api.model.internal.ActualHeaders
 import actual.api.model.sync.GetUserKeyRequest
 import actual.api.model.sync.GetUserKeyResponse
 import actual.api.model.sync.ListUserFilesResponse
@@ -26,14 +27,6 @@ class SyncApiTest {
     syncApi = webServerRule.buildApi(ActualJson)
   }
 
-  private suspend fun fetchUserFiles() = syncApi
-    .fetchUserFiles(TOKEN)
-    .adapted(ListUserFilesResponse.Failure.serializer())
-
-  private suspend fun fetchUserKey(body: GetUserKeyRequest) = syncApi
-    .fetchUserKey(TOKEN, body)
-    .adapted(GetUserKeyResponse.Failure.serializer())
-
   @Test
   fun `List budgets token included in header`() = runTest {
     // given
@@ -47,7 +40,7 @@ class SyncApiTest {
     // then
     assertEquals(
       expected = "abc-123",
-      actual = request.getHeader("X-ACTUAL-TOKEN"),
+      actual = request.getHeader(ActualHeaders.TOKEN),
     )
   }
 
@@ -58,7 +51,7 @@ class SyncApiTest {
     webServerRule.enqueue(json, code = 200)
 
     // when
-    val response = fetchUserFiles()
+    val response = syncApi.fetchUserFilesAdapted(TOKEN)
 
     // then
     assertEquals(
@@ -102,7 +95,7 @@ class SyncApiTest {
     webServerRule.enqueue(json, code = 400)
 
     // when
-    val response = fetchUserFiles()
+    val response = syncApi.fetchUserFilesAdapted(TOKEN)
 
     // then
     assertEquals(
@@ -119,7 +112,7 @@ class SyncApiTest {
 
     // when
     val body = GetUserKeyRequest(BUDGET_ID)
-    val response = fetchUserKey(body)
+    val response = syncApi.fetchUserKeyAdapted(TOKEN, body)
 
     // then
     val keyId = Uuid.parse("2a66f4de-c530-4c06-8103-a48e26a0ce44")
