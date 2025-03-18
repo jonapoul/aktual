@@ -2,7 +2,7 @@ package actual.account.login.domain
 
 import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
-import actual.api.client.adapted
+import actual.api.client.loginAdapted
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
 import alakazam.kotlin.core.CoroutineContexts
@@ -22,11 +22,7 @@ class LoginRequester @Inject internal constructor(
 
     val request = LoginRequest(password)
     val response = try {
-      withContext(contexts.io) {
-        apis.account
-          .login(request)
-          .adapted(LoginResponse.Failure.serializer())
-      }
+      withContext(contexts.io) { apis.account.loginAdapted(request) }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {

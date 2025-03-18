@@ -12,7 +12,7 @@ data class ActualResponse<T : Any>(
   val isSuccessful: Boolean,
 )
 
-fun <Base : Any, Success : Base, Failure : Base> Response<Success>.adapted(
+internal fun <Base : Any, Success : Base, Failure : Base> Response<Success>.adapted(
   failureSerializer: KSerializer<Failure>,
 ): ActualResponse<Base> = if (isSuccessful) {
   adapt(body())

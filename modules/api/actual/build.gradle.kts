@@ -1,5 +1,6 @@
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
+import blueprint.core.kspAllConfigs
 
 plugins {
   alias(libs.plugins.module.multiplatform)
@@ -18,6 +19,7 @@ kotlin {
     api(projects.budget.model)
     api(projects.url.model)
     compileOnly(libs.sekret)
+    implementation(projects.codegen.annotation)
   }
 
   commonTestDependencies {
@@ -25,3 +27,5 @@ kotlin {
     implementation(projects.test.http)
   }
 }
+
+kspAllConfigs(projects.codegen.ksp)

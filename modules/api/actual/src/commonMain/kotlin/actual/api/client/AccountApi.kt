@@ -10,12 +10,14 @@ import actual.api.model.account.LoginResponse
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.api.model.account.ValidateResponse
 import actual.api.model.internal.ActualHeaders
+import actual.codegen.AdaptedApi
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
 
+@AdaptedApi
 interface AccountApi {
   @GET("account/needs-bootstrap")
   suspend fun needsBootstrap(): Response<NeedsBootstrapResponse.Success>
@@ -33,7 +35,7 @@ interface AccountApi {
   @POST("account/change-password")
   suspend fun changePassword(
     @Body body: ChangePasswordRequest,
-    @Header(ActualHeaders.TOKEN) token: LoginToken = body.token,
+    @Header(ActualHeaders.TOKEN) token: LoginToken,
   ): Response<ChangePasswordResponse.Success>
 
   @POST("account/validate")
