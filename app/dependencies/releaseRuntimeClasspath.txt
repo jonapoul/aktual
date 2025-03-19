@@ -139,10 +139,10 @@ app.cash.sqldelight:sqlite-driver:2.0.2
 com.github.nanihadesuka:LazyColumnScrollbar:2.2.0
 com.google.android.material:material:1.12.0
 com.google.code.findbugs:jsr305:3.0.2
-com.google.dagger:dagger-lint-aar:2.55
-com.google.dagger:dagger:2.55
-com.google.dagger:hilt-android:2.55
-com.google.dagger:hilt-core:2.55
+com.google.dagger:dagger-lint-aar:2.56
+com.google.dagger:dagger:2.56
+com.google.dagger:hilt-android:2.56
+com.google.dagger:hilt-core:2.56
 com.google.errorprone:error_prone_annotations:2.15.0
 com.google.guava:listenablefuture:1.0
 com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:1.0.0
