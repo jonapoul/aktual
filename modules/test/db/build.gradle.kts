@@ -8,7 +8,6 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.test.alakazam.core)
-    api(libs.test.androidx.coreKtx)
     api(libs.test.kotlinx.coroutines)
     api(projects.db)
     implementation(libs.alakazam.db.sqldelight)
@@ -16,6 +15,7 @@ kotlin {
   }
 
   androidMainDependencies {
+    api(libs.test.androidx.coreKtx)
     implementation(libs.sqldelight.driver.android)
   }
 }
