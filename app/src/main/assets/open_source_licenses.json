@@ -2641,7 +2641,7 @@
   {
     "project": "Kotlin Stdlib",
     "description": "Kotlin Standard Library",
-    "version": "2.1.10",
+    "version": "2.1.20",
     "developers": [
       "Kotlin Team"
     ],
@@ -2653,7 +2653,7 @@
         "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
       }
     ],
-    "dependency": "org.jetbrains.kotlin:kotlin-stdlib:2.1.10"
+    "dependency": "org.jetbrains.kotlin:kotlin-stdlib:2.1.20"
   },
   {
     "project": "atomicfu",
