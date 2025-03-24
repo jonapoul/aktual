@@ -2317,7 +2317,7 @@
   {
     "project": "Haze",
     "description": "Haze",
-    "version": "1.5.1",
+    "version": "1.5.2",
     "developers": [
       "Chris Banes"
     ],
@@ -2329,7 +2329,7 @@
         "license_url": "http://www.apache.org/licenses/LICENSE-2.0.txt"
       }
     ],
-    "dependency": "dev.chrisbanes.haze:haze-android:1.5.1"
+    "dependency": "dev.chrisbanes.haze:haze-android:1.5.2"
   },
   {
     "project": "Alakazam Android Core",
