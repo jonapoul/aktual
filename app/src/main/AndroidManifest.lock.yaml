@@ -31,8 +31,8 @@ variants:
     - android.permission.REORDER_TASKS
     exports:
       activity:
+      - androidx.activity.ComponentActivity
       - androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity
       - androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity
       - androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity
-      - androidx.activity.ComponentActivity
-fingerprint: d0aea8bd583700a9735b18ec186d3ba7
+fingerprint: 6af002415e7f7d832ef7c0b06cc5d1c2
