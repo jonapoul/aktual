@@ -2108,7 +2108,7 @@
   {
     "project": "Dagger Lint Rules AAR Distribution",
     "description": "A fast dependency injector for Android and Java.",
-    "version": "2.56",
+    "version": "2.56.1",
     "developers": [],
     "url": "https://github.com/google/dagger",
     "year": null,
@@ -2118,12 +2118,12 @@
         "license_url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
       }
     ],
-    "dependency": "com.google.dagger:dagger-lint-aar:2.56"
+    "dependency": "com.google.dagger:dagger-lint-aar:2.56.1"
   },
   {
     "project": "Dagger",
     "description": "A fast dependency injector for Android and Java.",
-    "version": "2.56",
+    "version": "2.56.1",
     "developers": [],
     "url": "https://github.com/google/dagger",
     "year": null,
@@ -2133,12 +2133,12 @@
         "license_url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
       }
     ],
-    "dependency": "com.google.dagger:dagger:2.56"
+    "dependency": "com.google.dagger:dagger:2.56.1"
   },
   {
     "project": "Hilt Android",
     "description": "A fast dependency injector for Android and Java.",
-    "version": "2.56",
+    "version": "2.56.1",
     "developers": [],
     "url": "https://github.com/google/dagger",
     "year": null,
@@ -2148,12 +2148,12 @@
         "license_url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
       }
     ],
-    "dependency": "com.google.dagger:hilt-android:2.56"
+    "dependency": "com.google.dagger:hilt-android:2.56.1"
   },
   {
     "project": "Hilt Core",
     "description": "A fast dependency injector for Android and Java.",
-    "version": "2.56",
+    "version": "2.56.1",
     "developers": [],
     "url": "https://github.com/google/dagger",
     "year": null,
@@ -2163,7 +2163,7 @@
         "license_url": "https://www.apache.org/licenses/LICENSE-2.0.txt"
       }
     ],
-    "dependency": "com.google.dagger:hilt-core:2.56"
+    "dependency": "com.google.dagger:hilt-core:2.56.1"
   },
   {
     "project": "error-prone annotations",
