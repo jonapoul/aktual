@@ -7,12 +7,10 @@
   <string name="licenses_failed_retry">Retry</string>
   <string name="licenses_none_found">No licenses found!</string>
 
-  <string name="licenses_item_authors">Authors:</string>
+  <string name="licenses_item_group">Group:</string>
   <string name="licenses_item_artifact">Artifact:</string>
   <string name="licenses_item_version">Version:</string>
   <string name="licenses_item_license">License:</string>
-  <string name="licenses_item_year">Year:</string>
-  <string name="licenses_item_description">Description:</string>
   <string name="licenses_item_launch">Open in browser</string>
 
   <string name="licenses_search_placeholder">Enter search query</string>

@@ -8,7 +8,6 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 class LicensesRepositoryTest {
   private lateinit var licensesRepository: LicensesRepository
@@ -23,70 +22,48 @@ class LicensesRepositoryTest {
     val state = licensesRepository.loadLicenses()
 
     // Then
-    val alakazamAndroidCore = LibraryModel(
-      project = "Alakazam Android Core",
-      description = "A set of useful functions and extensions for Android development.",
-      version = "4.5.0",
-      developers = listOf("Jon Poulton"),
-      url = "https://github.com/jonapoul/alakazam",
-      year = 2021,
-      licenses = listOf(LicenseModel.Apache2),
-      dependency = "dev.jonpoulton.alakazam:android-core",
+    val alakazamAndroidCore = ArtifactDetail(
+      groupId = "dev.jonpoulton.alakazam",
+      artifactId = "android-core",
+      version = "6.0.0",
+      name = "Alakazam Android Core",
+      spdxLicenses = setOf(Apache2),
+      scm = ArtifactScm(url = "https://github.com/jonapoul/alakazam"),
     )
-    val composeMaterialRipple = LibraryModel(
-      project = "Compose Material Ripple",
-      description = "Material ripple used to build interactive components",
-      version = "1.6.4",
-      developers = listOf("AOSP"),
-      url = "https://developer.android.com/jetpack/androidx/releases/compose-material#1.6.4",
-      year = 2020,
-      licenses = listOf(LicenseModel.Apache2),
-      dependency = "androidx.compose.material:material-ripple-android",
+
+    val composeMaterialRipple = ArtifactDetail(
+      groupId = "androidx.compose.material",
+      artifactId = "material-ripple",
+      version = "1.7.8",
+      name = "Compose Material Ripple",
+      spdxLicenses = setOf(Apache2),
+      scm = ArtifactScm(url = "https://cs.android.com/androidx/platform/frameworks/support"),
     )
-    val fragmentKtx = LibraryModel(
-      project = "Fragment Kotlin Extensions",
-      description = "Kotlin extensions for 'fragment' artifact",
-      version = "1.6.2",
-      developers = listOf("AOSP"),
-      url = "https://developer.android.com/jetpack/androidx/releases/fragment#1.6.2",
-      year = 2018,
-      licenses = listOf(LicenseModel.Apache2),
-      dependency = "androidx.fragment:fragment-ktx",
+
+    val fragmentKtx = ArtifactDetail(
+      groupId = "androidx.fragment",
+      artifactId = "fragment-ktx",
+      version = "1.8.6",
+      name = "Fragment Kotlin Extensions",
+      spdxLicenses = setOf(Apache2),
+      scm = ArtifactScm(url = "https://cs.android.com/androidx/platform/frameworks/support"),
     )
-    val voyagerScreenModel = LibraryModel(
-      project = "VoyagerScreenModel",
-      description = "A pragmatic navigation library for Jetpack Compose",
-      version = "1.1.0-alpha04",
-      developers = listOf("Adriel Cafe"),
-      url = "https://github.com/adrielcafe/voyager",
-      year = 2021,
-      licenses = listOf(LicenseModel.MIT),
-      dependency = "cafe.adriel.voyager:voyager-screenmodel-android",
+
+    val slf4jApi = ArtifactDetail(
+      groupId = "org.slf4j",
+      artifactId = "slf4j-api",
+      version = "2.0.17",
+      name = "SLF4J API Module",
+      unknownLicenses = setOf(UnknownLicense(name = "MIT", url = "https://opensource.org/license/mit")),
+      scm = ArtifactScm(url = "https://github.com/qos-ch/slf4j/slf4j-parent"),
     )
 
     assertEquals(
       actual = state,
       expected = LicensesLoadState.Success(
-        libraries = listOf(
-          alakazamAndroidCore,
-          composeMaterialRipple,
-          fragmentKtx,
-          voyagerScreenModel,
-        ),
+        libraries = listOf(composeMaterialRipple, fragmentKtx, alakazamAndroidCore, slf4jApi),
       ),
     )
-  }
-
-  @Test
-  fun `Fail for invalid JSON`() = runTest {
-    // Given a file without any licenses on the single library
-    buildRepo(assetResource = "invalid.json")
-
-    // When
-    val state = licensesRepository.loadLicenses()
-
-    // Then
-    assertIs<LicensesLoadState.Failure>(state)
   }
 
   private fun TestScope.buildRepo(assetResource: String) {

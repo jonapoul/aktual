@@ -1,6 +1,6 @@
 package actual.about.licenses.ui
 
-import actual.about.licenses.data.LibraryModel
+import actual.about.licenses.data.ArtifactDetail
 import actual.about.licenses.res.LicensesStrings
 import actual.core.res.CoreDimens
 import actual.core.ui.CardShape
@@ -29,8 +29,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 
 @Composable
-internal fun LibraryItem(
-  library: LibraryModel,
+internal fun ArtifactItem(
+  artifact: ArtifactDetail,
   onLaunchUrl: (url: String) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -47,21 +47,19 @@ internal fun LibraryItem(
       modifier = Modifier.weight(1f),
     ) {
       Text(
-        text = library.project,
+        text = artifact.name ?: artifact.artifactId,
         fontWeight = FontWeight.W700,
         color = theme.pageTextPositive,
         fontSize = 15.sp,
       )
 
-      LibraryTableRow(title = LicensesStrings.itemAuthors, value = library.developers.joinToString())
-      LibraryTableRow(title = LicensesStrings.itemArtifact, value = library.dependency)
-      LibraryTableRow(title = LicensesStrings.itemVersion, value = library.version)
-      LibraryTableRow(title = LicensesStrings.itemYear, value = library.year?.toString())
-      LibraryTableRow(title = LicensesStrings.itemLicense, value = library.licenses.firstOrNull()?.license)
-      LibraryTableRow(title = LicensesStrings.itemDescription, value = library.description)
+      LibraryTableRow(title = LicensesStrings.itemGroup, value = artifact.groupId)
+      LibraryTableRow(title = LicensesStrings.itemArtifact, value = artifact.artifactId)
+      LibraryTableRow(title = LicensesStrings.itemVersion, value = artifact.version)
+      LibraryTableRow(title = LicensesStrings.itemLicense, value = artifact.license())
     }
 
-    val url = library.url
+    val url = artifact.scm?.url
     if (url != null) {
       NormalIconButton(
         imageVector = Icons.AutoMirrored.Filled.OpenInNew,
@@ -70,6 +68,15 @@ internal fun LibraryItem(
       )
     }
   }
+}
+
+@Stable
+private fun ArtifactDetail.license(): String {
+  val known = spdxLicenses.firstOrNull()
+  if (known != null) return known.name
+  val unknown = unknownLicenses.firstOrNull()
+  if (unknown != null) return unknown.name ?: "Unknown"
+  error("No licenses for $this?")
 }
 
 @Stable
@@ -127,8 +134,8 @@ private val TextSize = 12.sp
 @Preview
 @Composable
 private fun PreviewItem() = PreviewColumn {
-  LibraryItem(
-    library = AlakazamAndroidCore,
+  ArtifactItem(
+    artifact = AlakazamAndroidCore,
     onLaunchUrl = {},
   )
 }

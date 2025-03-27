@@ -1,7 +1,7 @@
 androidx.databinding:databinding-common:8.9.1
 androidx.databinding:databinding-compiler-common:8.9.1
-app.cash.licensee:app.cash.licensee.gradle.plugin:1.12.0
-app.cash.licensee:licensee-gradle-plugin:1.12.0
+app.cash.licensee:app.cash.licensee.gradle.plugin:1.13.0
+app.cash.licensee:licensee-gradle-plugin:1.13.0
 app.cash.sqldelight:app.cash.sqldelight.gradle.plugin:2.0.2
 app.cash.sqldelight:core:2.0.2
 app.cash.sqldelight:dialect-api:2.0.2
@@ -93,8 +93,6 @@ com.google.protobuf:protobuf-java:3.24.4
 com.google.testing.platform:core-proto:0.0.9-alpha03
 com.googlecode.juniversalchardet:juniversalchardet:1.0.3
 com.gradle:develocity-gradle-plugin-adapters:1.0.2
-com.jaredsburrows.license:com.jaredsburrows.license.gradle.plugin:0.9.8
-com.jaredsburrows:gradle-license-plugin:0.9.8
 com.osacky.doctor:com.osacky.doctor.gradle.plugin:0.10.0
 com.osacky.doctor:doctor-plugin:0.10.0
 com.squareup.moshi:moshi-adapters:1.15.0
@@ -118,6 +116,8 @@ com.vanniktech:gradle-dependency-graph-generator-plugin:0.9.0-SNAPSHOT
 commons-codec:commons-codec:1.11
 commons-io:commons-io:2.17.0
 commons-logging:commons-logging:1.2
+dev.drewhamilton.poko:poko-annotations-jvm:0.18.2
+dev.drewhamilton.poko:poko-annotations:0.18.2
 dev.jonpoulton.blueprint:core:1.0.0
 dev.jonpoulton.blueprint:recipes:1.0.0
 dev.jonpoulton.catalog:catalog-gradle-plugin:0.3.2
@@ -228,12 +228,11 @@ org.jetbrains.kotlin:kotlin-util-klib-metadata:2.1.20
 org.jetbrains.kotlin:kotlin-util-klib:2.1.20
 org.jetbrains.kotlinx.kover:org.jetbrains.kotlinx.kover.gradle.plugin:0.9.1
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0
-org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0
-org.jetbrains.kotlinx:kotlinx-serialization-bom:1.7.3
-org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.7.3
-org.jetbrains.kotlinx:kotlinx-serialization-core:1.7.3
-org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.7.3
-org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3
+org.jetbrains.kotlinx:kotlinx-serialization-bom:1.8.0
+org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.0
+org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.0
+org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.0
+org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0
 org.jetbrains.kotlinx:kover-features-jvm:0.9.1
 org.jetbrains.kotlinx:kover-gradle-plugin:0.9.1
 org.jetbrains.kotlinx:kover-jvm-agent:0.9.1

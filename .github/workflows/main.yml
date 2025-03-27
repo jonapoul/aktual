@@ -21,7 +21,7 @@ jobs:
       - name: Setup JDK
         uses: actions/setup-java@v4
         with:
-          java-version: 21
+          java-version-file: .github/workflows/.java-version
           distribution: "zulu"
 
       - name: Add permissions

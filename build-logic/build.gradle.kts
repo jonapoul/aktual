@@ -2,6 +2,14 @@ import java.util.Properties
 
 plugins {
   `kotlin-dsl`
+  idea
+}
+
+idea {
+  module {
+    isDownloadSources = true
+    isDownloadJavadoc = true
+  }
 }
 
 // Pull java version property from project's root properties file, since build-logic doesn't have access to it

@@ -11,7 +11,6 @@ plugins {
   alias(libs.plugins.kotlin.android)
   alias(libs.plugins.agp.app)
   alias(libs.plugins.hilt)
-  alias(libs.plugins.licenses)
   alias(libs.plugins.manifestLock)
   alias(libs.plugins.convention.kotlin.jvm)
   alias(libs.plugins.convention.android.base)
@@ -124,34 +123,9 @@ hilt {
   enableExperimentalClasspathAggregation = true
 }
 
-// Used to populate the licenses screen in-app
-licenseReport {
-  // Generate JSON and place in app assets
-  generateJsonReport = true
-  copyJsonReportToAssets = true
-
-  // Disable other report outputs
-  generateHtmlReport = false
-  generateCsvReport = false
-  generateTextReport = false
+licensee {
+  bundleAndroidAsset = true
 }
-
-// TODO: re-enable once https://github.com/jaredsburrows/gradle-license-plugin/issues/368 is fixed
-// fun registerLicenseTask(suffix: String) {
-//   val capitalized = suffix.capitalized()
-//   val assemble = tasks.getByName("assemble$capitalized")
-//   val license = tasks.getByName("license${capitalized}Report")
-//   assemble.dependsOn(license)
-//   license.doFirst {
-//     val file = project.file("src/main/assets/open_source_licenses.json")
-//     file.delete()
-//   }
-// }
-//
-// afterEvaluate {
-//   registerLicenseTask(suffix = "debug")
-//   registerLicenseTask(suffix = "release")
-// }
 
 dependencies {
   implementation(libs.alakazam.android.core)

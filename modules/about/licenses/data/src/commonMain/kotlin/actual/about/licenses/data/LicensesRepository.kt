@@ -22,16 +22,13 @@ class LicensesRepository @Inject internal constructor(
 
     val dirtyLibraries = withContext(contexts.default) {
       LicensesJson.decodeFromString(
-        deserializer = ListSerializer(LibraryModel.serializer()),
+        deserializer = ListSerializer(ArtifactDetail.serializer()),
         string = jsonString,
       )
     }
 
-    val cleanedLibraries = dirtyLibraries
-      .sortedBy { it.project }
-      .map { it.cleanedUp() }
-
-    LicensesLoadState.Success(cleanedLibraries)
+    val sorted = dirtyLibraries.sortedBy { it.id }
+    LicensesLoadState.Success(sorted)
   } catch (e: CancellationException) {
     throw e
   } catch (e: Exception) {
@@ -39,6 +36,6 @@ class LicensesRepository @Inject internal constructor(
   }
 
   private companion object {
-    const val LICENSES_FILENAME = "open_source_licenses.json"
+    const val LICENSES_FILENAME = "app/cash/licensee/artifacts.json"
   }
 }
