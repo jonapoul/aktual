@@ -1,6 +1,6 @@
 package actual.about.licenses.ui
 
-import actual.about.licenses.data.LibraryModel
+import actual.about.licenses.data.ArtifactDetail
 import actual.about.licenses.res.LicensesPlurals
 import actual.about.licenses.res.LicensesStrings
 import actual.about.licenses.vm.LicensesState
@@ -135,7 +135,7 @@ private fun LicensesSearchInput(
       )
 
       val numResults = remember(licensesState) {
-        (licensesState as? LicensesState.Loaded)?.libraries?.size ?: 0
+        (licensesState as? LicensesState.Loaded)?.artifacts?.size ?: 0
       }
       Text(
         modifier = Modifier
@@ -159,7 +159,7 @@ private fun LicensesScreenContent(
   when (state) {
     LicensesState.Loading -> LoadingContent(theme, modifier)
     LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
-    is LicensesState.Loaded -> LoadedContent(theme, state.libraries, onAction, modifier)
+    is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, onAction, modifier)
     is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
   }.exhaustive
 }
@@ -211,7 +211,7 @@ private fun NoneFoundContent(
 @Composable
 private fun LoadedContent(
   theme: Theme,
-  libraries: ImmutableList<LibraryModel>,
+  artifacts: ImmutableList<ArtifactDetail>,
   onAction: (LicensesAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -226,9 +226,9 @@ private fun LoadedContent(
     LazyColumn(
       state = listState,
     ) {
-      items(libraries) { library ->
-        LibraryItem(
-          library = library,
+      items(artifacts) { artifact ->
+        ArtifactItem(
+          artifact = artifact,
           onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },
           theme = theme,
         )
@@ -301,7 +301,7 @@ private fun PreviewNoneFound() = PreviewColumn {
 private fun PreviewLoaded() = PreviewColumn {
   LicensesScaffold(
     state = LicensesState.Loaded(
-      libraries = persistentListOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, VoyagerScreenModel),
+      artifacts = persistentListOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi),
     ),
     searchBarState = SearchBarState.Visible(text = "My wicked search query"),
     onAction = {},
