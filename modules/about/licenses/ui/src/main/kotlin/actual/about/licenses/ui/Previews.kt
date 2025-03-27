@@ -1,48 +1,42 @@
 package actual.about.licenses.ui
 
-import actual.about.licenses.data.LibraryModel
-import actual.about.licenses.data.LicenseModel
+import actual.about.licenses.data.Apache2
+import actual.about.licenses.data.ArtifactDetail
+import actual.about.licenses.data.ArtifactScm
+import actual.about.licenses.data.UnknownLicense
 
-internal val AlakazamAndroidCore = LibraryModel(
-  project = "Alakazam Android Core",
-  description = "A set of useful functions and extensions for Android development.",
-  version = "4.5.0",
-  developers = listOf("Jon Poulton"),
-  url = "https://github.com/jonapoul/alakazam",
-  year = 2021,
-  licenses = listOf(LicenseModel.Apache2),
-  dependency = "dev.jonpoulton.alakazam:android-core",
+internal val AlakazamAndroidCore = ArtifactDetail(
+  groupId = "dev.jonpoulton.alakazam",
+  artifactId = "android-core",
+  version = "6.0.0",
+  name = "Alakazam Android Core",
+  spdxLicenses = setOf(Apache2),
+  scm = ArtifactScm(url = "https://github.com/jonapoul/alakazam"),
 )
 
-internal val ComposeMaterialRipple = LibraryModel(
-  project = "Compose Material Ripple",
-  description = "Material ripple used to build interactive components",
-  version = "1.6.4",
-  developers = listOf("AOSP"),
-  url = "https://developer.android.com/jetpack/androidx/releases/compose-material#1.6.4",
-  year = 2020,
-  licenses = listOf(LicenseModel.Apache2),
-  dependency = "androidx.compose.material:material-ripple-android",
+internal val ComposeMaterialRipple = ArtifactDetail(
+  groupId = "androidx.compose.material",
+  artifactId = "material-ripple",
+  version = "1.7.8",
+  name = "Compose Material Ripple",
+  spdxLicenses = setOf(Apache2),
+  scm = ArtifactScm(url = "https://cs.android.com/androidx/platform/frameworks/support"),
 )
 
-internal val FragmentKtx = LibraryModel(
-  project = "Fragment Kotlin Extensions",
-  description = "Kotlin extensions for 'fragment' artifact",
-  version = "1.6.2",
-  developers = listOf("AOSP"),
-  url = "https://developer.android.com/jetpack/androidx/releases/fragment#1.6.2",
-  year = 2018,
-  licenses = listOf(LicenseModel.Apache2),
-  dependency = "androidx.fragment:fragment-ktx",
+internal val FragmentKtx = ArtifactDetail(
+  groupId = "androidx.fragment",
+  artifactId = "fragment-ktx",
+  version = "1.8.6",
+  name = "Fragment Kotlin Extensions",
+  spdxLicenses = setOf(Apache2),
+  scm = ArtifactScm(url = "https://cs.android.com/androidx/platform/frameworks/support"),
 )
 
-internal val VoyagerScreenModel = LibraryModel(
-  project = "VoyagerScreenModel",
-  description = "A pragmatic navigation library for Jetpack Compose",
-  version = "1.1.0-alpha04",
-  developers = listOf("Adriel Cafe"),
-  url = "https://github.com/adrielcafe/voyager",
-  year = 2021,
-  licenses = listOf(LicenseModel.MIT),
-  dependency = "cafe.adriel.voyager:voyager-screenmodel-android",
+internal val Slf4jApi = ArtifactDetail(
+  groupId = "org.slf4j",
+  artifactId = "slf4j-api",
+  version = "2.0.17",
+  name = "SLF4J API Module",
+  unknownLicenses = setOf(UnknownLicense(name = "MIT", url = "https://opensource.org/license/mit")),
+  scm = ArtifactScm(url = "https://github.com/qos-ch/slf4j/slf4j-parent"),
 )

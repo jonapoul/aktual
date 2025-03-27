@@ -93,8 +93,6 @@ com.google.protobuf:protobuf-java:3.24.4
 com.google.testing.platform:core-proto:0.0.9-alpha03
 com.googlecode.juniversalchardet:juniversalchardet:1.0.3
 com.gradle:develocity-gradle-plugin-adapters:1.0.2
-com.jaredsburrows.license:com.jaredsburrows.license.gradle.plugin:0.9.8
-com.jaredsburrows:gradle-license-plugin:0.9.8
 com.osacky.doctor:com.osacky.doctor.gradle.plugin:0.10.0
 com.osacky.doctor:doctor-plugin:0.10.0
 com.squareup.moshi:moshi-adapters:1.15.0
@@ -230,7 +228,6 @@ org.jetbrains.kotlin:kotlin-util-klib-metadata:2.1.20
 org.jetbrains.kotlin:kotlin-util-klib:2.1.20
 org.jetbrains.kotlinx.kover:org.jetbrains.kotlinx.kover.gradle.plugin:0.9.1
 org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.8.0
-org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0
 org.jetbrains.kotlinx:kotlinx-serialization-bom:1.8.0
 org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.8.0
 org.jetbrains.kotlinx:kotlinx-serialization-core:1.8.0

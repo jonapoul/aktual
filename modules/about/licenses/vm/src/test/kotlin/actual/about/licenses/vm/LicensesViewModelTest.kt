@@ -1,7 +1,8 @@
 package actual.about.licenses.vm
 
-import actual.about.licenses.data.LibraryModel
-import actual.about.licenses.data.LicenseModel
+import actual.about.licenses.data.Apache2
+import actual.about.licenses.data.ArtifactDetail
+import actual.about.licenses.data.ArtifactScm
 import actual.about.licenses.data.LicensesLoadState
 import actual.about.licenses.data.LicensesRepository
 import actual.test.assertEmitted
@@ -119,23 +120,11 @@ class LicensesViewModelTest {
   fun `Filter licenses based on search results`() = runTest {
     // Given the repo fetches some libraries successfully
     val basicLib = EXAMPLE_MODEL
-    val projectLib = EXAMPLE_MODEL.copy(project = "my project")
-    val descriptionLib = EXAMPLE_MODEL.copy(description = "whatever")
+    val projectLib = EXAMPLE_MODEL.copy(name = "my project")
     val versionLib = EXAMPLE_MODEL.copy(version = "7.8.9")
-    val yearLib = EXAMPLE_MODEL.copy(year = 1993)
-    val developersLib = EXAMPLE_MODEL.copy(developers = listOf("Tony Blair"))
-    val urlLib = EXAMPLE_MODEL.copy(url = "www.url.com")
-    val licenseLib = EXAMPLE_MODEL.copy(licenses = listOf(LicenseModel.MIT))
-    val allLibraries = listOf(
-      basicLib,
-      projectLib,
-      descriptionLib,
-      versionLib,
-      yearLib,
-      developersLib,
-      urlLib,
-      licenseLib,
-    )
+    val urlLib = EXAMPLE_MODEL.copy(scm = ArtifactScm("www.url.com"))
+    val licenseLib = EXAMPLE_MODEL.copy(spdxLicenses = setOf(Apache2.copy(identifier = "MIT")))
+    val allLibraries = listOf(basicLib, projectLib, versionLib, urlLib, licenseLib)
     coEvery { repository.loadLicenses() } returns LicensesLoadState.Success(allLibraries)
 
     buildViewModel()
@@ -148,9 +137,6 @@ class LicensesViewModelTest {
       viewModel.toggleSearchBar()
       viewModel.setSearchText(text = "my project")
       assertLoaded(projectLib)
-
-      viewModel.setSearchText(text = "99")
-      assertLoaded(yearLib)
 
       viewModel.setSearchText(text = "url")
       assertLoaded(urlLib)
@@ -172,24 +158,22 @@ class LicensesViewModelTest {
     )
   }
 
-  private suspend fun TurbineTestContext<LicensesState>.assertLoaded(vararg models: LibraryModel) {
+  private suspend fun TurbineTestContext<LicensesState>.assertLoaded(vararg models: ArtifactDetail) {
     assertLoaded(models.toList())
   }
 
-  private suspend fun TurbineTestContext<LicensesState>.assertLoaded(models: List<LibraryModel>) {
+  private suspend fun TurbineTestContext<LicensesState>.assertLoaded(models: List<ArtifactDetail>) {
     assertEmitted(LicensesState.Loaded(models.toImmutableList()))
   }
 
   private companion object {
-    val EXAMPLE_MODEL = LibraryModel(
-      project = "Something",
-      description = "Whatever",
+    val EXAMPLE_MODEL = ArtifactDetail(
+      groupId = "com.website",
+      artifactId = "something",
+      name = "Something",
+      spdxLicenses = setOf(Apache2),
+      scm = ArtifactScm("www.website.com"),
       version = "1.2.3",
-      developers = listOf("Tom", "Dick", "Harry"),
-      url = "www.website.com",
-      year = 2024,
-      licenses = listOf(LicenseModel.Apache2),
-      dependency = "com.website:something",
     )
   }
 }
