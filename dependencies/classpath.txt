@@ -59,8 +59,8 @@ com.autonomousapps:asm-relocated:9.7.1.0
 com.autonomousapps:dependency-analysis-gradle-plugin:2.12.0
 com.autonomousapps:graph-support:0.5
 com.autonomousapps:kotlin-editor-relocated:0.18.0
-com.charleskorn.kaml:kaml-jvm:0.73.0
-com.charleskorn.kaml:kaml:0.73.0
+com.charleskorn.kaml:kaml-jvm:0.74.0
+com.charleskorn.kaml:kaml:0.74.0
 com.dropbox.dependency-guard:com.dropbox.dependency-guard.gradle.plugin:0.5.0
 com.dropbox.dependency-guard:dependency-guard:0.5.0
 com.github.ben-manes.caffeine:caffeine:3.1.8
@@ -127,8 +127,8 @@ dev.zacsweers.moshix:moshi-sealed-runtime:0.25.1
 gradle.plugin.org.gradle.android:android-cache-fix-gradle-plugin:3.0.1
 guru.nidi.com.kitfox:svgSalamander:1.1.3
 guru.nidi:graphviz-java:0.18.1
-io.github.gmazzo.android.manifest.lock:io.github.gmazzo.android.manifest.lock.gradle.plugin:1.3.4
-io.github.gmazzo.android.manifest.lock:plugin:1.3.4
+io.github.gmazzo.android.manifest.lock:io.github.gmazzo.android.manifest.lock.gradle.plugin:1.3.5
+io.github.gmazzo.android.manifest.lock:plugin:1.3.5
 io.github.java-diff-utils:java-diff-utils:4.15
 io.gitlab.arturbosch.detekt:detekt-gradle-plugin:1.23.8
 io.gitlab.arturbosch.detekt:io.gitlab.arturbosch.detekt.gradle.plugin:1.23.8
