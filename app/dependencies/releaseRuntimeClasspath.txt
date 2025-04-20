@@ -153,8 +153,8 @@ com.squareup.okio:okio:3.11.0
 com.squareup.retrofit2:converter-kotlinx-serialization:2.11.0
 com.squareup.retrofit2:converter-scalars:2.11.0
 com.squareup.retrofit2:retrofit:2.11.0
-dev.chrisbanes.haze:haze-android:1.5.2
-dev.chrisbanes.haze:haze:1.5.2
+dev.chrisbanes.haze:haze-android:1.5.4
+dev.chrisbanes.haze:haze:1.5.4
 dev.jonpoulton.alakazam:android-core:6.0.0
 dev.jonpoulton.alakazam:android-http:6.0.0
 dev.jonpoulton.alakazam:android-ui-compose:6.0.0
