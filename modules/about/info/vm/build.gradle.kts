@@ -9,6 +9,7 @@ dependencies {
   api(projects.about.info.data)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
+  implementation(libs.javaxInject)
   implementation(libs.kotlinx.datetime)
   implementation(libs.molecule)
   compileOnly(libs.alakazam.kotlin.compose.annotations)

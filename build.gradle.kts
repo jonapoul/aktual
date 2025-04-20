@@ -39,6 +39,14 @@ rootLocalPropertiesOrNull()?.forEach { (key, value) ->
 }
 
 dependencyAnalysis {
+  useTypesafeProjectAccessors(true)
+
+  usage {
+    analysis {
+      checkSuperClasses(true)
+    }
+  }
+
   structure {
     ignoreKtx(ignore = true)
     bundle(name = "kotlin") { includeGroup("org.jetbrains.kotlin:*") }
