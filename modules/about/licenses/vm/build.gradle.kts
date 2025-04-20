@@ -11,6 +11,7 @@ dependencies {
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.androidx.lifecycle.viewmodel.core)
+  implementation(libs.javaxInject)
   implementation(libs.kotlinx.immutable)
   implementation(libs.molecule)
   compileOnly(libs.alakazam.kotlin.compose.annotations)

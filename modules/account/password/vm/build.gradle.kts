@@ -8,6 +8,7 @@ dependencies {
   api(projects.core.versions)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
+  implementation(libs.javaxInject)
   implementation(projects.account.login.domain)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   testImplementation(projects.core.connection)

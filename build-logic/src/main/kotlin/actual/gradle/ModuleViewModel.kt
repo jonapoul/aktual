@@ -33,7 +33,6 @@ class ModuleViewModel : Plugin<Project> {
     dependencies {
       api(libs.getLibrary("androidx.lifecycle.viewmodel.core"))
       api(libs.getLibrary("dagger.core"))
-      api(libs.getLibrary("javaxInject"))
       implementation(libs.getLibrary("hilt.android"))
       implementation(libs.getLibrary("kotlinx.coroutines"))
     }

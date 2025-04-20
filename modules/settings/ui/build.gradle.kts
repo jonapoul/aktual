@@ -24,6 +24,7 @@ dependencies {
   implementation(libs.androidx.compose.ui.util)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
+  implementation(libs.haze.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(libs.lazycolumn.scrollbar)
