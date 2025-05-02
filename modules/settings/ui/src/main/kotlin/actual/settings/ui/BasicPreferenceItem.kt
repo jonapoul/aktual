@@ -77,25 +77,28 @@ internal fun BasicPreferenceItem(
     }
 
     Column(
-      modifier = Modifier
-        .weight(1f)
-        .wrapContentHeight()
-        .padding(10.dp),
+      modifier = Modifier.weight(1f),
     ) {
-      Text(
-        text = title,
-        fontWeight = FontWeight.Bold,
-        textAlign = TextAlign.Start,
-        style = MaterialTheme.typography.bodyLarge,
-      )
-
-      if (subtitle != null) {
+      Column(
+        modifier = Modifier
+          .wrapContentHeight()
+          .padding(10.dp),
+      ) {
         Text(
-          text = subtitle,
-          fontWeight = FontWeight.Light,
+          text = title,
+          fontWeight = FontWeight.Bold,
           textAlign = TextAlign.Start,
-          style = MaterialTheme.typography.bodyMedium,
+          style = MaterialTheme.typography.bodyLarge,
         )
+
+        if (subtitle != null) {
+          Text(
+            text = subtitle,
+            fontWeight = FontWeight.Light,
+            textAlign = TextAlign.Start,
+            style = MaterialTheme.typography.bodyMedium,
+          )
+        }
       }
 
       if (content != null) {

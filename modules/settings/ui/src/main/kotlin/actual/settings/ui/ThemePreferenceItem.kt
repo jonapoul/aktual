@@ -2,6 +2,8 @@ package actual.settings.ui
 
 import actual.core.colorscheme.ColorSchemeType
 import actual.core.res.CoreStrings
+import actual.core.ui.ActualFontFamily
+import actual.core.ui.AlertDialog
 import actual.core.ui.ButtonShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewWithColorScheme
@@ -10,7 +12,7 @@ import actual.settings.res.SettingsStrings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -40,50 +42,87 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun ThemePreferenceItem(
-  value: ColorSchemeType,
+  selected: ColorSchemeType,
   onChange: (ColorSchemeType) -> Unit,
   modifier: Modifier = Modifier,
   hazeState: HazeState = remember { HazeState() },
 ) {
+  var openDialog by remember { mutableStateOf(false) }
+
   BasicPreferenceItem(
-    modifier = modifier,
+    modifier = modifier.fillMaxWidth(),
     title = SettingsStrings.theme,
     subtitle = null,
-    icon = value.icon(),
+    icon = selected.icon(),
     clickability = NotClickable,
     hazeState = hazeState,
   ) {
-    AppThemePicker(
-      modifier = Modifier.padding(2.dp),
-      selected = value,
-      onSelect = onChange,
+    TypeButton(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(3.dp),
+      type = selected,
+      isSelected = false,
+      onClick = { openDialog = !openDialog },
+    )
+  }
+
+  if (openDialog) {
+    ThemeChooserDialog(
+      selected = selected,
+      onDismissRequest = { openDialog = false },
+      onSelect = { newValue ->
+        openDialog = false
+        onChange(newValue)
+      },
     )
   }
 }
 
 @Composable
-private fun AppThemePicker(
+private fun ThemeChooserDialog(
   selected: ColorSchemeType,
   onSelect: (ColorSchemeType) -> Unit,
+  onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-) {
-  Column(
-    modifier = modifier,
-  ) {
-    TYPES.fastForEach { type ->
-      TypeButton(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(1.dp),
-        type = type,
-        isSelected = selected == type,
-        onClick = { onSelect(type) },
+) = AlertDialog(
+  modifier = modifier,
+  title = SettingsStrings.theme,
+  onDismissRequest = onDismissRequest,
+  buttons = {
+    TextButton(onClick = onDismissRequest) {
+      Text(
+        text = SettingsStrings.dialogDismiss,
+        fontFamily = ActualFontFamily,
       )
     }
-  }
-}
+  },
+  content = {
+    ThemeChooserDialogContent(
+      selected = selected,
+      onSelect = onSelect,
+    )
+  },
+)
 
 private val TYPES = ColorSchemeType.entries.toImmutableList()
+
+@Composable
+private fun ColumnScope.ThemeChooserDialogContent(
+  selected: ColorSchemeType,
+  onSelect: (ColorSchemeType) -> Unit,
+) {
+  TYPES.fastForEach { type ->
+    TypeButton(
+      modifier = Modifier
+        .fillMaxWidth()
+        .padding(1.dp),
+      type = type,
+      isSelected = selected == type,
+      onClick = { onSelect(type) },
+    )
+  }
+}
 
 @Composable
 private fun TypeButton(
@@ -177,7 +216,7 @@ private fun PreviewThemed(
     modifier = modifier,
   ) {
     ThemePreferenceItem(
-      value = selected,
+      selected = selected,
       onChange = { newValue -> selected = newValue },
     )
   }
