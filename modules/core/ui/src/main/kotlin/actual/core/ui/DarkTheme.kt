@@ -208,7 +208,7 @@ internal class DarkTheme : Theme {
   override val sliderInactiveTrack = ActualColors.gray800
   override val sliderInactiveTick = ActualColors.gray900
 
-  override val dialogBackground = ActualColors.gray600
+  override val dialogBackground = ActualColors.navy900
   override val dialogProgressWheelTrack = ActualColors.gray600
 
   override val budgetItemBackground = buttonNormalBackground

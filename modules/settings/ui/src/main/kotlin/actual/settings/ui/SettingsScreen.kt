@@ -149,7 +149,7 @@ private fun PreferenceItem(
   ) {
     when (value) {
       is PreferenceValue.Theme -> ThemePreferenceItem(
-        value = value.type,
+        selected = value.type,
         hazeState = hazeState,
         onChange = { onChange(PreferenceValue.Theme(it)) },
       )
