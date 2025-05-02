@@ -1,0 +1,3 @@
+-- packages/loot-core/migrations/1740506588539_add_last_reconciled_at.sql
+
+ALTER TABLE accounts ADD COLUMN last_reconciled text;

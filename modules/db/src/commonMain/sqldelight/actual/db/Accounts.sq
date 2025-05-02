@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS accounts(
   sort_order REAL,
   type TEXT,
   account_sync_source TEXT AS AccountSyncSource,
-  last_sync TEXT AS Instant
+  last_sync TEXT AS Instant,
+  last_reconciled TEXT AS Instant
 );
 
 getById:

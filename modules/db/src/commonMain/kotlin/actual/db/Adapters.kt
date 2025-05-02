@@ -100,6 +100,7 @@ internal val AccountsAdapter = Accounts.Adapter(
   bankAdapter = uuid,
   account_sync_sourceAdapter = accountSyncSource,
   last_syncAdapter = instantMsFromString,
+  last_reconciledAdapter = instantMsFromString,
 )
 
 internal val BanksAdapter = Banks.Adapter(
