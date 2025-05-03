@@ -5,33 +5,27 @@ import org.gradle.api.Project
 
 interface ModuleType {
   val string: String
-  val color: String
+  val color: Color
 
   fun interface Finder {
     fun find(project: Project): ModuleType
+    fun color(project: Project): Color = find(project).color.also { println("COLOR = $it") }
   }
 }
 
-@Suppress("MagicNumber")
-fun ModuleType.Finder.color(project: Project): Color {
-  val found = find(project).color
-  if (found.length != 7 || found.first() != '#') {
-    error("Invalid colour found for ${project.path}: '$found'")
-  }
-  return Color.rgb(found).fill()
-}
-
-enum class ActualModuleType(override val string: String, override val color: String) : ModuleType {
-  AndroidApp(string = "App", color = "#FF5555"), // red
-  AndroidViewModel(string = "ViewModel", color = "#F5A6A6"), // pink
-  AndroidHilt(string = "Hilt", color = "#FCB103"), // orange
-  AndroidCompose(string = "Compose", color = "#FFFF55"), // yellow
-  AndroidLibrary(string = "Android", color = "#55FF55"), // green
-  AndroidResources(string = "Resources", color = "#00FFFF"), // cyan
-  Navigation(string = "Navigation", color = "#5555FF"), // blue
-  Multiplatform(string = "Multiplatform", color = "#9D8DF1"), // indigo
-  Jvm(string = "JVM", color = "#8000FF"), // violet
+enum class ActualModuleType(override val string: String, override val color: Color) : ModuleType {
+  AndroidApp(string = "App", fill = "#FF5555"), // red
+  AndroidViewModel(string = "ViewModel", fill = "#F5A6A6"), // pink
+  AndroidHilt(string = "Hilt", fill = "#FCB103"), // orange
+  AndroidCompose(string = "Compose", fill = "#FFFF55"), // yellow
+  AndroidLibrary(string = "Android", fill = "#55FF55"), // green
+  AndroidResources(string = "Resources", fill = "#00FFFF"), // cyan
+  Navigation(string = "Navigation", fill = "#5555FF"), // blue
+  Multiplatform(string = "Multiplatform", fill = "#9D8DF1"), // indigo
+  Jvm(string = "JVM", fill = "#8000FF"), // violet
   ;
+
+  constructor(string: String, fill: String) : this(string, Color.rgb(fill).fill())
 
   companion object {
     val Finder = ModuleType.Finder { project ->

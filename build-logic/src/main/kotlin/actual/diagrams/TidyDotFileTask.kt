@@ -28,7 +28,7 @@ open class TidyDotFileTask @Inject constructor(objects: ObjectFactory) : Default
   fun invoke() {
     val file = this.dotFile.get().asFile
 
-    logger.info("Removing modules prefix from dotfile...")
+    logger.info("Removing modules prefix from dotfile at $file...")
 
     val fileContents = file
       .readText()

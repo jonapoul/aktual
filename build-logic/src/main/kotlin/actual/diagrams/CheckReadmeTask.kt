@@ -19,7 +19,7 @@ open class CheckReadmeTask @Inject constructor(objects: ObjectFactory) : Default
     val expectedContents = """
       # $expectedTitle
 
-      ![project-dependency-graph.png](project-dependency-graph.png)
+      ![$FILENAME_ROOT.png]($FILENAME_ROOT.png)
 
     """.trimIndent()
 

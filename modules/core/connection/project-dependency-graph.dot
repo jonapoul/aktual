@@ -2,20 +2,22 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":core:connection","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":account:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:actual" ["fillcolor"="#9D8DF1","shape"="box"]
-":api:builder" ["fillcolor"="#9D8DF1","shape"="box"]
-":budget:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:connection" ["fillcolor"="#9D8DF1","shape"="box"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="box"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="box"]
-":url:prefs" ["fillcolor"="#9D8DF1","shape"="box"]
+":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
+":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
+":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
+":api:builder" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
+":url:prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
+":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":url:model"
 ":api:builder" -> ":url:model"
 ":core:connection" -> ":api:actual" ["style"="dotted"]
@@ -27,8 +29,8 @@ graph ["rank"="same"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
-"Legend" ["style"="filled","fillcolor"="#bbbbbb","shape"="none","margin"="0","fontsize"="15","label"=<
-<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+"Legend" ["style"="filled","fillcolor"="#FFFFFF","shape"="none","margin"="0","fontsize"="15","label"=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
 </TABLE>
 >]

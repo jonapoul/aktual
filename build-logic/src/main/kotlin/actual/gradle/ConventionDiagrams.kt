@@ -1,8 +1,13 @@
 package actual.gradle
 
-import com.vanniktech.dependency.graph.generator.DependencyGraphGeneratorExtension.Generator
+import actual.diagrams.CheckDotFileTask
+import actual.diagrams.CheckReadmeTask
+import actual.diagrams.DiagramsBlueprintExtension
+import actual.diagrams.FILENAME_ROOT
+import actual.diagrams.GenerateGraphVizPngTask
+import actual.diagrams.TidyDotFileTask
 import com.vanniktech.dependency.graph.generator.DependencyGraphGeneratorExtension.ProjectGenerator
-import com.vanniktech.dependency.graph.generator.DependencyGraphGeneratorTask
+import com.vanniktech.dependency.graph.generator.DependencyGraphGeneratorPlugin
 import com.vanniktech.dependency.graph.generator.ProjectDependencyGraphGeneratorTask
 import guru.nidi.graphviz.attribute.Font
 import guru.nidi.graphviz.attribute.Label
@@ -12,37 +17,20 @@ import guru.nidi.graphviz.attribute.Style
 import guru.nidi.graphviz.model.Link
 import guru.nidi.graphviz.model.MutableGraph
 import guru.nidi.graphviz.parse.Parser
-import actual.diagrams.CheckDotFileTask
-import actual.diagrams.CheckReadmeTask
-import actual.diagrams.DiagramsBlueprintExtension
-import actual.diagrams.GenerateGraphVizPngTask
-import actual.diagrams.TidyDotFileTask
-import actual.diagrams.color
-import actual.diagrams.internal.depColour
-import actual.diagrams.internal.getOutputFile
-import actual.diagrams.internal.toNiceString
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.Task
 import org.gradle.api.plugins.JavaBasePlugin
-import org.gradle.api.tasks.TaskProvider
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.register
+import java.io.File
 
 class ConventionDiagrams : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
-    pluginManager.apply("com.vanniktech.dependency.graph.generator")
+    pluginManager.apply(DependencyGraphGeneratorPlugin::class)
+
     val extension = extensions.create("diagrams", DiagramsBlueprintExtension::class.java)
+    registerModuleTasks(extension)
 
-    val modulePngTask = registerModuleTasks(extension)
-    val dependenciesPngTask = registerDependencyTasks(extension)
-
-    // Aggregate task
-    tasks.register("generatePngs", Task::class.java) {
-      dependsOn(modulePngTask)
-      dependsOn(dependenciesPngTask)
-    }
-
-    // Also check readme contents
     tasks.register<CheckReadmeTask>(name = "checkDiagramReadme") {
       enabled = extension.checkReadmeContents.get()
       readmeFile.set(file("README.md"))
@@ -50,14 +38,12 @@ class ConventionDiagrams : Plugin<Project> {
     }
   }
 
-  private fun Project.registerModuleTasks(
-    extension: DiagramsBlueprintExtension,
-  ): TaskProvider<GenerateGraphVizPngTask> {
+  private fun Project.registerModuleTasks(extension: DiagramsBlueprintExtension) {
     val projectGenerator = ProjectGenerator(
       outputFormats = listOf(),
       projectNode = { node, proj ->
         val moduleTypeFinder = extension.moduleTypeFinder.get()
-        node.add(Shape.BOX).add(moduleTypeFinder.color(proj))
+        node.add(Shape.NONE).add(moduleTypeFinder.color(proj))
       },
       includeProject = { proj -> proj.shouldInclude() },
       graph = { graph ->
@@ -106,16 +92,16 @@ class ConventionDiagrams : Plugin<Project> {
       expectedDotFile.set(dotTask.get().getOutputFile())
       actualDotFile.set(tempDotTask.get().getOutputFile())
       dependsOn(tempTidyDotFileTask)
-      if (extension.checkModulesDotfile.get()) {
+      if (extension.checkDotfile.get()) {
         tasks.findByName("check")?.dependsOn(this)
       }
     }
 
-    return tasks.register<GenerateGraphVizPngTask>("generateModulesPng") {
+    tasks.register<GenerateGraphVizPngTask>("generateModulesPng") {
       reportDir.convention(layout.projectDirectory)
-      dotFile.convention(reportDir.file("project-dependency-graph.dot"))
-      pngFile.convention(reportDir.file("project-dependency-graph.png"))
-      errorFile.convention(reportDir.file("project-dependency-error.log"))
+      dotFile.convention(reportDir.file("$FILENAME_ROOT.dot"))
+      pngFile.convention(reportDir.file("$FILENAME_ROOT.png"))
+      errorFile.convention(reportDir.file("$FILENAME_ROOT-error.log"))
       dependsOn(tidyDotFileTask)
     }
   }
@@ -140,7 +126,7 @@ class ConventionDiagrams : Plugin<Project> {
 
   private fun buildLegend(extension: DiagramsBlueprintExtension): MutableGraph {
     val rows = extension.moduleTypes.get().map { type ->
-      "<TR><TD>${type.string}</TD><TD BGCOLOR=\"${type.color}\">module-name</TD></TR>"
+      "<TR><TD>${type.string}</TD><TD BGCOLOR=\"${type.color.value}\">module-name</TD></TR>"
     }
     return Parser().read(
       """
@@ -149,7 +135,7 @@ class ConventionDiagrams : Plugin<Project> {
           graph [fontsize=${extension.legendTitleFontSize.get()}]
           node [style=filled, fillcolor="${extension.legendBackground.get()}"];
           Legend [shape=none, margin=0, fontsize=${extension.legendFontSize.get()}, label=<
-            <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+            <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
               ${rows.joinToString(separator = "\n")}
             </TABLE>
           >];
@@ -158,62 +144,14 @@ class ConventionDiagrams : Plugin<Project> {
     )
   }
 
-  private fun Project.registerDependencyTasks(
-    extension: DiagramsBlueprintExtension,
-  ): TaskProvider<GenerateGraphVizPngTask> {
-    val dependencyGenerator = Generator(
-      outputFormats = listOf(),
-      dependencyNode = { node, dep ->
-        node
-          .add(Shape.RECTANGLE)
-          .add(dep.depColour())
-          .add(Label.of(dep.toNiceString(target = this)))
-      },
-      graph = { graph ->
-        graph
-          .graphAttrs().add(Rank.sep(extension.rankSeparation.get()), Font.size(extension.nodeFontSize.get()))
-          .nodeAttrs().add(Style.FILLED)
-      },
-    )
-
-    val dotTask = tasks.register("generateDependenciesDotfile", DependencyGraphGeneratorTask::class.java) {
-      group = "reporting"
-      description = "Generates a dependency graph for $path"
-      generator = dependencyGenerator
-      outputDirectory = projectDir
-    }
-
-    val tempDotTask = tasks.register("tempDependenciesDotfile", DependencyGraphGeneratorTask::class.java) {
-      group = JavaBasePlugin.VERIFICATION_GROUP
-      generator = dependencyGenerator
-      outputDirectory = project.layout.buildDirectory.file("diagrams-dependencies-temp").get().asFile
-    }
-
-    tasks.register("checkDependenciesDotfile", CheckDotFileTask::class.java) {
-      group = JavaBasePlugin.VERIFICATION_GROUP
-      taskPath.set(dotTask.get().path)
-      expectedDotFile.set(dotTask.get().getOutputFile())
-      actualDotFile.set(tempDotTask.get().getOutputFile())
-      dependsOn(tempDotTask)
-      if (extension.checkDependenciesDotfile.get()) {
-        tasks.findByName("check")?.dependsOn(this)
-      }
-    }
-
-    return tasks.register("generateDependenciesPng", GenerateGraphVizPngTask::class.java) {
-      reportDir.convention(layout.projectDirectory)
-      dotFile.convention(reportDir.file("dependency-graph.dot"))
-      pngFile.convention(reportDir.file("dependency-graph.png"))
-      errorFile.convention(reportDir.file("dependency-error.log"))
-      dependsOn(dotTask)
-    }
-  }
-
   private fun Project.shouldInclude(): Boolean {
     val isRoot = this == rootProject
     val isTest = path.contains("test", ignoreCase = true)
-    return !isRoot && !isTest
+    val isKsp = path.contains("ksp", ignoreCase = true)
+    return !isRoot && !isTest && !isKsp
   }
+
+  private fun ProjectDependencyGraphGeneratorTask.getOutputFile(): File = File(outputDirectory, "$FILENAME_ROOT.dot")
 
   private companion object {
     const val LEGEND_LABEL = "Legend"
