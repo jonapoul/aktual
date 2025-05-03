@@ -13,21 +13,13 @@ open class DiagramsBlueprintExtension @Inject constructor(
   target: Project,
   objects: ObjectFactory,
 ) {
-  val generateModules: Property<Boolean> = objects
-    .property(Boolean::class.java)
-    .convention(true)
-
-  val generateDependencies: Property<Boolean> = objects
-    .property(Boolean::class.java)
-    .convention(true)
-
   val showLegend: Property<Boolean> = objects
     .property(Boolean::class.java)
     .convention(true)
 
   val legendBackground: Property<String> = objects
     .property(String::class.java)
-    .convention("#bbbbbb")
+    .convention("#FFFFFF")
 
   val legendTitleFontSize: Property<Int> = objects
     .property(Int::class.java)
@@ -61,13 +53,9 @@ open class DiagramsBlueprintExtension @Inject constructor(
     .property(String::class.java)
     .convention(target.path)
 
-  val checkModulesDotfile: Property<Boolean> = objects
+  val checkDotfile: Property<Boolean> = objects
     .property(Boolean::class.java)
     .convention(true)
-
-  val checkDependenciesDotfile: Property<Boolean> = objects
-    .property(Boolean::class.java)
-    .convention(false)
 
   val moduleTypes: SetProperty<ModuleType> = objects
     .setProperty(ModuleType::class.java)
