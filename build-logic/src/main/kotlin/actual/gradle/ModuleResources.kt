@@ -4,10 +4,12 @@ import blueprint.core.getLibrary
 import blueprint.core.libs
 import blueprint.core.stringProperty
 import com.android.build.api.dsl.LibraryExtension
+import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.autonomousapps.DependencyAnalysisPlugin
 import dev.jonpoulton.catalog.gradle.CatalogExtension
 import dev.jonpoulton.catalog.gradle.CatalogParameterNaming
 import dev.jonpoulton.catalog.gradle.CatalogPlugin
+import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.NameTransform
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -15,7 +17,9 @@ import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.withType
 import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.registering
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 
 class ModuleResources : Plugin<Project> {
@@ -54,6 +58,10 @@ class ModuleResources : Plugin<Project> {
         NameTransform.removePrefix(prefix = "_"),
         NameTransform.CamelCase,
       )
+    }
+
+    tasks.register("generateResourceCatalog") {
+      dependsOn(tasks.withType<GenerateResourcesTask>())
     }
 
     val implementation by configurations
