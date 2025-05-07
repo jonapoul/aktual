@@ -1,6 +1,6 @@
 [versions]
 # Plugins
-agp = "8.9.2"
+agp = "8.10.0"
 androidCacheFix = "3.0.1"
 blueprint = "1.0.0"
 buildconfig = "5.6.4"
