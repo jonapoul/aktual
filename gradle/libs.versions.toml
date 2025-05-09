@@ -91,7 +91,6 @@ plugin-licensee = { module = "app.cash.licensee:licensee-gradle-plugin", version
 # Libraries
 alakazam-android-compose = { module = "dev.jonpoulton.alakazam:android-ui-compose", version.ref = "alakazam" }
 alakazam-android-core = { module = "dev.jonpoulton.alakazam:android-core", version.ref = "alakazam" }
-alakazam-di-hilt = { module = "dev.jonpoulton.alakazam:di-hilt", version.ref = "alakazam" }
 alakazam-db-sqldelight = { module = "dev.jonpoulton.alakazam:db-sqldelight", version.ref = "alakazam" }
 alakazam-kotlin-compose-annotations = { module = "dev.jonpoulton.alakazam:kotlin-compose-annotations", version.ref = "alakazam" }
 alakazam-kotlin-core = { module = "dev.jonpoulton.alakazam:kotlin-core", version.ref = "alakazam" }
