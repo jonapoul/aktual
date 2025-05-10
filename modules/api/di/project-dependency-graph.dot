@@ -5,6 +5,7 @@ node ["style"="filled"]
 ":api:builder" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:di" ["shape"="none","fillcolor"="#FCB103"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
+":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -14,6 +15,8 @@ graph ["rank"="same"]
 ":api:builder" -> ":url:model"
 ":api:di" -> ":api:builder" ["style"="dotted"]
 ":api:di" -> ":api:github"
+":api:github" -> ":codegen:annotation" ["style"="dotted"]
+":api:github" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

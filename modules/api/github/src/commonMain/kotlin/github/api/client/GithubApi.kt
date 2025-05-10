@@ -1,36 +1,35 @@
 package github.api.client
 
+import actual.codegen.GET
+import actual.codegen.KtorApi
+import actual.codegen.Path
+import actual.codegen.Query
+import actual.url.model.ServerUrl
 import github.api.model.GithubRelease
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
-import io.ktor.client.request.get
-import io.ktor.http.URLProtocol
-import io.ktor.http.path
 
 /**
  * From https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#list-releases
  */
+@KtorApi
 interface GithubApi : AutoCloseable {
-  suspend fun getReleases(): List<GithubRelease>
+  @GET("/repos/{user}/{repo}/releases/latest")
+  suspend fun getReleases(
+    @Path("user") user: String,
+    @Path("repo") repo: String,
+    @Query("per_page") perPage: Int? = null,
+    @Query("page") pageNumber: Int? = null,
+  ): List<GithubRelease>
 
   fun interface Factory {
     fun build(): GithubApi
   }
-}
 
-fun GithubApi(client: HttpClient): GithubApi = GithubApiClient(client)
-
-private class GithubApiClient(private val client: HttpClient) : GithubApi, AutoCloseable by client {
-  override suspend fun getReleases() = client
-    .get {
-      url {
-        protocol = URLProtocol.HTTPS
-        host = BASE_URL
-        path("/repos/jonapoul/actual-android/releases/latest")
-      }
-    }.body<List<GithubRelease>>()
-
-  private companion object {
-    const val BASE_URL = "api.github.com"
+  companion object {
+    val BASE_URL = ServerUrl("https://api.github.com")
   }
 }
+
+expect fun GithubApi(serverUrl: ServerUrl, client: HttpClient): GithubApi
+
+fun GithubApi(client: HttpClient): GithubApi = GithubApi(GithubApi.BASE_URL, client)

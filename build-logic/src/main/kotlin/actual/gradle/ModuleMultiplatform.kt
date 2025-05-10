@@ -24,6 +24,7 @@ class ModuleMultiplatform : Plugin<Project> {
     extensions.configure<KotlinMultiplatformExtension> {
       compilerOptions {
         freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
+        freeCompilerArgs.add("-Xexpect-actual-classes")
       }
 
       jvm()
