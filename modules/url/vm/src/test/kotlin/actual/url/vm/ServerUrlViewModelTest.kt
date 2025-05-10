@@ -3,37 +3,43 @@
 package actual.url.vm
 
 import actual.account.login.domain.LoginPreferences
-import actual.account.model.LoginMethod
 import actual.account.model.LoginToken
 import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
-import actual.api.model.account.NeedsBootstrapResponse
+import actual.api.client.ActualJson
 import actual.core.versions.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
+import actual.test.ThrowingRequestHandler
 import actual.test.assertEmitted
 import actual.test.buildPreferences
+import actual.test.clear
+import actual.test.enqueue
+import actual.test.respondJson
+import actual.test.testHttpClient
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
-import io.mockk.coEvery
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.http.HttpStatusCode
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import okhttp3.ResponseBody.Companion.toResponseBody
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import retrofit2.Response
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -54,6 +60,7 @@ class ServerUrlViewModelTest {
   // Mock
   private lateinit var apis: ActualApis
   private lateinit var accountApi: AccountApi
+  private lateinit var mockEngine: MockEngine
 
   @Before
   fun before() {
@@ -63,13 +70,20 @@ class ServerUrlViewModelTest {
     loginPreferences = LoginPreferences(prefs)
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
 
-    accountApi = mockk()
+    mockEngine = MockEngine(ThrowingRequestHandler)
+    accountApi = AccountApi(EXAMPLE_URL, testHttpClient(mockEngine, ActualJson))
     apis = mockk {
+      every { close() } just runs
       every { serverUrl } returns EXAMPLE_URL
       every { account } returns accountApi
     }
     apisStateHolder = ActualApisStateHolder()
     apisStateHolder.update { apis }
+  }
+
+  @After
+  fun after() {
+    mockEngine.close()
   }
 
   private fun buildViewModel() {
@@ -146,9 +160,12 @@ class ServerUrlViewModelTest {
   @Test
   fun `Show error message if bootstrap request gives failure response`() = runTest {
     buildViewModel()
+
     viewModel.errorMessage.test {
-      // Given we're currently not navigating, and the API returns that we're not bootstrapped
+      // Given we're currently not navigating
       assertNull(awaitItem())
+
+      // and the API returns failure
       val reason = "SOMETHING BROKE"
       val body = """
         {
@@ -156,7 +173,8 @@ class ServerUrlViewModelTest {
           "reason": "$reason"
         }
       """.trimIndent()
-      coEvery { accountApi.needsBootstrap() } returns Response.error(400, body.toResponseBody())
+      mockEngine.clear()
+      mockEngine.enqueue { respondJson(body, HttpStatusCode.BadRequest) }
 
       // When
       viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
@@ -180,8 +198,11 @@ class ServerUrlViewModelTest {
     viewModel.errorMessage.test {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
       assertNull(awaitItem())
+
+      // and the API fails
       val reason = "SOMETHING BROKE"
-      coEvery { accountApi.needsBootstrap() } throws IOException(reason)
+      mockEngine.clear()
+      mockEngine.enqueue { throw IOException(reason) }
 
       // When
       viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
@@ -229,15 +250,25 @@ class ServerUrlViewModelTest {
   }
 
   private fun setBootstrapResponse(bootstrapped: Boolean) {
-    coEvery { accountApi.needsBootstrap() } returns Response.success(
-      NeedsBootstrapResponse.Success(
-        data = NeedsBootstrapResponse.Data(
-          bootstrapped = bootstrapped,
-          loginMethod = LoginMethod.Password,
-          availableLoginMethods = emptyList(),
-        ),
-      ),
-    )
+    val json = """
+      {
+          "status": "ok",
+          "data": {
+              "bootstrapped": $bootstrapped,
+              "loginMethod": "password",
+              "availableLoginMethods": [
+                  {
+                      "method": "password",
+                      "active": 1,
+                      "displayName": "Password"
+                  }
+              ],
+              "multiuser": false
+          }
+      }
+    """.trimIndent()
+    mockEngine.clear()
+    mockEngine.enqueue { respondJson(json) }
   }
 
   private companion object {

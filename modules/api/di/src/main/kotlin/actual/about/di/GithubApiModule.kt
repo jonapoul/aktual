@@ -1,26 +1,29 @@
 package actual.about.di
 
-import actual.api.builder.buildOkHttp
-import actual.api.builder.buildRetrofit
-import actual.url.model.ServerUrl
+import actual.api.builder.buildKtorClient
 import alakazam.kotlin.core.BuildConfig
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.components.SingletonComponent
 import github.api.client.GithubApi
 import github.api.client.GithubJson
-import retrofit2.create
+import javax.inject.Singleton
 
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 class GithubApiModule {
   @Provides
+  @Singleton
   fun api(
     buildConfig: BuildConfig,
-  ): GithubApi = buildRetrofit(
-    client = buildOkHttp(buildConfig.debug, tag = "GITHUB"),
-    url = ServerUrl("https://api.github.com"),
-    json = GithubJson,
-  ).create()
+  ) = GithubApi.Factory {
+    GithubApi(
+      client = buildKtorClient(
+        json = GithubJson,
+        tag = "GITHUB",
+        isDebug = buildConfig.debug,
+      ),
+    )
+  }
 }

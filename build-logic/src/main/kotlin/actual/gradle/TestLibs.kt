@@ -12,8 +12,9 @@ internal val Project.testLibraries: List<Provider<MinimalExternalModuleDependenc
       getLibrary("test.alakazam.core"),
       getLibrary("test.kotlin.common"),
       getLibrary("test.kotlinx.coroutines"),
+      getLibrary("test.ktor"),
       getLibrary("test.mockk.core"),
-      getLibrary("test.okhttp"),
+      getLibrary("test.okio"),
       getLibrary("test.turbine"),
     )
   }

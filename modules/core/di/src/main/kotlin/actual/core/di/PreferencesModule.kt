@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package actual.core.di
 
 import alakazam.kotlin.core.CoroutineContexts

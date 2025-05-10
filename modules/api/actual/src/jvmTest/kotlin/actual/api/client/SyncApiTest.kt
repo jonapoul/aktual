@@ -1,61 +1,69 @@
 package actual.api.client
 
 import actual.account.model.LoginToken
-import actual.api.model.account.FailureReason
 import actual.api.model.internal.ActualHeaders
 import actual.api.model.sync.GetUserKeyRequest
 import actual.api.model.sync.GetUserKeyResponse
 import actual.api.model.sync.ListUserFilesResponse
 import actual.budget.model.BudgetId
-import actual.test.MockWebServerRule
-import alakazam.test.core.getResourceAsText
+import actual.test.respondJson
+import actual.test.testHttpClient
+import actual.url.model.Protocol
+import actual.url.model.ServerUrl
+import alakazam.test.core.assertThrows
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.MockRequestHandleScope
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.request.HttpRequestData
+import io.ktor.client.request.HttpResponseData
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.Rule
+import org.junit.After
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.uuid.Uuid
 
 class SyncApiTest {
-  @get:Rule
-  val webServerRule = MockWebServerRule()
-
+  private lateinit var mockEngine: MockEngine
   private lateinit var syncApi: SyncApi
 
-  @Before
-  fun before() {
-    syncApi = webServerRule.buildApi(ActualJson)
+  @After
+  fun after() {
+    mockEngine.close()
+  }
+
+  private fun buildApi(handler: suspend MockRequestHandleScope.(HttpRequestData) -> HttpResponseData) {
+    mockEngine = MockEngine(handler)
+    syncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, ActualJson))
   }
 
   @Test
   fun `List budgets token included in header`() = runTest {
     // given
-    val json = getResourceAsText("sync-list-budgets-success.json")
-    webServerRule.enqueue(json)
+    buildApi { respondJson(SYNC_LIST_BUDGETS_SUCCESS) }
 
     // when
     syncApi.fetchUserFiles(TOKEN)
-    val request = webServerRule.server.takeRequest()
+    val request = mockEngine.requestHistory.last()
 
     // then
     assertEquals(
       expected = "abc-123",
-      actual = request.getHeader(ActualHeaders.TOKEN),
+      actual = request.headers[ActualHeaders.TOKEN],
     )
   }
 
   @Test
   fun `List budgets success response`() = runTest {
     // given
-    val json = getResourceAsText("sync-list-budgets-success.json")
-    webServerRule.enqueue(json, code = 200)
+    buildApi { respondJson(SYNC_LIST_BUDGETS_SUCCESS) }
 
     // when
-    val response = syncApi.fetchUserFilesAdapted(TOKEN)
+    val response = syncApi.fetchUserFiles(TOKEN)
 
     // then
     assertEquals(
-      actual = response.body,
+      actual = response,
       expected = ListUserFilesResponse.Success(
         data = listOf(
           ListUserFilesResponse.Item(
@@ -91,33 +99,25 @@ class SyncApiTest {
   @Test
   fun `List budgets failure response`() = runTest {
     // given
-    val json = getResourceAsText("sync-list-budgets-failure.json")
-    webServerRule.enqueue(json, code = 400)
+    buildApi { respondJson(SYNC_LIST_BUDGETS_FAILURE, HttpStatusCode.BadRequest) }
 
     // when
-    val response = syncApi.fetchUserFilesAdapted(TOKEN)
-
-    // then
-    assertEquals(
-      actual = response.body,
-      expected = ListUserFilesResponse.Failure(reason = FailureReason.Other("Something broke")),
-    )
+    assertThrows<ClientRequestException> { syncApi.fetchUserFiles(TOKEN) }
   }
 
   @Test
   fun `Get user key success`() = runTest {
     // given
-    val json = getResourceAsText("get-user-key-success.json")
-    webServerRule.enqueue(json, code = 200)
+    buildApi { respondJson(SYNC_GET_USER_KEY_SUCCESS) }
 
     // when
     val body = GetUserKeyRequest(BUDGET_ID)
-    val response = syncApi.fetchUserKeyAdapted(TOKEN, body)
+    val response = syncApi.fetchUserKey(TOKEN, body)
 
     // then
     val keyId = Uuid.parse("2a66f4de-c530-4c06-8103-a48e26a0ce44")
     assertEquals(
-      actual = response.body,
+      actual = response,
       expected = GetUserKeyResponse.Success(
         data = GetUserKeyResponse.Data(
           id = keyId,
@@ -140,5 +140,6 @@ class SyncApiTest {
   private companion object {
     val TOKEN = LoginToken("abc-123")
     val BUDGET_ID = BudgetId("xyz-789")
+    val SERVER_URL = ServerUrl(Protocol.Https, "test.unused.com")
   }
 }

@@ -1,27 +1,27 @@
 package actual.core.connection
 
-import actual.api.builder.buildOkHttp
-import actual.api.builder.buildRetrofit
+import actual.api.builder.ClientFactory
+import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
+import actual.api.client.BaseApi
+import actual.api.client.SyncApi
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
-import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.core.collectFlow
 import alakazam.kotlin.logging.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.update
-import retrofit2.create
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class ConnectionMonitor @Inject constructor(
   private val scope: CoroutineScope,
-  private val buildConfig: BuildConfig,
+  private val clientFactory: ClientFactory,
   private val apiStateHolder: ActualApisStateHolder,
   private val serverUrlPreferences: ServerUrlPreferences,
 ) {
@@ -34,19 +34,21 @@ class ConnectionMonitor @Inject constructor(
       if (url == null) {
         apiStateHolder.reset()
       } else {
+        // Close previous client's resources before rebuilding
+        apiStateHolder.value?.close()
         tryToBuildApis(url)
       }
     }
   }
 
   private fun tryToBuildApis(url: ServerUrl) = try {
-    val client = buildOkHttp(isDebug = buildConfig.debug, tag = "ACTUAL HTTP")
-    val retrofit = buildRetrofit(client, url, ActualJson)
+    val client = clientFactory.build(ActualJson)
     val apis = ActualApis(
       serverUrl = url,
-      account = retrofit.create(),
-      base = retrofit.create(),
-      sync = retrofit.create(),
+      client = client,
+      account = AccountApi(url, client),
+      base = BaseApi(url, client),
+      sync = SyncApi(url, client),
     )
     apiStateHolder.update { apis }
   } catch (e: CancellationException) {

@@ -5,7 +5,6 @@ node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -13,7 +12,6 @@ graph ["rank"="same"]
 }
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
-":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

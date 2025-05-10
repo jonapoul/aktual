@@ -11,6 +11,7 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.hilt.android)
   implementation(libs.javaxInject)
+  implementation(libs.ktor.core)
   implementation(libs.molecule)
   implementation(libs.preferences.core)
   implementation(projects.account.login.domain)
@@ -19,5 +20,6 @@ dependencies {
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   testImplementation(projects.test.buildconfig)
   testImplementation(projects.test.coroutines)
+  testImplementation(projects.test.http)
   testImplementation(projects.test.prefs)
 }

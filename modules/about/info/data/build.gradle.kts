@@ -8,7 +8,6 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(libs.retrofit.core)
     api(projects.api.github)
     api(libs.alakazam.kotlin.core)
     implementation(libs.javaxInject)

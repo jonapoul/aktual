@@ -7,6 +7,7 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.javaxInject)
+    api(libs.okio)
     api(projects.budget.model)
   }
 }

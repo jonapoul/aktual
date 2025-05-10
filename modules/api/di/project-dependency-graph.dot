@@ -14,7 +14,6 @@ graph ["rank"="same"]
 ":api:builder" -> ":url:model"
 ":api:di" -> ":api:builder" ["style"="dotted"]
 ":api:di" -> ":api:github"
-":api:di" -> ":url:model" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

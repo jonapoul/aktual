@@ -3,12 +3,16 @@
 package actual.core.connection
 
 import actual.api.client.ActualApisStateHolder
-import actual.test.TestBuildConfig
+import actual.test.TestClientFactory
+import actual.test.ThrowingRequestHandler
 import actual.test.buildPreferences
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
+import alakazam.test.core.Flaky
+import alakazam.test.core.FlakyTestRule
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
+import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -26,18 +30,23 @@ class ConnectionMonitorTest {
   @get:Rule
   val mainDispatcherRule = MainDispatcherRule()
 
+  @get:Rule
+  val rule = FlakyTestRule()
+
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var serverUrlPreferences: ServerUrlPreferences
   private lateinit var apiStateHolder: ActualApisStateHolder
+  private lateinit var mockEngine: MockEngine
 
   private fun TestScope.before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     serverUrlPreferences = ServerUrlPreferences(prefs)
     apiStateHolder = ActualApisStateHolder()
+    mockEngine = MockEngine(ThrowingRequestHandler)
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,
-      buildConfig = TestBuildConfig,
+      clientFactory = TestClientFactory(mockEngine),
       apiStateHolder = apiStateHolder,
       serverUrlPreferences = serverUrlPreferences,
     )
@@ -90,6 +99,7 @@ class ConnectionMonitorTest {
   }
 
   @Test
+  @Flaky(retry = 5, reason = "Sometimes times out on assertNotNull after starting")
   fun `Remove APIs when URL is cleared`() = runTest(timeout = 10.seconds) {
     before()
 

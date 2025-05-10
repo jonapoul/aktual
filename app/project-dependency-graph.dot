@@ -37,7 +37,6 @@ node ["style"="filled"]
 ":budget:sync:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:vm" ["fillcolor"="#F5A6A6","shape"="none"]
-":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
@@ -104,12 +103,10 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":core:versions"
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
-":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":url:model"
 ":api:builder" -> ":url:model"
 ":api:di" -> ":api:builder" ["style"="dotted"]
 ":api:di" -> ":api:github"
-":api:di" -> ":url:model" ["style"="dotted"]
 ":app" -> ":about:info:nav" ["style"="dotted"]
 ":app" -> ":about:info:ui" ["style"="dotted"]
 ":app" -> ":about:licenses:nav" ["style"="dotted"]
