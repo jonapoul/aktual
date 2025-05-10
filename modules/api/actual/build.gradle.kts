@@ -1,11 +1,9 @@
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
-import blueprint.core.kspAllConfigs
 
 plugins {
   alias(libs.plugins.module.multiplatform)
   alias(libs.plugins.kotlin.serialization)
-  alias(libs.plugins.ksp)
   alias(libs.plugins.sekret)
 }
 
@@ -14,12 +12,13 @@ kotlin {
     api(libs.alakazam.kotlin.core)
     api(libs.javaxInject)
     api(libs.kotlinx.serialization.json)
-    api(libs.retrofit.core)
+    api(libs.ktor.core)
     api(projects.account.model)
     api(projects.budget.model)
     api(projects.url.model)
     compileOnly(libs.sekret)
-    implementation(projects.codegen.annotation)
+    implementation(libs.ktor.serialization.core)
+    implementation(libs.ktor.serialization.json)
   }
 
   commonTestDependencies {
@@ -27,5 +26,3 @@ kotlin {
     implementation(projects.test.http)
   }
 }
-
-kspAllConfigs(projects.codegen.ksp)

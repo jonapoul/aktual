@@ -17,7 +17,9 @@ import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,7 +28,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import retrofit2.Response
 import java.io.IOException
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
@@ -47,7 +48,10 @@ class ServerVersionFetcherTest {
   @Before
   fun before() {
     baseApi = mockk()
-    apis = mockk { every { base } returns baseApi }
+    apis = mockk {
+      every { base } returns baseApi
+      every { close() } just runs
+    }
 
     apisStateHolder = ActualApisStateHolder()
     apisStateHolder.update { apis }
@@ -92,9 +96,7 @@ class ServerVersionFetcherTest {
   @Test
   fun `Valid fetch response`() = runTest(timeout = 5.seconds) {
     // Given
-    coEvery { baseApi.info() } returns Response.success(
-      InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3")),
-    )
+    coEvery { baseApi.info() } returns InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
 
     // When
     versionsStateHolder.test {
@@ -112,9 +114,7 @@ class ServerVersionFetcherTest {
   @Test
   fun `Failed then successful fetch response`() = runTest(timeout = 5.seconds) {
     // Given
-    val validResponse = Response.success(
-      InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3")),
-    )
+    val validResponse = InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
     val failureReason = "SOMETHING BROKE"
     coEvery { baseApi.info() } answers {
       coEvery { baseApi.info() } returns validResponse

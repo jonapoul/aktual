@@ -129,7 +129,6 @@ licensee {
 
 dependencies {
   implementation(libs.alakazam.android.core)
-  implementation(libs.alakazam.di.hilt)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.activity.compose)

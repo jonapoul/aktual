@@ -6,13 +6,20 @@ import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
-import actual.test.MockWebServerRule
-import actual.test.TestBuildConfig
+import actual.test.TestClientFactory
+import actual.test.ThrowingRequestHandler
 import actual.test.buildPreferences
+import actual.test.clear
+import actual.test.enqueue
+import actual.test.respondJson
+import actual.url.model.Protocol
+import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -21,6 +28,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import org.junit.After
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -35,24 +43,29 @@ internal class LoginRequesterTest {
   @get:Rule
   val mainDispatcherRule = MainDispatcherRule()
 
-  @get:Rule
-  val webServerRule = MockWebServerRule()
-
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var loginPreferences: LoginPreferences
   private lateinit var serverUrlPreferences: ServerUrlPreferences
   private lateinit var connectionMonitor: ConnectionMonitor
+  private lateinit var mockEngine: MockEngine
+
+  @After
+  fun after() {
+    mockEngine.close()
+  }
 
   private fun TestScope.before() {
     val flowPrefs = buildPreferences(mainDispatcherRule.dispatcher)
     serverUrlPreferences = ServerUrlPreferences(flowPrefs)
     loginPreferences = LoginPreferences(flowPrefs)
     apisStateHolder = ActualApisStateHolder()
+    mockEngine = MockEngine(ThrowingRequestHandler)
+    mockEngine.clear()
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,
-      buildConfig = TestBuildConfig,
+      clientFactory = TestClientFactory(mockEngine),
       apiStateHolder = apisStateHolder,
       serverUrlPreferences = serverUrlPreferences,
     )
@@ -69,7 +82,7 @@ internal class LoginRequesterTest {
     before()
 
     // Given a URL is set
-    serverUrlPreferences.url.set(webServerRule.serverUrl())
+    serverUrlPreferences.url.set(EXAMPLE_URL)
 
     // and we have a non-null api
     connectionMonitor.start()
@@ -80,7 +93,7 @@ internal class LoginRequesterTest {
 
       // When we log in with a successful response
       val body = """{ "status": "ok", "data": { "token": "$EXAMPLE_TOKEN" } } """
-      webServerRule.enqueue(body)
+      mockEngine.enqueue { respondJson(body) }
       val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
       // Then a success response was parsed, and the token was stored in prefs
@@ -114,7 +127,7 @@ internal class LoginRequesterTest {
     before()
 
     // Given a URL is set
-    serverUrlPreferences.url.set(webServerRule.serverUrl())
+    serverUrlPreferences.url.set(EXAMPLE_URL)
 
     // and we have a non-null api
     connectionMonitor.start()
@@ -127,7 +140,7 @@ internal class LoginRequesterTest {
         "data": { "token": null }
       }
     """.trimIndent()
-    webServerRule.enqueue(body)
+    mockEngine.enqueue { respondJson(body) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
     // Then a success result was parsed, and the token was stored in prefs
@@ -139,7 +152,7 @@ internal class LoginRequesterTest {
     before()
 
     // Given a URL is set
-    serverUrlPreferences.url.set(webServerRule.serverUrl())
+    serverUrlPreferences.url.set(EXAMPLE_URL)
 
     // and we have a non-null api
     connectionMonitor.start()
@@ -152,7 +165,7 @@ internal class LoginRequesterTest {
         "reason": "Some error"
       }
     """.trimIndent()
-    webServerRule.enqueue(code = 500, body = body)
+    mockEngine.enqueue { respondJson(body, HttpStatusCode.InternalServerError) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
     // Then a HTTP result
@@ -162,5 +175,6 @@ internal class LoginRequesterTest {
   private companion object {
     val EXAMPLE_PASSWORD = Password(value = "P@ssw0rd")
     val EXAMPLE_TOKEN = LoginToken(value = "abc123")
+    val EXAMPLE_URL = ServerUrl(Protocol.Https, "website.com")
   }
 }

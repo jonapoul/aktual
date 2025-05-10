@@ -9,7 +9,7 @@ interface ModuleType {
 
   fun interface Finder {
     fun find(project: Project): ModuleType
-    fun color(project: Project): Color = find(project).color.also { println("COLOR = $it") }
+    fun color(project: Project): Color = find(project).color
   }
 }
 

@@ -8,26 +8,26 @@ import actual.budget.sync.vm.Bytes.Companion.Zero
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failed
 import actual.budget.sync.vm.DownloadState.InProgress
-import actual.core.files.FileSystem
+import actual.core.files.DatabaseDirectory
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import alakazam.kotlin.logging.Logger
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsChannel
+import io.ktor.http.contentLength
+import io.ktor.http.isSuccess
+import io.ktor.utils.io.readAvailable
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
-import okhttp3.ResponseBody
 import okio.buffer
-import okio.sink
-import okio.source
-import okio.use
-import java.io.File
 import java.io.IOException
 import javax.inject.Inject
 
 class BudgetFileDownloader @Inject internal constructor(
   private val contexts: CoroutineContexts,
-  private val fileSystem: FileSystem,
+  private val databaseDirectory: DatabaseDirectory,
   private val apisStateHolder: ActualApisStateHolder,
 ) {
   fun download(token: LoginToken, budgetId: BudgetId): Flow<DownloadState> {
@@ -45,44 +45,49 @@ class BudgetFileDownloader @Inject internal constructor(
       return
     }
 
-    val body = response.body()
-    if (response.isSuccessful && body != null) {
-      val budgetFile = fileSystem.budgetDatabase(id)
-      saveFile(body, budgetFile)
-    } else {
-      Logger.e("Failed: $response")
-      emit(Failed(response.message(), Zero))
+    val length = response.contentLength()?.bytes
+    when {
+      length == null -> {
+        Logger.e("Empty response: $response")
+        emit(Failed(response.status.description, Zero))
+      }
+
+      !response.status.isSuccess() -> {
+        Logger.e("Failed: ${response.status}")
+        emit(Failed(response.status.description, Zero))
+      }
+
+      else -> {
+        Logger.i("Starting download for $id with length $length")
+        saveFileAndEmitProgress(response, length, id)
+      }
     }
   }
 
-  @Suppress("NestedBlockDepth", "BlockingMethodInNonBlockingContext")
-  private suspend fun FlowCollector<DownloadState>.saveFile(body: ResponseBody, outputFile: File) {
-    if (outputFile.exists()) {
-      outputFile.delete()
-      outputFile.createNewFile()
-    }
-
-    val responseLength = body.contentLength().bytes
-    emit(InProgress(Zero, responseLength))
-
+  @Suppress("NestedBlockDepth")
+  private suspend fun FlowCollector<DownloadState>.saveFileAndEmitProgress(
+    response: HttpResponse,
+    responseLength: Bytes,
+    budgetId: BudgetId,
+  ) {
     try {
-      body.byteStream().source().buffer().use { source ->
-        outputFile.sink(append = false).buffer().use { sink ->
-          val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-          var readSoFar = 0L
-          var bytes = source.read(buffer)
-          while (bytes >= 0) {
-            sink.write(buffer, 0, bytes)
-            readSoFar += bytes
-            bytes = source.read(buffer)
-            emit(InProgress(readSoFar.bytes, responseLength))
-          }
+      databaseDirectory.sink(budgetId).buffer().use { sink ->
+        val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+        var totalBytesRead = 0L
+        val input = response.bodyAsChannel()
+        emit(InProgress(Zero, responseLength))
+        while (!input.isClosedForRead) {
+          val bytesRead = input.readAvailable(buffer)
+          if (bytesRead <= 0) break
+          sink.write(buffer, 0, bytesRead)
+          totalBytesRead += bytesRead
+          emit(InProgress(totalBytesRead.bytes, responseLength))
         }
       }
-      emit(Done(outputFile, responseLength))
-      Logger.i("Successfully downloaded $responseLength to $outputFile")
+      emit(Done(responseLength))
+      Logger.i("Successfully downloaded $responseLength for ID $budgetId")
     } catch (e: IOException) {
-      Logger.e(e, "Failed downloading $responseLength to $outputFile")
+      Logger.e(e, "Failed downloading $responseLength for ID $budgetId")
       emit(Failed(e.requireMessage(), responseLength))
     }
   }

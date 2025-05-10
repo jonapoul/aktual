@@ -9,16 +9,23 @@ import actual.budget.model.BudgetId
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failed
 import actual.budget.sync.vm.DownloadState.InProgress
-import actual.core.files.FileSystem
-import actual.test.MockWebServerRule
+import actual.test.testHttpClient
+import actual.url.model.Protocol
+import actual.url.model.ServerUrl
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
-import io.mockk.coEvery
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
+import io.ktor.http.headersOf
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
+import okio.buffer
+import okio.fakefilesystem.FakeFileSystem
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -27,6 +34,7 @@ import java.net.NoRouteToHostException
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 
 class BudgetFileDownloaderTest {
   @get:Rule
@@ -35,21 +43,27 @@ class BudgetFileDownloaderTest {
   @get:Rule
   val temporaryFolder = TemporaryFolder()
 
-  @get:Rule
-  val webServerRule = MockWebServerRule()
-
   private lateinit var budgetFileDownloader: BudgetFileDownloader
-  private lateinit var fileSystem: FileSystem
+  private lateinit var fileSystem: FakeFileSystem
+  private lateinit var databaseDirectory: TestDatabaseDirectory
   private lateinit var apisStateHolder: ActualApisStateHolder
+  private lateinit var mockEngine: MockEngine
+
+  @After
+  fun after() {
+    mockEngine.close()
+    fileSystem.checkNoOpenFiles()
+  }
 
   @Before
   fun before() {
-    fileSystem = TestFileSystem(temporaryFolder)
+    fileSystem = FakeFileSystem()
+    databaseDirectory = TestDatabaseDirectory(fileSystem)
     apisStateHolder = ActualApisStateHolder()
 
     budgetFileDownloader = BudgetFileDownloader(
       contexts = TestCoroutineContexts(mainDispatcherRule),
-      fileSystem = fileSystem,
+      databaseDirectory = databaseDirectory,
       apisStateHolder = apisStateHolder,
     )
   }
@@ -57,10 +71,12 @@ class BudgetFileDownloaderTest {
   @Test
   fun `Succeed downloading`() = runTest {
     // given
-    apisStateHolder.update { buildApis() }
     val dataSize = 1024.bytes
     val data = ByteArray(dataSize.numBytes.toInt()) { (it % Byte.MAX_VALUE).toByte() }
-    webServerRule.enqueue(data, code = 200)
+    mockEngine = MockEngine {
+      respond(data, headers = headersOf(HttpHeaders.ContentLength, dataSize.numBytes.toString()))
+    }
+    apisStateHolder.update { buildApis() }
 
     // when
     budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
@@ -77,7 +93,9 @@ class BudgetFileDownloaderTest {
       assertEquals(expected = dataSize, actual = finalState.total)
 
       // and it contains all our data, nothing more or less
-      val downloadedData = finalState.file.readBytes()
+      val path = databaseDirectory.pathFor(BUDGET_ID)
+      assertTrue(fileSystem.exists(path))
+      val downloadedData = fileSystem.source(path).buffer().use { it.readByteArray() }
       assertContentEquals(expected = data, actual = downloadedData)
 
       awaitComplete()
@@ -88,10 +106,8 @@ class BudgetFileDownloaderTest {
   @Test
   fun `Handle network failure`() = runTest {
     // given the API call throws network exception
-    val syncApi = mockk<SyncApi> {
-      coEvery { downloadUserFile(any(), any()) } throws NoRouteToHostException()
-    }
-    apisStateHolder.update { buildApis(syncApi) }
+    mockEngine = MockEngine { throw NoRouteToHostException() }
+    apisStateHolder.update { buildApis() }
 
     // when
     budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
@@ -106,11 +122,7 @@ class BudgetFileDownloaderTest {
 
       // and no files were created
       assertContentEquals(
-        actual = fileSystem
-          .databaseDirectory()
-          .listFiles()
-          .orEmpty()
-          .toList(),
+        actual = fileSystem.allPaths.toList(),
         expected = emptyList(),
       )
 
@@ -120,11 +132,12 @@ class BudgetFileDownloaderTest {
   }
 
   private fun buildApis(
-    syncApi: SyncApi = webServerRule.buildApi(ActualJson),
+    syncApi: SyncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, ActualJson)),
   ) = mockk<ActualApis> { every { sync } returns syncApi }
 
   private companion object {
     val TOKEN = LoginToken("abc-123")
     val BUDGET_ID = BudgetId("xyz-789")
+    val SERVER_URL = ServerUrl(Protocol.Https, "actual.website.com")
   }
 }
