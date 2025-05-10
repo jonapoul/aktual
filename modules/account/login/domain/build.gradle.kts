@@ -12,12 +12,12 @@ kotlin {
     api(projects.account.model)
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.kotlinx.coroutines)
-    implementation(libs.retrofit.core)
     implementation(projects.api.actual)
     compileOnly(libs.alakazam.kotlin.compose.annotations)
   }
 
   androidUnitTestDependencies {
+    implementation(projects.api.builder)
     implementation(projects.core.connection)
     implementation(projects.test.buildconfig)
     implementation(projects.test.coroutines)

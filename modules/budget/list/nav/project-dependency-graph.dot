@@ -2,8 +2,8 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":budget:list:nav","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":budget:list:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:list:nav" ["fillcolor"="#5555FF","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]

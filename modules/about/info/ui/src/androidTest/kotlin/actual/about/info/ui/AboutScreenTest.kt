@@ -43,7 +43,7 @@ class AboutScreenTest {
   lateinit var buildConfig: BuildConfig
 
   @BindValue
-  lateinit var githubApi: GithubApi
+  lateinit var githubApiFactory: GithubApi.Factory
 
   @BindValue
   lateinit var coroutineContexts: CoroutineContexts
@@ -52,7 +52,7 @@ class AboutScreenTest {
   @Suppress("InjectDispatcher")
   fun before() {
     buildConfig = TestBuildConfig
-    githubApi = TestGithubApi()
+    githubApiFactory = GithubApi.Factory { TestGithubApi() }
     coroutineContexts = TestCoroutineContexts(Dispatchers.Unconfined)
 
     hiltRule.inject()

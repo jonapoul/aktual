@@ -1,19 +1,23 @@
 package actual.about.info.data
 
-import actual.test.MockWebServerRule
 import actual.test.TestBuildConfig
-import alakazam.kotlin.core.BuildConfig
+import actual.test.ThrowingRequestHandler
+import actual.test.clear
+import actual.test.enqueue
+import actual.test.respondJson
+import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
-import alakazam.test.core.getResourceAsText
 import alakazam.test.core.standardDispatcher
 import github.api.client.GithubApi
 import github.api.client.GithubJson
 import github.api.model.GithubRelease
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respondError
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
-import org.junit.Before
-import org.junit.Rule
+import org.junit.After
 import org.junit.Test
 import java.io.IOException
 import kotlin.test.assertEquals
@@ -21,31 +25,25 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class GithubRepositoryTest {
-  @get:Rule
-  val webServerRule = MockWebServerRule()
-
   private lateinit var githubRepository: GithubRepository
-  private lateinit var githubApi: GithubApi
-  private lateinit var buildConfig: BuildConfig
+  private lateinit var mockEngine: MockEngine
 
-  @Before
-  fun before() {
-    buildConfig = TestBuildConfig
-    githubApi = webServerRule.buildApi(json = GithubJson)
+  @After
+  fun after() {
+    mockEngine.close()
   }
 
   @Test
   fun `Update available from three returned`() = runTest {
     // Given
     buildRepo()
-    val threeReleasesJson = getResourceAsText(filename = "new-release.json")
-    webServerRule.enqueue(threeReleasesJson)
+    mockEngine.enqueue { respondJson(NewRelease) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertEquals(expected = "1.2.3", actual = buildConfig.versionName)
+    assertEquals(expected = "1.2.3", actual = TestBuildConfig.versionName)
     assertEquals(
       actual = state,
       expected = LatestReleaseState.UpdateAvailable(
@@ -62,23 +60,22 @@ class GithubRepositoryTest {
   fun `No new updates`() = runTest {
     // Given
     buildRepo()
-    val threeReleasesJson = getResourceAsText(filename = "no-new-update.json")
-    webServerRule.enqueue(threeReleasesJson)
+    mockEngine.enqueue { respondJson(NoNewUpdate) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertEquals(expected = "1.2.3", actual = buildConfig.versionName)
+    assertEquals(expected = "1.2.3", actual = TestBuildConfig.versionName)
     assertEquals(actual = state, expected = LatestReleaseState.NoNewUpdate)
   }
 
   @Test
   fun `No releases`() = runTest {
     // Given
-    buildRepo()
     val emptyArrayResponse = "[]"
-    webServerRule.enqueue(emptyArrayResponse)
+    buildRepo()
+    mockEngine.enqueue { respondJson(emptyArrayResponse) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -91,8 +88,7 @@ class GithubRepositoryTest {
   fun `Private repo`() = runTest {
     // Given
     buildRepo()
-    val privateRepoJson = getResourceAsText(filename = "not-found.json")
-    webServerRule.enqueue(privateRepoJson)
+    mockEngine.enqueue { respondJson(NotFound, HttpStatusCode.NotFound) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -105,12 +101,8 @@ class GithubRepositoryTest {
   fun `Invalid JSON response`() = runTest {
     // Given
     buildRepo()
-    val jsonResponse = """
-      {
-        "foo" : "bar"
-      }
-    """.trimIndent()
-    webServerRule.enqueue(jsonResponse)
+    val jsonResponse = """{"foo" : "bar"}"""
+    mockEngine.enqueue { respondJson(jsonResponse) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -124,8 +116,7 @@ class GithubRepositoryTest {
   fun `Network failure`() = runTest {
     // Given
     buildRepo()
-    githubApi = GithubApi { throw IOException("Network broke!") }
-    buildRepo()
+    mockEngine.enqueue { throw IOException("Network broke!") }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -135,11 +126,28 @@ class GithubRepositoryTest {
     assertTrue(state.errorMessage.contains("IO failure"), state.errorMessage)
   }
 
+  @Test
+  fun `HTTP failure`() = runTest {
+    // Given
+    buildRepo()
+    mockEngine.enqueue { respondError(HttpStatusCode.MethodNotAllowed) }
+
+    // When
+    val state = githubRepository.fetchLatestRelease()
+
+    // Then
+    assertIs<LatestReleaseState.Failure>(state)
+    assertTrue(state.errorMessage.contains("HTTP error 405"), state.errorMessage)
+  }
+
   private fun TestScope.buildRepo() {
+    mockEngine = MockEngine(ThrowingRequestHandler)
+    mockEngine.clear()
+    val githubApi = GithubApi(testHttpClient(mockEngine, GithubJson))
     githubRepository = GithubRepository(
       contexts = TestCoroutineContexts(standardDispatcher),
-      api = githubApi,
-      buildConfig = buildConfig,
+      buildConfig = TestBuildConfig,
+      apiFactory = GithubApi.Factory { githubApi },
     )
   }
 }

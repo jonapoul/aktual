@@ -32,3 +32,7 @@
 - check server version on about screen
   - next to app version?
   - link to release notes
+
+- migrate away from junit rules
+
+- android native for multiplatform?

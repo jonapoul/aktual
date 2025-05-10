@@ -4,27 +4,26 @@ import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.core.CoroutineContexts
 import github.api.client.GithubApi
 import github.api.model.GithubRelease
-import github.api.model.GithubReleases
+import io.ktor.client.plugins.ResponseException
+import io.ktor.http.HttpStatusCode
+import io.ktor.serialization.JsonConvertException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
-import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
 class GithubRepository @Inject internal constructor(
   private val contexts: CoroutineContexts,
-  private val api: GithubApi,
+  private val apiFactory: GithubApi.Factory,
   private val buildConfig: BuildConfig,
 ) {
   suspend fun fetchLatestRelease(): LatestReleaseState {
     try {
-      val response = withContext(contexts.io) { api.getReleases() }
-      if (response !is GithubReleases.Valid) {
-        return LatestReleaseState.PrivateRepo
+      val releases = withContext(contexts.io) {
+        apiFactory.build().use { api -> api.getReleases() }
       }
 
-      val releases = response.releases
       val latest = releases.maxByOrNull { it.publishedAt }
       return when {
         releases.isEmpty() || latest == null ->
@@ -49,10 +48,14 @@ class GithubRepository @Inject internal constructor(
     }
   }
 
-  private fun Exception.toFailure(): LatestReleaseState.Failure {
+  private fun Exception.toFailure(): LatestReleaseState {
     val errorMessage = when (this) {
-      is SerializationException -> "Failed decoding JSON: $message"
-      is HttpException -> "HTTP error ${code()}: ${message()}"
+      is ResponseException -> when (response.status) {
+        HttpStatusCode.NotFound -> return LatestReleaseState.PrivateRepo
+        else -> with(response.status) { "HTTP error $value: $description" }
+      }
+
+      is SerializationException, is JsonConvertException -> "Failed decoding JSON: $message"
       is IOException -> "IO failure: $message"
       else -> "Other error - ${javaClass.simpleName}: $message"
     }

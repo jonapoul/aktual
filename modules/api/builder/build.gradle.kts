@@ -8,12 +8,13 @@ kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin.core)
     api(libs.kotlinx.serialization.json)
-    api(libs.okhttp.core)
-    api(libs.retrofit.core)
+    api(libs.ktor.core)
     api(projects.url.model)
     implementation(libs.alakazam.kotlin.logging)
-    implementation(libs.okhttp.logging)
-    implementation(libs.retrofit.scalars)
-    implementation(libs.retrofit.serialization)
+    implementation(libs.ktor.auth)
+    implementation(libs.ktor.cio)
+    implementation(libs.ktor.contentNegotiation)
+    implementation(libs.ktor.serialization.json)
+    implementation(libs.ktor.logging)
   }
 }

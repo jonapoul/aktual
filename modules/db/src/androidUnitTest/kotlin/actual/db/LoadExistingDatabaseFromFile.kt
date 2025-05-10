@@ -1,12 +1,13 @@
 package actual.db
 
 import actual.budget.model.BudgetId
-import actual.core.files.AndroidFileSystem
+import actual.core.files.AndroidDatabaseDirectory
 import alakazam.test.core.getResourceAsStream
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import app.cash.sqldelight.db.SqlDriver
 import kotlinx.coroutines.test.runTest
+import okio.FileSystem
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -48,13 +49,14 @@ class LoadExistingDatabaseFromFile {
   }
 
   private fun loadDatabaseIntoFile(): File {
-    val outputFile = AndroidFileSystem(context).budgetDatabase(BUDGET_ID)
+    val path = AndroidDatabaseDirectory(context, FileSystem.SYSTEM).pathFor(BUDGET_ID)
+    val file = path.toFile()
     getResourceAsStream("test-db.sqlite").use { input ->
-      outputFile.outputStream().use { output ->
+      file.outputStream().use { output ->
         input.copyTo(output)
       }
     }
-    return outputFile
+    return file
   }
 
   private companion object {

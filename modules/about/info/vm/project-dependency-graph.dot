@@ -2,8 +2,8 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":about:info:vm","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":about:info:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":about:info:data" ["fillcolor"="#9D8DF1","shape"="none"]
+":about:info:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]

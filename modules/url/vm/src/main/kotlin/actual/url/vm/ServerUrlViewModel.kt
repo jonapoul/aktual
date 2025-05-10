@@ -2,7 +2,6 @@ package actual.url.vm
 
 import actual.account.login.domain.LoginPreferences
 import actual.api.client.ActualApisStateHolder
-import actual.api.client.needsBootstrapAdapted
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
@@ -21,6 +20,8 @@ import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.ktor.client.call.body
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
@@ -152,12 +153,17 @@ class ServerUrlViewModel @Inject internal constructor(
       .first()
 
     Logger.v("apis = %s", apis)
-    val response = withContext(contexts.io) { apis.account.needsBootstrapAdapted() }
-    Logger.v("response = %s", response)
+    val response = try {
+      withContext(contexts.io) { apis.account.needsBootstrap() }
+    } catch (e: ResponseException) {
+      Logger.e(e, "HTTP failure checking bootstrap for %s", url)
+      e.response.body<NeedsBootstrapResponse.Failure>()
+    }
 
-    val confirmResult = when (val body = response.body) {
-      is NeedsBootstrapResponse.Success -> ConfirmResult.Succeeded(isBootstrapped = body.data.bootstrapped)
-      is NeedsBootstrapResponse.Failure -> ConfirmResult.Failed(reason = body.reason.reason)
+    Logger.v("response = %s", response)
+    val confirmResult = when (response) {
+      is NeedsBootstrapResponse.Success -> ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
+      is NeedsBootstrapResponse.Failure -> ConfirmResult.Failed(reason = response.reason.reason)
     }
     mutableConfirmResult.update { confirmResult }
   } catch (e: CancellationException) {

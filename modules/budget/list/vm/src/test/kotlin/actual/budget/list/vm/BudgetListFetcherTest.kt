@@ -8,27 +8,30 @@ import actual.api.client.SyncApi
 import actual.budget.model.Budget
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetState
-import actual.test.MockWebServerRule
+import actual.test.respondJson
+import actual.test.testHttpClient
+import actual.url.model.Protocol
+import actual.url.model.ServerUrl
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
+import org.junit.After
 import org.junit.Test
 import java.net.NoRouteToHostException
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 class BudgetListFetcherTest {
-  @get:Rule
-  val webServerRule = MockWebServerRule()
-
   private lateinit var budgetListFetcher: BudgetListFetcher
   private lateinit var apisStateHolder: ActualApisStateHolder
+  private lateinit var mockEngine: MockEngine
 
   private fun TestScope.before() {
     apisStateHolder = ActualApisStateHolder()
@@ -36,6 +39,13 @@ class BudgetListFetcherTest {
       contexts = TestCoroutineContexts(standardDispatcher),
       apisStateHolder = apisStateHolder,
     )
+  }
+
+  @After
+  fun after() {
+    if (::mockEngine.isInitialized) {
+      mockEngine.close()
+    }
   }
 
   @Test
@@ -51,8 +61,8 @@ class BudgetListFetcherTest {
     before()
 
     // given
+    mockEngine = MockEngine { respondJson(VALID_RESPONSE) }
     apisStateHolder.update { buildApis() }
-    webServerRule.enqueue(code = 200, body = VALID_RESPONSE)
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)
@@ -79,15 +89,14 @@ class BudgetListFetcherTest {
     before()
 
     // given
+    val body = """
+      {
+        "status": "ok",
+        "data": [ { "invalid_format": true } ]
+      }
+    """.trimIndent()
+    mockEngine = MockEngine { respondJson(body) }
     apisStateHolder.update { buildApis() }
-    webServerRule.enqueue(
-      """
-        {
-          "status": "ok",
-          "data": [ { "invalid_format": true } ]
-        }
-      """.trimIndent(),
-    )
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)
@@ -104,8 +113,8 @@ class BudgetListFetcherTest {
     val syncApi = mockk<SyncApi> {
       coEvery { fetchUserFiles(TOKEN) } throws NoRouteToHostException()
     }
+    mockEngine = MockEngine { respondJson(VALID_RESPONSE) }
     apisStateHolder.update { buildApis(syncApi) }
-    webServerRule.enqueue(VALID_RESPONSE, code = 200)
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)
@@ -125,8 +134,8 @@ class BudgetListFetcherTest {
         "reason": "something broke"
       }
     """.trimIndent()
+    mockEngine = MockEngine { respondJson(responseJson, HttpStatusCode.Forbidden) }
     apisStateHolder.update { buildApis() }
-    webServerRule.enqueue(responseJson, code = 403)
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)
@@ -139,11 +148,12 @@ class BudgetListFetcherTest {
   }
 
   private fun buildApis(
-    syncApi: SyncApi = webServerRule.buildApi(ActualJson),
+    syncApi: SyncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, ActualJson)),
   ) = mockk<ActualApis> { every { sync } returns syncApi }
 
   private companion object {
     val TOKEN = LoginToken(value = "abc-123")
+    val SERVER_URL = ServerUrl(Protocol.Https, "test.unused.com")
 
     val VALID_RESPONSE = """
       {

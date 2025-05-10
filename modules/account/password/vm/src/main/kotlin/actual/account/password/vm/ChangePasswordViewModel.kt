@@ -76,6 +76,7 @@ class ChangePasswordViewModel @Inject internal constructor(
         ChangePasswordResult.InvalidPassword -> ChangePasswordState.InvalidPassword
         ChangePasswordResult.NetworkFailure -> ChangePasswordState.NetworkFailure
         ChangePasswordResult.NotLoggedIn -> ChangePasswordState.NotLoggedIn
+        is ChangePasswordResult.HttpFailure -> ChangePasswordState.OtherFailure
         is ChangePasswordResult.OtherFailure -> ChangePasswordState.OtherFailure
       }
       mutableState.update { newState }

@@ -2,15 +2,14 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":account:password:vm","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":account:password:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":account:login:domain" ["fillcolor"="#9D8DF1","shape"="none"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":account:password:domain" ["fillcolor"="#9D8DF1","shape"="none"]
-":account:login:domain" ["fillcolor"="#9D8DF1","shape"="none"]
+":account:password:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
+":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -26,7 +25,6 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":core:versions"
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
-":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

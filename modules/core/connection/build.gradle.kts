@@ -13,11 +13,7 @@ kotlin {
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
-    implementation(libs.okhttp.core)
-    implementation(libs.okhttp.logging)
     implementation(libs.preferences.core)
-    implementation(libs.retrofit.core)
-    implementation(libs.retrofit.serialization)
     implementation(projects.api.actual)
     implementation(projects.api.builder)
     implementation(projects.core.versions)
@@ -29,6 +25,7 @@ kotlin {
     implementation(libs.alakazam.android.core)
     implementation(projects.test.buildconfig)
     implementation(projects.test.coroutines)
+    implementation(projects.test.http)
     implementation(projects.test.prefs)
   }
 }

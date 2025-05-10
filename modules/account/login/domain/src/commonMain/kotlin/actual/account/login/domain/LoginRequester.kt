@@ -2,11 +2,11 @@ package actual.account.login.domain
 
 import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
-import actual.api.client.loginAdapted
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import java.io.IOException
@@ -22,9 +22,11 @@ class LoginRequester @Inject internal constructor(
 
     val request = LoginRequest(password)
     val response = try {
-      withContext(contexts.io) { apis.account.loginAdapted(request) }
+      withContext(contexts.io) { apis.account.login(request) }
     } catch (e: CancellationException) {
       throw e
+    } catch (e: ResponseException) {
+      return with(e.response.status) { LoginResult.HttpFailure(value, description) }
     } catch (e: Exception) {
       return when (e) {
         is IOException -> LoginResult.NetworkFailure(e.requireMessage())
@@ -32,23 +34,13 @@ class LoginRequester @Inject internal constructor(
       }
     }
 
-    if (!response.isSuccessful) {
-      return LoginResult.HttpFailure(response.code, response.message)
+    val result = when (val data = response.data) {
+      is LoginResponse.Data.Invalid -> LoginResult.InvalidPassword
+      is LoginResponse.Data.Valid -> LoginResult.Success(data.token)
     }
 
-    val body = response.body
-    val result = when (body) {
-      is LoginResponse.Failure -> LoginResult.OtherFailure(body.reason.reason)
-      is LoginResponse.Success -> when (val data = body.data) {
-        is LoginResponse.Data.Invalid -> LoginResult.InvalidPassword
-        is LoginResponse.Data.Valid -> LoginResult.Success(data.token)
-      }
-    }
-
-    if (body is LoginResponse.Success) {
-      // Cache the token
-      loginPreferences.token.set(body.data.token)
-    }
+    // Also save the token
+    loginPreferences.token.set(response.data.token)
 
     return result
   }

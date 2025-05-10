@@ -4,12 +4,9 @@ plugins {
 
 dependencies {
   api(libs.alakazam.kotlin.core)
+  api(libs.javaxInject)
   api(projects.api.github)
-  implementation(libs.hilt.android)
-  implementation(libs.javaxInject)
   implementation(libs.kotlinx.serialization.json)
-  implementation(libs.okhttp.core)
-  implementation(libs.retrofit.core)
+  implementation(libs.ktor.core)
   implementation(projects.api.builder)
-  implementation(projects.url.model)
 }

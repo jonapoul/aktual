@@ -10,36 +10,38 @@ import actual.api.model.account.LoginResponse
 import actual.api.model.account.NeedsBootstrapResponse
 import actual.api.model.account.ValidateResponse
 import actual.api.model.internal.ActualHeaders
-import actual.codegen.AdaptedApi
-import retrofit2.Response
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.POST
+import actual.url.model.ServerUrl
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 
-@AdaptedApi
 interface AccountApi {
-  @GET("account/needs-bootstrap")
-  suspend fun needsBootstrap(): Response<NeedsBootstrapResponse.Success>
+  suspend fun needsBootstrap(): NeedsBootstrapResponse.Success
+  suspend fun bootstrap(body: BootstrapRequest): BootstrapResponse.Success
+  suspend fun login(body: LoginRequest): LoginResponse.Success
+  suspend fun changePassword(body: ChangePasswordRequest, token: LoginToken): ChangePasswordResponse.Success
+  suspend fun validate(token: LoginToken): ValidateResponse.Success
+}
 
-  @POST("account/bootstrap")
-  suspend fun bootstrap(
-    @Body body: BootstrapRequest,
-  ): Response<BootstrapResponse.Success>
+fun AccountApi(url: ServerUrl, client: HttpClient): AccountApi = AccountApiClient(url, client)
 
-  @POST("account/login")
-  suspend fun login(
-    @Body body: LoginRequest,
-  ): Response<LoginResponse.Success>
+private class AccountApiClient(private val serverUrl: ServerUrl, private val client: HttpClient) : AccountApi {
+  override suspend fun needsBootstrap() = client
+    .get(serverUrl, path = "/account/needs-bootstrap")
+    .body<NeedsBootstrapResponse.Success>()
 
-  @POST("account/change-password")
-  suspend fun changePassword(
-    @Body body: ChangePasswordRequest,
-    @Header(ActualHeaders.TOKEN) token: LoginToken,
-  ): Response<ChangePasswordResponse.Success>
+  override suspend fun bootstrap(body: BootstrapRequest) = client
+    .post(serverUrl, body, path = "/account/bootstrap")
+    .body<BootstrapResponse.Success>()
 
-  @POST("account/validate")
-  suspend fun validate(
-    @Header(ActualHeaders.TOKEN) token: LoginToken,
-  ): Response<ValidateResponse.Success>
+  override suspend fun login(body: LoginRequest) = client
+    .post(serverUrl, body, path = "/account/login")
+    .body<LoginResponse.Success>()
+
+  override suspend fun changePassword(body: ChangePasswordRequest, token: LoginToken) = client
+    .post(serverUrl, body, path = "/account/change-password", headers = mapOf(ActualHeaders.TOKEN to token.value))
+    .body<ChangePasswordResponse.Success>()
+
+  override suspend fun validate(token: LoginToken) = client
+    .post(serverUrl, path = "/account/validate", headers = mapOf(ActualHeaders.TOKEN to token.value))
+    .body<ValidateResponse.Success>()
 }

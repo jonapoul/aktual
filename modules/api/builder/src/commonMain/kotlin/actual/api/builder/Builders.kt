@@ -1,41 +1,42 @@
 package actual.api.builder
 
-import actual.url.model.ServerUrl
-import alakazam.kotlin.core.ifTrue
-import alakazam.kotlin.logging.Logger
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngine
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.logging.LoggingFormat
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
-import retrofit2.converter.scalars.ScalarsConverterFactory
+import alakazam.kotlin.logging.Logger as AlakazamLogger
+import io.ktor.client.plugins.logging.Logger as KtorLogger
 
-fun buildOkHttp(
-  isDebug: Boolean,
-  tag: String,
-) = OkHttpClient
-  .Builder()
-  .ifTrue(isDebug) { addLogger(tag) }
-  .build()
-
-fun buildRetrofit(
-  client: OkHttpClient,
-  url: ServerUrl,
+fun buildKtorClient(
   json: Json,
-): Retrofit {
-  val contentType = "application/json".toMediaType()
-  return Retrofit
-    .Builder()
-    .addConverterFactory(ScalarsConverterFactory.create())
-    .addConverterFactory(json.asConverterFactory(contentType))
-    .client(client)
-    .baseUrl(url.toString())
-    .build()
+  tag: String?,
+  engine: HttpClientEngine = CIO.create(),
+  isDebug: Boolean = false,
+) = HttpClient(engine) {
+  // Throws ResponseExceptions for non-2xx responses
+  expectSuccess = true
+
+  install(ContentNegotiation) {
+    json(json)
+  }
+
+  if (isDebug) {
+    install(Logging) {
+      logger = ActualLogger(tag)
+      level = LogLevel.ALL
+      format = LoggingFormat.OkHttp
+      // filter { request -> true }
+      // sanitizeHeader { header -> header == HttpHeaders.Authorization }
+    }
+  }
 }
 
-private fun OkHttpClient.Builder.addLogger(tag: String): OkHttpClient.Builder {
-  val interceptor = HttpLoggingInterceptor { Logger.tag(tag).v(it) }
-  interceptor.setLevel(HttpLoggingInterceptor.Level.BODY)
-  return addInterceptor(interceptor)
+private class ActualLogger(private val tag: String?) : KtorLogger {
+  private val delegate = if (tag == null) AlakazamLogger else AlakazamLogger.tag(tag)
+  override fun log(message: String) = delegate.v(message)
 }

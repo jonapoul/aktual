@@ -1,7 +1,5 @@
 package actual.budget.sync.vm
 
-import java.io.File
-
 sealed interface DownloadState {
   val total: Bytes
 
@@ -11,7 +9,6 @@ sealed interface DownloadState {
   ) : DownloadState
 
   data class Done(
-    val file: File,
     override val total: Bytes,
   ) : DownloadState
 
