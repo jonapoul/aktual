@@ -76,7 +76,7 @@ open class TidyDotFileTask @Inject constructor(objects: ObjectFactory) : Default
     var isInModuleDeclarations = false
 
     for (line in lines) {
-      if (line.startsWith("\":") && line.contains("fillcolor") && line.contains("box")) {
+      if (line.startsWith("\":") && line.contains("fillcolor")) {
         isInModuleDeclarations = true
         moduleDeclarations.add(line)
       } else if (isInModuleDeclarations) {

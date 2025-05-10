@@ -2,9 +2,9 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":api:di","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
+":api:builder" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:di" ["shape"="none","fillcolor"="#FCB103"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
-":api:builder" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
