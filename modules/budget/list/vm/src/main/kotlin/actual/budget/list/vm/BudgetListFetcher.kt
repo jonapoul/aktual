@@ -31,10 +31,7 @@ class BudgetListFetcher @Inject internal constructor(
       throw e
     } catch (e: ResponseException) {
       Logger.e(e, "HTTP failure fetching budgets")
-      runCatching { e.response.body<ListUserFilesResponse.Failure>() }
-        .getOrNull()
-        ?.let { FetchBudgetsResult.FailureResponse(it.reason.reason) }
-        ?: FetchBudgetsResult.OtherFailure(e.requireMessage())
+      parseResponseException(e)
     } catch (e: JsonConvertException) {
       Logger.e(e, "JSON failure fetching budgets")
       FetchBudgetsResult.InvalidResponse(e.requireMessage())
@@ -45,6 +42,13 @@ class BudgetListFetcher @Inject internal constructor(
       Logger.e(e, "Failed fetching budgets")
       FetchBudgetsResult.OtherFailure(e.requireMessage())
     }
+  }
+
+  private suspend fun parseResponseException(e: ResponseException): FetchBudgetsResult = try {
+    val body = e.response.body<ListUserFilesResponse.Failure>()
+    FetchBudgetsResult.FailureResponse(body.reason.reason)
+  } catch (e: JsonConvertException) {
+    FetchBudgetsResult.OtherFailure(e.requireMessage())
   }
 
   private fun toBudget(item: ListUserFilesResponse.Item) = Budget(
