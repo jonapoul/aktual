@@ -1,8 +1,7 @@
 package actual.about.info.data
 
+import actual.test.EmptyMockEngine
 import actual.test.TestBuildConfig
-import actual.test.ThrowingRequestHandler
-import actual.test.clear
 import actual.test.enqueue
 import actual.test.respondJson
 import actual.test.testHttpClient
@@ -14,6 +13,7 @@ import github.api.model.GithubRelease
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.URLProtocol
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
@@ -31,6 +31,22 @@ class GithubRepositoryTest {
   @After
   fun after() {
     mockEngine.close()
+  }
+
+  @Test
+  fun `Request is structured as expected`() = runTest {
+    // Given
+    buildRepo()
+    mockEngine.enqueue { respondJson(NewRelease) }
+
+    // When
+    githubRepository.fetchLatestRelease()
+    val request = mockEngine.requestHistory.last()
+
+    // Then
+    val expected = "https://api.github.com/repos/jonapoul/actual-android/releases/latest?per_page=1"
+    assertEquals(expected = expected, actual = request.url.toString())
+    assertEquals(expected = URLProtocol.HTTPS, actual = request.url.protocol)
   }
 
   @Test
@@ -141,8 +157,7 @@ class GithubRepositoryTest {
   }
 
   private fun TestScope.buildRepo() {
-    mockEngine = MockEngine(ThrowingRequestHandler)
-    mockEngine.clear()
+    mockEngine = EmptyMockEngine()
     val githubApi = GithubApi(testHttpClient(mockEngine, GithubJson))
     githubRepository = GithubRepository(
       contexts = TestCoroutineContexts(standardDispatcher),

@@ -21,7 +21,13 @@ class GithubRepository @Inject internal constructor(
   suspend fun fetchLatestRelease(): LatestReleaseState {
     try {
       val releases = withContext(contexts.io) {
-        apiFactory.build().use { api -> api.getReleases() }
+        apiFactory.build().use { api ->
+          api.getReleases(
+            user = "jonapoul",
+            repo = "actual-android",
+            perPage = 1,
+          )
+        }
       }
 
       val latest = releases.maxByOrNull { it.publishedAt }

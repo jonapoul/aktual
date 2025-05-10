@@ -1,10 +1,12 @@
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
+import blueprint.core.kspAllConfigs
 
 plugins {
   alias(libs.plugins.module.multiplatform)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.sekret)
+  alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -19,6 +21,7 @@ kotlin {
     compileOnly(libs.sekret)
     implementation(libs.ktor.serialization.core)
     implementation(libs.ktor.serialization.json)
+    implementation(projects.codegen.annotation)
   }
 
   commonTestDependencies {
@@ -26,3 +29,5 @@ kotlin {
     implementation(projects.test.http)
   }
 }
+
+kspAllConfigs(projects.codegen.ksp)

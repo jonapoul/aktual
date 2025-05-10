@@ -19,6 +19,8 @@ fun MockRequestHandleScope.respondJson(
   headers = headersOf(HttpHeaders.ContentType, "application/json"),
 )
 
+fun EmptyMockEngine(): MockEngine = MockEngine(ThrowingRequestHandler).also { it.clear() }
+
 fun MockEngine.enqueue(handler: MockRequestHandler) = config.requestHandlers.add(handler)
 
 fun MockEngine.clear() = config.requestHandlers.clear()
