@@ -1,13 +1,17 @@
+@file:Suppress("SpellCheckingInspection", "FunctionName")
+
 package actual.budget.model
 
-sealed class AccountSyncSource(open val value: String) {
-  data object SimpleFin : AccountSyncSource(value = "simpleFin")
-  data object GoCardless : AccountSyncSource(value = "goCardless")
-  data class Other(override val value: String) : AccountSyncSource(value)
-
+@JvmInline
+value class AccountSyncSource private constructor(val value: String) {
   override fun toString(): String = value
 
   companion object {
+    val SimpleFin = AccountSyncSource(value = "simpleFin")
+    val GoCardless = AccountSyncSource(value = "goCardless")
+    val PluggyAi = AccountSyncSource(value = "pluggyai")
+    fun Other(value: String) = AccountSyncSource(value)
+
     fun fromString(string: String): AccountSyncSource = when (string) {
       SimpleFin.value -> SimpleFin
       GoCardless.value -> GoCardless
