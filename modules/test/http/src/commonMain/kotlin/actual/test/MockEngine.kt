@@ -8,6 +8,7 @@ import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
+import io.ktor.util.toMap
 import org.intellij.lang.annotations.Language
 
 fun MockRequestHandleScope.respondJson(
@@ -24,5 +25,7 @@ fun EmptyMockEngine(): MockEngine = MockEngine(ThrowingRequestHandler).also { it
 fun MockEngine.enqueue(handler: MockRequestHandler) = config.requestHandlers.add(handler)
 
 fun MockEngine.clear() = config.requestHandlers.clear()
+
+fun MockEngine.requestHeaders() = requestHistory.last().headers.toMap()
 
 val ThrowingRequestHandler: MockRequestHandler = { error("No-op") }

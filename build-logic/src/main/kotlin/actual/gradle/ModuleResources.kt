@@ -4,7 +4,6 @@ import blueprint.core.getLibrary
 import blueprint.core.libs
 import blueprint.core.stringProperty
 import com.android.build.api.dsl.LibraryExtension
-import com.android.build.gradle.internal.tasks.factory.dependsOn
 import com.autonomousapps.DependencyAnalysisPlugin
 import dev.jonpoulton.catalog.gradle.CatalogExtension
 import dev.jonpoulton.catalog.gradle.CatalogParameterNaming
@@ -19,7 +18,6 @@ import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.withType
 import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.registering
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 
 class ModuleResources : Plugin<Project> {

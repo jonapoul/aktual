@@ -74,12 +74,33 @@ internal class KtorImplementationVisitor(
     .classBuilder(ClassName(apiClassName.packageName, apiClassName.simpleName + "Client"))
     .addModifiers(PRIVATE)
     .addSuperinterface(apiClassName)
-    .addSuperinterface(TYPE_AUTOCLOSEABLE, delegate = CodeBlock.of("client"))
+    .addSuperinterface(TYPE_AUTOCLOSEABLE, delegate = CodeBlock.of(PROPERTY_CLIENT))
     .primaryConstructor(buildConstructor())
-    .addProperty(PropertySpec.builder("serverUrl", TYPE_SERVER_URL, PRIVATE).initializer("serverUrl").build())
-    .addProperty(PropertySpec.builder("client", TYPE_HTTP_CLIENT, PRIVATE).initializer("client").build())
-    .addFunctions(functions)
+    .addProperty(
+      PropertySpec
+        .builder(PROPERTY_SERVER_URL, TYPE_SERVER_URL, PRIVATE)
+        .initializer(PROPERTY_SERVER_URL)
+        .build(),
+    ).addProperty(
+      PropertySpec
+        .builder(PROPERTY_CLIENT, TYPE_HTTP_CLIENT, PRIVATE)
+        .initializer(PROPERTY_CLIENT)
+        .build(),
+    ).addFunctions(functions)
+    .addProperty(buildUrlProtocolProperty())
     .build()
+
+  private fun buildUrlProtocolProperty() = PropertySpec
+    .builder(PROPERTY_URL_PROTOCOL, TYPE_URL_PROTOCOL, PRIVATE)
+    .initializer(
+      CodeBlock
+        .builder()
+        .beginControlFlow("when ($PROPERTY_SERVER_URL.protocol) {")
+        .addStatement("%T.Http -> %T.HTTP", TYPE_PROTOCOL, TYPE_URL_PROTOCOL)
+        .addStatement("%T.Https -> %T.HTTPS", TYPE_PROTOCOL, TYPE_URL_PROTOCOL)
+        .endControlFlow()
+        .build(),
+    ).build()
 
   /**
    * TODO: Shouldn't need to add [KModifier.ACTUAL] here, but KSP doesn't support generating code into the commonMain
@@ -90,15 +111,15 @@ internal class KtorImplementationVisitor(
     .builder(receiverType.simpleName)
     .returns(receiverType)
     .addModifiers(KModifier.ACTUAL)
-    .addParameter("serverUrl", TYPE_SERVER_URL)
-    .addParameter("client", TYPE_HTTP_CLIENT)
-    .addCode("return ${implType.name}(serverUrl, client)")
+    .addParameter(PROPERTY_SERVER_URL, TYPE_SERVER_URL)
+    .addParameter(PROPERTY_CLIENT, TYPE_HTTP_CLIENT)
+    .addCode("return ${implType.name}($PROPERTY_SERVER_URL, $PROPERTY_CLIENT)")
     .build()
 
   private fun buildConstructor() = FunSpec
     .constructorBuilder()
-    .addParameter("serverUrl", TYPE_SERVER_URL)
-    .addParameter("client", TYPE_HTTP_CLIENT)
+    .addParameter(PROPERTY_SERVER_URL, TYPE_SERVER_URL)
+    .addParameter(PROPERTY_CLIENT, TYPE_HTTP_CLIENT)
     .build()
 
   private fun buildFunction(f: KSFunctionDeclaration, annotation: Pair<Method, String>): FunSpec {
@@ -139,25 +160,28 @@ internal class KtorImplementationVisitor(
   ): CodeBlock {
     val builder = CodeBlock
       .builder()
-      .beginControlFlow("return client.%M {", method.memberName)
+      .beginControlFlow("return $PROPERTY_CLIENT.%M {", method.memberName)
 
     // URL
     var replacedPath = path
     for (item in parameters.paths) replacedPath = replacedPath.replace("{${item.label}}", "$${item.variableName}")
     with(builder) {
       beginControlFlow("url {")
-      add("protocol = ")
-      add(CODE_URL_PROTOCOL)
+      add("protocol = $PROPERTY_URL_PROTOCOL")
       addStatement("")
-      addStatement("host = serverUrl.baseUrl")
+      addStatement("host = $PROPERTY_SERVER_URL.baseUrl")
       addStatement("%M(\"$replacedPath\")", MEMBER_PATH)
       endControlFlow()
     }
 
     // Headers
     with(builder) {
-      parameters.headers.forEach { key, (name, className) ->
-        val value = if (className == STRING) "\"$name\"" else "$name.toString()"
+      parameters.headers.forEach { (key, parameterName, parameterType) ->
+        val value = when {
+          parameterType.isNullable -> "$parameterName?.toString()"
+          parameterType == STRING -> "\"$parameterName\""
+          else -> "$parameterName.toString()"
+        }
         addStatement("%M(\"$key\", $value)", MEMBER_HEADER)
       }
     }
@@ -189,9 +213,15 @@ internal class KtorImplementationVisitor(
 
   private data class ParameterAnnotations(
     val body: String?,
-    val headers: Map<String, Pair<String, TypeName>>,
+    val headers: List<HeaderItem>,
     val paths: List<PathItem>,
     val queries: List<QueryItem>,
+  )
+
+  private data class HeaderItem(
+    val headerName: String,
+    val parameterName: String,
+    val parameterType: TypeName,
   )
 
   private data class PathItem(
@@ -206,7 +236,7 @@ internal class KtorImplementationVisitor(
 
   private fun KSFunctionDeclaration.parameterAnnotations(): ParameterAnnotations {
     val bodies = arrayListOf<String>()
-    val headers = mutableMapOf<String, Pair<String, TypeName>>()
+    val headers = arrayListOf<HeaderItem>()
     val paths = arrayListOf<PathItem>()
     val queries = arrayListOf<QueryItem>()
 
@@ -215,16 +245,20 @@ internal class KtorImplementationVisitor(
       if (list.size > 1) error("Only support 1 parameter annotation on ${parameter.name.requireString}, got $list")
       val annotation = list.firstOrNull() ?: continue
 
-      val type = annotation.annotationType.resolve()
-      val typeName = type.toTypeName()
-      val qualifiedName = type
+      val qualifiedName = annotation
+        .annotationType
+        .resolve()
         .declaration
         .qualifiedName
         .requireString
       val name = parameter.name.requireString
       when (qualifiedName) {
         Header::class.qualifiedName -> {
-          headers[annotation.getValue()] = name to typeName
+          headers += HeaderItem(
+            headerName = annotation.getValue(),
+            parameterName = name,
+            parameterType = parameter.type.resolve().toClassName(),
+          )
         }
 
         Path::class.qualifiedName -> {
@@ -313,23 +347,14 @@ internal class KtorImplementationVisitor(
     val MEMBER_PUT = MemberName("io.ktor.client.request", "put")
     val MEMBER_SET_BODY = MemberName("io.ktor.client.request", "setBody")
 
+    const val PROPERTY_URL_PROTOCOL = "urlProtocol"
+    const val PROPERTY_CLIENT = "client"
+    const val PROPERTY_SERVER_URL = "serverUrl"
+
     val FILE_SUPPRESSIONS = listOf(
       "ALL",
       "warnings",
       "RemoveRedundantBackticks",
-    )
-
-    val CODE_URL_PROTOCOL = CodeBlock.of(
-      """
-        when (serverUrl.protocol) {
-          %T.Http -> %T.HTTP
-          %T.Https -> %T.HTTPS
-        }
-      """.trimIndent(),
-      TYPE_PROTOCOL,
-      TYPE_URL_PROTOCOL,
-      TYPE_PROTOCOL,
-      TYPE_URL_PROTOCOL,
     )
   }
 }
