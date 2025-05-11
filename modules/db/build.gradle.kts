@@ -26,6 +26,7 @@ buildConfig {
   packageName("actual.db")
   className("DatabaseBuildConfig")
   useKotlinOutput { internalVisibility = true }
+  generateAtSync = false
   buildConfigField(name = "FOREIGN_KEY_CONSTRAINTS", value = boolProperty(key = "actual.db.foreignKeyConstraints"))
 }
 
