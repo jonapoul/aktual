@@ -56,6 +56,9 @@ class ModuleResources : Plugin<Project> {
         NameTransform.removePrefix(prefix = "_"),
         NameTransform.CamelCase,
       )
+
+      // Regen the accessors when syncing the IDE
+      generateAtSync = true
     }
 
     tasks.register("generateResourceCatalog") {
