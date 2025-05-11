@@ -6,6 +6,7 @@ plugins {
   alias(libs.plugins.agp.lib) apply false
   alias(libs.plugins.androidCacheFix) apply false
   alias(libs.plugins.buildconfig) apply false
+  alias(libs.plugins.burst) apply false
   alias(libs.plugins.catalog) apply false
   alias(libs.plugins.dependencyGraph) apply false
   alias(libs.plugins.detekt) apply false

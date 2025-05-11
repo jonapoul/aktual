@@ -1,18 +1,24 @@
 package actual.gradle
 
+import app.cash.burst.gradle.BurstPlugin
 import blueprint.recipes.powerAssertBlueprint
 import blueprint.recipes.testBaseBlueprint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
 import org.gradle.kotlin.dsl.withType
+import org.gradle.kotlin.dsl.apply
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 class ConventionTest : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
-      apply(ConventionTestDependencies::class.java)
+      apply(ConventionTestDependencies::class)
+    }
+
+    pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+      pluginManager.apply(BurstPlugin::class)
     }
 
     testBaseBlueprint()
