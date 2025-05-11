@@ -1,7 +1,7 @@
 package actual.about.info.data
 
-import actual.test.EmptyMockEngine
 import actual.test.TestBuildConfig
+import actual.test.emptyMockEngine
 import actual.test.enqueue
 import actual.test.respondJson
 import actual.test.testHttpClient
@@ -67,6 +67,7 @@ class GithubRepositoryTest {
           versionName = "v2.3.4",
           publishedAt = Instant.parse("2024-03-30T09:57:02Z"),
           htmlUrl = "https://github.com/jonapoul/actual-android/releases/tag/2.3.4",
+          tagName = "2.3.4",
         ),
       ),
     )
@@ -157,7 +158,7 @@ class GithubRepositoryTest {
   }
 
   private fun TestScope.buildRepo() {
-    mockEngine = EmptyMockEngine()
+    mockEngine = emptyMockEngine()
     val githubApi = GithubApi(testHttpClient(mockEngine, GithubJson))
     githubRepository = GithubRepository(
       contexts = TestCoroutineContexts(standardDispatcher),

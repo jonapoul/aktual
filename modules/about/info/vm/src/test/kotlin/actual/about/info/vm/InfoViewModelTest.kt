@@ -43,7 +43,7 @@ class InfoViewModelTest {
     // Given the repo returns a new update
     val url = "www.website.com/whatever"
     val version = "2.3.4"
-    val model = GithubRelease(version, TestInstant, url)
+    val model = GithubRelease(version, TestInstant, url, tagName = "v1.2.3")
     coEvery { repository.fetchLatestRelease() } returns LatestReleaseState.UpdateAvailable(model)
 
     viewModel.checkUpdatesState.test {

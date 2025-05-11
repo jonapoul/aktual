@@ -32,7 +32,7 @@ class ServerVersionFetcher @Inject internal constructor(
     while (loopController.shouldLoop()) {
       Logger.v("fetchVersion %s", apis)
       try {
-        val response = withContext(contexts.io) { apis.base.info() }
+        val response = withContext(contexts.io) { apis.base.fetchInfo() }
         Logger.v("Fetched %s", response)
         versionsStateHolder.set(response.build.version)
         break

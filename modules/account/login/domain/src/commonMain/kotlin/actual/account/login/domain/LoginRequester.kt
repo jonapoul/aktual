@@ -1,5 +1,6 @@
 package actual.account.login.domain
 
+import actual.account.model.LoginMethod
 import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.LoginRequest
@@ -20,7 +21,8 @@ class LoginRequester @Inject internal constructor(
   suspend fun logIn(password: Password): LoginResult {
     val apis = apisStateHolder.value ?: return LoginResult.OtherFailure("URL not configured")
 
-    val request = LoginRequest(password)
+    // TODO: handle other login methods
+    val request = LoginRequest(LoginMethod.Password, password)
     val response = try {
       withContext(contexts.io) { apis.account.login(request) }
     } catch (e: CancellationException) {

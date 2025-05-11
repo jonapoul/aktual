@@ -17,4 +17,7 @@ data class GithubRelease(
 
   // The URL of the release tag. E.g. "https://github.com/jonapoul/actual-android/releases/tag/1.0.0"
   @SerialName("html_url") val htmlUrl: String,
+
+  // The name of the tag, e.g. "v1.2.3"
+  @SerialName("tag_name") val tagName: String,
 )

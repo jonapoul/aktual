@@ -10,12 +10,10 @@ import kotlinx.serialization.Serializable
 sealed interface FailureReason {
   val reason: String
 
-  data object TokenExpired : FailureReason {
-    override val reason = "token-expired"
-  }
-
-  data object Unauthorized : FailureReason {
-    override val reason = "unauthorized"
+  enum class Known(override val reason: String) : FailureReason {
+    TokenExpired("token-expired"),
+    Unauthorized("unauthorized"),
+    FileNotFound("file-not-found"),
   }
 
   data class Other(
