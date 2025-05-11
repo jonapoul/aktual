@@ -3,6 +3,7 @@ package actual.budget.list.vm
 import actual.account.model.LoginToken
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.sync.ListUserFilesResponse
+import actual.api.model.sync.UserFile
 import actual.budget.model.Budget
 import actual.budget.model.BudgetState
 import alakazam.kotlin.core.CoroutineContexts
@@ -51,7 +52,7 @@ class BudgetListFetcher @Inject internal constructor(
     FetchBudgetsResult.OtherFailure(e.requireMessage())
   }
 
-  private fun toBudget(item: ListUserFilesResponse.Item) = Budget(
+  private fun toBudget(item: UserFile) = Budget(
     name = item.name,
     state = BudgetState.Unknown,
     encryptKeyId = item.encryptKeyId,

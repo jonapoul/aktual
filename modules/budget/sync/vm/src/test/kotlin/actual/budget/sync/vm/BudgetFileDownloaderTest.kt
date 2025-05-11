@@ -7,7 +7,7 @@ import actual.api.client.ActualJson
 import actual.api.client.SyncApi
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.DownloadState.Done
-import actual.budget.sync.vm.DownloadState.Failed
+import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
 import actual.test.testHttpClient
 import actual.url.model.Protocol
@@ -17,7 +17,9 @@ import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
+import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.headersOf
 import io.mockk.every
 import io.mockk.mockk
@@ -118,7 +120,7 @@ class BudgetFileDownloaderTest {
       }
 
       // and the final state is a network failure
-      assertIs<Failed>(state)
+      assertIs<Failure.IO>(state)
 
       // and no files were created
       assertContentEquals(
@@ -129,6 +131,34 @@ class BudgetFileDownloaderTest {
       awaitComplete()
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun `Handle HTTP failure`() = runTest {
+    // given the API call returns error code
+    mockEngine = MockEngine { respondError(HttpStatusCode.NotFound) }
+    apisStateHolder.update { buildApis() }
+
+    // when
+    budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
+      // Then in progress momentarily
+      var state = awaitItem()
+      while (state is InProgress) {
+        state = awaitItem()
+      }
+
+      // Then HTTP state is emitted
+      val httpState = state
+      assertIs<Failure.Http>(httpState)
+      awaitComplete()
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    // and no files were created
+    assertContentEquals(
+      actual = fileSystem.allPaths.toList(),
+      expected = emptyList(),
+    )
   }
 
   private fun buildApis(

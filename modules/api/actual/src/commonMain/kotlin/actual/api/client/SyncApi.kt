@@ -2,6 +2,7 @@ package actual.api.client
 
 import actual.account.model.LoginToken
 import actual.api.model.internal.ActualHeaders
+import actual.api.model.sync.GetUserFileInfoResponse
 import actual.api.model.sync.GetUserKeyRequest
 import actual.api.model.sync.GetUserKeyResponse
 import actual.api.model.sync.ListUserFilesResponse
@@ -32,7 +33,7 @@ interface SyncApi {
   suspend fun fetchUserFileInfo(
     @Header(ActualHeaders.TOKEN) token: LoginToken,
     @Header(ActualHeaders.FILE_ID) budgetId: BudgetId,
-  ): HttpResponse // TODO
+  ): GetUserFileInfoResponse.Success
 
   @POST("/sync/user-get-key")
   suspend fun fetchUserKey(

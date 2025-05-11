@@ -1,17 +1,20 @@
 package actual.api.client
 
+import actual.api.model.account.FailureReason
+import actual.api.model.sync.EncryptMeta
+import actual.api.model.sync.GetUserFileInfoResponse
 import actual.api.model.sync.GetUserKeyRequest
 import actual.api.model.sync.GetUserKeyResponse
 import actual.api.model.sync.ListUserFilesResponse
 import actual.api.model.sync.UserFile
 import actual.api.model.sync.UserWithAccess
 import actual.budget.model.BudgetId
-import actual.test.EmptyMockEngine
+import actual.test.emptyMockEngine
 import actual.test.enqueue
-import actual.test.requestHeaders
+import actual.test.latestRequestHeaders
 import actual.test.respondJson
 import actual.test.testHttpClient
-import alakazam.test.core.assertThrows
+import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondOk
 import io.ktor.client.plugins.ClientRequestException
@@ -25,6 +28,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.fail
 import kotlin.uuid.Uuid
 
 class SyncApiTest {
@@ -33,7 +37,7 @@ class SyncApiTest {
 
   @BeforeTest
   fun before() {
-    mockEngine = EmptyMockEngine()
+    mockEngine = emptyMockEngine()
     syncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, ActualJson))
   }
 
@@ -47,7 +51,7 @@ class SyncApiTest {
     mockEngine.enqueue { respondJson(SYNC_LIST_BUDGETS_SUCCESS) }
     syncApi.fetchUserFiles(TOKEN)
     assertEquals(
-      actual = mockEngine.requestHeaders(),
+      actual = mockEngine.latestRequestHeaders(),
       expected = mapOf(
         "X-ACTUAL-TOKEN" to listOf("abc-123"),
         "Accept" to listOf("application/json"),
@@ -61,7 +65,7 @@ class SyncApiTest {
     mockEngine.enqueue { respondOk() }
     syncApi.downloadUserFile(TOKEN, BUDGET_ID)
     assertEquals(
-      actual = mockEngine.requestHeaders(),
+      actual = mockEngine.latestRequestHeaders(),
       expected = mapOf(
         "X-ACTUAL-TOKEN" to listOf("abc-123"),
         "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
@@ -73,10 +77,10 @@ class SyncApiTest {
 
   @Test
   fun `Fetch user file info request headers`() = runTest {
-    mockEngine.enqueue { respondOk() }
+    mockEngine.enqueue { respondJson(SYNC_GET_USER_FILE_INFO_SUCCESS) }
     syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
     assertEquals(
-      actual = mockEngine.requestHeaders(),
+      actual = mockEngine.latestRequestHeaders(),
       expected = mapOf(
         "X-ACTUAL-TOKEN" to listOf("abc-123"),
         "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
@@ -156,7 +160,14 @@ class SyncApiTest {
     mockEngine.enqueue { respondJson(SYNC_LIST_BUDGETS_FAILURE, HttpStatusCode.BadRequest) }
 
     // when
-    assertThrows<ClientRequestException> { syncApi.fetchUserFiles(TOKEN) }
+    try {
+      syncApi.fetchUserFiles(TOKEN)
+      fail("Should have thrown!")
+    } catch (e: ClientRequestException) {
+      // Then
+      val body = e.response.body<ListUserFilesResponse.Failure>()
+      assertEquals(actual = body, expected = ListUserFilesResponse.Failure("Something broke"))
+    }
   }
 
   @Test
@@ -188,6 +199,101 @@ class SyncApiTest {
           ),
         ),
       ),
+    )
+  }
+
+  @Test
+  fun `Get user key failure`() = runTest {
+    // given
+    mockEngine.enqueue { respondJson(SYNC_GET_USER_KEY_FAILURE, HttpStatusCode.Unauthorized) }
+
+    // when
+    val response = try {
+      val body = GetUserKeyRequest(BUDGET_ID)
+      syncApi.fetchUserKey(TOKEN, body)
+      fail("Should have thrown!")
+    } catch (e: ClientRequestException) {
+      e.response.body<GetUserKeyResponse.Failure>()
+    }
+
+    // then
+    assertEquals(
+      actual = response,
+      expected = GetUserKeyResponse.Failure(
+        reason = FailureReason.Known.Unauthorized,
+        details = "token-not-found",
+      ),
+    )
+  }
+
+  @Test
+  fun `Get file info success`() = runTest {
+    // given
+    mockEngine.enqueue { respondJson(SYNC_GET_USER_FILE_INFO_SUCCESS) }
+
+    // when
+    val response = syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
+
+    // then
+    assertEquals(
+      actual = response,
+      expected = GetUserFileInfoResponse.Success(
+        data = UserFile(
+          deleted = 0,
+          fileId = BudgetId("b328186c-c819-4333-959b-04f676c1ee46"),
+          groupId = "afb25fc0-b294-4f71-ae8f-ce1e4a8fec10",
+          name = "Main Budget",
+          encryptKeyId = null,
+          owner = null,
+          usersWithAccess = emptyList(),
+          encryptMeta = EncryptMeta(
+            keyId = "2a66f5de-c530-4c06-8103-a48f26a0ce44",
+            algorithm = "aes-256-gcm",
+            iv = "7tzgaLCrSFxVfzZR",
+            authTag = "25nafe0UpzehRCks/xQjoB==",
+          ),
+        ),
+      ),
+    )
+  }
+
+  @Test
+  fun `Get file info file not found failure`() = runTest {
+    // given
+    mockEngine.enqueue { respondJson(SYNC_GET_USER_FILE_INFO_FILE_NOT_FOUND, HttpStatusCode.BadRequest) }
+
+    // when
+    val response = try {
+      syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
+      fail("Should have thrown!")
+    } catch (e: ClientRequestException) {
+      e.response.body<GetUserFileInfoResponse.Failure>()
+    }
+
+    // then
+    assertEquals(
+      actual = response,
+      expected = GetUserFileInfoResponse.Failure(FailureReason.Known.FileNotFound, details = null),
+    )
+  }
+
+  @Test
+  fun `Get file info unauthorised failure`() = runTest {
+    // given
+    mockEngine.enqueue { respondJson(SYNC_GET_USER_FILE_INFO_UNAUTHORISED, HttpStatusCode.Unauthorized) }
+
+    // when
+    val response = try {
+      syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
+      fail("Should have thrown!")
+    } catch (e: ClientRequestException) {
+      e.response.body<GetUserFileInfoResponse.Failure>()
+    }
+
+    // then
+    assertEquals(
+      actual = response,
+      expected = GetUserFileInfoResponse.Failure(FailureReason.Known.Unauthorized, details = "token-not-found"),
     )
   }
 }

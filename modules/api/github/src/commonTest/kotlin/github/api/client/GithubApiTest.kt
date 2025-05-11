@@ -1,6 +1,6 @@
 package github.api.client
 
-import actual.test.EmptyMockEngine
+import actual.test.emptyMockEngine
 import actual.test.enqueue
 import actual.test.respondJson
 import actual.test.testHttpClient
@@ -18,7 +18,7 @@ class GithubApiTest {
 
   @Before
   fun before() {
-    mockEngine = EmptyMockEngine()
+    mockEngine = emptyMockEngine()
     githubApi = GithubApi(SERVER_URL, testHttpClient(mockEngine, GithubJson))
   }
 

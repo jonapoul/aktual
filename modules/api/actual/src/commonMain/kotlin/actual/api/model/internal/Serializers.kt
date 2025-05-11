@@ -27,9 +27,8 @@ internal class FailureReasonSerializer : KSerializer<FailureReason> {
 
   override fun serialize(encoder: Encoder, value: FailureReason) = encoder.encodeString(value.reason)
 
-  override fun deserialize(decoder: Decoder) = when (val string = decoder.decodeString()) {
-    FailureReason.TokenExpired.reason -> FailureReason.TokenExpired
-    FailureReason.Unauthorized.reason -> FailureReason.Unauthorized
-    else -> FailureReason.Other(string)
+  override fun deserialize(decoder: Decoder): FailureReason {
+    val string = decoder.decodeString()
+    return FailureReason.Known.entries.firstOrNull { it.reason == string } ?: FailureReason.Other(string)
   }
 }

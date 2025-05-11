@@ -7,4 +7,4 @@ import actual.url.model.ServerUrl
 
 val TOKEN = LoginToken("abc-123")
 val BUDGET_ID = BudgetId("xyz-789")
-val SERVER_URL = ServerUrl(Protocol.Https, "test.unused.com")
+val SERVER_URL = ServerUrl(Protocol.Https, "test.server.com")

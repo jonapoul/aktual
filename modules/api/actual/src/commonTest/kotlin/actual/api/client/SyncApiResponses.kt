@@ -55,3 +55,49 @@ internal val SYNC_GET_USER_KEY_SUCCESS = """
   }
 }
 """.trimIndent()
+
+@Language("JSON")
+internal val SYNC_GET_USER_KEY_FAILURE = """
+{
+    "status": "error",
+    "reason": "unauthorized",
+    "details": "token-not-found"
+}
+""".trimIndent()
+
+@Language("JSON")
+internal val SYNC_GET_USER_FILE_INFO_SUCCESS = """
+{
+    "status": "ok",
+    "data": {
+        "deleted": 0,
+        "fileId": "b328186c-c819-4333-959b-04f676c1ee46",
+        "groupId": "afb25fc0-b294-4f71-ae8f-ce1e4a8fec10",
+        "name": "Main Budget",
+        "encryptMeta": {
+            "keyId": "2a66f5de-c530-4c06-8103-a48f26a0ce44",
+            "algorithm": "aes-256-gcm",
+            "iv": "7tzgaLCrSFxVfzZR",
+            "authTag": "25nafe0UpzehRCks/xQjoB=="
+        },
+        "usersWithAccess": []
+    }
+}
+""".trimIndent()
+
+@Language("JSON")
+internal val SYNC_GET_USER_FILE_INFO_FILE_NOT_FOUND = """
+{
+    "status": "error",
+    "reason": "file-not-found"
+}
+""".trimIndent()
+
+@Language("JSON")
+internal val SYNC_GET_USER_FILE_INFO_UNAUTHORISED = """
+{
+    "status": "error",
+    "reason": "unauthorized",
+    "details": "token-not-found"
+}
+""".trimIndent()

@@ -9,7 +9,7 @@ import io.ktor.client.HttpClient
 @KtorApi
 interface BaseApi {
   @GET("/info")
-  suspend fun info(): InfoResponse
+  suspend fun fetchInfo(): InfoResponse
 }
 
 expect fun BaseApi(serverUrl: ServerUrl, client: HttpClient): BaseApi

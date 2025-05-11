@@ -96,7 +96,13 @@ class ServerVersionFetcherTest {
   @Test
   fun `Valid fetch response`() = runTest(timeout = 5.seconds) {
     // Given
-    coEvery { baseApi.info() } returns InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
+    coEvery { baseApi.fetchInfo() } returns InfoResponse(
+      build = Build(
+        name = "ABC",
+        description = "XYZ",
+        version = "1.2.3",
+      ),
+    )
 
     // When
     versionsStateHolder.test {
@@ -116,8 +122,8 @@ class ServerVersionFetcherTest {
     // Given
     val validResponse = InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
     val failureReason = "SOMETHING BROKE"
-    coEvery { baseApi.info() } answers {
-      coEvery { baseApi.info() } returns validResponse
+    coEvery { baseApi.fetchInfo() } answers {
+      coEvery { baseApi.fetchInfo() } returns validResponse
       throw IOException(failureReason)
     }
 
