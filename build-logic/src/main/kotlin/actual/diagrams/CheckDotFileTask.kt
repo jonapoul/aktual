@@ -19,11 +19,6 @@ open class CheckDotFileTask @Inject constructor(objects: ObjectFactory) : Defaul
   @get:InputFile
   val actualDotFile: RegularFileProperty = objects.fileProperty()
 
-  init {
-    // never cache
-    outputs.upToDateWhen { false }
-  }
-
   @TaskAction
   fun execute() {
     val expectedContents = expectedDotFile.get().asFile.readLines()
@@ -33,11 +28,11 @@ open class CheckDotFileTask @Inject constructor(objects: ObjectFactory) : Defaul
       """
         Dotfile needs updating! Run `gradle ${taskPath.get()}` to regenerate ${expectedDotFile.get()}.
 
-        Expected:
-        ${expectedContents.joinToString("\n")}
+        Expected (len = ${expectedContents.size}):
+        '${expectedContents.joinToString("\n")}'
 
-        Actual:
-        ${expectedContents.joinToString("\n")}
+        Actual (len = ${actualContents.size}):
+        '${actualContents.joinToString("\n")}'
       """.trimIndent()
     }
   }

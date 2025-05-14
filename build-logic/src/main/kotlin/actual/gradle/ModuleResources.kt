@@ -62,6 +62,7 @@ class ModuleResources : Plugin<Project> {
     }
 
     tasks.register("generateResourceCatalog") {
+      // TODO: There's probably a way to make this configure lazily but I can't figure it out
       dependsOn(tasks.withType<GenerateResourcesTask>())
     }
 
