@@ -21,10 +21,18 @@ class BudgetInfoFetcher @Inject internal constructor(
 ) {
   sealed interface Result {
     data class Success(val userFile: UserFile) : Result
-    sealed interface Failure : Result
-    data object NotLoggedIn : Failure
-    data class IOFailure(val reason: String) : Failure
-    data class HttpFailure(val reason: String) : Failure
+
+    sealed interface Failure : Result {
+      val reason: String
+    }
+
+    data object NotLoggedIn : Failure {
+      override val reason = "Not logged in"
+    }
+
+    data class IOFailure(override val reason: String) : Failure
+
+    data class HttpFailure(override val reason: String) : Failure
   }
 
   suspend fun fetch(token: LoginToken, budgetId: BudgetId): Result {

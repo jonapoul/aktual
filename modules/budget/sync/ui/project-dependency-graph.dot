@@ -4,6 +4,7 @@ graph ["dpi"="100","label"=":budget:sync:ui","labelloc"="t","fontsize"="30","ran
 node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:list:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:sync:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":budget:sync:res" ["fillcolor"="#00FFFF","shape"="none"]
@@ -24,8 +25,11 @@ graph ["rank"="same"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":url:model"
+":budget:list:nav" -> ":account:model"
 ":budget:sync:nav" -> ":account:model"
+":budget:sync:nav" -> ":budget:model"
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
+":budget:sync:ui" -> ":budget:list:nav" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:nav"
 ":budget:sync:ui" -> ":budget:sync:res" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"

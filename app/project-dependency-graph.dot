@@ -154,7 +154,9 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":url:model"
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
 ":budget:sync:nav" -> ":account:model"
+":budget:sync:nav" -> ":budget:model"
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
+":budget:sync:ui" -> ":budget:list:nav" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:nav"
 ":budget:sync:ui" -> ":budget:sync:res" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"

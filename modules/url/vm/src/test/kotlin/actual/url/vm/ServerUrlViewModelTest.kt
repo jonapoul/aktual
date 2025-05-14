@@ -10,10 +10,10 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.core.versions.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
-import actual.test.ThrowingRequestHandler
 import actual.test.assertEmitted
 import actual.test.buildPreferences
 import actual.test.clear
+import actual.test.emptyMockEngine
 import actual.test.enqueue
 import actual.test.respondJson
 import actual.test.testHttpClient
@@ -70,7 +70,7 @@ class ServerUrlViewModelTest {
     loginPreferences = LoginPreferences(prefs)
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
 
-    mockEngine = MockEngine(ThrowingRequestHandler)
+    mockEngine = emptyMockEngine()
     accountApi = AccountApi(EXAMPLE_URL, testHttpClient(mockEngine, ActualJson))
     apis = mockk {
       every { close() } just runs
