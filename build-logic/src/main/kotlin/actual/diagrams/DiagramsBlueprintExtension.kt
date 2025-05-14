@@ -53,10 +53,6 @@ open class DiagramsBlueprintExtension @Inject constructor(
     .property(String::class.java)
     .convention(target.path)
 
-  val checkDotfile: Property<Boolean> = objects
-    .property(Boolean::class.java)
-    .convention(true)
-
   val moduleTypes: SetProperty<ModuleType> = objects
     .setProperty(ModuleType::class.java)
     .convention(ActualModuleType.values().toSet())
