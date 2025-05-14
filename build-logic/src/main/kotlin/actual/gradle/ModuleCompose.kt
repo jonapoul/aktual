@@ -26,7 +26,7 @@ class ModuleCompose : Plugin<Project> {
       apply(ConventionSortDependencies::class.java)
     }
 
-    tasks.withType<KotlinCompile> {
+    tasks.withType<KotlinCompile>().configureEach {
       compilerOptions {
         freeCompilerArgs.add("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
       }

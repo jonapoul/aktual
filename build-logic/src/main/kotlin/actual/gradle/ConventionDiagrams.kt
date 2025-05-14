@@ -20,6 +20,7 @@ import guru.nidi.graphviz.parse.Parser
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaBasePlugin
+import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.register
 import java.io.File
@@ -31,10 +32,14 @@ class ConventionDiagrams : Plugin<Project> {
     val extension = extensions.create("diagrams", DiagramsBlueprintExtension::class.java)
     registerModuleTasks(extension)
 
-    tasks.register<CheckReadmeTask>(name = "checkDiagramReadme") {
+    val checkReadmeTask = tasks.register<CheckReadmeTask>(name = "checkDiagramReadme") {
       enabled = extension.checkReadmeContents.get()
       readmeFile.set(file("README.md"))
-      tasks.findByName("check")?.dependsOn(this)
+      projectPath.set(project.path)
+    }
+
+    tasks.named("check").configure {
+      dependsOn(checkReadmeTask)
     }
   }
 
@@ -76,7 +81,7 @@ class ConventionDiagrams : Plugin<Project> {
     val tempDotTask = tasks.register<ProjectDependencyGraphGeneratorTask>("tempModulesDotfile") {
       group = JavaBasePlugin.VERIFICATION_GROUP
       this.projectGenerator = projectGenerator
-      outputDirectory = project.layout.buildDirectory.file("diagrams-modules-temp").get().asFile
+      outputDirectory = project.layout.buildDirectory.dir("diagrams-modules-temp").get().asFile
     }
 
     val tempTidyDotFileTask = tasks.register<TidyDotFileTask>("tempTidyDotFile") {
@@ -86,15 +91,13 @@ class ConventionDiagrams : Plugin<Project> {
       dependsOn(tempDotTask)
     }
 
+    // Make sure configuration cache is disabled when running this!
     tasks.register<CheckDotFileTask>("checkModulesDotfile") {
       group = JavaBasePlugin.VERIFICATION_GROUP
       taskPath.set(dotTask.get().path)
       expectedDotFile.set(dotTask.get().getOutputFile())
       actualDotFile.set(tempDotTask.get().getOutputFile())
       dependsOn(tempTidyDotFileTask)
-      if (extension.checkDotfile.get()) {
-        tasks.findByName("check")?.dependsOn(this)
-      }
     }
 
     tasks.register<GenerateGraphVizPngTask>("generateModulesPng") {

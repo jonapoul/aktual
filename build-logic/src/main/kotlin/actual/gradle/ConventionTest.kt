@@ -24,7 +24,7 @@ class ConventionTest : Plugin<Project> {
     testBaseBlueprint()
     powerAssertBlueprint()
 
-    tasks.withType<Test> {
+    tasks.withType<Test>().configureEach {
       // Suppresses mockk warning - see https://github.com/mockk/mockk/issues/1171
       jvmArgs("-XX:+EnableDynamicAgentLoading")
     }

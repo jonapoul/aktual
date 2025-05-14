@@ -4,18 +4,24 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.property
 import javax.inject.Inject
 
 open class CheckReadmeTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
   @get:InputFile
   val readmeFile: RegularFileProperty = objects.fileProperty()
 
+  @get:Input
+  val projectPath: Property<String> = objects.property()
+
   @TaskAction
   fun execute() {
     val actualContents = readmeFile.get().asFile.readText()
-    val expectedTitle = project.path.removePrefix(prefix = ":")
+    val expectedTitle = projectPath.get().removePrefix(prefix = ":")
     val expectedContents = """
       # $expectedTitle
 

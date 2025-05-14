@@ -15,7 +15,7 @@ class ConventionKotlinJvm : Plugin<Project> {
       apply(ConventionKotlinBase::class.java)
     }
 
-    tasks.withType<KotlinCompile> {
+    tasks.withType<KotlinCompile>().configureEach {
       compilerOptions {
         jvmTarget.set(project.jvmTarget())
       }
