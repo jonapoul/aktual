@@ -1,3 +1,3 @@
 package actual.diagrams
 
-internal const val FILENAME_ROOT = "project-dependency-graph"
+internal const val FILENAME_ROOT = "modules"

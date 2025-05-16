@@ -7,12 +7,12 @@ burst = "2.5.0"
 buildconfig = "5.6.5"
 catalog = "0.3.3"
 dependencyAnalysis = "2.17.0"
-dependencyGraph = "0.9.0-SNAPSHOT"
 dependencyGuard = "0.5.0"
 dependencySort = "0.14"
 dependencyVersions = "0.52.0"
 detekt = "1.23.8"
 doctor = "0.10.0"
+graphviz = "0.18.1"
 hilt = "2.56.2"
 kotlin = "2.1.21"
 kover = "0.9.1"
@@ -77,10 +77,10 @@ plugin-burst = { module = "app.cash.burst:burst-gradle-plugin", version.ref = "b
 plugin-catalog = { module = "dev.jonpoulton.catalog:catalog-gradle-plugin", version.ref = "catalog" }
 plugin-compose = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 plugin-dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
-plugin-dependencyGraph = { module = "com.vanniktech:gradle-dependency-graph-generator-plugin", version.ref = "dependencyGraph" }
 plugin-dependencySort = { module = "com.squareup.sort-dependencies:com.squareup.sort-dependencies.gradle.plugin", version.ref = "dependencySort" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 plugin-detektCompose = { module = "io.nlopez.compose.rules:detekt", version.ref = "androidx-compose-rules" }
+plugin-graphviz = { module = "guru.nidi:graphviz-java", version.ref = "graphviz" }
 plugin-hilt = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
 plugin-kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-kotlin-powerAssert = { module = "org.jetbrains.kotlin:kotlin-power-assert", version.ref = "kotlin" }
@@ -207,7 +207,6 @@ buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version.ref = "catalog" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
-dependencyGraph = { id = "com.vanniktech.dependency.graph.generator", version.ref = "dependencyGraph" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version.ref = "dependencyGuard" }
 dependencySort = { id = "com.squareup.sort-dependencies", version.ref = "dependencySort" }
 dependencyVersions = { id = "com.github.ben-manes.versions", version.ref = "dependencyVersions" }

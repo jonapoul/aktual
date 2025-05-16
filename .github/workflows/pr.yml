@@ -43,7 +43,7 @@ jobs:
           commit_message: Baseline dependencies
 
       - name: Check module diagrams
-        run: ./gradlew checkModulesDotfile --no-configuration-cache
+        run: ./gradlew checkDotFiles --no-configuration-cache
 
       - name: Check
         run: ./gradlew check
