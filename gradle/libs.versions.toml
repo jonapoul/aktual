@@ -52,7 +52,7 @@ lazycolumn-scrollbar = "2.2.0"
 material = "1.12.0"
 okio = "3.11.0"
 preferences = "2.2.0"
-sqldelight = "2.0.2"
+sqldelight = "2.1.0"
 
 # Testing
 test-androidx-arch = "2.2.0"
