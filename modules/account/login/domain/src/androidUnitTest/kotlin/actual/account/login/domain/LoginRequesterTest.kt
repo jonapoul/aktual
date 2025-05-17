@@ -28,12 +28,12 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.fakefilesystem.FakeFileSystem
-import org.junit.After
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertNull
@@ -51,7 +51,7 @@ internal class LoginRequesterTest {
   private lateinit var mockEngine: MockEngine
   private lateinit var fileSystem: FakeFileSystem
 
-  @After
+  @AfterTest
   fun after() {
     mockEngine.close()
   }

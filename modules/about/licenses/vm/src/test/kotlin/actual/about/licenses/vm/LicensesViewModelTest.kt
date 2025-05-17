@@ -15,10 +15,10 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 class LicensesViewModelTest {
@@ -29,7 +29,7 @@ class LicensesViewModelTest {
   private lateinit var repository: LicensesRepository
   private lateinit var urlOpener: UrlOpener
 
-  @Before
+  @BeforeTest
   fun before() {
     repository = mockk(relaxed = true)
     urlOpener = mockk(relaxed = true)

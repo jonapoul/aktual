@@ -13,10 +13,10 @@ import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 class InfoViewModelTest {
@@ -27,7 +27,7 @@ class InfoViewModelTest {
   private lateinit var repository: GithubRepository
   private lateinit var urlOpener: UrlOpener
 
-  @Before
+  @BeforeTest
   fun before() {
     repository = mockk()
     urlOpener = mockk(relaxed = true)

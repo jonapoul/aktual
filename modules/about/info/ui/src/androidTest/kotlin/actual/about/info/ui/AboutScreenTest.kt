@@ -26,10 +26,10 @@ import dagger.hilt.android.testing.HiltAndroidTest
 import github.api.client.GithubApi
 import kotlinx.coroutines.Dispatchers
 import org.hamcrest.Matchers
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 
 @HiltAndroidTest
 class AboutScreenTest {
@@ -48,7 +48,7 @@ class AboutScreenTest {
   @BindValue
   lateinit var coroutineContexts: CoroutineContexts
 
-  @Before
+  @BeforeTest
   @Suppress("InjectDispatcher")
   fun before() {
     buildConfig = TestBuildConfig
@@ -59,7 +59,7 @@ class AboutScreenTest {
     Intents.init()
   }
 
-  @After
+  @AfterTest
   fun after() {
     Intents.release()
   }

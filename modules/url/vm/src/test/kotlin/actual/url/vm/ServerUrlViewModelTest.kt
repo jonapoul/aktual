@@ -34,13 +34,13 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
@@ -62,7 +62,7 @@ class ServerUrlViewModelTest {
   private lateinit var accountApi: AccountApi
   private lateinit var mockEngine: MockEngine
 
-  @Before
+  @BeforeTest
   fun before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     serverUrlPreferences = ServerUrlPreferences(prefs)
@@ -81,7 +81,7 @@ class ServerUrlViewModelTest {
     apisStateHolder.update { apis }
   }
 
-  @After
+  @AfterTest
   fun after() {
     mockEngine.close()
   }

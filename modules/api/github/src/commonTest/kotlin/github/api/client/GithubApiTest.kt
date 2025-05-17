@@ -7,8 +7,8 @@ import actual.test.testHttpClient
 import actual.url.model.ServerUrl
 import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -16,13 +16,13 @@ class GithubApiTest {
   private lateinit var githubApi: GithubApi
   private lateinit var mockEngine: MockEngine
 
-  @Before
+  @BeforeTest
   fun before() {
     mockEngine = emptyMockEngine()
     githubApi = GithubApi(SERVER_URL, testHttpClient(mockEngine, GithubJson))
   }
 
-  @After
+  @AfterTest
   fun after() {
     mockEngine.close()
   }

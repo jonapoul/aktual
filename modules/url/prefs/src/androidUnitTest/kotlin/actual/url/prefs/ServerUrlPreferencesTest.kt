@@ -6,10 +6,10 @@ import actual.url.model.ServerUrl
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -21,7 +21,7 @@ class ServerUrlPreferencesTest {
 
   private lateinit var preferences: ServerUrlPreferences
 
-  @Before
+  @BeforeTest
   fun before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     preferences = ServerUrlPreferences(prefs)

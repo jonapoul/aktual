@@ -9,9 +9,9 @@ import app.cash.turbine.test
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.Test
 import kotlin.test.assertContains
 
 @RunWith(RobolectricTestRunner::class)
