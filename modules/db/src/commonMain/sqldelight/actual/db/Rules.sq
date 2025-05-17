@@ -1,11 +1,12 @@
 import actual.budget.model.ConditionOperator;
 import actual.budget.model.RuleId;
+import actual.budget.model.RuleStage;
 import kotlin.Boolean;
 import kotlinx.serialization.json.JsonObject;
 
 CREATE TABLE IF NOT EXISTS rules(
   id TEXT AS RuleId PRIMARY KEY,
-  stage TEXT,
+  stage TEXT AS RuleStage,
   conditions TEXT AS JsonObject,
   actions TEXT AS JsonObject,
   tombstone INTEGER AS Boolean DEFAULT 0,

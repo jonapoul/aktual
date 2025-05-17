@@ -17,6 +17,7 @@ import actual.budget.model.Interval
 import actual.budget.model.PayeeId
 import actual.budget.model.ReportDate
 import actual.budget.model.RuleId
+import actual.budget.model.RuleStage
 import actual.budget.model.ScheduleId
 import actual.budget.model.ScheduleJsonPathIndex
 import actual.budget.model.ScheduleNextDateId
@@ -90,6 +91,7 @@ private val graphType = enumStringAdapter<GraphType>()
 private val groupBy = enumStringAdapter<GroupBy>()
 private val interval = enumStringAdapter<Interval>()
 private val sortBy = enumStringAdapter<SortBy>()
+private val ruleStage = enumStringAdapter<RuleStage>()
 private val widgetType = enumStringAdapter<WidgetType>()
 
 internal val AccountsAdapter = Accounts.Adapter(
@@ -178,6 +180,7 @@ internal val PayeeMappingAdapter = Payee_mapping.Adapter(
 
 internal val RulesAdapter = Rules.Adapter(
   idAdapter = ruleId,
+  stageAdapter = ruleStage,
   conditionsAdapter = jsonObject,
   actionsAdapter = jsonObject,
   conditions_opAdapter = conditionOperator,
