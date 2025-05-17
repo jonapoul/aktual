@@ -135,17 +135,20 @@ androidx.viewpager:viewpager:1.0.0
 androidx.window:window:1.0.0
 app.cash.molecule:molecule-runtime-android:2.1.0
 app.cash.molecule:molecule-runtime:2.1.0
+app.cash.sql-psi:core:0.5.2
 app.cash.sqldelight:android-driver:2.1.0
 app.cash.sqldelight:async-extensions-jvm:2.1.0
 app.cash.sqldelight:async-extensions:2.1.0
 app.cash.sqldelight:coroutines-extensions-jvm:2.1.0
 app.cash.sqldelight:coroutines-extensions:2.1.0
+app.cash.sqldelight:dialect-api:2.1.0
 app.cash.sqldelight:jdbc-driver:2.1.0
 app.cash.sqldelight:primitive-adapters-jvm:2.1.0
 app.cash.sqldelight:primitive-adapters:2.1.0
 app.cash.sqldelight:runtime-jvm:2.1.0
 app.cash.sqldelight:runtime:2.1.0
 app.cash.sqldelight:sqlite-driver:2.1.0
+app.cash.sqldelight:sqlite-json-module:2.1.0
 com.github.nanihadesuka:LazyColumnScrollbar:2.2.0
 com.google.android.material:material:1.12.0
 com.google.code.findbugs:jsr305:3.0.2
@@ -157,6 +160,8 @@ com.google.errorprone:error_prone_annotations:2.15.0
 com.google.guava:listenablefuture:1.0
 com.squareup.okio:okio-jvm:3.11.0
 com.squareup.okio:okio:3.11.0
+com.squareup:kotlinpoet-jvm:1.18.1
+com.squareup:kotlinpoet:1.18.1
 dev.chrisbanes.haze:haze-android:1.6.0
 dev.chrisbanes.haze:haze:1.6.0
 dev.jonpoulton.alakazam:android-core:6.0.0
@@ -229,6 +234,7 @@ org.jetbrains.compose.ui:ui-unit:1.8.0
 org.jetbrains.compose.ui:ui-util:1.8.0
 org.jetbrains.compose.ui:ui:1.8.0
 org.jetbrains.kotlin:kotlin-bom:1.8.22
+org.jetbrains.kotlin:kotlin-reflect:2.0.0
 org.jetbrains.kotlin:kotlin-stdlib-common:2.1.21
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22

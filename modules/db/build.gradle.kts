@@ -18,6 +18,7 @@ sqldelight {
       verifyDefinitions = true
       generateAsync = true
       dialect(libs.sqldelight.dialect)
+      module(libs.sqldelight.json.get())
     }
   }
 }
