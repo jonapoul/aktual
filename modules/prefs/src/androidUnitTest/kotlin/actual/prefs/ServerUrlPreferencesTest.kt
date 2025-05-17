@@ -1,4 +1,4 @@
-package actual.url.prefs
+package actual.prefs
 
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl

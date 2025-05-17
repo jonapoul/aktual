@@ -17,7 +17,7 @@ kotlin {
     implementation(projects.api.actual)
     implementation(projects.api.builder)
     implementation(projects.core.model)
-    implementation(projects.url.prefs)
+    implementation(projects.prefs)
   }
 
   androidUnitTestDependencies {

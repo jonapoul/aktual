@@ -12,7 +12,7 @@ dependencies {
   implementation(libs.javaxInject)
   implementation(libs.preferences.core)
   implementation(projects.account.login.domain)
-  implementation(projects.url.prefs)
+  implementation(projects.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   testImplementation(projects.core.connection)
   testImplementation(projects.test.buildconfig)

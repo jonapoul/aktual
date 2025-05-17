@@ -16,9 +16,9 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":url:nav" ["fillcolor"="#5555FF","shape"="none"]
-":url:prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -44,12 +44,13 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:model"
-":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
+":budget:list:vm" -> ":prefs" ["style"="dotted"]
 ":budget:sync:nav" -> ":account:model"
 ":budget:sync:nav" -> ":budget:model"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
-":url:prefs" -> ":core:model"
+":prefs" -> ":account:model"
+":prefs" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

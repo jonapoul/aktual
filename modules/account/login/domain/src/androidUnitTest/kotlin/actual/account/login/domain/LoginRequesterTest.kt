@@ -8,12 +8,13 @@ import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
+import actual.prefs.LoginPreferences
+import actual.prefs.ServerUrlPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
 import actual.test.plusAssign
 import actual.test.respondJson
-import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test

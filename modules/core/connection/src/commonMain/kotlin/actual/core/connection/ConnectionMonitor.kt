@@ -9,7 +9,7 @@ import actual.api.client.BaseApi
 import actual.api.client.SyncApi
 import actual.api.client.SyncDownloadApi
 import actual.core.model.ServerUrl
-import actual.url.prefs.ServerUrlPreferences
+import actual.prefs.ServerUrlPreferences
 import alakazam.kotlin.core.collectFlow
 import alakazam.kotlin.logging.Logger
 import kotlinx.coroutines.CancellationException

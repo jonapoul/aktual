@@ -9,6 +9,7 @@ kotlin {
   commonMainDependencies {
     api(libs.javaxInject)
     api(libs.preferences.core)
+    api(projects.account.model)
     api(projects.core.model)
   }
 

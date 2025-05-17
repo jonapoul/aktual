@@ -172,6 +172,5 @@ dependencies {
   implementation(projects.settings.nav)
   implementation(projects.settings.ui)
   implementation(projects.url.nav)
-  implementation(projects.url.prefs)
   implementation(projects.url.ui)
 }

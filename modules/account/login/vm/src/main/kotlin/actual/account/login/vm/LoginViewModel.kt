@@ -1,6 +1,5 @@
 package actual.account.login.vm
 
-import actual.account.login.domain.LoginPreferences
 import actual.account.login.domain.LoginRequester
 import actual.account.login.domain.LoginResult
 import actual.account.model.LoginToken
@@ -8,7 +7,8 @@ import actual.account.model.Password
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.ServerUrl
-import actual.url.prefs.ServerUrlPreferences
+import actual.prefs.LoginPreferences
+import actual.prefs.ServerUrlPreferences
 import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
