@@ -5,7 +5,6 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -16,7 +15,6 @@ graph ["rank"="same"]
 }
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
-":core:ui" -> ":core:versions"
 ":prefs" -> ":core:model"
 ":settings:ui" -> ":core:model"
 ":settings:ui" -> ":core:res" ["style"="dotted"]

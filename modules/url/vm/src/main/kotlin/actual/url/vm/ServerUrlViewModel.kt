@@ -3,10 +3,10 @@ package actual.url.vm
 import actual.account.login.domain.LoginPreferences
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.NeedsBootstrapResponse
+import actual.core.model.ActualVersions
+import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.core.versions.ActualVersions
-import actual.core.versions.ActualVersionsStateHolder
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.ResettableStateFlow

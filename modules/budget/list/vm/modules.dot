@@ -8,7 +8,6 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -22,7 +21,6 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:model"
-":budget:list:vm" -> ":core:versions"
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
 ":url:prefs" -> ":core:model"
 subgraph "cluster_legend" {

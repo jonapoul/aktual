@@ -13,7 +13,7 @@ import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.ui.transparentTopAppBarColors
-import actual.core.versions.ActualVersions
+import actual.core.model.ActualVersions
 import actual.url.res.ServerUrlStrings
 import actual.url.vm.NavDestination
 import actual.url.vm.ServerUrlViewModel

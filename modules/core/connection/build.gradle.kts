@@ -17,7 +17,6 @@ kotlin {
     implementation(projects.api.actual)
     implementation(projects.api.builder)
     implementation(projects.core.model)
-    implementation(projects.core.versions)
     implementation(projects.url.prefs)
   }
 

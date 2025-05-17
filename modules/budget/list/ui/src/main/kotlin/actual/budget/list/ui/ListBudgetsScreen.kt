@@ -22,7 +22,7 @@ import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
-import actual.core.versions.ActualVersions
+import actual.core.model.ActualVersions
 import actual.settings.nav.SettingsNavRoute
 import actual.url.nav.ServerUrlNavRoute
 import alakazam.android.ui.compose.VerticalSpacer

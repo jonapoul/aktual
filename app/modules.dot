@@ -44,7 +44,6 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
 ":db" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:nav" ["fillcolor"="#5555FF","shape"="none"]
@@ -87,7 +86,6 @@ graph ["rank"="same"]
 ":account:login:vm" -> ":account:login:domain"
 ":account:login:vm" -> ":account:model"
 ":account:login:vm" -> ":core:model"
-":account:login:vm" -> ":core:versions"
 ":account:login:vm" -> ":url:prefs" ["style"="dotted"]
 ":account:password:domain" -> ":account:login:domain"
 ":account:password:domain" -> ":account:model"
@@ -101,7 +99,7 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":account:login:domain" ["style"="dotted"]
 ":account:password:vm" -> ":account:model"
 ":account:password:vm" -> ":account:password:domain"
-":account:password:vm" -> ":core:versions"
+":account:password:vm" -> ":core:model"
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
@@ -151,7 +149,6 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:model"
-":budget:list:vm" -> ":core:versions"
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
 ":budget:sync:nav" -> ":account:model"
 ":budget:sync:nav" -> ":budget:model"
@@ -169,13 +166,11 @@ graph ["rank"="same"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:builder" ["style"="dotted"]
 ":core:connection" -> ":core:model" ["style"="dotted"]
-":core:connection" -> ":core:versions" ["style"="dotted"]
 ":core:connection" -> ":url:prefs" ["style"="dotted"]
 ":core:di" -> ":core:files"
 ":core:files" -> ":budget:model"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
-":core:ui" -> ":core:versions"
 ":db" -> ":budget:model"
 ":prefs" -> ":core:model"
 ":settings:ui" -> ":core:model"
@@ -193,7 +188,6 @@ graph ["rank"="same"]
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
 ":url:vm" -> ":core:model"
-":url:vm" -> ":core:versions"
 ":url:vm" -> ":url:prefs" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]

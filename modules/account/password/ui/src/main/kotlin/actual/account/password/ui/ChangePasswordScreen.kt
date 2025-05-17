@@ -14,7 +14,7 @@ import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.ui.transparentTopAppBarColors
-import actual.core.versions.ActualVersions
+import actual.core.model.ActualVersions
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

@@ -8,9 +8,9 @@ import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
+import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.core.versions.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
 import actual.test.assertEmitted
 import actual.test.buildPreferences

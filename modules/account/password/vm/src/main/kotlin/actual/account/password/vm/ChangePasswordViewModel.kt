@@ -6,8 +6,8 @@ import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.account.password.domain.ChangePasswordResult
 import actual.account.password.domain.PasswordChanger
-import actual.core.versions.ActualVersions
-import actual.core.versions.ActualVersionsStateHolder
+import actual.core.model.ActualVersions
+import actual.core.model.ActualVersionsStateHolder
 import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

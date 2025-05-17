@@ -15,7 +15,6 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -34,7 +33,7 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":account:login:domain" ["style"="dotted"]
 ":account:password:vm" -> ":account:model"
 ":account:password:vm" -> ":account:password:domain"
-":account:password:vm" -> ":core:versions"
+":account:password:vm" -> ":core:model"
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
@@ -42,7 +41,6 @@ graph ["rank"="same"]
 ":budget:list:nav" -> ":account:model"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
-":core:ui" -> ":core:versions"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

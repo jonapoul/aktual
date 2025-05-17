@@ -6,7 +6,6 @@ dependencies {
   api(projects.account.login.domain)
   api(projects.account.model)
   api(projects.core.model)
-  api(projects.core.versions)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)

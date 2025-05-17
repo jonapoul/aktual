@@ -9,7 +9,6 @@ dependencies {
   api(libs.kotlinx.immutable)
   api(projects.budget.model)
   api(projects.core.model)
-  api(projects.core.versions)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.ktor.core)

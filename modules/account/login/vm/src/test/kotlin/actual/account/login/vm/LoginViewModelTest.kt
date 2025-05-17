@@ -5,9 +5,9 @@ import actual.account.login.domain.LoginRequester
 import actual.account.login.domain.LoginResult
 import actual.account.model.LoginToken
 import actual.account.model.Password
+import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.core.versions.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
 import actual.test.buildPreferences
 import actual.url.prefs.ServerUrlPreferences

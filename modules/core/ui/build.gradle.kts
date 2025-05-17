@@ -12,7 +12,6 @@ dependencies {
   api(libs.kotlinx.immutable)
   api(libs.lazycolumn.scrollbar)
   api(projects.core.model)
-  api(projects.core.versions)
   implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
