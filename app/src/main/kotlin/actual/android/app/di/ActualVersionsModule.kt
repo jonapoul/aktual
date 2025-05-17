@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-interface ActualVersionsModule {
+class ActualVersionsModule {
   @Provides
   @Singleton
   fun holder(buildConfig: BuildConfig) = ActualVersionsStateHolder(buildConfig)
