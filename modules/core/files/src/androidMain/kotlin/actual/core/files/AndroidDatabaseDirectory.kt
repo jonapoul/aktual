@@ -7,11 +7,11 @@ import okio.Path.Companion.toOkioPath
 import javax.inject.Inject
 
 class AndroidDatabaseDirectory @Inject constructor(context: Context) : DatabaseDirectory {
-  private val databaseDirectory = context
+  private val directoryPath = context
     .getDatabasePath("unused")
     .parentFile
     ?.toOkioPath()
     ?: error("Null database directory!")
 
-  override fun pathFor(id: BudgetId): Path = databaseDirectory.resolve("$id.sqlite")
+  override fun pathFor(id: BudgetId): Path = directoryPath.resolve("$id.sqlite")
 }

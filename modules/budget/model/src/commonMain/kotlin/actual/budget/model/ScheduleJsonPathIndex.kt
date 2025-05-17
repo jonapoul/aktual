@@ -2,11 +2,11 @@ package actual.budget.model
 
 @JvmInline
 value class ScheduleJsonPathIndex(private val value: String) : Comparable<ScheduleJsonPathIndex> {
-  constructor(int: Int) : this("\$[$int]")
+  constructor(int: Int) : this("$[$int]")
 
   val index: Int
     get() = value
-      .removePrefix(prefix = "\$[")
+      .removePrefix(prefix = "$[")
       .removeSuffix(suffix = "]")
       .toInt()
 

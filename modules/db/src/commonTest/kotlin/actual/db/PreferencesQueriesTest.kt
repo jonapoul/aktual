@@ -4,6 +4,7 @@ import actual.db.test.assertAllPreferences
 import actual.db.test.getPreference
 import actual.db.test.setPreference
 import actual.test.assertEmitted
+import actual.test.runDatabaseTest
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.turbine.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -14,7 +15,7 @@ import kotlin.test.Test
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
-internal class PreferencesQueriesTest : DatabaseTest() {
+internal class PreferencesQueriesTest {
   @Test
   fun `Getting from empty table returns null`() = runDatabaseTest {
     assertNull(getPreference(key = "test"))
