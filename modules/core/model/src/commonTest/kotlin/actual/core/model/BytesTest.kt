@@ -1,6 +1,6 @@
-package actual.budget.sync.vm
+package actual.core.model
 
-import kotlin.test.Test
+import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 

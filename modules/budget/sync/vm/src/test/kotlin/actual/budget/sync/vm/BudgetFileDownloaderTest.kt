@@ -11,6 +11,7 @@ import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
+import actual.core.model.bytes
 import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
 import actual.test.plusAssign

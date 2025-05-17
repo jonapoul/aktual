@@ -1,4 +1,4 @@
-package actual.budget.sync.vm
+package actual.core.model
 
 import kotlin.math.abs
 import kotlin.math.roundToInt

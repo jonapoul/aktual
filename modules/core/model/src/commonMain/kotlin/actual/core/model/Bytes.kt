@@ -1,4 +1,4 @@
-package actual.budget.sync.vm
+package actual.core.model
 
 @JvmInline
 value class Bytes(val numBytes: Long) : Comparable<Bytes> {

@@ -21,6 +21,7 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":core:files"
+":budget:sync:vm" -> ":core:model"
 ":core:files" -> ":budget:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

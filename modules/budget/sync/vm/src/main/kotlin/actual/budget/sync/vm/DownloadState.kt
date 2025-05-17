@@ -1,5 +1,6 @@
 package actual.budget.sync.vm
 
+import actual.core.model.Bytes
 import okio.Path
 
 sealed interface DownloadState {
