@@ -1,6 +1,6 @@
 package actual.settings.vm
 
-import actual.core.colorscheme.ColorSchemeType
+import actual.core.model.ColorSchemeType
 import androidx.compose.runtime.Immutable
 
 @Immutable

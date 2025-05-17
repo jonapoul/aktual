@@ -23,6 +23,7 @@ graph ["rank"="same"]
 ":about:licenses:ui" -> ":core:res" ["style"="dotted"]
 ":about:licenses:ui" -> ":core:ui"
 ":about:licenses:vm" -> ":about:licenses:data"
+":core:colorscheme" -> ":core:model"
 ":core:files" -> ":budget:model"
 ":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:model"

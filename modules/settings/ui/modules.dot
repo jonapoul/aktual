@@ -14,6 +14,7 @@ node ["style"="filled"]
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
+":core:colorscheme" -> ":core:model"
 ":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]

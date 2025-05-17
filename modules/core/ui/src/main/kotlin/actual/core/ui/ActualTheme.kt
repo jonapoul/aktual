@@ -1,6 +1,6 @@
 package actual.core.ui
 
-import actual.core.colorscheme.ColorSchemeType
+import actual.core.model.ColorSchemeType
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme

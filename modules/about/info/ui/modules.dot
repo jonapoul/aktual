@@ -27,6 +27,7 @@ graph ["rank"="same"]
 ":about:info:vm" -> ":about:info:data"
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
 ":api:github" -> ":core:model"
+":core:colorscheme" -> ":core:model"
 ":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]

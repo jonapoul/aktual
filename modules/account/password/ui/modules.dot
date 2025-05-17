@@ -41,6 +41,7 @@ graph ["rank"="same"]
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
 ":budget:list:nav" -> ":account:model"
+":core:colorscheme" -> ":core:model"
 ":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]

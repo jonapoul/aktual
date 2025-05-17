@@ -1,8 +1,8 @@
 package actual.core.colorscheme
 
-import actual.core.colorscheme.ColorSchemeType.Dark
-import actual.core.colorscheme.ColorSchemeType.Light
-import actual.core.colorscheme.ColorSchemeType.System
+import actual.core.model.ColorSchemeType.Dark
+import actual.core.model.ColorSchemeType.Light
+import actual.core.model.ColorSchemeType.System
 import actual.test.assertEmitted
 import actual.test.buildPreferences
 import alakazam.test.core.MainDispatcherRule

@@ -1,4 +1,4 @@
-package actual.core.colorscheme
+package actual.core.model
 
 enum class ColorSchemeType {
   System,

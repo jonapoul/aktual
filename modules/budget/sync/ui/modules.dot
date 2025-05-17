@@ -39,6 +39,7 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":core:files"
 ":budget:sync:vm" -> ":core:model"
+":core:colorscheme" -> ":core:model"
 ":core:files" -> ":budget:model"
 ":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:model"

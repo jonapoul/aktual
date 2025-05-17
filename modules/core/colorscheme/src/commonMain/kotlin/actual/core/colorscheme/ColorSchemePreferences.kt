@@ -1,5 +1,6 @@
 package actual.core.colorscheme
 
+import actual.core.model.ColorSchemeType
 import dev.jonpoulton.preferences.core.IntSerializer
 import dev.jonpoulton.preferences.core.Preference
 import dev.jonpoulton.preferences.core.Preferences

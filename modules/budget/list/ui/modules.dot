@@ -50,6 +50,7 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
 ":budget:sync:nav" -> ":account:model"
 ":budget:sync:nav" -> ":budget:model"
+":core:colorscheme" -> ":core:model"
 ":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
