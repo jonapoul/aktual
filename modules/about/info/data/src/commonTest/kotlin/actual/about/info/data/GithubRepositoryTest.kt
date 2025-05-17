@@ -2,7 +2,7 @@ package actual.about.info.data
 
 import actual.test.TestBuildConfig
 import actual.test.emptyMockEngine
-import actual.test.enqueue
+import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
@@ -37,7 +37,7 @@ class GithubRepositoryTest {
   fun `Request is structured as expected`() = runTest {
     // Given
     buildRepo()
-    mockEngine.enqueue { respondJson(NewRelease) }
+    mockEngine += { respondJson(NewRelease) }
 
     // When
     githubRepository.fetchLatestRelease()
@@ -53,7 +53,7 @@ class GithubRepositoryTest {
   fun `Update available from three returned`() = runTest {
     // Given
     buildRepo()
-    mockEngine.enqueue { respondJson(NewRelease) }
+    mockEngine += { respondJson(NewRelease) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -77,7 +77,7 @@ class GithubRepositoryTest {
   fun `No new updates`() = runTest {
     // Given
     buildRepo()
-    mockEngine.enqueue { respondJson(NoNewUpdate) }
+    mockEngine += { respondJson(NoNewUpdate) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -92,7 +92,7 @@ class GithubRepositoryTest {
     // Given
     val emptyArrayResponse = "[]"
     buildRepo()
-    mockEngine.enqueue { respondJson(emptyArrayResponse) }
+    mockEngine += { respondJson(emptyArrayResponse) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -105,7 +105,7 @@ class GithubRepositoryTest {
   fun `Private repo`() = runTest {
     // Given
     buildRepo()
-    mockEngine.enqueue { respondJson(NotFound, HttpStatusCode.NotFound) }
+    mockEngine += { respondJson(NotFound, HttpStatusCode.NotFound) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -119,7 +119,7 @@ class GithubRepositoryTest {
     // Given
     buildRepo()
     val jsonResponse = """{"foo" : "bar"}"""
-    mockEngine.enqueue { respondJson(jsonResponse) }
+    mockEngine += { respondJson(jsonResponse) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -133,7 +133,7 @@ class GithubRepositoryTest {
   fun `Network failure`() = runTest {
     // Given
     buildRepo()
-    mockEngine.enqueue { throw IOException("Network broke!") }
+    mockEngine += { throw IOException("Network broke!") }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -147,7 +147,7 @@ class GithubRepositoryTest {
   fun `HTTP failure`() = runTest {
     // Given
     buildRepo()
-    mockEngine.enqueue { respondError(HttpStatusCode.MethodNotAllowed) }
+    mockEngine += { respondError(HttpStatusCode.MethodNotAllowed) }
 
     // When
     val state = githubRepository.fetchLatestRelease()

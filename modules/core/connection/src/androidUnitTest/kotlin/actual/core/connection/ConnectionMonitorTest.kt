@@ -21,6 +21,7 @@ import okio.fakefilesystem.FakeFileSystem
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -54,6 +55,11 @@ class ConnectionMonitorTest {
       serverUrlPreferences = serverUrlPreferences,
       fileSystem = fileSystem,
     )
+  }
+
+  @AfterTest
+  fun after() {
+    mockEngine.close()
   }
 
   @Test
