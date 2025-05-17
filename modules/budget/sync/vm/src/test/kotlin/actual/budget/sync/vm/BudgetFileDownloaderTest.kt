@@ -10,8 +10,8 @@ import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
 import actual.test.emptyMockEngine
-import actual.test.enqueue
 import actual.test.enqueueResponse
+import actual.test.plusAssign
 import actual.test.testHttpClient
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
@@ -123,7 +123,7 @@ class BudgetFileDownloaderTest {
   fun `Handle network failure`() = runTest {
     // given the API call throws network exception
     before()
-    mockEngine.enqueue { throw NoRouteToHostException() }
+    mockEngine += { throw NoRouteToHostException() }
 
     // when
     budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
@@ -150,7 +150,7 @@ class BudgetFileDownloaderTest {
   fun `Handle HTTP failure`() = runTest {
     // given the API call returns error code
     before()
-    mockEngine.enqueue { respondError(HttpStatusCode.NotFound) }
+    mockEngine += { respondError(HttpStatusCode.NotFound) }
 
     // when
     budgetFileDownloader.download(TOKEN, BUDGET_ID).test {

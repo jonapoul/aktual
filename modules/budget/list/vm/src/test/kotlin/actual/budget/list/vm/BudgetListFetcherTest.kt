@@ -8,6 +8,8 @@ import actual.api.client.SyncApi
 import actual.budget.model.Budget
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetState
+import actual.test.emptyMockEngine
+import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import actual.url.model.Protocol
@@ -34,6 +36,7 @@ class BudgetListFetcherTest {
   private lateinit var mockEngine: MockEngine
 
   private fun TestScope.before() {
+    mockEngine = emptyMockEngine()
     apisStateHolder = ActualApisStateHolder()
     budgetListFetcher = BudgetListFetcher(
       contexts = TestCoroutineContexts(standardDispatcher),
@@ -43,9 +46,7 @@ class BudgetListFetcherTest {
 
   @After
   fun after() {
-    if (::mockEngine.isInitialized) {
-      mockEngine.close()
-    }
+    mockEngine.close()
   }
 
   @Test
@@ -61,7 +62,7 @@ class BudgetListFetcherTest {
     before()
 
     // given
-    mockEngine = MockEngine { respondJson(VALID_RESPONSE) }
+    mockEngine += { respondJson(VALID_RESPONSE) }
     apisStateHolder.update { buildApis() }
 
     // when
@@ -95,7 +96,7 @@ class BudgetListFetcherTest {
         "data": [ { "invalid_format": true } ]
       }
     """.trimIndent()
-    mockEngine = MockEngine { respondJson(body) }
+    mockEngine += { respondJson(body) }
     apisStateHolder.update { buildApis() }
 
     // when
@@ -113,7 +114,7 @@ class BudgetListFetcherTest {
     val syncApi = mockk<SyncApi> {
       coEvery { fetchUserFiles(TOKEN) } throws NoRouteToHostException()
     }
-    mockEngine = MockEngine { respondJson(VALID_RESPONSE) }
+    mockEngine += { respondJson(VALID_RESPONSE) }
     apisStateHolder.update { buildApis(syncApi) }
 
     // when
@@ -134,7 +135,7 @@ class BudgetListFetcherTest {
         "reason": "something broke"
       }
     """.trimIndent()
-    mockEngine = MockEngine { respondJson(responseJson, HttpStatusCode.Forbidden) }
+    mockEngine += { respondJson(responseJson, HttpStatusCode.Forbidden) }
     apisStateHolder.update { buildApis() }
 
     // when

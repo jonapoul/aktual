@@ -14,7 +14,7 @@ import actual.test.assertEmitted
 import actual.test.buildPreferences
 import actual.test.clear
 import actual.test.emptyMockEngine
-import actual.test.enqueue
+import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import actual.url.model.Protocol
@@ -174,7 +174,7 @@ class ServerUrlViewModelTest {
         }
       """.trimIndent()
       mockEngine.clear()
-      mockEngine.enqueue { respondJson(body, HttpStatusCode.BadRequest) }
+      mockEngine += { respondJson(body, HttpStatusCode.BadRequest) }
 
       // When
       viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
@@ -202,7 +202,7 @@ class ServerUrlViewModelTest {
       // and the API fails
       val reason = "SOMETHING BROKE"
       mockEngine.clear()
-      mockEngine.enqueue { throw IOException(reason) }
+      mockEngine += { throw IOException(reason) }
 
       // When
       viewModel.onSelectProtocol(EXAMPLE_URL.protocol)
@@ -268,7 +268,7 @@ class ServerUrlViewModelTest {
       }
     """.trimIndent()
     mockEngine.clear()
-    mockEngine.enqueue { respondJson(json) }
+    mockEngine += { respondJson(json) }
   }
 
   private companion object {

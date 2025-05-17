@@ -24,6 +24,10 @@ fun emptyMockEngine(): MockEngine = MockEngine(ThrowingRequestHandler).also { it
 
 fun MockEngine.enqueue(handler: MockRequestHandler) = config.requestHandlers.add(handler)
 
+operator fun MockEngine.plusAssign(handler: MockRequestHandler) {
+  enqueue(handler)
+}
+
 fun MockEngine.clear() = config.requestHandlers.clear()
 
 fun MockEngine.latestRequest() = requestHistory.last()
