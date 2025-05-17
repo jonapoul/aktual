@@ -1,15 +1,15 @@
 <resources>
-  <string name="sync_state_talking_server">Talking to server…</string>
+  <string name="sync_step_fetching_info">Fetching File Info</string>
+  <string name="sync_step_starting_download">Starting Download</string>
+  <string name="sync_step_downloading">Downloading Database</string>
+  <string name="sync_step_validating">Validating Database</string>
 
-  <string name="sync_state_validating">Validating…</string>
+  <string name="sync_state_definite">In progress: %1$d%%</string>
+  <string name="sync_state_indefinite">In progress</string>
+  <string name="sync_state_not_started">Not started</string>
+  <string name="sync_state_failed">Failed: %1$s</string>
+  <string name="sync_state_succeeded">Succeeded</string>
 
-  <string name="sync_downloading_title">Downloading database…</string>
-  <string name="sync_downloading_progress">%1$s / %2$s</string>
-
-  <string name="sync_success">Success!</string>
-
-  <string name="sync_failure_desc">Failure</string>
-  <string name="sync_failure_message">Failed downloading</string>
-  <string name="sync_failure_default_message">Unknown reason</string>
-  <string name="sync_failure_retry">Retry</string>
+  <string name="sync_button_continue">Continue</string>
+  <string name="sync_button_retry">Retry</string>
 </resources>

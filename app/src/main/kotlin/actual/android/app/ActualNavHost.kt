@@ -11,6 +11,7 @@ import actual.account.password.nav.ChangePasswordNavRoute
 import actual.account.password.ui.ChangePasswordScreen
 import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.budget.list.ui.ListBudgetsScreen
+import actual.budget.model.BudgetId
 import actual.budget.sync.nav.SyncBudgetsNavRoute
 import actual.budget.sync.ui.SyncBudgetScreen
 import actual.settings.nav.SettingsNavRoute
@@ -28,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import java.io.Serializable
+import kotlin.reflect.KClass
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 
@@ -61,8 +63,8 @@ internal fun ActualNavHost(
 
     composable<SettingsNavRoute> { SettingsScreen(navController) }
 
-    composableWithArg<SyncBudgetsNavRoute>(mapOf(LoginTokenType)) { route, _ ->
-      SyncBudgetScreen(navController, route.token)
+    composableWithArg<SyncBudgetsNavRoute>(mapOf(BudgetIdType, LoginTokenType)) { route, _ ->
+      SyncBudgetScreen(navController, route.budgetId, route.token)
     }
   }
 }
@@ -78,14 +80,15 @@ private inline fun <reified T> NavGraphBuilder.composableWithArg(
 }
 
 private inline fun <reified T : Serializable> typeMapEntry(noinline parseValue: ((String) -> T)? = null) =
-  typeOf<T>() to WorkingSerializableType(T::class.java, parseValue)
+  typeOf<T>() to WorkingSerializableType(T::class, parseValue)
 
 private class WorkingSerializableType<T : Serializable>(
-  type: Class<T>,
+  type: KClass<T>,
   private val valueParser: ((String) -> T)? = null,
-) : NavType.SerializableType<T>(type) {
+) : NavType.SerializableType<T>(type.java) {
   // Not an unsupported operation!
   override fun parseValue(value: String): T = valueParser?.invoke(value) ?: super.parseValue(value)
 }
 
+private val BudgetIdType = typeMapEntry<BudgetId>(::BudgetId)
 private val LoginTokenType = typeMapEntry<LoginToken>(::LoginToken)

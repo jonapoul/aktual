@@ -32,6 +32,7 @@
 - check server version on about screen
   - next to app version?
   - link to release notes
+  - See packages/desktop-client/src/util/versions.ts in actual repo
 
 - migrate away from junit rules
 

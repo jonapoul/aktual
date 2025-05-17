@@ -7,9 +7,8 @@ import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
 import actual.test.TestClientFactory
-import actual.test.ThrowingRequestHandler
 import actual.test.buildPreferences
-import actual.test.clear
+import actual.test.emptyMockEngine
 import actual.test.enqueue
 import actual.test.respondJson
 import actual.url.model.Protocol
@@ -28,6 +27,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import okio.fakefilesystem.FakeFileSystem
 import org.junit.After
 import org.junit.Rule
 import org.junit.Test
@@ -49,6 +49,7 @@ internal class LoginRequesterTest {
   private lateinit var serverUrlPreferences: ServerUrlPreferences
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var mockEngine: MockEngine
+  private lateinit var fileSystem: FakeFileSystem
 
   @After
   fun after() {
@@ -60,14 +61,15 @@ internal class LoginRequesterTest {
     serverUrlPreferences = ServerUrlPreferences(flowPrefs)
     loginPreferences = LoginPreferences(flowPrefs)
     apisStateHolder = ActualApisStateHolder()
-    mockEngine = MockEngine(ThrowingRequestHandler)
-    mockEngine.clear()
+    mockEngine = emptyMockEngine()
+    fileSystem = FakeFileSystem()
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,
       clientFactory = TestClientFactory(mockEngine),
       apiStateHolder = apisStateHolder,
       serverUrlPreferences = serverUrlPreferences,
+      fileSystem = fileSystem,
     )
 
     loginRequester = LoginRequester(

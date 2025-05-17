@@ -113,7 +113,7 @@ fun ListBudgetsScreen(
         ListBudgetsAction.OpenInBrowser -> launchBrowser = true
         ListBudgetsAction.Reload -> viewModel.retry()
         is ListBudgetsAction.Delete -> budgetToDelete = action.budget
-        is ListBudgetsAction.Open -> navController.debugNavigate(SyncBudgetsNavRoute(token))
+        is ListBudgetsAction.Open -> navController.debugNavigate(SyncBudgetsNavRoute(token, action.budget.cloudFileId))
       }
     },
   )

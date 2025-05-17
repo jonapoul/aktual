@@ -14,7 +14,6 @@ import actual.codegen.KtorApi
 import actual.codegen.POST
 import actual.url.model.ServerUrl
 import io.ktor.client.HttpClient
-import io.ktor.client.statement.HttpResponse
 
 @KtorApi
 interface SyncApi {
@@ -22,12 +21,6 @@ interface SyncApi {
   suspend fun fetchUserFiles(
     @Header(ActualHeaders.TOKEN) token: LoginToken,
   ): ListUserFilesResponse.Success
-
-  @GET("/sync/download-user-file")
-  suspend fun downloadUserFile(
-    @Header(ActualHeaders.TOKEN) token: LoginToken,
-    @Header(ActualHeaders.FILE_ID) budgetId: BudgetId,
-  ): HttpResponse
 
   @GET("/sync/get-user-file-info")
   suspend fun fetchUserFileInfo(

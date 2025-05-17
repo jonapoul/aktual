@@ -2,7 +2,7 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":core:res","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":core:res" ["shape"="none","fillcolor"="#00FFFF"]
+":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]

@@ -27,7 +27,7 @@ node ["style"="filled"]
 ":api:builder" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:di" ["fillcolor"="#FCB103","shape"="none"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
-":app" ["shape"="none","fillcolor"="#FF5555"]
+":app" ["fillcolor"="#FF5555","shape"="none"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":budget:list:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -154,7 +154,9 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":url:model"
 ":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
 ":budget:sync:nav" -> ":account:model"
+":budget:sync:nav" -> ":budget:model"
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
+":budget:sync:ui" -> ":budget:list:nav" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:nav"
 ":budget:sync:ui" -> ":budget:sync:res" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"

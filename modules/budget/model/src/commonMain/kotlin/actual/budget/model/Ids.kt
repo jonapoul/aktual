@@ -1,6 +1,7 @@
 package actual.budget.model
 
 import kotlinx.serialization.Serializable
+import java.io.Serializable as JavaIoSerializable
 
 @JvmInline
 value class AccountId(private val value: String) : Comparable<AccountId> {
@@ -16,7 +17,7 @@ value class BankId(private val value: String) : Comparable<BankId> {
 
 @JvmInline
 @Serializable
-value class BudgetId(val value: String) : Comparable<BudgetId> {
+value class BudgetId(val value: String) : Comparable<BudgetId>, JavaIoSerializable {
   override fun toString(): String = value
   override fun compareTo(other: BudgetId) = value.compareTo(other.value)
 }

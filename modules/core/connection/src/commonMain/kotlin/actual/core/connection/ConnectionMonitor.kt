@@ -7,6 +7,7 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.client.BaseApi
 import actual.api.client.SyncApi
+import actual.api.client.SyncDownloadApi
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.kotlin.core.collectFlow
@@ -15,6 +16,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.update
+import okio.FileSystem
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -24,6 +26,7 @@ class ConnectionMonitor @Inject constructor(
   private val clientFactory: ClientFactory,
   private val apiStateHolder: ActualApisStateHolder,
   private val serverUrlPreferences: ServerUrlPreferences,
+  private val fileSystem: FileSystem,
 ) {
   private var job: Job? = null
 
@@ -49,6 +52,7 @@ class ConnectionMonitor @Inject constructor(
       account = AccountApi(url, client),
       base = BaseApi(url, client),
       sync = SyncApi(url, client),
+      syncDownload = SyncDownloadApi(url, client, fileSystem),
     )
     apiStateHolder.update { apis }
   } catch (e: CancellationException) {

@@ -7,7 +7,6 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import app.cash.sqldelight.db.SqlDriver
 import kotlinx.coroutines.test.runTest
-import okio.FileSystem
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -49,7 +48,7 @@ class LoadExistingDatabaseFromFile {
   }
 
   private fun loadDatabaseIntoFile(): File {
-    val path = AndroidDatabaseDirectory(context, FileSystem.SYSTEM).pathFor(BUDGET_ID)
+    val path = AndroidDatabaseDirectory(context).pathFor(BUDGET_ID)
     val file = path.toFile()
     getResourceAsStream("test-db.sqlite").use { input ->
       file.outputStream().use { output ->

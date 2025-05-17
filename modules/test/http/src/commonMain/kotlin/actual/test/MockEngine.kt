@@ -32,4 +32,14 @@ fun MockEngine.latestRequestHeaders() = latestRequest().headers.toMap()
 
 fun MockEngine.latestRequestUrl() = latestRequest().url.toString()
 
+fun MockEngine.enqueueResponse(content: ByteArray) = enqueue {
+  respond(
+    content = content,
+    status = HttpStatusCode.OK,
+    headers = headersOf("Content-Length", content.size.toString()),
+  )
+}
+
+fun MockEngine.enqueueResponse(content: String) = enqueueResponse(content.toByteArray())
+
 val ThrowingRequestHandler: MockRequestHandler = { error("No-op") }

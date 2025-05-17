@@ -16,29 +16,26 @@ sealed interface DownloadState {
   ) : DownloadState
 
   sealed interface Failure : DownloadState {
+    val message: String
+
     data object NotLoggedIn : Failure {
       override val total = Bytes.Zero
+      override val message = "Not logged in"
     }
 
-    data class InProgress(
-      val cause: String,
-      val read: Bytes,
-      override val total: Bytes,
-    ) : Failure
-
     data class IO(
-      val cause: String,
+      override val message: String,
       override val total: Bytes,
     ) : Failure
 
     data class Http(
       val code: Int,
-      val message: String,
+      override val message: String,
       override val total: Bytes,
     ) : Failure
 
     data class Other(
-      val message: String,
+      override val message: String,
       override val total: Bytes,
     ) : Failure
   }

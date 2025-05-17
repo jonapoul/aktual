@@ -1,21 +1,21 @@
-package actual.diagrams
+package actual.diagrams.tasks
 
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
-import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.file.RegularFileProperty
 import org.gradle.api.model.ObjectFactory
-import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
 import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
-open class GenerateGraphVizPngTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
-  @get:InputDirectory
-  val reportDir: DirectoryProperty = objects.directoryProperty()
-
+@CacheableTask
+open class GeneratePngFileTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
   @get:InputFile
+  @get:PathSensitive(PathSensitivity.RELATIVE)
   val dotFile: RegularFileProperty = objects.fileProperty()
 
   @get:OutputFile
@@ -25,8 +25,7 @@ open class GenerateGraphVizPngTask @Inject constructor(objects: ObjectFactory) :
   val errorFile: RegularFileProperty = objects.fileProperty()
 
   init {
-    // never cache
-    outputs.upToDateWhen { false }
+    group = "reporting"
   }
 
   @TaskAction
@@ -45,7 +44,7 @@ open class GenerateGraphVizPngTask @Inject constructor(objects: ObjectFactory) :
     if (status != 0) {
       throw GradleException("GraphViz error code $status: ${errorFile.bufferedReader().readText()}")
     } else {
-      logger.info("GraphViz success!")
+      logger.lifecycle(pngFile.absolutePath)
       errorFile.delete()
     }
   }

@@ -4,34 +4,31 @@ import actual.account.model.LoginToken
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
-import actual.api.client.SyncApi
+import actual.api.client.SyncDownloadApi
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
+import actual.test.emptyMockEngine
+import actual.test.enqueue
+import actual.test.enqueueResponse
 import actual.test.testHttpClient
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
-import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respond
 import io.ktor.client.engine.mock.respondError
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.headersOf
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import okio.buffer
 import okio.fakefilesystem.FakeFileSystem
 import org.junit.After
-import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
-import org.junit.rules.TemporaryFolder
 import java.net.NoRouteToHostException
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
@@ -39,17 +36,36 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class BudgetFileDownloaderTest {
-  @get:Rule
-  val mainDispatcherRule = MainDispatcherRule()
-
-  @get:Rule
-  val temporaryFolder = TemporaryFolder()
-
   private lateinit var budgetFileDownloader: BudgetFileDownloader
-  private lateinit var fileSystem: FakeFileSystem
   private lateinit var databaseDirectory: TestDatabaseDirectory
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var mockEngine: MockEngine
+  private lateinit var fileSystem: FakeFileSystem
+
+  fun TestScope.before() {
+    fileSystem = FakeFileSystem()
+    databaseDirectory = TestDatabaseDirectory(fileSystem)
+    mockEngine = emptyMockEngine()
+
+    val syncDownloadApi = SyncDownloadApi(
+      serverUrl = SERVER_URL,
+      client = testHttpClient(mockEngine, ActualJson),
+      fileSystem = fileSystem,
+    )
+
+    apisStateHolder = ActualApisStateHolder()
+    apisStateHolder.update {
+      mockk<ActualApis>(relaxed = true) {
+        every { syncDownload } returns syncDownloadApi
+      }
+    }
+
+    budgetFileDownloader = BudgetFileDownloader(
+      contexts = TestCoroutineContexts(unconfinedDispatcher),
+      databaseDirectory = databaseDirectory,
+      apisStateHolder = apisStateHolder,
+    )
+  }
 
   @After
   fun after() {
@@ -57,28 +73,27 @@ class BudgetFileDownloaderTest {
     fileSystem.checkNoOpenFiles()
   }
 
-  @Before
-  fun before() {
-    fileSystem = FakeFileSystem()
-    databaseDirectory = TestDatabaseDirectory(fileSystem)
-    apisStateHolder = ActualApisStateHolder()
+  @Test
+  fun `Fail if no APIs`() = runTest {
+    // given
+    before()
+    apisStateHolder.reset()
 
-    budgetFileDownloader = BudgetFileDownloader(
-      contexts = TestCoroutineContexts(mainDispatcherRule),
-      databaseDirectory = databaseDirectory,
-      apisStateHolder = apisStateHolder,
-    )
+    // when
+    budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
+      // then
+      assertEquals(expected = Failure.NotLoggedIn, actual = awaitItem())
+      awaitComplete()
+    }
   }
 
   @Test
   fun `Succeed downloading`() = runTest {
     // given
+    before()
     val dataSize = 1024.bytes
     val data = ByteArray(dataSize.numBytes.toInt()) { (it % Byte.MAX_VALUE).toByte() }
-    mockEngine = MockEngine {
-      respond(data, headers = headersOf(HttpHeaders.ContentLength, dataSize.numBytes.toString()))
-    }
-    apisStateHolder.update { buildApis() }
+    mockEngine.enqueueResponse(data)
 
     // when
     budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
@@ -97,19 +112,18 @@ class BudgetFileDownloaderTest {
       // and it contains all our data, nothing more or less
       val path = databaseDirectory.pathFor(BUDGET_ID)
       assertTrue(fileSystem.exists(path))
-      val downloadedData = fileSystem.source(path).buffer().use { it.readByteArray() }
+      val downloadedData = fileSystem.read(path) { readByteArray() }
       assertContentEquals(expected = data, actual = downloadedData)
 
       awaitComplete()
-      cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
   fun `Handle network failure`() = runTest {
     // given the API call throws network exception
-    mockEngine = MockEngine { throw NoRouteToHostException() }
-    apisStateHolder.update { buildApis() }
+    before()
+    mockEngine.enqueue { throw NoRouteToHostException() }
 
     // when
     budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
@@ -129,15 +143,14 @@ class BudgetFileDownloaderTest {
       )
 
       awaitComplete()
-      cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
   fun `Handle HTTP failure`() = runTest {
     // given the API call returns error code
-    mockEngine = MockEngine { respondError(HttpStatusCode.NotFound) }
-    apisStateHolder.update { buildApis() }
+    before()
+    mockEngine.enqueue { respondError(HttpStatusCode.NotFound) }
 
     // when
     budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
@@ -151,7 +164,6 @@ class BudgetFileDownloaderTest {
       val httpState = state
       assertIs<Failure.Http>(httpState)
       awaitComplete()
-      cancelAndIgnoreRemainingEvents()
     }
 
     // and no files were created
@@ -160,10 +172,6 @@ class BudgetFileDownloaderTest {
       expected = emptyList(),
     )
   }
-
-  private fun buildApis(
-    syncApi: SyncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, ActualJson)),
-  ) = mockk<ActualApis> { every { sync } returns syncApi }
 
   private companion object {
     val TOKEN = LoginToken("abc-123")

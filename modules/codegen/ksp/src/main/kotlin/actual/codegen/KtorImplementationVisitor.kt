@@ -20,7 +20,6 @@ import com.squareup.kotlinpoet.KModifier.PRIVATE
 import com.squareup.kotlinpoet.MemberName
 import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.STRING
 import com.squareup.kotlinpoet.TypeName
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.ksp.toClassName
@@ -176,13 +175,8 @@ internal class KtorImplementationVisitor(
 
     // Headers
     with(builder) {
-      parameters.headers.forEach { (key, parameterName, parameterType) ->
-        val value = when {
-          parameterType.isNullable -> "$parameterName?.toString()"
-          parameterType == STRING -> "\"$parameterName\""
-          else -> "$parameterName.toString()"
-        }
-        addStatement("%M(\"$key\", $value)", MEMBER_HEADER)
+      parameters.headers.forEach { (key, parameterName) ->
+        addStatement("%M(\"$key\", $parameterName)", MEMBER_HEADER)
       }
     }
 
@@ -221,7 +215,6 @@ internal class KtorImplementationVisitor(
   private data class HeaderItem(
     val headerName: String,
     val parameterName: String,
-    val parameterType: TypeName,
   )
 
   private data class PathItem(
@@ -257,7 +250,6 @@ internal class KtorImplementationVisitor(
           headers += HeaderItem(
             headerName = annotation.getValue(),
             parameterName = name,
-            parameterType = parameter.type.resolve().toClassName(),
           )
         }
 

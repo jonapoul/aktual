@@ -1,3 +1,3 @@
 # url:ui
 
-![project-dependency-graph.png](project-dependency-graph.png)
+![modules.png](modules.png)
