@@ -10,8 +10,8 @@ import actual.api.model.sync.UserFile
 import actual.api.model.sync.UserWithAccess
 import actual.budget.model.BudgetId
 import actual.test.emptyMockEngine
-import actual.test.enqueue
 import actual.test.latestRequestHeaders
+import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import io.ktor.client.call.body
@@ -47,7 +47,7 @@ class SyncApiTest {
 
   @Test
   fun `Fetch user files request headers`() = runTest {
-    mockEngine.enqueue { respondJson(SYNC_LIST_BUDGETS_SUCCESS) }
+    mockEngine += { respondJson(SYNC_LIST_BUDGETS_SUCCESS) }
     syncApi.fetchUserFiles(TOKEN)
     assertEquals(
       actual = mockEngine.latestRequestHeaders(),
@@ -61,7 +61,7 @@ class SyncApiTest {
 
   @Test
   fun `Fetch user file info request headers`() = runTest {
-    mockEngine.enqueue { respondJson(SYNC_GET_USER_FILE_INFO_SUCCESS) }
+    mockEngine += { respondJson(SYNC_GET_USER_FILE_INFO_SUCCESS) }
     syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
     assertEquals(
       actual = mockEngine.latestRequestHeaders(),
@@ -76,7 +76,7 @@ class SyncApiTest {
 
   @Test
   fun `Fetch user key request headers`() = runTest {
-    mockEngine.enqueue { respondJson(SYNC_GET_USER_KEY_SUCCESS) }
+    mockEngine += { respondJson(SYNC_GET_USER_KEY_SUCCESS) }
     val body = GetUserKeyRequest(BUDGET_ID)
     syncApi.fetchUserKey(TOKEN, body)
     val request = mockEngine.requestHistory.last()
@@ -96,7 +96,7 @@ class SyncApiTest {
   @Test
   fun `Fetch user files success response`() = runTest {
     // given
-    mockEngine.enqueue { respondJson(SYNC_LIST_BUDGETS_SUCCESS) }
+    mockEngine += { respondJson(SYNC_LIST_BUDGETS_SUCCESS) }
 
     // when
     val response = syncApi.fetchUserFiles(TOKEN)
@@ -141,7 +141,7 @@ class SyncApiTest {
   @Test
   fun `Fetch user files failure response`() = runTest {
     // given
-    mockEngine.enqueue { respondJson(SYNC_LIST_BUDGETS_FAILURE, HttpStatusCode.BadRequest) }
+    mockEngine += { respondJson(SYNC_LIST_BUDGETS_FAILURE, HttpStatusCode.BadRequest) }
 
     // when
     try {
@@ -157,7 +157,7 @@ class SyncApiTest {
   @Test
   fun `Get user key success`() = runTest {
     // given
-    mockEngine.enqueue { respondJson(SYNC_GET_USER_KEY_SUCCESS) }
+    mockEngine += { respondJson(SYNC_GET_USER_KEY_SUCCESS) }
 
     // when
     val body = GetUserKeyRequest(BUDGET_ID)
@@ -189,7 +189,7 @@ class SyncApiTest {
   @Test
   fun `Get user key failure`() = runTest {
     // given
-    mockEngine.enqueue { respondJson(SYNC_GET_USER_KEY_FAILURE, HttpStatusCode.Unauthorized) }
+    mockEngine += { respondJson(SYNC_GET_USER_KEY_FAILURE, HttpStatusCode.Unauthorized) }
 
     // when
     val response = try {
@@ -213,7 +213,7 @@ class SyncApiTest {
   @Test
   fun `Get file info success`() = runTest {
     // given
-    mockEngine.enqueue { respondJson(SYNC_GET_USER_FILE_INFO_SUCCESS) }
+    mockEngine += { respondJson(SYNC_GET_USER_FILE_INFO_SUCCESS) }
 
     // when
     val response = syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
@@ -244,7 +244,7 @@ class SyncApiTest {
   @Test
   fun `Get file info file not found failure`() = runTest {
     // given
-    mockEngine.enqueue { respondJson(SYNC_GET_USER_FILE_INFO_FILE_NOT_FOUND, HttpStatusCode.BadRequest) }
+    mockEngine += { respondJson(SYNC_GET_USER_FILE_INFO_FILE_NOT_FOUND, HttpStatusCode.BadRequest) }
 
     // when
     val response = try {
@@ -264,7 +264,7 @@ class SyncApiTest {
   @Test
   fun `Get file info unauthorised failure`() = runTest {
     // given
-    mockEngine.enqueue { respondJson(SYNC_GET_USER_FILE_INFO_UNAUTHORISED, HttpStatusCode.Unauthorized) }
+    mockEngine += { respondJson(SYNC_GET_USER_FILE_INFO_UNAUTHORISED, HttpStatusCode.Unauthorized) }
 
     // when
     val response = try {

@@ -3,9 +3,9 @@ package actual.api.client
 import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
 import actual.test.emptyMockEngine
-import actual.test.enqueue
 import actual.test.latestRequestHeaders
 import actual.test.latestRequestUrl
+import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.assertThrows
@@ -36,7 +36,7 @@ class BaseApiTest {
 
   @Test
   fun `Fetch info request format`() = runTest {
-    mockEngine.enqueue { respondJson(BASE_FETCH_INFO_SUCCESS) }
+    mockEngine += { respondJson(BASE_FETCH_INFO_SUCCESS) }
     baseApi.fetchInfo()
 
     assertEquals(
@@ -56,7 +56,7 @@ class BaseApiTest {
   @Test
   fun `Fetch info success response`() = runTest {
     // given
-    mockEngine.enqueue { respondJson(BASE_FETCH_INFO_SUCCESS) }
+    mockEngine += { respondJson(BASE_FETCH_INFO_SUCCESS) }
 
     // when
     val response = baseApi.fetchInfo()
@@ -77,7 +77,7 @@ class BaseApiTest {
   @Test
   fun `Fetch info failure response`() = runTest {
     // given
-    mockEngine.enqueue { respondError(HttpStatusCode.BadRequest) }
+    mockEngine += { respondError(HttpStatusCode.BadRequest) }
 
     // when
     assertThrows<ClientRequestException> { baseApi.fetchInfo() }

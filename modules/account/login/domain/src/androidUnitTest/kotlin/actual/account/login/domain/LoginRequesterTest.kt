@@ -9,7 +9,7 @@ import actual.core.connection.ConnectionMonitor
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
-import actual.test.enqueue
+import actual.test.plusAssign
 import actual.test.respondJson
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
@@ -95,7 +95,7 @@ internal class LoginRequesterTest {
 
       // When we log in with a successful response
       val body = """{ "status": "ok", "data": { "token": "$EXAMPLE_TOKEN" } } """
-      mockEngine.enqueue { respondJson(body) }
+      mockEngine += { respondJson(body) }
       val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
       // Then a success response was parsed, and the token was stored in prefs
@@ -142,7 +142,7 @@ internal class LoginRequesterTest {
         "data": { "token": null }
       }
     """.trimIndent()
-    mockEngine.enqueue { respondJson(body) }
+    mockEngine += { respondJson(body) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
     // Then a success result was parsed, and the token was stored in prefs
@@ -167,7 +167,7 @@ internal class LoginRequesterTest {
         "reason": "Some error"
       }
     """.trimIndent()
-    mockEngine.enqueue { respondJson(body, HttpStatusCode.InternalServerError) }
+    mockEngine += { respondJson(body, HttpStatusCode.InternalServerError) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
     // Then a HTTP result

@@ -10,7 +10,7 @@ import actual.api.model.sync.UserFile
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.BudgetInfoFetcher.Result
 import actual.test.emptyMockEngine
-import actual.test.enqueue
+import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import actual.url.model.ServerUrl
@@ -76,7 +76,7 @@ class BudgetInfoFetcherTest {
           }
       }
     """.trimIndent()
-    mockEngine.enqueue { respondJson(response) }
+    mockEngine += { respondJson(response) }
 
     // then
     val userFile = UserFile(
@@ -114,7 +114,7 @@ class BudgetInfoFetcherTest {
   fun `Handle HTTP failure`() = runTest {
     // given
     before()
-    mockEngine.enqueue {
+    mockEngine += {
       respondJson(
         status = HttpStatusCode.Unauthorized,
         content = """{ "status": "error", "reason": "unauthorized", "details": "token-not-found" }""",
@@ -132,7 +132,7 @@ class BudgetInfoFetcherTest {
   fun `Handle unexpected HTTP failure body`() = runTest {
     // given
     before()
-    mockEngine.enqueue {
+    mockEngine += {
       respondJson(
         status = HttpStatusCode.Unauthorized,
         content = """{ "unexpected-key": 123 }""",
@@ -151,7 +151,7 @@ class BudgetInfoFetcherTest {
   fun `Handle network error`() = runTest {
     // given
     before()
-    mockEngine.enqueue { throw NoRouteToHostException() }
+    mockEngine += { throw NoRouteToHostException() }
 
     // then
     assertIs<Result.IOFailure>(budgetInfoFetcher.fetch(TOKEN, BUDGET_ID))
