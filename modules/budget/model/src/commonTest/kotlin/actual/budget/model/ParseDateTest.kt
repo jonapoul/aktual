@@ -13,7 +13,7 @@ class ParseDateTest(
     TestCase(year = 2025, month = Month.JULY, day = 27, expected = "2025-07-27"),
     TestCase(year = 1, month = Month.JANUARY, day = 1, expected = "0001-01-01"),
     TestCase(year = 9999, month = Month.DECEMBER, day = 31, expected = "9999-12-31"),
-  )
+  ),
 ) {
   data class TestCase(val year: Int, val month: Month, val day: Int, val expected: String)
 
