@@ -168,6 +168,7 @@ graph ["rank"="same"]
 ":core:connection" -> ":core:model" ["style"="dotted"]
 ":core:connection" -> ":prefs" ["style"="dotted"]
 ":core:di" -> ":core:files"
+":core:di" -> ":core:model"
 ":core:files" -> ":budget:model"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
