@@ -1,13 +1,14 @@
 import actual.budget.model.ConditionOperator;
 import actual.budget.model.RuleId;
+import actual.budget.model.RuleStage;
 import kotlin.Boolean;
-import kotlinx.serialization.json.JsonObject;
+import kotlinx.serialization.json.JsonArray;
 
 CREATE TABLE IF NOT EXISTS rules(
   id TEXT AS RuleId PRIMARY KEY,
-  stage TEXT,
-  conditions TEXT AS JsonObject,
-  actions TEXT AS JsonObject,
+  stage TEXT AS RuleStage,
+  conditions TEXT AS JsonArray,
+  actions TEXT AS JsonArray,
   tombstone INTEGER AS Boolean DEFAULT 0,
   conditions_op TEXT AS ConditionOperator DEFAULT 'and'
 );
@@ -19,7 +20,7 @@ getWithConditionsAndActions:
 
 insert:
   INSERT OR REPLACE
-    INTO rules(id, stage, conditions, actions, tombstone, conditions)
+    INTO rules(id, stage, conditions, actions, tombstone, conditions_op)
     VALUES (?,?,?,?,?,?);
 
 delete:

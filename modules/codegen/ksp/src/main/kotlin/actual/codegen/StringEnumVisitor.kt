@@ -42,7 +42,7 @@ internal class StringEnumVisitor(
         return %T
           .entries
           .firstOrNull { it.$stringPropertyName == $paramName }
-          ?: error("No %L matching '${"\$"}$paramName'")
+          ?: error("No %L matching '$$paramName'")
       """.trimIndent(),
       className,
       className.simpleName,

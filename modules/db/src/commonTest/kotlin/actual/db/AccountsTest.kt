@@ -4,11 +4,12 @@ import actual.budget.model.AccountId
 import actual.db.test.buildAccount
 import actual.db.test.getAccountById
 import actual.db.test.insertAccount
+import actual.test.runDatabaseTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-internal class AccountsTest : DatabaseTest() {
+internal class AccountsTest {
   @Test
   fun `Get by ID`() = runDatabaseTest {
     val id1 = AccountId("account-1")
