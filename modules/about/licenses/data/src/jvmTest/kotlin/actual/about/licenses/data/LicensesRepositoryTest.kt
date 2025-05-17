@@ -6,7 +6,7 @@ import alakazam.test.core.getResourceAsStream
 import alakazam.test.core.standardDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LicensesRepositoryTest {

@@ -25,10 +25,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Rule
-import org.junit.Test
 import java.io.IOException
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
@@ -45,7 +45,7 @@ class ServerVersionFetcherTest {
   private lateinit var apis: ActualApis
   private lateinit var baseApi: BaseApi
 
-  @Before
+  @BeforeTest
   fun before() {
     baseApi = mockk()
     apis = mockk {

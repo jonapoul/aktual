@@ -8,10 +8,10 @@ import actual.test.buildPreferences
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
@@ -21,7 +21,7 @@ class ColorSchemePreferencesTest {
 
   private lateinit var preferences: ColorSchemePreferences
 
-  @Before
+  @BeforeTest
   fun before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     preferences = ColorSchemePreferences(prefs)
