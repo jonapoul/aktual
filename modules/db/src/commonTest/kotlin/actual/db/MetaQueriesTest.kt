@@ -2,11 +2,12 @@ package actual.db
 
 import actual.db.test.getMetaValue
 import actual.db.test.insertMeta
+import actual.test.runDatabaseTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-internal class MetaQueriesTest : DatabaseTest() {
+internal class MetaQueriesTest {
   @Test
   fun `Getting from empty table returns null`() = runDatabaseTest {
     assertNull(getMetaValue(key = "test"))
