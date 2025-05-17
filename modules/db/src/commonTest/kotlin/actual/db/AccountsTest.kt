@@ -8,7 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class AccountsTest : DatabaseTest() {
+internal class AccountsTest : DatabaseTest() {
   @Test
   fun `Get by ID`() = runDatabaseTest {
     val id1 = AccountId("account-1")

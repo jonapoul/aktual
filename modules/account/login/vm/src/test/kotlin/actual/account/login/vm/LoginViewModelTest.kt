@@ -11,17 +11,22 @@ import actual.test.buildPreferences
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
-import alakazam.test.core.MainDispatcherRule
+import alakazam.test.core.standardDispatcher
+import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
+import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.BeforeTest
+import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -29,11 +34,9 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 internal class LoginViewModelTest {
-  @get:Rule
-  val mainDispatcherRule = MainDispatcherRule()
-
   // real
   private lateinit var serverUrlPrefs: ServerUrlPreferences
   private lateinit var loginPrefs: LoginPreferences
@@ -43,15 +46,13 @@ internal class LoginViewModelTest {
   // mock
   private lateinit var loginRequester: LoginRequester
 
-  @BeforeTest
-  fun before() {
-    val prefs = buildPreferences(mainDispatcherRule.dispatcher)
+  private fun TestScope.before() {
+    Dispatchers.setMain(standardDispatcher)
+    val prefs = buildPreferences(unconfinedDispatcher)
     serverUrlPrefs = ServerUrlPreferences(prefs)
     loginPrefs = LoginPreferences(prefs)
-
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
-
     viewModel = LoginViewModel(
       versionsStateHolder = versionsStateHolder,
       loginRequester = loginRequester,
@@ -61,8 +62,14 @@ internal class LoginViewModelTest {
     )
   }
 
+  @AfterTest
+  fun after() {
+    Dispatchers.resetMain()
+  }
+
   @Test
   fun `Enter password`() = runTest {
+    before()
     viewModel.enteredPassword.test {
       assertEquals(expected = "", actual = awaitItem().toString())
 
@@ -79,6 +86,7 @@ internal class LoginViewModelTest {
 
   @Test
   fun `Server URL`() = runTest {
+    before()
     viewModel.serverUrl.test {
       assertNull(awaitItem())
 
@@ -93,6 +101,7 @@ internal class LoginViewModelTest {
 
   @Test
   fun `Signing in with invalid password`() = runTest {
+    before()
     combine(viewModel.loginFailure, viewModel.isLoading, ::Pair)
       .distinctUntilChanged()
       .test {
@@ -127,6 +136,7 @@ internal class LoginViewModelTest {
 
   @Test
   fun `Login token`() = runTest {
+    before()
     viewModel.token.test {
       expectNoEvents()
 
