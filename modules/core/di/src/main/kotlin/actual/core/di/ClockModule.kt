@@ -1,16 +1,16 @@
-package actual.android.app.di
+package actual.core.di
 
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okio.FileSystem
+import kotlinx.datetime.Clock
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class FileSystemModule {
+class ClockModule {
   @Provides
   @Singleton
-  fun fileSystem(): FileSystem = FileSystem.SYSTEM
+  fun clock(): Clock = Clock.System
 }

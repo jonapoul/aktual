@@ -1,4 +1,4 @@
-package actual.android.app.di
+package actual.core.di
 
 import actual.core.model.ActualVersionsStateHolder
 import alakazam.kotlin.core.BuildConfig

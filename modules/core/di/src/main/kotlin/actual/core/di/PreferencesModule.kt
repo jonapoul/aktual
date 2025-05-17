@@ -3,7 +3,9 @@
 package actual.core.di
 
 import alakazam.kotlin.core.CoroutineContexts
+import android.content.Context
 import android.content.SharedPreferences
+import androidx.preference.PreferenceManager
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -21,4 +23,9 @@ class PreferencesModule {
     prefs: SharedPreferences,
     contexts: CoroutineContexts,
   ): Preferences = AndroidSharedPreferences(prefs, contexts.io)
+
+  @Provides
+  fun sharedPrefs(
+    context: Context,
+  ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 }
