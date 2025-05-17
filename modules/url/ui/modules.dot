@@ -9,10 +9,10 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":url:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -26,12 +26,12 @@ graph ["rank"="same"]
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
-":api:actual" -> ":url:model"
+":api:actual" -> ":core:model"
 ":core:ui" -> ":core:colorscheme"
+":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:ui" -> ":core:versions"
-":core:ui" -> ":url:model"
-":url:prefs" -> ":url:model"
+":url:prefs" -> ":core:model"
 ":url:ui" -> ":account:login:nav" ["style"="dotted"]
 ":url:ui" -> ":core:res" ["style"="dotted"]
 ":url:ui" -> ":core:ui"
@@ -39,8 +39,8 @@ graph ["rank"="same"]
 ":url:ui" -> ":url:vm"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
+":url:vm" -> ":core:model"
 ":url:vm" -> ":core:versions"
-":url:vm" -> ":url:model"
 ":url:vm" -> ":url:prefs" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]

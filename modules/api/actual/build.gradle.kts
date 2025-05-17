@@ -18,7 +18,7 @@ kotlin {
     api(libs.okio)
     api(projects.account.model)
     api(projects.budget.model)
-    api(projects.url.model)
+    api(projects.core.model)
     compileOnly(libs.sekret)
     implementation(libs.ktor.serialization.core)
     implementation(libs.ktor.serialization.json)

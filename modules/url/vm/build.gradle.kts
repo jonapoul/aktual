@@ -5,8 +5,8 @@ plugins {
 dependencies {
   api(libs.alakazam.kotlin.core)
   api(libs.kotlinx.coroutines)
+  api(projects.core.model)
   api(projects.core.versions)
-  api(projects.url.model)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.hilt.android)

@@ -1,4 +1,4 @@
-package actual.url.model
+package actual.core.model
 
 import alakazam.kotlin.core.parse
 

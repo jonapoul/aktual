@@ -7,6 +7,7 @@ import actual.account.login.vm.LoginViewModel
 import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.budget.list.nav.ListBudgetsNavRoute
+import actual.core.model.ServerUrl
 import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
@@ -17,7 +18,6 @@ import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.ui.transparentTopAppBarColors
 import actual.core.versions.ActualVersions
-import actual.url.model.ServerUrl
 import actual.url.nav.ServerUrlNavRoute
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement

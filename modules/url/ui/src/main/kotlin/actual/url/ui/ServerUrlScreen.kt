@@ -1,6 +1,7 @@
 package actual.url.ui
 
 import actual.account.login.nav.LoginNavRoute
+import actual.core.model.Protocol
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.LocalTheme
@@ -13,7 +14,6 @@ import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.ui.transparentTopAppBarColors
 import actual.core.versions.ActualVersions
-import actual.url.model.Protocol
 import actual.url.res.ServerUrlStrings
 import actual.url.vm.NavDestination
 import actual.url.vm.ServerUrlViewModel

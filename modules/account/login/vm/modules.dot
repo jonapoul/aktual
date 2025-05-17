@@ -8,8 +8,8 @@ node ["style"="filled"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -19,14 +19,14 @@ graph ["rank"="same"]
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
 ":account:login:vm" -> ":account:login:domain"
 ":account:login:vm" -> ":account:model"
+":account:login:vm" -> ":core:model"
 ":account:login:vm" -> ":core:versions"
-":account:login:vm" -> ":url:model"
 ":account:login:vm" -> ":url:prefs" ["style"="dotted"]
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
-":api:actual" -> ":url:model"
-":url:prefs" -> ":url:model"
+":api:actual" -> ":core:model"
+":url:prefs" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

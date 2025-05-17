@@ -1,6 +1,6 @@
 package actual.url.prefs
 
-import actual.url.model.ServerUrl
+import actual.core.model.ServerUrl
 import dev.jonpoulton.preferences.core.Preference
 import dev.jonpoulton.preferences.core.Preferences
 import dev.jonpoulton.preferences.core.SimpleNullableStringSerializer

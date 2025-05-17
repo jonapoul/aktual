@@ -1,9 +1,9 @@
 package actual.budget.list.vm
 
 import actual.account.model.LoginToken
+import actual.core.model.ServerUrl
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
-import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel

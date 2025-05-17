@@ -5,14 +5,14 @@ node ["style"="filled"]
 ":about:info:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
 ":about:info:data" -> ":api:github"
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
-":api:github" -> ":url:model"
+":api:github" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

@@ -1,4 +1,4 @@
-package actual.url.model
+package actual.core.model
 
 enum class Protocol(private val value: String) {
   Http("http"),

@@ -5,9 +5,9 @@ import actual.account.login.domain.LoginRequester
 import actual.account.login.domain.LoginResult
 import actual.account.model.LoginToken
 import actual.account.model.Password
+import actual.core.model.ServerUrl
 import actual.core.versions.ActualVersions
 import actual.core.versions.ActualVersionsStateHolder
-import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.logging.Logger

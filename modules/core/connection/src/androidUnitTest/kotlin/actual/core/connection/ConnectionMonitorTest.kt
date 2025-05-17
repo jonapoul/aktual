@@ -3,10 +3,10 @@
 package actual.core.connection
 
 import actual.api.client.ActualApisStateHolder
+import actual.core.model.ServerUrl
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
-import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.Flaky
 import alakazam.test.core.FlakyTestRule

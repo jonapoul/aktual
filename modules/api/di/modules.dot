@@ -6,17 +6,17 @@ node ["style"="filled"]
 ":api:di" ["fillcolor"="#FCB103","shape"="none"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 ":api:di"
 }
-":api:builder" -> ":url:model"
+":api:builder" -> ":core:model"
 ":api:di" -> ":api:builder" ["style"="dotted"]
 ":api:di" -> ":api:github"
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
-":api:github" -> ":url:model"
+":api:github" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

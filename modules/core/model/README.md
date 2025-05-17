@@ -1,3 +1,3 @@
-# url:model
+# core:model
 
 ![modules.png](modules.png)

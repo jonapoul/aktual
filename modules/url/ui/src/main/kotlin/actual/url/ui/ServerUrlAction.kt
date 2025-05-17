@@ -1,6 +1,6 @@
 package actual.url.ui
 
-import actual.url.model.Protocol
+import actual.core.model.Protocol
 import androidx.compose.runtime.Immutable
 
 @Immutable

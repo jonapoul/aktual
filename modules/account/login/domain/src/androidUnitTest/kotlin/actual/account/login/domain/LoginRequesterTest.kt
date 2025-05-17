@@ -6,13 +6,13 @@ import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
+import actual.core.model.Protocol
+import actual.core.model.ServerUrl
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
 import actual.test.plusAssign
 import actual.test.respondJson
-import actual.url.model.Protocol
-import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts

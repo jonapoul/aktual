@@ -9,7 +9,7 @@ kotlin {
   commonMainDependencies {
     api(libs.javaxInject)
     api(libs.preferences.core)
-    api(projects.url.model)
+    api(projects.core.model)
   }
 
   androidUnitTestDependencies {

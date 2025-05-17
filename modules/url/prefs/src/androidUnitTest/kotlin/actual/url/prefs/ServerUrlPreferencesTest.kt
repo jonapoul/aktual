@@ -1,8 +1,8 @@
 package actual.url.prefs
 
+import actual.core.model.Protocol
+import actual.core.model.ServerUrl
 import actual.test.buildPreferences
-import actual.url.model.Protocol
-import actual.url.model.ServerUrl
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
 import kotlinx.coroutines.test.runTest

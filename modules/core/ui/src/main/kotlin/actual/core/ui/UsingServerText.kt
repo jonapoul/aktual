@@ -1,7 +1,7 @@
 package actual.core.ui
 
+import actual.core.model.ServerUrl
 import actual.core.res.CoreStrings
-import actual.url.model.ServerUrl
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
