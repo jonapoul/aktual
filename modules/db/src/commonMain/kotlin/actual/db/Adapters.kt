@@ -55,12 +55,12 @@ private val jsonObject = jsonElement<JsonObject> { jsonObject }
 private val jsonArray = jsonElement<JsonArray> { jsonArray }
 
 private val localDate = longAdapter(
-  encode = { date: LocalDate -> with(date) { "%04d%02d%02d".format(year, month, dayOfMonth).toLong() } },
+  encode = { date: LocalDate -> with(date) { "%04d%02d%02d".format(year, monthNumber, dayOfMonth).toLong() } },
   decode = { value: Long ->
     val str = value.toString()
-    val year = str.substring(startIndex = 0, endIndex = 3).toInt()
-    val month = str.substring(startIndex = 4, endIndex = 5).toInt()
-    val day = str.substring(startIndex = 6, endIndex = 7).toInt()
+    val year = str.substring(startIndex = 0, endIndex = 4).toInt()
+    val month = str.substring(startIndex = 4, endIndex = 6).toInt()
+    val day = str.substring(startIndex = 6, endIndex = 8).toInt()
     LocalDate(year, month, day)
   },
 )
