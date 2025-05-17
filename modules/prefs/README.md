@@ -1,3 +1,3 @@
-# core:colorscheme
+# prefs
 
 ![modules.png](modules.png)

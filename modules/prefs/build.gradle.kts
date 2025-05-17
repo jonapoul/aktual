@@ -13,6 +13,7 @@ kotlin {
   }
 
   androidUnitTestDependencies {
+    implementation(projects.test.buildconfig)
     implementation(projects.test.coroutines)
     implementation(projects.test.prefs)
   }

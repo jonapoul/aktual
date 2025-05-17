@@ -9,7 +9,6 @@ node ["style"="filled"]
 ":about:licenses:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -27,8 +26,6 @@ graph ["rank"="same"]
 ":about:info:vm" -> ":about:info:data"
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
 ":api:github" -> ":core:model"
-":core:colorscheme" -> ":core:model"
-":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:ui" -> ":core:versions"

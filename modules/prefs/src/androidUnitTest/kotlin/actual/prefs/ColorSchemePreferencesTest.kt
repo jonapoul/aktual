@@ -1,4 +1,4 @@
-package actual.core.colorscheme
+package actual.prefs
 
 import actual.core.model.ColorSchemeType.Dark
 import actual.core.model.ColorSchemeType.Light

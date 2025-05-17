@@ -12,7 +12,6 @@ node ["style"="filled"]
 ":budget:list:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -41,8 +40,6 @@ graph ["rank"="same"]
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
 ":budget:list:nav" -> ":account:model"
-":core:colorscheme" -> ":core:model"
-":core:ui" -> ":core:colorscheme"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":core:ui" -> ":core:versions"

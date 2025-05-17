@@ -1,14 +1,14 @@
 digraph {
 edge ["dir"="forward"]
-graph ["dpi"="100","label"=":core:colorscheme","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
+graph ["dpi"="100","label"=":prefs","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":core:colorscheme" -> ":core:model"
+":prefs" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
@@ -17,5 +17,5 @@ graph ["label"="Legend","fontsize"="20"]
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
 </TABLE>
 >]
-} -> ":core:colorscheme" ["style"="invis"]
+} -> ":prefs" ["style"="invis"]
 }
