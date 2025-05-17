@@ -4,7 +4,7 @@ import actual.budget.model.AccountId
 import actual.db.test.buildAccount
 import actual.db.test.getAccountById
 import actual.db.test.insertAccount
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 

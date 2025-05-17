@@ -22,9 +22,9 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Test
 import java.net.NoRouteToHostException
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
@@ -41,7 +41,7 @@ class BudgetListFetcherTest {
     )
   }
 
-  @After
+  @AfterTest
   fun after() {
     if (::mockEngine.isInitialized) {
       mockEngine.close()

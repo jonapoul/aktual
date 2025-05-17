@@ -7,12 +7,12 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import app.cash.sqldelight.db.SqlDriver
 import kotlinx.coroutines.test.runTest
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.File
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -21,12 +21,12 @@ class LoadExistingDatabaseFromFile {
   private lateinit var context: Context
   private lateinit var driver: SqlDriver
 
-  @Before
+  @BeforeTest
   fun before() {
     context = ApplicationProvider.getApplicationContext()
   }
 
-  @After
+  @AfterTest
   fun after() {
     driver.close()
   }
