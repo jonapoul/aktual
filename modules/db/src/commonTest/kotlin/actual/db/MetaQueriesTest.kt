@@ -6,7 +6,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
-class MetaQueriesTest : DatabaseTest() {
+internal class MetaQueriesTest : DatabaseTest() {
   @Test
   fun `Getting from empty table returns null`() = runDatabaseTest {
     assertNull(getMetaValue(key = "test"))

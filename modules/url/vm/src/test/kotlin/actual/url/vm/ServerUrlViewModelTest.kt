@@ -20,7 +20,6 @@ import actual.test.testHttpClient
 import actual.url.model.Protocol
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
-import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
@@ -32,9 +31,11 @@ import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
@@ -47,9 +48,6 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlViewModelTest {
-  @get:Rule
-  val mainDispatcherRule = MainDispatcherRule()
-
   // Real
   private lateinit var serverUrlPreferences: ServerUrlPreferences
   private lateinit var loginPreferences: LoginPreferences
@@ -64,12 +62,7 @@ class ServerUrlViewModelTest {
 
   @BeforeTest
   fun before() {
-    val prefs = buildPreferences(mainDispatcherRule.dispatcher)
-    serverUrlPreferences = ServerUrlPreferences(prefs)
-    serverUrlPreferences.url.set(EXAMPLE_URL)
-    loginPreferences = LoginPreferences(prefs)
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
-
     mockEngine = emptyMockEngine()
     accountApi = AccountApi(EXAMPLE_URL, testHttpClient(mockEngine, ActualJson))
     apis = mockk {
@@ -86,9 +79,16 @@ class ServerUrlViewModelTest {
     mockEngine.close()
   }
 
-  private fun buildViewModel() {
+  private fun TestScope.buildPreferences() {
+    val prefs = buildPreferences(UnconfinedTestDispatcher(testScheduler))
+    serverUrlPreferences = ServerUrlPreferences(prefs)
+    serverUrlPreferences.url.set(EXAMPLE_URL)
+    loginPreferences = LoginPreferences(prefs)
+  }
+
+  private fun TestScope.buildViewModel() {
     viewModel = ServerUrlViewModel(
-      contexts = TestCoroutineContexts(mainDispatcherRule),
+      contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
       apiStateHolder = apisStateHolder,
       serverUrlPreferences = serverUrlPreferences,
       loginPreferences = loginPreferences,
@@ -99,6 +99,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Nav to login when typing and clicking confirm if already bootstrapped`() = runTest {
+    buildPreferences()
     buildViewModel()
     viewModel.navDestination.receiveAsFlow().test {
       // Given we're currently not navigating, and the API returns that we're bootstrapped
@@ -121,6 +122,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Nav to bootstrap when typing and clicking confirm if not bootstrapped`() = runTest {
+    buildPreferences()
     buildViewModel()
     viewModel.navDestination.receiveAsFlow().test {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
@@ -144,6 +146,7 @@ class ServerUrlViewModelTest {
   @Test
   fun `Set initial parameters based on preferences`() = runTest {
     // Given
+    buildPreferences()
     serverUrlPreferences.url.set(EXAMPLE_URL)
 
     // When
@@ -159,6 +162,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Show error message if bootstrap request gives failure response`() = runTest {
+    buildPreferences()
     buildViewModel()
 
     viewModel.errorMessage.test {
@@ -194,6 +198,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Show error message if bootstrap request fails`() = runTest {
+    buildPreferences()
     buildViewModel()
     viewModel.errorMessage.test {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
@@ -222,6 +227,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Clear saved token if the confirmed URL is different from previously-saved`() = runTest {
+    buildPreferences()
     buildViewModel()
     loginPreferences.token.asFlow().test {
       // Given no token initially saved
