@@ -15,6 +15,7 @@ kotlin {
     api(libs.javaxInject)
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
+    api(libs.okio)
     api(projects.account.model)
     api(projects.budget.model)
     api(projects.url.model)

@@ -33,7 +33,6 @@ dependencies {
   compileOnly(libs.plugin.catalog)
   compileOnly(libs.plugin.compose)
   compileOnly(libs.plugin.dependencyAnalysis)
-  compileOnly(libs.plugin.dependencyGraph)
   compileOnly(libs.plugin.dependencySort)
   compileOnly(libs.plugin.detekt)
   compileOnly(libs.plugin.hilt)
@@ -45,6 +44,7 @@ dependencies {
   compileOnly(libs.plugin.licensee)
   implementation(libs.plugin.blueprint.core)
   implementation(libs.plugin.blueprint.recipes)
+  implementation(libs.plugin.graphviz)
 }
 
 tasks {

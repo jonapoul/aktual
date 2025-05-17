@@ -163,6 +163,7 @@ class BudgetInfoFetcherTest {
     account = mockk(),
     base = mockk(),
     sync = syncApi,
+    syncDownload = mockk(),
   )
 
   private companion object {

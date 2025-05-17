@@ -2,15 +2,11 @@ package actual.core.files
 
 import actual.budget.model.BudgetId
 import android.content.Context
-import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
 import javax.inject.Inject
 
-class AndroidDatabaseDirectory @Inject constructor(
-  context: Context,
-  override val fileSystem: FileSystem,
-) : DatabaseDirectory {
+class AndroidDatabaseDirectory @Inject constructor(context: Context) : DatabaseDirectory {
   private val databaseDirectory = context
     .getDatabasePath("unused")
     .parentFile

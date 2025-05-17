@@ -7,5 +7,6 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(projects.account.model)
+    api(projects.budget.model)
   }
 }

@@ -4,8 +4,8 @@ package actual.core.connection
 
 import actual.api.client.ActualApisStateHolder
 import actual.test.TestClientFactory
-import actual.test.ThrowingRequestHandler
 import actual.test.buildPreferences
+import actual.test.emptyMockEngine
 import actual.url.model.ServerUrl
 import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.Flaky
@@ -17,6 +17,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import okio.fakefilesystem.FakeFileSystem
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -37,18 +38,21 @@ class ConnectionMonitorTest {
   private lateinit var serverUrlPreferences: ServerUrlPreferences
   private lateinit var apiStateHolder: ActualApisStateHolder
   private lateinit var mockEngine: MockEngine
+  private lateinit var fileSystem: FakeFileSystem
 
   private fun TestScope.before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     serverUrlPreferences = ServerUrlPreferences(prefs)
     apiStateHolder = ActualApisStateHolder()
-    mockEngine = MockEngine(ThrowingRequestHandler)
+    mockEngine = emptyMockEngine()
+    fileSystem = FakeFileSystem()
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,
       clientFactory = TestClientFactory(mockEngine),
       apiStateHolder = apiStateHolder,
       serverUrlPreferences = serverUrlPreferences,
+      fileSystem = fileSystem,
     )
   }
 

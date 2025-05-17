@@ -3,17 +3,7 @@ package actual.diagrams
 import guru.nidi.graphviz.attribute.Color
 import org.gradle.api.Project
 
-interface ModuleType {
-  val string: String
-  val color: Color
-
-  fun interface Finder {
-    fun find(project: Project): ModuleType
-    fun color(project: Project): Color = find(project).color
-  }
-}
-
-enum class ActualModuleType(override val string: String, override val color: Color) : ModuleType {
+enum class ModuleType(val label: String, val color: Color) {
   AndroidApp(string = "App", fill = "#FF5555"), // red
   AndroidViewModel(string = "ViewModel", fill = "#F5A6A6"), // pink
   AndroidHilt(string = "Hilt", fill = "#FCB103"), // orange
@@ -28,20 +18,18 @@ enum class ActualModuleType(override val string: String, override val color: Col
   constructor(string: String, fill: String) : this(string, Color.rgb(fill).fill())
 
   companion object {
-    val Finder = ModuleType.Finder { project ->
-      with(project.plugins) {
-        when {
-          hasPlugin("com.android.application") -> AndroidApp
-          hasPlugin("actual.module.viewmodel") -> AndroidViewModel
-          hasPlugin("actual.module.hilt") -> AndroidHilt
-          hasPlugin("actual.module.compose") -> AndroidCompose
-          hasPlugin("actual.module.android") -> AndroidLibrary
-          hasPlugin("actual.module.resources") -> AndroidResources
-          hasPlugin("actual.module.navigation") -> Navigation
-          hasPlugin("actual.module.multiplatform") -> Multiplatform
-          hasPlugin("actual.module.jvm") -> Jvm
-          else -> error("Unknown module type for ${project.path}")
-        }
+    fun find(project: Project): ModuleType = with(project.plugins) {
+      when {
+        hasPlugin("com.android.application") -> AndroidApp
+        hasPlugin("actual.module.viewmodel") -> AndroidViewModel
+        hasPlugin("actual.module.hilt") -> AndroidHilt
+        hasPlugin("actual.module.compose") -> AndroidCompose
+        hasPlugin("actual.module.android") -> AndroidLibrary
+        hasPlugin("actual.module.resources") -> AndroidResources
+        hasPlugin("actual.module.navigation") -> Navigation
+        hasPlugin("actual.module.multiplatform") -> Multiplatform
+        hasPlugin("actual.module.jvm") -> Jvm
+        else -> error("Unknown module type for ${project.path}")
       }
     }
   }

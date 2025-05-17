@@ -16,7 +16,6 @@ import actual.test.respondJson
 import actual.test.testHttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
-import io.ktor.client.engine.mock.respondOk
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
@@ -54,21 +53,6 @@ class SyncApiTest {
       actual = mockEngine.latestRequestHeaders(),
       expected = mapOf(
         "X-ACTUAL-TOKEN" to listOf("abc-123"),
-        "Accept" to listOf("application/json"),
-        "Accept-Charset" to listOf("UTF-8"),
-      ),
-    )
-  }
-
-  @Test
-  fun `Download user files request headers`() = runTest {
-    mockEngine.enqueue { respondOk() }
-    syncApi.downloadUserFile(TOKEN, BUDGET_ID)
-    assertEquals(
-      actual = mockEngine.latestRequestHeaders(),
-      expected = mapOf(
-        "X-ACTUAL-TOKEN" to listOf("abc-123"),
-        "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
         "Accept" to listOf("application/json"),
         "Accept-Charset" to listOf("UTF-8"),
       ),

@@ -9,8 +9,6 @@ import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.plugins.logging.LoggingFormat
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
-import alakazam.kotlin.logging.Logger as AlakazamLogger
-import io.ktor.client.plugins.logging.Logger as KtorLogger
 
 fun buildKtorClient(
   json: Json,
@@ -27,16 +25,11 @@ fun buildKtorClient(
 
   if (isDebug) {
     install(Logging) {
-      logger = ActualLogger(tag)
-      level = LogLevel.ALL
+      logger = ActualKtorLogger(tag)
+      level = LogLevel.HEADERS
       format = LoggingFormat.OkHttp
       // filter { request -> true }
       // sanitizeHeader { header -> header == HttpHeaders.Authorization }
     }
   }
-}
-
-private class ActualLogger(private val tag: String?) : KtorLogger {
-  private val delegate = if (tag == null) AlakazamLogger else AlakazamLogger.tag(tag)
-  override fun log(message: String) = delegate.v(message)
 }
