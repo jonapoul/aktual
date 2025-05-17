@@ -14,27 +14,23 @@ import actual.test.enqueue
 import actual.test.respondJson
 import actual.test.testHttpClient
 import actual.url.model.ServerUrl
-import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpStatusCode
 import io.mockk.mockk
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 
 class BudgetInfoFetcherTest {
-  @get:Rule
-  val mainDispatcherRule = MainDispatcherRule()
-
   private lateinit var budgetInfoFetcher: BudgetInfoFetcher
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var mockEngine: MockEngine
@@ -46,15 +42,14 @@ class BudgetInfoFetcherTest {
     mockEngine.close()
   }
 
-  @BeforeTest
-  fun before() {
+  private fun TestScope.before() {
     mockEngine = emptyMockEngine()
     client = testHttpClient(mockEngine, ActualJson)
     syncApi = SyncApi(SERVER_URL, client)
     apisStateHolder = ActualApisStateHolder()
     apisStateHolder.update { actualApis() }
     budgetInfoFetcher = BudgetInfoFetcher(
-      contexts = TestCoroutineContexts(mainDispatcherRule),
+      contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
       apisStateHolder = apisStateHolder,
     )
   }
@@ -62,6 +57,7 @@ class BudgetInfoFetcherTest {
   @Test
   fun `Handle success`() = runTest {
     // given
+    before()
     val response = """
       {
           "status": "ok",
@@ -104,6 +100,7 @@ class BudgetInfoFetcherTest {
   @Test
   fun `Not logged in if no API client cached`() = runTest {
     // given
+    before()
     apisStateHolder.reset()
 
     // then
@@ -116,6 +113,7 @@ class BudgetInfoFetcherTest {
   @Test
   fun `Handle HTTP failure`() = runTest {
     // given
+    before()
     mockEngine.enqueue {
       respondJson(
         status = HttpStatusCode.Unauthorized,
@@ -133,6 +131,7 @@ class BudgetInfoFetcherTest {
   @Test
   fun `Handle unexpected HTTP failure body`() = runTest {
     // given
+    before()
     mockEngine.enqueue {
       respondJson(
         status = HttpStatusCode.Unauthorized,
@@ -151,6 +150,7 @@ class BudgetInfoFetcherTest {
   @Test
   fun `Handle network error`() = runTest {
     // given
+    before()
     mockEngine.enqueue { throw NoRouteToHostException() }
 
     // then

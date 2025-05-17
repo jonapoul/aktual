@@ -5,7 +5,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.Rule
 
-abstract class DatabaseTest {
+internal abstract class DatabaseTest {
   @get:Rule
   val databaseRule = DatabaseRule.inMemory()
 
