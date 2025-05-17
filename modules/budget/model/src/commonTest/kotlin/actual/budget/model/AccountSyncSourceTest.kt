@@ -1,6 +1,5 @@
-package actual.db
+package actual.budget.model
 
-import actual.budget.model.AccountSyncSource
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
 import kotlin.test.Test
