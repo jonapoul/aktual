@@ -36,14 +36,23 @@ import app.cash.sqldelight.ColumnAdapter
 import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlin.uuid.Uuid
 
-private val jsonObject = object : ColumnAdapter<JsonObject, String> {
-  override fun encode(value: JsonObject): String = Json.encodeToString(value)
-  override fun decode(databaseValue: String): JsonObject = Json.parseToJsonElement(databaseValue).jsonObject
+private inline fun <reified T : JsonElement> jsonElement(
+  crossinline getter: JsonElement.() -> T,
+) = object : ColumnAdapter<T, String> {
+  override fun encode(value: T): String = Json.encodeToString(value)
+  override fun decode(databaseValue: String): T = Json.parseToJsonElement(databaseValue).getter()
 }
+
+private val jsonElement = jsonElement<JsonElement> { this }
+private val jsonObject = jsonElement<JsonObject> { jsonObject }
+private val jsonArray = jsonElement<JsonArray> { jsonArray }
 
 private val localDate = longAdapter(
   encode = { date: LocalDate -> with(date) { "%04d%02d%02d".format(year, month, dayOfMonth).toLong() } },
@@ -137,7 +146,7 @@ internal val TransactionsAdapter = Transactions.Adapter(
 internal val CategoriesAdapter = Categories.Adapter(
   idAdapter = categoryId,
   cat_groupAdapter = categoryGroupId,
-  goal_defAdapter = jsonObject,
+  goal_defAdapter = jsonElement,
 )
 
 internal val CategoryGroupsAdapter = Category_groups.Adapter(
@@ -158,11 +167,12 @@ internal val CustomReportsAdapter = Custom_reports.Adapter(
   group_byAdapter = groupBy,
   balance_typeAdapter = balanceType,
   graph_typeAdapter = graphType,
-  conditionsAdapter = jsonObject,
+  conditionsAdapter = jsonArray,
   conditions_opAdapter = conditionOperator,
   metadataAdapter = jsonObject,
   sort_byAdapter = sortBy,
   intervalAdapter = interval,
+  selected_categoriesAdapter = jsonArray,
 )
 
 internal val MessagesClockAdapter = Messages_clock.Adapter(
@@ -181,8 +191,8 @@ internal val PayeeMappingAdapter = Payee_mapping.Adapter(
 internal val RulesAdapter = Rules.Adapter(
   idAdapter = ruleId,
   stageAdapter = ruleStage,
-  conditionsAdapter = jsonObject,
-  actionsAdapter = jsonObject,
+  conditionsAdapter = jsonArray,
+  actionsAdapter = jsonArray,
   conditions_opAdapter = conditionOperator,
 )
 
@@ -216,7 +226,7 @@ internal val ReflectBudgetsAdapter = Reflect_budgets.Adapter(
 
 internal val TransactionFiltersAdapter = Transaction_filters.Adapter(
   idAdapter = transactionFilterId,
-  conditionsAdapter = jsonObject,
+  conditionsAdapter = jsonArray,
   conditions_opAdapter = conditionOperator,
 )
 
