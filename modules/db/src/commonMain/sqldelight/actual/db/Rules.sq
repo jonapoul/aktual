@@ -20,7 +20,7 @@ getWithConditionsAndActions:
 
 insert:
   INSERT OR REPLACE
-    INTO rules(id, stage, conditions, actions, tombstone, conditions)
+    INTO rules(id, stage, conditions, actions, tombstone, conditions_op)
     VALUES (?,?,?,?,?,?);
 
 delete:
