@@ -50,7 +50,7 @@ dependencyAnalysis {
   structure {
     ignoreKtx(ignore = true)
     bundle(name = "kotlin") { includeGroup("org.jetbrains.kotlin:*") }
-    bundle(name = "modules") { include("^:.*\$".toRegex()) }
+    bundle(name = "modules") { include("^:.*$".toRegex()) }
     bundle(name = "ktor") { includeGroup(group = "io.ktor") }
     bundle(name = "viewModel") { include(regex = "androidx.lifecycle:lifecycle-viewmodel.*".toRegex()) }
   }
