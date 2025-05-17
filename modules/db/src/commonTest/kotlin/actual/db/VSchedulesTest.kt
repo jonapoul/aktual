@@ -257,4 +257,3 @@ private const val RULE_3_ACTIONS = """
   }
 ]
 """
-

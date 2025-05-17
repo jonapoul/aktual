@@ -69,7 +69,7 @@ internal suspend fun BudgetDatabase.insertScheduleJsonPaths(
   payee: Int,
   account: Int,
   amount: Int,
-  date: Int
+  date: Int,
 ) = schedulesJsonPathsQueries.withResult {
   insert(
     schedule_id = ScheduleId(scheduleId),
@@ -120,7 +120,7 @@ internal suspend fun BudgetDatabase.insertSchedule(
 
 internal suspend fun BudgetDatabase.insertPayeeMapping(
   id: String,
-  targetId: String
+  targetId: String,
 ) = payeeMappingQueries.withResult {
   insert(
     id = PayeeId(id),
