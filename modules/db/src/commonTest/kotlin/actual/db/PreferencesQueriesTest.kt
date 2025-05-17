@@ -14,7 +14,7 @@ import kotlin.test.Test
 import kotlin.test.assertNull
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class PreferencesQueriesTest : DatabaseTest() {
+internal class PreferencesQueriesTest : DatabaseTest() {
   @Test
   fun `Getting from empty table returns null`() = runDatabaseTest {
     assertNull(getPreference(key = "test"))
