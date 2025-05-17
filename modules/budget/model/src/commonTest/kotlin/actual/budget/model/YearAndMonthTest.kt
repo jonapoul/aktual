@@ -1,8 +1,8 @@
 package actual.budget.model
 
 import kotlinx.coroutines.test.runTest
-import org.junit.Test
 import java.time.Month
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

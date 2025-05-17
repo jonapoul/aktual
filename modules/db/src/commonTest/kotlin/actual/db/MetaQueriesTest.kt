@@ -2,7 +2,7 @@ package actual.db
 
 import actual.db.test.getMetaValue
 import actual.db.test.insertMeta
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 

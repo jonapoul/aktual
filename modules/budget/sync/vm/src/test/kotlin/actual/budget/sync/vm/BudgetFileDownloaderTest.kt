@@ -27,9 +27,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.fakefilesystem.FakeFileSystem
-import org.junit.After
-import org.junit.Test
 import java.net.NoRouteToHostException
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
@@ -67,7 +67,7 @@ class BudgetFileDownloaderTest {
     )
   }
 
-  @After
+  @AfterTest
   fun after() {
     mockEngine.close()
     fileSystem.checkNoOpenFiles()
