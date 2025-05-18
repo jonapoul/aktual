@@ -5,11 +5,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 
 @Composable
 fun LicensesScreen(
-  navController: NavController,
+  nav: LicensesNavigator,
   viewModel: LicensesViewModel = hiltViewModel(),
 ) {
   val licensesState by viewModel.licensesState.collectAsStateWithLifecycle()
@@ -20,7 +19,7 @@ fun LicensesScreen(
     searchBarState = searchBarState,
     onAction = { action ->
       when (action) {
-        LicensesAction.NavBack -> navController.popBackStack()
+        LicensesAction.NavBack -> nav.back()
         LicensesAction.Reload -> viewModel.load()
         LicensesAction.ToggleSearchBar -> viewModel.toggleSearchBar()
         is LicensesAction.EditSearchText -> viewModel.setSearchText(action.text)

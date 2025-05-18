@@ -1,5 +1,6 @@
 package actual.android.app
 
+import actual.android.app.nav.ActualNavHost
 import actual.core.ui.ActualTheme
 import actual.core.ui.LocalColorSchemeType
 import android.os.Bundle

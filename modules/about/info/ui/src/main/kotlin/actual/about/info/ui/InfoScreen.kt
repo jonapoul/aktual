@@ -2,18 +2,16 @@ package actual.about.info.ui
 
 import actual.about.info.vm.CheckUpdatesState
 import actual.about.info.vm.InfoViewModel
-import actual.about.licenses.nav.LicensesNavRoute
 import actual.core.ui.LocalTheme
 import alakazam.kotlin.core.noOp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 
 @Composable
 fun InfoScreen(
-  navController: NavController,
+  nav: InfoNavigator,
   viewModel: InfoViewModel = hiltViewModel(),
 ) {
   val theme = LocalTheme.current
@@ -47,8 +45,8 @@ fun InfoScreen(
         InfoAction.OpenSourceCode -> viewModel.openRepo()
         InfoAction.ReportIssue -> viewModel.reportIssues()
         InfoAction.CheckUpdates -> viewModel.fetchLatestRelease()
-        InfoAction.NavBack -> navController.popBackStack()
-        InfoAction.ViewLicenses -> navController.navigate(LicensesNavRoute)
+        InfoAction.NavBack -> nav.back()
+        InfoAction.ViewLicenses -> nav.toLicenses()
       }
     },
   )
