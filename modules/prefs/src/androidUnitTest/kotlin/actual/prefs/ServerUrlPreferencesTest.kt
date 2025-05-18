@@ -16,8 +16,7 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlPreferencesTest {
-  @get:Rule
-  val mainDispatcherRule = MainDispatcherRule()
+  @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
   private lateinit var preferences: ServerUrlPreferences
 

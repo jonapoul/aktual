@@ -33,20 +33,12 @@ import kotlin.test.Test
 
 @HiltAndroidTest
 class AboutScreenTest {
-  @get:Rule(order = 0)
-  val hiltRule = HiltAndroidRule(this)
+  @get:Rule(order = 0) val hiltRule = HiltAndroidRule(this)
+  @get:Rule(order = 1) val composeRule = createAndroidComposeRule<ActualTestActivity>()
 
-  @get:Rule(order = 1)
-  val composeRule = createAndroidComposeRule<ActualTestActivity>()
-
-  @BindValue
-  lateinit var buildConfig: BuildConfig
-
-  @BindValue
-  lateinit var githubApiFactory: GithubApi.Factory
-
-  @BindValue
-  lateinit var coroutineContexts: CoroutineContexts
+  @BindValue lateinit var buildConfig: BuildConfig
+  @BindValue lateinit var githubApiFactory: GithubApi.Factory
+  @BindValue lateinit var coroutineContexts: CoroutineContexts
 
   @BeforeTest
   @Suppress("InjectDispatcher")

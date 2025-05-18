@@ -34,8 +34,7 @@ import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
 class ServerVersionFetcherTest {
-  @get:Rule
-  val mainDispatcherRule = MainDispatcherRule()
+  @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
   // real
   private lateinit var fetcher: ServerVersionFetcher

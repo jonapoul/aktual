@@ -41,8 +41,7 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 internal class LoginRequesterTest {
-  @get:Rule
-  val mainDispatcherRule = MainDispatcherRule()
+  @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: ActualApisStateHolder

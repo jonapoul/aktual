@@ -1,5 +1,8 @@
 package actual.about.info.data
 
+import org.intellij.lang.annotations.Language
+
+@Language("JSON")
 internal val NewRelease = """
 [
   {
@@ -123,6 +126,7 @@ internal val NewRelease = """
 ]
 """.trimIndent()
 
+@Language("JSON")
 internal val NoNewUpdate = """
 [
   {
@@ -246,6 +250,7 @@ internal val NoNewUpdate = """
 ]
 """.trimIndent()
 
+@Language("JSON")
 internal val NotFound = """
 {
   "message": "Not Found",

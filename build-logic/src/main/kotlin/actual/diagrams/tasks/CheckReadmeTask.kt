@@ -11,19 +11,15 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.PathSensitivity.RELATIVE
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.property
 import javax.inject.Inject
 
 @CacheableTask
 open class CheckReadmeTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
-  @get:InputFile
-  @get:PathSensitive(PathSensitivity.RELATIVE)
-  val readmeFile: RegularFileProperty = objects.fileProperty()
-
-  @get:Input
-  val projectPath: Property<String> = objects.property()
+  @get:[PathSensitive(RELATIVE) InputFile] val readmeFile: RegularFileProperty = objects.fileProperty()
+  @get:Input val projectPath: Property<String> = objects.property()
 
   init {
     group = JavaBasePlugin.VERIFICATION_GROUP

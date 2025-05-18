@@ -29,11 +29,8 @@ import kotlin.time.Duration.Companion.seconds
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
-  @get:Rule
-  val mainDispatcherRule = MainDispatcherRule()
-
-  @get:Rule
-  val rule = FlakyTestRule()
+  @get:Rule val mainDispatcherRule = MainDispatcherRule()
+  @get:Rule val flakyTestRule = FlakyTestRule()
 
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var serverUrlPreferences: ServerUrlPreferences

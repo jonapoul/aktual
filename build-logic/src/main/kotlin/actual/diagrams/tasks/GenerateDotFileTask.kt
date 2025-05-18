@@ -34,17 +34,10 @@ import javax.inject.Inject
 
 @DisableCachingByDefault
 open class GenerateDotFileTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
-  @get:Input
-  val printOutput: Property<Boolean> = objects.property()
-
-  @get:OutputFile
-  val dotFile: RegularFileProperty = objects.fileProperty()
-
-  @get:Input
-  val toRemove: Property<String> = objects.property(String::class.java)
-
-  @get:Input
-  val replacement: Property<String> = objects.property(String::class.java)
+  @get:Input val printOutput: Property<Boolean> = objects.property()
+  @get:Input val toRemove: Property<String> = objects.property(String::class.java)
+  @get:Input val replacement: Property<String> = objects.property(String::class.java)
+  @get:OutputFile val dotFile: RegularFileProperty = objects.fileProperty()
 
   init {
     group = "reporting"
