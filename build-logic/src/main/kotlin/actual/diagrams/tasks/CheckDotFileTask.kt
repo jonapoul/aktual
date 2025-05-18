@@ -14,14 +14,9 @@ import javax.inject.Inject
 
 @DisableCachingByDefault
 open class CheckDotFileTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
-  @get:Input
-  val taskPath: Property<String> = objects.property()
-
-  @get:InputFile
-  val expectedDotFile: RegularFileProperty = objects.fileProperty()
-
-  @get:InputFile
-  val actualDotFile: RegularFileProperty = objects.fileProperty()
+  @get:Input val taskPath: Property<String> = objects.property()
+  @get:InputFile val expectedDotFile: RegularFileProperty = objects.fileProperty()
+  @get:InputFile val actualDotFile: RegularFileProperty = objects.fileProperty()
 
   init {
     group = JavaBasePlugin.VERIFICATION_GROUP

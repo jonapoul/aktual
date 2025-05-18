@@ -8,21 +8,15 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.PathSensitivity.RELATIVE
 import org.gradle.api.tasks.TaskAction
 import javax.inject.Inject
 
 @CacheableTask
 open class GeneratePngFileTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
-  @get:InputFile
-  @get:PathSensitive(PathSensitivity.RELATIVE)
-  val dotFile: RegularFileProperty = objects.fileProperty()
-
-  @get:OutputFile
-  val pngFile: RegularFileProperty = objects.fileProperty()
-
-  @get:OutputFile
-  val errorFile: RegularFileProperty = objects.fileProperty()
+  @get:[PathSensitive(RELATIVE) InputFile] val dotFile: RegularFileProperty = objects.fileProperty()
+  @get:OutputFile val pngFile: RegularFileProperty = objects.fileProperty()
+  @get:OutputFile val errorFile: RegularFileProperty = objects.fileProperty()
 
   init {
     group = "reporting"

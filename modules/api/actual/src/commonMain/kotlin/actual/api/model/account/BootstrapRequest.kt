@@ -7,7 +7,5 @@ import net.afanasev.sekret.Secret
 
 @Serializable
 data class BootstrapRequest(
-  @Secret
-  @SerialName("password")
-  val password: Password,
+  @Secret @SerialName("password") val password: Password,
 )

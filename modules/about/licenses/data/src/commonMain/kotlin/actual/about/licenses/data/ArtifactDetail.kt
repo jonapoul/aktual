@@ -16,8 +16,7 @@ data class ArtifactDetail(
   val unknownLicenses: Set<UnknownLicense> = emptySet(),
   val scm: ArtifactScm? = null,
 ) {
-  @get:Stable
-  val id: String get() = "$groupId:$artifactId:$version"
+  @get:Stable val id: String get() = "$groupId:$artifactId:$version"
 }
 
 @Serializable
