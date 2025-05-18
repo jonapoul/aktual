@@ -14,5 +14,6 @@ kotlin {
     implementation(libs.kotlinx.coroutines)
     implementation(libs.preferences.core)
     implementation(projects.api.actual)
+    implementation(projects.prefs)
   }
 }

@@ -5,12 +5,14 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:files" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 ":core:di"
 }
 ":core:di" -> ":core:files"
+":core:di" -> ":core:model"
 ":core:files" -> ":budget:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

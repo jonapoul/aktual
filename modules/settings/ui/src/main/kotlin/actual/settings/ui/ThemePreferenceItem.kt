@@ -1,6 +1,6 @@
 package actual.settings.ui
 
-import actual.core.colorscheme.ColorSchemeType
+import actual.core.model.ColorSchemeType
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.AlertDialog

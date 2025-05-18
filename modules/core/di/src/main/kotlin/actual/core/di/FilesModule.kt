@@ -6,11 +6,8 @@ import actual.core.files.Assets
 import actual.core.files.DatabaseDirectory
 import dagger.Binds
 import dagger.Module
-import dagger.hilt.InstallIn
-import dagger.hilt.components.SingletonComponent
 
 @Module
-@InstallIn(SingletonComponent::class)
 interface FilesModule {
   @Binds
   fun assets(impl: AndroidAssets): Assets

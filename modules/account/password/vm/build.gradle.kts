@@ -5,7 +5,7 @@ plugins {
 dependencies {
   api(projects.account.model)
   api(projects.account.password.domain)
-  api(projects.core.versions)
+  api(projects.core.model)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.javaxInject)

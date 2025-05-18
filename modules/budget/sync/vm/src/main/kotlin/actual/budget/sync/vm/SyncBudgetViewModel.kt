@@ -3,6 +3,7 @@ package actual.budget.sync.vm
 import actual.account.model.LoginToken
 import actual.api.model.sync.UserFile
 import actual.budget.model.BudgetId
+import actual.core.model.Percent
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

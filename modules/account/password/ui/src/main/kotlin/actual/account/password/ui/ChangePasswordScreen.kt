@@ -5,6 +5,7 @@ import actual.account.password.res.PasswordStrings
 import actual.account.password.vm.ChangePasswordState
 import actual.account.password.vm.ChangePasswordViewModel
 import actual.budget.list.nav.ListBudgetsNavRoute
+import actual.core.model.ActualVersions
 import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
@@ -14,7 +15,6 @@ import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
 import actual.core.ui.debugNavigate
 import actual.core.ui.transparentTopAppBarColors
-import actual.core.versions.ActualVersions
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

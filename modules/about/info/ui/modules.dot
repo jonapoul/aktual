@@ -9,11 +9,9 @@ node ["style"="filled"]
 ":about:licenses:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -26,11 +24,9 @@ graph ["rank"="same"]
 ":about:info:ui" -> ":core:ui"
 ":about:info:vm" -> ":about:info:data"
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
-":api:github" -> ":url:model"
-":core:ui" -> ":core:colorscheme"
+":api:github" -> ":core:model"
+":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
-":core:ui" -> ":core:versions"
-":core:ui" -> ":url:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

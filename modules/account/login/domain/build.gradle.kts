@@ -8,11 +8,12 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.javaxInject)
-    api(libs.preferences.core)
     api(projects.account.model)
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.kotlinx.coroutines)
+    implementation(libs.preferences.core)
     implementation(projects.api.actual)
+    implementation(projects.prefs)
     compileOnly(libs.alakazam.kotlin.compose.annotations)
   }
 
@@ -23,6 +24,5 @@ kotlin {
     implementation(projects.test.coroutines)
     implementation(projects.test.http)
     implementation(projects.test.prefs)
-    implementation(projects.url.prefs)
   }
 }

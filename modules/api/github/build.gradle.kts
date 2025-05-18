@@ -13,7 +13,7 @@ kotlin {
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)
     api(libs.ktor.core)
-    api(projects.url.model)
+    api(projects.core.model)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.serialization.core)
     implementation(libs.ktor.serialization.json)

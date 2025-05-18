@@ -1,10 +1,10 @@
 package github.api.client
 
+import actual.core.model.ServerUrl
 import actual.test.emptyMockEngine
 import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
-import actual.url.model.ServerUrl
 import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest

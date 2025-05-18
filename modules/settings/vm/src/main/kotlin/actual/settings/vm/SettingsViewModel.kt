@@ -1,6 +1,6 @@
 package actual.settings.vm
 
-import actual.core.colorscheme.ColorSchemePreferences
+import actual.prefs.ColorSchemePreferences
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel

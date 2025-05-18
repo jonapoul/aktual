@@ -3,7 +3,7 @@ package actual.budget.list.ui
 import actual.budget.model.Budget
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetState
-import actual.core.versions.ActualVersions
+import actual.core.model.ActualVersions
 
 internal val PreviewBudgetSynced = Budget(
   name = "Main Budget",

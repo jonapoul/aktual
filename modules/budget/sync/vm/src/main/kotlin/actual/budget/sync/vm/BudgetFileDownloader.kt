@@ -5,11 +5,12 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.client.SyncDownloadApi
 import actual.api.client.SyncDownloadState
 import actual.budget.model.BudgetId
-import actual.budget.sync.vm.Bytes.Companion.Zero
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
 import actual.core.files.DatabaseDirectory
+import actual.core.model.Bytes.Companion.Zero
+import actual.core.model.bytes
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import alakazam.kotlin.logging.Logger

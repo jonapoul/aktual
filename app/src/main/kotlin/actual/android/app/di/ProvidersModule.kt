@@ -2,7 +2,7 @@ package actual.android.app.di
 
 import actual.account.model.Password
 import actual.android.app.BuildConfig
-import actual.url.model.ServerUrl
+import actual.core.model.ServerUrl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

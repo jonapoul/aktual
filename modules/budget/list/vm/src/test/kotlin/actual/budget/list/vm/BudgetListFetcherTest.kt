@@ -8,12 +8,12 @@ import actual.api.client.SyncApi
 import actual.budget.model.Budget
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetState
+import actual.core.model.Protocol
+import actual.core.model.ServerUrl
 import actual.test.emptyMockEngine
 import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
-import actual.url.model.Protocol
-import actual.url.model.ServerUrl
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher
 import io.ktor.client.engine.mock.MockEngine

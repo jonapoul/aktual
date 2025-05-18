@@ -5,6 +5,7 @@ import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
+import actual.prefs.LoginPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import io.ktor.client.plugins.ResponseException

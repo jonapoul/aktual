@@ -12,7 +12,7 @@ import actual.codegen.GET
 import actual.codegen.Header
 import actual.codegen.KtorApi
 import actual.codegen.POST
-import actual.url.model.ServerUrl
+import actual.core.model.ServerUrl
 import io.ktor.client.HttpClient
 
 @KtorApi

@@ -1,6 +1,6 @@
 package actual.api.client
 
-import actual.url.model.ServerUrl
+import actual.core.model.ServerUrl
 import io.ktor.client.HttpClient
 import io.ktor.utils.io.core.Closeable
 

@@ -323,8 +323,8 @@ internal class KtorImplementationVisitor(
     val TYPE_CONTENT_TYPE = ClassName("io.ktor.http", "ContentType")
     val TYPE_HTTP_CLIENT = ClassName("io.ktor.client", "HttpClient")
     val TYPE_HTTP_RESPONSE = ClassName("io.ktor.client.statement", "HttpResponse")
-    val TYPE_PROTOCOL = ClassName("actual.url.model", "Protocol")
-    val TYPE_SERVER_URL = ClassName("actual.url.model", "ServerUrl")
+    val TYPE_PROTOCOL = ClassName("actual.core.model", "Protocol")
+    val TYPE_SERVER_URL = ClassName("actual.core.model", "ServerUrl")
     val TYPE_URL_PROTOCOL = ClassName("io.ktor.http", "URLProtocol")
 
     val MEMBER_BODY = MemberName("io.ktor.client.call", "body")

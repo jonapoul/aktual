@@ -2,7 +2,7 @@ package actual.core.connection
 
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
-import actual.core.versions.ActualVersionsStateHolder
+import actual.core.model.ActualVersionsStateHolder
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.LoopController
 import alakazam.kotlin.logging.Logger

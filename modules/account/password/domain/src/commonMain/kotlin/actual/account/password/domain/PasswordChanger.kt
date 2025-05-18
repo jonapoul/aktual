@@ -1,10 +1,10 @@
 package actual.account.password.domain
 
-import actual.account.login.domain.LoginPreferences
 import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.ChangePasswordRequest
 import actual.api.model.account.ChangePasswordResponse
+import actual.prefs.LoginPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import alakazam.kotlin.logging.Logger

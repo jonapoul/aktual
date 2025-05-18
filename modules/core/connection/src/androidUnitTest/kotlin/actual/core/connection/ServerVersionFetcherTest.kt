@@ -7,7 +7,8 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.client.BaseApi
 import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
-import actual.core.versions.ActualVersionsStateHolder
+import actual.core.model.ActualVersions
+import actual.core.model.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
 import alakazam.kotlin.core.LoopController
 import alakazam.test.core.FiniteLoopController
@@ -84,7 +85,7 @@ class ServerVersionFetcherTest {
     advanceUntilIdle()
     versionsStateHolder.test {
       // Then
-      assertEquals(expected = versionsStateHolder.empty(), actual = awaitItem())
+      assertEquals(expected = emptyState(), actual = awaitItem())
       advanceUntilIdle()
 
       expectNoEvents()
@@ -106,7 +107,7 @@ class ServerVersionFetcherTest {
 
     // When
     versionsStateHolder.test {
-      assertEquals(expected = versionsStateHolder.empty(), actual = awaitItem())
+      assertEquals(expected = emptyState(), actual = awaitItem())
 
       val fetchJob = launch { fetcher.startFetching() }
 
@@ -132,7 +133,7 @@ class ServerVersionFetcherTest {
 
     // When
     versionsStateHolder.test {
-      assertEquals(expected = versionsStateHolder.empty(), actual = awaitItem())
+      assertEquals(expected = emptyState(), actual = awaitItem())
 
       val fetchJob = launch { fetcher.startFetching() }
 
@@ -142,4 +143,6 @@ class ServerVersionFetcherTest {
       fetchJob.cancel()
     }
   }
+
+  private fun emptyState() = ActualVersions(TestBuildConfig.versionName, server = null)
 }
