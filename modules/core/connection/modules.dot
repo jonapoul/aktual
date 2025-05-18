@@ -8,9 +8,8 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":url:prefs" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -18,14 +17,14 @@ graph ["rank"="same"]
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
-":api:actual" -> ":url:model"
-":api:builder" -> ":url:model"
+":api:actual" -> ":core:model"
+":api:builder" -> ":core:model"
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:builder" ["style"="dotted"]
-":core:connection" -> ":core:versions" ["style"="dotted"]
-":core:connection" -> ":url:model" ["style"="dotted"]
-":core:connection" -> ":url:prefs" ["style"="dotted"]
-":url:prefs" -> ":url:model"
+":core:connection" -> ":core:model" ["style"="dotted"]
+":core:connection" -> ":prefs" ["style"="dotted"]
+":prefs" -> ":account:model"
+":prefs" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

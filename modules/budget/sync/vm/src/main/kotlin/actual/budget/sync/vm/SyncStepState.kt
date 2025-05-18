@@ -1,5 +1,6 @@
 package actual.budget.sync.vm
 
+import actual.core.model.Percent
 import androidx.compose.runtime.Immutable
 
 @Immutable

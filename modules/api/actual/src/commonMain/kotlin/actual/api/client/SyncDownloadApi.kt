@@ -3,8 +3,8 @@ package actual.api.client
 import actual.account.model.LoginToken
 import actual.api.model.internal.ActualHeaders
 import actual.budget.model.BudgetId
-import actual.url.model.Protocol
-import actual.url.model.ServerUrl
+import actual.core.model.Protocol
+import actual.core.model.ServerUrl
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header

@@ -2,7 +2,7 @@
 
 package actual.core.ui
 
-import actual.core.colorscheme.ColorSchemeType
+import actual.core.model.ColorSchemeType
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.height

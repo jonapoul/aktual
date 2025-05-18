@@ -1,6 +1,6 @@
 package actual.core.ui
 
-import actual.core.versions.ActualVersions
+import actual.core.model.ActualVersions
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text

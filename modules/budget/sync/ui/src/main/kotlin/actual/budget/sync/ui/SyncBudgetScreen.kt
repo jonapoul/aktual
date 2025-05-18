@@ -3,11 +3,11 @@ package actual.budget.sync.ui
 import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.sync.res.BudgetSyncStrings
-import actual.budget.sync.vm.Percent
 import actual.budget.sync.vm.SyncBudgetViewModel
 import actual.budget.sync.vm.SyncStep
 import actual.budget.sync.vm.SyncStepState
-import actual.budget.sync.vm.percent
+import actual.core.model.Percent
+import actual.core.model.percent
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButton

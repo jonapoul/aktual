@@ -6,7 +6,7 @@ dependencies {
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
   api(libs.androidx.navigation.runtime)
-  api(projects.core.colorscheme)
+  api(projects.core.model)
   api(projects.core.ui)
   api(projects.settings.vm)
   implementation(libs.androidx.compose.animation.core)

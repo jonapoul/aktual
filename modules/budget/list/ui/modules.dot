@@ -13,14 +13,12 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:sync:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
+":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:nav" ["fillcolor"="#5555FF","shape"="none"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:nav" ["fillcolor"="#5555FF","shape"="none"]
-":url:prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -28,7 +26,7 @@ graph ["rank"="same"]
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
-":api:actual" -> ":url:model"
+":api:actual" -> ":core:model"
 ":budget:list:nav" -> ":account:model"
 ":budget:list:ui" -> ":account:login:nav" ["style"="dotted"]
 ":budget:list:ui" -> ":account:model" ["style"="dotted"]
@@ -45,16 +43,14 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
-":budget:list:vm" -> ":core:versions"
-":budget:list:vm" -> ":url:model"
-":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
+":budget:list:vm" -> ":core:model"
+":budget:list:vm" -> ":prefs" ["style"="dotted"]
 ":budget:sync:nav" -> ":account:model"
 ":budget:sync:nav" -> ":budget:model"
-":core:ui" -> ":core:colorscheme"
+":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
-":core:ui" -> ":core:versions"
-":core:ui" -> ":url:model"
-":url:prefs" -> ":url:model"
+":prefs" -> ":account:model"
+":prefs" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

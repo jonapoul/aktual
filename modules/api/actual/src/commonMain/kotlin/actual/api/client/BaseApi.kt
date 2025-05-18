@@ -3,7 +3,7 @@ package actual.api.client
 import actual.api.model.base.InfoResponse
 import actual.codegen.GET
 import actual.codegen.KtorApi
-import actual.url.model.ServerUrl
+import actual.core.model.ServerUrl
 import io.ktor.client.HttpClient
 
 @KtorApi

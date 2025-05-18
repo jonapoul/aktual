@@ -1,12 +1,12 @@
 package actual.android.app
 
-import actual.account.login.domain.LoginPreferences
 import actual.account.model.LoginToken
-import actual.core.colorscheme.ColorSchemePreferences
-import actual.core.colorscheme.ColorSchemeType
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
-import actual.url.prefs.ServerUrlPreferences
+import actual.core.model.ColorSchemeType
+import actual.prefs.ColorSchemePreferences
+import actual.prefs.LoginPreferences
+import actual.prefs.ServerUrlPreferences
 import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -9,12 +9,13 @@ import actual.budget.model.BudgetId
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
+import actual.core.model.Protocol
+import actual.core.model.ServerUrl
+import actual.core.model.bytes
 import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
 import actual.test.plusAssign
 import actual.test.testHttpClient
-import actual.url.model.Protocol
-import actual.url.model.ServerUrl
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test

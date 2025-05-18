@@ -2,13 +2,16 @@
 
 package actual.url.vm
 
-import actual.account.login.domain.LoginPreferences
 import actual.account.model.LoginToken
 import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
-import actual.core.versions.ActualVersionsStateHolder
+import actual.core.model.ActualVersionsStateHolder
+import actual.core.model.Protocol
+import actual.core.model.ServerUrl
+import actual.prefs.LoginPreferences
+import actual.prefs.ServerUrlPreferences
 import actual.test.TestBuildConfig
 import actual.test.assertEmitted
 import actual.test.buildPreferences
@@ -17,9 +20,6 @@ import actual.test.emptyMockEngine
 import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
-import actual.url.model.Protocol
-import actual.url.model.ServerUrl
-import actual.url.prefs.ServerUrlPreferences
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine

@@ -38,21 +38,19 @@ node ["style"="filled"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:files" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
 ":db" ["fillcolor"="#9D8DF1","shape"="none"]
+":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":settings:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":settings:vm" ["fillcolor"="#F5A6A6","shape"="none"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:nav" ["fillcolor"="#5555FF","shape"="none"]
-":url:prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":url:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":url:vm" ["fillcolor"="#F5A6A6","shape"="none"]
@@ -76,6 +74,7 @@ graph ["rank"="same"]
 ":about:licenses:vm" -> ":about:licenses:data"
 ":account:login:domain" -> ":account:model"
 ":account:login:domain" -> ":api:actual" ["style"="dotted"]
+":account:login:domain" -> ":prefs" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:domain" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:nav" ["style"="dotted"]
 ":account:login:ui" -> ":account:login:res" ["style"="dotted"]
@@ -86,12 +85,12 @@ graph ["rank"="same"]
 ":account:login:ui" -> ":url:nav" ["style"="dotted"]
 ":account:login:vm" -> ":account:login:domain"
 ":account:login:vm" -> ":account:model"
-":account:login:vm" -> ":core:versions"
-":account:login:vm" -> ":url:model"
-":account:login:vm" -> ":url:prefs" ["style"="dotted"]
+":account:login:vm" -> ":core:model"
+":account:login:vm" -> ":prefs" ["style"="dotted"]
 ":account:password:domain" -> ":account:login:domain"
 ":account:password:domain" -> ":account:model"
 ":account:password:domain" -> ":api:actual" ["style"="dotted"]
+":account:password:domain" -> ":prefs" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:domain" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:res" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:vm"
@@ -101,16 +100,16 @@ graph ["rank"="same"]
 ":account:password:vm" -> ":account:login:domain" ["style"="dotted"]
 ":account:password:vm" -> ":account:model"
 ":account:password:vm" -> ":account:password:domain"
-":account:password:vm" -> ":core:versions"
+":account:password:vm" -> ":core:model"
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
-":api:actual" -> ":url:model"
-":api:builder" -> ":url:model"
+":api:actual" -> ":core:model"
+":api:builder" -> ":core:model"
 ":api:di" -> ":api:builder" ["style"="dotted"]
 ":api:di" -> ":api:github"
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
-":api:github" -> ":url:model"
+":api:github" -> ":core:model"
 ":app" -> ":about:info:nav" ["style"="dotted"]
 ":app" -> ":about:info:ui" ["style"="dotted"]
 ":app" -> ":about:licenses:nav" ["style"="dotted"]
@@ -125,14 +124,13 @@ graph ["rank"="same"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
 ":app" -> ":budget:sync:nav" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
-":app" -> ":core:colorscheme" ["style"="dotted"]
 ":app" -> ":core:connection" ["style"="dotted"]
 ":app" -> ":core:di" ["style"="dotted"]
 ":app" -> ":db" ["style"="dotted"]
+":app" -> ":prefs" ["style"="dotted"]
 ":app" -> ":settings:nav" ["style"="dotted"]
 ":app" -> ":settings:ui" ["style"="dotted"]
 ":app" -> ":url:nav" ["style"="dotted"]
-":app" -> ":url:prefs" ["style"="dotted"]
 ":app" -> ":url:ui" ["style"="dotted"]
 ":budget:list:nav" -> ":account:model"
 ":budget:list:ui" -> ":account:login:nav" ["style"="dotted"]
@@ -150,9 +148,8 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
-":budget:list:vm" -> ":core:versions"
-":budget:list:vm" -> ":url:model"
-":budget:list:vm" -> ":url:prefs" ["style"="dotted"]
+":budget:list:vm" -> ":core:model"
+":budget:list:vm" -> ":prefs" ["style"="dotted"]
 ":budget:sync:nav" -> ":account:model"
 ":budget:sync:nav" -> ":budget:model"
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
@@ -165,25 +162,25 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":core:files"
+":budget:sync:vm" -> ":core:model"
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:builder" ["style"="dotted"]
-":core:connection" -> ":core:versions" ["style"="dotted"]
-":core:connection" -> ":url:model" ["style"="dotted"]
-":core:connection" -> ":url:prefs" ["style"="dotted"]
+":core:connection" -> ":core:model" ["style"="dotted"]
+":core:connection" -> ":prefs" ["style"="dotted"]
 ":core:di" -> ":core:files"
+":core:di" -> ":core:model"
 ":core:files" -> ":budget:model"
-":core:ui" -> ":core:colorscheme"
+":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
-":core:ui" -> ":core:versions"
-":core:ui" -> ":url:model"
 ":db" -> ":budget:model"
-":settings:ui" -> ":core:colorscheme"
+":prefs" -> ":account:model"
+":prefs" -> ":core:model"
+":settings:ui" -> ":core:model"
 ":settings:ui" -> ":core:res" ["style"="dotted"]
 ":settings:ui" -> ":core:ui"
 ":settings:ui" -> ":settings:res" ["style"="dotted"]
 ":settings:ui" -> ":settings:vm"
-":settings:vm" -> ":core:colorscheme"
-":url:prefs" -> ":url:model"
+":settings:vm" -> ":prefs"
 ":url:ui" -> ":account:login:nav" ["style"="dotted"]
 ":url:ui" -> ":core:res" ["style"="dotted"]
 ":url:ui" -> ":core:ui"
@@ -191,9 +188,8 @@ graph ["rank"="same"]
 ":url:ui" -> ":url:vm"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
-":url:vm" -> ":core:versions"
-":url:vm" -> ":url:model"
-":url:vm" -> ":url:prefs" ["style"="dotted"]
+":url:vm" -> ":core:model"
+":url:vm" -> ":prefs" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

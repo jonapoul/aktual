@@ -2,28 +2,28 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":settings:ui","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":core:colorscheme" ["fillcolor"="#9D8DF1","shape"="none"]
+":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":core:versions" ["fillcolor"="#9D8DF1","shape"="none"]
+":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":settings:vm" ["fillcolor"="#F5A6A6","shape"="none"]
-":url:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":core:ui" -> ":core:colorscheme"
+":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
-":core:ui" -> ":core:versions"
-":core:ui" -> ":url:model"
-":settings:ui" -> ":core:colorscheme"
+":prefs" -> ":account:model"
+":prefs" -> ":core:model"
+":settings:ui" -> ":core:model"
 ":settings:ui" -> ":core:res" ["style"="dotted"]
 ":settings:ui" -> ":core:ui"
 ":settings:ui" -> ":settings:res" ["style"="dotted"]
 ":settings:ui" -> ":settings:vm"
-":settings:vm" -> ":core:colorscheme"
+":settings:vm" -> ":prefs"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

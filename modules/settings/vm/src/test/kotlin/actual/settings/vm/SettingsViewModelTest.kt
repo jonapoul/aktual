@@ -1,7 +1,7 @@
 package actual.settings.vm
 
-import actual.core.colorscheme.ColorSchemePreferences
-import actual.core.colorscheme.ColorSchemeType
+import actual.core.model.ColorSchemeType
+import actual.prefs.ColorSchemePreferences
 import actual.test.buildPreferences
 import alakazam.test.core.standardDispatcher
 import app.cash.turbine.TurbineTestContext

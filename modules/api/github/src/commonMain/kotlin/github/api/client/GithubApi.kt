@@ -4,7 +4,7 @@ import actual.codegen.GET
 import actual.codegen.KtorApi
 import actual.codegen.Path
 import actual.codegen.Query
-import actual.url.model.ServerUrl
+import actual.core.model.ServerUrl
 import github.api.model.GithubRelease
 import io.ktor.client.HttpClient
 

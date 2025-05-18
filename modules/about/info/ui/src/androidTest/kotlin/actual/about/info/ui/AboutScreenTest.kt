@@ -1,6 +1,6 @@
 package actual.about.info.ui
 
-import actual.core.colorscheme.ColorSchemeType
+import actual.core.model.ColorSchemeType
 import actual.core.ui.ActualTheme
 import actual.test.ActualTestActivity
 import actual.test.TestBuildConfig

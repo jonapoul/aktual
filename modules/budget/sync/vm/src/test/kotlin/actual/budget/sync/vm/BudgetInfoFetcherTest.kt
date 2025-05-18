@@ -9,11 +9,11 @@ import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.BudgetInfoFetcher.Result
+import actual.core.model.ServerUrl
 import actual.test.emptyMockEngine
 import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
-import actual.url.model.ServerUrl
 import alakazam.test.core.TestCoroutineContexts
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
