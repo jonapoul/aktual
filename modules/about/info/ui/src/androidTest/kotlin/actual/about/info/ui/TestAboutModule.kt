@@ -11,6 +11,6 @@ import dagger.hilt.components.SingletonComponent
   includes = [
     AlakazamModule::class,
     ContextModule::class,
-  ]
+  ],
 )
 interface TestAboutModule

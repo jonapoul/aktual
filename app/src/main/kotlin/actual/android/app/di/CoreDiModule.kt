@@ -27,6 +27,6 @@ import dagger.hilt.components.SingletonComponent
     FileSystemModule::class,
     LoopControllerModule::class,
     PreferencesModule::class,
-  ]
+  ],
 )
 interface CoreDiModule
