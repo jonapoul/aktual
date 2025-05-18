@@ -1,13 +1,10 @@
 package actual.budget.list.ui
 
-import actual.account.login.nav.LoginNavRoute
 import actual.account.model.LoginToken
-import actual.account.password.nav.ChangePasswordNavRoute
 import actual.budget.list.res.BudgetListStrings
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.budget.model.Budget
-import actual.budget.sync.nav.SyncBudgetsNavRoute
 import actual.core.icons.ActualIcons
 import actual.core.icons.Refresh
 import actual.core.model.ActualVersions
@@ -20,11 +17,8 @@ import actual.core.ui.Theme
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
-import actual.core.ui.debugNavigate
 import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
-import actual.settings.nav.SettingsNavRoute
-import actual.url.nav.ServerUrlNavRoute
 import alakazam.android.ui.compose.VerticalSpacer
 import alakazam.kotlin.core.exhaustive
 import android.content.Intent
@@ -61,14 +55,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ListBudgetsScreen(
-  navController: NavHostController,
+  nav: ListBudgetsNavigator,
   token: LoginToken,
   viewModel: ListBudgetsViewModel = hiltViewModel(token),
 ) {
@@ -107,13 +100,13 @@ fun ListBudgetsScreen(
     url = serverUrl,
     onAction = { action ->
       when (action) {
-        ListBudgetsAction.ChangeServer -> navController.openUrlScreen()
-        ListBudgetsAction.ChangePassword -> navController.debugNavigate(ChangePasswordNavRoute)
-        ListBudgetsAction.OpenSettings -> navController.debugNavigate(SettingsNavRoute)
+        ListBudgetsAction.ChangeServer -> nav.toUrl()
+        ListBudgetsAction.ChangePassword -> nav.toChangePassword()
+        ListBudgetsAction.OpenSettings -> nav.toSettings()
         ListBudgetsAction.OpenInBrowser -> launchBrowser = true
         ListBudgetsAction.Reload -> viewModel.retry()
         is ListBudgetsAction.Delete -> budgetToDelete = action.budget
-        is ListBudgetsAction.Open -> navController.debugNavigate(SyncBudgetsNavRoute(token, action.budget.cloudFileId))
+        is ListBudgetsAction.Open -> nav.toSyncBudget(token, action.budget.cloudFileId)
       }
     },
   )
@@ -123,9 +116,6 @@ fun ListBudgetsScreen(
 private fun hiltViewModel(token: LoginToken) = hiltViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory>(
   creationCallback = { factory -> factory.create(token.value) },
 )
-
-private fun NavHostController.openUrlScreen() =
-  debugNavigate(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
 
 @Composable
 private fun ListBudgetsScaffold(

@@ -5,7 +5,6 @@ plugins {
 dependencies {
   api(libs.androidx.compose.runtime)
   api(libs.androidx.lifecycle.viewmodel.core)
-  api(libs.androidx.navigation.runtime)
   api(projects.about.info.vm)
   api(projects.core.ui)
   implementation(libs.alakazam.android.compose)
@@ -27,10 +26,8 @@ dependencies {
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.kotlinx.coroutines)
   implementation(projects.about.info.res)
-  implementation(projects.about.licenses.nav)
   implementation(projects.core.res)
   androidTestImplementation(projects.core.di)
   androidTestImplementation(projects.test.buildconfig)

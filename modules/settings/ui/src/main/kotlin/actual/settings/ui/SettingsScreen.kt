@@ -36,7 +36,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.ImmutableList
@@ -45,7 +44,7 @@ import my.nanihadesuka.compose.LazyColumnScrollbar
 
 @Composable
 fun SettingsScreen(
-  navController: NavHostController,
+  nav: SettingsNavigator,
   viewModel: SettingsViewModel = hiltViewModel(),
 ) {
   val values by viewModel.prefValues.collectAsState()
@@ -54,7 +53,7 @@ fun SettingsScreen(
     values = values,
     onAction = { action ->
       when (action) {
-        SettingsAction.NavBack -> navController.popBackStack()
+        SettingsAction.NavBack -> nav.back()
         is SettingsAction.PreferenceChange -> viewModel.set(action.value)
       }
     },

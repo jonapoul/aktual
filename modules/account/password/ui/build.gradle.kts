@@ -5,7 +5,6 @@ plugins {
 dependencies {
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
-  api(libs.androidx.navigation.runtime)
   api(projects.account.password.vm)
   api(projects.core.ui)
   implementation(libs.alakazam.android.compose)
@@ -27,6 +26,5 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(projects.account.password.domain)
   implementation(projects.account.password.res)
-  implementation(projects.budget.list.nav)
   implementation(projects.core.res)
 }
