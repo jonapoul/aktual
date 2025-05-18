@@ -32,7 +32,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @HiltAndroidTest
-class AboutScreenTest {
+class InfoScreenTest {
   @get:Rule(order = 0) val hiltRule = HiltAndroidRule(this)
   @get:Rule(order = 1) val composeRule = createAndroidComposeRule<ActualTestActivity>()
 
@@ -40,12 +40,16 @@ class AboutScreenTest {
   @BindValue lateinit var githubApiFactory: GithubApi.Factory
   @BindValue lateinit var coroutineContexts: CoroutineContexts
 
+  private lateinit var navigator: TestNavigator
+
   @BeforeTest
   @Suppress("InjectDispatcher")
   fun before() {
     buildConfig = TestBuildConfig
     githubApiFactory = GithubApi.Factory { TestGithubApi() }
     coroutineContexts = TestCoroutineContexts(Dispatchers.Unconfined)
+
+    navigator = TestNavigator()
 
     hiltRule.inject()
     Intents.init()
@@ -76,7 +80,7 @@ class AboutScreenTest {
     setContent {
       val navController = TestNavHostController(LocalContext.current)
       navController.navigatorProvider.addNavigator(ComposeNavigator())
-      ActualTheme(ColorSchemeType.Light) { InfoScreen(navController) }
+      ActualTheme(ColorSchemeType.Light) { InfoScreen(navigator) }
     }
   }
 }
