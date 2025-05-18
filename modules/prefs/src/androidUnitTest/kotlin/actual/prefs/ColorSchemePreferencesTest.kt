@@ -16,8 +16,7 @@ import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 class ColorSchemePreferencesTest {
-  @get:Rule
-  val mainDispatcherRule = MainDispatcherRule()
+  @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
   private lateinit var preferences: ColorSchemePreferences
 

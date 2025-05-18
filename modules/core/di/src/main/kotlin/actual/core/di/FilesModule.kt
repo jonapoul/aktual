@@ -9,9 +9,6 @@ import dagger.Module
 
 @Module
 interface FilesModule {
-  @Binds
-  fun assets(impl: AndroidAssets): Assets
-
-  @Binds
-  fun databaseDir(impl: AndroidDatabaseDirectory): DatabaseDirectory
+  @Binds fun assets(impl: AndroidAssets): Assets
+  @Binds fun databaseDir(impl: AndroidDatabaseDirectory): DatabaseDirectory
 }
