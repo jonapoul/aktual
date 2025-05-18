@@ -5,7 +5,6 @@ plugins {
 dependencies {
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
-  api(libs.androidx.navigation.runtime)
   api(projects.account.login.vm)
   api(projects.core.ui)
   implementation(libs.alakazam.android.compose)
@@ -24,13 +23,9 @@ dependencies {
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
-  implementation(libs.androidx.navigation.common)
   implementation(libs.haze.core)
   implementation(libs.kotlinx.coroutines)
   implementation(projects.account.login.domain)
-  implementation(projects.account.login.nav)
   implementation(projects.account.login.res)
-  implementation(projects.budget.list.nav)
   implementation(projects.core.res)
-  implementation(projects.url.nav)
 }

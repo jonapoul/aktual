@@ -9,7 +9,6 @@ node ["style"="filled"]
 ":account:password:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":account:password:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
-":budget:list:nav" ["fillcolor"="#5555FF","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -30,7 +29,6 @@ graph ["rank"="same"]
 ":account:password:ui" -> ":account:password:domain" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:res" ["style"="dotted"]
 ":account:password:ui" -> ":account:password:vm"
-":account:password:ui" -> ":budget:list:nav" ["style"="dotted"]
 ":account:password:ui" -> ":core:res" ["style"="dotted"]
 ":account:password:ui" -> ":core:ui"
 ":account:password:vm" -> ":account:login:domain" ["style"="dotted"]
@@ -41,7 +39,6 @@ graph ["rank"="same"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
-":budget:list:nav" -> ":account:model"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":prefs" -> ":account:model"
@@ -54,7 +51,6 @@ graph ["label"="Legend","fontsize"="20"]
 <TR><TD>ViewModel</TD><TD BGCOLOR="#F5A6A6">module-name</TD></TR>
 <TR><TD>Compose</TD><TD BGCOLOR="#FFFF55">module-name</TD></TR>
 <TR><TD>Resources</TD><TD BGCOLOR="#00FFFF">module-name</TD></TR>
-<TR><TD>Navigation</TD><TD BGCOLOR="#5555FF">module-name</TD></TR>
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
 </TABLE>
 >]

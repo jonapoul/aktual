@@ -4,7 +4,6 @@ import actual.account.model.Password
 import actual.account.password.res.PasswordStrings
 import actual.account.password.vm.ChangePasswordState
 import actual.account.password.vm.ChangePasswordViewModel
-import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.core.model.ActualVersions
 import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
@@ -13,7 +12,6 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
-import actual.core.ui.debugNavigate
 import actual.core.ui.transparentTopAppBarColors
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
@@ -44,11 +42,10 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 
 @Composable
 fun ChangePasswordScreen(
-  navController: NavHostController,
+  navigator: ChangePasswordNavigator,
   viewModel: ChangePasswordViewModel = hiltViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
@@ -61,7 +58,7 @@ fun ChangePasswordScreen(
 
   val token = newToken
   if (token != null) {
-    LaunchedEffect(Unit) { navController.debugNavigate(ListBudgetsNavRoute(token)) }
+    LaunchedEffect(Unit) { navigator.toListBudgets(token) }
   }
 
   ChangePasswordScaffold(
@@ -73,7 +70,7 @@ fun ChangePasswordScreen(
     versions = versions,
     onAction = { action ->
       when (action) {
-        PasswordAction.NavBack -> navController.popBackStack()
+        PasswordAction.NavBack -> navigator.back()
         PasswordAction.Submit -> viewModel.submit()
         is PasswordAction.SetPassword1 -> viewModel.setPassword1(action.value)
         is PasswordAction.SetPassword2 -> viewModel.setPassword2(action.value)

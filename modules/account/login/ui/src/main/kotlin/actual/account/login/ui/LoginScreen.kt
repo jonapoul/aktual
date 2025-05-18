@@ -1,12 +1,9 @@
 package actual.account.login.ui
 
 import actual.account.login.domain.LoginResult
-import actual.account.login.nav.LoginNavRoute
 import actual.account.login.res.LoginStrings
 import actual.account.login.vm.LoginViewModel
-import actual.account.model.LoginToken
 import actual.account.model.Password
-import actual.budget.list.nav.ListBudgetsNavRoute
 import actual.core.model.ActualVersions
 import actual.core.model.ServerUrl
 import actual.core.res.CoreStrings
@@ -16,9 +13,7 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
-import actual.core.ui.debugNavigate
 import actual.core.ui.transparentTopAppBarColors
-import actual.url.nav.ServerUrlNavRoute
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,13 +44,12 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun LoginScreen(
-  navController: NavHostController,
+  nav: LoginNavigator,
   viewModel: LoginViewModel = hiltViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
@@ -66,7 +60,7 @@ fun LoginScreen(
 
   LaunchedEffect(Unit) {
     viewModel.token.collect { token ->
-      navController.listBudgets(token)
+      nav.toListBudgets(token)
     }
   }
 
@@ -82,20 +76,14 @@ fun LoginScreen(
     loginFailure = loginFailure,
     onAction = { action ->
       when (action) {
-        LoginAction.ChangeServer -> navController.openUrlScreen()
-        LoginAction.NavBack -> navController.popBackStack()
+        LoginAction.ChangeServer -> nav.toUrl()
+        LoginAction.NavBack -> nav.back()
         LoginAction.SignIn -> viewModel.onClickSignIn()
         is LoginAction.EnterPassword -> viewModel.onEnterPassword(action.password)
       }
     },
   )
 }
-
-private fun NavHostController.openUrlScreen() =
-  debugNavigate(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
-
-private fun NavHostController.listBudgets(token: LoginToken) =
-  debugNavigate(ListBudgetsNavRoute(token)) { popUpTo(LoginNavRoute) { inclusive = true } }
 
 @Composable
 private fun LoginScreenImpl(

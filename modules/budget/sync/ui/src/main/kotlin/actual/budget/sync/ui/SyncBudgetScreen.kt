@@ -50,14 +50,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun SyncBudgetScreen(
-  navController: NavHostController,
+  nav: SyncBudgetNavigator,
   budgetId: BudgetId,
   token: LoginToken,
   viewModel: SyncBudgetViewModel = hiltViewModel(token, budgetId),
@@ -68,17 +67,11 @@ fun SyncBudgetScreen(
     stepStates = stepStates,
     onAction = { action ->
       when (action) {
-        SyncBudgetAction.Continue -> navController.openBudget(budgetId)
+        SyncBudgetAction.Continue -> nav.toBudget(token, budgetId)
         SyncBudgetAction.Retry -> viewModel.start()
       }
     },
   )
-}
-
-@Suppress("unused")
-private fun NavHostController.openBudget(budgetId: BudgetId) {
-  // TODO: navigate away
-  // debugNavigate(ServerUrlNavRoute) { popUpTo(ListBudgetsNavRoute) { inclusive = true } }
 }
 
 @Composable

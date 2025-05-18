@@ -5,7 +5,6 @@ plugins {
 dependencies {
   api(libs.androidx.compose.runtime)
   api(libs.androidx.lifecycle.viewmodel.core)
-  api(libs.androidx.navigation.runtime)
   api(projects.about.licenses.vm)
   api(projects.core.ui)
   implementation(libs.alakazam.android.compose)

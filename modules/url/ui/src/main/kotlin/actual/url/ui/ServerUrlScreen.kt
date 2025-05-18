@@ -1,6 +1,5 @@
 package actual.url.ui
 
-import actual.account.login.nav.LoginNavRoute
 import actual.core.model.ActualVersions
 import actual.core.model.Protocol
 import actual.core.res.CoreStrings
@@ -12,7 +11,6 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
-import actual.core.ui.debugNavigate
 import actual.core.ui.transparentTopAppBarColors
 import actual.url.res.ServerUrlStrings
 import actual.url.vm.NavDestination
@@ -52,12 +50,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
 import kotlinx.coroutines.channels.consumeEach
 
 @Composable
 fun ServerUrlScreen(
-  navController: NavHostController,
+  nav: ServerUrlNavigator,
   viewModel: ServerUrlViewModel = hiltViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
@@ -81,7 +78,7 @@ fun ServerUrlScreen(
       when (destination) {
         NavDestination.Back -> activity.finish()
         NavDestination.ToBootstrap -> Logger.w("Not implemented bootstrap yet!")
-        NavDestination.ToLogin -> navController.debugNavigate(LoginNavRoute)
+        NavDestination.ToLogin -> nav.toLogin()
       }
     }
   }

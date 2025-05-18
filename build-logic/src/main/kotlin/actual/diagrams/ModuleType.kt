@@ -10,7 +10,6 @@ enum class ModuleType(val label: String, val color: Color) {
   AndroidCompose(string = "Compose", fill = "#FFFF55"), // yellow
   AndroidLibrary(string = "Android", fill = "#55FF55"), // green
   AndroidResources(string = "Resources", fill = "#00FFFF"), // cyan
-  Navigation(string = "Navigation", fill = "#5555FF"), // blue
   Multiplatform(string = "Multiplatform", fill = "#9D8DF1"), // indigo
   Jvm(string = "JVM", fill = "#8000FF"), // violet
   ;
@@ -26,7 +25,6 @@ enum class ModuleType(val label: String, val color: Color) {
         hasPlugin("actual.module.compose") -> AndroidCompose
         hasPlugin("actual.module.android") -> AndroidLibrary
         hasPlugin("actual.module.resources") -> AndroidResources
-        hasPlugin("actual.module.navigation") -> Navigation
         hasPlugin("actual.module.multiplatform") -> Multiplatform
         hasPlugin("actual.module.jvm") -> Jvm
         else -> error("Unknown module type for ${project.path}")
