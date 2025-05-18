@@ -6,8 +6,6 @@ plugins {
 
 dependencies {
   api(libs.androidx.compose.runtime)
-  api(libs.androidx.navigation.common)
-  api(libs.androidx.navigation.runtime)
   api(libs.haze.core)
   api(libs.kotlinx.immutable)
   api(libs.lazycolumn.scrollbar)
