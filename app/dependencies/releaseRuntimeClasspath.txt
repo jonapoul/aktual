@@ -157,8 +157,8 @@ com.google.errorprone:error_prone_annotations:2.15.0
 com.google.guava:listenablefuture:1.0
 com.squareup.okio:okio-jvm:3.11.0
 com.squareup.okio:okio:3.11.0
-dev.chrisbanes.haze:haze-android:1.6.0
-dev.chrisbanes.haze:haze:1.6.0
+dev.chrisbanes.haze:haze-android:1.6.1
+dev.chrisbanes.haze:haze:1.6.1
 dev.jonpoulton.alakazam:android-core:6.0.0
 dev.jonpoulton.alakazam:android-ui-compose:6.0.0
 dev.jonpoulton.alakazam:db-sqldelight-android:6.0.0
