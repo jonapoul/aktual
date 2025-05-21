@@ -29,6 +29,5 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(projects.about.info.res)
   implementation(projects.core.res)
-  androidTestImplementation(projects.core.di)
-  androidTestImplementation(projects.test.buildconfig)
+  testImplementation(projects.test.buildconfig)
 }

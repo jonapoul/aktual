@@ -32,10 +32,10 @@ class ModuleCompose : Plugin<Project> {
       }
     }
 
-    val androidTestImplementation by configurations
+    val testImplementation by configurations
     dependencies {
       if (path != ":test:compose") {
-        androidTestImplementation(project(":test:compose"))
+        testImplementation(project(":test:compose"))
       }
     }
   }
