@@ -1,10 +1,8 @@
 package actual.about.info.ui
 
 import actual.about.info.vm.BuildState
-import actual.core.model.ColorSchemeType
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
-import actual.core.ui.PreviewWithColorScheme
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
@@ -29,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource

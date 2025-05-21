@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
@@ -53,6 +54,7 @@ internal fun InfoBuildState(
 
     BuildStateItem(
       modifier = Modifier
+        .testTag(Tags.SourceCodeButton)
         .padding(ItemMargin)
         .hazeEffect(hazeState, hazeStyle),
       icon = Icons.Filled.Code,

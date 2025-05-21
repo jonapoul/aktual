@@ -82,11 +82,10 @@ class InfoViewModel @Inject constructor(
   }
 
   private fun buildState(): BuildState {
-    val version = "${buildConfig.versionName} (${buildConfig.versionCode})"
     val zone = ZoneId.systemDefault()
     val zonedDateTime = buildConfig.buildTime.toJavaInstant().atZone(zone)
     return BuildState(
-      buildVersion = version,
+      buildVersion = buildConfig.versionName,
       buildDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(zonedDateTime),
       sourceCodeRepo = buildConfig.repoName,
       year = zonedDateTime.year,
