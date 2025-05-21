@@ -27,8 +27,8 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.kotlinx.coroutines)
+  implementation(libs.lazycolumn.scrollbar)
   implementation(projects.about.info.res)
   implementation(projects.core.res)
-  androidTestImplementation(projects.core.di)
-  androidTestImplementation(projects.test.buildconfig)
+  testImplementation(projects.test.buildconfig)
 }

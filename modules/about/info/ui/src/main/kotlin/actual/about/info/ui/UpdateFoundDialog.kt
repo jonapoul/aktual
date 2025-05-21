@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,7 +28,7 @@ internal fun UpdateFoundDialog(
   theme: Theme = LocalTheme.current,
 ) {
   BasicAlertDialog(
-    modifier = modifier,
+    modifier = modifier.testTag(Tags.UpdateFoundDialog),
     onDismissRequest = onDismiss,
     content = {
       UpdateFoundDialogContent(
@@ -58,8 +59,8 @@ private fun UpdateFoundDialogContent(
     title = InfoStrings.updateFoundTitle,
     titleColor = theme.successText,
     content = {
-      TextContent(InfoStrings.updateFoundInstalled, currentVersion)
-      TextContent(InfoStrings.updateFoundLatest, latestVersion)
+      TextContent(InfoStrings.updateFoundInstalled, currentVersion, Tags.UpdateAvailableCurrentVersion)
+      TextContent(InfoStrings.updateFoundLatest, latestVersion, Tags.UpdateAvailableNewVersion)
     },
     buttons = {
       TextButton(onClick = onDismiss) {
@@ -68,7 +69,13 @@ private fun UpdateFoundDialogContent(
           color = theme.successText,
         )
       }
-      TextButton(onClick = { onOpenUrl(latestUrl) }) {
+      TextButton(
+        modifier = Modifier.testTag(Tags.UpdateAvailableDownloadButton),
+        onClick = {
+          onOpenUrl(latestUrl)
+          onDismiss()
+        },
+      ) {
         Text(
           text = InfoStrings.updateFoundView,
           color = theme.successText,
@@ -82,13 +89,25 @@ private fun UpdateFoundDialogContent(
 private fun TextContent(
   text: String,
   value: String,
+  valueNodeTag: String,
   modifier: Modifier = Modifier,
 ) {
   Row(
     modifier = modifier.fillMaxWidth(),
   ) {
-    Text(text, modifier = Modifier.weight(1f), textAlign = TextAlign.Start, fontWeight = FontWeight.Bold)
-    Text(value, modifier = Modifier.weight(1f), textAlign = TextAlign.End)
+    Text(
+      modifier = Modifier.weight(1f),
+      text = text,
+      textAlign = TextAlign.Start,
+      fontWeight = FontWeight.Bold,
+    )
+    Text(
+      modifier = Modifier
+        .weight(1f)
+        .testTag(valueNodeTag),
+      text = value,
+      textAlign = TextAlign.End,
+    )
   }
 }
 

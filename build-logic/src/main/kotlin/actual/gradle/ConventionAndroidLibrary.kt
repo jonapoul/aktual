@@ -26,16 +26,11 @@ class ConventionAndroidLibrary : Plugin<Project> {
         resources.excludes.add("META-INF/*")
       }
 
-      buildTypes {
-        debug {
-          enableUnitTestCoverage = true
-          enableAndroidTestCoverage = true
-        }
-
-        release {
-          enableUnitTestCoverage = false
-          enableAndroidTestCoverage = false
-        }
+      buildTypes.configureEach {
+        // If you enable these with Kover in the same module, you'll get jacoco being loaded twice.
+        // See https://github.com/Kotlin/kotlinx-kover/issues/739
+        enableUnitTestCoverage = false
+        enableAndroidTestCoverage = false
       }
     }
   }
