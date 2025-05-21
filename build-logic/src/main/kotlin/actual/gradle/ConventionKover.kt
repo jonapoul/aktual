@@ -15,19 +15,35 @@ class ConventionKover : Plugin<Project> {
       return@with
     }
 
+    val excludedAnnotations = listOf(
+      "actual.core.ui.ScreenPreview",
+      "androidx.compose.ui.tooling.preview.Preview",
+      "dagger.Generated",
+      "dagger.Module",
+      "dagger.Provides",
+      "javax.annotation.processing.Generated",
+    )
+    val excludedClasses = listOf(
+      "*Activity*",
+      "*Application*",
+      "*BuildConfig*",
+      "*_Factory*",
+      "*_HiltModules*",
+      "*_Impl*",
+      "*Module_*",
+      "hilt_aggregated_deps*",
+      "*Preview*Kt*",
+    )
+    val excludedPackages = listOf(
+      "*hilt_aggregated_deps.*",
+      "*.di.*",
+    )
+
     koverBlueprint(
-      excludedClasses = listOf(
-        "*Activity*",
-        "*Application*",
-        "*BuildConfig*",
-        "*_Factory*",
-        "*_HiltModules*",
-        "*_Impl*",
-        "*Module_*",
-        "hilt_aggregated_deps*",
-        "*ComposableSingletons*",
-        "*Preview*Kt*",
-      ),
+      useJacoco = true,
+      excludedAnnotations = excludedAnnotations,
+      excludedClasses = excludedClasses,
+      excludedPackages = excludedPackages,
     )
   }
 }

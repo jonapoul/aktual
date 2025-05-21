@@ -31,20 +31,6 @@ class ConventionTestDependencies : Plugin<Project> {
           val debugImplementation by configurations
           debugImplementation(libs.getLibrary("test.androidx.monitor"))
           debugImplementation(project(":test:hilt"))
-
-          val androidTestImplementation by configurations
-          androidTestImplementation(libs.getLibrary("test.alakazam.core"))
-          androidTestImplementation(libs.getLibrary("test.androidx.arch"))
-          androidTestImplementation(libs.getLibrary("test.androidx.coreKtx"))
-          androidTestImplementation(libs.getLibrary("test.androidx.espresso.core"))
-          androidTestImplementation(libs.getLibrary("test.androidx.espresso.intents"))
-          androidTestImplementation(libs.getLibrary("test.androidx.junit"))
-          androidTestImplementation(libs.getLibrary("test.androidx.navigation"))
-          androidTestImplementation(libs.getLibrary("test.androidx.rules"))
-          androidTestImplementation(libs.getLibrary("test.androidx.runner"))
-          androidTestImplementation(libs.getLibrary("test.kotlin.common"))
-          androidTestImplementation(libs.getLibrary("test.kotlinx.coroutines"))
-          androidTestImplementation(libs.getLibrary("test.turbine"))
         }
       }
     }

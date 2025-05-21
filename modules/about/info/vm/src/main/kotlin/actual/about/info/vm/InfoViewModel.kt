@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
-class InfoViewModel @Inject internal constructor(
+class InfoViewModel @Inject constructor(
   private val buildConfig: BuildConfig,
   private val githubRepository: GithubRepository,
   private val urlOpener: UrlOpener,
@@ -82,11 +82,10 @@ class InfoViewModel @Inject internal constructor(
   }
 
   private fun buildState(): BuildState {
-    val version = "${buildConfig.versionName} (${buildConfig.versionCode})"
     val zone = ZoneId.systemDefault()
     val zonedDateTime = buildConfig.buildTime.toJavaInstant().atZone(zone)
     return BuildState(
-      buildVersion = version,
+      buildVersion = buildConfig.versionName,
       buildDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(zonedDateTime),
       sourceCodeRepo = buildConfig.repoName,
       year = zonedDateTime.year,

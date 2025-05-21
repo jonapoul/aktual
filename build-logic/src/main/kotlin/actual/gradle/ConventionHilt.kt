@@ -18,14 +18,11 @@ class ConventionHilt : Plugin<Project> {
     val ksp by configurations
     val kspTest by configurations
     val testImplementation by configurations
-    val androidTestImplementation by configurations
 
     dependencies {
       ksp(libs.getLibrary("hilt.compiler"))
       kspTest(libs.getLibrary("hilt.compiler"))
-
       testImplementation(libs.getLibrary("test.hilt"))
-      androidTestImplementation(libs.getLibrary("test.hilt"))
     }
   }
 }

@@ -14,6 +14,10 @@ fun Theme.isLight(): Boolean = this is LightTheme
 
 @Immutable
 sealed interface Theme {
+  companion object {
+    fun dark(): Theme = DarkTheme()
+  }
+
   val pageBackground: Color
   val pageBackgroundModalActive: Color
   val pageBackgroundTopLeft: Color

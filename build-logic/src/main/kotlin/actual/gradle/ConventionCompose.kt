@@ -24,8 +24,8 @@ class ConventionCompose : Plugin<Project> {
       experimentalApis = emptyList(),
     )
 
-    val androidTestImplementation by configurations
     val debugImplementation by configurations
+    val testImplementation by configurations
     val implementation by configurations
     val lintChecks by configurations
 
@@ -34,11 +34,9 @@ class ConventionCompose : Plugin<Project> {
       lintChecks(libs.getLibrary("androidx.compose.lint"))
 
       // Testing
+      testImplementation(libs.getLibrary("test.androidx.compose.ui.junit4"))
+      testImplementation(libs.getLibrary("test.robolectric"))
       debugImplementation(libs.getLibrary("test.androidx.compose.ui.manifest"))
-
-      // UI testing
-      androidTestImplementation(platform(libs.getLibrary("androidx.compose.bom")))
-      androidTestImplementation(libs.getLibrary("test.androidx.compose.ui.junit4"))
     }
   }
 }

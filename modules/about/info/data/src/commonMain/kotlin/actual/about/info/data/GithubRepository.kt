@@ -13,7 +13,7 @@ import kotlinx.serialization.SerializationException
 import java.io.IOException
 import javax.inject.Inject
 
-class GithubRepository @Inject internal constructor(
+class GithubRepository @Inject constructor(
   private val contexts: CoroutineContexts,
   private val apiFactory: GithubApi.Factory,
   private val buildConfig: BuildConfig,

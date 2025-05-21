@@ -2,7 +2,10 @@ package actual.about.info.ui
 
 import actual.about.info.res.InfoStrings
 import actual.about.info.vm.BuildState
+import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
+import actual.core.ui.Theme
+import actual.core.ui.defaultHazeStyle
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,33 +15,48 @@ import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.hazeEffect
 
 @Composable
 internal fun InfoBuildState(
   buildState: BuildState,
   onAction: (InfoAction) -> Unit,
   modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+  hazeState: HazeState = remember { HazeState() },
+  hazeStyle: HazeStyle = defaultHazeStyle(theme),
 ) {
   Column(modifier) {
     BuildStateItem(
-      modifier = Modifier.padding(ItemMargin),
+      modifier = Modifier
+        .padding(ItemMargin)
+        .hazeEffect(hazeState, hazeStyle),
       icon = Icons.Filled.Numbers,
       title = InfoStrings.version,
       subtitle = buildState.buildVersion,
     )
 
     BuildStateItem(
-      modifier = Modifier.padding(ItemMargin),
+      modifier = Modifier
+        .padding(ItemMargin)
+        .hazeEffect(hazeState, hazeStyle),
       icon = Icons.Filled.CalendarToday,
       title = InfoStrings.date,
       subtitle = buildState.buildDate,
     )
 
     BuildStateItem(
-      modifier = Modifier.padding(ItemMargin),
+      modifier = Modifier
+        .testTag(Tags.SourceCodeButton)
+        .padding(ItemMargin)
+        .hazeEffect(hazeState, hazeStyle),
       icon = Icons.Filled.Code,
       title = InfoStrings.repo,
       subtitle = buildState.sourceCodeRepo,
