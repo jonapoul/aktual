@@ -23,7 +23,7 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
-class InfoViewModel @Inject internal constructor(
+class InfoViewModel @Inject constructor(
   private val buildConfig: BuildConfig,
   private val githubRepository: GithubRepository,
   private val urlOpener: UrlOpener,
