@@ -14,6 +14,7 @@ detekt = "1.23.8"
 doctor = "0.10.0"
 graphviz = "0.18.1"
 hilt = "2.56.2"
+jacoco = "0.8.13"
 kotlin = "2.1.21"
 kover = "0.9.1"
 ksp = "2.1.21-2.0.1"
@@ -81,6 +82,7 @@ plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", v
 plugin-detektCompose = { module = "io.nlopez.compose.rules:detekt", version.ref = "androidx-compose-rules" }
 plugin-graphviz = { module = "guru.nidi:graphviz-java", version.ref = "graphviz" }
 plugin-hilt = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
+plugin-jacoco = { module = "org.jacoco:org.jacoco.core", version.ref = "jacoco" }
 plugin-kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-kotlin-powerAssert = { module = "org.jetbrains.kotlin:kotlin-power-assert", version.ref = "kotlin" }
 plugin-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
