@@ -2,12 +2,13 @@ package actual.budget.model
 
 import alakazam.kotlin.serialization.SerializableByString
 import alakazam.kotlin.serialization.enumStringSerializer
+import dev.drewhamilton.poko.Poko
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class TransactionError(
+@Poko class TransactionError(
   @SerialName("difference") val difference: Int,
   @SerialName("type") val type: Type = Type.SplitTransactionError,
   @SerialName("version") val version: Int,

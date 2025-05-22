@@ -1,21 +1,22 @@
 package actual.api.model.account
 
+import dev.drewhamilton.poko.Poko
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 sealed interface BootstrapResponse {
   @Serializable
-  data class Success(
+  @Poko class Success(
     @SerialName("data") val data: Data,
   ) : BootstrapResponse
 
   @Serializable
-  data class Failure(
+  @Poko class Failure(
     @SerialName("reason") val reason: FailureReason,
   ) : BootstrapResponse
 
   @Serializable
-  data class Data(
+  @Poko class Data(
     @SerialName("bootstrapped") val bootstrapped: Boolean,
   )
 }

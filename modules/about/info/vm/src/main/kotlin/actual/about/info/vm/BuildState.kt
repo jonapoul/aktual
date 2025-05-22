@@ -1,9 +1,11 @@
 package actual.about.info.vm
 
 import androidx.compose.runtime.Immutable
+import dev.drewhamilton.poko.Poko
 
 @Immutable
-data class BuildState(
+@Poko
+class BuildState(
   val buildVersion: String,
   val buildDate: String,
   val sourceCodeRepo: String,

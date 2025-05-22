@@ -2,6 +2,7 @@ package actual.settings.ui
 
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
+import dev.drewhamilton.poko.Poko
 
 @Immutable
 internal sealed interface Clickability
@@ -10,7 +11,7 @@ internal sealed interface Clickability
 internal data object NotClickable : Clickability
 
 @Immutable
-internal data class Clickable(
+@Poko internal class Clickable(
   val enabled: Boolean,
   val onClick: () -> Unit,
 ) : Clickability

@@ -1,7 +1,10 @@
+@file:Suppress("JUnitMalformedDeclaration")
+
 package actual.budget.model
 
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
+import dev.drewhamilton.poko.Poko
 import kotlinx.datetime.Month
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -14,7 +17,7 @@ class ParseMonthTest(
     TestCase(year = 9999, month = Month.DECEMBER, expected = "9999-12"),
   ),
 ) {
-  data class TestCase(val year: Int, val month: Month, val expected: String)
+  @Poko class TestCase(val year: Int, val month: Month, val expected: String)
 
   @Test
   fun `Parse and stringify`() {

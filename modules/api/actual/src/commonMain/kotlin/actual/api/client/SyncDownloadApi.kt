@@ -5,6 +5,7 @@ import actual.api.model.internal.ActualHeaders
 import actual.budget.model.BudgetId
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
+import dev.drewhamilton.poko.Poko
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -92,12 +93,12 @@ class SyncDownloadApi(
 }
 
 sealed interface SyncDownloadState {
-  data class InProgress(
+  @Poko class InProgress(
     val bytesSentTotal: Long,
     val contentLength: Long,
   ) : SyncDownloadState
 
-  data class Done(
+  @Poko class Done(
     val path: Path,
     val contentLength: Long,
   ) : SyncDownloadState

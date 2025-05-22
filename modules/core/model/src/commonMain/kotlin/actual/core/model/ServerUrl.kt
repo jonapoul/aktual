@@ -1,8 +1,9 @@
 package actual.core.model
 
 import alakazam.kotlin.core.parse
+import dev.drewhamilton.poko.Poko
 
-data class ServerUrl(
+@Poko class ServerUrl(
   val protocol: Protocol,
   val baseUrl: String,
 ) {

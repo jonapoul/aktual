@@ -1,17 +1,18 @@
 package actual.budget.sync.vm
 
 import actual.core.model.Bytes
+import dev.drewhamilton.poko.Poko
 import okio.Path
 
 sealed interface DownloadState {
   val total: Bytes
 
-  data class InProgress(
+  @Poko class InProgress(
     val read: Bytes,
     override val total: Bytes,
   ) : DownloadState
 
-  data class Done(
+  @Poko class Done(
     override val total: Bytes,
     val path: Path,
   ) : DownloadState
@@ -24,18 +25,18 @@ sealed interface DownloadState {
       override val message = "Not logged in"
     }
 
-    data class IO(
+    @Poko class IO(
       override val message: String,
       override val total: Bytes,
     ) : Failure
 
-    data class Http(
+    @Poko class Http(
       val code: Int,
       override val message: String,
       override val total: Bytes,
     ) : Failure
 
-    data class Other(
+    @Poko class Other(
       override val message: String,
       override val total: Bytes,
     ) : Failure

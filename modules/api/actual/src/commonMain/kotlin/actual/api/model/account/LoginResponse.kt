@@ -2,17 +2,18 @@ package actual.api.model.account
 
 import actual.account.model.LoginToken
 import actual.api.model.internal.LoginResponseDataSerializer
+import dev.drewhamilton.poko.Poko
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 sealed interface LoginResponse {
   @Serializable
-  data class Success(
+  @Poko class Success(
     @SerialName("data") val data: Data,
   ) : LoginResponse
 
   @Serializable
-  data class Failure(
+  @Poko class Failure(
     @SerialName("reason") val reason: FailureReason,
   ) : LoginResponse
 
@@ -21,13 +22,13 @@ sealed interface LoginResponse {
     val token: LoginToken?
 
     @Serializable
-    data class Valid(
+    @Poko class Valid(
       @SerialName("token")
       override val token: LoginToken,
     ) : Data
 
     @Serializable
-    data class Invalid(
+    @Poko class Invalid(
       @SerialName("token")
       override val token: LoginToken? = null,
     ) : Data

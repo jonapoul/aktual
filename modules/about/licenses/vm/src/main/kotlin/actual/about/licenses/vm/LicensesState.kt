@@ -2,15 +2,16 @@ package actual.about.licenses.vm
 
 import actual.about.licenses.data.ArtifactDetail
 import androidx.compose.runtime.Immutable
+import dev.drewhamilton.poko.Poko
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 @Immutable
 sealed interface LicensesState {
   data object Loading : LicensesState
-  data class Loaded(val artifacts: ImmutableList<ArtifactDetail>) : LicensesState
+  @Poko class Loaded(val artifacts: ImmutableList<ArtifactDetail>) : LicensesState
   data object NoneFound : LicensesState
-  data class Error(val errorMessage: String) : LicensesState
+  @Poko class Error(val errorMessage: String) : LicensesState
 }
 
 internal fun LicensesState.Loaded.filteredBy(text: String): LicensesState.Loaded {

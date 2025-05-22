@@ -1,10 +1,11 @@
 package actual.api.client
 
 import actual.core.model.ServerUrl
+import dev.drewhamilton.poko.Poko
 import io.ktor.client.HttpClient
 import io.ktor.utils.io.core.Closeable
 
-data class ActualApis(
+@Poko class ActualApis(
   val serverUrl: ServerUrl,
   val client: HttpClient,
   val account: AccountApi,

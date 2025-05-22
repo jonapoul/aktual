@@ -1,5 +1,6 @@
 package actual.budget.model
 
+import dev.drewhamilton.poko.Poko
 import kotlinx.datetime.LocalDate
 
 sealed interface ReportDate {
@@ -8,7 +9,7 @@ sealed interface ReportDate {
   /**
    * Like "2011-10"
    */
-  data class Month(val yearAndMonth: YearAndMonth) : ReportDate {
+  @Poko class Month(val yearAndMonth: YearAndMonth) : ReportDate {
     override val date = yearAndMonth.date
     override fun toString() = yearAndMonth.toString()
   }
@@ -16,7 +17,7 @@ sealed interface ReportDate {
   /**
    * Like "2023-11-01"
    */
-  data class Date(override val date: LocalDate) : ReportDate {
+  @Poko class Date(override val date: LocalDate) : ReportDate {
     override fun toString() = date.toString()
   }
 

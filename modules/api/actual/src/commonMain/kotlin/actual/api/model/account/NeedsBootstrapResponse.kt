@@ -1,6 +1,7 @@
 package actual.api.model.account
 
 import actual.account.model.LoginMethod
+import dev.drewhamilton.poko.Poko
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -9,17 +10,17 @@ import kotlinx.serialization.Serializable
  */
 sealed interface NeedsBootstrapResponse {
   @Serializable
-  data class Success(
+  @Poko class Success(
     @SerialName("data") val data: Data,
   ) : NeedsBootstrapResponse
 
   @Serializable
-  data class Failure(
+  @Poko class Failure(
     @SerialName("reason") val reason: FailureReason,
   ) : NeedsBootstrapResponse
 
   @Serializable
-  data class Data(
+  @Poko class Data(
     @SerialName("bootstrapped") val bootstrapped: Boolean,
     @SerialName("loginMethod") val loginMethod: LoginMethod,
     @SerialName("availableLoginMethods") val availableLoginMethods: List<AvailableLoginMethod>,
@@ -27,7 +28,7 @@ sealed interface NeedsBootstrapResponse {
   )
 
   @Serializable
-  data class AvailableLoginMethod(
+  @Poko class AvailableLoginMethod(
     @SerialName("method") val method: LoginMethod,
     @SerialName("displayName") val displayName: String,
     @SerialName("active") val active: Int, // 1 == true, 0 == false

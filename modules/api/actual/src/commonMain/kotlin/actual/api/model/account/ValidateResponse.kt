@@ -2,22 +2,23 @@ package actual.api.model.account
 
 import actual.account.model.LoginMethod
 import actual.account.model.PossibleRole
+import dev.drewhamilton.poko.Poko
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 sealed interface ValidateResponse {
   @Serializable
-  data class Success(
+  @Poko class Success(
     @SerialName("data") val data: Data,
   ) : ValidateResponse
 
   @Serializable
-  data class Failure(
+  @Poko class Failure(
     @SerialName("reason") val reason: FailureReason,
   ) : ValidateResponse
 
   @Serializable
-  data class Data(
+  @Poko class Data(
     @SerialName("userName") val userName: String,
     @SerialName("permission") val permission: PossibleRole,
     @SerialName("userId") val userId: String,

@@ -1,7 +1,9 @@
+@file:Suppress("JUnitMalformedDeclaration")
 package actual.budget.model
 
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
+import dev.drewhamilton.poko.Poko
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlin.test.Test
@@ -15,7 +17,7 @@ class ParseDateTest(
     TestCase(year = 9999, month = Month.DECEMBER, day = 31, expected = "9999-12-31"),
   ),
 ) {
-  data class TestCase(val year: Int, val month: Month, val day: Int, val expected: String)
+  @Poko class TestCase(val year: Int, val month: Month, val day: Int, val expected: String)
 
   @Test
   fun `Parse and stringify`() {

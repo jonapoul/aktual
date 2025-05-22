@@ -2,9 +2,10 @@ package actual.core.model
 
 import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.core.StateHolder
+import dev.drewhamilton.poko.Poko
 import kotlinx.coroutines.flow.update
 
-data class ActualVersions(
+@Poko class ActualVersions(
   val app: String,
   val server: String?,
 ) {

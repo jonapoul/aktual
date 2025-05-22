@@ -1,11 +1,12 @@
 package actual.api.model.sync
 
 import actual.budget.model.BudgetId
+import dev.drewhamilton.poko.Poko
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class UserFile(
+@Poko class UserFile(
   @SerialName("deleted") val deleted: Int,
   @SerialName("fileId") val fileId: BudgetId,
   @SerialName("groupId") val groupId: String,
@@ -17,7 +18,7 @@ data class UserFile(
 )
 
 @Serializable
-data class UserWithAccess(
+@Poko class UserWithAccess(
   @SerialName("userId") val userId: String,
   @SerialName("userName") val userName: String,
   @SerialName("displayName") val displayName: String,
@@ -25,7 +26,7 @@ data class UserWithAccess(
 )
 
 @Serializable
-data class EncryptMeta(
+@Poko class EncryptMeta(
   @SerialName("keyId") val keyId: String,
   @SerialName("algorithm") val algorithm: String,
   @SerialName("iv") val iv: String,

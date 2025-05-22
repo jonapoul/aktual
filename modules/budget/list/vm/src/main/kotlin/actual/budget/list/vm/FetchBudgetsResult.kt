@@ -2,10 +2,11 @@ package actual.budget.list.vm
 
 import actual.budget.model.Budget
 import androidx.compose.runtime.Immutable
+import dev.drewhamilton.poko.Poko
 
 @Immutable
 sealed interface FetchBudgetsResult {
-  data class Success(
+  @Poko class Success(
     val budgets: List<Budget>,
   ) : FetchBudgetsResult
 
@@ -17,8 +18,8 @@ sealed interface FetchBudgetsResult {
     override val reason = null
   }
 
-  data class FailureResponse(override val reason: String?) : Failure
-  data class InvalidResponse(override val reason: String) : Failure
-  data class NetworkFailure(override val reason: String) : Failure
-  data class OtherFailure(override val reason: String) : Failure
+  @Poko class FailureResponse(override val reason: String?) : Failure
+  @Poko class InvalidResponse(override val reason: String) : Failure
+  @Poko class NetworkFailure(override val reason: String) : Failure
+  @Poko class OtherFailure(override val reason: String) : Failure
 }

@@ -15,6 +15,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.drewhamilton.poko.Poko
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
@@ -138,7 +139,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
     mutableSteps.update { stepStates -> stepStates.put(step, state) }
   }
 
-  data class Inputs(
+  @Poko class Inputs(
     val token: LoginToken,
     val budgetId: BudgetId,
   )

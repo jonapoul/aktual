@@ -1,7 +1,10 @@
+@file:Suppress("JUnitMalformedDeclaration")
+
 package actual.budget.model
 
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
+import dev.drewhamilton.poko.Poko
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.Instant
 import kotlin.test.Test
@@ -19,7 +22,8 @@ class TimestampTest(
     assertEquals(expected = case.string, actual = stringified)
   }
 
-  data class TestCase(
+  @Poko
+  class TestCase(
     val string: String,
     val timestamp: Timestamp,
   )

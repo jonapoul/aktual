@@ -2,15 +2,16 @@ package actual.budget.list.vm
 
 import actual.budget.model.Budget
 import androidx.compose.runtime.Immutable
+import dev.drewhamilton.poko.Poko
 import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 sealed interface ListBudgetsState {
-  data class Success(
+  @Poko class Success(
     val budgets: ImmutableList<Budget>,
   ) : ListBudgetsState
 
-  data class Failure(
+  @Poko class Failure(
     val reason: String?,
   ) : ListBudgetsState
 

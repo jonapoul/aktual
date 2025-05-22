@@ -1,5 +1,6 @@
 package github.api.model
 
+import dev.drewhamilton.poko.Poko
 import kotlinx.datetime.Instant
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -8,7 +9,7 @@ import kotlinx.serialization.Serializable
  * A subset of the fields returned by https://docs.github.com/en/rest/releases/releases?apiVersion=2022-11-28#list-releases
  */
 @Serializable
-data class GithubRelease(
+@Poko class GithubRelease(
   // The title (version string) of the release. E.g. "1.2.3"
   @SerialName("name") val versionName: String,
 

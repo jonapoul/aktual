@@ -2,10 +2,11 @@ package actual.account.login.domain
 
 import actual.account.model.LoginToken
 import androidx.compose.runtime.Immutable
+import dev.drewhamilton.poko.Poko
 
 @Immutable
 sealed interface LoginResult {
-  data class Success(
+  @Poko class Success(
     val token: LoginToken,
   ) : LoginResult
 
@@ -13,16 +14,16 @@ sealed interface LoginResult {
 
   data object InvalidPassword : Failure
 
-  data class HttpFailure(
+  @Poko class HttpFailure(
     val code: Int,
     val message: String,
   ) : Failure
 
-  data class NetworkFailure(
+  @Poko class NetworkFailure(
     val reason: String,
   ) : Failure
 
-  data class OtherFailure(
+  @Poko class OtherFailure(
     val reason: String,
   ) : Failure
 }

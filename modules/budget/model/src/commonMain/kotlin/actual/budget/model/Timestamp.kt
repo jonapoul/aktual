@@ -1,6 +1,7 @@
 package actual.budget.model
 
 import alakazam.kotlin.serialization.SimpleSerializer
+import dev.drewhamilton.poko.Poko
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
@@ -8,7 +9,7 @@ import kotlinx.serialization.Serializable
  * Corresponds to packages/crdt/src/crdt/timestamp.ts#Timestamp
  */
 @Serializable(Timestamp.Serializer::class)
-data class Timestamp(
+@Poko class Timestamp(
   val instant: Instant,
   val counter: Long,
   val node: String,

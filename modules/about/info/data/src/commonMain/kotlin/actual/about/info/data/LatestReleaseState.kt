@@ -1,5 +1,6 @@
 package actual.about.info.data
 
+import dev.drewhamilton.poko.Poko
 import github.api.model.GithubRelease
 
 sealed interface LatestReleaseState {
@@ -13,8 +14,10 @@ sealed interface LatestReleaseState {
   data object PrivateRepo : LatestReleaseState
 
   // A newer release was found on GitHub than the one you have installed
-  data class UpdateAvailable(val release: GithubRelease) : LatestReleaseState
+  @Poko
+  class UpdateAvailable(val release: GithubRelease) : LatestReleaseState
 
   // Some other failure when checking
-  data class Failure(val errorMessage: String) : LatestReleaseState
+  @Poko
+  class Failure(val errorMessage: String) : LatestReleaseState
 }

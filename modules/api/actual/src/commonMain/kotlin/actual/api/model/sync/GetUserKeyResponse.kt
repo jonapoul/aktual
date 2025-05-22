@@ -1,6 +1,7 @@
 package actual.api.model.sync
 
 import actual.api.model.account.FailureReason
+import dev.drewhamilton.poko.Poko
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -17,31 +18,31 @@ import kotlin.uuid.Uuid
 
 sealed interface GetUserKeyResponse {
   @Serializable(Serializer::class)
-  data class Success(
+  @Poko class Success(
     @SerialName("data") val data: Data,
   ) : GetUserKeyResponse
 
   @Serializable
-  data class Failure(
+  @Poko class Failure(
     @SerialName("reason") val reason: FailureReason,
     @SerialName("details") val details: String,
   ) : GetUserKeyResponse
 
   @Serializable
-  data class Data(
+  @Poko class Data(
     @SerialName("id") val id: Uuid,
     @SerialName("salt") val salt: String,
     @SerialName("test") val test: Test,
   )
 
   @Serializable
-  data class Test(
+  @Poko class Test(
     @SerialName("value") val value: String,
     @SerialName("meta") val meta: Meta,
   )
 
   @Serializable
-  data class Meta(
+  @Poko class Meta(
     @SerialName("keyId") val keyId: Uuid,
     @SerialName("algorithm") val algorithm: String,
     @SerialName("iv") val iv: String,

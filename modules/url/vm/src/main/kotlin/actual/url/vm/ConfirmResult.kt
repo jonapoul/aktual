@@ -1,14 +1,15 @@
 package actual.url.vm
 
 import androidx.compose.runtime.Immutable
+import dev.drewhamilton.poko.Poko
 
 @Immutable
 internal sealed interface ConfirmResult {
-  data class Failed(
+  @Poko class Failed(
     val reason: String,
   ) : ConfirmResult
 
-  data class Succeeded(
+  @Poko class Succeeded(
     val isBootstrapped: Boolean,
   ) : ConfirmResult
 }

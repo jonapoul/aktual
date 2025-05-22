@@ -1,6 +1,7 @@
 package actual.api.model.account
 
 import actual.api.model.internal.FailureReasonSerializer
+import dev.drewhamilton.poko.Poko
 import kotlinx.serialization.Serializable
 
 /**
@@ -16,7 +17,7 @@ sealed interface FailureReason {
     FileNotFound("file-not-found"),
   }
 
-  data class Other(
+  @Poko class Other(
     override val reason: String,
   ) : FailureReason
 }

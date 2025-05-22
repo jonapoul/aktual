@@ -8,6 +8,7 @@ import actual.budget.model.BudgetId
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import alakazam.kotlin.logging.Logger
+import dev.drewhamilton.poko.Poko
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
@@ -20,7 +21,7 @@ class BudgetInfoFetcher @Inject internal constructor(
   private val apisStateHolder: ActualApisStateHolder,
 ) {
   sealed interface Result {
-    data class Success(val userFile: UserFile) : Result
+    @Poko class Success(val userFile: UserFile) : Result
 
     sealed interface Failure : Result {
       val reason: String
@@ -30,9 +31,9 @@ class BudgetInfoFetcher @Inject internal constructor(
       override val reason = "Not logged in"
     }
 
-    data class IOFailure(override val reason: String) : Failure
+    @Poko class IOFailure(override val reason: String) : Failure
 
-    data class HttpFailure(override val reason: String) : Failure
+    @Poko class HttpFailure(override val reason: String) : Failure
   }
 
   suspend fun fetch(token: LoginToken, budgetId: BudgetId): Result {

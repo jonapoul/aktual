@@ -1,6 +1,7 @@
 package actual.about.licenses.data
 
 import androidx.compose.runtime.Stable
+import dev.drewhamilton.poko.Poko
 import kotlinx.serialization.Serializable
 
 /**
@@ -33,12 +34,12 @@ val Apache2 = SpdxLicense(
 )
 
 @Serializable
-data class UnknownLicense(
+@Poko class UnknownLicense(
   val name: String?,
   val url: String?,
 )
 
 @Serializable
-data class ArtifactScm(
+@Poko class ArtifactScm(
   val url: String,
 )
