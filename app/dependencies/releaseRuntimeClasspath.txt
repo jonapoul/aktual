@@ -159,6 +159,8 @@ com.squareup.okio:okio-jvm:3.11.0
 com.squareup.okio:okio:3.11.0
 dev.chrisbanes.haze:haze-android:1.6.2
 dev.chrisbanes.haze:haze:1.6.2
+dev.drewhamilton.poko:poko-annotations-jvm:0.18.7
+dev.drewhamilton.poko:poko-annotations:0.18.7
 dev.jonpoulton.alakazam:android-core:6.0.0
 dev.jonpoulton.alakazam:android-ui-compose:6.0.0
 dev.jonpoulton.alakazam:db-sqldelight-android:6.0.0

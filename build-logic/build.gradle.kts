@@ -42,6 +42,7 @@ dependencies {
   compileOnly(libs.plugin.ksp)
   compileOnly(libs.plugin.ktlint)
   compileOnly(libs.plugin.licensee)
+  compileOnly(libs.plugin.poko)
   implementation(libs.plugin.blueprint.core)
   implementation(libs.plugin.blueprint.recipes)
   implementation(libs.plugin.graphviz)

@@ -11,6 +11,7 @@ class ModuleMultiplatform : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
       apply(KotlinMultiplatformPluginWrapper::class.java)
+      apply(ConventionKotlinBase::class.java)
       apply(ConventionAndroidLibrary::class.java)
       apply(ConventionDiagrams::class.java)
       apply(ConventionKover::class.java)

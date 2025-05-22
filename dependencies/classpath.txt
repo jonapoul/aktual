@@ -118,8 +118,10 @@ com.sun.xml.fastinfoset:FastInfoset:1.2.16
 commons-codec:commons-codec:1.11
 commons-io:commons-io:2.17.0
 commons-logging:commons-logging:1.2
+dev.drewhamilton.poko:dev.drewhamilton.poko.gradle.plugin:0.18.7
 dev.drewhamilton.poko:poko-annotations-jvm:0.18.2
 dev.drewhamilton.poko:poko-annotations:0.18.2
+dev.drewhamilton.poko:poko-gradle-plugin:0.18.7
 dev.jonpoulton.blueprint:core:1.0.0
 dev.jonpoulton.blueprint:recipes:1.0.0
 dev.jonpoulton.catalog:catalog-gradle-plugin:0.3.3
