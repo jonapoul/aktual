@@ -244,8 +244,8 @@ org.jetbrains.kotlinx:kover-jvm-agent:0.9.1
 org.jetbrains:annotations:13.0
 org.jgrapht:jgrapht-core:1.5.2
 org.jheaps:jheaps:0.14
-org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin:12.2.0
-org.jlleitschuh.gradle:ktlint-gradle:12.2.0
+org.jlleitschuh.gradle.ktlint:org.jlleitschuh.gradle.ktlint.gradle.plugin:12.3.0
+org.jlleitschuh.gradle:ktlint-gradle:12.3.0
 org.jvnet.staxex:stax-ex:1.8.1
 org.ow2.asm:asm-analysis:9.7.1
 org.ow2.asm:asm-commons:9.8
