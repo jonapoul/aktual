@@ -3,6 +3,11 @@
 package actual.about.info.ui
 
 internal object Tags {
+  const val BuildStateItemTitle = "info:buildStateItem:title"
+  const val BuildStateItemValue = "info:buildStateItem:value"
+
+  const val ServerVersionText = "info:text:serverVersion"
+
   const val CheckUpdatesButton = "info:button:checkUpdates"
   const val ReportButton = "info:button:report"
   const val SourceCodeButton = "info:button:sourceCode"

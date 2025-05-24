@@ -29,7 +29,7 @@ fun InfoScreen(
     is CheckUpdatesState.Failed -> UpdateCheckFailedDialog(state.cause, onCancel, theme = theme)
 
     is CheckUpdatesState.UpdateFound -> UpdateFoundDialog(
-      currentVersion = buildState.buildVersion,
+      currentVersion = buildState.versions.app,
       latestVersion = state.version,
       latestUrl = state.url,
       onDismiss = onCancel,
