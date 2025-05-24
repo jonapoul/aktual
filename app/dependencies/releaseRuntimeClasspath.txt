@@ -147,6 +147,7 @@ app.cash.sqldelight:runtime-jvm:2.1.0
 app.cash.sqldelight:runtime:2.1.0
 app.cash.sqldelight:sqlite-driver:2.1.0
 com.github.nanihadesuka:LazyColumnScrollbar:2.2.0
+com.github.tony19:logback-android:3.0.0
 com.google.android.material:material:1.12.0
 com.google.code.findbugs:jsr305:3.0.2
 com.google.dagger:dagger-lint-aar:2.56.2
