@@ -2,6 +2,8 @@ package actual.about.info.vm
 
 import actual.about.info.data.GithubRepository
 import actual.about.info.data.LatestReleaseState
+import actual.core.model.ActualVersions
+import actual.core.model.ActualVersionsStateHolder
 import alakazam.android.core.UrlOpener
 import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.logging.Logger
@@ -15,6 +17,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.toJavaInstant
@@ -27,15 +30,15 @@ class InfoViewModel @Inject constructor(
   private val buildConfig: BuildConfig,
   private val githubRepository: GithubRepository,
   private val urlOpener: UrlOpener,
+  private val actualVersionsStateHolder: ActualVersionsStateHolder,
 ) : ViewModel() {
-  val buildState: StateFlow<BuildState> = viewModelScope.launchMolecule(Immediate) { buildState() }
+  val buildState: StateFlow<BuildState> = viewModelScope.launchMolecule(Immediate) {
+    val versions by actualVersionsStateHolder.collectAsState()
+    buildState(versions)
+  }
 
   private val mutableCheckUpdatesState = MutableStateFlow<CheckUpdatesState>(CheckUpdatesState.Inactive)
-
-  val checkUpdatesState: StateFlow<CheckUpdatesState> = viewModelScope.launchMolecule(Immediate) {
-    val mutableState by mutableCheckUpdatesState.collectAsState()
-    mutableState
-  }
+  val checkUpdatesState: StateFlow<CheckUpdatesState> = mutableCheckUpdatesState.asStateFlow()
 
   private var checkUpdatesJob: Job? = null
 
@@ -81,11 +84,11 @@ class InfoViewModel @Inject constructor(
     mutableCheckUpdatesState.update { CheckUpdatesState.Inactive }
   }
 
-  private fun buildState(): BuildState {
+  private fun buildState(versions: ActualVersions): BuildState {
     val zone = ZoneId.systemDefault()
     val zonedDateTime = buildConfig.buildTime.toJavaInstant().atZone(zone)
     return BuildState(
-      buildVersion = buildConfig.versionName,
+      versions = versions,
       buildDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(zonedDateTime),
       sourceCodeRepo = buildConfig.repoName,
       year = zonedDateTime.year,

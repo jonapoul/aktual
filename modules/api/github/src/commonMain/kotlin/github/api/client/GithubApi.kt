@@ -30,6 +30,4 @@ interface GithubApi : AutoCloseable {
   }
 }
 
-expect fun GithubApi(serverUrl: ServerUrl, client: HttpClient): GithubApi
-
-fun GithubApi(client: HttpClient): GithubApi = GithubApi(GithubApi.BASE_URL, client)
+expect fun GithubApi(serverUrl: ServerUrl = GithubApi.BASE_URL, client: HttpClient): GithubApi
