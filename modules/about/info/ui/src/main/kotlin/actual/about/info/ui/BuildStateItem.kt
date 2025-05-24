@@ -6,6 +6,7 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.NormalIconButton
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import android.R.attr.text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -64,11 +66,13 @@ internal fun BuildStateItem(
         .padding(ItemPadding),
     ) {
       Text(
+        modifier = Modifier.testTag(Tags.BuildStateItemTitle),
         text = title,
         style = MaterialTheme.typography.bodyLarge,
         color = theme.pageText,
       )
       Text(
+        modifier = Modifier.testTag(Tags.BuildStateItemValue),
         text = subtitle,
         style = MaterialTheme.typography.labelMedium,
         color = theme.pageTextSubdued,

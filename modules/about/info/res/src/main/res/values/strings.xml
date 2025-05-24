@@ -3,7 +3,9 @@
   <string name="info_toolbar_title">About</string>
   <string name="info_launch">Launch</string>
 
-  <string name="info_version">Version</string>
+  <string name="info_app_version">App Version</string>
+  <string name="info_server_version">Server Version</string>
+  <string name="info_server_version_unknown">Unknown</string>
   <string name="info_date">Build Time</string>
   <string name="info_repo">Source Code</string>
 

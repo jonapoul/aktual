@@ -3,6 +3,7 @@ package actual.about.info.ui
 import actual.about.info.data.GithubRepository
 import actual.about.info.data.LatestReleaseState
 import actual.about.info.vm.InfoViewModel
+import actual.core.model.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
 import actual.test.onDisplayedNodeWithTag
 import actual.test.printTreeToLog
@@ -13,9 +14,11 @@ import alakazam.test.core.MainDispatcherRule
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
+import androidx.compose.ui.test.filterToOne
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onChildren
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
@@ -23,6 +26,7 @@ import github.api.model.GithubRelease
 import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.flow.update
 import kotlinx.datetime.Instant
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -38,6 +42,7 @@ class InfoScreenTest {
 
   // real
   private lateinit var viewModel: InfoViewModel
+  private lateinit var actualVersionsStateHolder: ActualVersionsStateHolder
 
   // mock
   private lateinit var navigator: InfoNavigator
@@ -51,11 +56,13 @@ class InfoScreenTest {
     navigator = mockk(relaxed = true)
     urlOpener = mockk(relaxed = true)
     githubRepository = mockk(relaxed = true)
+    actualVersionsStateHolder = ActualVersionsStateHolder(BUILD_CONFIG)
 
     viewModel = InfoViewModel(
       buildConfig = BUILD_CONFIG,
       githubRepository = githubRepository,
       urlOpener = urlOpener,
+      actualVersionsStateHolder = actualVersionsStateHolder,
     )
   }
 
@@ -131,8 +138,44 @@ class InfoScreenTest {
     onNodeWithTag(Tags.UpdateFoundDialog).assertIsNotDisplayed()
   }
 
-  private fun ComposeContentTestRule.scrollToAndClick(tag: String) {
+  @Test
+  fun serverVersionUnknown() = composeRule.runTest {
+    // given
+    actualVersionsStateHolder.update { it.copy(server = null) }
+    setThemedContent { InfoScreen(navigator, viewModel) }
+
+    // when
+    scrollTo(Tags.ServerVersionText)
+
+    // then
+    onNodeWithTag(Tags.ServerVersionText, useUnmergedTree = true)
+      .onChildren()
+      .filterToOne(hasTestTag(Tags.BuildStateItemValue))
+      .assertTextEquals("Unknown")
+  }
+
+  @Test
+  fun serverVersionKnown() = composeRule.runTest {
+    // given
+    actualVersionsStateHolder.update { it.copy(server = "v7.8.9") }
+    setThemedContent { InfoScreen(navigator, viewModel) }
+
+    // when
+    scrollTo(Tags.ServerVersionText)
+
+    // then
+    onNodeWithTag(Tags.ServerVersionText, useUnmergedTree = true)
+      .onChildren()
+      .filterToOne(hasTestTag(Tags.BuildStateItemValue))
+      .assertTextEquals("v7.8.9")
+  }
+
+  private fun ComposeContentTestRule.scrollTo(tag: String) {
     onDisplayedNodeWithTag(Tags.InfoScreenContent).performScrollToNode(hasTestTag(tag))
+  }
+
+  private fun ComposeContentTestRule.scrollToAndClick(tag: String) {
+    scrollTo(tag)
     onDisplayedNodeWithTag(tag).performClick()
   }
 

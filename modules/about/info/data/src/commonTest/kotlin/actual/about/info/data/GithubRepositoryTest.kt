@@ -159,7 +159,7 @@ class GithubRepositoryTest {
 
   private fun TestScope.buildRepo() {
     mockEngine = emptyMockEngine()
-    val githubApi = GithubApi(testHttpClient(mockEngine, GithubJson))
+    val githubApi = GithubApi(client = testHttpClient(mockEngine, GithubJson))
     githubRepository = GithubRepository(
       contexts = TestCoroutineContexts(standardDispatcher),
       buildConfig = TestBuildConfig,
