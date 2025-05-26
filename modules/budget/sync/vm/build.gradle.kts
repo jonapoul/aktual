@@ -20,5 +20,6 @@ dependencies {
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   testImplementation(projects.test.buildconfig)
   testImplementation(projects.test.coroutines)
+  testImplementation(projects.test.files)
   testImplementation(projects.test.http)
 }

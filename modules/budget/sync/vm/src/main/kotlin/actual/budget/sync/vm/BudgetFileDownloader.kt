@@ -8,7 +8,8 @@ import actual.budget.model.BudgetId
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
-import actual.core.files.DatabaseDirectory
+import actual.core.files.BudgetFiles
+import actual.core.files.database
 import actual.core.model.Bytes.Companion.Zero
 import actual.core.model.bytes
 import alakazam.kotlin.core.CoroutineContexts
@@ -25,7 +26,7 @@ import javax.inject.Inject
 
 class BudgetFileDownloader @Inject internal constructor(
   private val contexts: CoroutineContexts,
-  private val databaseDirectory: DatabaseDirectory,
+  private val budgetFiles: BudgetFiles,
   private val apisStateHolder: ActualApisStateHolder,
 ) {
   fun download(token: LoginToken, budgetId: BudgetId): Flow<DownloadState> {
@@ -34,7 +35,7 @@ class BudgetFileDownloader @Inject internal constructor(
   }
 
   private suspend fun FlowCollector<DownloadState>.emitState(api: SyncDownloadApi, token: LoginToken, id: BudgetId) {
-    val destinationPath = databaseDirectory.pathFor(id)
+    val destinationPath = budgetFiles.database(id)
     try {
       emit(InProgress(Zero, Zero))
       api.downloadUserFile(token, id, destinationPath).collect { state ->

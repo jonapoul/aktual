@@ -143,6 +143,7 @@ graph ["rank"="same"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":db" -> ":budget:model"
+":db" -> ":core:files"
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 ":settings:ui" -> ":core:model"
