@@ -49,10 +49,10 @@ android {
     applicationId = "dev.jonpoulton.actual.app"
     minSdk = intProperty(key = "blueprint.android.minSdk")
     targetSdk = intProperty(key = "blueprint.android.targetSdk")
-    versionCode = gitCode.toInt()
+    versionCode = gitCode
     versionName = versionName()
     multiDexEnabled = true
-    setProperty("archivesBaseName", "$applicationId-$versionName")
+    base.archivesName = "$applicationId-$versionName"
 
     val kotlinTime = "kotlin.time.Instant.Companion.fromEpochMilliseconds(${System.currentTimeMillis()}L)"
     buildConfigField("kotlin.time.Instant", "BUILD_TIME", kotlinTime)

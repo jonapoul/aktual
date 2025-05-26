@@ -27,6 +27,11 @@ class ConventionTest : Plugin<Project> {
     tasks.withType<Test>().configureEach {
       // Suppresses mockk warning - see https://github.com/mockk/mockk/issues/1171
       jvmArgs("-XX:+EnableDynamicAgentLoading")
+
+      filter {
+        // To work around https://github.com/gradle/gradle/issues/33619
+        isFailOnNoMatchingTests = false
+      }
     }
   }
 }
