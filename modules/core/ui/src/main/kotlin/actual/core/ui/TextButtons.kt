@@ -64,8 +64,8 @@ fun PrimaryTextButton(
   )
 }
 
-@Stable
 @Composable
+@Suppress("ModifierNotUsedAtRoot") // there's probably a better solution
 fun PrimaryTextButtonWithLoading(
   text: String,
   isLoading: Boolean,
