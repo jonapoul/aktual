@@ -1,5 +1,3 @@
-@file:Suppress("ConstPropertyName")
-
 package actual.about.info.ui
 
 internal object Tags {

@@ -40,7 +40,7 @@ class ConventionKover : Plugin<Project> {
     )
 
     koverBlueprint(
-      useJacoco = true,
+      useJacoco = false,
       excludedAnnotations = excludedAnnotations,
       excludedClasses = excludedClasses,
       excludedPackages = excludedPackages,

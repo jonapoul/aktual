@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 @JvmInline
-value class Password(private val value: String) : CharSequence by value {
+value class Password(val value: String) : CharSequence by value {
   override fun toString(): String = value
 
   fun interface Provider {

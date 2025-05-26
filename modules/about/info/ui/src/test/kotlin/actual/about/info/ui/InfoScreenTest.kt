@@ -31,7 +31,6 @@ import kotlinx.datetime.Instant
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.robolectric.shadows.ShadowLog
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
@@ -51,8 +50,6 @@ class InfoScreenTest {
 
   @BeforeTest
   fun before() {
-    ShadowLog.stream = System.out
-
     navigator = mockk(relaxed = true)
     urlOpener = mockk(relaxed = true)
     githubRepository = mockk(relaxed = true)
