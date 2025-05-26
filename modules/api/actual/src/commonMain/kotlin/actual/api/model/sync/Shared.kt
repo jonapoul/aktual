@@ -10,10 +10,10 @@ data class UserFile(
   @SerialName("fileId") val fileId: BudgetId,
   @SerialName("groupId") val groupId: String,
   @SerialName("name") val name: String,
-  @SerialName("encryptKeyId") val encryptKeyId: String?,
-  @SerialName("owner") val owner: String?,
-  @SerialName("encryptMeta") val encryptMeta: EncryptMeta?,
-  @SerialName("usersWithAccess") val usersWithAccess: List<UserWithAccess>,
+  @SerialName("encryptKeyId") val encryptKeyId: String? = null,
+  @SerialName("owner") val owner: String? = null,
+  @SerialName("encryptMeta") val encryptMeta: EncryptMeta? = null,
+  @SerialName("usersWithAccess") val usersWithAccess: List<UserWithAccess> = emptyList(),
 )
 
 @Serializable
