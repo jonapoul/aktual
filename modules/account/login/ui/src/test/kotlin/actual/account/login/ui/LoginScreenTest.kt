@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalTestApi::class)
+
 package actual.account.login.ui
 
 import actual.account.login.domain.LoginRequester
@@ -14,6 +16,7 @@ import actual.test.buildPreferences
 import actual.test.runTest
 import actual.test.setThemedContent
 import alakazam.test.core.MainDispatcherRule
+import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasTestTag
