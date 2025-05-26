@@ -2,9 +2,11 @@ package actual.account.login.ui
 
 import actual.account.login.res.LoginStrings
 import actual.account.model.Password
+import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.PrimaryTextButtonWithLoading
 import actual.core.ui.TextField
+import actual.core.ui.Theme
 import actual.core.ui.keyboardFocusRequester
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Column
@@ -16,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -29,6 +32,7 @@ internal fun PasswordLogin(
   enteredPassword: Password,
   onAction: (LoginAction) -> Unit,
   modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier = modifier,
@@ -37,12 +41,15 @@ internal fun PasswordLogin(
 
     TextField(
       modifier = Modifier
+        .testTag(Tags.PasswordLoginTextField)
         .fillMaxWidth(1f)
         .focusRequester(keyboardFocusRequester(keyboard)),
       value = enteredPassword.toString(),
+      enabled = !isLoading,
       onValueChange = { password -> onAction(LoginAction.EnterPassword(password)) },
       placeholderText = LoginStrings.passwordHint,
       visualTransformation = PasswordVisualTransformation(),
+      theme = theme,
       keyboardOptions = KeyboardOptions(
         autoCorrectEnabled = false,
         capitalization = KeyboardCapitalization.None,
@@ -61,6 +68,7 @@ internal fun PasswordLogin(
 
     PrimaryTextButtonWithLoading(
       modifier = Modifier
+        .testTag(Tags.PasswordLoginButton)
         .padding(5.dp)
         .fillMaxWidth(),
       text = LoginStrings.signIn,

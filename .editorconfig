@@ -25,6 +25,7 @@ ktlint_standard_class-signature = disabled
 ktlint_standard_function-signature = disabled
 ktlint_standard_multiline-expression-wrapping = disabled
 ktlint_standard_no-blank-line-in-list = disabled
+ktlint_standard_property-naming = disabled
 ktlint_standard_spacing-between-declarations-with-annotations = disabled
 ktlint_standard_string-template-indent = disabled
 

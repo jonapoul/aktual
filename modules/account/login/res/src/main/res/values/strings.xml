@@ -4,7 +4,7 @@
   <string name="login_password_hint">Password</string>
   <string name="login_sign_in">Sign In</string>
   <string name="login_failure_password">Invalid password</string>
-  <string name="login_failure_http">Server error - %1$d: %2$s</string>
+  <string name="login_failure_http">Server error %1$d: %2$s</string>
   <string name="login_failure_network">Network error - %1$s</string>
   <string name="login_failure_other">An unknown error occurred - %1$s</string>
 </resources>

@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -63,8 +64,8 @@ fun PrimaryTextButton(
   )
 }
 
-@Stable
 @Composable
+@Suppress("ModifierNotUsedAtRoot") // there's probably a better solution
 fun PrimaryTextButtonWithLoading(
   text: String,
   isLoading: Boolean,
@@ -82,6 +83,7 @@ fun PrimaryTextButtonWithLoading(
   PrimaryTextButton(
     text = text,
 //    modifier = modifier,
+    modifier = Modifier.testTag(Tags.PrimaryTextButtonWithLoading),
     isEnabled = isEnabled && !isLoading,
     contentPadding = contentPadding,
     shape = shape,
