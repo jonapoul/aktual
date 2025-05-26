@@ -10,6 +10,7 @@ import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
+import actual.core.ui.Theme
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
@@ -68,7 +69,7 @@ fun LoginScreen(
     onDispose { viewModel.clearState() }
   }
 
-  LoginScreenImpl(
+  LoginScaffold(
     versions = versions,
     enteredPassword = enteredPassword,
     url = url,
@@ -86,16 +87,16 @@ fun LoginScreen(
 }
 
 @Composable
-private fun LoginScreenImpl(
+private fun LoginScaffold(
   versions: ActualVersions,
   enteredPassword: Password,
   url: ServerUrl?,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
   onAction: (LoginAction) -> Unit,
+  theme: Theme = LocalTheme.current,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
-  val theme = LocalTheme.current
   Scaffold(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
@@ -130,6 +131,7 @@ private fun LoginScreenImpl(
         loginFailure = loginFailure,
         hazeState = hazeState,
         onAction = onAction,
+        theme = theme,
       )
     }
   }
@@ -146,8 +148,8 @@ private fun Content(
   hazeState: HazeState,
   onAction: (LoginAction) -> Unit,
   modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
-  val theme = LocalTheme.current
   Column(
     modifier = modifier
       .fillMaxSize()
@@ -180,6 +182,7 @@ private fun Content(
         modifier = Modifier.fillMaxWidth(),
         isLoading = isLoading,
         enteredPassword = enteredPassword,
+        theme = theme,
         onAction = onAction,
       )
 
@@ -189,6 +192,7 @@ private fun Content(
         LoginFailureText(
           modifier = Modifier.fillMaxWidth(),
           result = loginFailure,
+          theme = theme,
         )
       }
     }
@@ -198,6 +202,7 @@ private fun Content(
     UsingServerText(
       url = url,
       hazeState = hazeState,
+      theme = theme,
       onClickChange = { onAction(LoginAction.ChangeServer) },
     )
 
@@ -213,7 +218,7 @@ private fun Content(
 @ScreenPreview
 @Composable
 private fun Regular() = PreviewScreen {
-  LoginScreenImpl(
+  LoginScaffold(
     versions = ActualVersions.Dummy,
     enteredPassword = Password.Empty,
     url = ServerUrl.Demo,
@@ -226,7 +231,7 @@ private fun Regular() = PreviewScreen {
 @ScreenPreview
 @Composable
 private fun WithErrorMessage() = PreviewScreen {
-  LoginScreenImpl(
+  LoginScaffold(
     versions = ActualVersions.Dummy,
     enteredPassword = Password.Dummy,
     url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),

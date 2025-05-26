@@ -9,12 +9,20 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class ConventionCompose : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
     with(pluginManager) {
       apply(ConventionKotlinJvm::class.java)
       apply(ConventionAndroidBase::class.java)
+    }
+
+    tasks.withType<KotlinCompile>().configureEach {
+      compilerOptions {
+        freeCompilerArgs.add("-opt-in=androidx.compose.ui.test.ExperimentalTestApi")
+      }
     }
 
     composeBlueprint(
