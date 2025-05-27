@@ -8,5 +8,6 @@ kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin.core)
     api(libs.kotlinx.coroutines)
+    api(libs.kotlinx.datetime)
   }
 }
