@@ -9,7 +9,7 @@ import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
 import actual.core.files.BudgetFiles
-import actual.core.files.database
+import actual.core.files.zip
 import actual.core.model.Bytes.Companion.Zero
 import actual.core.model.bytes
 import alakazam.kotlin.core.CoroutineContexts
@@ -35,7 +35,7 @@ class BudgetFileDownloader @Inject internal constructor(
   }
 
   private suspend fun FlowCollector<DownloadState>.emitState(api: SyncDownloadApi, token: LoginToken, id: BudgetId) {
-    val destinationPath = budgetFiles.database(id)
+    val destinationPath = budgetFiles.zip(id, mkdirs = true)
     try {
       emit(InProgress(Zero, Zero))
       api.downloadUserFile(token, id, destinationPath).collect { state ->
@@ -46,10 +46,12 @@ class BudgetFileDownloader @Inject internal constructor(
       }
     } catch (e: ResponseException) {
       Logger.e(e, "HTTP failure downloading $id with $token")
+      deleteDir(id)
       with(e.response.status) { emit(Failure.Http(value, description, Zero)) }
       return
     } catch (e: IOException) {
       Logger.e(e, "Failed fetching initial download request for $id with $token")
+      deleteDir(id)
       emit(Failure.IO(e.requireMessage(), Zero))
       return
     }
@@ -64,4 +66,11 @@ class BudgetFileDownloader @Inject internal constructor(
     path = state.path,
     total = state.contentLength.bytes,
   )
+
+  private fun deleteDir(id: BudgetId) {
+    with(budgetFiles) {
+      val dir = directory(id)
+      fileSystem.deleteRecursively(dir)
+    }
+  }
 }

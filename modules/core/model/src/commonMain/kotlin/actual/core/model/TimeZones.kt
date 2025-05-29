@@ -7,6 +7,5 @@ fun interface TimeZones {
 
   companion object {
     val System = TimeZones { TimeZone.currentSystemDefault() }
-    val Utc = TimeZones { TimeZone.UTC }
   }
 }

@@ -9,7 +9,7 @@ import actual.budget.model.BudgetId
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
-import actual.core.files.database
+import actual.core.files.zip
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.core.model.bytes
@@ -103,7 +103,7 @@ class BudgetFileDownloaderTest {
       // Then progress state is emitted
       var state = awaitItem()
       while (state !is Done) {
-        assertIs<InProgress>(state)
+        assertIs<InProgress>(state, "Should be in progress, got $state")
         state = awaitItem()
       }
 
@@ -113,7 +113,7 @@ class BudgetFileDownloaderTest {
       assertEquals(expected = dataSize, actual = finalState.total)
 
       // and it contains all our data, nothing more or less
-      val path = budgetFiles.database(BUDGET_ID)
+      val path = budgetFiles.zip(BUDGET_ID)
       assertTrue(fileSystem.exists(path))
       val downloadedData = fileSystem.read(path) { readByteArray() }
       assertContentEquals(expected = data, actual = downloadedData)

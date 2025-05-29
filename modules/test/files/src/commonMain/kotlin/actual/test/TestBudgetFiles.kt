@@ -7,7 +7,7 @@ import okio.Path
 import okio.fakefilesystem.FakeFileSystem
 
 class TestBudgetFiles(
-  private val fileSystem: FileSystem,
+  override val fileSystem: FileSystem,
   private val root: Path,
 ) : BudgetFiles {
   constructor(fileSystem: FakeFileSystem) : this(fileSystem, fileSystem.workingDirectory)

@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 class AndroidBudgetFiles @Inject constructor(
   context: Context,
-  private val fileSystem: FileSystem,
+  override val fileSystem: FileSystem,
 ) : BudgetFiles {
   private val directoryPath = context
     .getDatabasePath("unused")
