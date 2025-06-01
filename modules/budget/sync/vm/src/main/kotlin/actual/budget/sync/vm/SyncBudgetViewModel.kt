@@ -45,14 +45,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
   private val token = inputs.token
   private val budgetId = inputs.budgetId
 
-  private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(
-    persistentMapOf(
-      FetchingFileInfo to SyncStepState.NotStarted,
-      DownloadingDatabase to SyncStepState.NotStarted,
-      ValidatingDatabase to SyncStepState.NotStarted,
-    ),
-  )
-
+  private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
   val stepStates: StateFlow<ImmutableMap<SyncStep, SyncStepState>> = mutableSteps.asStateFlow()
 
   val overallState: StateFlow<SyncOverallState> = viewModelScope.launchMolecule(Immediate) {
@@ -82,6 +75,8 @@ class SyncBudgetViewModel @AssistedInject constructor(
   fun start() {
     Logger.d("start")
     job?.cancel()
+    mutableSteps.update { defaultStates() }
+
     job = viewModelScope.launch {
       val userFileDeferred = async { fetchUserFileInfo() }
       val fileDownloadDeferred = async { downloadBudgetFileAsync() }
@@ -183,5 +178,13 @@ class SyncBudgetViewModel @AssistedInject constructor(
     fun create(
       @Assisted inputs: Inputs,
     ): SyncBudgetViewModel
+  }
+
+  private companion object {
+    fun defaultStates() = persistentMapOf(
+      FetchingFileInfo to SyncStepState.NotStarted,
+      DownloadingDatabase to SyncStepState.NotStarted,
+      ValidatingDatabase to SyncStepState.NotStarted,
+    )
   }
 }
