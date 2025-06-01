@@ -98,16 +98,18 @@ internal fun BudgetListItem(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.Center,
     ) {
-      Icon(
-        modifier = Modifier
-          .padding(10.dp)
-          .size(13.dp),
-        imageVector = ActualIcons.Key,
-        contentDescription = description,
-        tint = if (budget.hasKey) theme.formLabelText else theme.buttonNormalDisabledText,
-      )
+      if (budget.encryptKeyId != null) {
+        Icon(
+          modifier = Modifier
+            .padding(10.dp)
+            .size(13.dp),
+          imageVector = ActualIcons.Key,
+          contentDescription = description,
+          tint = if (budget.hasKey) theme.formLabelText else theme.buttonNormalDisabledText,
+        )
 
-      HorizontalSpacer(8.dp)
+        HorizontalSpacer(8.dp)
+      }
 
       var showDeleteMenu by remember { mutableStateOf(false) }
 

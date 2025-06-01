@@ -6,6 +6,7 @@ import actual.api.model.sync.ListUserFilesResponse
 import actual.api.model.sync.UserFile
 import actual.budget.model.Budget
 import actual.budget.model.BudgetState
+import actual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import alakazam.kotlin.logging.Logger
@@ -20,6 +21,7 @@ import javax.inject.Inject
 class BudgetListFetcher @Inject internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
+  private val keyPreferences: KeyPreferences,
 ) {
   suspend fun fetchBudgets(token: LoginToken): FetchBudgetsResult {
     val apis = apisStateHolder.value ?: return FetchBudgetsResult.NotLoggedIn
@@ -58,5 +60,6 @@ class BudgetListFetcher @Inject internal constructor(
     encryptKeyId = item.encryptKeyId?.value,
     groupId = item.groupId,
     cloudFileId = item.fileId,
+    hasKey = item.encryptKeyId in keyPreferences,
   )
 }
