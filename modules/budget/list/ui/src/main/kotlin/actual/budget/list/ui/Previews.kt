@@ -11,6 +11,7 @@ internal val PreviewBudgetSynced = Budget(
   encryptKeyId = "abc123",
   groupId = "abc123",
   cloudFileId = BudgetId("abc123"),
+  hasKey = true,
 )
 
 internal val PreviewBudgetSyncing = PreviewBudgetSynced.copy(

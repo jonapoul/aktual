@@ -1,5 +1,7 @@
 package actual.test
 
+import actual.prefs.AndroidEncryptedPreferences
+import actual.prefs.EncryptedPreferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider
@@ -16,3 +18,8 @@ fun buildPreferences(
   coroutineContext: CoroutineContext,
   sharedPreferences: SharedPreferences = buildSharedPreferences(),
 ): Preferences = AndroidSharedPreferences(sharedPreferences, coroutineContext)
+
+fun buildEncryptedPreferences(
+  coroutineContext: CoroutineContext,
+  sharedPreferences: SharedPreferences = buildSharedPreferences(),
+): EncryptedPreferences = AndroidEncryptedPreferences(sharedPreferences, coroutineContext)

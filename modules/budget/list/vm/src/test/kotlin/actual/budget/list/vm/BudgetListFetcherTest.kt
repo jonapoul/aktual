@@ -10,6 +10,7 @@ import actual.budget.model.BudgetId
 import actual.budget.model.BudgetState
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
+import actual.prefs.KeyPreferences
 import actual.test.emptyMockEngine
 import actual.test.plusAssign
 import actual.test.respondJson
@@ -34,13 +35,16 @@ class BudgetListFetcherTest {
   private lateinit var budgetListFetcher: BudgetListFetcher
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var mockEngine: MockEngine
+  private lateinit var keyPreferences: KeyPreferences
 
   private fun TestScope.before() {
     mockEngine = emptyMockEngine()
     apisStateHolder = ActualApisStateHolder()
+    keyPreferences = mockk { every { contains(any()) } returns false }
     budgetListFetcher = BudgetListFetcher(
       contexts = TestCoroutineContexts(standardDispatcher),
       apisStateHolder = apisStateHolder,
+      keyPreferences = keyPreferences,
     )
   }
 
@@ -79,6 +83,7 @@ class BudgetListFetcherTest {
             encryptKeyId = "7fe20d96-ab62-43bc-b69c-53f55a26cbbf",
             groupId = "16f9c400-cdf5-43ae-983f-4dbcccb10ccf",
             cloudFileId = BudgetId("525fecc4-5080-4d01-b2ea-6032e5ee25c1"),
+            hasKey = false,
           ),
         ),
       ),

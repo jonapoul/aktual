@@ -53,6 +53,6 @@ class PreferencesModule {
       PrefValueEncryptionScheme.AES256_GCM,
     )
 
-    return AndroidEncryptedPreferences(prefs, contexts)
+    return AndroidEncryptedPreferences(prefs, contexts.io)
   }
 }

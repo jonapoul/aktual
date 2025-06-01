@@ -6,6 +6,5 @@ data class Budget(
   val encryptKeyId: String?,
   val groupId: String,
   val cloudFileId: BudgetId,
-) {
-  val hasKey = encryptKeyId != null
-}
+  val hasKey: Boolean,
+)
