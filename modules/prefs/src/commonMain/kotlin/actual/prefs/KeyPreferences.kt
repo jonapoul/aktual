@@ -6,7 +6,7 @@ import dev.jonpoulton.preferences.core.SimpleNullableStringSerializer
 import javax.inject.Inject
 
 class KeyPreferences @Inject constructor(private val prefs: EncryptedPreferences) {
-  operator fun contains(keyId: KeyId): Boolean = prefs.contains(key(keyId))
+  operator fun contains(keyId: KeyId?): Boolean = keyId?.let { prefs.contains(key(it)) } == true
   operator fun get(keyId: KeyId?): Base64String? = keyId?.let { preference(it).get() }
   operator fun set(keyId: KeyId, value: Base64String) = preference(keyId).set(value)
 
