@@ -10,13 +10,13 @@
 
 # Summary
 
+> [!CAUTION]
+> This is a pet project, not affiliated with the main Actual project! I give no guarantees of compatibility, functionality or anything else besides.
+
 An :warning: UNOFFICIAL :warning: Android client for the open-source self-hosted [Actual personal budgeting software](https://github.com/actualbudget/actual).
 
-TODO: Insert screenshot here
-
-# Download
-
-Go to the [releases page](https://github.com/jonapoul/actual-android/releases) to download the latest APK.
+> [!IMPORTANT]
+> This is nowhere near complete - do not bank on it being ready to use any time soon!
 
 # License
 
