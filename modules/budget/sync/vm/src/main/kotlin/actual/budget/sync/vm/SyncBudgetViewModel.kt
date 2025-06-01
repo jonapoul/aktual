@@ -45,7 +45,6 @@ class SyncBudgetViewModel @AssistedInject constructor(
   private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(
     persistentMapOf(
       SyncStep.FetchingFileInfo to SyncStepState.NotStarted,
-      SyncStep.StartingDatabaseDownload to SyncStepState.NotStarted,
       SyncStep.DownloadingDatabase to SyncStepState.NotStarted,
       SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
     ),
@@ -131,9 +130,8 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   private suspend fun CoroutineScope.downloadBudgetFileAsync(): Path? {
     var downloadedDbPath: Path? = null
-    setStepState(SyncStep.StartingDatabaseDownload, SyncStepState.InProgress.Indefinite)
+    setStepState(SyncStep.DownloadingDatabase, SyncStepState.InProgress.Indefinite)
     fileDownloader.download(token, budgetId).collect { state ->
-      setStepState(SyncStep.StartingDatabaseDownload, SyncStepState.Succeeded)
       val stepState = when (state) {
         is DownloadState.InProgress -> SyncStepState.InProgress.Definite(state.toPercent())
         is DownloadState.Failure -> SyncStepState.Failed(state.message)
