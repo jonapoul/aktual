@@ -4,11 +4,13 @@ graph ["dpi"="100","label"=":budget:sync:vm","labelloc"="t","fontsize"="30","ran
 node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:sync:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:files" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -17,12 +19,19 @@ graph ["rank"="same"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
+":budget:encryption" -> ":account:model"
+":budget:encryption" -> ":budget:model"
+":budget:encryption" -> ":core:model"
 ":budget:sync:vm" -> ":account:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
+":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":core:files"
 ":budget:sync:vm" -> ":core:model"
+":budget:sync:vm" -> ":prefs" ["style"="dotted"]
 ":core:files" -> ":budget:model"
+":prefs" -> ":account:model"
+":prefs" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

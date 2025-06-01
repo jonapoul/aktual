@@ -1,19 +1,5 @@
 plugins {
   alias(libs.plugins.module.viewmodel)
-  alias(libs.plugins.buildconfig)
-}
-
-buildConfig {
-  generateAtSync = true
-
-  useKotlinOutput {
-    internalVisibility = true
-    topLevelConstants = true
-  }
-
-  sourceSets.getByName("test") {
-    buildConfigField("RESOURCES_DIR", layout.projectDirectory.dir("src/test/resources").asFile.absolutePath)
-  }
 }
 
 dependencies {
@@ -30,7 +16,9 @@ dependencies {
   implementation(libs.okio)
   implementation(projects.account.model)
   implementation(projects.api.actual)
+  implementation(projects.budget.encryption)
   implementation(projects.budget.model)
+  implementation(projects.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   testImplementation(projects.test.buildconfig)
   testImplementation(projects.test.coroutines)

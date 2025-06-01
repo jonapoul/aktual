@@ -1,6 +1,8 @@
 package actual.api.model.sync
 
 import actual.budget.model.BudgetId
+import actual.core.model.Base64String
+import actual.core.model.KeyId
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -10,7 +12,7 @@ data class UserFile(
   @SerialName("fileId") val fileId: BudgetId,
   @SerialName("groupId") val groupId: String,
   @SerialName("name") val name: String,
-  @SerialName("encryptKeyId") val encryptKeyId: String? = null,
+  @SerialName("encryptKeyId") val encryptKeyId: KeyId? = null,
   @SerialName("owner") val owner: String? = null,
   @SerialName("encryptMeta") val encryptMeta: EncryptMeta? = null,
   @SerialName("usersWithAccess") val usersWithAccess: List<UserWithAccess> = emptyList(),
@@ -26,8 +28,8 @@ data class UserWithAccess(
 
 @Serializable
 data class EncryptMeta(
-  @SerialName("keyId") val keyId: String,
+  @SerialName("keyId") val keyId: KeyId?,
   @SerialName("algorithm") val algorithm: String,
-  @SerialName("iv") val iv: String,
-  @SerialName("authTag") val authTag: String,
+  @SerialName("iv") val iv: Base64String,
+  @SerialName("authTag") val authTag: Base64String,
 )

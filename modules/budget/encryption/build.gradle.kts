@@ -22,6 +22,13 @@ kotlin {
 
   sourceSets {
     val jvmMain by getting
-    val androidMain by getting { dependsOn(jvmMain) }
+    val androidMain by getting
+    val commonMain by getting
+
+    val jvmAndroidMain by registering {
+      dependsOn(commonMain)
+      androidMain.dependsOn(this)
+      jvmMain.dependsOn(this)
+    }
   }
 }

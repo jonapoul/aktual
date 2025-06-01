@@ -9,7 +9,8 @@ import actual.core.files.database
 import actual.core.files.metadata
 import actual.core.model.TimeZones
 import actual.test.TestBudgetFiles
-import actual_android.budget.sync.vm.RESOURCES_DIR
+import actual.test.copyTo
+import actual.test.resource
 import alakazam.test.core.TestClock
 import alakazam.test.core.TestCoroutineContexts
 import kotlinx.coroutines.test.runTest
@@ -21,7 +22,6 @@ import kotlinx.serialization.json.Json
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
-import okio.Path.Companion.toPath
 import okio.buffer
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -57,9 +57,9 @@ class DatabaseImporterTest {
   @Test
   fun `Successfully import`() = runTest {
     // given valid zip is downloaded/decrypted
-    val resource = RESOURCES_DIR.toPath().resolve("valid.zip")
-    val zip = root.resolve(resource.name)
-    fileSystem.copy(source = resource, target = zip)
+    val resource = resource("valid.zip")
+    val zip = root.resolve("valid.zip")
+    resource.copyTo(zip, fileSystem)
 
     // when
     val result = importer(USER_FILE, zip)
@@ -83,9 +83,9 @@ class DatabaseImporterTest {
   @Test
   fun `Fail on invalid metadata JSON`() = runTest {
     // given a zip containing invalid metadata is downloaded
-    val resource = RESOURCES_DIR.toPath().resolve("invalid-metadata.zip")
-    val zip = root.resolve(resource.name)
-    fileSystem.copy(source = resource, target = zip)
+    val resource = resource("invalid-metadata.zip")
+    val zip = root.resolve("invalid-metadata.zip")
+    resource.copyTo(zip, fileSystem)
 
     // when
     val result = importer(USER_FILE, zip)
@@ -101,9 +101,9 @@ class DatabaseImporterTest {
   @Test
   fun `Fail on invalid ZIP`() = runTest {
     // given a non-zip file pretending to be a zip is downloaded
-    val resource = RESOURCES_DIR.toPath().resolve("invalid.zip")
-    val zip = root.resolve(resource.name)
-    fileSystem.copy(source = resource, target = zip)
+    val resource = resource("invalid.zip")
+    val zip = root.resolve("invalid.zip")
+    resource.copyTo(zip, fileSystem)
 
     // when
     val result = importer(USER_FILE, zip)

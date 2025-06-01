@@ -1,8 +1,15 @@
-package actual.budget.encryption
+package actual.core.model
 
+import kotlinx.serialization.Serializable
 import kotlin.uuid.Uuid
 
+data class Key(
+  val id: KeyId,
+  val value: Base64String,
+)
+
 @JvmInline
+@Serializable
 value class KeyId(val value: String) : Comparable<KeyId> {
   constructor(uuid: Uuid) : this(uuid.toString())
 

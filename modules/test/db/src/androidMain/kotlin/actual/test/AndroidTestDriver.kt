@@ -12,5 +12,5 @@ fun androidDriverFactory(
   id: BudgetId,
   fileSystem: FileSystem,
   context: Context = ApplicationProvider.getApplicationContext(),
-  budgetFiles: BudgetFiles = AndroidBudgetFiles(context, fileSystem)
+  budgetFiles: BudgetFiles = AndroidBudgetFiles(context, fileSystem),
 ) = AndroidSqlDriverFactory(id, context, budgetFiles)

@@ -91,7 +91,7 @@ class DatabaseImporter @Inject constructor(
       cloudFileId = userFile.fileId,
       groupId = userFile.groupId,
       lastUploaded = clock.todayIn(timeZones.current()),
-      encryptKeyId = userFile.encryptMeta?.keyId,
+      encryptKeyId = userFile.encryptMeta?.keyId?.value,
     )
 
     val metaPath = budgetFiles.metadata(userFile.fileId)
@@ -105,10 +105,13 @@ class DatabaseImporter @Inject constructor(
   private fun loadIntoDbPath(zip: ZipInputStream, id: BudgetId): Path {
     val dbPath = budgetFiles.database(id, mkdirs = true)
     fileSystem.delete(dbPath, mustExist = false)
-    fileSystem.sink(dbPath)
+
+    fileSystem
+      .sink(dbPath)
       .buffer()
       .outputStream()
       .use { output -> zip.copyTo(output) }
+
     return dbPath
   }
 }

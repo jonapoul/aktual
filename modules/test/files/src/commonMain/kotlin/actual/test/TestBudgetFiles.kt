@@ -15,4 +15,8 @@ class TestBudgetFiles(
   override fun directory(id: BudgetId, mkdirs: Boolean): Path = root
     .resolve(id.value)
     .also { if (mkdirs) fileSystem.createDirectories(it) }
+
+  override fun tmp(mkdirs: Boolean): Path = root
+    .resolve("tmp")
+    .also { if (mkdirs) fileSystem.createDirectories(it) }
 }

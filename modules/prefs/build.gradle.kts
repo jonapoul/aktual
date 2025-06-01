@@ -1,3 +1,4 @@
+import blueprint.core.androidMainDependencies
 import blueprint.core.androidUnitTestDependencies
 import blueprint.core.commonMainDependencies
 
@@ -11,6 +12,10 @@ kotlin {
     api(libs.preferences.core)
     api(projects.account.model)
     api(projects.core.model)
+  }
+
+  androidMainDependencies {
+    implementation(libs.preferences.android)
   }
 
   androidUnitTestDependencies {

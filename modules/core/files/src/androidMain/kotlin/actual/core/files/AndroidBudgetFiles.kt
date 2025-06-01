@@ -21,4 +21,8 @@ class AndroidBudgetFiles @Inject constructor(
   override fun directory(id: BudgetId, mkdirs: Boolean): Path = directoryPath
     .resolve(id.value)
     .also { if (mkdirs) fileSystem.createDirectories(it) }
+
+  override fun tmp(mkdirs: Boolean): Path = directoryPath
+    .resolve("tmp")
+    .also { if (mkdirs) fileSystem.createDirectories(it) }
 }
