@@ -79,19 +79,18 @@ class SyncApiTest {
   @Test
   fun `Fetch user key request headers`() = runTest {
     mockEngine += { respondJson(SYNC_GET_USER_KEY_SUCCESS) }
-    val body = GetUserKeyRequest(BUDGET_ID)
-    syncApi.fetchUserKey(TOKEN, body)
+    val body = GetUserKeyRequest(BUDGET_ID, TOKEN)
+    syncApi.fetchUserKey(body)
     val request = mockEngine.requestHistory.last()
     assertEquals(
       actual = request.headers.toMap(),
       expected = mapOf(
-        "X-ACTUAL-TOKEN" to listOf("abc-123"),
         "Accept" to listOf("application/json"),
         "Accept-Charset" to listOf("UTF-8"),
       ),
     )
     val actualBody = assertIs<TextContent>(request.body)
-    assertEquals(actual = actualBody.text, expected = """{"fileId":"xyz-789"}""")
+    assertEquals(actual = actualBody.text, expected = """{"fileId":"xyz-789","token":"abc-123"}""")
     assertEquals(actual = actualBody.contentType, expected = ContentType.Application.Json)
   }
 
@@ -162,25 +161,25 @@ class SyncApiTest {
     mockEngine += { respondJson(SYNC_GET_USER_KEY_SUCCESS) }
 
     // when
-    val body = GetUserKeyRequest(BUDGET_ID)
-    val response = syncApi.fetchUserKey(TOKEN, body)
+    val body = GetUserKeyRequest(BUDGET_ID, TOKEN)
+    val response = syncApi.fetchUserKey(body)
 
     // then
-    val keyId = Uuid.parse("2a66f4de-c530-4c06-8103-a48e26a0ce44")
+    val keyId = KeyId("2b66f4de-c530-4c06-8103-a48e26a0ce44")
     assertEquals(
       actual = response,
       expected = GetUserKeyResponse.Success(
         data = GetUserKeyResponse.Data(
           id = keyId,
-          salt = "PpZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=",
+          salt = "PqZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=".base64,
           test = GetUserKeyResponse.Test(
-            value = "nrhpJgUnl8lZvWxSRMIT0aTRKCOHeddlIuGPfNw0NQR/d81m/ZYRqaOjMwoQHpduSzuAivfVZZEslZihl8WhOs7GVkdghw" +
+            value = "nrhqJgUnl8lZvWxSRMIT0aTRKCOHeddlIuGPfNw0NQR/d81m/ZYRqaOjMwoQHpduSzuAivfVZZEslZihl8WhOs7GVkdghw" +
               "Cjqr083G0261M464wHvQl2v5sB+l8f0/mQE2fco7zUagbA7Q==",
-            meta = GetUserKeyResponse.Meta(
+            meta = EncryptMeta(
               keyId = keyId,
               algorithm = "aes-256-gcm",
-              iv = "whBQQkPM88iFsLVk",
-              authTag = "X/JX1lWCchd0Ekjthlxuzg==",
+              iv = "whBQQkPM89iFsLVk".base64,
+              authTag = "X/JX1lWCchd0Ejjthlxuzg==".base64,
             ),
           ),
         ),
@@ -195,8 +194,8 @@ class SyncApiTest {
 
     // when
     val response = try {
-      val body = GetUserKeyRequest(BUDGET_ID)
-      syncApi.fetchUserKey(TOKEN, body)
+      val body = GetUserKeyRequest(BUDGET_ID, TOKEN)
+      syncApi.fetchUserKey(body)
       fail("Should have thrown!")
     } catch (e: ClientRequestException) {
       e.response.body<GetUserKeyResponse.Failure>()

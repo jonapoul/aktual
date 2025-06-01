@@ -30,7 +30,6 @@ interface SyncApi {
 
   @POST("/sync/user-get-key")
   suspend fun fetchUserKey(
-    @Header(ActualHeaders.TOKEN) token: LoginToken,
     @Body body: GetUserKeyRequest,
   ): GetUserKeyResponse.Success
 }
