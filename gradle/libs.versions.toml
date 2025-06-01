@@ -35,6 +35,7 @@ androidx-compose-lint = "1.4.2"
 androidx-compose-rules = "0.4.22"
 androidx-compose-hilt = "1.2.0"
 androidx-coreKtx = "1.16.0"
+androidx-crypto = "1.1.0-alpha07"
 androidx-fragment = "1.8.7"
 androidx-lifecycle = "2.9.0"
 androidx-navigation = "2.9.0"
@@ -126,6 +127,7 @@ androidx-compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-
 androidx-compose-ui-unit = { module = "androidx.compose.ui:ui-unit" }
 androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util" }
 androidx-coreKtx = { module = "androidx.core:core-ktx", version.ref = "androidx-coreKtx" }
+androidx-crypto = { module = "androidx.security:security-crypto", version.ref = "androidx-crypto" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx-fragment" }
 androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }

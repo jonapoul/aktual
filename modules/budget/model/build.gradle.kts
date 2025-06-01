@@ -1,4 +1,5 @@
 import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins {
   alias(libs.plugins.module.multiplatform)
@@ -10,5 +11,9 @@ kotlin {
     api(libs.alakazam.kotlin.serialization)
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)
+  }
+
+  commonTestDependencies {
+    implementation(projects.test.json)
   }
 }

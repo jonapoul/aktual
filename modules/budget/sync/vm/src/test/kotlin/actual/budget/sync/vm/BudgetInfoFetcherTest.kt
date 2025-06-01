@@ -9,7 +9,9 @@ import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.BudgetInfoFetcher.Result
+import actual.core.model.KeyId
 import actual.core.model.ServerUrl
+import actual.core.model.base64
 import actual.test.emptyMockEngine
 import actual.test.plusAssign
 import actual.test.respondJson
@@ -88,10 +90,10 @@ class BudgetInfoFetcherTest {
       owner = null,
       usersWithAccess = emptyList(),
       encryptMeta = EncryptMeta(
-        keyId = "2a66f5de-c530-4c06-8103-a48f26a0ce44",
+        keyId = KeyId("2a66f5de-c530-4c06-8103-a48f26a0ce44"),
         algorithm = "aes-256-gcm",
-        iv = "7tzgaLCrSFxVfzZR",
-        authTag = "25nafe0UpzehRCks/xQjoB==",
+        iv = "7tzgaLCrSFxVfzZR".base64,
+        authTag = "25nafe0UpzehRCks/xQjoB==".base64,
       ),
     )
     assertEquals(actual = budgetInfoFetcher.fetch(TOKEN, BUDGET_ID), expected = Result.Success(userFile))
