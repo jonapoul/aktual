@@ -55,7 +55,7 @@ class BudgetListFetcher @Inject internal constructor(
   private fun toBudget(item: UserFile) = Budget(
     name = item.name,
     state = BudgetState.Unknown,
-    encryptKeyId = item.encryptKeyId,
+    encryptKeyId = item.encryptKeyId?.value,
     groupId = item.groupId,
     cloudFileId = item.fileId,
   )

@@ -294,7 +294,6 @@ private fun StateIcon(
 @ReadOnlyComposable
 private fun SyncStep.string(): String = when (this) {
   SyncStep.FetchingFileInfo -> BudgetSyncStrings.syncStepFetchingInfo
-  SyncStep.StartingDatabaseDownload -> BudgetSyncStrings.syncStepStartingDownload
   SyncStep.DownloadingDatabase -> BudgetSyncStrings.syncStepDownloading
   SyncStep.ValidatingDatabase -> BudgetSyncStrings.syncStepValidating
 }
@@ -324,7 +323,6 @@ private fun NotStarted() = PreviewScreen {
     onAction = {},
     stepStates = persistentMapOf(
       SyncStep.FetchingFileInfo to SyncStepState.NotStarted,
-      SyncStep.StartingDatabaseDownload to SyncStepState.NotStarted,
       SyncStep.DownloadingDatabase to SyncStepState.NotStarted,
       SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
     ),
@@ -338,7 +336,6 @@ private fun Downloading() = PreviewScreen {
     onAction = {},
     stepStates = persistentMapOf(
       SyncStep.FetchingFileInfo to SyncStepState.InProgress.Indefinite,
-      SyncStep.StartingDatabaseDownload to SyncStepState.Succeeded,
       SyncStep.DownloadingDatabase to SyncStepState.InProgress.Definite(50.percent),
       SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
     ),
@@ -352,7 +349,6 @@ private fun AllSucceeded() = PreviewScreen {
     onAction = {},
     stepStates = persistentMapOf(
       SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
-      SyncStep.StartingDatabaseDownload to SyncStepState.Succeeded,
       SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
       SyncStep.ValidatingDatabase to SyncStepState.Succeeded,
     ),
@@ -366,7 +362,6 @@ private fun AllFailed() = PreviewScreen {
     onAction = {},
     stepStates = persistentMapOf(
       SyncStep.FetchingFileInfo to SyncStepState.Failed("Some error"),
-      SyncStep.StartingDatabaseDownload to SyncStepState.Failed("Some other error"),
       SyncStep.DownloadingDatabase to SyncStepState.Failed("Whatever"),
       SyncStep.ValidatingDatabase to SyncStepState.Failed(
         "Another error but this one's a lot longer, to see how it handles wrapping text",

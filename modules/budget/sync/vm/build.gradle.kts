@@ -16,9 +16,12 @@ dependencies {
   implementation(libs.okio)
   implementation(projects.account.model)
   implementation(projects.api.actual)
+  implementation(projects.budget.encryption)
   implementation(projects.budget.model)
+  implementation(projects.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   testImplementation(projects.test.buildconfig)
   testImplementation(projects.test.coroutines)
+  testImplementation(projects.test.files)
   testImplementation(projects.test.http)
 }

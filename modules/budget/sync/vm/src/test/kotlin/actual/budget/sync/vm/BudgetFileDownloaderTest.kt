@@ -9,9 +9,11 @@ import actual.budget.model.BudgetId
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
+import actual.core.files.encryptedZip
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.core.model.bytes
+import actual.test.TestBudgetFiles
 import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
 import actual.test.plusAssign
@@ -38,14 +40,14 @@ import kotlin.test.assertTrue
 
 class BudgetFileDownloaderTest {
   private lateinit var budgetFileDownloader: BudgetFileDownloader
-  private lateinit var databaseDirectory: TestDatabaseDirectory
+  private lateinit var budgetFiles: TestBudgetFiles
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var mockEngine: MockEngine
   private lateinit var fileSystem: FakeFileSystem
 
   fun TestScope.before() {
     fileSystem = FakeFileSystem()
-    databaseDirectory = TestDatabaseDirectory(fileSystem)
+    budgetFiles = TestBudgetFiles(fileSystem)
     mockEngine = emptyMockEngine()
 
     val syncDownloadApi = SyncDownloadApi(
@@ -63,7 +65,7 @@ class BudgetFileDownloaderTest {
 
     budgetFileDownloader = BudgetFileDownloader(
       contexts = TestCoroutineContexts(unconfinedDispatcher),
-      databaseDirectory = databaseDirectory,
+      budgetFiles = budgetFiles,
       apisStateHolder = apisStateHolder,
     )
   }
@@ -101,7 +103,7 @@ class BudgetFileDownloaderTest {
       // Then progress state is emitted
       var state = awaitItem()
       while (state !is Done) {
-        assertIs<InProgress>(state)
+        assertIs<InProgress>(state, "Should be in progress, got $state")
         state = awaitItem()
       }
 
@@ -111,7 +113,7 @@ class BudgetFileDownloaderTest {
       assertEquals(expected = dataSize, actual = finalState.total)
 
       // and it contains all our data, nothing more or less
-      val path = databaseDirectory.pathFor(BUDGET_ID)
+      val path = budgetFiles.encryptedZip(BUDGET_ID)
       assertTrue(fileSystem.exists(path))
       val downloadedData = fileSystem.read(path) { readByteArray() }
       assertContentEquals(expected = data, actual = downloadedData)
@@ -137,10 +139,10 @@ class BudgetFileDownloaderTest {
       // and the final state is a network failure
       assertIs<Failure.IO>(state)
 
-      // and no files were created
-      assertContentEquals(
+      // and only the temp dir was created
+      assertEquals(
         actual = fileSystem.allPaths.toList(),
-        expected = emptyList(),
+        expected = listOf(budgetFiles.tmp()),
       )
 
       awaitComplete()
@@ -167,10 +169,10 @@ class BudgetFileDownloaderTest {
       awaitComplete()
     }
 
-    // and no files were created
-    assertContentEquals(
+    // and only the temp dir was created
+    assertEquals(
       actual = fileSystem.allPaths.toList(),
-      expected = emptyList(),
+      expected = listOf(budgetFiles.tmp()),
     )
   }
 

@@ -1,6 +1,5 @@
 <resources>
   <string name="sync_step_fetching_info">Fetching File Info</string>
-  <string name="sync_step_starting_download">Starting Download</string>
   <string name="sync_step_downloading">Downloading Database</string>
   <string name="sync_step_validating">Validating Database</string>
 

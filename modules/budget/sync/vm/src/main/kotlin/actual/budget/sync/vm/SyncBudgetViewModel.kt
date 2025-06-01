@@ -3,6 +3,11 @@ package actual.budget.sync.vm
 import actual.account.model.LoginToken
 import actual.api.model.sync.UserFile
 import actual.budget.model.BudgetId
+import actual.budget.sync.vm.SyncStep.DownloadingDatabase
+import actual.budget.sync.vm.SyncStep.FetchingFileInfo
+import actual.budget.sync.vm.SyncStep.ValidatingDatabase
+import actual.core.files.BudgetFiles
+import actual.core.files.decryptedZip
 import actual.core.model.Percent
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
@@ -31,21 +36,16 @@ import okio.Path
 @HiltViewModel(assistedFactory = SyncBudgetViewModel.Factory::class)
 class SyncBudgetViewModel @AssistedInject constructor(
   @Assisted inputs: Inputs,
-  private val budgetFileDownloader: BudgetFileDownloader,
-  private val budgetInfoFetcher: BudgetInfoFetcher,
+  private val fileDownloader: BudgetFileDownloader,
+  private val infoFetcher: BudgetInfoFetcher,
+  private val decrypter: DatabaseDecrypter,
+  private val importer: DatabaseImporter,
+  private val files: BudgetFiles,
 ) : ViewModel() {
   private val token = inputs.token
   private val budgetId = inputs.budgetId
 
-  private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(
-    persistentMapOf(
-      SyncStep.FetchingFileInfo to SyncStepState.NotStarted,
-      SyncStep.StartingDatabaseDownload to SyncStepState.NotStarted,
-      SyncStep.DownloadingDatabase to SyncStepState.NotStarted,
-      SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
-    ),
-  )
-
+  private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
   val stepStates: StateFlow<ImmutableMap<SyncStep, SyncStepState>> = mutableSteps.asStateFlow()
 
   val overallState: StateFlow<SyncOverallState> = viewModelScope.launchMolecule(Immediate) {
@@ -60,7 +60,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
     }
   }
 
-  private var awaitJob: Job? = null
+  private var job: Job? = null
 
   init {
     Logger.d("init")
@@ -69,13 +69,15 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   override fun onCleared() {
     super.onCleared()
-    awaitJob?.cancel()
+    job?.cancel()
   }
 
   fun start() {
     Logger.d("start")
-    awaitJob?.cancel()
-    awaitJob = viewModelScope.launch {
+    job?.cancel()
+    mutableSteps.update { defaultStates() }
+
+    job = viewModelScope.launch {
       val userFileDeferred = async { fetchUserFileInfo() }
       val fileDownloadDeferred = async { downloadBudgetFileAsync() }
       val userFile = userFileDeferred.await()
@@ -84,30 +86,40 @@ class SyncBudgetViewModel @AssistedInject constructor(
       if (userFile == null || downloadedPath == null) {
         Logger.w("Failed syncing?")
         return@launch
-      } else {
-        Logger.i("Succeeded syncing: $userFile and $downloadedPath")
       }
 
-      // TODO: Actually load the data somewhere
-      //      val buffer = if (userFile.encryptMeta != null) {
-      //        decryptFile(syncState.path, userFile.encryptMeta)
-      //      } else {
-      //        syncState.path
-      //      }
-      //      importBuffer(buffer, userFile)
+      setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
+
+      Logger.i("Succeeded syncing: $userFile and $downloadedPath")
+      val meta = userFile.encryptMeta
+      val decryptResult = if (meta != null) {
+        // Encrypted payload, so decrypt it and return the decrypted zip's path
+        decrypter(userFile.fileId, downloadedPath, meta)
+      } else {
+        // Unencrypted, so just copy the payload to the expected place
+        val targetPath = files.decryptedZip(budgetId)
+        files.fileSystem.copy(source = downloadedPath, target = targetPath)
+        DecryptResult.NotNeeded(targetPath)
+      }
+      Logger.i("decryptResult=$decryptResult")
+
+      when (decryptResult) {
+        is DecryptResult.Failure -> handleDecryptFailure(decryptResult)
+        is DecryptResult.Success -> importDatabase(decryptResult.path, userFile)
+      }
     }
   }
 
   private suspend fun CoroutineScope.fetchUserFileInfo(): UserFile? {
-    setStepState(SyncStep.FetchingFileInfo, SyncStepState.InProgress.Indefinite)
-    return when (val result = budgetInfoFetcher.fetch(token, budgetId)) {
+    setStepState(FetchingFileInfo, SyncStepState.InProgress.Indefinite)
+    return when (val result = infoFetcher.fetch(token, budgetId)) {
       is BudgetInfoFetcher.Result.Failure -> {
-        setStepState(SyncStep.FetchingFileInfo, SyncStepState.Failed(result.reason))
+        setStepState(FetchingFileInfo, SyncStepState.Failed(result.reason))
         null
       }
 
       is BudgetInfoFetcher.Result.Success -> {
-        setStepState(SyncStep.FetchingFileInfo, SyncStepState.Succeeded)
+        setStepState(FetchingFileInfo, SyncStepState.Succeeded)
         result.userFile
       }
     }
@@ -115,9 +127,8 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   private suspend fun CoroutineScope.downloadBudgetFileAsync(): Path? {
     var downloadedDbPath: Path? = null
-    setStepState(SyncStep.StartingDatabaseDownload, SyncStepState.InProgress.Indefinite)
-    budgetFileDownloader.download(token, budgetId).collect { state ->
-      setStepState(SyncStep.StartingDatabaseDownload, SyncStepState.Succeeded)
+    setStepState(DownloadingDatabase, SyncStepState.InProgress.Indefinite)
+    fileDownloader.download(token, budgetId).collect { state ->
       val stepState = when (state) {
         is DownloadState.InProgress -> SyncStepState.InProgress.Definite(state.toPercent())
         is DownloadState.Failure -> SyncStepState.Failed(state.message)
@@ -126,7 +137,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
           SyncStepState.Succeeded
         }
       }
-      setStepState(SyncStep.DownloadingDatabase, stepState)
+      setStepState(DownloadingDatabase, stepState)
       Logger.d("stepState=%s", stepState)
     }
     return downloadedDbPath
@@ -136,6 +147,25 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   private fun setStepState(step: SyncStep, state: SyncStepState) {
     mutableSteps.update { stepStates -> stepStates.put(step, state) }
+  }
+
+  private fun handleDecryptFailure(result: DecryptResult.Failure) {
+    val message = when (result) {
+      DecryptResult.MissingKey -> "Missing key"
+      is DecryptResult.UnknownAlgorithm -> "Unknown algorithm: ${result.algorithm}"
+      is DecryptResult.OtherFailure -> "Other failure: ${result.message}"
+    }
+    setStepState(ValidatingDatabase, SyncStepState.Failed(message))
+  }
+
+  private suspend fun importDatabase(path: Path, userFile: UserFile) {
+    val importResult = importer(userFile, path)
+    Logger.i("importResult=$importResult")
+
+    when (importResult) {
+      is ImportResult.Failure -> setStepState(ValidatingDatabase, SyncStepState.Failed(importResult.toString()))
+      is ImportResult.Success -> setStepState(ValidatingDatabase, SyncStepState.Succeeded)
+    }
   }
 
   data class Inputs(
@@ -148,5 +178,13 @@ class SyncBudgetViewModel @AssistedInject constructor(
     fun create(
       @Assisted inputs: Inputs,
     ): SyncBudgetViewModel
+  }
+
+  private companion object {
+    fun defaultStates() = persistentMapOf(
+      FetchingFileInfo to SyncStepState.NotStarted,
+      DownloadingDatabase to SyncStepState.NotStarted,
+      ValidatingDatabase to SyncStepState.NotStarted,
+    )
   }
 }

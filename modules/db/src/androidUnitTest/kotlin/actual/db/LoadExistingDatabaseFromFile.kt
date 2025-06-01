@@ -1,12 +1,15 @@
 package actual.db
 
 import actual.budget.model.BudgetId
-import actual.core.files.AndroidDatabaseDirectory
+import actual.core.files.AndroidBudgetFiles
+import actual.core.files.BudgetFiles
+import actual.core.files.database
 import alakazam.test.core.getResourceAsStream
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import app.cash.sqldelight.db.SqlDriver
 import kotlinx.coroutines.test.runTest
+import okio.FileSystem
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.File
@@ -18,12 +21,16 @@ import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class LoadExistingDatabaseFromFile {
+  private lateinit var fileSystem: FileSystem
   private lateinit var context: Context
+  private lateinit var budgetFiles: BudgetFiles
   private lateinit var driver: SqlDriver
 
   @BeforeTest
   fun before() {
     context = ApplicationProvider.getApplicationContext()
+    fileSystem = FileSystem.SYSTEM
+    budgetFiles = AndroidBudgetFiles(context, fileSystem)
   }
 
   @AfterTest
@@ -34,7 +41,7 @@ class LoadExistingDatabaseFromFile {
   @Test
   fun `Opening existing file and reading table data`() = runTest {
     val file = loadDatabaseIntoFile()
-    driver = AndroidSqlDriverFactory(BUDGET_ID, context).create()
+    driver = AndroidSqlDriverFactory(BUDGET_ID, context, budgetFiles).create()
     val db = buildDatabase(driver)
 
     val viewHash = db.metaQueries.withResult {
@@ -48,14 +55,13 @@ class LoadExistingDatabaseFromFile {
   }
 
   private fun loadDatabaseIntoFile(): File {
-    val path = AndroidDatabaseDirectory(context).pathFor(BUDGET_ID)
-    val file = path.toFile()
+    val databaseFile = budgetFiles.database(BUDGET_ID, mkdirs = true).toFile()
     getResourceAsStream("test-db.sqlite").use { input ->
-      file.outputStream().use { output ->
+      databaseFile.outputStream().use { output ->
         input.copyTo(output)
       }
     }
-    return file
+    return databaseFile
   }
 
   private companion object {

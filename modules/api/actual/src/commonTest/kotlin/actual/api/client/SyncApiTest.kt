@@ -9,6 +9,8 @@ import actual.api.model.sync.ListUserFilesResponse
 import actual.api.model.sync.UserFile
 import actual.api.model.sync.UserWithAccess
 import actual.budget.model.BudgetId
+import actual.core.model.KeyId
+import actual.core.model.base64
 import actual.test.emptyMockEngine
 import actual.test.latestRequestHeaders
 import actual.test.plusAssign
@@ -111,7 +113,7 @@ class SyncApiTest {
             fileId = BudgetId("b328186c-c919-4333-959b-04e676c1ee46"),
             groupId = "afb25fc0-a294-4f71-ae8f-ce1e3a8fec10",
             name = "Main Budget",
-            encryptKeyId = "2a66f4de-c530-4c06-8103-a48e26a0ce44",
+            encryptKeyId = KeyId("2a66f4de-c530-4c06-8103-a48e26a0ce44"),
             owner = null,
             encryptMeta = null,
             usersWithAccess = emptyList(),
@@ -231,10 +233,10 @@ class SyncApiTest {
           owner = null,
           usersWithAccess = emptyList(),
           encryptMeta = EncryptMeta(
-            keyId = "2a66f5de-c530-4c06-8103-a48f26a0ce44",
+            keyId = KeyId("2a66f5de-c530-4c06-8103-a48f26a0ce44"),
             algorithm = "aes-256-gcm",
-            iv = "7tzgaLCrSFxVfzZR",
-            authTag = "25nafe0UpzehRCks/xQjoB==",
+            iv = "7tzgaLCrSFxVfzZR".base64,
+            authTag = "25nafe0UpzehRCks/xQjoB==".base64,
           ),
         ),
       ),

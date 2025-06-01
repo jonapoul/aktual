@@ -19,4 +19,5 @@ val FREE_COMPILER_ARGS = listOf(
   "-Xjvm-default=all-compatibility",
   "-opt-in=kotlin.RequiresOptIn",
   "-opt-in=kotlin.uuid.ExperimentalUuidApi",
+  "-opt-in=kotlin.io.encoding.ExperimentalEncodingApi",
 )
