@@ -3,6 +3,9 @@ package actual.budget.sync.vm
 import actual.account.model.LoginToken
 import actual.api.model.sync.UserFile
 import actual.budget.model.BudgetId
+import actual.budget.sync.vm.SyncStep.DownloadingDatabase
+import actual.budget.sync.vm.SyncStep.FetchingFileInfo
+import actual.budget.sync.vm.SyncStep.ValidatingDatabase
 import actual.core.files.BudgetFiles
 import actual.core.files.decryptedZip
 import actual.core.model.Percent
@@ -44,9 +47,9 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(
     persistentMapOf(
-      SyncStep.FetchingFileInfo to SyncStepState.NotStarted,
-      SyncStep.DownloadingDatabase to SyncStepState.NotStarted,
-      SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
+      FetchingFileInfo to SyncStepState.NotStarted,
+      DownloadingDatabase to SyncStepState.NotStarted,
+      ValidatingDatabase to SyncStepState.NotStarted,
     ),
   )
 
@@ -90,6 +93,8 @@ class SyncBudgetViewModel @AssistedInject constructor(
         return@launch
       }
 
+      setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
+
       Logger.i("Succeeded syncing: $userFile and $downloadedPath")
       val meta = userFile.encryptMeta
       val decryptResult = if (meta != null) {
@@ -103,26 +108,23 @@ class SyncBudgetViewModel @AssistedInject constructor(
       }
       Logger.i("decryptResult=$decryptResult")
 
-      if (decryptResult !is DecryptResult.Success) {
-        Logger.e("Failed decrypting!")
-        return@launch
+      when (decryptResult) {
+        is DecryptResult.Failure -> handleDecryptFailure(decryptResult)
+        is DecryptResult.Success -> importDatabase(decryptResult.path, userFile)
       }
-
-      val importResult = importer(userFile, decryptResult.path)
-      Logger.i("importResult=$importResult")
     }
   }
 
   private suspend fun CoroutineScope.fetchUserFileInfo(): UserFile? {
-    setStepState(SyncStep.FetchingFileInfo, SyncStepState.InProgress.Indefinite)
+    setStepState(FetchingFileInfo, SyncStepState.InProgress.Indefinite)
     return when (val result = infoFetcher.fetch(token, budgetId)) {
       is BudgetInfoFetcher.Result.Failure -> {
-        setStepState(SyncStep.FetchingFileInfo, SyncStepState.Failed(result.reason))
+        setStepState(FetchingFileInfo, SyncStepState.Failed(result.reason))
         null
       }
 
       is BudgetInfoFetcher.Result.Success -> {
-        setStepState(SyncStep.FetchingFileInfo, SyncStepState.Succeeded)
+        setStepState(FetchingFileInfo, SyncStepState.Succeeded)
         result.userFile
       }
     }
@@ -130,7 +132,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   private suspend fun CoroutineScope.downloadBudgetFileAsync(): Path? {
     var downloadedDbPath: Path? = null
-    setStepState(SyncStep.DownloadingDatabase, SyncStepState.InProgress.Indefinite)
+    setStepState(DownloadingDatabase, SyncStepState.InProgress.Indefinite)
     fileDownloader.download(token, budgetId).collect { state ->
       val stepState = when (state) {
         is DownloadState.InProgress -> SyncStepState.InProgress.Definite(state.toPercent())
@@ -140,7 +142,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
           SyncStepState.Succeeded
         }
       }
-      setStepState(SyncStep.DownloadingDatabase, stepState)
+      setStepState(DownloadingDatabase, stepState)
       Logger.d("stepState=%s", stepState)
     }
     return downloadedDbPath
@@ -150,6 +152,25 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   private fun setStepState(step: SyncStep, state: SyncStepState) {
     mutableSteps.update { stepStates -> stepStates.put(step, state) }
+  }
+
+  private fun handleDecryptFailure(result: DecryptResult.Failure) {
+    val message = when (result) {
+      DecryptResult.MissingKey -> "Missing key"
+      is DecryptResult.UnknownAlgorithm -> "Unknown algorithm: ${result.algorithm}"
+      is DecryptResult.OtherFailure -> "Other failure: ${result.message}"
+    }
+    setStepState(ValidatingDatabase, SyncStepState.Failed(message))
+  }
+
+  private suspend fun importDatabase(path: Path, userFile: UserFile) {
+    val importResult = importer(userFile, path)
+    Logger.i("importResult=$importResult")
+
+    when (importResult) {
+      is ImportResult.Failure -> setStepState(ValidatingDatabase, SyncStepState.Failed(importResult.toString()))
+      is ImportResult.Success -> setStepState(ValidatingDatabase, SyncStepState.Succeeded)
+    }
   }
 
   data class Inputs(
