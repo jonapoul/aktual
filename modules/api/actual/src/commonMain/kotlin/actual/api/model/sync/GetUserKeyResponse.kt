@@ -1,6 +1,9 @@
 package actual.api.model.sync
 
 import actual.api.model.account.FailureReason
+import actual.core.model.Base64String
+import actual.core.model.KeyId
+import actual.core.model.base64
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -13,7 +16,6 @@ import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import kotlin.uuid.Uuid
 
 sealed interface GetUserKeyResponse {
   @Serializable(Serializer::class)
@@ -29,23 +31,15 @@ sealed interface GetUserKeyResponse {
 
   @Serializable
   data class Data(
-    @SerialName("id") val id: Uuid,
-    @SerialName("salt") val salt: String,
+    @SerialName("id") val id: KeyId,
+    @SerialName("salt") val salt: Base64String,
     @SerialName("test") val test: Test,
   )
 
   @Serializable
   data class Test(
-    @SerialName("value") val value: String,
-    @SerialName("meta") val meta: Meta,
-  )
-
-  @Serializable
-  data class Meta(
-    @SerialName("keyId") val keyId: Uuid,
-    @SerialName("algorithm") val algorithm: String,
-    @SerialName("iv") val iv: String,
-    @SerialName("authTag") val authTag: String,
+    @SerialName("value") val value: Base64String,
+    @SerialName("meta") val meta: EncryptMeta,
   )
 }
 
@@ -63,8 +57,8 @@ private object Serializer : KSerializer<GetUserKeyResponse.Success> {
     }
     return GetUserKeyResponse.Success(
       data = GetUserKeyResponse.Data(
-        id = data.string("id").let(Uuid::parse),
-        salt = data.string("salt"),
+        id = KeyId(data.string("id")),
+        salt = data.string("salt").base64,
         test = test.requireNotNull(),
       ),
     )

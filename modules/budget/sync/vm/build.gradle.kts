@@ -9,6 +9,7 @@ dependencies {
   api(libs.kotlinx.immutable)
   api(projects.core.files)
   api(projects.core.model)
+  implementation(libs.alakazam.android.core)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.ktor.core)
@@ -24,4 +25,5 @@ dependencies {
   testImplementation(projects.test.coroutines)
   testImplementation(projects.test.files)
   testImplementation(projects.test.http)
+  testImplementation(projects.test.prefs)
 }
