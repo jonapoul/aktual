@@ -1,7 +1,10 @@
 package actual.budget.sync.vm
 
 import actual.account.model.LoginToken
+import actual.account.model.Password
+import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
+import actual.budget.encryption.KeyGenerator
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.SyncStep.DownloadingDatabase
 import actual.budget.sync.vm.SyncStep.FetchingFileInfo
@@ -9,6 +12,8 @@ import actual.budget.sync.vm.SyncStep.ValidatingDatabase
 import actual.core.files.BudgetFiles
 import actual.core.files.decryptedZip
 import actual.core.model.Percent
+import actual.prefs.KeyPreferences
+import alakazam.android.core.UrlOpener
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,24 +31,36 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.Path
+import kotlin.time.Duration.Companion.milliseconds
 
+@Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
 @HiltViewModel(assistedFactory = SyncBudgetViewModel.Factory::class)
 class SyncBudgetViewModel @AssistedInject constructor(
   @Assisted inputs: Inputs,
   private val fileDownloader: BudgetFileDownloader,
   private val infoFetcher: BudgetInfoFetcher,
-  private val decrypter: DatabaseDecrypter,
+  private val decrypter: Decrypter,
   private val importer: DatabaseImporter,
   private val files: BudgetFiles,
+  private val urlOpener: UrlOpener,
+  private val keyGenerator: KeyGenerator,
+  private val keyFetcher: KeyFetcher,
+  private val keyPreferences: KeyPreferences,
 ) : ViewModel() {
   private val token = inputs.token
   private val budgetId = inputs.budgetId
+
+  private var cachedData: CachedEncryptedData? = null
+
+  private val mutablePasswordState = MutableStateFlow<KeyPasswordState>(KeyPasswordState.Inactive)
+  val passwordState: StateFlow<KeyPasswordState> = mutablePasswordState.asStateFlow()
 
   private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
   val stepStates: StateFlow<ImmutableMap<SyncStep, SyncStepState>> = mutableSteps.asStateFlow()
@@ -72,10 +89,44 @@ class SyncBudgetViewModel @AssistedInject constructor(
     job?.cancel()
   }
 
+  fun enterKeyPassword(input: Password) = mutablePasswordState.update { KeyPasswordState.Active(input) }
+
+  fun dismissKeyPasswordDialog() = mutablePasswordState.update { KeyPasswordState.Inactive }
+
+  fun learnMore() = urlOpener.openUrl(LEARN_MORE_URL)
+
+  fun confirmKeyPassword() {
+    val state = mutablePasswordState.value
+    dismissKeyPasswordDialog()
+    val cachedData = cachedData
+    val meta = cachedData?.meta
+    val keyId = meta?.keyId
+    if (state !is KeyPasswordState.Active || cachedData == null || meta == null || keyId == null) {
+      error("Should never happen? state=$state, cachedData=$cachedData, meta=$meta, keyId=$keyId")
+    }
+
+    setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
+    viewModelScope.launch {
+      val fetched = keyFetcher(budgetId, token, state.input)
+      when (fetched) {
+        is FetchKeyResult.Failure -> Logger.w("Failed fetching keys: $fetched")
+
+        is FetchKeyResult.Success -> {
+//          val key = keyGenerator(fetched.key)
+          keyPreferences[keyId] = fetched.key
+
+          val result = decrypter(budgetId, meta, cachedData.encryptedPath)
+          handleDecryptResult(result, cachedData.encryptedPath, meta, cachedData.userFile)
+        }
+      }
+    }
+  }
+
   fun start() {
     Logger.d("start")
     job?.cancel()
     mutableSteps.update { defaultStates() }
+    dismissKeyPasswordDialog()
 
     job = viewModelScope.launch {
       val userFileDeferred = async { fetchUserFileInfo() }
@@ -94,19 +145,14 @@ class SyncBudgetViewModel @AssistedInject constructor(
       val meta = userFile.encryptMeta
       val decryptResult = if (meta != null) {
         // Encrypted payload, so decrypt it and return the decrypted zip's path
-        decrypter(userFile.fileId, downloadedPath, meta)
+        decrypter(userFile.fileId, meta, downloadedPath)
       } else {
         // Unencrypted, so just copy the payload to the expected place
         val targetPath = files.decryptedZip(budgetId)
         files.fileSystem.copy(source = downloadedPath, target = targetPath)
         DecryptResult.NotNeeded(targetPath)
       }
-      Logger.i("decryptResult=$decryptResult")
-
-      when (decryptResult) {
-        is DecryptResult.Failure -> handleDecryptFailure(decryptResult)
-        is DecryptResult.Success -> importDatabase(decryptResult.path, userFile)
-      }
+      handleDecryptResult(decryptResult, downloadedPath, meta, userFile)
     }
   }
 
@@ -138,7 +184,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
         }
       }
       setStepState(DownloadingDatabase, stepState)
-      Logger.d("stepState=%s", stepState)
+      Logger.v("stepState=%s", stepState)
     }
     return downloadedDbPath
   }
@@ -149,11 +195,43 @@ class SyncBudgetViewModel @AssistedInject constructor(
     mutableSteps.update { stepStates -> stepStates.put(step, state) }
   }
 
-  private fun handleDecryptFailure(result: DecryptResult.Failure) {
+  private suspend fun handleDecryptResult(
+    result: DecryptResult,
+    encryptedPath: Path,
+    meta: EncryptMeta?,
+    userFile: UserFile,
+  ) {
+    Logger.i("decryptResult=$result")
+    when (result) {
+      is DecryptResult.Failure -> handleDecryptFailure(result, encryptedPath, userFile, meta)
+      is DecryptResult.DecryptedFile -> importDatabase(result.path, userFile)
+      is DecryptResult.NotNeeded -> importDatabase(result.path, userFile)
+      is DecryptResult.DecryptedBuffer -> error("Should never happen!")
+    }
+  }
+
+  private fun handleDecryptFailure(
+    result: DecryptResult.Failure,
+    encryptedPath: Path,
+    userFile: UserFile,
+    meta: EncryptMeta?,
+  ) {
     val message = when (result) {
-      DecryptResult.MissingKey -> "Missing key"
       is DecryptResult.UnknownAlgorithm -> "Unknown algorithm: ${result.algorithm}"
+
       is DecryptResult.OtherFailure -> "Other failure: ${result.message}"
+
+      DecryptResult.MissingKey -> {
+        cachedData = CachedEncryptedData(encryptedPath, userFile, meta)
+
+        // wait a little before showing the dialog
+        viewModelScope.launch {
+          delay(500.milliseconds)
+          mutablePasswordState.update { KeyPasswordState.Active(Password.Empty) }
+        }
+
+        "Missing key"
+      }
     }
     setStepState(ValidatingDatabase, SyncStepState.Failed(message))
   }
@@ -173,6 +251,12 @@ class SyncBudgetViewModel @AssistedInject constructor(
     val budgetId: BudgetId,
   )
 
+  private data class CachedEncryptedData(
+    val encryptedPath: Path,
+    val userFile: UserFile,
+    val meta: EncryptMeta?,
+  )
+
   @AssistedFactory
   fun interface Factory {
     fun create(
@@ -181,6 +265,8 @@ class SyncBudgetViewModel @AssistedInject constructor(
   }
 
   private companion object {
+    const val LEARN_MORE_URL = "https://actualbudget.org/docs/getting-started/sync/#end-to-end-encryption"
+
     fun defaultStates() = persistentMapOf(
       FetchingFileInfo to SyncStepState.NotStarted,
       DownloadingDatabase to SyncStepState.NotStarted,

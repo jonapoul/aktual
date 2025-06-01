@@ -49,9 +49,9 @@ internal val SYNC_GET_USER_KEY_SUCCESS = """
 {
   "status": "ok",
   "data": {
-    "id": "2a66f4de-c530-4c06-8103-a48e26a0ce44",
-    "salt": "PpZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=",
-    "test": "{\"value\":\"nrhpJgUnl8lZvWxSRMIT0aTRKCOHeddlIuGPfNw0NQR/d81m/ZYRqaOjMwoQHpduSzuAivfVZZEslZihl8WhOs7GVkdghwCjqr083G0261M464wHvQl2v5sB+l8f0/mQE2fco7zUagbA7Q==\",\"meta\":{\"keyId\":\"2a66f4de-c530-4c06-8103-a48e26a0ce44\",\"algorithm\":\"aes-256-gcm\",\"iv\":\"whBQQkPM88iFsLVk\",\"authTag\":\"X/JX1lWCchd0Ekjthlxuzg==\"}}"
+    "id": "2b66f4de-c530-4c06-8103-a48e26a0ce44",
+    "salt": "PqZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=",
+    "test": "{\"value\":\"nrhqJgUnl8lZvWxSRMIT0aTRKCOHeddlIuGPfNw0NQR/d81m/ZYRqaOjMwoQHpduSzuAivfVZZEslZihl8WhOs7GVkdghwCjqr083G0261M464wHvQl2v5sB+l8f0/mQE2fco7zUagbA7Q==\",\"meta\":{\"keyId\":\"2b66f4de-c530-4c06-8103-a48e26a0ce44\",\"algorithm\":\"aes-256-gcm\",\"iv\":\"whBQQkPM89iFsLVk\",\"authTag\":\"X/JX1lWCchd0Ejjthlxuzg==\"}}"
   }
 }
 """.trimIndent()
