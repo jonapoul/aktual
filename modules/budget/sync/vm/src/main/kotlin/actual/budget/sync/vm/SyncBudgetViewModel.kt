@@ -4,6 +4,7 @@ import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
+import actual.budget.encryption.KeyGenerator
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.SyncStep.DownloadingDatabase
 import actual.budget.sync.vm.SyncStep.FetchingFileInfo
@@ -11,6 +12,7 @@ import actual.budget.sync.vm.SyncStep.ValidatingDatabase
 import actual.core.files.BudgetFiles
 import actual.core.files.decryptedZip
 import actual.core.model.Percent
+import actual.prefs.KeyPreferences
 import alakazam.android.core.UrlOpener
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
@@ -38,15 +40,19 @@ import kotlinx.coroutines.launch
 import okio.Path
 import kotlin.time.Duration.Companion.milliseconds
 
+@Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
 @HiltViewModel(assistedFactory = SyncBudgetViewModel.Factory::class)
 class SyncBudgetViewModel @AssistedInject constructor(
   @Assisted inputs: Inputs,
   private val fileDownloader: BudgetFileDownloader,
   private val infoFetcher: BudgetInfoFetcher,
-  private val decrypter: DatabaseDecrypter,
+  private val decrypter: Decrypter,
   private val importer: DatabaseImporter,
   private val files: BudgetFiles,
   private val urlOpener: UrlOpener,
+  private val keyGenerator: KeyGenerator,
+  private val keyFetcher: KeyFetcher,
+  private val keyPreferences: KeyPreferences,
 ) : ViewModel() {
   private val token = inputs.token
   private val budgetId = inputs.budgetId
@@ -94,14 +100,25 @@ class SyncBudgetViewModel @AssistedInject constructor(
     dismissKeyPasswordDialog()
     val cachedData = cachedData
     val meta = cachedData?.meta
-    if (state !is KeyPasswordState.Active || cachedData == null || meta == null) {
-      error("Should never happen? state=$state, cachedData=$cachedData, meta=$meta")
+    val keyId = meta?.keyId
+    if (state !is KeyPasswordState.Active || cachedData == null || meta == null || keyId == null) {
+      error("Should never happen? state=$state, cachedData=$cachedData, meta=$meta, keyId=$keyId")
     }
 
     setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
     viewModelScope.launch {
-      val result = decrypter(budgetId, cachedData.encryptedPath, meta)
-      handleDecryptResult(result, cachedData.encryptedPath, meta, cachedData.userFile)
+      val fetched = keyFetcher(budgetId, token, state.input)
+      when (fetched) {
+        is FetchKeyResult.Failure -> Logger.w("Failed fetching keys: $fetched")
+
+        is FetchKeyResult.Success -> {
+//          val key = keyGenerator(fetched.key)
+          keyPreferences[keyId] = fetched.key
+
+          val result = decrypter(budgetId, meta, cachedData.encryptedPath)
+          handleDecryptResult(result, cachedData.encryptedPath, meta, cachedData.userFile)
+        }
+      }
     }
   }
 
@@ -128,7 +145,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
       val meta = userFile.encryptMeta
       val decryptResult = if (meta != null) {
         // Encrypted payload, so decrypt it and return the decrypted zip's path
-        decrypter(userFile.fileId, downloadedPath, meta)
+        decrypter(userFile.fileId, meta, downloadedPath)
       } else {
         // Unencrypted, so just copy the payload to the expected place
         val targetPath = files.decryptedZip(budgetId)
@@ -187,7 +204,9 @@ class SyncBudgetViewModel @AssistedInject constructor(
     Logger.i("decryptResult=$result")
     when (result) {
       is DecryptResult.Failure -> handleDecryptFailure(result, encryptedPath, userFile, meta)
-      is DecryptResult.Success -> importDatabase(result.path, userFile)
+      is DecryptResult.DecryptedFile -> importDatabase(result.path, userFile)
+      is DecryptResult.NotNeeded -> importDatabase(result.path, userFile)
+      is DecryptResult.DecryptedBuffer -> error("Should never happen!")
     }
   }
 
@@ -195,7 +214,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
     result: DecryptResult.Failure,
     encryptedPath: Path,
     userFile: UserFile,
-    meta: EncryptMeta?
+    meta: EncryptMeta?,
   ) {
     val message = when (result) {
       is DecryptResult.UnknownAlgorithm -> "Unknown algorithm: ${result.algorithm}"

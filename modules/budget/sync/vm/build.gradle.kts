@@ -25,4 +25,5 @@ dependencies {
   testImplementation(projects.test.coroutines)
   testImplementation(projects.test.files)
   testImplementation(projects.test.http)
+  testImplementation(projects.test.prefs)
 }

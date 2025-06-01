@@ -1,12 +1,8 @@
 package actual.core.model
 
 import kotlinx.serialization.Serializable
+import javax.crypto.SecretKey
 import kotlin.uuid.Uuid
-
-data class Key(
-  val id: KeyId,
-  val value: Base64String,
-)
 
 @JvmInline
 @Serializable
@@ -20,3 +16,8 @@ value class KeyId(val value: String) : Comparable<KeyId> {
     fun random(): KeyId = KeyId(Uuid.Companion.random())
   }
 }
+
+data class Key(
+  val raw: SecretKey,
+  val base64: Base64String,
+)

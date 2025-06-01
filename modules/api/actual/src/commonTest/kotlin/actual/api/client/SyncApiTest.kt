@@ -30,7 +30,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.fail
-import kotlin.uuid.Uuid
 
 class SyncApiTest {
   private lateinit var mockEngine: MockEngine
@@ -166,6 +165,8 @@ class SyncApiTest {
 
     // then
     val keyId = KeyId("2b66f4de-c530-4c06-8103-a48e26a0ce44")
+    val value = "nrhqJgUnl8lZvWxSRMIT0aTRKCOHeddlIuGPfNw0NQR/d81m/ZYRqaOjMwoQHpduSzuAivfVZZEslZihl8WhOs7GV" +
+      "kdghwCjqr083G0261M464wHvQl2v5sB+l8f0/mQE2fco7zUagbA7Q=="
     assertEquals(
       actual = response,
       expected = GetUserKeyResponse.Success(
@@ -173,8 +174,7 @@ class SyncApiTest {
           id = keyId,
           salt = "PqZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=".base64,
           test = GetUserKeyResponse.Test(
-            value = "nrhqJgUnl8lZvWxSRMIT0aTRKCOHeddlIuGPfNw0NQR/d81m/ZYRqaOjMwoQHpduSzuAivfVZZEslZihl8WhOs7GVkdghw" +
-              "Cjqr083G0261M464wHvQl2v5sB+l8f0/mQE2fco7zUagbA7Q==",
+            value = value.base64,
             meta = EncryptMeta(
               keyId = keyId,
               algorithm = "aes-256-gcm",

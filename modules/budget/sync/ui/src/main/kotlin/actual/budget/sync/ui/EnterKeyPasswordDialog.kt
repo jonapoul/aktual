@@ -156,7 +156,7 @@ private fun buildDialogText(
   val style = SpanStyle(color = theme.pageTextLink, textDecoration = TextDecoration.Underline)
   val link = LinkAnnotation.Clickable(
     tag = Tags.KeyPasswordDialogLearnMore,
-    linkInteractionListener = LinkInteractionListener { onAction(SyncBudgetAction.LearnMore) }
+    linkInteractionListener = LinkInteractionListener { onAction(SyncBudgetAction.LearnMore) },
   )
   withStyle(style) {
     withLink(link) {
@@ -176,7 +176,7 @@ private fun PreviewEmpty() = PreviewColumn {
 
 @Preview
 @Composable
-private fun PreviewFull() = PreviewColumn() {
+private fun PreviewFull() = PreviewColumn {
   Content(
     input = Password("abc-123"),
     onAction = {},

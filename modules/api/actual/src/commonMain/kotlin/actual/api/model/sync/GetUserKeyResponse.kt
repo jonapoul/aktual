@@ -38,7 +38,7 @@ sealed interface GetUserKeyResponse {
 
   @Serializable
   data class Test(
-    @SerialName("value") val value: String,
+    @SerialName("value") val value: Base64String,
     @SerialName("meta") val meta: EncryptMeta,
   )
 }
