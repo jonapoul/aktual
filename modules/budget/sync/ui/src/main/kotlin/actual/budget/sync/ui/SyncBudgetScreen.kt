@@ -62,6 +62,7 @@ fun SyncBudgetScreen(
   viewModel: SyncBudgetViewModel = hiltViewModel(token, budgetId),
 ) {
   val stepStates by viewModel.stepStates.collectAsStateWithLifecycle()
+  val passwordState by viewModel.passwordState.collectAsStateWithLifecycle()
 
   SyncBudgetScaffold(
     stepStates = stepStates,
@@ -69,6 +70,8 @@ fun SyncBudgetScreen(
       when (action) {
         SyncBudgetAction.Continue -> nav.toBudget(token, budgetId)
         SyncBudgetAction.Retry -> viewModel.start()
+        SyncBudgetAction.ConfirmKeyPassword -> viewModel.confirmKeyPassword()
+        is SyncBudgetAction.EnterKeyPassword -> viewModel.enterKeyPassword(action.input)
       }
     },
   )

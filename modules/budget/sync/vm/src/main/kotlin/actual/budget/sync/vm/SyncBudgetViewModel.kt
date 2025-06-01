@@ -1,6 +1,8 @@
 package actual.budget.sync.vm
 
 import actual.account.model.LoginToken
+import actual.account.model.Password
+import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.SyncStep.DownloadingDatabase
@@ -45,6 +47,11 @@ class SyncBudgetViewModel @AssistedInject constructor(
   private val token = inputs.token
   private val budgetId = inputs.budgetId
 
+  private var cachedData: CachedEncryptedData? = null
+
+  private val mutablePasswordState = MutableStateFlow<KeyPasswordState>(KeyPasswordState.Inactive)
+  val passwordState: StateFlow<KeyPasswordState> = mutablePasswordState.asStateFlow()
+
   private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
   val stepStates: StateFlow<ImmutableMap<SyncStep, SyncStepState>> = mutableSteps.asStateFlow()
 
@@ -72,10 +79,31 @@ class SyncBudgetViewModel @AssistedInject constructor(
     job?.cancel()
   }
 
+  fun enterKeyPassword(input: String) {
+    mutablePasswordState.update { KeyPasswordState.Active(Password(input)) }
+  }
+
+  fun confirmKeyPassword() {
+    val state = mutablePasswordState.value
+    mutablePasswordState.update { KeyPasswordState.Inactive }
+    val cachedData = cachedData
+    val meta = cachedData?.meta
+    if (state !is KeyPasswordState.Active || cachedData == null || meta == null) {
+      error("Should never happen? state=$state, cachedData=$cachedData, meta=$meta")
+    }
+
+    setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
+    viewModelScope.launch {
+      val result = decrypter(budgetId, cachedData.encryptedPath, meta)
+      handleDecryptResult(result, cachedData.encryptedPath, meta, cachedData.userFile)
+    }
+  }
+
   fun start() {
     Logger.d("start")
     job?.cancel()
     mutableSteps.update { defaultStates() }
+    mutablePasswordState.update { KeyPasswordState.Inactive }
 
     job = viewModelScope.launch {
       val userFileDeferred = async { fetchUserFileInfo() }
@@ -101,12 +129,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
         files.fileSystem.copy(source = downloadedPath, target = targetPath)
         DecryptResult.NotNeeded(targetPath)
       }
-      Logger.i("decryptResult=$decryptResult")
-
-      when (decryptResult) {
-        is DecryptResult.Failure -> handleDecryptFailure(decryptResult)
-        is DecryptResult.Success -> importDatabase(decryptResult.path, userFile)
-      }
+      handleDecryptResult(decryptResult, downloadedPath, meta, userFile)
     }
   }
 
@@ -149,11 +172,36 @@ class SyncBudgetViewModel @AssistedInject constructor(
     mutableSteps.update { stepStates -> stepStates.put(step, state) }
   }
 
-  private fun handleDecryptFailure(result: DecryptResult.Failure) {
+  private suspend fun handleDecryptResult(
+    result: DecryptResult,
+    encryptedPath: Path,
+    meta: EncryptMeta?,
+    userFile: UserFile,
+  ) {
+    Logger.i("decryptResult=$result")
+    when (result) {
+      is DecryptResult.Failure -> handleDecryptFailure(result, encryptedPath, userFile, meta)
+      is DecryptResult.Success -> importDatabase(result.path, userFile)
+    }
+  }
+
+  private fun handleDecryptFailure(
+    result: DecryptResult.Failure,
+    encryptedPath: Path,
+    userFile: UserFile,
+    meta: EncryptMeta?
+  ) {
     val message = when (result) {
-      DecryptResult.MissingKey -> "Missing key"
       is DecryptResult.UnknownAlgorithm -> "Unknown algorithm: ${result.algorithm}"
+
       is DecryptResult.OtherFailure -> "Other failure: ${result.message}"
+
+      DecryptResult.MissingKey -> {
+        // show the password input view
+        cachedData = CachedEncryptedData(encryptedPath, userFile, meta)
+        mutablePasswordState.update { KeyPasswordState.Active(Password.Empty) }
+        "Missing key"
+      }
     }
     setStepState(ValidatingDatabase, SyncStepState.Failed(message))
   }
@@ -171,6 +219,12 @@ class SyncBudgetViewModel @AssistedInject constructor(
   data class Inputs(
     val token: LoginToken,
     val budgetId: BudgetId,
+  )
+
+  private data class CachedEncryptedData(
+    val encryptedPath: Path,
+    val userFile: UserFile,
+    val meta: EncryptMeta?,
   )
 
   @AssistedFactory
