@@ -11,6 +11,7 @@ import actual.budget.sync.vm.SyncStep.ValidatingDatabase
 import actual.core.files.BudgetFiles
 import actual.core.files.decryptedZip
 import actual.core.model.Percent
+import alakazam.android.core.UrlOpener
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,12 +29,14 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.Path
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel(assistedFactory = SyncBudgetViewModel.Factory::class)
 class SyncBudgetViewModel @AssistedInject constructor(
@@ -43,6 +46,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
   private val decrypter: DatabaseDecrypter,
   private val importer: DatabaseImporter,
   private val files: BudgetFiles,
+  private val urlOpener: UrlOpener,
 ) : ViewModel() {
   private val token = inputs.token
   private val budgetId = inputs.budgetId
@@ -79,13 +83,15 @@ class SyncBudgetViewModel @AssistedInject constructor(
     job?.cancel()
   }
 
-  fun enterKeyPassword(input: String) {
-    mutablePasswordState.update { KeyPasswordState.Active(Password(input)) }
-  }
+  fun enterKeyPassword(input: Password) = mutablePasswordState.update { KeyPasswordState.Active(input) }
+
+  fun dismissKeyPasswordDialog() = mutablePasswordState.update { KeyPasswordState.Inactive }
+
+  fun learnMore() = urlOpener.openUrl(LEARN_MORE_URL)
 
   fun confirmKeyPassword() {
     val state = mutablePasswordState.value
-    mutablePasswordState.update { KeyPasswordState.Inactive }
+    dismissKeyPasswordDialog()
     val cachedData = cachedData
     val meta = cachedData?.meta
     if (state !is KeyPasswordState.Active || cachedData == null || meta == null) {
@@ -103,7 +109,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
     Logger.d("start")
     job?.cancel()
     mutableSteps.update { defaultStates() }
-    mutablePasswordState.update { KeyPasswordState.Inactive }
+    dismissKeyPasswordDialog()
 
     job = viewModelScope.launch {
       val userFileDeferred = async { fetchUserFileInfo() }
@@ -161,7 +167,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
         }
       }
       setStepState(DownloadingDatabase, stepState)
-      Logger.d("stepState=%s", stepState)
+      Logger.v("stepState=%s", stepState)
     }
     return downloadedDbPath
   }
@@ -197,9 +203,14 @@ class SyncBudgetViewModel @AssistedInject constructor(
       is DecryptResult.OtherFailure -> "Other failure: ${result.message}"
 
       DecryptResult.MissingKey -> {
-        // show the password input view
         cachedData = CachedEncryptedData(encryptedPath, userFile, meta)
-        mutablePasswordState.update { KeyPasswordState.Active(Password.Empty) }
+
+        // wait a little before showing the dialog
+        viewModelScope.launch {
+          delay(500.milliseconds)
+          mutablePasswordState.update { KeyPasswordState.Active(Password.Empty) }
+        }
+
         "Missing key"
       }
     }
@@ -235,6 +246,8 @@ class SyncBudgetViewModel @AssistedInject constructor(
   }
 
   private companion object {
+    const val LEARN_MORE_URL = "https://actualbudget.org/docs/getting-started/sync/#end-to-end-encryption"
+
     fun defaultStates() = persistentMapOf(
       FetchingFileInfo to SyncStepState.NotStarted,
       DownloadingDatabase to SyncStepState.NotStarted,

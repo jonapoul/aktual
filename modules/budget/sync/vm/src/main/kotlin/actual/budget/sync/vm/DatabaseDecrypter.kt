@@ -10,6 +10,7 @@ import actual.core.model.Base64String
 import actual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import alakazam.kotlin.logging.Logger
 import kotlinx.coroutines.withContext
 import okio.Path
 import javax.inject.Inject
@@ -21,6 +22,7 @@ class DatabaseDecrypter @Inject constructor(
   private val files: BudgetFiles,
 ) {
   suspend operator fun invoke(id: BudgetId, filePath: Path, meta: EncryptMeta): DecryptResult {
+    Logger.d("Decrypting $id from $filePath with $meta")
     val key = meta.keyId
       ?.let { keys[it.value] }
       ?: return DecryptResult.MissingKey

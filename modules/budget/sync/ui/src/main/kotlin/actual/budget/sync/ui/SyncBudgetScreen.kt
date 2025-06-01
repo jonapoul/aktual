@@ -1,8 +1,10 @@
 package actual.budget.sync.ui
 
 import actual.account.model.LoginToken
+import actual.account.model.Password
 import actual.budget.model.BudgetId
 import actual.budget.sync.res.SyncStrings
+import actual.budget.sync.vm.KeyPasswordState
 import actual.budget.sync.vm.SyncBudgetViewModel
 import actual.budget.sync.vm.SyncStep
 import actual.budget.sync.vm.SyncStepState
@@ -66,12 +68,15 @@ fun SyncBudgetScreen(
 
   SyncBudgetScaffold(
     stepStates = stepStates,
+    passwordState = passwordState,
     onAction = { action ->
       when (action) {
         SyncBudgetAction.Continue -> nav.toBudget(token, budgetId)
         SyncBudgetAction.Retry -> viewModel.start()
         SyncBudgetAction.ConfirmKeyPassword -> viewModel.confirmKeyPassword()
         is SyncBudgetAction.EnterKeyPassword -> viewModel.enterKeyPassword(action.input)
+        SyncBudgetAction.DismissPasswordDialog -> viewModel.dismissKeyPasswordDialog()
+        SyncBudgetAction.LearnMore -> viewModel.learnMore()
       }
     },
   )
@@ -88,9 +93,17 @@ private fun hiltViewModel(
 @Composable
 private fun SyncBudgetScaffold(
   stepStates: ImmutableMap<SyncStep, SyncStepState>,
+  passwordState: KeyPasswordState,
   onAction: (SyncBudgetAction) -> Unit,
 ) {
   val theme = LocalTheme.current
+
+  if (passwordState is KeyPasswordState.Active) {
+    EnterKeyPasswordDialog(
+      input = passwordState.input,
+      onAction = onAction,
+    )
+  }
 
   Scaffold(
     topBar = {
@@ -324,6 +337,7 @@ private fun SyncStepState.color(theme: Theme): Color = when (this) {
 private fun NotStarted() = PreviewScreen {
   SyncBudgetScaffold(
     onAction = {},
+    passwordState = KeyPasswordState.Inactive,
     stepStates = persistentMapOf(
       SyncStep.FetchingFileInfo to SyncStepState.NotStarted,
       SyncStep.DownloadingDatabase to SyncStepState.NotStarted,
@@ -337,6 +351,7 @@ private fun NotStarted() = PreviewScreen {
 private fun Downloading() = PreviewScreen {
   SyncBudgetScaffold(
     onAction = {},
+    passwordState = KeyPasswordState.Inactive,
     stepStates = persistentMapOf(
       SyncStep.FetchingFileInfo to SyncStepState.InProgress.Indefinite,
       SyncStep.DownloadingDatabase to SyncStepState.InProgress.Definite(50.percent),
@@ -350,6 +365,7 @@ private fun Downloading() = PreviewScreen {
 private fun AllSucceeded() = PreviewScreen {
   SyncBudgetScaffold(
     onAction = {},
+    passwordState = KeyPasswordState.Inactive,
     stepStates = persistentMapOf(
       SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
       SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
@@ -363,12 +379,27 @@ private fun AllSucceeded() = PreviewScreen {
 private fun AllFailed() = PreviewScreen {
   SyncBudgetScaffold(
     onAction = {},
+    passwordState = KeyPasswordState.Inactive,
     stepStates = persistentMapOf(
       SyncStep.FetchingFileInfo to SyncStepState.Failed("Some error"),
       SyncStep.DownloadingDatabase to SyncStepState.Failed("Whatever"),
       SyncStep.ValidatingDatabase to SyncStepState.Failed(
         "Another error but this one's a lot longer, to see how it handles wrapping text",
       ),
+    ),
+  )
+}
+
+@ScreenPreview
+@Composable
+private fun ShowPasswordInputDialog() = PreviewScreen {
+  SyncBudgetScaffold(
+    onAction = {},
+    passwordState = KeyPasswordState.Active(input = Password.Empty),
+    stepStates = persistentMapOf(
+      SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
+      SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
+      SyncStep.ValidatingDatabase to SyncStepState.Failed("Missing Key"),
     ),
   )
 }
