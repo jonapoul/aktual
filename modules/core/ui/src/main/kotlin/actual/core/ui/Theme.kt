@@ -196,6 +196,8 @@ sealed interface Theme {
   val checkboxBorderSelected: Color
   val checkboxShadowSelected: Color
   val checkboxToggleBackground: Color
+  val checkboxToggleBackgroundSelected: Color
+  val checkboxToggleDisabled: Color
 
   val pillBackground: Color
   val pillBackgroundLight: Color

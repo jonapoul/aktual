@@ -10,14 +10,17 @@ import actual.core.ui.WavyBackground
 import actual.core.ui.scrollbarSettings
 import actual.core.ui.transparentTopAppBarColors
 import actual.settings.res.SettingsStrings
+import actual.settings.ui.items.ShowBottomBarPreferenceItem
+import actual.settings.ui.items.ThemePreferenceItem
 import actual.settings.vm.PreferenceValue
 import actual.settings.vm.SettingsViewModel
+import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -35,6 +38,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
@@ -124,13 +128,17 @@ private fun SettingsContent(
     LazyColumn(
       state = listState,
     ) {
-      items(values) { value ->
+      itemsIndexed(values) { i, value ->
         PreferenceItem(
           modifier = Modifier.fillMaxWidth(),
           value = value,
           hazeState = hazeState,
           onChange = { onAction(SettingsAction.PreferenceChange(it)) },
         )
+
+        if (i != values.size - 1) {
+          VerticalSpacer(10.dp)
+        }
       }
     }
   }
@@ -152,6 +160,12 @@ private fun PreferenceItem(
         hazeState = hazeState,
         onChange = { onChange(PreferenceValue.Theme(it)) },
       )
+
+      is PreferenceValue.ShowBottomBar -> ShowBottomBarPreferenceItem(
+        value = value.show,
+        hazeState = hazeState,
+        onChange = { onChange(PreferenceValue.ShowBottomBar(it)) },
+      )
     }
   }
 }
@@ -163,6 +177,7 @@ private fun Regular() = PreviewScreen { type ->
     onAction = {},
     values = persistentListOf(
       PreferenceValue.Theme(type),
+      PreferenceValue.ShowBottomBar(false),
     ),
   )
 }

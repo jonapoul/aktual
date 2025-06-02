@@ -11,4 +11,7 @@
   <string name="theme_light">Light</string>
   <string name="theme_dark">Dark</string>
   <string name="theme_midnight">Midnight</string>
+
+  <string name="connection_connected">Connected</string>
+  <string name="connection_disconnected">Disconnected</string>
 </resources>

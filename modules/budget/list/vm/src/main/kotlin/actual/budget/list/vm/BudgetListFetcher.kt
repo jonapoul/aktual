@@ -28,7 +28,7 @@ class BudgetListFetcher @Inject internal constructor(
     return try {
       val response = withContext(contexts.io) { apis.sync.fetchUserFiles(token) }
       val result = FetchBudgetsResult.Success(response.data.map(::toBudget))
-      Logger.i("Fetched budgets: %s", result)
+      Logger.d("Fetched budgets: %s", result)
       result
     } catch (e: CancellationException) {
       throw e

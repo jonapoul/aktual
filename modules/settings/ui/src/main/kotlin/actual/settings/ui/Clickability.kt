@@ -11,7 +11,7 @@ internal data object NotClickable : Clickability
 
 @Immutable
 internal data class Clickable(
-  val enabled: Boolean,
+  val enabled: Boolean = true,
   val onClick: () -> Unit,
 ) : Clickability
 

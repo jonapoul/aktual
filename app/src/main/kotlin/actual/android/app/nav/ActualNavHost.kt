@@ -10,6 +10,7 @@ import actual.budget.sync.ui.SyncBudgetScreen
 import actual.settings.ui.SettingsScreen
 import actual.url.ui.ServerUrlScreen
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -19,9 +20,11 @@ import androidx.navigation.compose.rememberNavController
 internal fun ActualNavHost(
   isServerUrlSet: Boolean,
   loginToken: LoginToken?,
+  modifier: Modifier = Modifier,
   nav: NavHostController = rememberNavController(),
 ) {
   NavHost(
+    modifier = modifier,
     navController = nav,
     startDestination = when {
       loginToken != null && isServerUrlSet -> ListBudgetsNavRoute(loginToken)

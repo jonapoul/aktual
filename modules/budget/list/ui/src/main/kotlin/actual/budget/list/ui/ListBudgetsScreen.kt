@@ -128,7 +128,9 @@ private fun ListBudgetsScaffold(
   val theme = LocalTheme.current
 
   Scaffold(
-    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    modifier = Modifier
+      .fillMaxSize()
+      .nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
