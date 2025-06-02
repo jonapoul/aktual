@@ -7,9 +7,14 @@ import actual.core.model.ColorSchemeType
 import actual.prefs.ColorSchemePreferences
 import actual.prefs.LoginPreferences
 import actual.prefs.ServerUrlPreferences
+import actual.prefs.StatusBarPreferences
 import alakazam.kotlin.logging.Logger
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.cash.molecule.RecompositionMode.Immediate
+import app.cash.molecule.launchMolecule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -26,12 +31,26 @@ internal class ActualActivityViewModel @Inject constructor(
   colorSchemePrefs: ColorSchemePreferences,
   serverUrlPreferences: ServerUrlPreferences,
   loginPreferences: LoginPreferences,
+  statusBarPreferences: StatusBarPreferences,
 ) : ViewModel() {
   val colorSchemeType: StateFlow<ColorSchemeType> = colorSchemePrefs.type.asStateFlow(viewModelScope)
 
   val isServerUrlSet: Boolean = serverUrlPreferences.url.isSet()
 
   val loginToken: LoginToken? = loginPreferences.token.get()
+
+  private val showStatusBar = statusBarPreferences.showStatusBar.asStateFlow(viewModelScope)
+
+  val statusBarState: StateFlow<StatusBarState> = viewModelScope.launchMolecule(Immediate) {
+    val showStatusBar by showStatusBar.collectAsState()
+    if (showStatusBar) {
+      StatusBarState.Visible(
+        isConnected = true,
+      )
+    } else {
+      StatusBarState.Hidden
+    }
+  }
 
   fun start() {
     connectionMonitor.start()
