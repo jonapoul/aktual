@@ -1,7 +1,10 @@
 package actual.settings.vm
 
 import actual.core.model.ColorSchemeType
+import actual.prefs.BottomBarPreferences
 import actual.prefs.ColorSchemePreferences
+import actual.settings.vm.PreferenceValue.ShowBottomBar
+import actual.settings.vm.PreferenceValue.Theme
 import actual.test.buildPreferences
 import alakazam.test.core.standardDispatcher
 import app.cash.turbine.TurbineTestContext
@@ -24,6 +27,7 @@ class SettingsViewModelTest {
 
     viewModel = SettingsViewModel(
       colorSchemePrefs = ColorSchemePreferences(prefs),
+      bottomBarPrefs = BottomBarPreferences(prefs),
     )
   }
 
@@ -31,16 +35,30 @@ class SettingsViewModelTest {
   fun `Color scheme changes`() = runTest {
     before()
     viewModel.prefValues.test {
-      assertValue(PreferenceValue.Theme(ColorSchemeType.System))
+      assertValue(Theme(ColorSchemeType.System))
 
-      viewModel.set(PreferenceValue.Theme(ColorSchemeType.Midnight))
-      assertValue(PreferenceValue.Theme(ColorSchemeType.Midnight))
+      viewModel.set(Theme(ColorSchemeType.Midnight))
+      assertValue(Theme(ColorSchemeType.Midnight))
 
-      viewModel.set(PreferenceValue.Theme(ColorSchemeType.Dark))
-      assertValue(PreferenceValue.Theme(ColorSchemeType.Dark))
+      viewModel.set(Theme(ColorSchemeType.Dark))
+      assertValue(Theme(ColorSchemeType.Dark))
 
-      viewModel.set(PreferenceValue.Theme(ColorSchemeType.Light))
-      assertValue(PreferenceValue.Theme(ColorSchemeType.Light))
+      viewModel.set(Theme(ColorSchemeType.Light))
+      assertValue(Theme(ColorSchemeType.Light))
+
+      expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Bottom bar preference changes`() = runTest {
+    before()
+    viewModel.prefValues.test {
+      assertValue(ShowBottomBar(true))
+
+      viewModel.set(ShowBottomBar(false))
+      assertValue(ShowBottomBar(false))
 
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
