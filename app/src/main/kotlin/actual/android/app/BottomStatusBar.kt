@@ -26,7 +26,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun BottomStatusBar(
-  state: StatusBarState.Visible,
+  state: BottomBarState.Visible,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = Row(
@@ -82,7 +82,7 @@ private fun tint(isConnected: Boolean, theme: Theme) = when (isConnected) {
 @Composable
 private fun PreviewConnected() = PreviewColumn {
   BottomStatusBar(
-    state = StatusBarState.Visible(
+    state = BottomBarState.Visible(
       isConnected = true,
     ),
   )
@@ -92,8 +92,8 @@ private fun PreviewConnected() = PreviewColumn {
 @Composable
 private fun PreviewDisconnected() = PreviewColumn {
   BottomStatusBar(
-    state = StatusBarState.Visible(
+    state = BottomBarState.Visible(
       isConnected = false,
-    )
+    ),
   )
 }

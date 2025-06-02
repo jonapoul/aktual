@@ -183,6 +183,8 @@ internal class LightTheme : Theme {
   override val checkboxBorderSelected = ActualColors.blue500
   override val checkboxShadowSelected = ActualColors.blue300
   override val checkboxToggleBackground = ActualColors.gray400
+  override val checkboxToggleBackgroundSelected = ActualColors.purple600
+  override val checkboxToggleDisabled = ActualColors.gray200
 
   override val pillBackground = ActualColors.navy150
   override val pillBackgroundLight = ActualColors.navy100

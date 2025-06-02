@@ -11,18 +11,15 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -47,14 +44,14 @@ class ActualActivity : ComponentActivity() {
 
     setContent {
       val scheme by viewModel.colorSchemeType.collectAsStateWithLifecycle()
-      val statusBarState by viewModel.statusBarState.collectAsStateWithLifecycle()
+      val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
 
       CompositionLocalProvider(LocalColorSchemeType provides scheme) {
         ActualTheme(scheme) {
           Content(
             isServerUrlSet = viewModel.isServerUrlSet,
             loginToken = viewModel.loginToken,
-            statusBarState = statusBarState,
+            bottomBarState = bottomBarState,
           )
         }
       }
@@ -66,34 +63,28 @@ class ActualActivity : ComponentActivity() {
 private fun Content(
   isServerUrlSet: Boolean,
   loginToken: LoginToken?,
-  statusBarState: StatusBarState,
+  bottomBarState: BottomBarState,
   modifier: Modifier = Modifier,
 ) {
-  Box(
+  Column(
     modifier = modifier,
-    contentAlignment = Alignment.BottomCenter,
+    verticalArrangement = Arrangement.Bottom,
   ) {
     ActualNavHost(
-      modifier = Modifier.fillMaxSize(),
+      modifier = Modifier.weight(1f),
       isServerUrlSet = isServerUrlSet,
       loginToken = loginToken,
     )
 
-    val state = statusBarState
-    if (state is StatusBarState.Visible) {
-      Column(
-        modifier = Modifier
-          .wrapContentHeight()
-          .fillMaxWidth(),
-      ) {
-        BottomStatusBar(
-          modifier = Modifier.wrapContentHeight(),
-          state = state,
-        )
-
-        val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-        VerticalSpacer(navigationBarHeight)
-      }
+    if (bottomBarState is BottomBarState.Visible) {
+      BottomStatusBar(
+        modifier = Modifier.wrapContentHeight(),
+        state = bottomBarState,
+      )
     }
+
+    // space to block out the bottom navigation bar, so we don't need to adjust layouts to account for it
+    val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+    VerticalSpacer(navigationBarHeight)
   }
 }

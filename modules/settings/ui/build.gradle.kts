@@ -8,6 +8,7 @@ dependencies {
   api(projects.core.model)
   api(projects.core.ui)
   api(projects.settings.vm)
+  implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
   implementation(libs.androidx.compose.hilt)

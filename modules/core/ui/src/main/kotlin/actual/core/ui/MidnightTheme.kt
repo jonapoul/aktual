@@ -179,10 +179,12 @@ internal class MidnightTheme : Theme {
   override val formInputShadowSelected = ActualColors.purple400
   override val formInputTextHighlight = ActualColors.purple200
   override val checkboxText = tableText
-  override val checkboxToggleBackground = ActualColors.gray400
   override val checkboxBackgroundSelected = ActualColors.purple300
   override val checkboxBorderSelected = ActualColors.purple300
   override val checkboxShadowSelected = ActualColors.purple500
+  override val checkboxToggleBackground = ActualColors.gray400
+  override val checkboxToggleBackgroundSelected = ActualColors.purple300
+  override val checkboxToggleDisabled = ActualColors.gray700
 
   override val pillBackground = ActualColors.gray500
   override val pillBackgroundLight = ActualColors.gray900

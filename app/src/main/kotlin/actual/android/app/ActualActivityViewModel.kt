@@ -1,13 +1,14 @@
 package actual.android.app
 
 import actual.account.model.LoginToken
+import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
 import actual.core.model.ColorSchemeType
+import actual.prefs.BottomBarPreferences
 import actual.prefs.ColorSchemePreferences
 import actual.prefs.LoginPreferences
 import actual.prefs.ServerUrlPreferences
-import actual.prefs.StatusBarPreferences
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -28,10 +29,11 @@ internal class ActualActivityViewModel @Inject constructor(
   private val scope: CoroutineScope,
   private val connectionMonitor: ConnectionMonitor,
   private val serverVersionFetcher: ServerVersionFetcher,
+  private val apiStateHolder: ActualApisStateHolder,
   colorSchemePrefs: ColorSchemePreferences,
   serverUrlPreferences: ServerUrlPreferences,
   loginPreferences: LoginPreferences,
-  statusBarPreferences: StatusBarPreferences,
+  bottomBarPreferences: BottomBarPreferences,
 ) : ViewModel() {
   val colorSchemeType: StateFlow<ColorSchemeType> = colorSchemePrefs.type.asStateFlow(viewModelScope)
 
@@ -39,16 +41,17 @@ internal class ActualActivityViewModel @Inject constructor(
 
   val loginToken: LoginToken? = loginPreferences.token.get()
 
-  private val showStatusBar = statusBarPreferences.showStatusBar.asStateFlow(viewModelScope)
+  private val showStatusBar = bottomBarPreferences.show.asStateFlow(viewModelScope)
 
-  val statusBarState: StateFlow<StatusBarState> = viewModelScope.launchMolecule(Immediate) {
+  val bottomBarState: StateFlow<BottomBarState> = viewModelScope.launchMolecule(Immediate) {
     val showStatusBar by showStatusBar.collectAsState()
     if (showStatusBar) {
-      StatusBarState.Visible(
-        isConnected = true,
+      val apis by apiStateHolder.collectAsState()
+      BottomBarState.Visible(
+        isConnected = apis != null,
       )
     } else {
-      StatusBarState.Hidden
+      BottomBarState.Hidden
     }
   }
 

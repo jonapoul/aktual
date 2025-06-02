@@ -182,7 +182,9 @@ internal class DarkTheme : Theme {
   override val checkboxBackgroundSelected = ActualColors.purple300
   override val checkboxBorderSelected = ActualColors.purple300
   override val checkboxShadowSelected = ActualColors.purple500
-  override val checkboxToggleBackground = ActualColors.gray700
+  override val checkboxToggleBackground = ActualColors.gray600
+  override val checkboxToggleBackgroundSelected = ActualColors.purple300
+  override val checkboxToggleDisabled = ActualColors.gray400
 
   override val pillBackground = ActualColors.navy800
   override val pillBackgroundLight = ActualColors.navy900
