@@ -1,4 +1,4 @@
-package actual.settings.ui
+package actual.settings.ui.items
 
 import actual.core.model.ColorSchemeType
 import actual.core.res.CoreStrings
@@ -9,6 +9,8 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewWithColorScheme
 import actual.core.ui.Theme
 import actual.settings.res.SettingsStrings
+import actual.settings.ui.BasicPreferenceItem
+import actual.settings.ui.NotClickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState

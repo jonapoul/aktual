@@ -1,15 +1,21 @@
 package actual.android.app
 
 import actual.account.model.LoginToken
+import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
 import actual.core.model.ColorSchemeType
+import actual.prefs.BottomBarPreferences
 import actual.prefs.ColorSchemePreferences
 import actual.prefs.LoginPreferences
 import actual.prefs.ServerUrlPreferences
 import alakazam.kotlin.logging.Logger
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import app.cash.molecule.RecompositionMode.Immediate
+import app.cash.molecule.launchMolecule
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.coroutines.CoroutineScope
@@ -23,15 +29,31 @@ internal class ActualActivityViewModel @Inject constructor(
   private val scope: CoroutineScope,
   private val connectionMonitor: ConnectionMonitor,
   private val serverVersionFetcher: ServerVersionFetcher,
+  private val apiStateHolder: ActualApisStateHolder,
   colorSchemePrefs: ColorSchemePreferences,
   serverUrlPreferences: ServerUrlPreferences,
   loginPreferences: LoginPreferences,
+  bottomBarPreferences: BottomBarPreferences,
 ) : ViewModel() {
   val colorSchemeType: StateFlow<ColorSchemeType> = colorSchemePrefs.type.asStateFlow(viewModelScope)
 
   val isServerUrlSet: Boolean = serverUrlPreferences.url.isSet()
 
   val loginToken: LoginToken? = loginPreferences.token.get()
+
+  private val showStatusBar = bottomBarPreferences.show.asStateFlow(viewModelScope)
+
+  val bottomBarState: StateFlow<BottomBarState> = viewModelScope.launchMolecule(Immediate) {
+    val showStatusBar by showStatusBar.collectAsState()
+    if (showStatusBar) {
+      val apis by apiStateHolder.collectAsState()
+      BottomBarState.Visible(
+        isConnected = apis != null,
+      )
+    } else {
+      BottomBarState.Hidden
+    }
+  }
 
   fun start() {
     connectionMonitor.start()

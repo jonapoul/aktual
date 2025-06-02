@@ -1,5 +1,8 @@
 <resources>
   <string name="settings_toolbar">App Settings</string>
-  <string name="settings_theme">App Theme</string>
+
+  <string name="settings_theme">App theme</string>
+  <string name="settings_show_bottom_bar">Show bottom status bar</string>
+
   <string name="settings_dialog_dismiss">Dismiss</string>
 </resources>

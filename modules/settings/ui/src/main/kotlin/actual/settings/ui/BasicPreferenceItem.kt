@@ -45,7 +45,8 @@ internal fun BasicPreferenceItem(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   hazeState: HazeState = remember { HazeState() },
   hazeStyle: HazeStyle = defaultHazeStyle(theme),
-  content: (@Composable () -> Unit)? = null,
+  rightContent: (@Composable () -> Unit)? = null,
+  bottomContent: (@Composable () -> Unit)? = null,
 ) {
   val clickableModifier = when (clickability) {
     NotClickable -> Modifier
@@ -101,9 +102,13 @@ internal fun BasicPreferenceItem(
         }
       }
 
-      if (content != null) {
-        content()
+      if (bottomContent != null) {
+        bottomContent()
       }
+    }
+
+    if (rightContent != null) {
+      rightContent()
     }
   }
 }

@@ -4,6 +4,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SliderDefaults
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBarDefaults
@@ -159,4 +160,16 @@ fun Theme.topAppBarIconButton(isPressed: Boolean) = primaryIconButton(isPressed)
   containerColor = mobileHeaderBackground,
   contentColor = mobileHeaderText,
   disabledContentColor = mobileHeaderTextSubdued,
+)
+
+@Suppress("unused")
+@Stable
+@Composable
+fun Theme.switch(isPressed: Boolean) = SwitchDefaults.colors(
+  checkedThumbColor = checkboxText,
+  uncheckedThumbColor = checkboxText,
+  checkedTrackColor = checkboxToggleBackgroundSelected,
+  uncheckedTrackColor = checkboxToggleBackground,
+  checkedBorderColor = checkboxToggleBackgroundSelected,
+  uncheckedBorderColor = checkboxToggleBackground,
 )
