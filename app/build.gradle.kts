@@ -129,6 +129,7 @@ licensee {
 }
 
 dependencies {
+  implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.android.core)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.alakazam.kotlin.logging)
@@ -136,7 +137,9 @@ dependencies {
   implementation(libs.androidx.activity.core)
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.annotation)
+  implementation(libs.androidx.compose.material3)
   implementation(libs.androidx.compose.runtime)
+  implementation(libs.androidx.compose.ui.toolingPreview)
   implementation(libs.androidx.fragment.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
@@ -152,6 +155,7 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.molecule)
   implementation(libs.preferences.android)
   implementation(projects.about.info.ui)
   implementation(projects.about.licenses.ui)
@@ -163,6 +167,7 @@ dependencies {
   implementation(projects.budget.sync.ui)
   implementation(projects.core.connection)
   implementation(projects.core.di)
+  implementation(projects.core.res)
   implementation(projects.db)
   implementation(projects.logging)
   implementation(projects.prefs)
