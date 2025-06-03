@@ -7,8 +7,7 @@ import actual.account.model.Password
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.prefs.LoginPreferences
-import actual.prefs.ServerUrlPreferences
+import actual.prefs.AppLocalPreferences
 import actual.test.TestBuildConfig
 import actual.test.buildPreferences
 import alakazam.test.core.standardDispatcher
@@ -38,8 +37,7 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 internal class LoginViewModelTest {
   // real
-  private lateinit var serverUrlPrefs: ServerUrlPreferences
-  private lateinit var loginPrefs: LoginPreferences
+  private lateinit var preferences: AppLocalPreferences
   private lateinit var viewModel: LoginViewModel
   private lateinit var versionsStateHolder: ActualVersionsStateHolder
 
@@ -49,15 +47,13 @@ internal class LoginViewModelTest {
   private fun TestScope.before() {
     Dispatchers.setMain(standardDispatcher)
     val prefs = buildPreferences(unconfinedDispatcher)
-    serverUrlPrefs = ServerUrlPreferences(prefs)
-    loginPrefs = LoginPreferences(prefs)
+    preferences = AppLocalPreferences(prefs)
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
     viewModel = LoginViewModel(
       versionsStateHolder = versionsStateHolder,
       loginRequester = loginRequester,
-      serverUrlPrefs = serverUrlPrefs,
-      loginPrefs = loginPrefs,
+      preferences = preferences,
       passwordProvider = { Password.Empty },
     )
   }
@@ -91,7 +87,7 @@ internal class LoginViewModelTest {
       assertNull(awaitItem())
 
       val url = ServerUrl(Protocol.Https, baseUrl = "url.for.my.server.com")
-      serverUrlPrefs.url.set(url)
+      preferences.serverUrl.set(url)
 
       assertEquals(expected = url, actual = awaitItem())
       expectNoEvents()
@@ -140,10 +136,9 @@ internal class LoginViewModelTest {
     viewModel.token.test {
       expectNoEvents()
 
-      loginPrefs.token.set(LoginToken(value = "abc123"))
+      preferences.loginToken.set(LoginToken(value = "abc123"))
       assertNotNull(awaitItem())
 
-      loginPrefs.token.delete()
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }

@@ -8,8 +8,7 @@ import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.prefs.LoginPreferences
-import actual.prefs.ServerUrlPreferences
+import actual.prefs.AppLocalPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
@@ -45,8 +44,7 @@ internal class LoginRequesterTest {
 
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: ActualApisStateHolder
-  private lateinit var loginPreferences: LoginPreferences
-  private lateinit var serverUrlPreferences: ServerUrlPreferences
+  private lateinit var preferences: AppLocalPreferences
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var mockEngine: MockEngine
   private lateinit var fileSystem: FakeFileSystem
@@ -58,8 +56,7 @@ internal class LoginRequesterTest {
 
   private fun TestScope.before() {
     val flowPrefs = buildPreferences(mainDispatcherRule.dispatcher)
-    serverUrlPreferences = ServerUrlPreferences(flowPrefs)
-    loginPreferences = LoginPreferences(flowPrefs)
+    preferences = AppLocalPreferences(flowPrefs)
     apisStateHolder = ActualApisStateHolder()
     mockEngine = emptyMockEngine()
     fileSystem = FakeFileSystem()
@@ -68,14 +65,14 @@ internal class LoginRequesterTest {
       scope = backgroundScope,
       clientFactory = TestClientFactory(mockEngine),
       apiStateHolder = apisStateHolder,
-      serverUrlPreferences = serverUrlPreferences,
+      preferences = preferences,
       fileSystem = fileSystem,
     )
 
     loginRequester = LoginRequester(
       contexts = TestCoroutineContexts(mainDispatcherRule),
       apisStateHolder = apisStateHolder,
-      loginPreferences = loginPreferences,
+      localPreferences = preferences,
     )
   }
 
@@ -84,13 +81,13 @@ internal class LoginRequesterTest {
     before()
 
     // Given a URL is set
-    serverUrlPreferences.url.set(EXAMPLE_URL)
+    preferences.serverUrl.set(EXAMPLE_URL)
 
     // and we have a non-null api
     connectionMonitor.start()
     apisStateHolder.filterNotNull().first()
 
-    loginPreferences.token.asFlow().test {
+    preferences.loginToken.asFlow().test {
       assertNull(awaitItem())
 
       // When we log in with a successful response
@@ -129,7 +126,7 @@ internal class LoginRequesterTest {
     before()
 
     // Given a URL is set
-    serverUrlPreferences.url.set(EXAMPLE_URL)
+    preferences.serverUrl.set(EXAMPLE_URL)
 
     // and we have a non-null api
     connectionMonitor.start()
@@ -154,7 +151,7 @@ internal class LoginRequesterTest {
     before()
 
     // Given a URL is set
-    serverUrlPreferences.url.set(EXAMPLE_URL)
+    preferences.serverUrl.set(EXAMPLE_URL)
 
     // and we have a non-null api
     connectionMonitor.start()

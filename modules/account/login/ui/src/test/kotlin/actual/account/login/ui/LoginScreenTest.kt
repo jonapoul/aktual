@@ -8,8 +8,7 @@ import actual.account.login.vm.LoginViewModel
 import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.core.model.ActualVersionsStateHolder
-import actual.prefs.LoginPreferences
-import actual.prefs.ServerUrlPreferences
+import actual.prefs.AppLocalPreferences
 import actual.test.TestBuildConfig
 import actual.test.assertEditableTextEquals
 import actual.test.buildPreferences
@@ -44,8 +43,7 @@ class LoginScreenTest {
   // real
   private lateinit var viewModel: LoginViewModel
   private lateinit var versionsStateHolder: ActualVersionsStateHolder
-  private lateinit var serverPrefs: ServerUrlPreferences
-  private lateinit var loginPrefs: LoginPreferences
+  private lateinit var preferences: AppLocalPreferences
 
   // mock
   private lateinit var navigator: LoginNavigator
@@ -61,16 +59,14 @@ class LoginScreenTest {
 
     versionsStateHolder = ActualVersionsStateHolder(BUILD_CONFIG)
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
-    serverPrefs = ServerUrlPreferences(prefs)
-    loginPrefs = LoginPreferences(prefs)
+    preferences = AppLocalPreferences(prefs)
   }
 
   private fun buildViewModel(password: Password = Password.Empty) {
     viewModel = LoginViewModel(
       loginRequester = loginRequester,
       versionsStateHolder = versionsStateHolder,
-      serverUrlPrefs = serverPrefs,
-      loginPrefs = loginPrefs,
+      preferences = preferences,
       passwordProvider = { password },
     )
   }
@@ -83,7 +79,7 @@ class LoginScreenTest {
 
     // and the login takes half a second before succeeding
     setLoginResult {
-      loginPrefs.token.setAndCommit(TOKEN) // to trigger nav behaviour
+      preferences.loginToken.setAndCommit(TOKEN) // to trigger nav behaviour
       LoginResult.Success(TOKEN)
     }
 

@@ -6,8 +6,7 @@ import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.prefs.LoginPreferences
-import actual.prefs.ServerUrlPreferences
+import actual.prefs.AppLocalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.core.collectFlow
@@ -43,8 +42,7 @@ import javax.inject.Inject
 class ServerUrlViewModel @Inject internal constructor(
   private val contexts: CoroutineContexts,
   private val apiStateHolder: ActualApisStateHolder,
-  private val serverUrlPreferences: ServerUrlPreferences,
-  private val loginPreferences: LoginPreferences,
+  private val preferences: AppLocalPreferences,
   versionsStateHolder: ActualVersionsStateHolder,
   urlProvider: ServerUrl.Provider,
 ) : ViewModel() {
@@ -80,14 +78,14 @@ class ServerUrlViewModel @Inject internal constructor(
 
   init {
     viewModelScope.launch {
-      val savedUrl = serverUrlPreferences.url.get()
+      val savedUrl = preferences.serverUrl.get()
       if (savedUrl != null) {
         mutableBaseUrl.update { savedUrl.baseUrl }
         mutableProtocol.update { savedUrl.protocol }
       }
 
       // Also clear any previous login state
-      loginPreferences.token.deleteAndCommit()
+      preferences.loginToken.deleteAndCommit()
     }
 
     viewModelScope.collectFlow(mutableConfirmResult) { result ->
@@ -127,15 +125,15 @@ class ServerUrlViewModel @Inject internal constructor(
       val protocol = mutableProtocol.value
       val baseUrl = mutableBaseUrl.value
       val url = ServerUrl(protocol, baseUrl)
-      val previousUrl = serverUrlPreferences.url.get()
+      val previousUrl = preferences.serverUrl.get()
 
       if (url != previousUrl) {
         // saving a new URL, so the existing token and API objects are invalidated
         apiStateHolder.update { null }
-        loginPreferences.token.deleteAndCommit()
+        preferences.loginToken.deleteAndCommit()
       }
 
-      serverUrlPreferences.url.set(url)
+      preferences.serverUrl.set(url)
       checkIfNeedsBootstrap(url)
       mutableIsLoading.update { false }
     }
@@ -172,7 +170,7 @@ class ServerUrlViewModel @Inject internal constructor(
     Logger.w(e, "Failed checking bootstrap for %s", url)
 
     // hit an error, we can't use this URL?
-    serverUrlPreferences.url.deleteAndCommit()
+    preferences.serverUrl.deleteAndCommit()
 
     mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
   }

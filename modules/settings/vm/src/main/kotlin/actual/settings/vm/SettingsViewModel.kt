@@ -1,7 +1,6 @@
 package actual.settings.vm
 
-import actual.prefs.BottomBarPreferences
-import actual.prefs.ColorSchemePreferences
+import actual.prefs.AppLocalPreferences
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -17,13 +16,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject internal constructor(
-  colorSchemePrefs: ColorSchemePreferences,
-  bottomBarPrefs: BottomBarPreferences,
+  preferences: AppLocalPreferences,
 ) : ViewModel() {
-  private val colorSchemePref = colorSchemePrefs.type
+  private val colorSchemePref = preferences.colorSchemeType
   private val colorSchemeFlow = colorSchemePref.asStateFlow(viewModelScope)
 
-  private val showBottomBarPref = bottomBarPrefs.show
+  private val showBottomBarPref = preferences.showBottomBar
   private val showBottomBar = showBottomBarPref.asStateFlow(viewModelScope)
 
   val prefValues: StateFlow<ImmutableList<PreferenceValue>> = viewModelScope.launchMolecule(Immediate) {
