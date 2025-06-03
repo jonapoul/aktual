@@ -5,7 +5,7 @@ import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
-import actual.prefs.LoginPreferences
+import actual.prefs.AppLocalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import io.ktor.client.plugins.ResponseException
@@ -17,7 +17,7 @@ import javax.inject.Inject
 class LoginRequester @Inject internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
-  private val loginPreferences: LoginPreferences,
+  private val localPreferences: AppLocalPreferences,
 ) {
   suspend fun logIn(password: Password): LoginResult {
     val apis = apisStateHolder.value ?: return LoginResult.OtherFailure("URL not configured")
@@ -43,7 +43,7 @@ class LoginRequester @Inject internal constructor(
     }
 
     // Also save the token
-    loginPreferences.token.set(response.data.token)
+    localPreferences.loginToken.set(response.data.token)
 
     return result
   }

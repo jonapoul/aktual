@@ -1,8 +1,7 @@
 package actual.settings.vm
 
 import actual.core.model.ColorSchemeType
-import actual.prefs.BottomBarPreferences
-import actual.prefs.ColorSchemePreferences
+import actual.prefs.AppLocalPreferences
 import actual.settings.vm.PreferenceValue.ShowBottomBar
 import actual.settings.vm.PreferenceValue.Theme
 import actual.test.buildPreferences
@@ -26,8 +25,7 @@ class SettingsViewModelTest {
     val prefs = buildPreferences(dispatcher)
 
     viewModel = SettingsViewModel(
-      colorSchemePrefs = ColorSchemePreferences(prefs),
-      bottomBarPrefs = BottomBarPreferences(prefs),
+      preferences = AppLocalPreferences(prefs),
     )
   }
 

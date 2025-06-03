@@ -10,8 +10,7 @@ import actual.api.client.ActualJson
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.prefs.LoginPreferences
-import actual.prefs.ServerUrlPreferences
+import actual.prefs.AppLocalPreferences
 import actual.test.TestBuildConfig
 import actual.test.assertEmitted
 import actual.test.buildPreferences
@@ -49,8 +48,7 @@ import kotlin.test.assertNull
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlViewModelTest {
   // Real
-  private lateinit var serverUrlPreferences: ServerUrlPreferences
-  private lateinit var loginPreferences: LoginPreferences
+  private lateinit var preferences: AppLocalPreferences
   private lateinit var viewModel: ServerUrlViewModel
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var versionsStateHolder: ActualVersionsStateHolder
@@ -81,17 +79,15 @@ class ServerUrlViewModelTest {
 
   private fun TestScope.buildPreferences() {
     val prefs = buildPreferences(UnconfinedTestDispatcher(testScheduler))
-    serverUrlPreferences = ServerUrlPreferences(prefs)
-    serverUrlPreferences.url.set(EXAMPLE_URL)
-    loginPreferences = LoginPreferences(prefs)
+    preferences = AppLocalPreferences(prefs)
+    preferences.serverUrl.set(EXAMPLE_URL)
   }
 
   private fun TestScope.buildViewModel() {
     viewModel = ServerUrlViewModel(
       contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
       apiStateHolder = apisStateHolder,
-      serverUrlPreferences = serverUrlPreferences,
-      loginPreferences = loginPreferences,
+      preferences = preferences,
       versionsStateHolder = versionsStateHolder,
       urlProvider = { null },
     )
@@ -147,7 +143,7 @@ class ServerUrlViewModelTest {
   fun `Set initial parameters based on preferences`() = runTest {
     // Given
     buildPreferences()
-    serverUrlPreferences.url.set(EXAMPLE_URL)
+    preferences.serverUrl.set(EXAMPLE_URL)
 
     // When
     buildViewModel()
@@ -229,15 +225,15 @@ class ServerUrlViewModelTest {
   fun `Clear saved token if the confirmed URL is different from previously-saved`() = runTest {
     buildPreferences()
     buildViewModel()
-    loginPreferences.token.asFlow().test {
+    preferences.loginToken.asFlow().test {
       // Given no token initially saved
       assertNull(awaitItem())
 
       // when we save a token and a URL
       val initialUrl = ServerUrl(Protocol.Https, "website.com")
-      serverUrlPreferences.url.setAndCommit(initialUrl)
+      preferences.serverUrl.setAndCommit(initialUrl)
       val token = LoginToken("abc-123")
-      loginPreferences.token.setAndCommit(token)
+      preferences.loginToken.setAndCommit(token)
 
       // then the token has been saved
       assertEmitted(token)

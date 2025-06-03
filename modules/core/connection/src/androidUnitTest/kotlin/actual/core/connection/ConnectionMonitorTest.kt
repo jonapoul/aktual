@@ -4,7 +4,7 @@ package actual.core.connection
 
 import actual.api.client.ActualApisStateHolder
 import actual.core.model.ServerUrl
-import actual.prefs.ServerUrlPreferences
+import actual.prefs.AppLocalPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
@@ -33,14 +33,14 @@ class ConnectionMonitorTest {
   @get:Rule val flakyTestRule = FlakyTestRule()
 
   private lateinit var connectionMonitor: ConnectionMonitor
-  private lateinit var serverUrlPreferences: ServerUrlPreferences
+  private lateinit var preferences: AppLocalPreferences
   private lateinit var apiStateHolder: ActualApisStateHolder
   private lateinit var mockEngine: MockEngine
   private lateinit var fileSystem: FakeFileSystem
 
   private fun TestScope.before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
-    serverUrlPreferences = ServerUrlPreferences(prefs)
+    preferences = AppLocalPreferences(prefs)
     apiStateHolder = ActualApisStateHolder()
     mockEngine = emptyMockEngine()
     fileSystem = FakeFileSystem()
@@ -49,7 +49,7 @@ class ConnectionMonitorTest {
       scope = backgroundScope,
       clientFactory = TestClientFactory(mockEngine),
       apiStateHolder = apiStateHolder,
-      serverUrlPreferences = serverUrlPreferences,
+      preferences = preferences,
       fileSystem = fileSystem,
     )
   }
@@ -68,7 +68,7 @@ class ConnectionMonitorTest {
       assertNull(awaitItem())
 
       // and no URL is set
-      assertNull(serverUrlPreferences.url.get())
+      assertNull(preferences.serverUrl.get())
 
       // When we start and wait for things to settle
       connectionMonitor.start()
@@ -93,7 +93,7 @@ class ConnectionMonitorTest {
       assertNull(awaitItem())
 
       // When the URL is set
-      serverUrlPreferences.url.set(ServerUrl.Demo)
+      preferences.serverUrl.set(ServerUrl.Demo)
 
       // An API is built and emitted
       assertNotNull(awaitItem())
@@ -111,7 +111,7 @@ class ConnectionMonitorTest {
     before()
 
     // Given we've set a URL and started
-    serverUrlPreferences.url.set(ServerUrl.Demo)
+    preferences.serverUrl.set(ServerUrl.Demo)
 
     apiStateHolder.test {
       // Nothing initially
@@ -124,7 +124,7 @@ class ConnectionMonitorTest {
       assertNotNull(awaitItem())
 
       // When the URL is cleared
-      serverUrlPreferences.url.delete()
+      preferences.serverUrl.delete()
 
       // Then the null API is emitted
       assertNull(awaitItem())
@@ -140,7 +140,7 @@ class ConnectionMonitorTest {
     before()
 
     // Given we've set a URL and started
-    serverUrlPreferences.url.set(ServerUrl.Demo)
+    preferences.serverUrl.set(ServerUrl.Demo)
 
     apiStateHolder.test {
       // Nothing initially
@@ -157,7 +157,7 @@ class ConnectionMonitorTest {
       advanceUntilIdle()
 
       // and the URL is cleared
-      serverUrlPreferences.url.delete()
+      preferences.serverUrl.delete()
 
       // nothing else is emitted
       expectNoEvents()

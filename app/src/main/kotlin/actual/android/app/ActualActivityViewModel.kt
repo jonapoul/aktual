@@ -5,10 +5,7 @@ import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
 import actual.core.model.ColorSchemeType
-import actual.prefs.BottomBarPreferences
-import actual.prefs.ColorSchemePreferences
-import actual.prefs.LoginPreferences
-import actual.prefs.ServerUrlPreferences
+import actual.prefs.AppLocalPreferences
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -30,18 +27,15 @@ internal class ActualActivityViewModel @Inject constructor(
   private val connectionMonitor: ConnectionMonitor,
   private val serverVersionFetcher: ServerVersionFetcher,
   private val apiStateHolder: ActualApisStateHolder,
-  colorSchemePrefs: ColorSchemePreferences,
-  serverUrlPreferences: ServerUrlPreferences,
-  loginPreferences: LoginPreferences,
-  bottomBarPreferences: BottomBarPreferences,
+  preferences: AppLocalPreferences,
 ) : ViewModel() {
-  val colorSchemeType: StateFlow<ColorSchemeType> = colorSchemePrefs.type.asStateFlow(viewModelScope)
+  val colorSchemeType: StateFlow<ColorSchemeType> = preferences.colorSchemeType.asStateFlow(viewModelScope)
 
-  val isServerUrlSet: Boolean = serverUrlPreferences.url.isSet()
+  val isServerUrlSet: Boolean = preferences.serverUrl.isSet()
 
-  val loginToken: LoginToken? = loginPreferences.token.get()
+  val loginToken: LoginToken? = preferences.loginToken.get()
 
-  private val showStatusBar = bottomBarPreferences.show.asStateFlow(viewModelScope)
+  private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 
   val bottomBarState: StateFlow<BottomBarState> = viewModelScope.launchMolecule(Immediate) {
     val showStatusBar by showStatusBar.collectAsState()
