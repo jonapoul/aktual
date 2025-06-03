@@ -61,7 +61,6 @@ class AppLocalPreferencesTest {
     }
   }
 
-
   @Test
   fun `Colour scheme types`() = runTest {
     with(preferences.colorSchemeType) {
