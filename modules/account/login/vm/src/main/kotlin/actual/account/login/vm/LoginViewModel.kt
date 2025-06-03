@@ -7,8 +7,7 @@ import actual.account.model.Password
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.ServerUrl
-import actual.prefs.LoginPreferences
-import actual.prefs.ServerUrlPreferences
+import actual.prefs.AppLocalPreferences
 import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
@@ -30,8 +29,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
   private val loginRequester: LoginRequester,
   versionsStateHolder: ActualVersionsStateHolder,
-  serverUrlPrefs: ServerUrlPreferences,
-  loginPrefs: LoginPreferences,
+  preferences: AppLocalPreferences,
   passwordProvider: Password.Provider,
 ) : ViewModel() {
   private val mutableEnteredPassword = ResettableStateFlow(passwordProvider.default())
@@ -40,15 +38,15 @@ class LoginViewModel @Inject constructor(
 
   val enteredPassword: StateFlow<Password> = mutableEnteredPassword.asStateFlow()
   val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()
-  val serverUrl: StateFlow<ServerUrl?> = serverUrlPrefs.url.asStateFlow(viewModelScope)
+  val serverUrl: StateFlow<ServerUrl?> = preferences.serverUrl.asStateFlow(viewModelScope)
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
 
   val loginFailure: StateFlow<LoginResult.Failure?> =
     combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
       .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
-  val token: Flow<LoginToken> = loginPrefs
-    .token
+  val token: Flow<LoginToken> = preferences
+    .loginToken
     .asFlow()
     .filterNotNull()
 
