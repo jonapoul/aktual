@@ -1,5 +1,7 @@
+import actual.budget.model.SyncedPrefKey;
+
 CREATE TABLE IF NOT EXISTS preferences(
-  id TEXT PRIMARY KEY,
+  id TEXT AS SyncedPrefKey PRIMARY KEY,
   value TEXT
 );
 
