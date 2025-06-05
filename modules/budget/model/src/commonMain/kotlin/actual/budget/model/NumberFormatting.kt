@@ -30,15 +30,3 @@ data class NumberFormatConfig(
   val format: NumberFormat,
   val hideFraction: Boolean,
 )
-
-enum class NumberType {
-  /**
-   * TODO: come back to this - what's the use case? See packages/desktop-client/src/components/spreadsheet/useFormat.ts
-   */
-  // String,
-
-  Number,
-  Percentage,
-  FinancialWithSign,
-  Financial,
-}

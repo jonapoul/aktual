@@ -5,7 +5,6 @@ import actual.budget.model.AccountSyncSource
 import actual.budget.model.Amount
 import actual.budget.model.BalanceType
 import actual.budget.model.BankId
-import actual.budget.model.SyncedPrefKey
 import actual.budget.model.CategoryGroupId
 import actual.budget.model.CategoryId
 import actual.budget.model.ConditionOperator
@@ -23,6 +22,7 @@ import actual.budget.model.ScheduleId
 import actual.budget.model.ScheduleJsonPathIndex
 import actual.budget.model.ScheduleNextDateId
 import actual.budget.model.SortBy
+import actual.budget.model.SyncedPrefKey
 import actual.budget.model.Timestamp
 import actual.budget.model.TransactionFilterId
 import actual.budget.model.TransactionId
