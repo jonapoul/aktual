@@ -5,6 +5,7 @@ import actual.budget.model.AccountSyncSource
 import actual.budget.model.Amount
 import actual.budget.model.BalanceType
 import actual.budget.model.BankId
+import actual.budget.model.SyncedPrefKey
 import actual.budget.model.CategoryGroupId
 import actual.budget.model.CategoryId
 import actual.budget.model.ConditionOperator
@@ -76,6 +77,7 @@ private val yearAndMonth = longAdapter(::YearAndMonth, YearAndMonth::toLong)
 private val accountId = stringAdapter(::AccountId)
 private val accountSyncSource = stringAdapter(AccountSyncSource::fromString)
 private val bankId = stringAdapter(::BankId)
+private val syncedPrefKey = stringAdapter(SyncedPrefKey::decode, SyncedPrefKey::key)
 private val categoryGroupId = stringAdapter(::CategoryGroupId)
 private val categoryId = stringAdapter(::CategoryId)
 private val customReportsId = stringAdapter(::CustomReportId)
@@ -186,6 +188,10 @@ internal val MessagesCrdtAdapter = Messages_crdt.Adapter(
 internal val PayeeMappingAdapter = Payee_mapping.Adapter(
   idAdapter = payeeId,
   targetIdAdapter = payeeId,
+)
+
+internal val PreferencesAdapter = Preferences.Adapter(
+  idAdapter = syncedPrefKey,
 )
 
 internal val RulesAdapter = Rules.Adapter(
