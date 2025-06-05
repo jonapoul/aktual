@@ -17,6 +17,7 @@ fun buildDatabase(driver: SqlDriver): BudgetDatabase = BudgetDatabase(
   messages_crdtAdapter = MessagesCrdtAdapter,
   payee_mappingAdapter = PayeeMappingAdapter,
   payeesAdapter = PayeesAdapter,
+  preferencesAdapter = PreferencesAdapter,
   reflect_budgetsAdapter = ReflectBudgetsAdapter,
   rulesAdapter = RulesAdapter,
   schedulesAdapter = SchedulesAdapter,
