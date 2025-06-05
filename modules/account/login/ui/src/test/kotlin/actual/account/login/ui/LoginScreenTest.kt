@@ -8,7 +8,7 @@ import actual.account.login.vm.LoginViewModel
 import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.core.model.ActualVersionsStateHolder
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import actual.test.TestBuildConfig
 import actual.test.assertEditableTextEquals
 import actual.test.buildPreferences
@@ -43,7 +43,7 @@ class LoginScreenTest {
   // real
   private lateinit var viewModel: LoginViewModel
   private lateinit var versionsStateHolder: ActualVersionsStateHolder
-  private lateinit var preferences: AppLocalPreferences
+  private lateinit var preferences: AppGlobalPreferences
 
   // mock
   private lateinit var navigator: LoginNavigator
@@ -59,7 +59,7 @@ class LoginScreenTest {
 
     versionsStateHolder = ActualVersionsStateHolder(BUILD_CONFIG)
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
-    preferences = AppLocalPreferences(prefs)
+    preferences = AppGlobalPreferences(prefs)
   }
 
   private fun buildViewModel(password: Password = Password.Empty) {

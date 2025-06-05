@@ -8,7 +8,7 @@ import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
@@ -44,7 +44,7 @@ internal class LoginRequesterTest {
 
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: ActualApisStateHolder
-  private lateinit var preferences: AppLocalPreferences
+  private lateinit var preferences: AppGlobalPreferences
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var mockEngine: MockEngine
   private lateinit var fileSystem: FakeFileSystem
@@ -56,7 +56,7 @@ internal class LoginRequesterTest {
 
   private fun TestScope.before() {
     val flowPrefs = buildPreferences(mainDispatcherRule.dispatcher)
-    preferences = AppLocalPreferences(flowPrefs)
+    preferences = AppGlobalPreferences(flowPrefs)
     apisStateHolder = ActualApisStateHolder()
     mockEngine = emptyMockEngine()
     fileSystem = FakeFileSystem()

@@ -4,7 +4,7 @@ import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.ChangePasswordRequest
 import actual.api.model.account.ChangePasswordResponse
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import alakazam.kotlin.logging.Logger
@@ -18,7 +18,7 @@ import javax.inject.Inject
 class PasswordChanger @Inject internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
-  private val preferences: AppLocalPreferences,
+  private val preferences: AppGlobalPreferences,
 ) {
   suspend fun submit(password: Password): ChangePasswordResult {
     val apis = apisStateHolder.value

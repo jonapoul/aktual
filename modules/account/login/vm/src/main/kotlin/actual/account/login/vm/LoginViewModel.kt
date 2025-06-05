@@ -7,7 +7,7 @@ import actual.account.model.Password
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.ServerUrl
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
@@ -29,7 +29,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
   private val loginRequester: LoginRequester,
   versionsStateHolder: ActualVersionsStateHolder,
-  preferences: AppLocalPreferences,
+  preferences: AppGlobalPreferences,
   passwordProvider: Password.Provider,
 ) : ViewModel() {
   private val mutableEnteredPassword = ResettableStateFlow(passwordProvider.default())
