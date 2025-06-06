@@ -163,6 +163,7 @@ dependencies {
   implementation(projects.account.login.ui)
   implementation(projects.account.password.ui)
   implementation(projects.api.actual)
+  implementation(projects.budget.di)
   implementation(projects.budget.list.ui)
   implementation(projects.budget.sync.ui)
   implementation(projects.core.connection)
