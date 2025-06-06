@@ -257,8 +257,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
       }
 
       is ImportResult.Success -> {
-        val budgetId = result.meta.cloudFileId
-        val component = budgetComponents.update(budgetId)
+        val component = budgetComponents.update(result.meta)
         Logger.i("Built new budget component from %s: %s", budgetId, component)
         setStepState(ValidatingDatabase, SyncStepState.Succeeded)
       }
