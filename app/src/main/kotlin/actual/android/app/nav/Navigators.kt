@@ -59,6 +59,7 @@ private class SettingsNavigatorImpl(private val nav: NavHostController) : Settin
 }
 
 private class SyncBudgetNavigatorImpl(private val nav: NavHostController) : SyncBudgetNavigator {
+  override fun back() = nav.popBackStack()
   override fun toBudget(token: LoginToken, budgetId: BudgetId) {
     Logger.w("Not implemented yet! nav=$nav, token=$token, budgetId=$budgetId")
   }

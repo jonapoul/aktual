@@ -169,7 +169,6 @@ dependencies {
   implementation(projects.core.connection)
   implementation(projects.core.di)
   implementation(projects.core.res)
-  implementation(projects.db)
   implementation(projects.logging)
   implementation(projects.prefs)
   implementation(projects.settings.ui)

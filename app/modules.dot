@@ -24,6 +24,7 @@ node ["style"="filled"]
 ":api:di" ["fillcolor"="#FCB103","shape"="none"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
+":budget:di" ["fillcolor"="#FCB103","shape"="none"]
 ":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:list:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -111,11 +112,12 @@ graph ["rank"="same"]
 ":app" -> ":core:connection" ["style"="dotted"]
 ":app" -> ":core:di" ["style"="dotted"]
 ":app" -> ":core:res" ["style"="dotted"]
-":app" -> ":db" ["style"="dotted"]
 ":app" -> ":logging" ["style"="dotted"]
 ":app" -> ":prefs" ["style"="dotted"]
 ":app" -> ":settings:ui" ["style"="dotted"]
 ":app" -> ":url:ui" ["style"="dotted"]
+":budget:di" -> ":budget:model"
+":budget:di" -> ":db"
 ":budget:encryption" -> ":account:model"
 ":budget:encryption" -> ":budget:model"
 ":budget:encryption" -> ":core:model"
@@ -136,6 +138,7 @@ graph ["rank"="same"]
 ":budget:sync:ui" -> ":core:ui"
 ":budget:sync:vm" -> ":account:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
+":budget:sync:vm" -> ":budget:di"
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":core:files"

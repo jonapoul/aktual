@@ -7,6 +7,7 @@ dependencies {
   api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
+  api(projects.budget.di)
   api(projects.core.files)
   api(projects.core.model)
   implementation(libs.alakazam.android.core)

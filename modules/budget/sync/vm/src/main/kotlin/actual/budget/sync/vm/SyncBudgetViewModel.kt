@@ -4,6 +4,7 @@ import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
+import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.encryption.KeyGenerator
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.SyncStep.DownloadingDatabase
@@ -33,8 +34,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.Path
@@ -53,6 +57,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
   private val keyGenerator: KeyGenerator,
   private val keyFetcher: KeyFetcher,
   private val keyPreferences: KeyPreferences,
+  private val budgetComponents: BudgetComponentStateHolder,
 ) : ViewModel() {
   private val token = inputs.token
   private val budgetId = inputs.budgetId
@@ -64,6 +69,10 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
   val stepStates: StateFlow<ImmutableMap<SyncStep, SyncStepState>> = mutableSteps.asStateFlow()
+
+  val budgetIsLoaded: StateFlow<Boolean> = budgetComponents
+    .map { it?.budgetId == budgetId }
+    .stateIn(viewModelScope, Eagerly, initialValue = false)
 
   val overallState: StateFlow<SyncOverallState> = viewModelScope.launchMolecule(Immediate) {
     val stepStates by mutableSteps.collectAsState()
@@ -89,6 +98,8 @@ class SyncBudgetViewModel @AssistedInject constructor(
     job?.cancel()
   }
 
+  fun clearBudget() = budgetComponents.clear()
+
   fun enterKeyPassword(input: Password) = mutablePasswordState.update { KeyPasswordState.Active(input) }
 
   fun dismissKeyPasswordDialog() = mutablePasswordState.update { KeyPasswordState.Inactive }
@@ -112,7 +123,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
         is FetchKeyResult.Failure -> Logger.w("Failed fetching keys: $fetched")
 
         is FetchKeyResult.Success -> {
-//          val key = keyGenerator(fetched.key)
+          // val key = keyGenerator(fetched.key)
           keyPreferences[keyId] = fetched.key
 
           val result = decrypter(budgetId, meta, cachedData.encryptedPath)
@@ -237,12 +248,20 @@ class SyncBudgetViewModel @AssistedInject constructor(
   }
 
   private suspend fun importDatabase(path: Path, userFile: UserFile) {
-    val importResult = importer(userFile, path)
-    Logger.i("importResult=$importResult")
+    val result = importer(userFile, path)
+    Logger.i("importResult=$result")
 
-    when (importResult) {
-      is ImportResult.Failure -> setStepState(ValidatingDatabase, SyncStepState.Failed(importResult.toString()))
-      is ImportResult.Success -> setStepState(ValidatingDatabase, SyncStepState.Succeeded)
+    when (result) {
+      is ImportResult.Failure -> {
+        setStepState(ValidatingDatabase, SyncStepState.Failed(result.toString()))
+      }
+
+      is ImportResult.Success -> {
+        val budgetId = result.meta.cloudFileId
+        val component = budgetComponents.update(budgetId)
+        Logger.i("Built new budget component from %s: %s", budgetId, component)
+        setStepState(ValidatingDatabase, SyncStepState.Succeeded)
+      }
     }
   }
 

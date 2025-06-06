@@ -19,7 +19,7 @@ internal fun <T : Any> NavHostController.debugNav(route: T) {
 }
 
 @SuppressLint("RestrictedApi")
-fun NavHostController.printBackStack() {
+private fun NavHostController.printBackStack() {
   val backstack = currentBackStack.value
   val str = backstack.joinToString { it.destination.toString() }
   Logger.v("printBackStack", "backstack = $str")
