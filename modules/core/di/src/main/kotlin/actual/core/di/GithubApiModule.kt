@@ -1,4 +1,4 @@
-package actual.about.di
+package actual.core.di
 
 import actual.api.builder.buildKtorClient
 import alakazam.kotlin.core.BuildConfig
