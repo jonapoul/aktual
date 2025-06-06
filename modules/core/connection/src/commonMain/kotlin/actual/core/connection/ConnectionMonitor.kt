@@ -9,7 +9,7 @@ import actual.api.client.BaseApi
 import actual.api.client.SyncApi
 import actual.api.client.SyncDownloadApi
 import actual.core.model.ServerUrl
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.collectFlow
 import alakazam.kotlin.logging.Logger
 import kotlinx.coroutines.CancellationException
@@ -25,7 +25,7 @@ class ConnectionMonitor @Inject constructor(
   private val scope: CoroutineScope,
   private val clientFactory: ClientFactory,
   private val apiStateHolder: ActualApisStateHolder,
-  private val preferences: AppLocalPreferences,
+  private val preferences: AppGlobalPreferences,
   private val fileSystem: FileSystem,
 ) {
   private var job: Job? = null

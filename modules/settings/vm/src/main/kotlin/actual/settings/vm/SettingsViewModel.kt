@@ -1,6 +1,6 @@
 package actual.settings.vm
 
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject internal constructor(
-  preferences: AppLocalPreferences,
+  preferences: AppGlobalPreferences,
 ) : ViewModel() {
   private val colorSchemePref = preferences.colorSchemeType
   private val colorSchemeFlow = colorSchemePref.asStateFlow(viewModelScope)

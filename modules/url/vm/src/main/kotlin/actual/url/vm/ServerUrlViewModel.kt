@@ -6,7 +6,7 @@ import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.core.collectFlow
@@ -42,7 +42,7 @@ import javax.inject.Inject
 class ServerUrlViewModel @Inject internal constructor(
   private val contexts: CoroutineContexts,
   private val apiStateHolder: ActualApisStateHolder,
-  private val preferences: AppLocalPreferences,
+  private val preferences: AppGlobalPreferences,
   versionsStateHolder: ActualVersionsStateHolder,
   urlProvider: ServerUrl.Provider,
 ) : ViewModel() {

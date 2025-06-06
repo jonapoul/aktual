@@ -19,15 +19,15 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
-class AppLocalPreferencesTest {
+class AppGlobalPreferencesTest {
   @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
-  private lateinit var preferences: AppLocalPreferences
+  private lateinit var preferences: AppGlobalPreferences
 
   @BeforeTest
   fun before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
-    preferences = AppLocalPreferences(prefs)
+    preferences = AppGlobalPreferences(prefs)
   }
 
   @Test

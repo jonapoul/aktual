@@ -4,7 +4,7 @@ package actual.core.connection
 
 import actual.api.client.ActualApisStateHolder
 import actual.core.model.ServerUrl
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
@@ -33,14 +33,14 @@ class ConnectionMonitorTest {
   @get:Rule val flakyTestRule = FlakyTestRule()
 
   private lateinit var connectionMonitor: ConnectionMonitor
-  private lateinit var preferences: AppLocalPreferences
+  private lateinit var preferences: AppGlobalPreferences
   private lateinit var apiStateHolder: ActualApisStateHolder
   private lateinit var mockEngine: MockEngine
   private lateinit var fileSystem: FakeFileSystem
 
   private fun TestScope.before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
-    preferences = AppLocalPreferences(prefs)
+    preferences = AppGlobalPreferences(prefs)
     apiStateHolder = ActualApisStateHolder()
     mockEngine = emptyMockEngine()
     fileSystem = FakeFileSystem()
