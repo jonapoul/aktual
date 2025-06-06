@@ -12,6 +12,7 @@ import actual.budget.sync.vm.SyncStep.FetchingFileInfo
 import actual.budget.sync.vm.SyncStep.ValidatingDatabase
 import actual.core.files.BudgetFiles
 import actual.core.files.decryptedZip
+import actual.core.files.encryptedZip
 import actual.core.model.Percent
 import actual.prefs.KeyPreferences
 import alakazam.android.core.UrlOpener
@@ -96,6 +97,11 @@ class SyncBudgetViewModel @AssistedInject constructor(
   override fun onCleared() {
     super.onCleared()
     job?.cancel()
+
+    with(files) {
+      fileSystem.delete(encryptedZip(budgetId))
+      fileSystem.delete(decryptedZip(budgetId))
+    }
   }
 
   fun clearBudget() {

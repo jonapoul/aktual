@@ -7,6 +7,7 @@ import actual.api.client.ActualApisStateHolder
 import actual.budget.di.BudgetComponentStateHolder
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
+import actual.core.files.BudgetFiles
 import actual.core.model.ColorSchemeType
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.logging.Logger
@@ -35,6 +36,7 @@ internal class ActualActivityViewModel @Inject constructor(
   private val connectionMonitor: ConnectionMonitor,
   private val serverVersionFetcher: ServerVersionFetcher,
   private val apiStateHolder: ActualApisStateHolder,
+  private val files: BudgetFiles,
   budgetComponents: BudgetComponentStateHolder,
   preferences: AppGlobalPreferences,
 ) : ViewModel() {
@@ -74,10 +76,14 @@ internal class ActualActivityViewModel @Inject constructor(
     }
   }
 
-  override fun onCleared() {
-    Logger.v("onCleared")
-    super.onCleared()
+  fun onDestroy() {
+    Logger.v("onDestroy")
     connectionMonitor.stop()
     scope.cancel()
+
+    with(files) {
+      val tmpDir = tmp(mkdirs = false)
+      fileSystem.deleteRecursively(tmpDir)
+    }
   }
 }

@@ -30,6 +30,11 @@ import dagger.hilt.android.AndroidEntryPoint
 class ActualActivity : ComponentActivity() {
   private val viewModel by viewModels<ActualActivityViewModel>()
 
+  override fun onDestroy() {
+    super.onDestroy()
+    viewModel.onDestroy()
+  }
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     viewModel.start()
