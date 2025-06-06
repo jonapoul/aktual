@@ -1,4 +1,4 @@
-package actual.about.di
+package actual.core.di
 
 import actual.api.builder.ClientFactory
 import actual.api.builder.buildKtorClient
