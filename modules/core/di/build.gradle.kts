@@ -13,10 +13,14 @@ dependencies {
   api(libs.kotlinx.datetime)
   api(libs.okio)
   api(libs.preferences.core)
+  api(projects.api.github)
   api(projects.core.files)
   api(projects.core.model)
   api(projects.prefs)
+  implementation(libs.kotlinx.serialization.json)
+  implementation(libs.ktor.core)
   implementation(libs.preferences.android)
+  implementation(projects.api.builder)
 }
 
 ksp {
