@@ -141,6 +141,7 @@ androidx-navigation-compose = { module = "androidx.navigation:navigation-compose
 androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splash" }
+dagger-compiler = { module = "com.google.dagger:dagger-compiler", version.ref = "hilt" }
 dagger-core = { module = "com.google.dagger:dagger", version.ref = "hilt" }
 haze-core = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
 hilt-core = { module = "com.google.dagger:hilt-core", version.ref = "hilt" }

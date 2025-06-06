@@ -4,6 +4,7 @@ import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
+import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.encryption.KeyGenerator
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.SyncStep.DownloadingDatabase
@@ -53,6 +54,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
   private val keyGenerator: KeyGenerator,
   private val keyFetcher: KeyFetcher,
   private val keyPreferences: KeyPreferences,
+  private val budgetComponents: BudgetComponentStateHolder,
 ) : ViewModel() {
   private val token = inputs.token
   private val budgetId = inputs.budgetId
@@ -237,12 +239,20 @@ class SyncBudgetViewModel @AssistedInject constructor(
   }
 
   private suspend fun importDatabase(path: Path, userFile: UserFile) {
-    val importResult = importer(userFile, path)
-    Logger.i("importResult=$importResult")
+    val result = importer(userFile, path)
+    Logger.i("importResult=$result")
 
-    when (importResult) {
-      is ImportResult.Failure -> setStepState(ValidatingDatabase, SyncStepState.Failed(importResult.toString()))
-      is ImportResult.Success -> setStepState(ValidatingDatabase, SyncStepState.Succeeded)
+    when (result) {
+      is ImportResult.Failure -> {
+        setStepState(ValidatingDatabase, SyncStepState.Failed(result.toString()))
+      }
+
+      is ImportResult.Success -> {
+        val budgetId = result.meta.cloudFileId
+        val component = budgetComponents.update(budgetId)
+        Logger.i("Built new budget component from %s: %s", budgetId, component)
+        setStepState(ValidatingDatabase, SyncStepState.Succeeded)
+      }
     }
   }
 

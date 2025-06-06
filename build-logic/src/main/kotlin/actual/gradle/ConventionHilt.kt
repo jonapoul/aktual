@@ -1,5 +1,6 @@
 package actual.gradle
 
+import blueprint.core.boolPropertyOrElse
 import blueprint.core.getLibrary
 import blueprint.core.libs
 import com.google.devtools.ksp.gradle.KspGradleSubplugin
@@ -19,9 +20,13 @@ class ConventionHilt : Plugin<Project> {
     val kspTest by configurations
     val testImplementation by configurations
 
+    val applyHiltCompiler = boolPropertyOrElse("actual.hilt.applyCompiler", default = true)
+
     dependencies {
-      ksp(libs.getLibrary("hilt.compiler"))
-      kspTest(libs.getLibrary("hilt.compiler"))
+      if (applyHiltCompiler) {
+        ksp(libs.getLibrary("hilt.compiler"))
+        kspTest(libs.getLibrary("hilt.compiler"))
+      }
       testImplementation(libs.getLibrary("test.hilt"))
     }
   }
