@@ -1,4 +1,4 @@
-@file:Suppress("ktlint:standard:parameter-list-wrapping")
+@file:Suppress("ktlint:standard:parameter-list-wrapping", "DEPRECATION")
 
 package actual.budget.di
 
@@ -18,6 +18,12 @@ import dagger.Component
 )
 interface BudgetComponent {
   val database: BudgetDatabase
+
+  @Deprecated("Don't use this directly", ReplaceWith("budgetId"))
+  val idAlias: BudgetIdAlias
+
+  val budgetId: BudgetId
+    get() = BudgetId(idAlias)
 
   @Component.Builder
   interface Builder {

@@ -18,6 +18,7 @@ import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.transparentTopAppBarColors
 import alakazam.android.ui.compose.VerticalSpacer
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -65,6 +66,12 @@ fun SyncBudgetScreen(
 ) {
   val stepStates by viewModel.stepStates.collectAsStateWithLifecycle()
   val passwordState by viewModel.passwordState.collectAsStateWithLifecycle()
+  val budgetIsLoaded by viewModel.budgetIsLoaded.collectAsStateWithLifecycle()
+
+  BackHandler(enabled = budgetIsLoaded) {
+    viewModel.clearBudget()
+    nav.back()
+  }
 
   SyncBudgetScaffold(
     stepStates = stepStates,

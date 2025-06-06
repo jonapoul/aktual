@@ -34,8 +34,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.Path
@@ -67,6 +70,10 @@ class SyncBudgetViewModel @AssistedInject constructor(
   private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
   val stepStates: StateFlow<ImmutableMap<SyncStep, SyncStepState>> = mutableSteps.asStateFlow()
 
+  val budgetIsLoaded: StateFlow<Boolean> = budgetComponents
+    .map { it?.budgetId == budgetId }
+    .stateIn(viewModelScope, Eagerly, initialValue = false)
+
   val overallState: StateFlow<SyncOverallState> = viewModelScope.launchMolecule(Immediate) {
     val stepStates by mutableSteps.collectAsState()
     val states = stepStates.values
@@ -91,6 +98,9 @@ class SyncBudgetViewModel @AssistedInject constructor(
     job?.cancel()
   }
 
+  fun clearBudget() = budgetComponents.clear()
+    .also { Logger.i("clearBudget") }
+
   fun enterKeyPassword(input: Password) = mutablePasswordState.update { KeyPasswordState.Active(input) }
 
   fun dismissKeyPasswordDialog() = mutablePasswordState.update { KeyPasswordState.Inactive }
@@ -114,7 +124,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
         is FetchKeyResult.Failure -> Logger.w("Failed fetching keys: $fetched")
 
         is FetchKeyResult.Success -> {
-//          val key = keyGenerator(fetched.key)
+          //          val key = keyGenerator(fetched.key)
           keyPreferences[keyId] = fetched.key
 
           val result = decrypter(budgetId, meta, cachedData.encryptedPath)
