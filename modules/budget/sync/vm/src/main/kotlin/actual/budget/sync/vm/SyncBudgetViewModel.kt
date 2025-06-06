@@ -98,15 +98,22 @@ class SyncBudgetViewModel @AssistedInject constructor(
     job?.cancel()
   }
 
-  fun clearBudget() = budgetComponents.clear()
+  fun clearBudget() {
+    Logger.v("clearBudget")
+    budgetComponents.clear()
+  }
 
   fun enterKeyPassword(input: Password) = mutablePasswordState.update { KeyPasswordState.Active(input) }
 
   fun dismissKeyPasswordDialog() = mutablePasswordState.update { KeyPasswordState.Inactive }
 
-  fun learnMore() = urlOpener.openUrl(LEARN_MORE_URL)
+  fun learnMore() {
+    Logger.v("learnMore")
+    urlOpener.openUrl(LEARN_MORE_URL)
+  }
 
   fun confirmKeyPassword() {
+    Logger.v("confirmKeyPassword")
     val state = mutablePasswordState.value
     dismissKeyPasswordDialog()
     val cachedData = cachedData

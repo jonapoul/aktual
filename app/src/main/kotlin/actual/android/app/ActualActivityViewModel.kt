@@ -23,8 +23,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -46,13 +46,12 @@ internal class ActualActivityViewModel @Inject constructor(
 
   private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 
-  private val budgetName: Flow<String?> = budgetComponents
-    .filterNotNull()
-    .flatMapLatest { component ->
-      component
-        .metadata
-        .map { it.budgetName }
-    }
+  private val budgetName: Flow<String?> = budgetComponents.flatMapLatest { component ->
+    component
+      ?.metadata
+      ?.map { it.budgetName }
+      ?: flowOf(null)
+  }
 
   val bottomBarState: StateFlow<BottomBarState> = viewModelScope.launchMolecule(Immediate) {
     val showStatusBar by showStatusBar.collectAsState()
