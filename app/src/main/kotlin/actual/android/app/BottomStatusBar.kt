@@ -20,6 +20,11 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,10 +37,18 @@ internal fun BottomStatusBar(
 ) = Row(
   modifier = modifier
     .background(theme.cardBackground.copy(alpha = 0.8f))
-    .padding(3.dp)
+    .padding(vertical = 3.dp, horizontal = 8.dp)
     .fillMaxWidth(),
   verticalAlignment = Alignment.CenterVertically,
 ) {
+  if (state.budgetName != null) {
+    Text(
+      text = loadedString(state.budgetName),
+      fontSize = 10.sp,
+      color = theme.pageText,
+    )
+  }
+
   val text = text(state.isConnected)
   val tint = tint(state.isConnected, theme)
 
@@ -55,8 +68,6 @@ internal fun BottomStatusBar(
     fontSize = 10.sp,
     color = tint,
   )
-
-  HorizontalSpacer(5.dp)
 }
 
 @Stable
@@ -78,12 +89,23 @@ private fun tint(isConnected: Boolean, theme: Theme) = when (isConnected) {
   false -> theme.warningText
 }
 
+@Stable
+@Composable
+private fun loadedString(budgetName: String): AnnotatedString = buildAnnotatedString {
+  append(CoreStrings.budgetLoaded)
+  append("  ")
+  withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+    append(budgetName)
+  }
+}
+
 @Preview
 @Composable
 private fun PreviewConnected() = PreviewColumn {
   BottomStatusBar(
     state = BottomBarState.Visible(
       isConnected = true,
+      budgetName = "My Budget",
     ),
   )
 }
@@ -94,6 +116,7 @@ private fun PreviewDisconnected() = PreviewColumn {
   BottomStatusBar(
     state = BottomBarState.Visible(
       isConnected = false,
+      budgetName = null,
     ),
   )
 }

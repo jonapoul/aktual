@@ -104,15 +104,22 @@ class SyncBudgetViewModel @AssistedInject constructor(
     }
   }
 
-  fun clearBudget() = budgetComponents.clear()
+  fun clearBudget() {
+    Logger.v("clearBudget")
+    budgetComponents.clear()
+  }
 
   fun enterKeyPassword(input: Password) = mutablePasswordState.update { KeyPasswordState.Active(input) }
 
   fun dismissKeyPasswordDialog() = mutablePasswordState.update { KeyPasswordState.Inactive }
 
-  fun learnMore() = urlOpener.openUrl(LEARN_MORE_URL)
+  fun learnMore() {
+    Logger.v("learnMore")
+    urlOpener.openUrl(LEARN_MORE_URL)
+  }
 
   fun confirmKeyPassword() {
+    Logger.v("confirmKeyPassword")
     val state = mutablePasswordState.value
     dismissKeyPasswordDialog()
     val cachedData = cachedData
@@ -263,8 +270,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
       }
 
       is ImportResult.Success -> {
-        val budgetId = result.meta.cloudFileId
-        val component = budgetComponents.update(budgetId)
+        val component = budgetComponents.update(result.meta)
         Logger.i("Built new budget component from %s: %s", budgetId, component)
         setStepState(ValidatingDatabase, SyncStepState.Succeeded)
       }

@@ -8,5 +8,6 @@ internal sealed interface BottomBarState {
 
   data class Visible(
     val isConnected: Boolean,
+    val budgetName: String?,
   ) : BottomBarState
 }
