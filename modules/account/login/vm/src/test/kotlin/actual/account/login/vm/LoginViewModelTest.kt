@@ -7,7 +7,7 @@ import actual.account.model.Password
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import actual.test.TestBuildConfig
 import actual.test.buildPreferences
 import alakazam.test.core.standardDispatcher
@@ -37,7 +37,7 @@ import kotlin.test.assertTrue
 @RunWith(RobolectricTestRunner::class)
 internal class LoginViewModelTest {
   // real
-  private lateinit var preferences: AppLocalPreferences
+  private lateinit var preferences: AppGlobalPreferences
   private lateinit var viewModel: LoginViewModel
   private lateinit var versionsStateHolder: ActualVersionsStateHolder
 
@@ -47,7 +47,7 @@ internal class LoginViewModelTest {
   private fun TestScope.before() {
     Dispatchers.setMain(standardDispatcher)
     val prefs = buildPreferences(unconfinedDispatcher)
-    preferences = AppLocalPreferences(prefs)
+    preferences = AppGlobalPreferences(prefs)
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
     viewModel = LoginViewModel(

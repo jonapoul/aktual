@@ -10,7 +10,7 @@ import actual.api.client.ActualJson
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import actual.test.TestBuildConfig
 import actual.test.assertEmitted
 import actual.test.buildPreferences
@@ -48,7 +48,7 @@ import kotlin.test.assertNull
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlViewModelTest {
   // Real
-  private lateinit var preferences: AppLocalPreferences
+  private lateinit var preferences: AppGlobalPreferences
   private lateinit var viewModel: ServerUrlViewModel
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var versionsStateHolder: ActualVersionsStateHolder
@@ -79,7 +79,7 @@ class ServerUrlViewModelTest {
 
   private fun TestScope.buildPreferences() {
     val prefs = buildPreferences(UnconfinedTestDispatcher(testScheduler))
-    preferences = AppLocalPreferences(prefs)
+    preferences = AppGlobalPreferences(prefs)
     preferences.serverUrl.set(EXAMPLE_URL)
   }
 

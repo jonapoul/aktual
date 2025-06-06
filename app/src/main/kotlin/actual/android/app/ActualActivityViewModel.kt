@@ -5,7 +5,7 @@ import actual.api.client.ActualApisStateHolder
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
 import actual.core.model.ColorSchemeType
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -27,7 +27,7 @@ internal class ActualActivityViewModel @Inject constructor(
   private val connectionMonitor: ConnectionMonitor,
   private val serverVersionFetcher: ServerVersionFetcher,
   private val apiStateHolder: ActualApisStateHolder,
-  preferences: AppLocalPreferences,
+  preferences: AppGlobalPreferences,
 ) : ViewModel() {
   val colorSchemeType: StateFlow<ColorSchemeType> = preferences.colorSchemeType.asStateFlow(viewModelScope)
 

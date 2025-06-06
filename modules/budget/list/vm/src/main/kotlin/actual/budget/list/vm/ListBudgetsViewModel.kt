@@ -4,7 +4,7 @@ import actual.account.model.LoginToken
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.ServerUrl
-import actual.prefs.AppLocalPreferences
+import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -23,7 +23,7 @@ import kotlinx.coroutines.launch
 @HiltViewModel(assistedFactory = ListBudgetsViewModel.Factory::class)
 class ListBudgetsViewModel @AssistedInject constructor(
   @Assisted tokenString: String,
-  preferences: AppLocalPreferences,
+  preferences: AppGlobalPreferences,
   versionsStateHolder: ActualVersionsStateHolder,
   private val budgetListFetcher: BudgetListFetcher,
 ) : ViewModel() {
