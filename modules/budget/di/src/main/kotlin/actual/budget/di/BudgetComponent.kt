@@ -1,9 +1,11 @@
-@file:Suppress("ktlint:standard:parameter-list-wrapping", "DEPRECATION")
+@file:Suppress("ktlint:standard:parameter-list-wrapping")
 
 package actual.budget.di
 
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetScope
+import actual.budget.model.DbMetadata
+import actual.budget.model.MutableDbMetadata
 import actual.core.files.BudgetFiles
 import actual.db.BudgetDatabase
 import android.content.Context
@@ -18,29 +20,26 @@ import dagger.Component
 )
 interface BudgetComponent {
   val database: BudgetDatabase
+  val metadata: MutableDbMetadata
 
-  @Deprecated("Don't use this directly", ReplaceWith("budgetId"))
-  val idAlias: BudgetIdAlias
-
-  val budgetId: BudgetId
-    get() = BudgetId(idAlias)
+  val budgetId: BudgetId get() = metadata.value.cloudFileId
 
   @Component.Builder
   interface Builder {
-    fun with(@BindsInstance budgetId: BudgetIdAlias): Builder
     fun with(@BindsInstance context: Context): Builder
     fun with(@BindsInstance files: BudgetFiles): Builder
+    fun with(@BindsInstance metadata: DbMetadata): Builder
     fun build(): BudgetComponent
   }
 
   companion object {
     fun build(
-      id: BudgetId,
+      metadata: DbMetadata,
       context: Context,
       files: BudgetFiles,
     ): BudgetComponent = DaggerBudgetComponent
       .builder()
-      .with(id.value)
+      .with(metadata)
       .with(context)
       .with(files)
       .build()

@@ -9,5 +9,6 @@ kotlin {
     api(libs.javaxInject)
     api(libs.okio)
     api(projects.budget.model)
+    implementation(libs.kotlinx.serialization.json)
   }
 }

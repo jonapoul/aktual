@@ -1,6 +1,6 @@
 package actual.budget.di
 
-import actual.budget.model.BudgetId
+import actual.budget.model.DbMetadata
 import actual.core.files.BudgetFiles
 import alakazam.kotlin.core.StateHolder
 import android.content.Context
@@ -17,8 +17,8 @@ class BudgetComponentStateHolder @Inject constructor(
 
   fun clear() = update { null }
 
-  fun update(id: BudgetId): BudgetComponent {
-    val component = BudgetComponent.build(id, context, files)
+  fun update(metadata: DbMetadata): BudgetComponent {
+    val component = BudgetComponent.build(metadata, context, files)
     update { component }
     return component
   }

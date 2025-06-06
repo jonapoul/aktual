@@ -8,6 +8,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
+    api(libs.alakazam.kotlin.core)
     api(libs.alakazam.kotlin.serialization)
     api(libs.javaxInject)
     api(libs.kotlinx.datetime)
