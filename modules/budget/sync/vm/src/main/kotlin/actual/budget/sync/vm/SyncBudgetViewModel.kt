@@ -99,7 +99,6 @@ class SyncBudgetViewModel @AssistedInject constructor(
   }
 
   fun clearBudget() = budgetComponents.clear()
-    .also { Logger.i("clearBudget") }
 
   fun enterKeyPassword(input: Password) = mutablePasswordState.update { KeyPasswordState.Active(input) }
 
@@ -124,7 +123,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
         is FetchKeyResult.Failure -> Logger.w("Failed fetching keys: $fetched")
 
         is FetchKeyResult.Success -> {
-          //          val key = keyGenerator(fetched.key)
+          // val key = keyGenerator(fetched.key)
           keyPreferences[keyId] = fetched.key
 
           val result = decrypter(budgetId, meta, cachedData.encryptedPath)
