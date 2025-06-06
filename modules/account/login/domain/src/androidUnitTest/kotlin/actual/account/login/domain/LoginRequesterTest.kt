@@ -72,7 +72,7 @@ internal class LoginRequesterTest {
     loginRequester = LoginRequester(
       contexts = TestCoroutineContexts(mainDispatcherRule),
       apisStateHolder = apisStateHolder,
-      localPreferences = preferences,
+      preferences = preferences,
     )
   }
 
