@@ -6,5 +6,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 interface SyncBudgetNavigator {
+  fun back(): Boolean
   fun toBudget(token: LoginToken, budgetId: BudgetId)
 }
