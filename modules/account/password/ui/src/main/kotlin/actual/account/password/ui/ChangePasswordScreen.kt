@@ -1,7 +1,7 @@
 package actual.account.password.ui
 
 import actual.account.model.Password
-import actual.account.password.res.PasswordStrings
+import actual.account.password.res.Strings
 import actual.account.password.vm.ChangePasswordState
 import actual.account.password.vm.ChangePasswordViewModel
 import actual.core.model.ActualVersions
@@ -154,14 +154,14 @@ private fun ChangePasswordContent(
       horizontalAlignment = Alignment.Start,
     ) {
       Text(
-        text = PasswordStrings.title,
+        text = Strings.passwordTitle,
         style = MaterialTheme.typography.headlineLarge,
       )
 
       VerticalSpacer(20.dp)
 
       Text(
-        text = PasswordStrings.message,
+        text = Strings.passwordMessage,
         color = theme.tableRowHeaderText,
         style = MaterialTheme.typography.bodyLarge,
       )
@@ -182,7 +182,7 @@ private fun ChangePasswordContent(
 
       when (state) {
         is ChangePasswordState.Failure -> Text(text = state.errorMessage(), color = theme.errorText)
-        ChangePasswordState.Success -> Text(text = PasswordStrings.success, color = theme.successText)
+        ChangePasswordState.Success -> Text(text = Strings.passwordSuccess, color = theme.successText)
         else -> Unit
       }
     }
@@ -199,11 +199,11 @@ private fun ChangePasswordContent(
 @Composable
 @ReadOnlyComposable
 private fun ChangePasswordState.Failure.errorMessage(): String = when (this) {
-  ChangePasswordState.InvalidPassword -> PasswordStrings.failureEmpty
-  ChangePasswordState.NetworkFailure -> PasswordStrings.failureNetwork
-  ChangePasswordState.OtherFailure -> PasswordStrings.failureOther
-  ChangePasswordState.PasswordsDontMatch -> PasswordStrings.failureMatch
-  ChangePasswordState.NotLoggedIn -> PasswordStrings.failureLoggedOut
+  ChangePasswordState.InvalidPassword -> Strings.passwordFailureEmpty
+  ChangePasswordState.NetworkFailure -> Strings.passwordFailureNetwork
+  ChangePasswordState.OtherFailure -> Strings.passwordFailureOther
+  ChangePasswordState.PasswordsDontMatch -> Strings.passwordFailureMatch
+  ChangePasswordState.NotLoggedIn -> Strings.passwordFailureLoggedOut
 }
 
 @ScreenPreview

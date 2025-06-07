@@ -1,7 +1,7 @@
 package actual.account.login.ui
 
 import actual.account.login.domain.LoginResult
-import actual.account.login.res.LoginStrings
+import actual.account.login.res.Strings
 import actual.account.login.vm.LoginViewModel
 import actual.account.model.Password
 import actual.core.model.ActualVersions
@@ -164,14 +164,14 @@ private fun Content(
       horizontalAlignment = Alignment.Start,
     ) {
       Text(
-        text = LoginStrings.title,
+        text = Strings.loginTitle,
         style = MaterialTheme.typography.headlineLarge,
       )
 
       VerticalSpacer(15.dp)
 
       Text(
-        text = LoginStrings.message,
+        text = Strings.loginMessage,
         color = theme.tableRowHeaderText,
         style = MaterialTheme.typography.bodyLarge,
       )

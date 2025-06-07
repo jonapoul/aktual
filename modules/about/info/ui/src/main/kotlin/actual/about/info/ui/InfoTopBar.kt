@@ -1,6 +1,6 @@
 package actual.about.info.ui
 
-import actual.about.info.res.InfoStrings
+import actual.about.info.res.Strings
 import actual.core.ui.Theme
 import actual.core.ui.topAppBarColors
 import androidx.compose.material.icons.Icons
@@ -23,13 +23,13 @@ internal fun InfoTopBar(
       IconButton(onClick = { onAction(InfoAction.NavBack) }) {
         Icon(
           imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-          contentDescription = InfoStrings.toolbarBack,
+          contentDescription = Strings.infoToolbarBack,
         )
       }
     },
     title = {
       Text(
-        text = InfoStrings.toolbarTitle,
+        text = Strings.infoToolbarTitle,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
       )

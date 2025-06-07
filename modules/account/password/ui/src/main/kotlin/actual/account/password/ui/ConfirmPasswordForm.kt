@@ -1,7 +1,7 @@
 package actual.account.password.ui
 
 import actual.account.model.Password
-import actual.account.password.res.PasswordStrings
+import actual.account.password.res.Strings
 import actual.account.password.vm.ChangePasswordState
 import actual.core.ui.PreviewColumn
 import actual.core.ui.PrimaryTextButtonWithLoading
@@ -54,7 +54,7 @@ internal fun ConfirmPasswordForm(
         .fillMaxWidth()
         .focusRequester(keyboardFocusRequester(keyboard)),
       password = inputPassword1,
-      placeholderText = PasswordStrings.input,
+      placeholderText = Strings.passwordInput,
       showPassword = showPasswords,
       imeAction = ImeAction.Next,
       onValueChange = { pw -> onAction(PasswordAction.SetPassword1(pw)) },
@@ -66,7 +66,7 @@ internal fun ConfirmPasswordForm(
     PasswordEntryText(
       modifier = Modifier.fillMaxWidth(),
       password = inputPassword2,
-      placeholderText = PasswordStrings.inputConfirm,
+      placeholderText = Strings.passwordInputConfirm,
       showPassword = showPasswords,
       imeAction = ImeAction.Go,
       onValueChange = { pw -> onAction(PasswordAction.SetPassword2(pw)) },
@@ -98,7 +98,7 @@ internal fun ConfirmPasswordForm(
       )
 
       Text(
-        text = PasswordStrings.show,
+        text = Strings.passwordShow,
         fontSize = 15.sp,
       )
     }
@@ -107,7 +107,7 @@ internal fun ConfirmPasswordForm(
 
     PrimaryTextButtonWithLoading(
       modifier = Modifier.fillMaxWidth(),
-      text = PasswordStrings.confirm,
+      text = Strings.passwordConfirm,
       isLoading = isLoading,
       isEnabled = !isLoading && passwordsMatch,
       onClick = { onAction(PasswordAction.Submit) },

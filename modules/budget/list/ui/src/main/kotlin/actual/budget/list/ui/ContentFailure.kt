@@ -1,6 +1,6 @@
 package actual.budget.list.ui
 
-import actual.budget.list.res.BudgetListStrings
+import actual.budget.list.res.Strings
 import actual.core.icons.ActualIcons
 import actual.core.icons.CloudWarning
 import actual.core.ui.ActualFontFamily
@@ -47,13 +47,13 @@ internal fun ContentFailure(
         modifier = Modifier.size(100.dp),
         imageVector = ActualIcons.CloudWarning,
         tint = theme.warningText,
-        contentDescription = BudgetListStrings.budgetFailureDesc,
+        contentDescription = Strings.budgetFailureDesc,
       )
 
       VerticalSpacer(30.dp)
 
       Text(
-        text = BudgetListStrings.budgetFailureMessage,
+        text = Strings.budgetFailureMessage,
         color = theme.warningText,
         fontFamily = ActualFontFamily,
         textAlign = TextAlign.Center,
@@ -64,7 +64,7 @@ internal fun ContentFailure(
       VerticalSpacer(15.dp)
 
       Text(
-        text = reason ?: BudgetListStrings.budgetFailureDefaultMessage,
+        text = reason ?: Strings.budgetFailureDefaultMessage,
         color = theme.warningTextDark,
         fontFamily = ActualFontFamily,
         fontSize = 16.sp,
@@ -73,7 +73,7 @@ internal fun ContentFailure(
 
       VerticalSpacer(30.dp)
 
-      val retryText = BudgetListStrings.budgetFailureRetry
+      val retryText = Strings.budgetFailureRetry
       PrimaryTextButton(
         prefix = { Icon(imageVector = Icons.Filled.Refresh, contentDescription = retryText) },
         text = retryText,

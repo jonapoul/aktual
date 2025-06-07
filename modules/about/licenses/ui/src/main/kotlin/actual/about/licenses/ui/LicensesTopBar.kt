@@ -1,6 +1,6 @@
 package actual.about.licenses.ui
 
-import actual.about.licenses.res.LicensesStrings
+import actual.about.licenses.res.Strings
 import actual.about.licenses.vm.SearchBarState
 import actual.core.ui.Theme
 import actual.core.ui.topAppBarColors
@@ -27,13 +27,13 @@ internal fun LicensesTopBar(
       IconButton(onClick = { onAction(LicensesAction.NavBack) }) {
         Icon(
           imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-          contentDescription = LicensesStrings.toolbarBack,
+          contentDescription = Strings.licensesToolbarBack,
         )
       }
     },
     title = {
       Text(
-        text = LicensesStrings.toolbarTitle,
+        text = Strings.licensesToolbarTitle,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
       )
@@ -45,7 +45,7 @@ internal fun LicensesTopBar(
             SearchBarState.Gone -> Icons.Filled.Search
             is SearchBarState.Visible -> Icons.Filled.SearchOff
           },
-          contentDescription = LicensesStrings.toolbarSearch,
+          contentDescription = Strings.licensesToolbarSearch,
         )
       }
     },

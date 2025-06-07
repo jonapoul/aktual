@@ -1,6 +1,6 @@
 package actual.about.info.ui
 
-import actual.about.info.res.InfoStrings
+import actual.about.info.res.Strings
 import actual.about.info.vm.BuildState
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
@@ -40,7 +40,7 @@ internal fun InfoBuildState(
         .padding(ItemMargin)
         .hazeEffect(hazeState, hazeStyle),
       icon = Icons.Filled.Apps,
-      title = InfoStrings.appVersion,
+      title = Strings.infoAppVersion,
       subtitle = buildState.versions.app,
     )
 
@@ -50,8 +50,8 @@ internal fun InfoBuildState(
         .padding(ItemMargin)
         .hazeEffect(hazeState, hazeStyle),
       icon = Icons.Filled.Cloud,
-      title = InfoStrings.serverVersion,
-      subtitle = buildState.versions.server ?: InfoStrings.serverVersionUnknown,
+      title = Strings.infoServerVersion,
+      subtitle = buildState.versions.server ?: Strings.infoServerVersionUnknown,
     )
 
     BuildStateItem(
@@ -59,7 +59,7 @@ internal fun InfoBuildState(
         .padding(ItemMargin)
         .hazeEffect(hazeState, hazeStyle),
       icon = Icons.Filled.CalendarToday,
-      title = InfoStrings.date,
+      title = Strings.infoDate,
       subtitle = buildState.buildDate,
     )
 
@@ -69,7 +69,7 @@ internal fun InfoBuildState(
         .padding(ItemMargin)
         .hazeEffect(hazeState, hazeStyle),
       icon = Icons.Filled.Code,
-      title = InfoStrings.repo,
+      title = Strings.infoRepo,
       subtitle = buildState.sourceCodeRepo,
       onClick = { onAction(InfoAction.OpenSourceCode) },
     )

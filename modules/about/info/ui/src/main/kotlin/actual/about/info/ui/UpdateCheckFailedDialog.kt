@@ -1,6 +1,6 @@
 package actual.about.info.ui
 
-import actual.about.info.res.InfoStrings
+import actual.about.info.res.Strings
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -44,14 +44,14 @@ private fun UpdateCheckFailedDialogContent(
   DialogContent(
     modifier = modifier,
     theme = theme,
-    title = InfoStrings.checkFailedTitle,
+    title = Strings.infoCheckFailedTitle,
     icon = Icons.Filled.Warning,
     titleColor = theme.errorText,
     content = { Text(cause) },
     buttons = {
       TextButton(onClick = onDismiss) {
         Text(
-          text = InfoStrings.checkFailedOk,
+          text = Strings.infoCheckFailedOk,
           color = theme.errorText,
         )
       }

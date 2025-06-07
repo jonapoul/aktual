@@ -1,6 +1,6 @@
 package actual.budget.list.ui
 
-import actual.budget.list.res.BudgetListStrings
+import actual.budget.list.res.Strings
 import actual.budget.model.BudgetState
 import actual.core.icons.ActualIcons
 import actual.core.icons.CloudCheck
@@ -67,13 +67,13 @@ internal fun BudgetStateText(
 @Composable
 @ReadOnlyComposable
 private fun BudgetState.text(): String = when (this) {
-  BudgetState.Local -> BudgetListStrings.budgetStateLocal
-  BudgetState.Remote -> BudgetListStrings.budgetStateRemote
-  BudgetState.Synced -> BudgetListStrings.budgetStateSynced
-  BudgetState.Syncing -> BudgetListStrings.budgetStateSyncing
-  BudgetState.Detached -> BudgetListStrings.budgetStateDetached
-  BudgetState.Broken -> BudgetListStrings.budgetStateBroken
-  BudgetState.Unknown -> BudgetListStrings.budgetStateUnknown
+  BudgetState.Local -> Strings.budgetStateLocal
+  BudgetState.Remote -> Strings.budgetStateRemote
+  BudgetState.Synced -> Strings.budgetStateSynced
+  BudgetState.Syncing -> Strings.budgetStateSyncing
+  BudgetState.Detached -> Strings.budgetStateDetached
+  BudgetState.Broken -> Strings.budgetStateBroken
+  BudgetState.Unknown -> Strings.budgetStateUnknown
 }
 
 @Stable

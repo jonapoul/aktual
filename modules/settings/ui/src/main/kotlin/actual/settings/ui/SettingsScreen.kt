@@ -9,7 +9,7 @@ import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.scrollbarSettings
 import actual.core.ui.transparentTopAppBarColors
-import actual.settings.res.SettingsStrings
+import actual.settings.res.Strings
 import actual.settings.ui.items.ShowBottomBarPreferenceItem
 import actual.settings.ui.items.ThemePreferenceItem
 import actual.settings.vm.PreferenceValue
@@ -85,7 +85,7 @@ private fun SettingsScaffold(
             )
           }
         },
-        title = { Text(SettingsStrings.toolbar) },
+        title = { Text(Strings.settingsToolbar) },
         scrollBehavior = scrollBehavior,
       )
     },

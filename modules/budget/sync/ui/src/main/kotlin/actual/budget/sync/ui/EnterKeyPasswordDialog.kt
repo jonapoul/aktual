@@ -1,7 +1,7 @@
 package actual.budget.sync.ui
 
 import actual.account.model.Password
-import actual.budget.sync.res.SyncStrings
+import actual.budget.sync.res.Strings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.AlertDialog
 import actual.core.ui.LocalTheme
@@ -56,12 +56,12 @@ internal fun EnterKeyPasswordDialog(
 ) {
   AlertDialog(
     modifier = modifier,
-    title = SyncStrings.passwordDialogTitle,
+    title = Strings.syncPasswordDialogTitle,
     onDismissRequest = { onAction(SyncBudgetAction.DismissPasswordDialog) },
     buttons = {
       TextButton(onClick = { onAction(SyncBudgetAction.DismissPasswordDialog) }) {
         Text(
-          text = SyncStrings.passwordDialogDismiss,
+          text = Strings.syncPasswordDialogDismiss,
           fontFamily = ActualFontFamily,
         )
       }
@@ -70,7 +70,7 @@ internal fun EnterKeyPasswordDialog(
         onClick = { onAction(SyncBudgetAction.ConfirmKeyPassword) },
       ) {
         Text(
-          text = SyncStrings.passwordDialogConfirm,
+          text = Strings.syncPasswordDialogConfirm,
           fontFamily = ActualFontFamily,
         )
       }
@@ -113,7 +113,7 @@ private fun Content(
         .focusRequester(keyboardFocusRequester(keyboard)),
       value = input.value,
       onValueChange = { input -> onAction(SyncBudgetAction.EnterKeyPassword(Password(input))) },
-      placeholderText = SyncStrings.passwordDialogPlaceholder,
+      placeholderText = Strings.syncPasswordDialogPlaceholder,
       singleLine = true,
       visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
       keyboardOptions = KeyboardOptions(
@@ -139,7 +139,7 @@ private fun Content(
         checked = passwordVisible,
         onCheckedChange = null,
       )
-      Text(text = SyncStrings.passwordDialogShowPassword)
+      Text(text = Strings.syncPasswordDialogShowPassword)
     }
   }
 }
@@ -150,7 +150,7 @@ private fun buildDialogText(
   theme: Theme,
   onAction: (SyncBudgetAction) -> Unit,
 ) = buildAnnotatedString {
-  append(SyncStrings.passwordDialogText)
+  append(Strings.syncPasswordDialogText)
   append(" ")
 
   val style = SpanStyle(color = theme.pageTextLink, textDecoration = TextDecoration.Underline)
@@ -160,7 +160,7 @@ private fun buildDialogText(
   )
   withStyle(style) {
     withLink(link) {
-      append(SyncStrings.passwordDialogLearnMore)
+      append(Strings.syncPasswordDialogLearnMore)
     }
   }
 }

@@ -3,7 +3,7 @@ package actual.budget.sync.ui
 import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.budget.model.BudgetId
-import actual.budget.sync.res.SyncStrings
+import actual.budget.sync.res.Strings
 import actual.budget.sync.vm.KeyPasswordState
 import actual.budget.sync.vm.SyncBudgetViewModel
 import actual.budget.sync.vm.SyncStep
@@ -169,7 +169,7 @@ private fun ListBudgetsContent(
       modifier = Modifier
         .padding(ButtonPadding)
         .fillMaxWidth(),
-      text = SyncStrings.buttonContinue,
+      text = Strings.syncButtonContinue,
       onClick = { onAction(SyncBudgetAction.Continue) },
       contentPadding = ButtonContentPadding,
       isEnabled = stepStates.allSuccess(),
@@ -179,7 +179,7 @@ private fun ListBudgetsContent(
       modifier = Modifier
         .padding(ButtonPadding)
         .fillMaxWidth(),
-      text = SyncStrings.buttonRetry,
+      text = Strings.syncButtonRetry,
       onClick = { onAction(SyncBudgetAction.Retry) },
       contentPadding = ButtonContentPadding,
       isEnabled = stepStates.anyFailure(),
@@ -316,19 +316,19 @@ private fun StateIcon(
 @Composable
 @ReadOnlyComposable
 private fun SyncStep.string(): String = when (this) {
-  SyncStep.FetchingFileInfo -> SyncStrings.stepFetchingInfo
-  SyncStep.DownloadingDatabase -> SyncStrings.stepDownloading
-  SyncStep.ValidatingDatabase -> SyncStrings.stepValidating
+  SyncStep.FetchingFileInfo -> Strings.syncStepFetchingInfo
+  SyncStep.DownloadingDatabase -> Strings.syncStepDownloading
+  SyncStep.ValidatingDatabase -> Strings.syncStepValidating
 }
 
 @Composable
 @ReadOnlyComposable
 private fun SyncStepState.string(): String = when (this) {
-  is SyncStepState.InProgress.Definite -> SyncStrings.stateDefinite(progress.value)
-  SyncStepState.InProgress.Indefinite -> SyncStrings.stateIndefinite
-  SyncStepState.NotStarted -> SyncStrings.stateNotStarted
-  is SyncStepState.Failed -> SyncStrings.stateFailed(moreInfo)
-  SyncStepState.Succeeded -> SyncStrings.stateSucceeded
+  is SyncStepState.InProgress.Definite -> Strings.syncStateDefinite(progress.value)
+  SyncStepState.InProgress.Indefinite -> Strings.syncStateIndefinite
+  SyncStepState.NotStarted -> Strings.syncStateNotStarted
+  is SyncStepState.Failed -> Strings.syncStateFailed(moreInfo)
+  SyncStepState.Succeeded -> Strings.syncStateSucceeded
 }
 
 @Stable

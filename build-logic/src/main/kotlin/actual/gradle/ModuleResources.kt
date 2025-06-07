@@ -2,7 +2,6 @@ package actual.gradle
 
 import blueprint.core.getLibrary
 import blueprint.core.libs
-import blueprint.core.stringProperty
 import com.android.build.api.dsl.LibraryExtension
 import com.autonomousapps.DependencyAnalysisPlugin
 import dev.jonpoulton.catalog.gradle.CatalogExtension
@@ -12,7 +11,6 @@ import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.NameTransform
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.internal.extensions.stdlib.capitalized
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getValue
@@ -41,21 +39,11 @@ class ModuleResources : Plugin<Project> {
       }
     }
 
-    val resourcePrefix = stringProperty(key = "resource.prefix")
-
     extensions.configure<CatalogExtension> {
       generateInternal = false
       parameterNaming = CatalogParameterNaming.ByType
-
-      // "Strings" -> "PrefixedStrings" for prefix of "prefixed"
-      typePrefix = resourcePrefix.capitalized()
-
-      // "prefixed_resource_name" -> "resourceName" for prefix of "prefixed"
-      nameTransform = NameTransform.chained(
-        NameTransform.removePrefix(prefix = resourcePrefix),
-        NameTransform.removePrefix(prefix = "_"),
-        NameTransform.CamelCase,
-      )
+      typePrefix = null
+      nameTransform = NameTransform.CamelCase // "resource_name" -> "resourceName"
 
       // Regen the accessors when syncing the IDE
       generateAtSync = true

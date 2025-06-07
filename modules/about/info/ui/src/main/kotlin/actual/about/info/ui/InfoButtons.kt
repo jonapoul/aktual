@@ -1,6 +1,6 @@
 package actual.about.info.ui
 
-import actual.about.info.res.InfoStrings
+import actual.about.info.res.Strings
 import actual.core.ui.NormalTextButton
 import actual.core.ui.PreviewColumn
 import androidx.compose.foundation.layout.Column
@@ -26,17 +26,17 @@ internal fun InfoButtons(
 
     NormalTextButton(
       modifier = buttonModifier.testTag(Tags.CheckUpdatesButton),
-      text = InfoStrings.checkUpdates,
+      text = Strings.infoCheckUpdates,
       onClick = { onAction(InfoAction.CheckUpdates) },
     )
     NormalTextButton(
       modifier = buttonModifier.testTag(Tags.ReportButton),
-      text = InfoStrings.reportIssues,
+      text = Strings.infoReportIssues,
       onClick = { onAction(InfoAction.ReportIssue) },
     )
     NormalTextButton(
       modifier = buttonModifier.testTag(Tags.LicensesButton),
-      text = InfoStrings.licenses,
+      text = Strings.infoLicenses,
       onClick = { onAction(InfoAction.ViewLicenses) },
     )
   }

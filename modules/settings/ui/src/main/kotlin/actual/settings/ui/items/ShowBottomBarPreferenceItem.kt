@@ -4,7 +4,7 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.switch
-import actual.settings.res.SettingsStrings
+import actual.settings.res.Strings
 import actual.settings.ui.BasicPreferenceItem
 import actual.settings.ui.Clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -34,7 +34,7 @@ internal fun ShowBottomBarPreferenceItem(
 ) {
   BasicPreferenceItem(
     modifier = modifier.fillMaxWidth(),
-    title = SettingsStrings.showBottomBar,
+    title = Strings.settingsShowBottomBar,
     subtitle = null,
     icon = icon(value),
     clickability = Clickable { onChange(!value) },

@@ -1,7 +1,7 @@
 package actual.budget.list.ui
 
 import actual.account.model.LoginToken
-import actual.budget.list.res.BudgetListStrings
+import actual.budget.list.res.Strings
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.budget.model.Budget
@@ -171,7 +171,7 @@ private inline fun TopBarActions(
         modifier = Modifier.padding(horizontal = 5.dp),
         onClick = { onAction(ListBudgetsAction.Reload) },
         imageVector = ActualIcons.Refresh,
-        contentDescription = BudgetListStrings.budgetFailureRetry,
+        contentDescription = Strings.budgetFailureRetry,
         colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
       )
     }
@@ -180,7 +180,7 @@ private inline fun TopBarActions(
       modifier = Modifier.padding(horizontal = 5.dp),
       onClick = { onAction(ListBudgetsAction.OpenSettings) },
       imageVector = Icons.Filled.Settings,
-      contentDescription = BudgetListStrings.listBudgetsSettings,
+      contentDescription = Strings.listBudgetsSettings,
       colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
     )
 
@@ -189,7 +189,7 @@ private inline fun TopBarActions(
       modifier = Modifier.padding(horizontal = 5.dp),
       onClick = { showMenu = !showMenu },
       imageVector = Icons.Filled.MoreVert,
-      contentDescription = BudgetListStrings.listBudgetsMenu,
+      contentDescription = Strings.listBudgetsMenu,
       colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
     )
 
@@ -197,7 +197,7 @@ private inline fun TopBarActions(
       expanded = showMenu,
       onDismissRequest = { showMenu = false },
     ) {
-      val passwordText = BudgetListStrings.listBudgetsChangePassword
+      val passwordText = Strings.listBudgetsChangePassword
       DropdownMenuItem(
         text = { Text(passwordText) },
         onClick = { onAction(ListBudgetsAction.ChangePassword) },
@@ -210,7 +210,7 @@ private inline fun TopBarActions(
 @Stable
 @Composable
 private fun ScaffoldTitle(theme: Theme) = Text(
-  text = BudgetListStrings.listBudgetsToolbar,
+  text = Strings.listBudgetsToolbar,
   maxLines = 1,
   overflow = TextOverflow.Ellipsis,
   color = theme.pageText,
