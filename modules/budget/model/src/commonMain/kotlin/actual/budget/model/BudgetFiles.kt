@@ -20,7 +20,7 @@ fun BudgetFiles.encryptedZip(id: BudgetId, mkdirs: Boolean = false): Path = tmp(
 
 fun BudgetFiles.decryptedZip(id: BudgetId, mkdirs: Boolean = false): Path = tmp(mkdirs).resolve("$id-decrypted.zip")
 
-fun BudgetFiles.saveMetadata(metadata: DbMetadata) {
+fun BudgetFiles.writeMetadata(metadata: DbMetadata) {
   val path = metadata(metadata.cloudFileId, mkdirs = true)
   val json = Json.encodeToString(metadata)
   fileSystem.sink(path).buffer().use { sink -> sink.writeUtf8(json) }

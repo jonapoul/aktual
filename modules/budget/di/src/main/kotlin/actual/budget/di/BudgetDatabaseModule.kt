@@ -6,7 +6,7 @@ import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetScope
 import actual.budget.model.DbMetadata
 import actual.budget.model.MutableDbMetadata
-import actual.budget.model.saveMetadata
+import actual.budget.model.writeMetadata
 import android.content.Context
 import dagger.Module
 import dagger.Provides
@@ -28,5 +28,5 @@ class BudgetDatabaseModule {
   fun metadata(
     metadata: DbMetadata,
     files: BudgetFiles,
-  ) = MutableDbMetadata(metadata, files::saveMetadata)
+  ) = DbMetadataMutator(metadata, files::writeMetadata)
 }
