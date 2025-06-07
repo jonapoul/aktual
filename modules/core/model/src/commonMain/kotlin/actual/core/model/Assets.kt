@@ -1,4 +1,4 @@
-package actual.core.files
+package actual.core.model
 
 import java.io.InputStream
 

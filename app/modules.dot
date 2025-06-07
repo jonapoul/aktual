@@ -35,7 +35,6 @@ node ["style"="filled"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
-":core:files" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -59,7 +58,7 @@ graph ["rank"="same"]
 ":about:info:ui" -> ":core:res" ["style"="dotted"]
 ":about:info:ui" -> ":core:ui"
 ":about:info:vm" -> ":about:info:data"
-":about:licenses:data" -> ":core:files" ["style"="dotted"]
+":about:licenses:data" -> ":core:model" ["style"="dotted"]
 ":about:licenses:ui" -> ":about:licenses:res" ["style"="dotted"]
 ":about:licenses:ui" -> ":about:licenses:vm"
 ":about:licenses:ui" -> ":core:res" ["style"="dotted"]
@@ -137,7 +136,6 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:di"
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
-":budget:sync:vm" -> ":core:files"
 ":budget:sync:vm" -> ":core:model"
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
@@ -146,14 +144,13 @@ graph ["rank"="same"]
 ":core:connection" -> ":prefs" ["style"="dotted"]
 ":core:di" -> ":api:builder" ["style"="dotted"]
 ":core:di" -> ":api:github"
-":core:di" -> ":core:files"
+":core:di" -> ":budget:model"
 ":core:di" -> ":core:model"
 ":core:di" -> ":prefs"
-":core:files" -> ":budget:model"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":db" -> ":budget:model"
-":db" -> ":core:files"
+":db" -> ":core:model"
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 ":settings:ui" -> ":core:model"

@@ -1,9 +1,9 @@
 package actual.db
 
+import actual.budget.model.AndroidBudgetFiles
+import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
-import actual.core.files.AndroidBudgetFiles
-import actual.core.files.BudgetFiles
-import actual.core.files.database
+import actual.budget.model.database
 import alakazam.test.core.getResourceAsStream
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider

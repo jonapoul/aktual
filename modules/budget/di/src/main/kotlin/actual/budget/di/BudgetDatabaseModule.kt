@@ -1,10 +1,10 @@
 package actual.budget.di
 
+import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetScope
 import actual.budget.model.DbMetadata
 import actual.budget.model.MutableDbMetadata
-import actual.core.files.BudgetFiles
-import actual.core.files.saveMetadata
+import actual.budget.model.saveMetadata
 import actual.db.AndroidSqlDriverFactory
 import actual.db.buildDatabase
 import android.content.Context

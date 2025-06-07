@@ -1,4 +1,4 @@
-package actual.core.files
+package actual.core.model
 
 import android.content.Context
 import java.io.InputStream

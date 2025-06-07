@@ -1,8 +1,8 @@
 package actual.test
 
+import actual.budget.model.AndroidBudgetFiles
+import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
-import actual.core.files.AndroidBudgetFiles
-import actual.core.files.BudgetFiles
 import actual.db.AndroidSqlDriverFactory
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider

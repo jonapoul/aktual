@@ -9,7 +9,6 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:sync:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:files" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":db" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -30,12 +29,10 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:di"
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
-":budget:sync:vm" -> ":core:files"
 ":budget:sync:vm" -> ":core:model"
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
-":core:files" -> ":budget:model"
 ":db" -> ":budget:model"
-":db" -> ":core:files"
+":db" -> ":core:model"
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 subgraph "cluster_legend" {

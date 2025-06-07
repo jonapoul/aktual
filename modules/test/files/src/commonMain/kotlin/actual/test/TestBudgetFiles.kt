@@ -1,7 +1,7 @@
 package actual.test
 
+import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
-import actual.core.files.BudgetFiles
 import okio.FileSystem
 import okio.Path
 import okio.fakefilesystem.FakeFileSystem

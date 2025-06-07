@@ -1,6 +1,5 @@
-package actual.core.files
+package actual.budget.model
 
-import actual.budget.model.BudgetId
 import android.content.Context
 import okio.FileSystem
 import okio.Path

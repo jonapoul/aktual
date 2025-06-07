@@ -4,7 +4,7 @@ graph ["dpi"="100","label"=":budget:di","labelloc"="t","fontsize"="30","ranksep"
 node ["style"="filled"]
 ":budget:di" ["fillcolor"="#FCB103","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:files" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":db" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -12,9 +12,8 @@ graph ["rank"="same"]
 ":budget:di"
 }
 ":budget:di" -> ":db"
-":core:files" -> ":budget:model"
 ":db" -> ":budget:model"
-":db" -> ":core:files"
+":db" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

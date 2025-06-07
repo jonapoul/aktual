@@ -34,7 +34,7 @@ buildConfig {
 kotlin {
   commonMainDependencies {
     api(projects.budget.model)
-    api(projects.core.files)
+    api(projects.core.model)
     implementation(libs.alakazam.db.sqldelight)
     implementation(libs.alakazam.kotlin.logging)
     implementation(libs.kotlinx.serialization.json)
@@ -47,7 +47,6 @@ kotlin {
   commonTestDependencies {
     implementation(libs.test.alakazam.core)
     implementation(libs.test.alakazam.sqldelight)
-    implementation(projects.core.files)
     implementation(projects.test.coroutines)
     implementation(projects.test.db)
   }

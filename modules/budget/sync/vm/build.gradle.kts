@@ -10,7 +10,6 @@ dependencies {
   api(libs.kotlinx.datetime)
   api(libs.kotlinx.immutable)
   api(projects.budget.di)
-  api(projects.core.files)
   api(projects.core.model)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
