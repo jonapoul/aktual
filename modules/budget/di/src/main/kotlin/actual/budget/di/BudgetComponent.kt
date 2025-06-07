@@ -5,13 +5,13 @@ package actual.budget.di
 import actual.budget.db.BudgetDatabase
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
-import actual.budget.model.BudgetScope
+import actual.budget.model.BudgetScoped
 import actual.budget.model.DbMetadata
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
 
-@BudgetScope
+@BudgetScoped
 @Component(
   modules = [
     BudgetDatabaseModule::class,
