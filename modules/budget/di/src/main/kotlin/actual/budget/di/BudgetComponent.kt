@@ -2,12 +2,12 @@
 
 package actual.budget.di
 
+import actual.budget.db.BudgetDatabase
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetScope
 import actual.budget.model.DbMetadata
 import actual.budget.model.MutableDbMetadata
-import actual.db.BudgetDatabase
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component

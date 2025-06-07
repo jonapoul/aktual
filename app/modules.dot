@@ -23,6 +23,7 @@ node ["style"="filled"]
 ":api:builder" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
+":budget:db" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:di" ["fillcolor"="#FCB103","shape"="none"]
 ":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:list:res" ["fillcolor"="#00FFFF","shape"="none"]
@@ -38,7 +39,6 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":db" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:res" ["fillcolor"="#00FFFF","shape"="none"]
@@ -112,7 +112,9 @@ graph ["rank"="same"]
 ":app" -> ":prefs" ["style"="dotted"]
 ":app" -> ":settings:ui" ["style"="dotted"]
 ":app" -> ":url:ui" ["style"="dotted"]
-":budget:di" -> ":db"
+":budget:db" -> ":budget:model"
+":budget:db" -> ":core:model"
+":budget:di" -> ":budget:db"
 ":budget:encryption" -> ":account:model"
 ":budget:encryption" -> ":budget:model"
 ":budget:encryption" -> ":core:model"
@@ -149,8 +151,6 @@ graph ["rank"="same"]
 ":core:di" -> ":prefs"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
-":db" -> ":budget:model"
-":db" -> ":core:model"
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 ":settings:ui" -> ":core:model"

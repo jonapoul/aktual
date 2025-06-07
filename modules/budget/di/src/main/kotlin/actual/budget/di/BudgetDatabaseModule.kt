@@ -1,12 +1,12 @@
 package actual.budget.di
 
+import actual.budget.db.AndroidSqlDriverFactory
+import actual.budget.db.buildDatabase
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetScope
 import actual.budget.model.DbMetadata
 import actual.budget.model.MutableDbMetadata
 import actual.budget.model.saveMetadata
-import actual.db.AndroidSqlDriverFactory
-import actual.db.buildDatabase
 import android.content.Context
 import dagger.Module
 import dagger.Provides
