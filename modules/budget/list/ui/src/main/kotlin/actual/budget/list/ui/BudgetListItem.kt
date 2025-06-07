@@ -1,6 +1,6 @@
 package actual.budget.list.ui
 
-import actual.budget.list.res.BudgetListStrings
+import actual.budget.list.res.Strings
 import actual.budget.model.Budget
 import actual.budget.model.BudgetState
 import actual.core.icons.ActualIcons
@@ -136,7 +136,7 @@ private fun DeleteMenu(
     expanded = expanded,
     onDismissRequest = onDismiss,
   ) {
-    val deleteText = BudgetListStrings.budgetDelete
+    val deleteText = Strings.budgetDelete
     DropdownMenuItem(
       text = { Text(deleteText, fontFamily = ActualFontFamily) },
       leadingIcon = { Icon(imageVector = Icons.Filled.DeleteForever, contentDescription = deleteText) },
@@ -148,10 +148,10 @@ private fun DeleteMenu(
 @Composable
 @ReadOnlyComposable
 private fun budgetDescription(budget: Budget) = when {
-  budget.state == BudgetState.Unknown -> BudgetListStrings.listBudgetsOffline
-  budget.hasKey -> BudgetListStrings.listBudgetsEncryptedWithKey
-  budget.encryptKeyId != null -> BudgetListStrings.listBudgetsEncryptedWithoutKey
-  else -> BudgetListStrings.listBudgetsUnencrypted
+  budget.state == BudgetState.Unknown -> Strings.listBudgetsOffline
+  budget.hasKey -> Strings.listBudgetsEncryptedWithKey
+  budget.encryptKeyId != null -> Strings.listBudgetsEncryptedWithoutKey
+  else -> Strings.listBudgetsUnencrypted
 }
 
 @Preview

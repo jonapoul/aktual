@@ -1,6 +1,6 @@
 package actual.about.info.ui
 
-import actual.about.info.res.InfoStrings
+import actual.about.info.res.Strings
 import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -70,11 +70,11 @@ internal fun InfoHeader(
         color = theme.pageText,
       )
       Text(
-        text = InfoStrings.subtitle1(year),
+        text = Strings.infoSubtitle1(year),
         color = theme.pageTextSubdued,
       )
       Text(
-        text = InfoStrings.subtitle2,
+        text = Strings.infoSubtitle2,
         color = theme.pageTextSubdued,
       )
     }

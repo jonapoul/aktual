@@ -1,12 +1,11 @@
 package actual.about.info.ui
 
-import actual.about.info.res.InfoStrings
+import actual.about.info.res.Strings
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.NormalIconButton
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
-import android.R.attr.text
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -83,7 +82,7 @@ internal fun BuildStateItem(
       NormalIconButton(
         modifier = Modifier.padding(ItemPadding),
         imageVector = Icons.AutoMirrored.Filled.Launch,
-        contentDescription = InfoStrings.launch,
+        contentDescription = Strings.infoLaunch,
         onClick = onClick,
       )
     }

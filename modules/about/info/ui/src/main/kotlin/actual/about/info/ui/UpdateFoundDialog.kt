@@ -1,6 +1,6 @@
 package actual.about.info.ui
 
-import actual.about.info.res.InfoStrings
+import actual.about.info.res.Strings
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -56,16 +56,16 @@ private fun UpdateFoundDialogContent(
   DialogContent(
     modifier = modifier,
     theme = theme,
-    title = InfoStrings.updateFoundTitle,
+    title = Strings.infoUpdateFoundTitle,
     titleColor = theme.successText,
     content = {
-      TextContent(InfoStrings.updateFoundInstalled, currentVersion, Tags.UpdateAvailableCurrentVersion)
-      TextContent(InfoStrings.updateFoundLatest, latestVersion, Tags.UpdateAvailableNewVersion)
+      TextContent(Strings.infoUpdateFoundInstalled, currentVersion, Tags.UpdateAvailableCurrentVersion)
+      TextContent(Strings.infoUpdateFoundLatest, latestVersion, Tags.UpdateAvailableNewVersion)
     },
     buttons = {
       TextButton(onClick = onDismiss) {
         Text(
-          text = InfoStrings.updateFoundDismiss,
+          text = Strings.infoUpdateFoundDismiss,
           color = theme.successText,
         )
       }
@@ -77,7 +77,7 @@ private fun UpdateFoundDialogContent(
         },
       ) {
         Text(
-          text = InfoStrings.updateFoundView,
+          text = Strings.infoUpdateFoundView,
           color = theme.successText,
         )
       }

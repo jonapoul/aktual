@@ -1,8 +1,8 @@
 package actual.about.licenses.ui
 
 import actual.about.licenses.data.ArtifactDetail
-import actual.about.licenses.res.LicensesPlurals
-import actual.about.licenses.res.LicensesStrings
+import actual.about.licenses.res.Plurals
+import actual.about.licenses.res.Strings
 import actual.about.licenses.vm.LicensesState
 import actual.about.licenses.vm.SearchBarState
 import actual.core.res.CoreDimens
@@ -127,7 +127,7 @@ private fun LicensesSearchInput(
           .focusRequester(keyboardFocusRequester(keyboard)),
         value = text,
         onValueChange = { query -> onAction(LicensesAction.EditSearchText(query)) },
-        placeholderText = LicensesStrings.searchPlaceholder,
+        placeholderText = Strings.licensesSearchPlaceholder,
         leadingIcon = { Icon(imageVector = Icons.Filled.Search, contentDescription = null) },
         clearable = true,
         theme = theme,
@@ -141,7 +141,7 @@ private fun LicensesSearchInput(
         modifier = Modifier
           .wrapContentWidth()
           .padding(horizontal = CoreDimens.large),
-        text = LicensesPlurals.searchNumResults(numResults, numResults),
+        text = Plurals.licensesSearchNumResults(numResults, numResults),
         fontSize = 12.sp,
         color = theme.mobileHeaderTextSubdued,
       )
@@ -200,7 +200,7 @@ private fun NoneFoundContent(
     VerticalSpacer(CoreDimens.large)
 
     Text(
-      text = LicensesStrings.noneFound,
+      text = Strings.licensesNoneFound,
       fontSize = 20.sp,
       textAlign = TextAlign.Center,
       color = theme.warningText,
@@ -261,7 +261,7 @@ private fun ErrorContent(
     VerticalSpacer(CoreDimens.large)
 
     Text(
-      text = LicensesStrings.failed(errorMessage),
+      text = Strings.licensesFailed(errorMessage),
       fontSize = 20.sp,
       textAlign = TextAlign.Center,
       color = theme.errorText,
@@ -270,7 +270,7 @@ private fun ErrorContent(
     VerticalSpacer(CoreDimens.large)
 
     PrimaryTextButton(
-      text = LicensesStrings.failedRetry,
+      text = Strings.licensesFailedRetry,
       onClick = { onAction(LicensesAction.Reload) },
     )
   }

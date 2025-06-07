@@ -1,7 +1,7 @@
 package actual.about.licenses.ui
 
 import actual.about.licenses.data.ArtifactDetail
-import actual.about.licenses.res.LicensesStrings
+import actual.about.licenses.res.Strings
 import actual.core.res.CoreDimens
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
@@ -53,17 +53,17 @@ internal fun ArtifactItem(
         fontSize = 15.sp,
       )
 
-      LibraryTableRow(title = LicensesStrings.itemGroup, value = artifact.groupId)
-      LibraryTableRow(title = LicensesStrings.itemArtifact, value = artifact.artifactId)
-      LibraryTableRow(title = LicensesStrings.itemVersion, value = artifact.version)
-      LibraryTableRow(title = LicensesStrings.itemLicense, value = artifact.license())
+      LibraryTableRow(title = Strings.licensesItemGroup, value = artifact.groupId)
+      LibraryTableRow(title = Strings.licensesItemArtifact, value = artifact.artifactId)
+      LibraryTableRow(title = Strings.licensesItemVersion, value = artifact.version)
+      LibraryTableRow(title = Strings.licensesItemLicense, value = artifact.license())
     }
 
     val url = artifact.scm?.url
     if (url != null) {
       NormalIconButton(
         imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-        contentDescription = LicensesStrings.itemLaunch,
+        contentDescription = Strings.licensesItemLaunch,
         onClick = { onLaunchUrl.invoke(url) },
       )
     }
