@@ -93,11 +93,13 @@ private fun generateGraph(project: Project): MutableGraph {
   }
 
   val nodes = projects
-    .filter { proj -> dependencies.none { it.to == proj } }.map { mutNode(it.path) }
+    .filter { proj -> dependencies.none { it.to == proj } }
+    .map { mutNode(it.path) }
     .toTypedArray()
 
   graph.add(
-    Factory.graph()
+    Factory
+      .graph()
       .graphAttr()
       .with(Rank.inSubgraph(RankType.SAME))
       .with(*nodes),
@@ -308,9 +310,9 @@ private const val NODE_FONT_SIZE = 30
 private const val RANK_SEPARATION = 1.5
 
 private val FILL_COLOR_REGEX = """
-      ^.*?"fillcolor"="#(\w+)".*?$
-    """.trimIndent().toRegex()
+  ^.*?"fillcolor"="#(\w+)".*?$
+""".trimIndent().toRegex()
 
 private val TABLE_LINE_REGEX = """
-      ^<TR><TD>.*?</TD><TD BGCOLOR="#(.*?)">module-name</TD></TR>$
-    """.trimIndent().toRegex()
+  ^<TR><TD>.*?</TD><TD BGCOLOR="#(.*?)">module-name</TD></TR>$
+""".trimIndent().toRegex()
