@@ -10,6 +10,6 @@ dependencies {
   api(libs.alakazam.kotlin.core)
   api(libs.javaxInject)
   api(projects.db)
-  ksp(libs.dagger.compiler)
   implementation(libs.kotlinx.coroutines)
+  ksp(libs.dagger.compiler)
 }
