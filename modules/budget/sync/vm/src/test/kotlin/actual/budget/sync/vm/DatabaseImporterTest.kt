@@ -5,8 +5,8 @@ import actual.api.model.sync.UserWithAccess
 import actual.budget.model.BudgetId
 import actual.budget.model.DbMetadata
 import actual.budget.model.Timestamp
-import actual.core.files.database
-import actual.core.files.metadata
+import actual.budget.model.database
+import actual.budget.model.metadata
 import actual.core.model.TimeZones
 import actual.test.TestBudgetFiles
 import actual.test.copyTo

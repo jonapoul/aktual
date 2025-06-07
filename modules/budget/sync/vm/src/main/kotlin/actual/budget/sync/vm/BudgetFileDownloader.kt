@@ -4,12 +4,12 @@ import actual.account.model.LoginToken
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.SyncDownloadApi
 import actual.api.client.SyncDownloadState
+import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
+import actual.budget.model.encryptedZip
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
-import actual.core.files.BudgetFiles
-import actual.core.files.encryptedZip
 import actual.core.model.Bytes.Companion.Zero
 import actual.core.model.bytes
 import alakazam.kotlin.core.CoroutineContexts

@@ -13,7 +13,7 @@ dependencies {
   api(libs.okio)
   api(libs.preferences.core)
   api(projects.api.github)
-  api(projects.core.files)
+  api(projects.budget.model)
   api(projects.core.model)
   api(projects.prefs)
   implementation(libs.androidx.crypto)

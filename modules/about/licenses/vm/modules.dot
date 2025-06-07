@@ -4,15 +4,13 @@ graph ["dpi"="100","label"=":about:licenses:vm","labelloc"="t","fontsize"="30","
 node ["style"="filled"]
 ":about:licenses:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":about:licenses:vm" ["fillcolor"="#F5A6A6","shape"="none"]
-":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:files" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":about:licenses:data" -> ":core:files" ["style"="dotted"]
+":about:licenses:data" -> ":core:model" ["style"="dotted"]
 ":about:licenses:vm" -> ":about:licenses:data"
-":core:files" -> ":budget:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

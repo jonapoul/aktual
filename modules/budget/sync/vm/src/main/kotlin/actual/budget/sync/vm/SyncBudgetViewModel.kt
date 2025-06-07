@@ -6,13 +6,13 @@ import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
 import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.encryption.KeyGenerator
+import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
+import actual.budget.model.decryptedZip
+import actual.budget.model.encryptedZip
 import actual.budget.sync.vm.SyncStep.DownloadingDatabase
 import actual.budget.sync.vm.SyncStep.FetchingFileInfo
 import actual.budget.sync.vm.SyncStep.ValidatingDatabase
-import actual.core.files.BudgetFiles
-import actual.core.files.decryptedZip
-import actual.core.files.encryptedZip
 import actual.core.model.Percent
 import actual.prefs.KeyPreferences
 import alakazam.android.core.UrlOpener

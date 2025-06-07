@@ -2,11 +2,11 @@ package actual.budget.sync.vm
 
 import actual.api.client.ActualJson
 import actual.api.model.sync.UserFile
+import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.DbMetadata
-import actual.core.files.BudgetFiles
-import actual.core.files.database
-import actual.core.files.metadata
+import actual.budget.model.database
+import actual.budget.model.metadata
 import actual.core.model.TimeZones
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage

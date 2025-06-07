@@ -6,8 +6,6 @@ node ["style"="filled"]
 ":about:licenses:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":about:licenses:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":about:licenses:vm" ["fillcolor"="#F5A6A6","shape"="none"]
-":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:files" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -15,13 +13,12 @@ node ["style"="filled"]
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":about:licenses:data" -> ":core:files" ["style"="dotted"]
+":about:licenses:data" -> ":core:model" ["style"="dotted"]
 ":about:licenses:ui" -> ":about:licenses:res" ["style"="dotted"]
 ":about:licenses:ui" -> ":about:licenses:vm"
 ":about:licenses:ui" -> ":core:res" ["style"="dotted"]
 ":about:licenses:ui" -> ":core:ui"
 ":about:licenses:vm" -> ":about:licenses:data"
-":core:files" -> ":budget:model"
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 subgraph "cluster_legend" {

@@ -6,10 +6,10 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.client.SyncDownloadApi
 import actual.budget.model.BudgetId
+import actual.budget.model.encryptedZip
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
-import actual.core.files.encryptedZip
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.core.model.bytes

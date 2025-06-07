@@ -3,14 +3,12 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":about:licenses:data","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":about:licenses:data" ["fillcolor"="#9D8DF1","shape"="none"]
-":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:files" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 }
-":about:licenses:data" -> ":core:files" ["style"="dotted"]
-":core:files" -> ":budget:model"
+":about:licenses:data" -> ":core:model" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

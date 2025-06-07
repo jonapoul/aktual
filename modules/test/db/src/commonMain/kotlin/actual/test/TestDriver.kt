@@ -1,9 +1,9 @@
 package actual.test
 
-import actual.db.BudgetDatabase
-import actual.db.JvmSqlDriverFactory
-import actual.db.SqlDriverFactory
-import actual.db.buildDatabase
+import actual.budget.db.BudgetDatabase
+import actual.budget.db.JvmSqlDriverFactory
+import actual.budget.db.SqlDriverFactory
+import actual.budget.db.buildDatabase
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest

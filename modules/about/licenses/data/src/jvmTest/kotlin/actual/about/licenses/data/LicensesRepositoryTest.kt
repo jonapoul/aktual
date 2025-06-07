@@ -1,6 +1,6 @@
 package actual.about.licenses.data
 
-import actual.core.files.Assets
+import actual.core.model.Assets
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.getResourceAsStream
 import alakazam.test.core.standardDispatcher

@@ -3,9 +3,9 @@ package actual.budget.sync.vm
 import actual.api.model.sync.EncryptMeta
 import actual.budget.encryption.UnknownAlgorithmException
 import actual.budget.encryption.decryptToSink
+import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
-import actual.core.files.BudgetFiles
-import actual.core.files.decryptedZip
+import actual.budget.model.decryptedZip
 import actual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage

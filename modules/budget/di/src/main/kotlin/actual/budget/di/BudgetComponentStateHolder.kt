@@ -1,7 +1,7 @@
 package actual.budget.di
 
+import actual.budget.model.BudgetFiles
 import actual.budget.model.DbMetadata
-import actual.core.files.BudgetFiles
 import alakazam.kotlin.core.StateHolder
 import android.content.Context
 import kotlinx.coroutines.flow.update
