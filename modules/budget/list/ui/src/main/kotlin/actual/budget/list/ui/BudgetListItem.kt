@@ -33,7 +33,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +47,6 @@ import androidx.compose.ui.unit.sp
 /**
  * actual/packages/desktop-client/src/components/manager/BudgetList.tsx
  */
-@Stable
 @Composable
 internal fun BudgetListItem(
   budget: Budget,
@@ -147,13 +145,13 @@ private fun DeleteMenu(
   }
 }
 
-@Stable
 @Composable
 @ReadOnlyComposable
-private fun budgetDescription(budget: Budget) = if (budget.hasKey) {
-  BudgetListStrings.listBudgetsEncryptedWithKey
-} else {
-  BudgetListStrings.listBudgetsEncryptedWithoutKey
+private fun budgetDescription(budget: Budget) = when {
+  budget.state == BudgetState.Unknown -> BudgetListStrings.listBudgetsOffline
+  budget.hasKey -> BudgetListStrings.listBudgetsEncryptedWithKey
+  budget.encryptKeyId != null -> BudgetListStrings.listBudgetsEncryptedWithoutKey
+  else -> BudgetListStrings.listBudgetsUnencrypted
 }
 
 @Preview
