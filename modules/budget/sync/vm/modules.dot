@@ -21,7 +21,6 @@ graph ["rank"="same"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
-":budget:di" -> ":budget:model"
 ":budget:di" -> ":db"
 ":budget:encryption" -> ":account:model"
 ":budget:encryption" -> ":budget:model"

@@ -5,7 +5,6 @@ plugins {
 dependencies {
   api(libs.alakazam.android.core)
   api(libs.alakazam.kotlin.core)
-  api(libs.androidx.crypto)
   api(libs.androidx.preference.ktx)
   api(libs.hilt.android)
   api(libs.javaxInject)
@@ -17,6 +16,7 @@ dependencies {
   api(projects.core.files)
   api(projects.core.model)
   api(projects.prefs)
+  implementation(libs.androidx.crypto)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.ktor.core)
   implementation(libs.preferences.android)

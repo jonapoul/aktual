@@ -11,7 +11,6 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 ":budget:di"
 }
-":budget:di" -> ":budget:model"
 ":budget:di" -> ":db"
 ":core:files" -> ":budget:model"
 ":db" -> ":budget:model"
