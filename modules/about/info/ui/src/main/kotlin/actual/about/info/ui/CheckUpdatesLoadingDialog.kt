@@ -1,6 +1,6 @@
 package actual.about.info.ui
 
-import actual.about.info.res.InfoStrings
+import actual.about.info.res.Strings
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -63,7 +63,7 @@ private fun CheckUpdatesLoadingDialogContent(
         HorizontalSpacer(15.dp)
 
         Text(
-          text = InfoStrings.checkingUpdatesLoading,
+          text = Strings.infoCheckingUpdatesLoading,
           color = theme.pageText,
         )
       }
@@ -71,7 +71,7 @@ private fun CheckUpdatesLoadingDialogContent(
     buttons = {
       TextButton(onClick = onCancel) {
         Text(
-          text = InfoStrings.checkingUpdatesCancel,
+          text = Strings.infoCheckingUpdatesCancel,
           color = theme.pageTextPositive,
         )
       }

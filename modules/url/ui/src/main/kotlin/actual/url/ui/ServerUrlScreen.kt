@@ -12,7 +12,7 @@ import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
 import actual.core.ui.transparentTopAppBarColors
-import actual.url.res.ServerUrlStrings
+import actual.url.res.Strings
 import actual.url.vm.NavDestination
 import actual.url.vm.ServerUrlViewModel
 import alakazam.android.ui.compose.VerticalSpacer
@@ -173,14 +173,14 @@ private fun ServerUrlContent(
     horizontalAlignment = Alignment.Start,
   ) {
     Text(
-      text = ServerUrlStrings.serverUrlTitle,
+      text = Strings.serverUrlTitle,
       style = MaterialTheme.typography.headlineLarge,
     )
 
     VerticalSpacer(height = 15.dp)
 
     Text(
-      text = ServerUrlStrings.serverUrlMessage,
+      text = Strings.serverUrlMessage,
       color = theme.tableRowHeaderText,
       style = MaterialTheme.typography.bodyLarge,
     )
@@ -200,7 +200,7 @@ private fun ServerUrlContent(
       modifier = Modifier
         .padding(5.dp)
         .fillMaxWidth(),
-      text = ServerUrlStrings.serverUrlConfirm,
+      text = Strings.serverUrlConfirm,
       isLoading = isLoading,
       isEnabled = isEnabled,
       onClick = { onAction(ServerUrlAction.ConfirmUrl) },

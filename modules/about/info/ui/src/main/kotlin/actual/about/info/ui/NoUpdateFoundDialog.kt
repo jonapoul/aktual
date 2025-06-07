@@ -1,6 +1,6 @@
 package actual.about.info.ui
 
-import actual.about.info.res.InfoStrings
+import actual.about.info.res.Strings
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -39,14 +39,14 @@ private fun NoUpdateFoundDialogContent(
   DialogContent(
     modifier = modifier,
     theme = theme,
-    title = InfoStrings.noUpdateTitle,
+    title = Strings.infoNoUpdateTitle,
     content = {
-      Text(text = InfoStrings.noUpdateMessage)
+      Text(text = Strings.infoNoUpdateMessage)
     },
     buttons = {
       TextButton(onClick = onDismiss) {
         Text(
-          text = InfoStrings.noUpdateOk,
+          text = Strings.infoNoUpdateOk,
           color = theme.pageTextPositive,
         )
       }

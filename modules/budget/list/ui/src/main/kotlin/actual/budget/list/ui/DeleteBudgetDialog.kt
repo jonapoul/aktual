@@ -1,6 +1,6 @@
 package actual.budget.list.ui
 
-import actual.budget.list.res.BudgetListStrings
+import actual.budget.list.res.Strings
 import actual.budget.model.Budget
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.AlertDialog
@@ -31,12 +31,12 @@ internal fun DeleteBudgetDialog(
 ) {
   AlertDialog(
     modifier = modifier,
-    title = BudgetListStrings.budgetDeleteDialogTitle(budget.name),
+    title = Strings.budgetDeleteDialogTitle(budget.name),
     onDismissRequest = { onAction(DeleteDialogAction.Dismiss) },
     buttons = {
       TextButton(onClick = { onAction(DeleteDialogAction.Dismiss) }) {
         Text(
-          text = BudgetListStrings.budgetDeleteDialogDismiss,
+          text = Strings.budgetDeleteDialogDismiss,
           fontFamily = ActualFontFamily,
         )
       }
@@ -72,18 +72,18 @@ private fun Content(
     )
 
     BareTextButton(
-      text = BudgetListStrings.budgetDeleteDialogHostedButton,
+      text = Strings.budgetDeleteDialogHostedButton,
       colors = { theme, pressed -> theme.errorPrimary(pressed) },
       onClick = onDeleteRemote,
     )
 
     Text(
-      text = BudgetListStrings.budgetDeleteDialogLocalTxt,
+      text = Strings.budgetDeleteDialogLocalTxt,
       fontSize = 14.sp,
     )
 
     BareTextButton(
-      text = BudgetListStrings.budgetDeleteDialogLocalButton,
+      text = Strings.budgetDeleteDialogLocalButton,
       colors = { theme, pressed -> theme.errorBare(pressed) },
       onClick = onDeleteLocal,
     )
@@ -93,13 +93,13 @@ private fun Content(
 @Stable
 @Composable
 fun annotatedString() = buildAnnotatedString {
-  append(BudgetListStrings.budgetDeleteDialogHostedTxt1)
+  append(Strings.budgetDeleteDialogHostedTxt1)
   append(" ")
   withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-    append(BudgetListStrings.budgetDeleteDialogHostedTxt2)
+    append(Strings.budgetDeleteDialogHostedTxt2)
   }
   append(" ")
-  append(BudgetListStrings.budgetDeleteDialogHostedTxt3)
+  append(Strings.budgetDeleteDialogHostedTxt3)
 }
 
 @Stable

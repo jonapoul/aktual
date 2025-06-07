@@ -8,7 +8,7 @@ import actual.core.ui.ButtonShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewWithColorScheme
 import actual.core.ui.Theme
-import actual.settings.res.SettingsStrings
+import actual.settings.res.Strings
 import actual.settings.ui.BasicPreferenceItem
 import actual.settings.ui.NotClickable
 import androidx.compose.foundation.background
@@ -53,7 +53,7 @@ internal fun ThemePreferenceItem(
 
   BasicPreferenceItem(
     modifier = modifier.fillMaxWidth(),
-    title = SettingsStrings.theme,
+    title = Strings.settingsTheme,
     subtitle = null,
     icon = selected.icon(),
     clickability = NotClickable,
@@ -89,12 +89,12 @@ private fun ThemeChooserDialog(
   modifier: Modifier = Modifier,
 ) = AlertDialog(
   modifier = modifier,
-  title = SettingsStrings.theme,
+  title = Strings.settingsTheme,
   onDismissRequest = onDismissRequest,
   buttons = {
     TextButton(onClick = onDismissRequest) {
       Text(
-        text = SettingsStrings.dialogDismiss,
+        text = Strings.settingsDialogDismiss,
         fontFamily = ActualFontFamily,
       )
     }

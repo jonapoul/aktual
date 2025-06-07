@@ -1,6 +1,6 @@
 package actual.account.login.ui
 
-import actual.account.login.res.LoginStrings
+import actual.account.login.res.Strings
 import actual.account.model.Password
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -47,7 +47,7 @@ internal fun PasswordLogin(
       value = enteredPassword.toString(),
       enabled = !isLoading,
       onValueChange = { password -> onAction(LoginAction.EnterPassword(password)) },
-      placeholderText = LoginStrings.passwordHint,
+      placeholderText = Strings.loginPasswordHint,
       visualTransformation = PasswordVisualTransformation(),
       theme = theme,
       keyboardOptions = KeyboardOptions(
@@ -71,7 +71,7 @@ internal fun PasswordLogin(
         .testTag(Tags.PasswordLoginButton)
         .padding(5.dp)
         .fillMaxWidth(),
-      text = LoginStrings.signIn,
+      text = Strings.loginSignIn,
       isLoading = isLoading,
       onClick = { onAction(LoginAction.SignIn) },
     )

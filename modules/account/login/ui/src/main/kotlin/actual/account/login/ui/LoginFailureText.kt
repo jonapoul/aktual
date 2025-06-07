@@ -1,7 +1,7 @@
 package actual.account.login.ui
 
 import actual.account.login.domain.LoginResult
-import actual.account.login.res.LoginStrings
+import actual.account.login.res.Strings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -22,10 +22,10 @@ internal fun LoginFailureText(
   theme: Theme = LocalTheme.current,
 ) {
   val errorMessage = when (result) {
-    is LoginResult.InvalidPassword -> LoginStrings.failurePassword
-    is LoginResult.HttpFailure -> LoginStrings.failureHttp(result.code, result.message)
-    is LoginResult.NetworkFailure -> LoginStrings.failureNetwork(result.reason)
-    is LoginResult.OtherFailure -> LoginStrings.failureOther(result.reason)
+    is LoginResult.InvalidPassword -> Strings.loginFailurePassword
+    is LoginResult.HttpFailure -> Strings.loginFailureHttp(result.code, result.message)
+    is LoginResult.NetworkFailure -> Strings.loginFailureNetwork(result.reason)
+    is LoginResult.OtherFailure -> Strings.loginFailureOther(result.reason)
   }
 
   Text(
