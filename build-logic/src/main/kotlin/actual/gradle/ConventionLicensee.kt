@@ -9,7 +9,7 @@ class ConventionLicensee : Plugin<Project> {
     licenseeBlueprint(
       allowedUrls = listOf(
         "https://opensource.org/license/mit", // slf4j
-      )
+      ),
     )
   }
 }

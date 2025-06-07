@@ -17,7 +17,6 @@ plugins {
   alias(libs.plugins.kotlin.powerAssert) apply false
   alias(libs.plugins.kotlin.serialization) apply false
   alias(libs.plugins.ksp) apply false
-  alias(libs.plugins.ktlint) apply false
   alias(libs.plugins.licensee) apply false
   alias(libs.plugins.manifestLock) apply false
   alias(libs.plugins.sqldelight) apply false

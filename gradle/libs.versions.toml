@@ -18,8 +18,6 @@ jacoco = "0.8.13"
 kotlin = "2.1.21"
 kover = "0.9.1"
 ksp = "2.1.21-2.0.1"
-ktlint-cli = "1.5.0"
-ktlint-gradle = "12.3.0"
 licensee = "1.13.0"
 manifestLock = "1.3.5"
 molecule = "2.1.0"
@@ -91,7 +89,6 @@ plugin-kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", v
 plugin-kotlin-powerAssert = { module = "org.jetbrains.kotlin:kotlin-power-assert", version.ref = "kotlin" }
 plugin-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
 plugin-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
-plugin-ktlint = { module = "org.jlleitschuh.gradle:ktlint-gradle", version.ref = "ktlint-gradle" }
 plugin-licensee = { module = "app.cash.licensee:licensee-gradle-plugin", version.ref = "licensee" }
 
 # Libraries
@@ -232,7 +229,6 @@ kotlin-powerAssert = { id = "org.jetbrains.kotlin.plugin.power-assert", version.
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
-ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint-gradle" }
 licensee = { id = "app.cash.licensee", version.ref = "licensee" }
 manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version.ref = "manifestLock" }
 sekret = { id = "net.afanasev.sekret", version.ref = "sekret" }

@@ -7,7 +7,6 @@ class ConventionStyle : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
     with(pluginManager) {
       apply(ConventionDetekt::class.java)
-      apply(ConventionKtlint::class.java)
       apply(ConventionLicensee::class.java)
     }
   }
