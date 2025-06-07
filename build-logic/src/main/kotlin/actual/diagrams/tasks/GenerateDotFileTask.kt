@@ -315,4 +315,4 @@ private val FILL_COLOR_REGEX = """
 
 private val TABLE_LINE_REGEX = """
   ^<TR><TD>.*?</TD><TD BGCOLOR="#(.*?)">module-name</TD></TR>$
-  """.trimIndent().toRegex()
+""".trimIndent().toRegex()
