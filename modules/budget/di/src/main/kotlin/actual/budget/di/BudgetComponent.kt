@@ -7,7 +7,6 @@ import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetScope
 import actual.budget.model.DbMetadata
-import actual.budget.model.MutableDbMetadata
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
@@ -20,7 +19,6 @@ import dagger.Component
 )
 interface BudgetComponent {
   val database: BudgetDatabase
-  val metadata: MutableDbMetadata
 
   val budgetId: BudgetId get() = metadata.value.cloudFileId
 

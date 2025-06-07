@@ -5,8 +5,6 @@ import actual.budget.db.buildDatabase
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetScope
 import actual.budget.model.DbMetadata
-import actual.budget.model.MutableDbMetadata
-import actual.budget.model.writeMetadata
 import android.content.Context
 import dagger.Module
 import dagger.Provides
@@ -22,11 +20,4 @@ class BudgetDatabaseModule {
   ) = buildDatabase(
     factory = AndroidSqlDriverFactory(metadata.cloudFileId, context, files),
   )
-
-  @Provides
-  @BudgetScope
-  fun metadata(
-    metadata: DbMetadata,
-    files: BudgetFiles,
-  ) = DbMetadataMutator(metadata, files::writeMetadata)
 }
