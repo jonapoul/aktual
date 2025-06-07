@@ -1,6 +1,5 @@
 package actual.budget.db.dao
 
-import actual.budget.db.dao.PreferencesDao
 import actual.budget.model.AccountId
 import actual.budget.model.SyncedPrefKey
 import actual.test.assertEmitted

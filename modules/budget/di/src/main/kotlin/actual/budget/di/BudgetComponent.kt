@@ -3,13 +3,16 @@
 package actual.budget.di
 
 import actual.budget.db.BudgetDatabase
+import actual.budget.db.dao.PreferencesDao
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetScoped
 import actual.budget.model.DbMetadata
+import alakazam.kotlin.core.CoroutineContexts
 import android.content.Context
 import dagger.BindsInstance
 import dagger.Component
+import kotlinx.coroutines.CoroutineScope
 
 @BudgetScoped
 @Component(
@@ -19,14 +22,18 @@ import dagger.Component
 )
 interface BudgetComponent {
   val database: BudgetDatabase
+  val localPreferences: BudgetLocalPreferences
+  val syncedPreferences: PreferencesDao
 
-  val budgetId: BudgetId get() = metadata.value.cloudFileId
+  val budgetId: BudgetId get() = localPreferences.budgetId
 
   @Component.Builder
   interface Builder {
     fun with(@BindsInstance context: Context): Builder
     fun with(@BindsInstance files: BudgetFiles): Builder
     fun with(@BindsInstance metadata: DbMetadata): Builder
+    fun with(@BindsInstance scope: CoroutineScope): Builder
+    fun with(@BindsInstance contexts: CoroutineContexts): Builder
     fun build(): BudgetComponent
   }
 
@@ -35,11 +42,15 @@ interface BudgetComponent {
       metadata: DbMetadata,
       context: Context,
       files: BudgetFiles,
+      scope: CoroutineScope,
+      contexts: CoroutineContexts,
     ): BudgetComponent = DaggerBudgetComponent
       .builder()
       .with(metadata)
       .with(context)
       .with(files)
+      .with(scope)
+      .with(contexts)
       .build()
   }
 }
