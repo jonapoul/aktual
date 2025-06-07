@@ -1,6 +1,5 @@
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
-import org.gradle.kotlin.dsl.compileOnly
 
 plugins {
   alias(libs.plugins.module.multiplatform)
@@ -14,7 +13,7 @@ kotlin {
     implementation(libs.javaxInject)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.serialization.json)
-    implementation(projects.core.files)
+    implementation(projects.core.model)
     compileOnly(libs.alakazam.kotlin.compose.annotations)
   }
 

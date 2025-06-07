@@ -5,9 +5,9 @@ package actual.android.app
 import actual.account.model.LoginToken
 import actual.api.client.ActualApisStateHolder
 import actual.budget.di.BudgetComponentStateHolder
+import actual.budget.model.BudgetFiles
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
-import actual.core.files.BudgetFiles
 import actual.core.model.ColorSchemeType
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.logging.Logger

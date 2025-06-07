@@ -1,6 +1,6 @@
 package actual.about.licenses.data
 
-import actual.core.files.Assets
+import actual.core.model.Assets
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import kotlinx.coroutines.CancellationException
