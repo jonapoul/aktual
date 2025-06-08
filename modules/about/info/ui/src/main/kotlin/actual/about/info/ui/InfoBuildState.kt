@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.CalendarToday
 import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Code
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -28,7 +27,6 @@ import dev.chrisbanes.haze.hazeEffect
 @Composable
 internal fun InfoBuildState(
   buildState: BuildState,
-  onAction: (InfoAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
   hazeState: HazeState = remember { HazeState() },
@@ -62,17 +60,6 @@ internal fun InfoBuildState(
       title = Strings.infoDate,
       subtitle = buildState.buildDate,
     )
-
-    BuildStateItem(
-      modifier = Modifier
-        .testTag(Tags.SourceCodeButton)
-        .padding(ItemMargin)
-        .hazeEffect(hazeState, hazeStyle),
-      icon = Icons.Filled.Code,
-      title = Strings.infoRepo,
-      subtitle = buildState.sourceCodeRepo,
-      onClick = { onAction(InfoAction.OpenSourceCode) },
-    )
   }
 }
 
@@ -84,6 +71,5 @@ private fun PreviewBuildState() = PreviewScreen {
   InfoBuildState(
     modifier = Modifier.fillMaxWidth(),
     buildState = PreviewBuildState,
-    onAction = {},
   )
 }

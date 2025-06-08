@@ -143,6 +143,10 @@ class ServerUrlViewModel @Inject internal constructor(
     mutableNavDestination.trySend(NavDestination.Back)
   }
 
+  fun onClickAbout() {
+    mutableNavDestination.trySend(NavDestination.ToAbout)
+  }
+
   private suspend fun checkIfNeedsBootstrap(url: ServerUrl) = try {
     Logger.v("checkIfNeedsBootstrap %s", url)
     val apis = apiStateHolder

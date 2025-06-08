@@ -100,7 +100,6 @@ private fun InfoScreenContent(
         buildState = buildState,
         hazeState = hazeState,
         theme = theme,
-        onAction = onAction,
       )
 
       VerticalSpacer(weight = 1f)
