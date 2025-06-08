@@ -5,8 +5,8 @@ plugins {
 dependencies {
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
-  api(projects.account.password.vm)
-  api(projects.core.ui)
+  api(projects.modules.account.password.vm)
+  api(projects.modules.core.ui)
   implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
@@ -24,7 +24,7 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.kotlinx.coroutines)
-  implementation(projects.account.password.domain)
-  implementation(projects.account.password.res)
-  implementation(projects.core.res)
+  implementation(projects.modules.account.password.domain)
+  implementation(projects.modules.account.password.res)
+  implementation(projects.modules.core.res)
 }

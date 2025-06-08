@@ -33,8 +33,8 @@ buildConfig {
 
 kotlin {
   commonMainDependencies {
-    api(projects.budget.model)
-    api(projects.core.model)
+    api(projects.modules.budget.model)
+    api(projects.modules.core.model)
     implementation(libs.alakazam.db.sqldelight)
     implementation(libs.alakazam.kotlin.logging)
     implementation(libs.kotlinx.serialization.json)
@@ -47,8 +47,8 @@ kotlin {
   commonTestDependencies {
     implementation(libs.test.alakazam.core)
     implementation(libs.test.alakazam.sqldelight)
-    implementation(projects.test.coroutines)
-    implementation(projects.test.db)
+    implementation(projects.modules.test.coroutines)
+    implementation(projects.modules.test.db)
   }
 
   androidMainDependencies {

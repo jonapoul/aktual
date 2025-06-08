@@ -5,8 +5,8 @@ plugins {
 dependencies {
   api(libs.androidx.compose.runtime)
   api(libs.androidx.lifecycle.viewmodel.core)
-  api(projects.about.licenses.vm)
-  api(projects.core.ui)
+  api(projects.modules.about.licenses.vm)
+  api(projects.modules.core.ui)
   implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.androidx.compose.animation.core)
@@ -30,6 +30,6 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(libs.lazycolumn.scrollbar)
-  implementation(projects.about.licenses.res)
-  implementation(projects.core.res)
+  implementation(projects.modules.about.licenses.res)
+  implementation(projects.modules.core.res)
 }

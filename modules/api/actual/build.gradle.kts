@@ -16,19 +16,19 @@ kotlin {
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
     api(libs.okio)
-    api(projects.account.model)
-    api(projects.budget.model)
-    api(projects.core.model)
+    api(projects.modules.account.model)
+    api(projects.modules.budget.model)
+    api(projects.modules.core.model)
     compileOnly(libs.sekret)
     implementation(libs.ktor.serialization.core)
     implementation(libs.ktor.serialization.json)
-    implementation(projects.codegen.annotation)
+    implementation(projects.modules.codegen.annotation)
   }
 
   commonTestDependencies {
-    implementation(projects.test.coroutines)
-    implementation(projects.test.http)
+    implementation(projects.modules.test.coroutines)
+    implementation(projects.modules.test.http)
   }
 }
 
-kspAllConfigs(projects.codegen.ksp)
+kspAllConfigs(projects.modules.codegen.ksp)

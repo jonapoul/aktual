@@ -9,7 +9,7 @@ kotlin {
   commonMainDependencies {
     api(libs.test.alakazam.core)
     api(libs.test.kotlinx.coroutines)
-    api(projects.budget.db)
+    api(projects.modules.budget.db)
     implementation(libs.alakazam.db.sqldelight)
     implementation(libs.sqldelight.driver.sqlite)
   }

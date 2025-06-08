@@ -11,13 +11,13 @@ kotlin {
   commonMainDependencies {
     api(libs.javaxInject)
     api(libs.okio)
-    api(projects.account.model)
-    api(projects.budget.model)
-    api(projects.core.model)
+    api(projects.modules.account.model)
+    api(projects.modules.budget.model)
+    api(projects.modules.core.model)
   }
 
   jvmTestDependencies {
-    implementation(projects.test.files)
+    implementation(projects.modules.test.files)
   }
 
   sourceSets {

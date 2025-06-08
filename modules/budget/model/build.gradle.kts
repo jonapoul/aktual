@@ -18,7 +18,7 @@ kotlin {
   }
 
   commonTestDependencies {
-    implementation(projects.test.files)
-    implementation(projects.test.json)
+    implementation(projects.modules.test.files)
+    implementation(projects.modules.test.json)
   }
 }

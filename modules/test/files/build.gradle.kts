@@ -9,6 +9,6 @@ kotlin {
     api(libs.okio)
     api(libs.test.junit)
     api(libs.test.okio)
-    api(projects.budget.model)
+    api(projects.modules.budget.model)
   }
 }

@@ -8,7 +8,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(projects.api.github)
+    api(projects.modules.api.github)
     api(libs.alakazam.kotlin.core)
     implementation(libs.javaxInject)
     implementation(libs.kotlinx.coroutines)
@@ -17,8 +17,8 @@ kotlin {
   }
 
   commonTestDependencies {
-    implementation(projects.test.buildconfig)
-    implementation(projects.test.coroutines)
-    implementation(projects.test.http)
+    implementation(projects.modules.test.buildconfig)
+    implementation(projects.modules.test.coroutines)
+    implementation(projects.modules.test.http)
   }
 }

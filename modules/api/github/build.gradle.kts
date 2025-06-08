@@ -13,16 +13,16 @@ kotlin {
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)
     api(libs.ktor.core)
-    api(projects.core.model)
+    api(projects.modules.core.model)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.serialization.core)
     implementation(libs.ktor.serialization.json)
-    implementation(projects.codegen.annotation)
+    implementation(projects.modules.codegen.annotation)
   }
 
   commonTestDependencies {
-    implementation(projects.test.http)
+    implementation(projects.modules.test.http)
   }
 }
 
-kspAllConfigs(projects.codegen.ksp)
+kspAllConfigs(projects.modules.codegen.ksp)

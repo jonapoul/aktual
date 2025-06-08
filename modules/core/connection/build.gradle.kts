@@ -14,17 +14,17 @@ kotlin {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.preferences.core)
-    implementation(projects.api.actual)
-    implementation(projects.api.builder)
-    implementation(projects.core.model)
-    implementation(projects.prefs)
+    implementation(projects.modules.api.actual)
+    implementation(projects.modules.api.builder)
+    implementation(projects.modules.core.model)
+    implementation(projects.modules.prefs)
   }
 
   androidUnitTestDependencies {
     implementation(libs.alakazam.android.core)
-    implementation(projects.test.buildconfig)
-    implementation(projects.test.coroutines)
-    implementation(projects.test.http)
-    implementation(projects.test.prefs)
+    implementation(projects.modules.test.buildconfig)
+    implementation(projects.modules.test.coroutines)
+    implementation(projects.modules.test.http)
+    implementation(projects.modules.test.prefs)
   }
 }

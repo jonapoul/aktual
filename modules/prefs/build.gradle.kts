@@ -10,8 +10,8 @@ kotlin {
   commonMainDependencies {
     api(libs.javaxInject)
     api(libs.preferences.core)
-    api(projects.account.model)
-    api(projects.core.model)
+    api(projects.modules.account.model)
+    api(projects.modules.core.model)
   }
 
   androidMainDependencies {
@@ -19,8 +19,8 @@ kotlin {
   }
 
   androidUnitTestDependencies {
-    implementation(projects.test.buildconfig)
-    implementation(projects.test.coroutines)
-    implementation(projects.test.prefs)
+    implementation(projects.modules.test.buildconfig)
+    implementation(projects.modules.test.coroutines)
+    implementation(projects.modules.test.prefs)
   }
 }
