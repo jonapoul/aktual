@@ -1,31 +1,50 @@
 package actual.budget.list.ui
 
 import actual.budget.list.res.Strings
+import actual.budget.list.vm.DeletingState
 import actual.budget.model.Budget
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.AlertDialog
 import actual.core.ui.BareTextButton
+import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.core.ui.buttonBare
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun DeleteBudgetDialog(
   budget: Budget,
+  deletingState: DeletingState,
+  localFileExists: Boolean,
   onAction: (DeleteDialogAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -43,14 +62,10 @@ internal fun DeleteBudgetDialog(
     },
     content = {
       Content(
-        onDeleteLocal = {
-          onAction(DeleteDialogAction.DeleteLocal)
-          onAction(DeleteDialogAction.Dismiss)
-        },
-        onDeleteRemote = {
-          onAction(DeleteDialogAction.DeleteRemote)
-          onAction(DeleteDialogAction.Dismiss)
-        },
+        deletingState = deletingState,
+        localFileExists = localFileExists,
+        onDeleteLocal = { onAction(DeleteDialogAction.DeleteLocal) },
+        onDeleteRemote = { onAction(DeleteDialogAction.DeleteRemote) },
       )
     },
   )
@@ -59,6 +74,8 @@ internal fun DeleteBudgetDialog(
 @Stable
 @Composable
 private fun Content(
+  deletingState: DeletingState,
+  localFileExists: Boolean,
   onDeleteLocal: () -> Unit,
   onDeleteRemote: () -> Unit,
 ) {
@@ -71,21 +88,76 @@ private fun Content(
       fontSize = 14.sp,
     )
 
-    BareTextButton(
+    var hasPressedDeleteButton by remember { mutableStateOf(false) }
+    val isNotDeleting = deletingState is DeletingState.Inactive
+
+    LoadableBareTextButton(
       text = Strings.budgetDeleteDialogHostedButton,
       colors = { theme, pressed -> theme.errorPrimary(pressed) },
-      onClick = onDeleteRemote,
+      isEnabled = isNotDeleting,
+      isLoading = deletingState is DeletingState.Active && deletingState.deletingRemote,
+      onClick = {
+        hasPressedDeleteButton = true
+        onDeleteRemote()
+      },
     )
 
-    Text(
-      text = Strings.budgetDeleteDialogLocalTxt,
-      fontSize = 14.sp,
-    )
+    if (localFileExists) {
+      Text(
+        text = Strings.budgetDeleteDialogLocalTxt,
+        fontSize = 14.sp,
+      )
 
-    BareTextButton(
-      text = Strings.budgetDeleteDialogLocalButton,
-      colors = { theme, pressed -> theme.errorBare(pressed) },
-      onClick = onDeleteLocal,
+      LoadableBareTextButton(
+        text = Strings.budgetDeleteDialogLocalButton,
+        colors = { theme, pressed -> theme.errorBare(pressed) },
+        isEnabled = isNotDeleting,
+        isLoading = deletingState is DeletingState.Active && deletingState.deletingLocal,
+        onClick = {
+          hasPressedDeleteButton = true
+          onDeleteLocal()
+        },
+      )
+    }
+  }
+}
+
+private val IconPadding = 10.dp
+private val IconSize = 32.dp
+private val ProgressWheelStrokeWidth = 5.dp
+
+@Composable
+private fun LoadableBareTextButton(
+  text: String,
+  onClick: () -> Unit,
+  isEnabled: Boolean,
+  isLoading: Boolean,
+  colors: @Composable (Theme, Boolean) -> ButtonColors,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) = Box(
+  modifier = modifier,
+  contentAlignment = Alignment.Center,
+) {
+  BareTextButton(
+    text = text,
+    colors = colors,
+    isEnabled = isEnabled,
+    onClick = onClick,
+    style = if (isLoading) TextStyle(color = Transparent) else MaterialTheme.typography.buttonBare,
+  )
+
+  Box(
+    modifier = modifier.padding(IconPadding),
+    contentAlignment = Alignment.Center,
+  ) {
+    CircularProgressIndicator(
+      modifier = Modifier
+        .size(IconSize)
+        .alpha(if (isLoading) 1f else 0f),
+      color = theme.sliderActiveTrack,
+      trackColor = theme.sliderInactiveTrack,
+      strokeWidth = ProgressWheelStrokeWidth,
     )
   }
 }
@@ -120,6 +192,41 @@ private fun Theme.errorBare(isPressed: Boolean) = ButtonDefaults.outlinedButtonC
 @Composable
 private fun PreviewContent() = PreviewColumn {
   Content(
+    deletingState = DeletingState.Inactive,
+    localFileExists = true,
+    onDeleteLocal = {},
+    onDeleteRemote = {},
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewDeletingLocal() = PreviewColumn {
+  Content(
+    deletingState = DeletingState.Active(deletingLocal = true),
+    localFileExists = true,
+    onDeleteLocal = {},
+    onDeleteRemote = {},
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewDeletingRemote() = PreviewColumn {
+  Content(
+    deletingState = DeletingState.Active(deletingRemote = true),
+    localFileExists = true,
+    onDeleteLocal = {},
+    onDeleteRemote = {},
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewNoLocal() = PreviewColumn {
+  Content(
+    deletingState = DeletingState.Active(deletingRemote = true),
+    localFileExists = false,
     onDeleteLocal = {},
     onDeleteRemote = {},
   )

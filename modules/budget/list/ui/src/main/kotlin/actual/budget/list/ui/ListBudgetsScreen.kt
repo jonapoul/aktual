@@ -82,16 +82,33 @@ fun ListBudgetsScreen(
 
   var budgetToDelete by remember { mutableStateOf<Budget?>(null) }
   budgetToDelete?.let { budget ->
+    val deletingState by viewModel.deletingState.collectAsStateWithLifecycle()
+    val localFilesExist by viewModel.localFilesExist.collectAsStateWithLifecycle()
+    val thisFileExists = localFilesExist.getOrElse(budget.cloudFileId) { false }
+
     DeleteBudgetDialog(
       budget = budget,
+      deletingState = deletingState,
+      localFileExists = thisFileExists,
       onAction = { action ->
         when (action) {
-          DeleteDialogAction.DeleteLocal -> TODO()
-          DeleteDialogAction.DeleteRemote -> TODO()
-          DeleteDialogAction.Dismiss -> budgetToDelete = null
+          DeleteDialogAction.DeleteLocal -> viewModel.deleteLocal(budget.cloudFileId)
+          DeleteDialogAction.DeleteRemote -> TODO("https://github.com/jonapoul/actual-android/issues/257")
+          DeleteDialogAction.Dismiss -> {
+            budgetToDelete = null
+            viewModel.clearDeletingState()
+          }
         }
       },
     )
+  }
+
+  LaunchedEffect(Unit) {
+    viewModel.closeDialog.collect { closeDialog ->
+      if (closeDialog) {
+        budgetToDelete = null
+      }
+    }
   }
 
   ListBudgetsScaffold(
