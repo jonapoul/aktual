@@ -1,6 +1,11 @@
 package actual.settings.vm
 
 import actual.core.model.ColorSchemeType
+import actual.core.model.ColorSchemeType.Dark
+import actual.core.model.ColorSchemeType.Light
+import actual.core.model.ColorSchemeType.Midnight
+import actual.core.model.ColorSchemeType.System
+import actual.core.model.DarkColorSchemeType
 import actual.prefs.AppGlobalPreferences
 import actual.settings.vm.PreferenceValue.ShowBottomBar
 import actual.settings.vm.PreferenceValue.Theme
@@ -33,16 +38,19 @@ class SettingsViewModelTest {
   fun `Color scheme changes`() = runTest {
     before()
     viewModel.prefValues.test {
-      assertValue(Theme(ColorSchemeType.System))
+      assertValue(theme(System, Dark))
 
-      viewModel.set(Theme(ColorSchemeType.Midnight))
-      assertValue(Theme(ColorSchemeType.Midnight))
+      viewModel.set(theme(Midnight, Dark))
+      assertValue(theme(Midnight, Dark))
 
-      viewModel.set(Theme(ColorSchemeType.Dark))
-      assertValue(Theme(ColorSchemeType.Dark))
+      viewModel.set(theme(Dark, Dark))
+      assertValue(theme(Dark, Dark))
 
-      viewModel.set(Theme(ColorSchemeType.Light))
-      assertValue(Theme(ColorSchemeType.Light))
+      viewModel.set(theme(Light, Dark))
+      assertValue(theme(Light, Dark))
+
+      viewModel.set(theme(Light, Midnight))
+      assertValue(theme(Light, Midnight))
 
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
@@ -65,4 +73,6 @@ class SettingsViewModelTest {
 
   private suspend fun TurbineTestContext<ImmutableList<PreferenceValue>>.assertValue(value: PreferenceValue) =
     assertContains(awaitItem(), value)
+
+  private fun theme(regular: ColorSchemeType, dark: DarkColorSchemeType) = Theme(ThemeConfig(regular, dark))
 }

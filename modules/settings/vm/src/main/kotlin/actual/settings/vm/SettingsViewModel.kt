@@ -21,22 +21,31 @@ class SettingsViewModel @Inject internal constructor(
   private val colorSchemePref = preferences.colorSchemeType
   private val colorSchemeFlow = colorSchemePref.asStateFlow(viewModelScope)
 
+  private val darkSchemePref = preferences.darkColorSchemeType
+  private val darkSchemeFlow = darkSchemePref.asStateFlow(viewModelScope)
+
   private val showBottomBarPref = preferences.showBottomBar
   private val showBottomBar = showBottomBarPref.asStateFlow(viewModelScope)
 
   val prefValues: StateFlow<ImmutableList<PreferenceValue>> = viewModelScope.launchMolecule(Immediate) {
     val colorScheme by colorSchemeFlow.collectAsState()
+    val darkScheme by darkSchemeFlow.collectAsState()
     val showBottomBar by showBottomBar.collectAsState()
     persistentListOf(
-      PreferenceValue.Theme(colorScheme),
+      PreferenceValue.Theme(ThemeConfig(colorScheme, darkScheme)),
       PreferenceValue.ShowBottomBar(showBottomBar),
     )
   }
 
   fun set(value: PreferenceValue) {
     when (value) {
-      is PreferenceValue.Theme -> colorSchemePref.set(value.type)
+      is PreferenceValue.Theme -> setColorScheme(value.config)
       is PreferenceValue.ShowBottomBar -> showBottomBarPref.set(value.show)
     }
+  }
+
+  private fun setColorScheme(config: ThemeConfig) {
+    colorSchemePref.set(config.theme)
+    darkSchemePref.set(config.darkTheme)
   }
 }

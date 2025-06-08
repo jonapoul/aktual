@@ -3,7 +3,6 @@ package actual.android.app
 import actual.account.model.LoginToken
 import actual.android.app.nav.ActualNavHost
 import actual.core.ui.ActualTheme
-import actual.core.ui.LocalColorSchemeType
 import alakazam.android.ui.compose.VerticalSpacer
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -18,7 +17,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color.Companion.Transparent
@@ -49,16 +47,15 @@ class ActualActivity : ComponentActivity() {
 
     setContent {
       val scheme by viewModel.colorSchemeType.collectAsStateWithLifecycle()
+      val darkScheme by viewModel.darkSchemeType.collectAsStateWithLifecycle()
       val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
 
-      CompositionLocalProvider(LocalColorSchemeType provides scheme) {
-        ActualTheme(scheme) {
-          Content(
-            isServerUrlSet = viewModel.isServerUrlSet,
-            loginToken = viewModel.loginToken,
-            bottomBarState = bottomBarState,
-          )
-        }
+      ActualTheme(scheme, darkScheme) {
+        Content(
+          isServerUrlSet = viewModel.isServerUrlSet,
+          loginToken = viewModel.loginToken,
+          bottomBarState = bottomBarState,
+        )
       }
     }
   }
