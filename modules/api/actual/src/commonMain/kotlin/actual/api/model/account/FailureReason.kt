@@ -11,9 +11,10 @@ sealed interface FailureReason {
   val reason: String
 
   enum class Known(override val reason: String) : FailureReason {
+    FileNotFound("file-not-found"),
     TokenExpired("token-expired"),
     Unauthorized("unauthorized"),
-    FileNotFound("file-not-found"),
+    UnprocessableEntity("unprocessable-entity"),
   }
 
   data class Other(
