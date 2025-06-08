@@ -20,6 +20,7 @@ class BudgetLocalPreferences @Inject constructor(
   private val isUpdating = AtomicBoolean(false)
 
   val budgetId: BudgetId get() = metadata.cloudFileId
+  val budgetName: String get() = metadata.budgetName
 
   fun modify(transaction: DbMetadata.() -> Unit) {
     var locked = false

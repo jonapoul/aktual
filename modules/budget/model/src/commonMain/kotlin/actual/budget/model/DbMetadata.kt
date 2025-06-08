@@ -48,16 +48,45 @@ data class DbMetadata(
     data["encryptKeyId"] = encryptKeyId
   }
 
-  val budgetName: String get() = data["budgetName"].string
-  val cloudFileId: BudgetId get() = data["cloudFileId"].string.let(::BudgetId)
-  val groupId: String get() = data["groupId"].string
-  val id: String get() = data["id"].string
-  val lastScheduleRun: LocalDate get() = data["lastScheduleRun"].string.let(LocalDate::parse)
-  val lastSyncedTimestamp: Timestamp get() = data["lastSyncedTimestamp"].string.let(Timestamp::parse)
-  val lastUploaded: LocalDate get() = data["lastUploaded"].string.let(LocalDate::parse)
-  val resetClock: Boolean get() = data["resetClock"].string.toBoolean()
-  val userId: String get() = data["userId"].string
-  val encryptKeyId: String? get() = data["encryptKeyId"].string
+  var budgetName: String
+    get() = data["budgetName"].string
+    set(value) = data.set("budgetName", value)
+
+  var cloudFileId: BudgetId
+    get() = data["cloudFileId"].string.let(::BudgetId)
+    set(value) = data.set("cloudFileId", value.toString())
+
+  var groupId: String
+    get() = data["groupId"].string
+    set(value) = data.set("groupId", value)
+
+  var id: String
+    get() = data["id"].string
+    set(value) = data.set("id", value)
+
+  var lastScheduleRun: LocalDate
+    get() = data["lastScheduleRun"].string.let(LocalDate::parse)
+    set(value) = data.set("lastScheduleRun", value.toString())
+
+  var lastSyncedTimestamp: Timestamp
+    get() = data["lastSyncedTimestamp"].string.let(Timestamp::parse)
+    set(value) = data.set("lastSyncedTimestamp", value.toString())
+
+  var lastUploaded: LocalDate
+    get() = data["lastUploaded"].string.let(LocalDate::parse)
+    set(value) = data.set("lastUploaded", value.toString())
+
+  var resetClock: Boolean
+    get() = data["resetClock"].string.toBoolean()
+    set(value) = data.set("resetClock", value)
+
+  var userId: String
+    get() = data["userId"].string
+    set(value) = data.set("userId", value)
+
+  var encryptKeyId: String?
+    get() = data["encryptKeyId"].string
+    set(value) = data.set("encryptKeyId", value)
 
   companion object {
     private val Any?.string: String get() = this as String
