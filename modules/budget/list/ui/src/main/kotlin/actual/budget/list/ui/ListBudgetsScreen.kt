@@ -93,7 +93,7 @@ fun ListBudgetsScreen(
       onAction = { action ->
         when (action) {
           DeleteDialogAction.DeleteLocal -> viewModel.deleteLocal(budget.cloudFileId)
-          DeleteDialogAction.DeleteRemote -> TODO("https://github.com/jonapoul/actual-android/issues/257")
+          DeleteDialogAction.DeleteRemote -> viewModel.deleteRemote(budget.cloudFileId)
           DeleteDialogAction.Dismiss -> {
             budgetToDelete = null
             viewModel.clearDeletingState()
