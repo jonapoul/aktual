@@ -6,6 +6,7 @@ import actual.budget.db.BudgetDatabase
 import actual.budget.db.dao.PreferencesDao
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
+import actual.budget.model.BudgetLocalPreferences
 import actual.budget.model.BudgetScoped
 import actual.budget.model.DbMetadata
 import alakazam.kotlin.core.CoroutineContexts

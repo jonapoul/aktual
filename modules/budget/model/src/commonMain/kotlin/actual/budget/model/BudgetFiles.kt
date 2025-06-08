@@ -22,7 +22,7 @@ fun BudgetFiles.decryptedZip(id: BudgetId, mkdirs: Boolean = false): Path = tmp(
 
 fun BudgetFiles.writeMetadata(metadata: DbMetadata) {
   val path = metadata(metadata.cloudFileId, mkdirs = true)
-  val json = Json.encodeToString(metadata)
+  val json = Json.encodeToString(DbMetadata.serializer(), metadata)
   fileSystem.sink(path).buffer().use { sink -> sink.writeUtf8(json) }
 }
 
@@ -30,5 +30,5 @@ fun BudgetFiles.readMetadata(id: BudgetId): DbMetadata {
   val path = metadata(id, mkdirs = false)
   if (!fileSystem.exists(path)) throw FileNotFoundException("$path doesn't exist")
   val json = fileSystem.source(path).buffer().use { source -> source.readUtf8() }
-  return Json.decodeFromString<DbMetadata>(json)
+  return Json.decodeFromString(DbMetadata.serializer(), json)
 }

@@ -1,5 +1,6 @@
 package actual.budget.model
 
+import alakazam.kotlin.core.deepCopy
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -21,6 +22,8 @@ import kotlinx.serialization.json.jsonObject
 data class DbMetadata(
   private val data: MutableMap<String, Any?> = mutableMapOf(),
 ) : MutableMap<String, Any?> by data {
+  constructor(other: DbMetadata) : this(other.deepCopy().toMutableMap())
+
   constructor(
     budgetName: String,
     cloudFileId: BudgetId,
@@ -56,8 +59,8 @@ data class DbMetadata(
   val userId: String get() = data["userId"].string
   val encryptKeyId: String? get() = data["encryptKeyId"].string
 
-  private companion object {
-    val Any?.string: String get() = this as String
+  companion object {
+    private val Any?.string: String get() = this as String
   }
 }
 
