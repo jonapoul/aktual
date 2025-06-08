@@ -6,6 +6,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 interface ListBudgetsNavigator {
+  fun toAbout()
   fun toChangePassword()
   fun toUrl()
   fun toSettings()

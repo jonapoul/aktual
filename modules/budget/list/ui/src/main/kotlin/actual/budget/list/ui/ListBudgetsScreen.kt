@@ -28,6 +28,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
@@ -119,6 +120,7 @@ fun ListBudgetsScreen(
       when (action) {
         ListBudgetsAction.ChangeServer -> nav.toUrl()
         ListBudgetsAction.ChangePassword -> nav.toChangePassword()
+        ListBudgetsAction.OpenAbout -> nav.toAbout()
         ListBudgetsAction.OpenSettings -> nav.toSettings()
         ListBudgetsAction.OpenInBrowser -> launchBrowser = true
         ListBudgetsAction.Reload -> viewModel.retry()
@@ -222,6 +224,15 @@ private inline fun TopBarActions(
           onAction(ListBudgetsAction.ChangePassword)
         },
         leadingIcon = { Icon(Icons.Filled.Key, contentDescription = passwordText) },
+      )
+      val aboutText = Strings.listBudgetsAbout
+      DropdownMenuItem(
+        text = { Text(aboutText) },
+        onClick = {
+          showMenu = false
+          onAction(ListBudgetsAction.OpenAbout)
+        },
+        leadingIcon = { Icon(Icons.Filled.Info, contentDescription = aboutText) },
       )
     }
   }
