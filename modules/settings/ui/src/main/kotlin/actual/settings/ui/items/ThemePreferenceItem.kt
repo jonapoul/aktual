@@ -1,6 +1,7 @@
 package actual.settings.ui.items
 
 import actual.core.model.ColorSchemeType
+import actual.core.model.DarkColorSchemeType
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.AlertDialog
@@ -11,9 +12,11 @@ import actual.core.ui.Theme
 import actual.settings.res.Strings
 import actual.settings.ui.BasicPreferenceItem
 import actual.settings.ui.NotClickable
+import actual.settings.vm.ThemeConfig
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -40,51 +43,90 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import dev.chrisbanes.haze.HazeState
-import kotlinx.collections.immutable.toImmutableList
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun ThemePreferenceItem(
-  selected: ColorSchemeType,
-  onChange: (ColorSchemeType) -> Unit,
+  config: ThemeConfig,
+  onChange: (ThemeConfig) -> Unit,
   modifier: Modifier = Modifier,
   hazeState: HazeState = remember { HazeState() },
 ) {
-  var openDialog by remember { mutableStateOf(false) }
+  var openRegularDialog by remember { mutableStateOf(false) }
+  var openDarkDialog by remember { mutableStateOf(false) }
+  val (theme, darkTheme) = config
 
-  BasicPreferenceItem(
+  Column(
     modifier = modifier.fillMaxWidth(),
-    title = Strings.settingsTheme,
-    subtitle = null,
-    icon = selected.icon(),
-    clickability = NotClickable,
-    hazeState = hazeState,
   ) {
-    TypeButton(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(3.dp),
-      type = selected,
-      isSelected = false,
-      onClick = { openDialog = !openDialog },
+    BasicPreferenceItem(
+      title = Strings.settingsTheme,
+      subtitle = null,
+      icon = theme.regularIcon(),
+      clickability = NotClickable,
+      hazeState = hazeState,
+    ) {
+      TypeButton(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(3.dp),
+        type = theme,
+        isSelected = false,
+        onClick = { openRegularDialog = !openRegularDialog },
+      )
+    }
+
+    if (config.theme == ColorSchemeType.System) {
+      BasicPreferenceItem(
+        title = Strings.settingsDarkTheme,
+        subtitle = null,
+        icon = darkTheme.darkIcon(),
+        clickability = NotClickable,
+        hazeState = hazeState,
+      ) {
+        TypeButton(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(3.dp),
+          type = darkTheme,
+          isSelected = false,
+          onClick = { openDarkDialog = !openDarkDialog },
+        )
+      }
+    }
+  }
+
+  if (openRegularDialog) {
+    ThemeChooserDialog(
+      selected = theme,
+      options = REGULAR_OPTIONS,
+      onDismissRequest = { openRegularDialog = false },
+      onSelect = { newValue ->
+        openRegularDialog = false
+        onChange(config.copy(theme = newValue))
+      },
     )
   }
 
-  if (openDialog) {
+  if (openDarkDialog) {
     ThemeChooserDialog(
-      selected = selected,
-      onDismissRequest = { openDialog = false },
+      selected = darkTheme,
+      options = DARK_OPTIONS,
+      onDismissRequest = { openDarkDialog = false },
       onSelect = { newValue ->
-        openDialog = false
-        onChange(newValue)
+        openDarkDialog = false
+        onChange(config.copy(darkTheme = newValue))
       },
     )
   }
 }
 
 @Composable
-private fun ThemeChooserDialog(
-  selected: ColorSchemeType,
-  onSelect: (ColorSchemeType) -> Unit,
+private fun <T : ColorSchemeType> ThemeChooserDialog(
+  selected: T,
+  options: ImmutableList<T>,
+  onSelect: (T) -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
 ) = AlertDialog(
@@ -102,19 +144,31 @@ private fun ThemeChooserDialog(
   content = {
     ThemeChooserDialogContent(
       selected = selected,
+      options = options,
       onSelect = onSelect,
     )
   },
 )
 
-private val TYPES = ColorSchemeType.entries.toImmutableList()
+private val REGULAR_OPTIONS = persistentListOf<ColorSchemeType>(
+  ColorSchemeType.System,
+  ColorSchemeType.Light,
+  ColorSchemeType.Dark,
+  ColorSchemeType.Midnight,
+)
+
+private val DARK_OPTIONS = persistentListOf<DarkColorSchemeType>(
+  ColorSchemeType.Dark,
+  ColorSchemeType.Midnight,
+)
 
 @Composable
-private fun ColumnScope.ThemeChooserDialogContent(
-  selected: ColorSchemeType,
-  onSelect: (ColorSchemeType) -> Unit,
+private fun <T : ColorSchemeType> ColumnScope.ThemeChooserDialogContent(
+  selected: T,
+  options: ImmutableList<T>,
+  onSelect: (T) -> Unit,
 ) {
-  TYPES.fastForEach { type ->
+  options.fastForEach { type ->
     TypeButton(
       modifier = Modifier
         .fillMaxWidth()
@@ -127,8 +181,8 @@ private fun ColumnScope.ThemeChooserDialogContent(
 }
 
 @Composable
-private fun TypeButton(
-  type: ColorSchemeType,
+private fun <T : ColorSchemeType> TypeButton(
+  type: T,
   isSelected: Boolean,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
@@ -184,9 +238,16 @@ private fun ColorSchemeType.string(): String = when (this) {
 
 @Composable
 @ReadOnlyComposable
-private fun ColorSchemeType.icon(): ImageVector = when (this) {
+private fun ColorSchemeType.regularIcon(): ImageVector = when (this) {
   ColorSchemeType.System -> Icons.Filled.Settings
   ColorSchemeType.Light -> Icons.Filled.LightMode
+  ColorSchemeType.Dark -> Icons.Filled.WbTwilight
+  ColorSchemeType.Midnight -> Icons.Filled.DarkMode
+}
+
+@Composable
+@ReadOnlyComposable
+private fun DarkColorSchemeType.darkIcon(): ImageVector = when (this) {
   ColorSchemeType.Dark -> Icons.Filled.WbTwilight
   ColorSchemeType.Midnight -> Icons.Filled.DarkMode
 }
@@ -201,25 +262,32 @@ private fun PreviewLight() = PreviewThemed(ColorSchemeType.Light)
 
 @Preview
 @Composable
-private fun PreviewDark() = PreviewThemed(ColorSchemeType.Dark)
+private fun PreviewDark() = PreviewThemed(ColorSchemeType.Dark, dark = ColorSchemeType.Dark)
 
 @Preview
 @Composable
-private fun PreviewMidnight() = PreviewThemed(ColorSchemeType.Midnight)
+private fun PreviewMidnight() = PreviewThemed(ColorSchemeType.Dark, dark = ColorSchemeType.Midnight)
 
 @Composable
 private fun PreviewThemed(
-  initial: ColorSchemeType,
+  theme: ColorSchemeType,
   modifier: Modifier = Modifier,
+  dark: DarkColorSchemeType = ColorSchemeType.Dark,
 ) {
-  var selected by remember { mutableStateOf(initial) }
+  var config by remember { mutableStateOf(ThemeConfig(theme, dark)) }
+  val schemeType = when (config.theme) {
+    ColorSchemeType.System -> ColorSchemeType.System
+    ColorSchemeType.Light -> ColorSchemeType.Light
+    ColorSchemeType.Midnight -> ColorSchemeType.Midnight
+    ColorSchemeType.Dark -> config.darkTheme
+  }
   PreviewWithColorScheme(
-    schemeType = selected,
+    schemeType = schemeType,
     modifier = modifier,
   ) {
     ThemePreferenceItem(
-      selected = selected,
-      onChange = { newValue -> selected = newValue },
+      config = ThemeConfig(schemeType, ColorSchemeType.Midnight),
+      onChange = { newValue -> config = newValue },
     )
   }
 }

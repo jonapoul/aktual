@@ -1,5 +1,6 @@
 package actual.settings.ui
 
+import actual.core.model.ColorSchemeType
 import actual.core.res.CoreDimens
 import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
@@ -14,6 +15,7 @@ import actual.settings.ui.items.ShowBottomBarPreferenceItem
 import actual.settings.ui.items.ThemePreferenceItem
 import actual.settings.vm.PreferenceValue
 import actual.settings.vm.SettingsViewModel
+import actual.settings.vm.ThemeConfig
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -156,7 +158,7 @@ private fun PreferenceItem(
   ) {
     when (value) {
       is PreferenceValue.Theme -> ThemePreferenceItem(
-        selected = value.type,
+        config = value.config,
         hazeState = hazeState,
         onChange = { onChange(PreferenceValue.Theme(it)) },
       )
@@ -176,7 +178,7 @@ private fun Regular() = PreviewScreen { type ->
   SettingsScaffold(
     onAction = {},
     values = persistentListOf(
-      PreferenceValue.Theme(type),
+      PreferenceValue.Theme(ThemeConfig(type, ColorSchemeType.Dark)),
       PreferenceValue.ShowBottomBar(false),
     ),
   )
