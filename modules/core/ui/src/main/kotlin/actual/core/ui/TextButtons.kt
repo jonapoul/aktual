@@ -234,12 +234,12 @@ private fun RowScope.DefaultTextButtonContent(
 
 private val ButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
 
-private val Typography.buttonPrimary: TextStyle
+val Typography.buttonPrimary: TextStyle
   @Composable
   @ReadOnlyComposable
   get() = textStyle(fontSize = 15.sp)
 
-private val Typography.buttonBare: TextStyle
+val Typography.buttonBare: TextStyle
   @Composable
   @ReadOnlyComposable
   get() = textStyle(fontSize = 15.sp)
