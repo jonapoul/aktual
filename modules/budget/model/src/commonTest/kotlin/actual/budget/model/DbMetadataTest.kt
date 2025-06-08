@@ -8,7 +8,7 @@ import kotlin.test.assertEquals
 
 class DbMetadataTest {
   @Test
-  fun parseData() {
+  fun `Read and write metadata`() {
     val json = """
       {
         "id": "My-Finances-e742ff8",
@@ -24,7 +24,7 @@ class DbMetadataTest {
       }
     """.trimIndent()
 
-    val model = DbMetadata(
+    val expectedModel = DbMetadata(
       id = "My-Finances-e742ff8",
       budgetName = "Test Budget",
       cloudFileId = BudgetId("cf2b43ee-8067-48ed-ab5b-4e4e5531056e"),
@@ -41,9 +41,10 @@ class DbMetadataTest {
       ),
     )
 
-    assertEquals(
-      actual = PrettyJson.decodeFromString<DbMetadata>(json),
-      expected = model,
-    )
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertEquals(actual = decoded, expected = expectedModel)
+
+    val encoded = PrettyJson.encodeToString(decoded)
+    assertEquals(actual = encoded, expected = json)
   }
 }

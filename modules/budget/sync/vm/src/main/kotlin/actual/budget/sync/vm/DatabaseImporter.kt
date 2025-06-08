@@ -6,7 +6,7 @@ import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.DbMetadata
 import actual.budget.model.database
-import actual.budget.model.metadata
+import actual.budget.model.writeMetadata
 import actual.core.model.TimeZones
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
@@ -80,26 +80,22 @@ class DatabaseImporter @Inject constructor(
     }
 
     val meta = try {
-      ActualJson.decodeFromString<DbMetadata>(metaJson)
+      ActualJson.decodeFromString(DbMetadata.serializer(), metaJson)
     } catch (e: SerializationException) {
       Logger.e(e, "Failed deserializing DbMetadata: '%s'", metaJson)
       return ImportResult.InvalidMetaFile
     }
 
     // Update the metadata. The stored file on the server might be out-of-date with a few keys
-    val updatedMeta = meta.copy(
-      cloudFileId = userFile.fileId,
-      groupId = userFile.groupId,
-      lastUploaded = clock.todayIn(timeZones.current()),
-      encryptKeyId = userFile.encryptMeta?.keyId?.value,
-    )
+    with(meta) {
+      cloudFileId = userFile.fileId
+      groupId = userFile.groupId
+      lastUploaded = clock.todayIn(timeZones.current())
+      encryptKeyId = userFile.encryptMeta?.keyId?.value
+    }
 
-    val metaPath = budgetFiles.metadata(userFile.fileId)
-    fileSystem.delete(metaPath, mustExist = false)
-
-    val updatedMetaJson = ActualJson.encodeToString(updatedMeta)
-    fileSystem.sink(metaPath).buffer().use { it.writeUtf8(updatedMetaJson) }
-    return ImportResult.Success(updatedMeta)
+    budgetFiles.writeMetadata(meta)
+    return ImportResult.Success(meta)
   }
 
   private fun loadIntoDbPath(zip: ZipInputStream, id: BudgetId): Path {

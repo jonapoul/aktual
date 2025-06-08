@@ -9,44 +9,38 @@ import actual.budget.model.SyncedPrefKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class PreferencesDao(private val database: BudgetDatabase) {
-  suspend fun getAll(): Map<SyncedPrefKey, String?> = database
-    .preferencesQueries
-    .withResult {
-      getAll()
-        .executeAsList()
-        .associate { (key, value) -> key to value }
-    }
+class PreferencesDao @Inject constructor(database: BudgetDatabase) {
+  private val queries = database.preferencesQueries
 
-  suspend operator fun get(key: SyncedPrefKey): String? = database
-    .preferencesQueries
-    .withResult {
-      getValue(key)
-        .executeAsOneOrNull()
-        ?.value_
-    }
+  suspend fun getAll(): Map<SyncedPrefKey, String?> = queries.withResult {
+    getAll()
+      .executeAsList()
+      .associate { (key, value) -> key to value }
+  }
 
-  suspend operator fun set(key: SyncedPrefKey, value: String?) = database
-    .preferencesQueries
-    .withoutResult {
-      setValue(key, value?.toString())
-    }
+  suspend operator fun get(key: SyncedPrefKey): String? = queries.withResult {
+    getValue(key)
+      .executeAsOneOrNull()
+      ?.value_
+  }
 
-  suspend fun observe(key: SyncedPrefKey): Flow<String?> = database
-    .preferencesQueries
-    .withResult {
-      getValue(key)
-        .asSingleNullableFlow()
-        .map { it?.value_?.toString() }
-        .distinctUntilChanged()
-    }
+  suspend operator fun set(key: SyncedPrefKey, value: String?) = queries.withoutResult {
+    setValue(key, value?.toString())
+  }
+
+  fun observe(key: SyncedPrefKey): Flow<String?> = queries
+    .getValue(key)
+    .asSingleNullableFlow()
+    .map { it?.value_?.toString() }
+    .distinctUntilChanged()
 
   suspend fun <R> withResult(
     query: suspend PreferencesQueries.() -> R,
-  ): R = database.preferencesQueries.withResult(query)
+  ): R = queries.withResult(query)
 
   suspend fun withoutResult(
     query: suspend PreferencesQueries.() -> Unit,
-  ) = database.preferencesQueries.withoutResult(query)
+  ) = queries.withoutResult(query)
 }

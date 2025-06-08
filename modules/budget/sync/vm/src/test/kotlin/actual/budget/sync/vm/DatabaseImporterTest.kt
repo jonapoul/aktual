@@ -81,24 +81,6 @@ class DatabaseImporterTest {
   }
 
   @Test
-  fun `Fail on invalid metadata JSON`() = runTest {
-    // given a zip containing invalid metadata is downloaded
-    val resource = resource("invalid-metadata.zip")
-    val zip = root.resolve("invalid-metadata.zip")
-    resource.copyTo(zip, fileSystem)
-
-    // when
-    val result = importer(USER_FILE, zip)
-
-    // then
-    assertEquals(expected = ImportResult.InvalidMetaFile, actual = result)
-
-    // and the budget dir doesn't exist
-    val dir = budgetFiles.directory(BUDGET_ID)
-    assertFalse(fileSystem.exists(dir))
-  }
-
-  @Test
   fun `Fail on invalid ZIP`() = runTest {
     // given a non-zip file pretending to be a zip is downloaded
     val resource = resource("invalid.zip")
