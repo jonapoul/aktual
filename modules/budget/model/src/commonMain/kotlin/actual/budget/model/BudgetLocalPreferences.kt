@@ -28,7 +28,7 @@ class BudgetLocalPreferences @Inject constructor(
       locked = isUpdating.compareAndSet(expectedValue = false, newValue = true)
     }
 
-    val previous = metadata.deepCopy()
+    val previous = DbMetadata(metadata)
     metadata.transaction()
 
     if (metadata == previous) {
