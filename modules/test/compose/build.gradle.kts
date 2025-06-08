@@ -8,6 +8,6 @@ dependencies {
   api(libs.test.androidx.compose.ui.core)
   api(libs.test.androidx.compose.ui.junit4)
   api(libs.test.kotlinx.coroutines)
-  api(projects.core.ui)
+  api(projects.modules.core.ui)
   implementation(libs.androidx.compose.ui.core)
 }

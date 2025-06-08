@@ -5,8 +5,8 @@ plugins {
 dependencies {
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
-  api(projects.budget.list.vm)
-  api(projects.core.ui)
+  api(projects.modules.budget.list.vm)
+  api(projects.modules.core.ui)
   implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.androidx.compose.animation.core)
@@ -31,8 +31,8 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(libs.lazycolumn.scrollbar)
-  implementation(projects.account.model)
-  implementation(projects.budget.list.res)
-  implementation(projects.budget.model)
-  implementation(projects.core.res)
+  implementation(projects.modules.account.model)
+  implementation(projects.modules.budget.list.res)
+  implementation(projects.modules.budget.model)
+  implementation(projects.modules.core.res)
 }

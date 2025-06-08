@@ -5,8 +5,8 @@ plugins {
 dependencies {
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
-  api(projects.budget.sync.vm)
-  api(projects.core.ui)
+  api(projects.modules.budget.sync.vm)
+  api(projects.modules.core.ui)
   implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.animation.core)
@@ -28,6 +28,6 @@ dependencies {
   implementation(libs.hilt.android)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
-  implementation(projects.account.model)
-  implementation(projects.budget.sync.res)
+  implementation(projects.modules.account.model)
+  implementation(projects.modules.budget.sync.res)
 }

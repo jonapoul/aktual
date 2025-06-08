@@ -3,17 +3,17 @@ plugins {
 }
 
 dependencies {
-  api(projects.account.model)
-  api(projects.account.password.domain)
-  api(projects.core.model)
+  api(projects.modules.account.model)
+  api(projects.modules.account.password.domain)
+  api(projects.modules.core.model)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.javaxInject)
-  implementation(projects.account.login.domain)
+  implementation(projects.modules.account.login.domain)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
-  testImplementation(projects.core.connection)
-  testImplementation(projects.test.buildconfig)
-  testImplementation(projects.test.coroutines)
-  testImplementation(projects.test.http)
-  testImplementation(projects.test.prefs)
+  testImplementation(projects.modules.core.connection)
+  testImplementation(projects.modules.test.buildconfig)
+  testImplementation(projects.modules.test.coroutines)
+  testImplementation(projects.modules.test.http)
+  testImplementation(projects.modules.test.prefs)
 }
