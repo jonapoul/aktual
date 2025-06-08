@@ -4,6 +4,7 @@ import actual.core.model.ActualVersions
 import actual.core.model.Protocol
 import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
+import actual.core.ui.BasicIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButtonWithLoading
@@ -11,6 +12,7 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
+import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
 import actual.url.res.Strings
 import actual.url.vm.NavDestination
@@ -28,6 +30,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -79,6 +82,7 @@ fun ServerUrlScreen(
         NavDestination.Back -> activity.finish()
         NavDestination.ToBootstrap -> Logger.w("Not implemented bootstrap yet!")
         NavDestination.ToLogin -> nav.toLogin()
+        NavDestination.ToAbout -> nav.toAbout()
       }
     }
   }
@@ -94,6 +98,7 @@ fun ServerUrlScreen(
       when (action) {
         ServerUrlAction.ConfirmUrl -> viewModel.onClickConfirm()
         ServerUrlAction.NavBack -> viewModel.onClickBack()
+        ServerUrlAction.OpenAbout -> viewModel.onClickAbout()
         is ServerUrlAction.EnterUrl -> viewModel.onEnterUrl(action.url)
         is ServerUrlAction.SelectProtocol -> viewModel.onSelectProtocol(action.protocol)
         is ServerUrlAction.UseDemoServer -> viewModel.onUseDemoServer()
@@ -130,6 +135,15 @@ private fun ServerUrlScaffold(
         },
         title = { },
         scrollBehavior = scrollBehavior,
+        actions = {
+          BasicIconButton(
+            modifier = Modifier.padding(horizontal = 5.dp),
+            onClick = { onAction(ServerUrlAction.OpenAbout) },
+            imageVector = Icons.Filled.Info,
+            contentDescription = Strings.serverUrlMenuAbout,
+            colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+          )
+        },
       )
     },
   ) { innerPadding ->

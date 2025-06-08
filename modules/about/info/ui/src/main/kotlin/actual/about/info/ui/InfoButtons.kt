@@ -25,6 +25,11 @@ internal fun InfoButtons(
     val buttonModifier = Modifier.fillMaxWidth()
 
     NormalTextButton(
+      modifier = buttonModifier.testTag(Tags.SourceCodeButton),
+      text = Strings.infoRepo,
+      onClick = { onAction(InfoAction.OpenSourceCode) },
+    )
+    NormalTextButton(
       modifier = buttonModifier.testTag(Tags.CheckUpdatesButton),
       text = Strings.infoCheckUpdates,
       onClick = { onAction(InfoAction.CheckUpdates) },

@@ -219,7 +219,7 @@ private fun LoadedContent(
   LazyColumnScrollbar(
     modifier = modifier
       .fillMaxSize()
-      .padding(CoreDimens.large),
+      .padding(horizontal = CoreDimens.large),
     state = listState,
     settings = theme.scrollbarSettings(),
   ) {

@@ -1,9 +1,7 @@
 package actual.about.info.ui
 
-import actual.about.info.res.Strings
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.NormalIconButton
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import androidx.compose.foundation.background
@@ -13,9 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Launch
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material3.Icon
@@ -43,17 +39,12 @@ internal fun BuildStateItem(
       .fillMaxWidth()
       .height(ItemHeight)
       .background(theme.cardBackground, CardShape)
-      .padding(horizontal = ItemPadding)
-      .clickable(
-        enabled = onClick != null,
-        onClick = { onClick?.invoke() },
-      ),
+      .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
+      .padding(horizontal = ItemPadding),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Icon(
-      modifier = Modifier
-        .padding(ItemPadding)
-        .size(32.dp),
+      modifier = Modifier.padding(ItemPadding),
       imageVector = icon,
       contentDescription = title,
       tint = theme.pageText,
@@ -77,20 +68,11 @@ internal fun BuildStateItem(
         color = theme.pageTextSubdued,
       )
     }
-
-    if (onClick != null) {
-      NormalIconButton(
-        modifier = Modifier.padding(ItemPadding),
-        imageVector = Icons.AutoMirrored.Filled.Launch,
-        contentDescription = Strings.infoLaunch,
-        onClick = onClick,
-      )
-    }
   }
 }
 
 private val ItemPadding = 8.dp
-private val ItemHeight = 70.dp
+private val ItemHeight = 50.dp
 
 @Preview
 @Composable

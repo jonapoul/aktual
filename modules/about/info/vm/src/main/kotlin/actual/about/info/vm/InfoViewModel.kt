@@ -90,7 +90,6 @@ class InfoViewModel @Inject constructor(
     return BuildState(
       versions = versions,
       buildDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(zonedDateTime),
-      sourceCodeRepo = buildConfig.repoName,
       year = zonedDateTime.year,
     )
   }

@@ -1,5 +1,5 @@
 flowchart TD
-  app["App"]
+  app["Open App"]
   budgetList["List Budgets"]
   budgetSync["Sync Budget"]
   budget["Budget"]
@@ -13,13 +13,24 @@ flowchart TD
   app --valid token--> budgetList
   app --no token--> login
   app --no token, no url--> url
-  budgetList --tap budget--> budgetSync
+
+  budgetList --tap budget - unsynced--> budgetSync
+  budgetList --tap budget - synced--> budget
   budgetList --tap change password--> password
   budgetList --tap settings--> settings
   budgetList --tap change url--> url
+  budgetList --tap about app--> info
+
   budgetSync --budget synced--> budget
+
   info -- tap licenses--> licenses
+
   login --valid token--> budgetList
+  login --tap about app--> info
   login --tap change url--> url
+
   password --successfully changed--> budgetList
+
   url --url changed--> login
+
+  budget --close file--> budgetList

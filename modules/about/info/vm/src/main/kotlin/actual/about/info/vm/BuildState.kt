@@ -7,6 +7,5 @@ import androidx.compose.runtime.Immutable
 data class BuildState(
   val versions: ActualVersions,
   val buildDate: String,
-  val sourceCodeRepo: String,
   val year: Int,
 )
