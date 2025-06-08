@@ -48,6 +48,7 @@ private class LoginNavigatorImpl(private val nav: NavHostController) : LoginNavi
 
 private class ServerUrlNavigatorImpl(private val nav: NavHostController) : ServerUrlNavigator {
   override fun toLogin() = nav.debugNav(LoginNavRoute)
+  override fun toAbout() = nav.debugNav(InfoNavRoute)
 }
 
 private class LicensesNavigatorImpl(private val nav: NavHostController) : LicensesNavigator {
