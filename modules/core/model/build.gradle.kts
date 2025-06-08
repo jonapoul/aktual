@@ -13,5 +13,6 @@ kotlin {
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)
     api(libs.okio)
+    compileOnly(libs.alakazam.kotlin.compose.annotations)
   }
 }
