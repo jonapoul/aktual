@@ -140,7 +140,10 @@ private fun DeleteMenu(
     DropdownMenuItem(
       text = { Text(deleteText, fontFamily = ActualFontFamily) },
       leadingIcon = { Icon(imageVector = Icons.Filled.DeleteForever, contentDescription = deleteText) },
-      onClick = onClickDelete,
+      onClick = {
+        onDismiss()
+        onClickDelete()
+      },
     )
   }
 }

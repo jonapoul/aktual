@@ -200,7 +200,10 @@ private inline fun TopBarActions(
       val passwordText = Strings.listBudgetsChangePassword
       DropdownMenuItem(
         text = { Text(passwordText) },
-        onClick = { onAction(ListBudgetsAction.ChangePassword) },
+        onClick = {
+          showMenu = false
+          onAction(ListBudgetsAction.ChangePassword)
+        },
         leadingIcon = { Icon(Icons.Filled.Key, contentDescription = passwordText) },
       )
     }
