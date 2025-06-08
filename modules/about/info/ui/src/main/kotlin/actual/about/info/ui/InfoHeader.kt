@@ -43,7 +43,7 @@ internal fun InfoHeader(
     val appName = CoreStrings.appName
 
     Box(
-      modifier = Modifier.size(80.dp),
+      modifier = Modifier.size(50.dp),
     ) {
       Image(
         modifier = Modifier.clip(CircleShape),
