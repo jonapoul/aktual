@@ -47,7 +47,7 @@ class ConventionDiagrams : Plugin<Project> {
 
     val checkModulesReadmeTask = tasks.register<CheckReadmeTask>("checkModulesReadme") {
       readmeFile.set(file("README.md"))
-      projectPath.set(path)
+      projectPath.set(path.removePrefix(removeModulePrefix))
     }
 
     tasks.named("check").configure {

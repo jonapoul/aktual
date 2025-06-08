@@ -18,8 +18,8 @@ class ConventionAndroidBase : Plugin<Project> {
     androidDesugaringBlueprint(libs.getVersion("android.desugaring"))
 
     extensions.findByType(CommonExtension::class)?.apply {
-      // e.g. "actual.path.to.my.module"
-      namespace = "actual" + path.split(":").joinToString(".")
+      // ":modules:path:to:module" -> "actual.path.to.module", or ":app" -> "actual.app"
+      namespace = "actual" + path.removePrefix(":modules").split(":").joinToString(".")
 
       defaultConfig {
         testInstrumentationRunner = "actual.test.ActualHiltTestRunner"

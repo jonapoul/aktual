@@ -5,14 +5,14 @@ plugins {
 dependencies {
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
-  api(projects.prefs)
+  api(projects.modules.prefs)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.hilt.android)
   implementation(libs.javaxInject)
   implementation(libs.molecule)
   implementation(libs.preferences.core)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
-  testImplementation(projects.test.buildconfig)
-  testImplementation(projects.test.coroutines)
-  testImplementation(projects.test.prefs)
+  testImplementation(projects.modules.test.buildconfig)
+  testImplementation(projects.modules.test.coroutines)
+  testImplementation(projects.modules.test.prefs)
 }

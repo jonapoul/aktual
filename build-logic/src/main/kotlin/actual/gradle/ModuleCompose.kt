@@ -35,7 +35,7 @@ class ModuleCompose : Plugin<Project> {
     val testImplementation by configurations
     dependencies {
       if (path != ":test:compose") {
-        testImplementation(project(":test:compose"))
+        testImplementation(project(":modules:test:compose"))
       }
     }
   }

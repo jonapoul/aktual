@@ -5,8 +5,8 @@ plugins {
 dependencies {
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
-  api(projects.core.ui)
-  api(projects.url.vm)
+  api(projects.modules.core.ui)
+  api(projects.modules.url.vm)
   implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.alakazam.kotlin.logging)
@@ -27,6 +27,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
-  implementation(projects.core.res)
-  implementation(projects.url.res)
+  implementation(projects.modules.core.res)
+  implementation(projects.modules.url.res)
 }

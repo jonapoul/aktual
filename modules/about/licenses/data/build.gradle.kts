@@ -13,11 +13,11 @@ kotlin {
     implementation(libs.javaxInject)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.serialization.json)
-    implementation(projects.core.model)
+    implementation(projects.modules.core.model)
     compileOnly(libs.alakazam.kotlin.compose.annotations)
   }
 
   commonTestDependencies {
-    implementation(projects.test.coroutines)
+    implementation(projects.modules.test.coroutines)
   }
 }

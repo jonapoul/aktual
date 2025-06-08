@@ -6,5 +6,5 @@ dependencies {
   api(libs.ksp.api)
   implementation(libs.kotlinpoet.core)
   implementation(libs.kotlinpoet.ksp)
-  implementation(projects.codegen.annotation)
+  implementation(projects.modules.codegen.annotation)
 }
