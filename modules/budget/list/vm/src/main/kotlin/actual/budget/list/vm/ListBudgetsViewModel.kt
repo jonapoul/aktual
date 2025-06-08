@@ -1,6 +1,8 @@
 package actual.budget.list.vm
 
 import actual.account.model.LoginToken
+import actual.api.client.ActualApisStateHolder
+import actual.api.model.sync.DeleteUserFileRequest
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.database
@@ -42,6 +44,7 @@ class ListBudgetsViewModel @AssistedInject constructor(
   private val budgetListFetcher: BudgetListFetcher,
   private val files: BudgetFiles,
   private val contexts: CoroutineContexts,
+  private val apisStateHolder: ActualApisStateHolder,
 ) : ViewModel() {
   // Necessary because trying to pass a value class through dagger's assisted injection results in a KSP build failure.
   // See https://github.com/google/dagger/issues/4613
@@ -89,6 +92,36 @@ class ListBudgetsViewModel @AssistedInject constructor(
 
   fun clearDeletingState() = mutableDeletingState.update { DeletingState.Inactive }
 
+  fun deleteRemote(id: BudgetId) {
+    Logger.d("deleteRemote $id")
+    val syncApi = apisStateHolder.value?.sync ?: error("No sync API found?")
+    mutableDeletingState.update { DeletingState.Active(deletingRemote = true) }
+
+    viewModelScope.launch {
+      // delete local
+      with(files) {
+        val budgetDir = directory(id)
+        withContext(contexts.io) { fileSystem.deleteRecursively(budgetDir) }
+      }
+
+      // delete remote
+      try {
+        val request = DeleteUserFileRequest(id, token)
+        syncApi.delete(request)
+      } catch (e: Exception) {
+        Logger.e(e, "Failed deleting $id")
+      }
+
+      // close dialog
+      Logger.d("Successfully deleted $id")
+      clearDeletingState()
+      mutableCloseDialog.emit(true)
+
+      // re-fetch from server
+      fetchState()
+    }
+  }
+
   fun deleteLocal(id: BudgetId) {
     Logger.d("deleteLocal $id")
     mutableDeletingState.update { DeletingState.Active(deletingLocal = true) }
@@ -99,10 +132,6 @@ class ListBudgetsViewModel @AssistedInject constructor(
           withContext(contexts.io) { fileSystem.deleteRecursively(budgetDir) }
         }
 
-        while (fileSystem.exists(budgetDir)) {
-          Logger.v("Still exists: $budgetDir")
-          delay(200.milliseconds)
-        }
         Logger.d("Successfully deleted $budgetDir")
         clearDeletingState()
         mutableCloseDialog.emit(true)

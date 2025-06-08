@@ -10,8 +10,10 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.buttonBare
+import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -19,6 +21,7 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -91,10 +94,27 @@ private fun Content(
     var hasPressedDeleteButton by remember { mutableStateOf(false) }
     val isNotDeleting = deletingState is DeletingState.Inactive
 
+    var firstCheckbox by remember { mutableStateOf(false) }
+    var secondCheckbox by remember { mutableStateOf(false) }
+
+    Row {
+      Switch(
+        checked = firstCheckbox,
+        onCheckedChange = { firstCheckbox = !firstCheckbox },
+      )
+
+      HorizontalSpacer(20.dp)
+
+      Switch(
+        checked = secondCheckbox,
+        onCheckedChange = { secondCheckbox = !secondCheckbox },
+      )
+    }
+
     LoadableBareTextButton(
       text = Strings.budgetDeleteDialogHostedButton,
       colors = { theme, pressed -> theme.errorPrimary(pressed) },
-      isEnabled = isNotDeleting,
+      isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
       isLoading = deletingState is DeletingState.Active && deletingState.deletingRemote,
       onClick = {
         hasPressedDeleteButton = true

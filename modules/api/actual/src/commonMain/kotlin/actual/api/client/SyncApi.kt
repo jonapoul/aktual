@@ -2,6 +2,8 @@ package actual.api.client
 
 import actual.account.model.LoginToken
 import actual.api.model.internal.ActualHeaders
+import actual.api.model.sync.DeleteUserFileRequest
+import actual.api.model.sync.DeleteUserFileResponse
 import actual.api.model.sync.GetUserFileInfoResponse
 import actual.api.model.sync.GetUserKeyRequest
 import actual.api.model.sync.GetUserKeyResponse
@@ -32,6 +34,11 @@ interface SyncApi {
   suspend fun fetchUserKey(
     @Body body: GetUserKeyRequest,
   ): GetUserKeyResponse.Success
+
+  @POST("/sync/delete-user-file")
+  suspend fun delete(
+    @Body body: DeleteUserFileRequest,
+  ): DeleteUserFileResponse.Success
 }
 
 expect fun SyncApi(serverUrl: ServerUrl, client: HttpClient): SyncApi
