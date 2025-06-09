@@ -1,3 +1,3 @@
-# budget:accounts:ui
+# budget:transactions:res
 
 ![modules.png](modules.png)

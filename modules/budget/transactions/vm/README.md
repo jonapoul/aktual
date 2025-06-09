@@ -1,3 +1,3 @@
-# budget:accounts:res
+# budget:transactions:vm
 
 ![modules.png](modules.png)

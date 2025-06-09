@@ -1,6 +1,7 @@
 package actual.settings.ui
 
-import actual.core.model.ColorSchemeType
+import actual.core.model.DarkColorSchemeType
+import actual.core.model.RegularColorSchemeType
 import actual.core.res.CoreDimens
 import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
@@ -178,7 +179,7 @@ private fun Regular() = PreviewScreen { type ->
   SettingsScaffold(
     onAction = {},
     values = persistentListOf(
-      PreferenceValue.Theme(ThemeConfig(type, ColorSchemeType.Dark)),
+      PreferenceValue.Theme(ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Dark)),
       PreferenceValue.ShowBottomBar(false),
     ),
   )
