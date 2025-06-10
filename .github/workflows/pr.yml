@@ -43,6 +43,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          ref: ${{ github.head_ref }}
 
       - name: Setup JDK
         uses: actions/setup-java@v4
@@ -62,7 +63,7 @@ jobs:
         run: ./gradlew dependencyGuardBaseline :dependencyGuardBaseline --no-configuration-cache --no-parallel
 
       - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: Baseline dependencies
 
