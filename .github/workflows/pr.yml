@@ -24,6 +24,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          ref: ${{ github.head_ref }}
 
       - name: Install ktlint
         run: |
