@@ -24,7 +24,6 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-          ref: ${{ github.ref_name }}
 
       - name: Install ktlint
         run: |
@@ -44,6 +43,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
+          ref: ${{ github.head_ref }}
 
       - name: Setup JDK
         uses: actions/setup-java@v4
