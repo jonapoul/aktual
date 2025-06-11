@@ -21,7 +21,7 @@ ksp = "2.1.21-2.0.2"
 licensee = "1.13.0"
 manifestLock = "1.3.5"
 molecule = "2.1.0"
-sekret = "1.0.0"
+sekret = "1.0.1"
 
 # Libraries
 alakazam = "6.0.0"
