@@ -12,8 +12,6 @@ import actual.budget.sync.vm.BudgetInfoFetcher.Result
 import actual.core.model.KeyId
 import actual.core.model.ServerUrl
 import actual.core.model.base64
-import actual.test.emptyMockEngine
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
@@ -35,7 +33,7 @@ import kotlin.test.assertIs
 class BudgetInfoFetcherTest {
   private lateinit var budgetInfoFetcher: BudgetInfoFetcher
   private lateinit var apisStateHolder: ActualApisStateHolder
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var client: HttpClient
   private lateinit var syncApi: SyncApi
 
@@ -45,7 +43,7 @@ class BudgetInfoFetcherTest {
   }
 
   private fun TestScope.before() {
-    mockEngine = emptyMockEngine()
+    mockEngine = MockEngine.Queue()
     client = testHttpClient(mockEngine, ActualJson)
     syncApi = SyncApi(SERVER_URL, client)
     apisStateHolder = ActualApisStateHolder()
