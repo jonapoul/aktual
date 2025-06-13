@@ -1,6 +1,8 @@
 package actual.about.info.data
 
 import actual.test.TestBuildConfig
+import actual.test.emptyMockEngine
+import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
@@ -24,7 +26,7 @@ import kotlin.test.assertTrue
 
 class GithubRepositoryTest {
   private lateinit var githubRepository: GithubRepository
-  private lateinit var mockEngine: MockEngine.Queue
+  private lateinit var mockEngine: MockEngine
 
   @AfterTest
   fun after() {
@@ -156,7 +158,7 @@ class GithubRepositoryTest {
   }
 
   private fun TestScope.buildRepo() {
-    mockEngine = MockEngine.Queue()
+    mockEngine = emptyMockEngine()
     val githubApi = GithubApi(client = testHttpClient(mockEngine, GithubJson))
     githubRepository = GithubRepository(
       contexts = TestCoroutineContexts(standardDispatcher),

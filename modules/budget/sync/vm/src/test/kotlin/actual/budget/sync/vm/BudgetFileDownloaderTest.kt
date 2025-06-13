@@ -14,7 +14,9 @@ import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.core.model.bytes
 import actual.test.TestBudgetFiles
+import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
+import actual.test.plusAssign
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.unconfinedDispatcher
@@ -40,13 +42,13 @@ class BudgetFileDownloaderTest {
   private lateinit var budgetFileDownloader: BudgetFileDownloader
   private lateinit var budgetFiles: TestBudgetFiles
   private lateinit var apisStateHolder: ActualApisStateHolder
-  private lateinit var mockEngine: MockEngine.Queue
+  private lateinit var mockEngine: MockEngine
   private lateinit var fileSystem: FakeFileSystem
 
   fun TestScope.before() {
     fileSystem = FakeFileSystem()
     budgetFiles = TestBudgetFiles(fileSystem)
-    mockEngine = MockEngine.Queue()
+    mockEngine = emptyMockEngine()
 
     val syncDownloadApi = SyncDownloadApi(
       serverUrl = SERVER_URL,
