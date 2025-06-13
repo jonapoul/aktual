@@ -1,5 +1,6 @@
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
+import org.gradle.kotlin.dsl.compileOnly
 
 plugins {
   alias(libs.plugins.module.multiplatform)
@@ -15,6 +16,7 @@ kotlin {
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
+    compileOnly(libs.alakazam.kotlin.compose.annotations)
   }
 
   commonTestDependencies {

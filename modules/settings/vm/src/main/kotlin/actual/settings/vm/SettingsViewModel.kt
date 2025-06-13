@@ -18,10 +18,10 @@ import javax.inject.Inject
 class SettingsViewModel @Inject internal constructor(
   preferences: AppGlobalPreferences,
 ) : ViewModel() {
-  private val colorSchemePref = preferences.colorSchemeType
+  private val colorSchemePref = preferences.regularColorScheme
   private val colorSchemeFlow = colorSchemePref.asStateFlow(viewModelScope)
 
-  private val darkSchemePref = preferences.darkColorSchemeType
+  private val darkSchemePref = preferences.darkColorScheme
   private val darkSchemeFlow = darkSchemePref.asStateFlow(viewModelScope)
 
   private val showBottomBarPref = preferences.showBottomBar
@@ -45,7 +45,7 @@ class SettingsViewModel @Inject internal constructor(
   }
 
   private fun setColorScheme(config: ThemeConfig) {
-    colorSchemePref.set(config.theme)
-    darkSchemePref.set(config.darkTheme)
+    colorSchemePref.set(config.regular)
+    darkSchemePref.set(config.dark)
   }
 }

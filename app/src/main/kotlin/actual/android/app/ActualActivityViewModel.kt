@@ -8,8 +8,8 @@ import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.model.BudgetFiles
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
-import actual.core.model.ColorSchemeType
 import actual.core.model.DarkColorSchemeType
+import actual.core.model.RegularColorSchemeType
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
@@ -39,8 +39,8 @@ internal class ActualActivityViewModel @Inject constructor(
   budgetComponents: BudgetComponentStateHolder,
   preferences: AppGlobalPreferences,
 ) : ViewModel() {
-  val colorSchemeType: StateFlow<ColorSchemeType> = preferences.colorSchemeType.asStateFlow(viewModelScope)
-  val darkSchemeType: StateFlow<DarkColorSchemeType> = preferences.darkColorSchemeType.asStateFlow(viewModelScope)
+  val regularSchemeType: StateFlow<RegularColorSchemeType> = preferences.regularColorScheme.asStateFlow(viewModelScope)
+  val darkSchemeType: StateFlow<DarkColorSchemeType> = preferences.darkColorScheme.asStateFlow(viewModelScope)
 
   val isServerUrlSet: Boolean = preferences.serverUrl.isSet()
 

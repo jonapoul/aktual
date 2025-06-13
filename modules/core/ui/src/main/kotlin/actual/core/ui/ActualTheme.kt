@@ -1,12 +1,6 @@
 package actual.core.ui
 
 import actual.core.model.ColorSchemeType
-import actual.core.model.ColorSchemeType.Dark
-import actual.core.model.ColorSchemeType.Light
-import actual.core.model.ColorSchemeType.Midnight
-import actual.core.model.ColorSchemeType.System
-import actual.core.model.DarkColorSchemeType
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
@@ -17,29 +11,20 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun ActualTheme(
-  regularScheme: ColorSchemeType,
-  darkScheme: DarkColorSchemeType = Dark,
+  type: ColorSchemeType,
   content: @Composable () -> Unit,
 ) {
-  val systemDarkTheme = isSystemInDarkTheme()
-
-  val theme = remember(regularScheme, darkScheme, systemDarkTheme) {
-    when (regularScheme) {
-      System -> when (darkScheme) {
-        Dark -> if (systemDarkTheme) DarkTheme() else LightTheme()
-        Midnight -> if (systemDarkTheme) MidnightTheme() else LightTheme()
-      }
-
-      Dark -> DarkTheme()
-      Light -> LightTheme()
-      Midnight -> MidnightTheme()
+  val theme = remember(type) {
+    when (type) {
+      ColorSchemeType.Light -> LightTheme()
+      ColorSchemeType.Dark -> DarkTheme()
+      ColorSchemeType.Midnight -> MidnightTheme()
     }
   }
 
   CompositionLocalProvider(
     LocalTheme provides theme,
-    LocalColorSchemeType provides regularScheme,
-    LocalDarkSchemeType provides darkScheme,
+    LocalColorSchemeType provides type,
   ) {
     SetStatusBarColors(
       theme = theme,

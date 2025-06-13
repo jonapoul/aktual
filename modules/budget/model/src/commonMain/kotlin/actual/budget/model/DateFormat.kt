@@ -1,5 +1,8 @@
 package actual.budget.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class DateFormat(
   val value: String,
   val label: String,

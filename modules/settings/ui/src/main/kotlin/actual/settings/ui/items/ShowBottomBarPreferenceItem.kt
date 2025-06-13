@@ -36,7 +36,7 @@ internal fun ShowBottomBarPreferenceItem(
     modifier = modifier.fillMaxWidth(),
     title = Strings.settingsShowBottomBar,
     subtitle = null,
-    icon = regularIcon(value),
+    icon = icon(value),
     clickability = Clickable { onChange(!value) },
     hazeState = hazeState,
     rightContent = {
@@ -53,7 +53,7 @@ internal fun ShowBottomBarPreferenceItem(
 }
 
 @Stable
-private fun regularIcon(isVisible: Boolean) = when (isVisible) {
+private fun icon(isVisible: Boolean) = when (isVisible) {
   true -> Icons.Filled.Visibility
   false -> Icons.Filled.VisibilityOff
 }
