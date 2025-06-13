@@ -1,6 +1,5 @@
 package actual.api.client
 
-import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
 import actual.test.latestRequestHeaders
 import actual.test.testHttpClient
@@ -17,14 +16,14 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 
 class SyncDownloadApiTest {
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var syncDownloadApi: SyncDownloadApi
   private lateinit var fileSystem: FakeFileSystem
   private lateinit var destinationPath: Path
 
   @BeforeTest
   fun before() {
-    mockEngine = emptyMockEngine()
+    mockEngine = MockEngine.Queue()
     fileSystem = FakeFileSystem()
     destinationPath = fileSystem.workingDirectory.resolve("my-file.txt")
     syncDownloadApi = SyncDownloadApi(

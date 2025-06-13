@@ -2,10 +2,8 @@ package actual.api.client
 
 import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
-import actual.test.emptyMockEngine
 import actual.test.latestRequestHeaders
 import actual.test.latestRequestUrl
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.assertThrows
@@ -20,12 +18,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class BaseApiTest {
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var baseApi: BaseApi
 
   @BeforeTest
   fun before() {
-    mockEngine = emptyMockEngine()
+    mockEngine = MockEngine.Queue()
     baseApi = BaseApi(SERVER_URL, testHttpClient(mockEngine, ActualJson))
   }
 

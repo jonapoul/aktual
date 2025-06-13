@@ -13,8 +13,6 @@ import actual.core.model.base64
 import actual.prefs.EncryptedPreferences
 import actual.prefs.KeyPreferences
 import actual.test.buildPreferences
-import actual.test.emptyMockEngine
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
@@ -39,7 +37,7 @@ class KeyFetcherTest {
   private lateinit var keyPreferences: KeyPreferences
   private lateinit var decrypter: Decrypter
 
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var syncApi: SyncApi
 
   @BeforeTest
@@ -53,7 +51,7 @@ class KeyFetcherTest {
     keyPreferences = KeyPreferences(encryptedPrefs)
     decrypter = Decrypter(contexts, keyPreferences, files = mockk())
 
-    mockEngine = emptyMockEngine()
+    mockEngine = MockEngine.Queue()
     syncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, ActualJson))
     val stateHolder = ActualApisStateHolder()
     stateHolder.value = mockk(relaxed = true) { every { sync } returns syncApi }
