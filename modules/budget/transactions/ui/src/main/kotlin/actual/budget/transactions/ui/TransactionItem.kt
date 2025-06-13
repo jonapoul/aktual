@@ -73,7 +73,7 @@ private fun RowScope.TransactionListItem(
   val isChecked by checkbox.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
     checked = isChecked,
-    onCheckedChange = { isChecked -> checkbox.onCheckedChange(transaction.id, isChecked) },
+    onCheckedChange = { newValue -> checkbox.onCheckedChange(transaction.id, newValue) },
   )
 
   HorizontalSpacer(dimens.interColumn)
@@ -142,7 +142,7 @@ private fun RowScope.TransactionTableItem(
   val isChecked by checkbox.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
     checked = isChecked,
-    onCheckedChange = { isChecked -> checkbox.onCheckedChange(transaction.id, isChecked) },
+    onCheckedChange = { newValue -> checkbox.onCheckedChange(transaction.id, newValue) },
   )
 
   HorizontalSpacer(dimens.interColumn)
