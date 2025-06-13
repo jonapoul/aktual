@@ -11,6 +11,8 @@ import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
+import actual.test.emptyMockEngine
+import actual.test.plusAssign
 import actual.test.respondJson
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
@@ -44,7 +46,7 @@ internal class LoginRequesterTest {
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var connectionMonitor: ConnectionMonitor
-  private lateinit var mockEngine: MockEngine.Queue
+  private lateinit var mockEngine: MockEngine
   private lateinit var fileSystem: FakeFileSystem
 
   @AfterTest
@@ -56,7 +58,7 @@ internal class LoginRequesterTest {
     val flowPrefs = buildPreferences(mainDispatcherRule.dispatcher)
     preferences = AppGlobalPreferences(flowPrefs)
     apisStateHolder = ActualApisStateHolder()
-    mockEngine = MockEngine.Queue()
+    mockEngine = emptyMockEngine()
     fileSystem = FakeFileSystem()
 
     connectionMonitor = ConnectionMonitor(

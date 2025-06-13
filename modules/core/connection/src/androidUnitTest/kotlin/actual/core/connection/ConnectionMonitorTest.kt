@@ -7,6 +7,7 @@ import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
+import actual.test.emptyMockEngine
 import alakazam.test.core.Flaky
 import alakazam.test.core.FlakyTestRule
 import alakazam.test.core.MainDispatcherRule
@@ -34,14 +35,14 @@ class ConnectionMonitorTest {
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var apiStateHolder: ActualApisStateHolder
-  private lateinit var mockEngine: MockEngine.Queue
+  private lateinit var mockEngine: MockEngine
   private lateinit var fileSystem: FakeFileSystem
 
   private fun TestScope.before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     preferences = AppGlobalPreferences(prefs)
     apiStateHolder = ActualApisStateHolder()
-    mockEngine = MockEngine.Queue()
+    mockEngine = emptyMockEngine()
     fileSystem = FakeFileSystem()
 
     connectionMonitor = ConnectionMonitor(

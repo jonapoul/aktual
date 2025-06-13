@@ -15,6 +15,8 @@ import actual.test.TestBuildConfig
 import actual.test.assertEmitted
 import actual.test.buildPreferences
 import actual.test.clear
+import actual.test.emptyMockEngine
+import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
@@ -54,12 +56,12 @@ class ServerUrlViewModelTest {
   // Mock
   private lateinit var apis: ActualApis
   private lateinit var accountApi: AccountApi
-  private lateinit var mockEngine: MockEngine.Queue
+  private lateinit var mockEngine: MockEngine
 
   @BeforeTest
   fun before() {
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
-    mockEngine = MockEngine.Queue()
+    mockEngine = emptyMockEngine()
     accountApi = AccountApi(EXAMPLE_URL, testHttpClient(mockEngine, ActualJson))
     apis = mockk {
       every { close() } just runs
