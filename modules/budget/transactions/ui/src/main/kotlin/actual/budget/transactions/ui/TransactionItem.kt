@@ -62,6 +62,7 @@ internal fun TransactionItem(
   }
 }
 
+@Suppress("unused")
 @Composable
 private fun RowScope.TransactionListItem(
   transaction: Transaction,
@@ -130,6 +131,7 @@ private fun RowScope.TransactionListItem(
   )
 }
 
+@Suppress("unused")
 @Composable
 private fun RowScope.TransactionTableItem(
   transaction: Transaction,

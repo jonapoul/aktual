@@ -1,3 +1,5 @@
+@file:Suppress("CompositionLocalAllowlist")
+
 package actual.budget.transactions.ui
 
 import androidx.compose.runtime.compositionLocalOf
