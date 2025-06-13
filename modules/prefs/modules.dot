@@ -14,8 +14,6 @@ node ["style"="filled"]
 ":budget:list:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:vm" ["fillcolor"="#F5A6A6","shape"="none"]
-":budget:transactions:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":budget:transactions:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -55,8 +53,6 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":prefs" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
-":budget:transactions:ui" -> ":budget:transactions:vm"
-":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":core:connection" -> ":prefs" ["style"="dotted"]
 ":core:di" -> ":prefs"
 ":prefs" -> ":account:model"

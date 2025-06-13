@@ -1,6 +1,7 @@
 package actual.budget.transactions.ui
 
 import actual.budget.transactions.vm.DatedTransactions
+import actual.budget.transactions.vm.SortBy
 import actual.budget.transactions.vm.TransactionsFormat
 import actual.core.res.CoreDimens
 import actual.core.ui.LocalTheme
@@ -14,9 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import my.nanihadesuka.compose.LazyColumnScrollbar
@@ -25,6 +27,7 @@ import my.nanihadesuka.compose.LazyColumnScrollbar
 internal fun Transactions(
   transactions: ImmutableList<DatedTransactions>,
   format: TransactionsFormat,
+  sorting: SortBy,
   checkbox: TransactionCheckbox,
   header: TransactionHeader,
   modifier: Modifier = Modifier,
@@ -41,12 +44,24 @@ internal fun Transactions(
     LazyColumn(
       state = listState,
     ) {
-      transactions.fastForEachIndexed { index, (date, transactions) ->
+      if (format == TransactionsFormat.Table) {
+        stickyHeader {
+          CategoryHeader(
+            modifier = Modifier.fillMaxWidth(),
+            sorting = sorting,
+            onSort = {},
+            theme = theme,
+          )
+        }
+      }
+
+      transactions.fastForEach { (date, transactions) ->
         stickyHeader {
           DateHeader(
             modifier = Modifier.fillMaxWidth(),
             date = date,
             header = header,
+            theme = theme,
           )
         }
 
@@ -58,6 +73,8 @@ internal fun Transactions(
             checkbox = checkbox,
             theme = theme,
           )
+
+          HorizontalDivider(color = theme.tableBorderSeparator)
         }
       }
     }
@@ -66,11 +83,27 @@ internal fun Transactions(
 
 @ScreenPreview
 @Composable
-private fun PreviewTransactions() = PreviewScreen {
+private fun PreviewTransactionsList() = PreviewScreen {
+  Transactions(
+    checkbox = PreviewTransactionCheckbox,
+    header = PreviewTransactionHeader,
+    format = TransactionsFormat.List,
+    sorting = SortBy.Date(ascending = true),
+    transactions = persistentListOf(
+      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1, TRANSACTION_2)),
+      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3)),
+    ),
+  )
+}
+
+@ScreenPreview
+@Composable
+private fun PreviewTransactionsTable() = PreviewScreen {
   Transactions(
     checkbox = PreviewTransactionCheckbox,
     header = PreviewTransactionHeader,
     format = TransactionsFormat.Table,
+    sorting = SortBy.Date(ascending = true),
     transactions = persistentListOf(
       DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1, TRANSACTION_2)),
       DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3)),

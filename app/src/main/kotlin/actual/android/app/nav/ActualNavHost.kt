@@ -7,6 +7,7 @@ import actual.account.model.LoginToken
 import actual.account.password.ui.ChangePasswordScreen
 import actual.budget.list.ui.ListBudgetsScreen
 import actual.budget.sync.ui.SyncBudgetScreen
+import actual.budget.transactions.ui.TransactionsScreen
 import actual.settings.ui.SettingsScreen
 import actual.url.ui.ServerUrlScreen
 import androidx.compose.runtime.Composable
@@ -50,6 +51,10 @@ internal fun ActualNavHost(
 
     composableWithArg<SyncBudgetsNavRoute>(mapOf(BudgetIdType, LoginTokenType)) { route, _ ->
       SyncBudgetScreen(SyncBudgetNavigator(nav), route.budgetId, route.token)
+    }
+
+    composableWithArg<TransactionsNavRoute>(mapOf(BudgetIdType, LoginTokenType)) { route, _ ->
+      TransactionsScreen(TransactionsNavigator(nav), route.budgetId, route.token)
     }
   }
 }

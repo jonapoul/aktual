@@ -13,6 +13,7 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.ktor.core)
   implementation(libs.ktor.serialization.core)
+  implementation(libs.okio)
   implementation(libs.preferences.core)
   implementation(projects.modules.account.model)
   implementation(projects.modules.api.actual)

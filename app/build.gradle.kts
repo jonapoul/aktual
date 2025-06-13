@@ -166,6 +166,7 @@ dependencies {
   implementation(projects.modules.budget.di)
   implementation(projects.modules.budget.list.ui)
   implementation(projects.modules.budget.sync.ui)
+  implementation(projects.modules.budget.transactions.ui)
   implementation(projects.modules.core.connection)
   implementation(projects.modules.core.di)
   implementation(projects.modules.core.res)
