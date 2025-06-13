@@ -1,9 +1,9 @@
 package actual.prefs
 
-import actual.core.model.ColorSchemeType
-import actual.core.model.ColorSchemeType.Dark
-import actual.core.model.ColorSchemeType.Light
 import actual.core.model.Protocol
+import actual.core.model.RegularColorSchemeType.Dark
+import actual.core.model.RegularColorSchemeType.Light
+import actual.core.model.RegularColorSchemeType.System
 import actual.core.model.ServerUrl
 import actual.test.assertEmitted
 import actual.test.buildPreferences
@@ -63,22 +63,22 @@ class AppGlobalPreferencesTest {
 
   @Test
   fun `Colour scheme types`() = runTest {
-    with(preferences.colorSchemeType) {
+    with(preferences.regularColorScheme) {
       asFlow().test {
         // Given
-        assertEmitted(ColorSchemeType.System)
+        assertEmitted(System)
 
         set(Light)
         assertEmitted(Light)
 
-        set(ColorSchemeType.System)
-        assertEmitted(ColorSchemeType.System)
+        set(System)
+        assertEmitted(System)
 
         set(Dark)
         assertEmitted(Dark)
 
         deleteAndCommit()
-        assertEmitted(ColorSchemeType.System)
+        assertEmitted(System)
 
         expectNoEvents()
         cancelAndIgnoreRemainingEvents()

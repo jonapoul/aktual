@@ -1,14 +1,18 @@
 package actual.core.model
 
-import androidx.compose.runtime.Immutable
-
-@Immutable
-sealed interface ColorSchemeType {
-  data object System : ColorSchemeType
-  data object Light : ColorSchemeType
-  data object Dark : DarkColorSchemeType
-  data object Midnight : DarkColorSchemeType
+enum class ColorSchemeType {
+  Light,
+  Dark,
+  Midnight,
 }
 
-@Immutable
-sealed interface DarkColorSchemeType : ColorSchemeType
+enum class RegularColorSchemeType {
+  System,
+  Light,
+  Dark,
+}
+
+enum class DarkColorSchemeType {
+  Dark,
+  Midnight,
+}

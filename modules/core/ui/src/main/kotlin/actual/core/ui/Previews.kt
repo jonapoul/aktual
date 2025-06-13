@@ -23,7 +23,7 @@ fun PreviewColumn(
   content: @Composable (ColorSchemeType) -> Unit,
 ) {
   LazyColumn {
-    items(SchemeTypes, key = { it }) { schemeType ->
+    items(SchemeTypes, key = { it.ordinal }) { schemeType ->
       Box(modifier = modifier) {
         PreviewWithColorScheme(schemeType, content = content)
       }
@@ -37,7 +37,7 @@ fun PreviewActualRow(
   content: @Composable (ColorSchemeType) -> Unit,
 ) {
   LazyRow {
-    items(SchemeTypes, key = { it }) { schemeType ->
+    items(SchemeTypes, key = { it.ordinal }) { schemeType ->
       Box(modifier = modifier) {
         PreviewWithColorScheme(schemeType, content = content)
       }
@@ -51,7 +51,7 @@ fun PreviewScreen(
   content: @Composable (ColorSchemeType) -> Unit,
 ) {
   LazyRow {
-    items(SchemeTypes, key = { it }) { schemeType ->
+    items(SchemeTypes, key = { it.ordinal }) { schemeType ->
       PreviewWithColorScheme(
         modifier = modifier
           .width(MY_PHONE_WIDTH_DP.dp)
