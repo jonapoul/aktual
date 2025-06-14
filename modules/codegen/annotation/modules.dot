@@ -19,7 +19,6 @@ node ["style"="filled"]
 ":codegen:ksp" ["fillcolor"="#8000FF","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
-":test:kotlin" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -50,7 +49,6 @@ graph ["rank"="same"]
 ":codegen:ksp" -> ":codegen:annotation" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:di" -> ":api:github"
-":test:kotlin" -> ":api:actual" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

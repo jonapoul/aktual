@@ -23,11 +23,34 @@ abstract class CollateProjectLinksTask : DefaultTask() {
     val outputFile = outputFile.get().asFile
     val allLinks = mutableSetOf<ProjectLink>()
     projectLinkFiles.forEach { file -> allLinks += ProjectLinks.read(file) }
-    ProjectLinks.write(allLinks, outputFile)
+
+    val filteredLinks = allLinks
+      .filterTestModules()
+      .throwIfLinkToSelf()
+      .toSet()
+
+    ProjectLinks.write(filteredLinks, outputFile)
+  }
+
+  private fun Collection<ProjectLink>.filterTestModules() = filter { (from, to) ->
+    BLOCKED_MODULE_PATHS.none { blocked ->
+      from.contains(blocked) || to.contains(blocked)
+    }
+  }
+
+  private fun Collection<ProjectLink>.throwIfLinkToSelf() = onEach { (from, to) ->
+    if (to == from) {
+      error("Found a module link from '$from' to itself - this will probably cause weird build issues!")
+    }
+    return this
   }
 
   companion object {
     private const val NAME = "collateProjectLinks"
+
+    private val BLOCKED_MODULE_PATHS = setOf(
+      ":test:",
+    )
 
     fun get(target: Project) = target.tasks.named<CollateProjectLinksTask>(NAME)
 

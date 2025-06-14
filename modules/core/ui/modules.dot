@@ -12,7 +12,6 @@ node ["style"="filled"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":test:compose" ["fillcolor"="#FFFF55","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -32,7 +31,6 @@ graph ["rank"="same"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":settings:ui" -> ":core:ui"
-":test:compose" -> ":core:ui"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

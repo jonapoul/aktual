@@ -16,7 +16,6 @@ node ["style"="filled"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":test:kotlin" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -42,7 +41,6 @@ graph ["rank"="same"]
 ":budget:sync:ui" -> ":budget:sync:vm"
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
-":test:kotlin" -> ":api:actual" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
