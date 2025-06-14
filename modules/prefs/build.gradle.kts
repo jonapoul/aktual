@@ -1,5 +1,4 @@
 import blueprint.core.androidMainDependencies
-import blueprint.core.androidUnitTestDependencies
 import blueprint.core.commonMainDependencies
 
 plugins {
@@ -16,11 +15,5 @@ kotlin {
 
   androidMainDependencies {
     implementation(libs.preferences.android)
-  }
-
-  androidUnitTestDependencies {
-    implementation(projects.modules.test.buildconfig)
-    implementation(projects.modules.test.coroutines)
-    implementation(projects.modules.test.prefs)
   }
 }

@@ -15,8 +15,4 @@ dependencies {
   implementation(projects.modules.account.login.domain)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   testImplementation(projects.modules.core.connection)
-  testImplementation(projects.modules.test.buildconfig)
-  testImplementation(projects.modules.test.coroutines)
-  testImplementation(projects.modules.test.http)
-  testImplementation(projects.modules.test.prefs)
 }

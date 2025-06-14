@@ -23,8 +23,8 @@ node ["style"="filled"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":settings:vm" ["fillcolor"="#F5A6A6","shape"="none"]
-":test:json" ["fillcolor"="#9D8DF1","shape"="none"]
-":test:prefs" ["fillcolor"="#55FF55","shape"="none"]
+":test:android" ["fillcolor"="#55FF55","shape"="none"]
+":test:kotlin" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":url:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 {
@@ -83,8 +83,8 @@ graph ["rank"="same"]
 ":prefs" -> ":account:model"
 ":settings:ui" -> ":settings:vm"
 ":settings:vm" -> ":prefs"
-":test:json" -> ":api:actual"
-":test:prefs" -> ":prefs"
+":test:android" -> ":prefs"
+":test:kotlin" -> ":api:actual" ["style"="dotted"]
 ":url:ui" -> ":url:vm"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]

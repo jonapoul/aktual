@@ -6,8 +6,6 @@ import com.autonomousapps.DependencyAnalysisPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 
 class ModuleViewModel : Plugin<Project> {
@@ -27,14 +25,13 @@ class ModuleViewModel : Plugin<Project> {
       apply(ConventionSortDependencies::class.java)
     }
 
-    val api by configurations
-    val implementation by configurations
-
     dependencies {
-      api(libs.getLibrary("androidx.lifecycle.viewmodel.core"))
-      api(libs.getLibrary("dagger.core"))
-      implementation(libs.getLibrary("hilt.android"))
-      implementation(libs.getLibrary("kotlinx.coroutines"))
+      "api"(libs.getLibrary("androidx.lifecycle.viewmodel.core"))
+      "api"(libs.getLibrary("dagger.core"))
+      "implementation"(libs.getLibrary("hilt.android"))
+      "implementation"(libs.getLibrary("kotlinx.coroutines"))
+      "testImplementation"(project(":modules:test:android"))
+      "testImplementation"(project(":modules:test:kotlin"))
     }
   }
 }

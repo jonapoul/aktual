@@ -1,5 +1,4 @@
 import blueprint.core.commonMainDependencies
-import blueprint.core.commonTestDependencies
 import blueprint.core.kspAllConfigs
 
 plugins {
@@ -18,10 +17,6 @@ kotlin {
     implementation(libs.ktor.serialization.core)
     implementation(libs.ktor.serialization.json)
     implementation(projects.modules.codegen.annotation)
-  }
-
-  commonTestDependencies {
-    implementation(projects.modules.test.http)
   }
 }
 

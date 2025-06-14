@@ -4,8 +4,6 @@ import com.autonomousapps.DependencyAnalysisPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -32,10 +30,11 @@ class ModuleCompose : Plugin<Project> {
       }
     }
 
-    val testImplementation by configurations
     dependencies {
       if (path != ":test:compose") {
-        testImplementation(project(":modules:test:compose"))
+        "testImplementation"(project(":modules:test:android"))
+        "testImplementation"(project(":modules:test:compose"))
+        "testImplementation"(project(":modules:test:kotlin"))
       }
     }
   }

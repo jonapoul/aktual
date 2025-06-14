@@ -22,9 +22,7 @@ node ["style"="filled"]
 ":budget:transactions:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
-":test:db" ["fillcolor"="#9D8DF1","shape"="none"]
-":test:files" ["fillcolor"="#9D8DF1","shape"="none"]
-":test:json" ["fillcolor"="#9D8DF1","shape"="none"]
+":test:kotlin" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":url:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 {
@@ -73,9 +71,8 @@ graph ["rank"="same"]
 ":budget:transactions:vm" -> ":budget:model"
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:di" -> ":budget:model"
-":test:db" -> ":budget:db"
-":test:files" -> ":budget:model"
-":test:json" -> ":api:actual"
+":test:kotlin" -> ":api:actual" ["style"="dotted"]
+":test:kotlin" -> ":budget:db"
 ":url:ui" -> ":url:vm"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]

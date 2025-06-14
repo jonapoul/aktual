@@ -12,7 +12,4 @@ dependencies {
   implementation(libs.molecule)
   implementation(libs.preferences.core)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
-  testImplementation(projects.modules.test.buildconfig)
-  testImplementation(projects.modules.test.coroutines)
-  testImplementation(projects.modules.test.prefs)
 }

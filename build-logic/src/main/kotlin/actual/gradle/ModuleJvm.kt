@@ -4,8 +4,6 @@ import com.autonomousapps.DependencyAnalysisPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.provideDelegate
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 
 class ModuleJvm : Plugin<Project> {
@@ -22,9 +20,8 @@ class ModuleJvm : Plugin<Project> {
       apply(ConventionSortDependencies::class.java)
     }
 
-    val testImplementation by configurations
     dependencies {
-      testLibraries.forEach { lib -> testImplementation(lib) }
+      testLibraries.forEach { lib -> "testImplementation"(lib) }
     }
   }
 }

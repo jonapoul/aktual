@@ -6,9 +6,6 @@ import com.android.build.gradle.api.AndroidBasePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.project
-import org.gradle.kotlin.dsl.provideDelegate
 
 class ConventionTestDependencies : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
@@ -28,9 +25,7 @@ class ConventionTestDependencies : Plugin<Project> {
           testImplementation(libs.getLibrary("test.mockk.android"))
           testImplementation(libs.getLibrary("test.robolectric"))
 
-          val debugImplementation by configurations
-          debugImplementation(libs.getLibrary("test.androidx.monitor"))
-          debugImplementation(project(":modules:test:hilt"))
+          "debugImplementation"(libs.getLibrary("test.androidx.monitor"))
         }
       }
     }

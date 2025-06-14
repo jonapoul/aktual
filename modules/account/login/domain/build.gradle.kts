@@ -20,9 +20,5 @@ kotlin {
   androidUnitTestDependencies {
     implementation(projects.modules.api.builder)
     implementation(projects.modules.core.connection)
-    implementation(projects.modules.test.buildconfig)
-    implementation(projects.modules.test.coroutines)
-    implementation(projects.modules.test.http)
-    implementation(projects.modules.test.prefs)
   }
 }

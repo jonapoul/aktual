@@ -1,7 +1,6 @@
 @file:Suppress("unused")
 
 import blueprint.core.commonMainDependencies
-import blueprint.core.jvmTestDependencies
 
 plugins {
   alias(libs.plugins.module.multiplatform)
@@ -14,10 +13,6 @@ kotlin {
     api(projects.modules.account.model)
     api(projects.modules.budget.model)
     api(projects.modules.core.model)
-  }
-
-  jvmTestDependencies {
-    implementation(projects.modules.test.files)
   }
 
   sourceSets {

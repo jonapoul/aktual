@@ -1,7 +1,7 @@
 package actual.android.app.nav
 
-import actual.about.info.ui.InfoScreen
-import actual.about.licenses.ui.LicensesScreen
+import actual.about.ui.info.InfoScreen
+import actual.about.ui.licenses.LicensesScreen
 import actual.account.login.ui.LoginScreen
 import actual.account.model.LoginToken
 import actual.account.password.ui.ChangePasswordScreen

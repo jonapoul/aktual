@@ -24,9 +24,4 @@ dependencies {
   implementation(projects.modules.budget.model)
   implementation(projects.modules.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
-  testImplementation(projects.modules.test.buildconfig)
-  testImplementation(projects.modules.test.coroutines)
-  testImplementation(projects.modules.test.files)
-  testImplementation(projects.modules.test.http)
-  testImplementation(projects.modules.test.prefs)
 }

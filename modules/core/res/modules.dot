@@ -2,8 +2,7 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":core:res","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":about:info:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":about:licenses:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":about:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":account:login:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":account:password:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
@@ -20,16 +19,13 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 ":core:res"
 }
-":about:info:ui" -> ":core:res" ["style"="dotted"]
-":about:info:ui" -> ":core:ui"
-":about:licenses:ui" -> ":core:res" ["style"="dotted"]
-":about:licenses:ui" -> ":core:ui"
+":about:ui" -> ":core:res" ["style"="dotted"]
+":about:ui" -> ":core:ui"
 ":account:login:ui" -> ":core:res" ["style"="dotted"]
 ":account:login:ui" -> ":core:ui"
 ":account:password:ui" -> ":core:res" ["style"="dotted"]
 ":account:password:ui" -> ":core:ui"
-":app" -> ":about:info:ui" ["style"="dotted"]
-":app" -> ":about:licenses:ui" ["style"="dotted"]
+":app" -> ":about:ui" ["style"="dotted"]
 ":app" -> ":account:login:ui" ["style"="dotted"]
 ":app" -> ":account:password:ui" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
