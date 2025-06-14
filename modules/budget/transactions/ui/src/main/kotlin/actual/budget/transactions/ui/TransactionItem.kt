@@ -2,8 +2,8 @@ package actual.budget.transactions.ui
 
 import actual.budget.transactions.vm.Transaction
 import actual.budget.transactions.vm.TransactionsFormat
+import actual.core.ui.BareIconButton
 import actual.core.ui.LocalTheme
-import actual.core.ui.NormalIconButton
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import alakazam.android.ui.compose.HorizontalSpacer
@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -62,7 +63,6 @@ internal fun TransactionItem(
   }
 }
 
-@Suppress("unused")
 @Composable
 private fun RowScope.TransactionListItem(
   transaction: Transaction,
@@ -72,6 +72,7 @@ private fun RowScope.TransactionListItem(
 ) {
   val isChecked by checkbox.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
+    modifier = Modifier.minimumInteractiveComponentSize(),
     checked = isChecked,
     onCheckedChange = { newValue -> checkbox.onCheckedChange(transaction.id, newValue) },
   )
@@ -87,6 +88,7 @@ private fun RowScope.TransactionListItem(
       maxLines = 1,
       textAlign = TextAlign.Start,
       fontSize = dimens.textSize,
+      color = theme.tableText,
     )
 
     Text(
@@ -95,6 +97,7 @@ private fun RowScope.TransactionListItem(
       maxLines = 1,
       textAlign = TextAlign.Start,
       fontSize = dimens.textSize,
+      color = theme.tableText,
     )
 
     Text(
@@ -103,6 +106,7 @@ private fun RowScope.TransactionListItem(
       maxLines = 1,
       textAlign = TextAlign.Start,
       fontSize = dimens.textSize,
+      color = theme.tableText,
     )
 
     Text(
@@ -111,6 +115,7 @@ private fun RowScope.TransactionListItem(
       maxLines = 1,
       textAlign = TextAlign.Start,
       fontSize = dimens.textSize,
+      color = theme.tableText,
     )
   }
 
@@ -120,18 +125,19 @@ private fun RowScope.TransactionListItem(
     maxLines = 1,
     textAlign = TextAlign.End,
     fontSize = dimens.textSize,
+    color = theme.tableText,
   )
 
   HorizontalSpacer(dimens.interColumn)
 
-  NormalIconButton(
+  BareIconButton(
+    modifier = Modifier.minimumInteractiveComponentSize(),
     imageVector = Icons.Filled.MoreVert,
     contentDescription = "",
     onClick = {},
   )
 }
 
-@Suppress("unused")
 @Composable
 private fun RowScope.TransactionTableItem(
   transaction: Transaction,
@@ -141,6 +147,7 @@ private fun RowScope.TransactionTableItem(
 ) {
   val isChecked by checkbox.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
+    modifier = Modifier.minimumInteractiveComponentSize(),
     checked = isChecked,
     onCheckedChange = { newValue -> checkbox.onCheckedChange(transaction.id, newValue) },
   )
@@ -154,6 +161,7 @@ private fun RowScope.TransactionTableItem(
     maxLines = 1,
     textAlign = TextAlign.Start,
     fontSize = dimens.textSize,
+    color = theme.tableText,
   )
 
   HorizontalSpacer(dimens.interColumn)
@@ -165,6 +173,7 @@ private fun RowScope.TransactionTableItem(
     maxLines = 1,
     textAlign = TextAlign.Start,
     fontSize = dimens.textSize,
+    color = theme.tableText,
   )
 
   HorizontalSpacer(dimens.interColumn)
@@ -176,6 +185,7 @@ private fun RowScope.TransactionTableItem(
     maxLines = 1,
     textAlign = TextAlign.Start,
     fontSize = dimens.textSize,
+    color = theme.tableText,
   )
 
   HorizontalSpacer(dimens.interColumn)
@@ -187,6 +197,7 @@ private fun RowScope.TransactionTableItem(
     maxLines = 1,
     textAlign = TextAlign.Start,
     fontSize = dimens.textSize,
+    color = theme.tableText,
   )
 
   HorizontalSpacer(dimens.interColumn)
@@ -198,11 +209,13 @@ private fun RowScope.TransactionTableItem(
     maxLines = 1,
     textAlign = TextAlign.End,
     fontSize = dimens.textSize,
+    color = theme.tableText,
   )
 
   HorizontalSpacer(dimens.interColumn)
 
-  NormalIconButton(
+  BareIconButton(
+    modifier = Modifier.minimumInteractiveComponentSize(),
     imageVector = Icons.Filled.MoreVert,
     contentDescription = "",
     onClick = {},

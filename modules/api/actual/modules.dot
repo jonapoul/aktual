@@ -16,8 +16,6 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:vm" ["fillcolor"="#F5A6A6","shape"="none"]
-":budget:transactions:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":budget:transactions:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -55,8 +53,6 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
-":budget:transactions:ui" -> ":budget:transactions:vm"
-":budget:transactions:vm" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":test:json" -> ":api:actual"
 ":url:ui" -> ":url:vm"
