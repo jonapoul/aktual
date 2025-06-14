@@ -28,6 +28,4 @@ dependencies {
   implementation(projects.modules.account.login.domain)
   implementation(projects.modules.account.login.res)
   implementation(projects.modules.core.res)
-  testImplementation(projects.modules.test.buildconfig)
-  testImplementation(projects.modules.test.prefs)
 }

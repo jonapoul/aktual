@@ -17,6 +17,4 @@ dependencies {
   implementation(libs.molecule)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   compileOnly(libs.hilt.core)
-  testImplementation(projects.modules.test.buildconfig)
-  testImplementation(projects.modules.test.coroutines)
 }

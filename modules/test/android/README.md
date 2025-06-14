@@ -1,3 +1,3 @@
-# test:buildconfig
+# test:android
 
 ![modules.png](modules.png)

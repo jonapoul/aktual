@@ -31,11 +31,9 @@ node ["style"="filled"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":settings:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":test:android" ["fillcolor"="#55FF55","shape"="none"]
 ":test:compose" ["fillcolor"="#FFFF55","shape"="none"]
-":test:db" ["fillcolor"="#9D8DF1","shape"="none"]
-":test:http" ["fillcolor"="#9D8DF1","shape"="none"]
-":test:json" ["fillcolor"="#9D8DF1","shape"="none"]
-":test:prefs" ["fillcolor"="#55FF55","shape"="none"]
+":test:kotlin" ["fillcolor"="#9D8DF1","shape"="none"]
 ":url:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":url:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 {
@@ -115,12 +113,11 @@ graph ["rank"="same"]
 ":settings:ui" -> ":core:ui"
 ":settings:ui" -> ":settings:vm"
 ":settings:vm" -> ":prefs"
+":test:android" -> ":prefs"
 ":test:compose" -> ":core:ui"
-":test:db" -> ":budget:db"
-":test:http" -> ":api:builder" ["style"="dotted"]
-":test:http" -> ":core:model"
-":test:json" -> ":api:actual"
-":test:prefs" -> ":prefs"
+":test:kotlin" -> ":api:actual" ["style"="dotted"]
+":test:kotlin" -> ":api:builder" ["style"="dotted"]
+":test:kotlin" -> ":budget:db"
 ":url:ui" -> ":core:ui"
 ":url:ui" -> ":url:vm"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]

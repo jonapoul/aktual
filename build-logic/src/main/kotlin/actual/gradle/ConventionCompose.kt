@@ -7,8 +7,6 @@ import blueprint.recipes.composeBlueprint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.provideDelegate
 
 class ConventionCompose : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
@@ -24,19 +22,14 @@ class ConventionCompose : Plugin<Project> {
       experimentalApis = emptyList(),
     )
 
-    val debugImplementation by configurations
-    val testImplementation by configurations
-    val implementation by configurations
-    val lintChecks by configurations
-
     dependencies {
-      implementation(platform(libs.getLibrary("androidx.compose.bom")))
-      lintChecks(libs.getLibrary("androidx.compose.lint"))
+      "implementation"(platform(libs.getLibrary("androidx.compose.bom")))
+      "lintChecks"(libs.getLibrary("androidx.compose.lint"))
 
       // Testing
-      testImplementation(libs.getLibrary("test.androidx.compose.ui.junit4"))
-      testImplementation(libs.getLibrary("test.robolectric"))
-      debugImplementation(libs.getLibrary("test.androidx.compose.ui.manifest"))
+      "testImplementation"(libs.getLibrary("test.androidx.compose.ui.junit4"))
+      "testImplementation"(libs.getLibrary("test.robolectric"))
+      "debugImplementation"(libs.getLibrary("test.androidx.compose.ui.manifest"))
     }
   }
 }

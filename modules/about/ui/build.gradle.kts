@@ -32,5 +32,4 @@ dependencies {
   implementation(libs.lazycolumn.scrollbar)
   implementation(projects.modules.about.res)
   implementation(projects.modules.core.res)
-  testImplementation(projects.modules.test.buildconfig)
 }
