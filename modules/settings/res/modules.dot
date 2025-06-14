@@ -2,17 +2,23 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":settings:res","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":settings:res" ["fillcolor"="#00FFFF","shape"="none"]
+":app" ["fillcolor"="#FF5555","shape"="none"]
+":settings:res" ["fillcolor"="#00FFFF","color"="black","penwidth"="3","shape"="box"]
+":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 ":settings:res"
 }
+":app" -> ":settings:ui" ["style"="dotted"]
+":settings:ui" -> ":settings:res" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
 "Legend" ["style"="filled","fillcolor"="#FFFFFF","shape"="none","margin"="0","fontsize"="15","label"=<
 <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+<TR><TD>App</TD><TD BGCOLOR="#FF5555">module-name</TD></TR>
+<TR><TD>Compose</TD><TD BGCOLOR="#FFFF55">module-name</TD></TR>
 <TR><TD>Resources</TD><TD BGCOLOR="#00FFFF">module-name</TD></TR>
 </TABLE>
 >]

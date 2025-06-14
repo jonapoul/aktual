@@ -1,8 +1,8 @@
-@file:Suppress("SpreadOperator")
-
 package actual.diagrams.tasks
 
 import actual.diagrams.ModuleType
+import guru.nidi.graphviz.attribute.Attributes
+import guru.nidi.graphviz.attribute.Color
 import guru.nidi.graphviz.attribute.Font
 import guru.nidi.graphviz.attribute.GraphAttr
 import guru.nidi.graphviz.attribute.Label
@@ -11,8 +11,6 @@ import guru.nidi.graphviz.attribute.Rank.RankType
 import guru.nidi.graphviz.attribute.Shape
 import guru.nidi.graphviz.attribute.Style
 import guru.nidi.graphviz.model.Factory
-import guru.nidi.graphviz.model.Factory.mutGraph
-import guru.nidi.graphviz.model.Factory.mutNode
 import guru.nidi.graphviz.model.Link
 import guru.nidi.graphviz.model.MutableGraph
 import guru.nidi.graphviz.parse.Parser
@@ -20,33 +18,38 @@ import okio.buffer
 import okio.sink
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
-import org.gradle.api.artifacts.Configuration
-import org.gradle.api.artifacts.ProjectDependency
+import org.gradle.api.file.RegularFile
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.provider.Provider
+import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity.RELATIVE
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.property
-import org.gradle.work.DisableCachingByDefault
-import javax.inject.Inject
+import org.gradle.kotlin.dsl.register
 
-@DisableCachingByDefault
-open class GenerateDotFileTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
-  @get:Input val printOutput: Property<Boolean> = objects.property()
-  @get:Input val toRemove: Property<String> = objects.property(String::class.java)
-  @get:Input val replacement: Property<String> = objects.property(String::class.java)
-  @get:OutputFile val dotFile: RegularFileProperty = objects.fileProperty()
-
-  init {
-    group = "reporting"
-    outputs.cacheIf { false }
-  }
+@CacheableTask
+abstract class GenerateDotFileTask : DefaultTask() {
+  @get:[PathSensitive(RELATIVE) InputFile] abstract val linksFile: RegularFileProperty
+  @get:[PathSensitive(RELATIVE) InputFile] abstract val moduleTypesFile: RegularFileProperty
+  @get:Input abstract val thisPath: Property<String>
+  @get:Input abstract val printOutput: Property<Boolean>
+  @get:Input abstract val toRemove: Property<String>
+  @get:Input abstract val replacement: Property<String>
+  @get:OutputFile abstract val dotFile: RegularFileProperty
 
   @TaskAction
   fun execute() {
-    val dotFileContents = generateGraph(project)
+    val thisPath = thisPath.get()
+    val linksFile = linksFile.get().asFile
+    val moduleTypesFile = moduleTypesFile.get().asFile
+    val links = ProjectLinks.read(linksFile)
+    val typedModules = TypedModules.read(moduleTypesFile)
+
+    val dotFileContents = generateGraph(links, typedModules, thisPath)
       .toString()
       .replace(toRemove.get(), replacement.get())
       .withoutUnusedModuleTypes()
@@ -66,43 +69,75 @@ open class GenerateDotFileTask @Inject constructor(objects: ObjectFactory) : Def
 
   companion object {
     const val TASK_NAME = "generateModulesDotFile"
+
+    fun register(
+      target: Project,
+      name: String,
+      dotFile: Provider<RegularFile>,
+      printOutput: Boolean,
+    ) = with(target) {
+      val toRemove = providers.gradleProperty("actual.diagram.removeModulePrefix")
+      val replacement = providers.gradleProperty("actual.diagram.replacementModulePrefix")
+
+      val task = tasks.register<GenerateDotFileTask>(name) {
+        group = "reporting"
+        description = "Generates a project dependency graph for $path"
+        this.dotFile.set(dotFile)
+        this.toRemove.set(toRemove)
+        this.replacement.set(replacement)
+        this.printOutput.set(printOutput)
+        this.thisPath.set(target.path)
+      }
+
+      gradle.projectsEvaluated {
+        val collateModuleTypes = CollateModuleTypesTask.get(rootProject)
+        val calculateProjectTree = CalculateProjectTreeTask.get(target)
+        task.configure {
+          linksFile.set(calculateProjectTree.get().outputFile)
+          moduleTypesFile.set(collateModuleTypes.get().outputFile)
+        }
+      }
+
+      task
+    }
   }
 }
 
-private fun generateGraph(project: Project): MutableGraph {
-  val projects = mutableSetOf<Project>()
-  val dependencies = mutableListOf<ProjectDependencyContainer>()
+private fun generateGraph(links: Set<ProjectLink>, types: Set<TypedModule>, thisPath: String): MutableGraph {
+  val projectPaths = links
+    .map { it.fromPath }
+    .plus(links.map { it.toPath })
+    .toSet()
 
-  project.allprojects
-    .filter { it.isDependingOnOtherProject() }
-    .forEach { addProject(it, projects, dependencies) }
+  val typeMap = types.associate { (path, type) -> path to type }
 
-  val graph = mutGraph()
+  val graph = Factory
+    .mutGraph()
     .setDirected(true)
     .graphAttrs()
     .add(GraphAttr.dpi(DPI))
 
   graph.nodeAttrs().add(Style.FILLED)
 
-  projects.forEach { proj ->
-    val moduleType = ModuleType.find(proj)
-    val node = mutNode(proj.path)
+  projectPaths.forEach { path ->
+    val moduleType = requireNotNull(typeMap[path]) { "Null module type for $path in $typeMap" }
+    val node = Factory.mutNode(path)
     node.add(moduleType.color)
-    node.add(Shape.NONE)
+    if (path == thisPath) {
+      node.add(Color.BLACK, Attributes.attr("penwidth", "3"))
+      node.add(Shape.BOX)
+    } else {
+      node.add(Shape.NONE)
+    }
     graph.add(node)
   }
-
-  val nodes = projects
-    .filter { proj -> dependencies.none { it.to == proj } }
-    .map { mutNode(it.path) }
-    .toTypedArray()
 
   graph.add(
     Factory
       .graph()
       .graphAttr()
       .with(Rank.inSubgraph(RankType.SAME))
-      .with(*nodes),
+      .with(Factory.mutNode(thisPath)),
   )
 
   val rootNodes = graph
@@ -110,25 +145,21 @@ private fun generateGraph(project: Project): MutableGraph {
     .filterNotNull()
     .filter { it.links().isEmpty() }
 
-  dependencies
-    .filterNot { (from, to, _) -> from == to }
-    .distinctBy { it.from.path to it.to.path }
+  links
+    .filter { it.fromPath != it.toPath }
+    .distinctBy { it.fromPath to it.toPath }
     .forEach { (from, to, configuration) ->
-      val fromNode = rootNodes.single { it.name().toString() == from.path }
-      val toNode = rootNodes.singleOrNull { it.name().toString() == to.path } ?: return@forEach
+      val fromNode = rootNodes.single { it.name().toString() == from }
+      val toNode = rootNodes.singleOrNull { it.name().toString() == to } ?: return@forEach
       val link = Link.to(toNode)
-      val styledLink = if (configuration.isImplementation()) {
-        link.with(Style.DOTTED)
-      } else {
-        link
-      }
+      val styledLink = if (isImplementation(configuration)) link.with(Style.DOTTED) else link
       graph.add(fromNode.addLink(styledLink))
     }
 
-  graph.addLegend(project)
+  graph.addLegend(thisPath)
 
   graph.graphAttrs().add(
-    Label.of(project.path).locate(Label.Location.TOP),
+    Label.of(thisPath).locate(Label.Location.TOP),
     Font.size(LABEL_FONT_SIZE),
   )
 
@@ -141,46 +172,13 @@ private fun generateGraph(project: Project): MutableGraph {
   return graph
 }
 
-private fun addProject(
-  project: Project,
-  projects: MutableSet<Project>,
-  dependencies: MutableList<ProjectDependencyContainer>,
-) {
-  if (project.shouldInclude() && projects.add(project)) {
-    project.configurations
-      .filter { conf -> conf.shouldInclude() }
-      .flatMap { conf ->
-        conf.dependencies
-          .withType(ProjectDependency::class.java)
-          .map { ProjectDependencyContainer(project, project.project(it.path), conf) }
-      }.forEach {
-        dependencies.add(it)
-        addProject(it.to, projects, dependencies)
-      }
-  }
-}
+private fun isImplementation(configuration: String) = configuration.contains("implementation", ignoreCase = true)
 
-private fun Project.shouldInclude(): Boolean {
-  val isRoot = this == rootProject
-  val isTest = path.contains("test", ignoreCase = true)
-  val isKsp = path.contains("ksp", ignoreCase = true)
-  return !isRoot && !isTest && !isKsp
-}
-
-private fun Configuration.shouldInclude(): Boolean =
-  !name.contains("test", ignoreCase = true) && !name.startsWith("ios")
-
-private fun Project.isDependingOnOtherProject(): Boolean =
-  configurations.any { c -> c.dependencies.any { dep -> dep is ProjectDependency } }
-
-private fun Configuration.isImplementation() = name.lowercase().endsWith("implementation")
-
-private fun MutableGraph.addLegend(project: Project) {
-  val rootName = project.path
+private fun MutableGraph.addLegend(thisPath: String) {
   val rootNode = rootNodes()
     .filterNotNull()
     .distinct()
-    .firstOrNull { it.name().toString() == rootName }
+    .firstOrNull { it.name().toString() == thisPath }
     ?: return
 
   // Add the actual legend
@@ -211,12 +209,6 @@ private fun buildLegend(): MutableGraph {
     """.trimIndent(),
   )
 }
-
-private data class ProjectDependencyContainer(
-  val from: Project,
-  val to: Project,
-  val configuration: Configuration,
-)
 
 private fun String.withoutUnusedModuleTypes(): String = buildString {
   val usedColours = mutableSetOf<String>()

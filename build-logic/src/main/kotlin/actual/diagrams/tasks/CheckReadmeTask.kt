@@ -3,8 +3,8 @@ package actual.diagrams.tasks
 import actual.diagrams.FILENAME_ROOT
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
+import org.gradle.api.Project
 import org.gradle.api.file.RegularFileProperty
-import org.gradle.api.model.ObjectFactory
 import org.gradle.api.plugins.JavaBasePlugin
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.CacheableTask
@@ -13,21 +13,17 @@ import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity.RELATIVE
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.property
-import javax.inject.Inject
+import org.gradle.kotlin.dsl.register
 
 @CacheableTask
-open class CheckReadmeTask @Inject constructor(objects: ObjectFactory) : DefaultTask() {
-  @get:[PathSensitive(RELATIVE) InputFile] val readmeFile: RegularFileProperty = objects.fileProperty()
-  @get:Input val projectPath: Property<String> = objects.property()
-
-  init {
-    group = JavaBasePlugin.VERIFICATION_GROUP
-  }
+abstract class CheckReadmeTask : DefaultTask() {
+  @get:[PathSensitive(RELATIVE) InputFile] abstract val readmeFile: RegularFileProperty
+  @get:Input abstract val projectPath: Property<String>
 
   @TaskAction
   fun execute() {
-    val actualContents = readmeFile.get().asFile.readText()
+    val readmeFile = readmeFile.get().asFile
+    val actualContents = readmeFile.readText()
     val expectedTitle = projectPath.get().removePrefix(prefix = ":")
     val expectedContents = """
       # $expectedTitle
@@ -38,7 +34,7 @@ open class CheckReadmeTask @Inject constructor(objects: ObjectFactory) : Default
 
     if (expectedContents != actualContents) {
       val msg = """
-        Expected contents like:
+        Expected contents in $readmeFile like:
 
         '$expectedContents'
 
@@ -47,6 +43,17 @@ open class CheckReadmeTask @Inject constructor(objects: ObjectFactory) : Default
         '$actualContents'
       """.trimIndent()
       throw GradleException(msg)
+    }
+  }
+
+  companion object {
+    fun register(target: Project) = with(target) {
+      val removeModulePrefix = providers.gradleProperty("actual.diagram.removeModulePrefix")
+      tasks.register<CheckReadmeTask>("checkModulesReadme") {
+        group = JavaBasePlugin.VERIFICATION_GROUP
+        readmeFile.set(file("README.md"))
+        projectPath.set(target.path.removePrefix(removeModulePrefix.get()))
+      }
     }
   }
 }

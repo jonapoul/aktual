@@ -2,8 +2,21 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":test:files","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
+":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":test:files" ["fillcolor"="#9D8DF1","color"="black","penwidth"="3","shape"="box"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
+":test:files"
 }
+":test:files" -> ":budget:model"
+subgraph "cluster_legend" {
+edge ["dir"="none"]
+graph ["label"="Legend","fontsize"="20"]
+"Legend" ["style"="filled","fillcolor"="#FFFFFF","shape"="none","margin"="0","fontsize"="15","label"=<
+<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+<TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
+</TABLE>
+>]
+} -> ":test:files" ["style"="invis"]
 }
