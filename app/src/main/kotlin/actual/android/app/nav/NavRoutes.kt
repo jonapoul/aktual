@@ -42,3 +42,10 @@ data class SyncBudgetsNavRoute(
   val token: LoginToken,
   val budgetId: BudgetId,
 ) : JSerializable
+
+@Immutable
+@Serializable
+data class TransactionsNavRoute(
+  val token: LoginToken,
+  val budgetId: BudgetId,
+) : JSerializable

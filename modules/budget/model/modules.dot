@@ -50,6 +50,7 @@ graph ["rank"="same"]
 ":app" -> ":budget:di" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
+":app" -> ":budget:transactions:ui" ["style"="dotted"]
 ":app" -> ":core:connection" ["style"="dotted"]
 ":app" -> ":core:di" ["style"="dotted"]
 ":app" -> ":url:ui" ["style"="dotted"]
@@ -67,7 +68,8 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
 ":budget:transactions:ui" -> ":budget:model" ["style"="dotted"]
 ":budget:transactions:ui" -> ":budget:transactions:vm"
-":budget:transactions:vm" -> ":api:actual" ["style"="dotted"]
+":budget:transactions:vm" -> ":budget:db" ["style"="dotted"]
+":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:model"
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:di" -> ":budget:model"

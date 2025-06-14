@@ -8,9 +8,9 @@ import actual.account.password.ui.ChangePasswordNavigator
 import actual.budget.list.ui.ListBudgetsNavigator
 import actual.budget.model.BudgetId
 import actual.budget.sync.ui.SyncBudgetNavigator
+import actual.budget.transactions.ui.TransactionsNavigator
 import actual.settings.ui.SettingsNavigator
 import actual.url.ui.ServerUrlNavigator
-import alakazam.kotlin.logging.Logger
 import androidx.navigation.NavHostController
 
 fun ChangePasswordNavigator(nav: NavHostController): ChangePasswordNavigator = ChangePasswordNavigatorImpl(nav)
@@ -21,6 +21,7 @@ fun LoginNavigator(nav: NavHostController): LoginNavigator = LoginNavigatorImpl(
 fun ServerUrlNavigator(nav: NavHostController): ServerUrlNavigator = ServerUrlNavigatorImpl(nav)
 fun SettingsNavigator(nav: NavHostController): SettingsNavigator = SettingsNavigatorImpl(nav)
 fun SyncBudgetNavigator(nav: NavHostController): SyncBudgetNavigator = SyncBudgetNavigatorImpl(nav)
+fun TransactionsNavigator(nav: NavHostController): TransactionsNavigator = TransactionsNavigatorImpl(nav)
 
 private class ChangePasswordNavigatorImpl(private val nav: NavHostController) : ChangePasswordNavigator {
   override fun back() = nav.popBackStack()
@@ -62,7 +63,9 @@ private class SettingsNavigatorImpl(private val nav: NavHostController) : Settin
 
 private class SyncBudgetNavigatorImpl(private val nav: NavHostController) : SyncBudgetNavigator {
   override fun back() = nav.popBackStack()
-  override fun toBudget(token: LoginToken, budgetId: BudgetId) {
-    Logger.w("Not implemented yet! nav=$nav, token=$token, budgetId=$budgetId")
-  }
+  override fun toBudget(token: LoginToken, budgetId: BudgetId) = nav.debugNav(TransactionsNavRoute(token, budgetId))
+}
+
+private class TransactionsNavigatorImpl(private val nav: NavHostController) : TransactionsNavigator {
+  override fun back() = nav.popBackStack()
 }

@@ -31,6 +31,7 @@ graph ["rank"="same"]
 ":app" -> ":account:password:ui" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
+":app" -> ":budget:transactions:ui" ["style"="dotted"]
 ":app" -> ":settings:ui" ["style"="dotted"]
 ":app" -> ":url:ui" ["style"="dotted"]
 ":budget:list:ui" -> ":core:ui"
