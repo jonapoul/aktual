@@ -1,57 +1,54 @@
 package actual.gradle
 
 import actual.diagrams.FILENAME_ROOT
+import actual.diagrams.tasks.CalculateProjectTreeTask
 import actual.diagrams.tasks.CheckDotFileTask
 import actual.diagrams.tasks.CheckReadmeTask
+import actual.diagrams.tasks.CollateModuleTypesTask
+import actual.diagrams.tasks.CollateProjectLinksTask
+import actual.diagrams.tasks.DumpModuleTypeTask
+import actual.diagrams.tasks.DumpProjectLinksTask
 import actual.diagrams.tasks.GenerateDotFileTask
 import actual.diagrams.tasks.GeneratePngFileTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.register
 
 class ConventionDiagrams : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
-    val path = project.path
-    val removeModulePrefix = ":modules:"
-    val replacementModulePrefix = ":"
-
-    val realDotFile = project.layout.projectDirectory.file("$FILENAME_ROOT.dot")
-
-    val generateDotFileTask = tasks.register<GenerateDotFileTask>(GenerateDotFileTask.TASK_NAME) {
-      description = "Generates a project dependency graph for $path"
-      dotFile.set(realDotFile)
-      toRemove.set(removeModulePrefix)
-      replacement.set(replacementModulePrefix)
-      printOutput.set(true)
+    if (target == rootProject) {
+      CollateProjectLinksTask.register(this)
+      CollateModuleTypesTask.register(this)
+      return@with
     }
 
-    val generateTempDotFileTask = tasks.register<GenerateDotFileTask>("generateTempDotFile") {
-      dotFile.set(project.layout.buildDirectory.file("diagrams-modules-temp/$FILENAME_ROOT.dot"))
-      toRemove.set(removeModulePrefix)
-      replacement.set(replacementModulePrefix)
-      printOutput.set(false)
-    }
+    val realDotFile = layout.projectDirectory.file("$FILENAME_ROOT.dot")
 
-    tasks.register<CheckDotFileTask>("checkDotFiles") {
-      taskPath.set("$path:${GenerateDotFileTask.TASK_NAME}")
-      expectedDotFile.set(generateTempDotFileTask.get().dotFile)
-      actualDotFile.set(realDotFile)
-    }
+    DumpModuleTypeTask.register(target)
+    DumpProjectLinksTask.register(target)
+    CalculateProjectTreeTask.register(target)
 
-    tasks.register<GeneratePngFileTask>("generateModulesPng") {
-      val reportDir = layout.projectDirectory
-      dotFile.set(generateDotFileTask.get().dotFile)
-      pngFile.set(reportDir.file("$FILENAME_ROOT.png"))
-      errorFile.set(reportDir.file("$FILENAME_ROOT-error.log"))
-    }
+    val generateDotFileTask = GenerateDotFileTask.register(
+      target = target,
+      name = GenerateDotFileTask.TASK_NAME,
+      dotFile = provider { realDotFile },
+      printOutput = true,
+    )
 
-    val checkModulesReadmeTask = tasks.register<CheckReadmeTask>("checkModulesReadme") {
-      readmeFile.set(file("README.md"))
-      projectPath.set(path.removePrefix(removeModulePrefix))
-    }
+    val generateTempDotFileTask = GenerateDotFileTask.register(
+      target = target,
+      name = "generateTempDotFile",
+      dotFile = layout.buildDirectory.file("diagrams-modules-temp/$FILENAME_ROOT.dot"),
+      printOutput = false,
+    )
+
+    GeneratePngFileTask.register(target, generateDotFileTask)
+
+    val checkDotFiles = CheckDotFileTask.register(target, generateTempDotFileTask, realDotFile)
+    val checkModulesReadmeTask = CheckReadmeTask.register(target)
 
     tasks.named("check").configure {
       dependsOn(checkModulesReadmeTask)
+      dependsOn(checkDotFiles)
     }
   }
 }

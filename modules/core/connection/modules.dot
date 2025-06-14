@@ -5,20 +5,23 @@ node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:builder" ["fillcolor"="#9D8DF1","shape"="none"]
+":app" ["fillcolor"="#FF5555","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:connection" ["fillcolor"="#9D8DF1","color"="black","penwidth"="3","shape"="box"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
+":core:connection"
 }
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
 ":api:builder" -> ":core:model"
+":app" -> ":core:connection" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:builder" ["style"="dotted"]
 ":core:connection" -> ":core:model" ["style"="dotted"]
@@ -30,6 +33,7 @@ edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
 "Legend" ["style"="filled","fillcolor"="#FFFFFF","shape"="none","margin"="0","fontsize"="15","label"=<
 <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+<TR><TD>App</TD><TD BGCOLOR="#FF5555">module-name</TD></TR>
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
 </TABLE>
 >]

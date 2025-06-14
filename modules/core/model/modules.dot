@@ -2,16 +2,148 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":core:model","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":about:info:data" ["fillcolor"="#9D8DF1","shape"="none"]
+":about:info:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":about:info:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":about:licenses:data" ["fillcolor"="#9D8DF1","shape"="none"]
+":about:licenses:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":about:licenses:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":account:login:domain" ["fillcolor"="#9D8DF1","shape"="none"]
+":account:login:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":account:login:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":account:password:domain" ["fillcolor"="#9D8DF1","shape"="none"]
+":account:password:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":account:password:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
+":api:builder" ["fillcolor"="#9D8DF1","shape"="none"]
+":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
+":app" ["fillcolor"="#FF5555","shape"="none"]
+":budget:db" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:di" ["fillcolor"="#FCB103","shape"="none"]
+":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":budget:list:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":budget:sync:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":budget:transactions:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":budget:transactions:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
+":core:di" ["fillcolor"="#FCB103","shape"="none"]
+":core:model" ["fillcolor"="#9D8DF1","color"="black","penwidth"="3","shape"="box"]
+":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
+":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":settings:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":test:compose" ["fillcolor"="#FFFF55","shape"="none"]
+":test:db" ["fillcolor"="#9D8DF1","shape"="none"]
+":test:http" ["fillcolor"="#9D8DF1","shape"="none"]
+":test:json" ["fillcolor"="#9D8DF1","shape"="none"]
+":test:prefs" ["fillcolor"="#55FF55","shape"="none"]
+":url:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":url:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
+":core:model"
 }
+":about:info:data" -> ":api:github"
+":about:info:ui" -> ":about:info:vm"
+":about:info:ui" -> ":core:ui"
+":about:info:vm" -> ":about:info:data"
+":about:licenses:data" -> ":core:model" ["style"="dotted"]
+":about:licenses:ui" -> ":about:licenses:vm"
+":about:licenses:ui" -> ":core:ui"
+":about:licenses:vm" -> ":about:licenses:data"
+":account:login:domain" -> ":api:actual" ["style"="dotted"]
+":account:login:domain" -> ":prefs" ["style"="dotted"]
+":account:login:ui" -> ":account:login:domain" ["style"="dotted"]
+":account:login:ui" -> ":account:login:vm"
+":account:login:ui" -> ":core:ui"
+":account:login:vm" -> ":account:login:domain"
+":account:login:vm" -> ":core:model"
+":account:login:vm" -> ":prefs"
+":account:password:domain" -> ":account:login:domain"
+":account:password:domain" -> ":api:actual" ["style"="dotted"]
+":account:password:domain" -> ":prefs" ["style"="dotted"]
+":account:password:ui" -> ":account:password:domain" ["style"="dotted"]
+":account:password:ui" -> ":account:password:vm"
+":account:password:ui" -> ":core:ui"
+":account:password:vm" -> ":account:login:domain" ["style"="dotted"]
+":account:password:vm" -> ":account:password:domain"
+":account:password:vm" -> ":core:model"
+":api:actual" -> ":core:model"
+":api:builder" -> ":core:model"
+":api:github" -> ":core:model"
+":app" -> ":about:info:ui" ["style"="dotted"]
+":app" -> ":about:licenses:ui" ["style"="dotted"]
+":app" -> ":account:login:domain" ["style"="dotted"]
+":app" -> ":account:login:ui" ["style"="dotted"]
+":app" -> ":account:password:ui" ["style"="dotted"]
+":app" -> ":api:actual" ["style"="dotted"]
+":app" -> ":budget:di" ["style"="dotted"]
+":app" -> ":budget:list:ui" ["style"="dotted"]
+":app" -> ":budget:sync:ui" ["style"="dotted"]
+":app" -> ":core:connection" ["style"="dotted"]
+":app" -> ":core:di" ["style"="dotted"]
+":app" -> ":prefs" ["style"="dotted"]
+":app" -> ":settings:ui" ["style"="dotted"]
+":app" -> ":url:ui" ["style"="dotted"]
+":budget:db" -> ":core:model"
+":budget:di" -> ":budget:db"
+":budget:encryption" -> ":core:model"
+":budget:list:ui" -> ":budget:list:vm"
+":budget:list:ui" -> ":core:ui"
+":budget:list:vm" -> ":api:actual" ["style"="dotted"]
+":budget:list:vm" -> ":core:model"
+":budget:list:vm" -> ":prefs" ["style"="dotted"]
+":budget:sync:ui" -> ":budget:sync:vm"
+":budget:sync:ui" -> ":core:ui"
+":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
+":budget:sync:vm" -> ":budget:di"
+":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
+":budget:sync:vm" -> ":core:model"
+":budget:sync:vm" -> ":prefs" ["style"="dotted"]
+":budget:transactions:ui" -> ":budget:transactions:vm"
+":budget:transactions:ui" -> ":core:ui"
+":budget:transactions:vm" -> ":api:actual" ["style"="dotted"]
+":budget:transactions:vm" -> ":core:model"
+":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
+":core:connection" -> ":api:actual" ["style"="dotted"]
+":core:connection" -> ":api:builder" ["style"="dotted"]
+":core:connection" -> ":core:model" ["style"="dotted"]
+":core:connection" -> ":prefs" ["style"="dotted"]
+":core:di" -> ":api:builder" ["style"="dotted"]
+":core:di" -> ":api:github"
+":core:di" -> ":core:model"
+":core:di" -> ":prefs"
+":core:ui" -> ":core:model"
+":prefs" -> ":core:model"
+":settings:ui" -> ":core:model"
+":settings:ui" -> ":core:ui"
+":settings:ui" -> ":settings:vm"
+":settings:vm" -> ":prefs"
+":test:compose" -> ":core:ui"
+":test:db" -> ":budget:db"
+":test:http" -> ":api:builder" ["style"="dotted"]
+":test:http" -> ":core:model"
+":test:json" -> ":api:actual"
+":test:prefs" -> ":prefs"
+":url:ui" -> ":core:ui"
+":url:ui" -> ":url:vm"
+":url:vm" -> ":account:login:domain" ["style"="dotted"]
+":url:vm" -> ":api:actual" ["style"="dotted"]
+":url:vm" -> ":core:model"
+":url:vm" -> ":prefs" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
 "Legend" ["style"="filled","fillcolor"="#FFFFFF","shape"="none","margin"="0","fontsize"="15","label"=<
 <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+<TR><TD>App</TD><TD BGCOLOR="#FF5555">module-name</TD></TR>
+<TR><TD>ViewModel</TD><TD BGCOLOR="#F5A6A6">module-name</TD></TR>
+<TR><TD>Hilt</TD><TD BGCOLOR="#FCB103">module-name</TD></TR>
+<TR><TD>Compose</TD><TD BGCOLOR="#FFFF55">module-name</TD></TR>
+<TR><TD>Android</TD><TD BGCOLOR="#55FF55">module-name</TD></TR>
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
 </TABLE>
 >]

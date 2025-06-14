@@ -15,9 +15,36 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ktlint:
+  changes:
     runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.filter.outputs.build }}
+      github: ${{ steps.filter.outputs.github }}
+      kotlin: ${{ steps.filter.outputs.kotlin }}
+      docs: ${{ steps.filter.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v2
+        id: filter
+        with:
+          filters: |
+            github:
+              - '.github/**'
+            build:
+              - '**.kts'
+              - '**.properties'
+              - 'build-logic/**'
+              - 'gradle/**'
+            kotlin:
+              - '**.kt'
+              - '**.kts'
+            docs:
+              - '**.md'
 
+  ktlint:
+    needs: changes
+    if: ${{ needs.changes.outputs.kotlin == 'true' }}
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
@@ -34,8 +61,9 @@ jobs:
       - name: Run ktlint
         run: ktlint '**/*.kt' '**/*.kts' '!**/build/**' --color
 
-  pr-check:
-    needs: ktlint
+  baseline:
+    needs: [ changes ]
+    if: ${{ needs.changes.outputs.build == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -67,8 +95,30 @@ jobs:
         with:
           commit_message: Baseline dependencies
 
-      - name: Check module diagrams
-        run: ./gradlew checkDotFiles --no-configuration-cache
+  pr-check:
+    needs: [ ktlint, changes ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ github.head_ref }}
+
+      - name: Setup JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version-file: .github/workflows/.java-version
+          distribution: "zulu"
+
+      - name: Add permissions
+        run: chmod +x ./gradlew
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          add-job-summary: on-failure
 
       - name: Check
         run: ./gradlew check
