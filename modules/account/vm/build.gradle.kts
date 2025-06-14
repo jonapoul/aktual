@@ -17,6 +17,6 @@ dependencies {
   implementation(libs.molecule)
   implementation(libs.preferences.core)
   implementation(projects.modules.api.actual)
-  testImplementation(projects.modules.core.connection)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
+  testImplementation(projects.modules.core.connection)
 }

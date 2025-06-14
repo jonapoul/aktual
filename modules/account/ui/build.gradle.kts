@@ -8,7 +8,6 @@ dependencies {
   api(projects.modules.account.vm)
   api(projects.modules.core.model)
   api(projects.modules.core.ui)
-  api(projects.modules.account.vm)
   implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.alakazam.kotlin.logging)
