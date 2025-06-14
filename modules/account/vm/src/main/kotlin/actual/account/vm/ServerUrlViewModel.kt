@@ -1,4 +1,4 @@
-package actual.url.vm
+package actual.account.vm
 
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.NeedsBootstrapResponse
@@ -12,6 +12,7 @@ import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.core.collectFlow
 import alakazam.kotlin.core.requireMessage
 import alakazam.kotlin.logging.Logger
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -190,4 +191,23 @@ class ServerUrlViewModel @Inject internal constructor(
       }
     }
   }
+}
+
+@Immutable
+internal sealed interface ConfirmResult {
+  data class Failed(
+    val reason: String,
+  ) : ConfirmResult
+
+  data class Succeeded(
+    val isBootstrapped: Boolean,
+  ) : ConfirmResult
+}
+
+@Immutable
+sealed interface NavDestination {
+  data object Back : NavDestination
+  data object ToBootstrap : NavDestination
+  data object ToLogin : NavDestination
+  data object ToAbout : NavDestination
 }

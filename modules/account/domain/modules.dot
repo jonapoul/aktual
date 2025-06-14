@@ -12,8 +12,6 @@ node ["style"="filled"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
-":url:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":url:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -31,11 +29,8 @@ graph ["rank"="same"]
 ":api:actual" -> ":core:model"
 ":app" -> ":account:domain" ["style"="dotted"]
 ":app" -> ":account:ui" ["style"="dotted"]
-":app" -> ":url:ui" ["style"="dotted"]
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
-":url:ui" -> ":url:vm"
-":url:vm" -> ":account:domain" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

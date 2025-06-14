@@ -9,6 +9,7 @@ import actual.account.model.Password
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import alakazam.kotlin.logging.Logger
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -103,4 +104,18 @@ class ChangePasswordViewModel @Inject internal constructor(
   private companion object {
     val SUCCESS_DELAY = 1.seconds
   }
+}
+
+@Immutable
+sealed interface ChangePasswordState {
+  data object Loading : ChangePasswordState
+
+  data object Success : ChangePasswordState
+
+  sealed interface Failure : ChangePasswordState
+  data object InvalidPassword : Failure
+  data object NotLoggedIn : Failure
+  data object PasswordsDontMatch : Failure
+  data object NetworkFailure : Failure
+  data object OtherFailure : Failure
 }

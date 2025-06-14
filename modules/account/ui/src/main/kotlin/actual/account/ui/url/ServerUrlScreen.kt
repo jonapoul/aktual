@@ -1,5 +1,8 @@
-package actual.url.ui
+package actual.account.ui.url
 
+import actual.account.res.Strings
+import actual.account.vm.NavDestination
+import actual.account.vm.ServerUrlViewModel
 import actual.core.model.ActualVersions
 import actual.core.model.Protocol
 import actual.core.res.CoreStrings
@@ -14,9 +17,6 @@ import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
 import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
-import actual.url.res.Strings
-import actual.url.vm.NavDestination
-import actual.url.vm.ServerUrlViewModel
 import alakazam.android.ui.compose.VerticalSpacer
 import alakazam.kotlin.logging.Logger
 import android.app.Activity

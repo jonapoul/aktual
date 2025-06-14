@@ -20,4 +20,14 @@
   <string name="password_failure_network">Unable to contact the server</string>
   <string name="password_failure_other">Internal error</string>
   <string name="password_failure_logged_out">Can\'t change password - logged out</string>
+
+  <string name="server_url_toolbar">Actual Budget</string>
+  <string name="server_url_title">Where\'s the server?</string>
+  <string name="server_url_menu_about">About</string>
+  <string name="server_url_message">There is no server configured. After running the server, specify the URL here to use the app. You can always change this later. We will validate that Actual is running at this URL.</string>
+  <string name="server_url_confirm">Confirm</string>
+  <string name="server_url_version_app_null">App: Unknown</string>
+  <string name="server_url_version_app">App: v%1$s</string>
+  <string name="server_url_version_server_null">Server: Unknown</string>
+  <string name="server_url_version_server">Server: v%1$s</string>
 </resources>

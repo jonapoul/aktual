@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalCoroutinesApi::class)
 
-package actual.url.vm
+package actual.account.vm
 
 import actual.account.model.LoginToken
 import actual.api.client.AccountApi

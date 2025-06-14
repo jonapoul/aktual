@@ -26,10 +26,12 @@ graph ["rank"="same"]
 ":account:ui" -> ":account:domain" ["style"="dotted"]
 ":account:ui" -> ":account:res" ["style"="dotted"]
 ":account:ui" -> ":account:vm"
+":account:ui" -> ":core:model"
 ":account:ui" -> ":core:res" ["style"="dotted"]
 ":account:ui" -> ":core:ui"
 ":account:vm" -> ":account:domain"
 ":account:vm" -> ":account:model"
+":account:vm" -> ":api:actual" ["style"="dotted"]
 ":account:vm" -> ":core:model"
 ":account:vm" -> ":prefs"
 ":api:actual" -> ":account:model"

@@ -1,4 +1,4 @@
-package actual.url.ui
+package actual.account.ui.url
 
 import actual.core.model.Protocol
 import actual.core.ui.ExposedDropDownMenu

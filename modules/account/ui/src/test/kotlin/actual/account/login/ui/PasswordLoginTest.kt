@@ -27,11 +27,11 @@ class PasswordLoginTest {
     // given
     var wasClicked = false
     setThemedContent {
-        PasswordLogin(
-            isLoading = true,
-            enteredPassword = PASSWORD,
-            onAction = { wasClicked = it == LoginAction.SignIn },
-        )
+      PasswordLogin(
+        isLoading = true,
+        enteredPassword = PASSWORD,
+        onAction = { wasClicked = it == LoginAction.SignIn },
+      )
     }
 
     // then the sign in button is disabled
@@ -49,11 +49,11 @@ class PasswordLoginTest {
   fun `Entered password is censored`() = composeRule.runTest {
     // given
     setThemedContent {
-        PasswordLogin(
-            isLoading = false,
-            enteredPassword = PASSWORD,
-            onAction = {},
-        )
+      PasswordLogin(
+        isLoading = false,
+        enteredPassword = PASSWORD,
+        onAction = {},
+      )
     }
 
     // then the text entry input is blocked out

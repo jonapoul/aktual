@@ -1,7 +1,7 @@
 package actual.account.ui.login
 
-import actual.account.res.Strings
 import actual.account.model.Password
+import actual.account.res.Strings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.PrimaryTextButtonWithLoading

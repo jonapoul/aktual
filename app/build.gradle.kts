@@ -171,5 +171,4 @@ dependencies {
   implementation(projects.modules.logging)
   implementation(projects.modules.prefs)
   implementation(projects.modules.settings.ui)
-  implementation(projects.modules.url.ui)
 }

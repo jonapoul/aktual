@@ -13,7 +13,6 @@ node ["style"="filled"]
 ":core:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":test:compose" ["fillcolor"="#FFFF55","shape"="none"]
-":url:ui" ["fillcolor"="#FFFF55","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -27,7 +26,6 @@ graph ["rank"="same"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
 ":app" -> ":budget:transactions:ui" ["style"="dotted"]
 ":app" -> ":settings:ui" ["style"="dotted"]
-":app" -> ":url:ui" ["style"="dotted"]
 ":budget:list:ui" -> ":core:ui"
 ":budget:sync:ui" -> ":core:ui"
 ":budget:transactions:ui" -> ":core:ui"
@@ -35,7 +33,6 @@ graph ["rank"="same"]
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":settings:ui" -> ":core:ui"
 ":test:compose" -> ":core:ui"
-":url:ui" -> ":core:ui"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
