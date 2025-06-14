@@ -30,7 +30,6 @@ class ConventionTestDependencies : Plugin<Project> {
 
           val debugImplementation by configurations
           debugImplementation(libs.getLibrary("test.androidx.monitor"))
-          debugImplementation(project(":modules:test:hilt"))
         }
       }
     }

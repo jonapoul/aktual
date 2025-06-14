@@ -21,10 +21,6 @@ class ConventionAndroidBase : Plugin<Project> {
       // ":modules:path:to:module" -> "actual.path.to.module", or ":app" -> "actual.app"
       namespace = "actual" + path.removePrefix(":modules").split(":").joinToString(".")
 
-      defaultConfig {
-        testInstrumentationRunner = "actual.test.ActualHiltTestRunner"
-      }
-
       testOptions {
         unitTests {
           // For Robolectric
