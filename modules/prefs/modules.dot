@@ -20,7 +20,7 @@ node ["style"="filled"]
 ":prefs" ["fillcolor"="#9D8DF1","color"="black","penwidth"="3","shape"="box"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":settings:vm" ["fillcolor"="#F5A6A6","shape"="none"]
-":test:prefs" ["fillcolor"="#55FF55","shape"="none"]
+":test:android" ["fillcolor"="#55FF55","shape"="none"]
 ":url:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":url:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 {
@@ -59,7 +59,7 @@ graph ["rank"="same"]
 ":prefs" -> ":core:model"
 ":settings:ui" -> ":settings:vm"
 ":settings:vm" -> ":prefs"
-":test:prefs" -> ":prefs"
+":test:android" -> ":prefs"
 ":url:ui" -> ":url:vm"
 ":url:vm" -> ":account:login:domain" ["style"="dotted"]
 ":url:vm" -> ":prefs" ["style"="dotted"]

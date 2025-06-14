@@ -13,8 +13,6 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
 
@@ -54,14 +52,11 @@ class ModuleResources : Plugin<Project> {
       dependsOn(tasks.withType<GenerateResourcesTask>())
     }
 
-    val implementation by configurations
-    val api by configurations
-
     dependencies {
       // Required for resource accessor generation
-      implementation(platform(libs.getLibrary("androidx.compose.bom")))
-      api(libs.getLibrary("androidx.compose.runtime"))
-      api(libs.getLibrary("androidx.compose.ui.core"))
+      "implementation"(platform(libs.getLibrary("androidx.compose.bom")))
+      "api"(libs.getLibrary("androidx.compose.runtime"))
+      "api"(libs.getLibrary("androidx.compose.ui.core"))
     }
   }
 }

@@ -47,8 +47,6 @@ kotlin {
   commonTestDependencies {
     implementation(libs.test.alakazam.core)
     implementation(libs.test.alakazam.sqldelight)
-    implementation(projects.modules.test.coroutines)
-    implementation(projects.modules.test.db)
   }
 
   androidMainDependencies {

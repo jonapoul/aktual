@@ -1,5 +1,6 @@
 package actual.gradle
 
+import blueprint.core.androidUnitTestDependencies
 import blueprint.core.commonTestDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -17,8 +18,8 @@ class ModuleMultiplatform : Plugin<Project> {
       apply(ConventionIdea::class.java)
       apply(ConventionStyle::class.java)
       apply(ConventionTest::class.java)
-//      apply(DependencyAnalysisPlugin::class.java) // doesn't support KMP
-//      apply(ConventionSortDependencies::class.java) // doesn't support KMP
+      // apply(DependencyAnalysisPlugin::class.java) // doesn't support KMP
+      // apply(ConventionSortDependencies::class.java) // doesn't support KMP
     }
 
     extensions.configure<KotlinMultiplatformExtension> {
@@ -32,6 +33,11 @@ class ModuleMultiplatform : Plugin<Project> {
 
       commonTestDependencies {
         testLibraries.forEach { lib -> implementation(lib) }
+        implementation(project(":modules:test:kotlin"))
+      }
+
+      androidUnitTestDependencies {
+        implementation(project(":modules:test:android"))
       }
     }
   }

@@ -12,7 +12,6 @@ import org.gradle.api.tasks.PathSensitivity.RELATIVE
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.withType
 
 @CacheableTask
 abstract class CollateModuleTypesTask : DefaultTask() {
@@ -40,12 +39,10 @@ abstract class CollateModuleTypesTask : DefaultTask() {
       }
 
       gradle.projectsEvaluated {
-        rootProject.subprojects {
-          val dumpTasks = tasks.withType<DumpModuleTypeTask>()
-          task.configure {
-            dependsOn(dumpTasks)
-            dumpTasks.forEach { dumpTask -> projectTypeFiles.from(dumpTask.outputFile) }
-          }
+        val dumpTasks = rootProject.subprojects.mapNotNull(DumpModuleTypeTask::get)
+        task.configure {
+          dependsOn(dumpTasks)
+          projectTypeFiles.from(dumpTasks.map { it.get().outputFile })
         }
       }
 

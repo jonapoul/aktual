@@ -27,12 +27,7 @@ main:
     - androidx.profileinstaller.ProfileInstallReceiver
 variants:
   debug:
-    permissions:
-    - android.permission.REORDER_TASKS
     exports:
       activity:
       - androidx.activity.ComponentActivity
-      - androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity
-      - androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity
-      - androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity
-fingerprint: 6af002415e7f7d832ef7c0b06cc5d1c2
+fingerprint: c4fd7a64d6bdfd41a1870a0af598a5a6

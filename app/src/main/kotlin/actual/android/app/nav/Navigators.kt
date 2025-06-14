@@ -1,7 +1,7 @@
 package actual.android.app.nav
 
-import actual.about.info.ui.InfoNavigator
-import actual.about.licenses.ui.LicensesNavigator
+import actual.about.ui.info.InfoNavigator
+import actual.about.ui.licenses.LicensesNavigator
 import actual.account.login.ui.LoginNavigator
 import actual.account.model.LoginToken
 import actual.account.password.ui.ChangePasswordNavigator
