@@ -6,7 +6,7 @@ node ["style"="filled"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:transactions:res" ["fillcolor"="#00FFFF","shape"="none"]
-":budget:transactions:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":budget:transactions:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
 ":budget:transactions:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -16,6 +16,7 @@ node ["style"="filled"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
+":budget:transactions:ui"
 }
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
