@@ -2,13 +2,10 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":account:model","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":account:login:domain" ["fillcolor"="#9D8DF1","shape"="none"]
-":account:login:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":account:login:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":account:domain" ["fillcolor"="#9D8DF1","shape"="none"]
 ":account:model" ["fillcolor"="#9D8DF1","color"="black","penwidth"="3","shape"="box"]
-":account:password:domain" ["fillcolor"="#9D8DF1","shape"="none"]
-":account:password:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":account:password:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":account:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":account:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
 ":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -32,27 +29,17 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 ":account:model"
 }
-":account:login:domain" -> ":account:model"
-":account:login:domain" -> ":api:actual" ["style"="dotted"]
-":account:login:domain" -> ":prefs" ["style"="dotted"]
-":account:login:ui" -> ":account:login:domain" ["style"="dotted"]
-":account:login:ui" -> ":account:login:vm"
-":account:login:vm" -> ":account:login:domain"
-":account:login:vm" -> ":account:model"
-":account:login:vm" -> ":prefs"
-":account:password:domain" -> ":account:login:domain"
-":account:password:domain" -> ":account:model"
-":account:password:domain" -> ":api:actual" ["style"="dotted"]
-":account:password:domain" -> ":prefs" ["style"="dotted"]
-":account:password:ui" -> ":account:password:domain" ["style"="dotted"]
-":account:password:ui" -> ":account:password:vm"
-":account:password:vm" -> ":account:login:domain" ["style"="dotted"]
-":account:password:vm" -> ":account:model"
-":account:password:vm" -> ":account:password:domain"
+":account:domain" -> ":account:model"
+":account:domain" -> ":api:actual" ["style"="dotted"]
+":account:domain" -> ":prefs" ["style"="dotted"]
+":account:ui" -> ":account:domain" ["style"="dotted"]
+":account:ui" -> ":account:vm"
+":account:vm" -> ":account:domain"
+":account:vm" -> ":account:model"
+":account:vm" -> ":prefs"
 ":api:actual" -> ":account:model"
-":app" -> ":account:login:domain" ["style"="dotted"]
-":app" -> ":account:login:ui" ["style"="dotted"]
-":app" -> ":account:password:ui" ["style"="dotted"]
+":app" -> ":account:domain" ["style"="dotted"]
+":app" -> ":account:ui" ["style"="dotted"]
 ":app" -> ":api:actual" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
@@ -86,7 +73,7 @@ graph ["rank"="same"]
 ":test:android" -> ":prefs"
 ":test:kotlin" -> ":api:actual" ["style"="dotted"]
 ":url:ui" -> ":url:vm"
-":url:vm" -> ":account:login:domain" ["style"="dotted"]
+":url:vm" -> ":account:domain" ["style"="dotted"]
 ":url:vm" -> ":api:actual" ["style"="dotted"]
 ":url:vm" -> ":prefs" ["style"="dotted"]
 subgraph "cluster_legend" {

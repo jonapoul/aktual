@@ -3,8 +3,7 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":core:ui","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":about:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":account:login:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":account:password:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":account:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -21,11 +20,9 @@ graph ["rank"="same"]
 ":core:ui"
 }
 ":about:ui" -> ":core:ui"
-":account:login:ui" -> ":core:ui"
-":account:password:ui" -> ":core:ui"
+":account:ui" -> ":core:ui"
 ":app" -> ":about:ui" ["style"="dotted"]
-":app" -> ":account:login:ui" ["style"="dotted"]
-":app" -> ":account:password:ui" ["style"="dotted"]
+":app" -> ":account:ui" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
 ":app" -> ":budget:transactions:ui" ["style"="dotted"]

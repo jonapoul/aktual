@@ -13,7 +13,7 @@ dependencies {
   implementation(libs.ktor.core)
   implementation(libs.molecule)
   implementation(libs.preferences.core)
-  implementation(projects.modules.account.login.domain)
+  implementation(projects.modules.account.domain)
   implementation(projects.modules.api.actual)
   implementation(projects.modules.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)

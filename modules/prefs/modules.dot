@@ -2,13 +2,10 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":prefs","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":account:login:domain" ["fillcolor"="#9D8DF1","shape"="none"]
-":account:login:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":account:login:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":account:domain" ["fillcolor"="#9D8DF1","shape"="none"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":account:password:domain" ["fillcolor"="#9D8DF1","shape"="none"]
-":account:password:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":account:password:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":account:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":account:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:list:vm" ["fillcolor"="#F5A6A6","shape"="none"]
@@ -28,20 +25,13 @@ edge ["dir"="none"]
 graph ["rank"="same"]
 ":prefs"
 }
-":account:login:domain" -> ":prefs" ["style"="dotted"]
-":account:login:ui" -> ":account:login:domain" ["style"="dotted"]
-":account:login:ui" -> ":account:login:vm"
-":account:login:vm" -> ":account:login:domain"
-":account:login:vm" -> ":prefs"
-":account:password:domain" -> ":account:login:domain"
-":account:password:domain" -> ":prefs" ["style"="dotted"]
-":account:password:ui" -> ":account:password:domain" ["style"="dotted"]
-":account:password:ui" -> ":account:password:vm"
-":account:password:vm" -> ":account:login:domain" ["style"="dotted"]
-":account:password:vm" -> ":account:password:domain"
-":app" -> ":account:login:domain" ["style"="dotted"]
-":app" -> ":account:login:ui" ["style"="dotted"]
-":app" -> ":account:password:ui" ["style"="dotted"]
+":account:domain" -> ":prefs" ["style"="dotted"]
+":account:ui" -> ":account:domain" ["style"="dotted"]
+":account:ui" -> ":account:vm"
+":account:vm" -> ":account:domain"
+":account:vm" -> ":prefs"
+":app" -> ":account:domain" ["style"="dotted"]
+":app" -> ":account:ui" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
 ":app" -> ":core:connection" ["style"="dotted"]
@@ -61,7 +51,7 @@ graph ["rank"="same"]
 ":settings:vm" -> ":prefs"
 ":test:android" -> ":prefs"
 ":url:ui" -> ":url:vm"
-":url:vm" -> ":account:login:domain" ["style"="dotted"]
+":url:vm" -> ":account:domain" ["style"="dotted"]
 ":url:vm" -> ":prefs" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
