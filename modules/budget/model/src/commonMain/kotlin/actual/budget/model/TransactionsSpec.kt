@@ -4,11 +4,11 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class TransactionsSpec(
-  val accountView: AccountView,
+  val accountSpec: AccountSpec,
 )
 
 @Immutable
-sealed interface AccountView {
-  data object AllAccounts : AccountView
-  data class Account(val id: AccountId) : AccountView
+sealed interface AccountSpec {
+  data object AllAccounts : AccountSpec
+  data class SpecificAccount(val id: AccountId) : AccountSpec
 }

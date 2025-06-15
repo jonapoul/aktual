@@ -10,9 +10,9 @@ import kotlinx.datetime.LocalDate
 internal interface StateProvider {
   fun isChecked(id: TransactionId): Flow<Boolean>
   fun isExpanded(date: LocalDate): Flow<Boolean>
-}
 
-internal object PreviewStateProvider : StateProvider {
-  override fun isChecked(id: TransactionId): Flow<Boolean> = flowOf()
-  override fun isExpanded(date: LocalDate): Flow<Boolean> = flowOf()
+  object Empty : StateProvider {
+    override fun isChecked(id: TransactionId): Flow<Boolean> = flowOf()
+    override fun isExpanded(date: LocalDate): Flow<Boolean> = flowOf()
+  }
 }

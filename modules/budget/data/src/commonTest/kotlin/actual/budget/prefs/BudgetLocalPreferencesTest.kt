@@ -1,9 +1,16 @@
-package actual.budget.model
+package actual.budget.prefs
 
+import actual.budget.model.BudgetFiles
+import actual.budget.model.BudgetId
+import actual.budget.model.DbMetadata
+import actual.budget.model.Timestamp
+import actual.budget.model.metadata
+import actual.budget.model.writeMetadata
 import actual.test.TestBudgetFiles
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -39,14 +46,15 @@ class BudgetLocalPreferencesTest {
   @Test
   fun `Not modifying metadata does nothing`() = runTest {
     // given
-    val metadata = DbMetadata(TEST_METADATA)
+    val metadata = TEST_METADATA
     files.writeMetadata(metadata)
     val previousWriteTime = fileModificationTime(metadata)
 
     // when
     buildPreferences(metadata)
-    preferences.modify {
-      // no-op
+    preferences.update {
+      // no change
+      metadata
     }
 
     // then
@@ -58,15 +66,17 @@ class BudgetLocalPreferencesTest {
   @Test
   fun `Modifying metadata writes to file`() = runTest {
     // given
-    val metadata = DbMetadata(TEST_METADATA)
+    val metadata = TEST_METADATA
     files.writeMetadata(metadata)
     val previousWriteTime = fileModificationTime(metadata)
 
     // when
     buildPreferences(metadata)
-    preferences.modify {
-      set("some-new-key", 123)
-      set("budgetName", "Hello World")
+    preferences.update { metadata ->
+      metadata + mapOf(
+        "some-new-key" to 123,
+        "budgetName" to "Hello World",
+      )
     }
 
     // then

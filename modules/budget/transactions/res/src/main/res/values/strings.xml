@@ -1,14 +1,16 @@
 <resources>
   <string name="transactions_expand">Expand</string>
   <string name="transactions_collapse">Collapse</string>
-
+  <string name="transactions_empty">No transactions</string>
   <string name="transactions_header_date">Date</string>
   <string name="transactions_header_account">Account</string>
   <string name="transactions_header_payee">Payee</string>
   <string name="transactions_header_notes">Notes</string>
   <string name="transactions_header_category">Category</string>
   <string name="transactions_header_amount">Amount</string>
-
   <string name="transactions_sort_asc">Ascending</string>
   <string name="transactions_sort_desc">Descending</string>
+  <string name="transactions_title_all">All Accounts</string>
+  <string name="transactions_title_loading">Loading…</string>
+  <string name="transactions_title_none">&lt;No title&gt;</string>
 </resources>

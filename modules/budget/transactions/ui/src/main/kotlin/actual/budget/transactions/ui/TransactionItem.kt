@@ -1,7 +1,7 @@
 package actual.budget.transactions.ui
 
+import actual.budget.model.TransactionsFormat
 import actual.budget.transactions.vm.Transaction
-import actual.budget.transactions.vm.TransactionsFormat
 import actual.core.ui.BareIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -32,7 +32,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 internal fun TransactionItem(
   transaction: Transaction,
   format: TransactionsFormat,
-  checkbox: TransactionCheckbox,
+  provider: StateProvider,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -48,14 +49,16 @@ internal fun TransactionItem(
     when (format) {
       TransactionsFormat.List -> TransactionListItem(
         transaction = transaction,
-        checkbox = checkbox,
+        provider = provider,
+        onAction = onAction,
         theme = theme,
         dimens = dimens,
       )
 
       TransactionsFormat.Table -> TransactionTableItem(
         transaction = transaction,
-        checkbox = checkbox,
+        provider = provider,
+        onAction = onAction,
         theme = theme,
         dimens = dimens,
       )
@@ -66,15 +69,16 @@ internal fun TransactionItem(
 @Composable
 private fun RowScope.TransactionListItem(
   transaction: Transaction,
-  checkbox: TransactionCheckbox,
+  provider: StateProvider,
+  onAction: ActionListener,
   theme: Theme,
   dimens: TableSpacings,
 ) {
-  val isChecked by checkbox.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
+  val isChecked by provider.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
     modifier = Modifier.minimumInteractiveComponentSize(),
     checked = isChecked,
-    onCheckedChange = { newValue -> checkbox.onCheckedChange(transaction.id, newValue) },
+    onCheckedChange = { newValue -> onAction(Action.CheckItem(transaction.id, newValue)) },
   )
 
   HorizontalSpacer(dimens.interColumn)
@@ -141,15 +145,16 @@ private fun RowScope.TransactionListItem(
 @Composable
 private fun RowScope.TransactionTableItem(
   transaction: Transaction,
-  checkbox: TransactionCheckbox,
+  provider: StateProvider,
+  onAction: ActionListener,
   theme: Theme,
   dimens: TableSpacings,
 ) {
-  val isChecked by checkbox.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
+  val isChecked by provider.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
     modifier = Modifier.minimumInteractiveComponentSize(),
     checked = isChecked,
-    onCheckedChange = { newValue -> checkbox.onCheckedChange(transaction.id, newValue) },
+    onCheckedChange = { newValue -> onAction(Action.CheckItem(transaction.id, newValue)) },
   )
 
   HorizontalSpacer(dimens.interColumn)
@@ -226,9 +231,10 @@ private fun RowScope.TransactionTableItem(
 @Composable
 private fun PreviewListItem() = PreviewColumn {
   TransactionItem(
-    checkbox = PreviewTransactionCheckbox,
-    format = TransactionsFormat.List,
     transaction = TRANSACTION_1,
+    format = TransactionsFormat.List,
+    provider = StateProvider.Empty,
+    onAction = {},
   )
 }
 
@@ -236,8 +242,9 @@ private fun PreviewListItem() = PreviewColumn {
 @Composable
 private fun PreviewTableItem() = PreviewColumn {
   TransactionItem(
-    checkbox = PreviewTransactionCheckbox,
-    format = TransactionsFormat.Table,
     transaction = TRANSACTION_1,
+    format = TransactionsFormat.Table,
+    provider = StateProvider.Empty,
+    onAction = {},
   )
 }

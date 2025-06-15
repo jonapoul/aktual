@@ -33,6 +33,7 @@ buildConfig {
 
 kotlin {
   commonMainDependencies {
+    api(libs.preferences.core)
     api(projects.modules.budget.model)
     api(projects.modules.core.model)
     implementation(libs.alakazam.db.sqldelight)
