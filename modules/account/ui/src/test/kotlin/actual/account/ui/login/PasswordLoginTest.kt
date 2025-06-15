@@ -1,9 +1,6 @@
-package actual.account.login.ui
+package actual.account.ui.login
 
 import actual.account.model.Password
-import actual.account.ui.login.LoginAction
-import actual.account.ui.login.PasswordLogin
-import actual.account.ui.login.Tags
 import actual.test.assertEditableTextEquals
 import actual.test.runTest
 import actual.test.setThemedContent

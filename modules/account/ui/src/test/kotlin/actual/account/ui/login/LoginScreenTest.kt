@@ -1,14 +1,12 @@
 @file:OptIn(ExperimentalTestApi::class)
 
-package actual.account.login.ui
+package actual.account.ui.login
 
 import actual.account.domain.LoginRequester
 import actual.account.domain.LoginResult
-import actual.account.login.vm.LoginViewModel
 import actual.account.model.LoginToken
 import actual.account.model.Password
-import actual.account.ui.login.LoginNavigator
-import actual.account.ui.login.Tags
+import actual.account.vm.LoginViewModel
 import actual.core.model.ActualVersionsStateHolder
 import actual.prefs.AppGlobalPreferences
 import actual.test.TestBuildConfig
