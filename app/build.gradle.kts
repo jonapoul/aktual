@@ -158,9 +158,8 @@ dependencies {
   implementation(libs.molecule)
   implementation(libs.preferences.android)
   implementation(projects.modules.about.ui)
-  implementation(projects.modules.account.login.domain)
-  implementation(projects.modules.account.login.ui)
-  implementation(projects.modules.account.password.ui)
+  implementation(projects.modules.account.domain)
+  implementation(projects.modules.account.ui)
   implementation(projects.modules.api.actual)
   implementation(projects.modules.budget.di)
   implementation(projects.modules.budget.list.ui)
@@ -172,5 +171,4 @@ dependencies {
   implementation(projects.modules.logging)
   implementation(projects.modules.prefs)
   implementation(projects.modules.settings.ui)
-  implementation(projects.modules.url.ui)
 }
