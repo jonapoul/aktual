@@ -3,8 +3,7 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":core:res","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":about:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":account:login:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":account:password:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":account:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -12,8 +11,6 @@ node ["style"="filled"]
 ":core:res" ["fillcolor"="#00FFFF","color"="black","penwidth"="3","shape"="box"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":test:compose" ["fillcolor"="#FFFF55","shape"="none"]
-":url:ui" ["fillcolor"="#FFFF55","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -21,19 +18,15 @@ graph ["rank"="same"]
 }
 ":about:ui" -> ":core:res" ["style"="dotted"]
 ":about:ui" -> ":core:ui"
-":account:login:ui" -> ":core:res" ["style"="dotted"]
-":account:login:ui" -> ":core:ui"
-":account:password:ui" -> ":core:res" ["style"="dotted"]
-":account:password:ui" -> ":core:ui"
+":account:ui" -> ":core:res" ["style"="dotted"]
+":account:ui" -> ":core:ui"
 ":app" -> ":about:ui" ["style"="dotted"]
-":app" -> ":account:login:ui" ["style"="dotted"]
-":app" -> ":account:password:ui" ["style"="dotted"]
+":app" -> ":account:ui" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
 ":app" -> ":budget:transactions:ui" ["style"="dotted"]
 ":app" -> ":core:res" ["style"="dotted"]
 ":app" -> ":settings:ui" ["style"="dotted"]
-":app" -> ":url:ui" ["style"="dotted"]
 ":budget:list:ui" -> ":core:res" ["style"="dotted"]
 ":budget:list:ui" -> ":core:ui"
 ":budget:sync:ui" -> ":core:ui"
@@ -42,9 +35,6 @@ graph ["rank"="same"]
 ":core:ui" -> ":core:res" ["style"="dotted"]
 ":settings:ui" -> ":core:res" ["style"="dotted"]
 ":settings:ui" -> ":core:ui"
-":test:compose" -> ":core:ui"
-":url:ui" -> ":core:res" ["style"="dotted"]
-":url:ui" -> ":core:ui"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

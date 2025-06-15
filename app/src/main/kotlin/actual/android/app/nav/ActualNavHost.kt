@@ -2,14 +2,14 @@ package actual.android.app.nav
 
 import actual.about.ui.info.InfoScreen
 import actual.about.ui.licenses.LicensesScreen
-import actual.account.login.ui.LoginScreen
 import actual.account.model.LoginToken
-import actual.account.password.ui.ChangePasswordScreen
+import actual.account.ui.login.LoginScreen
+import actual.account.ui.password.ChangePasswordScreen
+import actual.account.ui.url.ServerUrlScreen
 import actual.budget.list.ui.ListBudgetsScreen
 import actual.budget.sync.ui.SyncBudgetScreen
 import actual.budget.transactions.ui.TransactionsScreen
 import actual.settings.ui.SettingsScreen
-import actual.url.ui.ServerUrlScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController

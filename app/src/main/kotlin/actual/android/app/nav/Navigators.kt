@@ -2,15 +2,15 @@ package actual.android.app.nav
 
 import actual.about.ui.info.InfoNavigator
 import actual.about.ui.licenses.LicensesNavigator
-import actual.account.login.ui.LoginNavigator
 import actual.account.model.LoginToken
-import actual.account.password.ui.ChangePasswordNavigator
+import actual.account.ui.login.LoginNavigator
+import actual.account.ui.password.ChangePasswordNavigator
+import actual.account.ui.url.ServerUrlNavigator
 import actual.budget.list.ui.ListBudgetsNavigator
 import actual.budget.model.BudgetId
 import actual.budget.sync.ui.SyncBudgetNavigator
 import actual.budget.transactions.ui.TransactionsNavigator
 import actual.settings.ui.SettingsNavigator
-import actual.url.ui.ServerUrlNavigator
 import androidx.navigation.NavHostController
 
 fun ChangePasswordNavigator(nav: NavHostController): ChangePasswordNavigator = ChangePasswordNavigatorImpl(nav)

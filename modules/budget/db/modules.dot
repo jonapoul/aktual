@@ -11,7 +11,6 @@ node ["style"="filled"]
 ":budget:transactions:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:transactions:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":test:kotlin" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -28,7 +27,6 @@ graph ["rank"="same"]
 ":budget:transactions:ui" -> ":budget:transactions:vm"
 ":budget:transactions:vm" -> ":budget:db" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
-":test:kotlin" -> ":budget:db"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
