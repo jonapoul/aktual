@@ -96,7 +96,7 @@ jobs:
           commit_message: Baseline dependencies
 
   pr-check:
-    needs: [ ktlint, changes ]
+    needs: [ changes ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
