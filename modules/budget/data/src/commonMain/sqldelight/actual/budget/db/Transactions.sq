@@ -133,4 +133,17 @@ SELECT *
 
 -- packages/loot-core/src/server/accounts/app.ts closeAccount()
 getIdsByAccount:
-SELECT id, transfer_id FROM v_transactions WHERE account = ?;
+SELECT id, date FROM v_transactions WHERE account = ?;
+
+getIds:
+SELECT id, date FROM v_transactions;
+
+getById:
+SELECT * FROM v_transactions WHERE id = ?;
+
+getNames:
+SELECT name FROM accounts WHERE id = ? AND name IS NOT NULL
+    UNION ALL
+    SELECT name FROM payees WHERE id = ? AND name IS NOT NULL
+    UNION ALL
+    SELECT name FROM categories WHERE id = ? AND name IS NOT NULL;

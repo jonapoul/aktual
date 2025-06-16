@@ -36,9 +36,10 @@ import my.nanihadesuka.compose.LazyColumnScrollbar
 @Composable
 internal fun Transactions(
   transactions: ImmutableList<DatedTransactions>,
+  observer: TransactionObserver,
   format: TransactionsFormat,
   sorting: TransactionsSorting,
-  provider: StateProvider,
+  source: StateSource,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -52,9 +53,10 @@ internal fun Transactions(
   } else {
     TransactionsFilled(
       transactions = transactions,
+      observer = observer,
       format = format,
       sorting = sorting,
-      provider = provider,
+      source = source,
       onAction = onAction,
       modifier = modifier,
       theme = theme,
@@ -97,9 +99,10 @@ private fun TransactionsEmpty(
 @Composable
 private fun TransactionsFilled(
   transactions: ImmutableList<DatedTransactions>,
+  observer: TransactionObserver,
   format: TransactionsFormat,
   sorting: TransactionsSorting,
-  provider: StateProvider,
+  source: StateSource,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -126,23 +129,24 @@ private fun TransactionsFilled(
         }
       }
 
-      transactions.fastForEach { (date, transactions) ->
+      transactions.fastForEach { (date, ids) ->
         stickyHeader {
           DateHeader(
             modifier = Modifier.fillMaxWidth(),
             date = date,
-            provider = provider,
+            source = source,
             onAction = onAction,
             theme = theme,
           )
         }
 
-        items(transactions) { transaction ->
+        items(ids) { id ->
           TransactionItem(
             modifier = Modifier.fillMaxWidth(),
-            transaction = transaction,
+            id = id,
+            observer = observer,
             format = format,
-            provider = provider,
+            source = source,
             onAction = onAction,
             theme = theme,
           )
@@ -158,13 +162,14 @@ private fun TransactionsFilled(
 @Composable
 private fun PreviewTransactionsList() = PreviewScreen {
   Transactions(
-    provider = StateProvider.Empty,
+    source = StateSource.Empty,
     onAction = {},
     format = TransactionsFormat.List,
     sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
+    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
     transactions = persistentListOf(
-      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1, TRANSACTION_2)),
-      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3)),
+      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1.id, TRANSACTION_2.id)),
+      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3.id)),
     ),
   )
 }
@@ -173,13 +178,14 @@ private fun PreviewTransactionsList() = PreviewScreen {
 @Composable
 private fun PreviewTransactionsTable() = PreviewScreen {
   Transactions(
-    provider = StateProvider.Empty,
+    source = StateSource.Empty,
     onAction = {},
     format = TransactionsFormat.Table,
     sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
+    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
     transactions = persistentListOf(
-      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1, TRANSACTION_2)),
-      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3)),
+      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1.id, TRANSACTION_2.id)),
+      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3.id)),
     ),
   )
 }
@@ -188,10 +194,11 @@ private fun PreviewTransactionsTable() = PreviewScreen {
 @Composable
 private fun PreviewTransactionsTableEmpty() = PreviewScreen {
   Transactions(
-    provider = StateProvider.Empty,
+    source = StateSource.Empty,
     onAction = {},
     format = TransactionsFormat.Table,
     sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
+    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
     transactions = persistentListOf(),
   )
 }

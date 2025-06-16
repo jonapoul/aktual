@@ -36,12 +36,12 @@ import kotlinx.datetime.LocalDate
 @Composable
 internal fun DateHeader(
   date: LocalDate,
-  provider: StateProvider,
+  source: StateSource,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val isExpanded by provider.isExpanded(date).collectAsStateWithLifecycle(initialValue = false)
+  val isExpanded by source.isExpanded(date).collectAsStateWithLifecycle(initialValue = false)
   Column(
     modifier = modifier
       .fillMaxWidth()
@@ -89,7 +89,7 @@ private fun contentDescription(isExpanded: Boolean): String = when (isExpanded) 
 private fun PreviewDateHeader() = PreviewColumn {
   DateHeader(
     date = PREVIEW_DATE,
-    provider = StateProvider.Empty,
+    source = StateSource.Empty,
     onAction = {},
   )
 }

@@ -7,11 +7,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.LocalDate
 
 @Immutable
-internal interface StateProvider {
+internal interface StateSource {
   fun isChecked(id: TransactionId): Flow<Boolean>
   fun isExpanded(date: LocalDate): Flow<Boolean>
 
-  object Empty : StateProvider {
+  object Empty : StateSource {
     override fun isChecked(id: TransactionId): Flow<Boolean> = flowOf()
     override fun isExpanded(date: LocalDate): Flow<Boolean> = flowOf()
   }

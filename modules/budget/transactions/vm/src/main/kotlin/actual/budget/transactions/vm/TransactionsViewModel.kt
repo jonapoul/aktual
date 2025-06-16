@@ -2,6 +2,7 @@ package actual.budget.transactions.vm
 
 import actual.account.model.LoginToken
 import actual.budget.db.dao.AccountsDao
+import actual.budget.db.dao.TransactionsDao
 import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.model.AccountSpec
 import actual.budget.model.BudgetId
@@ -17,6 +18,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,6 +26,8 @@ import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -38,7 +42,8 @@ class TransactionsViewModel @AssistedInject constructor(
 ) : ViewModel() {
   // data sources
   private val component = components.require()
-  private val accountsDao = component.database.let(::AccountsDao)
+  private val accountsDao = AccountsDao(component.database)
+  private val transactionsDao = TransactionsDao(component.database)
   private val prefs = component.localPreferences
 
   // local data
@@ -54,7 +59,10 @@ class TransactionsViewModel @AssistedInject constructor(
     .map { it.transactionFormat.get() }
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsFormat.Default)
 
-  val transactions: StateFlow<ImmutableList<DatedTransactions>> = MutableStateFlow(persistentListOf())
+  val transactions: StateFlow<ImmutableList<DatedTransactions>> = getIdsFlow(inputs)
+    .distinctUntilChanged()
+    .map(::toDatedTransactions)
+    .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
 
   val sorting: StateFlow<TransactionsSorting> = prefs
     .map(::TransactionsSorting)
@@ -94,6 +102,36 @@ class TransactionsViewModel @AssistedInject constructor(
     expandAllGroups.update { expand }
     if (expand) expandedGroups.update { persistentMapOf() }
   }
+
+  fun observe(id: TransactionId): Flow<Transaction> = transactionsDao
+    .observeById(id)
+    .filterNotNull()
+    .distinctUntilChanged()
+    .map { vt ->
+      val names = transactionsDao.getNames(
+        account = requireNotNull(vt.account),
+        payee = requireNotNull(vt.payee),
+        category = requireNotNull(vt.category),
+      )
+      Transaction(vt, names)
+    }
+
+  private fun getIdsFlow(inputs: Inputs): Flow<List<DatedId>> = when (val spec = inputs.spec.accountSpec) {
+    AccountSpec.AllAccounts -> transactionsDao
+      .observeIds()
+      .map { list -> list.map { (id, date) -> DatedId(id, date) } }
+
+    is AccountSpec.SpecificAccount -> transactionsDao
+      .observeIdsByAccount(spec.id)
+      .map { list -> list.map { (id, date) -> DatedId(id, date) } }
+  }
+
+  private fun toDatedTransactions(datedIds: List<DatedId>) = datedIds
+    .groupBy { it.date }
+    .map { (date, datedIds) -> DatedTransactions(date, datedIds.map { it.id }.toImmutableList()) }
+    .toImmutableList()
+
+  private data class DatedId(val id: TransactionId, val date: LocalDate)
 
   data class Inputs(
     val token: LoginToken,

@@ -56,8 +56,8 @@ fun TransactionsScreen(
   val format by viewModel.format.collectAsStateWithLifecycle()
   val sorting by viewModel.sorting.collectAsStateWithLifecycle()
 
-  val provider = remember {
-    object : StateProvider {
+  val source = remember {
+    object : StateSource {
       override fun isChecked(id: TransactionId): Flow<Boolean> = viewModel.isChecked(id)
       override fun isExpanded(date: LocalDate): Flow<Boolean> = viewModel.isExpanded(date)
     }
@@ -65,10 +65,11 @@ fun TransactionsScreen(
 
   TransactionsScaffold(
     transactions = transactions,
+    observer = remember { TransactionObserver(viewModel::observe) },
     loadedAccount = loadedAccount,
     format = format,
     sorting = sorting,
-    provider = provider,
+    source = source,
     onAction = { action ->
       when (action) {
         Action.NavBack -> nav.back()
@@ -91,10 +92,11 @@ private fun hiltViewModel(
 @Composable
 private fun TransactionsScaffold(
   transactions: ImmutableList<DatedTransactions>,
+  observer: TransactionObserver,
   loadedAccount: LoadedAccount,
   format: TransactionsFormat,
   sorting: TransactionsSorting,
-  provider: StateProvider,
+  source: StateSource,
   onAction: ActionListener,
 ) {
   val theme = LocalTheme.current
@@ -107,9 +109,10 @@ private fun TransactionsScaffold(
       Transactions(
         modifier = Modifier.padding(innerPadding),
         transactions = transactions,
+        observer = observer,
         format = format,
         sorting = sorting,
-        provider = provider,
+        source = source,
         onAction = onAction,
         theme = theme,
       )
@@ -181,9 +184,10 @@ private fun TitleBarSpecific() = PreviewColumn {
 private fun EmptyTable() = PreviewScreen {
   TransactionsScaffold(
     loadedAccount = LoadedAccount.AllAccounts,
+    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
     format = TransactionsFormat.Table,
     sorting = TransactionsSorting(SortColumn.Date, SortDirection.Descending),
-    provider = StateProvider.Empty,
+    source = StateSource.Empty,
     transactions = persistentListOf(),
     onAction = {},
   )

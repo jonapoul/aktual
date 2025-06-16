@@ -1,5 +1,6 @@
 package actual.budget.transactions.ui
 
+import actual.budget.model.TransactionId
 import actual.budget.model.TransactionsFormat
 import actual.budget.transactions.vm.Transaction
 import actual.core.ui.BareIconButton
@@ -30,9 +31,25 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 internal fun TransactionItem(
+  id: TransactionId,
+  observer: TransactionObserver,
+  format: TransactionsFormat,
+  source: StateSource,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) {
+  val transaction by observer(id).collectAsStateWithLifecycle(initialValue = null)
+  transaction?.let {
+    TransactionItem(it, format, source, onAction, modifier, theme)
+  }
+}
+
+@Composable
+private fun TransactionItem(
   transaction: Transaction,
   format: TransactionsFormat,
-  provider: StateProvider,
+  source: StateSource,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -49,7 +66,7 @@ internal fun TransactionItem(
     when (format) {
       TransactionsFormat.List -> TransactionListItem(
         transaction = transaction,
-        provider = provider,
+        source = source,
         onAction = onAction,
         theme = theme,
         dimens = dimens,
@@ -57,7 +74,7 @@ internal fun TransactionItem(
 
       TransactionsFormat.Table -> TransactionTableItem(
         transaction = transaction,
-        provider = provider,
+        source = source,
         onAction = onAction,
         theme = theme,
         dimens = dimens,
@@ -69,12 +86,12 @@ internal fun TransactionItem(
 @Composable
 private fun RowScope.TransactionListItem(
   transaction: Transaction,
-  provider: StateProvider,
+  source: StateSource,
   onAction: ActionListener,
   theme: Theme,
   dimens: TableSpacings,
 ) {
-  val isChecked by provider.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
+  val isChecked by source.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
     modifier = Modifier.minimumInteractiveComponentSize(),
     checked = isChecked,
@@ -145,12 +162,12 @@ private fun RowScope.TransactionListItem(
 @Composable
 private fun RowScope.TransactionTableItem(
   transaction: Transaction,
-  provider: StateProvider,
+  source: StateSource,
   onAction: ActionListener,
   theme: Theme,
   dimens: TableSpacings,
 ) {
-  val isChecked by provider.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
+  val isChecked by source.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
     modifier = Modifier.minimumInteractiveComponentSize(),
     checked = isChecked,
@@ -233,7 +250,7 @@ private fun PreviewListItem() = PreviewColumn {
   TransactionItem(
     transaction = TRANSACTION_1,
     format = TransactionsFormat.List,
-    provider = StateProvider.Empty,
+    source = StateSource.Empty,
     onAction = {},
   )
 }
@@ -244,7 +261,7 @@ private fun PreviewTableItem() = PreviewColumn {
   TransactionItem(
     transaction = TRANSACTION_1,
     format = TransactionsFormat.Table,
-    provider = StateProvider.Empty,
+    source = StateSource.Empty,
     onAction = {},
   )
 }
