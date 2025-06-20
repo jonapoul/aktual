@@ -66,7 +66,7 @@ test-androidx-rules = "1.6.1"
 test-androidx-runner = "1.6.2"
 test-junit = "4.13.2"
 test-mockk = "1.14.2"
-test-robolectric = "4.14.1"
+test-robolectric = "4.15"
 test-turbine = "1.2.1"
 
 [libraries]
