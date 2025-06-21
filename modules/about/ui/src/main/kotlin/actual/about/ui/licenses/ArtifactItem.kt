@@ -3,30 +3,37 @@ package actual.about.ui.licenses
 import actual.about.data.ArtifactDetail
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.NormalIconButton
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.core.ui.defaultHazeStyle
 import actual.l10n.Dimens
 import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.OpenInNew
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.hazeEffect
 
 @Composable
 internal fun ArtifactItem(
@@ -34,40 +41,46 @@ internal fun ArtifactItem(
   onLaunchUrl: (url: String) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+  hazeState: HazeState = remember { HazeState() },
+  hazeStyle: HazeStyle = defaultHazeStyle(theme),
 ) {
-  Row(
+  val interactionSource = remember { MutableInteractionSource() }
+  Column(
     modifier = modifier
       .shadow(Dimens.medium)
       .padding(Dimens.small)
-      .background(theme.cardBackground, CardShape)
+      .background(Color.Transparent, CardShape)
+      .hazeEffect(hazeState, hazeStyle)
+      .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
       .padding(Dimens.huge),
-    verticalAlignment = Alignment.Top,
+    verticalArrangement = Arrangement.Top,
   ) {
-    Column(
-      modifier = Modifier.weight(1f),
-    ) {
-      Text(
-        text = artifact.name ?: artifact.artifactId,
-        fontWeight = FontWeight.W700,
-        color = theme.pageTextPositive,
-        fontSize = 15.sp,
-      )
+    Text(
+      text = artifact.name ?: artifact.artifactId,
+      fontWeight = FontWeight.W700,
+      color = theme.pageTextPositive,
+      fontSize = 15.sp,
+    )
 
-      LibraryTableRow(title = Strings.licensesItemGroup, value = artifact.groupId)
-      LibraryTableRow(title = Strings.licensesItemArtifact, value = artifact.artifactId)
-      LibraryTableRow(title = Strings.licensesItemVersion, value = artifact.version)
-      LibraryTableRow(title = Strings.licensesItemLicense, value = artifact.license())
-    }
-
-    val url = artifact.scm?.url
-    if (url != null) {
-      NormalIconButton(
-        imageVector = Icons.AutoMirrored.Filled.OpenInNew,
-        contentDescription = Strings.licensesItemLaunch,
-        onClick = { onLaunchUrl.invoke(url) },
-      )
-    }
+    LibraryTableRow(title = Strings.licensesItemGroup, value = artifact.groupId)
+    LibraryTableRow(title = Strings.licensesItemArtifact, value = artifact.artifactId)
+    LibraryTableRow(title = Strings.licensesItemVersion, value = artifact.version)
+    LibraryTableRow(title = Strings.licensesItemLicense, value = artifact.license())
   }
+}
+
+private fun Modifier.clickableIfNeeded(
+  artifact: ArtifactDetail,
+  onLaunchUrl: (String) -> Unit,
+  interactionSource: MutableInteractionSource,
+): Modifier {
+  val url = artifact.scm?.url ?: return this
+  return clickable(
+    interactionSource = interactionSource,
+    indication = ripple(),
+    enabled = true,
+    onClick = { onLaunchUrl(url) }
+  )
 }
 
 @Stable

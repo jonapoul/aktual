@@ -9,6 +9,8 @@ import actual.core.ui.PrimaryTextButton
 import actual.core.ui.ScreenPreview
 import actual.core.ui.TextField
 import actual.core.ui.Theme
+import actual.core.ui.WavyBackground
+import actual.core.ui.defaultHazeStyle
 import actual.core.ui.keyboardFocusRequester
 import actual.core.ui.scrollbarSettings
 import actual.core.ui.textField
@@ -22,7 +24,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -53,6 +54,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import my.nanihadesuka.compose.LazyColumnScrollbar
@@ -67,26 +70,33 @@ internal fun LicensesScaffold(
   Scaffold(
     topBar = { LicensesTopBar(searchBarState, theme, onAction) },
   ) { innerPadding ->
-    Column(
-      modifier = Modifier
-        .padding(innerPadding)
-        .background(theme.pageBackground),
-    ) {
-      LicensesSearchInput(
-        modifier = Modifier
-          .fillMaxWidth()
-          .wrapContentHeight(),
-        searchState = searchBarState,
-        licensesState = state,
-        onAction = onAction,
-        theme = theme,
+    Box {
+      val hazeState = remember { HazeState() }
+
+      WavyBackground(
+        modifier = Modifier.hazeSource(hazeState),
       )
 
-      LicensesScreenContent(
-        state = state,
-        theme = theme,
-        onAction = onAction,
-      )
+      Column(
+        modifier = Modifier.padding(innerPadding),
+      ) {
+        LicensesSearchInput(
+          modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight(),
+          searchState = searchBarState,
+          licensesState = state,
+          onAction = onAction,
+          theme = theme,
+        )
+
+        LicensesScreenContent(
+          state = state,
+          hazeState = hazeState,
+          theme = theme,
+          onAction = onAction,
+        )
+      }
     }
   }
 }
@@ -104,21 +114,18 @@ private fun LicensesSearchInput(
   LaunchedEffect(isVisible) { if (isVisible) keyboard?.show() else keyboard?.hide() }
 
   AnimatedVisibility(
-    visible = searchState is SearchBarState.Visible,
+    visible = isVisible,
     enter = slideInVertically() + fadeIn(),
     exit = slideOutVertically() + fadeOut(),
   ) {
     val text = (searchState as? SearchBarState.Visible)?.text.orEmpty()
     val colors = theme.textField(
-      focusedContainer = theme.mobileHeaderBackgroundSubdued,
       text = theme.mobileHeaderTextSubdued,
       icon = theme.mobileHeaderTextSubdued,
     )
 
     Column(
-      modifier = modifier
-        .fillMaxWidth()
-        .background(theme.mobileHeaderBackgroundSubdued),
+      modifier = modifier.fillMaxWidth(),
       horizontalAlignment = Alignment.End,
     ) {
       TextField(
@@ -152,6 +159,7 @@ private fun LicensesSearchInput(
 @Composable
 private fun LicensesScreenContent(
   state: LicensesState,
+  hazeState: HazeState,
   onAction: (LicensesAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -159,7 +167,7 @@ private fun LicensesScreenContent(
   when (state) {
     LicensesState.Loading -> LoadingContent(theme, modifier)
     LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
-    is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, onAction, modifier)
+    is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, hazeState, onAction, modifier)
     is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
   }.exhaustive
 }
@@ -212,10 +220,12 @@ private fun NoneFoundContent(
 private fun LoadedContent(
   theme: Theme,
   artifacts: ImmutableList<ArtifactDetail>,
+  hazeState: HazeState,
   onAction: (LicensesAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val listState = rememberLazyListState()
+  val hazeStyle = defaultHazeStyle(theme)
   LazyColumnScrollbar(
     modifier = modifier
       .fillMaxSize()
@@ -229,6 +239,8 @@ private fun LoadedContent(
       items(artifacts) { artifact ->
         ArtifactItem(
           artifact = artifact,
+          hazeState = hazeState,
+          hazeStyle = hazeStyle,
           onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },
           theme = theme,
         )
