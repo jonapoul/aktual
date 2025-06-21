@@ -1,6 +1,5 @@
 package actual.budget.list.ui
 
-import actual.budget.list.res.Strings
 import actual.budget.list.vm.DeletingState
 import actual.budget.model.Budget
 import actual.core.ui.ActualFontFamily
@@ -10,6 +9,7 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.buttonBare
+import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

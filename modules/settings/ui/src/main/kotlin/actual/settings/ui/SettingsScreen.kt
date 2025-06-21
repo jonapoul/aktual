@@ -2,8 +2,6 @@ package actual.settings.ui
 
 import actual.core.model.DarkColorSchemeType
 import actual.core.model.RegularColorSchemeType
-import actual.core.res.CoreDimens
-import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
@@ -11,7 +9,8 @@ import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.scrollbarSettings
 import actual.core.ui.transparentTopAppBarColors
-import actual.settings.res.Strings
+import actual.l10n.Dimens
+import actual.l10n.Strings
 import actual.settings.ui.items.ShowBottomBarPreferenceItem
 import actual.settings.ui.items.ThemePreferenceItem
 import actual.settings.vm.PreferenceValue
@@ -84,7 +83,7 @@ private fun SettingsScaffold(
           IconButton(onClick = { onAction(SettingsAction.NavBack) }) {
             Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = CoreStrings.navBack,
+              contentDescription = Strings.navBack,
             )
           }
         },
@@ -124,7 +123,7 @@ private fun SettingsContent(
   LazyColumnScrollbar(
     modifier = modifier
       .fillMaxSize()
-      .padding(CoreDimens.large),
+      .padding(Dimens.large),
     state = listState,
     settings = theme.scrollbarSettings(),
   ) {

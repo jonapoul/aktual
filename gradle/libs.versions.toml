@@ -76,7 +76,6 @@ plugin-androidCacheFix = { module = "org.gradle.android.cache-fix:org.gradle.and
 plugin-blueprint-core = { module = "dev.jonpoulton.blueprint:core", version.ref = "blueprint" }
 plugin-blueprint-recipes = { module = "dev.jonpoulton.blueprint:recipes", version.ref = "blueprint" }
 plugin-burst = { module = "app.cash.burst:burst-gradle-plugin", version.ref = "burst" }
-plugin-catalog = { module = "dev.jonpoulton.catalog:catalog-gradle-plugin", version.ref = "catalog" }
 plugin-compose = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 plugin-dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
 plugin-dependencySort = { module = "com.squareup.sort-dependencies:com.squareup.sort-dependencies.gradle.plugin", version.ref = "dependencySort" }

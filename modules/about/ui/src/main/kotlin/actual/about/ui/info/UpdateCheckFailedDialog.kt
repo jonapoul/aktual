@@ -1,10 +1,10 @@
 package actual.about.ui.info
 
-import actual.about.res.Strings
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.l10n.Strings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.BasicAlertDialog

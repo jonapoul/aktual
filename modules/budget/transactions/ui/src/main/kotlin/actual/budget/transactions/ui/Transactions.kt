@@ -3,15 +3,15 @@ package actual.budget.transactions.ui
 import actual.budget.model.SortColumn
 import actual.budget.model.SortDirection
 import actual.budget.model.TransactionsFormat
-import actual.budget.transactions.res.Strings
 import actual.budget.transactions.vm.DatedTransactions
 import actual.budget.transactions.vm.TransactionsSorting
-import actual.core.res.CoreDimens
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.scrollbarSettings
+import actual.l10n.Dimens
+import actual.l10n.Strings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -111,7 +111,7 @@ private fun TransactionsFilled(
   LazyColumnScrollbar(
     modifier = modifier
       .fillMaxSize()
-      .padding(horizontal = CoreDimens.large),
+      .padding(horizontal = Dimens.large),
     state = listState,
     settings = theme.scrollbarSettings(),
   ) {

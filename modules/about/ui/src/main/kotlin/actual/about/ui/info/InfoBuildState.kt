@@ -1,12 +1,12 @@
 package actual.about.ui.info
 
-import actual.about.res.Strings
 import actual.about.vm.BuildState
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.defaultHazeStyle
+import actual.l10n.Strings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth

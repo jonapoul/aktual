@@ -1,7 +1,6 @@
 package actual.budget.list.ui
 
 import actual.account.model.LoginToken
-import actual.budget.list.res.Strings
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.budget.model.Budget
@@ -19,6 +18,7 @@ import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
 import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
+import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
 import alakazam.kotlin.core.exhaustive
 import android.content.Intent

@@ -28,6 +28,5 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(libs.lazycolumn.scrollbar)
-  implementation(projects.modules.core.res)
-  implementation(projects.modules.settings.res)
+  implementation(projects.modules.l10n)
 }

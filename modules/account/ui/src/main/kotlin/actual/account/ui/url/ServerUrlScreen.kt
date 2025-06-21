@@ -1,11 +1,9 @@
 package actual.account.ui.url
 
-import actual.account.res.Strings
 import actual.account.vm.NavDestination
 import actual.account.vm.ServerUrlViewModel
 import actual.core.model.ActualVersions
 import actual.core.model.Protocol
-import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.BasicIconButton
 import actual.core.ui.LocalTheme
@@ -17,6 +15,7 @@ import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
 import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
+import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
 import alakazam.kotlin.logging.Logger
 import android.app.Activity
@@ -129,7 +128,7 @@ private fun ServerUrlScaffold(
           IconButton(onClick = { onAction(ServerUrlAction.NavBack) }) {
             Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = CoreStrings.navBack,
+              contentDescription = Strings.navBack,
             )
           }
         },

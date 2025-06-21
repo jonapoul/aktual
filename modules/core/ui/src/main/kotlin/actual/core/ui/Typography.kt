@@ -15,7 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import actual.core.res.R as CoreR
+import actual.core.android.R as CoreR
 
 @Composable
 @ReadOnlyComposable

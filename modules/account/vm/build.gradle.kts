@@ -14,7 +14,6 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.hilt.android)
   implementation(libs.ktor.core)
-  implementation(libs.molecule)
   implementation(libs.preferences.core)
   implementation(projects.modules.api.actual)
   compileOnly(libs.alakazam.kotlin.compose.annotations)

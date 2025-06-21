@@ -1,11 +1,11 @@
 package actual.account.ui.login
 
 import actual.account.domain.LoginResult
-import actual.account.res.Strings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.l10n.Strings
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable

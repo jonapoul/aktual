@@ -10,11 +10,11 @@ import actual.budget.model.SortColumn.Payee
 import actual.budget.model.SortDirection
 import actual.budget.model.SortDirection.Ascending
 import actual.budget.model.SortDirection.Descending
-import actual.budget.transactions.res.Strings
 import actual.budget.transactions.vm.TransactionsSorting
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

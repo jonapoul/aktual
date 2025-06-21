@@ -2,12 +2,12 @@ package actual.budget.transactions.ui
 
 import actual.budget.model.TransactionId
 import actual.budget.model.TransactionsFormat
-import actual.budget.transactions.res.Strings
 import actual.budget.transactions.vm.Transaction
 import actual.core.ui.BareIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column

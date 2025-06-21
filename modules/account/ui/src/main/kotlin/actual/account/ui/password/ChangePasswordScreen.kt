@@ -1,11 +1,9 @@
 package actual.account.ui.password
 
 import actual.account.model.Password
-import actual.account.res.Strings
 import actual.account.vm.ChangePasswordState
 import actual.account.vm.ChangePasswordViewModel
 import actual.core.model.ActualVersions
-import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
@@ -13,6 +11,7 @@ import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
 import actual.core.ui.transparentTopAppBarColors
+import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -101,7 +100,7 @@ private fun ChangePasswordScaffold(
           IconButton(onClick = { onAction(PasswordAction.NavBack) }) {
             Icon(
               imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = CoreStrings.navBack,
+              contentDescription = Strings.navBack,
             )
           }
         },

@@ -3,7 +3,6 @@ package actual.budget.sync.ui
 import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.budget.model.BudgetId
-import actual.budget.sync.res.Strings
 import actual.budget.sync.vm.KeyPasswordState
 import actual.budget.sync.vm.SyncBudgetViewModel
 import actual.budget.sync.vm.SyncStep
@@ -17,6 +16,7 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.transparentTopAppBarColors
+import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState

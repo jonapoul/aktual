@@ -1,7 +1,6 @@
 package actual.budget.sync.ui
 
 import actual.account.model.Password
-import actual.budget.sync.res.Strings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.AlertDialog
 import actual.core.ui.LocalTheme
@@ -9,6 +8,7 @@ import actual.core.ui.PreviewColumn
 import actual.core.ui.TextField
 import actual.core.ui.Theme
 import actual.core.ui.keyboardFocusRequester
+import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column

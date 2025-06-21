@@ -1,6 +1,5 @@
 package actual.budget.list.ui
 
-import actual.budget.list.res.Strings
 import actual.core.icons.ActualIcons
 import actual.core.icons.CloudWarning
 import actual.core.ui.ActualFontFamily
@@ -9,6 +8,7 @@ import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButton
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
+import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

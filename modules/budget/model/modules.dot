@@ -50,8 +50,8 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:di"
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
-":budget:sync:vm" -> ":budget:model" ["style"="dotted"]
-":budget:transactions:ui" -> ":budget:model" ["style"="dotted"]
+":budget:sync:vm" -> ":budget:model"
+":budget:transactions:ui" -> ":budget:model"
 ":budget:transactions:ui" -> ":budget:transactions:vm"
 ":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]

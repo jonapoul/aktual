@@ -1,6 +1,6 @@
 package actual.core.ui
 
-import actual.core.res.CoreStrings
+import actual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -109,7 +109,7 @@ private fun ClearButton(
   ) {
     Icon(
       imageVector = Icons.Default.Clear,
-      contentDescription = CoreStrings.inputClear,
+      contentDescription = Strings.inputClear,
       tint = tint,
     )
   }
