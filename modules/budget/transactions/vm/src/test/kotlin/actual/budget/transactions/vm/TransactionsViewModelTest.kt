@@ -175,7 +175,6 @@ class TransactionsViewModelTest {
     }
   }
 
-  /* Depends on https://github.com/sqldelight/sqldelight/pull/5816 */
 //  @Test
 //  fun `Observing transaction`() = runTest {
 //    // given
