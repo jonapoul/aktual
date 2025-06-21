@@ -1,11 +1,8 @@
 package actual.about.ui.licenses
 
 import actual.about.data.ArtifactDetail
-import actual.about.res.Plurals
-import actual.about.res.Strings
 import actual.about.vm.LicensesState
 import actual.about.vm.SearchBarState
-import actual.core.res.CoreDimens
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.PrimaryTextButton
@@ -15,6 +12,9 @@ import actual.core.ui.Theme
 import actual.core.ui.keyboardFocusRequester
 import actual.core.ui.scrollbarSettings
 import actual.core.ui.textField
+import actual.l10n.Dimens
+import actual.l10n.Plurals
+import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
 import alakazam.kotlin.core.exhaustive
 import androidx.compose.animation.AnimatedVisibility
@@ -140,7 +140,7 @@ private fun LicensesSearchInput(
       Text(
         modifier = Modifier
           .wrapContentWidth()
-          .padding(horizontal = CoreDimens.large),
+          .padding(horizontal = Dimens.large),
         text = Plurals.licensesSearchNumResults(numResults, numResults),
         fontSize = 12.sp,
         color = theme.mobileHeaderTextSubdued,
@@ -197,7 +197,7 @@ private fun NoneFoundContent(
       tint = theme.warningText,
     )
 
-    VerticalSpacer(CoreDimens.large)
+    VerticalSpacer(Dimens.large)
 
     Text(
       text = Strings.licensesNoneFound,
@@ -219,7 +219,7 @@ private fun LoadedContent(
   LazyColumnScrollbar(
     modifier = modifier
       .fillMaxSize()
-      .padding(horizontal = CoreDimens.large),
+      .padding(horizontal = Dimens.large),
     state = listState,
     settings = theme.scrollbarSettings(),
   ) {
@@ -258,7 +258,7 @@ private fun ErrorContent(
       tint = theme.errorText,
     )
 
-    VerticalSpacer(CoreDimens.large)
+    VerticalSpacer(Dimens.large)
 
     Text(
       text = Strings.licensesFailed(errorMessage),
@@ -267,7 +267,7 @@ private fun ErrorContent(
       color = theme.errorText,
     )
 
-    VerticalSpacer(CoreDimens.large)
+    VerticalSpacer(Dimens.large)
 
     PrimaryTextButton(
       text = Strings.licensesFailedRetry,

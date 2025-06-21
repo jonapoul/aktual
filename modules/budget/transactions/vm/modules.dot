@@ -25,7 +25,6 @@ graph ["rank"="same"]
 ":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:model"
-":budget:transactions:vm" -> ":core:model"
 ":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"

@@ -3,10 +3,10 @@ package actual.android.app
 import actual.core.icons.ActualIcons
 import actual.core.icons.CloudCheck
 import actual.core.icons.CloudWarning
-import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -79,8 +79,8 @@ private fun icon(isConnected: Boolean) = when (isConnected) {
 @Stable
 @Composable
 private fun text(isConnected: Boolean) = when (isConnected) {
-  true -> CoreStrings.connectionConnected
-  false -> CoreStrings.connectionDisconnected
+  true -> Strings.connectionConnected
+  false -> Strings.connectionDisconnected
 }
 
 @Stable
@@ -92,7 +92,7 @@ private fun tint(isConnected: Boolean, theme: Theme) = when (isConnected) {
 @Stable
 @Composable
 private fun loadedString(budgetName: String): AnnotatedString = buildAnnotatedString {
-  append(CoreStrings.budgetLoaded)
+  append(Strings.budgetLoaded)
   append("  ")
   withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
     append(budgetName)

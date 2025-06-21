@@ -1,8 +1,8 @@
 package actual.about.ui.info
 
-import actual.about.res.Strings
 import actual.core.ui.NormalTextButton
 import actual.core.ui.PreviewColumn
+import actual.l10n.Strings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width

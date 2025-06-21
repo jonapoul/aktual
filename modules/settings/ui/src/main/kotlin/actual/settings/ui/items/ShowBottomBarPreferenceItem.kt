@@ -4,7 +4,7 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.switch
-import actual.settings.res.Strings
+import actual.l10n.Strings
 import actual.settings.ui.BasicPreferenceItem
 import actual.settings.ui.Clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

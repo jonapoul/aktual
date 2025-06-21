@@ -14,7 +14,6 @@ dependencies {
   implementation(libs.androidx.compose.runtime)
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable)
-  implementation(libs.molecule)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   compileOnly(libs.hilt.core)
 }

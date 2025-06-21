@@ -4,7 +4,6 @@ import actual.diagrams.ModuleType.AndroidApp
 import actual.diagrams.ModuleType.AndroidCompose
 import actual.diagrams.ModuleType.AndroidHilt
 import actual.diagrams.ModuleType.AndroidLibrary
-import actual.diagrams.ModuleType.AndroidResources
 import actual.diagrams.ModuleType.AndroidViewModel
 import actual.diagrams.ModuleType.Jvm
 import actual.diagrams.ModuleType.Multiplatform
@@ -18,7 +17,6 @@ enum class ModuleType {
   AndroidHilt,
   AndroidCompose,
   AndroidLibrary,
-  AndroidResources,
   Multiplatform,
   Jvm,
   Other,
@@ -31,7 +29,6 @@ internal fun moduleType(project: Project): ModuleType = with(project.pluginManag
     hasPlugin("actual.module.hilt") -> AndroidHilt
     hasPlugin("actual.module.compose") -> AndroidCompose
     hasPlugin("actual.module.android") -> AndroidLibrary
-    hasPlugin("actual.module.resources") -> AndroidResources
     hasPlugin("actual.module.multiplatform") -> Multiplatform
     hasPlugin("actual.module.jvm") -> Jvm
     else -> Other
@@ -45,7 +42,6 @@ internal val ModuleType.label: String
     AndroidHilt -> "Hilt"
     AndroidCompose -> "Compose"
     AndroidLibrary -> "Android"
-    AndroidResources -> "Resources"
     Multiplatform -> "Multiplatform"
     Jvm -> "JVM"
     Other -> "Other"
@@ -58,7 +54,6 @@ internal val ModuleType.color: Color
     AndroidHilt -> "#FCB103" // orange
     AndroidCompose -> "#FFFF55" // yellow
     AndroidLibrary -> "#55FF55" // green
-    AndroidResources -> "#00FFFF" // cyan
     Multiplatform -> "#9D8DF1" // indigo
     Jvm -> "#8000FF" // violet
     Other -> "#808080" // grey

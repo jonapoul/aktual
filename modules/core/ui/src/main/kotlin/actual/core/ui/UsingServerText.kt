@@ -1,7 +1,7 @@
 package actual.core.ui
 
 import actual.core.model.ServerUrl
-import actual.core.res.CoreStrings
+import actual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -41,7 +41,7 @@ fun UsingServerText(
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Text(
-      text = CoreStrings.loginUsingServer,
+      text = Strings.loginUsingServer,
       fontSize = fontSize,
       color = theme.pageText,
       textAlign = TextAlign.Center,
@@ -56,7 +56,7 @@ fun UsingServerText(
     )
 
     BareTextButton(
-      text = CoreStrings.loginServerChange,
+      text = Strings.loginServerChange,
       onClick = onClickChange,
     )
   }

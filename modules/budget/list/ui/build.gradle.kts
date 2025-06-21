@@ -32,7 +32,6 @@ dependencies {
   implementation(libs.kotlinx.immutable)
   implementation(libs.lazycolumn.scrollbar)
   implementation(projects.modules.account.model)
-  implementation(projects.modules.budget.list.res)
   implementation(projects.modules.budget.model)
-  implementation(projects.modules.core.res)
+  implementation(projects.modules.l10n)
 }

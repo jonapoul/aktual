@@ -1,10 +1,9 @@
 package actual.about.ui.info
 
-import actual.about.res.Strings
-import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import actual.core.res.R as CoreR
+import actual.core.android.R as CoreR
 
 @Composable
 internal fun InfoHeader(
@@ -40,7 +39,7 @@ internal fun InfoHeader(
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    val appName = CoreStrings.appName
+    val appName = Strings.appName
 
     Box(
       modifier = Modifier.size(50.dp),

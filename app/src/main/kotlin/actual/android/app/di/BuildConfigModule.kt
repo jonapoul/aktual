@@ -1,6 +1,6 @@
 package actual.android.app.di
 
-import actual.core.res.R
+import actual.l10n.R
 import alakazam.kotlin.core.BasicBuildConfig
 import android.content.Context
 import android.os.Build

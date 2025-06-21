@@ -30,6 +30,6 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(libs.lazycolumn.scrollbar)
-  implementation(projects.modules.about.res)
-  implementation(projects.modules.core.res)
+  implementation(projects.modules.core.android)
+  implementation(projects.modules.l10n)
 }

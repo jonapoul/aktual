@@ -1,6 +1,5 @@
 package actual.budget.list.ui
 
-import actual.budget.list.res.Strings
 import actual.budget.model.BudgetState
 import actual.core.icons.ActualIcons
 import actual.core.icons.CloudCheck
@@ -12,6 +11,7 @@ import actual.core.ui.ActualFontFamily
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewActualRow
 import actual.core.ui.Theme
+import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
