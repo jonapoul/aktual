@@ -64,7 +64,7 @@ internal fun InfoHeader(
     ) {
       Text(
         text = appName,
-        fontSize = 30.sp,
+        fontSize = 25.sp,
         fontWeight = FontWeight.W700,
         color = theme.pageText,
       )
@@ -83,5 +83,5 @@ internal fun InfoHeader(
 @Preview
 @Composable
 private fun PreviewHeader() = PreviewColumn {
-  InfoHeader(year = 2024)
+  InfoHeader(year = 2025)
 }

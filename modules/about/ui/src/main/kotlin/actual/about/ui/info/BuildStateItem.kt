@@ -24,6 +24,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
+import dev.chrisbanes.haze.hazeEffect
 
 @Composable
 internal fun BuildStateItem(
@@ -38,7 +40,7 @@ internal fun BuildStateItem(
     modifier = modifier
       .fillMaxWidth()
       .height(ItemHeight)
-      .background(theme.cardBackground, CardShape)
+      .background(Color.Transparent, CardShape)
       .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
       .padding(horizontal = ItemPadding),
     verticalAlignment = Alignment.CenterVertically,

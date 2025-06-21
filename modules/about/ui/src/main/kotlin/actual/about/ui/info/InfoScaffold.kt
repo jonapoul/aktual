@@ -1,11 +1,13 @@
 package actual.about.ui.info
 
 import actual.about.vm.BuildState
+import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
+import actual.core.ui.defaultHazeStyle
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
@@ -15,9 +17,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
@@ -29,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import my.nanihadesuka.compose.ColumnScrollbar
 
@@ -45,9 +48,7 @@ internal fun InfoScaffold(
       val hazeState = remember { HazeState() }
 
       WavyBackground(
-        modifier = Modifier
-          .hazeSource(hazeState)
-          .background(Color.Red),
+        modifier = Modifier.hazeSource(hazeState),
       )
 
       InfoScreenContent(
@@ -74,43 +75,55 @@ private fun InfoScreenContent(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val scrollState = rememberScrollState()
-  ColumnScrollbar(
+  Column(
     modifier = modifier.fillMaxSize(),
-    state = scrollState,
   ) {
-    Column(
-      modifier = Modifier
-        .testTag(Tags.InfoScreenContent)
-        .fillMaxSize()
-        .verticalScroll(scrollState)
-        .padding(15.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
+    val scrollState = rememberScrollState()
+    val hazeStyle = defaultHazeStyle(theme)
+    ColumnScrollbar(
+      modifier = Modifier.weight(1f),
+      state = scrollState,
     ) {
-      InfoHeader(
+      Column(
         modifier = Modifier
-          .wrapContentWidth()
-          .padding(vertical = 5.dp),
-        year = buildState.year,
-        theme = theme,
-      )
+          .testTag(Tags.InfoScreenContent)
+          .fillMaxWidth()
+          .verticalScroll(scrollState)
+          .padding(horizontal = 15.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+      ) {
 
-      InfoBuildState(
-        modifier = Modifier.fillMaxWidth(),
-        buildState = buildState,
-        hazeState = hazeState,
-        theme = theme,
-      )
+        Box(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 6.dp, vertical = 12.dp)
+            .background(Color.Transparent, CardShape)
+            .hazeEffect(hazeState, hazeStyle),
+        ) {
+          InfoHeader(
+            modifier = Modifier.fillMaxWidth(),
+            year = buildState.year,
+            theme = theme,
+          )
+        }
 
-      VerticalSpacer(weight = 1f)
-
-      InfoButtons(
-        modifier = Modifier
-          .wrapContentHeight()
-          .fillMaxWidth(),
-        onAction = onAction,
-      )
+        InfoBuildState(
+          modifier = Modifier.fillMaxWidth(),
+          buildState = buildState,
+          hazeState = hazeState,
+          hazeStyle = hazeStyle,
+          theme = theme,
+        )
+      }
     }
+
+    InfoButtons(
+      modifier = Modifier
+        .wrapContentHeight()
+        .fillMaxWidth()
+        .padding(horizontal = 15.dp),
+      onAction = onAction,
+    )
   }
 }
 
