@@ -9,9 +9,9 @@ import kotlinx.datetime.LocalDate
 data class Transaction(
   val id: TransactionId,
   val date: LocalDate,
-  val account: String,
-  val payee: String,
+  val account: String?,
+  val payee: String?,
   val notes: String?,
-  val category: String,
+  val category: String?,
   val amount: Amount,
 )

@@ -3,12 +3,11 @@
 package actual.budget.di
 
 import actual.budget.db.BudgetDatabase
-import actual.budget.db.dao.PreferencesDao
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
-import actual.budget.model.BudgetLocalPreferences
 import actual.budget.model.BudgetScoped
 import actual.budget.model.DbMetadata
+import actual.budget.prefs.BudgetLocalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import android.content.Context
 import dagger.BindsInstance
@@ -24,9 +23,8 @@ import kotlinx.coroutines.CoroutineScope
 interface BudgetComponent {
   val database: BudgetDatabase
   val localPreferences: BudgetLocalPreferences
-  val syncedPreferences: PreferencesDao
 
-  val budgetId: BudgetId get() = localPreferences.budgetId
+  val budgetId: BudgetId get() = localPreferences.value.cloudFileId
 
   @Component.Builder
   interface Builder {
