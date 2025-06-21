@@ -24,7 +24,7 @@ enum class ModuleType {
   Other,
 }
 
-internal fun ModuleType(project: Project) = with(project.pluginManager) {
+internal fun moduleType(project: Project): ModuleType = with(project.pluginManager) {
   when {
     hasPlugin("com.android.application") -> AndroidApp
     hasPlugin("actual.module.viewmodel") -> AndroidViewModel

@@ -1,6 +1,7 @@
 package actual.diagrams.tasks
 
 import actual.diagrams.ModuleType
+import actual.diagrams.moduleType
 import org.gradle.api.DefaultTask
 import org.gradle.api.Project
 import org.gradle.api.UnknownTaskException
@@ -47,7 +48,7 @@ abstract class DumpModuleTypeTask : DefaultTask() {
 
       target.afterEvaluate {
         task.configure {
-          type.set(ModuleType(target))
+          type.set(moduleType(target))
         }
       }
 
