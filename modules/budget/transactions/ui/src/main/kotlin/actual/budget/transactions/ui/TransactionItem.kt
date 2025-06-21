@@ -1,7 +1,9 @@
 package actual.budget.transactions.ui
 
+import actual.budget.model.TransactionId
+import actual.budget.model.TransactionsFormat
+import actual.budget.transactions.res.Strings
 import actual.budget.transactions.vm.Transaction
-import actual.budget.transactions.vm.TransactionsFormat
 import actual.core.ui.BareIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -20,6 +22,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,9 +33,26 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 internal fun TransactionItem(
+  id: TransactionId,
+  observer: TransactionObserver,
+  format: TransactionsFormat,
+  source: StateSource,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) {
+  val transaction by observer(id).collectAsStateWithLifecycle(initialValue = null)
+  transaction?.let {
+    TransactionItem(it, format, source, onAction, modifier, theme)
+  }
+}
+
+@Composable
+private fun TransactionItem(
   transaction: Transaction,
   format: TransactionsFormat,
-  checkbox: TransactionCheckbox,
+  source: StateSource,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -48,14 +68,16 @@ internal fun TransactionItem(
     when (format) {
       TransactionsFormat.List -> TransactionListItem(
         transaction = transaction,
-        checkbox = checkbox,
+        source = source,
+        onAction = onAction,
         theme = theme,
         dimens = dimens,
       )
 
       TransactionsFormat.Table -> TransactionTableItem(
         transaction = transaction,
-        checkbox = checkbox,
+        source = source,
+        onAction = onAction,
         theme = theme,
         dimens = dimens,
       )
@@ -66,15 +88,16 @@ internal fun TransactionItem(
 @Composable
 private fun RowScope.TransactionListItem(
   transaction: Transaction,
-  checkbox: TransactionCheckbox,
+  source: StateSource,
+  onAction: ActionListener,
   theme: Theme,
   dimens: TableSpacings,
 ) {
-  val isChecked by checkbox.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
+  val isChecked by source.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
     modifier = Modifier.minimumInteractiveComponentSize(),
     checked = isChecked,
-    onCheckedChange = { newValue -> checkbox.onCheckedChange(transaction.id, newValue) },
+    onCheckedChange = { newValue -> onAction(Action.CheckItem(transaction.id, newValue)) },
   )
 
   HorizontalSpacer(dimens.interColumn)
@@ -83,7 +106,7 @@ private fun RowScope.TransactionListItem(
     modifier = Modifier.weight(1f),
   ) {
     Text(
-      text = transaction.account,
+      text = transaction.account.orEmptyString(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
@@ -92,7 +115,7 @@ private fun RowScope.TransactionListItem(
     )
 
     Text(
-      text = transaction.payee,
+      text = transaction.payee.orEmptyString(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
@@ -110,7 +133,7 @@ private fun RowScope.TransactionListItem(
     )
 
     Text(
-      text = transaction.category,
+      text = transaction.category.orEmptyString(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
@@ -141,22 +164,23 @@ private fun RowScope.TransactionListItem(
 @Composable
 private fun RowScope.TransactionTableItem(
   transaction: Transaction,
-  checkbox: TransactionCheckbox,
+  source: StateSource,
+  onAction: ActionListener,
   theme: Theme,
   dimens: TableSpacings,
 ) {
-  val isChecked by checkbox.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
+  val isChecked by source.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
     modifier = Modifier.minimumInteractiveComponentSize(),
     checked = isChecked,
-    onCheckedChange = { newValue -> checkbox.onCheckedChange(transaction.id, newValue) },
+    onCheckedChange = { newValue -> onAction(Action.CheckItem(transaction.id, newValue)) },
   )
 
   HorizontalSpacer(dimens.interColumn)
 
   Text(
     modifier = Modifier.weight(1f),
-    text = transaction.account,
+    text = transaction.account.orEmptyString(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.Start,
@@ -168,7 +192,7 @@ private fun RowScope.TransactionTableItem(
 
   Text(
     modifier = Modifier.weight(1f),
-    text = transaction.payee,
+    text = transaction.payee.orEmptyString(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.Start,
@@ -192,7 +216,7 @@ private fun RowScope.TransactionTableItem(
 
   Text(
     modifier = Modifier.weight(1f),
-    text = transaction.category,
+    text = transaction.category.orEmptyString(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.Start,
@@ -222,13 +246,18 @@ private fun RowScope.TransactionTableItem(
   )
 }
 
+@Composable
+@ReadOnlyComposable
+private fun String?.orEmptyString() = this ?: Strings.transactionsItemEmpty
+
 @Preview
 @Composable
 private fun PreviewListItem() = PreviewColumn {
   TransactionItem(
-    checkbox = PreviewTransactionCheckbox,
-    format = TransactionsFormat.List,
     transaction = TRANSACTION_1,
+    format = TransactionsFormat.List,
+    source = StateSource.Empty,
+    onAction = {},
   )
 }
 
@@ -236,8 +265,9 @@ private fun PreviewListItem() = PreviewColumn {
 @Composable
 private fun PreviewTableItem() = PreviewColumn {
   TransactionItem(
-    checkbox = PreviewTransactionCheckbox,
-    format = TransactionsFormat.Table,
     transaction = TRANSACTION_1,
+    format = TransactionsFormat.Table,
+    source = StateSource.Empty,
+    onAction = {},
   )
 }

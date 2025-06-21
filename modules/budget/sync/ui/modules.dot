@@ -5,7 +5,7 @@ node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
-":budget:db" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:di" ["fillcolor"="#FCB103","shape"="none"]
 ":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -27,9 +27,9 @@ graph ["rank"="same"]
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
-":budget:db" -> ":budget:model"
-":budget:db" -> ":core:model"
-":budget:di" -> ":budget:db"
+":budget:data" -> ":budget:model"
+":budget:data" -> ":core:model"
+":budget:di" -> ":budget:data"
 ":budget:encryption" -> ":account:model"
 ":budget:encryption" -> ":budget:model"
 ":budget:encryption" -> ":core:model"

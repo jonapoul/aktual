@@ -20,7 +20,7 @@ kotlin {
     api(libs.test.ktor)
     api(libs.test.okio)
     api(libs.test.turbine)
-    api(projects.modules.budget.db)
+    api(projects.modules.budget.data)
     implementation(libs.alakazam.db.sqldelight)
     implementation(libs.sqldelight.driver.sqlite)
     implementation(projects.modules.api.actual)

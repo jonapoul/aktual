@@ -77,7 +77,7 @@ class DatabaseImporterTest {
     assertTrue(fileSystem.exists(metaPath), "Meta doesn't exist: $metaPath")
     val contentsJson = fileSystem.source(metaPath).buffer().use { it.readUtf8() }
     val contents = Json.decodeFromString<DbMetadata>(contentsJson)
-    assertEquals(expected = LocalDate(2024, Month.MARCH, 18), actual = contents.lastUploaded)
+    assertEquals(expected = LocalDate(2025, Month.FEBRUARY, 27), actual = contents.lastUploaded)
   }
 
   @Test
@@ -129,7 +129,7 @@ class DatabaseImporterTest {
         counter = 0,
         node = "93836f5283a57c87",
       ),
-      lastUploaded = LocalDate.parse("2024-03-18"),
+      lastUploaded = LocalDate.parse("2025-02-27"),
       resetClock = true,
       userId = "583b50fe-3c55-42ca-9f09-a14ecd38677f",
     )

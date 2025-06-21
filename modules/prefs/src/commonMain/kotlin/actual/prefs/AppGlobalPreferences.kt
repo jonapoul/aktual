@@ -13,7 +13,7 @@ import javax.inject.Inject
 /**
  * Prefs which are kept on this device, but apply across all budgets
  */
-class AppGlobalPreferences @Inject constructor(preferences: Preferences) {
+class AppGlobalPreferences @Inject constructor(private val preferences: Preferences) {
   val loginToken: Preference<LoginToken?> = preferences
     .getNullableObject(key = "token", LoginTokenSerializer, default = null)
 
@@ -31,6 +31,7 @@ class AppGlobalPreferences @Inject constructor(preferences: Preferences) {
   private companion object {
     val RegularColorSchemeSerializer = enumOrdinalSerializer<RegularColorSchemeType>()
     val DarkColorSchemeSerializer = enumOrdinalSerializer<DarkColorSchemeType>()
+
     val LoginTokenSerializer = SimpleNullableStringSerializer { token -> token?.let(::LoginToken) }
     val ServerUrlSerializer = SimpleNullableStringSerializer { url -> url?.let(::ServerUrl) }
   }

@@ -1,18 +1,24 @@
 package actual.budget.transactions.ui
 
 import actual.account.model.LoginToken
-import actual.budget.model.AccountView
+import actual.budget.model.AccountSpec
 import actual.budget.model.BudgetId
+import actual.budget.model.SortColumn
+import actual.budget.model.SortDirection
 import actual.budget.model.TransactionId
+import actual.budget.model.TransactionsFormat
 import actual.budget.model.TransactionsSpec
+import actual.budget.transactions.res.Strings
 import actual.budget.transactions.vm.DatedTransactions
-import actual.budget.transactions.vm.SortBy
-import actual.budget.transactions.vm.TransactionsFormat
+import actual.budget.transactions.vm.LoadedAccount
+import actual.budget.transactions.vm.TransactionsSorting
 import actual.budget.transactions.vm.TransactionsViewModel
 import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
+import actual.core.ui.PreviewColumn
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
+import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Box
@@ -29,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
@@ -41,16 +48,16 @@ fun TransactionsScreen(
   nav: TransactionsNavigator,
   budgetId: BudgetId,
   token: LoginToken,
-  config: TransactionsSpec = TransactionsSpec(AccountView.AllAccounts),
+  config: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
   viewModel: TransactionsViewModel = hiltViewModel(token, budgetId, config),
 ) {
   val transactions by viewModel.transactions.collectAsStateWithLifecycle()
-  val title by viewModel.title.collectAsStateWithLifecycle()
+  val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
   val format by viewModel.format.collectAsStateWithLifecycle()
   val sorting by viewModel.sorting.collectAsStateWithLifecycle()
 
-  val provider = remember {
-    object : StateProvider {
+  val source = remember {
+    object : StateSource {
       override fun isChecked(id: TransactionId): Flow<Boolean> = viewModel.isChecked(id)
       override fun isExpanded(date: LocalDate): Flow<Boolean> = viewModel.isExpanded(date)
     }
@@ -58,15 +65,16 @@ fun TransactionsScreen(
 
   TransactionsScaffold(
     transactions = transactions,
-    title = title,
+    observer = remember { TransactionObserver(viewModel::observe) },
+    loadedAccount = loadedAccount,
     format = format,
     sorting = sorting,
-    provider = provider,
+    source = source,
     onAction = { action ->
       when (action) {
-        TransactionsAction.NavBack -> nav.back()
-        is TransactionsAction.CheckItem -> viewModel.setChecked(action.id, action.isChecked)
-        is TransactionsAction.ExpandGroup -> viewModel.setExpanded(action.group, action.isExpanded)
+        Action.NavBack -> nav.back()
+        is Action.CheckItem -> viewModel.setChecked(action.id, action.isChecked)
+        is Action.ExpandGroup -> viewModel.setExpanded(action.group, action.isExpanded)
       }
     },
   )
@@ -84,44 +92,16 @@ private fun hiltViewModel(
 @Composable
 private fun TransactionsScaffold(
   transactions: ImmutableList<DatedTransactions>,
-  title: String,
+  observer: TransactionObserver,
+  loadedAccount: LoadedAccount,
   format: TransactionsFormat,
-  sorting: SortBy,
-  provider: StateProvider,
-  onAction: (TransactionsAction) -> Unit,
+  sorting: TransactionsSorting,
+  source: StateSource,
+  onAction: ActionListener,
 ) {
-  val checkbox = remember {
-    object : TransactionCheckbox {
-      override fun isChecked(id: TransactionId): Flow<Boolean> = provider.isChecked(id)
-      override fun onCheckedChange(id: TransactionId, isChecked: Boolean) =
-        onAction(TransactionsAction.CheckItem(id, isChecked))
-    }
-  }
-
-  val header = remember {
-    object : TransactionHeader {
-      override fun isExpanded(date: LocalDate): Flow<Boolean> = provider.isExpanded(date)
-      override fun onExpandedChange(date: LocalDate, isExpanded: Boolean) =
-        onAction(TransactionsAction.ExpandGroup(date, isExpanded))
-    }
-  }
-
   val theme = LocalTheme.current
   Scaffold(
-    topBar = {
-      TopAppBar(
-        colors = theme.transparentTopAppBarColors(),
-        navigationIcon = {
-          IconButton(onClick = { onAction(TransactionsAction.NavBack) }) {
-            Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-              contentDescription = CoreStrings.navBack,
-            )
-          }
-        },
-        title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
-      )
-    },
+    topBar = { TransactionsTitleBar(loadedAccount, onAction, theme) },
   ) { innerPadding ->
     Box {
       WavyBackground()
@@ -129,24 +109,85 @@ private fun TransactionsScaffold(
       Transactions(
         modifier = Modifier.padding(innerPadding),
         transactions = transactions,
+        observer = observer,
         format = format,
         sorting = sorting,
-        checkbox = checkbox,
-        header = header,
+        source = source,
+        onAction = onAction,
         theme = theme,
       )
     }
   }
 }
 
+@Composable
+private fun TransactionsTitleBar(
+  loadedAccount: LoadedAccount,
+  onAction: ActionListener,
+  theme: Theme = LocalTheme.current,
+) {
+  val title = when (loadedAccount) {
+    LoadedAccount.AllAccounts -> Strings.transactionsTitleAll
+    LoadedAccount.Loading -> Strings.transactionsTitleLoading
+    is LoadedAccount.SpecificAccount -> loadedAccount.account.name ?: Strings.transactionsTitleNone
+  }
+
+  TopAppBar(
+    colors = theme.transparentTopAppBarColors(),
+    navigationIcon = {
+      IconButton(onClick = { onAction(Action.NavBack) }) {
+        Icon(
+          imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+          contentDescription = CoreStrings.navBack,
+        )
+      }
+    },
+    title = {
+      Text(
+        text = title,
+        maxLines = 1,
+        overflow = Ellipsis,
+      )
+    },
+  )
+}
+
+@Preview
+@Composable
+private fun TitleBarAll() = PreviewColumn {
+  TransactionsTitleBar(
+    loadedAccount = LoadedAccount.AllAccounts,
+    onAction = {},
+  )
+}
+
+@Preview
+@Composable
+private fun TitleBarLoading() = PreviewColumn {
+  TransactionsTitleBar(
+    loadedAccount = LoadedAccount.Loading,
+    onAction = {},
+  )
+}
+
+@Preview
+@Composable
+private fun TitleBarSpecific() = PreviewColumn {
+  TransactionsTitleBar(
+    loadedAccount = LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
+    onAction = {},
+  )
+}
+
 @ScreenPreview
 @Composable
 private fun EmptyTable() = PreviewScreen {
   TransactionsScaffold(
-    title = "All Accounts",
+    loadedAccount = LoadedAccount.AllAccounts,
+    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
     format = TransactionsFormat.Table,
-    sorting = SortBy.Date(ascending = false),
-    provider = PreviewStateProvider,
+    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Descending),
+    source = StateSource.Empty,
     transactions = persistentListOf(),
     onAction = {},
   )

@@ -12,7 +12,7 @@ node ["style"="filled"]
 ":api:builder" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
-":budget:db" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:di" ["fillcolor"="#FCB103","shape"="none"]
 ":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -62,8 +62,8 @@ graph ["rank"="same"]
 ":app" -> ":core:di" ["style"="dotted"]
 ":app" -> ":prefs" ["style"="dotted"]
 ":app" -> ":settings:ui" ["style"="dotted"]
-":budget:db" -> ":core:model"
-":budget:di" -> ":budget:db"
+":budget:data" -> ":core:model"
+":budget:di" -> ":budget:data"
 ":budget:encryption" -> ":core:model"
 ":budget:list:ui" -> ":budget:list:vm"
 ":budget:list:ui" -> ":core:ui"
@@ -79,9 +79,10 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
 ":budget:transactions:ui" -> ":budget:transactions:vm"
 ":budget:transactions:ui" -> ":core:ui"
-":budget:transactions:vm" -> ":budget:db" ["style"="dotted"]
+":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":core:model"
+":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:builder" ["style"="dotted"]
 ":core:connection" -> ":core:model" ["style"="dotted"]

@@ -60,6 +60,7 @@ graph ["rank"="same"]
 ":budget:transactions:ui" -> ":account:model" ["style"="dotted"]
 ":budget:transactions:ui" -> ":budget:transactions:vm"
 ":budget:transactions:vm" -> ":account:model" ["style"="dotted"]
+":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":prefs" ["style"="dotted"]
 ":core:di" -> ":prefs"

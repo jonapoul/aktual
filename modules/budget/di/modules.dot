@@ -3,7 +3,7 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":budget:di","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
-":budget:db" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:di" ["fillcolor"="#FCB103","color"="black","penwidth"="3","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -19,9 +19,9 @@ graph ["rank"="same"]
 ":app" -> ":budget:di" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
 ":app" -> ":budget:transactions:ui" ["style"="dotted"]
-":budget:db" -> ":budget:model"
-":budget:db" -> ":core:model"
-":budget:di" -> ":budget:db"
+":budget:data" -> ":budget:model"
+":budget:data" -> ":core:model"
+":budget:di" -> ":budget:data"
 ":budget:sync:ui" -> ":budget:sync:vm"
 ":budget:sync:vm" -> ":budget:di"
 ":budget:transactions:ui" -> ":budget:transactions:vm"

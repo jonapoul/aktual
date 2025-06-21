@@ -4,7 +4,7 @@ graph ["dpi"="100","label"=":budget:transactions:ui","labelloc"="t","fontsize"="
 node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
-":budget:db" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:di" ["fillcolor"="#FCB103","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:transactions:res" ["fillcolor"="#00FFFF","shape"="none"]
@@ -13,15 +13,16 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 ":budget:transactions:ui"
 }
 ":app" -> ":budget:transactions:ui" ["style"="dotted"]
-":budget:db" -> ":budget:model"
-":budget:db" -> ":core:model"
-":budget:di" -> ":budget:db"
+":budget:data" -> ":budget:model"
+":budget:data" -> ":core:model"
+":budget:di" -> ":budget:data"
 ":budget:transactions:ui" -> ":account:model" ["style"="dotted"]
 ":budget:transactions:ui" -> ":budget:model" ["style"="dotted"]
 ":budget:transactions:ui" -> ":budget:transactions:res" ["style"="dotted"]
@@ -29,12 +30,15 @@ graph ["rank"="same"]
 ":budget:transactions:ui" -> ":core:res" ["style"="dotted"]
 ":budget:transactions:ui" -> ":core:ui"
 ":budget:transactions:vm" -> ":account:model" ["style"="dotted"]
-":budget:transactions:vm" -> ":budget:db" ["style"="dotted"]
+":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:model"
 ":budget:transactions:vm" -> ":core:model"
+":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":core:res" ["style"="dotted"]
+":prefs" -> ":account:model"
+":prefs" -> ":core:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

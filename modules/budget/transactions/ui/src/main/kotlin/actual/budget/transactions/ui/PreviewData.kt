@@ -1,5 +1,7 @@
 package actual.budget.transactions.ui
 
+import actual.budget.db.Accounts
+import actual.budget.model.AccountId
 import actual.budget.model.Amount
 import actual.budget.model.TransactionId
 import actual.budget.transactions.vm.Transaction
@@ -36,4 +38,25 @@ internal val TRANSACTION_3 = Transaction(
   notes = null,
   category = "Salary",
   amount = Amount(1234.56),
+)
+
+internal val PREVIEW_ACCOUNT = Accounts(
+  id = AccountId("abc"),
+  account_id = null,
+  name = "My Account",
+  balance_current = null,
+  balance_available = null,
+  balance_limit = null,
+  mask = null,
+  official_name = null,
+  subtype = null,
+  bank = null,
+  offbudget = null,
+  closed = null,
+  tombstone = null,
+  sort_order = null,
+  type = null,
+  account_sync_source = null,
+  last_sync = null,
+  last_reconciled = null,
 )

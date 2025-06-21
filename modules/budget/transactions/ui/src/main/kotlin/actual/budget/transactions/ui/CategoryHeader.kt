@@ -1,7 +1,17 @@
 package actual.budget.transactions.ui
 
+import actual.budget.model.SortColumn
+import actual.budget.model.SortColumn.Account
+import actual.budget.model.SortColumn.Amount
+import actual.budget.model.SortColumn.Category
+import actual.budget.model.SortColumn.Date
+import actual.budget.model.SortColumn.Notes
+import actual.budget.model.SortColumn.Payee
+import actual.budget.model.SortDirection
+import actual.budget.model.SortDirection.Ascending
+import actual.budget.model.SortDirection.Descending
 import actual.budget.transactions.res.Strings
-import actual.budget.transactions.vm.SortBy
+import actual.budget.transactions.vm.TransactionsSorting
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
@@ -35,8 +45,8 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun CategoryHeader(
-  sorting: SortBy,
-  onSort: (SortBy) -> Unit,
+  sorting: TransactionsSorting,
+  onSort: (TransactionsSorting) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -51,8 +61,8 @@ internal fun CategoryHeader(
     CategoryHeaderText(
       modifier = Modifier.width(LocalMinimumInteractiveComponentSize.current),
       text = Strings.transactionsHeaderDate,
-      sorting = sorting.toColumnSorting<SortBy.Date>(),
-      onSort = { column -> onSort(SortBy.Date(column.toBoolean())) },
+      direction = sorting.toDirection(Date),
+      onSort = { dir -> onSort(TransactionsSorting(Date, dir)) },
       theme = theme,
     )
 
@@ -60,8 +70,8 @@ internal fun CategoryHeader(
     CategoryHeaderText(
       modifier = Modifier.weight(1f),
       text = Strings.transactionsHeaderAccount,
-      sorting = sorting.toColumnSorting<SortBy.Account>(),
-      onSort = { column -> onSort(SortBy.Account(column.toBoolean())) },
+      direction = sorting.toDirection(Account),
+      onSort = { dir -> onSort(TransactionsSorting(Account, dir)) },
       theme = theme,
     )
 
@@ -69,8 +79,8 @@ internal fun CategoryHeader(
     CategoryHeaderText(
       modifier = Modifier.weight(1f),
       text = Strings.transactionsHeaderPayee,
-      sorting = sorting.toColumnSorting<SortBy.Payee>(),
-      onSort = { column -> onSort(SortBy.Payee(column.toBoolean())) },
+      direction = sorting.toDirection(Payee),
+      onSort = { dir -> onSort(TransactionsSorting(Payee, dir)) },
       theme = theme,
     )
 
@@ -78,8 +88,8 @@ internal fun CategoryHeader(
     CategoryHeaderText(
       modifier = Modifier.weight(1f),
       text = Strings.transactionsHeaderNotes,
-      sorting = sorting.toColumnSorting<SortBy.Notes>(),
-      onSort = { column -> onSort(SortBy.Notes(column.toBoolean())) },
+      direction = sorting.toDirection(Notes),
+      onSort = { dir -> onSort(TransactionsSorting(Notes, dir)) },
       theme = theme,
     )
 
@@ -87,8 +97,8 @@ internal fun CategoryHeader(
     CategoryHeaderText(
       modifier = Modifier.weight(1f),
       text = Strings.transactionsHeaderCategory,
-      sorting = sorting.toColumnSorting<SortBy.Category>(),
-      onSort = { column -> onSort(SortBy.Category(column.toBoolean())) },
+      direction = sorting.toDirection(Category),
+      onSort = { dir -> onSort(TransactionsSorting(Category, dir)) },
       theme = theme,
     )
 
@@ -96,8 +106,8 @@ internal fun CategoryHeader(
     CategoryHeaderText(
       modifier = Modifier.weight(1f),
       text = Strings.transactionsHeaderAmount,
-      sorting = sorting.toColumnSorting<SortBy.Amount>(),
-      onSort = { column -> onSort(SortBy.Amount(column.toBoolean())) },
+      direction = sorting.toDirection(Amount),
+      onSort = { dir -> onSort(TransactionsSorting(Amount, dir)) },
       theme = theme,
     )
 
@@ -107,29 +117,14 @@ internal fun CategoryHeader(
 }
 
 @Stable
-private inline fun <reified T : SortBy> SortBy.toColumnSorting() = if (T::class.isInstance(this)) {
-  if (ascending) ColumnSorting.Ascending else ColumnSorting.Descending
-} else {
-  ColumnSorting.None
-}
-
-private enum class ColumnSorting {
-  Ascending,
-  Descending,
-  None,
-}
-
-private fun ColumnSorting.toBoolean() = when (this) {
-  ColumnSorting.Ascending -> true
-  ColumnSorting.Descending -> false
-  ColumnSorting.None -> error("Should never happen!")
-}
+private fun TransactionsSorting.toDirection(target: SortColumn): SortDirection? =
+  if (column == target) direction else null
 
 @Composable
 private fun CategoryHeaderText(
   text: String,
-  sorting: ColumnSorting,
-  onSort: (ColumnSorting) -> Unit,
+  direction: SortDirection?,
+  onSort: (SortDirection) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -139,10 +134,10 @@ private fun CategoryHeaderText(
         indication = ripple(),
         interactionSource = remember { MutableInteractionSource() },
         onClick = {
-          when (sorting) {
-            ColumnSorting.Ascending -> onSort(ColumnSorting.Descending)
-            ColumnSorting.Descending -> onSort(ColumnSorting.Ascending)
-            ColumnSorting.None -> onSort(ColumnSorting.Descending)
+          when (direction) {
+            Ascending -> onSort(Descending)
+            Descending -> onSort(Ascending)
+            null -> onSort(Descending)
           }
         },
       ),
@@ -159,22 +154,22 @@ private fun CategoryHeaderText(
       maxLines = 1,
     )
 
-    when (sorting) {
-      ColumnSorting.Ascending -> Icon(
+    when (direction) {
+      Ascending -> Icon(
         modifier = Modifier.size(20.dp),
         imageVector = Icons.Filled.ArrowDownward,
         contentDescription = Strings.transactionsSortAsc,
         tint = theme.tableHeaderText,
       )
 
-      ColumnSorting.Descending -> Icon(
+      Descending -> Icon(
         modifier = Modifier.size(20.dp),
         imageVector = Icons.Filled.ArrowUpward,
         contentDescription = Strings.transactionsSortDesc,
         tint = theme.tableHeaderText,
       )
 
-      ColumnSorting.None -> Unit
+      null -> Unit
     }
   }
 }
@@ -184,7 +179,7 @@ private fun CategoryHeaderText(
 private fun PreviewSortedByDate() = PreviewColumn {
   CategoryHeader(
     modifier = Modifier.fillMaxWidth(),
-    sorting = SortBy.Date(ascending = false),
+    sorting = TransactionsSorting(column = Date, direction = Descending),
     onSort = {},
   )
 }
@@ -194,7 +189,7 @@ private fun PreviewSortedByDate() = PreviewColumn {
 private fun PreviewSortedByAmount() = PreviewColumn {
   CategoryHeader(
     modifier = Modifier.fillMaxWidth(),
-    sorting = SortBy.Amount(ascending = true),
+    sorting = TransactionsSorting(column = Amount, direction = Ascending),
     onSort = {},
   )
 }
