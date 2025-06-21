@@ -2,6 +2,7 @@ package actual.budget.transactions.ui
 
 import actual.budget.model.TransactionId
 import actual.budget.model.TransactionsFormat
+import actual.budget.transactions.res.Strings
 import actual.budget.transactions.vm.Transaction
 import actual.core.ui.BareIconButton
 import actual.core.ui.LocalTheme
@@ -21,6 +22,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -104,7 +106,7 @@ private fun RowScope.TransactionListItem(
     modifier = Modifier.weight(1f),
   ) {
     Text(
-      text = transaction.account,
+      text = transaction.account.orEmptyString(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
@@ -113,7 +115,7 @@ private fun RowScope.TransactionListItem(
     )
 
     Text(
-      text = transaction.payee,
+      text = transaction.payee.orEmptyString(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
@@ -131,7 +133,7 @@ private fun RowScope.TransactionListItem(
     )
 
     Text(
-      text = transaction.category,
+      text = transaction.category.orEmptyString(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
@@ -178,7 +180,7 @@ private fun RowScope.TransactionTableItem(
 
   Text(
     modifier = Modifier.weight(1f),
-    text = transaction.account,
+    text = transaction.account.orEmptyString(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.Start,
@@ -190,7 +192,7 @@ private fun RowScope.TransactionTableItem(
 
   Text(
     modifier = Modifier.weight(1f),
-    text = transaction.payee,
+    text = transaction.payee.orEmptyString(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.Start,
@@ -214,7 +216,7 @@ private fun RowScope.TransactionTableItem(
 
   Text(
     modifier = Modifier.weight(1f),
-    text = transaction.category,
+    text = transaction.category.orEmptyString(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.Start,
@@ -243,6 +245,10 @@ private fun RowScope.TransactionTableItem(
     onClick = {},
   )
 }
+
+@Composable
+@ReadOnlyComposable
+private fun String?.orEmptyString() = this ?: Strings.transactionsItemEmpty
 
 @Preview
 @Composable
