@@ -3,14 +3,13 @@ package actual.settings.ui.items
 import actual.core.model.ColorSchemeType
 import actual.core.model.DarkColorSchemeType
 import actual.core.model.RegularColorSchemeType
-import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.AlertDialog
 import actual.core.ui.ButtonShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewWithColorScheme
 import actual.core.ui.Theme
-import actual.settings.res.Strings
+import actual.l10n.Strings
 import actual.settings.ui.BasicPreferenceItem
 import actual.settings.ui.NotClickable
 import actual.settings.vm.ThemeConfig
@@ -240,16 +239,16 @@ private fun interface SchemeTypeStrings<T> {
 
 private val DarkSchemeTypeStrings = SchemeTypeStrings<DarkColorSchemeType> { type ->
   when (type) {
-    DarkColorSchemeType.Dark -> CoreStrings.themeDark
-    DarkColorSchemeType.Midnight -> CoreStrings.themeMidnight
+    DarkColorSchemeType.Dark -> Strings.themeDark
+    DarkColorSchemeType.Midnight -> Strings.themeMidnight
   }
 }
 
 private val RegularSchemeTypeStrings = SchemeTypeStrings<RegularColorSchemeType> { type ->
   when (type) {
-    RegularColorSchemeType.System -> CoreStrings.themeSystem
-    RegularColorSchemeType.Light -> CoreStrings.themeLight
-    RegularColorSchemeType.Dark -> CoreStrings.themeDark
+    RegularColorSchemeType.System -> Strings.themeSystem
+    RegularColorSchemeType.Light -> Strings.themeLight
+    RegularColorSchemeType.Dark -> Strings.themeDark
   }
 }
 

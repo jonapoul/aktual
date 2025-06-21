@@ -1,9 +1,9 @@
 package actual.about.ui.licenses
 
-import actual.about.res.Strings
 import actual.about.vm.SearchBarState
 import actual.core.ui.Theme
 import actual.core.ui.topAppBarColors
+import actual.l10n.Strings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search

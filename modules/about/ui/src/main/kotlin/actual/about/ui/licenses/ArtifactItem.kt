@@ -1,13 +1,13 @@
 package actual.about.ui.licenses
 
 import actual.about.data.ArtifactDetail
-import actual.about.res.Strings
-import actual.core.res.CoreDimens
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.NormalIconButton
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.l10n.Dimens
+import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -37,10 +37,10 @@ internal fun ArtifactItem(
 ) {
   Row(
     modifier = modifier
-      .shadow(CoreDimens.medium)
-      .padding(CoreDimens.small)
+      .shadow(Dimens.medium)
+      .padding(Dimens.small)
       .background(theme.cardBackground, CardShape)
-      .padding(CoreDimens.huge),
+      .padding(Dimens.huge),
     verticalAlignment = Alignment.Top,
   ) {
     Column(
@@ -110,7 +110,7 @@ private fun LibraryTableRow(
       fontWeight = FontWeight.Bold,
     )
 
-    HorizontalSpacer(CoreDimens.medium)
+    HorizontalSpacer(Dimens.medium)
 
     Text(
       modifier = Modifier

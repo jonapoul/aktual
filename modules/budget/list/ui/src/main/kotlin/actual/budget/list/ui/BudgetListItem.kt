@@ -1,17 +1,16 @@
 package actual.budget.list.ui
 
-import actual.budget.list.res.Strings
 import actual.budget.model.Budget
 import actual.budget.model.BudgetState
 import actual.core.icons.ActualIcons
 import actual.core.icons.Key
-import actual.core.res.CoreStrings
 import actual.core.ui.ActualFontFamily
 import actual.core.ui.BareIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.RowShape
 import actual.core.ui.Theme
+import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -113,7 +112,7 @@ internal fun BudgetListItem(
 
       BareIconButton(
         imageVector = Icons.Filled.MoreVert,
-        contentDescription = CoreStrings.navBack,
+        contentDescription = Strings.navBack,
         onClick = { showDeleteMenu = true },
       )
 

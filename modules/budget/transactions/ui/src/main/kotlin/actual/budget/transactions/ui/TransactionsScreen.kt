@@ -8,12 +8,10 @@ import actual.budget.model.SortDirection
 import actual.budget.model.TransactionId
 import actual.budget.model.TransactionsFormat
 import actual.budget.model.TransactionsSpec
-import actual.budget.transactions.res.Strings
 import actual.budget.transactions.vm.DatedTransactions
 import actual.budget.transactions.vm.LoadedAccount
 import actual.budget.transactions.vm.TransactionsSorting
 import actual.budget.transactions.vm.TransactionsViewModel
-import actual.core.res.CoreStrings
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.PreviewScreen
@@ -21,6 +19,7 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.transparentTopAppBarColors
+import actual.l10n.Strings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -138,7 +137,7 @@ private fun TransactionsTitleBar(
       IconButton(onClick = { onAction(Action.NavBack) }) {
         Icon(
           imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-          contentDescription = CoreStrings.navBack,
+          contentDescription = Strings.navBack,
         )
       }
     },

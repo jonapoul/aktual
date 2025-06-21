@@ -30,6 +30,5 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(projects.modules.account.domain)
-  implementation(projects.modules.account.res)
-  implementation(projects.modules.core.res)
+  implementation(projects.modules.l10n)
 }

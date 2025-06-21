@@ -30,6 +30,7 @@ class ModuleViewModel : Plugin<Project> {
       "api"(libs.getLibrary("dagger.core"))
       "implementation"(libs.getLibrary("hilt.android"))
       "implementation"(libs.getLibrary("kotlinx.coroutines"))
+      "implementation"(libs.getLibrary("molecule"))
       "testImplementation"(project(":modules:test:android"))
       "testImplementation"(project(":modules:test:kotlin"))
     }

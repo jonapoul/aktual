@@ -1,11 +1,11 @@
 package actual.account.ui.password
 
 import actual.account.model.Password
-import actual.account.res.Strings
 import actual.account.vm.ChangePasswordState
 import actual.core.ui.PreviewColumn
 import actual.core.ui.PrimaryTextButtonWithLoading
 import actual.core.ui.keyboardFocusRequester
+import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

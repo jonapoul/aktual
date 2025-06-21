@@ -24,7 +24,8 @@ dependencies {
   implementation(libs.androidx.compose.ui.unit)
   implementation(libs.androidx.coreKtx)
   implementation(libs.kotlinx.coroutines)
-  implementation(projects.modules.core.res)
+  implementation(projects.modules.core.android)
+  implementation(projects.modules.l10n)
 }
 
 koverExcludes {

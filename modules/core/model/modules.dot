@@ -81,7 +81,6 @@ graph ["rank"="same"]
 ":budget:transactions:ui" -> ":core:ui"
 ":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
-":budget:transactions:vm" -> ":core:model"
 ":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:builder" ["style"="dotted"]

@@ -8,9 +8,10 @@ node ["style"="filled"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:transactions:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":core:android" ["fillcolor"="#55FF55","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:res" ["fillcolor"="#00FFFF","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
+":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
 {
 edge ["dir"="none"]
@@ -28,8 +29,9 @@ graph ["rank"="same"]
 ":budget:list:ui" -> ":core:ui"
 ":budget:sync:ui" -> ":core:ui"
 ":budget:transactions:ui" -> ":core:ui"
+":core:ui" -> ":core:android" ["style"="dotted"]
 ":core:ui" -> ":core:model"
-":core:ui" -> ":core:res" ["style"="dotted"]
+":core:ui" -> ":l10n" ["style"="dotted"]
 ":settings:ui" -> ":core:ui"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
@@ -38,7 +40,7 @@ graph ["label"="Legend","fontsize"="20"]
 <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
 <TR><TD>App</TD><TD BGCOLOR="#FF5555">module-name</TD></TR>
 <TR><TD>Compose</TD><TD BGCOLOR="#FFFF55">module-name</TD></TR>
-<TR><TD>Resources</TD><TD BGCOLOR="#00FFFF">module-name</TD></TR>
+<TR><TD>Android</TD><TD BGCOLOR="#55FF55">module-name</TD></TR>
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
 </TABLE>
 >]

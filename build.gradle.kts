@@ -78,6 +78,7 @@ dependencyAnalysis {
           libs.androidx.compose.ui.tooling,
           libs.androidx.compose.ui.toolingPreview,
           libs.hilt.core,
+          libs.molecule,
           libs.test.androidx.monitor,
         )
       }

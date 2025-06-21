@@ -1,6 +1,6 @@
 package actual.core.ui
 
-import actual.core.res.CoreDimens
+import actual.l10n.Dimens
 import alakazam.android.ui.compose.HorizontalSpacer
 import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.background
@@ -96,7 +96,7 @@ fun DialogContent(
       modifier = Modifier
         .defaultMinSize(minWidth = 300.dp)
         .background(theme.dialogBackground)
-        .padding(CoreDimens.veryLarge),
+        .padding(Dimens.veryLarge),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Top,
     ) {
@@ -116,20 +116,20 @@ fun DialogContent(
 
         title?.let {
           Text(
-            modifier = Modifier.padding(vertical = CoreDimens.large),
+            modifier = Modifier.padding(vertical = Dimens.large),
             text = title,
             color = titleColor,
           )
         }
       }
 
-      VerticalSpacer(CoreDimens.medium)
+      VerticalSpacer(Dimens.medium)
 
       CompositionLocalProvider(LocalContentColor provides theme.pageText) {
         content()
       }
 
-      VerticalSpacer(CoreDimens.medium)
+      VerticalSpacer(Dimens.medium)
 
       buttons?.let {
         CompositionLocalProvider(LocalContentColor provides theme.pageTextPositive) {

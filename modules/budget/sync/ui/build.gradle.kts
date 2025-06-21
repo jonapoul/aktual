@@ -29,5 +29,5 @@ dependencies {
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
   implementation(projects.modules.account.model)
-  implementation(projects.modules.budget.sync.res)
+  implementation(projects.modules.l10n)
 }
