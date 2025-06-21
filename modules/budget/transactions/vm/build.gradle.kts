@@ -17,4 +17,5 @@ dependencies {
   implementation(projects.modules.budget.di)
   implementation(projects.modules.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
+  testImplementation(libs.sqldelight.driver.android)
 }

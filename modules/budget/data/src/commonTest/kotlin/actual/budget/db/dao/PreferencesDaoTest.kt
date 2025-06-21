@@ -4,8 +4,10 @@ import actual.budget.model.AccountId
 import actual.budget.model.SyncedPrefKey
 import actual.test.assertEmitted
 import actual.test.runDatabaseTest
+import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
@@ -66,7 +68,10 @@ internal class PreferencesDaoTest {
   }
 
   private fun runDaoTest(action: suspend PreferencesDao.(TestScope) -> Unit) =
-    runDatabaseTest { scope -> action(PreferencesDao(this), scope) }
+    runDatabaseTest { scope ->
+      val dao = PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
+      action(dao, scope)
+    }
 
   private suspend fun PreferencesDao.assertAllPreferences(vararg expected: Pair<SyncedPrefKey, String?>) =
     assertEquals(actual = getAll(), expected = expected.toMap())

@@ -3,12 +3,18 @@ package actual.budget.transactions.vm
 import actual.account.model.LoginToken
 import actual.budget.db.dao.AccountsDao
 import actual.budget.db.dao.TransactionsDao
+import actual.budget.db.transactions.GetById
 import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.model.AccountSpec
+import actual.budget.model.Amount
 import actual.budget.model.BudgetId
 import actual.budget.model.TransactionId
 import actual.budget.model.TransactionsFormat
 import actual.budget.model.TransactionsSpec
+import actual.budget.transactions.vm.LoadedAccount.AllAccounts
+import actual.budget.transactions.vm.LoadedAccount.Loading
+import actual.budget.transactions.vm.LoadedAccount.SpecificAccount
+import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
@@ -29,6 +35,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -39,15 +46,16 @@ import kotlinx.datetime.LocalDate
 class TransactionsViewModel @AssistedInject constructor(
   @Assisted inputs: Inputs,
   components: BudgetComponentStateHolder,
+  contexts: CoroutineContexts,
 ) : ViewModel() {
   // data sources
   private val component = components.require()
-  private val accountsDao = AccountsDao(component.database)
-  private val transactionsDao = TransactionsDao(component.database)
+  private val accountsDao = AccountsDao(component.database, contexts)
+  private val transactionsDao = TransactionsDao(component.database, contexts)
   private val prefs = component.localPreferences
 
   // local data
-  private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(LoadedAccount.Loading)
+  private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
   private val expandedGroups = MutableStateFlow(persistentMapOf<LocalDate, Boolean>())
   private val expandAllGroups = MutableStateFlow(false)
   private val checkedTransactionIds = MutableStateFlow(persistentMapOf<TransactionId, Boolean>())
@@ -74,10 +82,10 @@ class TransactionsViewModel @AssistedInject constructor(
     }
 
     when (val spec = inputs.spec.accountSpec) {
-      is AccountSpec.AllAccounts -> mutableLoadedAccount.update { LoadedAccount.AllAccounts }
+      is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }
       is AccountSpec.SpecificAccount -> viewModelScope.launch {
         val account = accountsDao[spec.id] ?: error("No account matching $spec")
-        mutableLoadedAccount.update { LoadedAccount.SpecificAccount(account) }
+        mutableLoadedAccount.update { SpecificAccount(account) }
       }
     }
   }
@@ -105,31 +113,39 @@ class TransactionsViewModel @AssistedInject constructor(
 
   fun observe(id: TransactionId): Flow<Transaction> = transactionsDao
     .observeById(id)
+    .onEach { println("observe $id = $it") }
     .filterNotNull()
     .distinctUntilChanged()
-    .map { vt ->
-      val names = transactionsDao.getNames(
-        account = requireNotNull(vt.account),
-        payee = requireNotNull(vt.payee),
-        category = requireNotNull(vt.category),
-      )
-      Transaction(vt, names)
-    }
+    .map(::toTransaction)
 
   private fun getIdsFlow(inputs: Inputs): Flow<List<DatedId>> = when (val spec = inputs.spec.accountSpec) {
-    AccountSpec.AllAccounts -> transactionsDao
-      .observeIds()
-      .map { list -> list.map { (id, date) -> DatedId(id, date) } }
+    AccountSpec.AllAccounts ->
+      transactionsDao
+        .observeIds()
+        .map { list -> list.map { (id, date) -> DatedId(id, date) } }
 
-    is AccountSpec.SpecificAccount -> transactionsDao
-      .observeIdsByAccount(spec.id)
-      .map { list -> list.map { (id, date) -> DatedId(id, date) } }
+    is AccountSpec.SpecificAccount ->
+      transactionsDao
+        .observeIdsByAccount(spec.id)
+        .map { list -> list.map { (id, date) -> DatedId(id, date) } }
   }
 
   private fun toDatedTransactions(datedIds: List<DatedId>) = datedIds
     .groupBy { it.date }
     .map { (date, datedIds) -> DatedTransactions(date, datedIds.map { it.id }.toImmutableList()) }
     .toImmutableList()
+
+  private fun toTransaction(data: GetById): Transaction = with(data) {
+    Transaction(
+      id = id,
+      date = date,
+      account = accountName,
+      payee = payeeName,
+      notes = notes,
+      category = categoryName,
+      amount = Amount(amount),
+    )
+  }
 
   private data class DatedId(val id: TransactionId, val date: LocalDate)
 

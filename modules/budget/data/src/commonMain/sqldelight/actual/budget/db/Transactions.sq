@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS transactions(
   acct TEXT AS AccountId,
   category TEXT AS CategoryId,
   amount INTEGER AS Amount,
-  description TEXT,
+  description TEXT AS PayeeId,
   notes TEXT,
   date INTEGER AS LocalDate,
   financial_id TEXT,
@@ -133,17 +133,22 @@ SELECT *
 
 -- packages/loot-core/src/server/accounts/app.ts closeAccount()
 getIdsByAccount:
-SELECT id, date FROM v_transactions WHERE account = ?;
+SELECT id, date FROM v_transactions WHERE account = ? ORDER BY sort_order;
 
 getIds:
-SELECT id, date FROM v_transactions;
+SELECT id, date FROM v_transactions ORDER BY sort_order;
 
 getById:
-SELECT * FROM v_transactions WHERE id = ?;
-
-getNames:
-SELECT name FROM accounts WHERE id = ? AND name IS NOT NULL
-    UNION ALL
-    SELECT name FROM payees WHERE id = ? AND name IS NOT NULL
-    UNION ALL
-    SELECT name FROM categories WHERE id = ? AND name IS NOT NULL;
+SELECT
+  vt.id,
+  vt.date,
+  a.name AS accountName,
+  p.name AS payeeName,
+  vt.notes,
+  c.name AS categoryName,
+  vt.amount
+  FROM v_transactions AS vt
+  JOIN categories AS c ON vt.category = c.id
+  JOIN accounts AS a ON vt.account = a.id
+  JOIN payees AS p ON vt.payee = p.id
+  WHERE vt.id = ?;

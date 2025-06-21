@@ -143,6 +143,7 @@ internal val TransactionsAdapter = Transactions.Adapter(
   transferred_idAdapter = transactionId,
   parent_idAdapter = transactionId,
   scheduleAdapter = scheduleId,
+  descriptionAdapter = payeeId,
 )
 
 internal val CategoriesAdapter = Categories.Adapter(

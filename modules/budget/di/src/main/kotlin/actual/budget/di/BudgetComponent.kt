@@ -3,7 +3,6 @@
 package actual.budget.di
 
 import actual.budget.db.BudgetDatabase
-import actual.budget.db.dao.PreferencesDao
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetScoped
@@ -24,7 +23,6 @@ import kotlinx.coroutines.CoroutineScope
 interface BudgetComponent {
   val database: BudgetDatabase
   val localPreferences: BudgetLocalPreferences
-  val syncedPreferences: PreferencesDao
 
   val budgetId: BudgetId get() = localPreferences.value.cloudFileId
 

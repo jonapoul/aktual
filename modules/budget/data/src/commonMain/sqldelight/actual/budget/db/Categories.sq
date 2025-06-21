@@ -25,6 +25,14 @@ CREATE VIEW IF NOT EXISTS v_categories AS
     tombstone
   FROM categories;
 
+insert:
+  INSERT INTO categories VALUES ?;
+
+getById:
+  SELECT *
+    FROM categories
+    WHERE id = ?;
+
 isIncome:
   SELECT is_income
     FROM categories
