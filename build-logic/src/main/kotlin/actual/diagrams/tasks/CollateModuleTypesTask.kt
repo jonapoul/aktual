@@ -39,7 +39,10 @@ abstract class CollateModuleTypesTask : DefaultTask() {
       }
 
       gradle.projectsEvaluated {
-        val dumpTasks = rootProject.subprojects.mapNotNull(DumpModuleTypeTask::get)
+        val dumpTasks = rootProject
+          .subprojects
+          .toList()
+          .mapNotNull(DumpModuleTypeTask::get)
         task.configure {
           dependsOn(dumpTasks)
           projectTypeFiles.from(dumpTasks.map { it.get().outputFile })

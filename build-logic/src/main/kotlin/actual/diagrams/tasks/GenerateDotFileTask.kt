@@ -1,6 +1,8 @@
 package actual.diagrams.tasks
 
 import actual.diagrams.ModuleType
+import actual.diagrams.color
+import actual.diagrams.label
 import guru.nidi.graphviz.attribute.Attributes
 import guru.nidi.graphviz.attribute.Color
 import guru.nidi.graphviz.attribute.Font
