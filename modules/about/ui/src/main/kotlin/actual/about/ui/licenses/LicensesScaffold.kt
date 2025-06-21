@@ -4,7 +4,7 @@ import actual.about.data.ArtifactDetail
 import actual.about.vm.LicensesState
 import actual.about.vm.SearchBarState
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
+import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButton
 import actual.core.ui.ScreenPreview
 import actual.core.ui.TextField
@@ -90,7 +90,7 @@ internal fun LicensesScaffold(
           theme = theme,
         )
 
-        LicensesScreenContent(
+        Content(
           state = state,
           hazeState = hazeState,
           theme = theme,
@@ -157,7 +157,7 @@ private fun LicensesSearchInput(
 }
 
 @Composable
-private fun LicensesScreenContent(
+private fun Content(
   state: LicensesState,
   hazeState: HazeState,
   onAction: (LicensesAction) -> Unit,
@@ -244,6 +244,8 @@ private fun LoadedContent(
           onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },
           theme = theme,
         )
+
+        VerticalSpacer(5.dp)
       }
     }
   }
@@ -290,7 +292,7 @@ private fun ErrorContent(
 
 @ScreenPreview
 @Composable
-private fun PreviewLoading() = PreviewColumn {
+private fun PreviewLoading() = PreviewScreen {
   LicensesScaffold(
     state = LicensesState.Loading,
     searchBarState = SearchBarState.Gone,
@@ -300,7 +302,7 @@ private fun PreviewLoading() = PreviewColumn {
 
 @ScreenPreview
 @Composable
-private fun PreviewNoneFound() = PreviewColumn {
+private fun PreviewNoneFound() = PreviewScreen {
   LicensesScaffold(
     state = LicensesState.NoneFound,
     searchBarState = SearchBarState.Gone,
@@ -310,7 +312,7 @@ private fun PreviewNoneFound() = PreviewColumn {
 
 @ScreenPreview
 @Composable
-private fun PreviewLoaded() = PreviewColumn {
+private fun PreviewLoaded() = PreviewScreen {
   LicensesScaffold(
     state = LicensesState.Loaded(
       artifacts = persistentListOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi),
@@ -322,7 +324,7 @@ private fun PreviewLoaded() = PreviewColumn {
 
 @ScreenPreview
 @Composable
-private fun PreviewError() = PreviewColumn {
+private fun PreviewError() = PreviewScreen {
   LicensesScaffold(
     state = LicensesState.Error(errorMessage = "Something broke lol! Here's some more shite to show how it looks"),
     searchBarState = SearchBarState.Gone,

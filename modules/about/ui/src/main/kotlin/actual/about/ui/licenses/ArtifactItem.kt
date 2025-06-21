@@ -62,12 +62,14 @@ internal fun ArtifactItem(
       fontSize = 15.sp,
     )
 
-    LibraryTableRow(title = Strings.licensesItemGroup, value = artifact.groupId)
-    LibraryTableRow(title = Strings.licensesItemArtifact, value = artifact.artifactId)
+    LibraryTableRow(title = Strings.licensesItemArtifact, value = artifact.fullArtifact)
     LibraryTableRow(title = Strings.licensesItemVersion, value = artifact.version)
     LibraryTableRow(title = Strings.licensesItemLicense, value = artifact.license())
   }
 }
+
+@get:Stable
+private val ArtifactDetail.fullArtifact get() = "$groupId:$artifactId"
 
 private fun Modifier.clickableIfNeeded(
   artifact: ArtifactDetail,
@@ -79,7 +81,7 @@ private fun Modifier.clickableIfNeeded(
     interactionSource = interactionSource,
     indication = ripple(),
     enabled = true,
-    onClick = { onLaunchUrl(url) }
+    onClick = { onLaunchUrl(url) },
   )
 }
 

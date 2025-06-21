@@ -8,7 +8,6 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.defaultHazeStyle
-import alakazam.android.ui.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
@@ -92,7 +90,6 @@ private fun InfoScreenContent(
           .padding(horizontal = 15.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
       ) {
-
         Box(
           modifier = Modifier
             .fillMaxWidth()
