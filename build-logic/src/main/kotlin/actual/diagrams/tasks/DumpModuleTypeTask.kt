@@ -47,7 +47,7 @@ abstract class DumpModuleTypeTask : DefaultTask() {
 
       target.afterEvaluate {
         task.configure {
-          type.set(ModuleType.find(target))
+          type.set(ModuleType(target))
         }
       }
 
