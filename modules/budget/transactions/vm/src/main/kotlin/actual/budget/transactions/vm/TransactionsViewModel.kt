@@ -8,6 +8,9 @@ import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.model.AccountSpec
 import actual.budget.model.Amount
 import actual.budget.model.BudgetId
+import actual.budget.model.DbMetadata.Companion.enumDelegate
+import actual.budget.model.SortColumn
+import actual.budget.model.SortDirection
 import actual.budget.model.TransactionId
 import actual.budget.model.TransactionsFormat
 import actual.budget.model.TransactionsSpec
@@ -64,7 +67,7 @@ class TransactionsViewModel @AssistedInject constructor(
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
 
   val format: StateFlow<TransactionsFormat> = prefs
-    .map { it.transactionFormat.get() }
+    .map { meta -> meta[TransactionFormatDelegate] }
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsFormat.Default)
 
   val transactions: StateFlow<ImmutableList<DatedTransactions>> = getIdsFlow(inputs)
@@ -91,7 +94,7 @@ class TransactionsViewModel @AssistedInject constructor(
   }
 
   fun setFormat(format: TransactionsFormat) {
-    prefs.update { it.transactionFormat.set(format) }
+    prefs.update { meta -> meta.set(TransactionFormatDelegate, format) }
   }
 
   fun isChecked(id: TransactionId): Flow<Boolean> = checkedTransactionIds.map { it.getOrDefault(id, false) }
