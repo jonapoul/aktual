@@ -7,8 +7,6 @@ import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.database
 import actual.budget.model.metadata
-import actual.core.model.ActualVersions
-import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
@@ -40,7 +38,6 @@ import kotlin.time.Duration.Companion.milliseconds
 class ListBudgetsViewModel @AssistedInject constructor(
   @Assisted tokenString: String,
   preferences: AppGlobalPreferences,
-  versionsStateHolder: ActualVersionsStateHolder,
   private val budgetListFetcher: BudgetListFetcher,
   private val files: BudgetFiles,
   private val contexts: CoroutineContexts,
@@ -51,7 +48,6 @@ class ListBudgetsViewModel @AssistedInject constructor(
   // TODO: Rework to pass the token in directly when they fix it
   private val token = LoginToken(tokenString)
 
-  val versions: StateFlow<ActualVersions> = versionsStateHolder.asStateFlow()
   val serverUrl: StateFlow<ServerUrl?> = preferences.serverUrl.asStateFlow(viewModelScope)
 
   private val mutableState = MutableStateFlow<ListBudgetsState>(ListBudgetsState.Loading)
