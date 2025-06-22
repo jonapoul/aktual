@@ -59,7 +59,7 @@ jobs:
           sudo mv ktlint /usr/local/bin/
 
       - name: Run ktlint
-        run: ktlint '**/*.kt' '**/*.kts' '!**/build/**' --color
+        run: scripts/ktlintCheck.sh
 
   baseline:
     needs: [ changes ]
