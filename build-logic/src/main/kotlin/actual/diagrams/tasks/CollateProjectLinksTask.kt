@@ -65,11 +65,11 @@ abstract class CollateProjectLinksTask : DefaultTask() {
       }
 
       gradle.projectsEvaluated {
-        val dumpTasks = rootProject
-          .subprojects
-          .toList()
-          .mapNotNull(DumpProjectLinksTask::get)
         task.configure {
+          val dumpTasks = rootProject
+            .subprojects
+            .toList()
+            .mapNotNull(DumpProjectLinksTask::get)
           dependsOn(dumpTasks)
           projectLinkFiles.from(dumpTasks.map { it.get().outputFile })
         }
