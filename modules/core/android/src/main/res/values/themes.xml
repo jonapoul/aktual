@@ -1,10 +1,12 @@
 <resources>
-    <style name="Theme.Actual" parent="Theme.Material3.DayNight.NoActionBar" />
 
-    <style name="Theme.Actual.SplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">#ff8812e1</item>
-        <item name="windowSplashScreenIconBackgroundColor">#ff8812e1</item>
-        <item name="windowSplashScreenAnimatedIcon">@mipmap/splash_icon</item>
-        <item name="postSplashScreenTheme">@style/Theme.Actual</item>
-    </style>
+  <style name="Theme.Actual" parent="Theme.Material3.DayNight.NoActionBar" />
+
+  <style name="Theme.Actual.SplashScreen" parent="Theme.SplashScreen">
+    <item name="windowSplashScreenBackground">#ff8812e1</item>
+    <item name="windowSplashScreenIconBackgroundColor">#ff8812e1</item>
+    <item name="windowSplashScreenAnimatedIcon">@mipmap/splash_icon</item>
+    <item name="postSplashScreenTheme">@style/Theme.Actual</item>
+  </style>
+
 </resources>

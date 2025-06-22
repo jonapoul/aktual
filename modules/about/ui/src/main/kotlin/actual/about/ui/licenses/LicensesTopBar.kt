@@ -2,7 +2,7 @@ package actual.about.ui.licenses
 
 import actual.about.vm.SearchBarState
 import actual.core.ui.Theme
-import actual.core.ui.topAppBarColors
+import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -22,7 +22,7 @@ internal fun LicensesTopBar(
   onAction: (LicensesAction) -> Unit,
 ) {
   TopAppBar(
-    colors = theme.topAppBarColors(),
+    colors = theme.transparentTopAppBarColors(),
     navigationIcon = {
       IconButton(onClick = { onAction(LicensesAction.NavBack) }) {
         Icon(
