@@ -1,5 +1,7 @@
 package actual.android.app
 
+import actual.l10.AndroidLocalization
+import actual.l10.Localization
 import actual.logging.ActualLogging
 import actual.logging.AndroidLogStorage
 import actual.logging.AndroidTreeFactory
@@ -15,7 +17,10 @@ class ActualApplication : Application() {
 
   override fun onCreate() {
     super.onCreate()
+
     ActualLogging.init(AndroidTreeFactory, AndroidLogStorage(this))
+    Localization.set(AndroidLocalization(this))
+
     Logger.i("onCreate")
     Logger.d("buildConfig = $buildConfig")
   }
