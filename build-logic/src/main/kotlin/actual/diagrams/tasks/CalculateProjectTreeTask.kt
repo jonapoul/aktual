@@ -11,6 +11,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity.RELATIVE
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 
 @CacheableTask
@@ -68,16 +69,25 @@ abstract class CalculateProjectTreeTask : DefaultTask() {
   companion object {
     private const val NAME = "calculateProjectTree"
 
-    fun outputFile(target: Project) = target.fileInReportDirectory("project-links-tree.txt")
+    fun get(target: Project) = target.tasks.named<CalculateProjectTreeTask>(NAME)
 
     fun register(target: Project) = with(target) {
-      tasks.register<CalculateProjectTreeTask>(NAME) {
+      val task = tasks.register<CalculateProjectTreeTask>(NAME) {
         group = "reporting"
         thisPath.set(target.path)
         supportUpwardsTraversal.set(boolPropertyProvider("actual.diagram.supportUpwardsTraversal"))
-        outputFile.set(outputFile(target))
-        collatedLinks.set(CollateProjectLinksTask.outputFile(target))
+        outputFile.set(fileInReportDirectory("project-links-tree.txt"))
       }
+
+      gradle.projectsEvaluated {
+        val collateProjectLinks = CollateProjectLinksTask.get(rootProject)
+        task.configure {
+          collatedLinks.set(collateProjectLinks.get().outputFile)
+          dependsOn(collateProjectLinks)
+        }
+      }
+
+      task
     }
   }
 }

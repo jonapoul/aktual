@@ -81,17 +81,26 @@ abstract class GenerateDotFileTask : DefaultTask() {
       val toRemove = providers.gradleProperty("actual.diagram.removeModulePrefix")
       val replacement = providers.gradleProperty("actual.diagram.replacementModulePrefix")
 
-      tasks.register<GenerateDotFileTask>(name) {
+      val task = tasks.register<GenerateDotFileTask>(name) {
         group = "reporting"
         description = "Generates a project dependency graph for $path"
         this.dotFile.set(dotFile)
         this.toRemove.set(toRemove)
         this.replacement.set(replacement)
         this.printOutput.set(printOutput)
-        thisPath.set(target.path)
-        linksFile.set(CalculateProjectTreeTask.outputFile(target))
-        moduleTypesFile.set(CollateModuleTypesTask.outputFile(target))
+        this.thisPath.set(target.path)
       }
+
+      gradle.projectsEvaluated {
+        val collateModuleTypes = CollateModuleTypesTask.get(rootProject)
+        val calculateProjectTree = CalculateProjectTreeTask.get(target)
+        task.configure {
+          linksFile.set(calculateProjectTree.get().outputFile)
+          moduleTypesFile.set(collateModuleTypes.get().outputFile)
+        }
+      }
+
+      task
     }
   }
 }

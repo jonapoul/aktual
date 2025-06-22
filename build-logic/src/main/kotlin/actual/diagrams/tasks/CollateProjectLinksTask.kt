@@ -10,6 +10,7 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity.RELATIVE
 import org.gradle.api.tasks.TaskAction
+import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 
 @CacheableTask
@@ -21,9 +22,7 @@ abstract class CollateProjectLinksTask : DefaultTask() {
   fun execute() {
     val outputFile = outputFile.get().asFile
     val allLinks = mutableSetOf<ProjectLink>()
-    projectLinkFiles
-      .filter { file -> file.exists() }
-      .forEach { file -> allLinks += ProjectLinks.read(file) }
+    projectLinkFiles.forEach { file -> allLinks += ProjectLinks.read(file) }
 
     val filteredLinks = allLinks
       .filterTestModules()
@@ -53,7 +52,7 @@ abstract class CollateProjectLinksTask : DefaultTask() {
       ":test:",
     )
 
-    fun outputFile(target: Project) = target.fileInReportDirectory("project-links-all.txt")
+    fun get(target: Project) = target.tasks.named<CollateProjectLinksTask>(NAME)
 
     fun register(target: Project) = with(target) {
       if (target != rootProject) {
@@ -62,17 +61,17 @@ abstract class CollateProjectLinksTask : DefaultTask() {
 
       val task = tasks.register<CollateProjectLinksTask>(NAME) {
         group = "reporting"
-        outputFile.set(outputFile(target))
+        outputFile.set(fileInReportDirectory("project-links-all.txt"))
       }
 
       gradle.projectsEvaluated {
-        val inputFiles = rootProject
+        val dumpTasks = rootProject
           .subprojects
           .toList()
-          .mapNotNull(DumpProjectLinksTask::outputFile)
-
+          .mapNotNull(DumpProjectLinksTask::get)
         task.configure {
-          projectLinkFiles.from(inputFiles)
+          dependsOn(dumpTasks)
+          projectLinkFiles.from(dumpTasks.map { it.get().outputFile })
         }
       }
 
