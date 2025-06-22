@@ -72,7 +72,7 @@ class AboutScreenTest {
     setThemedContent { InfoScreen(navigator, viewModel) }
 
     // when we scroll the button into view and click the button
-    scrollToAndClick(Tags.ReportButton)
+    onDisplayedNodeWithTag(Tags.ReportButton).performClick()
 
     // then
     runOnIdle {
@@ -86,7 +86,7 @@ class AboutScreenTest {
     setThemedContent { InfoScreen(navigator, viewModel) }
 
     // when we scroll the button into view and click the button
-    scrollToAndClick(Tags.SourceCodeButton)
+    onDisplayedNodeWithTag(Tags.SourceCodeButton).performClick()
 
     // then
     runOnIdle {
@@ -100,7 +100,7 @@ class AboutScreenTest {
     setThemedContent { InfoScreen(navigator, viewModel) }
 
     // when we scroll the button into view and click the button
-    scrollToAndClick(Tags.LicensesButton)
+    onDisplayedNodeWithTag(Tags.LicensesButton).performClick()
 
     // then
     runOnIdle {
@@ -115,7 +115,7 @@ class AboutScreenTest {
     setThemedContent { InfoScreen(navigator, viewModel) }
 
     // when we scroll the button into view and click the button
-    scrollToAndClick(Tags.CheckUpdatesButton)
+    onDisplayedNodeWithTag(Tags.CheckUpdatesButton).performClick()
     waitForIdle()
 
     printTreeToLog(root = onNodeWithTag(Tags.UpdateFoundDialog))
@@ -172,11 +172,6 @@ class AboutScreenTest {
 
   private fun ComposeContentTestRule.scrollTo(tag: String) {
     onDisplayedNodeWithTag(Tags.InfoScreenContent).performScrollToNode(hasTestTag(tag))
-  }
-
-  private fun ComposeContentTestRule.scrollToAndClick(tag: String) {
-    scrollTo(tag)
-    onDisplayedNodeWithTag(tag).performClick()
   }
 
   private companion object {

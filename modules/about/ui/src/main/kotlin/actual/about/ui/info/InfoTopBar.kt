@@ -1,7 +1,7 @@
 package actual.about.ui.info
 
 import actual.core.ui.Theme
-import actual.core.ui.topAppBarColors
+import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -18,7 +18,7 @@ internal fun InfoTopBar(
   onAction: (InfoAction) -> Unit,
 ) {
   TopAppBar(
-    colors = theme.topAppBarColors(),
+    colors = theme.transparentTopAppBarColors(),
     navigationIcon = {
       IconButton(onClick = { onAction(InfoAction.NavBack) }) {
         Icon(
