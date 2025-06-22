@@ -10,7 +10,6 @@ import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity.RELATIVE
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 
 @CacheableTask
@@ -22,6 +21,7 @@ abstract class CollateModuleTypesTask : DefaultTask() {
   fun execute() {
     val outputFile = outputFile.get().asFile
     val modulesWithType = projectTypeFiles
+      .filter { file -> file.exists() }
       .map { file -> TypedModule(file.readText()) }
       .toSortedSet()
     TypedModules.write(modulesWithType, outputFile)
@@ -30,22 +30,22 @@ abstract class CollateModuleTypesTask : DefaultTask() {
   companion object {
     private const val NAME = "collateModuleTypes"
 
-    fun get(target: Project) = target.tasks.named<CollateModuleTypesTask>(NAME)
+    fun outputFile(target: Project) = target.fileInReportDirectory("project-types-all.txt")
 
     fun register(target: Project) = with(target) {
       val task = tasks.register<CollateModuleTypesTask>(NAME) {
         group = "reporting"
-        outputFile.set(fileInReportDirectory("project-types-all.txt"))
+        outputFile.set(outputFile(target))
       }
 
       gradle.projectsEvaluated {
-        val dumpTasks = rootProject
+        val moduleTypeFiles = rootProject
           .subprojects
           .toList()
-          .mapNotNull(DumpModuleTypeTask::get)
+          .map(DumpModuleTypeTask::outputFile)
+
         task.configure {
-          dependsOn(dumpTasks)
-          projectTypeFiles.from(dumpTasks.map { it.get().outputFile })
+          projectTypeFiles.from(moduleTypeFiles)
         }
       }
 
