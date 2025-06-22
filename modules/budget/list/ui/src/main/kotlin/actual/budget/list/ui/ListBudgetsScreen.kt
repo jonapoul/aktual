@@ -4,8 +4,6 @@ import actual.account.model.LoginToken
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.budget.model.Budget
-import actual.core.icons.ActualIcons
-import actual.core.icons.Refresh
 import actual.core.ui.BasicIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
@@ -17,6 +15,7 @@ import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -33,6 +32,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -142,7 +142,7 @@ private fun ListBudgetsScaffold(
         colors = theme.transparentTopAppBarColors(),
         title = { ScaffoldTitle(theme) },
         scrollBehavior = scrollBehavior,
-        actions = { TopBarActions(state, onAction) },
+        actions = { TopBarActions(onAction) },
       )
     },
   ) { innerPadding ->
@@ -161,20 +161,9 @@ private fun ListBudgetsScaffold(
 
 @Composable
 private inline fun TopBarActions(
-  state: ListBudgetsState,
   crossinline onAction: (ListBudgetsAction) -> Unit,
 ) {
   Row {
-    if (state is ListBudgetsState.Success) {
-      BasicIconButton(
-        modifier = Modifier.padding(horizontal = 5.dp),
-        onClick = { onAction(ListBudgetsAction.Reload) },
-        imageVector = ActualIcons.Refresh,
-        contentDescription = Strings.budgetFailureRetry,
-        colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
-      )
-    }
-
     BasicIconButton(
       modifier = Modifier.padding(horizontal = 5.dp),
       onClick = { onAction(ListBudgetsAction.OpenSettings) },
@@ -246,45 +235,56 @@ private fun Content(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  Box(
+  PullToRefreshBox(
     modifier = modifier
       .fillMaxSize()
       .padding(16.dp),
     contentAlignment = Alignment.Center,
+    onRefresh = { onAction(ListBudgetsAction.Reload) },
+    isRefreshing = state is ListBudgetsState.Loading,
   ) {
-    when (state) {
-      is ListBudgetsState.Loading -> {
-        ContentLoading(
+    StateContent(state, onAction, theme)
+  }
+}
+
+@Composable
+private fun BoxScope.StateContent(
+  state: ListBudgetsState,
+  onAction: (ListBudgetsAction) -> Unit,
+  theme: Theme = LocalTheme.current,
+) {
+  when (state) {
+    is ListBudgetsState.Loading -> {
+      ContentLoading(
+        modifier = Modifier.fillMaxSize(),
+        theme = theme,
+      )
+    }
+
+    is ListBudgetsState.Failure -> {
+      ContentFailure(
+        modifier = Modifier.fillMaxSize(),
+        reason = state.reason,
+        onClickRetry = { onAction(ListBudgetsAction.Reload) },
+        theme = theme,
+      )
+    }
+
+    is ListBudgetsState.Success -> {
+      if (state.budgets.isEmpty()) {
+        ContentEmpty(
           modifier = Modifier.fillMaxSize(),
           theme = theme,
+          onCreateBudgetInBrowser = { onAction(ListBudgetsAction.OpenInBrowser) },
         )
-      }
-
-      is ListBudgetsState.Failure -> {
-        ContentFailure(
+      } else {
+        ContentSuccess(
           modifier = Modifier.fillMaxSize(),
-          reason = state.reason,
-          onClickRetry = { onAction(ListBudgetsAction.Reload) },
+          budgets = state.budgets,
           theme = theme,
+          onClickOpen = { budget -> onAction(ListBudgetsAction.Open(budget)) },
+          onClickDelete = { budget -> onAction(ListBudgetsAction.Delete(budget)) },
         )
-      }
-
-      is ListBudgetsState.Success -> {
-        if (state.budgets.isEmpty()) {
-          ContentEmpty(
-            modifier = Modifier.fillMaxSize(),
-            theme = theme,
-            onCreateBudgetInBrowser = { onAction(ListBudgetsAction.OpenInBrowser) },
-          )
-        } else {
-          ContentSuccess(
-            modifier = Modifier.fillMaxSize(),
-            budgets = state.budgets,
-            theme = theme,
-            onClickOpen = { budget -> onAction(ListBudgetsAction.Open(budget)) },
-            onClickDelete = { budget -> onAction(ListBudgetsAction.Delete(budget)) },
-          )
-        }
       }
     }
   }
