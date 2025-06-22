@@ -16,6 +16,6 @@ data class TransactionsSorting(
 }
 
 fun TransactionsSorting(metadata: DbMetadata) = TransactionsSorting(
-  column = metadata.sortColumn.get(),
-  direction = metadata.sortDirection.get(),
+  column = metadata[SortColumnDelegate],
+  direction = metadata[SortDirectionDelegate],
 )

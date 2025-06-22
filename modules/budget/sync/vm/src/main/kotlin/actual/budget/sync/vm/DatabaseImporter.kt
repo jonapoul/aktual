@@ -87,15 +87,14 @@ class DatabaseImporter @Inject constructor(
     }
 
     // Update the metadata. The stored file on the server might be out-of-date with a few keys
-    with(meta) {
-      cloudFileId = userFile.fileId
-      groupId = userFile.groupId
-      lastUploaded = clock.todayIn(timeZones.current())
-      encryptKeyId = userFile.encryptMeta?.keyId?.value
-    }
+    val newMeta = meta
+      .set(DbMetadata.CloudFileId, userFile.fileId)
+      .set(DbMetadata.GroupId, userFile.groupId)
+      .set(DbMetadata.LastUploaded, clock.todayIn(timeZones.current()))
+      .set(DbMetadata.EncryptKeyId, userFile.encryptMeta?.keyId?.value)
 
-    budgetFiles.writeMetadata(meta)
-    return ImportResult.Success(meta)
+    budgetFiles.writeMetadata(newMeta)
+    return ImportResult.Success(newMeta)
   }
 
   private fun loadIntoDbPath(zip: ZipInputStream, id: BudgetId): Path {

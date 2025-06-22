@@ -1,6 +1,5 @@
 package actual.budget.model
 
-import actual.budget.model.DbMetadata.Keys
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
@@ -21,28 +20,16 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
-import kotlin.reflect.KProperty
 
 @Immutable
 @Serializable(DbMetadataSerializer::class)
 data class DbMetadata(
   val data: PersistentMap<String, Any?> = persistentMapOf(),
 ) : Map<String, Any?> by data {
-  var budgetName by stringDelegate(Keys.BudgetName)
-  var cloudFileId by typedDelegate(Keys.CloudFileId, ::BudgetId)
-  var groupId by stringDelegate(Keys.GroupId)
-  var id by stringDelegate(Keys.Id)
-  var lastScheduleRun by typedDelegate(Keys.LastScheduleRun, LocalDate::parse)
-  var lastSyncedTimestamp by typedDelegate(Keys.LastSyncedTimestamp, Timestamp::parse)
-  var lastUploaded by typedDelegate(Keys.LastUploaded, LocalDate::parse)
-  var resetClock by boolDelegate(Keys.ResetClock)
-  var userId by stringDelegate(Keys.UserId)
-  var encryptKeyId by primitiveDelegate<String?>(Keys.EncryptKeyId, default = null)
-
-  operator fun plus(other: Map<String, Any?>): DbMetadata = DbMetadata(data.putAll(other))
-
+  operator fun <T> get(delegate: Delegate<T>): T = delegate.get(this)
   operator fun set(key: String, value: Any?): DbMetadata = DbMetadata(data.put(key, value))
-
+  operator fun <T> set(delegate: Delegate<T>, value: T): DbMetadata = delegate.set(this, value)
+  operator fun plus(other: Map<String, Any?>): DbMetadata = DbMetadata(data.putAll(other))
   operator fun minus(key: String): DbMetadata = DbMetadata(data.remove(key))
 
   operator fun minus(keys: Collection<String>): DbMetadata {
@@ -51,55 +38,56 @@ data class DbMetadata(
     return DbMetadata(data.toPersistentMap())
   }
 
-  val sortColumn = enumDelegate("sortColumn", SortColumn.Default)
-  val sortDirection = enumDelegate("sortDirection", SortDirection.Default)
-  val transactionFormat = enumDelegate("transactionFormat", TransactionsFormat.Default)
+  val cloudFileId: BudgetId get() = get(CloudFileId)
 
   interface Delegate<T> {
-    fun get(): T
-    fun set(value: T): DbMetadata
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): T = get()
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) = set(value)
+    val key: String
+    fun get(meta: DbMetadata): T
+    fun set(meta: DbMetadata, value: T): DbMetadata
   }
 
-  object Keys {
-    const val BudgetName = "budgetName"
-    const val CloudFileId = "cloudFileId"
-    const val GroupId = "groupId"
-    const val Id = "id"
-    const val LastScheduleRun = "lastScheduleRun"
-    const val LastSyncedTimestamp = "lastSyncedTimestamp"
-    const val LastUploaded = "lastUploaded"
-    const val ResetClock = "resetClock"
-    const val UserId = "userId"
-    const val EncryptKeyId = "encryptKeyId"
-  }
+  companion object {
+    val BudgetName = stringDelegate(Keys.BudgetName)
+    val CloudFileId = typedDelegate(Keys.CloudFileId, ::BudgetId)
+    val GroupId = stringDelegate(Keys.GroupId)
+    val Id = stringDelegate(Keys.Id)
+    val LastScheduleRun = typedDelegate(Keys.LastScheduleRun, LocalDate::parse)
+    val LastSyncedTimestamp = typedDelegate(Keys.LastSyncedTimestamp, Timestamp::parse)
+    val LastUploaded = typedDelegate(Keys.LastUploaded, LocalDate::parse)
+    val ResetClock = boolDelegate(Keys.ResetClock)
+    val UserId = stringDelegate(Keys.UserId)
+    val EncryptKeyId = primitiveDelegate<String?>(Keys.EncryptKeyId, default = null)
 
-  private inline fun <reified E : Enum<E>> enumDelegate(key: String, default: E) = object : Delegate<E> {
-    override fun set(value: E) = set(key, value.ordinal)
-    override fun get(): E = enumValues<E>()[getOrDefault(key, default.ordinal) as Int]
-  }
+    inline fun <reified E : Enum<E>> enumDelegate(key: String, default: E) = object : Delegate<E> {
+      override val key = key
+      override fun set(meta: DbMetadata, value: E) = meta.set(key, value.ordinal)
+      override fun get(meta: DbMetadata): E = enumValues<E>()[meta.getOrDefault(key, default.ordinal) as Int]
+    }
 
-  private inline fun <reified T> primitiveDelegate(key: String, default: T) = object : Delegate<T> {
-    override fun set(value: T) = set(key, value)
-    override fun get(): T = getOrDefault(key, default) as T
-  }
+    private inline fun <reified T> primitiveDelegate(key: String, default: T) = object : Delegate<T> {
+      override val key = key
+      override fun set(meta: DbMetadata, value: T) = meta.set(key, value)
+      override fun get(meta: DbMetadata): T = meta.getOrDefault(key, default) as T
+    }
 
-  private fun stringDelegate(key: String) = primitiveDelegate<String>(key)
-  private fun boolDelegate(key: String) = primitiveDelegate<Boolean>(key)
+    private fun stringDelegate(key: String) = primitiveDelegate<String>(key)
+    private fun boolDelegate(key: String) = primitiveDelegate<Boolean>(key)
 
-  private inline fun <reified T> primitiveDelegate(key: String) = object : Delegate<T> {
-    override fun set(value: T) = set(key, value)
-    override fun get(): T = requireNotNull(get(key)) as T
-  }
+    private inline fun <reified T> primitiveDelegate(key: String) = object : Delegate<T> {
+      override val key = key
+      override fun set(meta: DbMetadata, value: T) = meta.set(key, value)
+      override fun get(meta: DbMetadata): T = requireNotNull(meta[key]) as T
+    }
 
-  private inline fun <reified T> typedDelegate(
-    key: String,
-    crossinline decode: (String) -> T,
-    crossinline encode: (T) -> String = { it.toString() },
-  ) = object : Delegate<T> {
-    override fun set(value: T) = set(key, encode(value))
-    override fun get(): T = decode(requireNotNull(get(key)) as String)
+    private inline fun <reified T> typedDelegate(
+      key: String,
+      crossinline decode: (String) -> T,
+      crossinline encode: (T) -> String = { it.toString() },
+    ) = object : Delegate<T> {
+      override val key = key
+      override fun set(meta: DbMetadata, value: T) = meta.set(key, encode(value))
+      override fun get(meta: DbMetadata): T = decode(requireNotNull(meta[key]) as String)
+    }
   }
 }
 
@@ -168,4 +156,17 @@ private object DbMetadataSerializer : KSerializer<DbMetadata> {
         ?: error("Can't parse primitive content '$content'")
     }
   }
+}
+
+private object Keys {
+  const val BudgetName = "budgetName"
+  const val CloudFileId = "cloudFileId"
+  const val GroupId = "groupId"
+  const val Id = "id"
+  const val LastScheduleRun = "lastScheduleRun"
+  const val LastSyncedTimestamp = "lastSyncedTimestamp"
+  const val LastUploaded = "lastUploaded"
+  const val ResetClock = "resetClock"
+  const val UserId = "userId"
+  const val EncryptKeyId = "encryptKeyId"
 }

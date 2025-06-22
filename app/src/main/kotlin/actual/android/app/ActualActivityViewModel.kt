@@ -6,6 +6,7 @@ import actual.account.model.LoginToken
 import actual.api.client.ActualApisStateHolder
 import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.model.BudgetFiles
+import actual.budget.model.DbMetadata
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
 import actual.core.model.DarkColorSchemeType
@@ -53,7 +54,7 @@ internal class ActualActivityViewModel @Inject constructor(
   private val budgetName: Flow<String?> = budgetComponents.flatMapLatest { component ->
     component
       ?.localPreferences
-      ?.map { it.budgetName }
+      ?.map { meta -> meta[DbMetadata.BudgetName] }
       ?: flowOf(null)
   }
 
