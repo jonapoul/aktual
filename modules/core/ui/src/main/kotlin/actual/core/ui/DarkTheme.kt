@@ -198,6 +198,8 @@ internal class DarkTheme : Theme {
 
   override val reportsRed = ActualColors.red300
   override val reportsBlue = ActualColors.blue400
+  override val reportsGreen = ActualColors.green400
+  override val reportsGray = ActualColors.gray400
   override val reportsLabel = pageText
   override val reportsInnerLabel = ActualColors.navy800
 

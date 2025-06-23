@@ -7,8 +7,10 @@ import actual.budget.model.GraphType;
 import actual.budget.model.GroupBy;
 import actual.budget.model.Interval;
 import actual.budget.model.ReportDate;
+import actual.budget.model.SelectedCategory;
 import actual.budget.model.SortBy;
 import kotlin.Boolean;
+import kotlin.collections.List;
 import kotlinx.serialization.json.JsonArray;
 import kotlinx.serialization.json.JsonObject;
 
@@ -26,7 +28,7 @@ CREATE TABLE IF NOT EXISTS custom_reports(
   show_offbudget INTEGER AS Boolean DEFAULT 0,
   show_hidden INTEGER AS Boolean DEFAULT 0,
   show_uncategorized INTEGER AS Boolean DEFAULT 0,
-  selected_categories TEXT AS JsonArray,
+  selected_categories TEXT AS List<SelectedCategory>,
   graph_type TEXT AS GraphType DEFAULT 'BarGraph',
   conditions TEXT AS JsonArray,
   conditions_op TEXT AS ConditionOperator DEFAULT 'and',
@@ -37,6 +39,9 @@ CREATE TABLE IF NOT EXISTS custom_reports(
   include_current INTEGER AS Boolean DEFAULT 0,
   sort_by TEXT AS SortBy DEFAULT 'Descending'
 );
+
+insert:
+  INSERT INTO custom_reports VALUES ?;
 
 getIds:
   SELECT id FROM custom_reports;
