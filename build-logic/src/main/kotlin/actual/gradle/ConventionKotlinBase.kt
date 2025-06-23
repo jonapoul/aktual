@@ -9,6 +9,7 @@ class ConventionKotlinBase : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     tasks.withType<KotlinCompile>().configureEach {
       compilerOptions {
+        allWarningsAsErrors.set(true)
         freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
       }
     }
