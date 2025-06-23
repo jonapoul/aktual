@@ -65,7 +65,7 @@ test-androidx-monitor = "1.7.2"
 test-androidx-rules = "1.6.1"
 test-androidx-runner = "1.6.2"
 test-junit = "4.13.2"
-test-mockk = "1.14.3"
+test-mockk = "1.14.4"
 test-robolectric = "4.15.1"
 test-turbine = "1.2.1"
 
