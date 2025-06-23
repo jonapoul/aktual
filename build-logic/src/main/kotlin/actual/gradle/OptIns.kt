@@ -10,7 +10,7 @@ fun Project.optIn(vararg classes: String) {
   tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
       freeCompilerArgs.addAll(
-        classes.map { "-opt-in=$it" }
+        classes.map { "-opt-in=$it" },
       )
     }
   }
