@@ -4,9 +4,7 @@ import com.autonomousapps.DependencyAnalysisPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class ModuleCompose : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
@@ -22,12 +20,6 @@ class ModuleCompose : Plugin<Project> {
       apply(ConventionTest::class.java)
       apply(DependencyAnalysisPlugin::class.java)
       apply(ConventionSortDependencies::class.java)
-    }
-
-    tasks.withType<KotlinCompile>().configureEach {
-      compilerOptions {
-        freeCompilerArgs.add("-opt-in=androidx.compose.material3.ExperimentalMaterial3Api")
-      }
     }
 
     dependencies {

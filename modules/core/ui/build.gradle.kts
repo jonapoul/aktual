@@ -1,8 +1,12 @@
+import actual.gradle.EXPERIMENTAL_MATERIAL_3
 import actual.gradle.koverExcludes
+import actual.gradle.optIn
 
 plugins {
   alias(libs.plugins.module.compose)
 }
+
+optIn(EXPERIMENTAL_MATERIAL_3)
 
 dependencies {
   api(libs.androidx.compose.runtime)
