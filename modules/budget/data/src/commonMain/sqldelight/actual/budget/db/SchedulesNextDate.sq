@@ -1,7 +1,7 @@
 import actual.budget.model.ScheduleId;
 import actual.budget.model.ScheduleNextDateId;
 import kotlin.Boolean;
-import kotlinx.datetime.Instant;
+import kotlin.time.Instant;
 import kotlinx.datetime.LocalDate;
 
 CREATE TABLE IF NOT EXISTS schedules_next_date(

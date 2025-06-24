@@ -1,7 +1,7 @@
 package actual.budget.model
 
 import kotlinx.coroutines.test.runTest
-import java.time.Month
+import kotlinx.datetime.Month
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse

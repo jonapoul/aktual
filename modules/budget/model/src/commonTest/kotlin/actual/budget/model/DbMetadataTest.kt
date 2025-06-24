@@ -1,10 +1,10 @@
 package actual.budget.model
 
 import actual.test.PrettyJson
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.time.Instant
 
 class DbMetadataTest {
   @Test

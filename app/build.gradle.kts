@@ -46,8 +46,8 @@ android {
     multiDexEnabled = true
     setProperty("archivesBaseName", "$applicationId-$versionName")
 
-    val kotlinTime = "kotlinx.datetime.Instant.Companion.fromEpochMilliseconds(${System.currentTimeMillis()}L)"
-    buildConfigField("kotlinx.datetime.Instant", "BUILD_TIME", kotlinTime)
+    val kotlinTime = "kotlin.time.Instant.Companion.fromEpochMilliseconds(${System.currentTimeMillis()}L)"
+    buildConfigField("kotlin.time.Instant", "BUILD_TIME", kotlinTime)
     buildConfigField("String", "GIT_HASH", "\"${gitCommitHash}\"")
   }
 
@@ -153,7 +153,6 @@ dependencies {
   implementation(libs.javaxInject)
   implementation(libs.kotlin.stdlib)
   implementation(libs.kotlinx.coroutines)
-  implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.molecule)
   implementation(libs.preferences.android)

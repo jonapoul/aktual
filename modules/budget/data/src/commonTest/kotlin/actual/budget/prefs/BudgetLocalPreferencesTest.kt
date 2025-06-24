@@ -14,28 +14,28 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
-import okio.fakefilesystem.FakeFileSystem
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BudgetLocalPreferencesTest {
-  private lateinit var files: BudgetFiles
-  private lateinit var fileSystem: FakeFileSystem
-  private lateinit var contexts: CoroutineContexts
+  @get:Rule val temporaryFolder = TemporaryFolder()
 
+  private lateinit var files: BudgetFiles
+  private lateinit var contexts: CoroutineContexts
   private lateinit var preferences: BudgetLocalPreferences
 
   @BeforeTest
   fun before() {
-    fileSystem = FakeFileSystem()
-    files = TestBudgetFiles(fileSystem)
+    files = TestBudgetFiles(temporaryFolder)
     contexts = TestCoroutineContexts(EmptyCoroutineContext)
   }
 
@@ -86,10 +86,10 @@ class BudgetLocalPreferencesTest {
     assertTrue(newWriteTime > previousWriteTime)
   }
 
-  private fun fileModificationTime(metadata: DbMetadata): Long = fileSystem
-    .metadata(files.metadata(metadata.cloudFileId))
-    .lastModifiedAtMillis
-    ?: error("No lastModifiedAtMillis found for $metadata")
+  private fun fileModificationTime(metadata: DbMetadata): Long = files
+    .metadata(metadata.cloudFileId)
+    .toFile()
+    .lastModified()
 
   private companion object {
     val BUDGET_ID = BudgetId("cf2b43ee-8067-48ed-ab5b-4e4e5531056e")

@@ -4,7 +4,6 @@ import actual.budget.model.AndroidBudgetFiles
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.database
-import alakazam.test.core.getResourceAsStream
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import app.cash.sqldelight.db.SqlDriver
@@ -13,6 +12,7 @@ import okio.FileSystem
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.File
+import java.io.InputStream
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -63,6 +63,10 @@ class LoadExistingDatabaseFromFile {
     }
     return databaseFile
   }
+
+  private fun getResourceAsStream(filename: String): InputStream =
+    this.javaClass.classLoader?.getResourceAsStream(filename)
+      ?: error("Null input stream for $filename!")
 
   private companion object {
     val BUDGET_ID = BudgetId("abc-123")

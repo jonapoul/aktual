@@ -16,13 +16,13 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
 import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class GithubRepositoryTest {
   private lateinit var githubRepository: GithubRepository

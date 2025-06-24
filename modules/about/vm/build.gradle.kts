@@ -12,7 +12,6 @@ dependencies {
   api(projects.modules.about.data)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
-  implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
   compileOnly(libs.hilt.core)

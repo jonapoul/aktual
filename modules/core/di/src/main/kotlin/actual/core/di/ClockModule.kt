@@ -1,10 +1,10 @@
 package actual.core.di
 
-import actual.core.model.TimeZones
+import alakazam.kotlin.time.TimeZoneProvider
 import dagger.Module
 import dagger.Provides
-import kotlinx.datetime.Clock
 import javax.inject.Singleton
+import kotlin.time.Clock
 
 @Module
 class ClockModule {
@@ -13,5 +13,5 @@ class ClockModule {
   fun clock(): Clock = Clock.System
 
   @Provides
-  fun timeZones(): TimeZones = TimeZones.System
+  fun timeZones(): TimeZoneProvider = TimeZoneProvider.Default
 }
