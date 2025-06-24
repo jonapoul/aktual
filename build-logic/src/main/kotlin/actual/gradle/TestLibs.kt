@@ -14,7 +14,6 @@ internal val Project.testLibraries: List<Provider<MinimalExternalModuleDependenc
       getLibrary("test.kotlinx.coroutines"),
       getLibrary("test.ktor"),
       getLibrary("test.mockk.core"),
-      getLibrary("test.okio"),
       getLibrary("test.turbine"),
     )
   }

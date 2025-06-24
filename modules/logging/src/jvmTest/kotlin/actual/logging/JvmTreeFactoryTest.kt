@@ -2,7 +2,6 @@ package actual.logging
 
 import alakazam.kotlin.logging.Logger
 import alakazam.test.core.TestClock
-import kotlinx.datetime.Instant
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
@@ -16,6 +15,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class JvmTreeFactoryTest {
   @get:Rule val temporaryFolder = TemporaryFolder()

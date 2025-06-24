@@ -34,14 +34,15 @@ import alakazam.db.sqldelight.enumStringAdapter
 import alakazam.db.sqldelight.longAdapter
 import alakazam.db.sqldelight.stringAdapter
 import app.cash.sqldelight.ColumnAdapter
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.number
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 private inline fun <reified T : JsonElement> jsonElement(
@@ -56,7 +57,7 @@ private val jsonObject = jsonElement<JsonObject> { jsonObject }
 private val jsonArray = jsonElement<JsonArray> { jsonArray }
 
 private val localDate = longAdapter(
-  encode = { date: LocalDate -> with(date) { "%04d%02d%02d".format(year, monthNumber, dayOfMonth).toLong() } },
+  encode = { date: LocalDate -> with(date) { "%04d%02d%02d".format(year, month.number, day).toLong() } },
   decode = { value: Long ->
     val str = value.toString()
     val year = str.substring(startIndex = 0, endIndex = 4).toInt()

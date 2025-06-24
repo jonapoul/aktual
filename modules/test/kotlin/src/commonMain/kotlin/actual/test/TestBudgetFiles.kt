@@ -4,13 +4,14 @@ import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import okio.FileSystem
 import okio.Path
-import okio.fakefilesystem.FakeFileSystem
+import okio.Path.Companion.toOkioPath
+import org.junit.rules.TemporaryFolder
 
 class TestBudgetFiles(
   override val fileSystem: FileSystem,
   private val root: Path,
 ) : BudgetFiles {
-  constructor(fileSystem: FakeFileSystem) : this(fileSystem, fileSystem.workingDirectory)
+  constructor(temporaryFolder: TemporaryFolder) : this(FileSystem.SYSTEM, temporaryFolder.root.toOkioPath())
 
   override fun directory(id: BudgetId, mkdirs: Boolean): Path = root
     .resolve(id.value)

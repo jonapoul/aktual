@@ -21,4 +21,5 @@ val FREE_COMPILER_ARGS = listOf(
   "-opt-in=kotlin.RequiresOptIn",
   "-opt-in=kotlin.uuid.ExperimentalUuidApi",
   "-opt-in=kotlin.io.encoding.ExperimentalEncodingApi",
+  "-opt-in=kotlin.time.ExperimentalTime",
 )

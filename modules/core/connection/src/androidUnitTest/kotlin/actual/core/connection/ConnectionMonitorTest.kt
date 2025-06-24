@@ -17,8 +17,9 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import okio.fakefilesystem.FakeFileSystem
+import okio.FileSystem
 import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
@@ -29,6 +30,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
+  @get:Rule val temporaryFolder = TemporaryFolder()
   @get:Rule val mainDispatcherRule = MainDispatcherRule()
   @get:Rule val flakyTestRule = FlakyTestRule()
 
@@ -36,14 +38,14 @@ class ConnectionMonitorTest {
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var apiStateHolder: ActualApisStateHolder
   private lateinit var mockEngine: MockEngine
-  private lateinit var fileSystem: FakeFileSystem
+  private lateinit var fileSystem: FileSystem
 
   private fun TestScope.before() {
     val prefs = buildPreferences(mainDispatcherRule.dispatcher)
     preferences = AppGlobalPreferences(prefs)
     apiStateHolder = ActualApisStateHolder()
     mockEngine = emptyMockEngine()
-    fileSystem = FakeFileSystem()
+    fileSystem = FileSystem.SYSTEM
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,

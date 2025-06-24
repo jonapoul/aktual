@@ -1,8 +1,8 @@
 package actual.logging
 
 import alakazam.kotlin.logging.Tree
-import kotlinx.datetime.Clock
 import java.io.PrintStream
+import kotlin.time.Clock
 
 class JvmTreeFactory(
   private val stream: PrintStream = System.out,

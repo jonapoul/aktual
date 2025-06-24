@@ -9,7 +9,6 @@ kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin.core)
     api(libs.kotlinx.coroutines)
-    api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
@@ -18,7 +17,6 @@ kotlin {
     api(libs.test.kotlin.common)
     api(libs.test.kotlinx.coroutines)
     api(libs.test.ktor)
-    api(libs.test.okio)
     api(libs.test.turbine)
     api(projects.modules.budget.data)
     implementation(libs.alakazam.db.sqldelight)

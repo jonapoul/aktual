@@ -10,7 +10,6 @@ kotlin {
     api(libs.alakazam.kotlin.core)
     api(libs.javaxInject)
     api(libs.kotlinx.coroutines)
-    api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)
     api(libs.okio)
     compileOnly(libs.alakazam.kotlin.compose.annotations)
