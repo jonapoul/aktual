@@ -24,7 +24,7 @@ molecule = "2.1.0"
 sekret = "2.0.0"
 
 # Libraries
-alakazam = "6.0.0"
+alakazam = "6.1.0"
 android-desugaring = "2.1.5"
 androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
