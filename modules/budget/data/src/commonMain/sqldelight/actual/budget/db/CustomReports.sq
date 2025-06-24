@@ -7,6 +7,7 @@ import actual.budget.model.GraphType;
 import actual.budget.model.GroupBy;
 import actual.budget.model.Interval;
 import actual.budget.model.ReportDate;
+import actual.budget.model.ReportMetadata;
 import actual.budget.model.SelectedCategory;
 import actual.budget.model.SortBy;
 import kotlin.Boolean;
@@ -32,7 +33,7 @@ CREATE TABLE IF NOT EXISTS custom_reports(
   graph_type TEXT AS GraphType DEFAULT 'BarGraph',
   conditions TEXT AS JsonArray,
   conditions_op TEXT AS ConditionOperator DEFAULT 'and',
-  metadata TEXT AS JsonObject,
+  metadata TEXT AS ReportMetadata,
   interval TEXT AS Interval DEFAULT 'Monthly',
   color_scheme TEXT,
   tombstone INTEGER AS Boolean DEFAULT 0,
@@ -45,6 +46,9 @@ insert:
 
 getIds:
   SELECT id FROM custom_reports;
+
+getMetadataById:
+  SELECT metadata FROM custom_reports WHERE id = ?;
 
 getIdByName:
   SELECT id

@@ -16,6 +16,7 @@ import actual.budget.model.GroupBy
 import actual.budget.model.Interval
 import actual.budget.model.PayeeId
 import actual.budget.model.ReportDate
+import actual.budget.model.ReportMetadata
 import actual.budget.model.RuleId
 import actual.budget.model.RuleStage
 import actual.budget.model.ScheduleId
@@ -64,6 +65,7 @@ private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>
   override fun encode(value: T): String = Json.encodeToString(serializer, value)
 }
 
+private val reportMetadata = jsonSerializable(ReportMetadata.serializer())
 private val selectedCategories = jsonSerializable(ListSerializer(SelectedCategory.serializer()))
 
 private val localDate = longAdapter(
@@ -183,7 +185,7 @@ internal val CustomReportsAdapter = Custom_reports.Adapter(
   graph_typeAdapter = graphType,
   conditionsAdapter = jsonArray,
   conditions_opAdapter = conditionOperator,
-  metadataAdapter = jsonObject,
+  metadataAdapter = reportMetadata,
   sort_byAdapter = sortBy,
   intervalAdapter = interval,
   selected_categoriesAdapter = selectedCategories,
