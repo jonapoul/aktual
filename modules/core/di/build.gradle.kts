@@ -5,11 +5,11 @@ plugins {
 dependencies {
   api(libs.alakazam.android.core)
   api(libs.alakazam.kotlin.core)
+  api(libs.alakazam.kotlin.time)
   api(libs.androidx.preference.ktx)
   api(libs.hilt.android)
   api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
-  api(libs.kotlinx.datetime)
   api(libs.okio)
   api(libs.preferences.core)
   api(projects.modules.api.github)

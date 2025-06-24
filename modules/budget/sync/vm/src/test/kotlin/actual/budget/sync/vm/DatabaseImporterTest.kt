@@ -7,14 +7,13 @@ import actual.budget.model.DbMetadata
 import actual.budget.model.Timestamp
 import actual.budget.model.database
 import actual.budget.model.metadata
-import actual.core.model.TimeZones
 import actual.test.TestBudgetFiles
 import actual.test.copyTo
 import actual.test.resource
+import alakazam.kotlin.time.TimeZoneProvider
 import alakazam.test.core.TestClock
 import alakazam.test.core.TestCoroutineContexts
 import kotlinx.coroutines.test.runTest
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.TimeZone
@@ -31,6 +30,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlin.time.Instant
 
 class DatabaseImporterTest {
   @get:Rule val temporaryFolder = TemporaryFolder()
@@ -50,7 +50,7 @@ class DatabaseImporterTest {
       fileSystem = fileSystem,
       budgetFiles = budgetFiles,
       clock = TestClock { INSTANT },
-      timeZones = TimeZones { TimeZone.UTC },
+      timeZones = TimeZoneProvider { TimeZone.UTC },
     )
   }
 

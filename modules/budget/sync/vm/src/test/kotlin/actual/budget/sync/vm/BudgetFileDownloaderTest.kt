@@ -29,7 +29,9 @@ import io.mockk.mockk
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import okio.fakefilesystem.FakeFileSystem
+import okio.FileSystem
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -39,15 +41,17 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class BudgetFileDownloaderTest {
+  @get:Rule val temporaryFolder = TemporaryFolder()
+
   private lateinit var budgetFileDownloader: BudgetFileDownloader
   private lateinit var budgetFiles: TestBudgetFiles
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var mockEngine: MockEngine
-  private lateinit var fileSystem: FakeFileSystem
+  private lateinit var fileSystem: FileSystem
 
   fun TestScope.before() {
-    fileSystem = FakeFileSystem()
-    budgetFiles = TestBudgetFiles(fileSystem)
+    fileSystem = FileSystem.SYSTEM
+    budgetFiles = TestBudgetFiles(temporaryFolder)
     mockEngine = emptyMockEngine()
 
     val syncDownloadApi = SyncDownloadApi(
@@ -73,7 +77,6 @@ class BudgetFileDownloaderTest {
   @AfterTest
   fun after() {
     mockEngine.close()
-    fileSystem.checkNoOpenFiles()
   }
 
   @Test
@@ -141,8 +144,8 @@ class BudgetFileDownloaderTest {
 
       // and only the temp dir was created
       assertEquals(
-        actual = fileSystem.allPaths.toList(),
-        expected = listOf(budgetFiles.tmp()),
+        actual = temporaryFolder.root.listFiles()?.toList(),
+        expected = listOf(budgetFiles.tmp().toFile()),
       )
 
       awaitComplete()
@@ -171,8 +174,8 @@ class BudgetFileDownloaderTest {
 
     // and only the temp dir was created
     assertEquals(
-      actual = fileSystem.allPaths.toList(),
-      expected = listOf(budgetFiles.tmp()),
+      actual = temporaryFolder.root.listFiles()?.toList(),
+      expected = listOf(budgetFiles.tmp().toFile()),
     )
   }
 

@@ -3,7 +3,7 @@ import actual.budget.model.AccountSyncSource;
 import actual.budget.model.Amount;
 import kotlin.Boolean;
 import kotlin.uuid.Uuid;
-import kotlinx.datetime.Instant;
+import kotlin.time.Instant;
 
 CREATE TABLE IF NOT EXISTS accounts(
   id TEXT AS AccountId PRIMARY KEY,

@@ -12,10 +12,10 @@ import actual.budget.model.RuleStage
 import actual.budget.model.ScheduleId
 import actual.budget.model.ScheduleJsonPathIndex
 import actual.budget.model.ScheduleNextDateId
-import kotlinx.datetime.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
+import kotlin.time.Instant
 
 internal suspend fun BudgetDatabase.getAccountById(id: AccountId): Accounts? =
   accountsQueries.withResult { getById(id).executeAsOneOrNull() }

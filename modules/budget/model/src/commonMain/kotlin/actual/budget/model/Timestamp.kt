@@ -1,8 +1,8 @@
 package actual.budget.model
 
 import alakazam.kotlin.serialization.SimpleSerializer
-import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
+import kotlin.time.Instant
 
 /**
  * Corresponds to packages/crdt/src/crdt/timestamp.ts#Timestamp

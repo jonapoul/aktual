@@ -2,13 +2,13 @@ package actual.logging
 
 import alakazam.kotlin.logging.BasicTree
 import alakazam.kotlin.logging.LogLevel
-import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.char
 import java.io.PrintStream
+import kotlin.time.Clock
 
 internal class TimestampedPrintStreamTree(
   private val stream: PrintStream,

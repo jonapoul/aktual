@@ -9,7 +9,6 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(libs.kotlinx.datetime)
     api(libs.kotlinx.serialization.core)
     api(libs.ktor.core)
     api(projects.modules.core.model)

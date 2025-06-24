@@ -2,6 +2,7 @@ package actual.budget.model
 
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
+import kotlinx.datetime.number
 
 /**
  * [value] has format like "2025-02"
@@ -11,7 +12,7 @@ value class YearAndMonth(private val value: String) : Comparable<YearAndMonth> {
   // Comes like "202402" -> Feb 2024
   constructor(long: Long) : this(long.toLocalDate())
 
-  constructor(year: Int, month: Month) : this(LocalDate(year, month, dayOfMonth = 1))
+  constructor(year: Int, month: Month) : this(LocalDate(year, month, day = 1))
 
   constructor(date: LocalDate) : this(
     value = date
@@ -33,14 +34,14 @@ value class YearAndMonth(private val value: String) : Comparable<YearAndMonth> {
   }
 
   val year: Int get() = split[0].toInt()
-  val month: Month get() = split[1].toInt().let(Month::of)
-  val date: LocalDate get() = LocalDate(year, month, dayOfMonth = 1)
+  val month: Month get() = split[1].toInt().let(::Month)
+  val date: LocalDate get() = LocalDate(year, month, day = 1)
 
   override fun toString(): String = value
 
   override fun compareTo(other: YearAndMonth): Int = value.compareTo(other.value)
 
-  fun toLong(): Long = (year * FACTOR.toLong()) + month.value
+  fun toLong(): Long = (year * FACTOR.toLong()) + month.number
 
   companion object {
     private const val SEPARATOR = "-"
@@ -48,9 +49,9 @@ value class YearAndMonth(private val value: String) : Comparable<YearAndMonth> {
     private const val FACTOR = 100
 
     private fun Long.toLocalDate(): LocalDate {
-      val month = Month.of(toInt() % FACTOR)
+      val month = Month(toInt() % FACTOR)
       val year = toInt() / FACTOR
-      return LocalDate(year, month, dayOfMonth = 1)
+      return LocalDate(year, month, day = 1)
     }
   }
 }

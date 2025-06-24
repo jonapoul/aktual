@@ -7,13 +7,12 @@ import actual.budget.model.BudgetId
 import actual.budget.model.DbMetadata
 import actual.budget.model.database
 import actual.budget.model.writeMetadata
-import actual.core.model.TimeZones
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import alakazam.kotlin.logging.Logger
+import alakazam.kotlin.time.TimeZoneProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.Clock
 import kotlinx.datetime.todayIn
 import kotlinx.serialization.SerializationException
 import okio.FileSystem
@@ -22,6 +21,7 @@ import okio.buffer
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
 import javax.inject.Inject
+import kotlin.time.Clock
 
 /**
  * Adapted from packages/loot-core/src/server/cloud-storage.ts importBuffer()
@@ -31,7 +31,7 @@ class DatabaseImporter @Inject constructor(
   private val fileSystem: FileSystem,
   private val budgetFiles: BudgetFiles,
   private val clock: Clock,
-  private val timeZones: TimeZones,
+  private val timeZones: TimeZoneProvider,
 ) {
   suspend operator fun invoke(userFile: UserFile, zipPath: Path): ImportResult {
     val directory = budgetFiles.directory(userFile.fileId, mkdirs = true)
@@ -90,7 +90,7 @@ class DatabaseImporter @Inject constructor(
     val newMeta = meta
       .set(DbMetadata.CloudFileId, userFile.fileId)
       .set(DbMetadata.GroupId, userFile.groupId)
-      .set(DbMetadata.LastUploaded, clock.todayIn(timeZones.current()))
+      .set(DbMetadata.LastUploaded, clock.todayIn(timeZones.get()))
       .set(DbMetadata.EncryptKeyId, userFile.encryptMeta?.keyId?.value)
 
     budgetFiles.writeMetadata(newMeta)

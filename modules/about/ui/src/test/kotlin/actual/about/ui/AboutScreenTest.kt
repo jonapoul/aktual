@@ -30,12 +30,12 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.flow.update
-import kotlinx.datetime.Instant
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.time.Instant
 
 @RunWith(RobolectricTestRunner::class)
 class AboutScreenTest {

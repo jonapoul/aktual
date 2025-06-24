@@ -1,7 +1,7 @@
 package actual.test
 
 import alakazam.kotlin.core.BasicBuildConfig
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 
 val TestInstant = Instant.fromEpochMilliseconds(1710786854286L) // Mon Mar 18 2024 18:34:14
 

@@ -27,8 +27,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import okio.fakefilesystem.FakeFileSystem
+import okio.FileSystem
 import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
@@ -41,13 +42,14 @@ import kotlin.test.assertNull
 @RunWith(RobolectricTestRunner::class)
 internal class LoginRequesterTest {
   @get:Rule val mainDispatcherRule = MainDispatcherRule()
+  @get:Rule val temporaryFolder = TemporaryFolder()
 
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var mockEngine: MockEngine
-  private lateinit var fileSystem: FakeFileSystem
+  private lateinit var fileSystem: FileSystem
 
   @AfterTest
   fun after() {
@@ -59,7 +61,7 @@ internal class LoginRequesterTest {
     preferences = AppGlobalPreferences(flowPrefs)
     apisStateHolder = ActualApisStateHolder()
     mockEngine = emptyMockEngine()
-    fileSystem = FakeFileSystem()
+    fileSystem = FileSystem.SYSTEM
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,

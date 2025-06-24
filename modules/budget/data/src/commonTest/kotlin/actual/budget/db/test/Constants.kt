@@ -1,6 +1,6 @@
 package actual.budget.db.test
 
-import kotlinx.datetime.Instant
+import kotlin.time.Instant
 import kotlin.uuid.Uuid
 
 internal val BANK_ID = Uuid.parse("3df1f75a-fcc6-4e5f-a5a1-38ae7aa145eb")
