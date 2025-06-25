@@ -57,10 +57,10 @@ com.android.tools:sdk-common:31.10.1
 com.android.tools:sdklib:31.10.1
 com.android:signflinger:8.10.1
 com.android:zipflinger:8.10.1
-com.autonomousapps.dependency-analysis:com.autonomousapps.dependency-analysis.gradle.plugin:2.18.0
+com.autonomousapps.dependency-analysis:com.autonomousapps.dependency-analysis.gradle.plugin:2.19.0
 com.autonomousapps:antlr:4.13.2.0
 com.autonomousapps:asm-relocated:9.7.1.0
-com.autonomousapps:dependency-analysis-gradle-plugin:2.18.0
+com.autonomousapps:dependency-analysis-gradle-plugin:2.19.0
 com.autonomousapps:graph-support:0.6
 com.autonomousapps:kotlin-editor-relocated:0.18.0
 com.charleskorn.kaml:kaml-jvm:0.74.0
@@ -218,7 +218,7 @@ org.jetbrains.kotlin:kotlin-gradle-plugin-model:2.1.21
 org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.21
 org.jetbrains.kotlin:kotlin-gradle-plugins-bom:2.1.21
 org.jetbrains.kotlin:kotlin-klib-commonizer-api:2.1.21
-org.jetbrains.kotlin:kotlin-metadata-jvm:2.0.21
+org.jetbrains.kotlin:kotlin-metadata-jvm:2.1.21
 org.jetbrains.kotlin:kotlin-native-utils:2.1.21
 org.jetbrains.kotlin:kotlin-power-assert:2.1.21
 org.jetbrains.kotlin:kotlin-reflect:2.0.21
