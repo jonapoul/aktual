@@ -1,25 +1,33 @@
+@file:Suppress("ktlint:standard:max-line-length")
+
 package actual.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
+import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 
 class ConventionKotlinBase : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
-    tasks.withType<KotlinCompile>().configureEach {
-      compilerOptions {
-        allWarningsAsErrors.set(true)
-        freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
-      }
+    extensions.getByType(HasConfigurableKotlinCompilerOptions::class).apply {
+      compilerOptions { configure() }
     }
+  }
+
+  private fun KotlinCommonCompilerOptions.configure() {
+    allWarningsAsErrors.set(true)
+    freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
   }
 }
 
 val FREE_COMPILER_ARGS = listOf(
-  "-Xjvm-default=all-compatibility",
+  "-Xcontext-parameters", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-parameters
+  "-Xcontext-sensitive-resolution", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-sensitive-resolution
+  "-Xexpect-actual-classes",
+  "-Xnested-type-aliases", // https://kotlinlang.org/docs/whatsnew22.html#support-for-nested-type-aliases
   "-opt-in=kotlin.RequiresOptIn",
-  "-opt-in=kotlin.uuid.ExperimentalUuidApi",
   "-opt-in=kotlin.io.encoding.ExperimentalEncodingApi",
   "-opt-in=kotlin.time.ExperimentalTime",
+  "-opt-in=kotlin.uuid.ExperimentalUuidApi",
 )

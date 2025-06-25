@@ -12,6 +12,7 @@ class ModuleMultiplatform : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
       apply(KotlinMultiplatformPluginWrapper::class.java)
+      apply(ConventionKotlinBase::class.java)
       apply(ConventionAndroidLibrary::class.java)
       apply(ConventionDiagrams::class.java)
       apply(ConventionKover::class.java)
@@ -23,12 +24,6 @@ class ModuleMultiplatform : Plugin<Project> {
     }
 
     extensions.configure<KotlinMultiplatformExtension> {
-      compilerOptions {
-        allWarningsAsErrors.set(true)
-        freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
-        freeCompilerArgs.add("-Xexpect-actual-classes")
-      }
-
       jvm()
       androidTarget()
 
