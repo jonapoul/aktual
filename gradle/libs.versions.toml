@@ -3,7 +3,7 @@
 agp = "8.10.1"
 androidCacheFix = "3.0.1"
 blueprint = "1.0.0"
-burst = "2.5.0"
+burst = "2.6.0"
 buildconfig = "5.6.7"
 catalog = "0.3.4"
 dependencyAnalysis = "2.19.0"
