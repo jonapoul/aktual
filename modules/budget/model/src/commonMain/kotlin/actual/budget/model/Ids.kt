@@ -23,12 +23,14 @@ value class BudgetId(val value: String) : Comparable<BudgetId>, JavaIoSerializab
 }
 
 @JvmInline
+@Serializable
 value class CategoryId(private val value: String) : Comparable<CategoryId> {
   override fun toString(): String = value
   override fun compareTo(other: CategoryId) = value.compareTo(other.value)
 }
 
 @JvmInline
+@Serializable
 value class CategoryGroupId(private val value: String) : Comparable<CategoryGroupId> {
   override fun toString(): String = value
   override fun compareTo(other: CategoryGroupId) = value.compareTo(other.value)

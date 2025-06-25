@@ -5,6 +5,10 @@ plugins {
   alias(libs.plugins.kotlin.serialization)
 }
 
+tasks.withType<Test>().configureEach {
+  systemProperty("test.resourcesDir", file("src/commonTest/resources").absolutePath)
+}
+
 kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin.serialization)

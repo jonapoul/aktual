@@ -211,6 +211,8 @@ sealed interface Theme {
 
   val reportsRed: Color
   val reportsBlue: Color
+  val reportsGreen: Color
+  val reportsGray: Color
   val reportsLabel: Color
   val reportsInnerLabel: Color
 
