@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:max-line-length")
+
 package actual.gradle
 
 import org.gradle.api.Plugin
