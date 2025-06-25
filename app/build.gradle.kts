@@ -1,10 +1,12 @@
 import blueprint.core.gitVersionCode
 import blueprint.core.gitVersionHash
 import blueprint.core.intProperty
-import blueprint.core.javaVersionString
+import blueprint.core.jvmTarget
 import blueprint.core.rootLocalPropertiesOrNull
 import blueprint.core.stringProperty
 import blueprint.core.stringPropertyOrNull
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.LocalDate
 
 plugins {
@@ -28,6 +30,12 @@ dependencyGuard {
   configuration("releaseRuntimeClasspath")
 }
 
+tasks.withType<KotlinCompile>().configureEach {
+  compilerOptions {
+    jvmTarget = jvmTarget()
+  }
+}
+
 val gitCommitHash = project.gitVersionHash()
 val gitCode = project.gitVersionCode()
 
@@ -49,10 +57,6 @@ android {
     val kotlinTime = "kotlin.time.Instant.Companion.fromEpochMilliseconds(${System.currentTimeMillis()}L)"
     buildConfigField("kotlin.time.Instant", "BUILD_TIME", kotlinTime)
     buildConfigField("String", "GIT_HASH", "\"${gitCommitHash}\"")
-  }
-
-  kotlinOptions {
-    jvmTarget = javaVersionString()
   }
 
   packaging {
