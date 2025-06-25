@@ -37,7 +37,7 @@ class SelectedCategoryTest {
           "tombstone": 0
         }
       ]
-  """.trimIndent()
+    """.trimIndent()
 
     private val ITEM_1 = SelectedCategory(
       id = CategoryId("9099179f-9105-4679-94c9-7e4e6465ce34"),
