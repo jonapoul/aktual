@@ -16,11 +16,13 @@ import actual.budget.model.GroupBy
 import actual.budget.model.Interval
 import actual.budget.model.PayeeId
 import actual.budget.model.ReportDate
+import actual.budget.model.ReportMetadata
 import actual.budget.model.RuleId
 import actual.budget.model.RuleStage
 import actual.budget.model.ScheduleId
 import actual.budget.model.ScheduleJsonPathIndex
 import actual.budget.model.ScheduleNextDateId
+import actual.budget.model.SelectedCategory
 import actual.budget.model.SortBy
 import actual.budget.model.SyncedPrefKey
 import actual.budget.model.Timestamp
@@ -36,6 +38,8 @@ import alakazam.db.sqldelight.stringAdapter
 import app.cash.sqldelight.ColumnAdapter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.number
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -55,6 +59,14 @@ private inline fun <reified T : JsonElement> jsonElement(
 private val jsonElement = jsonElement<JsonElement> { this }
 private val jsonObject = jsonElement<JsonObject> { jsonObject }
 private val jsonArray = jsonElement<JsonArray> { jsonArray }
+
+private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>) = object : ColumnAdapter<T, String> {
+  override fun decode(databaseValue: String): T = Json.decodeFromString(serializer, databaseValue)
+  override fun encode(value: T): String = Json.encodeToString(serializer, value)
+}
+
+private val reportMetadata = jsonSerializable(ReportMetadata.serializer())
+private val selectedCategories = jsonSerializable(ListSerializer(SelectedCategory.serializer()))
 
 private val localDate = longAdapter(
   encode = { date: LocalDate -> with(date) { "%04d%02d%02d".format(year, month.number, day).toLong() } },
@@ -173,10 +185,10 @@ internal val CustomReportsAdapter = Custom_reports.Adapter(
   graph_typeAdapter = graphType,
   conditionsAdapter = jsonArray,
   conditions_opAdapter = conditionOperator,
-  metadataAdapter = jsonObject,
+  metadataAdapter = reportMetadata,
   sort_byAdapter = sortBy,
   intervalAdapter = interval,
-  selected_categoriesAdapter = jsonArray,
+  selected_categoriesAdapter = selectedCategories,
 )
 
 internal val MessagesClockAdapter = Messages_clock.Adapter(
