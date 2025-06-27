@@ -1,18 +1,17 @@
 import actual.budget.model.BalanceType;
-import actual.budget.model.ConditionOperator;
 import actual.budget.model.CustomReportId;
 import actual.budget.model.CustomReportMode;
 import actual.budget.model.DateRangeType;
 import actual.budget.model.GraphType;
 import actual.budget.model.GroupBy;
 import actual.budget.model.Interval;
+import actual.budget.model.Operator;
+import actual.budget.model.ReportCondition;
 import actual.budget.model.ReportDate;
-import actual.budget.model.ReportMetadata;
 import actual.budget.model.SelectedCategory;
 import actual.budget.model.SortBy;
 import kotlin.Boolean;
 import kotlin.collections.List;
-import kotlinx.serialization.json.JsonArray;
 import kotlinx.serialization.json.JsonObject;
 
 CREATE TABLE IF NOT EXISTS custom_reports(
@@ -31,31 +30,19 @@ CREATE TABLE IF NOT EXISTS custom_reports(
   show_uncategorized INTEGER AS Boolean DEFAULT 0,
   selected_categories TEXT AS List<SelectedCategory>,
   graph_type TEXT AS GraphType DEFAULT 'BarGraph',
-  conditions TEXT AS JsonArray,
-  conditions_op TEXT AS ConditionOperator DEFAULT 'and',
-  metadata TEXT AS ReportMetadata,
+  conditions TEXT AS List<ReportCondition>,
+  conditions_op TEXT AS Operator DEFAULT 'and',
+  metadata TEXT AS JsonObject,
   interval TEXT AS Interval DEFAULT 'Monthly',
   color_scheme TEXT,
   tombstone INTEGER AS Boolean DEFAULT 0,
   include_current INTEGER AS Boolean DEFAULT 0,
-  sort_by TEXT AS SortBy DEFAULT 'Descending'
+  sort_by TEXT AS SortBy DEFAULT 'desc'
 );
 
-insert:
-  INSERT INTO custom_reports VALUES ?;
-
-getIds:
-  SELECT id FROM custom_reports;
-
-getMetadataById:
-  SELECT metadata FROM custom_reports WHERE id = ?;
-
-getIdByName:
-  SELECT id
-    FROM custom_reports
-    WHERE tombstone = 0 AND name = ?;
-
-delete:
-  DELETE
-    FROM custom_reports
-    WHERE id = ?;
+delete: DELETE FROM custom_reports WHERE id = ?;
+getById: SELECT * FROM custom_reports WHERE id = ?;
+getIdByName: SELECT id FROM custom_reports WHERE tombstone = 0 AND name = ? LIMIT 1;
+getIds: SELECT id FROM custom_reports;
+getMetadataById: SELECT metadata FROM custom_reports WHERE id = ?;
+insert: INSERT INTO custom_reports VALUES ?;

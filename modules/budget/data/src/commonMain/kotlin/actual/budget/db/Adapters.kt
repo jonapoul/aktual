@@ -7,16 +7,16 @@ import actual.budget.model.BalanceType
 import actual.budget.model.BankId
 import actual.budget.model.CategoryGroupId
 import actual.budget.model.CategoryId
-import actual.budget.model.ConditionOperator
 import actual.budget.model.CustomReportId
 import actual.budget.model.CustomReportMode
 import actual.budget.model.DateRangeType
 import actual.budget.model.GraphType
 import actual.budget.model.GroupBy
 import actual.budget.model.Interval
+import actual.budget.model.Operator
 import actual.budget.model.PayeeId
+import actual.budget.model.ReportCondition
 import actual.budget.model.ReportDate
-import actual.budget.model.ReportMetadata
 import actual.budget.model.RuleId
 import actual.budget.model.RuleStage
 import actual.budget.model.ScheduleId
@@ -65,7 +65,7 @@ private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>
   override fun encode(value: T): String = Json.encodeToString(serializer, value)
 }
 
-private val reportMetadata = jsonSerializable(ReportMetadata.serializer())
+private val reportConditions = jsonSerializable(ReportCondition.ListSerializer)
 private val selectedCategories = jsonSerializable(ListSerializer(SelectedCategory.serializer()))
 
 private val localDate = longAdapter(
@@ -108,7 +108,7 @@ private val uuid = stringAdapter(Uuid::parse)
 private val zeroBudgetMonthId = stringAdapter(::ZeroBudgetMonthId)
 
 private val balanceType = enumStringAdapter<BalanceType>()
-private val conditionOperator = enumStringAdapter<ConditionOperator>()
+private val operator = enumStringAdapter<Operator>()
 private val customReportMode = enumStringAdapter<CustomReportMode>()
 private val dateRangeType = enumStringAdapter<DateRangeType>()
 private val graphType = enumStringAdapter<GraphType>()
@@ -183,9 +183,9 @@ internal val CustomReportsAdapter = Custom_reports.Adapter(
   group_byAdapter = groupBy,
   balance_typeAdapter = balanceType,
   graph_typeAdapter = graphType,
-  conditionsAdapter = jsonArray,
-  conditions_opAdapter = conditionOperator,
-  metadataAdapter = reportMetadata,
+  conditionsAdapter = reportConditions,
+  conditions_opAdapter = operator,
+  metadataAdapter = jsonObject,
   sort_byAdapter = sortBy,
   intervalAdapter = interval,
   selected_categoriesAdapter = selectedCategories,
@@ -213,7 +213,7 @@ internal val RulesAdapter = Rules.Adapter(
   stageAdapter = ruleStage,
   conditionsAdapter = jsonArray,
   actionsAdapter = jsonArray,
-  conditions_opAdapter = conditionOperator,
+  conditions_opAdapter = operator,
 )
 
 internal val SchedulesAdapter = Schedules.Adapter(
@@ -247,7 +247,7 @@ internal val ReflectBudgetsAdapter = Reflect_budgets.Adapter(
 internal val TransactionFiltersAdapter = Transaction_filters.Adapter(
   idAdapter = transactionFilterId,
   conditionsAdapter = jsonArray,
-  conditions_opAdapter = conditionOperator,
+  conditions_opAdapter = operator,
 )
 
 internal val ZeroBudgetMonthsAdapter = Zero_budget_months.Adapter(
