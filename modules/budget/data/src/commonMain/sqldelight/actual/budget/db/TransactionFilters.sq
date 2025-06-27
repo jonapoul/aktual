@@ -1,4 +1,4 @@
-import actual.budget.model.ConditionOperator;
+import actual.budget.model.Operator;
 import actual.budget.model.TransactionFilterId;
 import kotlin.Boolean;
 import kotlinx.serialization.json.JsonArray;
@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS transaction_filters(
   id TEXT AS TransactionFilterId PRIMARY KEY,
   name TEXT,
   conditions TEXT AS JsonArray,
-  conditions_op TEXT AS ConditionOperator DEFAULT 'and',
+  conditions_op TEXT AS Operator DEFAULT 'and',
   tombstone INTEGER AS Boolean DEFAULT 0
 );
 
