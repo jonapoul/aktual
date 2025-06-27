@@ -5,7 +5,7 @@ import actual.budget.db.BudgetDatabase
 import actual.budget.db.withResult
 import actual.budget.db.withoutResult
 import actual.budget.model.AccountId
-import actual.budget.model.ConditionOperator
+import actual.budget.model.Operator
 import actual.budget.model.PayeeId
 import actual.budget.model.RuleId
 import actual.budget.model.RuleStage
@@ -38,7 +38,7 @@ internal suspend fun BudgetDatabase.insertRule(
   conditions: String?,
   actions: String?,
   tombstone: Boolean? = false,
-  conditionsOp: ConditionOperator? = ConditionOperator.And,
+  conditionsOp: Operator? = Operator.And,
 ) = rulesQueries.withResult {
   insert(
     id = RuleId(id),
