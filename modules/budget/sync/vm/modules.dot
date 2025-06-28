@@ -36,7 +36,7 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:di"
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model"
-":budget:sync:vm" -> ":core:model"
+":budget:sync:vm" -> ":core:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"

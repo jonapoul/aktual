@@ -5,8 +5,4 @@ enum class Currency(val symbol: Char) {
   ;
 
   override fun toString(): String = symbol.toString()
-
-  companion object {
-    fun default() = Gbp
-  }
 }
