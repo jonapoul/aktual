@@ -1,7 +1,9 @@
 package actual.budget.model
 
+import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
 
+@Immutable
 sealed interface ReportDate {
   val date: LocalDate
 

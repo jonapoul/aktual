@@ -1,6 +1,6 @@
 package actual.budget.model
 
-enum class DateRangeType(private val value: String) {
+enum class DateRangeType(val value: String) {
   ThisWeek(value = "This week"),
   LastWeek(value = "Last week"),
   ThisMonth(value = "This month"),

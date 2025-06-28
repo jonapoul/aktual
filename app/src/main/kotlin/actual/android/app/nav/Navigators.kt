@@ -8,6 +8,8 @@ import actual.account.ui.password.ChangePasswordNavigator
 import actual.account.ui.url.ServerUrlNavigator
 import actual.budget.list.ui.ListBudgetsNavigator
 import actual.budget.model.BudgetId
+import actual.budget.model.CustomReportId
+import actual.budget.reports.ui.ReportsDashboardNavigator
 import actual.budget.sync.ui.SyncBudgetNavigator
 import actual.budget.transactions.ui.TransactionsNavigator
 import actual.settings.ui.SettingsNavigator
@@ -18,6 +20,7 @@ fun InfoNavigator(nav: NavHostController): InfoNavigator = InfoNavigatorImpl(nav
 fun ListBudgetsNavigator(nav: NavHostController): ListBudgetsNavigator = ListBudgetsNavigatorImpl(nav)
 fun LicensesNavigator(nav: NavHostController): LicensesNavigator = LicensesNavigatorImpl(nav)
 fun LoginNavigator(nav: NavHostController): LoginNavigator = LoginNavigatorImpl(nav)
+fun ReportsDashboardNavigator(nav: NavHostController): ReportsDashboardNavigator = ReportsDashboardNavigatorImpl(nav)
 fun ServerUrlNavigator(nav: NavHostController): ServerUrlNavigator = ServerUrlNavigatorImpl(nav)
 fun SettingsNavigator(nav: NavHostController): SettingsNavigator = SettingsNavigatorImpl(nav)
 fun SyncBudgetNavigator(nav: NavHostController): SyncBudgetNavigator = SyncBudgetNavigatorImpl(nav)
@@ -55,6 +58,12 @@ private class ServerUrlNavigatorImpl(private val nav: NavHostController) : Serve
 
 private class LicensesNavigatorImpl(private val nav: NavHostController) : LicensesNavigator {
   override fun back() = nav.popBackStack()
+}
+
+private class ReportsDashboardNavigatorImpl(private val nav: NavHostController) : ReportsDashboardNavigator {
+  override fun back() = nav.popBackStack()
+  override fun toReport(token: LoginToken, budgetId: BudgetId, reportId: CustomReportId) =
+    nav.debugNav(ReportNavRoute(token, budgetId, reportId))
 }
 
 private class SettingsNavigatorImpl(private val nav: NavHostController) : SettingsNavigator {

@@ -37,7 +37,8 @@ value class CategoryGroupId(private val value: String) : Comparable<CategoryGrou
 }
 
 @JvmInline
-value class CustomReportId(private val value: String) : Comparable<CustomReportId> {
+@Serializable
+value class CustomReportId(val value: String) : Comparable<CustomReportId>, JavaIoSerializable {
   override fun toString(): String = value
   override fun compareTo(other: CustomReportId) = value.compareTo(other.value)
 }

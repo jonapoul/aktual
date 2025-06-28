@@ -12,7 +12,6 @@ dependencies {
   api(libs.kotlinx.immutable)
   api(projects.modules.budget.di)
   api(projects.modules.budget.model)
-  api(projects.modules.core.model)
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.kotlinx.serialization.core)
@@ -22,6 +21,7 @@ dependencies {
   implementation(projects.modules.account.model)
   implementation(projects.modules.api.actual)
   implementation(projects.modules.budget.encryption)
+  implementation(projects.modules.core.model)
   implementation(projects.modules.prefs)
   compileOnly(libs.alakazam.kotlin.compose.annotations)
 }

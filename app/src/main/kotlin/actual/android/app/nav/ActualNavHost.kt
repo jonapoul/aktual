@@ -7,6 +7,7 @@ import actual.account.ui.login.LoginScreen
 import actual.account.ui.password.ChangePasswordScreen
 import actual.account.ui.url.ServerUrlScreen
 import actual.budget.list.ui.ListBudgetsScreen
+import actual.budget.reports.ui.ReportsDashboardScreen
 import actual.budget.sync.ui.SyncBudgetScreen
 import actual.budget.transactions.ui.TransactionsScreen
 import actual.settings.ui.SettingsScreen
@@ -44,6 +45,14 @@ internal fun ActualNavHost(
     }
 
     composable<LoginNavRoute> { LoginScreen(LoginNavigator(nav)) }
+
+    composableWithArg<ReportsListNavRoute>(mapOf(BudgetIdType, LoginTokenType)) { route, _ ->
+      ReportsDashboardScreen(ReportsDashboardNavigator(nav), route.budgetId, route.token)
+    }
+
+    composableWithArg<ReportNavRoute>(mapOf(BudgetIdType, LoginTokenType, CustomReportIdType)) { route, _ ->
+      // TBC
+    }
 
     composable<ServerUrlNavRoute> { ServerUrlScreen(ServerUrlNavigator(nav)) }
 

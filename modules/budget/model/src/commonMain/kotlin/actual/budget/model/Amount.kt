@@ -12,11 +12,11 @@ value class Amount(private val value: Long) : Comparable<Amount> {
   constructor(value: Float) : this((value * FACTOR).roundToLong())
   constructor(value: Double) : this((value * FACTOR).roundToLong())
 
-  override fun toString(): String = toString(Currency.default())
+  override fun toString(): String = "%.2f".format(toFloat())
 
   override fun compareTo(other: Amount): Int = value.compareTo(other.value)
 
-  fun toString(currency: Currency): String = "%c%.2f".format(currency.symbol, toFloat())
+  fun toString(currency: Currency): String = currency.symbol + toString()
 
   fun toFloat(): Float = (value / FACTOR).toFloat()
 
@@ -24,5 +24,6 @@ value class Amount(private val value: Long) : Comparable<Amount> {
 
   companion object {
     private const val FACTOR = 100.0
+    val Zero = Amount(0L)
   }
 }
