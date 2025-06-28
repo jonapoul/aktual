@@ -103,7 +103,7 @@ graph ["rank"="same"]
 ":budget:reports:ui" -> ":budget:reports:vm"
 ":budget:reports:ui" -> ":core:ui"
 ":budget:reports:ui" -> ":l10n" ["style"="dotted"]
-":budget:reports:vm" -> ":account:model"
+":budget:reports:vm" -> ":account:model" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:model"
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"
@@ -114,7 +114,7 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:di"
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model"
-":budget:sync:vm" -> ":core:model"
+":budget:sync:vm" -> ":core:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
 ":budget:transactions:ui" -> ":account:model" ["style"="dotted"]
 ":budget:transactions:ui" -> ":budget:model"

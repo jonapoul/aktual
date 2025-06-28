@@ -14,7 +14,7 @@ graph ["rank"="same"]
 }
 ":app" -> ":budget:reports:ui" ["style"="dotted"]
 ":budget:reports:ui" -> ":budget:reports:vm"
-":budget:reports:vm" -> ":account:model"
+":budget:reports:vm" -> ":account:model" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:model"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
