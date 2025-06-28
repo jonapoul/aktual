@@ -19,27 +19,27 @@ class PreferencesDao @Inject constructor(
 ) {
   private val queries = database.preferencesQueries
 
-  suspend fun getAll(): Map<SyncedPrefKey, String?> = queries.withResult {
+  suspend fun getAll(): Map<SyncedPrefKey, String?> = withResult {
     getAll()
       .executeAsList()
       .associate { (key, value) -> key to value }
   }
 
-  suspend operator fun get(key: SyncedPrefKey): String? = queries.withResult {
+  suspend operator fun get(key: SyncedPrefKey): String? = withResult {
     getValue(key)
       .executeAsOneOrNull()
       ?.value_
   }
 
-  suspend operator fun set(key: SyncedPrefKey, value: String?) = queries.withoutResult {
-    setValue(key, value?.toString())
+  suspend operator fun set(key: SyncedPrefKey, value: String?) = withoutResult {
+    setValue(key, value)
   }
 
   fun observe(key: SyncedPrefKey): Flow<String?> = queries
     .getValue(key)
     .asFlow()
     .mapToOneOrNull(contexts.default)
-    .map { it?.value_?.toString() }
+    .map { it?.value_ }
     .distinctUntilChanged()
 
   suspend fun <R> withResult(

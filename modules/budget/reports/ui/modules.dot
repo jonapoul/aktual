@@ -23,6 +23,7 @@ graph ["rank"="same"]
 ":budget:reports:ui" -> ":l10n" ["style"="dotted"]
 ":budget:reports:vm" -> ":account:model" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:model"
+":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":l10n" ["style"="dotted"]

@@ -135,6 +135,7 @@ graph ["rank"="same"]
 ":core:di" -> ":budget:model"
 ":core:di" -> ":core:model"
 ":core:di" -> ":prefs"
+":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":l10n" ["style"="dotted"]
