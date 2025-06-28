@@ -17,6 +17,7 @@ node ["style"="filled"]
 ":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:list:vm" ["fillcolor"="#F5A6A6","shape"="none"]
+":budget:reports:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":budget:transactions:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -56,6 +57,7 @@ graph ["rank"="same"]
 ":app" -> ":api:actual" ["style"="dotted"]
 ":app" -> ":budget:di" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
+":app" -> ":budget:reports:ui" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
 ":app" -> ":budget:transactions:ui" ["style"="dotted"]
 ":app" -> ":core:connection" ["style"="dotted"]
@@ -70,6 +72,7 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":core:model"
 ":budget:list:vm" -> ":prefs" ["style"="dotted"]
+":budget:reports:ui" -> ":core:ui"
 ":budget:sync:ui" -> ":budget:sync:vm"
 ":budget:sync:ui" -> ":core:ui"
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]

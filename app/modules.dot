@@ -19,6 +19,8 @@ node ["style"="filled"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:list:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:reports:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":budget:reports:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":budget:transactions:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -71,6 +73,7 @@ graph ["rank"="same"]
 ":app" -> ":api:actual" ["style"="dotted"]
 ":app" -> ":budget:di" ["style"="dotted"]
 ":app" -> ":budget:list:ui" ["style"="dotted"]
+":app" -> ":budget:reports:ui" ["style"="dotted"]
 ":app" -> ":budget:sync:ui" ["style"="dotted"]
 ":app" -> ":budget:transactions:ui" ["style"="dotted"]
 ":app" -> ":core:android" ["style"="dotted"]
@@ -96,6 +99,12 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:model"
 ":budget:list:vm" -> ":prefs" ["style"="dotted"]
+":budget:reports:ui" -> ":account:model" ["style"="dotted"]
+":budget:reports:ui" -> ":budget:reports:vm"
+":budget:reports:ui" -> ":core:ui"
+":budget:reports:ui" -> ":l10n" ["style"="dotted"]
+":budget:reports:vm" -> ":account:model"
+":budget:reports:vm" -> ":budget:model"
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"
 ":budget:sync:ui" -> ":core:ui"
