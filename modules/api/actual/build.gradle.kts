@@ -5,6 +5,7 @@ plugins {
   alias(libs.plugins.module.multiplatform)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.ksp)
+  alias(libs.plugins.redacted)
 }
 
 kotlin {
@@ -20,6 +21,7 @@ kotlin {
     implementation(libs.ktor.serialization.core)
     implementation(libs.ktor.serialization.json)
     implementation(projects.modules.codegen.annotation)
+    compileOnly(libs.redacted.annotations)
   }
 }
 
