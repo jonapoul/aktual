@@ -4,6 +4,7 @@ graph ["dpi"="100","label"=":settings:ui","labelloc"="t","fontsize"="30","rankse
 node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
+":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:android" ["fillcolor"="#55FF55","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -17,6 +18,7 @@ graph ["rank"="same"]
 ":settings:ui"
 }
 ":app" -> ":settings:ui" ["style"="dotted"]
+":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":l10n" ["style"="dotted"]

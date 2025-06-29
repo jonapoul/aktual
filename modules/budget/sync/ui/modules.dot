@@ -44,6 +44,7 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:model"
 ":budget:sync:vm" -> ":core:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
+":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":l10n" ["style"="dotted"]

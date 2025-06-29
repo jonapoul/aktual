@@ -13,6 +13,7 @@ dependencies {
   api(libs.haze.core)
   api(libs.kotlinx.immutable)
   api(libs.lazycolumn.scrollbar)
+  api(projects.modules.budget.model)
   api(projects.modules.core.model)
   implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.compose.animation.core)

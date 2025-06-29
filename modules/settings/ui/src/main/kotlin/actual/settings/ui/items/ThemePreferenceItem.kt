@@ -160,7 +160,10 @@ private fun <T> ThemeChooserDialog(
 
 private val REGULAR_OPTIONS = RegularColorSchemeType.entries.toImmutableList()
 private val DARK_OPTIONS = DarkColorSchemeType.entries.toImmutableList()
-private val OPTIONS_TO_SHOW_DARK_CONFIG = persistentSetOf(RegularColorSchemeType.Dark, RegularColorSchemeType.System)
+private val OPTIONS_TO_SHOW_DARK_CONFIG = persistentSetOf(
+  RegularColorSchemeType.Dark,
+  RegularColorSchemeType.System,
+)
 
 @Composable
 private fun <T> ColumnScope.ThemeChooserDialogContent(
