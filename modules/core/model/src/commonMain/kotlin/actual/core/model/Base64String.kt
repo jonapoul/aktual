@@ -5,7 +5,7 @@ import kotlin.io.encoding.Base64
 
 @JvmInline
 @Serializable
-value class Base64String(val value: String) : Comparable<Base64String>, CharSequence by value {
+value class Base64String(val value: String) : Comparable<Base64String> {
   constructor(bytes: ByteArray) : this(Base64.encode(bytes))
 
   override fun toString() = value

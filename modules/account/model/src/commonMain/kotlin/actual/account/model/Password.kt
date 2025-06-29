@@ -1,12 +1,12 @@
 package actual.account.model
 
+import dev.zacsweers.redacted.annotations.Redacted
 import kotlinx.serialization.Serializable
 
-@Serializable
+@Redacted
 @JvmInline
-value class Password(val value: String) : CharSequence by value {
-  override fun toString(): String = value
-
+@Serializable
+value class Password(val value: String) {
   fun interface Provider {
     fun default(): Password
   }
