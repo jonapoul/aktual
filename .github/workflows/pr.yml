@@ -95,8 +95,8 @@ jobs:
         with:
           commit_message: Baseline dependencies
 
-  pr-check:
-    needs: [ changes ]
+  check:
+    needs: [ changes, baseline ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
