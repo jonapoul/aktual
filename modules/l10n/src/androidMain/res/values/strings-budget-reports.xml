@@ -4,4 +4,17 @@
   <string name="reports_dashboard_delete">Delete</string>
   <string name="reports_dashboard_empty">No reports</string>
   <string name="reports_dashboard_range">%1$s to %2$s</string>
+
+  <string name="reports_month_jan">Jan</string>
+  <string name="reports_month_feb">Feb</string>
+  <string name="reports_month_mar">Mar</string>
+  <string name="reports_month_apr">Apr</string>
+  <string name="reports_month_may">May</string>
+  <string name="reports_month_jun">Jun</string>
+  <string name="reports_month_jul">Jul</string>
+  <string name="reports_month_aug">Aug</string>
+  <string name="reports_month_sep">Sep</string>
+  <string name="reports_month_oct">Oct</string>
+  <string name="reports_month_nov">Nov</string>
+  <string name="reports_month_dec">Dec</string>
 </resources>

@@ -1,7 +1,7 @@
 package actual.android.app
 
-import actual.l10.AndroidLocalization
-import actual.l10.Localization
+import actual.l10n.AndroidLocalization
+import actual.l10n.Localization
 import actual.logging.ActualLogging
 import actual.logging.AndroidLogStorage
 import actual.logging.AndroidTreeFactory
