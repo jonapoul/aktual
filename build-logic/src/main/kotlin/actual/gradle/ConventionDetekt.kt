@@ -11,6 +11,7 @@ import org.gradle.kotlin.dsl.dependencies
 class ConventionDetekt : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
     detektBlueprint(
+      configFile = rootProject.file("config/detekt.yml"),
       detektAllConfig = DetektAll.Apply(ignoreRelease = true),
     )
 

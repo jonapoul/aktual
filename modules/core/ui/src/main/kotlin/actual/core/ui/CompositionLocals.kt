@@ -1,5 +1,3 @@
-@file:Suppress("CompositionLocalAllowlist")
-
 package actual.core.ui
 
 import actual.budget.model.Amount
