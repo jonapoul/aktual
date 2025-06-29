@@ -67,13 +67,13 @@ internal class LoginViewModelTest {
   fun `Enter password`() = runTest {
     before()
     viewModel.enteredPassword.test {
-      assertEquals(expected = "", actual = awaitItem().toString())
+      assertEquals(expected = "", actual = awaitItem().value)
 
       viewModel.onEnterPassword(password = "hello world")
-      assertEquals(expected = "hello world", actual = awaitItem().toString())
+      assertEquals(expected = "hello world", actual = awaitItem().value)
 
       viewModel.clearState()
-      assertEquals(expected = "", actual = awaitItem().toString())
+      assertEquals(expected = "", actual = awaitItem().value)
 
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()

@@ -44,7 +44,7 @@ internal fun PasswordLogin(
         .testTag(Tags.PasswordLoginTextField)
         .fillMaxWidth(1f)
         .focusRequester(keyboardFocusRequester(keyboard)),
-      value = enteredPassword.toString(),
+      value = enteredPassword.value,
       enabled = !isLoading,
       onValueChange = { password -> onAction(LoginAction.EnterPassword(password)) },
       placeholderText = Strings.loginPasswordHint,

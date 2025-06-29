@@ -1,11 +1,12 @@
 package actual.core.model
 
 import kotlinx.serialization.Serializable
+import java.util.stream.IntStream
 import kotlin.io.encoding.Base64
 
 @JvmInline
 @Serializable
-value class Base64String(val value: String) : Comparable<Base64String> {
+value class Base64String(val value: String) : Comparable<Base64String>, CharSequence by value {
   constructor(bytes: ByteArray) : this(Base64.encode(bytes))
 
   override fun toString() = value
@@ -14,6 +15,9 @@ value class Base64String(val value: String) : Comparable<Base64String> {
   fun decode(): ByteArray = Base64.decode(value)
   fun toCharArray() = value.toCharArray()
   fun toByteArray() = value.toByteArray(Charsets.UTF_8)
+
+  override fun chars(): IntStream = value.chars()
+  override fun codePoints(): IntStream = value.codePoints()
 }
 
 val String.base64 get() = Base64String(this)
