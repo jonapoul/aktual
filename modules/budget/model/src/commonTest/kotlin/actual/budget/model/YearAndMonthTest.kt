@@ -24,6 +24,9 @@ class YearAndMonthTest {
     assertEquals(expected = 2024, actual = yearAndMonth.year)
     assertEquals(expected = Month.FEBRUARY, actual = yearAndMonth.month)
     assertEquals(expected = long, actual = yearAndMonth.toLong())
+
+    val converted = YearAndMonth(yearAndMonth.toLong())
+    assertEquals(yearAndMonth, converted)
   }
 
   @Test

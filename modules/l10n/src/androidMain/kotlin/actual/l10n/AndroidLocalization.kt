@@ -1,4 +1,4 @@
-package actual.l10
+package actual.l10n
 
 import android.content.Context
 import androidx.compose.ui.unit.Dp
