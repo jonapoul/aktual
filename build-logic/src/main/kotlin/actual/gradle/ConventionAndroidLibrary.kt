@@ -14,9 +14,11 @@ class ConventionAndroidLibrary : Plugin<Project> {
     }
 
     extensions.configure<LibraryExtension> {
+      androidResources {
+        enable = false
+      }
+
       buildFeatures {
-        // Force-disable useless build steps. These can be re-enabled on a per-module basis, if they need them
-        androidResources = false
         dataBinding = false
         mlModelBinding = false
         prefabPublishing = false
