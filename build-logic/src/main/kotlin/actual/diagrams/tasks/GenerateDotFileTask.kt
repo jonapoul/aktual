@@ -109,6 +109,7 @@ private fun generateGraph(links: Set<ProjectLink>, types: Set<TypedModule>, this
   val projectPaths = links
     .map { it.fromPath }
     .plus(links.map { it.toPath })
+    .plus(thisPath)
     .toSet()
 
   val typeMap = types.associate { (path, type) -> path to type }
