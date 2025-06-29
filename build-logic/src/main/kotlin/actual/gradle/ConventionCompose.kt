@@ -20,6 +20,7 @@ class ConventionCompose : Plugin<Project> {
       composeLintVersion = libs.getVersion("androidx.compose.lint"),
       writeMetrics = true,
       experimentalApis = emptyList(),
+      stabilityFile = rootProject.layout.projectDirectory.file("config/compose-stability.conf"),
     )
 
     dependencies {
