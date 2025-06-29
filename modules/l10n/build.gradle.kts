@@ -10,10 +10,8 @@ plugins {
 }
 
 android {
-  buildFeatures {
-    androidResources = true
-    resValues = true
-  }
+  androidResources.enable = true
+  buildFeatures.resValues = true
 }
 
 catalog {
