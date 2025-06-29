@@ -159,8 +159,8 @@ com.google.dagger:hilt-android:2.56.2
 com.google.dagger:hilt-core:2.56.2
 com.google.errorprone:error_prone_annotations:2.15.0
 com.google.guava:listenablefuture:1.0
-com.squareup.okio:okio-jvm:3.13.0
-com.squareup.okio:okio:3.13.0
+com.squareup.okio:okio-jvm:3.14.0
+com.squareup.okio:okio:3.14.0
 dev.chrisbanes.haze:haze-android:1.6.4
 dev.chrisbanes.haze:haze:1.6.4
 dev.jonpoulton.alakazam:android-core:6.1.0
