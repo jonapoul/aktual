@@ -1,4 +1,4 @@
-@file:Suppress("LongParameterList", "CompositionLocalAllowlist")
+@file:Suppress("LongParameterList")
 
 package actual.core.ui
 

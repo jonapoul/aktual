@@ -27,6 +27,10 @@ class ConventionAndroidBase : Plugin<Project> {
           isIncludeAndroidResources = true
         }
       }
+
+      lint {
+        lintConfig = rootProject.file("config/lint.xml")
+      }
     }
   }
 }
