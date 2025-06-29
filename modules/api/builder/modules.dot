@@ -3,9 +3,6 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":api:builder","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":api:builder" ["fillcolor"="#9D8DF1","color"="black","penwidth"="3","shape"="box"]
-":app" ["fillcolor"="#FF5555","shape"="none"]
-":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -13,17 +10,11 @@ graph ["rank"="same"]
 ":api:builder"
 }
 ":api:builder" -> ":core:model"
-":app" -> ":core:connection" ["style"="dotted"]
-":app" -> ":core:di" ["style"="dotted"]
-":core:connection" -> ":api:builder" ["style"="dotted"]
-":core:di" -> ":api:builder" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
 "Legend" ["style"="filled","fillcolor"="#FFFFFF","shape"="none","margin"="0","fontsize"="15","label"=<
 <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
-<TR><TD>App</TD><TD BGCOLOR="#FF5555">module-name</TD></TR>
-<TR><TD>Hilt</TD><TD BGCOLOR="#FCB103">module-name</TD></TR>
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
 </TABLE>
 >]
