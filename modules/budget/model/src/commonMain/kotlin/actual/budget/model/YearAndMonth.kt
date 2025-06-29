@@ -14,13 +14,7 @@ value class YearAndMonth(private val value: String) : Comparable<YearAndMonth> {
 
   constructor(year: Int, month: Month) : this(LocalDate(year, month, day = 1))
 
-  constructor(date: LocalDate) : this(
-    value = date
-      .toString()
-      .split(SEPARATOR)
-      .take(n = 2)
-      .joinToString(SEPARATOR),
-  )
+  constructor(date: LocalDate) : this(value = "%04d-%02d".format(date.year, date.month.number))
 
   private val split get() = value.split(SEPARATOR)
 
@@ -43,10 +37,18 @@ value class YearAndMonth(private val value: String) : Comparable<YearAndMonth> {
 
   fun toLong(): Long = (year * FACTOR.toLong()) + month.number
 
+  fun monthNumber(): Long = (year * MONTHS_PER_YEAR) + month.number
+
   companion object {
+    fun fromMonthNumber(number: Long) = YearAndMonth(
+      year = (number / MONTHS_PER_YEAR).toInt(),
+      month = Month((number % MONTHS_PER_YEAR).toInt()),
+    )
+
     private const val SEPARATOR = "-"
 
     private const val FACTOR = 100
+    private const val MONTHS_PER_YEAR = 12L
 
     private fun Long.toLocalDate(): LocalDate {
       val month = Month(toInt() % FACTOR)

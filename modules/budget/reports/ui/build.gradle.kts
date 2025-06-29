@@ -13,6 +13,7 @@ dependencies {
   api(projects.modules.budget.reports.vm)
   api(projects.modules.core.ui)
   implementation(libs.androidx.activity.compose)
+  implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
   implementation(libs.androidx.compose.hilt)
   implementation(libs.androidx.compose.material.icons.core)
@@ -32,6 +33,8 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable)
   implementation(libs.lazycolumn.scrollbar)
+  implementation(libs.vico.compose)
+  implementation(libs.vico.core)
   implementation(projects.modules.account.model)
   implementation(projects.modules.l10n)
 }

@@ -1,6 +1,7 @@
 package actual.budget.model
 
 import java.util.Locale
+import kotlin.math.absoluteValue
 import kotlin.math.roundToLong
 import java.text.NumberFormat as JNumberFormat
 
@@ -17,6 +18,12 @@ value class Amount(private val value: Long) : Comparable<Amount> {
   override fun toString(): String = "%.2f".format(toFloat())
 
   override fun compareTo(other: Amount): Int = value.compareTo(other.value)
+
+  operator fun plus(other: Amount) = Amount(value + other.value)
+
+  operator fun minus(other: Amount) = this + (-other)
+
+  operator fun unaryMinus() = Amount(-value)
 
   fun toFloat(): Float = toDouble().toFloat()
 
@@ -48,7 +55,7 @@ value class Amount(private val value: Long) : Comparable<Amount> {
       maximumFractionDigits = if (hideFraction) 0 else 2
     }
 
-    append(numberFormat.format(toDouble()))
+    append(numberFormat.format(toDouble().absoluteValue))
   }
 
   companion object {
