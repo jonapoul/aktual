@@ -1,5 +1,3 @@
-@file:Suppress("CompositionLocalAllowlist")
-
 package actual.budget.transactions.ui
 
 import androidx.compose.runtime.compositionLocalOf
@@ -8,7 +6,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-internal val LocalTableDimens = compositionLocalOf<TableSpacings> { TableSpacings() }
+internal val LocalTableDimens = compositionLocalOf { TableSpacings() }
 
 internal data class TableSpacings(
   val interColumn: Dp = 5.dp,
