@@ -4,14 +4,18 @@ package actual.android.app
 
 import actual.account.model.LoginToken
 import actual.api.client.ActualApisStateHolder
+import actual.budget.db.dao.PreferencesDao
 import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.model.BudgetFiles
 import actual.budget.model.DbMetadata
+import actual.budget.model.NumberFormat
+import actual.budget.model.SyncedPrefKey
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerVersionFetcher
 import actual.core.model.DarkColorSchemeType
 import actual.core.model.RegularColorSchemeType
 import actual.prefs.AppGlobalPreferences
+import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,16 +29,20 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 internal class ActualActivityViewModel @Inject constructor(
   private val scope: CoroutineScope,
+  private val contexts: CoroutineContexts,
   private val connectionMonitor: ConnectionMonitor,
   private val serverVersionFetcher: ServerVersionFetcher,
   private val apiStateHolder: ActualApisStateHolder,
@@ -42,16 +50,34 @@ internal class ActualActivityViewModel @Inject constructor(
   budgetComponents: BudgetComponentStateHolder,
   preferences: AppGlobalPreferences,
 ) : ViewModel() {
+  private val component = budgetComponents.stateIn(viewModelScope, Eagerly, initialValue = null)
+
+  private val syncedPrefs = component
+    .filterNotNull()
+    .map { c -> PreferencesDao(c.database, contexts) }
+    .stateIn(viewModelScope, Eagerly, initialValue = null)
+
+  val numberFormat: StateFlow<NumberFormat> = observeSyncedPref(
+    key = SyncedPrefKey.Global.NumberFormat,
+    default = NumberFormat.Default,
+    mapper = NumberFormat::from,
+  )
+
+  val hideFraction: StateFlow<Boolean> = observeSyncedPref(
+    key = SyncedPrefKey.Global.HideFraction,
+    default = false,
+    mapper = { it.toBoolean() },
+  )
+
   val regularSchemeType: StateFlow<RegularColorSchemeType> = preferences.regularColorScheme.asStateFlow(viewModelScope)
   val darkSchemeType: StateFlow<DarkColorSchemeType> = preferences.darkColorScheme.asStateFlow(viewModelScope)
 
   val isServerUrlSet: Boolean = preferences.serverUrl.isSet()
-
   val loginToken: LoginToken? = preferences.loginToken.get()
 
   private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 
-  private val budgetName: Flow<String?> = budgetComponents.flatMapLatest { component ->
+  private val budgetName: Flow<String?> = component.flatMapLatest { component ->
     component
       ?.localPreferences
       ?.map { meta -> meta[DbMetadata.BudgetName] }
@@ -89,4 +115,9 @@ internal class ActualActivityViewModel @Inject constructor(
       fileSystem.deleteRecursively(tmpDir)
     }
   }
+
+  private fun <T> observeSyncedPref(key: SyncedPrefKey, default: T, mapper: (String) -> T?): StateFlow<T> = syncedPrefs
+    .filterNotNull()
+    .flatMapLatest { dao -> dao.observe(key).map { value -> value?.let { mapper(it) } ?: default } }
+    .stateIn(viewModelScope, Eagerly, initialValue = default)
 }

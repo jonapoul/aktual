@@ -6,6 +6,7 @@ node ["style"="filled"]
 ":account:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":app" ["fillcolor"="#FF5555","shape"="none"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:reports:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:sync:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:transactions:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -32,6 +33,7 @@ graph ["rank"="same"]
 ":budget:reports:ui" -> ":core:ui"
 ":budget:sync:ui" -> ":core:ui"
 ":budget:transactions:ui" -> ":core:ui"
+":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":l10n" ["style"="dotted"]

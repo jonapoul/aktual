@@ -9,8 +9,9 @@ import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.core.ui.WithNumberFormatConfig
+import actual.core.ui.formattedString
 import actual.l10n.Strings
-import android.R.attr.end
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
@@ -149,7 +150,7 @@ private fun Header(
     horizontalAlignment = Alignment.End,
   ) {
     Text(
-      text = values.amount.toString(),
+      text = values.amount.formattedString(),
       textAlign = TextAlign.End,
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
@@ -159,7 +160,7 @@ private fun Header(
     )
     val prefix = if (values.change >= Amount.Zero) '+' else '-'
     Text(
-      text = prefix + values.change.toString(),
+      text = prefix + values.change.formattedString(),
       textAlign = TextAlign.End,
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
@@ -190,26 +191,32 @@ private fun ReportDate.string(): String = when (this) {
 @Preview
 @Composable
 private fun PreviewItem1() = PreviewColumn {
-  ReportDashboardItem(
-    item = ITEM_1,
-    onAction = {},
-  )
+  WithNumberFormatConfig {
+    ReportDashboardItem(
+      item = ITEM_1,
+      onAction = {},
+    )
+  }
 }
 
 @Preview
 @Composable
 private fun PreviewItem2() = PreviewColumn {
-  ReportDashboardItem(
-    item = ITEM_2,
-    onAction = {},
-  )
+  WithNumberFormatConfig {
+    ReportDashboardItem(
+      item = ITEM_2,
+      onAction = {},
+    )
+  }
 }
 
 @Preview
 @Composable
 private fun PreviewItem3() = PreviewColumn {
-  ReportDashboardItem(
-    item = ITEM_3,
-    onAction = {},
-  )
+  WithNumberFormatConfig {
+    ReportDashboardItem(
+      item = ITEM_3,
+      onAction = {},
+    )
+  }
 }

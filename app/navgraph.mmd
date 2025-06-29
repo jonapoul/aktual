@@ -2,35 +2,39 @@ flowchart TD
   app["Open App"]
   budgetList["List Budgets"]
   budgetSync["Sync Budget"]
-  budget["Budget"]
   info["About"]
   licenses["Licenses"]
   login["Login"]
   password["Change Password"]
   settings["Settings"]
-  url["Change URL"]
+  url["Server URL"]
+
+  subgraph budget["Budget"]
+    transactions["Transactions"]
+    reportsDashboard["Reports Dashboard"]
+    report["Report"]
+    budgetSettings["Settings"]
+  end
 
   app --valid token--> budgetList
+  app --valid budget ID--> transactions
   app --no token--> login
   app --no token, no url--> url
 
   budgetList --tap budget - unsynced--> budgetSync
-  budgetList --tap budget - synced--> budget
+  budgetList --tap budget - synced--> transactions
   budgetList --tap change password--> password
   budgetList --tap settings--> settings
   budgetList --tap change url--> url
-  budgetList --tap about app--> info
+  budgetList --tap about--> info
 
   budgetSync --budget synced--> budget
 
   info -- tap licenses--> licenses
 
   login --valid token--> budgetList
-  login --tap about app--> info
+  login --tap about--> info
   login --tap change url--> url
 
-  password --successfully changed--> budgetList
-
-  url --url changed--> login
-
   budget --close file--> budgetList
+  budget --tap about--> info

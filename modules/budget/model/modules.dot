@@ -2,6 +2,7 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","label"=":budget:model","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
+":about:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":account:domain" ["fillcolor"="#9D8DF1","shape"="none"]
 ":account:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":account:vm" ["fillcolor"="#F5A6A6","shape"="none"]
@@ -21,17 +22,22 @@ node ["style"="filled"]
 ":budget:transactions:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
+":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 ":budget:model"
 }
+":about:ui" -> ":core:ui"
 ":account:domain" -> ":api:actual" ["style"="dotted"]
 ":account:ui" -> ":account:domain" ["style"="dotted"]
 ":account:ui" -> ":account:vm"
+":account:ui" -> ":core:ui"
 ":account:vm" -> ":account:domain"
 ":account:vm" -> ":api:actual" ["style"="dotted"]
 ":api:actual" -> ":budget:model"
+":app" -> ":about:ui" ["style"="dotted"]
 ":app" -> ":account:domain" ["style"="dotted"]
 ":app" -> ":account:ui" ["style"="dotted"]
 ":app" -> ":api:actual" ["style"="dotted"]
@@ -42,27 +48,34 @@ graph ["rank"="same"]
 ":app" -> ":budget:transactions:ui" ["style"="dotted"]
 ":app" -> ":core:connection" ["style"="dotted"]
 ":app" -> ":core:di" ["style"="dotted"]
+":app" -> ":settings:ui" ["style"="dotted"]
 ":budget:data" -> ":budget:model"
 ":budget:di" -> ":budget:data"
 ":budget:encryption" -> ":budget:model"
 ":budget:list:ui" -> ":budget:list:vm"
 ":budget:list:ui" -> ":budget:model" ["style"="dotted"]
+":budget:list:ui" -> ":core:ui"
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:reports:ui" -> ":budget:reports:vm"
+":budget:reports:ui" -> ":core:ui"
 ":budget:reports:vm" -> ":budget:model"
 ":budget:sync:ui" -> ":budget:sync:vm"
+":budget:sync:ui" -> ":core:ui"
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:di"
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model"
 ":budget:transactions:ui" -> ":budget:model"
 ":budget:transactions:ui" -> ":budget:transactions:vm"
+":budget:transactions:ui" -> ":core:ui"
 ":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:model"
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:di" -> ":budget:model"
+":core:ui" -> ":budget:model"
+":settings:ui" -> ":core:ui"
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

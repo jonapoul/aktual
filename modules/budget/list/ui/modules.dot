@@ -34,6 +34,7 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:model"
 ":budget:list:vm" -> ":prefs" ["style"="dotted"]
+":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":l10n" ["style"="dotted"]
