@@ -38,4 +38,13 @@ class YearAndMonthTest {
     assertFalse(dec2025 <= feb2024)
     assertFalse(dec2025 < feb2024)
   }
+
+  @Test
+  fun `Month numbers`() = runTest {
+    for (month in Month.entries) {
+      val yearAndMonth = YearAndMonth(2024, month)
+      val monthNumber = yearAndMonth.monthNumber()
+      assertEquals(expected = yearAndMonth, actual = YearAndMonth.fromMonthNumber(monthNumber))
+    }
+  }
 }
