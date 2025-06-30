@@ -40,10 +40,13 @@ value class YearAndMonth(private val value: String) : Comparable<YearAndMonth> {
   fun monthNumber(): Long = (year * MONTHS_PER_YEAR) + month.number
 
   companion object {
-    fun fromMonthNumber(number: Long) = YearAndMonth(
-      year = (number / MONTHS_PER_YEAR).toInt(),
-      month = Month((number % MONTHS_PER_YEAR).toInt()),
-    )
+    fun fromMonthNumber(number: Long): YearAndMonth {
+      val adjustedNumber = number - 1 // Convert to 0-based indexing
+      return YearAndMonth(
+        year = (adjustedNumber / MONTHS_PER_YEAR).toInt(),
+        month = Month(((adjustedNumber % MONTHS_PER_YEAR) + 1).toInt()),
+      )
+    }
 
     private const val SEPARATOR = "-"
 
