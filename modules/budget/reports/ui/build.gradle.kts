@@ -8,10 +8,12 @@ plugins {
 optIn(EXPERIMENTAL_MATERIAL_3)
 
 dependencies {
+  api(project(":modules:budget:reports:vm"))
+  api(project(":modules:core:ui"))
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
-  api(projects.modules.budget.reports.vm)
-  api(projects.modules.core.ui)
+  implementation(project(":modules:account:model"))
+  implementation(project(":modules:l10n"))
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
@@ -35,6 +37,4 @@ dependencies {
   implementation(libs.lazycolumn.scrollbar)
   implementation(libs.vico.compose)
   implementation(libs.vico.core)
-  implementation(projects.modules.account.model)
-  implementation(projects.modules.l10n)
 }

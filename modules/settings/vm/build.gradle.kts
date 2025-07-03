@@ -3,9 +3,9 @@ plugins {
 }
 
 dependencies {
+  api(project(":modules:prefs"))
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
-  api(projects.modules.prefs)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.hilt.android)
   implementation(libs.javaxInject)

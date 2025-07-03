@@ -8,11 +8,13 @@ plugins {
 optIn(EXPERIMENTAL_MATERIAL_3)
 
 dependencies {
+  api(project(":modules:budget:model"))
+  api(project(":modules:budget:transactions:vm"))
+  api(project(":modules:core:ui"))
   api(libs.androidx.compose.foundation.layout)
   api(libs.androidx.compose.runtime)
-  api(projects.modules.budget.model)
-  api(projects.modules.budget.transactions.vm)
-  api(projects.modules.core.ui)
+  implementation(project(":modules:account:model"))
+  implementation(project(":modules:l10n"))
   implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.compose.foundation.core)
   implementation(libs.androidx.compose.hilt)
@@ -35,6 +37,4 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable)
   implementation(libs.lazycolumn.scrollbar)
-  implementation(projects.modules.account.model)
-  implementation(projects.modules.l10n)
 }
