@@ -13,8 +13,8 @@ dependencies {
   api(libs.haze.core)
   api(libs.kotlinx.immutable)
   api(libs.lazycolumn.scrollbar)
-  api(projects.modules.budget.model)
-  api(projects.modules.core.model)
+  api(project(":modules:budget:model"))
+  api(project(":modules:core:model"))
   implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
@@ -29,8 +29,8 @@ dependencies {
   implementation(libs.androidx.compose.ui.unit)
   implementation(libs.androidx.coreKtx)
   implementation(libs.kotlinx.coroutines)
-  implementation(projects.modules.core.android)
-  implementation(projects.modules.l10n)
+  implementation(project(":modules:core:android"))
+  implementation(project(":modules:l10n"))
 }
 
 koverExcludes {

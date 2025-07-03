@@ -4,7 +4,7 @@ plugins {
 
 dependencies {
   api(libs.preferences.core)
-  api(projects.modules.prefs)
+  api(project(":modules:prefs"))
   implementation(libs.preferences.android)
   implementation(libs.test.androidx.coreKtx)
 }

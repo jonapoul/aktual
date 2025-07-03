@@ -12,15 +12,15 @@ dependencies {
   api(libs.kotlinx.coroutines)
   api(libs.okio)
   api(libs.preferences.core)
-  api(projects.modules.api.github)
-  api(projects.modules.budget.model)
-  api(projects.modules.core.model)
-  api(projects.modules.prefs)
+  api(project(":modules:api:github"))
+  api(project(":modules:budget:model"))
+  api(project(":modules:core:model"))
+  api(project(":modules:prefs"))
   implementation(libs.androidx.crypto)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.ktor.core)
   implementation(libs.preferences.android)
-  implementation(projects.modules.api.builder)
+  implementation(project(":modules:api:builder"))
 }
 
 ksp {

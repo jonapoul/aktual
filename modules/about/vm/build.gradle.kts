@@ -9,7 +9,7 @@ dependencies {
   api(libs.dagger.core)
   api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
-  api(projects.modules.about.data)
+  api(project(":modules:about:data"))
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.kotlinx.immutable)

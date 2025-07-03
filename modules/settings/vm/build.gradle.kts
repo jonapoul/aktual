@@ -5,7 +5,7 @@ plugins {
 dependencies {
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
-  api(projects.modules.prefs)
+  api(project(":modules:prefs"))
   implementation(libs.androidx.compose.runtime)
   implementation(libs.hilt.android)
   implementation(libs.javaxInject)

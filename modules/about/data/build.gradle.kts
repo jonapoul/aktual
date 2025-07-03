@@ -7,7 +7,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(projects.modules.api.github)
+    api(project(":modules:api:github"))
     api(libs.alakazam.kotlin.core)
     api(libs.kotlinx.serialization.core)
     implementation(libs.javaxInject)
