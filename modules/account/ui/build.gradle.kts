@@ -8,11 +8,13 @@ plugins {
 optIn(EXPERIMENTAL_MATERIAL_3)
 
 dependencies {
-  api(libs.androidx.compose.foundation.layout)
-  api(libs.androidx.compose.runtime)
   api(project(":modules:account:vm"))
   api(project(":modules:core:model"))
   api(project(":modules:core:ui"))
+  api(libs.androidx.compose.foundation.layout)
+  api(libs.androidx.compose.runtime)
+  implementation(project(":modules:account:domain"))
+  implementation(project(":modules:l10n"))
   implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.alakazam.kotlin.logging)
@@ -34,6 +36,4 @@ dependencies {
   implementation(libs.haze.core)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.immutable)
-  implementation(project(":modules:account:domain"))
-  implementation(project(":modules:l10n"))
 }

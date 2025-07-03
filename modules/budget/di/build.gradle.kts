@@ -7,9 +7,9 @@ ksp {
 }
 
 dependencies {
+  api(project(":modules:budget:data"))
   api(libs.alakazam.kotlin.core)
   api(libs.javaxInject)
-  api(project(":modules:budget:data"))
   implementation(libs.kotlinx.coroutines)
   ksp(libs.dagger.compiler)
 }
