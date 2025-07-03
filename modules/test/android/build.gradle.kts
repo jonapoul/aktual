@@ -3,8 +3,8 @@ plugins {
 }
 
 dependencies {
+  api(project(":modules:prefs"))
   api(libs.preferences.core)
-  api(projects.modules.prefs)
   implementation(libs.preferences.android)
   implementation(libs.test.androidx.coreKtx)
 }

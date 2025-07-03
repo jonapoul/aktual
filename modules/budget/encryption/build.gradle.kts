@@ -10,9 +10,9 @@ kotlin {
   commonMainDependencies {
     api(libs.javaxInject)
     api(libs.okio)
-    api(projects.modules.account.model)
-    api(projects.modules.budget.model)
-    api(projects.modules.core.model)
+    api(project(":modules:account:model"))
+    api(project(":modules:budget:model"))
+    api(project(":modules:core:model"))
   }
 
   sourceSets {

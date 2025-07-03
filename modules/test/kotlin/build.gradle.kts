@@ -18,11 +18,11 @@ kotlin {
     api(libs.test.kotlinx.coroutines)
     api(libs.test.ktor)
     api(libs.test.turbine)
-    api(projects.modules.budget.data)
+    api(project(":modules:budget:data"))
     implementation(libs.alakazam.db.sqldelight)
     implementation(libs.sqldelight.driver.sqlite)
-    implementation(projects.modules.api.actual)
-    implementation(projects.modules.api.builder)
+    implementation(project(":modules:api:actual"))
+    implementation(project(":modules:api:builder"))
   }
 
   androidMainDependencies {
