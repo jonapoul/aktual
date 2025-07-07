@@ -130,6 +130,7 @@ internal class DarkTheme : Theme {
   override val calendarItemText = ActualColors.navy150
   override val calendarItemBackground = ActualColors.navy800
   override val calendarSelectedBackground = buttonNormalSelectedBackground
+  override val calendarCellBackground = ActualColors.navy900
 
   override val buttonBareText = buttonNormalText
   override val buttonBareTextHover = buttonNormalText

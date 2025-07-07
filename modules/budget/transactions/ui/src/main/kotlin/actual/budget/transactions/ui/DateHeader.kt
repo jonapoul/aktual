@@ -47,8 +47,6 @@ internal fun DateHeader(
       .fillMaxWidth()
       .background(theme.tableRowHeaderBackground)
       .clickable(
-        indication = ripple(),
-        interactionSource = remember { MutableInteractionSource() },
         onClick = { onAction(Action.ExpandGroup(date, !isExpanded)) },
       ),
     verticalArrangement = Arrangement.Bottom,

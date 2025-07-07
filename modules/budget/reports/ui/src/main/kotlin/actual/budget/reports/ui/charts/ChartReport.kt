@@ -1,6 +1,7 @@
 package actual.budget.reports.ui.charts
 
 import actual.budget.reports.ui.Action
+import actual.budget.reports.vm.CalendarData
 import actual.budget.reports.vm.CashFlowData
 import actual.budget.reports.vm.ChartData
 import actual.budget.reports.vm.NetWorthData
@@ -20,4 +21,5 @@ internal fun ReportChart(
   is CashFlowData -> CashFlowChart(data, compact, modifier, theme)
   is NetWorthData -> NetWorthChart(data, compact, modifier, theme)
   is SummaryData -> SummaryChart(data, compact, onAction, modifier, theme)
+  is CalendarData -> CalendarChart(data, compact, onAction, modifier, theme)
 }

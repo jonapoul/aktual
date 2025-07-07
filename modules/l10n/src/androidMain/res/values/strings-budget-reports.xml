@@ -18,6 +18,27 @@
   <string name="reports_month_nov">Nov</string>
   <string name="reports_month_dec">Dec</string>
 
+  <string name="reports_month_jan_l">January</string>
+  <string name="reports_month_feb_l">February</string>
+  <string name="reports_month_mar_l">March</string>
+  <string name="reports_month_apr_l">April</string>
+  <string name="reports_month_may_l">May</string>
+  <string name="reports_month_jun_l">June</string>
+  <string name="reports_month_jul_l">July</string>
+  <string name="reports_month_aug_l">August</string>
+  <string name="reports_month_sep_l">September</string>
+  <string name="reports_month_oct_l">October</string>
+  <string name="reports_month_nov_l">November</string>
+  <string name="reports_month_dec_l">December</string>
+
+  <string name="reports_week_mon">M</string>
+  <string name="reports_week_tue">T</string>
+  <string name="reports_week_wed">W</string>
+  <string name="reports_week_thu">T</string>
+  <string name="reports_week_fri">F</string>
+  <string name="reports_week_sat">S</string>
+  <string name="reports_week_sun">S</string>
+
   <string name="reports_summary_show_as">Show as:</string>
   <string name="reports_summary_sum">Sum</string>
   <string name="reports_summary_per_month">Average per month</string>
@@ -28,4 +49,7 @@
   <string name="reports_summary_num_months">number of months</string>
   <string name="reports_summary_num_transactions">number of transactions</string>
   <string name="reports_summary_all_time_divisor">All time divisor</string>
+
+  <string name="reports_calendar_income">Income:</string>
+  <string name="reports_calendar_expenses">Expenses:</string>
 </resources>
