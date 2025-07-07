@@ -83,7 +83,7 @@ fun PreviewWithColorScheme(
   schemeType: ColorSchemeType,
   modifier: Modifier = Modifier,
   content: @Composable (ColorSchemeType) -> Unit,
-) {
+) = WithNumberFormatConfig {
   ActualTheme(schemeType) {
     Surface(modifier = modifier) {
       content(schemeType)

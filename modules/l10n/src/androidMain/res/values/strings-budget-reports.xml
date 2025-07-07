@@ -17,4 +17,15 @@
   <string name="reports_month_oct">Oct</string>
   <string name="reports_month_nov">Nov</string>
   <string name="reports_month_dec">Dec</string>
+
+  <string name="reports_summary_show_as">Show as:</string>
+  <string name="reports_summary_sum">Sum</string>
+  <string name="reports_summary_per_month">Average per month</string>
+  <string name="reports_summary_per_transaction">Average per transaction</string>
+  <string name="reports_summary_percentage">Percentage</string>
+
+  <string name="reports_summary_all">all transactions</string>
+  <string name="reports_summary_num_months">number of months</string>
+  <string name="reports_summary_num_transactions">number of transactions</string>
+  <string name="reports_summary_all_time_divisor">All time divisor</string>
 </resources>

@@ -14,6 +14,7 @@ dependencies {
   api(libs.androidx.compose.runtime)
   implementation(project(":modules:account:model"))
   implementation(project(":modules:l10n"))
+  implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)

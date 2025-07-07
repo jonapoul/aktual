@@ -5,9 +5,13 @@ import actual.budget.model.CustomReportId
 import actual.budget.model.DateRangeType
 import actual.budget.model.ReportDate
 import actual.budget.model.YearAndMonth
+import actual.budget.reports.ui.charts.PreviewCashFlow
+import actual.budget.reports.ui.charts.PreviewNetWorth
+import actual.budget.reports.ui.charts.PreviewSummary
 import actual.budget.reports.vm.ReportDashboardItem
 import actual.budget.reports.vm.ReportRange
 import actual.budget.reports.vm.ReportValues
+import kotlinx.datetime.Month
 import kotlinx.datetime.Month.JUNE
 import kotlinx.datetime.Month.OCTOBER
 
@@ -16,6 +20,7 @@ internal val ITEM_1 = ReportDashboardItem(
   name = "Pensions",
   range = ReportRange.Dynamic(DateRangeType.Last12Months),
   values = ReportValues.None,
+  data = PreviewCashFlow.DATA,
 )
 
 internal val ITEM_2 = ReportDashboardItem(
@@ -26,6 +31,7 @@ internal val ITEM_2 = ReportDashboardItem(
     end = ReportDate.Month(YearAndMonth(2025, JUNE)),
   ),
   values = ReportValues.None,
+  data = PreviewNetWorth.DATA,
 )
 
 internal val ITEM_3 = ReportDashboardItem(
@@ -33,4 +39,7 @@ internal val ITEM_3 = ReportDashboardItem(
   name = "Pensions",
   range = ReportRange.Dynamic(DateRangeType.AllTime),
   values = ReportValues.Shown(amount = Amount(12345.67), change = Amount(789.01)),
+  data = PreviewSummary.PER_TRANSACTION_DATA,
 )
+
+internal fun date(year: Int, month: Month) = YearAndMonth(year, month)
