@@ -30,13 +30,14 @@ import actual.budget.model.TransactionFilterId
 import actual.budget.model.TransactionId
 import actual.budget.model.WidgetId
 import actual.budget.model.WidgetType
-import actual.budget.model.YearAndMonth
 import actual.budget.model.ZeroBudgetMonthId
 import alakazam.db.sqldelight.enumStringAdapter
 import alakazam.db.sqldelight.longAdapter
 import alakazam.db.sqldelight.stringAdapter
 import app.cash.sqldelight.ColumnAdapter
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.number
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
@@ -85,7 +86,16 @@ private val instantMsFromString = stringAdapter(
 )
 private val amount = longAdapter(::Amount, Amount::toLong)
 private val instantFromLong = longAdapter(Instant::fromEpochMilliseconds, Instant::toEpochMilliseconds)
-private val yearAndMonth = longAdapter(::YearAndMonth, YearAndMonth::toLong)
+
+private const val YEAR_MONTH_FACTOR = 100
+private val yearMonth = longAdapter(
+  decode = { long ->
+    val month = Month(long.toInt() % YEAR_MONTH_FACTOR)
+    val year = long.toInt() / YEAR_MONTH_FACTOR
+    YearMonth(year, month)
+  },
+  encode = { (it.year * YEAR_MONTH_FACTOR.toLong()) + it.month.number },
+)
 
 private val accountId = stringAdapter(::AccountId)
 private val accountSyncSource = stringAdapter(AccountSyncSource::fromString)
@@ -239,7 +249,7 @@ internal val SchedulesNextDateAdapter = Schedules_next_date.Adapter(
 )
 
 internal val ReflectBudgetsAdapter = Reflect_budgets.Adapter(
-  monthAdapter = yearAndMonth,
+  monthAdapter = yearMonth,
   categoryAdapter = categoryId,
   amountAdapter = amount,
 )
@@ -255,7 +265,7 @@ internal val ZeroBudgetMonthsAdapter = Zero_budget_months.Adapter(
 )
 
 internal val ZeroBudgetsAdapter = Zero_budgets.Adapter(
-  monthAdapter = yearAndMonth,
+  monthAdapter = yearMonth,
   categoryAdapter = categoryId,
   amountAdapter = amount,
 )

@@ -16,8 +16,8 @@ import actual.budget.model.ReportCondition
 import actual.budget.model.ReportDate
 import actual.budget.model.SelectedCategory
 import actual.budget.model.SortBy
-import actual.budget.model.YearAndMonth
 import kotlinx.datetime.Month
+import kotlinx.datetime.YearMonth
 import kotlinx.serialization.json.JsonObject
 import kotlin.uuid.Uuid
 
@@ -53,8 +53,8 @@ internal fun buildAccount(
 internal fun buildCustomReport(
   id: CustomReportId = CustomReportId("abc-123"),
   name: String? = "My report",
-  startDate: ReportDate = ReportDate.Month(YearAndMonth(1999, Month.JANUARY)),
-  endDate: ReportDate = ReportDate.Month(YearAndMonth(2025, Month.DECEMBER)),
+  startDate: ReportDate = ReportDate.Month(YearMonth(1999, Month.JANUARY)),
+  endDate: ReportDate = ReportDate.Month(YearMonth(2025, Month.DECEMBER)),
   range: DateRangeType = DateRangeType.Last12Months,
   selectedCategories: List<SelectedCategory> = emptyList(),
   conditions: List<ReportCondition> = emptyList(),
