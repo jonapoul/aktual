@@ -1,17 +1,17 @@
 package actual.budget.reports.ui.charts
 
-import actual.budget.model.Amount
-import actual.budget.model.YearAndMonth
+import actual.budget.reports.ui.charts.PreviewShared.WIDTH
+import actual.budget.reports.vm.CashFlowData
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
-import actual.core.ui.WithNumberFormatConfig
+import actual.core.ui.isInPreview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,19 +34,23 @@ import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
 import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
 import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
-import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Month
-import kotlin.collections.map
 
 @Composable
 internal fun CashFlowChart(
-  modelProducer: CartesianChartModelProducer,
+  data: CashFlowData,
   compact: Boolean,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
+  val modelProducer = remember { CartesianChartModelProducer() }
+
+  if (isInPreview()) {
+    runBlocking { modelProducer.populate(data) }
+  } else {
+    LaunchedEffect(data) { modelProducer.populate(data) }
+  }
+
   val label = axisLabelComponent(compact)
   val tick = axisTickComponent(compact)
   val guideline = axisGuidelineComponent(compact)
@@ -96,80 +100,47 @@ internal fun CashFlowChart(
   )
 }
 
-@Preview(widthDp = PREVIEW_WIDTH) @Composable private fun PreviewRegular() = PreviewChart(Data, compact = false)
-@Preview(widthDp = PREVIEW_WIDTH) @Composable private fun PreviewCompact() = PreviewChart(Data, compact = true)
+private suspend fun CartesianChartModelProducer.populate(data: CashFlowData) = with(data.items) {
+  runTransaction {
+    columnSeries {
+      series(
+        x = keys.map { it.monthNumber() },
+        y = values.map { it.income.toDouble() },
+      )
+    }
 
-@Composable
-private fun PreviewChart(data: ImmutableMap<YearAndMonth, CashFlowDatum>, compact: Boolean) = PreviewColumn {
-  WithNumberFormatConfig {
-    CashFlowChart(
-      modifier = Modifier
-        .background(LocalTheme.current.tableBackground, CardShape)
-        .width(PREVIEW_WIDTH.dp)
-        .padding(5.dp),
-      modelProducer = previewModelProducer(data),
-      compact = compact,
-    )
-  }
-}
+    columnSeries {
+      series(
+        x = keys.map { it.monthNumber() },
+        y = values.map { it.expenses.toDouble() },
+      )
+    }
 
-@Composable
-private fun previewModelProducer(data: ImmutableMap<YearAndMonth, CashFlowDatum>): CartesianChartModelProducer {
-  val modelProducer = remember { CartesianChartModelProducer() }
-  runBlocking {
-    modelProducer.runTransaction {
-      columnSeries {
-        series(
-          x = data.keys.map { it.monthNumber() },
-          y = data.values.map { it.income.toDouble() },
-        )
-      }
-
-      columnSeries {
-        series(
-          x = data.keys.map { it.monthNumber() },
-          y = data.values.map { it.expenses.toDouble() },
-        )
-      }
-
-      lineSeries {
-        series(
-          x = data.keys.map { it.monthNumber() },
-          y = data.values.map { it.balance.toDouble() },
-        )
-      }
+    lineSeries {
+      series(
+        x = keys.map { it.monthNumber() },
+        y = values.map { it.balance.toDouble() },
+      )
     }
   }
-  return modelProducer
 }
 
-@Immutable
-data class CashFlowDatum(
-  val income: Amount,
-  val expenses: Amount,
-  val transfers: Amount,
-  val balance: Amount,
-  val change: Amount = income + expenses + transfers,
-)
+@Preview(widthDp = WIDTH)
+@Composable
+private fun PreviewRegular() = PreviewChart(compact = false)
 
-private fun datum(income: Int, expenses: Int, transfers: Int, balance: Int) = CashFlowDatum(
-  income = Amount(income.toDouble()),
-  expenses = Amount(expenses.toDouble()),
-  transfers = Amount(transfers.toDouble()),
-  balance = Amount(balance.toDouble()),
-)
+@Preview(widthDp = WIDTH)
+@Composable
+private fun PreviewCompact() = PreviewChart(compact = true)
 
-private val Data = persistentMapOf(
-  YearAndMonth(2024, Month.JULY) to datum(income = 6683, expenses = -4695, transfers = -1779, balance = 4781),
-  YearAndMonth(2024, Month.AUGUST) to datum(income = 6071, expenses = -4111, transfers = -729, balance = 6012),
-  YearAndMonth(2024, Month.SEPTEMBER) to datum(income = 6041, expenses = -4233, transfers = -779, balance = 7041),
-  YearAndMonth(2024, Month.OCTOBER) to datum(income = 6041, expenses = -3602, transfers = -3819, balance = 5662),
-  YearAndMonth(2024, Month.NOVEMBER) to datum(income = 9200, expenses = -5191, transfers = -1111, balance = 8560),
-  YearAndMonth(2024, Month.DECEMBER) to datum(income = 27, expenses = -4536, transfers = -4508, balance = 2389),
-  YearAndMonth(2025, Month.JANUARY) to datum(income = 34551, expenses = -17336, transfers = -3477, balance = 15403),
-  YearAndMonth(2025, Month.FEBRUARY) to datum(income = 9913, expenses = -12977, transfers = -834, balance = 11505),
-  YearAndMonth(2025, Month.MARCH) to datum(income = 9850, expenses = -7413, transfers = -4146, balance = 9796),
-  YearAndMonth(2025, Month.APRIL) to datum(income = 10218, expenses = -6161, transfers = -4990, balance = 8862),
-  YearAndMonth(2025, Month.MAY) to datum(income = 9791, expenses = -5751, transfers = -2422, balance = 10480),
-  YearAndMonth(2025, Month.JUNE) to datum(income = 143, expenses = -745, transfers = -4041, balance = 5836),
-)
+@Composable
+private fun PreviewChart(compact: Boolean) = PreviewColumn {
+  CashFlowChart(
+    modifier = Modifier
+      .background(LocalTheme.current.tableBackground, CardShape)
+      .width(WIDTH.dp)
+      .padding(5.dp),
+    data = PreviewCashFlow.DATA,
+    compact = compact,
+  )
+}
