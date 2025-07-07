@@ -1,10 +1,10 @@
 import actual.budget.model.Amount;
 import actual.budget.model.CategoryId;
-import actual.budget.model.YearAndMonth;
+import kotlinx.datetime.YearMonth;
 
 CREATE TABLE IF NOT EXISTS reflect_budgets(
   id TEXT PRIMARY KEY,
-  month INTEGER AS YearAndMonth, -- will probably cause an error, stores data like "202404" instead of "2024-04"
+  month INTEGER AS YearMonth,
   category TEXT AS CategoryId,
   amount INTEGER AS Amount DEFAULT 0,
   carryover INTEGER DEFAULT 0,

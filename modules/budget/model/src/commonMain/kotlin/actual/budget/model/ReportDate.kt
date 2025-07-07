@@ -2,6 +2,8 @@ package actual.budget.model
 
 import androidx.compose.runtime.Immutable
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.onDay
 
 @Immutable
 sealed interface ReportDate {
@@ -10,9 +12,9 @@ sealed interface ReportDate {
   /**
    * Like "2011-10"
    */
-  data class Month(val yearAndMonth: YearAndMonth) : ReportDate {
-    override val date = yearAndMonth.date
-    override fun toString() = yearAndMonth.toString()
+  data class Month(val yearMonth: YearMonth) : ReportDate {
+    override val date = yearMonth.onDay(1)
+    override fun toString() = yearMonth.toString()
   }
 
   /**
@@ -27,7 +29,7 @@ sealed interface ReportDate {
 
     @Suppress("MagicNumber")
     fun parse(string: String): ReportDate = when (string.split(SEPARATOR).size) {
-      2 -> Month(YearAndMonth(string))
+      2 -> Month(YearMonth.parse(string))
       3 -> Date(LocalDate.parse(string))
       else -> error("Unexpected ReportDate '$string'")
     }

@@ -31,6 +31,7 @@ buildConfig {
 
 kotlin {
   commonMainDependencies {
+    api(libs.kotlinx.datetime)
     api(libs.preferences.core)
     api(project(":modules:budget:model"))
     api(project(":modules:core:model"))

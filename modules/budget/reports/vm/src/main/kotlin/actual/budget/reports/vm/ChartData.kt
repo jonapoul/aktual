@@ -1,18 +1,18 @@
 package actual.budget.reports.vm
 
 import actual.budget.model.Amount
-import actual.budget.model.YearAndMonth
 import actual.core.model.Percent
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.YearMonth
 
 @Immutable
 sealed interface ChartData
 
 @Immutable
 data class CashFlowData(
-  val items: ImmutableMap<YearAndMonth, CashFlowDatum>,
+  val items: ImmutableMap<YearMonth, CashFlowDatum>,
 ) : ChartData
 
 @Immutable
@@ -26,7 +26,7 @@ data class CashFlowDatum(
 
 @Immutable
 data class NetWorthData(
-  val items: ImmutableMap<YearAndMonth, Amount>,
+  val items: ImmutableMap<YearMonth, Amount>,
 ) : ChartData
 
 @Immutable

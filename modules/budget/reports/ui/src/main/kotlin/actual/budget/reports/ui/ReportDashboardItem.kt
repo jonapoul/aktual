@@ -2,6 +2,9 @@ package actual.budget.reports.ui
 
 import actual.budget.model.Amount
 import actual.budget.model.ReportDate
+import actual.budget.reports.ui.ReportDashboardItems.ITEM_1
+import actual.budget.reports.ui.ReportDashboardItems.ITEM_2
+import actual.budget.reports.ui.ReportDashboardItems.ITEM_3
 import actual.budget.reports.ui.charts.ReportChart
 import actual.budget.reports.vm.ReportDashboardItem
 import actual.budget.reports.vm.ReportRange
@@ -192,7 +195,7 @@ private fun ReportRange.string(): String = when (this) {
 @Composable
 @ReadOnlyComposable
 private fun ReportDate.string(): String = when (this) {
-  is ReportDate.Month -> yearAndMonth.toString()
+  is ReportDate.Month -> yearMonth.toString()
   is ReportDate.Date -> date.toString()
 }
 
