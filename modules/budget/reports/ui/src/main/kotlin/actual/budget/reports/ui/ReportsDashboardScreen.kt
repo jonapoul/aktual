@@ -56,6 +56,8 @@ fun ReportsDashboardScreen(
         is Action.OpenItem -> nav.toReport(token, budgetId, action.id)
         is Action.Rename -> viewModel.renameReport(action.id)
         is Action.Delete -> viewModel.deleteReport(action.id)
+        is Action.SetSummaryType -> TODO()
+        is Action.SetAllTimeDivisor -> TODO()
       }
     },
   )

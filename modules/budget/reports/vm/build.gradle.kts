@@ -8,6 +8,7 @@ dependencies {
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
   implementation(project(":modules:account:model"))
+  implementation(project(":modules:core:model"))
   implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
 }

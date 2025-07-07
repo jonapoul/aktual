@@ -7,7 +7,6 @@ import actual.core.ui.BareIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
-import actual.core.ui.WithNumberFormatConfig
 import actual.core.ui.formattedString
 import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
@@ -255,25 +254,21 @@ private fun String?.orEmptyString() = this ?: Strings.transactionsItemEmpty
 @Preview
 @Composable
 private fun PreviewListItem() = PreviewColumn {
-  WithNumberFormatConfig {
-    TransactionItem(
-      transaction = TRANSACTION_1,
-      format = TransactionsFormat.List,
-      source = StateSource.Empty,
-      onAction = {},
-    )
-  }
+  TransactionItem(
+    transaction = TRANSACTION_1,
+    format = TransactionsFormat.List,
+    source = StateSource.Empty,
+    onAction = {},
+  )
 }
 
 @Preview
 @Composable
 private fun PreviewTableItem() = PreviewColumn {
-  WithNumberFormatConfig {
-    TransactionItem(
-      transaction = TRANSACTION_1,
-      format = TransactionsFormat.Table,
-      source = StateSource.Empty,
-      onAction = {},
-    )
-  }
+  TransactionItem(
+    transaction = TRANSACTION_1,
+    format = TransactionsFormat.Table,
+    source = StateSource.Empty,
+    onAction = {},
+  )
 }

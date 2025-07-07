@@ -266,7 +266,7 @@ private fun DeterminateWheel(
     contentAlignment = Alignment.Center,
   ) {
     val animatedProgress by animateFloatAsState(
-      targetValue = percent.value / 100f,
+      targetValue = percent.floatValue / 100f,
       animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
     )
 
@@ -324,7 +324,7 @@ private fun SyncStep.string(): String = when (this) {
 @Composable
 @ReadOnlyComposable
 private fun SyncStepState.string(): String = when (this) {
-  is SyncStepState.InProgress.Definite -> Strings.syncStateDefinite(progress.value)
+  is SyncStepState.InProgress.Definite -> Strings.syncStateDefinite(progress.intValue)
   SyncStepState.InProgress.Indefinite -> Strings.syncStateIndefinite
   SyncStepState.NotStarted -> Strings.syncStateNotStarted
   is SyncStepState.Failed -> Strings.syncStateFailed(moreInfo)

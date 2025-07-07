@@ -12,6 +12,7 @@ data class ReportDashboardItem(
   val name: String,
   val range: ReportRange,
   val values: ReportValues,
+  val data: ChartData,
 )
 
 @Immutable
