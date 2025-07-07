@@ -1,5 +1,5 @@
-import actual.budget.model.YearAndMonth;
+import kotlinx.datetime.YearMonth;
 
 CREATE TABLE IF NOT EXISTS created_budgets (
-  month TEXT AS YearAndMonth PRIMARY KEY
+  month TEXT AS YearMonth PRIMARY KEY
 );

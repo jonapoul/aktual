@@ -2,7 +2,6 @@ package actual.budget.reports.ui.charts
 
 import actual.budget.model.Amount
 import actual.budget.model.NumberFormatConfig
-import actual.budget.model.YearAndMonth
 import actual.core.ui.LocalNumberFormatConfig
 import actual.core.ui.LocalTheme
 import actual.core.ui.Theme
@@ -34,6 +33,8 @@ import com.patrykandpatrick.vico.core.common.component.TextComponent
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import com.patrykandpatrick.vico.core.common.shape.Shape
 import kotlinx.datetime.Month
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.number
 import kotlin.math.roundToLong
 
 @Composable
@@ -74,7 +75,7 @@ internal fun hItemPlacer(compact: Boolean) = if (compact) {
 @Composable
 internal fun xAxisFormatter(androidContext: Context = LocalContext.current) = remember(androidContext) {
   CartesianValueFormatter { _, value, _ ->
-    val date = YearAndMonth.fromMonthNumber(value.roundToLong())
+    val date = YearMonth.fromMonthNumber(value.roundToLong())
     val month = androidContext.getString(date.month.resId())
     val year = date.year.toString().substring(startIndex = 2)
     "$month $year"
@@ -138,5 +139,17 @@ internal fun rememberMarker(
     },
     indicatorSize = 36.dp,
     guideline = guideline,
+  )
+}
+
+private const val MONTHS_PER_YEAR = 12L
+
+internal fun YearMonth.monthNumber(): Long = (year * MONTHS_PER_YEAR) + month.number
+
+internal fun YearMonth.Companion.fromMonthNumber(number: Long): YearMonth {
+  val adjustedNumber = number - 1 // Convert to 0-based indexing
+  return YearMonth(
+    year = (adjustedNumber / MONTHS_PER_YEAR).toInt(),
+    month = Month(((adjustedNumber % MONTHS_PER_YEAR) + 1).toInt()),
   )
 }

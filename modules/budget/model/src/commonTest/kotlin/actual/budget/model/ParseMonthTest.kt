@@ -3,6 +3,7 @@ package actual.budget.model
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
 import kotlinx.datetime.Month
+import kotlinx.datetime.YearMonth
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -18,7 +19,7 @@ class ParseMonthTest(
 
   @Test
   fun `Parse and stringify`() {
-    val date = ReportDate.Month(YearAndMonth(case.year, case.month))
+    val date = ReportDate.Month(YearMonth(case.year, case.month))
     assertEquals(expected = case.expected, actual = date.toString())
     assertEquals(expected = date, actual = ReportDate.parse(case.expected))
   }
