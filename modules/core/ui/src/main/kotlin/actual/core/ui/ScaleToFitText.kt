@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.runBlocking
 
 // TODO: Remove UnusedBoxWithConstraintsScope suppression when https://issuetracker.google.com/issues/429780473 is fixed
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -51,39 +52,48 @@ fun ScaleToFitText(
     var fontSize by remember { mutableStateOf(maxTextSize) }
     val textMeasurer = rememberTextMeasurer()
 
-    LaunchedEffect(text, maxWidthPx, maxHeightPx) {
-      var minSize = minTextSize.value
-      var maxSize = maxTextSize.value
+    val resizingText: () -> Unit = remember {
+      {
+        var minSize = minTextSize.value
+        var maxSize = maxTextSize.value
 
-      while (minSize <= maxSize) {
-        val midSize = (minSize + maxSize) / 2f
-        val testStyle = style.copy(fontSize = midSize.sp)
+        while (minSize <= maxSize) {
+          val midSize = (minSize + maxSize) / 2f
+          val testStyle = style.copy(fontSize = midSize.sp)
 
-        val result = textMeasurer.measure(
-          text = text,
-          style = testStyle,
-          constraints = Constraints(maxWidth = maxWidthPx.toInt(), maxHeight = maxHeightPx.toInt()),
-          maxLines = maxLines,
-        )
+          val result = textMeasurer.measure(
+            text = text,
+            style = testStyle,
+            constraints = Constraints(maxWidth = maxWidthPx.toInt(), maxHeight = maxHeightPx.toInt()),
+            maxLines = maxLines,
+          )
 
-        val shouldReduceFont = with(result) {
-          hasVisualOverflow || size.width > maxWidthPx || size.height > maxHeightPx
-        }
-        if (shouldReduceFont) {
-          maxSize = midSize - SIZE_ITERATOR
-        } else {
-          minSize = midSize + SIZE_ITERATOR
-          fontSize = midSize.sp
+          val shouldReduceFont = with(result) {
+            hasVisualOverflow || size.width > maxWidthPx || size.height > maxHeightPx
+          }
+          if (shouldReduceFont) {
+            maxSize = midSize - SIZE_ITERATOR
+          } else {
+            minSize = midSize + SIZE_ITERATOR
+            fontSize = midSize.sp
+          }
         }
       }
+    }
+
+    if (isInPreview()) {
+      runBlocking { resizingText() }
+    } else {
+      LaunchedEffect(text, maxWidthPx, maxHeightPx) { resizingText() }
     }
 
     Text(
       modifier = Modifier.wrapContentSize(),
       text = text,
-      style = style.copy(fontSize = fontSize),
+      style = style,
       maxLines = maxLines,
       color = color,
+      fontSize = fontSize,
     )
   }
 }

@@ -1,4 +1,4 @@
-package actual.budget.reports.ui.charts
+package actual.budget.reports.ui.charts.calendar
 
 import actual.budget.model.Amount
 import actual.budget.reports.vm.CalendarData
@@ -10,8 +10,8 @@ import kotlinx.datetime.YearMonth
 
 internal object PreviewCalendar {
   val JAN_2025 = CalendarMonth(
-    income = Amount(57_958.86),
-    expenses = Amount(38_227.88),
+    income = Amount(5678.90),
+    expenses = Amount(3456.78),
     month = YearMonth(2025, Month.JANUARY),
     days = persistentListOf(
       day(day = -2),
@@ -32,7 +32,7 @@ internal object PreviewCalendar {
       day(day = 14, expenses = 46.66),
       day(day = 15, expenses = 20.4),
       day(day = 16, expenses = 17.85),
-      day(day = 17, income = 1666.1),
+      day(day = 17, income = 666.1),
       day(day = 18, income = 714.76, expenses = 745.96),
       day(day = 19, income = 123.45),
       day(day = 20),
@@ -46,11 +46,12 @@ internal object PreviewCalendar {
       day(day = 28),
       day(day = 29, income = 24, expenses = 24),
       day(day = 30, expenses = 166),
-      day(day = 31, income = 12345.67),
+      day(day = 31, income = 2345.67),
     ),
   )
 
   val ONE_MONTH = CalendarData(
+    title = "My Calendar",
     start = YearMonth(2025, Month.JANUARY),
     end = YearMonth(2025, Month.JANUARY),
     income = Amount(5795.88),
@@ -59,6 +60,7 @@ internal object PreviewCalendar {
   )
 
   val THREE_MONTHS = CalendarData(
+    title = "My Calendar",
     start = YearMonth(2025, Month.JANUARY),
     end = YearMonth(2025, Month.MARCH),
     income = Amount(57958.8),
@@ -70,7 +72,7 @@ internal object PreviewCalendar {
     ),
   )
 
-  private fun day(day: Int, income: Number = 0, expenses: Number = 0) = CalendarDay(
+  internal fun day(day: Int, income: Number = 0, expenses: Number = 0) = CalendarDay(
     day = day,
     income = Amount(income.toDouble()),
     expenses = Amount(expenses.toDouble()),

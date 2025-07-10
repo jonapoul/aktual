@@ -25,6 +25,8 @@ value class Amount(private val value: Long) : Comparable<Amount> {
 
   operator fun unaryMinus() = Amount(-value)
 
+  operator fun div(other: Amount): Float = (value.toDouble() / other.value.toDouble()).toFloat()
+
   fun toFloat(): Float = toDouble().toFloat()
 
   fun toDouble(): Double = value / FACTOR

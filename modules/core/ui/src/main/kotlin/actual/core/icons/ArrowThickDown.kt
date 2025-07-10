@@ -17,25 +17,26 @@ val ActualIcons.ArrowThickDown: ImageVector
     if (icon != null) {
       return icon!!
     }
-    icon = ImageVector.Builder(
-      name = "ArrowThickDown",
-      defaultWidth = 20.dp,
-      defaultHeight = 20.dp,
-      viewportWidth = 20f,
-      viewportHeight = 20f,
-    ).apply {
-      path(fill = SolidColor(Color.Black)) {
-        moveTo(7f, 10f)
-        verticalLineTo(2f)
-        horizontalLineToRelative(6f)
-        verticalLineToRelative(8f)
-        horizontalLineToRelative(5f)
-        lineToRelative(-8f, 8f)
-        lineToRelative(-8f, -8f)
-        horizontalLineToRelative(5f)
-        close()
-      }
-    }.build()
+    icon = ImageVector
+      .Builder(
+        name = "ArrowThickDown",
+        defaultWidth = 20.dp,
+        defaultHeight = 20.dp,
+        viewportWidth = 20f,
+        viewportHeight = 20f,
+      ).apply {
+        path(fill = SolidColor(Color.Black)) {
+          moveTo(7f, 10f)
+          verticalLineTo(2f)
+          horizontalLineToRelative(6f)
+          verticalLineToRelative(8f)
+          horizontalLineToRelative(5f)
+          lineToRelative(-8f, 8f)
+          lineToRelative(-8f, -8f)
+          horizontalLineToRelative(5f)
+          close()
+        }
+      }.build()
 
     return icon!!
   }
