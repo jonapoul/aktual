@@ -2,6 +2,10 @@ package actual.budget.reports.ui
 
 import actual.budget.model.Amount
 import actual.budget.model.ReportDate
+import actual.budget.reports.ui.ReportDashboardItems.ITEM_1
+import actual.budget.reports.ui.ReportDashboardItems.ITEM_2
+import actual.budget.reports.ui.ReportDashboardItems.ITEM_3
+import actual.budget.reports.ui.charts.ReportChart
 import actual.budget.reports.vm.ReportDashboardItem
 import actual.budget.reports.vm.ReportRange
 import actual.budget.reports.vm.ReportValues
@@ -9,7 +13,6 @@ import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
-import actual.core.ui.WithNumberFormatConfig
 import actual.core.ui.formattedString
 import actual.l10n.Strings
 import androidx.compose.foundation.background
@@ -77,6 +80,14 @@ internal fun ReportDashboardItem(
       onDismiss = { showContextMenu = false },
       onAction = onAction,
     )
+
+    ReportChart(
+      modifier = Modifier.fillMaxWidth(),
+      data = item.data,
+      compact = true,
+      onAction = onAction,
+      theme = theme,
+    )
   }
 }
 
@@ -101,7 +112,7 @@ private fun ReportDropDownMenu(
     },
   )
   DropdownMenuItem(
-    text = { Text(Strings.reportsDashboardRename) },
+    text = { Text(Strings.reportsDashboardDelete) },
     leadingIcon = { Icon(Icons.Filled.Delete, Strings.reportsDashboardDelete) },
     onClick = {
       onDismiss()
@@ -184,39 +195,33 @@ private fun ReportRange.string(): String = when (this) {
 @Composable
 @ReadOnlyComposable
 private fun ReportDate.string(): String = when (this) {
-  is ReportDate.Month -> yearAndMonth.toString()
+  is ReportDate.Month -> yearMonth.toString()
   is ReportDate.Date -> date.toString()
 }
 
 @Preview
 @Composable
 private fun PreviewItem1() = PreviewColumn {
-  WithNumberFormatConfig {
-    ReportDashboardItem(
-      item = ITEM_1,
-      onAction = {},
-    )
-  }
+  ReportDashboardItem(
+    item = ITEM_1,
+    onAction = {},
+  )
 }
 
 @Preview
 @Composable
 private fun PreviewItem2() = PreviewColumn {
-  WithNumberFormatConfig {
-    ReportDashboardItem(
-      item = ITEM_2,
-      onAction = {},
-    )
-  }
+  ReportDashboardItem(
+    item = ITEM_2,
+    onAction = {},
+  )
 }
 
 @Preview
 @Composable
 private fun PreviewItem3() = PreviewColumn {
-  WithNumberFormatConfig {
-    ReportDashboardItem(
-      item = ITEM_3,
-      onAction = {},
-    )
-  }
+  ReportDashboardItem(
+    item = ITEM_3,
+    onAction = {},
+  )
 }

@@ -9,7 +9,7 @@ kotlin {
     api(libs.alakazam.kotlin.core)
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
-    api(projects.modules.core.model)
+    api(project(":modules:core:model"))
     implementation(libs.alakazam.kotlin.logging)
     implementation(libs.ktor.auth)
     implementation(libs.ktor.cio)

@@ -14,10 +14,10 @@ kotlin {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.preferences.core)
-    implementation(projects.modules.api.actual)
-    implementation(projects.modules.api.builder)
-    implementation(projects.modules.core.model)
-    implementation(projects.modules.prefs)
+    implementation(project(":modules:api:actual"))
+    implementation(project(":modules:api:builder"))
+    implementation(project(":modules:core:model"))
+    implementation(project(":modules:prefs"))
   }
 
   androidUnitTestDependencies {

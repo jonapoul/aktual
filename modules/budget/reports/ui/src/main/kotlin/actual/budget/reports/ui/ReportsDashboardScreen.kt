@@ -2,6 +2,9 @@ package actual.budget.reports.ui
 
 import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
+import actual.budget.reports.ui.ReportDashboardItems.ITEM_1
+import actual.budget.reports.ui.ReportDashboardItems.ITEM_2
+import actual.budget.reports.ui.ReportDashboardItems.ITEM_3
 import actual.budget.reports.vm.DashboardState
 import actual.budget.reports.vm.ReportDashboardItem
 import actual.budget.reports.vm.ReportsDashboardViewModel
@@ -56,6 +59,8 @@ fun ReportsDashboardScreen(
         is Action.OpenItem -> nav.toReport(token, budgetId, action.id)
         is Action.Rename -> viewModel.renameReport(action.id)
         is Action.Delete -> viewModel.deleteReport(action.id)
+        is Action.SetSummaryType -> TODO()
+        is Action.SetAllTimeDivisor -> TODO()
       }
     },
   )

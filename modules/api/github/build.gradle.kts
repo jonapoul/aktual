@@ -11,12 +11,12 @@ kotlin {
   commonMainDependencies {
     api(libs.kotlinx.serialization.core)
     api(libs.ktor.core)
-    api(projects.modules.core.model)
+    api(project(":modules:core:model"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.serialization.core)
     implementation(libs.ktor.serialization.json)
-    implementation(projects.modules.codegen.annotation)
+    implementation(project(":modules:codegen:annotation"))
   }
 }
 
-kspAllConfigs(projects.modules.codegen.ksp)
+kspAllConfigs(project(":modules:codegen:ksp"))

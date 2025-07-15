@@ -31,9 +31,10 @@ buildConfig {
 
 kotlin {
   commonMainDependencies {
+    api(libs.kotlinx.datetime)
     api(libs.preferences.core)
-    api(projects.modules.budget.model)
-    api(projects.modules.core.model)
+    api(project(":modules:budget:model"))
+    api(project(":modules:core:model"))
     implementation(libs.alakazam.db.sqldelight)
     implementation(libs.alakazam.kotlin.logging)
     implementation(libs.kotlinx.serialization.json)
