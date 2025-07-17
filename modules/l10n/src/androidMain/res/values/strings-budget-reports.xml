@@ -5,40 +5,6 @@
   <string name="reports_dashboard_empty">No reports</string>
   <string name="reports_dashboard_range">%1$s to %2$s</string>
 
-  <string name="reports_month_jan">Jan</string>
-  <string name="reports_month_feb">Feb</string>
-  <string name="reports_month_mar">Mar</string>
-  <string name="reports_month_apr">Apr</string>
-  <string name="reports_month_may">May</string>
-  <string name="reports_month_jun">Jun</string>
-  <string name="reports_month_jul">Jul</string>
-  <string name="reports_month_aug">Aug</string>
-  <string name="reports_month_sep">Sep</string>
-  <string name="reports_month_oct">Oct</string>
-  <string name="reports_month_nov">Nov</string>
-  <string name="reports_month_dec">Dec</string>
-
-  <string name="reports_month_jan_l">January</string>
-  <string name="reports_month_feb_l">February</string>
-  <string name="reports_month_mar_l">March</string>
-  <string name="reports_month_apr_l">April</string>
-  <string name="reports_month_may_l">May</string>
-  <string name="reports_month_jun_l">June</string>
-  <string name="reports_month_jul_l">July</string>
-  <string name="reports_month_aug_l">August</string>
-  <string name="reports_month_sep_l">September</string>
-  <string name="reports_month_oct_l">October</string>
-  <string name="reports_month_nov_l">November</string>
-  <string name="reports_month_dec_l">December</string>
-
-  <string name="reports_week_mon">M</string>
-  <string name="reports_week_tue">T</string>
-  <string name="reports_week_wed">W</string>
-  <string name="reports_week_thu">T</string>
-  <string name="reports_week_fri">F</string>
-  <string name="reports_week_sat">S</string>
-  <string name="reports_week_sun">S</string>
-
   <string name="reports_summary_show_as">Show as:</string>
   <string name="reports_summary_sum">Sum</string>
   <string name="reports_summary_per_month">Average per month</string>
@@ -52,4 +18,20 @@
 
   <string name="reports_calendar_income">Income:</string>
   <string name="reports_calendar_expenses">Expenses:</string>
+
+  <string name="reports_date_config_live">Live</string>
+  <string name="reports_date_config_static">Static</string>
+  <string name="reports_date_config_start">Range start:</string>
+  <string name="reports_date_config_end">Range end:</string>
+
+  <string name="reports_date_type_this_week">This week</string>
+  <string name="reports_date_type_last_week">Last week</string>
+  <string name="reports_date_type_this_month">This month</string>
+  <string name="reports_date_type_last_month">Last month</string>
+  <string name="reports_date_type_last_3_months">Last 3 months</string>
+  <string name="reports_date_type_last_6_months">Last 6 months</string>
+  <string name="reports_date_type_last_12_months">Last 12 months</string>
+  <string name="reports_date_type_year_to_date">Year to date</string>
+  <string name="reports_date_type_last_year">Last year</string>
+  <string name="reports_date_type_all_time">All time</string>
 </resources>

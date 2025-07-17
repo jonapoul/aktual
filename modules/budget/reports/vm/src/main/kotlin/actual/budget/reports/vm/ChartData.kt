@@ -7,6 +7,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.YearMonthRange
 
 @Immutable
 sealed interface ChartData
@@ -90,6 +91,7 @@ enum class SummaryChartType {
 
 @Immutable
 data class CalendarData(
+  val title: String,
   val start: YearMonth,
   val end: YearMonth,
   val income: Amount,
@@ -110,4 +112,18 @@ data class CalendarDay(
   val day: Int,
   val income: Amount,
   val expenses: Amount,
+)
+
+@Immutable
+enum class DateRangeMode {
+  Live,
+  Static,
+}
+
+@Immutable
+data class ChartDateConfig(
+  val mode: DateRangeMode,
+  val start: YearMonth,
+  val end: YearMonth,
+  val range: YearMonthRange,
 )

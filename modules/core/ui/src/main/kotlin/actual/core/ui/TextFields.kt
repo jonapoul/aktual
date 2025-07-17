@@ -1,5 +1,6 @@
 package actual.core.ui
 
+import actual.budget.model.DateRangeType
 import actual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -33,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun TextField(
@@ -121,10 +123,27 @@ fun ExposedDropDownMenu(
   onValueChange: (String) -> Unit,
   options: ImmutableList<String>,
   modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) = ExposedDropDownMenu(
+  value = value,
+  onValueChange = onValueChange,
+  options = options,
+  modifier = modifier,
+  theme = theme,
+  string = { it },
+)
+
+@Composable
+fun <T> ExposedDropDownMenu(
+  value: T,
+  onValueChange: (T) -> Unit,
+  options: ImmutableList<T>,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+  string: @Composable (T) -> String,
 ) {
   var expanded by remember { mutableStateOf(false) }
-  var selectedOptionText by remember { mutableStateOf(value) }
-  val theme = LocalTheme.current
+  var selectedOption by remember { mutableStateOf(value) }
 
   ExposedDropdownMenuBox(
     modifier = modifier,
@@ -135,10 +154,11 @@ fun ExposedDropDownMenu(
       modifier = Modifier.menuAnchor(MenuAnchorType.PrimaryNotEditable, enabled = true),
       readOnly = true,
       placeholderText = null,
-      value = selectedOptionText,
-      onValueChange = onValueChange,
+      value = string(selectedOption),
+      onValueChange = {},
       trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
       colors = theme.exposedDropDownMenu(),
+      theme = theme,
     )
 
     ExposedDropdownMenu(
@@ -147,14 +167,14 @@ fun ExposedDropDownMenu(
       onDismissRequest = { expanded = false },
     ) {
       val itemColors = theme.dropDownMenuItem()
-      options.forEach { selectionOption ->
+      options.forEach { o ->
         DropdownMenuItem(
-          text = { Text(selectionOption) },
+          text = { Text(string(o)) },
           contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,
           colors = itemColors,
           onClick = {
-            selectedOptionText = selectionOption
-            onValueChange(selectionOption)
+            selectedOption = o
+            onValueChange(o)
             expanded = false
           },
         )
@@ -216,5 +236,25 @@ private fun PreviewDropDownMenuForcedWidth() = PreviewColumn {
     value = value,
     onValueChange = { newValue -> value = newValue },
     options = options,
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewDropDownMenuEnum() = PreviewColumn {
+  var value by remember { mutableStateOf(DateRangeType.YearToDate) }
+  val options = DateRangeType.entries.toImmutableList()
+  ExposedDropDownMenu(
+    value = value,
+    onValueChange = { newValue -> value = newValue },
+    options = options,
+    string = { type ->
+      when (type) {
+        DateRangeType.YearToDate -> "YTD"
+        DateRangeType.LastYear -> "Last Year"
+        DateRangeType.AllTime -> "All Time with some more text"
+        else -> type.name
+      }
+    },
   )
 }

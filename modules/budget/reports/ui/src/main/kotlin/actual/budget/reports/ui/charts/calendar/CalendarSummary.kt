@@ -5,6 +5,7 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.formattedString
+import actual.core.ui.stringShort
 import actual.l10n.Strings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,8 +36,8 @@ internal fun CalendarSummary(
       overflow = TextOverflow.Ellipsis,
     )
 
-    val start = stringShort(data.start)
-    val end = stringShort(data.end)
+    val start = data.start.stringShort()
+    val end = data.end.stringShort()
     Text(
       text = "$start - $end",
       color = theme.pageTextSubdued,

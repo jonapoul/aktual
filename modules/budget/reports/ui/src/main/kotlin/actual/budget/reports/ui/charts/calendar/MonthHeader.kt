@@ -9,6 +9,7 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.formattedString
+import actual.core.ui.stringLong
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,7 +44,7 @@ internal fun MonthHeader(
   if (!compact) {
     Text(
       modifier = Modifier.weight(1f),
-      text = stringLong(month.month),
+      text = month.month.stringLong(),
       fontWeight = FontWeight.Bold,
       color = theme.pageTextSubdued,
     )
@@ -52,7 +53,7 @@ internal fun MonthHeader(
   if (compact) {
     Income(
       modifier = Modifier.wrapContentWidth(),
-      compact = compact,
+      compact = true,
       month = month,
       theme = theme,
     )
@@ -61,7 +62,7 @@ internal fun MonthHeader(
 
     Expenses(
       modifier = Modifier.wrapContentWidth(),
-      compact = compact,
+      compact = true,
       month = month,
       theme = theme,
     )
@@ -73,13 +74,13 @@ internal fun MonthHeader(
     ) {
       Income(
         modifier = Modifier.fillMaxWidth(),
-        compact = compact,
+        compact = false,
         month = month,
         theme = theme,
       )
       Expenses(
         modifier = Modifier.fillMaxWidth(),
-        compact = compact,
+        compact = false,
         month = month,
         theme = theme,
       )

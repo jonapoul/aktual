@@ -10,6 +10,7 @@ import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.core.ui.stringShort
 import alakazam.android.ui.compose.VerticalSpacer
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -68,7 +69,7 @@ internal fun CalendarMonth(
     DayOfWeek.entries.fastForEach { day ->
       Text(
         modifier = Modifier.weight(1f),
-        text = stringShort(day),
+        text = day.stringShort(),
         textAlign = TextAlign.Center,
         color = theme.pageTextSubdued,
       )
@@ -124,13 +125,12 @@ private fun CalendarMonth.toWeeks(): ImmutableList<ImmutableList<CalendarDay>> {
 private const val DAYS_PER_WEEK = 7
 private val TABLE_SPACING = 2.dp
 
-
 @Preview(heightDp = 900)
 @Composable
 private fun PreviewMonth() = PreviewColumn {
   CalendarMonth(
     month = PreviewCalendar.JAN_2025,
     compact = false,
-    onAction = {}
+    onAction = {},
   )
 }
