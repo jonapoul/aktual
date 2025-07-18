@@ -52,8 +52,8 @@ fun <T> SlidingToggleButton(
   require(options.isNotEmpty()) { "Passed an empty options list into SlidingToggleButton" }
 
   val optionCount = options.size
-  val singleOptionWidth = singleOptionWidth.takeIf { !it.isUnspecified } ?: 100.dp
-  val buttonWidth = singleOptionWidth * optionCount
+  val realSingleOptionWidth = singleOptionWidth.takeIf { !it.isUnspecified } ?: 100.dp
+  val buttonWidth = realSingleOptionWidth * optionCount
   val shape = RoundedCornerShape(radius)
 
   val slideOffset by animateFloatAsState(
@@ -73,8 +73,8 @@ fun <T> SlidingToggleButton(
     Box(
       modifier = Modifier
         .fillMaxHeight()
-        .width(singleOptionWidth)
-        .offset(x = slideOffset * singleOptionWidth)
+        .width(realSingleOptionWidth)
+        .offset(x = slideOffset * realSingleOptionWidth)
         .clip(RoundedCornerShape(radius))
         .background(theme.buttonPrimaryBackground),
     )
@@ -86,7 +86,7 @@ fun <T> SlidingToggleButton(
       options.fastForEachIndexed { index, option ->
         Box(
           modifier = Modifier
-            .width(singleOptionWidth)
+            .width(realSingleOptionWidth)
             .fillMaxHeight()
             .clickable { onSelectOption(index) },
           contentAlignment = Alignment.Center,

@@ -18,6 +18,7 @@ class ModuleHilt : Plugin<Project> {
       apply(ConventionKotlinJvm::class.java)
       apply(ConventionIdea::class.java)
       apply(ConventionStyle::class.java)
+      apply(ConventionTest::class.java)
       apply(DependencyAnalysisPlugin::class.java)
       apply(ConventionSortDependencies::class.java)
     }

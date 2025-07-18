@@ -27,6 +27,7 @@ import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -54,6 +55,11 @@ class TransactionsViewModelTest {
     val factory = AndroidSqlDriverFactory(BUDGET_ID, context, files)
     driver = factory.create()
     database = buildDatabase(driver)
+  }
+
+  @AfterTest
+  fun after() {
+    driver.close()
   }
 
   private suspend fun TestScope.buildViewModel(spec: AccountSpec) {
