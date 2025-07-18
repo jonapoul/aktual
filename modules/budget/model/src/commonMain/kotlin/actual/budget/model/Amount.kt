@@ -39,6 +39,7 @@ value class Amount(private val value: Long) : Comparable<Amount> {
   fun toString(
     config: NumberFormatConfig,
     includeSign: Boolean,
+    isPrivacyEnabled: Boolean,
   ): String = buildString {
     if (includeSign) append(if (value > 0) "+" else "-")
 
@@ -58,6 +59,9 @@ value class Amount(private val value: Long) : Comparable<Amount> {
     }
 
     append(numberFormat.format(toDouble().absoluteValue))
+  }.let { string ->
+    val numberCount = string.count { it.isDigit() }
+    if (isPrivacyEnabled) "~".repeat(numberCount) else string
   }
 
   companion object {
