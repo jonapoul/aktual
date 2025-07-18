@@ -1,6 +1,6 @@
 package actual.budget.reports.ui.charts
 
-import actual.budget.reports.ui.Action
+import actual.budget.reports.ui.ActionListener
 import actual.budget.reports.vm.CalendarData
 import actual.budget.reports.vm.CashFlowData
 import actual.budget.reports.vm.ChartData
@@ -15,7 +15,7 @@ internal fun ReportChart(
   data: ChartData,
   compact: Boolean,
   theme: Theme,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) = when (data) {
   is CashFlowData -> CashFlowChart(data, compact, modifier, theme)

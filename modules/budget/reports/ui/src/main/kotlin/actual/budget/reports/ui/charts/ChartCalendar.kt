@@ -5,6 +5,7 @@ package actual.budget.reports.ui.charts
 
 import actual.budget.model.Amount
 import actual.budget.reports.ui.Action
+import actual.budget.reports.ui.ActionListener
 import actual.budget.reports.ui.charts.PreviewShared.HEIGHT
 import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.CalendarData
@@ -75,7 +76,7 @@ import my.nanihadesuka.compose.LazyRowScrollbar
 internal fun CalendarChart(
   data: CalendarData,
   compact: Boolean,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = if (compact) {
@@ -87,7 +88,7 @@ internal fun CalendarChart(
 @Composable
 private fun CompactCalendarChart(
   data: CalendarData,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -120,7 +121,7 @@ private fun CompactCalendarChart(
 @Composable
 private fun RegularCalendarChart(
   data: CalendarData,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = Column(
@@ -395,7 +396,7 @@ private fun PreviewSummaryThreeMonthsCompact() = PreviewColumn {
 private fun DayButton(
   day: CalendarDay,
   month: CalendarMonth,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = BoxWithConstraints(
@@ -535,7 +536,7 @@ private fun PreviewDayTiny() = PreviewColumn {
 private fun CalendarMonth(
   month: CalendarMonth,
   compact: Boolean,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
   minSize: Dp = 300.dp,
