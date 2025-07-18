@@ -3,6 +3,7 @@ package actual.budget.reports.ui.charts
 import actual.budget.model.Amount
 import actual.budget.model.NumberFormatConfig
 import actual.core.ui.LocalNumberFormatConfig
+import actual.core.ui.LocalPrivacyEnabled
 import actual.core.ui.LocalTheme
 import actual.core.ui.Theme
 import actual.l10n.R
@@ -83,9 +84,16 @@ internal fun xAxisFormatter(androidContext: Context = LocalContext.current) = re
 }
 
 @Composable
-internal fun yAxisFormatter(config: NumberFormatConfig = LocalNumberFormatConfig.current) = remember(config) {
+internal fun yAxisFormatter(
+  config: NumberFormatConfig = LocalNumberFormatConfig.current,
+  isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
+) = remember(config, isPrivacyEnabled) {
   CartesianValueFormatter { _, value, _ ->
-    Amount(value).toString(config.copy(hideFraction = true), includeSign = true)
+    Amount(value).toString(
+      config = config.copy(hideFraction = true),
+      includeSign = true,
+      isPrivacyEnabled = isPrivacyEnabled,
+    )
   }
 }
 

@@ -52,7 +52,7 @@ internal class ActualActivityViewModel @Inject constructor(
 ) : ViewModel() {
   private val component = budgetComponents.stateIn(viewModelScope, Eagerly, initialValue = null)
 
-  private val syncedPrefs = component
+  private val syncedPrefs: StateFlow<PreferencesDao?> = component
     .filterNotNull()
     .map { c -> PreferencesDao(c.database, contexts) }
     .stateIn(viewModelScope, Eagerly, initialValue = null)
@@ -65,6 +65,12 @@ internal class ActualActivityViewModel @Inject constructor(
 
   val hideFraction: StateFlow<Boolean> = observeSyncedPref(
     key = SyncedPrefKey.Global.HideFraction,
+    default = false,
+    mapper = { it.toBoolean() },
+  )
+
+  val isPrivacyEnabled: StateFlow<Boolean> = observeSyncedPref(
+    key = SyncedPrefKey.Global.IsPrivacyEnabled,
     default = false,
     mapper = { it.toBoolean() },
   )

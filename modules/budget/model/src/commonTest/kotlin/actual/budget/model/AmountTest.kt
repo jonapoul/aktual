@@ -28,15 +28,23 @@ class AmountTest {
     assertEquals(actual = 123456789.0.amount.toString(format = DotComma), expected = "123.456.789,00")
   }
 
-  private val Double.amount get() = Amount(this)
+  // One dash per digit - not including commas/spaces/dots
+  @Test
+  fun `With privacy`() {
+    assertEquals(actual = 123.0.amount.toString(isPrivacyEnabled = true), expected = "~~~~~")
+    assertEquals(actual = 123.45.amount.toString(isPrivacyEnabled = true), expected = "~~~~~")
+    assertEquals(actual = 1234.56.amount.toString(isPrivacyEnabled = true), expected = "~~~~~~")
+    assertEquals(actual = 123456789.0.amount.toString(isPrivacyEnabled = true), expected = "~~~~~~~~~~~")
+  }
 
-  private val Int.amount get() = Amount(this)
+  private val Double.amount get() = Amount(this)
 
   private fun Amount.toString(
     format: NumberFormat = NumberFormat.CommaDot,
     hideFraction: Boolean = false,
     includeSign: Boolean = false,
-  ) = toString(NumberFormatConfig(format, hideFraction), includeSign)
+    isPrivacyEnabled: Boolean = false,
+  ) = toString(NumberFormatConfig(format, hideFraction), includeSign, isPrivacyEnabled)
 
   private companion object {
     const val WEIRD_SPACE = '\u00A0'

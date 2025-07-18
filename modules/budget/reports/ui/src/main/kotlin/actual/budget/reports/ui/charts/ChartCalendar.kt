@@ -603,12 +603,12 @@ private fun CalendarMonth(
 
 private fun CalendarMonth.toWeeks(): ImmutableList<ImmutableList<CalendarDay>> {
   val weeks = mutableListOf<ImmutableList<CalendarDay>>()
-  var currentWeek = mutableListOf<CalendarDay>()
+  val currentWeek = mutableListOf<CalendarDay>()
   for (day in days) {
     currentWeek.add(day)
     if (currentWeek.size == DAYS_PER_WEEK) {
       weeks.add(currentWeek.toImmutableList())
-      currentWeek = mutableListOf()
+      currentWeek.clear()
     }
   }
   if (currentWeek.isNotEmpty()) {
@@ -623,6 +623,16 @@ private val TABLE_SPACING = 2.dp
 @Preview(heightDp = 900)
 @Composable
 private fun PreviewMonth() = PreviewColumn {
+  CalendarMonth(
+    month = PreviewCalendar.JAN_2025,
+    compact = false,
+    onAction = {},
+  )
+}
+
+@Preview(heightDp = 900)
+@Composable
+private fun PreviewMonthWithPrivacy() = PreviewColumn(isPrivacyEnabled = true) {
   CalendarMonth(
     month = PreviewCalendar.JAN_2025,
     compact = false,

@@ -144,7 +144,7 @@ private fun RowScope.TransactionListItem(
   }
 
   Text(
-    text = transaction.amount.toString(),
+    text = transaction.amount.formattedString(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.End,

@@ -105,6 +105,10 @@ private fun MixedRegular() = PreviewChart(PreviewNetWorth.DATA, compact = false)
 
 @Preview(widthDp = WIDTH)
 @Composable
+private fun MixedRegularPrivate() = PreviewChart(PreviewNetWorth.DATA, compact = false, isPrivacyEnabled = true)
+
+@Preview(widthDp = WIDTH)
+@Composable
 private fun MixedCompact() = PreviewChart(PreviewNetWorth.DATA, compact = true)
 
 @Preview(widthDp = WIDTH)
@@ -124,7 +128,11 @@ private fun NegativeRegular() = PreviewChart(PreviewNetWorth.NEGATIVE_DATA, comp
 private fun NegativeCompact() = PreviewChart(PreviewNetWorth.NEGATIVE_DATA, compact = true)
 
 @Composable
-private fun PreviewChart(data: NetWorthData, compact: Boolean) = PreviewColumn {
+private fun PreviewChart(
+  data: NetWorthData,
+  compact: Boolean,
+  isPrivacyEnabled: Boolean = false,
+) = PreviewColumn(isPrivacyEnabled = isPrivacyEnabled) {
   NetWorthChart(
     modifier = Modifier
       .background(LocalTheme.current.tableBackground, CardShape)

@@ -2,12 +2,14 @@ package actual.budget.transactions.vm
 
 import actual.account.model.LoginToken
 import actual.budget.db.dao.AccountsDao
+import actual.budget.db.dao.PreferencesDao
 import actual.budget.db.dao.TransactionsDao
 import actual.budget.db.transactions.GetById
 import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.model.AccountSpec
 import actual.budget.model.Amount
 import actual.budget.model.BudgetId
+import actual.budget.model.SyncedPrefKey
 import actual.budget.model.TransactionId
 import actual.budget.model.TransactionsFormat
 import actual.budget.model.TransactionsSpec
@@ -53,6 +55,7 @@ class TransactionsViewModel @AssistedInject constructor(
   private val accountsDao = AccountsDao(component.database, contexts)
   private val transactionsDao = TransactionsDao(component.database, contexts)
   private val prefs = component.localPreferences
+  private val syncedPrefs = PreferencesDao(component.database, contexts)
 
   // local data
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
@@ -105,6 +108,12 @@ class TransactionsViewModel @AssistedInject constructor(
   fun setChecked(id: TransactionId, isChecked: Boolean) = checkedTransactionIds.update { it.put(id, isChecked) }
 
   fun setExpanded(date: LocalDate, isExpanded: Boolean) = expandedGroups.update { it.put(date, isExpanded) }
+
+  fun setPrivacyMode(privacyMode: Boolean) {
+    viewModelScope.launch {
+      syncedPrefs[SyncedPrefKey.Global.IsPrivacyEnabled] = privacyMode.toString()
+    }
+  }
 
   fun expandAll(expand: Boolean) {
     expandAllGroups.update { expand }

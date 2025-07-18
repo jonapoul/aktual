@@ -9,6 +9,7 @@ internal sealed interface Action {
   data object NavBack : Action
   data class ExpandGroup(val group: LocalDate, val isExpanded: Boolean) : Action
   data class CheckItem(val id: TransactionId, val isChecked: Boolean) : Action
+  data class SetPrivacyMode(val isPrivacyEnabled: Boolean) : Action
 }
 
 @Immutable
