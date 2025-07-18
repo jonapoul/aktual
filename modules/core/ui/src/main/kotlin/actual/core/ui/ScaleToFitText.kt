@@ -5,7 +5,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.LocalTextStyle
@@ -28,6 +30,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.runBlocking
+import kotlin.math.roundToInt
 
 // TODO: Remove UnusedBoxWithConstraintsScope suppression when https://issuetracker.google.com/issues/429780473 is fixed
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -46,8 +49,8 @@ fun ScaleToFitText(
     contentAlignment = Alignment.Center,
   ) {
     val density = LocalDensity.current
-    val maxWidthPx = with(density) { maxWidth.toPx() }
-    val maxHeightPx = with(density) { maxHeight.toPx() }
+    val maxWidthPx = with(density) { maxWidth.toPx().roundToInt() }
+    val maxHeightPx = with(density) { maxHeight.toPx().roundToInt() }
 
     var fontSize by remember { mutableStateOf(maxTextSize) }
     val textMeasurer = rememberTextMeasurer()
@@ -59,17 +62,16 @@ fun ScaleToFitText(
 
         while (minSize <= maxSize) {
           val midSize = (minSize + maxSize) / 2f
-          val testStyle = style.copy(fontSize = midSize.sp)
 
           val result = textMeasurer.measure(
             text = text,
-            style = testStyle,
-            constraints = Constraints(maxWidth = maxWidthPx.toInt(), maxHeight = maxHeightPx.toInt()),
+            style = style.copy(fontSize = midSize.sp),
+            constraints = Constraints(maxWidth = maxWidthPx, maxHeight = maxHeightPx),
             maxLines = maxLines,
           )
 
           val shouldReduceFont = with(result) {
-            hasVisualOverflow || size.width > maxWidthPx || size.height > maxHeightPx
+            hasVisualOverflow || size.width >= maxWidthPx || size.height >= maxHeightPx
           }
           if (shouldReduceFont) {
             maxSize = midSize - SIZE_ITERATOR
@@ -100,7 +102,6 @@ fun ScaleToFitText(
 
 private const val SIZE_ITERATOR = 0.5f
 
-// NB: need to run interactive mode for this to render in preview
 @Preview
 @Composable
 private fun ScaleToFitTextPreview() {
@@ -123,22 +124,30 @@ private fun ScaleToFitTextPreview() {
       text = "Hello world 30x500",
     )
 
-    ScaleToFitText(
-      modifier = Modifier
-        .height(300.dp)
-        .width(100.dp)
-        .background(Color.Gray)
-        .border(width = 1.dp, color = Color.Green),
-      text = "Hello world 300x100",
-    )
-
-    ScaleToFitText(
-      modifier = Modifier
-        .height(100.dp)
-        .width(500.dp)
-        .background(Color.Gray)
-        .border(width = 1.dp, color = Color.Green),
-      text = "Hello world 300x100 but loads more text here and here's some more",
-    )
+    Row {
+      ScaleToFitText(
+        modifier = Modifier
+          .height(100.dp)
+          .width(100.dp)
+          .background(Color.Gray)
+          .border(width = 1.dp, color = Color.Green),
+        text = "Hello world 100x100",
+      )
+      ScaleToFitText(
+        modifier = Modifier
+          .size(12.dp)
+          .background(Color.Gray)
+          .border(width = 1.dp, color = Color.Yellow),
+        text = "15.dp",
+      )
+      ScaleToFitText(
+        modifier = Modifier
+          .height(100.dp)
+          .weight(1f)
+          .background(Color.Gray)
+          .border(width = 1.dp, color = Color.Cyan),
+        text = "Hello world weighted but loads more text here and here's some more",
+      )
+    }
   }
 }

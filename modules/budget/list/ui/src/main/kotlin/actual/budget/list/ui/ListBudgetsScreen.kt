@@ -15,7 +15,6 @@ import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import android.content.Intent
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -248,7 +247,7 @@ private fun Content(
 }
 
 @Composable
-private fun BoxScope.StateContent(
+private fun StateContent(
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
   theme: Theme = LocalTheme.current,

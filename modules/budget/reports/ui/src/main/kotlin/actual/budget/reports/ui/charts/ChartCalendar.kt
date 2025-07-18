@@ -12,6 +12,7 @@ import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewWithColorScheme
 import actual.core.ui.Theme
+import actual.core.ui.scrollbarSettings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,10 +24,12 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import my.nanihadesuka.compose.LazyRowScrollbar
 
 @Composable
 internal fun CalendarChart(
@@ -47,31 +50,33 @@ private fun CompactCalendarChart(
   onAction: (Action) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = Column(
-  modifier = modifier,
 ) {
-  CalendarSummary(
-    modifier = Modifier
-      .fillMaxWidth()
-      .wrapContentHeight(),
-    data = data,
-    compact = true,
-    theme = theme,
-  )
-
-  LazyRow(
-    horizontalArrangement = Arrangement.spacedBy(4.dp),
+  val listState = rememberLazyListState()
+  LazyRowScrollbar(
+    modifier = modifier,
+    state = listState,
+    settings = theme.scrollbarSettings(),
   ) {
-    items(items = data.months, key = { it.month }) { month ->
-      CalendarMonth(
-        month = month,
-        compact = true,
-        onAction = onAction,
-        theme = theme,
-      )
+    LazyRow(
+      horizontalArrangement = Arrangement.spacedBy(4.dp),
+      state = listState,
+    ) {
+      items(
+        items = data.months,
+        key = { it.month },
+      ) { month ->
+        CalendarMonth(
+          modifier = Modifier.width(500.dp),
+          month = month,
+          compact = true,
+          onAction = onAction,
+          theme = theme,
+        )
+      }
     }
   }
 }
+
 @Composable
 private fun RegularCalendarChart(
   data: CalendarData,
@@ -83,6 +88,7 @@ private fun RegularCalendarChart(
 ) {
   CalendarSummary(
     modifier = Modifier
+      .padding(10.dp)
       .fillMaxWidth()
       .wrapContentHeight(),
     data = data,
@@ -104,11 +110,11 @@ private fun RegularCalendarChart(
   }
 }
 
-@Preview(widthDp = WIDTH, heightDp = HEIGHT)
+@Preview(widthDp = WIDTH, heightDp = 400)
 @Composable
 private fun PreviewCompactOneMonth() = PreviewChart(PreviewCalendar.ONE_MONTH, true)
 
-@Preview(widthDp = WIDTH, heightDp = HEIGHT)
+@Preview(widthDp = WIDTH, heightDp = 400)
 @Composable
 private fun PreviewCompactThreeMonth() = PreviewChart(PreviewCalendar.THREE_MONTHS, true)
 

@@ -1,3 +1,6 @@
+// TODO: Remove UnusedBoxWithConstraintsScope suppression when https://issuetracker.google.com/issues/429780473 is fixed
+@file:SuppressLint("UnusedBoxWithConstraintsScope")
+
 package actual.budget.reports.ui.charts.calendar
 
 import actual.budget.model.Amount
@@ -9,10 +12,12 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.ScaleToFitText
 import actual.core.ui.Theme
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,6 +26,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,18 +37,17 @@ import androidx.compose.ui.unit.dp
 internal fun DayButton(
   day: CalendarDay,
   month: CalendarMonth,
-  compact: Boolean,
   onAction: (Action) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = Box(
+) = BoxWithConstraints(
   modifier = modifier
-    .background(theme.calendarCellBackground, CardShape)
-    .clickable(enabled = day.day >= 1) { onAction(Action.ClickCalendarDay(day)) },
+    .background(if (!day.isValid) Color.Transparent else theme.calendarCellBackground, CardShape)
+    .clickable(enabled = day.isValid) { onAction(Action.ClickCalendarDay(day)) },
   contentAlignment = Alignment.Center,
 ) {
-  if (day.day < 1) {
-    return
+  if (!day.isValid) {
+    return@BoxWithConstraints
   }
 
   Row(
@@ -67,13 +72,15 @@ internal fun DayButton(
     )
   }
 
-  val padding = if (compact) 4.dp else 8.dp
   ScaleToFitText(
-    modifier = Modifier.padding(padding),
+    modifier = Modifier.padding(2.dp),
     text = day.day.toString(),
     color = theme.tableText,
   )
 }
+
+@get:Stable
+private val CalendarDay.isValid get() = day >= 1
 
 @Composable
 internal fun DayBarChart(
@@ -118,7 +125,6 @@ private fun PreviewDayBoth() = PreviewColumn {
     modifier = Modifier.size(100.dp),
     day = PreviewCalendar.day(day = 26, income = 5345.67, expenses = 1234.56),
     month = PreviewCalendar.JAN_2025.copy(income = Amount(10345.89), expenses = Amount(3456.90)),
-    compact = false,
     onAction = {},
   )
 }
@@ -130,7 +136,6 @@ private fun PreviewDayOnlyIncome() = PreviewColumn {
     modifier = Modifier.size(100.dp),
     day = PreviewCalendar.day(day = 26, income = 2345.67),
     month = PreviewCalendar.JAN_2025,
-    compact = false,
     onAction = {},
   )
 }
@@ -142,7 +147,6 @@ private fun PreviewDayOnlyExpenses() = PreviewColumn {
     modifier = Modifier.size(100.dp),
     day = PreviewCalendar.day(day = 26, expenses = 1234.56),
     month = PreviewCalendar.JAN_2025,
-    compact = false,
     onAction = {},
   )
 }
@@ -154,7 +158,17 @@ private fun PreviewDayEmpty() = PreviewColumn {
     modifier = Modifier.size(100.dp),
     day = PreviewCalendar.day(day = 26),
     month = PreviewCalendar.JAN_2025,
-    compact = false,
+    onAction = {},
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewDayTiny() = PreviewColumn {
+  DayButton(
+    modifier = Modifier.size(35.dp),
+    day = PreviewCalendar.day(day = 26),
+    month = PreviewCalendar.JAN_2025,
     onAction = {},
   )
 }

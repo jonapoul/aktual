@@ -28,7 +28,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun MonthHeader(
@@ -41,14 +40,12 @@ internal fun MonthHeader(
   verticalAlignment = Alignment.CenterVertically,
   horizontalArrangement = Arrangement.End,
 ) {
-  if (!compact) {
-    Text(
-      modifier = Modifier.weight(1f),
-      text = month.month.stringLong(),
-      fontWeight = FontWeight.Bold,
-      color = theme.pageTextSubdued,
-    )
-  }
+  Text(
+    modifier = Modifier.weight(1f),
+    text = month.month.stringLong(),
+    fontWeight = FontWeight.Bold,
+    color = theme.pageTextSubdued,
+  )
 
   if (compact) {
     Income(
@@ -109,7 +106,6 @@ private fun Income(
     text = month.income.formattedString(),
     color = theme.reportsBlue,
     textAlign = TextAlign.End,
-    fontSize = fontSize(compact),
   )
 }
 
@@ -134,13 +130,10 @@ private fun Expenses(
     text = month.expenses.formattedString(),
     color = theme.reportsRed,
     textAlign = TextAlign.End,
-    fontSize = fontSize(compact),
   )
 }
 
 private fun iconSize(compact: Boolean) = if (compact) 12.dp else 16.dp
-
-private fun fontSize(compact: Boolean) = if (compact) 10.sp else 12.sp
 
 @Preview
 @Composable
