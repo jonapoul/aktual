@@ -16,3 +16,6 @@ local.properties
 
 # CI
 dependency-graph-reports/
+
+# API secrets
+*.private.env.json

@@ -1,0 +1,17 @@
+###
+# @name data/migrations/1707267033000_reports.sql
+GET {{ACTUAL_BASE_URL}}/data/migrations/1707267033000_reports.sql
+
+<> 1707267033000_reports-success.200.sql
+
+###
+# @name data/default-db.sqlite
+GET {{ACTUAL_BASE_URL}}/data/default-db.sqlite
+
+<> default-db-success.200.octet-stream
+
+###
+# @name data-file-index.txt
+GET {{ACTUAL_BASE_URL}}/data-file-index.txt
+
+<> data-file-index.200.txt

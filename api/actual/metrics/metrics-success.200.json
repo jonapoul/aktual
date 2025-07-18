@@ -1,0 +1,10 @@
+{
+  "mem": {
+    "rss": 112377856,
+    "heapTotal": 32088064,
+    "heapUsed": 29558608,
+    "external": 3925760,
+    "arrayBuffers": 387791
+  },
+  "uptime": 806662.711204594
+}

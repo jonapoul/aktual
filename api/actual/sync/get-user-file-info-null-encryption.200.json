@@ -1,0 +1,18 @@
+{
+  "status": "ok",
+  "data": {
+    "deleted": 0,
+    "fileId": "0e186798-305c-40f9-b609-589ffa138499",
+    "groupId": "2d41985d-064f-461e-8432-23194354ee16",
+    "name": "Test Budget",
+    "encryptMeta": null,
+    "usersWithAccess": [
+      {
+        "userId": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+        "displayName": "",
+        "userName": "",
+        "owner": true
+      }
+    ]
+  }
+}
