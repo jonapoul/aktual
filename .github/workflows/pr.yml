@@ -20,7 +20,7 @@ jobs:
     outputs:
       build: ${{ steps.filter.outputs.build }}
       github: ${{ steps.filter.outputs.github }}
-      kotlin: ${{ steps.filter.outputs.kotlin }}
+      src: ${{ steps.filter.outputs.src }}
       docs: ${{ steps.filter.outputs.docs }}
     steps:
       - uses: actions/checkout@v4
@@ -33,17 +33,19 @@ jobs:
             build:
               - '**.kts'
               - '**.properties'
+              - '**.conf'
               - 'build-logic/**'
               - 'gradle/**'
-            kotlin:
+            src:
               - '**.kt'
               - '**.kts'
+              - '**/src/**'
             docs:
               - '**.md'
 
   ktlint:
     needs: changes
-    if: ${{ needs.changes.outputs.kotlin == 'true' }}
+    if: ${{ needs.changes.outputs.src == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -97,6 +99,10 @@ jobs:
 
   check:
     needs: [ changes, baseline ]
+    if: |
+      always() &&
+      needs.changes.outputs.src == 'true' &&
+      (needs.baseline.result == 'skipped' || needs.baseline.result == 'success')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
