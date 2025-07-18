@@ -74,7 +74,9 @@ internal fun hItemPlacer(compact: Boolean) = if (compact) {
 }
 
 @Composable
-internal fun xAxisFormatter(androidContext: Context = LocalContext.current) = remember(androidContext) {
+internal fun yearMonthXAxisFormatter(
+  androidContext: Context = LocalContext.current,
+) = remember(androidContext) {
   CartesianValueFormatter { _, value, _ ->
     val date = YearMonth.fromMonthNumber(value.roundToLong())
     val month = androidContext.getString(date.month.resId())
@@ -84,7 +86,7 @@ internal fun xAxisFormatter(androidContext: Context = LocalContext.current) = re
 }
 
 @Composable
-internal fun yAxisFormatter(
+internal fun amountYAxisFormatter(
   config: NumberFormatConfig = LocalNumberFormatConfig.current,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
 ) = remember(config, isPrivacyEnabled) {
