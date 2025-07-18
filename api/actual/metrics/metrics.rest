@@ -1,0 +1,6 @@
+###
+# @name metrics
+GET {{ACTUAL_BASE_URL}}/metrics
+
+<> metrics-success.200.json
+// {{ACTUAL_BASE_URL}}/metrics
