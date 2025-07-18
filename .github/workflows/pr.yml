@@ -97,7 +97,7 @@ jobs:
 
   check:
     needs: [ changes, baseline ]
-    if: ${{ needs.baseline.result == 'skipped' || needs.baseline.result == 'success' }}
+    if: always() && (needs.baseline.result == 'skipped' || needs.baseline.result == 'success')
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
