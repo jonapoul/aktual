@@ -115,7 +115,7 @@ private fun PreviewStrings() = PreviewColumn {
     modifier = Modifier.padding(16.dp),
     options = persistentListOf("Option A", "Option B"),
     selectedIndex = selectedA,
-    onSelectOption = { selectedA = it },
+    onSelectOption = { newOption -> selectedA = newOption },
   )
 }
 
@@ -136,7 +136,7 @@ private fun PreviewEnum() = PreviewColumn {
         Interval.Yearly -> "Yearly with loads more text clipped off"
       }
     },
-    onSelectOption = { selectedB = it },
+    onSelectOption = { newOption -> selectedB = newOption },
     singleOptionWidth = 75.dp,
   )
 }
