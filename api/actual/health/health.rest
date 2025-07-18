@@ -1,0 +1,5 @@
+###
+# @name health
+GET {{ACTUAL_BASE_URL}}/health
+
+<> health-success.200.json

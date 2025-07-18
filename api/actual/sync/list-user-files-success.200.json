@@ -1,0 +1,94 @@
+{
+  "status": "ok",
+  "data": [
+    {
+      "deleted": 0,
+      "fileId": "b328186c-c919-4333-959b-04e676c1ee46",
+      "groupId": "afb25fc0-a294-4f71-ae8f-ce1e3a8fec10",
+      "name": "Main Budget",
+      "encryptKeyId": "b98636ab-200f-46be-9763-2af439aa40cb",
+      "owner": null,
+      "usersWithAccess": []
+    },
+    {
+      "deleted": 0,
+      "fileId": "0e186798-305c-40f9-b609-589ffa138499",
+      "groupId": "2d41985d-064f-461e-8432-23194354ee16",
+      "name": "Test Budget",
+      "encryptKeyId": null,
+      "owner": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+      "usersWithAccess": [
+        {
+          "userId": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+          "displayName": "",
+          "userName": "",
+          "owner": true
+        }
+      ]
+    },
+    {
+      "deleted": 0,
+      "fileId": "81dba092-7c25-479b-bf03-854f9a289fe8",
+      "groupId": "cd47aa40-0b6f-462d-a987-22e1a70e6815",
+      "name": "My Finances",
+      "encryptKeyId": "a57fc3bf-fa98-44f2-82b7-54b4755703a9",
+      "owner": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+      "usersWithAccess": [
+        {
+          "userId": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+          "displayName": "",
+          "userName": "",
+          "owner": true
+        }
+      ]
+    },
+    {
+      "deleted": 0,
+      "fileId": "2baeaff2-d800-4f0b-80f2-e49f7a2a1235",
+      "groupId": "3646112e-f45e-4ea4-b673-a7059da84da3",
+      "name": "Yet Another Budget",
+      "encryptKeyId": null,
+      "owner": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+      "usersWithAccess": [
+        {
+          "userId": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+          "displayName": "",
+          "userName": "",
+          "owner": true
+        }
+      ]
+    },
+    {
+      "deleted": 0,
+      "fileId": "657f6253-c412-4458-8a1b-de5b85ed8011",
+      "groupId": "493b2630-132b-4a27-b001-2c3ceb49501a",
+      "name": "srgvbrgbsrd",
+      "encryptKeyId": null,
+      "owner": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+      "usersWithAccess": [
+        {
+          "userId": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+          "displayName": "",
+          "userName": "",
+          "owner": true
+        }
+      ]
+    },
+    {
+      "deleted": 0,
+      "fileId": "3e0add6a-1806-462d-a7d0-3827efdd789a",
+      "groupId": "305a00c1-ca8a-45db-8798-8b9adf6ae8c4",
+      "name": "gyjgyukgkmym",
+      "encryptKeyId": null,
+      "owner": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+      "usersWithAccess": [
+        {
+          "userId": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+          "displayName": "",
+          "userName": "",
+          "owner": true
+        }
+      ]
+    }
+  ]
+}

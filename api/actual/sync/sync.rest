@@ -1,0 +1,40 @@
+###
+# @name sync/download-user-file
+GET {{ACTUAL_BASE_URL}}/sync/download-user-file
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+X-ACTUAL-FILE-ID: {{ACTUAL_MAIN_FILE_ID}}
+
+<> download-user-file-not-found.400.html
+<> download-user-file-unauthorized.401.json
+
+###
+# @name sync/get-user-file-info
+GET {{ACTUAL_BASE_URL}}/sync/get-user-file-info
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+X-ACTUAL-FILE-ID: {{ACTUAL_MAIN_FILE_ID}}
+
+<> get-user-file-info-no-file.400.json
+<> get-user-file-info-null-encryption.200.json
+<> get-user-file-info-success.200.json
+<> get-user-file-info-unauthorized.401.json
+
+###
+# @name sync/list-user-files
+GET {{ACTUAL_BASE_URL}}/sync/list-user-files
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+
+<> list-user-files-success.200.json
+<> list-user-files-unauthorized.401.json
+
+###
+# @name sync/user-get-key
+POST {{ACTUAL_BASE_URL}}/sync/user-get-key
+Content-Type: application/json
+
+{
+    "fileId": "{{ACTUAL_MAIN_FILE_ID}}",
+    "token": "{{ACTUAL_TOKEN}}"
+}
+
+<> user-get-key-success.200.json
+<> user-get-key-unauthorized.401.json

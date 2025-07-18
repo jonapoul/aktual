@@ -1,0 +1,38 @@
+###
+# @name account/bootstrap
+POST {{ACTUAL_BASE_URL}}/account/bootstrap
+Content-Type: application/json
+
+{"password": "{{ACTUAL_PASSWORD}}"}
+
+<> bootstrap-already.400.json
+<> bootstrap-success.200.json
+
+###
+# @name account/change-password
+POST {{ACTUAL_BASE_URL}}/account/change-password
+X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
+Content-Type: application/json
+
+{"password": "{{PASSWORD}}"}
+
+<> change-password-success.200.json
+<> change-password-token-not-found.401.json
+
+###
+# @name account/login
+POST {{ACTUAL_BASE_URL}}/account/login
+Content-Type: application/json
+
+{
+    "password": "{{ACTUAL_PASSWORD}}",
+    "loginMethod": "password"
+}
+
+<> login-success.200.json
+
+###
+# @name account/needs-bootstrap
+GET {{ACTUAL_BASE_URL}}/account/needs-bootstrap
+
+<> needs-bootstrap-success.200.json

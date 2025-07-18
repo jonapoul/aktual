@@ -1,0 +1,15 @@
+{
+  "status": "ok",
+  "data": {
+    "bootstrapped": true,
+    "loginMethod": "password",
+    "availableLoginMethods": [
+      {
+        "method": "password",
+        "active": 1,
+        "displayName": "Password"
+      }
+    ],
+    "multiuser": false
+  }
+}
