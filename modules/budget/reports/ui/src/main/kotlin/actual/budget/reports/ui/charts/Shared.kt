@@ -90,18 +90,18 @@ internal fun yAxisFormatter(config: NumberFormatConfig = LocalNumberFormatConfig
 }
 
 internal fun Month.resId() = when (this) {
-  Month.JANUARY -> R.string.reports_month_jan
-  Month.FEBRUARY -> R.string.reports_month_feb
-  Month.MARCH -> R.string.reports_month_mar
-  Month.APRIL -> R.string.reports_month_apr
-  Month.MAY -> R.string.reports_month_may
-  Month.JUNE -> R.string.reports_month_jun
-  Month.JULY -> R.string.reports_month_jul
-  Month.AUGUST -> R.string.reports_month_aug
-  Month.SEPTEMBER -> R.string.reports_month_sep
-  Month.OCTOBER -> R.string.reports_month_oct
-  Month.NOVEMBER -> R.string.reports_month_nov
-  Month.DECEMBER -> R.string.reports_month_dec
+  Month.JANUARY -> R.string.month_jan_short
+  Month.FEBRUARY -> R.string.month_feb_short
+  Month.MARCH -> R.string.month_mar_short
+  Month.APRIL -> R.string.month_apr_short
+  Month.MAY -> R.string.month_may_short
+  Month.JUNE -> R.string.month_jun_short
+  Month.JULY -> R.string.month_jul_short
+  Month.AUGUST -> R.string.month_aug_short
+  Month.SEPTEMBER -> R.string.month_sep_short
+  Month.OCTOBER -> R.string.month_oct_short
+  Month.NOVEMBER -> R.string.month_nov_short
+  Month.DECEMBER -> R.string.month_dec_short
 }
 
 /**

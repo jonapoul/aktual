@@ -61,6 +61,7 @@ fun ReportsDashboardScreen(
         is Action.Delete -> viewModel.deleteReport(action.id)
         is Action.SetSummaryType -> TODO()
         is Action.SetAllTimeDivisor -> TODO()
+        is Action.ClickCalendarDay -> TODO()
       }
     },
   )

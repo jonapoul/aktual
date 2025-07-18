@@ -17,7 +17,6 @@ import actual.core.ui.Theme
 import actual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,10 +30,8 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -130,17 +127,13 @@ private fun CategoryHeaderText(
 ) {
   Row(
     modifier = modifier
-      .clickable(
-        indication = ripple(),
-        interactionSource = remember { MutableInteractionSource() },
-        onClick = {
-          when (direction) {
-            Ascending -> onSort(Descending)
-            Descending -> onSort(Ascending)
-            null -> onSort(Descending)
-          }
-        },
-      ),
+      .clickable {
+        when (direction) {
+          Ascending -> onSort(Descending)
+          Descending -> onSort(Ascending)
+          null -> onSort(Descending)
+        }
+      },
     verticalAlignment = Alignment.CenterVertically,
     horizontalArrangement = Arrangement.End,
   ) {

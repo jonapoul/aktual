@@ -130,6 +130,7 @@ internal class MidnightTheme : Theme {
   override val calendarItemText = ActualColors.gray150
   override val calendarItemBackground = ActualColors.gray500
   override val calendarSelectedBackground = buttonNormalSelectedBackground
+  override val calendarCellBackground = ActualColors.navy900
 
   override val buttonBareText = buttonNormalText
   override val buttonBareTextHover = buttonNormalText

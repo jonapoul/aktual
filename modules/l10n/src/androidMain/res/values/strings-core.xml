@@ -15,4 +15,44 @@
   <string name="budget_loaded">Loaded:</string>
   <string name="connection_connected">Connected</string>
   <string name="connection_disconnected">Disconnected</string>
+
+  <string name="month_jan_short">Jan</string>
+  <string name="month_feb_short">Feb</string>
+  <string name="month_mar_short">Mar</string>
+  <string name="month_apr_short">Apr</string>
+  <string name="month_may_short">May</string>
+  <string name="month_jun_short">Jun</string>
+  <string name="month_jul_short">Jul</string>
+  <string name="month_aug_short">Aug</string>
+  <string name="month_sep_short">Sep</string>
+  <string name="month_oct_short">Oct</string>
+  <string name="month_nov_short">Nov</string>
+  <string name="month_dec_short">Dec</string>
+
+  <string name="month_jan_long">January</string>
+  <string name="month_feb_long">February</string>
+  <string name="month_mar_long">March</string>
+  <string name="month_apr_long">April</string>
+  <string name="month_may_long">May</string>
+  <string name="month_jun_long">June</string>
+  <string name="month_jul_long">July</string>
+  <string name="month_aug_long">August</string>
+  <string name="month_sep_long">September</string>
+  <string name="month_oct_long">October</string>
+  <string name="month_nov_long">November</string>
+  <string name="month_dec_long">December</string>
+
+  <string name="week_mon">M</string>
+  <string name="week_tue">T</string>
+  <string name="week_wed">W</string>
+  <string name="week_thu">T</string>
+  <string name="week_fri">F</string>
+  <string name="week_sat">S</string>
+  <string name="week_sun">S</string>
+
+  <string name="year_month_picker_title">Select month</string>
+  <string name="year_month_picker_to">to</string>
+  <string name="year_month_picker_save">Save</string>
+  <string name="year_month_picker_cancel">Cancel</string>
+  <string name="year_month_picker_out_of_range">Out of range: must be from %1$s to %2$s inclusive</string>
 </resources>

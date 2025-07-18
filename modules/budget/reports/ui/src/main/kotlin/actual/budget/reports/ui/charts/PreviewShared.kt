@@ -6,6 +6,7 @@ import kotlinx.datetime.Month
 
 internal object PreviewShared {
   const val WIDTH = 800
+  const val HEIGHT = 200
 
   val AMOUNT = Amount(12345.67)
 

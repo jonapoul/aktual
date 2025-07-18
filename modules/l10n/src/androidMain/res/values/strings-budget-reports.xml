@@ -5,19 +5,6 @@
   <string name="reports_dashboard_empty">No reports</string>
   <string name="reports_dashboard_range">%1$s to %2$s</string>
 
-  <string name="reports_month_jan">Jan</string>
-  <string name="reports_month_feb">Feb</string>
-  <string name="reports_month_mar">Mar</string>
-  <string name="reports_month_apr">Apr</string>
-  <string name="reports_month_may">May</string>
-  <string name="reports_month_jun">Jun</string>
-  <string name="reports_month_jul">Jul</string>
-  <string name="reports_month_aug">Aug</string>
-  <string name="reports_month_sep">Sep</string>
-  <string name="reports_month_oct">Oct</string>
-  <string name="reports_month_nov">Nov</string>
-  <string name="reports_month_dec">Dec</string>
-
   <string name="reports_summary_show_as">Show as:</string>
   <string name="reports_summary_sum">Sum</string>
   <string name="reports_summary_per_month">Average per month</string>
@@ -28,4 +15,23 @@
   <string name="reports_summary_num_months">number of months</string>
   <string name="reports_summary_num_transactions">number of transactions</string>
   <string name="reports_summary_all_time_divisor">All time divisor</string>
+
+  <string name="reports_calendar_income">Income:</string>
+  <string name="reports_calendar_expenses">Expenses:</string>
+
+  <string name="reports_date_config_live">Live</string>
+  <string name="reports_date_config_static">Static</string>
+  <string name="reports_date_config_start">Range start:</string>
+  <string name="reports_date_config_end">Range end:</string>
+
+  <string name="reports_date_type_this_week">This week</string>
+  <string name="reports_date_type_last_week">Last week</string>
+  <string name="reports_date_type_this_month">This month</string>
+  <string name="reports_date_type_last_month">Last month</string>
+  <string name="reports_date_type_last_3_months">Last 3 months</string>
+  <string name="reports_date_type_last_6_months">Last 6 months</string>
+  <string name="reports_date_type_last_12_months">Last 12 months</string>
+  <string name="reports_date_type_year_to_date">Year to date</string>
+  <string name="reports_date_type_last_year">Last year</string>
+  <string name="reports_date_type_all_time">All time</string>
 </resources>

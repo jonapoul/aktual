@@ -130,6 +130,7 @@ internal class LightTheme : Theme {
   override val calendarItemText = ActualColors.navy150
   override val calendarItemBackground = ActualColors.navy800
   override val calendarSelectedBackground = ActualColors.navy500
+  override val calendarCellBackground = ActualColors.navy100
 
   override val buttonBareText = ActualColors.navy900
   override val buttonBareTextHover = buttonBareText

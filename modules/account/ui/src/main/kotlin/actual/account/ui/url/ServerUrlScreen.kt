@@ -205,6 +205,7 @@ private fun ServerUrlContent(
       url = url,
       protocol = protocol,
       onAction = onAction,
+      theme = theme,
     )
 
     VerticalSpacer(height = 20.dp)
