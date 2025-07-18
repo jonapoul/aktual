@@ -34,7 +34,6 @@ class AboutViewModel @Inject constructor(
 ) : ViewModel() {
   val buildState: StateFlow<BuildState> = viewModelScope.launchMolecule(Immediate) {
     val versions by actualVersionsStateHolder.collectAsState()
-    ""
     buildState(versions)
   }
 
