@@ -2,8 +2,10 @@ package actual.account.ui.url
 
 import actual.core.model.Protocol
 import actual.core.ui.ExposedDropDownMenu
+import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.TextField
+import actual.core.ui.Theme
 import actual.core.ui.keyboardFocusRequester
 import alakazam.android.ui.compose.HorizontalSpacer
 import alakazam.kotlin.core.parse
@@ -29,6 +31,7 @@ internal fun InputFields(
   protocol: Protocol,
   onAction: (ServerUrlAction) -> Unit,
   modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   Row(
     modifier = modifier.fillMaxWidth(),
@@ -38,6 +41,7 @@ internal fun InputFields(
       value = protocol.toString(),
       options = PROTOCOLS,
       onValueChange = { onAction(ServerUrlAction.SelectProtocol(Protocol::class.parse(it))) },
+      theme = theme,
     )
 
     HorizontalSpacer(width = 5.dp)
