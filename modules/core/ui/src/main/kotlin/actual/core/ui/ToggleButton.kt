@@ -40,7 +40,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun <T> SlidingToggleButton(
   options: ImmutableList<T>,
-  onOptionSelected: (index: Int) -> Unit,
+  onSelectOption: (index: Int) -> Unit,
   modifier: Modifier = Modifier,
   selectedIndex: Int = 0,
   theme: Theme = LocalTheme.current,
@@ -88,7 +88,7 @@ fun <T> SlidingToggleButton(
           modifier = Modifier
             .width(singleOptionWidth)
             .fillMaxHeight()
-            .clickable { onOptionSelected(index) },
+            .clickable { onSelectOption(index) },
           contentAlignment = Alignment.Center,
         ) {
           Text(
@@ -115,7 +115,7 @@ private fun PreviewStrings() = PreviewColumn {
     modifier = Modifier.padding(16.dp),
     options = persistentListOf("Option A", "Option B"),
     selectedIndex = selectedA,
-    onOptionSelected = { selectedA = it },
+    onSelectOption = { selectedA = it },
   )
 }
 
@@ -136,7 +136,7 @@ private fun PreviewEnum() = PreviewColumn {
         Interval.Yearly -> "Yearly with loads more text clipped off"
       }
     },
-    onOptionSelected = { selectedB = it },
+    onSelectOption = { selectedB = it },
     singleOptionWidth = 75.dp,
   )
 }

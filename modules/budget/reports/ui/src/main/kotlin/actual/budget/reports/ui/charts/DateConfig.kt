@@ -53,7 +53,7 @@ internal fun ChartDateConfig(
   SlidingToggleButton(
     modifier = Modifier.wrapContentSize(),
     options = modes,
-    onOptionSelected = { index -> selectedIndex = index },
+    onSelectOption = { index -> selectedIndex = index },
     selectedIndex = selectedIndex,
     theme = theme,
     string = { type -> type.string() },
