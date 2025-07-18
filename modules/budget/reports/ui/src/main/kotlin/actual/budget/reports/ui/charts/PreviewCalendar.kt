@@ -1,4 +1,4 @@
-package actual.budget.reports.ui.charts.calendar
+package actual.budget.reports.ui.charts
 
 import actual.budget.model.Amount
 import actual.budget.reports.vm.CalendarData
