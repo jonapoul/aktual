@@ -24,7 +24,6 @@ import actual.core.ui.Theme
 import actual.core.ui.formattedString
 import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
-import android.R.attr.theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -166,7 +165,7 @@ private fun RegularPerMonth(
     ) {
       Text(
         modifier = Modifier.fillMaxWidth(),
-        text = data.total.toString(),
+        text = data.total.formattedString(),
         fontSize = 30.sp,
         textAlign = TextAlign.Center,
         color = theme.pageText,
@@ -254,7 +253,7 @@ private fun RegularPerTransaction(
     ) {
       Text(
         modifier = Modifier.fillMaxWidth(),
-        text = data.total.toString(),
+        text = data.total.formattedString(),
         fontSize = 30.sp,
         textAlign = TextAlign.Center,
         color = theme.pageText,
@@ -556,11 +555,19 @@ private fun SumRegular() = PreviewChart(PreviewSummary.SUM_DATA, false)
 
 @Preview(widthDp = WIDTH)
 @Composable
+private fun SumRegularPrivate() = PreviewChart(PreviewSummary.SUM_DATA, false, private = true)
+
+@Preview(widthDp = WIDTH)
+@Composable
 private fun PerMonthRegular() = PreviewChart(PreviewSummary.PER_MONTH_DATA, false)
 
 @Preview(widthDp = WIDTH)
 @Composable
 private fun PerTransactionRegular() = PreviewChart(PreviewSummary.PER_TRANSACTION_DATA, false)
+
+@Preview(widthDp = WIDTH)
+@Composable
+private fun PerTransactionPrivate() = PreviewChart(PreviewSummary.PER_TRANSACTION_DATA, false, private = true)
 
 @Preview(widthDp = WIDTH)
 @Composable
@@ -577,7 +584,11 @@ private fun PercentSpecific() = PreviewChart(
 )
 
 @Composable
-private fun PreviewChart(data: SummaryData, compact: Boolean) = PreviewColumn {
+private fun PreviewChart(
+  data: SummaryData,
+  compact: Boolean,
+  private: Boolean = false,
+) = PreviewColumn(isPrivacyEnabled = private) {
   SummaryChart(
     modifier = Modifier
       .background(LocalTheme.current.tableBackground, CardShape)

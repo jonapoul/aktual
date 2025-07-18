@@ -131,10 +131,17 @@ private fun PreviewRegular() = PreviewChart(compact = false)
 
 @Preview(widthDp = WIDTH)
 @Composable
+private fun PreviewRegularPrivate() = PreviewChart(compact = false, isPrivacyEnabled = true)
+
+@Preview(widthDp = WIDTH)
+@Composable
 private fun PreviewCompact() = PreviewChart(compact = true)
 
 @Composable
-private fun PreviewChart(compact: Boolean) = PreviewColumn {
+private fun PreviewChart(
+  compact: Boolean,
+  isPrivacyEnabled: Boolean = false,
+) = PreviewColumn(isPrivacyEnabled = isPrivacyEnabled) {
   CashFlowChart(
     modifier = Modifier
       .background(LocalTheme.current.tableBackground, CardShape)

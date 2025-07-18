@@ -12,6 +12,7 @@ import actual.budget.transactions.vm.DatedTransactions
 import actual.budget.transactions.vm.LoadedAccount
 import actual.budget.transactions.vm.TransactionsSorting
 import actual.budget.transactions.vm.TransactionsViewModel
+import actual.core.ui.LocalPrivacyEnabled
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.PreviewScreen
@@ -24,6 +25,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -74,6 +77,7 @@ fun TransactionsScreen(
         Action.NavBack -> nav.back()
         is Action.CheckItem -> viewModel.setChecked(action.id, action.isChecked)
         is Action.ExpandGroup -> viewModel.setExpanded(action.group, action.isExpanded)
+        is Action.SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
       }
     },
   )
@@ -147,6 +151,19 @@ private fun TransactionsTitleBar(
         maxLines = 1,
         overflow = Ellipsis,
       )
+    },
+    actions = {
+      if (LocalPrivacyEnabled.current) {
+        IconButton(
+          onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = false)) },
+          content = { Icon(Icons.Filled.VisibilityOff, contentDescription = null) },
+        )
+      } else {
+        IconButton(
+          onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = true)) },
+          content = { Icon(Icons.Filled.Visibility, contentDescription = null) },
+        )
+      }
     },
   )
 }

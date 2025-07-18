@@ -21,26 +21,34 @@ import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.persistentListOf
 
 @Composable
-fun WithNumberFormatConfig(
+fun WithCompositionLocals(
+  isPrivacyEnabled: Boolean = false,
   format: NumberFormat = NumberFormat.Default,
   hideFractions: Boolean = false,
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
     LocalNumberFormatConfig provides NumberFormatConfig(format, hideFractions),
-    content,
-  )
+    LocalPrivacyEnabled provides isPrivacyEnabled,
+  ) {
+    content()
+  }
 }
 
 @Composable
 fun PreviewColumn(
   modifier: Modifier = Modifier,
+  isPrivacyEnabled: Boolean = false,
   content: @Composable (ColorSchemeType) -> Unit,
 ) {
   LazyColumn {
     items(SchemeTypes, key = { it.ordinal }) { schemeType ->
       Box(modifier = modifier) {
-        PreviewWithColorScheme(schemeType, content = content)
+        PreviewWithColorScheme(
+          schemeType = schemeType,
+          isPrivacyEnabled = isPrivacyEnabled,
+          content = content,
+        )
       }
     }
   }
@@ -49,12 +57,17 @@ fun PreviewColumn(
 @Composable
 fun PreviewActualRow(
   modifier: Modifier = Modifier,
+  privacyFilter: Boolean = false,
   content: @Composable (ColorSchemeType) -> Unit,
 ) {
   LazyRow {
     items(SchemeTypes, key = { it.ordinal }) { schemeType ->
       Box(modifier = modifier) {
-        PreviewWithColorScheme(schemeType, content = content)
+        PreviewWithColorScheme(
+          schemeType = schemeType,
+          isPrivacyEnabled = privacyFilter,
+          content = content,
+        )
       }
     }
   }
@@ -63,6 +76,7 @@ fun PreviewActualRow(
 @Composable
 fun PreviewScreen(
   modifier: Modifier = Modifier,
+  privacyFilter: Boolean = false,
   content: @Composable (ColorSchemeType) -> Unit,
 ) {
   LazyRow {
@@ -72,6 +86,7 @@ fun PreviewScreen(
           .width(MY_PHONE_WIDTH_DP.dp)
           .height(MY_PHONE_HEIGHT_DP.dp),
         schemeType = schemeType,
+        isPrivacyEnabled = privacyFilter,
         content = { content(schemeType) },
       )
     }
@@ -82,8 +97,11 @@ fun PreviewScreen(
 fun PreviewWithColorScheme(
   schemeType: ColorSchemeType,
   modifier: Modifier = Modifier,
+  isPrivacyEnabled: Boolean = false,
   content: @Composable (ColorSchemeType) -> Unit,
-) = WithNumberFormatConfig {
+) = WithCompositionLocals(
+  isPrivacyEnabled = isPrivacyEnabled,
+) {
   ActualTheme(schemeType) {
     Surface(modifier = modifier) {
       content(schemeType)
