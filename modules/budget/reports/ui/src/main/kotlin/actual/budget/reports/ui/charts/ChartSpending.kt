@@ -251,7 +251,7 @@ private data class MtdSpending(val target: Amount, val comparison: Amount)
 @Stable
 private fun calculateMtdSpending(data: SpendingData): MtdSpending {
   val lastDay = data.days.last { it.target != null }
-  return MtdSpending(lastDay.target!!, lastDay.comparison)
+  return MtdSpending(requireNotNull(lastDay.target), lastDay.comparison)
 }
 
 @Composable
