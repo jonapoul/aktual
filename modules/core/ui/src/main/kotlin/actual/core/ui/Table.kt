@@ -12,15 +12,18 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -52,14 +55,9 @@ fun WeightedTable(
   val textMeasurer = rememberTextMeasurer()
 
   val columnWidths = remember(data, textStyles) {
-    (0 until data.numColumns).map { columnIndex ->
-      data.maxOfOrNull { row ->
-        textMeasurer.measure(
-          text = row[columnIndex],
-          style = textStyles[columnIndex],
-        ).size.width
-      } ?: 0
-    }.toImmutableList()
+    (0 until data.numColumns)
+      .map { columnIndex -> columnWidth(textMeasurer, data, textStyles, columnIndex) }
+      .toImmutableList()
   }
 
   val totalWidth = columnWidths.sum()
@@ -85,6 +83,24 @@ fun WeightedTable(
       }
     }
   }
+}
+
+@Stable
+private fun columnWidth(
+  textMeasurer: TextMeasurer,
+  data: ImmutableList<ImmutableList<String>>,
+  textStyles: ImmutableList<TextStyle>,
+  columnIndex: Int,
+): Int {
+  var maxWidth = 0
+  data.fastForEach { row ->
+    val width = textMeasurer
+      .measure(row[columnIndex], textStyles[columnIndex])
+      .size
+      .width
+    maxWidth = maxOf(maxWidth, width)
+  }
+  return maxWidth
 }
 
 private val ImmutableList<ImmutableList<*>>.numColumns: Int get() = maxOfOrNull { it.size } ?: 0
@@ -118,10 +134,11 @@ fun WrapWidthTable(
   val columnWidths = remember(data, textStyles, density) {
     (0 until data.numColumns).map { columnIndex ->
       val maxWidthPx = data.maxOfOrNull { row ->
-        textMeasurer.measure(
-          text = row[columnIndex],
-          style = textStyles[columnIndex],
-        ).size.width
+        textMeasurer
+          .measure(
+            text = row[columnIndex],
+            style = textStyles[columnIndex],
+          ).size.width
       } ?: 0
 
       with(density) { maxWidthPx.toDp() }
