@@ -16,6 +16,7 @@ internal object PreviewCashFlow {
   )
 
   val DATA = CashFlowData(
+    title = "My Cash Flow",
     items = persistentMapOf(
       date(2024, Month.JULY) to datum(income = 6683, expenses = -4695, transfers = -1779, balance = 4781),
       date(2024, Month.AUGUST) to datum(income = 6071, expenses = -4111, transfers = -729, balance = 6012),

@@ -14,6 +14,7 @@ sealed interface ChartData
 
 @Immutable
 data class CashFlowData(
+  val title: String,
   val items: ImmutableMap<YearMonth, CashFlowDatum>,
 ) : ChartData
 
@@ -28,18 +29,23 @@ data class CashFlowDatum(
 
 @Immutable
 data class NetWorthData(
+  val title: String,
   val items: ImmutableMap<YearMonth, Amount>,
 ) : ChartData
 
 @Immutable
 sealed interface SummaryData : ChartData, DateRange {
+  val title: String
+
   data class Sum(
+    override val title: String,
     override val start: LocalDate,
     override val end: LocalDate,
     val value: Amount,
   ) : SummaryData
 
   data class AveragePerMonth(
+    override val title: String,
     override val start: LocalDate,
     override val end: LocalDate,
     val numMonths: Float,
@@ -48,6 +54,7 @@ sealed interface SummaryData : ChartData, DateRange {
   ) : SummaryData
 
   data class AveragePerTransaction(
+    override val title: String,
     override val start: LocalDate,
     override val end: LocalDate,
     val numTransactions: Int,
@@ -56,6 +63,7 @@ sealed interface SummaryData : ChartData, DateRange {
   ) : SummaryData
 
   data class Percentage(
+    override val title: String,
     override val start: LocalDate,
     override val end: LocalDate,
     val numerator: Amount,

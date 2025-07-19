@@ -91,10 +91,18 @@ private fun CompactCalendarChart(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+) = Column(
+  modifier = modifier,
 ) {
+  CalendarSummary(
+    modifier = Modifier.padding(10.dp),
+    data = data,
+    compact = true,
+    theme = theme,
+  )
+
   val listState = rememberLazyListState()
   LazyRowScrollbar(
-    modifier = modifier,
     state = listState,
     settings = theme.scrollbarSettings(),
   ) {
@@ -324,10 +332,8 @@ private fun CalendarSummary(
       overflow = TextOverflow.Ellipsis,
     )
 
-    val start = data.start.stringShort()
-    val end = data.end.stringShort()
     Text(
-      text = "$start - $end",
+      text = dateRange(data.start, data.end),
       color = theme.pageTextSubdued,
       overflow = TextOverflow.Ellipsis,
     )
@@ -392,6 +398,7 @@ private fun PreviewSummaryThreeMonthsCompact() = PreviewColumn {
     compact = true,
   )
 }
+
 @Composable
 private fun DayButton(
   day: CalendarDay,

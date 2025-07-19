@@ -79,7 +79,7 @@ fun PreviewActualRow(
 @Composable
 fun PreviewScreen(
   modifier: Modifier = Modifier,
-  privacyFilter: Boolean = false,
+  isPrivacyEnabled: Boolean = false,
   content: @Composable (ColorSchemeType) -> Unit,
 ) {
   LazyRow {
@@ -89,7 +89,7 @@ fun PreviewScreen(
           .width(MY_PHONE_WIDTH_DP.dp)
           .height(MY_PHONE_HEIGHT_DP.dp),
         schemeType = schemeType,
-        isPrivacyEnabled = privacyFilter,
+        isPrivacyEnabled = isPrivacyEnabled,
         content = { content(schemeType) },
       )
     }

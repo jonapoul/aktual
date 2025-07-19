@@ -41,7 +41,8 @@ value class Amount(private val value: Long) : Comparable<Amount> {
     includeSign: Boolean,
     isPrivacyEnabled: Boolean,
   ): String = buildString {
-    if (includeSign) append(if (value > 0) "+" else "-")
+    if (includeSign && value > 0) append("+")
+    if (value < 0) append("-")
 
     val (format, hideFraction) = config
 

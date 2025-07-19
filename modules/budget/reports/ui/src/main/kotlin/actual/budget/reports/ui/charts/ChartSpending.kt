@@ -8,6 +8,8 @@ import actual.budget.reports.vm.SpendingDayNumber
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
+import actual.core.ui.PreviewScreen
+import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WrapWidthTable
 import actual.core.ui.formattedString
@@ -21,12 +23,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -87,10 +92,18 @@ internal fun SpendingChart(
   }
 
   Chart(
+    modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
     data = data,
     compact = compact,
     theme = theme,
   )
+
+  if (!compact) {
+    Footer(
+      title = Strings.reportsSpendingFooterTitle,
+      text = Strings.reportsSpendingFooter,
+    )
+  }
 }
 
 @Composable
@@ -114,7 +127,7 @@ private fun Chart(
   val line = axisLineComponent(compact)
 
   CartesianChartHost(
-    modifier = modifier,
+    modifier = modifier.fillMaxHeight(),
     modelProducer = modelProducer,
     scrollState = rememberVicoScrollState(scrollEnabled = false),
     chart = rememberCartesianChart(
@@ -318,26 +331,31 @@ private fun xAxisFormatter() = remember {
   }
 }
 
+@ScreenPreview
 @Composable
-private fun PreviewChart(
-  data: SpendingData,
-  compact: Boolean,
-  isPrivacyEnabled: Boolean = false,
-) = PreviewColumn(isPrivacyEnabled = isPrivacyEnabled) {
+private fun PreviewRegular() = PreviewScreen {
+  Surface(
+    modifier = Modifier
+      .fillMaxSize()
+      .background(LocalTheme.current.tableBackground),
+  ) {
+    SpendingChart(
+      modifier = Modifier.padding(4.dp),
+      data = PreviewSpending.JUL_2025,
+      compact = false,
+    )
+  }
+}
+
+@Preview(widthDp = WIDTH)
+@Composable
+private fun PreviewCompact() = PreviewColumn {
   SpendingChart(
     modifier = Modifier
       .background(LocalTheme.current.tableBackground, CardShape)
       .width(WIDTH.dp)
       .padding(5.dp),
-    data = data,
-    compact = compact,
+    data = PreviewSpending.JUL_2025,
+    compact = true,
   )
 }
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun MixedRegular() = PreviewChart(PreviewSpending.JUL_2025, compact = false)
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun MixedCompact() = PreviewChart(PreviewSpending.JUL_2025, compact = true)
