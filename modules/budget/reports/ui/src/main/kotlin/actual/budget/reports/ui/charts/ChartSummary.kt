@@ -23,7 +23,6 @@ import actual.core.ui.PreviewColumn
 import actual.core.ui.ScaleToFitText
 import actual.core.ui.Theme
 import actual.core.ui.formattedString
-import actual.core.ui.stringShort
 import actual.l10n.Strings
 import alakazam.android.ui.compose.HorizontalSpacer
 import androidx.compose.foundation.background

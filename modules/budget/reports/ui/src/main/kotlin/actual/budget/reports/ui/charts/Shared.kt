@@ -8,7 +8,6 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.Theme
 import actual.core.ui.stringShort
 import actual.l10n.R
-import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
 import android.content.Context
 import android.text.Layout
