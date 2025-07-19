@@ -93,7 +93,7 @@ internal fun amountYAxisFormatter(
   CartesianValueFormatter { _, value, _ ->
     Amount(value).toString(
       config = config.copy(hideFraction = true),
-      includeSign = true,
+      includeSign = false,
       isPrivacyEnabled = isPrivacyEnabled,
     )
   }
