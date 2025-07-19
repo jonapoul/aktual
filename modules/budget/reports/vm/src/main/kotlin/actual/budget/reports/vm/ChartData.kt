@@ -166,3 +166,8 @@ sealed interface SpendingComparison {
   data object Budgeted : SpendingComparison
   data object Average : SpendingComparison
 }
+
+@Immutable
+data class TextData(
+  val content: String,
+) : ChartData

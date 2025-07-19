@@ -1,3 +1,5 @@
+@file:Suppress("HttpUrlsUsage")
+
 package actual.gradle
 
 import blueprint.recipes.licenseeBlueprint
@@ -9,6 +11,7 @@ class ConventionLicensee : Plugin<Project> {
     licenseeBlueprint(
       allowedUrls = listOf(
         "https://opensource.org/license/mit", // slf4j
+        "http://opensource.org/licenses/BSD-2-Clause", // commonmark
       ),
     )
   }

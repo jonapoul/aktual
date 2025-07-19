@@ -51,6 +51,7 @@ ktor = "3.2.2"
 lazycolumn-scrollbar = "2.2.0"
 logback-android = "3.0.0"
 logback-classic = "1.5.18"
+markdown-twain = "0.3.2"
 material = "1.12.0"
 okio = "3.15.0"
 preferences = "2.2.0"
@@ -164,6 +165,7 @@ ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", 
 lazycolumn-scrollbar = { module = "com.github.nanihadesuka:LazyColumnScrollbar", version.ref = "lazycolumn-scrollbar" }
 logback-android = { module = "com.github.tony19:logback-android", version.ref = "logback-android" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
+markdown-twain = { module = "com.colintheshots:twain", version.ref = "markdown-twain" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
