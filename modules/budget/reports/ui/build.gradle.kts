@@ -36,7 +36,7 @@ dependencies {
   implementation(libs.kotlinx.datetime)
   implementation(libs.kotlinx.immutable)
   implementation(libs.lazycolumn.scrollbar)
-  implementation(libs.markdown)
+  implementation(libs.markdown.twain)
   implementation(libs.vico.compose)
   implementation(libs.vico.core)
 }

@@ -62,6 +62,7 @@ fun ReportsDashboardScreen(
         is Action.SetSummaryType -> TODO()
         is Action.SetAllTimeDivisor -> TODO()
         is Action.ClickCalendarDay -> TODO()
+        is Action.SaveTextContent -> TODO()
       }
     },
   )

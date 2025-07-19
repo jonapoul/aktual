@@ -25,5 +25,5 @@ internal fun ReportChart(
   is SummaryData -> SummaryChart(data, compact, onAction, modifier, theme)
   is CalendarData -> CalendarChart(data, compact, onAction, modifier, theme)
   is SpendingData -> SpendingChart(data, compact, modifier, theme)
-  is TextData -> TextChart(data, compact, modifier, theme)
+  is TextData -> TextChart(data, compact, onAction, modifier, theme)
 }

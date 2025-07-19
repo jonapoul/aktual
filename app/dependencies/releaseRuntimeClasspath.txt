@@ -17,6 +17,7 @@ androidx.compose.animation:animation-android:1.8.3
 androidx.compose.animation:animation-core-android:1.8.3
 androidx.compose.animation:animation-core:1.8.3
 androidx.compose.animation:animation:1.8.3
+androidx.compose.compiler:compiler:1.5.11
 androidx.compose.foundation:foundation-android:1.8.3
 androidx.compose.foundation:foundation-layout-android:1.8.3
 androidx.compose.foundation:foundation-layout:1.8.3
@@ -151,10 +152,10 @@ app.cash.sqldelight:sqlite-driver:2.1.0
 com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.13.0
 com.atlassian.commonmark:commonmark-ext-gfm-tables:0.13.0
 com.atlassian.commonmark:commonmark:0.13.0
-com.github.jeziellago:Markwon:58aa5aba6a
-com.github.jeziellago:compose-markdown:0.5.7
+com.colintheshots:twain:0.3.2
 com.github.nanihadesuka:LazyColumnScrollbar:2.2.0
 com.github.tony19:logback-android:3.0.0
+com.google.accompanist:accompanist-drawablepainter:0.32.0
 com.google.android.material:material:1.12.0
 com.google.code.findbugs:jsr305:3.0.2
 com.google.code.gson:gson:2.8.9
@@ -190,6 +191,8 @@ dev.jonpoulton.preferences:core:2.2.0
 dev.zacsweers.redacted:redacted-compiler-plugin-annotations-jvm:1.14.1
 dev.zacsweers.redacted:redacted-compiler-plugin-annotations:1.14.1
 io.coil-kt:coil-base:2.6.0
+io.coil-kt:coil-compose-base:2.6.0
+io.coil-kt:coil-compose:2.6.0
 io.coil-kt:coil-gif:2.6.0
 io.coil-kt:coil:2.6.0
 io.ktor:ktor-client-auth-jvm:3.2.2
@@ -229,11 +232,11 @@ io.ktor:ktor-websocket-serialization:3.2.2
 io.ktor:ktor-websockets-jvm:3.2.2
 io.ktor:ktor-websockets:3.2.2
 io.noties.markwon:core:4.6.2
+io.noties.markwon:editor:4.6.2
 io.noties.markwon:ext-strikethrough:4.6.2
 io.noties.markwon:ext-tables:4.6.2
-io.noties.markwon:ext-tasklist:4.6.2
 io.noties.markwon:html:4.6.2
-io.noties.markwon:linkify:4.6.2
+io.noties.markwon:image-coil:4.6.2
 jakarta.inject:jakarta.inject-api:2.0.1
 javax.inject:javax.inject:1
 org.jetbrains.androidx.lifecycle:lifecycle-common:2.8.4
@@ -256,8 +259,8 @@ org.jetbrains.compose.ui:ui-util:1.8.0
 org.jetbrains.compose.ui:ui:1.8.0
 org.jetbrains.kotlin:kotlin-bom:1.8.22
 org.jetbrains.kotlin:kotlin-stdlib-common:2.2.0
-org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.22
-org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.22
+org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.9.0
+org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.0
 org.jetbrains.kotlin:kotlin-stdlib:2.2.0
 org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.4.0
 org.jetbrains.kotlinx:kotlinx-collections-immutable:0.4.0
