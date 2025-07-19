@@ -29,6 +29,7 @@ data class CashFlowDatum(
 
 @Immutable
 data class NetWorthData(
+  val title: String,
   val items: ImmutableMap<YearMonth, Amount>,
 ) : ChartData
 
