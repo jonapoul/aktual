@@ -65,7 +65,7 @@ jobs:
 
   baseline:
     needs: [ changes ]
-    if: ${{ needs.changes.outputs.build == 'true' }}
+    if: needs.changes.outputs.build == 'true' && github.event.pull_request.user.login == 'renovate[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
