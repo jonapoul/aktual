@@ -2,6 +2,7 @@ package actual.budget.reports.ui.charts
 
 import actual.budget.model.Amount
 import actual.budget.reports.ui.Action
+import actual.budget.reports.ui.ActionListener
 import actual.budget.reports.ui.charts.PreviewShared.END_DATE
 import actual.budget.reports.ui.charts.PreviewShared.START_DATE
 import actual.budget.reports.ui.charts.PreviewShared.WIDTH
@@ -58,7 +59,7 @@ import kotlinx.datetime.LocalDate
 internal fun SummaryChart(
   data: SummaryData,
   compact: Boolean,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = when (data) {
@@ -112,7 +113,7 @@ private fun CompactPercent(
 @Composable
 private fun RegularPerMonth(
   data: SummaryData.AveragePerMonth,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = Column(
@@ -200,7 +201,7 @@ private fun RegularPerMonth(
 @Composable
 private fun RegularPerTransaction(
   data: SummaryData.AveragePerTransaction,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = Column(
@@ -288,7 +289,7 @@ private fun RegularPerTransaction(
 @Composable
 private fun RegularPercent(
   data: SummaryData.Percentage,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = Column(
@@ -378,7 +379,7 @@ private fun RegularPercent(
 @Composable
 private fun RegularSum(
   data: SummaryData.Sum,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = Column(
@@ -407,7 +408,7 @@ private fun RegularSum(
 @Composable
 private fun ShowAs(
   data: SummaryData,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = Row(
@@ -467,7 +468,7 @@ private fun SumColumn(
 @Composable
 private fun DivisorCheckbox(
   data: SummaryData.Percentage,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
   Row(

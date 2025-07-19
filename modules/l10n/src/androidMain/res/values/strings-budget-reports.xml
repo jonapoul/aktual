@@ -34,4 +34,9 @@
   <string name="reports_date_type_year_to_date">Year to date</string>
   <string name="reports_date_type_last_year">Last year</string>
   <string name="reports_date_type_all_time">All time</string>
+
+  <string name="reports_spending_date_range">Compare %1$s to %2$s</string>
+  <string name="reports_spending_average">average</string>
+  <string name="reports_spending_budgeted">budgeted</string>
+  <string name="reports_spending_mtd">Spent %1$s MTD:</string>
 </resources>

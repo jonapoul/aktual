@@ -72,7 +72,7 @@ internal fun NetWorthChart(
         guideline = guideline,
         label = label,
         tick = tick,
-        valueFormatter = yAxisFormatter(),
+        valueFormatter = amountYAxisFormatter(),
         itemPlacer = remember { VerticalAxis.ItemPlacer.count(count = { 8 }) },
       ),
       bottomAxis = HorizontalAxis.rememberBottom(
@@ -80,7 +80,7 @@ internal fun NetWorthChart(
         guideline = guideline,
         label = label,
         tick = tick,
-        valueFormatter = xAxisFormatter(),
+        valueFormatter = yearMonthXAxisFormatter(),
         itemPlacer = hItemPlacer(compact),
       ),
       marker = if (compact) null else rememberMarker(),

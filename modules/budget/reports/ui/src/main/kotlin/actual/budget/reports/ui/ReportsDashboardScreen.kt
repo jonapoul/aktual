@@ -78,7 +78,7 @@ private fun hiltViewModel(
 @Composable
 private fun ReportsDashboardScaffold(
   state: DashboardState,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   theme: Theme = LocalTheme.current,
 ) {
   Scaffold(
@@ -106,7 +106,7 @@ private fun ReportsDashboardScaffold(
 @Composable
 private fun Content(
   state: DashboardState,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -148,7 +148,7 @@ private fun ContentEmpty(
 @Composable
 private fun ContentList(
   items: ImmutableList<ReportDashboardItem>,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {

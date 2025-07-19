@@ -127,3 +127,34 @@ data class ChartDateConfig(
   val end: YearMonth,
   val range: YearMonthRange,
 )
+
+@Immutable
+data class SpendingData(
+  val title: String,
+  val mode: DateRangeMode,
+  val targetMonth: YearMonth,
+  val comparison: SpendingComparison,
+  val difference: Amount,
+  val days: ImmutableList<SpendingDay>,
+) : ChartData
+
+@Immutable
+sealed interface SpendingDayNumber {
+  @JvmInline
+  value class Specific(val number: Int) : SpendingDayNumber
+  data object End : SpendingDayNumber
+}
+
+@Immutable
+data class SpendingDay(
+  val number: SpendingDayNumber,
+  val target: Amount?,
+  val comparison: Amount,
+)
+
+@Immutable
+sealed interface SpendingComparison {
+  data class SingleMonth(val value: YearMonth) : SpendingComparison
+  data object Budgeted : SpendingComparison
+  data object Average : SpendingComparison
+}

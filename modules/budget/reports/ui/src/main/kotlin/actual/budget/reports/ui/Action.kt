@@ -14,3 +14,8 @@ internal sealed interface Action {
   data class SetAllTimeDivisor(val allTime: Boolean) : Action
   data class ClickCalendarDay(val day: CalendarDay) : Action
 }
+
+@Immutable
+internal fun interface ActionListener {
+  operator fun invoke(action: Action)
+}
