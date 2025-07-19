@@ -14,6 +14,7 @@ sealed interface ChartData
 
 @Immutable
 data class CashFlowData(
+  val title: String,
   val items: ImmutableMap<YearMonth, CashFlowDatum>,
 ) : ChartData
 

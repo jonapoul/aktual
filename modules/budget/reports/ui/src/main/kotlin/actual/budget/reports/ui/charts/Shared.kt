@@ -6,13 +6,24 @@ import actual.core.ui.LocalNumberFormatConfig
 import actual.core.ui.LocalPrivacyEnabled
 import actual.core.ui.LocalTheme
 import actual.core.ui.Theme
+import actual.core.ui.stringShort
 import actual.l10n.R
+import actual.l10n.Strings
+import alakazam.android.ui.compose.VerticalSpacer
 import android.content.Context
 import android.text.Layout
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisGuidelineComponent
 import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLabelComponent
@@ -33,6 +44,7 @@ import com.patrykandpatrick.vico.core.common.component.ShapeComponent
 import com.patrykandpatrick.vico.core.common.component.TextComponent
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import com.patrykandpatrick.vico.core.common.shape.Shape
+import kotlinx.collections.immutable.ImmutableCollection
 import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.number
@@ -161,5 +173,37 @@ internal fun YearMonth.Companion.fromMonthNumber(number: Long): YearMonth {
   return YearMonth(
     year = (adjustedNumber / MONTHS_PER_YEAR).toInt(),
     month = Month(((adjustedNumber % MONTHS_PER_YEAR) + 1).toInt()),
+  )
+}
+
+@Stable
+@Composable
+internal fun dateRange(start: YearMonth, end: YearMonth) = "${start.stringShort()} - ${end.stringShort()}"
+
+@Stable
+@Composable
+internal fun dateRange(months: ImmutableCollection<YearMonth>): String = dateRange(months.min(), months.max())
+
+@Composable
+internal fun Footer(
+  title: String,
+  text: String,
+  modifier: Modifier = Modifier,
+) = Column(
+  modifier = modifier
+    .fillMaxWidth()
+    .padding(8.dp),
+) {
+  Text(
+    text = title,
+    fontWeight = FontWeight.Bold,
+    style = MaterialTheme.typography.bodyMedium,
+  )
+
+  VerticalSpacer(4.dp)
+
+  Text(
+    text = text,
+    style = MaterialTheme.typography.bodySmall,
   )
 }

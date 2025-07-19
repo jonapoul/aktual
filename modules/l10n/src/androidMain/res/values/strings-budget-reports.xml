@@ -19,6 +19,12 @@
   <string name="reports_calendar_income">Income:</string>
   <string name="reports_calendar_expenses">Expenses:</string>
 
+  <string name="reports_cash_flow_income">Income:</string>
+  <string name="reports_cash_flow_expenses">Expenses:</string>
+  <string name="reports_cash_flow_transfers">Transfers:</string>
+  <string name="reports_cash_flow_footer_title">How is cash flow calculated?</string>
+  <string name="reports_cash_flow_footer">Cash flow shows the balance of your budgeted accounts over time, and the amount of expenses/income each day or month. Your budgeted accounts are considered to be “cash on hand,” so this gives you a picture of how available money fluctuates.</string>
+
   <string name="reports_date_config_live">Live</string>
   <string name="reports_date_config_static">Static</string>
   <string name="reports_date_config_start">Range start:</string>
