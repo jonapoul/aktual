@@ -83,11 +83,23 @@ private fun Header(
     .fillMaxWidth(),
   verticalAlignment = Alignment.CenterVertically,
 ) {
-  Text(
+  Column(
     modifier = Modifier.weight(1f),
-    text = dateRange(data.items.keys),
-    overflow = TextOverflow.Ellipsis,
-  )
+  ) {
+    Text(
+      text = data.title,
+      overflow = TextOverflow.Ellipsis,
+      color = theme.pageText,
+      style = MaterialTheme.typography.bodyLarge,
+    )
+
+    Text(
+      text = dateRange(data.items.keys),
+      overflow = TextOverflow.Ellipsis,
+      color = theme.pageTextSubdued,
+      style = MaterialTheme.typography.bodyMedium,
+    )
+  }
 
   Column(
     horizontalAlignment = Alignment.End,

@@ -23,10 +23,10 @@
   <string name="reports_cash_flow_expenses">Expenses:</string>
   <string name="reports_cash_flow_transfers">Transfers:</string>
   <string name="reports_cash_flow_footer_title">How is cash flow calculated?</string>
-  <string name="reports_cash_flow_footer">Cash flow shows the balance of your budgeted accounts over time, and the amount of expenses/income each day or month. Your budgeted accounts are considered to be "cash on hand," so this gives you a picture of how available money fluctuates.</string>
+  <string name="reports_cash_flow_footer">Cash flow shows the balance of your budgeted accounts over time, and the amount of expenses/income each day or month. Your budgeted accounts are considered to be \"cash on hand\", so this gives you a picture of how available money fluctuates.</string>
 
   <string name="reports_net_worth_footer_title">How is net worth calculated?</string>
-  <string name="reports_net_worth_footer">Net worth shows the balance of all accounts over time, including all of your investments. Your "net worth" is considered to be the amount you’d have if you sold all your assets and paid off as much debt as possible. If you hover over the graph, you can also see the amount of assets and debt individually.</string>
+  <string name="reports_net_worth_footer">Net worth shows the balance of all accounts over time, including all of your investments. Your \"net worth\" is considered to be the amount you’d have if you sold all your assets and paid off as much debt as possible. If you hover over the graph, you can also see the amount of assets and debt individually.</string>
 
   <string name="reports_date_config_live">Live</string>
   <string name="reports_date_config_static">Static</string>
@@ -48,4 +48,6 @@
   <string name="reports_spending_average">average</string>
   <string name="reports_spending_budgeted">budgeted</string>
   <string name="reports_spending_mtd">Spent %1$s MTD:</string>
+  <string name="reports_spending_footer_title">How are \"Average\" and \"Spent Average MTD\" calculated?</string>
+  <string name="reports_spending_footer">They are both the average cumulative spending by day for the three months before the selected \"compare\" month.</string>
 </resources>
