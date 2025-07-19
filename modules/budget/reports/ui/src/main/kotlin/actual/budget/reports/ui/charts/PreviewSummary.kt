@@ -7,12 +7,14 @@ import actual.core.model.percent
 
 internal object PreviewSummary {
   val SUM_DATA = SummaryData.Sum(
+    title = "My Sum Summary",
     start = PreviewShared.START_DATE,
     end = PreviewShared.END_DATE,
     value = PreviewShared.AMOUNT,
   )
 
   val PER_MONTH_DATA = SummaryData.AveragePerMonth(
+    title = "My Per-Month Summary",
     start = PreviewShared.START_DATE,
     end = PreviewShared.END_DATE,
     numMonths = 18.19f,
@@ -21,6 +23,7 @@ internal object PreviewSummary {
   )
 
   val PER_TRANSACTION_DATA = SummaryData.AveragePerTransaction(
+    title = "My Per-Transaction Summary",
     start = PreviewShared.START_DATE,
     end = PreviewShared.END_DATE,
     numTransactions = 1327,
@@ -29,6 +32,7 @@ internal object PreviewSummary {
   )
 
   val PERCENT_DATA = SummaryData.Percentage(
+    title = "My Percent Summary",
     start = PreviewShared.START_DATE,
     end = PreviewShared.END_DATE,
     numerator = Amount(6198.55),

@@ -39,6 +39,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -54,6 +55,7 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.yearMonth
 
 @Composable
 internal fun SummaryChart(
@@ -62,29 +64,69 @@ internal fun SummaryChart(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = when (data) {
-  is SummaryData.AveragePerMonth -> if (compact) {
-    CompactAmount(data.average, modifier, theme)
-  } else {
-    RegularPerMonth(data, onAction, modifier, theme)
+) = Column(
+  modifier = modifier,
+  horizontalAlignment = Alignment.CenterHorizontally,
+  verticalArrangement = Arrangement.Center,
+) {
+  if (compact) {
+    Header(
+      modifier = Modifier.fillMaxWidth(),
+      data = data,
+      theme = theme,
+    )
   }
 
-  is SummaryData.AveragePerTransaction -> if (compact) {
-    CompactAmount(data.average, modifier, theme)
-  } else {
-    RegularPerTransaction(data, onAction, modifier, theme)
-  }
+  when (data) {
+    is SummaryData.AveragePerMonth -> if (compact) {
+      CompactAmount(data.average)
+    } else {
+      RegularPerMonth(data, onAction)
+    }
 
-  is SummaryData.Percentage -> if (compact) {
-    CompactPercent(data.percent, modifier, theme)
-  } else {
-    RegularPercent(data, onAction, modifier, theme)
-  }
+    is SummaryData.AveragePerTransaction -> if (compact) {
+      CompactAmount(data.average)
+    } else {
+      RegularPerTransaction(data, onAction)
+    }
 
-  is SummaryData.Sum -> if (compact) {
-    CompactAmount(data.value, modifier, theme)
-  } else {
-    RegularSum(data, onAction, modifier, theme)
+    is SummaryData.Percentage -> if (compact) {
+      CompactPercent(data.percent)
+    } else {
+      RegularPercent(data, onAction)
+    }
+
+    is SummaryData.Sum -> if (compact) {
+      CompactAmount(data.value)
+    } else {
+      RegularSum(data, onAction)
+    }
+  }
+}
+
+@Composable
+private fun Header(
+  data: SummaryData,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) = Column(
+  modifier = modifier,
+  horizontalAlignment = Alignment.Start,
+) {
+  Text(
+    text = data.title,
+    color = theme.pageText,
+    style = MaterialTheme.typography.bodyLarge,
+  )
+
+  data.start?.yearMonth?.let { start ->
+    data.end?.yearMonth?.let { end ->
+      Text(
+        text = dateRange(start, end),
+        color = theme.pageTextSubdued,
+        style = MaterialTheme.typography.bodyMedium,
+      )
+    }
   }
 }
 
