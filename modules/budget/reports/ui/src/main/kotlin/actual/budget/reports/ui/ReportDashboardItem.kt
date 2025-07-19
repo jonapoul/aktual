@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 internal fun ReportDashboardItem(
   item: ReportDashboardItem,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -96,7 +96,7 @@ private fun ReportDropDownMenu(
   item: ReportDashboardItem,
   expanded: Boolean,
   onDismiss: () -> Unit,
-  onAction: (Action) -> Unit,
+  onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) = DropdownMenu(
   modifier = modifier,
