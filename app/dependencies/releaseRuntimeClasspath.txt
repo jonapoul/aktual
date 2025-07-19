@@ -70,6 +70,7 @@ androidx.drawerlayout:drawerlayout:1.1.1
 androidx.dynamicanimation:dynamicanimation:1.0.0
 androidx.emoji2:emoji2-views-helper:1.4.0
 androidx.emoji2:emoji2:1.4.0
+androidx.exifinterface:exifinterface:1.3.7
 androidx.fragment:fragment-ktx:1.8.8
 androidx.fragment:fragment:1.8.8
 androidx.graphics:graphics-path:1.0.1
@@ -147,6 +148,11 @@ app.cash.sqldelight:primitive-adapters:2.1.0
 app.cash.sqldelight:runtime-jvm:2.1.0
 app.cash.sqldelight:runtime:2.1.0
 app.cash.sqldelight:sqlite-driver:2.1.0
+com.atlassian.commonmark:commonmark-ext-gfm-strikethrough:0.13.0
+com.atlassian.commonmark:commonmark-ext-gfm-tables:0.13.0
+com.atlassian.commonmark:commonmark:0.13.0
+com.github.jeziellago:Markwon:58aa5aba6a
+com.github.jeziellago:compose-markdown:0.5.7
 com.github.nanihadesuka:LazyColumnScrollbar:2.2.0
 com.github.tony19:logback-android:3.0.0
 com.google.android.material:material:1.12.0
@@ -161,6 +167,7 @@ com.google.errorprone:error_prone_annotations:2.15.0
 com.google.guava:listenablefuture:1.0
 com.patrykandpatrick.vico:compose:2.1.3
 com.patrykandpatrick.vico:core:2.1.3
+com.squareup.okhttp3:okhttp:4.12.0
 com.squareup.okio:okio-jvm:3.15.0
 com.squareup.okio:okio:3.15.0
 dev.chrisbanes.haze:haze-android:1.6.8
@@ -182,6 +189,9 @@ dev.jonpoulton.preferences:core-jvm:2.2.0
 dev.jonpoulton.preferences:core:2.2.0
 dev.zacsweers.redacted:redacted-compiler-plugin-annotations-jvm:1.14.1
 dev.zacsweers.redacted:redacted-compiler-plugin-annotations:1.14.1
+io.coil-kt:coil-base:2.6.0
+io.coil-kt:coil-gif:2.6.0
+io.coil-kt:coil:2.6.0
 io.ktor:ktor-client-auth-jvm:3.2.2
 io.ktor:ktor-client-auth:3.2.2
 io.ktor:ktor-client-cio-jvm:3.2.2
@@ -218,6 +228,12 @@ io.ktor:ktor-websocket-serialization-jvm:3.2.2
 io.ktor:ktor-websocket-serialization:3.2.2
 io.ktor:ktor-websockets-jvm:3.2.2
 io.ktor:ktor-websockets:3.2.2
+io.noties.markwon:core:4.6.2
+io.noties.markwon:ext-strikethrough:4.6.2
+io.noties.markwon:ext-tables:4.6.2
+io.noties.markwon:ext-tasklist:4.6.2
+io.noties.markwon:html:4.6.2
+io.noties.markwon:linkify:4.6.2
 jakarta.inject:jakarta.inject-api:2.0.1
 javax.inject:javax.inject:1
 org.jetbrains.androidx.lifecycle:lifecycle-common:2.8.4
