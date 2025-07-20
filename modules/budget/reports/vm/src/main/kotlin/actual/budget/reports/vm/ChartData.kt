@@ -1,6 +1,7 @@
 package actual.budget.reports.vm
 
 import actual.budget.model.Amount
+import actual.budget.model.DateRangeType
 import actual.core.model.Percent
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
@@ -171,3 +172,18 @@ sealed interface SpendingComparison {
 data class TextData(
   val content: String,
 ) : ChartData
+
+@Immutable
+data class CustomData(
+  val title: String,
+  val mode: DateRangeMode,
+  val range: ReportTimeRange,
+) : ChartData
+
+@Immutable
+sealed interface ReportTimeRange {
+  @JvmInline
+  value class Relative(val type: DateRangeType) : ReportTimeRange
+
+  data class Specific(val range: YearMonthRange) : ReportTimeRange
+}

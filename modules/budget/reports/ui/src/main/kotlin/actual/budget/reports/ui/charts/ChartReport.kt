@@ -4,6 +4,7 @@ import actual.budget.reports.ui.ActionListener
 import actual.budget.reports.vm.CalendarData
 import actual.budget.reports.vm.CashFlowData
 import actual.budget.reports.vm.ChartData
+import actual.budget.reports.vm.CustomData
 import actual.budget.reports.vm.NetWorthData
 import actual.budget.reports.vm.SpendingData
 import actual.budget.reports.vm.SummaryData
@@ -26,4 +27,5 @@ internal fun ReportChart(
   is CalendarData -> CalendarChart(data, compact, onAction, modifier, theme)
   is SpendingData -> SpendingChart(data, compact, modifier, theme)
   is TextData -> TextChart(data, compact, onAction, modifier, theme)
+  is CustomData -> CustomChart(data, compact, modifier, theme)
 }
