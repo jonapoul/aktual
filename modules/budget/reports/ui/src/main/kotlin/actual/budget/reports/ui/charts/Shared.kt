@@ -1,6 +1,7 @@
 package actual.budget.reports.ui.charts
 
 import actual.budget.model.Amount
+import actual.budget.model.DateRangeType
 import actual.budget.model.NumberFormatConfig
 import actual.core.ui.LocalNumberFormatConfig
 import actual.core.ui.LocalPrivacyEnabled
@@ -8,6 +9,7 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.Theme
 import actual.core.ui.stringShort
 import actual.l10n.R
+import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
 import android.content.Context
 import android.text.Layout
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -177,10 +180,12 @@ internal fun YearMonth.Companion.fromMonthNumber(number: Long): YearMonth {
 
 @Stable
 @Composable
+@ReadOnlyComposable
 internal fun dateRange(start: YearMonth, end: YearMonth) = "${start.stringShort()} - ${end.stringShort()}"
 
 @Stable
 @Composable
+@ReadOnlyComposable
 internal fun dateRange(months: ImmutableCollection<YearMonth>): String = dateRange(months.min(), months.max())
 
 @Composable
@@ -205,4 +210,19 @@ internal fun Footer(
     text = text,
     style = MaterialTheme.typography.bodySmall,
   )
+}
+
+@Composable
+@ReadOnlyComposable
+internal fun DateRangeType.string() = when (this) {
+  DateRangeType.ThisWeek -> Strings.reportsDateTypeThisWeek
+  DateRangeType.LastWeek -> Strings.reportsDateTypeLastWeek
+  DateRangeType.ThisMonth -> Strings.reportsDateTypeThisMonth
+  DateRangeType.LastMonth -> Strings.reportsDateTypeLastMonth
+  DateRangeType.Last3Months -> Strings.reportsDateTypeLast3Months
+  DateRangeType.Last6Months -> Strings.reportsDateTypeLast6Months
+  DateRangeType.Last12Months -> Strings.reportsDateTypeLast12Months
+  DateRangeType.YearToDate -> Strings.reportsDateTypeYearToDate
+  DateRangeType.LastYear -> Strings.reportsDateTypeLastYear
+  DateRangeType.AllTime -> Strings.reportsDateTypeAllTime
 }
