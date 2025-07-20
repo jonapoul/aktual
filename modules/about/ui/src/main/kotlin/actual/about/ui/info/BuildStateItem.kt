@@ -1,5 +1,6 @@
 package actual.about.ui.info
 
+import actual.core.ui.ActualTypography
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -15,7 +16,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -59,13 +59,13 @@ internal fun BuildStateItem(
       Text(
         modifier = Modifier.testTag(Tags.BuildStateItemTitle),
         text = title,
-        style = MaterialTheme.typography.bodyLarge,
+        style = ActualTypography.bodyLarge,
         color = theme.pageText,
       )
       Text(
         modifier = Modifier.testTag(Tags.BuildStateItemValue),
         text = subtitle,
-        style = MaterialTheme.typography.labelMedium,
+        style = ActualTypography.labelMedium,
         color = theme.pageTextSubdued,
       )
     }

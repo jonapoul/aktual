@@ -2,6 +2,7 @@ package actual.budget.reports.ui.charts
 
 import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.NetWorthData
+import actual.core.ui.ActualTypography
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -19,7 +20,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -90,14 +90,14 @@ private fun Header(
       text = data.title,
       overflow = TextOverflow.Ellipsis,
       color = theme.pageText,
-      style = MaterialTheme.typography.bodyLarge,
+      style = ActualTypography.bodyLarge,
     )
 
     Text(
       text = dateRange(data.items.keys),
       overflow = TextOverflow.Ellipsis,
       color = theme.pageTextSubdued,
-      style = MaterialTheme.typography.bodyMedium,
+      style = ActualTypography.bodyMedium,
     )
   }
 
@@ -108,7 +108,7 @@ private fun Header(
     Text(
       text = netWorthLatest.formattedString(includeSign = false),
       textAlign = TextAlign.End,
-      style = MaterialTheme.typography.bodyLarge,
+      style = ActualTypography.bodyLarge,
       color = theme.pageText,
     )
 
@@ -121,7 +121,7 @@ private fun Header(
     Text(
       text = netWorthChange.formattedString(includeSign = true),
       textAlign = TextAlign.End,
-      style = MaterialTheme.typography.bodySmall,
+      style = ActualTypography.bodySmall,
       color = if (netWorthChange.isPositive()) theme.successText else theme.errorText,
     )
   }

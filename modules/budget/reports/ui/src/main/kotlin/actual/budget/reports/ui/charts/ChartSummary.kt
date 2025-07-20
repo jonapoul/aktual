@@ -16,6 +16,7 @@ import actual.core.icons.Equals
 import actual.core.icons.OpenBracket
 import actual.core.icons.Sum
 import actual.core.model.Percent
+import actual.core.ui.ActualTypography
 import actual.core.ui.CardShape
 import actual.core.ui.ExposedDropDownMenu
 import actual.core.ui.LocalTheme
@@ -39,7 +40,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -116,7 +116,7 @@ private fun Header(
   Text(
     text = data.title,
     color = theme.pageText,
-    style = MaterialTheme.typography.bodyLarge,
+    style = ActualTypography.bodyLarge,
   )
 
   data.start?.yearMonth?.let { start ->
@@ -124,7 +124,7 @@ private fun Header(
       Text(
         text = dateRange(start, end),
         color = theme.pageTextSubdued,
-        style = MaterialTheme.typography.bodyMedium,
+        style = ActualTypography.bodyMedium,
       )
     }
   }

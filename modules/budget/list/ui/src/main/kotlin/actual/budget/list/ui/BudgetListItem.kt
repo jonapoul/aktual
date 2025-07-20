@@ -5,6 +5,7 @@ import actual.budget.model.BudgetState
 import actual.core.icons.ActualIcons
 import actual.core.icons.Key
 import actual.core.ui.ActualFontFamily
+import actual.core.ui.ActualTypography
 import actual.core.ui.BareIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -28,7 +29,6 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -84,7 +84,7 @@ internal fun BudgetListItem(
       Text(
         modifier = Modifier.padding(top = 4.dp),
         text = description,
-        style = MaterialTheme.typography.bodySmall,
+        style = ActualTypography.bodySmall,
         color = theme.budgetItemTextSecondary,
         fontSize = 10.sp,
         lineHeight = 12.sp,

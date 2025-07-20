@@ -5,6 +5,7 @@ import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.SpendingComparison
 import actual.budget.reports.vm.SpendingData
 import actual.budget.reports.vm.SpendingDayNumber
+import actual.core.ui.ActualTypography
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -30,7 +31,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -189,7 +189,7 @@ private fun CompactHeader(
     Text(
       text = data.title,
       color = theme.pageText,
-      style = MaterialTheme.typography.bodyLarge,
+      style = ActualTypography.bodyLarge,
     )
     Text(
       text = Strings.reportsSpendingDateRange(
@@ -197,7 +197,7 @@ private fun CompactHeader(
         data.comparison.string(),
       ),
       color = theme.pageTextSubdued,
-      style = MaterialTheme.typography.bodyMedium,
+      style = ActualTypography.bodyMedium,
     )
   }
 
@@ -230,7 +230,7 @@ private fun RegularLegend(
 
   HorizontalSpacer(weight = 1f)
 
-  val style = MaterialTheme.typography.bodySmall.copy(textAlign = TextAlign.End)
+  val style = ActualTypography.bodySmall.copy(textAlign = TextAlign.End)
   val mtdSpending = calculateMtdSpending(data)
   val padding = PaddingValues(horizontal = 4.dp)
 
@@ -286,7 +286,7 @@ private fun LegendItem(
 
   Text(
     text = text,
-    style = MaterialTheme.typography.bodySmall,
+    style = ActualTypography.bodySmall,
   )
 }
 
