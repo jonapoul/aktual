@@ -13,6 +13,7 @@ dependencies {
   api(project(":modules:core:model"))
   api(libs.androidx.compose.runtime)
   api(libs.haze.core)
+  api(libs.kotlinx.datetime)
   api(libs.kotlinx.immutable)
   api(libs.lazycolumn.scrollbar)
   implementation(project(":modules:core:android"))
@@ -29,6 +30,7 @@ dependencies {
   implementation(libs.androidx.compose.ui.tooling)
   implementation(libs.androidx.compose.ui.toolingPreview)
   implementation(libs.androidx.compose.ui.unit)
+  implementation(libs.androidx.compose.ui.util)
   implementation(libs.androidx.coreKtx)
   implementation(libs.kotlinx.coroutines)
 }
