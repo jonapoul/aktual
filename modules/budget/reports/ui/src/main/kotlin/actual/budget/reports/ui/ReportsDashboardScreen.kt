@@ -24,7 +24,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -63,6 +67,7 @@ fun ReportsDashboardScreen(
         is Action.SetAllTimeDivisor -> TODO()
         is Action.ClickCalendarDay -> TODO()
         is Action.SaveTextContent -> TODO()
+        Action.CreateNewReport -> nav.createReport(token, budgetId)
       }
     },
   )
@@ -87,6 +92,14 @@ private fun ReportsDashboardScaffold(
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
         title = { Text(Strings.reportsDashboardTitle) },
+        actions = {
+          IconButton(onClick = { onAction(Action.CreateNewReport) }) {
+            Icon(
+              imageVector = Icons.Filled.Add,
+              contentDescription = Strings.reportsDashboardCreate,
+            )
+          }
+        }
       )
     },
   ) { innerPadding ->

@@ -54,6 +54,9 @@ internal fun ActualNavHost(
       // TBC
     }
 
+    composableWithArg<CreateReportNavRoute>(mapOf(BudgetIdType, LoginTokenType)) { route, _ ->
+    }
+
     composable<ServerUrlNavRoute> { ServerUrlScreen(ServerUrlNavigator(nav)) }
 
     composable<SettingsNavRoute> { SettingsScreen(SettingsNavigator(nav)) }

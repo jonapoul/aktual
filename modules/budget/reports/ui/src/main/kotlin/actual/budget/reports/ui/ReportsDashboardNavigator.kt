@@ -9,4 +9,5 @@ import androidx.compose.runtime.Immutable
 interface ReportsDashboardNavigator {
   fun back(): Boolean
   fun toReport(token: LoginToken, budgetId: BudgetId, reportId: CustomReportId)
+  fun createReport(token: LoginToken, budgetId: BudgetId)
 }

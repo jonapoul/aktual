@@ -65,3 +65,10 @@ data class ReportNavRoute(
   val budgetId: BudgetId,
   val reportId: CustomReportId,
 ) : JSerializable
+
+@Immutable
+@Serializable
+data class CreateReportNavRoute(
+  val token: LoginToken,
+  val budgetId: BudgetId,
+) : JSerializable

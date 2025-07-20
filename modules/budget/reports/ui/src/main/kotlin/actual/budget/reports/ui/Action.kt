@@ -15,6 +15,7 @@ internal sealed interface Action {
   data class SetAllTimeDivisor(val allTime: Boolean) : Action
   data class ClickCalendarDay(val day: CalendarDay) : Action
   data class SaveTextContent(val data: TextData, val newContent: String) : Action
+  data object CreateNewReport : Action
 }
 
 @Immutable
