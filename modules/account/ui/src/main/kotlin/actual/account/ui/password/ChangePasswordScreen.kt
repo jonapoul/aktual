@@ -4,6 +4,7 @@ import actual.account.model.Password
 import actual.account.vm.ChangePasswordState
 import actual.account.vm.ChangePasswordViewModel
 import actual.core.model.ActualVersions
+import actual.core.ui.ActualTypography
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
@@ -24,7 +25,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -154,7 +154,7 @@ private fun ChangePasswordContent(
     ) {
       Text(
         text = Strings.passwordTitle,
-        style = MaterialTheme.typography.headlineLarge,
+        style = ActualTypography.headlineLarge,
       )
 
       VerticalSpacer(20.dp)
@@ -162,7 +162,7 @@ private fun ChangePasswordContent(
       Text(
         text = Strings.passwordMessage,
         color = theme.tableRowHeaderText,
-        style = MaterialTheme.typography.bodyLarge,
+        style = ActualTypography.bodyLarge,
       )
 
       VerticalSpacer(30.dp)

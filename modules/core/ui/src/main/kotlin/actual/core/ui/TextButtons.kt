@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Typography
@@ -42,7 +41,7 @@ fun PrimaryTextButton(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = MaterialTheme.typography.buttonPrimary,
+  style: TextStyle = ActualTypography.buttonPrimary,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: ComposableLambda? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primaryButton(pressed) },
@@ -75,7 +74,7 @@ fun PrimaryTextButtonWithLoading(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = MaterialTheme.typography.buttonPrimary,
+  style: TextStyle = ActualTypography.buttonPrimary,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: ComposableLambda? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primaryButton(pressed) },
@@ -129,7 +128,7 @@ fun NormalTextButton(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = MaterialTheme.typography.buttonPrimary,
+  style: TextStyle = ActualTypography.buttonPrimary,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: ComposableLambda? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { t, pressed -> t.normalButton(pressed) },
@@ -161,7 +160,7 @@ fun BareTextButton(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = MaterialTheme.typography.buttonBare,
+  style: TextStyle = ActualTypography.buttonBare,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: ComposableLambda? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { theme, pressed -> theme.bareButton(pressed) },

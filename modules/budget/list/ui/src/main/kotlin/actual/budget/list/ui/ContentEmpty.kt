@@ -1,6 +1,7 @@
 package actual.budget.list.ui
 
 import actual.core.ui.ActualFontFamily
+import actual.core.ui.ActualTypography
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButton
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -39,7 +39,7 @@ internal fun ContentEmpty(
     Text(
       text = Strings.budgetSuccessEmpty,
       textAlign = TextAlign.Center,
-      style = MaterialTheme.typography.headlineLarge,
+      style = ActualTypography.headlineLarge,
     )
 
     VerticalSpacer(20.dp)

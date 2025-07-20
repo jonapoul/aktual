@@ -3,6 +3,7 @@ package actual.budget.list.ui
 import actual.budget.list.vm.DeletingState
 import actual.budget.model.Budget
 import actual.core.ui.ActualFontFamily
+import actual.core.ui.ActualTypography
 import actual.core.ui.AlertDialog
 import actual.core.ui.BareTextButton
 import actual.core.ui.LocalTheme
@@ -20,7 +21,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -164,7 +164,7 @@ private fun LoadableBareTextButton(
     colors = colors,
     isEnabled = isEnabled,
     onClick = onClick,
-    style = if (isLoading) TextStyle(color = Transparent) else MaterialTheme.typography.buttonBare,
+    style = if (isLoading) TextStyle(color = Transparent) else ActualTypography.buttonBare,
   )
 
   Box(
