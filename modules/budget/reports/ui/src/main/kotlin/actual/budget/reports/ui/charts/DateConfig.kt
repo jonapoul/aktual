@@ -137,20 +137,6 @@ private fun DateRangeMode.string() = when (this) {
   DateRangeMode.Static -> Strings.reportsDateConfigStatic
 }
 
-@Composable
-private fun DateRangeType.string() = when (this) {
-  DateRangeType.ThisWeek -> Strings.reportsDateTypeThisWeek
-  DateRangeType.LastWeek -> Strings.reportsDateTypeLastWeek
-  DateRangeType.ThisMonth -> Strings.reportsDateTypeThisMonth
-  DateRangeType.LastMonth -> Strings.reportsDateTypeLastMonth
-  DateRangeType.Last3Months -> Strings.reportsDateTypeLast3Months
-  DateRangeType.Last6Months -> Strings.reportsDateTypeLast6Months
-  DateRangeType.Last12Months -> Strings.reportsDateTypeLast12Months
-  DateRangeType.YearToDate -> Strings.reportsDateTypeYearToDate
-  DateRangeType.LastYear -> Strings.reportsDateTypeLastYear
-  DateRangeType.AllTime -> Strings.reportsDateTypeAllTime
-}
-
 @Preview
 @Composable
 private fun PreviewLight() = PreviewConfig(ColorSchemeType.Light)
