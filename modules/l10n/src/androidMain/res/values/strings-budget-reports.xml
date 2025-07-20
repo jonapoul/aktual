@@ -3,7 +3,6 @@
   <string name="reports_dashboard_rename">Rename</string>
   <string name="reports_dashboard_delete">Delete</string>
   <string name="reports_dashboard_empty">No reports</string>
-  <string name="reports_dashboard_range">%1$s to %2$s</string>
 
   <string name="reports_summary_show_as">Show as:</string>
   <string name="reports_summary_sum">Sum</string>
