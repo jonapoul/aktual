@@ -5,6 +5,7 @@ import actual.account.model.Password
 import actual.account.vm.LoginViewModel
 import actual.core.model.ActualVersions
 import actual.core.model.ServerUrl
+import actual.core.ui.ActualTypography
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
@@ -26,7 +27,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -164,7 +164,7 @@ private fun Content(
     ) {
       Text(
         text = Strings.loginTitle,
-        style = MaterialTheme.typography.headlineLarge,
+        style = ActualTypography.headlineLarge,
       )
 
       VerticalSpacer(15.dp)
@@ -172,7 +172,7 @@ private fun Content(
       Text(
         text = Strings.loginMessage,
         color = theme.tableRowHeaderText,
-        style = MaterialTheme.typography.bodyLarge,
+        style = ActualTypography.bodyLarge,
       )
 
       VerticalSpacer(20.dp)

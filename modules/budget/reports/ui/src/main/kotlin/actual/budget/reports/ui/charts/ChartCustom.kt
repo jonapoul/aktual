@@ -3,6 +3,7 @@ package actual.budget.reports.ui.charts
 import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.CustomData
 import actual.budget.reports.vm.ReportTimeRange
+import actual.core.ui.ActualTypography
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -18,7 +19,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -57,7 +57,7 @@ internal fun CustomChart(
   ) {
     Text(
       text = Strings.reportsCustomNoop,
-      style = MaterialTheme.typography.titleLarge,
+      style = ActualTypography.titleLarge,
       color = theme.warningText,
       textAlign = TextAlign.Center,
     )

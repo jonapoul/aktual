@@ -3,6 +3,7 @@ package actual.budget.reports.ui.charts
 import actual.budget.model.Amount
 import actual.budget.model.DateRangeType
 import actual.budget.model.NumberFormatConfig
+import actual.core.ui.ActualTypography
 import actual.core.ui.LocalNumberFormatConfig
 import actual.core.ui.LocalPrivacyEnabled
 import actual.core.ui.LocalTheme
@@ -16,7 +17,6 @@ import android.text.Layout
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -201,14 +201,14 @@ internal fun Footer(
   Text(
     text = title,
     fontWeight = FontWeight.Bold,
-    style = MaterialTheme.typography.bodyMedium,
+    style = ActualTypography.bodyMedium,
   )
 
   VerticalSpacer(4.dp)
 
   Text(
     text = text,
-    style = MaterialTheme.typography.bodySmall,
+    style = ActualTypography.bodySmall,
   )
 }
 

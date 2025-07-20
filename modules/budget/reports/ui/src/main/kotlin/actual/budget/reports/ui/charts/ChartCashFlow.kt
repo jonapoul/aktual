@@ -3,6 +3,7 @@ package actual.budget.reports.ui.charts
 import actual.budget.model.Amount
 import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.CashFlowData
+import actual.core.ui.ActualTypography
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -22,7 +23,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -185,7 +185,7 @@ private fun RegularHeader(
   )
 
   val padding = PaddingValues(horizontal = 2.dp)
-  val normalStyle = MaterialTheme.typography.labelMedium.copy(textAlign = TextAlign.Start, color = theme.pageText)
+  val normalStyle = ActualTypography.labelMedium.copy(textAlign = TextAlign.Start, color = theme.pageText)
   val boldStyle = normalStyle.copy(textAlign = TextAlign.End, fontWeight = FontWeight.W600)
   val summaryData = summaryData(data)
 
@@ -231,7 +231,7 @@ private fun CompactHeader(
       text = dateRange(data.items.keys),
       color = theme.pageTextSubdued,
       overflow = TextOverflow.Ellipsis,
-      style = MaterialTheme.typography.labelMedium,
+      style = ActualTypography.labelMedium,
     )
   }
 

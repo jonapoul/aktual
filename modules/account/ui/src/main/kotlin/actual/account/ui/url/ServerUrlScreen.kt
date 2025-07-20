@@ -5,6 +5,7 @@ import actual.account.vm.ServerUrlViewModel
 import actual.core.model.ActualVersions
 import actual.core.model.Protocol
 import actual.core.ui.ActualFontFamily
+import actual.core.ui.ActualTypography
 import actual.core.ui.BasicIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewScreen
@@ -32,7 +33,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -187,7 +187,7 @@ private fun ServerUrlContent(
   ) {
     Text(
       text = Strings.serverUrlTitle,
-      style = MaterialTheme.typography.headlineLarge,
+      style = ActualTypography.headlineLarge,
     )
 
     VerticalSpacer(height = 15.dp)
@@ -195,7 +195,7 @@ private fun ServerUrlContent(
     Text(
       text = Strings.serverUrlMessage,
       color = theme.tableRowHeaderText,
-      style = MaterialTheme.typography.bodyLarge,
+      style = ActualTypography.bodyLarge,
     )
 
     VerticalSpacer(height = 20.dp)

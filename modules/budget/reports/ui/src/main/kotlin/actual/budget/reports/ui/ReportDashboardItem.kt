@@ -9,6 +9,7 @@ import actual.budget.reports.ui.charts.ReportChart
 import actual.budget.reports.vm.ReportDashboardItem
 import actual.budget.reports.vm.ReportRange
 import actual.budget.reports.vm.ReportValues
+import actual.core.ui.ActualTypography
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
@@ -29,7 +30,6 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
@@ -150,7 +150,7 @@ private fun Header(
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       fontSize = 13.sp,
-      style = MaterialTheme.typography.bodySmall,
+      style = ActualTypography.bodySmall,
       color = theme.pageTextSubdued,
     )
   }
@@ -176,7 +176,7 @@ private fun Header(
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       fontSize = 13.sp,
-      style = MaterialTheme.typography.bodySmall,
+      style = ActualTypography.bodySmall,
       color = when {
         values.change >= Amount.Zero -> theme.noticeTextLight
         else -> theme.errorText

@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LocalTextStyle
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -157,7 +156,6 @@ fun WrapWidthTable(
               .width(columnWidths[index]),
             text = cell,
             style = textStyles[index],
-            color = MaterialTheme.colorScheme.onSurface,
             maxLines = 1,
             overflow = if (ellipsize) TextOverflow.Ellipsis else TextOverflow.Clip,
           )
@@ -190,9 +188,9 @@ private fun PreviewWeightedTableWithStylesAndPadding() = PreviewColumn(maxHeight
     ),
     textStyles = persistentListOf(
       LocalTextStyle.current,
-      MaterialTheme.typography.bodyMedium,
-      MaterialTheme.typography.headlineSmall,
-      MaterialTheme.typography.labelSmall,
+      ActualTypography.bodyMedium,
+      ActualTypography.headlineSmall,
+      ActualTypography.labelSmall,
     ),
   )
 }

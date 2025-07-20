@@ -4,6 +4,7 @@ import actual.core.model.ColorSchemeType
 import actual.core.model.DarkColorSchemeType
 import actual.core.model.RegularColorSchemeType
 import actual.core.ui.ActualFontFamily
+import actual.core.ui.ActualTypography
 import actual.core.ui.AlertDialog
 import actual.core.ui.ButtonShape
 import actual.core.ui.LocalTheme
@@ -26,7 +27,6 @@ import androidx.compose.material.icons.filled.Brightness3
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -208,7 +208,7 @@ private fun <T> TypeButton(
     Text(
       text = strings(type),
       textAlign = TextAlign.Center,
-      style = MaterialTheme.typography.bodySmall,
+      style = ActualTypography.bodySmall,
     )
   }
 }

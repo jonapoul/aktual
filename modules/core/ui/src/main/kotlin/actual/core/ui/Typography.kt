@@ -2,6 +2,7 @@ package actual.core.ui
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
@@ -41,6 +42,10 @@ fun typography(theme: Theme = LocalTheme.current): Typography {
 //     labelSmall =
   )
 }
+
+@get:Composable
+val ActualTypography: Typography
+  get() = MaterialTheme.typography
 
 val ActualFontFamily = FontFamily(
   Font(CoreR.font.inter_thin, FontWeight.W100),
