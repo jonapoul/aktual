@@ -53,3 +53,9 @@ interface BudgetComponent {
       .build()
   }
 }
+
+fun BudgetComponent.throwIfWrongBudget(expected: BudgetId) {
+  require(budgetId == expected) {
+    "Loading from the wrong budget! Expected $expected, got $budgetId"
+  }
+}

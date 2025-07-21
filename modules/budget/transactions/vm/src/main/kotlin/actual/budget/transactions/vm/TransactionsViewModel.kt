@@ -6,6 +6,7 @@ import actual.budget.db.dao.PreferencesDao
 import actual.budget.db.dao.TransactionsDao
 import actual.budget.db.transactions.GetById
 import actual.budget.di.BudgetComponentStateHolder
+import actual.budget.di.throwIfWrongBudget
 import actual.budget.model.AccountSpec
 import actual.budget.model.Amount
 import actual.budget.model.BudgetId
@@ -42,6 +43,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlin.collections.map
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel(assistedFactory = TransactionsViewModel.Factory::class)
@@ -80,9 +82,7 @@ class TransactionsViewModel @AssistedInject constructor(
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsSorting.Default)
 
   init {
-    require(component.budgetId == inputs.budgetId) {
-      "Loading from the wrong budget! Expected ${inputs.budgetId}, got ${component.budgetId}"
-    }
+    component.throwIfWrongBudget(inputs.budgetId)
 
     when (val spec = inputs.spec.accountSpec) {
       is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }
