@@ -15,40 +15,38 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  changes:
+  identify:
     runs-on: ubuntu-latest
     outputs:
       build: ${{ steps.filter.outputs.build }}
       github: ${{ steps.filter.outputs.github }}
+      kotlin: ${{ steps.filter.outputs.kotlin }}
       src: ${{ steps.filter.outputs.src }}
-      docs: ${{ steps.filter.outputs.docs }}
     steps:
       - uses: actions/checkout@v4
       - uses: dorny/paths-filter@v3
         id: filter
         with:
           filters: |
-            github:
-              - '.github/**'
             build:
               - '**.kts'
               - '**.properties'
               - '**.conf'
               - 'build-logic/**'
               - 'gradle/**'
+            github:
+              - '.github/**'
+            kotlin:
+              - '**.kt'
+              - '**.kts'
             src:
               - '**.kt'
               - '**.kts'
               - '**/src/**'
-            docs:
-              - '**.md'
 
   ktlint:
-    needs: [ changes ]
-    if: |
-      needs.changes.outputs.build == 'true' ||
-      needs.changes.outputs.github == 'true' ||
-      needs.changes.outputs.src == 'true'
+    needs: [ identify ]
+    if: needs.identify.outputs.kotlin == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -67,9 +65,9 @@ jobs:
         run: scripts/ktlintCheck.sh
 
   baseline:
-    needs: [ changes ]
+    needs: [ identify ]
     if: |
-      needs.changes.outputs.build == 'true' &&
+      needs.identify.outputs.build == 'true' &&
       github.event.pull_request.user.login == 'renovate[bot]'
     runs-on: ubuntu-latest
     steps:
@@ -97,15 +95,15 @@ jobs:
       - name: Run baseline
         run: ./gradlew dependencyGuardBaseline :dependencyGuardBaseline --no-configuration-cache --no-parallel
 
-      - name: Commit changes
+      - name: Commit identify
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: Baseline dependencies
 
   check:
-    needs: [ changes, baseline ]
+    needs: [ identify, baseline ]
     if: |
-      (needs.changes.outputs.src == 'true' || needs.changes.outputs.build == 'true' || needs.changes.outputs.github == 'true') &&
+      (needs.identify.outputs.src == 'true' || needs.identify.outputs.build == 'true' || needs.identify.outputs.github == 'true') &&
       (needs.baseline.result == 'skipped' || needs.baseline.result == 'success')
     runs-on: ubuntu-latest
     steps:
