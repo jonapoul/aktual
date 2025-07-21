@@ -103,6 +103,7 @@ jobs:
   check:
     needs: [ identify, baseline ]
     if: |
+      always() &&
       (needs.identify.outputs.src == 'true' || needs.identify.outputs.build == 'true' || needs.identify.outputs.github == 'true') &&
       (needs.baseline.result == 'skipped' || needs.baseline.result == 'success')
     runs-on: ubuntu-latest
