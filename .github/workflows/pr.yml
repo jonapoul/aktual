@@ -101,7 +101,7 @@ jobs:
     needs: [ changes, baseline ]
     if: |
       always() &&
-      needs.changes.outputs.src == 'true' &&
+      (needs.changes.outputs.src == 'true' || needs.changes.outputs.build == 'true') &&
       (needs.baseline.result == 'skipped' || needs.baseline.result == 'success')
     runs-on: ubuntu-latest
     steps:
