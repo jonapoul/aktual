@@ -95,7 +95,7 @@ jobs:
       - name: Run baseline
         run: ./gradlew dependencyGuardBaseline :dependencyGuardBaseline --no-configuration-cache --no-parallel
 
-      - name: Commit identify
+      - name: Commit changes
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: Baseline dependencies
