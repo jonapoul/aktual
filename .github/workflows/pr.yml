@@ -44,8 +44,11 @@ jobs:
               - '**.md'
 
   ktlint:
-    needs: changes
-    if: ${{ needs.changes.outputs.src == 'true' }}
+    needs: [ changes ]
+    if: |
+      needs.changes.outputs.build == 'true' ||
+      needs.changes.outputs.github == 'true' ||
+      needs.changes.outputs.src == 'true'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -65,7 +68,9 @@ jobs:
 
   baseline:
     needs: [ changes ]
-    if: needs.changes.outputs.build == 'true' && github.event.pull_request.user.login == 'renovate[bot]'
+    if: |
+      needs.changes.outputs.build == 'true' &&
+      github.event.pull_request.user.login == 'renovate[bot]'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -100,8 +105,7 @@ jobs:
   check:
     needs: [ changes, baseline ]
     if: |
-      always() &&
-      (needs.changes.outputs.src == 'true' || needs.changes.outputs.build == 'true') &&
+      (needs.changes.outputs.src == 'true' || needs.changes.outputs.build == 'true' || needs.changes.outputs.github == 'true') &&
       (needs.baseline.result == 'skipped' || needs.baseline.result == 'success')
     runs-on: ubuntu-latest
     steps:
