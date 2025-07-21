@@ -2,8 +2,6 @@ package actual.budget.db
 
 import app.cash.sqldelight.db.SqlDriver
 
-fun buildDatabase(factory: SqlDriverFactory): BudgetDatabase = buildDatabase(factory.create())
-
 fun buildDatabase(driver: SqlDriver): BudgetDatabase = BudgetDatabase(
   driver = driver,
   accountsAdapter = AccountsAdapter,
