@@ -79,10 +79,11 @@ internal fun CalendarChart(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+  includeHeader: Boolean = true,
 ) = if (compact) {
-  CompactCalendarChart(data, onAction, modifier, theme)
+  CompactCalendarChart(data, onAction, modifier, theme, includeHeader)
 } else {
-  RegularCalendarChart(data, onAction, modifier, theme)
+  RegularCalendarChart(data, onAction, modifier, theme, includeHeader)
 }
 
 @Composable
@@ -91,15 +92,18 @@ private fun CompactCalendarChart(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+  includeHeader: Boolean = true,
 ) = Column(
   modifier = modifier,
 ) {
-  CalendarSummary(
-    modifier = Modifier.padding(10.dp),
-    data = data,
-    compact = true,
-    theme = theme,
-  )
+  if (includeHeader) {
+    CalendarSummary(
+      modifier = Modifier.padding(10.dp),
+      data = data,
+      compact = true,
+      theme = theme,
+    )
+  }
 
   val listState = rememberLazyListState()
   LazyRowScrollbar(
@@ -132,18 +136,21 @@ private fun RegularCalendarChart(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+  includeHeader: Boolean = true,
 ) = Column(
   modifier = modifier,
 ) {
-  CalendarSummary(
-    modifier = Modifier
-      .padding(10.dp)
-      .fillMaxWidth()
-      .wrapContentHeight(),
-    data = data,
-    compact = false,
-    theme = theme,
-  )
+  if (includeHeader) {
+    CalendarSummary(
+      modifier = Modifier
+        .padding(10.dp)
+        .fillMaxWidth()
+        .wrapContentHeight(),
+      data = data,
+      compact = false,
+      theme = theme,
+    )
+  }
 
   LazyColumn(
     verticalArrangement = Arrangement.spacedBy(4.dp),
