@@ -7,6 +7,7 @@ import actual.account.ui.login.LoginScreen
 import actual.account.ui.password.ChangePasswordScreen
 import actual.account.ui.url.ServerUrlScreen
 import actual.budget.list.ui.ListBudgetsScreen
+import actual.budget.reports.ui.ChooseReportTypeScreen
 import actual.budget.reports.ui.ReportsDashboardScreen
 import actual.budget.sync.ui.SyncBudgetScreen
 import actual.budget.transactions.ui.TransactionsScreen
@@ -55,6 +56,7 @@ internal fun ActualNavHost(
     }
 
     composableWithArg<CreateReportNavRoute>(mapOf(BudgetIdType, LoginTokenType)) { route, _ ->
+      ChooseReportTypeScreen(ChooseReportTypeNavigator(nav), route.budgetId, route.token)
     }
 
     composable<ServerUrlNavRoute> { ServerUrlScreen(ServerUrlNavigator(nav)) }

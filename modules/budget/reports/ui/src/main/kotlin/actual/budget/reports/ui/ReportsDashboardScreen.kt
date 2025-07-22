@@ -99,7 +99,7 @@ private fun ReportsDashboardScaffold(
               contentDescription = Strings.reportsDashboardCreate,
             )
           }
-        }
+        },
       )
     },
   ) { innerPadding ->

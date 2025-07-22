@@ -50,8 +50,7 @@ internal fun ReportDashboardItem(
       .combinedClickable(
         onClick = { onAction(Action.OpenItem(item.id)) },
         onLongClick = { showContextMenu = true },
-      )
-      .padding(8.dp),
+      ).padding(8.dp),
   ) {
     ReportDropDownMenu(
       item = item,

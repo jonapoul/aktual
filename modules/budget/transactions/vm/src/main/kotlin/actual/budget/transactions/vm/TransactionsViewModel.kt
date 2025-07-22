@@ -38,7 +38,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -122,7 +121,6 @@ class TransactionsViewModel @AssistedInject constructor(
 
   fun observe(id: TransactionId): Flow<Transaction> = transactionsDao
     .observeById(id)
-    .onEach { println("observe $id = $it") }
     .filterNotNull()
     .distinctUntilChanged()
     .map(::toTransaction)
