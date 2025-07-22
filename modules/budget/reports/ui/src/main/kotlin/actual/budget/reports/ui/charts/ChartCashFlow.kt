@@ -63,13 +63,16 @@ internal fun CashFlowChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+  includeHeader: Boolean = true,
 ) = Column(
   modifier = modifier,
 ) {
-  if (compact) {
-    CompactHeader(data, theme = theme)
-  } else {
-    RegularHeader(data, theme = theme)
+  if (includeHeader) {
+    if (compact) {
+      CompactHeader(data, theme = theme)
+    } else {
+      RegularHeader(data, theme = theme)
+    }
   }
 
   val modelProducer = remember { CartesianChartModelProducer() }

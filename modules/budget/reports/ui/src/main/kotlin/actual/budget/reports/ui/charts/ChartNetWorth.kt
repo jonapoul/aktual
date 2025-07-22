@@ -51,11 +51,14 @@ internal fun NetWorthChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+  includeHeader: Boolean = true,
 ) = Column(modifier = modifier) {
-  Header(
-    modifier = Modifier.fillMaxWidth(),
-    data = data,
-  )
+  if (includeHeader) {
+    Header(
+      modifier = Modifier.fillMaxWidth(),
+      data = data,
+    )
+  }
 
   Chart(
     modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),

@@ -20,10 +20,12 @@ fun Theme.topAppBarColors(
   containerColor: Color = mobileHeaderBackground,
   titleContentColor: Color = mobileHeaderText,
   navigationIconContentColor: Color = mobileHeaderText,
+  actionIconContentColor: Color = mobileHeaderText,
 ) = TopAppBarDefaults.topAppBarColors(
   containerColor = containerColor,
   titleContentColor = titleContentColor,
   navigationIconContentColor = navigationIconContentColor,
+  actionIconContentColor = actionIconContentColor,
 )
 
 @Stable

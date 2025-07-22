@@ -2,7 +2,7 @@ package actual.android.app.nav
 
 import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
-import actual.budget.model.CustomReportId
+import actual.budget.model.WidgetId
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import java.io.Serializable as JSerializable
@@ -63,5 +63,12 @@ data class ReportsListNavRoute(
 data class ReportNavRoute(
   val token: LoginToken,
   val budgetId: BudgetId,
-  val reportId: CustomReportId,
+  val widgetId: WidgetId,
+) : JSerializable
+
+@Immutable
+@Serializable
+data class CreateReportNavRoute(
+  val token: LoginToken,
+  val budgetId: BudgetId,
 ) : JSerializable

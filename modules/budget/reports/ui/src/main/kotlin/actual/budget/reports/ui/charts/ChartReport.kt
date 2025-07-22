@@ -20,12 +20,13 @@ internal fun ReportChart(
   theme: Theme,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  includeHeader: Boolean = true,
 ) = when (data) {
-  is CashFlowData -> CashFlowChart(data, compact, modifier, theme)
-  is NetWorthData -> NetWorthChart(data, compact, modifier, theme)
-  is SummaryData -> SummaryChart(data, compact, onAction, modifier, theme)
-  is CalendarData -> CalendarChart(data, compact, onAction, modifier, theme)
-  is SpendingData -> SpendingChart(data, compact, modifier, theme)
+  is CashFlowData -> CashFlowChart(data, compact, modifier, theme, includeHeader)
+  is NetWorthData -> NetWorthChart(data, compact, modifier, theme, includeHeader)
+  is SummaryData -> SummaryChart(data, compact, onAction, modifier, theme, includeHeader)
+  is CalendarData -> CalendarChart(data, compact, onAction, modifier, theme, includeHeader)
+  is SpendingData -> SpendingChart(data, compact, modifier, theme, includeHeader)
   is TextData -> TextChart(data, compact, onAction, modifier, theme)
-  is CustomData -> CustomChart(data, compact, modifier, theme)
+  is CustomData -> CustomChart(data, compact, modifier, theme, includeHeader)
 }

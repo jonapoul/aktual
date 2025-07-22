@@ -36,10 +36,11 @@ internal fun CustomChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+  includeHeader: Boolean = true,
 ) = Column(
   modifier = modifier,
 ) {
-  if (compact) {
+  if (compact && includeHeader) {
     Header(
       modifier = Modifier
         .padding(4.dp)

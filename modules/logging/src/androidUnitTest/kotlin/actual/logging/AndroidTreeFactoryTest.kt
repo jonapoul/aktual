@@ -65,7 +65,6 @@ class AndroidTreeFactoryTest {
     // then
     val logDir = context.filesDir.resolve("../logs")
     while (!logDir.exists()) {
-      println("$logDir doesn't exist yet, waiting...")
       Thread.sleep(100L)
     }
 

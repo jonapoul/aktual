@@ -64,12 +64,13 @@ internal fun SummaryChart(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+  includeHeader: Boolean = true,
 ) = Column(
   modifier = modifier,
   horizontalAlignment = Alignment.CenterHorizontally,
   verticalArrangement = Arrangement.Center,
 ) {
-  if (compact) {
+  if (compact && includeHeader) {
     Header(
       modifier = Modifier.fillMaxWidth(),
       data = data,

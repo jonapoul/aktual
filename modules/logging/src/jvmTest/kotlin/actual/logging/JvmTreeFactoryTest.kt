@@ -74,7 +74,6 @@ class JvmTreeFactoryTest {
     // then
     val logDir = logStorage.directory()
     while (!fileSystem.exists(logDir)) {
-      println("$logDir doesn't exist yet, waiting...")
       Thread.sleep(100L)
     }
 
