@@ -28,18 +28,18 @@ class ConventionDetekt : Plugin<Project> {
     }
 
     val check by tasks.getting
-    val detektTasks = tasks.withType<Detekt>()
     val detektCheck by tasks.registering
+    check.dependsOn(detektCheck)
+
+    val detektTasks = tasks
+      .withType<Detekt>()
+      .matching { task -> !task.name.contains("release", ignoreCase = true) }
 
     detektCheck.configure { dependsOn(detektTasks) }
 
     detektTasks.configureEach {
       reports.html.required.set(true)
       exclude { it.file.path.contains("generated") }
-
-      if (!name.contains("release", ignoreCase = true)) {
-        check.dependsOn(this)
-      }
     }
 
     dependencies {
