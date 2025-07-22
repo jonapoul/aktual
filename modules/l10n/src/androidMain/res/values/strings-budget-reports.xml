@@ -3,7 +3,16 @@
   <string name="reports_dashboard_rename">Rename</string>
   <string name="reports_dashboard_delete">Delete</string>
   <string name="reports_dashboard_empty">No reports</string>
-  <string name="reports_dashboard_range">%1$s to %2$s</string>
+  <string name="reports_dashboard_create">Create new report</string>
+
+  <string name="reports_choose_type_title">Choose report type</string>
+  <string name="reports_choose_type_net_worth">Net Worth</string>
+  <string name="reports_choose_type_cash_flow">Cash Flow</string>
+  <string name="reports_choose_type_spending">Spending</string>
+  <string name="reports_choose_type_markdown">Markdown</string>
+  <string name="reports_choose_type_summary">Summary</string>
+  <string name="reports_choose_type_calendar">Calendar</string>
+  <string name="reports_choose_type_custom">Custom</string>
 
   <string name="reports_summary_show_as">Show as:</string>
   <string name="reports_summary_sum">Sum</string>

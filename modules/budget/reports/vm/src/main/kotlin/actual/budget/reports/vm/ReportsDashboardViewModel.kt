@@ -2,7 +2,7 @@ package actual.budget.reports.vm
 
 import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
-import actual.budget.model.CustomReportId
+import actual.budget.model.WidgetId
 import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import dagger.assisted.Assisted
@@ -41,11 +41,11 @@ class ReportsDashboardViewModel @AssistedInject constructor(
     // TBC
   }
 
-  fun renameReport(id: CustomReportId) {
+  fun renameReport(id: WidgetId) {
     // TODO
   }
 
-  fun deleteReport(id: CustomReportId) {
+  fun deleteReport(id: WidgetId) {
     // TODO
   }
 

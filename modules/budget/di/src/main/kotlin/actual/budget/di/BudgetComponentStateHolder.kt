@@ -16,7 +16,7 @@ class BudgetComponentStateHolder @Inject constructor(
   private val files: BudgetFiles,
   private val scope: CoroutineScope,
   private val contexts: CoroutineContexts,
-) : StateHolder<BudgetComponent?>(initialState = null) {
+) : StateHolder<BudgetComponent?>(initialState = null), AutoCloseable {
   fun require(): BudgetComponent = value ?: error("No budget component loaded!")
 
   fun clear() = update { null }
@@ -25,5 +25,16 @@ class BudgetComponentStateHolder @Inject constructor(
     val component = BudgetComponent.build(metadata, context, files, scope, contexts)
     update { component }
     return component
+  }
+
+  override fun close() {
+    value?.close()
+  }
+
+  override fun compareAndSet(expect: BudgetComponent?, update: BudgetComponent?): Boolean {
+    val previous = value
+    val successfullySet = super.compareAndSet(expect, update)
+    if (successfullySet) previous?.close()
+    return successfullySet
   }
 }

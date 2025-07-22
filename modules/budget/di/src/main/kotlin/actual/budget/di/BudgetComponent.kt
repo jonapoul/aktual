@@ -10,6 +10,7 @@ import actual.budget.model.DbMetadata
 import actual.budget.prefs.BudgetLocalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import android.content.Context
+import app.cash.sqldelight.db.SqlDriver
 import dagger.BindsInstance
 import dagger.Component
 import kotlinx.coroutines.CoroutineScope
@@ -20,11 +21,16 @@ import kotlinx.coroutines.CoroutineScope
     BudgetDatabaseModule::class,
   ],
 )
-interface BudgetComponent {
+interface BudgetComponent : AutoCloseable {
+  val driver: SqlDriver
   val database: BudgetDatabase
   val localPreferences: BudgetLocalPreferences
 
   val budgetId: BudgetId get() = localPreferences.value.cloudFileId
+
+  override fun close() {
+    driver.close()
+  }
 
   @Component.Builder
   interface Builder {
@@ -51,5 +57,11 @@ interface BudgetComponent {
       .with(scope)
       .with(contexts)
       .build()
+  }
+}
+
+fun BudgetComponent.throwIfWrongBudget(expected: BudgetId) {
+  require(budgetId == expected) {
+    "Loading from the wrong budget! Expected $expected, got $budgetId"
   }
 }

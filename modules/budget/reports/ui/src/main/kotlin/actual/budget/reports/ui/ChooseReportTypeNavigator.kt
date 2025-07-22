@@ -6,8 +6,7 @@ import actual.budget.model.WidgetId
 import androidx.compose.runtime.Immutable
 
 @Immutable
-interface ReportsDashboardNavigator {
+interface ChooseReportTypeNavigator {
   fun back(): Boolean
   fun toReport(token: LoginToken, budgetId: BudgetId, widgetId: WidgetId)
-  fun createReport(token: LoginToken, budgetId: BudgetId)
 }

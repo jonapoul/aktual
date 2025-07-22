@@ -15,3 +15,19 @@ suspend fun <T : Collection<*>> TurbineTestContext<T>.assertEmissionSize(expecte
     message = "Expected collection of size $expected, got $collection",
   )
 }
+
+suspend fun <T> TurbineTestContext<List<T>>.assertListEmitted(vararg expected: T) {
+  val expectedList = expected.toList()
+
+  val actualList = try {
+    awaitItem()
+  } catch (t: Throwable) {
+    throw AssertionError("Timed out waiting for $expectedList", t)
+  }
+
+  assertEquals(
+    actual = actualList,
+    expected = expected.toList(),
+    message = "Expected list $expectedList, got $actualList",
+  )
+}

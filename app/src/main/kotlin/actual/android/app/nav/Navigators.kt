@@ -8,7 +8,8 @@ import actual.account.ui.password.ChangePasswordNavigator
 import actual.account.ui.url.ServerUrlNavigator
 import actual.budget.list.ui.ListBudgetsNavigator
 import actual.budget.model.BudgetId
-import actual.budget.model.CustomReportId
+import actual.budget.model.WidgetId
+import actual.budget.reports.ui.ChooseReportTypeNavigator
 import actual.budget.reports.ui.ReportsDashboardNavigator
 import actual.budget.sync.ui.SyncBudgetNavigator
 import actual.budget.transactions.ui.TransactionsNavigator
@@ -16,9 +17,10 @@ import actual.settings.ui.SettingsNavigator
 import androidx.navigation.NavHostController
 
 fun ChangePasswordNavigator(nav: NavHostController): ChangePasswordNavigator = ChangePasswordNavigatorImpl(nav)
+fun ChooseReportTypeNavigator(nav: NavHostController): ChooseReportTypeNavigator = ChooseReportTypeNavigatorImpl(nav)
 fun InfoNavigator(nav: NavHostController): InfoNavigator = InfoNavigatorImpl(nav)
-fun ListBudgetsNavigator(nav: NavHostController): ListBudgetsNavigator = ListBudgetsNavigatorImpl(nav)
 fun LicensesNavigator(nav: NavHostController): LicensesNavigator = LicensesNavigatorImpl(nav)
+fun ListBudgetsNavigator(nav: NavHostController): ListBudgetsNavigator = ListBudgetsNavigatorImpl(nav)
 fun LoginNavigator(nav: NavHostController): LoginNavigator = LoginNavigatorImpl(nav)
 fun ReportsDashboardNavigator(nav: NavHostController): ReportsDashboardNavigator = ReportsDashboardNavigatorImpl(nav)
 fun ServerUrlNavigator(nav: NavHostController): ServerUrlNavigator = ServerUrlNavigatorImpl(nav)
@@ -62,8 +64,19 @@ private class LicensesNavigatorImpl(private val nav: NavHostController) : Licens
 
 private class ReportsDashboardNavigatorImpl(private val nav: NavHostController) : ReportsDashboardNavigator {
   override fun back() = nav.popBackStack()
-  override fun toReport(token: LoginToken, budgetId: BudgetId, reportId: CustomReportId) =
-    nav.debugNav(ReportNavRoute(token, budgetId, reportId))
+
+  override fun toReport(token: LoginToken, budgetId: BudgetId, widgetId: WidgetId) =
+    nav.debugNav(ReportNavRoute(token, budgetId, widgetId))
+
+  override fun createReport(token: LoginToken, budgetId: BudgetId) =
+    nav.debugNav(CreateReportNavRoute(token, budgetId))
+}
+
+private class ChooseReportTypeNavigatorImpl(private val nav: NavHostController) : ChooseReportTypeNavigator {
+  override fun back() = nav.popBackStack()
+
+  override fun toReport(token: LoginToken, budgetId: BudgetId, widgetId: WidgetId) =
+    nav.debugNav(ReportNavRoute(token, budgetId, widgetId))
 }
 
 private class SettingsNavigatorImpl(private val nav: NavHostController) : SettingsNavigator {
