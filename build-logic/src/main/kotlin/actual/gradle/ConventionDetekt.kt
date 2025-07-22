@@ -11,7 +11,6 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.getValue
-import org.gradle.kotlin.dsl.getting
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.registering
 import org.gradle.kotlin.dsl.withType
@@ -27,19 +26,16 @@ class ConventionDetekt : Plugin<Project> {
       buildUponDefaultConfig = true
     }
 
-    val check by tasks.getting
-    val detektTasks = tasks.withType<Detekt>()
-    val detektCheck by tasks.registering
+    val detektTasks = tasks
+      .withType<Detekt>()
+      .matching { task -> !task.name.contains("release", ignoreCase = true) }
 
-    detektCheck.configure { dependsOn(detektTasks) }
+    val detektCheck by tasks.registering { dependsOn(detektTasks) }
+    tasks.getByName("check") { dependsOn(detektCheck) }
 
     detektTasks.configureEach {
       reports.html.required.set(true)
       exclude { it.file.path.contains("generated") }
-
-      if (!name.contains("release", ignoreCase = true)) {
-        check.dependsOn(this)
-      }
     }
 
     dependencies {
