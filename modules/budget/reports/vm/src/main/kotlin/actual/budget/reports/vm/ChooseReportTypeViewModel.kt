@@ -55,7 +55,8 @@ class ChooseReportTypeViewModel @AssistedInject constructor(
       return
     }
 
-    viewModelScope.launch {
+    job?.cancel()
+    job = viewModelScope.launch {
       val widgetId = WidgetId(uuidGenerator())
       val (x, y) = newWidgetPosition()
       dao.insert(widgetId, type, x, y, buildEmptyMetadata(type))
