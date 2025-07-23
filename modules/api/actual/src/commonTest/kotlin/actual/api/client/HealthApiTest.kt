@@ -32,7 +32,7 @@ class HealthApiTest {
     mockEngine += { respondJson(HEALTH_SUCCESS) }
     assertEquals(
       expected = GetHealthResponse(status = "UP"),
-      actual = healthApi.getHealth()
+      actual = healthApi.getHealth(),
     )
   }
 }
