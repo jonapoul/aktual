@@ -2,7 +2,7 @@ package actual.android.app.nav
 
 import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
-import actual.budget.model.CustomReportId
+import actual.budget.model.WidgetId
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
@@ -38,4 +38,4 @@ internal class WorkingSerializableType<T : Serializable>(
 
 internal val BudgetIdType = typeMapEntry<BudgetId>(::BudgetId)
 internal val LoginTokenType = typeMapEntry<LoginToken>(::LoginToken)
-internal val CustomReportIdType = typeMapEntry<CustomReportId>(::CustomReportId)
+internal val WidgetIdType = typeMapEntry<WidgetId>(::WidgetId)

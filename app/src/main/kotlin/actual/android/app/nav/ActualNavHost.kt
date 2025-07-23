@@ -51,7 +51,7 @@ internal fun ActualNavHost(
       ReportsDashboardScreen(ReportsDashboardNavigator(nav), route.budgetId, route.token)
     }
 
-    composableWithArg<ReportNavRoute>(mapOf(BudgetIdType, LoginTokenType, CustomReportIdType)) { route, _ ->
+    composableWithArg<ReportNavRoute>(mapOf(BudgetIdType, LoginTokenType, WidgetIdType)) { route, _ ->
       // TBC
     }
 

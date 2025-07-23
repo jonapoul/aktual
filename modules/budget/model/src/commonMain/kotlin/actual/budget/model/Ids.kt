@@ -39,7 +39,7 @@ value class CategoryGroupId(private val value: String) : Comparable<CategoryGrou
 
 @JvmInline
 @Serializable
-value class CustomReportId(val value: String) : Comparable<CustomReportId>, JavaIoSerializable {
+value class CustomReportId(val value: String) : Comparable<CustomReportId> {
   override fun toString(): String = value
   override fun compareTo(other: CustomReportId) = value.compareTo(other.value)
 }
@@ -82,7 +82,7 @@ value class TransactionFilterId(private val value: String) : Comparable<Transact
 
 @JvmInline
 @Serializable
-value class WidgetId(private val value: String) : Comparable<WidgetId> {
+value class WidgetId(private val value: String) : Comparable<WidgetId>, JavaIoSerializable {
   constructor(uuid: Uuid) : this(uuid.toString())
   override fun toString(): String = value
   override fun compareTo(other: WidgetId) = value.compareTo(other.value)
