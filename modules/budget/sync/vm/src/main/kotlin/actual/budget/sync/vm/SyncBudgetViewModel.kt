@@ -16,6 +16,7 @@ import actual.budget.sync.vm.SyncStep.ValidatingDatabase
 import actual.core.model.Percent
 import actual.prefs.KeyPreferences
 import alakazam.android.core.UrlOpener
+import alakazam.kotlin.core.launchInfiniteLoop
 import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -44,6 +45,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import okio.Path
 import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 
 @Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
 @HiltViewModel(assistedFactory = SyncBudgetViewModel.Factory::class)
@@ -87,7 +89,8 @@ class SyncBudgetViewModel @AssistedInject constructor(
     }
   }
 
-  private var job: Job? = null
+  private var syncJob: Job? = null
+  private var logStatesJob: Job? = null
 
   init {
     Logger.d("init")
@@ -96,7 +99,8 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   override fun onCleared() {
     super.onCleared()
-    job?.cancel()
+    syncJob?.cancel()
+    logStatesJob?.cancel()
 
     with(files) {
       fileSystem.delete(encryptedZip(budgetId))
@@ -148,15 +152,24 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   fun start() {
     Logger.d("start")
-    job?.cancel()
+    syncJob?.cancel()
+    logStatesJob?.cancel()
     mutableSteps.update { defaultStates() }
     dismissKeyPasswordDialog()
 
-    job = viewModelScope.launch {
+    logStatesJob = viewModelScope.launchInfiniteLoop {
+      logStates()
+      delay(duration = 0.1.seconds)
+    }
+
+    syncJob = viewModelScope.launch {
       val userFileDeferred = async { fetchUserFileInfo() }
       val fileDownloadDeferred = async { downloadBudgetFileAsync() }
       val userFile = userFileDeferred.await()
       val downloadedPath = fileDownloadDeferred.await()
+
+      logStatesJob?.cancel()
+      logStates() // make sure we log the final state
 
       if (userFile == null || downloadedPath == null) {
         Logger.w("Failed syncing?")
@@ -180,6 +193,11 @@ class SyncBudgetViewModel @AssistedInject constructor(
     }
   }
 
+  private fun logStates() {
+    val stateMap = mutableSteps.value
+    Logger.v("stepState=%s", stateMap)
+  }
+
   private suspend fun CoroutineScope.fetchUserFileInfo(): UserFile? {
     setStepState(FetchingFileInfo, SyncStepState.InProgress.Indefinite)
     return when (val result = infoFetcher.fetch(token, budgetId)) {
@@ -198,6 +216,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
   private suspend fun CoroutineScope.downloadBudgetFileAsync(): Path? {
     var downloadedDbPath: Path? = null
     setStepState(DownloadingDatabase, SyncStepState.InProgress.Indefinite)
+
     fileDownloader.download(token, budgetId).collect { state ->
       val stepState = when (state) {
         is DownloadState.InProgress -> SyncStepState.InProgress.Definite(state.toPercent())
@@ -208,7 +227,6 @@ class SyncBudgetViewModel @AssistedInject constructor(
         }
       }
       setStepState(DownloadingDatabase, stepState)
-      Logger.v("stepState=%s", stepState)
     }
     return downloadedDbPath
   }
