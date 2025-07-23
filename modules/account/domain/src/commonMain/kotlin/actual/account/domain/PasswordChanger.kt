@@ -7,11 +7,11 @@ import actual.api.model.account.ChangePasswordResponse
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
-import alakazam.kotlin.logging.Logger
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
+import logcat.logcat
 import java.io.IOException
 import javax.inject.Inject
 
@@ -30,19 +30,19 @@ class PasswordChanger @Inject internal constructor(
     return try {
       val request = ChangePasswordRequest(token, password)
       val response = withContext(contexts.io) { apis.account.changePassword(request, token) }
-      Logger.v("Received response: $response")
+      logcat.v { "Received response: $response" }
       ChangePasswordResult.Success
     } catch (e: CancellationException) {
       throw e
     } catch (e: ResponseException) {
       val body = e.response.body<ChangePasswordResponse.Failure>()
-      Logger.e(e, "HTTP failure changing password: status=${e.response.status}, body=$body")
+      logcat.e(e) { "HTTP failure changing password: status=${e.response.status}, body=$body" }
       ChangePasswordResult.HttpFailure(e.response.status.value, body.reason.reason)
     } catch (e: IOException) {
-      Logger.e(e, "Network failure changing password")
+      logcat.e(e) { "Network failure changing password" }
       ChangePasswordResult.NetworkFailure
     } catch (e: Exception) {
-      Logger.e(e, "Failed changing password")
+      logcat.e(e) { "Failed changing password" }
       ChangePasswordResult.OtherFailure(e.requireMessage())
     }
   }

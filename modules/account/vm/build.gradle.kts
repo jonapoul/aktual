@@ -11,7 +11,6 @@ dependencies {
   api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   implementation(project(":modules:api:actual"))
-  implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.hilt.android)
   implementation(libs.ktor.core)

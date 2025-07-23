@@ -9,7 +9,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(libs.alakazam.kotlin.logging)
+    api(libs.logcat)
     api(libs.okio)
   }
 

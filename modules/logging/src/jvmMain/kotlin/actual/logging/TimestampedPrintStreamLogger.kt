@@ -1,32 +1,32 @@
 package actual.logging
 
-import alakazam.kotlin.logging.BasicTree
-import alakazam.kotlin.logging.LogLevel
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.UtcOffset
 import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.char
+import logcat.LogPriority
+import logcat.MinPriorityLogger
 import java.io.PrintStream
 import kotlin.time.Clock
 
-internal class TimestampedPrintStreamTree(
+internal class TimestampedPrintStreamLogger(
   private val stream: PrintStream,
   private val clock: Clock,
-) : BasicTree() {
-  override fun log(level: LogLevel, tag: String?, message: String, t: Throwable?) {
+  override val minPriority: LogPriority,
+) : MinPriorityLogger {
+  override fun log(priority: LogPriority, tag: String, message: String) {
     val time = clock.now().format(TIMESTAMP_FORMAT)
-    stream.println("$time ${level.char()}/$tag: $message")
-    t?.printStackTrace(stream)
+    stream.println("$time ${priority.char()}/$tag: $message")
   }
 
-  private fun LogLevel.char() = when (this) {
-    LogLevel.Verbose -> 'V'
-    LogLevel.Debug -> 'D'
-    LogLevel.Info -> 'I'
-    LogLevel.Warn -> 'W'
-    LogLevel.Error -> 'E'
-    LogLevel.Assert -> 'A'
+  private fun LogPriority.char() = when (this) {
+    LogPriority.VERBOSE -> 'V'
+    LogPriority.DEBUG -> 'D'
+    LogPriority.INFO -> 'I'
+    LogPriority.WARN -> 'W'
+    LogPriority.ERROR -> 'E'
+    LogPriority.ASSERT -> 'A'
   }
 
   private companion object {

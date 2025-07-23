@@ -10,11 +10,11 @@ import actual.budget.model.BudgetId
 import actual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
-import alakazam.kotlin.logging.Logger
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
+import logcat.logcat
 import okio.Buffer
 import javax.inject.Inject
 
@@ -26,7 +26,7 @@ class KeyFetcher @Inject constructor(
   private val decrypter: Decrypter,
 ) {
   suspend operator fun invoke(budgetId: BudgetId, token: LoginToken, keyPassword: Password): FetchKeyResult {
-    Logger.d("KeyFetcher $budgetId $token $keyPassword")
+    logcat.d { "KeyFetcher $budgetId $token $keyPassword" }
     val syncApi = stateHolder.value?.sync ?: return FetchKeyResult.NotLoggedIn
 
     val response = try {
@@ -34,12 +34,12 @@ class KeyFetcher @Inject constructor(
       withContext(contexts.io) { syncApi.fetchUserKey(request) }
     } catch (e: ResponseException) {
       val failure = e.response.body<GetUserKeyResponse.Failure>()
-      Logger.e(e, "Failure = $failure")
+      logcat.e(e) { "Failure = $failure" }
       return FetchKeyResult.ResponseFailure(failure.reason)
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
-      Logger.e(e, "Failed fetching key for $budgetId and $keyPassword")
+      logcat.e(e) { "Failed fetching key for $budgetId and $keyPassword" }
       return FetchKeyResult.IOFailure(e.requireMessage())
     }
 
@@ -56,13 +56,13 @@ class KeyFetcher @Inject constructor(
         error("Invalid password $keyPassword: $decrypted")
       }
 
-      Logger.i("Decrypted data successfully with test!")
-      Logger.v("testBuffer = %s", buffer)
-      Logger.v("decrypted = %s", decrypted)
+      logcat.i { "Decrypted data successfully with test!" }
+      logcat.v { "testBuffer = $buffer" }
+      logcat.v { "decrypted = $decrypted" }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
-      Logger.e(e, "Failed decrypting buffer from $response with key $key")
+      logcat.e(e) { "Failed decrypting buffer from $response with key $key" }
       return FetchKeyResult.TestFailure
     } finally {
       // This is only inserted for the sake of the decryption test

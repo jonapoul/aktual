@@ -47,24 +47,29 @@ graph ["rank"="same"]
 ":about:ui" -> ":core:ui"
 ":about:ui" -> ":l10n" ["style"="dotted"]
 ":about:vm" -> ":about:data"
+":about:vm" -> ":logging" ["style"="dotted"]
 ":account:domain" -> ":account:model"
 ":account:domain" -> ":api:actual" ["style"="dotted"]
+":account:domain" -> ":logging" ["style"="dotted"]
 ":account:domain" -> ":prefs" ["style"="dotted"]
 ":account:ui" -> ":account:domain" ["style"="dotted"]
 ":account:ui" -> ":account:vm"
 ":account:ui" -> ":core:model"
 ":account:ui" -> ":core:ui"
 ":account:ui" -> ":l10n" ["style"="dotted"]
+":account:ui" -> ":logging" ["style"="dotted"]
 ":account:vm" -> ":account:domain"
 ":account:vm" -> ":account:model"
 ":account:vm" -> ":api:actual" ["style"="dotted"]
 ":account:vm" -> ":core:model"
+":account:vm" -> ":logging" ["style"="dotted"]
 ":account:vm" -> ":prefs"
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
 ":api:builder" -> ":core:model"
+":api:builder" -> ":logging" ["style"="dotted"]
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
 ":api:github" -> ":core:model"
 ":app-android" -> ":about:ui" ["style"="dotted"]
@@ -85,6 +90,7 @@ graph ["rank"="same"]
 ":app-android" -> ":settings:ui" ["style"="dotted"]
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
+":budget:data" -> ":logging" ["style"="dotted"]
 ":budget:di" -> ":budget:data"
 ":budget:encryption" -> ":account:model"
 ":budget:encryption" -> ":budget:model"
@@ -98,6 +104,7 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:model"
+":budget:list:vm" -> ":logging" ["style"="dotted"]
 ":budget:list:vm" -> ":prefs" ["style"="dotted"]
 ":budget:reports:ui" -> ":account:model" ["style"="dotted"]
 ":budget:reports:ui" -> ":budget:reports:vm"
@@ -107,6 +114,7 @@ graph ["rank"="same"]
 ":budget:reports:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:model"
 ":budget:reports:vm" -> ":core:model" ["style"="dotted"]
+":budget:reports:vm" -> ":logging" ["style"="dotted"]
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"
 ":budget:sync:ui" -> ":core:ui"
@@ -117,6 +125,7 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model"
 ":budget:sync:vm" -> ":core:model" ["style"="dotted"]
+":budget:sync:vm" -> ":logging" ["style"="dotted"]
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
 ":budget:transactions:ui" -> ":account:model" ["style"="dotted"]
 ":budget:transactions:ui" -> ":budget:model"
@@ -127,10 +136,12 @@ graph ["rank"="same"]
 ":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:model"
+":budget:transactions:vm" -> ":logging" ["style"="dotted"]
 ":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
 ":core:connection" -> ":api:builder" ["style"="dotted"]
 ":core:connection" -> ":core:model" ["style"="dotted"]
+":core:connection" -> ":logging" ["style"="dotted"]
 ":core:connection" -> ":prefs" ["style"="dotted"]
 ":core:di" -> ":api:builder" ["style"="dotted"]
 ":core:di" -> ":api:github"
@@ -147,6 +158,7 @@ graph ["rank"="same"]
 ":settings:ui" -> ":core:ui"
 ":settings:ui" -> ":l10n" ["style"="dotted"]
 ":settings:ui" -> ":settings:vm"
+":settings:vm" -> ":logging" ["style"="dotted"]
 ":settings:vm" -> ":prefs"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

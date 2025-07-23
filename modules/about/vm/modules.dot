@@ -7,6 +7,7 @@ node ["style"="filled"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -14,6 +15,7 @@ graph ["rank"="same"]
 }
 ":about:data" -> ":api:github"
 ":about:vm" -> ":about:data"
+":about:vm" -> ":logging" ["style"="dotted"]
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
 ":api:github" -> ":core:model"
 subgraph "cluster_legend" {

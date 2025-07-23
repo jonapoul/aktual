@@ -8,6 +8,7 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -16,6 +17,7 @@ graph ["rank"="same"]
 }
 ":account:domain" -> ":account:model"
 ":account:domain" -> ":api:actual" ["style"="dotted"]
+":account:domain" -> ":logging" ["style"="dotted"]
 ":account:domain" -> ":prefs" ["style"="dotted"]
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"

@@ -17,7 +17,6 @@ import actual.core.model.Percent
 import actual.prefs.KeyPreferences
 import alakazam.android.core.UrlOpener
 import alakazam.kotlin.core.launchInfiniteLoop
-import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -43,6 +42,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import logcat.logcat
 import okio.Path
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
@@ -93,7 +93,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
   private var logStatesJob: Job? = null
 
   init {
-    Logger.d("init")
+    logcat.d { "init" }
     start()
   }
 
@@ -109,7 +109,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
   }
 
   fun clearBudget() {
-    Logger.v("clearBudget")
+    logcat.v { "clearBudget" }
     budgetComponents.clear()
   }
 
@@ -118,12 +118,12 @@ class SyncBudgetViewModel @AssistedInject constructor(
   fun dismissKeyPasswordDialog() = mutablePasswordState.update { KeyPasswordState.Inactive }
 
   fun learnMore() {
-    Logger.v("learnMore")
+    logcat.v { "learnMore" }
     urlOpener.openUrl(LEARN_MORE_URL)
   }
 
   fun confirmKeyPassword() {
-    Logger.v("confirmKeyPassword")
+    logcat.v { "confirmKeyPassword" }
     val state = mutablePasswordState.value
     dismissKeyPasswordDialog()
     val cachedData = cachedData
@@ -137,7 +137,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
     viewModelScope.launch {
       val fetched = keyFetcher(budgetId, token, state.input)
       when (fetched) {
-        is FetchKeyResult.Failure -> Logger.w("Failed fetching keys: $fetched")
+        is FetchKeyResult.Failure -> logcat.w { "Failed fetching keys: $fetched" }
 
         is FetchKeyResult.Success -> {
           // val key = keyGenerator(fetched.key)
@@ -151,7 +151,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
   }
 
   fun start() {
-    Logger.d("start")
+    logcat.d { "start" }
     syncJob?.cancel()
     logStatesJob?.cancel()
     mutableSteps.update { defaultStates() }
@@ -172,13 +172,13 @@ class SyncBudgetViewModel @AssistedInject constructor(
       logStates() // make sure we log the final state
 
       if (userFile == null || downloadedPath == null) {
-        Logger.w("Failed syncing?")
+        logcat.w { "Failed syncing?" }
         return@launch
       }
 
       setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
 
-      Logger.i("Succeeded syncing: $userFile and $downloadedPath")
+      logcat.i { "Succeeded syncing: $userFile and $downloadedPath" }
       val meta = userFile.encryptMeta
       val decryptResult = if (meta != null) {
         // Encrypted payload, so decrypt it and return the decrypted zip's path
@@ -195,7 +195,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   private fun logStates() {
     val stateMap = mutableSteps.value
-    Logger.v("stepState=%s", stateMap)
+    logcat.v { "stepState=$stateMap" }
   }
 
   private suspend fun CoroutineScope.fetchUserFileInfo(): UserFile? {
@@ -243,7 +243,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
     meta: EncryptMeta?,
     userFile: UserFile,
   ) {
-    Logger.i("decryptResult=$result")
+    logcat.i { "decryptResult=$result" }
     when (result) {
       is DecryptResult.Failure -> handleDecryptFailure(result, encryptedPath, userFile, meta)
       is DecryptResult.DecryptedFile -> importDatabase(result.path, userFile)
@@ -280,7 +280,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
   private suspend fun importDatabase(path: Path, userFile: UserFile) {
     val result = importer(userFile, path)
-    Logger.i("importResult=$result")
+    logcat.i { "importResult=$result" }
 
     when (result) {
       is ImportResult.Failure -> {
@@ -289,7 +289,7 @@ class SyncBudgetViewModel @AssistedInject constructor(
 
       is ImportResult.Success -> {
         val component = budgetComponents.update(result.meta)
-        Logger.i("Built new budget component from %s: %s", budgetId, component)
+        logcat.i { "Built new budget component from $budgetId: $component" }
         setStepState(ValidatingDatabase, SyncStepState.Succeeded)
       }
     }

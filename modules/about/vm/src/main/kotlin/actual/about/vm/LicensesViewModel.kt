@@ -3,7 +3,6 @@ package actual.about.vm
 import actual.about.data.LicensesLoadState
 import actual.about.data.LicensesRepository
 import alakazam.android.core.UrlOpener
-import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -16,6 +15,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import logcat.logcat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,7 +50,7 @@ class LicensesViewModel @Inject internal constructor(
   }
 
   fun load() {
-    Logger.d("load")
+    logcat.d { "load" }
     mutableState.update { LicensesState.Loading }
     viewModelScope.launch {
       val licensesState = when (val loadState = licensesRepository.loadLicenses()) {
@@ -69,17 +69,17 @@ class LicensesViewModel @Inject internal constructor(
   }
 
   fun openUrl(url: String) {
-    Logger.d("openUrl %s", url)
+    logcat.d { "openUrl $url" }
     urlOpener.openUrl(url)
   }
 
   fun toggleSearchBar() {
-    Logger.d("toggleSearchBar existing=%s", showSearchBar.value)
+    logcat.d { "toggleSearchBar existing=${showSearchBar.value}" }
     showSearchBar.update { alreadyVisible -> !alreadyVisible }
   }
 
   fun setSearchText(text: String) {
-    Logger.d("setSearchText %s", text)
+    logcat.d { "setSearchText $text" }
     searchTerm.update { text }
   }
 }

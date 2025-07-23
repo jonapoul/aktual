@@ -11,7 +11,6 @@ import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.core.collectFlow
 import alakazam.kotlin.core.requireMessage
-import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -37,6 +36,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import logcat.logcat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -101,13 +101,13 @@ class ServerUrlViewModel @Inject internal constructor(
   }
 
   fun onEnterUrl(url: String) {
-    Logger.v("onUrlEntered %s", url)
+    logcat.v { "onUrlEntered $url" }
     mutableBaseUrl.update { url }
     mutableConfirmResult.update { null }
   }
 
   fun onUseDemoServer() {
-    Logger.v("onUseDemoServer")
+    logcat.v { "onUseDemoServer" }
     val demo = ServerUrl.Demo
     mutableBaseUrl.update { demo.baseUrl }
     mutableProtocol.update { demo.protocol }
@@ -115,12 +115,12 @@ class ServerUrlViewModel @Inject internal constructor(
   }
 
   fun onSelectProtocol(protocol: Protocol) {
-    Logger.v("onProtocolSelected %s", protocol)
+    logcat.v { "onProtocolSelected $protocol" }
     mutableProtocol.update { protocol }
   }
 
   fun onClickConfirm() {
-    Logger.v("onClickConfirm")
+    logcat.v { "onClickConfirm" }
     mutableIsLoading.update { true }
     viewModelScope.launch {
       val protocol = mutableProtocol.value
@@ -149,21 +149,21 @@ class ServerUrlViewModel @Inject internal constructor(
   }
 
   private suspend fun checkIfNeedsBootstrap(url: ServerUrl) = try {
-    Logger.v("checkIfNeedsBootstrap %s", url)
+    logcat.v { "checkIfNeedsBootstrap $url" }
     val apis = apiStateHolder
       .filterNotNull()
       .filter { it.serverUrl == url }
       .first()
 
-    Logger.v("apis = %s", apis)
+    logcat.v { "apis = $apis" }
     val response = try {
       withContext(contexts.io) { apis.account.needsBootstrap() }
     } catch (e: ResponseException) {
-      Logger.e(e, "HTTP failure checking bootstrap for %s", url)
+      logcat.e(e) { "HTTP failure checking bootstrap for $url" }
       e.response.body<NeedsBootstrapResponse.Failure>()
     }
 
-    Logger.v("response = %s", response)
+    logcat.v { "response = $response" }
     val confirmResult = when (response) {
       is NeedsBootstrapResponse.Success -> ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
       is NeedsBootstrapResponse.Failure -> ConfirmResult.Failed(reason = response.reason.reason)
@@ -172,7 +172,7 @@ class ServerUrlViewModel @Inject internal constructor(
   } catch (e: CancellationException) {
     throw e
   } catch (e: Exception) {
-    Logger.w(e, "Failed checking bootstrap for %s", url)
+    logcat.w(e) { "Failed checking bootstrap for $url" }
 
     // hit an error, we can't use this URL?
     preferences.serverUrl.deleteAndCommit()

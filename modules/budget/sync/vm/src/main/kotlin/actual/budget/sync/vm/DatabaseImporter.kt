@@ -9,12 +9,12 @@ import actual.budget.model.database
 import actual.budget.model.writeMetadata
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
-import alakazam.kotlin.logging.Logger
 import alakazam.kotlin.time.TimeZoneProvider
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.todayIn
 import kotlinx.serialization.SerializationException
+import logcat.logcat
 import okio.FileSystem
 import okio.Path
 import okio.buffer
@@ -41,7 +41,7 @@ class DatabaseImporter @Inject constructor(
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
-      Logger.e(e, "Unexpected failure importing $userFile from $zipPath")
+      logcat.e(e) { "Unexpected failure importing $userFile from $zipPath" }
       ImportResult.OtherFailure(e.requireMessage())
     }
 
@@ -70,7 +70,7 @@ class DatabaseImporter @Inject constructor(
         }
       }
     } catch (e: ZipException) {
-      Logger.e(e, "Failed getting zip entries: dbPath='%s', meta='%s'", nullableDbPath, nullableMeta)
+      logcat.e(e) { "Failed getting zip entries: dbPath='$nullableDbPath', meta='$nullableMeta'" }
       return ImportResult.NotZipFile
     }
 
@@ -82,7 +82,7 @@ class DatabaseImporter @Inject constructor(
     val meta = try {
       ActualJson.decodeFromString(DbMetadata.serializer(), metaJson)
     } catch (e: SerializationException) {
-      Logger.e(e, "Failed deserializing DbMetadata: '%s'", metaJson)
+      logcat.e(e) { "Failed deserializing DbMetadata: '$metaJson'" }
       return ImportResult.InvalidMetaFile
     }
 

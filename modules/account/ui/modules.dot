@@ -13,6 +13,7 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
+":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -21,16 +22,19 @@ graph ["rank"="same"]
 }
 ":account:domain" -> ":account:model"
 ":account:domain" -> ":api:actual" ["style"="dotted"]
+":account:domain" -> ":logging" ["style"="dotted"]
 ":account:domain" -> ":prefs" ["style"="dotted"]
 ":account:ui" -> ":account:domain" ["style"="dotted"]
 ":account:ui" -> ":account:vm"
 ":account:ui" -> ":core:model"
 ":account:ui" -> ":core:ui"
 ":account:ui" -> ":l10n" ["style"="dotted"]
+":account:ui" -> ":logging" ["style"="dotted"]
 ":account:vm" -> ":account:domain"
 ":account:vm" -> ":account:model"
 ":account:vm" -> ":api:actual" ["style"="dotted"]
 ":account:vm" -> ":core:model"
+":account:vm" -> ":logging" ["style"="dotted"]
 ":account:vm" -> ":prefs"
 ":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"

@@ -16,6 +16,10 @@ class JvmLogStorage(private val overrideUserPath: Path? = null) : LogStorage {
       else -> System.getProperty("user.home")
     }
 
+    if (path == null) {
+      error("Not sure where to store logs! os='$os'")
+    }
+
     return path.toPath().resolve("actual/logs")
   }
 }
