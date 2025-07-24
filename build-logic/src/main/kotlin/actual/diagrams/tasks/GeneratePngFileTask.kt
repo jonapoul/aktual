@@ -9,14 +9,14 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity.RELATIVE
+import org.gradle.api.tasks.PathSensitivity.ABSOLUTE
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
 
 @CacheableTask
 abstract class GeneratePngFileTask : DefaultTask() {
-  @get:[PathSensitive(RELATIVE) InputFile] abstract val dotFile: RegularFileProperty
+  @get:[PathSensitive(ABSOLUTE) InputFile] abstract val dotFile: RegularFileProperty
   @get:OutputFile abstract val pngFile: RegularFileProperty
   @get:OutputFile abstract val errorFile: RegularFileProperty
 

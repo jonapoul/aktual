@@ -8,14 +8,14 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.InputFiles
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity.RELATIVE
+import org.gradle.api.tasks.PathSensitivity.ABSOLUTE
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 
 @CacheableTask
 abstract class CollateProjectLinksTask : DefaultTask() {
-  @get:[PathSensitive(RELATIVE) InputFiles] abstract val projectLinkFiles: ConfigurableFileCollection
+  @get:[PathSensitive(ABSOLUTE) InputFiles] abstract val projectLinkFiles: ConfigurableFileCollection
   @get:OutputFile abstract val outputFile: RegularFileProperty
 
   @TaskAction
@@ -73,8 +73,8 @@ abstract class CollateProjectLinksTask : DefaultTask() {
           dependsOn(dumpTasks)
           projectLinkFiles.from(
             dumpTasks.map { taskProvider ->
-              taskProvider.map { outputFile.get() }
-            }
+              taskProvider.map { it.outputFile.get() }
+            },
           )
         }
       }

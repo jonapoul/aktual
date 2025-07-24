@@ -10,7 +10,7 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity.RELATIVE
+import org.gradle.api.tasks.PathSensitivity.ABSOLUTE
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
 import org.gradle.kotlin.dsl.register
@@ -18,8 +18,8 @@ import org.gradle.kotlin.dsl.register
 @CacheableTask
 abstract class CheckDotFileTask : DefaultTask() {
   @get:Input abstract val taskPath: Property<String>
-  @get:[PathSensitive(RELATIVE) InputFile] abstract val expectedDotFile: RegularFileProperty
-  @get:[PathSensitive(RELATIVE) InputFile] abstract val actualDotFile: RegularFileProperty
+  @get:[PathSensitive(ABSOLUTE) InputFile] abstract val expectedDotFile: RegularFileProperty
+  @get:[PathSensitive(ABSOLUTE) InputFile] abstract val actualDotFile: RegularFileProperty
 
   @TaskAction
   fun execute() {
