@@ -9,14 +9,14 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity.RELATIVE
+import org.gradle.api.tasks.PathSensitivity.ABSOLUTE
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 
 @CacheableTask
 abstract class CalculateProjectTreeTask : DefaultTask() {
-  @get:[PathSensitive(RELATIVE) InputFile] abstract val collatedLinks: RegularFileProperty
+  @get:[PathSensitive(ABSOLUTE) InputFile] abstract val collatedLinks: RegularFileProperty
   @get:Input abstract val thisPath: Property<String>
   @get:Input abstract val supportUpwardsTraversal: Property<Boolean>
   @get:OutputFile abstract val outputFile: RegularFileProperty
@@ -82,7 +82,7 @@ abstract class CalculateProjectTreeTask : DefaultTask() {
       gradle.projectsEvaluated {
         val collateProjectLinks = CollateProjectLinksTask.get(rootProject)
         task.configure {
-          collatedLinks.set(collateProjectLinks.get().outputFile)
+          collatedLinks.set(collateProjectLinks.map { it.outputFile.get() })
           dependsOn(collateProjectLinks)
         }
       }

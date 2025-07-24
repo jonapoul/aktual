@@ -29,14 +29,14 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputFile
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.PathSensitive
-import org.gradle.api.tasks.PathSensitivity.RELATIVE
+import org.gradle.api.tasks.PathSensitivity.ABSOLUTE
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.register
 
 @CacheableTask
 abstract class GenerateDotFileTask : DefaultTask() {
-  @get:[PathSensitive(RELATIVE) InputFile] abstract val linksFile: RegularFileProperty
-  @get:[PathSensitive(RELATIVE) InputFile] abstract val moduleTypesFile: RegularFileProperty
+  @get:[PathSensitive(ABSOLUTE) InputFile] abstract val linksFile: RegularFileProperty
+  @get:[PathSensitive(ABSOLUTE) InputFile] abstract val moduleTypesFile: RegularFileProperty
   @get:Input abstract val thisPath: Property<String>
   @get:Input abstract val printOutput: Property<Boolean>
   @get:Input abstract val toRemove: Property<String>
@@ -95,8 +95,8 @@ abstract class GenerateDotFileTask : DefaultTask() {
         val collateModuleTypes = CollateModuleTypesTask.get(rootProject)
         val calculateProjectTree = CalculateProjectTreeTask.get(target)
         task.configure {
-          linksFile.set(calculateProjectTree.get().outputFile)
-          moduleTypesFile.set(collateModuleTypes.get().outputFile)
+          linksFile.set(calculateProjectTree.map { it.outputFile.get() })
+          moduleTypesFile.set(collateModuleTypes.map { it.outputFile.get() })
         }
       }
 
