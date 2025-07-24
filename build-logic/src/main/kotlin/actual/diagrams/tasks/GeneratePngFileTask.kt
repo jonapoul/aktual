@@ -46,7 +46,7 @@ abstract class GeneratePngFileTask : DefaultTask() {
       tasks.register<GeneratePngFileTask>("generateModulesPng") {
         group = "reporting"
         val reportDir = layout.projectDirectory
-        dotFile.set(generateDotFile.get().dotFile)
+        dotFile.set(generateDotFile.map { it.dotFile.get() })
         pngFile.set(reportDir.file("$FILENAME_ROOT.png"))
         errorFile.set(reportDir.file("$FILENAME_ROOT-error.log"))
       }

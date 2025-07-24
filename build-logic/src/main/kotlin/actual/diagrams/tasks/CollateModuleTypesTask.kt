@@ -45,7 +45,11 @@ abstract class CollateModuleTypesTask : DefaultTask() {
             .toList()
             .mapNotNull(DumpModuleTypeTask::get)
           dependsOn(dumpTasks)
-          projectTypeFiles.from(dumpTasks.map { it.get().outputFile })
+          projectTypeFiles.from(
+            dumpTasks.map { taskProvider ->
+              taskProvider.map { outputFile.get() }
+            }
+          )
         }
       }
 

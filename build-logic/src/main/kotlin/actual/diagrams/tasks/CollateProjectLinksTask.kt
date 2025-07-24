@@ -71,7 +71,11 @@ abstract class CollateProjectLinksTask : DefaultTask() {
             .toList()
             .mapNotNull(DumpProjectLinksTask::get)
           dependsOn(dumpTasks)
-          projectLinkFiles.from(dumpTasks.map { it.get().outputFile })
+          projectLinkFiles.from(
+            dumpTasks.map { taskProvider ->
+              taskProvider.map { outputFile.get() }
+            }
+          )
         }
       }
 

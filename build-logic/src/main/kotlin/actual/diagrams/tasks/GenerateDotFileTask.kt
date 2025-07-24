@@ -95,8 +95,8 @@ abstract class GenerateDotFileTask : DefaultTask() {
         val collateModuleTypes = CollateModuleTypesTask.get(rootProject)
         val calculateProjectTree = CalculateProjectTreeTask.get(target)
         task.configure {
-          linksFile.set(calculateProjectTree.get().outputFile)
-          moduleTypesFile.set(collateModuleTypes.get().outputFile)
+          linksFile.set(calculateProjectTree.map { it.outputFile.get() })
+          moduleTypesFile.set(collateModuleTypes.map { it.outputFile.get() })
         }
       }
 

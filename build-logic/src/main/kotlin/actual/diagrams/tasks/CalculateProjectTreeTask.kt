@@ -82,7 +82,7 @@ abstract class CalculateProjectTreeTask : DefaultTask() {
       gradle.projectsEvaluated {
         val collateProjectLinks = CollateProjectLinksTask.get(rootProject)
         task.configure {
-          collatedLinks.set(collateProjectLinks.get().outputFile)
+          collatedLinks.set(collateProjectLinks.map { it.outputFile.get() })
           dependsOn(collateProjectLinks)
         }
       }
