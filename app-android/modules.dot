@@ -1,6 +1,6 @@
 digraph {
 edge ["dir"="forward"]
-graph ["dpi"="100","label"=":app","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
+graph ["dpi"="100","label"=":app-android","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":about:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":about:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -12,7 +12,7 @@ node ["style"="filled"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:builder" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:github" ["fillcolor"="#9D8DF1","shape"="none"]
-":app" ["fillcolor"="#FF5555","color"="black","penwidth"="3","shape"="box"]
+":app-android" ["fillcolor"="#FF5555","color"="black","penwidth"="3","shape"="box"]
 ":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:di" ["fillcolor"="#FCB103","shape"="none"]
 ":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -39,7 +39,7 @@ node ["style"="filled"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
-":app"
+":app-android"
 }
 ":about:data" -> ":api:github"
 ":about:ui" -> ":about:vm"
@@ -67,22 +67,22 @@ graph ["rank"="same"]
 ":api:builder" -> ":core:model"
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
 ":api:github" -> ":core:model"
-":app" -> ":about:ui" ["style"="dotted"]
-":app" -> ":account:domain" ["style"="dotted"]
-":app" -> ":account:ui" ["style"="dotted"]
-":app" -> ":api:actual" ["style"="dotted"]
-":app" -> ":budget:di" ["style"="dotted"]
-":app" -> ":budget:list:ui" ["style"="dotted"]
-":app" -> ":budget:reports:ui" ["style"="dotted"]
-":app" -> ":budget:sync:ui" ["style"="dotted"]
-":app" -> ":budget:transactions:ui" ["style"="dotted"]
-":app" -> ":core:android" ["style"="dotted"]
-":app" -> ":core:connection" ["style"="dotted"]
-":app" -> ":core:di" ["style"="dotted"]
-":app" -> ":l10n" ["style"="dotted"]
-":app" -> ":logging" ["style"="dotted"]
-":app" -> ":prefs" ["style"="dotted"]
-":app" -> ":settings:ui" ["style"="dotted"]
+":app-android" -> ":about:ui" ["style"="dotted"]
+":app-android" -> ":account:domain" ["style"="dotted"]
+":app-android" -> ":account:ui" ["style"="dotted"]
+":app-android" -> ":api:actual" ["style"="dotted"]
+":app-android" -> ":budget:di" ["style"="dotted"]
+":app-android" -> ":budget:list:ui" ["style"="dotted"]
+":app-android" -> ":budget:reports:ui" ["style"="dotted"]
+":app-android" -> ":budget:sync:ui" ["style"="dotted"]
+":app-android" -> ":budget:transactions:ui" ["style"="dotted"]
+":app-android" -> ":core:android" ["style"="dotted"]
+":app-android" -> ":core:connection" ["style"="dotted"]
+":app-android" -> ":core:di" ["style"="dotted"]
+":app-android" -> ":l10n" ["style"="dotted"]
+":app-android" -> ":logging" ["style"="dotted"]
+":app-android" -> ":prefs" ["style"="dotted"]
+":app-android" -> ":settings:ui" ["style"="dotted"]
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:di" -> ":budget:data"
@@ -161,5 +161,5 @@ graph ["label"="Legend","fontsize"="20"]
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
 </TABLE>
 >]
-} -> ":app" ["style"="invis"]
+} -> ":app-android" ["style"="invis"]
 }
