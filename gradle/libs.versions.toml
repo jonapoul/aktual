@@ -6,6 +6,8 @@ blueprint = "1.0.0"
 buildconfig = "5.6.7"
 burst = "2.6.0"
 catalog = "0.3.4"
+compose = "1.8.2"
+composeHotReload = "1.0.0-beta04"
 dependencyAnalysis = "2.19.0"
 dependencyGuard = "0.5.0"
 dependencySort = "0.14"
@@ -78,7 +80,8 @@ plugin-androidCacheFix = { module = "org.gradle.android.cache-fix:org.gradle.and
 plugin-blueprint-core = { module = "dev.jonpoulton.blueprint:core", version.ref = "blueprint" }
 plugin-blueprint-recipes = { module = "dev.jonpoulton.blueprint:recipes", version.ref = "blueprint" }
 plugin-burst = { module = "app.cash.burst:burst-gradle-plugin", version.ref = "burst" }
-plugin-compose = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
+plugin-compose = { module = "org.jetbrains.compose:org.jetbrains.compose.gradle.plugin", version.ref = "compose" }
+plugin-composeHotReload = { module = "org.jetbrains.compose.hot-reload:hot-reload-gradle-plugin", version.ref = "composeHotReload" }
 plugin-dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
 plugin-dependencySort = { module = "com.squareup.sort-dependencies:com.squareup.sort-dependencies.gradle.plugin", version.ref = "dependencySort" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
@@ -86,6 +89,7 @@ plugin-detektCompose = { module = "io.nlopez.compose.rules:detekt", version.ref 
 plugin-graphviz = { module = "guru.nidi:graphviz-java", version.ref = "graphviz" }
 plugin-hilt = { module = "com.google.dagger:hilt-android-gradle-plugin", version.ref = "hilt" }
 plugin-jacoco = { module = "org.jacoco:org.jacoco.core", version.ref = "jacoco" }
+plugin-kotlin-compose = { module = "org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin", version.ref = "kotlin" }
 plugin-kotlin-gradle = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 plugin-kotlin-powerAssert = { module = "org.jetbrains.kotlin:kotlin-power-assert", version.ref = "kotlin" }
 plugin-kover = { module = "org.jetbrains.kotlinx:kover-gradle-plugin", version.ref = "kover" }
@@ -216,6 +220,8 @@ androidCacheFix = { id = "org.gradle.android.cache-fix", version.ref = "androidC
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version.ref = "catalog" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose" }
+composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version.ref = "dependencyGuard" }
 dependencySort = { id = "com.squareup.sort-dependencies", version.ref = "dependencySort" }
