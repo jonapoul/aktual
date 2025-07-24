@@ -164,6 +164,7 @@ class BudgetInfoFetcherTest {
     client = client,
     account = mockk(),
     base = mockk(),
+    health = mockk(),
     sync = syncApi,
     syncDownload = mockk(),
   )

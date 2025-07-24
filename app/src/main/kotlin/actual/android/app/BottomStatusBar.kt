@@ -3,6 +3,7 @@ package actual.android.app
 import actual.core.icons.ActualIcons
 import actual.core.icons.CloudCheck
 import actual.core.icons.CloudWarning
+import actual.core.model.PingState
 import actual.core.ui.LocalTheme
 import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,22 +43,24 @@ internal fun BottomStatusBar(
     .fillMaxWidth(),
   verticalAlignment = Alignment.CenterVertically,
 ) {
-  if (state.budgetName != null) {
+  val (pingState, budgetName) = state
+
+  if (budgetName != null) {
     Text(
-      text = loadedString(state.budgetName),
+      text = loadedString(budgetName),
       fontSize = 10.sp,
       color = theme.pageText,
     )
   }
 
-  val text = text(state.isConnected)
-  val tint = tint(state.isConnected, theme)
+  val text = pingState.text()
+  val tint = pingState.tint(theme)
 
   HorizontalSpacer(weight = 1f)
 
   Image(
     modifier = Modifier.size(12.dp),
-    imageVector = icon(state.isConnected),
+    imageVector = pingState.icon(),
     contentDescription = text,
     colorFilter = ColorFilter.tint(tint),
   )
@@ -71,22 +75,25 @@ internal fun BottomStatusBar(
 }
 
 @Stable
-private fun icon(isConnected: Boolean) = when (isConnected) {
-  true -> ActualIcons.CloudCheck
-  false -> ActualIcons.CloudWarning
+private fun PingState.icon() = when (this) {
+  PingState.Success -> ActualIcons.CloudCheck
+  PingState.Failure -> ActualIcons.CloudWarning
+  PingState.Unknown -> ActualIcons.CloudWarning
 }
 
-@Stable
 @Composable
-private fun text(isConnected: Boolean) = when (isConnected) {
-  true -> Strings.connectionConnected
-  false -> Strings.connectionDisconnected
+@ReadOnlyComposable
+private fun PingState.text() = when (this) {
+  PingState.Success -> Strings.connectionConnected
+  PingState.Failure -> Strings.connectionDisconnected
+  PingState.Unknown -> Strings.connectionUnknown
 }
 
 @Stable
-private fun tint(isConnected: Boolean, theme: Theme) = when (isConnected) {
-  true -> theme.successText
-  false -> theme.warningText
+private fun PingState.tint(theme: Theme) = when (this) {
+  PingState.Success -> theme.successText
+  PingState.Failure -> theme.warningText
+  PingState.Unknown -> theme.pageTextSubdued
 }
 
 @Stable
@@ -104,7 +111,7 @@ private fun loadedString(budgetName: String): AnnotatedString = buildAnnotatedSt
 private fun PreviewConnected() = PreviewColumn {
   BottomStatusBar(
     state = BottomBarState.Visible(
-      isConnected = true,
+      pingState = PingState.Success,
       budgetName = "My Budget",
     ),
   )
@@ -115,7 +122,18 @@ private fun PreviewConnected() = PreviewColumn {
 private fun PreviewDisconnected() = PreviewColumn {
   BottomStatusBar(
     state = BottomBarState.Visible(
-      isConnected = false,
+      pingState = PingState.Failure,
+      budgetName = null,
+    ),
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewUnknown() = PreviewColumn {
+  BottomStatusBar(
+    state = BottomBarState.Visible(
+      pingState = PingState.Unknown,
       budgetName = null,
     ),
   )

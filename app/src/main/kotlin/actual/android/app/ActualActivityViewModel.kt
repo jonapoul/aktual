@@ -3,7 +3,6 @@
 package actual.android.app
 
 import actual.account.model.LoginToken
-import actual.api.client.ActualApisStateHolder
 import actual.budget.db.dao.PreferencesDao
 import actual.budget.di.BudgetComponentStateHolder
 import actual.budget.model.BudgetFiles
@@ -11,8 +10,10 @@ import actual.budget.model.DbMetadata
 import actual.budget.model.NumberFormat
 import actual.budget.model.SyncedPrefKey
 import actual.core.connection.ConnectionMonitor
+import actual.core.connection.ServerPinger
 import actual.core.connection.ServerVersionFetcher
 import actual.core.model.DarkColorSchemeType
+import actual.core.model.PingStateHolder
 import actual.core.model.RegularColorSchemeType
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
@@ -44,8 +45,9 @@ internal class ActualActivityViewModel @Inject constructor(
   private val scope: CoroutineScope,
   private val contexts: CoroutineContexts,
   private val connectionMonitor: ConnectionMonitor,
+  private val serverPinger: ServerPinger,
+  private val pingStateHolder: PingStateHolder,
   private val serverVersionFetcher: ServerVersionFetcher,
-  private val apiStateHolder: ActualApisStateHolder,
   private val files: BudgetFiles,
   budgetComponents: BudgetComponentStateHolder,
   preferences: AppGlobalPreferences,
@@ -93,10 +95,10 @@ internal class ActualActivityViewModel @Inject constructor(
   val bottomBarState: StateFlow<BottomBarState> = viewModelScope.launchMolecule(Immediate) {
     val showStatusBar by showStatusBar.collectAsState()
     val budgetName by budgetName.collectAsState(initial = null)
+    val pingState by pingStateHolder.collectAsState()
     if (showStatusBar) {
-      val apis by apiStateHolder.collectAsState()
       BottomBarState.Visible(
-        isConnected = apis != null,
+        pingState = pingState,
         budgetName = budgetName,
       )
     } else {
@@ -105,6 +107,7 @@ internal class ActualActivityViewModel @Inject constructor(
   }
 
   fun start() {
+    serverPinger.start()
     connectionMonitor.start()
     viewModelScope.launch {
       serverVersionFetcher.startFetching()
@@ -113,6 +116,7 @@ internal class ActualActivityViewModel @Inject constructor(
 
   fun onDestroy() {
     Logger.v("onDestroy")
+    serverPinger.stop()
     connectionMonitor.stop()
     scope.cancel()
 
