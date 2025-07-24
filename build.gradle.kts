@@ -8,6 +8,8 @@ plugins {
   alias(libs.plugins.buildconfig) apply false
   alias(libs.plugins.burst) apply false
   alias(libs.plugins.catalog) apply false
+  alias(libs.plugins.compose) apply false
+  alias(libs.plugins.composeHotReload) apply false
   alias(libs.plugins.detekt) apply false
   alias(libs.plugins.hilt) apply false
   alias(libs.plugins.kotlin.android) apply false
