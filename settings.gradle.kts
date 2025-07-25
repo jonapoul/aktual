@@ -42,6 +42,7 @@ enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 private fun module(path: String) = include(":modules:$path")
 
 include(":app-android")
+include(":app-desktop")
 module("about:data")
 module("about:ui")
 module("about:vm")
