@@ -1,23 +1,21 @@
 package actual.logging
 
-import alakazam.kotlin.logging.Logger
-import alakazam.test.core.TestClock
+import logcat.LogPriority
+import logcat.LogcatLogger
+import logcat.logcat
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
 import okio.buffer
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import java.io.ByteArrayOutputStream
-import java.io.PrintStream
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
-import kotlin.time.Instant
 
-class JvmTreeFactoryTest {
+class LogbackLoggerTest {
   @get:Rule val temporaryFolder = TemporaryFolder()
 
   private lateinit var fileSystem: FileSystem
@@ -26,7 +24,8 @@ class JvmTreeFactoryTest {
 
   @BeforeTest
   fun before() {
-    Logger.uprootAll()
+    LogcatLogger.uninstall()
+    LogcatLogger.install()
     fileSystem = FileSystem.SYSTEM
     logStorageRoot = temporaryFolder.newFolder("log").toOkioPath()
     logStorage = JvmLogStorage(logStorageRoot)
@@ -34,42 +33,19 @@ class JvmTreeFactoryTest {
 
   @AfterTest
   fun after() {
-    Logger.uprootAll()
-  }
-
-  @Test
-  fun `Log to print stream`() {
-    // given
-    val timeMs = 1748073213000 // Sat May 24 2025 07:53:33 GMT+0000
-    val byteArrayOutputStream = ByteArrayOutputStream()
-    val factory = JvmTreeFactory(
-      stream = PrintStream(byteArrayOutputStream),
-      clock = TestClock { Instant.fromEpochMilliseconds(timeMs) },
-    )
-    ActualLogging.init(factory, logStorage)
-
-    // when
-    Logger.i("Hello world")
-    Logger.tag("TAGGED").d("This one has a tag")
-
-    // then
-    val contents = byteArrayOutputStream.toString().trim().lines()
-    byteArrayOutputStream.flush()
-    assertEquals(expected = "2025-05-24T07:53:33.000Z I/null: Hello world", actual = contents[0])
-    assertEquals(expected = "2025-05-24T07:53:33.000Z D/TAGGED: This one has a tag", actual = contents[1])
+    LogcatLogger.uninstall()
   }
 
   @Test
   fun `Log to file asynchronously`() {
     // given
-    val factory = JvmTreeFactory()
-    ActualLogging.init(factory, logStorage)
+    LogcatLogger.loggers += LogbackLogger(logStorage, minPriority = LogPriority.DEBUG)
 
     // when
-    Logger.i("Hello world")
-    Logger.v("This is ignored because it's verbose")
-    Logger.d("This is just on the edge")
-    Logger.e("Here's an error, with a formatted argument: %04d", 123)
+    logcat.i { "Hello world" }
+    logcat.v { "This is ignored because it's verbose" }
+    logcat.d { "This is just on the edge" }
+    logcat.e { "Here's an error, with a formatted argument: %04d".format(123) }
 
     // then
     val logDir = logStorage.directory()

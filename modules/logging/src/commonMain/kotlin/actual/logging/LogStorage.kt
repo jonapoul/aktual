@@ -2,6 +2,6 @@ package actual.logging
 
 import okio.Path
 
-interface LogStorage {
+fun interface LogStorage {
   fun directory(): Path
 }

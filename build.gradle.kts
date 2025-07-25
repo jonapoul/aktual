@@ -56,6 +56,10 @@ dependencyAnalysis {
     bundle(name = "modules") { include("^:.*$".toRegex()) }
     bundle(name = "ktor") { includeGroup(group = "io.ktor") }
     bundle(name = "viewModel") { include(regex = "androidx.lifecycle:lifecycle-viewmodel.*".toRegex()) }
+    bundle(name = "logging") {
+      includeGroup("com.squareup.logcat")
+      include(":modules:logging".toRegex())
+    }
   }
 
   reporting {
@@ -78,9 +82,13 @@ dependencyAnalysis {
 
       onUnusedDependencies {
         exclude(
+          ":modules:logging",
+        )
+        exclude(
           libs.androidx.compose.ui.tooling,
           libs.androidx.compose.ui.toolingPreview,
           libs.hilt.core,
+          libs.logcat,
           libs.molecule,
           libs.test.androidx.monitor,
         )

@@ -9,6 +9,7 @@ node ["style"="filled"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","color"="black","penwidth"="3","shape"="box"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -16,6 +17,7 @@ graph ["rank"="same"]
 ":core:di"
 }
 ":api:builder" -> ":core:model"
+":api:builder" -> ":logging" ["style"="dotted"]
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
 ":api:github" -> ":core:model"
 ":core:di" -> ":api:builder" ["style"="dotted"]

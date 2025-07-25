@@ -6,12 +6,12 @@ import actual.core.model.PingState
 import actual.core.model.PingStateHolder
 import alakazam.kotlin.core.LoopController
 import alakazam.kotlin.core.launchInfiniteLoop
-import alakazam.kotlin.logging.Logger
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
+import logcat.logcat
 import javax.inject.Inject
 import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
@@ -33,7 +33,7 @@ class ServerPinger @Inject constructor(
 
       val healthApi = apiStateHolder.value?.health
       if (healthApi == null) {
-        Logger.w("No API - setting ping state to failure")
+        logcat.w { "No API - setting ping state to failure" }
         pingStateHolder.update { PingState.Failure }
       } else {
         attemptPing(healthApi)
@@ -47,11 +47,11 @@ class ServerPinger @Inject constructor(
     try {
       val response = healthApi.getHealth()
       pingStateHolder.update { PingState.Success }
-      Logger.v("Succeeded pinging server: $response")
+      logcat.v { "Succeeded pinging server: $response" }
     } catch (e: CancellationException) {
       throw e
     } catch (e: Exception) {
-      Logger.w(e, "Failed pinging server")
+      logcat.w(e) { "Failed pinging server" }
       pingStateHolder.update { PingState.Failure }
     }
   }

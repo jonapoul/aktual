@@ -1,7 +1,5 @@
 package actual.logging
 
-import alakazam.kotlin.logging.BasicTree
-import alakazam.kotlin.logging.LogLevel
 import ch.qos.logback.classic.AsyncAppender
 import ch.qos.logback.classic.Level
 import ch.qos.logback.classic.LoggerContext
@@ -10,12 +8,17 @@ import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.rolling.RollingFileAppender
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy
 import ch.qos.logback.core.util.FileSize
+import logcat.LogPriority
+import logcat.MinPriorityLogger
 import org.slf4j.LoggerFactory
 import ch.qos.logback.classic.Logger as LogbackLogger
 import org.slf4j.Logger as Slf4jLogger
 
 @Suppress("MagicNumber")
-internal abstract class SharedLogbackTree(storage: LogStorage) : BasicTree() {
+class LogbackLogger(
+  storage: LogStorage,
+  override val minPriority: LogPriority,
+) : MinPriorityLogger {
   init {
     val loggerContext = LoggerFactory.getILoggerFactory() as LoggerContext
     loggerContext.reset() // Clear default config
@@ -62,16 +65,16 @@ internal abstract class SharedLogbackTree(storage: LogStorage) : BasicTree() {
     }
   }
 
-  private val logger: Slf4jLogger = LoggerFactory.getLogger(SharedLogbackTree::class.java)
+  private val slf4jLogger: Slf4jLogger = LoggerFactory.getLogger(LogbackLogger::class.java)
 
-  override fun log(level: LogLevel, tag: String?, message: String, t: Throwable?) {
-    when (level) {
-      LogLevel.Verbose -> logger.trace(message, t)
-      LogLevel.Debug -> logger.debug(message, t)
-      LogLevel.Info -> logger.info(message, t)
-      LogLevel.Warn -> logger.warn(message, t)
-      LogLevel.Error -> logger.error(message, t)
-      LogLevel.Assert -> logger.error(message, t)
+  override fun log(priority: LogPriority, tag: String, message: String) = with(slf4jLogger) {
+    when (priority) {
+      LogPriority.VERBOSE -> trace(message)
+      LogPriority.DEBUG -> debug(message)
+      LogPriority.INFO -> info(message)
+      LogPriority.WARN -> warn(message)
+      LogPriority.ERROR -> error(message)
+      LogPriority.ASSERT -> error(message)
     }
   }
 }

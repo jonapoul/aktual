@@ -14,13 +14,13 @@ import actual.core.model.Bytes.Companion.Zero
 import actual.core.model.bytes
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
-import alakazam.kotlin.logging.Logger
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import logcat.logcat
 import java.io.IOException
 import javax.inject.Inject
 
@@ -45,12 +45,12 @@ class BudgetFileDownloader @Inject internal constructor(
         }
       }
     } catch (e: ResponseException) {
-      Logger.e(e, "HTTP failure downloading $id with $token")
+      logcat.e(e) { "HTTP failure downloading $id with $token" }
       deleteDir(id)
       with(e.response.status) { emit(Failure.Http(value, description, Zero)) }
       return
     } catch (e: IOException) {
-      Logger.e(e, "Failed fetching initial download request for $id with $token")
+      logcat.e(e) { "Failed fetching initial download request for $id with $token" }
       deleteDir(id)
       emit(Failure.IO(e.requireMessage(), Zero))
       return

@@ -11,6 +11,7 @@ node ["style"="filled"]
 ":budget:sync:vm" ["fillcolor"="#F5A6A6","color"="black","penwidth"="3","shape"="box"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -23,6 +24,7 @@ graph ["rank"="same"]
 ":api:actual" -> ":core:model"
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
+":budget:data" -> ":logging" ["style"="dotted"]
 ":budget:di" -> ":budget:data"
 ":budget:encryption" -> ":account:model"
 ":budget:encryption" -> ":budget:model"
@@ -33,6 +35,7 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model"
 ":budget:sync:vm" -> ":core:model" ["style"="dotted"]
+":budget:sync:vm" -> ":logging" ["style"="dotted"]
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
