@@ -1,6 +1,3 @@
-import blueprint.core.commonMainDependencies
-import blueprint.core.kspAllConfigs
-
 plugins {
   alias(libs.plugins.module.multiplatform)
   alias(libs.plugins.kotlin.serialization)

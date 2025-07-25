@@ -1,7 +1,3 @@
-@file:Suppress("unused")
-
-import blueprint.core.commonMainDependencies
-
 plugins {
   alias(libs.plugins.module.multiplatform)
 }
@@ -20,7 +16,7 @@ kotlin {
     val androidMain by getting
     val commonMain by getting
 
-    val jvmAndroidMain by registering {
+    register("jvmAndroidMain") {
       dependsOn(commonMain)
       androidMain.dependsOn(this)
       jvmMain.dependsOn(this)
