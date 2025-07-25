@@ -246,6 +246,7 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 convention-android-base = { id = "actual.convention.android.base" }
 convention-android-library = { id = "actual.convention.android.library" }
 convention-compose = { id = "actual.convention.compose" }
+convention-composeMp = { id = "actual.convention.compose.mp" }
 convention-diagrams = { id = "actual.convention.diagrams" }
 convention-hilt = { id = "actual.convention.hilt" }
 convention-idea = { id = "actual.convention.idea" }
@@ -257,6 +258,7 @@ convention-test = { id = "actual.convention.test" }
 
 module-android = { id = "actual.module.android" }
 module-compose = { id = "actual.module.compose" }
+module-composeMp = { id = "actual.module.compose.mp" }
 module-hilt = { id = "actual.module.hilt" }
 module-jvm = { id = "actual.module.jvm" }
 module-multiplatform = { id = "actual.module.multiplatform" }
