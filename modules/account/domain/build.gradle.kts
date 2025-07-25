@@ -1,6 +1,3 @@
-import blueprint.core.androidUnitTestDependencies
-import blueprint.core.commonMainDependencies
-
 plugins {
   alias(libs.plugins.module.multiplatform)
 }
