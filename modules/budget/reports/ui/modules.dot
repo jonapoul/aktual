@@ -12,6 +12,7 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
+":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -19,6 +20,7 @@ graph ["rank"="same"]
 }
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
+":budget:data" -> ":logging" ["style"="dotted"]
 ":budget:di" -> ":budget:data"
 ":budget:reports:ui" -> ":account:model" ["style"="dotted"]
 ":budget:reports:ui" -> ":budget:reports:vm"
@@ -28,6 +30,7 @@ graph ["rank"="same"]
 ":budget:reports:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:model"
 ":budget:reports:vm" -> ":core:model" ["style"="dotted"]
+":budget:reports:vm" -> ":logging" ["style"="dotted"]
 ":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
 ":core:ui" -> ":core:model"

@@ -6,7 +6,6 @@ import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import alakazam.android.core.UrlOpener
 import alakazam.kotlin.core.BuildConfig
-import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -20,6 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import logcat.logcat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
@@ -51,12 +51,12 @@ class AboutViewModel @Inject constructor(
   }
 
   fun openUrl(url: String) {
-    Logger.d("openUrl $url")
+    logcat.d { "openUrl $url" }
     urlOpener.openUrl(url)
   }
 
   fun fetchLatestRelease() {
-    Logger.d("fetchLatestRelease")
+    logcat.d { "fetchLatestRelease" }
     checkUpdatesJob?.cancel()
     mutableCheckUpdatesState.update { CheckUpdatesState.Checking }
 
@@ -78,7 +78,7 @@ class AboutViewModel @Inject constructor(
   }
 
   fun cancelUpdateCheck() {
-    Logger.d("cancelUpdateCheck")
+    logcat.d { "cancelUpdateCheck" }
     checkUpdatesJob?.cancel()
     checkUpdatesJob = null
     mutableCheckUpdatesState.update { CheckUpdatesState.Inactive }

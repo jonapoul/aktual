@@ -8,6 +8,7 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:reports:vm" ["fillcolor"="#F5A6A6","color"="black","penwidth"="3","shape"="box"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -15,11 +16,13 @@ graph ["rank"="same"]
 }
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
+":budget:data" -> ":logging" ["style"="dotted"]
 ":budget:di" -> ":budget:data"
 ":budget:reports:vm" -> ":account:model" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:model"
 ":budget:reports:vm" -> ":core:model" ["style"="dotted"]
+":budget:reports:vm" -> ":logging" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

@@ -9,7 +9,6 @@ import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.ResettableStateFlow
-import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +22,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import logcat.logcat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -61,14 +61,14 @@ class LoginViewModel @Inject constructor(
   }
 
   fun onClickSignIn() {
-    Logger.v("onClickSignIn")
+    logcat.v { "onClickSignIn" }
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
     viewModelScope.launch {
       val password = mutableEnteredPassword.value
       val result = loginRequester.logIn(password)
 
-      Logger.d("Login result = %s", result)
+      logcat.d { "Login result = $result" }
       mutableIsLoading.update { false }
 
       if (result is LoginResult.Failure) {

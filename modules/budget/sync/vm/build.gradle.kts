@@ -17,7 +17,6 @@ dependencies {
   implementation(project(":modules:budget:encryption"))
   implementation(project(":modules:core:model"))
   implementation(project(":modules:prefs"))
-  implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.compose.runtime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)

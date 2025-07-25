@@ -11,7 +11,6 @@ import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
 import actual.budget.model.WidgetType
 import actual.core.model.UuidGenerator
-import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
@@ -24,6 +23,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
+import logcat.logcat
 
 @HiltViewModel(assistedFactory = ChooseReportTypeViewModel.Factory::class)
 class ChooseReportTypeViewModel @AssistedInject constructor(
@@ -51,7 +51,7 @@ class ChooseReportTypeViewModel @AssistedInject constructor(
 
   fun createReport(type: WidgetType) {
     if (type == WidgetType.Custom) {
-      Logger.w("Can't create a custom report yet")
+      logcat.w { "Can't create a custom report yet" }
       return
     }
 

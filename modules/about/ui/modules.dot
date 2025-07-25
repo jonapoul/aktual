@@ -12,6 +12,7 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
+":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
@@ -23,6 +24,7 @@ graph ["rank"="same"]
 ":about:ui" -> ":core:ui"
 ":about:ui" -> ":l10n" ["style"="dotted"]
 ":about:vm" -> ":about:data"
+":about:vm" -> ":logging" ["style"="dotted"]
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
 ":api:github" -> ":core:model"
 ":core:ui" -> ":budget:model"

@@ -9,7 +9,6 @@ kotlin {
   commonMainDependencies {
     api(libs.javaxInject)
     api(libs.alakazam.kotlin.core)
-    implementation(libs.alakazam.kotlin.logging)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
@@ -17,6 +16,7 @@ kotlin {
     implementation(project(":modules:api:actual"))
     implementation(project(":modules:api:builder"))
     implementation(project(":modules:core:model"))
+    implementation(project(":modules:logging"))
     implementation(project(":modules:prefs"))
   }
 

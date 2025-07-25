@@ -5,12 +5,12 @@ import actual.api.client.ActualApisStateHolder
 import actual.core.model.ActualVersionsStateHolder
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.LoopController
-import alakazam.kotlin.logging.Logger
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
+import logcat.logcat
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -30,19 +30,19 @@ class ServerVersionFetcher @Inject internal constructor(
 
   private suspend fun fetchVersion(apis: ActualApis) {
     while (loopController.shouldLoop()) {
-      Logger.v("fetchVersion %s", apis)
+      logcat.v { "fetchVersion %s".format(apis) }
       try {
         val response = withContext(contexts.io) { apis.base.fetchInfo() }
-        Logger.v("Fetched %s", response)
+        logcat.v { "Fetched %s".format(response) }
         versionsStateHolder.set(response.build.version)
         break
       } catch (e: CancellationException) {
         throw e
       } catch (e: ResponseException) {
-        Logger.w(e, "HTTP failure fetching server info")
+        logcat.w(e) { "HTTP failure fetching server info" }
         delay(RETRY_DELAY)
       } catch (e: Exception) {
-        Logger.w(e, "Failed fetching server info")
+        logcat.w(e) { "Failed fetching server info" }
         delay(RETRY_DELAY)
       }
     }

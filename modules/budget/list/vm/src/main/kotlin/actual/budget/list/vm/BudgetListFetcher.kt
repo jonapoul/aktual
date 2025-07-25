@@ -9,12 +9,12 @@ import actual.budget.model.BudgetState
 import actual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
-import alakazam.kotlin.logging.Logger
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
+import logcat.logcat
 import java.io.IOException
 import javax.inject.Inject
 
@@ -28,21 +28,21 @@ class BudgetListFetcher @Inject internal constructor(
     return try {
       val response = withContext(contexts.io) { apis.sync.fetchUserFiles(token) }
       val result = FetchBudgetsResult.Success(response.data.map(::toBudget))
-      Logger.d("Fetched budgets: %s", result)
+      logcat.d { "Fetched budgets: $result" }
       result
     } catch (e: CancellationException) {
       throw e
     } catch (e: ResponseException) {
-      Logger.e(e, "HTTP failure fetching budgets")
+      logcat.e(e) { "HTTP failure fetching budgets" }
       parseResponseException(e)
     } catch (e: JsonConvertException) {
-      Logger.e(e, "JSON failure fetching budgets")
+      logcat.e(e) { "JSON failure fetching budgets" }
       FetchBudgetsResult.InvalidResponse(e.requireMessage())
     } catch (e: IOException) {
-      Logger.e(e, "Network failure fetching budgets")
+      logcat.e(e) { "Network failure fetching budgets" }
       FetchBudgetsResult.NetworkFailure(e.requireMessage())
     } catch (e: Exception) {
-      Logger.e(e, "Failed fetching budgets")
+      logcat.e(e) { "Failed fetching budgets" }
       FetchBudgetsResult.OtherFailure(e.requireMessage())
     }
   }

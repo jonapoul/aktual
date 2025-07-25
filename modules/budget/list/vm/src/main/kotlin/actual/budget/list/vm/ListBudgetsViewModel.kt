@@ -10,7 +10,6 @@ import actual.budget.model.metadata
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.assisted.Assisted
@@ -32,6 +31,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import logcat.logcat
 import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel(assistedFactory = ListBudgetsViewModel.Factory::class)
@@ -63,7 +63,7 @@ class ListBudgetsViewModel @AssistedInject constructor(
   val closeDialog: SharedFlow<Boolean> = mutableCloseDialog.asSharedFlow()
 
   init {
-    Logger.d("init")
+    logcat.d { "init" }
     fetchState()
 
     // Periodically check whether our files still exist
@@ -82,14 +82,14 @@ class ListBudgetsViewModel @AssistedInject constructor(
   }
 
   fun retry() {
-    Logger.d("retry")
+    logcat.d { "retry" }
     fetchState()
   }
 
   fun clearDeletingState() = mutableDeletingState.update { DeletingState.Inactive }
 
   fun deleteRemote(id: BudgetId) {
-    Logger.d("deleteRemote $id")
+    logcat.d { "deleteRemote $id" }
     val syncApi = apisStateHolder.value?.sync ?: error("No sync API found?")
     mutableDeletingState.update { DeletingState.Active(deletingRemote = true) }
 
@@ -105,11 +105,11 @@ class ListBudgetsViewModel @AssistedInject constructor(
         val request = DeleteUserFileRequest(id, token)
         syncApi.delete(request)
       } catch (e: Exception) {
-        Logger.e(e, "Failed deleting $id")
+        logcat.e(e) { "Failed deleting $id" }
       }
 
       // close dialog
-      Logger.d("Successfully deleted $id")
+      logcat.d { "Successfully deleted $id" }
       clearDeletingState()
       mutableCloseDialog.emit(true)
 
@@ -119,7 +119,7 @@ class ListBudgetsViewModel @AssistedInject constructor(
   }
 
   fun deleteLocal(id: BudgetId) {
-    Logger.d("deleteLocal $id")
+    logcat.d { "deleteLocal $id" }
     mutableDeletingState.update { DeletingState.Active(deletingLocal = true) }
     viewModelScope.launch {
       with(files) {
@@ -128,7 +128,7 @@ class ListBudgetsViewModel @AssistedInject constructor(
           withContext(contexts.io) { fileSystem.deleteRecursively(budgetDir) }
         }
 
-        Logger.d("Successfully deleted $budgetDir")
+        logcat.d { "Successfully deleted $budgetDir" }
         clearDeletingState()
         mutableCloseDialog.emit(true)
       }
@@ -139,7 +139,7 @@ class ListBudgetsViewModel @AssistedInject constructor(
     mutableState.update { ListBudgetsState.Loading }
     viewModelScope.launch {
       val result = budgetListFetcher.fetchBudgets(token)
-      Logger.d("Fetch budgets result = %s", result)
+      logcat.d { "Fetch budgets result = $result" }
       val newState = when (result) {
         is FetchBudgetsResult.Failure -> ListBudgetsState.Failure(result.reason)
         is FetchBudgetsResult.Success -> ListBudgetsState.Success(result.budgets.toImmutableList())

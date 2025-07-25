@@ -4,12 +4,14 @@ graph ["dpi"="100","label"=":api:builder","labelloc"="t","fontsize"="30","rankse
 node ["style"="filled"]
 ":api:builder" ["fillcolor"="#9D8DF1","color"="black","penwidth"="3","shape"="box"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
 graph ["rank"="same"]
 ":api:builder"
 }
 ":api:builder" -> ":core:model"
+":api:builder" -> ":logging" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]

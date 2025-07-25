@@ -31,6 +31,7 @@ class ModuleViewModel : Plugin<Project> {
       "implementation"(libs.getLibrary("hilt.android"))
       "implementation"(libs.getLibrary("kotlinx.coroutines"))
       "implementation"(libs.getLibrary("molecule"))
+      "implementation"(project(":modules:logging"))
       "testImplementation"(project(":modules:test:android"))
       "testImplementation"(project(":modules:test:kotlin"))
     }

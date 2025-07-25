@@ -36,12 +36,12 @@ kotlin {
     api(project(":modules:budget:model"))
     api(project(":modules:core:model"))
     implementation(libs.alakazam.db.sqldelight)
-    implementation(libs.alakazam.kotlin.logging)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.coroutines)
     implementation(libs.sqldelight.driver.sqlite)
     implementation(libs.sqldelight.primitive)
     implementation(libs.sqldelight.runtime)
+    implementation(project(":modules:logging"))
   }
 
   commonTestDependencies {

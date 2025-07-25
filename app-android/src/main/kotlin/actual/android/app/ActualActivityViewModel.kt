@@ -17,7 +17,6 @@ import actual.core.model.PingStateHolder
 import actual.core.model.RegularColorSchemeType
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -38,6 +37,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import logcat.logcat
 import javax.inject.Inject
 
 @HiltViewModel
@@ -115,7 +115,7 @@ internal class ActualActivityViewModel @Inject constructor(
   }
 
   fun onDestroy() {
-    Logger.v("onDestroy")
+    logcat.v { "onDestroy" }
     serverPinger.stop()
     connectionMonitor.stop()
     scope.cancel()

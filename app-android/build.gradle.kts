@@ -152,7 +152,6 @@ dependencies {
   implementation(libs.alakazam.android.compose)
   implementation(libs.alakazam.android.core)
   implementation(libs.alakazam.kotlin.core)
-  implementation(libs.alakazam.kotlin.logging)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.activity.core)
   implementation(libs.androidx.activity.ktx)
@@ -174,6 +173,7 @@ dependencies {
   implementation(libs.kotlin.stdlib)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.kotlinx.serialization.core)
+  implementation(libs.logcat)
   implementation(libs.molecule)
   implementation(libs.preferences.android)
 }

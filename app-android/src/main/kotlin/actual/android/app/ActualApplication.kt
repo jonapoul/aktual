@@ -2,13 +2,15 @@ package actual.android.app
 
 import actual.l10n.AndroidLocalization
 import actual.l10n.Localization
-import actual.logging.ActualLogging
+import actual.logging.ActualAndroidLogcatLogger
 import actual.logging.AndroidLogStorage
-import actual.logging.AndroidTreeFactory
+import actual.logging.LogbackLogger
 import alakazam.kotlin.core.BuildConfig
-import alakazam.kotlin.logging.Logger
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp
+import logcat.LogPriority
+import logcat.LogcatLogger
+import logcat.logcat
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -18,10 +20,25 @@ class ActualApplication : Application() {
   override fun onCreate() {
     super.onCreate()
 
-    ActualLogging.init(AndroidTreeFactory, AndroidLogStorage(this))
-    Localization.set(AndroidLocalization(this))
+    setUpL10n()
+    setUpLogging()
 
-    Logger.i("onCreate")
-    Logger.d("buildConfig = $buildConfig")
+    logcat.i { "onCreate" }
+    logcat.d { "buildConfig = $buildConfig" }
+  }
+
+  private fun setUpL10n() {
+    val l10n = AndroidLocalization(context = this)
+    Localization.set(l10n)
+  }
+
+  private fun setUpLogging() {
+    val logStorage = AndroidLogStorage(context = this)
+    val minPriority = LogPriority.VERBOSE
+    with(LogcatLogger) {
+      install()
+      loggers += ActualAndroidLogcatLogger(minPriority)
+      loggers += LogbackLogger(logStorage, minPriority)
+    }
   }
 }

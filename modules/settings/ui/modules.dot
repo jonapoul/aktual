@@ -8,6 +8,7 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
+":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
 ":settings:vm" ["fillcolor"="#F5A6A6","shape"="none"]
@@ -26,6 +27,7 @@ graph ["rank"="same"]
 ":settings:ui" -> ":core:ui"
 ":settings:ui" -> ":l10n" ["style"="dotted"]
 ":settings:ui" -> ":settings:vm"
+":settings:vm" -> ":logging" ["style"="dotted"]
 ":settings:vm" -> ":prefs"
 subgraph "cluster_legend" {
 edge ["dir"="none"]

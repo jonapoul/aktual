@@ -18,7 +18,6 @@ import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import alakazam.android.ui.compose.VerticalSpacer
-import alakazam.kotlin.logging.Logger
 import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,6 +52,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.channels.consumeEach
+import logcat.logcat
 
 @Composable
 fun ServerUrlScreen(
@@ -79,7 +79,7 @@ fun ServerUrlScreen(
     viewModel.navDestination.consumeEach { destination ->
       when (destination) {
         NavDestination.Back -> activity.finish()
-        NavDestination.ToBootstrap -> Logger.w("Not implemented bootstrap yet!")
+        NavDestination.ToBootstrap -> logcat.w { "Not implemented bootstrap yet!" }
         NavDestination.ToLogin -> nav.toLogin()
         NavDestination.ToAbout -> nav.toAbout()
       }

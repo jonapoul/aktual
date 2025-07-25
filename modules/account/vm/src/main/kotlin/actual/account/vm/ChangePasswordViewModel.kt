@@ -8,7 +8,6 @@ import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
-import alakazam.kotlin.logging.Logger
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,6 +25,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import logcat.logcat
 import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
@@ -62,7 +62,7 @@ class ChangePasswordViewModel @Inject internal constructor(
   fun submit() {
     val password = mutablePassword1.value
     val password2 = mutablePassword2.value
-    Logger.d("submit %s %s", password, password2)
+    logcat.d { "submit $password $password2" }
     if (password2 != password) {
       mutableState.update { ChangePasswordState.PasswordsDontMatch }
       return
@@ -71,7 +71,7 @@ class ChangePasswordViewModel @Inject internal constructor(
     mutableState.update { ChangePasswordState.Loading }
     viewModelScope.launch {
       val changePasswordResult = passwordChanger.submit(password)
-      Logger.d("result = %s", changePasswordResult)
+      logcat.d { "result = $changePasswordResult" }
       val newState = when (changePasswordResult) {
         ChangePasswordResult.Success -> ChangePasswordState.Success
         ChangePasswordResult.InvalidPassword -> ChangePasswordState.InvalidPassword
@@ -83,7 +83,7 @@ class ChangePasswordViewModel @Inject internal constructor(
       mutableState.update { newState }
 
       if (changePasswordResult is ChangePasswordResult.Success) {
-        Logger.d("Logging in...")
+        logcat.d { "Logging in..." }
         val loginResult = loginRequester.logIn(password)
         handleLoginResult(loginResult)
       }
@@ -91,7 +91,7 @@ class ChangePasswordViewModel @Inject internal constructor(
   }
 
   private suspend fun handleLoginResult(loginResult: LoginResult) {
-    Logger.d("loginResult = %s", loginResult)
+    logcat.d { "loginResult = $loginResult" }
     if (loginResult is LoginResult.Success) {
       // wait for a second before triggering the navigation, so the user gets the success message
       delay(SUCCESS_DELAY)

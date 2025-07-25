@@ -3,7 +3,6 @@ package actual.budget.reports.vm
 import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
-import alakazam.kotlin.logging.Logger
 import androidx.lifecycle.ViewModel
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -13,6 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import logcat.logcat
 
 @Suppress("unused", "VarCouldBeVal")
 @HiltViewModel(assistedFactory = ReportsDashboardViewModel.Factory::class)
@@ -28,7 +28,7 @@ class ReportsDashboardViewModel @AssistedInject constructor(
   val state: StateFlow<DashboardState> = mutableState.asStateFlow()
 
   init {
-    Logger.d("init")
+    logcat.d { "init" }
     start()
   }
 

@@ -9,8 +9,8 @@ import actual.budget.model.decryptedZip
 import actual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
-import alakazam.kotlin.logging.Logger
 import kotlinx.coroutines.withContext
+import logcat.logcat
 import okio.Buffer
 import okio.Path
 import okio.Sink
@@ -28,7 +28,7 @@ class Decrypter @Inject constructor(
    */
   suspend operator fun invoke(id: BudgetId, meta: EncryptMeta, filePath: Path): DecryptResult {
     val decryptedPath = files.decryptedZip(id, mkdirs = true)
-    Logger.d("Decrypting $id from $filePath into $decryptedPath with $meta")
+    logcat.d { "Decrypting $id from $filePath into $decryptedPath with $meta" }
     return decrypt(
       meta = meta,
       source = files.fileSystem.source(filePath),
@@ -41,7 +41,7 @@ class Decrypter @Inject constructor(
    * Decrypts a [Buffer] of bytes and returns another containing the decrypted data
    */
   suspend operator fun invoke(meta: EncryptMeta, buffer: Buffer): DecryptResult {
-    Logger.d("Decrypting ${buffer.size} bytes with $meta")
+    logcat.d { "Decrypting ${buffer.size} bytes with $meta" }
     val output = Buffer()
     return decrypt(
       meta = meta,
