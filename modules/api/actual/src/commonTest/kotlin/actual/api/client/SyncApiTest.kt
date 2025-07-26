@@ -149,8 +149,10 @@ class SyncApiTest {
       fail("Should have thrown!")
     } catch (e: ClientRequestException) {
       // Then
-      val body = e.response.body<ListUserFilesResponse.Failure>()
-      assertEquals(actual = body, expected = ListUserFilesResponse.Failure("Something broke"))
+      assertEquals(
+        actual = e.response.body<ListUserFilesResponse.Failure>(),
+        expected = ListUserFilesResponse.Failure(FailureReason("Something broke")),
+      )
     }
   }
 
@@ -205,7 +207,7 @@ class SyncApiTest {
     assertEquals(
       actual = response,
       expected = GetUserKeyResponse.Failure(
-        reason = FailureReason.Known.Unauthorized,
+        reason = FailureReason.Unauthorized,
         details = "token-not-found",
       ),
     )
@@ -258,7 +260,7 @@ class SyncApiTest {
     // then
     assertEquals(
       actual = response,
-      expected = GetUserFileInfoResponse.Failure(FailureReason.Known.FileNotFound, details = null),
+      expected = GetUserFileInfoResponse.Failure(FailureReason.FileNotFound, details = null),
     )
   }
 
@@ -278,7 +280,7 @@ class SyncApiTest {
     // then
     assertEquals(
       actual = response,
-      expected = GetUserFileInfoResponse.Failure(FailureReason.Known.Unauthorized, details = "token-not-found"),
+      expected = GetUserFileInfoResponse.Failure(FailureReason.Unauthorized, details = "token-not-found"),
     )
   }
 }

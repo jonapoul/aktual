@@ -28,7 +28,7 @@ class PasswordChanger @Inject internal constructor(
     }
 
     return try {
-      val request = ChangePasswordRequest(token, password)
+      val request = ChangePasswordRequest(password)
       val response = withContext(contexts.io) { apis.account.changePassword(request, token) }
       logcat.v { "Received response: $response" }
       ChangePasswordResult.Success

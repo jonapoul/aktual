@@ -10,6 +10,7 @@ import actual.budget.di.throwIfWrongBudget
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
 import actual.budget.model.WidgetType
+import actual.core.model.Empty
 import actual.core.model.UuidGenerator
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -86,7 +87,7 @@ class ChooseReportTypeViewModel @AssistedInject constructor(
 
   private fun buildEmptyMetadata(type: WidgetType): JsonObject = when (type) {
     // TODO: implement properly
-    else -> JsonObject(emptyMap())
+    else -> JsonObject.Empty
   }
 
   data class Inputs(
