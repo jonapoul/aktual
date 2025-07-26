@@ -1,10 +1,12 @@
 package actual.api.client
 
 import actual.account.model.LoginToken
+import actual.account.model.Password
 import actual.api.model.account.BootstrapRequest
 import actual.api.model.account.BootstrapResponse
 import actual.api.model.account.ChangePasswordRequest
 import actual.api.model.account.ChangePasswordResponse
+import actual.api.model.account.LoginMethodsResponse
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
 import actual.api.model.account.NeedsBootstrapResponse
@@ -23,6 +25,9 @@ interface AccountApi {
   @GET("/account/needs-bootstrap")
   suspend fun needsBootstrap(): NeedsBootstrapResponse.Success
 
+  @GET("/account/login-methods")
+  suspend fun loginMethods(): LoginMethodsResponse.Success
+
   @POST("/account/bootstrap")
   suspend fun bootstrap(
     @Body body: BootstrapRequest,
@@ -30,7 +35,18 @@ interface AccountApi {
 
   @POST("/account/login")
   suspend fun login(
-    @Body body: LoginRequest,
+    @Body body: LoginRequest.Password,
+  ): LoginResponse.Success
+
+  @POST("/account/login")
+  suspend fun login(
+    @Body body: LoginRequest.OpenId,
+  ): LoginResponse.Success
+
+  @POST("/account/login")
+  suspend fun login(
+    @Body body: LoginRequest.Header,
+    @Header(ActualHeaders.PASSWORD) password: Password,
   ): LoginResponse.Success
 
   @POST("/account/change-password")

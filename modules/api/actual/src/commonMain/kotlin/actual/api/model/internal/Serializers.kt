@@ -1,10 +1,9 @@
 package actual.api.model.internal
 
-import actual.api.model.account.FailureReason
 import actual.api.model.account.LoginResponse
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.PrimitiveKind
-import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
@@ -22,13 +21,10 @@ internal class LoginResponseDataSerializer :
   }
 }
 
-internal class FailureReasonSerializer : KSerializer<FailureReason> {
-  override val descriptor = PrimitiveSerialDescriptor(serialName = "FailureReason", PrimitiveKind.STRING)
+internal typealias BoolAsInt = @Serializable(IntToBoolSerializer::class) Boolean
 
-  override fun serialize(encoder: Encoder, value: FailureReason) = encoder.encodeString(value.reason)
-
-  override fun deserialize(decoder: Decoder): FailureReason {
-    val string = decoder.decodeString()
-    return FailureReason.Known.entries.firstOrNull { it.reason == string } ?: FailureReason.Other(string)
-  }
+internal object IntToBoolSerializer : KSerializer<Boolean> {
+  override val descriptor = Boolean.serializer().descriptor
+  override fun deserialize(decoder: Decoder): Boolean = decoder.decodeInt() != 0
+  override fun serialize(encoder: Encoder, value: Boolean) = encoder.encodeInt(if (value) 1 else 0)
 }

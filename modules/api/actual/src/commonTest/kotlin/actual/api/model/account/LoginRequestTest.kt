@@ -1,30 +1,51 @@
 package actual.api.model.account
 
-import actual.account.model.LoginMethod
 import actual.account.model.Password
-import kotlinx.serialization.json.Json
+import actual.test.testEncoding
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class LoginRequestTest {
-  val request = LoginRequest(
-    loginMethod = LoginMethod.Password,
-    password = Password("P@ssw0rd!"),
-  )
+  private val password = Password("P@ssw0rd!")
 
   @Test
   fun `Convert to string with blocked out password`() {
     assertEquals(
-      expected = "LoginRequest(loginMethod=Password, password=██)",
-      actual = request.toString(),
+      expected = "Password(password=██, loginMethod=Password)",
+      actual = LoginRequest.Password(password).toString(),
     )
   }
 
   @Test
-  fun `Serialize to json without blocking out password`() {
-    assertEquals(
-      expected = """{"loginMethod":"password","password":"P@ssw0rd!"}""",
-      actual = Json.encodeToString(request),
-    )
-  }
+  fun `Serialize to json without blocking out password`() = testEncoding(
+    model = LoginRequest.Password(password),
+    expected = """
+      {
+        "password": "P@ssw0rd!",
+        "loginMethod": "password"
+      }
+    """.trimIndent(),
+  )
+
+  @Test
+  fun `Encode header request`() = testEncoding(
+    model = LoginRequest.Header(),
+    expected = """
+      {
+        "loginMethod": "header"
+      }
+    """.trimIndent(),
+  )
+
+  @Test
+  fun `Encode openID request`() = testEncoding(
+    model = LoginRequest.OpenId(password, returnUrl = "https://url.com"),
+    expected = """
+      {
+        "password": "P@ssw0rd!",
+        "returnUrl": "https://url.com",
+        "loginMethod": "openid"
+      }
+    """.trimIndent(),
+  )
 }

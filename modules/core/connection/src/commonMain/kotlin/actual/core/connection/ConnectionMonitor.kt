@@ -7,6 +7,7 @@ import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.client.BaseApi
 import actual.api.client.HealthApi
+import actual.api.client.MetricsApi
 import actual.api.client.SyncApi
 import actual.api.client.SyncDownloadApi
 import actual.core.model.ServerUrl
@@ -53,6 +54,7 @@ class ConnectionMonitor @Inject constructor(
       account = AccountApi(url, client),
       base = BaseApi(url, client),
       health = HealthApi(url, client),
+      metrics = MetricsApi(url, client),
       sync = SyncApi(url, client),
       syncDownload = SyncDownloadApi(url, client, fileSystem),
     )

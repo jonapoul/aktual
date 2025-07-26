@@ -1,6 +1,7 @@
 package actual.api.client
 
 import actual.api.model.health.GetHealthResponse
+import actual.test.HealthResponses
 import actual.test.emptyMockEngine
 import actual.test.plusAssign
 import actual.test.respondJson
@@ -29,7 +30,7 @@ class HealthApiTest {
 
   @Test
   fun `Get health successfully`() = runTest {
-    mockEngine += { respondJson(HEALTH_SUCCESS) }
+    mockEngine += { respondJson(HealthResponses.HEALTH_SUCCESS_200) }
     assertEquals(
       expected = GetHealthResponse(status = "UP"),
       actual = healthApi.getHealth(),

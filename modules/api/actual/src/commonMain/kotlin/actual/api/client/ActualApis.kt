@@ -10,6 +10,7 @@ data class ActualApis(
   val account: AccountApi,
   val base: BaseApi,
   val health: HealthApi,
+  val metrics: MetricsApi,
   val sync: SyncApi,
   val syncDownload: SyncDownloadApi,
 ) : Closeable by client
