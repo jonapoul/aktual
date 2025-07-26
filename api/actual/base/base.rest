@@ -1,0 +1,8 @@
+###
+# @name info
+GET {{ACTUAL_BASE_URL}}/info
+Content-Type: application/json
+
+{"password": "{{ACTUAL_PASSWORD}}"}
+
+<> info-success.200.json

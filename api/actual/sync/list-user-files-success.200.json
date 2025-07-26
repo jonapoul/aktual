@@ -41,54 +41,6 @@
           "owner": true
         }
       ]
-    },
-    {
-      "deleted": 0,
-      "fileId": "2baeaff2-d800-4f0b-80f2-e49f7a2a1235",
-      "groupId": "3646112e-f45e-4ea4-b673-a7059da84da3",
-      "name": "Yet Another Budget",
-      "encryptKeyId": null,
-      "owner": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
-      "usersWithAccess": [
-        {
-          "userId": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
-          "displayName": "",
-          "userName": "",
-          "owner": true
-        }
-      ]
-    },
-    {
-      "deleted": 0,
-      "fileId": "657f6253-c412-4458-8a1b-de5b85ed8011",
-      "groupId": "493b2630-132b-4a27-b001-2c3ceb49501a",
-      "name": "srgvbrgbsrd",
-      "encryptKeyId": null,
-      "owner": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
-      "usersWithAccess": [
-        {
-          "userId": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
-          "displayName": "",
-          "userName": "",
-          "owner": true
-        }
-      ]
-    },
-    {
-      "deleted": 0,
-      "fileId": "3e0add6a-1806-462d-a7d0-3827efdd789a",
-      "groupId": "305a00c1-ca8a-45db-8798-8b9adf6ae8c4",
-      "name": "gyjgyukgkmym",
-      "encryptKeyId": null,
-      "owner": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
-      "usersWithAccess": [
-        {
-          "userId": "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
-          "displayName": "",
-          "userName": "",
-          "owner": true
-        }
-      ]
     }
   ]
 }

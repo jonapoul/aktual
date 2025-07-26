@@ -20,6 +20,10 @@ kotlin {
     implementation(project(":modules:codegen:annotation"))
     compileOnly(libs.redacted.annotations)
   }
+
+  commonTestDependencies {
+    implementation(project(":modules:test:api"))
+  }
 }
 
 kspAllConfigs(project(":modules:codegen:ksp"))

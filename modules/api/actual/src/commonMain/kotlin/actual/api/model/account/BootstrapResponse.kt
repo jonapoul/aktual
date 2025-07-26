@@ -1,5 +1,6 @@
 package actual.api.model.account
 
+import actual.account.model.LoginToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -16,6 +17,6 @@ sealed interface BootstrapResponse {
 
   @Serializable
   data class Data(
-    @SerialName("bootstrapped") val bootstrapped: Boolean,
+    @SerialName("token") val token: LoginToken,
   )
 }

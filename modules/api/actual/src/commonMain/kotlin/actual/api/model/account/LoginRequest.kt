@@ -1,13 +1,27 @@
 package actual.api.model.account
 
 import actual.account.model.LoginMethod
-import actual.account.model.Password
 import dev.zacsweers.redacted.annotations.Redacted
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import actual.account.model.Password as PasswordModel
 
-@Serializable
-data class LoginRequest(
-  @SerialName("loginMethod") val loginMethod: LoginMethod,
-  @Redacted @SerialName("password") val password: Password,
-)
+sealed interface LoginRequest {
+  @Serializable
+  data class Header(
+    @SerialName("loginMethod") val loginMethod: LoginMethod = LoginMethod.Header,
+  ) : LoginRequest
+
+  @Serializable
+  data class OpenId(
+    @Redacted @SerialName("password") val password: PasswordModel,
+    @SerialName("returnUrl") val returnUrl: String,
+    @SerialName("loginMethod") val loginMethod: LoginMethod = LoginMethod.OpenId,
+  ) : LoginRequest
+
+  @Serializable
+  data class Password(
+    @Redacted @SerialName("password") val password: PasswordModel,
+    @SerialName("loginMethod") val loginMethod: LoginMethod = LoginMethod.Password,
+  ) : LoginRequest
+}

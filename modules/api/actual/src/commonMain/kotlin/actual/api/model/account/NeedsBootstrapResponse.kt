@@ -25,11 +25,4 @@ sealed interface NeedsBootstrapResponse {
     @SerialName("availableLoginMethods") val availableLoginMethods: List<AvailableLoginMethod>,
     @SerialName("multiuser") val multiuser: Boolean = false,
   )
-
-  @Serializable
-  data class AvailableLoginMethod(
-    @SerialName("method") val method: LoginMethod,
-    @SerialName("displayName") val displayName: String,
-    @SerialName("active") val active: Int, // 1 == true, 0 == false
-  )
 }

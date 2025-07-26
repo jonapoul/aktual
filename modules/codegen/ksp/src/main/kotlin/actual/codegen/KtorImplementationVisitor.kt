@@ -138,7 +138,7 @@ internal class KtorImplementationVisitor(
     f.parameters.forEach { p ->
       val type = p.type.resolve()
       val declaration = type.declaration
-      val className = with(declaration) { ClassName(packageName.requireString, simpleName.requireString) }
+      val className = ClassName.bestGuess(declaration.qualifiedName.requireString)
       val parameter = ParameterSpec
         .builder(p.name.requireString, className.copy(nullable = type.isMarkedNullable))
         .build()

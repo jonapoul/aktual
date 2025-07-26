@@ -1,6 +1,9 @@
 package actual.core.model
 
+import kotlinx.serialization.Serializable
+
 @JvmInline
+@Serializable
 value class Bytes(val numBytes: Long) : Comparable<Bytes> {
   override fun toString(): String = toString(precision = 1)
 

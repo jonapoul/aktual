@@ -24,3 +24,7 @@ and enter your server's info. You can get `ACTUAL_TOKEN` from the response to th
 First select the run config (on a per-file basis), then either click the run button in the left-hand gutter or run all from the file's toolbar.
 
 ![run-all.png](../docs/img/run-all.png)
+
+# Warning
+
+The example JSON files in here are used for codegen in the app's unit tests, so changing them will probably cause test failures. See [the build file in :modules:test:api](../modules/test/api/build.gradle.kts).

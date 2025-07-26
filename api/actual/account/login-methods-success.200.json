@@ -1,0 +1,10 @@
+{
+  "status": "ok",
+  "methods": [
+    {
+      "method": "password",
+      "active": 1,
+      "displayName": "Password"
+    }
+  ]
+}
