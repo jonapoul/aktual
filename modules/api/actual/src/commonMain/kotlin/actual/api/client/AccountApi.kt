@@ -1,6 +1,7 @@
 package actual.api.client
 
 import actual.account.model.LoginToken
+import actual.account.model.Password
 import actual.api.model.account.BootstrapRequest
 import actual.api.model.account.BootstrapResponse
 import actual.api.model.account.ChangePasswordRequest
@@ -34,7 +35,18 @@ interface AccountApi {
 
   @POST("/account/login")
   suspend fun login(
-    @Body body: LoginRequest,
+    @Body body: LoginRequest.Password,
+  ): LoginResponse.Success
+
+  @POST("/account/login")
+  suspend fun login(
+    @Body body: LoginRequest.OpenId,
+  ): LoginResponse.Success
+
+  @POST("/account/login")
+  suspend fun login(
+    @Body body: LoginRequest.Header,
+    @Header(ActualHeaders.PASSWORD) password: Password,
   ): LoginResponse.Success
 
   @POST("/account/change-password")

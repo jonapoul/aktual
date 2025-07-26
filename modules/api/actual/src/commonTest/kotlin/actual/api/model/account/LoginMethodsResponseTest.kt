@@ -9,7 +9,7 @@ class LoginMethodsResponseTest {
   @Test
   fun `Decode from JSON`() = testDecoding(
     json = AccountResponses.LOGIN_METHODS_SUCCESS_200,
-    model = LoginMethodsResponse.Success(
+    expected = LoginMethodsResponse.Success(
       methods = listOf(
         AvailableLoginMethod(
           method = Password,

@@ -8,6 +8,7 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(project(":modules:api:actual"))
+    implementation(project(":modules:test:kotlin"))
     implementation(kotlin("test"))
   }
 }
