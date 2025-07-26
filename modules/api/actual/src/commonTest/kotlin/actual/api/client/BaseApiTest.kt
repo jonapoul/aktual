@@ -1,6 +1,7 @@
 package actual.api.client
 
 import actual.api.model.base.Build
+import actual.test.BaseResponses
 import actual.api.model.base.InfoResponse
 import actual.test.emptyMockEngine
 import actual.test.latestRequestHeaders
@@ -36,7 +37,7 @@ class BaseApiTest {
 
   @Test
   fun `Fetch info request format`() = runTest {
-    mockEngine += { respondJson(BASE_FETCH_INFO_SUCCESS) }
+    mockEngine += { respondJson(BaseResponses.INFO_SUCCESS_200) }
     baseApi.fetchInfo()
 
     assertEquals(
@@ -56,7 +57,7 @@ class BaseApiTest {
   @Test
   fun `Fetch info success response`() = runTest {
     // given
-    mockEngine += { respondJson(BASE_FETCH_INFO_SUCCESS) }
+    mockEngine += { respondJson(BaseResponses.INFO_SUCCESS_200) }
 
     // when
     val response = baseApi.fetchInfo()
@@ -68,7 +69,7 @@ class BaseApiTest {
         build = Build(
           name = "@actual-app/sync-server",
           description = "actual syncing server",
-          version = "25.4.0",
+          version = "25.7.1",
         ),
       ),
     )

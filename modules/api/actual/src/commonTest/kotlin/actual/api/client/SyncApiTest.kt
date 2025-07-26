@@ -11,6 +11,7 @@ import actual.api.model.sync.UserWithAccess
 import actual.budget.model.BudgetId
 import actual.core.model.KeyId
 import actual.core.model.base64
+import actual.test.SyncResponses
 import actual.test.emptyMockEngine
 import actual.test.latestRequestHeaders
 import actual.test.plusAssign
@@ -48,7 +49,7 @@ class SyncApiTest {
 
   @Test
   fun `Fetch user files request headers`() = runTest {
-    mockEngine += { respondJson(SYNC_LIST_BUDGETS_SUCCESS) }
+    mockEngine += { respondJson(SyncResponses.LIST_USER_FILES_SUCCESS_200) }
     syncApi.fetchUserFiles(TOKEN)
     assertEquals(
       actual = mockEngine.latestRequestHeaders(),
@@ -62,7 +63,7 @@ class SyncApiTest {
 
   @Test
   fun `Fetch user file info request headers`() = runTest {
-    mockEngine += { respondJson(SYNC_GET_USER_FILE_INFO_SUCCESS) }
+    mockEngine += { respondJson(SyncResponses.GET_USER_FILE_INFO_SUCCESS_200) }
     syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
     assertEquals(
       actual = mockEngine.latestRequestHeaders(),
@@ -77,7 +78,7 @@ class SyncApiTest {
 
   @Test
   fun `Fetch user key request headers`() = runTest {
-    mockEngine += { respondJson(SYNC_GET_USER_KEY_SUCCESS) }
+    mockEngine += { respondJson(SyncResponses.USER_GET_KEY_SUCCESS_200) }
     val body = GetUserKeyRequest(BUDGET_ID, TOKEN)
     syncApi.fetchUserKey(body)
     val request = mockEngine.requestHistory.last()
@@ -96,12 +97,18 @@ class SyncApiTest {
   @Test
   fun `Fetch user files success response`() = runTest {
     // given
-    mockEngine += { respondJson(SYNC_LIST_BUDGETS_SUCCESS) }
+    mockEngine += { respondJson(SyncResponses.LIST_USER_FILES_SUCCESS_200) }
 
     // when
     val response = syncApi.fetchUserFiles(TOKEN)
 
     // then
+    val user = UserWithAccess(
+      userId = "b3166dc3-0eda-42ca-83e1-b1ccce06a60b",
+      displayName = "",
+      userName = "",
+      isOwner = true,
+    )
     assertEquals(
       actual = response,
       expected = ListUserFilesResponse.Success(
@@ -111,27 +118,24 @@ class SyncApiTest {
             fileId = BudgetId("b328186c-c919-4333-959b-04e676c1ee46"),
             groupId = "afb25fc0-a294-4f71-ae8f-ce1e3a8fec10",
             name = "Main Budget",
-            encryptKeyId = KeyId("2a66f4de-c530-4c06-8103-a48e26a0ce44"),
-            owner = null,
-            encryptMeta = null,
-            usersWithAccess = emptyList(),
+            encryptKeyId = KeyId("b98636ab-200f-46be-9763-2af439aa40cb"),
           ),
           UserFile(
             deleted = 0,
-            fileId = BudgetId("cf2b43ee-8067-48ed-ab5b-4e4e5531056e"),
-            groupId = "ee90358a-f73e-4aa5-a922-653190fd31b7",
+            fileId = BudgetId("0e186798-305c-40f9-b609-589ffa138499"),
+            groupId = "2d41985d-064f-461e-8432-23194354ee16",
             name = "Test Budget",
-            encryptKeyId = null,
-            owner = "354d0cfe-cd36-44eb-a404-5990a3ab5c39",
-            encryptMeta = null,
-            usersWithAccess = listOf(
-              UserWithAccess(
-                userId = "354d0cfe-cd36-44eb-a404-5990a3ab5c39",
-                displayName = "",
-                userName = "",
-                isOwner = true,
-              ),
-            ),
+            owner = user.userId,
+            usersWithAccess = listOf(user),
+          ),
+          UserFile(
+            deleted = 0,
+            fileId = BudgetId("81dba092-7c25-479b-bf03-854f9a289fe8"),
+            groupId = "cd47aa40-0b6f-462d-a987-22e1a70e6815",
+            name = "My Finances",
+            encryptKeyId = KeyId("a57fc3bf-fa98-44f2-82b7-54b4755703a9"),
+            owner = user.userId,
+            usersWithAccess = listOf(user),
           ),
         ),
       ),
@@ -141,7 +145,7 @@ class SyncApiTest {
   @Test
   fun `Fetch user files failure response`() = runTest {
     // given
-    mockEngine += { respondJson(SYNC_LIST_BUDGETS_FAILURE, HttpStatusCode.BadRequest) }
+    mockEngine += { respondJson(SyncResponses.LIST_USER_FILES_UNAUTHORIZED_401, HttpStatusCode.Unauthorized) }
 
     // when
     try {
@@ -151,7 +155,7 @@ class SyncApiTest {
       // Then
       assertEquals(
         actual = e.response.body<ListUserFilesResponse.Failure>(),
-        expected = ListUserFilesResponse.Failure(FailureReason("Something broke")),
+        expected = ListUserFilesResponse.Failure(reason = FailureReason.Unauthorized, details = "token-not-found"),
       )
     }
   }
@@ -159,29 +163,29 @@ class SyncApiTest {
   @Test
   fun `Get user key success`() = runTest {
     // given
-    mockEngine += { respondJson(SYNC_GET_USER_KEY_SUCCESS) }
+    mockEngine += { respondJson(SyncResponses.USER_GET_KEY_SUCCESS_200) }
 
     // when
     val body = GetUserKeyRequest(BUDGET_ID, TOKEN)
     val response = syncApi.fetchUserKey(body)
 
     // then
-    val keyId = KeyId("2b66f4de-c530-4c06-8103-a48e26a0ce44")
-    val value = "nrhqJgUnl8lZvWxSRMIT0aTRKCOHeddlIuGPfNw0NQR/d81m/ZYRqaOjMwoQHpduSzuAivfVZZEslZihl8WhOs7GV" +
-      "kdghwCjqr083G0261M464wHvQl2v5sB+l8f0/mQE2fco7zUagbA7Q=="
+    val keyId = KeyId("b98636ab-200f-46be-9763-2af439aa40cb")
+    val value = "nrhpJgUnl8lZvWxSRMIT0aTRKCOHeddlIuGPfNw0NQR/d81m/ZYRqaOjMwoQHpduSzuAivfVZZEslZihl8W" +
+      "hOs7GVkdghwCjqr083G0261M464wHvQl2v5sB+l8f0/mQE2fco7zUagbA7Q=="
     assertEquals(
       actual = response,
       expected = GetUserKeyResponse.Success(
         data = GetUserKeyResponse.Data(
           id = keyId,
-          salt = "PqZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=".base64,
+          salt = "PpZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=".base64,
           test = GetUserKeyResponse.Test(
             value = value.base64,
             meta = EncryptMeta(
               keyId = keyId,
               algorithm = "aes-256-gcm",
-              iv = "whBQQkPM89iFsLVk".base64,
-              authTag = "X/JX1lWCchd0Ejjthlxuzg==".base64,
+              iv = "8tzhaLCrSFyVfzZF".base64,
+              authTag = "35maee1UpzftRCks/yQjoB==".base64,
             ),
           ),
         ),
@@ -192,7 +196,7 @@ class SyncApiTest {
   @Test
   fun `Get user key failure`() = runTest {
     // given
-    mockEngine += { respondJson(SYNC_GET_USER_KEY_FAILURE, HttpStatusCode.Unauthorized) }
+    mockEngine += { respondJson(SyncResponses.USER_GET_KEY_UNAUTHORIZED_401, HttpStatusCode.Unauthorized) }
 
     // when
     val response = try {
@@ -206,17 +210,14 @@ class SyncApiTest {
     // then
     assertEquals(
       actual = response,
-      expected = GetUserKeyResponse.Failure(
-        reason = FailureReason.Unauthorized,
-        details = "token-not-found",
-      ),
+      expected = GetUserKeyResponse.Failure(reason = FailureReason.Unauthorized, details = "token-not-found"),
     )
   }
 
   @Test
   fun `Get file info success`() = runTest {
     // given
-    mockEngine += { respondJson(SYNC_GET_USER_FILE_INFO_SUCCESS) }
+    mockEngine += { respondJson(SyncResponses.GET_USER_FILE_INFO_SUCCESS_200) }
 
     // when
     val response = syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
@@ -227,17 +228,14 @@ class SyncApiTest {
       expected = GetUserFileInfoResponse.Success(
         data = UserFile(
           deleted = 0,
-          fileId = BudgetId("b328186c-c819-4333-959b-04f676c1ee46"),
-          groupId = "afb25fc0-b294-4f71-ae8f-ce1e4a8fec10",
+          fileId = BudgetId("b328186c-c919-4333-959b-04e676c1ee46"),
+          groupId = "afb25fc0-a294-4f71-ae8f-ce1e3a8fec10",
           name = "Main Budget",
-          encryptKeyId = null,
-          owner = null,
-          usersWithAccess = emptyList(),
           encryptMeta = EncryptMeta(
-            keyId = KeyId("2a66f5de-c530-4c06-8103-a48f26a0ce44"),
+            keyId = KeyId("b98636ab-200f-46be-9763-2af439aa40cb"),
             algorithm = "aes-256-gcm",
-            iv = "7tzgaLCrSFxVfzZR".base64,
-            authTag = "25nafe0UpzehRCks/xQjoB==".base64,
+            iv = "8tzhaLCrSFyVfzZF".base64,
+            authTag = "35maee1UpzftRCks/yQjoB==".base64,
           ),
         ),
       ),
@@ -247,7 +245,7 @@ class SyncApiTest {
   @Test
   fun `Get file info file not found failure`() = runTest {
     // given
-    mockEngine += { respondJson(SYNC_GET_USER_FILE_INFO_FILE_NOT_FOUND, HttpStatusCode.BadRequest) }
+    mockEngine += { respondJson(SyncResponses.GET_USER_FILE_INFO_NO_FILE_400, HttpStatusCode.BadRequest) }
 
     // when
     val response = try {
@@ -260,14 +258,14 @@ class SyncApiTest {
     // then
     assertEquals(
       actual = response,
-      expected = GetUserFileInfoResponse.Failure(FailureReason.FileNotFound, details = null),
+      expected = GetUserFileInfoResponse.Failure(FailureReason.FileNotFound),
     )
   }
 
   @Test
   fun `Get file info unauthorised failure`() = runTest {
     // given
-    mockEngine += { respondJson(SYNC_GET_USER_FILE_INFO_UNAUTHORISED, HttpStatusCode.Unauthorized) }
+    mockEngine += { respondJson(SyncResponses.GET_USER_FILE_INFO_UNAUTHORIZED_401, HttpStatusCode.Unauthorized) }
 
     // when
     val response = try {

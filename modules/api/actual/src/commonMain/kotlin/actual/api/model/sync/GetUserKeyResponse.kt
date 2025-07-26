@@ -26,7 +26,7 @@ sealed interface GetUserKeyResponse {
   @Serializable
   data class Failure(
     @SerialName("reason") val reason: FailureReason,
-    @SerialName("details") val details: String,
+    @SerialName("details") val details: String? = null,
   ) : GetUserKeyResponse
 
   @Serializable

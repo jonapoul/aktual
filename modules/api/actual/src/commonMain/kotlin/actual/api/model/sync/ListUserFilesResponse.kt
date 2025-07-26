@@ -13,5 +13,6 @@ sealed interface ListUserFilesResponse {
   @Serializable
   data class Failure(
     @SerialName("reason") val reason: FailureReason,
+    @SerialName("details") val details: String? = null,
   ) : ListUserFilesResponse
 }
