@@ -5,6 +5,7 @@ import actual.api.model.account.BootstrapRequest
 import actual.api.model.account.BootstrapResponse
 import actual.api.model.account.ChangePasswordRequest
 import actual.api.model.account.ChangePasswordResponse
+import actual.api.model.account.LoginMethodsResponse
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
 import actual.api.model.account.NeedsBootstrapResponse
@@ -22,6 +23,9 @@ import io.ktor.client.HttpClient
 interface AccountApi {
   @GET("/account/needs-bootstrap")
   suspend fun needsBootstrap(): NeedsBootstrapResponse.Success
+
+  @GET("/account/login-methods")
+  suspend fun loginMethods(): LoginMethodsResponse.Success
 
   @POST("/account/bootstrap")
   suspend fun bootstrap(

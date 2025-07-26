@@ -36,3 +36,9 @@ Content-Type: application/json
 GET {{ACTUAL_BASE_URL}}/account/needs-bootstrap
 
 <> needs-bootstrap-success.200.json
+
+###
+# @name account/login-methods
+GET {{ACTUAL_BASE_URL}}/account/login-methods
+
+<> login-methods-success.200.json

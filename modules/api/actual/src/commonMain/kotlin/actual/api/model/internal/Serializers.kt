@@ -3,6 +3,8 @@ package actual.api.model.internal
 import actual.api.model.account.FailureReason
 import actual.api.model.account.LoginResponse
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
@@ -31,4 +33,12 @@ internal class FailureReasonSerializer : KSerializer<FailureReason> {
     val string = decoder.decodeString()
     return FailureReason.Known.entries.firstOrNull { it.reason == string } ?: FailureReason.Other(string)
   }
+}
+
+internal typealias BoolAsInt = @Serializable(IntToBoolSerializer::class) Boolean
+
+internal object IntToBoolSerializer : KSerializer<Boolean> {
+  override val descriptor = Boolean.serializer().descriptor
+  override fun deserialize(decoder: Decoder): Boolean = decoder.decodeInt() != 0
+  override fun serialize(encoder: Encoder, value: Boolean) = encoder.encodeInt(if (value) 1 else 0)
 }
