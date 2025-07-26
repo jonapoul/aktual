@@ -13,7 +13,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
 
-class LoginRequester @Inject internal constructor(
+class LoginRequester @Inject constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
   private val preferences: AppGlobalPreferences,

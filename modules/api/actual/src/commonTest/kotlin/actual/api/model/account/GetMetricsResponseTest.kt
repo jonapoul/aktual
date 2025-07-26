@@ -19,7 +19,7 @@ class GetMetricsResponseTest {
         heapUsed = 29558608L.bytes,
         external = 3925760L.bytes,
         arrayBuffers = 387791L.bytes,
-      )
-    )
+      ),
+    ),
   )
 }

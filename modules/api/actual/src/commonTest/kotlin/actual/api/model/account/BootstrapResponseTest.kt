@@ -11,7 +11,7 @@ class BootstrapResponseTest {
     json = AccountResponses.BOOTSTRAP_ALREADY_400,
     expected = BootstrapResponse.Failure(
       reason = FailureReason.AlreadyBootstrapped,
-    )
+    ),
   )
 
   @Test
@@ -20,7 +20,7 @@ class BootstrapResponseTest {
     expected = BootstrapResponse.Success(
       data = BootstrapResponse.Data(
         token = LoginToken("92af386a-f727-431b-963a-f8cac5285878"),
-      )
+      ),
     ),
   )
 }

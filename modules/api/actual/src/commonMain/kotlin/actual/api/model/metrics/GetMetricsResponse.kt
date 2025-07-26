@@ -29,7 +29,9 @@ data class GetMetricsResponse(
 
 // Takes output from https://www.geeksforgeeks.org/node-js/node-js-process-uptime-method/
 private object DurationAsDoubleSerializer : KSerializer<Duration> {
+  private const val NANOSECS_PER_SEC = 1e9
   override val descriptor = PrimitiveSerialDescriptor("Duration", PrimitiveKind.DOUBLE)
   override fun deserialize(decoder: Decoder) = decoder.decodeDouble().seconds
-  override fun serialize(encoder: Encoder, value: Duration) = encoder.encodeDouble(value.inWholeNanoseconds / 1e9)
+  override fun serialize(encoder: Encoder, value: Duration) =
+    encoder.encodeDouble(value.inWholeNanoseconds / NANOSECS_PER_SEC)
 }

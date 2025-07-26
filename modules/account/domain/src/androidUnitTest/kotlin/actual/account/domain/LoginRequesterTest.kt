@@ -5,6 +5,7 @@ import actual.account.model.Password
 import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
+import actual.api.model.account.LoginRequest
 import actual.core.connection.ConnectionMonitor
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
@@ -111,7 +112,7 @@ internal class LoginRequesterTest {
     // Given a mock API is provided, which throws a network error when called
     val errorMessage = "something broke"
     val accountApi = mockk<AccountApi>()
-    coEvery { accountApi.login(any()) } throws IOException(errorMessage)
+    coEvery { accountApi.login(any<LoginRequest.Password>()) } throws IOException(errorMessage)
     val apis = mockk<ActualApis>()
     every { apis.account } returns accountApi
     apisStateHolder.update { apis }
