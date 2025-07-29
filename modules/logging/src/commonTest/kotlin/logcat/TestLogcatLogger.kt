@@ -13,7 +13,7 @@ internal class TestLogcatLogger : LogcatLogger {
     val message: String,
   )
 
-  override fun isLoggable(priority: LogPriority): Boolean {
+  override fun isLoggable(priority: LogPriority, tag: String): Boolean {
     latestPriority = priority
     return shouldLog
   }
