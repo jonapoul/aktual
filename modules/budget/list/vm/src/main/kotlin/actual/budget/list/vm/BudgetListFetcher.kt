@@ -9,6 +9,7 @@ import actual.budget.model.BudgetState
 import actual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
@@ -16,9 +17,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import java.io.IOException
-import javax.inject.Inject
 
-class BudgetListFetcher @Inject internal constructor(
+@Inject
+class BudgetListFetcher internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
   private val keyPreferences: KeyPreferences,

@@ -1,23 +1,26 @@
 package actual.budget.reports.vm
 
-import actual.account.model.LoginToken
 import actual.budget.db.dao.DashboardDao
 import actual.budget.db.dao.DashboardDao.Companion.DEFAULT_HEIGHT
 import actual.budget.db.dao.DashboardDao.Companion.DEFAULT_WIDTH
 import actual.budget.db.dao.DashboardDao.Companion.MAX_WIDTH
-import actual.budget.di.BudgetComponentStateHolder
+import actual.budget.di.BudgetGraphHolder
 import actual.budget.di.throwIfWrongBudget
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
 import actual.budget.model.WidgetType
+import actual.core.di.ViewModelFactory
+import actual.core.di.ViewModelFactoryKey
+import actual.core.di.ViewModelKey
+import actual.core.di.ViewModelScope
 import actual.core.model.Empty
 import actual.core.model.UuidGenerator
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -26,11 +29,13 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import logcat.logcat
 
-@HiltViewModel(assistedFactory = ChooseReportTypeViewModel.Factory::class)
-class ChooseReportTypeViewModel @AssistedInject constructor(
+@Inject
+@ViewModelKey(ChooseReportTypeViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class ChooseReportTypeViewModel(
   private val uuidGenerator: UuidGenerator,
-  budgetComponents: BudgetComponentStateHolder,
-  @Assisted inputs: Inputs,
+  budgetComponents: BudgetGraphHolder,
+  @Assisted budgetId: BudgetId,
 ) : ViewModel() {
   // data sources
   private val component = budgetComponents.require()
@@ -42,7 +47,7 @@ class ChooseReportTypeViewModel @AssistedInject constructor(
   val shouldNavigateEvent: Flow<ShouldNavigateEvent> = shouldNavigateChannel.receiveAsFlow()
 
   init {
-    component.throwIfWrongBudget(inputs.budgetId)
+    component.throwIfWrongBudget(budgetId)
   }
 
   override fun onCleared() {
@@ -90,19 +95,17 @@ class ChooseReportTypeViewModel @AssistedInject constructor(
     else -> JsonObject.Empty
   }
 
-  data class Inputs(
-    val token: LoginToken,
-    val budgetId: BudgetId,
-  )
-
   data class ShouldNavigateEvent(
     val id: WidgetId,
   )
 
+  @Inject
   @AssistedFactory
-  fun interface Factory {
+  @ViewModelFactoryKey(Factory::class)
+  @ContributesIntoMap(ViewModelScope::class)
+  fun interface Factory : ViewModelFactory {
     fun create(
-      @Assisted inputs: Inputs,
+      @Assisted budgetId: BudgetId,
     ): ChooseReportTypeViewModel
   }
 }

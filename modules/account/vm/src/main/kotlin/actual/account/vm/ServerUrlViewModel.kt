@@ -6,6 +6,8 @@ import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
+import actual.core.model.ViewModelKey
+import actual.core.model.ViewModelScope
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.ResettableStateFlow
@@ -18,7 +20,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
@@ -37,10 +40,11 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
-import javax.inject.Inject
 
-@HiltViewModel
-class ServerUrlViewModel @Inject internal constructor(
+@Inject
+@ViewModelKey(ServerUrlViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class ServerUrlViewModel internal constructor(
   private val contexts: CoroutineContexts,
   private val apiStateHolder: ActualApisStateHolder,
   private val preferences: AppGlobalPreferences,

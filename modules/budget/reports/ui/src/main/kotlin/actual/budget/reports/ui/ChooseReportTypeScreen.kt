@@ -21,6 +21,7 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.defaultHazeStyle
+import actual.core.ui.metroViewModel
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import androidx.activity.compose.BackHandler
@@ -48,7 +49,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
@@ -62,7 +62,7 @@ fun ChooseReportTypeScreen(
   nav: ChooseReportTypeNavigator,
   budgetId: BudgetId,
   token: LoginToken,
-  viewModel: ChooseReportTypeViewModel = hiltViewModel(token, budgetId),
+  viewModel: ChooseReportTypeViewModel = metroViewModel(budgetId),
 ) {
   BackHandler { nav.back() }
 
@@ -202,12 +202,11 @@ private fun WidgetType.sampleData(): ChartData = when (this) {
 }
 
 @Composable
-private fun hiltViewModel(
-  token: LoginToken,
+private fun metroViewModel(
   budgetId: BudgetId,
-) = hiltViewModel<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory>(
-  creationCallback = { factory -> factory.create(ChooseReportTypeViewModel.Inputs(token, budgetId)) },
-)
+) = metroViewModel<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory> {
+  create(budgetId)
+}
 
 @Immutable
 private sealed interface ChooseReportTypeAction {

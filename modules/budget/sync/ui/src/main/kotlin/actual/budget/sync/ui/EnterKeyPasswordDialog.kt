@@ -9,7 +9,7 @@ import actual.core.ui.TextField
 import actual.core.ui.Theme
 import actual.core.ui.keyboardFocusRequester
 import actual.l10n.Strings
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

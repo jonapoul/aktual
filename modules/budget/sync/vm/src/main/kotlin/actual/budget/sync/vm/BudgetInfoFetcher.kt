@@ -13,7 +13,6 @@ import io.ktor.serialization.JsonConvertException
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import java.io.IOException
-import javax.inject.Inject
 
 class BudgetInfoFetcher @Inject internal constructor(
   private val contexts: CoroutineContexts,

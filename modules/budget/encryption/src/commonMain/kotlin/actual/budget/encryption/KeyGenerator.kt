@@ -4,14 +4,15 @@ import actual.account.model.Password
 import actual.core.model.Base64String
 import actual.core.model.Key
 import actual.core.model.base64
+import dev.zacsweers.metro.Inject
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
-import javax.inject.Inject
 import kotlin.text.Charsets.UTF_8
 
 // Ref packages/loot-core/src/server/encryption/index.ts
-class KeyGenerator @Inject constructor() {
+@Inject
+class KeyGenerator {
   // See createFromPassword()
   operator fun invoke(password: Password, salt: Base64String): Key {
     val keySpec = PBEKeySpec(

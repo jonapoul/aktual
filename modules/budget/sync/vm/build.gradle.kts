@@ -8,7 +8,6 @@ dependencies {
   api(libs.alakazam.android.core)
   api(libs.alakazam.kotlin.core)
   api(libs.alakazam.kotlin.time)
-  api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.datetime)
   api(libs.kotlinx.immutable)
@@ -22,5 +21,5 @@ dependencies {
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.ktor.core)
   implementation(libs.okio)
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
+  compileOnly(libs.alakazam.kotlin.composeAnnotations)
 }

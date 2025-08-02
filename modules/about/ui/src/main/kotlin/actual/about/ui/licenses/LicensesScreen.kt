@@ -1,15 +1,15 @@
 package actual.about.ui.licenses
 
 import actual.about.vm.LicensesViewModel
+import actual.core.ui.metroViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun LicensesScreen(
   nav: LicensesNavigator,
-  viewModel: LicensesViewModel = hiltViewModel(),
+  viewModel: LicensesViewModel = metroViewModel(),
 ) {
   val licensesState by viewModel.licensesState.collectAsStateWithLifecycle()
   val searchBarState by viewModel.searchBarState.collectAsStateWithLifecycle()

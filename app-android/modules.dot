@@ -31,6 +31,7 @@ node ["style"="filled"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":di" ["fillcolor"="#FCB103","shape"="none"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -47,6 +48,7 @@ graph ["rank"="same"]
 ":about:ui" -> ":core:ui"
 ":about:ui" -> ":l10n" ["style"="dotted"]
 ":about:vm" -> ":about:data"
+":about:vm" -> ":core:di"
 ":about:vm" -> ":logging" ["style"="dotted"]
 ":account:domain" -> ":account:model"
 ":account:domain" -> ":api:actual" ["style"="dotted"]
@@ -61,6 +63,7 @@ graph ["rank"="same"]
 ":account:vm" -> ":account:domain"
 ":account:vm" -> ":account:model"
 ":account:vm" -> ":api:actual" ["style"="dotted"]
+":account:vm" -> ":core:di"
 ":account:vm" -> ":core:model"
 ":account:vm" -> ":logging" ["style"="dotted"]
 ":account:vm" -> ":prefs"
@@ -84,6 +87,7 @@ graph ["rank"="same"]
 ":app-android" -> ":core:android" ["style"="dotted"]
 ":app-android" -> ":core:connection" ["style"="dotted"]
 ":app-android" -> ":core:di" ["style"="dotted"]
+":app-android" -> ":di" ["style"="dotted"]
 ":app-android" -> ":l10n" ["style"="dotted"]
 ":app-android" -> ":logging" ["style"="dotted"]
 ":app-android" -> ":prefs" ["style"="dotted"]
@@ -103,6 +107,7 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
+":budget:list:vm" -> ":core:di"
 ":budget:list:vm" -> ":core:model"
 ":budget:list:vm" -> ":logging" ["style"="dotted"]
 ":budget:list:vm" -> ":prefs" ["style"="dotted"]
@@ -113,6 +118,7 @@ graph ["rank"="same"]
 ":budget:reports:vm" -> ":account:model" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:model"
+":budget:reports:vm" -> ":core:di"
 ":budget:reports:vm" -> ":core:model" ["style"="dotted"]
 ":budget:reports:vm" -> ":logging" ["style"="dotted"]
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
@@ -124,6 +130,7 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:di"
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model"
+":budget:sync:vm" -> ":core:di"
 ":budget:sync:vm" -> ":core:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":logging" ["style"="dotted"]
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
@@ -136,6 +143,7 @@ graph ["rank"="same"]
 ":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:model"
+":budget:transactions:vm" -> ":core:di"
 ":budget:transactions:vm" -> ":logging" ["style"="dotted"]
 ":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
@@ -143,21 +151,24 @@ graph ["rank"="same"]
 ":core:connection" -> ":core:model" ["style"="dotted"]
 ":core:connection" -> ":logging" ["style"="dotted"]
 ":core:connection" -> ":prefs" ["style"="dotted"]
-":core:di" -> ":api:builder" ["style"="dotted"]
-":core:di" -> ":api:github"
-":core:di" -> ":budget:model"
-":core:di" -> ":core:model"
-":core:di" -> ":prefs"
 ":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
+":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":l10n" ["style"="dotted"]
+":di" -> ":api:builder" ["style"="dotted"]
+":di" -> ":api:github"
+":di" -> ":budget:model"
+":di" -> ":core:di"
+":di" -> ":core:model"
+":di" -> ":prefs"
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 ":settings:ui" -> ":core:model"
 ":settings:ui" -> ":core:ui"
 ":settings:ui" -> ":l10n" ["style"="dotted"]
 ":settings:ui" -> ":settings:vm"
+":settings:vm" -> ":core:di"
 ":settings:vm" -> ":logging" ["style"="dotted"]
 ":settings:vm" -> ":prefs"
 subgraph "cluster_legend" {
@@ -167,7 +178,7 @@ graph ["label"="Legend","fontsize"="20"]
 <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
 <TR><TD>App</TD><TD BGCOLOR="#FF5555">module-name</TD></TR>
 <TR><TD>ViewModel</TD><TD BGCOLOR="#F5A6A6">module-name</TD></TR>
-<TR><TD>Hilt</TD><TD BGCOLOR="#FCB103">module-name</TD></TR>
+<TR><TD>DI</TD><TD BGCOLOR="#FCB103">module-name</TD></TR>
 <TR><TD>Compose</TD><TD BGCOLOR="#FFFF55">module-name</TD></TR>
 <TR><TD>Android</TD><TD BGCOLOR="#55FF55">module-name</TD></TR>
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>

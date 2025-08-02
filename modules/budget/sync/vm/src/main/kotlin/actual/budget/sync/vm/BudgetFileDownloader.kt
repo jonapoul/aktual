@@ -22,7 +22,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import logcat.logcat
 import java.io.IOException
-import javax.inject.Inject
 
 class BudgetFileDownloader @Inject internal constructor(
   private val contexts: CoroutineContexts,

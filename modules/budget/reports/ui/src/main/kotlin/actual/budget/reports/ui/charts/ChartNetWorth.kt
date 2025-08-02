@@ -12,7 +12,7 @@ import actual.core.ui.Theme
 import actual.core.ui.formattedString
 import actual.core.ui.isInPreview
 import actual.l10n.Strings
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

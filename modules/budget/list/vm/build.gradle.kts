@@ -6,7 +6,6 @@ dependencies {
   api(project(":modules:budget:model"))
   api(project(":modules:core:model"))
   api(libs.alakazam.kotlin.core)
-  api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.immutable)
   implementation(project(":modules:account:model"))
@@ -17,5 +16,5 @@ dependencies {
   implementation(libs.ktor.serialization.core)
   implementation(libs.okio)
   implementation(libs.preferences.core)
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
+  compileOnly(libs.alakazam.kotlin.composeAnnotations)
 }

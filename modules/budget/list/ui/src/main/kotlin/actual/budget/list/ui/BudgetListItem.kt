@@ -12,7 +12,7 @@ import actual.core.ui.PreviewColumn
 import actual.core.ui.RowShape
 import actual.core.ui.Theme
 import actual.l10n.Strings
-import alakazam.android.ui.compose.HorizontalSpacer
+import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

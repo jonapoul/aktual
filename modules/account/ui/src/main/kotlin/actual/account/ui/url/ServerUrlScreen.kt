@@ -14,10 +14,11 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
+import actual.core.ui.metroViewModel
 import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
 import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -49,7 +50,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.channels.consumeEach
 import logcat.logcat
@@ -57,7 +57,7 @@ import logcat.logcat
 @Composable
 fun ServerUrlScreen(
   nav: ServerUrlNavigator,
-  viewModel: ServerUrlViewModel = hiltViewModel(),
+  viewModel: ServerUrlViewModel = metroViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredUrl by viewModel.baseUrl.collectAsStateWithLifecycle()

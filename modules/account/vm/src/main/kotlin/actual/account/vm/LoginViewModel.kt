@@ -7,12 +7,15 @@ import actual.account.model.Password
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.ServerUrl
+import actual.core.model.ViewModelKey
+import actual.core.model.ViewModelScope
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.ResettableStateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.jonpoulton.preferences.core.asStateFlow
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -23,10 +26,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
-import javax.inject.Inject
 
-@HiltViewModel
-class LoginViewModel @Inject constructor(
+@Inject
+@ViewModelKey(LoginViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class LoginViewModel(
   private val loginRequester: LoginRequester,
   versionsStateHolder: ActualVersionsStateHolder,
   preferences: AppGlobalPreferences,

@@ -1,8 +1,9 @@
 package actual.core.model
 
 import alakazam.kotlin.core.StateHolder
-import javax.inject.Inject
-import javax.inject.Singleton
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
 enum class PingState {
   Unknown,
@@ -10,5 +11,6 @@ enum class PingState {
   Success,
 }
 
-@Singleton
-class PingStateHolder @Inject constructor() : StateHolder<PingState>(initialState = PingState.Unknown)
+@Inject
+@SingleIn(AppScope::class)
+class PingStateHolder : StateHolder<PingState>(initialState = PingState.Unknown)

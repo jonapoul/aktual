@@ -8,10 +8,13 @@ import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
+import actual.core.model.ViewModelKey
+import actual.core.model.ViewModelScope
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -26,11 +29,12 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-@HiltViewModel
-class ChangePasswordViewModel @Inject internal constructor(
+@Inject
+@ViewModelKey(ChangePasswordViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class ChangePasswordViewModel internal constructor(
   versionsStateHolder: ActualVersionsStateHolder,
   private val passwordChanger: PasswordChanger,
   private val loginRequester: LoginRequester,

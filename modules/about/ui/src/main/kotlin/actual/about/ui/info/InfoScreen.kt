@@ -3,16 +3,16 @@ package actual.about.ui.info
 import actual.about.vm.AboutViewModel
 import actual.about.vm.CheckUpdatesState
 import actual.core.ui.LocalTheme
+import actual.core.ui.metroViewModel
 import alakazam.kotlin.core.noOp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun InfoScreen(
   nav: InfoNavigator,
-  viewModel: AboutViewModel = hiltViewModel(),
+  viewModel: AboutViewModel = metroViewModel(),
 ) {
   val theme = LocalTheme.current
   val buildState by viewModel.buildState.collectAsStateWithLifecycle()

@@ -13,6 +13,7 @@ import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
+import actual.core.ui.metroViewModel
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import androidx.activity.compose.BackHandler
@@ -38,7 +39,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -50,7 +50,7 @@ fun ReportsDashboardScreen(
   nav: ReportsDashboardNavigator,
   budgetId: BudgetId,
   token: LoginToken,
-  viewModel: ReportsDashboardViewModel = hiltViewModel(token, budgetId),
+  viewModel: ReportsDashboardViewModel = metroViewModel(token, budgetId),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -74,12 +74,12 @@ fun ReportsDashboardScreen(
 }
 
 @Composable
-private fun hiltViewModel(
+private fun metroViewModel(
   token: LoginToken,
   budgetId: BudgetId,
-) = hiltViewModel<ReportsDashboardViewModel, ReportsDashboardViewModel.Factory>(
-  creationCallback = { factory -> factory.create(ReportsDashboardViewModel.Inputs(token, budgetId)) },
-)
+) = metroViewModel<ReportsDashboardViewModel, ReportsDashboardViewModel.Factory> {
+  create(token, budgetId)
+}
 
 @Composable
 private fun ReportsDashboardScaffold(

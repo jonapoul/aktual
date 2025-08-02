@@ -1,5 +1,7 @@
 package actual.gradle
 
+import blueprint.core.getLibrary
+import blueprint.core.libs
 import com.autonomousapps.DependencyAnalysisPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -13,7 +15,6 @@ class ModuleCompose : Plugin<Project> {
       apply(ConventionAndroidLibrary::class.java)
       apply(ConventionCompose::class.java)
       apply(ConventionDiagrams::class.java)
-      apply(ConventionHilt::class.java)
       apply(ConventionKover::class.java)
       apply(ConventionIdea::class.java)
       apply(ConventionStyle::class.java)
@@ -23,6 +24,8 @@ class ModuleCompose : Plugin<Project> {
     }
 
     dependencies {
+      "implementation"(libs.getLibrary("alakazam.kotlin.compose"))
+
       if (path != ":test:compose") {
         "testImplementation"(project(":modules:test:android"))
         "testImplementation"(project(":modules:test:compose"))

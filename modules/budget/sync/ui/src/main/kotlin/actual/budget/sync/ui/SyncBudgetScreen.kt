@@ -15,9 +15,10 @@ import actual.core.ui.PrimaryTextButton
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
+import actual.core.ui.metroViewModel
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +52,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.persistentMapOf
@@ -62,7 +62,7 @@ fun SyncBudgetScreen(
   nav: SyncBudgetNavigator,
   budgetId: BudgetId,
   token: LoginToken,
-  viewModel: SyncBudgetViewModel = hiltViewModel(token, budgetId),
+  viewModel: SyncBudgetViewModel = metroViewModel(token, budgetId),
 ) {
   val stepStates by viewModel.stepStates.collectAsStateWithLifecycle()
   val passwordState by viewModel.passwordState.collectAsStateWithLifecycle()
@@ -90,12 +90,12 @@ fun SyncBudgetScreen(
 }
 
 @Composable
-private fun hiltViewModel(
+private fun metroViewModel(
   token: LoginToken,
   budgetId: BudgetId,
-) = hiltViewModel<SyncBudgetViewModel, SyncBudgetViewModel.Factory>(
-  creationCallback = { factory -> factory.create(SyncBudgetViewModel.Inputs(token, budgetId)) },
-)
+) = metroViewModel<SyncBudgetViewModel, SyncBudgetViewModel.Factory> {
+  create(token, budgetId)
+}
 
 @Composable
 private fun SyncBudgetScaffold(

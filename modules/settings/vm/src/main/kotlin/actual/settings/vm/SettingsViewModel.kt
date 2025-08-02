@@ -1,5 +1,7 @@
 package actual.settings.vm
 
+import actual.core.model.ViewModelKey
+import actual.core.model.ViewModelScope
 import actual.prefs.AppGlobalPreferences
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -7,15 +9,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.jonpoulton.preferences.core.asStateFlow
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.StateFlow
-import javax.inject.Inject
 
-@HiltViewModel
-class SettingsViewModel @Inject internal constructor(
+@Inject
+@ViewModelKey(SettingsViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class SettingsViewModel internal constructor(
   preferences: AppGlobalPreferences,
 ) : ViewModel() {
   private val colorSchemePref = preferences.regularColorScheme

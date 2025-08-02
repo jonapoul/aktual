@@ -17,8 +17,8 @@ dependencies {
   api(libs.kotlinx.immutable)
   api(libs.lazycolumn.scrollbar)
   implementation(project(":modules:core:android"))
+  implementation(project(":modules:core:di"))
   implementation(project(":modules:l10n"))
-  implementation(libs.alakazam.android.compose)
   implementation(libs.androidx.compose.animation.core)
   implementation(libs.androidx.compose.foundation.core)
   implementation(libs.androidx.compose.foundation.layout)
@@ -32,6 +32,7 @@ dependencies {
   implementation(libs.androidx.compose.ui.unit)
   implementation(libs.androidx.compose.ui.util)
   implementation(libs.androidx.coreKtx)
+  implementation(libs.androidx.lifecycle.viewmodel.compose)
   implementation(libs.kotlinx.coroutines)
 }
 

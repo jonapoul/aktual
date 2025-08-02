@@ -3,7 +3,7 @@ package actual.budget.transactions.vm
 import actual.budget.db.AndroidSqlDriverFactory
 import actual.budget.db.BudgetDatabase
 import actual.budget.db.buildDatabase
-import actual.budget.di.BudgetComponentStateHolder
+import actual.budget.di.BudgetGraphHolder
 import actual.budget.model.AccountId
 import actual.budget.model.AccountSpec
 import actual.budget.model.AccountSpec.AllAccounts
@@ -38,7 +38,7 @@ class TransactionsViewModelTest {
   // real
   private lateinit var viewModel: TransactionsViewModel
   private lateinit var context: Context
-  private lateinit var components: BudgetComponentStateHolder
+  private lateinit var components: BudgetGraphHolder
   private lateinit var fileSystem: FileSystem
   private lateinit var driver: SqlDriver
 
@@ -79,7 +79,7 @@ class TransactionsViewModelTest {
     }
 
     val contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
-    components = BudgetComponentStateHolder(context, files, this, contexts)
+    components = BudgetGraphHolder(context, files, this, contexts)
     components.update(METADATA)
     viewModel = TransactionsViewModel(
       inputs = TransactionsViewModel.Inputs(TOKEN, BUDGET_ID, TransactionsSpec(spec)),

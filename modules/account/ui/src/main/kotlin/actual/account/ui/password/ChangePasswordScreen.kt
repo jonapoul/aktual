@@ -11,9 +11,10 @@ import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
+import actual.core.ui.metroViewModel
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -39,13 +40,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
 fun ChangePasswordScreen(
   navigator: ChangePasswordNavigator,
-  viewModel: ChangePasswordViewModel = hiltViewModel(),
+  viewModel: ChangePasswordViewModel = metroViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val inputPassword1 by viewModel.inputPassword1.collectAsStateWithLifecycle()

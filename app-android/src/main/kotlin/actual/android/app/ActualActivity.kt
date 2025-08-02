@@ -2,12 +2,15 @@ package actual.android.app
 
 import actual.account.model.LoginToken
 import actual.android.app.nav.ActualNavHost
+import actual.app.di.ViewModelGraph
 import actual.core.model.ColorSchemeType
 import actual.core.model.DarkColorSchemeType
 import actual.core.model.RegularColorSchemeType
 import actual.core.ui.ActualTheme
+import actual.core.ui.LocalViewModelProvidersBuilder
 import actual.core.ui.WithCompositionLocals
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
+import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
@@ -29,10 +33,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dagger.hilt.android.AndroidEntryPoint
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 
-@AndroidEntryPoint
-class ActualActivity : ComponentActivity() {
+@Inject
+@ActivityKey(ActualActivity::class)
+@ContributesIntoMap(AppScope::class, binding<Activity>())
+class ActualActivity(vmGraphBuilder: ViewModelGraph.Builder) : ComponentActivity() {
+  override val defaultViewModelProviderFactory: ViewModelGraph.Builder = vmGraphBuilder
+
   private val viewModel by viewModels<ActualActivityViewModel>()
 
   override fun onDestroy() {
@@ -61,17 +72,21 @@ class ActualActivity : ComponentActivity() {
       val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
       val colorSchemeType = chooseSchemeType(regular, darkScheme)
 
-      WithCompositionLocals(
-        isPrivacyEnabled = isPrivacyEnabled,
-        format = numberFormat,
-        hideFractions = hideFraction,
+      CompositionLocalProvider(
+        LocalViewModelProvidersBuilder provides defaultViewModelProviderFactory,
       ) {
-        ActualTheme(colorSchemeType) {
-          Content(
-            isServerUrlSet = viewModel.isServerUrlSet,
-            loginToken = viewModel.loginToken,
-            bottomBarState = bottomBarState,
-          )
+        WithCompositionLocals(
+          isPrivacyEnabled = isPrivacyEnabled,
+          format = numberFormat,
+          hideFractions = hideFraction,
+        ) {
+          ActualTheme(colorSchemeType) {
+            Content(
+              isServerUrlSet = viewModel.isServerUrlSet,
+              loginToken = viewModel.loginToken,
+              bottomBarState = bottomBarState,
+            )
+          }
         }
       }
     }

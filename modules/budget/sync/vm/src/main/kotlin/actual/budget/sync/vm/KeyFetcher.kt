@@ -10,15 +10,16 @@ import actual.budget.model.BudgetId
 import actual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import okio.Buffer
-import javax.inject.Inject
 
-class KeyFetcher @Inject constructor(
+@Inject
+class KeyFetcher(
   private val stateHolder: ActualApisStateHolder,
   private val contexts: CoroutineContexts,
   private val keyGenerator: KeyGenerator,

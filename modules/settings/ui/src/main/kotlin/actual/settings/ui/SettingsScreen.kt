@@ -7,6 +7,7 @@ import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
+import actual.core.ui.metroViewModel
 import actual.core.ui.scrollbarSettings
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Dimens
@@ -16,7 +17,7 @@ import actual.settings.ui.items.ThemePreferenceItem
 import actual.settings.vm.PreferenceValue
 import actual.settings.vm.SettingsViewModel
 import actual.settings.vm.ThemeConfig
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,7 +42,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.ImmutableList
@@ -51,7 +51,7 @@ import my.nanihadesuka.compose.LazyColumnScrollbar
 @Composable
 fun SettingsScreen(
   nav: SettingsNavigator,
-  viewModel: SettingsViewModel = hiltViewModel(),
+  viewModel: SettingsViewModel = metroViewModel(),
 ) {
   val values by viewModel.prefValues.collectAsState()
 

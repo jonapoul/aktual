@@ -8,7 +8,7 @@ import actual.core.ui.Theme
 import actual.core.ui.defaultHazeStyle
 import actual.l10n.Dimens
 import actual.l10n.Strings
-import alakazam.android.ui.compose.HorizontalSpacer
+import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

@@ -4,11 +4,11 @@ import actual.budget.model.BudgetFiles
 import actual.budget.model.DbMetadata
 import actual.budget.model.writeMetadata
 import alakazam.kotlin.core.CoroutineContexts
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 

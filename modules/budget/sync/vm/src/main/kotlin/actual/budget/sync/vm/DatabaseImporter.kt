@@ -10,6 +10,7 @@ import actual.budget.model.writeMetadata
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import alakazam.kotlin.time.TimeZoneProvider
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.todayIn
@@ -20,13 +21,13 @@ import okio.Path
 import okio.buffer
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
-import javax.inject.Inject
 import kotlin.time.Clock
 
 /**
  * Adapted from packages/loot-core/src/server/cloud-storage.ts importBuffer()
  */
-class DatabaseImporter @Inject constructor(
+@Inject
+class DatabaseImporter(
   private val contexts: CoroutineContexts,
   private val fileSystem: FileSystem,
   private val budgetFiles: BudgetFiles,

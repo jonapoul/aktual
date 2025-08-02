@@ -7,7 +7,7 @@ import actual.budget.db.GetPositionAndSize
 import actual.budget.db.dao.DashboardDao
 import actual.budget.db.dao.DashboardDao.Companion.DEFAULT_HEIGHT
 import actual.budget.db.dao.DashboardDao.Companion.DEFAULT_WIDTH
-import actual.budget.di.BudgetComponentStateHolder
+import actual.budget.di.BudgetGraphHolder
 import actual.budget.model.AndroidBudgetFiles
 import actual.budget.model.BudgetFiles
 import actual.budget.model.WidgetType
@@ -39,7 +39,7 @@ class ChooseReportTypeViewModelTest {
   // real
   private lateinit var viewModel: ChooseReportTypeViewModel
   private lateinit var context: Context
-  private lateinit var components: BudgetComponentStateHolder
+  private lateinit var components: BudgetGraphHolder
   private lateinit var fileSystem: FileSystem
   private lateinit var dashboardDao: DashboardDao
   private lateinit var database: BudgetDatabase
@@ -112,7 +112,7 @@ class ChooseReportTypeViewModelTest {
 
   private inline fun runVmTest(crossinline testBody: suspend TestScope.() -> Unit) = runTest {
     contexts = TestCoroutineContexts(standardDispatcher)
-    components = BudgetComponentStateHolder(context, files, this, contexts)
+    components = BudgetGraphHolder(context, files, this, contexts)
     val component = components.update(TEST_METADATA)
     database = component.database
     dashboardDao = DashboardDao(database)

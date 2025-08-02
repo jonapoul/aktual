@@ -4,6 +4,8 @@ import actual.about.data.GithubRepository
 import actual.about.data.LatestReleaseState
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
+import actual.core.model.ViewModelKey
+import actual.core.model.ViewModelScope
 import alakazam.android.core.UrlOpener
 import alakazam.kotlin.core.BuildConfig
 import androidx.compose.runtime.collectAsState
@@ -12,7 +14,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,11 +25,12 @@ import kotlinx.coroutines.launch
 import logcat.logcat
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import javax.inject.Inject
 import kotlin.time.toJavaInstant
 
-@HiltViewModel
-class AboutViewModel @Inject constructor(
+@Inject
+@ViewModelKey(AboutViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class AboutViewModel(
   private val buildConfig: BuildConfig,
   private val githubRepository: GithubRepository,
   private val urlOpener: UrlOpener,

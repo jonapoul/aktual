@@ -11,7 +11,6 @@ plugins {
   alias(libs.plugins.compose) apply false
   alias(libs.plugins.composeHotReload) apply false
   alias(libs.plugins.detekt) apply false
-  alias(libs.plugins.hilt) apply false
   alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.kotlin.compose) apply false
   alias(libs.plugins.kotlin.jvm) apply false
@@ -21,6 +20,7 @@ plugins {
   alias(libs.plugins.ksp) apply false
   alias(libs.plugins.licensee) apply false
   alias(libs.plugins.manifestLock) apply false
+  alias(libs.plugins.metro) apply false
   alias(libs.plugins.redacted) apply false
   alias(libs.plugins.sqldelight) apply false
 
@@ -87,7 +87,6 @@ dependencyAnalysis {
         exclude(
           libs.androidx.compose.ui.tooling,
           libs.androidx.compose.ui.toolingPreview,
-          libs.hilt.core,
           libs.logcat,
           libs.molecule,
           libs.test.androidx.monitor,

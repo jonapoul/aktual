@@ -18,24 +18,15 @@ class ConventionKover : Plugin<Project> {
     val excludedAnnotations = listOf(
       "actual.core.ui.ScreenPreview",
       "androidx.compose.ui.tooling.preview.Preview",
-      "dagger.Generated",
-      "dagger.Module",
-      "dagger.Provides",
       "javax.annotation.processing.Generated",
     )
     val excludedClasses = listOf(
       "*Activity*",
       "*Application*",
       "*BuildConfig*",
-      "*_Factory*",
-      "*_HiltModules*",
-      "*_Impl*",
-      "*Module_*",
-      "hilt_aggregated_deps*",
       "*Preview*Kt*",
     )
     val excludedPackages = listOf(
-      "*hilt_aggregated_deps.*",
       "*.di.*",
     )
 

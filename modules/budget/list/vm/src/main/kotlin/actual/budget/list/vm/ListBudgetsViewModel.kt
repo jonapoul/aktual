@@ -7,16 +7,20 @@ import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.database
 import actual.budget.model.metadata
+import actual.core.di.ViewModelFactory
+import actual.core.di.ViewModelFactoryKey
+import actual.core.di.ViewModelKey
+import actual.core.di.ViewModelScope
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.jonpoulton.preferences.core.asStateFlow
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -34,8 +38,10 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 import kotlin.time.Duration.Companion.milliseconds
 
-@HiltViewModel(assistedFactory = ListBudgetsViewModel.Factory::class)
-class ListBudgetsViewModel @AssistedInject constructor(
+@Inject
+@ViewModelKey(ListBudgetsViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class ListBudgetsViewModel(
   @Assisted tokenString: String,
   preferences: AppGlobalPreferences,
   private val budgetListFetcher: BudgetListFetcher,
@@ -155,8 +161,11 @@ class ListBudgetsViewModel @AssistedInject constructor(
     ).all(fileSystem::exists)
   }
 
+  @Inject
   @AssistedFactory
-  interface Factory {
-    fun create(tokenString: String): ListBudgetsViewModel
+  @ViewModelFactoryKey(Factory::class)
+  @ContributesIntoMap(ViewModelScope::class)
+  interface Factory : ViewModelFactory {
+    fun create(token: LoginToken): ListBudgetsViewModel
   }
 }

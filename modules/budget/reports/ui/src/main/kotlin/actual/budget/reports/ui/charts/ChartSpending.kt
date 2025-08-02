@@ -17,7 +17,7 @@ import actual.core.ui.formattedString
 import actual.core.ui.isInPreview
 import actual.core.ui.stringShort
 import actual.l10n.Strings
-import alakazam.android.ui.compose.HorizontalSpacer
+import alakazam.kotlin.compose.HorizontalSpacer
 import alakazam.kotlin.core.capitalized
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

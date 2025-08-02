@@ -4,7 +4,7 @@ import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
-import actual.budget.di.BudgetComponentStateHolder
+import actual.budget.di.BudgetGraphHolder
 import actual.budget.encryption.KeyGenerator
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
@@ -13,6 +13,10 @@ import actual.budget.model.encryptedZip
 import actual.budget.sync.vm.SyncStep.DownloadingDatabase
 import actual.budget.sync.vm.SyncStep.FetchingFileInfo
 import actual.budget.sync.vm.SyncStep.ValidatingDatabase
+import actual.core.di.ViewModelFactory
+import actual.core.di.ViewModelFactoryKey
+import actual.core.di.ViewModelKey
+import actual.core.di.ViewModelScope
 import actual.core.model.Percent
 import actual.prefs.KeyPreferences
 import alakazam.android.core.UrlOpener
@@ -23,10 +27,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
@@ -48,9 +52,12 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
-@HiltViewModel(assistedFactory = SyncBudgetViewModel.Factory::class)
-class SyncBudgetViewModel @AssistedInject constructor(
-  @Assisted inputs: Inputs,
+@Inject
+@ViewModelKey(SyncBudgetViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class SyncBudgetViewModel(
+  @Assisted private val token: LoginToken,
+  @Assisted private val budgetId: BudgetId,
   private val fileDownloader: BudgetFileDownloader,
   private val infoFetcher: BudgetInfoFetcher,
   private val decrypter: Decrypter,
@@ -60,11 +67,8 @@ class SyncBudgetViewModel @AssistedInject constructor(
   private val keyGenerator: KeyGenerator,
   private val keyFetcher: KeyFetcher,
   private val keyPreferences: KeyPreferences,
-  private val budgetComponents: BudgetComponentStateHolder,
+  private val budgetComponents: BudgetGraphHolder,
 ) : ViewModel() {
-  private val token = inputs.token
-  private val budgetId = inputs.budgetId
-
   private var cachedData: CachedEncryptedData? = null
 
   private val mutablePasswordState = MutableStateFlow<KeyPasswordState>(KeyPasswordState.Inactive)
@@ -295,21 +299,20 @@ class SyncBudgetViewModel @AssistedInject constructor(
     }
   }
 
-  data class Inputs(
-    val token: LoginToken,
-    val budgetId: BudgetId,
-  )
-
   private data class CachedEncryptedData(
     val encryptedPath: Path,
     val userFile: UserFile,
     val meta: EncryptMeta?,
   )
 
+  @Inject
   @AssistedFactory
-  fun interface Factory {
+  @ViewModelFactoryKey(Factory::class)
+  @ContributesIntoMap(ViewModelScope::class)
+  fun interface Factory : ViewModelFactory {
     fun create(
-      @Assisted inputs: Inputs,
+      @Assisted token: LoginToken,
+      @Assisted budgetId: BudgetId,
     ): SyncBudgetViewModel
   }
 

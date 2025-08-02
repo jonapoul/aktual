@@ -6,7 +6,7 @@ import actual.core.ui.PreviewColumn
 import actual.core.ui.PrimaryTextButtonWithLoading
 import actual.core.ui.keyboardFocusRequester
 import actual.l10n.Strings
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column

@@ -44,5 +44,6 @@ compose.desktop {
 }
 
 dependencies {
+  implementation(project(":modules:di"))
   implementation(compose.desktop.currentOs)
 }

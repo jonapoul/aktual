@@ -4,7 +4,7 @@ package actual.android.app
 
 import actual.account.model.LoginToken
 import actual.budget.db.dao.PreferencesDao
-import actual.budget.di.BudgetComponentStateHolder
+import actual.budget.di.BudgetGraphHolder
 import actual.budget.model.BudgetFiles
 import actual.budget.model.DbMetadata
 import actual.budget.model.NumberFormat
@@ -15,6 +15,8 @@ import actual.core.connection.ServerVersionFetcher
 import actual.core.model.DarkColorSchemeType
 import actual.core.model.PingStateHolder
 import actual.core.model.RegularColorSchemeType
+import actual.core.model.ViewModelKey
+import actual.core.model.ViewModelScope
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.compose.runtime.collectAsState
@@ -23,8 +25,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.jonpoulton.preferences.core.asStateFlow
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
@@ -38,10 +41,11 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import logcat.logcat
-import javax.inject.Inject
 
-@HiltViewModel
-internal class ActualActivityViewModel @Inject constructor(
+@Inject
+@ViewModelKey(ActualActivityViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+internal class ActualActivityViewModel(
   private val scope: CoroutineScope,
   private val contexts: CoroutineContexts,
   private val connectionMonitor: ConnectionMonitor,
@@ -49,7 +53,7 @@ internal class ActualActivityViewModel @Inject constructor(
   private val pingStateHolder: PingStateHolder,
   private val serverVersionFetcher: ServerVersionFetcher,
   private val files: BudgetFiles,
-  budgetComponents: BudgetComponentStateHolder,
+  budgetComponents: BudgetGraphHolder,
   preferences: AppGlobalPreferences,
 ) : ViewModel() {
   private val component = budgetComponents.stateIn(viewModelScope, Eagerly, initialValue = null)

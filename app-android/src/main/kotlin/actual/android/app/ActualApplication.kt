@@ -1,30 +1,34 @@
 package actual.android.app
 
+import actual.app.di.AndroidAppGraph
 import actual.l10n.AndroidLocalization
 import actual.l10n.Localization
 import actual.logging.ActualAndroidLogcatLogger
 import actual.logging.AndroidLogStorage
 import actual.logging.LogbackLogger
-import alakazam.kotlin.core.BuildConfig
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
-import javax.inject.Inject
 
-@HiltAndroidApp
-class ActualApplication : Application() {
-  @Inject lateinit var buildConfig: BuildConfig
+class ActualApplication : Application(), AndroidAppGraph.Holder {
+  private var nullableGraph: AndroidAppGraph? = null
+
+  override fun graph() = requireNotNull(nullableGraph) {
+    "AndroidAppGraph hasn't been initialised yet"
+  }
 
   override fun onCreate() {
     super.onCreate()
+    val buildConfig = buildConfig(context = this)
 
+    nullableGraph = setUpDi(buildConfig, context = this)
     setUpL10n()
     setUpLogging()
 
     logcat.i { "onCreate" }
     logcat.d { "buildConfig = $buildConfig" }
+    logcat.d { "graph = $nullableGraph" }
   }
 
   private fun setUpL10n() {

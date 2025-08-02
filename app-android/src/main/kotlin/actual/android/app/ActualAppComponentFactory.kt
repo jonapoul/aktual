@@ -1,0 +1,55 @@
+package actual.android.app
+
+import actual.app.di.AndroidAppGraph
+import actual.core.di.ProviderMap
+import android.app.Activity
+import android.app.Application
+import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.ContentProvider
+import android.content.Intent
+import androidx.core.app.AppComponentFactory
+
+/**
+ * From https://github.com/ZacSweers/metro/blob/main/samples/compose-navigation-app/src/main/kotlin/dev/zacsweers/metro/sample/androidviewmodel/components/MetroAppComponentFactory.kt
+ */
+class ActualAppComponentFactory : AppComponentFactory() {
+  override fun instantiateApplicationCompat(cl: ClassLoader, className: String): Application =
+    super.instantiateApplicationCompat(cl, className).also { app ->
+      val graph = (app as AndroidAppGraph.Holder).graph()
+      activityProviders = graph.activityProviders
+      broadcastReceiverProviders = graph.broadcastReceiverProviders
+      contentProviderProviders = graph.contentProviderProviders
+      serviceProviders = graph.serviceProviders
+    }
+
+  override fun instantiateActivityCompat(cl: ClassLoader, className: String, intent: Intent?): Activity =
+    getInstance(cl, className, activityProviders) ?: super.instantiateActivityCompat(cl, className, intent)
+
+  override fun instantiateReceiverCompat(cl: ClassLoader, className: String, intent: Intent?): BroadcastReceiver =
+    getInstance(cl, className, broadcastReceiverProviders) ?: super.instantiateReceiverCompat(cl, className, intent)
+
+  override fun instantiateServiceCompat(cl: ClassLoader, className: String, intent: Intent?): Service =
+    getInstance(cl, className, serviceProviders) ?: super.instantiateServiceCompat(cl, className, intent)
+
+  override fun instantiateProviderCompat(cl: ClassLoader, className: String): ContentProvider =
+    getInstance(cl, className, contentProviderProviders) ?: super.instantiateProviderCompat(cl, className)
+
+  private inline fun <reified T : Any> getInstance(
+    cl: ClassLoader,
+    className: String,
+    providers: ProviderMap<T>,
+  ): T? {
+    val clazz = Class.forName(className, false, cl).asSubclass(T::class.java)
+    val modelProvider = providers[clazz.kotlin] ?: return null
+    return modelProvider()
+  }
+
+  // AppComponentFactory can be created multiple times
+  companion object {
+    private lateinit var activityProviders: ProviderMap<Activity>
+    private lateinit var broadcastReceiverProviders: ProviderMap<BroadcastReceiver>
+    private lateinit var contentProviderProviders: ProviderMap<ContentProvider>
+    private lateinit var serviceProviders: ProviderMap<Service>
+  }
+}

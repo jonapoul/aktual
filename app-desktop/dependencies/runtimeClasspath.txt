@@ -10,6 +10,8 @@ androidx.lifecycle:lifecycle-runtime-desktop:2.8.5
 androidx.lifecycle:lifecycle-runtime:2.8.5
 androidx.lifecycle:lifecycle-viewmodel-desktop:2.8.5
 androidx.lifecycle:lifecycle-viewmodel:2.8.5
+dev.zacsweers.metro:runtime-jvm:0.5.4
+dev.zacsweers.metro:runtime:0.5.4
 org.jetbrains.androidx.lifecycle:lifecycle-common:2.8.4
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose-desktop:2.8.4
 org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose:2.8.4

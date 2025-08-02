@@ -17,7 +17,7 @@ import actual.core.ui.textField
 import actual.l10n.Dimens
 import actual.l10n.Plurals
 import actual.l10n.Strings
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
 import alakazam.kotlin.core.exhaustive
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn

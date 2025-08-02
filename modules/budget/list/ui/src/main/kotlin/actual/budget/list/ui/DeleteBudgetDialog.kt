@@ -11,7 +11,7 @@ import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.buttonBare
 import actual.l10n.Strings
-import alakazam.android.ui.compose.HorizontalSpacer
+import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

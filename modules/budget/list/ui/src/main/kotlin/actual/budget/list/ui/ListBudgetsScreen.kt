@@ -10,6 +10,7 @@ import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
+import actual.core.ui.metroViewModel
 import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
@@ -47,7 +48,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.persistentListOf
 
@@ -55,7 +55,7 @@ import kotlinx.collections.immutable.persistentListOf
 fun ListBudgetsScreen(
   nav: ListBudgetsNavigator,
   token: LoginToken,
-  viewModel: ListBudgetsViewModel = hiltViewModel(token),
+  viewModel: ListBudgetsViewModel = metroViewModel(token),
 ) {
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -120,9 +120,9 @@ fun ListBudgetsScreen(
 }
 
 @Composable
-private fun hiltViewModel(token: LoginToken) = hiltViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory>(
-  creationCallback = { factory -> factory.create(token.value) },
-)
+private fun metroViewModel(token: LoginToken) = metroViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory> {
+  create(token)
+}
 
 @Composable
 private fun ListBudgetsScaffold(

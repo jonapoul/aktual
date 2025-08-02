@@ -1,7 +1,6 @@
 package actual.gradle
 
 import app.cash.burst.gradle.BurstPlugin
-import blueprint.recipes.powerAssertBlueprint
 import blueprint.recipes.testBaseBlueprint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -22,7 +21,7 @@ class ConventionTest : Plugin<Project> {
     }
 
     testBaseBlueprint()
-    powerAssertBlueprint()
+    // powerAssertBlueprint() // TODO: Causes issues with metro. IDK
 
     tasks.withType<Test>().configureEach {
       // Suppresses mockk warning - see https://github.com/mockk/mockk/issues/1171

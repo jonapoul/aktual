@@ -6,7 +6,6 @@ dependencies {
   api(project(":modules:budget:data"))
   api(project(":modules:budget:model"))
   api(libs.alakazam.kotlin.core)
-  api(libs.javaxInject)
   api(libs.kotlinx.coroutines)
   api(libs.kotlinx.datetime)
   api(libs.kotlinx.immutable)
@@ -14,6 +13,6 @@ dependencies {
   implementation(project(":modules:budget:di"))
   implementation(project(":modules:prefs"))
   implementation(libs.androidx.compose.runtime)
-  compileOnly(libs.alakazam.kotlin.compose.annotations)
+  compileOnly(libs.alakazam.kotlin.composeAnnotations)
   testImplementation(libs.sqldelight.driver.android)
 }

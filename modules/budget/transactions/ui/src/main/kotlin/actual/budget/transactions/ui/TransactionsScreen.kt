@@ -19,6 +19,7 @@ import actual.core.ui.PreviewScreen
 import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
+import actual.core.ui.metroViewModel
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import androidx.compose.foundation.layout.Box
@@ -38,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -50,8 +50,8 @@ fun TransactionsScreen(
   nav: TransactionsNavigator,
   budgetId: BudgetId,
   token: LoginToken,
-  config: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
-  viewModel: TransactionsViewModel = hiltViewModel(token, budgetId, config),
+  spec: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
+  viewModel: TransactionsViewModel = metroViewModel(token, budgetId, spec),
 ) {
   val transactions by viewModel.transactions.collectAsStateWithLifecycle()
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
@@ -84,13 +84,13 @@ fun TransactionsScreen(
 }
 
 @Composable
-private fun hiltViewModel(
+private fun metroViewModel(
   token: LoginToken,
   budgetId: BudgetId,
-  config: TransactionsSpec,
-) = hiltViewModel<TransactionsViewModel, TransactionsViewModel.Factory>(
-  creationCallback = { factory -> factory.create(TransactionsViewModel.Inputs(token, budgetId, config)) },
-)
+  spec: TransactionsSpec,
+) = metroViewModel<TransactionsViewModel, TransactionsViewModel.Factory> {
+  create(token, budgetId, spec)
+}
 
 @Composable
 private fun TransactionsScaffold(

@@ -26,8 +26,8 @@ import actual.core.ui.scrollbarSettings
 import actual.core.ui.stringLong
 import actual.core.ui.stringShort
 import actual.l10n.Strings
-import alakazam.android.ui.compose.HorizontalSpacer
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.HorizontalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

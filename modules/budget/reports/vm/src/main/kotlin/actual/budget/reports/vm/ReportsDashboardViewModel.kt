@@ -3,25 +3,28 @@ package actual.budget.reports.vm
 import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
+import actual.core.di.ViewModelFactory
+import actual.core.di.ViewModelFactoryKey
+import actual.core.di.ViewModelKey
+import actual.core.di.ViewModelScope
 import androidx.lifecycle.ViewModel
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import logcat.logcat
 
-@Suppress("unused", "VarCouldBeVal")
-@HiltViewModel(assistedFactory = ReportsDashboardViewModel.Factory::class)
-class ReportsDashboardViewModel @AssistedInject constructor(
-  @Assisted inputs: Inputs,
+@Inject
+@ViewModelKey(ReportsDashboardViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class ReportsDashboardViewModel(
+  @Assisted private val token: LoginToken,
+  @Assisted private val budgetId: BudgetId,
 ) : ViewModel() {
-  private val token = inputs.token
-  private val budgetId = inputs.budgetId
-
   private var job: Job? = null
 
   private val mutableState = MutableStateFlow<DashboardState>(DashboardState.Loading)
@@ -49,15 +52,14 @@ class ReportsDashboardViewModel @AssistedInject constructor(
     // TODO
   }
 
-  data class Inputs(
-    val token: LoginToken,
-    val budgetId: BudgetId,
-  )
-
+  @Inject
   @AssistedFactory
-  fun interface Factory {
+  @ViewModelFactoryKey(Factory::class)
+  @ContributesIntoMap(ViewModelScope::class)
+  fun interface Factory : ViewModelFactory {
     fun create(
-      @Assisted inputs: Inputs,
+      @Assisted token: LoginToken,
+      @Assisted budgetId: BudgetId,
     ): ReportsDashboardViewModel
   }
 }

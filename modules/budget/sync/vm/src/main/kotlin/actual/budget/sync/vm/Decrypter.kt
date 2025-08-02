@@ -9,16 +9,17 @@ import actual.budget.model.decryptedZip
 import actual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import okio.Buffer
 import okio.Path
 import okio.Sink
 import okio.Source
-import javax.inject.Inject
 
 // Adapted from packages/loot-core/src/server/encryption/encryption-internals.ts
-class Decrypter @Inject constructor(
+@Inject
+class Decrypter(
   private val contexts: CoroutineContexts,
   private val keys: KeyPreferences,
   private val files: BudgetFiles,

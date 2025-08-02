@@ -5,7 +5,7 @@ import actual.budget.db.dao.AccountsDao
 import actual.budget.db.dao.PreferencesDao
 import actual.budget.db.dao.TransactionsDao
 import actual.budget.db.transactions.GetById
-import actual.budget.di.BudgetComponentStateHolder
+import actual.budget.di.BudgetGraphHolder
 import actual.budget.di.throwIfWrongBudget
 import actual.budget.model.AccountSpec
 import actual.budget.model.Amount
@@ -17,18 +17,21 @@ import actual.budget.model.TransactionsSpec
 import actual.budget.transactions.vm.LoadedAccount.AllAccounts
 import actual.budget.transactions.vm.LoadedAccount.Loading
 import actual.budget.transactions.vm.LoadedAccount.SpecificAccount
+import actual.core.di.ViewModelFactory
+import actual.core.di.ViewModelFactoryKey
+import actual.core.di.ViewModelKey
+import actual.core.di.ViewModelScope
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
@@ -42,13 +45,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
-import kotlin.collections.map
 
-@OptIn(ExperimentalCoroutinesApi::class)
-@HiltViewModel(assistedFactory = TransactionsViewModel.Factory::class)
-class TransactionsViewModel @AssistedInject constructor(
+@Inject
+@ViewModelKey(TransactionsViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class TransactionsViewModel(
   @Assisted inputs: Inputs,
-  components: BudgetComponentStateHolder,
+  components: BudgetGraphHolder,
   contexts: CoroutineContexts,
 ) : ViewModel() {
   // data sources
@@ -162,10 +165,15 @@ class TransactionsViewModel @AssistedInject constructor(
     val spec: TransactionsSpec,
   )
 
+  @Inject
   @AssistedFactory
-  fun interface Factory {
+  @ViewModelFactoryKey(Factory::class)
+  @ContributesIntoMap(ViewModelScope::class)
+  fun interface Factory : ViewModelFactory {
     fun create(
-      @Assisted inputs: Inputs,
+      @Assisted token: LoginToken,
+      @Assisted budgetId: BudgetId,
+      @Assisted spec: TransactionsSpec,
     ): TransactionsViewModel
   }
 }

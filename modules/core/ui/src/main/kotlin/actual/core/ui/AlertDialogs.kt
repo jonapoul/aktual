@@ -1,8 +1,8 @@
 package actual.core.ui
 
 import actual.l10n.Dimens
-import alakazam.android.ui.compose.HorizontalSpacer
-import alakazam.android.ui.compose.VerticalSpacer
+import alakazam.kotlin.compose.HorizontalSpacer
+import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

@@ -7,7 +7,7 @@ import actual.core.ui.PreviewColumn
 import actual.core.ui.TextField
 import actual.core.ui.Theme
 import actual.core.ui.keyboardFocusRequester
-import alakazam.android.ui.compose.HorizontalSpacer
+import alakazam.kotlin.compose.HorizontalSpacer
 import alakazam.kotlin.core.parse
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

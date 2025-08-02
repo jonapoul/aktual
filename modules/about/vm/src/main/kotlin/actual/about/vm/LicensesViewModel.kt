@@ -2,6 +2,8 @@ package actual.about.vm
 
 import actual.about.data.LicensesLoadState
 import actual.about.data.LicensesRepository
+import actual.core.model.ViewModelKey
+import actual.core.model.ViewModelScope
 import alakazam.android.core.UrlOpener
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -9,17 +11,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
-import javax.inject.Inject
 
-@HiltViewModel
-class LicensesViewModel @Inject internal constructor(
+@Inject
+@ViewModelKey(LicensesViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class LicensesViewModel internal constructor(
   private val licensesRepository: LicensesRepository,
   private val urlOpener: UrlOpener,
 ) : ViewModel() {

@@ -4,7 +4,6 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(libs.javaxInject)
     api(libs.alakazam.kotlin.core)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.serialization.core)
