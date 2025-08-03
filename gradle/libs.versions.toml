@@ -5,7 +5,6 @@ androidCacheFix = "3.0.1"
 blueprint = "1.0.0"
 buildconfig = "5.6.7"
 burst = "2.6.0"
-catalog = "0.3.4"
 compose = "1.8.2"
 composeHotReload = "1.0.0-beta04"
 dependencyAnalysis = "2.19.0"
@@ -213,7 +212,6 @@ agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version.ref = "androidCacheFix" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
-catalog = { id = "dev.jonpoulton.catalog", version.ref = "catalog" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
 dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }

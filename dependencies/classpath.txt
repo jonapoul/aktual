@@ -120,10 +120,8 @@ dev.drewhamilton.poko:poko-annotations-jvm:0.18.2
 dev.drewhamilton.poko:poko-annotations:0.18.2
 dev.jonpoulton.blueprint:core:1.0.0
 dev.jonpoulton.blueprint:recipes:1.0.0
-dev.jonpoulton.catalog:catalog-gradle-plugin:0.3.4
-dev.jonpoulton.catalog:dev.jonpoulton.catalog.gradle.plugin:0.3.4
-dev.zacsweers.metro:dev.zacsweers.metro.gradle.plugin:0.5.4
-dev.zacsweers.metro:gradle-plugin:0.5.4
+dev.zacsweers.metro:dev.zacsweers.metro.gradle.plugin:0.5.5
+dev.zacsweers.metro:gradle-plugin:0.5.5
 dev.zacsweers.moshix:moshi-sealed-reflect:0.25.1
 dev.zacsweers.moshix:moshi-sealed-runtime:0.25.1
 dev.zacsweers.redacted:dev.zacsweers.redacted.gradle.plugin:1.14.1
