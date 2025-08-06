@@ -9,9 +9,9 @@ node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:android" ["fillcolor"="#55FF55","shape"="none"]
-":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":di:core" ["fillcolor"="#FCB103","shape"="none"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -32,14 +32,14 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
-":budget:list:vm" -> ":core:di"
 ":budget:list:vm" -> ":core:model"
+":budget:list:vm" -> ":di:core"
 ":budget:list:vm" -> ":logging" ["style"="dotted"]
 ":budget:list:vm" -> ":prefs" ["style"="dotted"]
 ":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
-":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"
+":core:ui" -> ":di:core" ["style"="dotted"]
 ":core:ui" -> ":l10n" ["style"="dotted"]
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"

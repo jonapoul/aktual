@@ -8,8 +8,8 @@ node ["style"="filled"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":di:core" ["fillcolor"="#FCB103","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
@@ -24,8 +24,8 @@ graph ["rank"="same"]
 ":account:vm" -> ":account:domain"
 ":account:vm" -> ":account:model"
 ":account:vm" -> ":api:actual" ["style"="dotted"]
-":account:vm" -> ":core:di"
 ":account:vm" -> ":core:model"
+":account:vm" -> ":di:core"
 ":account:vm" -> ":logging" ["style"="dotted"]
 ":account:vm" -> ":prefs"
 ":api:actual" -> ":account:model"

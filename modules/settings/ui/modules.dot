@@ -5,9 +5,9 @@ node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:android" ["fillcolor"="#55FF55","shape"="none"]
-":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":di:core" ["fillcolor"="#FCB103","shape"="none"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -20,8 +20,8 @@ graph ["rank"="same"]
 }
 ":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
-":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"
+":core:ui" -> ":di:core" ["style"="dotted"]
 ":core:ui" -> ":l10n" ["style"="dotted"]
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
@@ -29,7 +29,7 @@ graph ["rank"="same"]
 ":settings:ui" -> ":core:ui"
 ":settings:ui" -> ":l10n" ["style"="dotted"]
 ":settings:ui" -> ":settings:vm"
-":settings:vm" -> ":core:di"
+":settings:vm" -> ":di:core"
 ":settings:vm" -> ":logging" ["style"="dotted"]
 ":settings:vm" -> ":prefs"
 subgraph "cluster_legend" {

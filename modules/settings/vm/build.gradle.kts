@@ -2,11 +2,12 @@ plugins {
   alias(libs.plugins.module.viewmodel)
 }
 
-dependencies {
-  api(project(":modules:prefs"))
-  api(libs.kotlinx.coroutines)
-  api(libs.kotlinx.immutable)
-  implementation(libs.androidx.compose.runtime)
-  implementation(libs.preferences.core)
-  compileOnly(libs.alakazam.kotlin.composeAnnotations)
+kotlin {
+  commonMainDependencies {
+    api(project(":modules:prefs"))
+    api(libs.kotlinx.coroutines)
+    api(libs.kotlinx.immutable)
+    implementation(compose.runtime)
+    implementation(libs.preferences.core)
+  }
 }

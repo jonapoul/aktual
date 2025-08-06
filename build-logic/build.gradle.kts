@@ -42,6 +42,7 @@ dependencies {
   compileOnly(libs.plugin.ksp)
   compileOnly(libs.plugin.licensee)
   compileOnly(libs.plugin.metro)
+
   implementation(libs.plugin.blueprint.core)
   implementation(libs.plugin.blueprint.recipes)
   implementation(libs.plugin.graphviz)
@@ -58,7 +59,6 @@ gradlePlugin {
     create(id = "actual.convention.android.base", impl = "actual.gradle.ConventionAndroidBase")
     create(id = "actual.convention.android.library", impl = "actual.gradle.ConventionAndroidLibrary")
     create(id = "actual.convention.compose", impl = "actual.gradle.ConventionCompose")
-    create(id = "actual.convention.compose.mp", impl = "actual.gradle.ConventionComposeMp")
     create(id = "actual.convention.detekt", impl = "actual.gradle.ConventionDetekt")
     create(id = "actual.convention.diagrams", impl = "actual.gradle.ConventionDiagrams")
     create(id = "actual.convention.idea", impl = "actual.gradle.ConventionIdea")
@@ -70,9 +70,9 @@ gradlePlugin {
     create(id = "actual.convention.sortdependencies", impl = "actual.gradle.ConventionSortDependencies")
     create(id = "actual.convention.style", impl = "actual.gradle.ConventionStyle")
     create(id = "actual.convention.test", impl = "actual.gradle.ConventionTest")
+
     create(id = "actual.module.android", impl = "actual.gradle.ModuleAndroid")
     create(id = "actual.module.compose", impl = "actual.gradle.ModuleCompose")
-    create(id = "actual.module.compose.mp", impl = "actual.gradle.ModuleComposeMp")
     create(id = "actual.module.di", impl = "actual.gradle.ModuleDi")
     create(id = "actual.module.jvm", impl = "actual.gradle.ModuleJvm")
     create(id = "actual.module.multiplatform", impl = "actual.gradle.ModuleMultiplatform")

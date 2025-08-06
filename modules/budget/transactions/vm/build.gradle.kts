@@ -12,7 +12,7 @@ dependencies {
   implementation(project(":modules:account:model"))
   implementation(project(":modules:budget:di"))
   implementation(project(":modules:prefs"))
-  implementation(libs.androidx.compose.runtime)
+  implementation(compose.runtime)
   compileOnly(libs.alakazam.kotlin.composeAnnotations)
   testImplementation(libs.sqldelight.driver.android)
 }

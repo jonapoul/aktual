@@ -7,31 +7,31 @@ plugins {
 
 optIn(EXPERIMENTAL_MATERIAL_3)
 
-dependencies {
-  api(project(":modules:budget:model"))
-  api(project(":modules:budget:transactions:vm"))
-  api(project(":modules:core:ui"))
-  api(libs.androidx.compose.foundation.layout)
-  api(libs.androidx.compose.runtime)
-  implementation(project(":modules:account:model"))
-  implementation(project(":modules:l10n"))
-  implementation(libs.androidx.compose.foundation.core)
-  implementation(libs.androidx.compose.material.icons.core)
-  implementation(libs.androidx.compose.material.icons.extended)
-  implementation(libs.androidx.compose.material3)
-  implementation(libs.androidx.compose.ui.core)
-  implementation(libs.androidx.compose.ui.graphics)
-  implementation(libs.androidx.compose.ui.text)
-  implementation(libs.androidx.compose.ui.tooling)
-  implementation(libs.androidx.compose.ui.toolingPreview)
-  implementation(libs.androidx.compose.ui.unit)
-  implementation(libs.androidx.compose.ui.util)
-  implementation(libs.androidx.lifecycle.common)
-  implementation(libs.androidx.lifecycle.runtime.compose)
-  implementation(libs.androidx.lifecycle.viewmodel.compose)
-  implementation(libs.androidx.lifecycle.viewmodel.core)
-  implementation(libs.kotlinx.coroutines)
-  implementation(libs.kotlinx.datetime)
-  implementation(libs.kotlinx.immutable)
-  implementation(libs.lazycolumn.scrollbar)
+kotlin {
+  commonMainDependencies {
+    api(compose.foundation)
+    api(compose.runtime)
+    api(project(":modules:budget:model"))
+    api(project(":modules:budget:transactions:vm"))
+    api(project(":modules:core:ui"))
+    implementation(compose.material3)
+    implementation(compose.materialIconsExtended)
+    implementation(compose.preview)
+    implementation(compose.ui)
+    implementation(compose.uiTooling)
+    implementation(compose.uiUtil)
+    implementation(libs.androidx.lifecycle.common)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.core)
+    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.datetime)
+    implementation(libs.kotlinx.immutable)
+    implementation(project(":modules:account:model"))
+    implementation(project(":modules:l10n"))
+  }
+
+  androidMainDependencies {
+    implementation(libs.lazycolumn.scrollbar)
+  }
 }

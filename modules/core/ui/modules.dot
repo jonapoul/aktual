@@ -4,9 +4,9 @@ graph ["dpi"="100","label"=":core:ui","labelloc"="t","fontsize"="30","ranksep"="
 node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:android" ["fillcolor"="#55FF55","shape"="none"]
-":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
+":di:core" ["fillcolor"="#FCB103","shape"="none"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
 {
 edge ["dir"="none"]
@@ -15,8 +15,8 @@ graph ["rank"="same"]
 }
 ":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
-":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"
+":core:ui" -> ":di:core" ["style"="dotted"]
 ":core:ui" -> ":l10n" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]

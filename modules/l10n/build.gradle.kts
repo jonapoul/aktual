@@ -12,7 +12,7 @@ compose.resources {
   generateResClass = always
   nameOfResClass = "Res"
   packageOfResClass = "actual.l10n"
-  publicResClass = false
+  publicResClass = true
 }
 
 kotlin {

@@ -7,29 +7,29 @@ plugins {
 
 optIn(EXPERIMENTAL_MATERIAL_3)
 
-dependencies {
-  api(project(":modules:budget:sync:vm"))
-  api(project(":modules:core:ui"))
-  api(libs.androidx.compose.foundation.layout)
-  api(libs.androidx.compose.runtime)
-  implementation(project(":modules:account:model"))
-  implementation(project(":modules:l10n"))
-  implementation(libs.androidx.activity.compose)
-  implementation(libs.androidx.compose.animation.core)
-  implementation(libs.androidx.compose.foundation.core)
-  implementation(libs.androidx.compose.material.icons.core)
-  implementation(libs.androidx.compose.material.icons.extended)
-  implementation(libs.androidx.compose.material3)
-  implementation(libs.androidx.compose.ui.core)
-  implementation(libs.androidx.compose.ui.graphics)
-  implementation(libs.androidx.compose.ui.text)
-  implementation(libs.androidx.compose.ui.tooling)
-  implementation(libs.androidx.compose.ui.toolingPreview)
-  implementation(libs.androidx.compose.ui.unit)
-  implementation(libs.androidx.lifecycle.common)
-  implementation(libs.androidx.lifecycle.runtime.compose)
-  implementation(libs.androidx.lifecycle.viewmodel.compose)
-  implementation(libs.androidx.lifecycle.viewmodel.core)
-  implementation(libs.kotlinx.coroutines)
-  implementation(libs.kotlinx.immutable)
+kotlin {
+  commonMainDependencies {
+    api(project(":modules:budget:sync:vm"))
+    api(project(":modules:core:ui"))
+    api(compose.foundation)
+    api(compose.runtime)
+    implementation(project(":modules:account:model"))
+    implementation(project(":modules:l10n"))
+    implementation(compose.animation)
+    implementation(compose.material3)
+    implementation(compose.materialIconsExtended)
+    implementation(compose.preview)
+    implementation(compose.ui)
+    implementation(compose.uiTooling)
+    implementation(libs.androidx.lifecycle.common)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.core)
+    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.immutable)
+  }
+
+  androidMainDependencies {
+    implementation(libs.androidx.activity.compose)
+  }
 }

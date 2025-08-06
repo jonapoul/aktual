@@ -28,10 +28,10 @@ node ["style"="filled"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:android" ["fillcolor"="#55FF55","shape"="none"]
 ":core:connection" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
-":di" ["fillcolor"="#FCB103","shape"="none"]
+":di:app" ["fillcolor"="#FCB103","shape"="none"]
+":di:core" ["fillcolor"="#FCB103","shape"="none"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -48,7 +48,7 @@ graph ["rank"="same"]
 ":about:ui" -> ":core:ui"
 ":about:ui" -> ":l10n" ["style"="dotted"]
 ":about:vm" -> ":about:data"
-":about:vm" -> ":core:di"
+":about:vm" -> ":di:core"
 ":about:vm" -> ":logging" ["style"="dotted"]
 ":account:domain" -> ":account:model"
 ":account:domain" -> ":api:actual" ["style"="dotted"]
@@ -63,8 +63,8 @@ graph ["rank"="same"]
 ":account:vm" -> ":account:domain"
 ":account:vm" -> ":account:model"
 ":account:vm" -> ":api:actual" ["style"="dotted"]
-":account:vm" -> ":core:di"
 ":account:vm" -> ":core:model"
+":account:vm" -> ":di:core"
 ":account:vm" -> ":logging" ["style"="dotted"]
 ":account:vm" -> ":prefs"
 ":api:actual" -> ":account:model"
@@ -86,8 +86,7 @@ graph ["rank"="same"]
 ":app-android" -> ":budget:transactions:ui" ["style"="dotted"]
 ":app-android" -> ":core:android" ["style"="dotted"]
 ":app-android" -> ":core:connection" ["style"="dotted"]
-":app-android" -> ":core:di" ["style"="dotted"]
-":app-android" -> ":di" ["style"="dotted"]
+":app-android" -> ":di:app" ["style"="dotted"]
 ":app-android" -> ":l10n" ["style"="dotted"]
 ":app-android" -> ":logging" ["style"="dotted"]
 ":app-android" -> ":prefs" ["style"="dotted"]
@@ -107,8 +106,8 @@ graph ["rank"="same"]
 ":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
-":budget:list:vm" -> ":core:di"
 ":budget:list:vm" -> ":core:model"
+":budget:list:vm" -> ":di:core"
 ":budget:list:vm" -> ":logging" ["style"="dotted"]
 ":budget:list:vm" -> ":prefs" ["style"="dotted"]
 ":budget:reports:ui" -> ":account:model" ["style"="dotted"]
@@ -118,8 +117,8 @@ graph ["rank"="same"]
 ":budget:reports:vm" -> ":account:model" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:model"
-":budget:reports:vm" -> ":core:di"
 ":budget:reports:vm" -> ":core:model" ["style"="dotted"]
+":budget:reports:vm" -> ":di:core"
 ":budget:reports:vm" -> ":logging" ["style"="dotted"]
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
 ":budget:sync:ui" -> ":budget:sync:vm"
@@ -130,8 +129,8 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":budget:di"
 ":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:model"
-":budget:sync:vm" -> ":core:di"
 ":budget:sync:vm" -> ":core:model" ["style"="dotted"]
+":budget:sync:vm" -> ":di:core"
 ":budget:sync:vm" -> ":logging" ["style"="dotted"]
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
 ":budget:transactions:ui" -> ":account:model" ["style"="dotted"]
@@ -143,7 +142,7 @@ graph ["rank"="same"]
 ":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:model"
-":budget:transactions:vm" -> ":core:di"
+":budget:transactions:vm" -> ":di:core"
 ":budget:transactions:vm" -> ":logging" ["style"="dotted"]
 ":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":core:connection" -> ":api:actual" ["style"="dotted"]
@@ -153,22 +152,22 @@ graph ["rank"="same"]
 ":core:connection" -> ":prefs" ["style"="dotted"]
 ":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
-":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"
+":core:ui" -> ":di:core" ["style"="dotted"]
 ":core:ui" -> ":l10n" ["style"="dotted"]
-":di" -> ":api:builder" ["style"="dotted"]
-":di" -> ":api:github"
-":di" -> ":budget:model"
-":di" -> ":core:di"
-":di" -> ":core:model"
-":di" -> ":prefs"
+":di:app" -> ":api:builder" ["style"="dotted"]
+":di:app" -> ":api:github"
+":di:app" -> ":budget:model"
+":di:app" -> ":core:model"
+":di:app" -> ":di:core"
+":di:app" -> ":prefs"
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 ":settings:ui" -> ":core:model"
 ":settings:ui" -> ":core:ui"
 ":settings:ui" -> ":l10n" ["style"="dotted"]
 ":settings:ui" -> ":settings:vm"
-":settings:vm" -> ":core:di"
+":settings:vm" -> ":di:core"
 ":settings:vm" -> ":logging" ["style"="dotted"]
 ":settings:vm" -> ":prefs"
 subgraph "cluster_legend" {

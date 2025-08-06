@@ -8,7 +8,7 @@ dependencies {
   api(libs.alakazam.kotlin.core)
   api(libs.androidx.lifecycle.viewmodel.core)
   api(libs.kotlinx.coroutines)
-  implementation(libs.androidx.compose.runtime)
+  implementation(compose.runtime)
   implementation(libs.kotlinx.immutable)
   compileOnly(libs.alakazam.kotlin.composeAnnotations)
 }

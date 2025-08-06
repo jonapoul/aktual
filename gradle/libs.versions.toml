@@ -29,7 +29,6 @@ alakazam = "6.2.0"
 android-desugaring = "2.1.5"
 androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
-androidx-compose-bom = "2025.07.00"
 androidx-compose-lint = "1.4.2"
 androidx-compose-rules = "0.4.26"
 androidx-coreKtx = "1.16.0"
@@ -108,23 +107,7 @@ androidx-activity-compose = { module = "androidx.activity:activity-compose", ver
 androidx-activity-core = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
-androidx-compose-animation-core = { module = "androidx.compose.animation:animation-core" }
-androidx-compose-animation-full = { module = "androidx.compose.animation:animation" }
-androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "androidx-compose-bom" }
-androidx-compose-foundation-core = { module = "androidx.compose.foundation:foundation" }
-androidx-compose-foundation-layout = { module = "androidx.compose.foundation:foundation-layout" }
 androidx-compose-lint = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "androidx-compose-lint" }
-androidx-compose-material-icons-core = { module = "androidx.compose.material:material-icons-core" }
-androidx-compose-material-icons-extended = { module = "androidx.compose.material:material-icons-extended" }
-androidx-compose-material3 = { module = "androidx.compose.material3:material3" }
-androidx-compose-runtime = { module = "androidx.compose.runtime:runtime" }
-androidx-compose-ui-core = { module = "androidx.compose.ui:ui" }
-androidx-compose-ui-graphics = { module = "androidx.compose.ui:ui-graphics" }
-androidx-compose-ui-text = { module = "androidx.compose.ui:ui-text" }
-androidx-compose-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
-androidx-compose-ui-toolingPreview = { module = "androidx.compose.ui:ui-tooling-preview" }
-androidx-compose-ui-unit = { module = "androidx.compose.ui:ui-unit" }
-androidx-compose-ui-util = { module = "androidx.compose.ui:ui-util" }
 androidx-coreKtx = { module = "androidx.core:core-ktx", version.ref = "androidx-coreKtx" }
 androidx-crypto = { module = "androidx.security:security-crypto", version.ref = "androidx-crypto" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx-fragment" }
@@ -178,17 +161,13 @@ sqldelight-driver-sqlite = { module = "app.cash.sqldelight:sqlite-driver", versi
 sqldelight-json = { module = "app.cash.sqldelight:sqlite-json-module", version.ref = "sqldelight" }
 sqldelight-primitive = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
-vico-compose = { module = "com.patrykandpatrick.vico:compose", version.ref = "vico" }
-vico-core = { module = "com.patrykandpatrick.vico:core", version.ref = "vico" }
+vico-multiplatform = { module = "com.patrykandpatrick.vico:multiplatform", version.ref = "vico" }
 
 # Testing
 test-alakazam-core = { module = "dev.jonpoulton.alakazam:testing-core", version.ref = "alakazam" }
 test-alakazam-logging = { module = "dev.jonpoulton.alakazam:testing-logging", version.ref = "alakazam" }
 test-alakazam-sqldelight = { module = "dev.jonpoulton.alakazam:testing-sqldelight", version.ref = "alakazam" }
 test-androidx-arch = { module = "androidx.arch.core:core-testing", version.ref = "test-androidx-arch" }
-test-androidx-compose-ui-core = { module = "androidx.compose.ui:ui-test" }
-test-androidx-compose-ui-junit4 = { module = "androidx.compose.ui:ui-test-junit4" }
-test-androidx-compose-ui-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 test-androidx-coreKtx = { module = "androidx.test:core-ktx", version.ref = "test-androidx-coreKtx" }
 test-androidx-junit = { module = "androidx.test.ext:junit", version.ref = "test-androidx-junit" }
 test-androidx-monitor = { module = "androidx.test:monitor", version.ref = "test-androidx-monitor" }
@@ -238,7 +217,6 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 convention-android-base = { id = "actual.convention.android.base" }
 convention-android-library = { id = "actual.convention.android.library" }
 convention-compose = { id = "actual.convention.compose" }
-convention-composeMp = { id = "actual.convention.compose.mp" }
 convention-di = { id = "actual.convention.di" }
 convention-diagrams = { id = "actual.convention.diagrams" }
 convention-idea = { id = "actual.convention.idea" }
@@ -250,7 +228,6 @@ convention-test = { id = "actual.convention.test" }
 
 module-android = { id = "actual.module.android" }
 module-compose = { id = "actual.module.compose" }
-module-composeMp = { id = "actual.module.compose.mp" }
 module-di = { id = "actual.module.di" }
 module-jvm = { id = "actual.module.jvm" }
 module-multiplatform = { id = "actual.module.multiplatform" }

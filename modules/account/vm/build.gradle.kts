@@ -10,7 +10,7 @@ dependencies {
   api(libs.alakazam.kotlin.core)
   api(libs.kotlinx.coroutines)
   implementation(project(":modules:api:actual"))
-  implementation(libs.androidx.compose.runtime)
+  implementation(compose.runtime)
   implementation(libs.ktor.core)
   implementation(libs.preferences.core)
   compileOnly(libs.alakazam.kotlin.composeAnnotations)

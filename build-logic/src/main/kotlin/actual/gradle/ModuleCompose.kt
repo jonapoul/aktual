@@ -1,35 +1,37 @@
 package actual.gradle
 
+import androidUnitTestDependencies
+import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 import blueprint.core.getLibrary
 import blueprint.core.libs
-import com.autonomousapps.DependencyAnalysisPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
-import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
+import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class ModuleCompose : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
-      apply(KotlinAndroidPluginWrapper::class.java)
-      apply(ConventionAndroidLibrary::class.java)
+      apply(ModuleMultiplatform::class.java)
       apply(ConventionCompose::class.java)
-      apply(ConventionDiagrams::class.java)
-      apply(ConventionKover::class.java)
-      apply(ConventionIdea::class.java)
-      apply(ConventionStyle::class.java)
-      apply(ConventionTest::class.java)
-      apply(DependencyAnalysisPlugin::class.java)
-      apply(ConventionSortDependencies::class.java)
     }
 
-    dependencies {
-      "implementation"(libs.getLibrary("alakazam.kotlin.compose"))
+    extensions.configure<KotlinMultiplatformExtension> {
+      commonMainDependencies {
+        implementation(libs.getLibrary("alakazam.kotlin.compose"))
+      }
 
-      if (path != ":test:compose") {
-        "testImplementation"(project(":modules:test:android"))
-        "testImplementation"(project(":modules:test:compose"))
-        "testImplementation"(project(":modules:test:kotlin"))
+      commonTestDependencies {
+        implementation(project(":modules:test:kotlin"))
+
+        if (name != ":modules:test:compose") {
+          implementation(project(":modules:test:compose"))
+        }
+      }
+
+      androidUnitTestDependencies {
+        implementation(project(":modules:test:android"))
       }
     }
   }

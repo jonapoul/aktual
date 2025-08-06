@@ -11,7 +11,7 @@ dependencies {
   implementation(project(":modules:account:model"))
   implementation(project(":modules:api:actual"))
   implementation(project(":modules:prefs"))
-  implementation(libs.androidx.compose.runtime)
+  implementation(compose.runtime)
   implementation(libs.ktor.core)
   implementation(libs.ktor.serialization.core)
   implementation(libs.okio)

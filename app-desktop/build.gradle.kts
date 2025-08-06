@@ -4,7 +4,7 @@ plugins {
   alias(libs.plugins.module.jvm)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.kotlin.compose)
-  alias(libs.plugins.convention.composeMp)
+  alias(libs.plugins.convention.compose)
   alias(libs.plugins.dependencyGuard)
 }
 
@@ -44,6 +44,6 @@ compose.desktop {
 }
 
 dependencies {
-  implementation(project(":modules:di"))
+  implementation(project(":modules:di:app"))
   implementation(compose.desktop.currentOs)
 }

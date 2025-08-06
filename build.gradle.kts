@@ -84,8 +84,6 @@ dependencyAnalysis {
           ":modules:logging",
         )
         exclude(
-          libs.androidx.compose.ui.tooling,
-          libs.androidx.compose.ui.toolingPreview,
           libs.logcat,
           libs.molecule,
           libs.test.androidx.monitor,

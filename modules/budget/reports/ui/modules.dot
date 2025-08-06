@@ -9,9 +9,9 @@ node ["style"="filled"]
 ":budget:reports:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
 ":budget:reports:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":core:android" ["fillcolor"="#55FF55","shape"="none"]
-":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","shape"="none"]
+":di:core" ["fillcolor"="#FCB103","shape"="none"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 {
@@ -30,13 +30,13 @@ graph ["rank"="same"]
 ":budget:reports:vm" -> ":account:model" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:model"
-":budget:reports:vm" -> ":core:di"
 ":budget:reports:vm" -> ":core:model" ["style"="dotted"]
+":budget:reports:vm" -> ":di:core"
 ":budget:reports:vm" -> ":logging" ["style"="dotted"]
 ":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:android" ["style"="dotted"]
-":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"
+":core:ui" -> ":di:core" ["style"="dotted"]
 ":core:ui" -> ":l10n" ["style"="dotted"]
 subgraph "cluster_legend" {
 edge ["dir"="none"]

@@ -19,8 +19,6 @@ class ModuleMultiplatform : Plugin<Project> {
       apply(ConventionIdea::class.java)
       apply(ConventionStyle::class.java)
       apply(ConventionTest::class.java)
-      // apply(DependencyAnalysisPlugin::class.java) // doesn't support KMP
-      // apply(ConventionSortDependencies::class.java) // doesn't support KMP
     }
 
     extensions.configure<KotlinMultiplatformExtension> {
@@ -33,6 +31,7 @@ class ModuleMultiplatform : Plugin<Project> {
       }
 
       androidUnitTestDependencies {
+        androidTestLibraries.forEach { lib -> implementation(lib) }
         implementation(project(":modules:test:android"))
       }
     }

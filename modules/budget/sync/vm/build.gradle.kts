@@ -16,7 +16,7 @@ dependencies {
   implementation(project(":modules:budget:encryption"))
   implementation(project(":modules:core:model"))
   implementation(project(":modules:prefs"))
-  implementation(libs.androidx.compose.runtime)
+  implementation(compose.runtime)
   implementation(libs.kotlinx.serialization.core)
   implementation(libs.kotlinx.serialization.json)
   implementation(libs.ktor.core)

@@ -10,7 +10,7 @@ dependencies {
   implementation(project(":modules:account:model"))
   implementation(project(":modules:budget:di"))
   implementation(project(":modules:core:model"))
-  implementation(libs.androidx.compose.runtime)
+  implementation(compose.runtime)
   testImplementation(libs.sqldelight.coroutines)
   testImplementation(libs.sqldelight.driver.android)
 }

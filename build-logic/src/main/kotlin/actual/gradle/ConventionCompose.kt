@@ -1,28 +1,53 @@
 package actual.gradle
 
-import blueprint.core.boolPropertyOrElse
+import blueprint.core.getLibrary
+import blueprint.core.libs
+import com.android.build.api.dsl.CommonExtension
+import com.android.build.gradle.LintPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.compose.ComposePlugin
+import org.jetbrains.compose.reload.gradle.ComposeHotReloadPlugin
+import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradleSubplugin
+import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType.androidJvm
 
 class ConventionCompose : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
     with(pluginManager) {
       apply(ConventionKotlinBase::class.java)
-      apply(ConventionAndroidBase::class.java)
       apply(ComposeCompilerGradleSubplugin::class)
       apply(ComposePlugin::class)
+      apply(ComposeHotReloadPlugin::class)
     }
 
-    addAndroidFlag()
-    addMetrics()
-    addLint()
-    addComposeBom()
+    extensions.findByType(CommonExtension::class)?.apply {
+      buildFeatures {
+        compose = true
+      }
+    }
 
-    if (boolPropertyOrElse(key = "actual.compose.android", default = true)) {
-      addComposeAndroid()
+    val metricReportDir = project.layout.buildDirectory.dir("compose_metrics")
+    val stabilityFile = rootProject.layout.projectDirectory.file("config/compose-stability.conf")
+
+    extensions.configure<ComposeCompilerGradlePluginExtension> {
+      metricsDestination.set(metricReportDir)
+      reportsDestination.set(metricReportDir)
+      stabilityConfigurationFiles.add(stabilityFile)
+      targetKotlinPlatforms.addAll(androidJvm)
+    }
+
+    val lintChecks = configurations.findByName("lintChecks") ?: run {
+      pluginManager.apply(LintPlugin::class)
+      configurations.getByName("lintChecks")
+    }
+
+    dependencies {
+      lintChecks(libs.getLibrary("androidx.compose.lint"))
     }
   }
 }

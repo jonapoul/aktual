@@ -8,9 +8,9 @@ node ["style"="filled"]
 ":app-desktop" ["fillcolor"="#FF5555","color"="black","penwidth"="3","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":di" ["fillcolor"="#FCB103","shape"="none"]
+":di:app" ["fillcolor"="#FCB103","shape"="none"]
+":di:core" ["fillcolor"="#FCB103","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 {
@@ -22,13 +22,13 @@ graph ["rank"="same"]
 ":api:builder" -> ":logging" ["style"="dotted"]
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
 ":api:github" -> ":core:model"
-":app-desktop" -> ":di" ["style"="dotted"]
-":di" -> ":api:builder" ["style"="dotted"]
-":di" -> ":api:github"
-":di" -> ":budget:model"
-":di" -> ":core:di"
-":di" -> ":core:model"
-":di" -> ":prefs"
+":app-desktop" -> ":di:app" ["style"="dotted"]
+":di:app" -> ":api:builder" ["style"="dotted"]
+":di:app" -> ":api:github"
+":di:app" -> ":budget:model"
+":di:app" -> ":core:model"
+":di:app" -> ":di:core"
+":di:app" -> ":prefs"
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 subgraph "cluster_legend" {
