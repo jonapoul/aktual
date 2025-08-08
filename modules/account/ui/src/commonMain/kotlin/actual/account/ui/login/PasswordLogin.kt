@@ -2,7 +2,6 @@ package actual.account.ui.login
 
 import actual.account.model.Password
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.PrimaryTextButtonWithLoading
 import actual.core.ui.TextField
 import actual.core.ui.Theme
@@ -23,7 +22,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -76,34 +74,4 @@ internal fun PasswordLogin(
       onClick = { onAction(LoginAction.SignIn) },
     )
   }
-}
-
-@Preview
-@Composable
-private fun Loading() = PreviewColumn {
-  PasswordLogin(
-    isLoading = true,
-    enteredPassword = Password.Dummy,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun Filled() = PreviewColumn {
-  PasswordLogin(
-    isLoading = false,
-    enteredPassword = Password.Dummy,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun Empty() = PreviewColumn {
-  PasswordLogin(
-    isLoading = false,
-    enteredPassword = Password.Empty,
-    onAction = {},
-  )
 }

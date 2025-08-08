@@ -1,22 +1,18 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.settings.ui
 
-import actual.core.model.DarkColorSchemeType
-import actual.core.model.RegularColorSchemeType
+import actual.core.ui.Dimens
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
-import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.metroViewModel
-import actual.core.ui.scrollbarSettings
+import actual.core.ui.scrollbar
 import actual.core.ui.transparentTopAppBarColors
-import actual.l10n.Dimens
 import actual.l10n.Strings
 import actual.settings.ui.items.ShowBottomBarPreferenceItem
 import actual.settings.ui.items.ThemePreferenceItem
 import actual.settings.vm.PreferenceValue
 import actual.settings.vm.SettingsViewModel
-import actual.settings.vm.ThemeConfig
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +23,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -45,13 +42,11 @@ import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import my.nanihadesuka.compose.LazyColumnScrollbar
 
 @Composable
 fun SettingsScreen(
   nav: SettingsNavigator,
-  viewModel: SettingsViewModel = viewModel(),
+  viewModel: SettingsViewModel = metroViewModel<SettingsViewModel>(),
 ) {
   val values by viewModel.prefValues.collectAsState()
 
@@ -67,7 +62,7 @@ fun SettingsScreen(
 }
 
 @Composable
-private fun SettingsScaffold(
+internal fun SettingsScaffold(
   values: ImmutableList<PreferenceValue>,
   onAction: (SettingsAction) -> Unit,
 ) {
@@ -104,7 +99,6 @@ private fun SettingsScaffold(
         values = values,
         hazeState = hazeState,
         onAction = onAction,
-        theme = theme,
       )
     }
   }
@@ -116,31 +110,26 @@ private fun SettingsContent(
   values: ImmutableList<PreferenceValue>,
   hazeState: HazeState,
   onAction: (SettingsAction) -> Unit,
-  theme: Theme,
   modifier: Modifier = Modifier,
 ) {
   val listState = rememberLazyListState()
-  LazyColumnScrollbar(
+  LazyColumn(
     modifier = modifier
       .fillMaxSize()
-      .padding(Dimens.Large),
+      .padding(Dimens.Large)
+      .scrollbar(listState),
     state = listState,
-    settings = theme.scrollbarSettings(),
   ) {
-    LazyColumn(
-      state = listState,
-    ) {
-      itemsIndexed(values) { i, value ->
-        PreferenceItem(
-          modifier = Modifier.fillMaxWidth(),
-          value = value,
-          hazeState = hazeState,
-          onChange = { onAction(SettingsAction.PreferenceChange(it)) },
-        )
+    itemsIndexed(values) { i, value ->
+      PreferenceItem(
+        modifier = Modifier.fillMaxWidth(),
+        value = value,
+        hazeState = hazeState,
+        onChange = { onAction(SettingsAction.PreferenceChange(it)) },
+      )
 
-        if (i != values.size - 1) {
-          VerticalSpacer(10.dp)
-        }
+      if (i != values.size - 1) {
+        VerticalSpacer(10.dp)
       }
     }
   }
@@ -172,14 +161,3 @@ private fun PreferenceItem(
   }
 }
 
-@ScreenPreview
-@Composable
-private fun Regular() = PreviewScreen { type ->
-  SettingsScaffold(
-    onAction = {},
-    values = persistentListOf(
-      PreferenceValue.Theme(ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Dark)),
-      PreferenceValue.ShowBottomBar(false),
-    ),
-  )
-}

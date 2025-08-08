@@ -2,9 +2,9 @@ package actual.about.vm
 
 import actual.about.data.LicensesLoadState
 import actual.about.data.LicensesRepository
-import actual.core.model.ViewModelKey
-import actual.core.model.ViewModelScope
-import alakazam.android.core.UrlOpener
+import actual.core.di.ViewModelKey
+import actual.core.di.ViewModelScope
+import actual.core.model.UrlOpener
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -74,7 +74,7 @@ class LicensesViewModel internal constructor(
 
   fun openUrl(url: String) {
     logcat.d { "openUrl $url" }
-    urlOpener.openUrl(url)
+    urlOpener(url)
   }
 
   fun toggleSearchBar() {

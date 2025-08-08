@@ -9,48 +9,49 @@ import actual.core.ui.LocalPrivacyEnabled
 import actual.core.ui.LocalTheme
 import actual.core.ui.Theme
 import actual.core.ui.stringShort
-import actual.l10n.R
 import actual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
-import android.content.Context
-import android.text.Layout
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisGuidelineComponent
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLabelComponent
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisLineComponent
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberAxisTickComponent
-import com.patrykandpatrick.vico.compose.cartesian.marker.rememberDefaultCartesianMarker
-import com.patrykandpatrick.vico.compose.common.component.fixed
-import com.patrykandpatrick.vico.compose.common.component.rememberShapeComponent
-import com.patrykandpatrick.vico.compose.common.component.rememberTextComponent
-import com.patrykandpatrick.vico.compose.common.fill
-import com.patrykandpatrick.vico.compose.common.insets
-import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
-import com.patrykandpatrick.vico.core.cartesian.marker.CartesianMarker
-import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
-import com.patrykandpatrick.vico.core.common.LayeredComponent
-import com.patrykandpatrick.vico.core.common.component.ShapeComponent
-import com.patrykandpatrick.vico.core.common.component.TextComponent
-import com.patrykandpatrick.vico.core.common.shape.CorneredShape
-import com.patrykandpatrick.vico.core.common.shape.Shape
+import androidx.compose.ui.unit.sp
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisGuidelineComponent
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisLabelComponent
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisLineComponent
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.rememberAxisTickComponent
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.multiplatform.cartesian.marker.CartesianMarker
+import com.patrykandpatrick.vico.multiplatform.cartesian.marker.DefaultCartesianMarker
+import com.patrykandpatrick.vico.multiplatform.cartesian.marker.rememberDefaultCartesianMarker
+import com.patrykandpatrick.vico.multiplatform.common.Insets
+import com.patrykandpatrick.vico.multiplatform.common.LayeredComponent
+import com.patrykandpatrick.vico.multiplatform.common.component.ShapeComponent
+import com.patrykandpatrick.vico.multiplatform.common.component.TextComponent
+import com.patrykandpatrick.vico.multiplatform.common.component.rememberShapeComponent
+import com.patrykandpatrick.vico.multiplatform.common.component.rememberTextComponent
+import com.patrykandpatrick.vico.multiplatform.common.fill
+import com.patrykandpatrick.vico.multiplatform.common.shape.CorneredShape
+import com.patrykandpatrick.vico.multiplatform.common.shape.Shape
 import kotlinx.collections.immutable.ImmutableCollection
+import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.number
 import kotlin.math.roundToLong
+
+internal fun date(year: Int, month: Month) = YearMonth(year, month)
 
 @Composable
 internal fun axisLineComponent(compact: Boolean) = if (compact) {
@@ -77,7 +78,9 @@ internal fun axisTickComponent(compact: Boolean) = if (compact) {
 internal fun axisLabelComponent(compact: Boolean, theme: Theme = LocalTheme.current) = if (compact) {
   null
 } else {
-  rememberAxisLabelComponent(color = theme.pageText)
+  rememberAxisLabelComponent(
+    style = TextStyle(color = theme.pageText, fontSize = 12.sp)
+  )
 }
 
 @Composable
@@ -88,14 +91,15 @@ internal fun hItemPlacer(compact: Boolean) = if (compact) {
 }
 
 @Composable
-internal fun yearMonthXAxisFormatter(
-  androidContext: Context = LocalContext.current,
-) = remember(androidContext) {
-  CartesianValueFormatter { _, value, _ ->
-    val date = YearMonth.fromMonthNumber(value.roundToLong())
-    val month = androidContext.getString(date.month.resId())
-    val year = date.year.toString().substring(startIndex = 2)
-    "$month $year"
+internal fun yearMonthXAxisFormatter(): CartesianValueFormatter {
+  val monthStrings = monthStringsMap()
+  return remember(monthStrings) {
+    CartesianValueFormatter { _, value, _ ->
+      val date = YearMonth.fromMonthNumber(value.roundToLong())
+      val month = monthStrings[date.month] ?: "???"
+      val year = date.year.toString().substring(startIndex = 2)
+      "$month $year"
+    }
   }
 }
 
@@ -113,20 +117,10 @@ internal fun amountYAxisFormatter(
   }
 }
 
-internal fun Month.resId() = when (this) {
-  Month.JANUARY -> R.string.month_jan_short
-  Month.FEBRUARY -> R.string.month_feb_short
-  Month.MARCH -> R.string.month_mar_short
-  Month.APRIL -> R.string.month_apr_short
-  Month.MAY -> R.string.month_may_short
-  Month.JUNE -> R.string.month_jun_short
-  Month.JULY -> R.string.month_jul_short
-  Month.AUGUST -> R.string.month_aug_short
-  Month.SEPTEMBER -> R.string.month_sep_short
-  Month.OCTOBER -> R.string.month_oct_short
-  Month.NOVEMBER -> R.string.month_nov_short
-  Month.DECEMBER -> R.string.month_dec_short
-}
+@Composable
+internal fun monthStringsMap(): ImmutableMap<Month, String> = Month.entries
+  .associateWith { month -> month.stringShort() }
+  .toImmutableMap()
 
 /**
  * Adapted from https://github.com/patrykandpatrick/vico/blob/master/sample/compose/src/main/kotlin/com/patrykandpatrick/vico/sample/compose/Marker.kt
@@ -137,9 +131,8 @@ internal fun rememberMarker(
   theme: Theme = LocalTheme.current,
 ): CartesianMarker {
   val label = rememberTextComponent(
-    color = theme.pageText,
-    textAlignment = Layout.Alignment.ALIGN_CENTER,
-    padding = insets(8.dp, 4.dp),
+    style = TextStyle(color = theme.pageText, textAlign = TextAlign.Center),
+    padding = Insets(8.dp, 4.dp),
     minWidth = TextComponent.MinWidth.fixed(40.dp),
   )
   val indicatorFrontComponent = rememberShapeComponent(
@@ -156,9 +149,9 @@ internal fun rememberMarker(
         front = LayeredComponent(
           back = ShapeComponent(fill = fill(color), shape = markerShape),
           front = indicatorFrontComponent,
-          padding = insets(5.dp),
+          padding = Insets(5.dp),
         ),
-        padding = insets(10.dp),
+        padding = Insets(10.dp),
       )
     },
     indicatorSize = 36.dp,
@@ -180,12 +173,10 @@ internal fun YearMonth.Companion.fromMonthNumber(number: Long): YearMonth {
 
 @Stable
 @Composable
-@ReadOnlyComposable
 internal fun dateRange(start: YearMonth, end: YearMonth) = "${start.stringShort()} - ${end.stringShort()}"
 
 @Stable
 @Composable
-@ReadOnlyComposable
 internal fun dateRange(months: ImmutableCollection<YearMonth>): String = dateRange(months.min(), months.max())
 
 @Composable
@@ -213,7 +204,6 @@ internal fun Footer(
 }
 
 @Composable
-@ReadOnlyComposable
 internal fun DateRangeType.string() = when (this) {
   DateRangeType.ThisWeek -> Strings.reportsDateTypeThisWeek
   DateRangeType.LastWeek -> Strings.reportsDateTypeLastWeek

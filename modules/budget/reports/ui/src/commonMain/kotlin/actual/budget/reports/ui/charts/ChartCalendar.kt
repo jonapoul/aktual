@@ -1,34 +1,28 @@
 // TODO: Remove UnusedBoxWithConstraintsScope suppression when https://issuetracker.google.com/issues/429780473 is fixed
-@file:SuppressLint("UnusedBoxWithConstraintsScope")
+@file:Suppress("UnusedBoxWithConstraintsScope")
 
 package actual.budget.reports.ui.charts
 
 import actual.budget.model.Amount
 import actual.budget.reports.ui.Action
 import actual.budget.reports.ui.ActionListener
-import actual.budget.reports.ui.charts.PreviewShared.HEIGHT
-import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.CalendarData
 import actual.budget.reports.vm.CalendarDay
 import actual.budget.reports.vm.CalendarMonth
 import actual.core.icons.ActualIcons
 import actual.core.icons.ArrowThickDown
 import actual.core.icons.ArrowThickUp
-import actual.core.model.ColorSchemeType.Dark
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
-import actual.core.ui.PreviewWithColorScheme
 import actual.core.ui.ScaleToFitText
 import actual.core.ui.Theme
 import actual.core.ui.formattedString
-import actual.core.ui.scrollbarSettings
+import actual.core.ui.scrollbar
 import actual.core.ui.stringLong
 import actual.core.ui.stringShort
 import actual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import alakazam.kotlin.compose.VerticalSpacer
-import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,7 +34,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -63,14 +56,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
-import my.nanihadesuka.compose.LazyRowScrollbar
 
 @Composable
 internal fun CalendarChart(
@@ -106,26 +97,22 @@ private fun CompactCalendarChart(
   }
 
   val listState = rememberLazyListState()
-  LazyRowScrollbar(
+  LazyRow(
+    modifier = Modifier.scrollbar(listState),
+    horizontalArrangement = Arrangement.spacedBy(4.dp),
     state = listState,
-    settings = theme.scrollbarSettings(),
   ) {
-    LazyRow(
-      horizontalArrangement = Arrangement.spacedBy(4.dp),
-      state = listState,
-    ) {
-      items(
-        items = data.months,
-        key = { it.month },
-      ) { month ->
-        CalendarMonth(
-          modifier = Modifier.width(500.dp),
-          month = month,
-          compact = true,
-          onAction = onAction,
-          theme = theme,
-        )
-      }
+    items(
+      items = data.months,
+      key = { it.month },
+    ) { month ->
+      CalendarMonth(
+        modifier = Modifier.width(500.dp),
+        month = month,
+        compact = true,
+        onAction = onAction,
+        theme = theme,
+      )
     }
   }
 }
@@ -166,38 +153,8 @@ private fun RegularCalendarChart(
   }
 }
 
-@Preview(widthDp = WIDTH, heightDp = 400)
 @Composable
-private fun PreviewCompactOneMonth() = PreviewChart(PreviewCalendar.ONE_MONTH, true)
-
-@Preview(widthDp = WIDTH, heightDp = 400)
-@Composable
-private fun PreviewCompactThreeMonth() = PreviewChart(PreviewCalendar.THREE_MONTHS, true)
-
-@Preview(widthDp = WIDTH, heightDp = HEIGHT * 5)
-@Composable
-private fun PreviewRegularOneMonth() = PreviewChart(PreviewCalendar.ONE_MONTH, false)
-
-@Preview(widthDp = WIDTH, heightDp = HEIGHT * 5)
-@Composable
-private fun PreviewRegularThreeMonth() = PreviewChart(PreviewCalendar.THREE_MONTHS, false)
-
-@Composable
-private fun PreviewChart(data: CalendarData, compact: Boolean) = PreviewWithColorScheme(Dark) {
-  CalendarChart(
-    modifier = Modifier
-      .background(LocalTheme.current.tableBackground, CardShape)
-      .width(WIDTH.dp)
-      .height(HEIGHT.dp)
-      .padding(5.dp),
-    compact = compact,
-    data = data,
-    onAction = {},
-  )
-}
-
-@Composable
-private fun MonthHeader(
+internal fun MonthHeader(
   month: CalendarMonth,
   compact: Boolean,
   modifier: Modifier = Modifier,
@@ -302,26 +259,8 @@ private fun Expenses(
 
 private fun iconSize(compact: Boolean) = if (compact) 12.dp else 16.dp
 
-@Preview
 @Composable
-private fun PreviewMonthHeader() = PreviewColumn {
-  MonthHeader(
-    month = PreviewCalendar.JAN_2025.copy(expenses = Amount.Zero),
-    compact = false,
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewMonthHeaderCompact() = PreviewColumn {
-  MonthHeader(
-    month = PreviewCalendar.JAN_2025,
-    compact = true,
-  )
-}
-
-@Composable
-private fun CalendarSummary(
+internal fun CalendarSummary(
   data: CalendarData,
   compact: Boolean,
   modifier: Modifier = Modifier,
@@ -379,35 +318,8 @@ private fun CalendarSummary(
   }
 }
 
-@Preview
 @Composable
-private fun PreviewSummaryOneMonth() = PreviewColumn {
-  CalendarSummary(
-    data = PreviewCalendar.ONE_MONTH,
-    compact = false,
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewSummaryThreeMonths() = PreviewColumn {
-  CalendarSummary(
-    data = PreviewCalendar.THREE_MONTHS,
-    compact = false,
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewSummaryThreeMonthsCompact() = PreviewColumn {
-  CalendarSummary(
-    data = PreviewCalendar.THREE_MONTHS,
-    compact = true,
-  )
-}
-
-@Composable
-private fun DayButton(
+internal fun DayButton(
   day: CalendarDay,
   month: CalendarMonth,
   onAction: ActionListener,
@@ -491,63 +403,8 @@ private fun DayBarChart(
   )
 }
 
-@Preview
 @Composable
-private fun PreviewDayBoth() = PreviewColumn {
-  DayButton(
-    modifier = Modifier.size(100.dp),
-    day = PreviewCalendar.day(day = 26, income = 5345.67, expenses = 1234.56),
-    month = PreviewCalendar.JAN_2025.copy(income = Amount(10345.89), expenses = Amount(3456.90)),
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewDayOnlyIncome() = PreviewColumn {
-  DayButton(
-    modifier = Modifier.size(100.dp),
-    day = PreviewCalendar.day(day = 26, income = 2345.67),
-    month = PreviewCalendar.JAN_2025,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewDayOnlyExpenses() = PreviewColumn {
-  DayButton(
-    modifier = Modifier.size(100.dp),
-    day = PreviewCalendar.day(day = 26, expenses = 1234.56),
-    month = PreviewCalendar.JAN_2025,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewDayEmpty() = PreviewColumn {
-  DayButton(
-    modifier = Modifier.size(100.dp),
-    day = PreviewCalendar.day(day = 26),
-    month = PreviewCalendar.JAN_2025,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewDayTiny() = PreviewColumn {
-  DayButton(
-    modifier = Modifier.size(35.dp),
-    day = PreviewCalendar.day(day = 26),
-    month = PreviewCalendar.JAN_2025,
-    onAction = {},
-  )
-}
-
-@Composable
-private fun CalendarMonth(
+internal fun CalendarMonth(
   month: CalendarMonth,
   compact: Boolean,
   onAction: ActionListener,
@@ -634,34 +491,3 @@ private fun CalendarMonth.toWeeks(): ImmutableList<ImmutableList<CalendarDay>> {
 
 private const val DAYS_PER_WEEK = 7
 private val TABLE_SPACING = 2.dp
-
-@Preview(heightDp = 900)
-@Composable
-private fun PreviewMonth() = PreviewColumn {
-  CalendarMonth(
-    month = PreviewCalendar.JAN_2025,
-    compact = false,
-    onAction = {},
-  )
-}
-
-@Preview(heightDp = 900)
-@Composable
-private fun PreviewMonthWithPrivacy() = PreviewColumn(isPrivacyEnabled = true) {
-  CalendarMonth(
-    month = PreviewCalendar.JAN_2025,
-    compact = false,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewCompact() = PreviewColumn {
-  CalendarMonth(
-    modifier = Modifier.height(230.dp),
-    month = PreviewCalendar.JAN_2025,
-    compact = true,
-    onAction = {},
-  )
-}

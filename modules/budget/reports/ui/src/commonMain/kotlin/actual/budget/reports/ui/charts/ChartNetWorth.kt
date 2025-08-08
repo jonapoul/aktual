@@ -1,25 +1,18 @@
 package actual.budget.reports.ui.charts
 
-import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.NetWorthData
 import actual.core.ui.ActualTypography
-import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.formattedString
 import actual.core.ui.isInPreview
 import actual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,21 +21,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.compose.common.fill
-import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.multiplatform.common.fill
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -196,46 +186,4 @@ private suspend fun CartesianChartModelProducer.populate(data: NetWorthData) = w
       )
     }
   }
-}
-
-@ScreenPreview
-@Composable
-private fun MixedRegular() = PreviewScreen {
-  NetWorthChart(
-    data = PreviewNetWorth.DATA,
-    compact = false,
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun MixedRegularPrivate() = PreviewScreen(isPrivacyEnabled = true) {
-  NetWorthChart(
-    data = PreviewNetWorth.DATA,
-    compact = false,
-  )
-}
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PreviewCompact() = PreviewColumn(isPrivacyEnabled = false) {
-  NetWorthChart(
-    modifier = Modifier
-      .background(LocalTheme.current.tableBackground, CardShape)
-      .width(WIDTH.dp),
-    data = PreviewNetWorth.DATA,
-    compact = true,
-  )
-}
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PreviewCompactPrivate() = PreviewColumn(isPrivacyEnabled = true) {
-  NetWorthChart(
-    modifier = Modifier
-      .background(LocalTheme.current.tableBackground, CardShape)
-      .width(WIDTH.dp),
-    data = PreviewNetWorth.DATA,
-    compact = true,
-  )
 }

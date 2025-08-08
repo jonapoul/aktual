@@ -13,13 +13,12 @@ import actual.budget.model.encryptedZip
 import actual.budget.sync.vm.SyncStep.DownloadingDatabase
 import actual.budget.sync.vm.SyncStep.FetchingFileInfo
 import actual.budget.sync.vm.SyncStep.ValidatingDatabase
-import actual.core.di.ViewModelFactory
-import actual.core.di.ViewModelFactoryKey
-import actual.core.di.ViewModelKey
+import actual.core.di.AssistedFactoryKey
+import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
 import actual.core.model.Percent
+import actual.core.model.UrlOpener
 import actual.prefs.KeyPreferences
-import alakazam.android.core.UrlOpener
 import alakazam.kotlin.core.launchInfiniteLoop
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,8 +52,6 @@ import kotlin.time.Duration.Companion.seconds
 
 @Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
 @Inject
-@ViewModelKey(SyncBudgetViewModel::class)
-@ContributesIntoMap(ViewModelScope::class)
 class SyncBudgetViewModel(
   @Assisted private val token: LoginToken,
   @Assisted private val budgetId: BudgetId,
@@ -123,7 +120,7 @@ class SyncBudgetViewModel(
 
   fun learnMore() {
     logcat.v { "learnMore" }
-    urlOpener.openUrl(LEARN_MORE_URL)
+    urlOpener(LEARN_MORE_URL)
   }
 
   fun confirmKeyPassword() {
@@ -305,11 +302,10 @@ class SyncBudgetViewModel(
     val meta: EncryptMeta?,
   )
 
-  @Inject
   @AssistedFactory
-  @ViewModelFactoryKey(Factory::class)
+  @AssistedFactoryKey(Factory::class)
   @ContributesIntoMap(ViewModelScope::class)
-  fun interface Factory : ViewModelFactory {
+  fun interface Factory : ViewModelAssistedFactory {
     fun create(
       @Assisted token: LoginToken,
       @Assisted budgetId: BudgetId,

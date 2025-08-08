@@ -1,16 +1,11 @@
 package actual.budget.reports.ui.charts
 
 import actual.budget.model.Amount
-import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.SpendingComparison
 import actual.budget.reports.vm.SpendingData
 import actual.budget.reports.vm.SpendingDayNumber
 import actual.core.ui.ActualTypography
-import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WrapWidthTable
 import actual.core.ui.formattedString
@@ -29,14 +24,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -44,27 +36,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
-import com.patrykandpatrick.vico.compose.cartesian.layer.dashed
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.compose.common.fill
-import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianValueFormatter
-import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
-import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer.AreaFill
-import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer.LineFill
-import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer.LineProvider
-import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer.LineStroke
+import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueFormatter
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.multiplatform.common.fill
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
@@ -135,21 +119,21 @@ private fun Chart(
     scrollState = rememberVicoScrollState(scrollEnabled = false),
     chart = rememberCartesianChart(
       rememberLineCartesianLayer(
-        lineProvider = LineProvider.series(
+        lineProvider = LineCartesianLayer.LineProvider.series(
           LineCartesianLayer.rememberLine(
-            fill = LineFill.single(fill(theme.reportsGreen)),
-            areaFill = AreaFill.single(
+            fill = LineCartesianLayer.LineFill.single(fill(theme.reportsGreen)),
+            areaFill = LineCartesianLayer.AreaFill.single(
               fill = fill(theme.reportsGreen.copy(alpha = 0.2f)),
             ),
           ),
         ),
       ),
       rememberLineCartesianLayer(
-        lineProvider = LineProvider.series(
+        lineProvider = LineCartesianLayer.LineProvider.series(
           LineCartesianLayer.rememberLine(
-            fill = LineFill.single(fill(theme.reportsGray)),
-            stroke = LineStroke.dashed(thickness = 1.dp),
-            areaFill = AreaFill.single(
+            fill = LineCartesianLayer.LineFill.single(fill(theme.reportsGray)),
+            stroke = LineCartesianLayer.LineStroke.Dashed(thickness = 1.dp),
+            areaFill = LineCartesianLayer.AreaFill.single(
               fill = fill(theme.reportsGray.copy(alpha = 0.2f)),
             ),
           ),
@@ -294,7 +278,6 @@ private fun LegendItem(
 }
 
 @Composable
-@ReadOnlyComposable
 private fun SpendingComparison.string() = when (this) {
   SpendingComparison.Average -> Strings.reportsSpendingAverage
   SpendingComparison.Budgeted -> Strings.reportsSpendingBudgeted
@@ -332,33 +315,4 @@ private fun xAxisFormatter() = remember {
     val int = value.roundToInt()
     if (int == END_DAY) "$END_DAY+" else "%02d".format(int)
   }
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewRegular() = PreviewScreen {
-  Surface(
-    modifier = Modifier
-      .fillMaxSize()
-      .background(LocalTheme.current.tableBackground),
-  ) {
-    SpendingChart(
-      modifier = Modifier.padding(4.dp),
-      data = PreviewSpending.JUL_2025,
-      compact = false,
-    )
-  }
-}
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PreviewCompact() = PreviewColumn {
-  SpendingChart(
-    modifier = Modifier
-      .background(LocalTheme.current.tableBackground, CardShape)
-      .width(WIDTH.dp)
-      .padding(5.dp),
-    data = PreviewSpending.JUL_2025,
-    compact = true,
-  )
 }

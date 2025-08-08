@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.about.ui.info
 
 import actual.core.ui.Theme
@@ -5,6 +7,7 @@ import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text

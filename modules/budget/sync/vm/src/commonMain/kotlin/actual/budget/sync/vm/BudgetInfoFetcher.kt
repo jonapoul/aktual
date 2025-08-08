@@ -7,6 +7,7 @@ import actual.api.model.sync.UserFile
 import actual.budget.model.BudgetId
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
@@ -14,7 +15,8 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 import java.io.IOException
 
-class BudgetInfoFetcher @Inject internal constructor(
+@Inject
+class BudgetInfoFetcher internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
 ) {

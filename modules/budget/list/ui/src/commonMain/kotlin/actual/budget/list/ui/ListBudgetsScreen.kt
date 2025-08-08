@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.budget.list.ui
 
 import actual.account.model.LoginToken
@@ -6,15 +8,12 @@ import actual.budget.list.vm.ListBudgetsViewModel
 import actual.budget.model.Budget
 import actual.core.ui.BasicIconButton
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
-import actual.core.ui.metroViewModel
+import actual.core.ui.assistedMetroViewModel
 import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
-import android.content.Intent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +26,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -44,10 +44,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.persistentListOf
 
@@ -59,17 +57,6 @@ fun ListBudgetsScreen(
 ) {
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
-
-  var launchBrowser by remember { mutableStateOf(false) }
-  val context = LocalContext.current
-  LaunchedEffect(launchBrowser) {
-    if (launchBrowser) {
-      val intent = Intent(Intent.ACTION_VIEW)
-      intent.data = serverUrl?.toString()?.toUri()
-      context.startActivity(intent, null)
-      launchBrowser = false
-    }
-  }
 
   var budgetToDelete by remember { mutableStateOf<Budget?>(null) }
   budgetToDelete?.let { budget ->
@@ -110,7 +97,7 @@ fun ListBudgetsScreen(
         ListBudgetsAction.ChangePassword -> nav.toChangePassword()
         ListBudgetsAction.OpenAbout -> nav.toAbout()
         ListBudgetsAction.OpenSettings -> nav.toSettings()
-        ListBudgetsAction.OpenInBrowser -> launchBrowser = true
+        ListBudgetsAction.OpenInBrowser -> viewModel.open(serverUrl)
         ListBudgetsAction.Reload -> viewModel.retry()
         is ListBudgetsAction.Delete -> budgetToDelete = action.budget
         is ListBudgetsAction.Open -> nav.toSyncBudget(token, action.budget.cloudFileId)
@@ -120,12 +107,13 @@ fun ListBudgetsScreen(
 }
 
 @Composable
-private fun metroViewModel(token: LoginToken) = metroViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory> {
-  create(token)
-}
+private fun metroViewModel(token: LoginToken) =
+  assistedMetroViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory> {
+    create(token)
+  }
 
 @Composable
-private fun ListBudgetsScaffold(
+internal fun ListBudgetsScaffold(
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
 ) {
@@ -287,33 +275,4 @@ private fun StateContent(
       }
     }
   }
-}
-
-@ScreenPreview
-@Composable
-private fun Success() = PreviewScreen {
-  ListBudgetsScaffold(
-    state = ListBudgetsState.Success(
-      budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken),
-    ),
-    onAction = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun Loading() = PreviewScreen {
-  ListBudgetsScaffold(
-    state = ListBudgetsState.Loading,
-    onAction = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun Failure() = PreviewScreen {
-  ListBudgetsScaffold(
-    state = ListBudgetsState.Failure(reason = "Something broke lol"),
-    onAction = {},
-  )
 }

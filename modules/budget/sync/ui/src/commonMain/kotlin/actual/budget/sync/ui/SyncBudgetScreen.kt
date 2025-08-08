@@ -1,25 +1,23 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.budget.sync.ui
 
 import actual.account.model.LoginToken
-import actual.account.model.Password
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.KeyPasswordState
 import actual.budget.sync.vm.SyncBudgetViewModel
 import actual.budget.sync.vm.SyncStep
 import actual.budget.sync.vm.SyncStepState
 import actual.core.model.Percent
-import actual.core.model.percent
+import actual.core.ui.BackHandler
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButton
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
-import actual.core.ui.metroViewModel
+import actual.core.ui.assistedMetroViewModel
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,13 +34,13 @@ import androidx.compose.material.icons.filled.Block
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ProgressIndicatorDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -54,7 +52,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableMap
-import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -62,7 +59,7 @@ fun SyncBudgetScreen(
   nav: SyncBudgetNavigator,
   budgetId: BudgetId,
   token: LoginToken,
-  viewModel: SyncBudgetViewModel = metroViewModel(token, budgetId),
+  viewModel: SyncBudgetViewModel = assistedViewModel(token, budgetId),
 ) {
   val stepStates by viewModel.stepStates.collectAsStateWithLifecycle()
   val passwordState by viewModel.passwordState.collectAsStateWithLifecycle()
@@ -90,15 +87,15 @@ fun SyncBudgetScreen(
 }
 
 @Composable
-private fun metroViewModel(
+private fun assistedViewModel(
   token: LoginToken,
   budgetId: BudgetId,
-) = metroViewModel<SyncBudgetViewModel, SyncBudgetViewModel.Factory> {
+) = assistedMetroViewModel<SyncBudgetViewModel, SyncBudgetViewModel.Factory> {
   create(token, budgetId)
 }
 
 @Composable
-private fun SyncBudgetScaffold(
+internal fun SyncBudgetScaffold(
   stepStates: ImmutableMap<SyncStep, SyncStepState>,
   passwordState: KeyPasswordState,
   onAction: (SyncBudgetAction) -> Unit,
@@ -314,7 +311,6 @@ private fun StateIcon(
 )
 
 @Composable
-@ReadOnlyComposable
 private fun SyncStep.string(): String = when (this) {
   SyncStep.FetchingFileInfo -> Strings.syncStepFetchingInfo
   SyncStep.DownloadingDatabase -> Strings.syncStepDownloading
@@ -322,7 +318,6 @@ private fun SyncStep.string(): String = when (this) {
 }
 
 @Composable
-@ReadOnlyComposable
 private fun SyncStepState.string(): String = when (this) {
   is SyncStepState.InProgress.Definite -> Strings.syncStateDefinite(progress.intValue)
   SyncStepState.InProgress.Indefinite -> Strings.syncStateIndefinite
@@ -337,76 +332,4 @@ private fun SyncStepState.color(theme: Theme): Color = when (this) {
   SyncStepState.NotStarted -> theme.buttonNormalDisabledText
   is SyncStepState.Failed -> theme.errorText
   SyncStepState.Succeeded -> theme.successText
-}
-
-@ScreenPreview
-@Composable
-private fun NotStarted() = PreviewScreen {
-  SyncBudgetScaffold(
-    onAction = {},
-    passwordState = KeyPasswordState.Inactive,
-    stepStates = persistentMapOf(
-      SyncStep.FetchingFileInfo to SyncStepState.NotStarted,
-      SyncStep.DownloadingDatabase to SyncStepState.NotStarted,
-      SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
-    ),
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun Downloading() = PreviewScreen {
-  SyncBudgetScaffold(
-    onAction = {},
-    passwordState = KeyPasswordState.Inactive,
-    stepStates = persistentMapOf(
-      SyncStep.FetchingFileInfo to SyncStepState.InProgress.Indefinite,
-      SyncStep.DownloadingDatabase to SyncStepState.InProgress.Definite(50.percent),
-      SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
-    ),
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun AllSucceeded() = PreviewScreen {
-  SyncBudgetScaffold(
-    onAction = {},
-    passwordState = KeyPasswordState.Inactive,
-    stepStates = persistentMapOf(
-      SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
-      SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
-      SyncStep.ValidatingDatabase to SyncStepState.Succeeded,
-    ),
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun AllFailed() = PreviewScreen {
-  SyncBudgetScaffold(
-    onAction = {},
-    passwordState = KeyPasswordState.Inactive,
-    stepStates = persistentMapOf(
-      SyncStep.FetchingFileInfo to SyncStepState.Failed("Some error"),
-      SyncStep.DownloadingDatabase to SyncStepState.Failed("Whatever"),
-      SyncStep.ValidatingDatabase to SyncStepState.Failed(
-        "Another error but this one's a lot longer, to see how it handles wrapping text",
-      ),
-    ),
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun ShowPasswordInputDialog() = PreviewScreen {
-  SyncBudgetScaffold(
-    onAction = {},
-    passwordState = KeyPasswordState.Active(input = Password.Empty),
-    stepStates = persistentMapOf(
-      SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
-      SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
-      SyncStep.ValidatingDatabase to SyncStepState.Failed("Missing Key"),
-    ),
-  )
 }

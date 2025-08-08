@@ -1,7 +1,6 @@
 package actual.budget.transactions.ui
 
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import androidx.compose.foundation.background
@@ -19,13 +18,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.datetime.LocalDate
@@ -72,19 +69,8 @@ internal fun DateHeader(
   }
 }
 
-@ReadOnlyComposable
 @Composable
 private fun contentDescription(isExpanded: Boolean): String = when (isExpanded) {
   true -> Strings.transactionsCollapse
   false -> Strings.transactionsExpand
-}
-
-@Preview
-@Composable
-private fun PreviewDateHeader() = PreviewColumn {
-  DateHeader(
-    date = PREVIEW_DATE,
-    source = StateSource.Empty,
-    onAction = {},
-  )
 }

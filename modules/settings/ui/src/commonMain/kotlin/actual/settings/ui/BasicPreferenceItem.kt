@@ -3,7 +3,6 @@ package actual.settings.ui
 import actual.core.ui.ActualTypography
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.defaultHazeStyle
 import androidx.compose.foundation.background
@@ -15,8 +14,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -28,7 +25,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -84,6 +80,7 @@ internal fun BasicPreferenceItem(
         modifier = Modifier
           .wrapContentHeight()
           .padding(10.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
       ) {
         Text(
           text = title,
@@ -111,26 +108,4 @@ internal fun BasicPreferenceItem(
       rightContent()
     }
   }
-}
-
-@Preview
-@Composable
-private fun WithIcon() = PreviewColumn {
-  BasicPreferenceItem(
-    title = "Change the doodad",
-    subtitle = "When you change this setting, the doodad will update. This might also affect the thingybob.",
-    icon = Icons.Filled.Info,
-    clickability = Clickable { },
-  )
-}
-
-@Preview
-@Composable
-private fun WithoutIcon() = PreviewColumn {
-  BasicPreferenceItem(
-    title = "Change the doodad",
-    subtitle = "When you change this setting, the doodad will update. This might also affect the thingybob.",
-    icon = null,
-    clickability = Clickable { },
-  )
 }

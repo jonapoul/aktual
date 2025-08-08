@@ -2,14 +2,12 @@ package actual.budget.list.ui
 
 import actual.budget.list.vm.DeletingState
 import actual.budget.model.Budget
-import actual.core.ui.ActualFontFamily
 import actual.core.ui.ActualTypography
 import actual.core.ui.AlertDialog
 import actual.core.ui.BareTextButton
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
-import actual.core.ui.buttonBare
+import actual.core.ui.buttonTextStyle
 import actual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Box
@@ -39,7 +37,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -57,10 +54,7 @@ internal fun DeleteBudgetDialog(
     onDismissRequest = { onAction(DeleteDialogAction.Dismiss) },
     buttons = {
       TextButton(onClick = { onAction(DeleteDialogAction.Dismiss) }) {
-        Text(
-          text = Strings.budgetDeleteDialogDismiss,
-          fontFamily = ActualFontFamily,
-        )
+        Text(text = Strings.budgetDeleteDialogDismiss)
       }
     },
     content = {
@@ -76,7 +70,7 @@ internal fun DeleteBudgetDialog(
 
 @Stable
 @Composable
-private fun Content(
+internal fun Content(
   deletingState: DeletingState,
   localFileExists: Boolean,
   onDeleteLocal: () -> Unit,
@@ -164,7 +158,7 @@ private fun LoadableBareTextButton(
     colors = colors,
     isEnabled = isEnabled,
     onClick = onClick,
-    style = if (isLoading) TextStyle(color = Transparent) else ActualTypography.buttonBare,
+    style = if (isLoading) TextStyle(color = Transparent) else ActualTypography.buttonTextStyle,
   )
 
   Box(
@@ -207,47 +201,3 @@ private fun Theme.errorBare(isPressed: Boolean) = ButtonDefaults.outlinedButtonC
   containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
   contentColor = if (isPressed) buttonBareText else errorText,
 )
-
-@Preview
-@Composable
-private fun PreviewContent() = PreviewColumn {
-  Content(
-    deletingState = DeletingState.Inactive,
-    localFileExists = true,
-    onDeleteLocal = {},
-    onDeleteRemote = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewDeletingLocal() = PreviewColumn {
-  Content(
-    deletingState = DeletingState.Active(deletingLocal = true),
-    localFileExists = true,
-    onDeleteLocal = {},
-    onDeleteRemote = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewDeletingRemote() = PreviewColumn {
-  Content(
-    deletingState = DeletingState.Active(deletingRemote = true),
-    localFileExists = true,
-    onDeleteLocal = {},
-    onDeleteRemote = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewNoLocal() = PreviewColumn {
-  Content(
-    deletingState = DeletingState.Active(deletingRemote = true),
-    localFileExists = false,
-    onDeleteLocal = {},
-    onDeleteRemote = {},
-  )
-}

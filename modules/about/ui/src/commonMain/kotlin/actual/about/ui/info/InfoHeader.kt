@@ -1,9 +1,11 @@
 package actual.about.ui.info
 
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
+import actual.l10n.Res
 import actual.l10n.Strings
+import actual.l10n.app_icon_background
+import actual.l10n.app_icon_foreground
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -19,12 +21,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import actual.core.android.R as CoreR
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 internal fun InfoHeader(
@@ -46,12 +46,12 @@ internal fun InfoHeader(
     ) {
       Image(
         modifier = Modifier.clip(CircleShape),
-        painter = painterResource(id = CoreR.mipmap.ic_launcher_round_background),
+        painter = painterResource(Res.drawable.app_icon_background),
         contentDescription = appName,
       )
 
       Image(
-        painter = painterResource(id = CoreR.mipmap.ic_launcher_round_foreground),
+        painter = painterResource(Res.drawable.app_icon_foreground),
         contentDescription = appName,
       )
     }
@@ -78,10 +78,4 @@ internal fun InfoHeader(
       )
     }
   }
-}
-
-@Preview
-@Composable
-private fun PreviewHeader() = PreviewColumn {
-  InfoHeader(year = 2025)
 }

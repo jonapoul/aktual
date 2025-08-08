@@ -2,7 +2,6 @@ package actual.account.ui.password
 
 import actual.account.model.Password
 import actual.account.vm.ChangePasswordState
-import actual.core.ui.PreviewColumn
 import actual.core.ui.PrimaryTextButtonWithLoading
 import actual.core.ui.keyboardFocusRequester
 import actual.l10n.Strings
@@ -24,7 +23,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -113,43 +111,4 @@ internal fun ConfirmPasswordForm(
       onClick = { onAction(PasswordAction.Submit) },
     )
   }
-}
-
-@Preview
-@Composable
-private fun EmptyForm() = PreviewColumn {
-  ConfirmPasswordForm(
-    inputPassword1 = Password.Empty,
-    inputPassword2 = Password.Empty,
-    showPasswords = false,
-    state = null,
-    passwordsMatch = false,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun ShowPasswords() = PreviewColumn {
-  ConfirmPasswordForm(
-    inputPassword1 = Password.Dummy,
-    inputPassword2 = Password.Dummy,
-    showPasswords = true,
-    state = null,
-    passwordsMatch = true,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun Loading() = PreviewColumn {
-  ConfirmPasswordForm(
-    inputPassword1 = Password.Dummy,
-    inputPassword2 = Password.Dummy,
-    showPasswords = false,
-    state = ChangePasswordState.Loading,
-    passwordsMatch = true,
-    onAction = {},
-  )
 }

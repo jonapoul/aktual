@@ -12,7 +12,6 @@ import actual.budget.model.SortDirection.Ascending
 import actual.budget.model.SortDirection.Descending
 import actual.budget.transactions.vm.TransactionsSorting
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import androidx.compose.foundation.background
@@ -36,7 +35,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -165,24 +163,4 @@ private fun CategoryHeaderText(
       null -> Unit
     }
   }
-}
-
-@Preview
-@Composable
-private fun PreviewSortedByDate() = PreviewColumn {
-  CategoryHeader(
-    modifier = Modifier.fillMaxWidth(),
-    sorting = TransactionsSorting(column = Date, direction = Descending),
-    onSort = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewSortedByAmount() = PreviewColumn {
-  CategoryHeader(
-    modifier = Modifier.fillMaxWidth(),
-    sorting = TransactionsSorting(column = Amount, direction = Ascending),
-    onSort = {},
-  )
 }

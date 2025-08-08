@@ -16,14 +16,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 
@@ -140,40 +138,4 @@ fun DialogContent(
       }
     }
   }
-}
-
-@Preview
-@Composable
-private fun ExampleContentWithButtons() = PreviewColumn {
-  val theme = LocalTheme.current
-  DialogContent(
-    title = "Hello world",
-    buttons = {
-      TextButton(onClick = { }) { Text("Delete", color = theme.errorText, fontFamily = ActualFontFamily) }
-      TextButton(onClick = { }) { Text("Dismiss", fontFamily = ActualFontFamily) }
-    },
-    content = {
-      Text("This is some text with even more text here to show how it behaves when splitting over lines")
-      PrimaryTextButton(text = "Click me", onClick = {})
-      Text("This is some text")
-      NormalTextButton(text = "Click me", onClick = {})
-    },
-  )
-}
-
-@Preview
-@Composable
-private fun ExampleContentWithoutButtons() = PreviewColumn {
-  DialogContent(
-    title = "Hello world",
-    buttons = null,
-    content = {
-      Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("This is some text")
-        PrimaryTextButton(text = "Click me", onClick = {})
-        Text("This is some text")
-        NormalTextButton(text = "Click me", onClick = {})
-      }
-    },
-  )
 }

@@ -5,17 +5,16 @@ import blueprint.core.libs
 import commonMainDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.gradle.kotlin.dsl.apply
 
 class ModuleDi : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
     with(pluginManager) {
-      apply(ModuleMultiplatform::class.java)
-      apply(ConventionDi::class.java)
+      apply(ModuleMultiplatform::class)
+      apply(ConventionDi::class)
     }
 
-    extensions.configure<KotlinMultiplatformExtension> {
+    kotlin {
       commonMainDependencies {
         implementation(libs.getLibrary("metro.runtime"))
       }

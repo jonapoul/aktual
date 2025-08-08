@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -26,7 +25,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,7 +39,7 @@ fun PrimaryTextButton(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = ActualTypography.buttonPrimary,
+  style: TextStyle = ActualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: ComposableLambda? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primaryButton(pressed) },
@@ -74,7 +72,7 @@ fun PrimaryTextButtonWithLoading(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = ActualTypography.buttonPrimary,
+  style: TextStyle = ActualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: ComposableLambda? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primaryButton(pressed) },
@@ -109,7 +107,6 @@ fun PrimaryTextButtonWithLoading(
         Text(
           modifier = Modifier.alpha(if (isLoading) 0f else 1f),
           text = text,
-          fontFamily = ActualFontFamily,
           style = style,
           fontSize = fontSize,
         )
@@ -128,7 +125,7 @@ fun NormalTextButton(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = ActualTypography.buttonPrimary,
+  style: TextStyle = ActualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: ComposableLambda? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { t, pressed -> t.normalButton(pressed) },
@@ -160,7 +157,7 @@ fun BareTextButton(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = ActualTypography.buttonBare,
+  style: TextStyle = ActualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: ComposableLambda? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { theme, pressed -> theme.bareButton(pressed) },
@@ -225,7 +222,6 @@ private fun RowScope.DefaultTextButtonContent(
 
   Text(
     text = text,
-    fontFamily = ActualFontFamily,
     style = style,
     fontSize = fontSize,
   )
@@ -233,89 +229,5 @@ private fun RowScope.DefaultTextButtonContent(
 
 private val ButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
 
-val Typography.buttonPrimary: TextStyle
-  @Composable
-  @ReadOnlyComposable
-  get() = textStyle(fontSize = 15.sp)
-
-val Typography.buttonBare: TextStyle
-  @Composable
-  @ReadOnlyComposable
-  get() = textStyle(fontSize = 15.sp)
-
-@Preview
-@Composable
-private fun Bare() = PreviewColumn {
-  BareTextButton(
-    text = "Bare",
-    onClick = {},
-  )
-}
-
-@Preview
-@Composable
-private fun BareDisabled() = PreviewColumn {
-  BareTextButton(
-    text = "Bare",
-    onClick = {},
-    isEnabled = false,
-  )
-}
-
-@Preview
-@Composable
-private fun Primary() = PreviewColumn {
-  PrimaryTextButton(
-    text = "Primary",
-    onClick = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PrimaryDisabled() = PreviewColumn {
-  PrimaryTextButton(
-    text = "Primary",
-    onClick = {},
-    isEnabled = false,
-  )
-}
-
-@Preview
-@Composable
-private fun Normal() = PreviewColumn {
-  NormalTextButton(
-    text = "Normal",
-    onClick = {},
-  )
-}
-
-@Preview
-@Composable
-private fun NormalDisabled() = PreviewColumn {
-  NormalTextButton(
-    text = "Normal",
-    onClick = {},
-    isEnabled = false,
-  )
-}
-
-@Preview
-@Composable
-private fun PrimaryWithLoadingNotLoading() = PreviewColumn {
-  PrimaryTextButtonWithLoading(
-    text = "OK",
-    isLoading = false,
-    onClick = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PrimaryWithLoading() = PreviewColumn {
-  PrimaryTextButtonWithLoading(
-    text = "OK",
-    isLoading = true,
-    onClick = {},
-  )
-}
+val Typography.buttonTextStyle: TextStyle
+  get() = bodyMedium.copy(fontSize = 15.sp)

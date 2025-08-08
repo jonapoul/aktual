@@ -1,10 +1,8 @@
 package actual.budget.sync.ui
 
 import actual.account.model.Password
-import actual.core.ui.ActualFontFamily
 import actual.core.ui.AlertDialog
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.TextField
 import actual.core.ui.Theme
 import actual.core.ui.keyboardFocusRequester
@@ -43,7 +41,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -60,19 +57,13 @@ internal fun EnterKeyPasswordDialog(
     onDismissRequest = { onAction(SyncBudgetAction.DismissPasswordDialog) },
     buttons = {
       TextButton(onClick = { onAction(SyncBudgetAction.DismissPasswordDialog) }) {
-        Text(
-          text = Strings.syncPasswordDialogDismiss,
-          fontFamily = ActualFontFamily,
-        )
+        Text(text = Strings.syncPasswordDialogDismiss)
       }
       TextButton(
         enabled = input.isNotEmpty(),
         onClick = { onAction(SyncBudgetAction.ConfirmKeyPassword) },
       ) {
-        Text(
-          text = Strings.syncPasswordDialogConfirm,
-          fontFamily = ActualFontFamily,
-        )
+        Text(text = Strings.syncPasswordDialogConfirm)
       }
     },
     content = {
@@ -86,7 +77,7 @@ internal fun EnterKeyPasswordDialog(
 }
 
 @Composable
-private fun Content(
+internal fun Content(
   input: Password,
   onAction: (SyncBudgetAction) -> Unit,
   theme: Theme = LocalTheme.current,
@@ -101,7 +92,7 @@ private fun Content(
       fontSize = 14.sp,
     )
 
-    VerticalSpacer()
+    VerticalSpacer(4.dp)
 
     val keyboard = LocalSoftwareKeyboardController.current
     var passwordVisible by remember { mutableStateOf(false) }
@@ -163,22 +154,4 @@ private fun buildDialogText(
       append(Strings.syncPasswordDialogLearnMore)
     }
   }
-}
-
-@Preview
-@Composable
-private fun PreviewEmpty() = PreviewColumn {
-  Content(
-    input = Password.Empty,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewFull() = PreviewColumn {
-  Content(
-    input = Password("abc-123"),
-    onAction = {},
-  )
 }

@@ -17,9 +17,8 @@ import actual.budget.model.TransactionsSpec
 import actual.budget.transactions.vm.LoadedAccount.AllAccounts
 import actual.budget.transactions.vm.LoadedAccount.Loading
 import actual.budget.transactions.vm.LoadedAccount.SpecificAccount
-import actual.core.di.ViewModelFactory
-import actual.core.di.ViewModelFactoryKey
-import actual.core.di.ViewModelKey
+import actual.core.di.AssistedFactoryKey
+import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
@@ -47,10 +46,10 @@ import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
 
 @Inject
-@ViewModelKey(TransactionsViewModel::class)
-@ContributesIntoMap(ViewModelScope::class)
 class TransactionsViewModel(
-  @Assisted inputs: Inputs,
+  @Suppress("unused") @Assisted private val token: LoginToken,
+  @Assisted private val budgetId: BudgetId,
+  @Assisted private val spec: TransactionsSpec,
   components: BudgetGraphHolder,
   contexts: CoroutineContexts,
 ) : ViewModel() {
@@ -74,7 +73,7 @@ class TransactionsViewModel(
     .map { meta -> meta[TransactionFormatDelegate] }
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsFormat.Default)
 
-  val transactions: StateFlow<ImmutableList<DatedTransactions>> = getIdsFlow(inputs)
+  val transactions: StateFlow<ImmutableList<DatedTransactions>> = getIdsFlow()
     .distinctUntilChanged()
     .map(::toDatedTransactions)
     .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
@@ -84,9 +83,9 @@ class TransactionsViewModel(
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsSorting.Default)
 
   init {
-    component.throwIfWrongBudget(inputs.budgetId)
+    component.throwIfWrongBudget(budgetId)
 
-    when (val spec = inputs.spec.accountSpec) {
+    when (val spec = spec.accountSpec) {
       is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }
       is AccountSpec.SpecificAccount -> viewModelScope.launch {
         val account = accountsDao[spec.id] ?: error("No account matching $spec")
@@ -128,7 +127,7 @@ class TransactionsViewModel(
     .distinctUntilChanged()
     .map(::toTransaction)
 
-  private fun getIdsFlow(inputs: Inputs): Flow<List<DatedId>> = when (val spec = inputs.spec.accountSpec) {
+  private fun getIdsFlow(): Flow<List<DatedId>> = when (val spec = spec.accountSpec) {
     AccountSpec.AllAccounts ->
       transactionsDao
         .observeIds()
@@ -159,17 +158,10 @@ class TransactionsViewModel(
 
   private data class DatedId(val id: TransactionId, val date: LocalDate)
 
-  data class Inputs(
-    val token: LoginToken,
-    val budgetId: BudgetId,
-    val spec: TransactionsSpec,
-  )
-
-  @Inject
   @AssistedFactory
-  @ViewModelFactoryKey(Factory::class)
+  @AssistedFactoryKey(Factory::class)
   @ContributesIntoMap(ViewModelScope::class)
-  fun interface Factory : ViewModelFactory {
+  fun interface Factory : ViewModelAssistedFactory {
     fun create(
       @Assisted token: LoginToken,
       @Assisted budgetId: BudgetId,

@@ -2,11 +2,10 @@ package actual.about.ui.licenses
 
 import actual.about.data.ArtifactDetail
 import actual.core.ui.CardShape
+import actual.core.ui.Dimens
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.defaultHazeStyle
-import actual.l10n.Dimens
 import actual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.background
@@ -29,7 +28,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -48,11 +46,11 @@ internal fun ArtifactItem(
   Column(
     modifier = modifier
       .shadow(Dimens.Medium)
-      .padding(Dimens.small)
+      .padding(Dimens.Small)
       .background(Color.Transparent, CardShape)
       .hazeEffect(hazeState, hazeStyle)
       .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
-      .padding(Dimens.huge),
+      .padding(Dimens.Huge),
     verticalArrangement = Arrangement.Top,
   ) {
     Text(
@@ -145,12 +143,3 @@ private const val VALUE_WEIGHT = 3f
 
 private val LineHeight = 15.sp
 private val TextSize = 12.sp
-
-@Preview
-@Composable
-private fun PreviewItem() = PreviewColumn {
-  ArtifactItem(
-    artifact = AlakazamAndroidCore,
-    onLaunchUrl = {},
-  )
-}

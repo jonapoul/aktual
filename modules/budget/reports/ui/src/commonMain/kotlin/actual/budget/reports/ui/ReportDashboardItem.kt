@@ -1,13 +1,9 @@
 package actual.budget.reports.ui
 
-import actual.budget.reports.ui.ReportDashboardItems.ITEM_1
-import actual.budget.reports.ui.ReportDashboardItems.ITEM_2
-import actual.budget.reports.ui.ReportDashboardItems.ITEM_3
 import actual.budget.reports.ui.charts.ReportChart
 import actual.budget.reports.vm.ReportDashboardItem
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import androidx.compose.foundation.background
@@ -29,7 +25,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -96,32 +91,5 @@ private fun ReportDropDownMenu(
       onDismiss()
       onAction(Action.Delete(item.id))
     },
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewItem1() = PreviewColumn {
-  ReportDashboardItem(
-    item = ITEM_1,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewItem2() = PreviewColumn {
-  ReportDashboardItem(
-    item = ITEM_2,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewItem3() = PreviewColumn {
-  ReportDashboardItem(
-    item = ITEM_3,
-    onAction = {},
   )
 }

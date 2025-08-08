@@ -1,16 +1,17 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.about.ui.info
 
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun NoUpdateFoundDialog(
@@ -31,7 +32,7 @@ internal fun NoUpdateFoundDialog(
 }
 
 @Composable
-private fun NoUpdateFoundDialogContent(
+internal fun NoUpdateFoundDialogContent(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -54,10 +55,3 @@ private fun NoUpdateFoundDialogContent(
   )
 }
 
-@Preview
-@Composable
-private fun PreviewContent() = PreviewColumn {
-  NoUpdateFoundDialogContent(
-    onDismiss = {},
-  )
-}

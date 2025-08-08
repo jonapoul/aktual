@@ -1,7 +1,7 @@
 package actual.core.ui
 
-import actual.di.core.ViewModelAssistedFactory
-import actual.di.core.ViewModelGraphProvider
+import actual.core.di.ViewModelAssistedFactory
+import actual.core.di.ViewModelGraphProvider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModel
@@ -19,7 +19,7 @@ val LocalViewModelGraphProvider = staticCompositionLocalOf<ViewModelGraphProvide
 
 // Used to fetch ViewModel instances from ViewModelGraph
 @Composable
-inline fun <reified VM : ViewModel> viewModel(
+inline fun <reified VM : ViewModel> metroViewModel(
   owner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { "No ViewModelStoreOwner found" },
   key: String? = null,
 ): VM = viewModel(
@@ -33,7 +33,7 @@ inline fun <reified VM : ViewModel> viewModel(
  * compile-time validation that [VM] and [VMAF] types match up to each other (yet?)
  */
 @Composable
-inline fun <reified VM : ViewModel, reified VMAF : ViewModelAssistedFactory> assistedViewModel(
+inline fun <reified VM : ViewModel, reified VMAF : ViewModelAssistedFactory> assistedMetroViewModel(
   owner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { "No ViewModelStoreOwner found" },
   key: String? = null,
   crossinline buildViewModel: VMAF.() -> VM,

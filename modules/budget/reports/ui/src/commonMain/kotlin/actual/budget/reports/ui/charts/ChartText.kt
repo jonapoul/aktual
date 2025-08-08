@@ -2,39 +2,36 @@ package actual.budget.reports.ui.charts
 
 import actual.budget.reports.ui.Action
 import actual.budget.reports.ui.ActionListener
-import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.TextData
 import actual.core.ui.BareTextButton
-import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
 import actual.core.ui.NormalTextButton
-import actual.core.ui.PreviewColumn
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
+import actual.core.ui.verticalScrollWithBar
 import actual.l10n.Strings
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.colintheshots.twain.MarkdownEditor
-import com.colintheshots.twain.MarkdownText
+import com.mikepenz.markdown.m3.Markdown
+import com.mikepenz.markdown.m3.markdownColor
 
 @Composable
 internal fun TextChart(
@@ -48,22 +45,41 @@ internal fun TextChart(
 ) {
   var isEditing by remember { mutableStateOf(false) }
   var editingContent by remember(data) { mutableStateOf(data.content) }
+  val keyboard = LocalSoftwareKeyboardController.current
+
+  val onSave = {
+    keyboard?.hide()
+    onAction(Action.SaveTextContent(data, editingContent))
+    isEditing = false
+  }
+
+  val scrollState = rememberScrollState()
 
   Box(
     modifier = Modifier.weight(1f),
   ) {
     if (isEditing) {
-      MarkdownEditor(
-        modifier = Modifier.fillMaxSize(),
+      BasicTextField(
+        modifier = Modifier
+          .fillMaxSize()
+          .padding(4.dp)
+          .verticalScrollWithBar(scrollState),
         value = editingContent,
         onValueChange = { editingContent = it },
+        keyboardOptions = KeyboardOptions(
+          autoCorrectEnabled = true,
+          capitalization = KeyboardCapitalization.Sentences,
+          keyboardType = KeyboardType.Text,
+          imeAction = ImeAction.None,
+        ),
       )
     } else {
-      MarkdownText(
-        modifier = Modifier.fillMaxSize(),
-        markdown = data.content,
-        color = theme.pageText,
-        textAlign = TextAlign.Center,
+      Markdown(
+        modifier = Modifier
+          .fillMaxSize()
+          .verticalScrollWithBar(scrollState),
+        content = data.content,
+        colors = markdownColor(theme.pageText),
       )
     }
   }
@@ -88,10 +104,7 @@ internal fun TextChart(
       NormalTextButton(
         modifier = Modifier.weight(1f),
         text = Strings.reportsTextSave,
-        onClick = {
-          onAction(Action.SaveTextContent(data, editingContent))
-          isEditing = false
-        },
+        onClick = { onSave() },
       )
     } else {
       NormalTextButton(
@@ -104,49 +117,4 @@ internal fun TextChart(
       )
     }
   }
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewRegular() = PreviewScreen(isPrivacyEnabled = false) {
-  Surface(Modifier.background(LocalTheme.current.tableBackground)) {
-    TextChart(
-      modifier = Modifier
-        .background(LocalTheme.current.tableBackground, CardShape)
-        .padding(horizontal = 4.dp),
-      data = PreviewText.DATA,
-      compact = false,
-      onAction = {},
-    )
-  }
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewRegularPrivate() = PreviewScreen(isPrivacyEnabled = true) {
-  Surface(Modifier.background(LocalTheme.current.tableBackground)) {
-    TextChart(
-      modifier = Modifier
-        .background(LocalTheme.current.tableBackground, CardShape)
-        .padding(horizontal = 4.dp),
-      data = PreviewText.DATA,
-      compact = false,
-      onAction = {},
-    )
-  }
-}
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PreviewCompact() = PreviewColumn(isPrivacyEnabled = false) {
-  TextChart(
-    modifier = Modifier
-      .background(LocalTheme.current.tableBackground, CardShape)
-      .width(WIDTH.dp)
-      .height(300.dp)
-      .padding(4.dp),
-    data = PreviewText.DATA,
-    compact = true,
-    onAction = {},
-  )
 }

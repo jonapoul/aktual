@@ -1,6 +1,9 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.core.ui
 
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.SliderDefaults
@@ -11,8 +14,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
-import my.nanihadesuka.compose.ScrollbarLayoutSide
-import my.nanihadesuka.compose.ScrollbarSettings
 
 @Stable
 @Composable
@@ -33,6 +34,7 @@ fun Theme.topAppBarColors(
 fun Theme.transparentTopAppBarColors() = topAppBarColors(
   containerColor = Color.Transparent,
   navigationIconContentColor = mobileHeaderTextTransparent,
+  actionIconContentColor = mobileHeaderTextTransparent,
   titleContentColor = mobileHeaderTextTransparent,
 )
 
@@ -40,14 +42,6 @@ fun Theme.transparentTopAppBarColors() = topAppBarColors(
 @Composable
 fun Theme.dropDownMenuItem() = MenuDefaults.itemColors(
   textColor = formInputText,
-)
-
-@Stable
-@Composable
-fun Theme.scrollbarSettings() = ScrollbarSettings(
-  side = ScrollbarLayoutSide.End,
-  thumbUnselectedColor = scrollbar,
-  thumbSelectedColor = scrollbarSelected,
 )
 
 @Stable

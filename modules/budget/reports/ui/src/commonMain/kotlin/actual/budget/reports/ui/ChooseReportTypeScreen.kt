@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.budget.reports.ui
 
 import actual.account.model.LoginToken
@@ -14,17 +16,16 @@ import actual.budget.reports.ui.charts.ReportChart
 import actual.budget.reports.vm.ChartData
 import actual.budget.reports.vm.ChooseReportTypeViewModel
 import actual.core.ui.ActualTypography
+import actual.core.ui.BackHandler
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
+import actual.core.ui.assistedMetroViewModel
 import actual.core.ui.defaultHazeStyle
-import actual.core.ui.metroViewModel
+import actual.core.ui.scrollbar
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -37,13 +38,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -55,7 +56,6 @@ import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
-import my.nanihadesuka.compose.LazyColumnScrollbar
 
 @Composable
 fun ChooseReportTypeScreen(
@@ -82,7 +82,7 @@ fun ChooseReportTypeScreen(
 }
 
 @Composable
-private fun ChooseReportTypeScaffold(
+internal fun ChooseReportTypeScaffold(
   onAction: ChooseReportTypeActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -118,28 +118,25 @@ private fun Content(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val scrollState = rememberLazyListState()
+  val lazyListState = rememberLazyListState()
   val hazeStyle = defaultHazeStyle(theme)
-  LazyColumnScrollbar(
-    modifier = modifier,
-    state = scrollState,
+  LazyColumn(
+    modifier = modifier
+      .fillMaxWidth()
+      .scrollbar(lazyListState),
+    state = lazyListState,
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+    contentPadding = PaddingValues(8.dp),
   ) {
-    LazyColumn(
-      modifier = Modifier.fillMaxWidth(),
-      state = scrollState,
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-      contentPadding = PaddingValues(8.dp),
-    ) {
-      items(WIDGET_TYPES) { type ->
-        WidgetType(
-          modifier = Modifier.fillMaxWidth(),
-          type = type,
-          onAction = onAction,
-          theme = theme,
-          hazeState = hazeState,
-          hazeStyle = hazeStyle,
-        )
-      }
+    items(WIDGET_TYPES) { type ->
+      WidgetType(
+        modifier = Modifier.fillMaxWidth(),
+        type = type,
+        onAction = onAction,
+        theme = theme,
+        hazeState = hazeState,
+        hazeStyle = hazeStyle,
+      )
     }
   }
 }
@@ -179,7 +176,6 @@ private fun WidgetType(
 }
 
 @Composable
-@ReadOnlyComposable
 private fun WidgetType.string() = when (this) {
   WidgetType.NetWorth -> Strings.reportsChooseTypeNetWorth
   WidgetType.CashFlow -> Strings.reportsChooseTypeCashFlow
@@ -204,27 +200,19 @@ private fun WidgetType.sampleData(): ChartData = when (this) {
 @Composable
 private fun metroViewModel(
   budgetId: BudgetId,
-) = metroViewModel<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory> {
+) = assistedMetroViewModel<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory> {
   create(budgetId)
 }
 
 @Immutable
-private sealed interface ChooseReportTypeAction {
+internal sealed interface ChooseReportTypeAction {
   data class Create(val type: WidgetType) : ChooseReportTypeAction
 }
 
 @Immutable
-private fun interface ChooseReportTypeActionListener {
+internal fun interface ChooseReportTypeActionListener {
   operator fun invoke(action: ChooseReportTypeAction)
 }
 
 private val WIDGET_TYPES = WidgetType.entries.toImmutableList()
 private val REPORT_HEIGHT = 250.dp
-
-@ScreenPreview
-@Composable
-private fun PreviewLoaded() = PreviewScreen {
-  ChooseReportTypeScaffold(
-    onAction = {},
-  )
-}

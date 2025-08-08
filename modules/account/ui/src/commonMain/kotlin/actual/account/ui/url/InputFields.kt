@@ -3,12 +3,11 @@ package actual.account.ui.url
 import actual.core.model.Protocol
 import actual.core.ui.ExposedDropDownMenu
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.TextField
 import actual.core.ui.Theme
 import actual.core.ui.keyboardFocusRequester
-import alakazam.kotlin.compose.HorizontalSpacer
 import alakazam.kotlin.core.parse
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
@@ -21,7 +20,6 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 
@@ -35,6 +33,7 @@ internal fun InputFields(
 ) {
   Row(
     modifier = modifier.fillMaxWidth(),
+    horizontalArrangement = Arrangement.spacedBy(5.dp),
   ) {
     ExposedDropDownMenu(
       modifier = Modifier.width(110.dp),
@@ -43,8 +42,6 @@ internal fun InputFields(
       onValueChange = { onAction(ServerUrlAction.SelectProtocol(Protocol::class.parse(it))) },
       theme = theme,
     )
-
-    HorizontalSpacer(width = 5.dp)
 
     val keyboard = LocalSoftwareKeyboardController.current
 
@@ -77,23 +74,3 @@ private val PROTOCOLS = Protocol
   .toImmutableList()
 
 private const val EXAMPLE_URL = "example.com"
-
-@Preview
-@Composable
-private fun Empty() = PreviewColumn {
-  InputFields(
-    url = "",
-    protocol = Protocol.Http,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun Filled() = PreviewColumn {
-  InputFields(
-    url = "my.server.com:1234/path",
-    protocol = Protocol.Https,
-    onAction = {},
-  )
-}

@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.LocalTextStyle
@@ -20,12 +19,10 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -164,59 +161,3 @@ fun WrapWidthTable(
     }
   }
 }
-
-@Preview(widthDp = 500)
-@Composable
-private fun PreviewWeightedTable() = PreviewColumn(maxHeight = 500.dp) {
-  WeightedTable(
-    modifier = Modifier.wrapContentSize(),
-    data = PREVIEW_CELLS,
-  )
-}
-
-@Preview(widthDp = 700)
-@Composable
-private fun PreviewWeightedTableWithStylesAndPadding() = PreviewColumn(maxHeight = 500.dp) {
-  WeightedTable(
-    modifier = Modifier.wrapContentSize(),
-    data = PREVIEW_CELLS,
-    paddings = persistentListOf(
-      PaddingValues(all = 8.dp),
-      PaddingValues(top = 16.dp),
-      PaddingValues(all = 0.dp),
-      PaddingValues(all = 0.dp),
-    ),
-    textStyles = persistentListOf(
-      LocalTextStyle.current,
-      ActualTypography.bodyMedium,
-      ActualTypography.headlineSmall,
-      ActualTypography.labelSmall,
-    ),
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewWrapWidth() = PreviewColumn(maxHeight = 500.dp) {
-  WrapWidthTable(
-    modifier = Modifier.wrapContentSize(),
-    data = PREVIEW_CELLS,
-  )
-}
-
-@Preview(widthDp = 900)
-@Composable
-private fun PreviewWrapWidthWithStylesAndPadding() = PreviewColumn(maxHeight = 500.dp) {
-  WrapWidthTable(
-    modifier = Modifier.wrapContentSize(),
-    data = PREVIEW_CELLS,
-    padding = PaddingValues(4.dp),
-  )
-}
-
-private val PREVIEW_CELLS = persistentListOf(
-  persistentListOf("John Doe", "28", "Engineering", "john.doe@company.com"),
-  persistentListOf("Jane Smith", "32", "Marketing", "jane.smith@company.com"),
-  persistentListOf("Bob Johnsonovic", "45", "Human Resources", "bob.johnson@company.com"),
-  persistentListOf("Alice Brown", "29", "Design", "alice.brown@company.com"),
-)

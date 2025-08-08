@@ -1,10 +1,10 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.budget.transactions.ui
 
 import actual.account.model.LoginToken
 import actual.budget.model.AccountSpec
 import actual.budget.model.BudgetId
-import actual.budget.model.SortColumn
-import actual.budget.model.SortDirection
 import actual.budget.model.TransactionId
 import actual.budget.model.TransactionsFormat
 import actual.budget.model.TransactionsSpec
@@ -14,12 +14,9 @@ import actual.budget.transactions.vm.TransactionsSorting
 import actual.budget.transactions.vm.TransactionsViewModel
 import actual.core.ui.LocalPrivacyEnabled
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
-import actual.core.ui.metroViewModel
+import actual.core.ui.assistedMetroViewModel
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import androidx.compose.foundation.layout.Box
@@ -28,6 +25,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -38,10 +36,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 
@@ -88,12 +84,12 @@ private fun metroViewModel(
   token: LoginToken,
   budgetId: BudgetId,
   spec: TransactionsSpec,
-) = metroViewModel<TransactionsViewModel, TransactionsViewModel.Factory> {
+) = assistedMetroViewModel<TransactionsViewModel, TransactionsViewModel.Factory> {
   create(token, budgetId, spec)
 }
 
 @Composable
-private fun TransactionsScaffold(
+internal fun TransactionsScaffold(
   transactions: ImmutableList<DatedTransactions>,
   observer: TransactionObserver,
   loadedAccount: LoadedAccount,
@@ -124,7 +120,7 @@ private fun TransactionsScaffold(
 }
 
 @Composable
-private fun TransactionsTitleBar(
+internal fun TransactionsTitleBar(
   loadedAccount: LoadedAccount,
   onAction: ActionListener,
   theme: Theme = LocalTheme.current,
@@ -165,46 +161,5 @@ private fun TransactionsTitleBar(
         )
       }
     },
-  )
-}
-
-@Preview
-@Composable
-private fun TitleBarAll() = PreviewColumn {
-  TransactionsTitleBar(
-    loadedAccount = LoadedAccount.AllAccounts,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun TitleBarLoading() = PreviewColumn {
-  TransactionsTitleBar(
-    loadedAccount = LoadedAccount.Loading,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun TitleBarSpecific() = PreviewColumn {
-  TransactionsTitleBar(
-    loadedAccount = LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
-    onAction = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun EmptyTable() = PreviewScreen {
-  TransactionsScaffold(
-    loadedAccount = LoadedAccount.AllAccounts,
-    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
-    format = TransactionsFormat.Table,
-    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Descending),
-    source = StateSource.Empty,
-    transactions = persistentListOf(),
-    onAction = {},
   )
 }

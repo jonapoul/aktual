@@ -1,5 +1,11 @@
 package actual.test
 
+import actual.core.model.ColorSchemeType
+import actual.core.ui.LocalColorSchemeType
+import actual.core.ui.LocalTheme
+import actual.core.ui.Theme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.ComposeContentTestRule
@@ -14,3 +20,15 @@ fun ComposeContentTestRule.runTest(block: ComposeContentTestRule.() -> Unit) {
 }
 
 fun ComposeContentTestRule.onDisplayedNodeWithTag(tag: String) = onNodeWithTag(tag).assertIsDisplayed()
+
+fun ComposeContentTestRule.setThemedContent(
+  theme: Theme = Theme.dark(),
+  type: ColorSchemeType = ColorSchemeType.Dark,
+  content: @Composable () -> Unit,
+) = setContent {
+  CompositionLocalProvider(
+    LocalTheme provides theme,
+    LocalColorSchemeType provides type,
+    content = content,
+  )
+}

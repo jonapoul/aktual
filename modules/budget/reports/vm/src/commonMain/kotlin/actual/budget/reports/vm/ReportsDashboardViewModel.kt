@@ -3,9 +3,8 @@ package actual.budget.reports.vm
 import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
-import actual.core.di.ViewModelFactory
-import actual.core.di.ViewModelFactoryKey
-import actual.core.di.ViewModelKey
+import actual.core.di.AssistedFactoryKey
+import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.Assisted
@@ -18,9 +17,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import logcat.logcat
 
+@Suppress("unused")
 @Inject
-@ViewModelKey(ReportsDashboardViewModel::class)
-@ContributesIntoMap(ViewModelScope::class)
 class ReportsDashboardViewModel(
   @Assisted private val token: LoginToken,
   @Assisted private val budgetId: BudgetId,
@@ -52,11 +50,10 @@ class ReportsDashboardViewModel(
     // TODO
   }
 
-  @Inject
   @AssistedFactory
-  @ViewModelFactoryKey(Factory::class)
+  @AssistedFactoryKey(Factory::class)
   @ContributesIntoMap(ViewModelScope::class)
-  fun interface Factory : ViewModelFactory {
+  fun interface Factory : ViewModelAssistedFactory {
     fun create(
       @Assisted token: LoginToken,
       @Assisted budgetId: BudgetId,

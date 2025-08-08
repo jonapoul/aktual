@@ -6,8 +6,6 @@ import commonMainDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 class ModuleViewModel : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
@@ -16,13 +14,15 @@ class ModuleViewModel : Plugin<Project> {
       apply(ConventionCompose::class)
     }
 
-    extensions.configure<KotlinMultiplatformExtension> {
+    kotlin {
       commonMainDependencies {
-        api(project(":modules:di:core"))
+        api(project(":modules:core:di"))
         api(libs.getLibrary("androidx.lifecycle.viewmodel.core"))
+        api(libs.getLibrary("kotlinx.coroutines"))
+        api(libs.getLibrary("kotlinx.immutable"))
         implementation(project(":modules:logging"))
-        implementation(libs.getLibrary("kotlinx.coroutines"))
         implementation(libs.getLibrary("molecule"))
+        implementation(compose.runtime)
       }
     }
   }

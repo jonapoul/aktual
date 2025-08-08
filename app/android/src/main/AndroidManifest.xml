@@ -1,0 +1,36 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools">
+
+  <uses-permission android:name="android.permission.INTERNET" />
+  <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+  <application
+    android:name="actual.app.android.ActualApplication"
+    android:appComponentFactory="actual.app.android.ActualAppComponentFactory"
+    android:allowBackup="true"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:networkSecurityConfig="@xml/network_security_config"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.Actual"
+    android:usesCleartextTraffic="true"
+    tools:replace="android:appComponentFactory">
+
+    <activity
+      android:name="actual.app.android.ActualActivity"
+      android:exported="true"
+      android:launchMode="singleInstance"
+      android:theme="@style/Theme.Actual.SplashScreen"
+      tools:ignore="Instantiatable">
+
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+
+    </activity>
+
+  </application>
+
+</manifest>

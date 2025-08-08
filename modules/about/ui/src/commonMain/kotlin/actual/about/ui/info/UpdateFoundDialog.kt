@@ -1,13 +1,15 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.about.ui.info
 
 import actual.core.ui.DialogContent
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -15,7 +17,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 
 @Composable
 internal fun UpdateFoundDialog(
@@ -44,7 +45,7 @@ internal fun UpdateFoundDialog(
 }
 
 @Composable
-private fun UpdateFoundDialogContent(
+internal fun UpdateFoundDialogContent(
   currentVersion: String,
   latestVersion: String,
   latestUrl: String,
@@ -109,16 +110,4 @@ private fun TextContent(
       textAlign = TextAlign.End,
     )
   }
-}
-
-@Preview
-@Composable
-private fun PreviewContent() = PreviewColumn {
-  UpdateFoundDialogContent(
-    currentVersion = "v1.2.3",
-    latestVersion = "v2.3.4",
-    latestUrl = "https://github.com/jonapoul/actual-android/releases/v2.3.4",
-    onOpenUrl = {},
-    onDismiss = {},
-  )
 }

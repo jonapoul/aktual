@@ -16,7 +16,8 @@ class ConventionKover : Plugin<Project> {
     }
 
     val excludedAnnotations = listOf(
-      "actual.core.ui.ScreenPreview",
+      "actual.core.ui.SingleScreenPreview",
+      "actual.core.ui.TripleScreenPreview",
       "androidx.compose.ui.tooling.preview.Preview",
       "javax.annotation.processing.Generated",
     )

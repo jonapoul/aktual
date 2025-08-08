@@ -14,6 +14,7 @@ import actual.core.model.Bytes.Companion.Zero
 import actual.core.model.bytes
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import dev.zacsweers.metro.Inject
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -23,7 +24,8 @@ import kotlinx.coroutines.flow.flowOn
 import logcat.logcat
 import java.io.IOException
 
-class BudgetFileDownloader @Inject internal constructor(
+@Inject
+class BudgetFileDownloader internal constructor(
   private val contexts: CoroutineContexts,
   private val budgetFiles: BudgetFiles,
   private val apisStateHolder: ActualApisStateHolder,

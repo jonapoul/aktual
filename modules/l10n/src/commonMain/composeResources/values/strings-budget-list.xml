@@ -21,7 +21,7 @@
   <string name="budget_delete">Delete</string>
 
   <string name="budget_success_empty">No budgets found</string>
-  <string name="budget_success_empty_second">Creating new budgets isn\'t currently supported in this app - you\'ll need to do this from the browser.</string>
+  <string name="budget_success_empty_second">Creating new budgets isn't currently supported in this app - you\'ll need to do this from the browser.</string>
   <string name="budget_success_empty_launch">Open Browser</string>
 
   <string name="budget_failure_desc">Failure</string>

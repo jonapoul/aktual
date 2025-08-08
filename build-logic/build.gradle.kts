@@ -32,8 +32,6 @@ dependencies {
   compileOnly(libs.plugin.burst)
   compileOnly(libs.plugin.compose)
   compileOnly(libs.plugin.composeHotReload)
-  compileOnly(libs.plugin.dependencyAnalysis)
-  compileOnly(libs.plugin.dependencySort)
   compileOnly(libs.plugin.detekt)
   compileOnly(libs.plugin.kotlin.compose)
   compileOnly(libs.plugin.kotlin.gradle)
@@ -43,6 +41,7 @@ dependencies {
   compileOnly(libs.plugin.licensee)
   compileOnly(libs.plugin.metro)
 
+  implementation(libs.okio)
   implementation(libs.plugin.blueprint.core)
   implementation(libs.plugin.blueprint.recipes)
   implementation(libs.plugin.graphviz)
@@ -67,7 +66,6 @@ gradlePlugin {
     create(id = "actual.convention.kover", impl = "actual.gradle.ConventionKover")
     create(id = "actual.convention.licensee", impl = "actual.gradle.ConventionLicensee")
     create(id = "actual.convention.di", impl = "actual.gradle.ConventionDi")
-    create(id = "actual.convention.sortdependencies", impl = "actual.gradle.ConventionSortDependencies")
     create(id = "actual.convention.style", impl = "actual.gradle.ConventionStyle")
     create(id = "actual.convention.test", impl = "actual.gradle.ConventionTest")
 
@@ -80,7 +78,10 @@ gradlePlugin {
   }
 }
 
-fun NamedDomainObjectContainer<PluginDeclaration>.create(id: String, impl: String) = create(id) {
+fun NamedDomainObjectContainer<PluginDeclaration>.create(
+  id: String,
+  impl: String,
+): PluginDeclaration = create(id) {
   this.id = id
   implementationClass = impl
 }

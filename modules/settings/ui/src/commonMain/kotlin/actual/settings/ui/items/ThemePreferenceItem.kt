@@ -1,25 +1,20 @@
 package actual.settings.ui.items
 
-import actual.core.model.ColorSchemeType
 import actual.core.model.DarkColorSchemeType
 import actual.core.model.RegularColorSchemeType
-import actual.core.ui.ActualFontFamily
 import actual.core.ui.ActualTypography
 import actual.core.ui.AlertDialog
 import actual.core.ui.ButtonShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewWithColorScheme
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import actual.settings.ui.BasicPreferenceItem
 import actual.settings.ui.NotClickable
 import actual.settings.vm.ThemeConfig
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -142,10 +137,7 @@ private fun <T> ThemeChooserDialog(
   onDismissRequest = onDismissRequest,
   buttons = {
     TextButton(onClick = onDismissRequest) {
-      Text(
-        text = Strings.settingsDialogDismiss,
-        fontFamily = ActualFontFamily,
-      )
+      Text(text = Strings.settingsDialogDismiss)
     }
   },
   content = {
@@ -166,7 +158,7 @@ private val OPTIONS_TO_SHOW_DARK_CONFIG = persistentSetOf(
 )
 
 @Composable
-private fun <T> ColumnScope.ThemeChooserDialogContent(
+private fun <T> ThemeChooserDialogContent(
   selected: T,
   strings: SchemeTypeStrings<T>,
   options: ImmutableList<T>,
@@ -255,59 +247,15 @@ private val RegularSchemeTypeStrings = SchemeTypeStrings<RegularColorSchemeType>
   }
 }
 
-@Composable
-@ReadOnlyComposable
+@Stable
 private fun RegularColorSchemeType.icon(): ImageVector = when (this) {
   RegularColorSchemeType.System -> Icons.Filled.Settings
   RegularColorSchemeType.Light -> Icons.Filled.LightMode
   RegularColorSchemeType.Dark -> Icons.Filled.Brightness2
 }
 
-@Composable
-@ReadOnlyComposable
+@Stable
 private fun DarkColorSchemeType.icon(): ImageVector = when (this) {
   DarkColorSchemeType.Dark -> Icons.Filled.Brightness2
   DarkColorSchemeType.Midnight -> Icons.Filled.Brightness3
-}
-
-@Preview
-@Composable
-private fun PreviewSystem() = PreviewThemed(RegularColorSchemeType.System)
-
-@Preview
-@Composable
-private fun PreviewLight() = PreviewThemed(RegularColorSchemeType.Light)
-
-@Preview
-@Composable
-private fun PreviewDark() = PreviewThemed(RegularColorSchemeType.Dark, dark = DarkColorSchemeType.Dark)
-
-@Preview
-@Composable
-private fun PreviewMidnight() = PreviewThemed(RegularColorSchemeType.Dark, dark = DarkColorSchemeType.Midnight)
-
-@Composable
-private fun PreviewThemed(
-  regular: RegularColorSchemeType,
-  modifier: Modifier = Modifier,
-  dark: DarkColorSchemeType = DarkColorSchemeType.Dark,
-) {
-  var config by remember { mutableStateOf(ThemeConfig(regular, dark)) }
-  val schemeType = when (config.regular) {
-    RegularColorSchemeType.System -> ColorSchemeType.Light
-    RegularColorSchemeType.Light -> ColorSchemeType.Light
-    RegularColorSchemeType.Dark -> when (dark) {
-      DarkColorSchemeType.Dark -> ColorSchemeType.Dark
-      DarkColorSchemeType.Midnight -> ColorSchemeType.Midnight
-    }
-  }
-  PreviewWithColorScheme(
-    schemeType = schemeType,
-    modifier = modifier,
-  ) {
-    ThemePreferenceItem(
-      config = ThemeConfig(regular, dark),
-      onChange = { newValue -> config = newValue },
-    )
-  }
 }

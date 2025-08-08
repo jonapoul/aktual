@@ -1,16 +1,12 @@
 package actual.budget.transactions.ui
 
-import actual.budget.model.SortColumn
-import actual.budget.model.SortDirection
 import actual.budget.model.TransactionsFormat
 import actual.budget.transactions.vm.DatedTransactions
 import actual.budget.transactions.vm.TransactionsSorting
+import actual.core.ui.Dimens
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
-import actual.core.ui.scrollbarSettings
-import actual.l10n.Dimens
+import actual.core.ui.scrollbar
 import actual.l10n.Strings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,8 +26,6 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import my.nanihadesuka.compose.LazyColumnScrollbar
 
 @Composable
 internal fun Transactions(
@@ -108,97 +102,48 @@ private fun TransactionsFilled(
   theme: Theme = LocalTheme.current,
 ) {
   val listState = rememberLazyListState()
-  LazyColumnScrollbar(
+  LazyColumn(
     modifier = modifier
       .fillMaxSize()
-      .padding(horizontal = Dimens.Large),
+      .padding(horizontal = Dimens.Large)
+      .scrollbar(listState),
     state = listState,
-    settings = theme.scrollbarSettings(),
   ) {
-    LazyColumn(
-      state = listState,
-    ) {
-      if (format == TransactionsFormat.Table) {
-        stickyHeader {
-          CategoryHeader(
-            modifier = Modifier.fillMaxWidth(),
-            sorting = sorting,
-            onSort = {},
-            theme = theme,
-          )
-        }
+    if (format == TransactionsFormat.Table) {
+      stickyHeader {
+        CategoryHeader(
+          modifier = Modifier.fillMaxWidth(),
+          sorting = sorting,
+          onSort = {},
+          theme = theme,
+        )
+      }
+    }
+
+    transactions.fastForEach { (date, ids) ->
+      stickyHeader {
+        DateHeader(
+          modifier = Modifier.fillMaxWidth(),
+          date = date,
+          source = source,
+          onAction = onAction,
+          theme = theme,
+        )
       }
 
-      transactions.fastForEach { (date, ids) ->
-        stickyHeader {
-          DateHeader(
-            modifier = Modifier.fillMaxWidth(),
-            date = date,
-            source = source,
-            onAction = onAction,
-            theme = theme,
-          )
-        }
+      items(ids) { id ->
+        TransactionItem(
+          modifier = Modifier.fillMaxWidth(),
+          id = id,
+          observer = observer,
+          format = format,
+          source = source,
+          onAction = onAction,
+          theme = theme,
+        )
 
-        items(ids) { id ->
-          TransactionItem(
-            modifier = Modifier.fillMaxWidth(),
-            id = id,
-            observer = observer,
-            format = format,
-            source = source,
-            onAction = onAction,
-            theme = theme,
-          )
-
-          HorizontalDivider(color = theme.tableBorderSeparator)
-        }
+        HorizontalDivider(color = theme.tableBorderSeparator)
       }
     }
   }
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewTransactionsList() = PreviewScreen {
-  Transactions(
-    source = StateSource.Empty,
-    onAction = {},
-    format = TransactionsFormat.List,
-    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
-    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
-    transactions = persistentListOf(
-      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1.id, TRANSACTION_2.id)),
-      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3.id)),
-    ),
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewTransactionsTable() = PreviewScreen {
-  Transactions(
-    source = StateSource.Empty,
-    onAction = {},
-    format = TransactionsFormat.Table,
-    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
-    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
-    transactions = persistentListOf(
-      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1.id, TRANSACTION_2.id)),
-      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3.id)),
-    ),
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewTransactionsTableEmpty() = PreviewScreen {
-  Transactions(
-    source = StateSource.Empty,
-    onAction = {},
-    format = TransactionsFormat.Table,
-    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
-    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
-    transactions = persistentListOf(),
-  )
 }

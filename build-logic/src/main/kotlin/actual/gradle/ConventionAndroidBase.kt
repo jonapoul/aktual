@@ -2,23 +2,21 @@
 
 package actual.gradle
 
-import blueprint.core.getVersion
+import blueprint.core.getLibrary
 import blueprint.core.libs
 import blueprint.recipes.androidBaseBlueprint
-import blueprint.recipes.androidDesugaringBlueprint
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.findByType
 
 class ConventionAndroidBase : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     androidBaseBlueprint()
 
-    androidDesugaringBlueprint(libs.getVersion("android.desugaring"))
-
     extensions.findByType(CommonExtension::class)?.apply {
-      // ":modules:path:to:module" -> "actual.path.to.module", or ":app-android" -> "actual.app"
+      // ":modules:path:to:module" -> "actual.path.to.module", or ":app-android" -> "actual.app.android"
       namespace = "actual" + path
         .removePrefix(":modules")
         .split(":", "-")
@@ -34,6 +32,14 @@ class ConventionAndroidBase : Plugin<Project> {
       lint {
         lintConfig = rootProject.file("config/lint.xml")
       }
+
+      compileOptions {
+        isCoreLibraryDesugaringEnabled = true
+      }
+    }
+
+    dependencies {
+      "coreLibraryDesugaring"(libs.getLibrary("android.desugaring"))
     }
   }
 }

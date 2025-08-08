@@ -1,25 +1,24 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.account.ui.url
 
 import actual.account.vm.NavDestination
 import actual.account.vm.ServerUrlViewModel
 import actual.core.model.ActualVersions
 import actual.core.model.Protocol
-import actual.core.ui.ActualFontFamily
 import actual.core.ui.ActualTypography
 import actual.core.ui.BasicIconButton
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButtonWithLoading
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
+import actual.core.ui.appCloser
 import actual.core.ui.metroViewModel
 import actual.core.ui.normalIconButton
 import actual.core.ui.transparentTopAppBarColors
 import actual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
-import android.app.Activity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +30,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -43,11 +43,9 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,13 +70,12 @@ fun ServerUrlScreen(
     }
   }
 
-  val context = LocalContext.current
-  val activity = remember { context as? Activity ?: error("$context isn't an activity?") }
+  val closeApp = appCloser()
 
   LaunchedEffect(Unit) {
     viewModel.navDestination.consumeEach { destination ->
       when (destination) {
-        NavDestination.Back -> activity.finish()
+        NavDestination.Back -> closeApp()
         NavDestination.ToBootstrap -> logcat.w { "Not implemented bootstrap yet!" }
         NavDestination.ToLogin -> nav.toLogin()
         NavDestination.ToAbout -> nav.toAbout()
@@ -107,7 +104,7 @@ fun ServerUrlScreen(
 }
 
 @Composable
-private fun ServerUrlScaffold(
+internal fun ServerUrlScaffold(
   url: String,
   protocol: Protocol,
   versions: ActualVersions,
@@ -226,7 +223,6 @@ private fun ServerUrlContent(
       Text(
         modifier = Modifier.fillMaxWidth(),
         text = errorMessage,
-        fontFamily = ActualFontFamily,
         color = theme.errorText,
         textAlign = TextAlign.Center,
       )
@@ -245,32 +241,4 @@ private fun ServerUrlContent(
       )
     }
   }
-}
-
-@ScreenPreview
-@Composable
-private fun Regular() = PreviewScreen {
-  ServerUrlScaffold(
-    url = "",
-    protocol = Protocol.Https,
-    versions = ActualVersions.Dummy,
-    isEnabled = true,
-    isLoading = false,
-    onAction = {},
-    errorMessage = null,
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun WithErrorMessage() = PreviewScreen {
-  ServerUrlScaffold(
-    url = "my.server.com:1234/path",
-    protocol = Protocol.Http,
-    versions = ActualVersions.Dummy,
-    isEnabled = true,
-    isLoading = true,
-    onAction = {},
-    errorMessage = "Hello this is an error message, split over multiple lines so you can see how it behaves",
-  )
 }

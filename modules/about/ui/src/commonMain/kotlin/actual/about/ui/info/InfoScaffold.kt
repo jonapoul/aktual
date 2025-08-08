@@ -3,11 +3,10 @@ package actual.about.ui.info
 import actual.about.vm.BuildState
 import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.defaultHazeStyle
+import actual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -31,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
-import my.nanihadesuka.compose.ColumnScrollbar
 
 @Composable
 internal fun InfoScaffold(
@@ -78,40 +75,36 @@ private fun InfoScreenContent(
   ) {
     val scrollState = rememberScrollState()
     val hazeStyle = defaultHazeStyle(theme)
-    ColumnScrollbar(
-      modifier = Modifier.weight(1f),
-      state = scrollState,
+    Column(
+      modifier = Modifier
+        .testTag(Tags.InfoScreenContent)
+        .weight(1f)
+        .fillMaxWidth()
+        .verticalScrollWithBar(scrollState)
+        .padding(horizontal = 15.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Column(
+      Box(
         modifier = Modifier
-          .testTag(Tags.InfoScreenContent)
           .fillMaxWidth()
-          .verticalScroll(scrollState)
-          .padding(horizontal = 15.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
+          .padding(horizontal = 6.dp, vertical = 12.dp)
+          .background(Color.Transparent, CardShape)
+          .hazeEffect(hazeState, hazeStyle),
       ) {
-        Box(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 6.dp, vertical = 12.dp)
-            .background(Color.Transparent, CardShape)
-            .hazeEffect(hazeState, hazeStyle),
-        ) {
-          InfoHeader(
-            modifier = Modifier.fillMaxWidth(),
-            year = buildState.year,
-            theme = theme,
-          )
-        }
-
-        InfoBuildState(
+        InfoHeader(
           modifier = Modifier.fillMaxWidth(),
-          buildState = buildState,
-          hazeState = hazeState,
-          hazeStyle = hazeStyle,
+          year = buildState.year,
           theme = theme,
         )
       }
+
+      InfoBuildState(
+        modifier = Modifier.fillMaxWidth(),
+        buildState = buildState,
+        hazeState = hazeState,
+        hazeStyle = hazeStyle,
+        theme = theme,
+      )
     }
 
     InfoButtons(
@@ -124,11 +117,3 @@ private fun InfoScreenContent(
   }
 }
 
-@ScreenPreview
-@Composable
-private fun PreviewInfo() = PreviewScreen {
-  InfoScaffold(
-    buildState = PreviewBuildState,
-    onAction = {},
-  )
-}

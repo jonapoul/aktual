@@ -2,9 +2,6 @@
 
 package actual.core.icons
 
-import actual.core.ui.PreviewActualRow
-import androidx.compose.material3.Icon
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType.Companion.NonZero
 import androidx.compose.ui.graphics.SolidColor
@@ -13,7 +10,6 @@ import androidx.compose.ui.graphics.StrokeJoin.Companion.Miter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.ImageVector.Builder
 import androidx.compose.ui.graphics.vector.path
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 val ActualIcons.CloudUnknown: ImageVector
@@ -96,12 +92,3 @@ val ActualIcons.CloudUnknown: ImageVector
   }
 
 private var icon: ImageVector? = null
-
-@Preview
-@Composable
-private fun Preview() = PreviewActualRow {
-  Icon(
-    imageVector = ActualIcons.CloudUnknown,
-    contentDescription = null,
-  )
-}

@@ -22,6 +22,8 @@ class ConventionDi : Plugin<Project> {
       shrinkUnusedBindings.set(true)
       transformProvidersToPrivate.set(true)
       warnOnInjectAnnotationPlacement.set(true)
+
+      reportsDestination.set(layout.buildDirectory.dir("reports/metro"))
     }
   }
 }

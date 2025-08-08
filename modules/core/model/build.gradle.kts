@@ -12,4 +12,8 @@ kotlin {
     api(libs.okio)
     compileOnly(libs.alakazam.kotlin.composeAnnotations)
   }
+
+  androidMainDependencies {
+    implementation(libs.androidx.coreKtx)
+  }
 }

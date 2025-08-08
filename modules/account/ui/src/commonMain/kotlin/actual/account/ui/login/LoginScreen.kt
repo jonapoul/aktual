@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.account.ui.login
 
 import actual.account.domain.LoginResult
@@ -7,8 +9,6 @@ import actual.core.model.ActualVersions
 import actual.core.model.ServerUrl
 import actual.core.ui.ActualTypography
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.UsingServerText
 import actual.core.ui.VersionsText
@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -86,7 +87,7 @@ fun LoginScreen(
 }
 
 @Composable
-private fun LoginScaffold(
+internal fun LoginScaffold(
   versions: ActualVersions,
   enteredPassword: Password,
   url: ServerUrl?,
@@ -205,37 +206,11 @@ private fun Content(
       onClickChange = { onAction(LoginAction.ChangeServer) },
     )
 
-    VerticalSpacer()
+    VerticalSpacer(4.dp)
 
     VersionsText(
       modifier = Modifier.align(Alignment.End),
       versions = versions,
     )
   }
-}
-
-@ScreenPreview
-@Composable
-private fun Regular() = PreviewScreen {
-  LoginScaffold(
-    versions = ActualVersions.Dummy,
-    enteredPassword = Password.Empty,
-    url = ServerUrl.Demo,
-    isLoading = false,
-    loginFailure = null,
-    onAction = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun WithErrorMessage() = PreviewScreen {
-  LoginScaffold(
-    versions = ActualVersions.Dummy,
-    enteredPassword = Password.Dummy,
-    url = ServerUrl("https://this.is.a.long.url.discombobulated.com/actual/budget/whatever.json"),
-    isLoading = true,
-    loginFailure = LoginResult.InvalidPassword,
-    onAction = {},
-  )
 }

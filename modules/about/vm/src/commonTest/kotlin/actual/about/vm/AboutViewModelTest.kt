@@ -3,10 +3,10 @@ package actual.about.vm
 import actual.about.data.GithubRepository
 import actual.about.data.LatestReleaseState
 import actual.core.model.ActualVersionsStateHolder
+import actual.core.model.UrlOpener
 import actual.test.TestBuildConfig
 import actual.test.TestInstant
 import actual.test.assertEmitted
-import alakazam.android.core.UrlOpener
 import app.cash.turbine.test
 import github.api.model.GithubRelease
 import io.mockk.coEvery
@@ -74,7 +74,7 @@ class AboutViewModelTest {
     viewModel.reportIssues()
 
     // Then
-    verify(exactly = 1) { urlOpener.openUrl("https://github.com/jonapoul/actual-android/issues/new") }
+    verify(exactly = 1) { urlOpener("https://github.com/jonapoul/actual-android/issues/new") }
     confirmVerified(urlOpener)
   }
 
@@ -84,7 +84,7 @@ class AboutViewModelTest {
     viewModel.openRepo()
 
     // Then
-    verify(exactly = 1) { urlOpener.openUrl("https://github.com/jonapoul/actual-android") }
+    verify(exactly = 1) { urlOpener("https://github.com/jonapoul/actual-android") }
     confirmVerified(urlOpener)
   }
 }

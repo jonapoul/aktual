@@ -1,7 +1,7 @@
 package actual.settings.vm
 
-import actual.di.core.ViewModelKey
-import actual.di.core.ViewModelScope
+import actual.core.di.ViewModelKey
+import actual.core.di.ViewModelScope
 import actual.prefs.AppGlobalPreferences
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

@@ -7,16 +7,12 @@ import actual.core.icons.CloudDownload
 import actual.core.icons.CloudUnknown
 import actual.core.icons.CloudWarning
 import actual.core.icons.FileDouble
-import actual.core.ui.ActualFontFamily
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewActualRow
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.Icon
@@ -28,7 +24,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -56,16 +51,13 @@ internal fun BudgetStateText(
 
     Text(
       text = text,
-      fontFamily = ActualFontFamily,
       color = theme.budgetItemTextSecondary,
       fontSize = 13.sp,
     )
   }
 }
 
-@Stable
 @Composable
-@ReadOnlyComposable
 private fun BudgetState.text(): String = when (this) {
   BudgetState.Local -> Strings.budgetStateLocal
   BudgetState.Remote -> Strings.budgetStateRemote
@@ -78,7 +70,6 @@ private fun BudgetState.text(): String = when (this) {
 
 @Stable
 @Composable
-@ReadOnlyComposable
 private fun BudgetState.icon(): ImageVector = when (this) {
   BudgetState.Local -> ActualIcons.FileDouble
   BudgetState.Remote -> ActualIcons.CloudDownload
@@ -95,14 +86,4 @@ private fun BudgetState.icon(): ImageVector = when (this) {
 private fun BudgetState.iconColor(theme: Theme): Color = when (this) {
   BudgetState.Broken, BudgetState.Detached -> theme.warningText
   else -> theme.pageText
-}
-
-@Preview
-@Composable
-private fun PreviewStates() = PreviewActualRow {
-  LazyColumn {
-    items(BudgetState.entries) {
-      BudgetStateText(it)
-    }
-  }
 }

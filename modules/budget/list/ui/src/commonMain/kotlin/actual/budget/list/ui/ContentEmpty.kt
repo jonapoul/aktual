@@ -1,11 +1,8 @@
 package actual.budget.list.ui
 
-import actual.core.ui.ActualFontFamily
 import actual.core.ui.ActualTypography
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButton
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
@@ -48,7 +45,6 @@ internal fun ContentEmpty(
       text = Strings.budgetSuccessEmptySecond,
       color = theme.pageText,
       textAlign = TextAlign.Center,
-      fontFamily = ActualFontFamily,
       fontSize = 20.sp,
     )
 
@@ -59,12 +55,4 @@ internal fun ContentEmpty(
       onClick = onCreateBudgetInBrowser,
     )
   }
-}
-
-@ScreenPreview
-@Composable
-private fun Empty() = PreviewScreen {
-  ContentEmpty(
-    onCreateBudgetInBrowser = {},
-  )
 }

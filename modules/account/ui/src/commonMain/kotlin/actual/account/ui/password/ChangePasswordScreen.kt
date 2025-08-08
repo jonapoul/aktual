@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.account.ui.password
 
 import actual.account.model.Password
@@ -6,8 +8,6 @@ import actual.account.vm.ChangePasswordViewModel
 import actual.core.model.ActualVersions
 import actual.core.ui.ActualTypography
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.VersionsText
 import actual.core.ui.WavyBackground
@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -33,7 +34,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -80,7 +80,7 @@ fun ChangePasswordScreen(
 }
 
 @Composable
-private fun ChangePasswordScaffold(
+internal fun ChangePasswordScaffold(
   inputPassword1: Password,
   inputPassword2: Password,
   showPasswords: Boolean,
@@ -196,67 +196,10 @@ private fun ChangePasswordContent(
 }
 
 @Composable
-@ReadOnlyComposable
 private fun ChangePasswordState.Failure.errorMessage(): String = when (this) {
   ChangePasswordState.InvalidPassword -> Strings.passwordFailureEmpty
   ChangePasswordState.NetworkFailure -> Strings.passwordFailureNetwork
   ChangePasswordState.OtherFailure -> Strings.passwordFailureOther
   ChangePasswordState.PasswordsDontMatch -> Strings.passwordFailureMatch
   ChangePasswordState.NotLoggedIn -> Strings.passwordFailureLoggedOut
-}
-
-@ScreenPreview
-@Composable
-private fun Regular() = PreviewScreen {
-  ChangePasswordScaffold(
-    inputPassword1 = Password.Empty,
-    inputPassword2 = Password.Empty,
-    showPasswords = false,
-    passwordsMatch = false,
-    state = null,
-    versions = ActualVersions.Dummy,
-    onAction = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun Loading() = PreviewScreen {
-  ChangePasswordScaffold(
-    inputPassword1 = Password.Empty,
-    inputPassword2 = Password.Empty,
-    showPasswords = false,
-    passwordsMatch = false,
-    state = ChangePasswordState.Loading,
-    versions = ActualVersions.Dummy,
-    onAction = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun Success() = PreviewScreen {
-  ChangePasswordScaffold(
-    inputPassword1 = Password.Empty,
-    inputPassword2 = Password.Empty,
-    showPasswords = false,
-    passwordsMatch = false,
-    state = ChangePasswordState.Success,
-    versions = ActualVersions.Dummy,
-    onAction = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun Failure() = PreviewScreen {
-  ChangePasswordScaffold(
-    inputPassword1 = Password.Dummy,
-    inputPassword2 = Password.Dummy,
-    showPasswords = false,
-    passwordsMatch = true,
-    state = ChangePasswordState.NetworkFailure,
-    versions = ActualVersions.Dummy,
-    onAction = {},
-  )
 }

@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
 package actual.gradle
 
 import androidUnitTestDependencies
@@ -7,19 +9,39 @@ import blueprint.core.getLibrary
 import blueprint.core.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.invoke
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 class ModuleCompose : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
-      apply(ModuleMultiplatform::class.java)
-      apply(ConventionCompose::class.java)
+      apply(ModuleMultiplatform::class)
+      apply(ConventionCompose::class)
     }
 
-    extensions.configure<KotlinMultiplatformExtension> {
+    kotlin {
+      sourceSets {
+        invokeWhenCreated("androidDebug") {
+          dependencies {
+            implementation(compose.preview)
+          }
+        }
+      }
+
       commonMainDependencies {
+        api(compose.runtime)
+        implementation(compose.animation)
+        implementation(compose.foundation)
+        implementation(compose.material3)
+        implementation(compose.materialIconsExtended)
+        implementation(compose.ui)
+        implementation(compose.uiTooling)
+        implementation(compose.uiUtil)
         implementation(libs.getLibrary("alakazam.kotlin.compose"))
+        implementation(libs.getLibrary("androidx.lifecycle.runtime.compose"))
+        implementation(libs.getLibrary("androidx.lifecycle.viewmodel.compose"))
+        implementation(libs.getLibrary("kotlinx.immutable"))
       }
 
       commonTestDependencies {
@@ -32,6 +54,7 @@ class ModuleCompose : Plugin<Project> {
 
       androidUnitTestDependencies {
         implementation(project(":modules:test:android"))
+        implementation(libs.getLibrary("test.androidx.compose.ui.junit4"))
       }
     }
   }

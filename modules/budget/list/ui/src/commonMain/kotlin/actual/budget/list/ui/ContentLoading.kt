@@ -1,8 +1,6 @@
 package actual.budget.list.ui
 
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -26,10 +24,4 @@ internal fun ContentLoading(
       color = theme.buttonPrimaryBackground,
     )
   }
-}
-
-@ScreenPreview
-@Composable
-private fun Loading() = PreviewScreen {
-  ContentLoading()
 }

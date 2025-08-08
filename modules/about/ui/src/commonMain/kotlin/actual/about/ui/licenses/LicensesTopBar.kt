@@ -1,3 +1,5 @@
+@file:OptIn(ExperimentalMaterial3Api::class)
+
 package actual.about.ui.licenses
 
 import actual.about.vm.SearchBarState
@@ -8,6 +10,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SearchOff
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -20,34 +23,32 @@ internal fun LicensesTopBar(
   state: SearchBarState,
   theme: Theme,
   onAction: (LicensesAction) -> Unit,
-) {
-  TopAppBar(
-    colors = theme.transparentTopAppBarColors(),
-    navigationIcon = {
-      IconButton(onClick = { onAction(LicensesAction.NavBack) }) {
-        Icon(
-          imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-          contentDescription = Strings.licensesToolbarBack,
-        )
-      }
-    },
-    title = {
-      Text(
-        text = Strings.licensesToolbarTitle,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
+) = TopAppBar(
+  colors = theme.transparentTopAppBarColors(),
+  navigationIcon = {
+    IconButton(onClick = { onAction(LicensesAction.NavBack) }) {
+      Icon(
+        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+        contentDescription = Strings.licensesToolbarBack,
       )
-    },
-    actions = {
-      IconButton(onClick = { onAction(LicensesAction.ToggleSearchBar) }) {
-        Icon(
-          imageVector = when (state) {
-            SearchBarState.Gone -> Icons.Filled.Search
-            is SearchBarState.Visible -> Icons.Filled.SearchOff
-          },
-          contentDescription = Strings.licensesToolbarSearch,
-        )
-      }
-    },
-  )
-}
+    }
+  },
+  title = {
+    Text(
+      text = Strings.licensesToolbarTitle,
+      maxLines = 1,
+      overflow = TextOverflow.Ellipsis,
+    )
+  },
+  actions = {
+    IconButton(onClick = { onAction(LicensesAction.ToggleSearchBar) }) {
+      Icon(
+        imageVector = when (state) {
+          SearchBarState.Gone -> Icons.Filled.Search
+          is SearchBarState.Visible -> Icons.Filled.SearchOff
+        },
+        contentDescription = Strings.licensesToolbarSearch,
+      )
+    }
+  },
+)

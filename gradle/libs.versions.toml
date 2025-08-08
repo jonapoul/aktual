@@ -5,11 +5,10 @@ androidCacheFix = "3.0.1"
 blueprint = "1.0.0"
 buildconfig = "5.6.7"
 burst = "2.6.0"
-compose = "1.8.2"
+catalog = "0.4.0"
+compose = "1.9.0-beta01"
 composeHotReload = "1.0.0-beta04"
-dependencyAnalysis = "2.19.0"
 dependencyGuard = "0.5.0"
-dependencySort = "0.14"
 dependencyVersions = "0.52.0"
 detekt = "1.23.8"
 doctor = "0.11.0"
@@ -33,25 +32,21 @@ androidx-compose-lint = "1.4.2"
 androidx-compose-rules = "0.4.26"
 androidx-coreKtx = "1.16.0"
 androidx-crypto = "1.1.0"
-androidx-fragment = "1.8.8"
 androidx-lifecycle = "2.9.2"
-androidx-navigation = "2.9.3"
 androidx-preference = "1.2.1"
 androidx-splash = "1.0.1"
 coil = "2.7.0"
 haze = "1.6.9"
-javaxInject = "1"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-datetime = "0.7.1"
 kotlinx-immutable = "0.4.0"
 kotlinx-serialization = "1.9.0"
 ktor = "3.2.3"
-lazycolumn-scrollbar = "2.2.0"
 logback-android = "3.0.0"
 logback-classic = "1.5.18"
 logcat = "0.4"
-markdown-twain = "0.3.2"
+markdown = "0.35.0"
 material = "1.12.0"
 okio = "3.16.0"
 preferences = "2.2.0"
@@ -80,8 +75,6 @@ plugin-blueprint-recipes = { module = "dev.jonpoulton.blueprint:recipes", versio
 plugin-burst = { module = "app.cash.burst:burst-gradle-plugin", version.ref = "burst" }
 plugin-compose = { module = "org.jetbrains.compose:org.jetbrains.compose.gradle.plugin", version.ref = "compose" }
 plugin-composeHotReload = { module = "org.jetbrains.compose.hot-reload:hot-reload-gradle-plugin", version.ref = "composeHotReload" }
-plugin-dependencyAnalysis = { module = "com.autonomousapps:dependency-analysis-gradle-plugin", version.ref = "dependencyAnalysis" }
-plugin-dependencySort = { module = "com.squareup.sort-dependencies:com.squareup.sort-dependencies.gradle.plugin", version.ref = "dependencySort" }
 plugin-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 plugin-detektCompose = { module = "io.nlopez.compose.rules:detekt", version.ref = "androidx-compose-rules" }
 plugin-graphviz = { module = "guru.nidi:graphviz-java", version.ref = "graphviz" }
@@ -95,7 +88,6 @@ plugin-licensee = { module = "app.cash.licensee:licensee-gradle-plugin", version
 plugin-metro = { module = "dev.zacsweers.metro:dev.zacsweers.metro.gradle.plugin", version.ref = "metro" }
 
 # Libraries
-alakazam-android-core = { module = "dev.jonpoulton.alakazam:android-core", version.ref = "alakazam" }
 alakazam-db-sqldelight = { module = "dev.jonpoulton.alakazam:db-sqldelight", version.ref = "alakazam" }
 alakazam-kotlin-compose = { module = "dev.jonpoulton.alakazam:kotlin-compose", version.ref = "alakazam" }
 alakazam-kotlin-composeAnnotations = { module = "dev.jonpoulton.alakazam:kotlin-compose-annotations", version.ref = "alakazam" }
@@ -110,21 +102,15 @@ androidx-annotation = { module = "androidx.annotation:annotation", version.ref =
 androidx-compose-lint = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "androidx-compose-lint" }
 androidx-coreKtx = { module = "androidx.core:core-ktx", version.ref = "androidx-coreKtx" }
 androidx-crypto = { module = "androidx.security:security-crypto", version.ref = "androidx-crypto" }
-androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "androidx-fragment" }
-androidx-lifecycle-common = { module = "androidx.lifecycle:lifecycle-common", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-core = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
-androidx-navigation-common = { module = "androidx.navigation:navigation-common", version.ref = "androidx-navigation" }
-androidx-navigation-commonKtx = { module = "androidx.navigation:navigation-common-ktx", version.ref = "androidx-navigation" }
-androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
-androidx-navigation-runtime = { module = "androidx.navigation:navigation-runtime", version.ref = "androidx-navigation" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version.ref = "androidx-preference" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version.ref = "androidx-splash" }
 haze-core = { module = "dev.chrisbanes.haze:haze", version.ref = "haze" }
-javaxInject = { module = "javax.inject:javax.inject", version.ref = "javaxInject" }
+jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.0-beta04" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinpoet-core = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
@@ -141,11 +127,11 @@ ktor-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-serialization-core = { module = "io.ktor:ktor-serialization", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-lazycolumn-scrollbar = { module = "com.github.nanihadesuka:LazyColumnScrollbar", version.ref = "lazycolumn-scrollbar" }
 logback-android = { module = "com.github.tony19:logback-android", version.ref = "logback-android" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback-classic" }
 logcat = { module = "com.squareup.logcat:logcat", version.ref = "logcat" }
-markdown-twain = { module = "com.colintheshots:twain", version.ref = "markdown-twain" }
+markdown-core = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdown" }
+markdown-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdown" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
 metro-runtime = { module = "dev.zacsweers.metro:runtime", version.ref = "metro" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
@@ -168,20 +154,17 @@ test-alakazam-core = { module = "dev.jonpoulton.alakazam:testing-core", version.
 test-alakazam-logging = { module = "dev.jonpoulton.alakazam:testing-logging", version.ref = "alakazam" }
 test-alakazam-sqldelight = { module = "dev.jonpoulton.alakazam:testing-sqldelight", version.ref = "alakazam" }
 test-androidx-arch = { module = "androidx.arch.core:core-testing", version.ref = "test-androidx-arch" }
+test-androidx-compose-ui-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "compose" }
 test-androidx-coreKtx = { module = "androidx.test:core-ktx", version.ref = "test-androidx-coreKtx" }
 test-androidx-junit = { module = "androidx.test.ext:junit", version.ref = "test-androidx-junit" }
 test-androidx-monitor = { module = "androidx.test:monitor", version.ref = "test-androidx-monitor" }
-test-androidx-navigation = { module = "androidx.navigation:navigation-testing", version.ref = "androidx-navigation" }
 test-androidx-rules = { module = "androidx.test:rules", version.ref = "test-androidx-rules" }
 test-androidx-runner = { module = "androidx.test:runner", version.ref = "test-androidx-runner" }
 test-junit = { module = "junit:junit", version.ref = "test-junit" }
 test-kotlin-common = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-test-kotlin-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 test-ktor = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
-test-mockk-android = { module = "io.mockk:mockk-android", version.ref = "test-mockk" }
-test-mockk-core = { module = "io.mockk:mockk", version.ref = "test-mockk" }
-test-mockk-dsl = { module = "io.mockk:mockk-dsl", version.ref = "test-mockk" }
+test-mockk = { module = "io.mockk:mockk", version.ref = "test-mockk" }
 test-robolectric = { module = "org.robolectric:robolectric", version.ref = "test-robolectric" }
 test-turbine = { module = "app.cash.turbine:turbine", version.ref = "test-turbine" }
 
@@ -191,15 +174,13 @@ agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version.ref = "androidCacheFix" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
+catalog = { id = "dev.jonpoulton.catalog", version.ref = "catalog" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
-dependencyAnalysis = { id = "com.autonomousapps.dependency-analysis", version.ref = "dependencyAnalysis" }
 dependencyGuard = { id = "com.dropbox.dependency-guard", version.ref = "dependencyGuard" }
-dependencySort = { id = "com.squareup.sort-dependencies", version.ref = "dependencySort" }
 dependencyVersions = { id = "com.github.ben-manes.versions", version.ref = "dependencyVersions" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 doctor = { id = "com.osacky.doctor", version.ref = "doctor" }
-idea = { id = "idea" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -215,12 +196,10 @@ redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 convention-android-base = { id = "actual.convention.android.base" }
-convention-android-library = { id = "actual.convention.android.library" }
 convention-compose = { id = "actual.convention.compose" }
 convention-di = { id = "actual.convention.di" }
 convention-diagrams = { id = "actual.convention.diagrams" }
 convention-idea = { id = "actual.convention.idea" }
-convention-kotlin-base = { id = "actual.convention.kotlin.base" }
 convention-kotlin-jvm = { id = "actual.convention.kotlin.jvm" }
 convention-kover = { id = "actual.convention.kover" }
 convention-style = { id = "actual.convention.style" }
@@ -231,6 +210,4 @@ module-compose = { id = "actual.module.compose" }
 module-di = { id = "actual.module.di" }
 module-jvm = { id = "actual.module.jvm" }
 module-multiplatform = { id = "actual.module.multiplatform" }
-module-navigation = { id = "actual.module.navigation" }
-module-resources = { id = "actual.module.resources" }
 module-viewmodel = { id = "actual.module.viewmodel" }

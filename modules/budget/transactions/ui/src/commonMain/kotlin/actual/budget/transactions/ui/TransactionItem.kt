@@ -5,7 +5,6 @@ import actual.budget.model.TransactionsFormat
 import actual.budget.transactions.vm.Transaction
 import actual.core.ui.BareIconButton
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.formattedString
 import actual.l10n.Strings
@@ -23,13 +22,11 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
@@ -49,7 +46,7 @@ internal fun TransactionItem(
 }
 
 @Composable
-private fun TransactionItem(
+internal fun TransactionItem(
   transaction: Transaction,
   format: TransactionsFormat,
   source: StateSource,
@@ -248,27 +245,4 @@ private fun RowScope.TransactionTableItem(
 }
 
 @Composable
-@ReadOnlyComposable
 private fun String?.orEmptyString() = this ?: Strings.transactionsItemEmpty
-
-@Preview
-@Composable
-private fun PreviewListItem() = PreviewColumn {
-  TransactionItem(
-    transaction = TRANSACTION_1,
-    format = TransactionsFormat.List,
-    source = StateSource.Empty,
-    onAction = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewTableItem() = PreviewColumn {
-  TransactionItem(
-    transaction = TRANSACTION_1,
-    format = TransactionsFormat.Table,
-    source = StateSource.Empty,
-    onAction = {},
-  )
-}

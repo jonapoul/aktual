@@ -2,14 +2,11 @@ package actual.about.ui.info
 
 import actual.about.vm.BuildState
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.defaultHazeStyle
 import actual.l10n.Strings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apps
@@ -64,12 +61,3 @@ internal fun InfoBuildState(
 }
 
 private val ItemMargin = PaddingValues(horizontal = 6.dp, vertical = 3.dp)
-
-@ScreenPreview
-@Composable
-private fun PreviewBuildState() = PreviewScreen {
-  InfoBuildState(
-    modifier = Modifier.fillMaxWidth(),
-    buildState = PreviewBuildState,
-  )
-}

@@ -2,22 +2,17 @@ package actual.budget.list.ui
 
 import actual.budget.model.Budget
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
-import alakazam.kotlin.compose.VerticalSpacer
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.fillMaxWidth
+import actual.core.ui.scrollbar
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import my.nanihadesuka.compose.LazyColumnScrollbar
-import my.nanihadesuka.compose.ScrollbarSettings
 
 @Stable
 @Composable
@@ -29,37 +24,18 @@ internal fun ContentSuccess(
   theme: Theme = LocalTheme.current,
 ) {
   val listState = rememberLazyListState()
-  LazyColumnScrollbar(
+  LazyColumn(
+    modifier = modifier.scrollbar(listState),
     state = listState,
-    settings = ScrollbarSettings.Default,
+    verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    LazyColumn(
-      state = listState,
-      modifier = modifier.fillMaxWidth(),
-    ) {
-      itemsIndexed(budgets) { index, budget ->
-        BudgetListItem(
-          budget = budget,
-          theme = theme,
-          onClickOpen = { onClickOpen(budget) },
-          onClickDelete = { onClickDelete(budget) },
-        )
-
-        if (index < budgets.lastIndex) {
-          VerticalSpacer()
-        }
-      }
+    itemsIndexed(budgets) { index, budget ->
+      BudgetListItem(
+        budget = budget,
+        theme = theme,
+        onClickOpen = { onClickOpen(budget) },
+        onClickDelete = { onClickDelete(budget) },
+      )
     }
   }
-}
-
-@ScreenPreview
-@Composable
-private fun Three() = PreviewScreen {
-  ContentSuccess(
-    modifier = Modifier.background(LocalTheme.current.pageBackground),
-    budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
-    onClickOpen = {},
-    onClickDelete = {},
-  )
 }

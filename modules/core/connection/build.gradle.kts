@@ -15,8 +15,4 @@ kotlin {
     implementation(project(":modules:logging"))
     implementation(project(":modules:prefs"))
   }
-
-  androidUnitTestDependencies {
-    implementation(libs.alakazam.android.core)
-  }
 }

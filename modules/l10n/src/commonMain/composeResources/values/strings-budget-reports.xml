@@ -64,5 +64,5 @@
   <string name="reports_text_save">Save</string>
   <string name="reports_text_edit">Edit</string>
 
-  <string name="reports_custom_noop">Custom reports aren\'t supported yet!</string>
+  <string name="reports_custom_noop">Custom reports aren't supported yet!</string>
 </resources>

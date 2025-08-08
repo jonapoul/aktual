@@ -2,11 +2,11 @@ package actual.about.vm
 
 import actual.about.data.GithubRepository
 import actual.about.data.LatestReleaseState
+import actual.core.di.ViewModelKey
+import actual.core.di.ViewModelScope
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
-import actual.core.model.ViewModelKey
-import actual.core.model.ViewModelScope
-import alakazam.android.core.UrlOpener
+import actual.core.model.UrlOpener
 import alakazam.kotlin.core.BuildConfig
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -56,7 +56,7 @@ class AboutViewModel(
 
   fun openUrl(url: String) {
     logcat.d { "openUrl $url" }
-    urlOpener.openUrl(url)
+    urlOpener(url)
   }
 
   fun fetchLatestRelease() {

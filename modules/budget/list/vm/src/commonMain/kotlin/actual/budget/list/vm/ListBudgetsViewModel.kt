@@ -7,11 +7,11 @@ import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
 import actual.budget.model.database
 import actual.budget.model.metadata
-import actual.core.di.ViewModelFactory
-import actual.core.di.ViewModelFactoryKey
-import actual.core.di.ViewModelKey
+import actual.core.di.AssistedFactoryKey
+import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
 import actual.core.model.ServerUrl
+import actual.core.model.UrlOpener
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
@@ -39,21 +39,15 @@ import logcat.logcat
 import kotlin.time.Duration.Companion.milliseconds
 
 @Inject
-@ViewModelKey(ListBudgetsViewModel::class)
-@ContributesIntoMap(ViewModelScope::class)
 class ListBudgetsViewModel(
-  @Assisted tokenString: String,
+  @Assisted private val token: LoginToken,
   preferences: AppGlobalPreferences,
   private val budgetListFetcher: BudgetListFetcher,
   private val files: BudgetFiles,
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
+  private val urlOpener: UrlOpener,
 ) : ViewModel() {
-  // Necessary because trying to pass a value class through dagger's assisted injection results in a KSP build failure.
-  // See https://github.com/google/dagger/issues/4613
-  // TODO: Rework to pass the token in directly when they fix it
-  private val token = LoginToken(tokenString)
-
   val serverUrl: StateFlow<ServerUrl?> = preferences.serverUrl.asStateFlow(viewModelScope)
 
   private val mutableState = MutableStateFlow<ListBudgetsState>(ListBudgetsState.Loading)
@@ -141,6 +135,11 @@ class ListBudgetsViewModel(
     }
   }
 
+  fun open(serverUrl: ServerUrl?) {
+    val url = serverUrl?.toString() ?: return
+    urlOpener(url)
+  }
+
   private fun fetchState() {
     mutableState.update { ListBudgetsState.Loading }
     viewModelScope.launch {
@@ -161,11 +160,12 @@ class ListBudgetsViewModel(
     ).all(fileSystem::exists)
   }
 
-  @Inject
   @AssistedFactory
-  @ViewModelFactoryKey(Factory::class)
+  @AssistedFactoryKey(Factory::class)
   @ContributesIntoMap(ViewModelScope::class)
-  interface Factory : ViewModelFactory {
-    fun create(token: LoginToken): ListBudgetsViewModel
+  interface Factory : ViewModelAssistedFactory {
+    fun create(
+      @Assisted token: LoginToken,
+    ): ListBudgetsViewModel
   }
 }

@@ -9,9 +9,8 @@ import actual.budget.di.throwIfWrongBudget
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
 import actual.budget.model.WidgetType
-import actual.core.di.ViewModelFactory
-import actual.core.di.ViewModelFactoryKey
-import actual.core.di.ViewModelKey
+import actual.core.di.AssistedFactoryKey
+import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
 import actual.core.model.Empty
 import actual.core.model.UuidGenerator
@@ -30,8 +29,6 @@ import kotlinx.serialization.json.JsonObject
 import logcat.logcat
 
 @Inject
-@ViewModelKey(ChooseReportTypeViewModel::class)
-@ContributesIntoMap(ViewModelScope::class)
 class ChooseReportTypeViewModel(
   private val uuidGenerator: UuidGenerator,
   budgetComponents: BudgetGraphHolder,
@@ -99,11 +96,10 @@ class ChooseReportTypeViewModel(
     val id: WidgetId,
   )
 
-  @Inject
   @AssistedFactory
-  @ViewModelFactoryKey(Factory::class)
+  @AssistedFactoryKey(Factory::class)
   @ContributesIntoMap(ViewModelScope::class)
-  fun interface Factory : ViewModelFactory {
+  fun interface Factory : ViewModelAssistedFactory {
     fun create(
       @Assisted budgetId: BudgetId,
     ): ChooseReportTypeViewModel

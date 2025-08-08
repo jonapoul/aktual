@@ -3,18 +3,16 @@ package actual.about.ui.licenses
 import actual.about.data.ArtifactDetail
 import actual.about.vm.LicensesState
 import actual.about.vm.SearchBarState
+import actual.core.ui.Dimens
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButton
-import actual.core.ui.ScreenPreview
 import actual.core.ui.TextField
 import actual.core.ui.Theme
 import actual.core.ui.WavyBackground
 import actual.core.ui.defaultHazeStyle
 import actual.core.ui.keyboardFocusRequester
-import actual.core.ui.scrollbarSettings
+import actual.core.ui.scrollbar
 import actual.core.ui.textField
-import actual.l10n.Dimens
 import actual.l10n.Plurals
 import actual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
@@ -57,8 +55,6 @@ import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import my.nanihadesuka.compose.LazyColumnScrollbar
 
 @Composable
 internal fun LicensesScaffold(
@@ -226,27 +222,23 @@ private fun LoadedContent(
 ) {
   val listState = rememberLazyListState()
   val hazeStyle = defaultHazeStyle(theme)
-  LazyColumnScrollbar(
+  LazyColumn(
     modifier = modifier
       .fillMaxSize()
-      .padding(horizontal = Dimens.Large),
+      .padding(horizontal = Dimens.Large)
+      .scrollbar(listState),
     state = listState,
-    settings = theme.scrollbarSettings(),
   ) {
-    LazyColumn(
-      state = listState,
-    ) {
-      items(artifacts) { artifact ->
-        ArtifactItem(
-          artifact = artifact,
-          hazeState = hazeState,
-          hazeStyle = hazeStyle,
-          onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },
-          theme = theme,
-        )
+    items(artifacts) { artifact ->
+      ArtifactItem(
+        artifact = artifact,
+        hazeState = hazeState,
+        hazeStyle = hazeStyle,
+        onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },
+        theme = theme,
+      )
 
-        VerticalSpacer(5.dp)
-      }
+      VerticalSpacer(5.dp)
     }
   }
 }
@@ -288,46 +280,4 @@ private fun ErrorContent(
       onClick = { onAction(LicensesAction.Reload) },
     )
   }
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewLoading() = PreviewScreen {
-  LicensesScaffold(
-    state = LicensesState.Loading,
-    searchBarState = SearchBarState.Gone,
-    onAction = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewNoneFound() = PreviewScreen {
-  LicensesScaffold(
-    state = LicensesState.NoneFound,
-    searchBarState = SearchBarState.Gone,
-    onAction = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewLoaded() = PreviewScreen {
-  LicensesScaffold(
-    state = LicensesState.Loaded(
-      artifacts = persistentListOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi),
-    ),
-    searchBarState = SearchBarState.Visible(text = "My wicked search query"),
-    onAction = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewError() = PreviewScreen {
-  LicensesScaffold(
-    state = LicensesState.Error(errorMessage = "Something broke lol! Here's some more shite to show how it looks"),
-    searchBarState = SearchBarState.Gone,
-    onAction = {},
-  )
 }

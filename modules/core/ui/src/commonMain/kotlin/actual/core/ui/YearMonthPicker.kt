@@ -1,11 +1,9 @@
-// YearAndMonth
-@file:SuppressLint("ComposeUnstableReceiver")
+@file:Suppress("ComposeUnstableReceiver")
 
 package actual.core.ui
 
 import actual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
-import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -13,18 +11,15 @@ import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
-import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
 
@@ -47,7 +42,7 @@ fun YearMonthPicker(
       .clickable { showDialog = true },
     readOnly = true,
     placeholderText = null,
-    value = selected.string(),
+    value = selected.stringLong(),
     onValueChange = {},
     colors = theme.exposedDropDownMenu(),
     theme = theme,
@@ -65,13 +60,6 @@ fun YearMonthPicker(
       },
     )
   }
-}
-
-@Composable
-@ReadOnlyComposable
-private fun YearMonth.string(): String {
-  val month = month.stringLong()
-  return "$month $year"
 }
 
 @Composable
@@ -97,7 +85,7 @@ private fun PickDateDialog(
 )
 
 @Composable
-private fun PickDateDialogContent(
+internal fun PickDateDialogContent(
   value: YearMonth,
   range: YearMonthRange,
   onDismiss: () -> Unit,
@@ -165,45 +153,3 @@ private fun <T : Comparable<T>> YearMonthRange.rangeValues(
   .distinct()
   .sorted()
   .toImmutableList()
-
-@Preview
-@Composable
-private fun PreviewYearMonthPicker() = PreviewColumn {
-  YearMonthPicker(
-    modifier = Modifier.padding(4.dp),
-    value = YearMonth(2025, Month.FEBRUARY),
-    onValueChange = {},
-    range = YearMonthRange(
-      start = YearMonth(2011, Month.DECEMBER),
-      endInclusive = YearMonth(2025, Month.JULY),
-    ),
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewDialogContent() = PreviewColumn {
-  PickDateDialogContent(
-    value = YearMonth(2025, Month.FEBRUARY),
-    range = YearMonthRange(
-      start = YearMonth(2011, Month.DECEMBER),
-      endInclusive = YearMonth(2025, Month.JULY),
-    ),
-    onDismiss = {},
-    onValueChange = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewDialogContentOutOfRange() = PreviewColumn {
-  PickDateDialogContent(
-    value = YearMonth(2025, Month.AUGUST),
-    range = YearMonthRange(
-      start = YearMonth(2011, Month.DECEMBER),
-      endInclusive = YearMonth(2025, Month.JULY),
-    ),
-    onDismiss = {},
-    onValueChange = {},
-  )
-}

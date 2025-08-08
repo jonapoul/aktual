@@ -1,13 +1,11 @@
 package actual.settings.ui.items
 
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.Theme
 import actual.core.ui.switch
 import actual.l10n.Strings
 import actual.settings.ui.BasicPreferenceItem
 import actual.settings.ui.Clickable
-import androidx.compose.desktop.ui.tooling.preview.Preview
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,22 +54,4 @@ internal fun ShowBottomBarPreferenceItem(
 private fun icon(isVisible: Boolean) = when (isVisible) {
   true -> Icons.Filled.Visibility
   false -> Icons.Filled.VisibilityOff
-}
-
-@Preview
-@Composable
-private fun PreviewChecked() = PreviewColumn {
-  ShowBottomBarPreferenceItem(
-    value = true,
-    onChange = {},
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewUnchecked() = PreviewColumn {
-  ShowBottomBarPreferenceItem(
-    value = false,
-    onChange = {},
-  )
 }

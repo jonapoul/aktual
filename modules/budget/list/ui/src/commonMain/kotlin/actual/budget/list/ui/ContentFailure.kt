@@ -2,11 +2,8 @@ package actual.budget.list.ui
 
 import actual.core.icons.ActualIcons
 import actual.core.icons.CloudWarning
-import actual.core.ui.ActualFontFamily
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewScreen
 import actual.core.ui.PrimaryTextButton
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
@@ -55,7 +52,6 @@ internal fun ContentFailure(
       Text(
         text = Strings.budgetFailureMessage,
         color = theme.warningText,
-        fontFamily = ActualFontFamily,
         textAlign = TextAlign.Center,
         fontSize = 20.sp,
         fontWeight = FontWeight.Bold,
@@ -66,7 +62,6 @@ internal fun ContentFailure(
       Text(
         text = reason ?: Strings.budgetFailureDefaultMessage,
         color = theme.warningTextDark,
-        fontFamily = ActualFontFamily,
         fontSize = 16.sp,
         textAlign = TextAlign.Center,
       )
@@ -81,22 +76,4 @@ internal fun ContentFailure(
       )
     }
   }
-}
-
-@ScreenPreview
-@Composable
-private fun Failure() = PreviewScreen {
-  ContentFailure(
-    reason = "Failed to do the thing, here's a bit more text to show how it behaves when wrapping",
-    onClickRetry = {},
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun NoReason() = PreviewScreen {
-  ContentFailure(
-    reason = null,
-    onClickRetry = {},
-  )
 }

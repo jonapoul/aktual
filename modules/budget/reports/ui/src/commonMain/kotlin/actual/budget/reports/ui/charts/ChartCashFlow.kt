@@ -1,20 +1,14 @@
 package actual.budget.reports.ui.charts
 
 import actual.budget.model.Amount
-import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.CashFlowData
 import actual.core.ui.ActualTypography
-import actual.core.ui.CardShape
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
-import actual.core.ui.PreviewScreen
-import actual.core.ui.ScreenPreview
 import actual.core.ui.Theme
 import actual.core.ui.WrapWidthTable
 import actual.core.ui.formattedString
 import actual.core.ui.isInPreview
 import actual.l10n.Strings
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -22,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -34,26 +27,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.patrykandpatrick.vico.compose.cartesian.CartesianChartHost
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberBottom
-import com.patrykandpatrick.vico.compose.cartesian.axis.rememberStart
-import com.patrykandpatrick.vico.compose.cartesian.layer.continuous
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberColumnCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLine
-import com.patrykandpatrick.vico.compose.cartesian.layer.rememberLineCartesianLayer
-import com.patrykandpatrick.vico.compose.cartesian.rememberCartesianChart
-import com.patrykandpatrick.vico.compose.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.compose.common.component.rememberLineComponent
-import com.patrykandpatrick.vico.compose.common.fill
-import com.patrykandpatrick.vico.core.cartesian.axis.HorizontalAxis
-import com.patrykandpatrick.vico.core.cartesian.axis.VerticalAxis
-import com.patrykandpatrick.vico.core.cartesian.data.CartesianChartModelProducer
-import com.patrykandpatrick.vico.core.cartesian.data.columnSeries
-import com.patrykandpatrick.vico.core.cartesian.data.lineSeries
-import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
-import com.patrykandpatrick.vico.core.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
+import com.patrykandpatrick.vico.multiplatform.cartesian.axis.VerticalAxis
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianChartModelProducer
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.columnSeries
+import com.patrykandpatrick.vico.multiplatform.cartesian.data.lineSeries
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.ColumnCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.LineCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberColumnCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLine
+import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCartesianLayer
+import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
+import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.multiplatform.common.component.rememberLineComponent
+import com.patrykandpatrick.vico.multiplatform.common.fill
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.runBlocking
 
@@ -107,7 +96,7 @@ internal fun CashFlowChart(
         lineProvider = LineCartesianLayer.LineProvider.series(
           LineCartesianLayer.rememberLine(
             fill = LineCartesianLayer.LineFill.single(fill(theme.pageTextLight)),
-            stroke = LineCartesianLayer.LineStroke.continuous(thickness = 3.dp),
+            stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
           ),
         ),
       ),
@@ -269,37 +258,4 @@ private suspend fun CartesianChartModelProducer.populate(data: CashFlowData) = w
       )
     }
   }
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewRegular() = PreviewScreen(isPrivacyEnabled = false) {
-  CashFlowChart(
-    modifier = Modifier.padding(horizontal = 8.dp),
-    data = PreviewCashFlow.DATA,
-    compact = false,
-  )
-}
-
-@ScreenPreview
-@Composable
-private fun PreviewRegularPrivate() = PreviewScreen(isPrivacyEnabled = true) {
-  CashFlowChart(
-    modifier = Modifier.padding(horizontal = 8.dp),
-    data = PreviewCashFlow.DATA,
-    compact = false,
-  )
-}
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PreviewCompact() = PreviewColumn(isPrivacyEnabled = false) {
-  CashFlowChart(
-    modifier = Modifier
-      .background(LocalTheme.current.tableBackground, CardShape)
-      .width(WIDTH.dp)
-      .padding(5.dp),
-    data = PreviewCashFlow.DATA,
-    compact = true,
-  )
 }

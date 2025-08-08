@@ -3,9 +3,6 @@ package actual.budget.reports.ui.charts
 import actual.budget.model.Amount
 import actual.budget.reports.ui.Action
 import actual.budget.reports.ui.ActionListener
-import actual.budget.reports.ui.charts.PreviewShared.END_DATE
-import actual.budget.reports.ui.charts.PreviewShared.START_DATE
-import actual.budget.reports.ui.charts.PreviewShared.WIDTH
 import actual.budget.reports.vm.DateRange
 import actual.budget.reports.vm.PercentageDivisor
 import actual.budget.reports.vm.SummaryChartType
@@ -17,16 +14,14 @@ import actual.core.icons.OpenBracket
 import actual.core.icons.Sum
 import actual.core.model.Percent
 import actual.core.ui.ActualTypography
-import actual.core.ui.CardShape
 import actual.core.ui.ExposedDropDownMenu
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewColumn
 import actual.core.ui.ScaleToFitText
 import actual.core.ui.Theme
 import actual.core.ui.formattedString
+import actual.core.ui.stringShort
 import actual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,12 +38,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableMap
@@ -569,77 +561,16 @@ private fun Equals(modifier: Modifier = Modifier) = Icon(
 
 // E.g. "Jan 24"
 @Composable
-@ReadOnlyComposable
 private fun string(date: LocalDate): String {
-  val month = stringResource(date.month.resId())
+  val month = date.month.stringShort()
   val year = date.year.toString().substring(startIndex = 2)
   return "$month $year"
 }
 
 @Composable
-@ReadOnlyComposable
 private fun string(type: SummaryChartType): String = when (type) {
   SummaryChartType.Sum -> Strings.reportsSummarySum
   SummaryChartType.AveragePerMonth -> Strings.reportsSummaryPerMonth
   SummaryChartType.AveragePerTransaction -> Strings.reportsSummaryPerTransaction
   SummaryChartType.Percentage -> Strings.reportsSummaryPercentage
-}
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun SumCompact() = PreviewChart(PreviewSummary.SUM_DATA, true)
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PercentCompact() = PreviewChart(PreviewSummary.PERCENT_DATA, true)
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun SumRegular() = PreviewChart(PreviewSummary.SUM_DATA, false)
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun SumRegularPrivate() = PreviewChart(PreviewSummary.SUM_DATA, false, private = true)
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PerMonthRegular() = PreviewChart(PreviewSummary.PER_MONTH_DATA, false)
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PerTransactionRegular() = PreviewChart(PreviewSummary.PER_TRANSACTION_DATA, false)
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PerTransactionPrivate() = PreviewChart(PreviewSummary.PER_TRANSACTION_DATA, false, private = true)
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PercentAllTime() = PreviewChart(
-  data = PreviewSummary.PERCENT_DATA.copy(divisor = PercentageDivisor.AllTime),
-  compact = false,
-)
-
-@Preview(widthDp = WIDTH)
-@Composable
-private fun PercentSpecific() = PreviewChart(
-  data = PreviewSummary.PERCENT_DATA.copy(divisor = PercentageDivisor.Specific(START_DATE, END_DATE)),
-  compact = false,
-)
-
-@Composable
-private fun PreviewChart(
-  data: SummaryData,
-  compact: Boolean,
-  private: Boolean = false,
-) = PreviewColumn(isPrivacyEnabled = private) {
-  SummaryChart(
-    modifier = Modifier
-      .background(LocalTheme.current.tableBackground, CardShape)
-      .width(WIDTH.dp)
-      .padding(5.dp),
-    compact = compact,
-    data = data,
-    onAction = {},
-  )
 }
