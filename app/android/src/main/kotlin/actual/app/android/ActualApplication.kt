@@ -13,8 +13,6 @@ import logcat.logcat
 import actual.app.android.BuildConfig as ActualBuildConfig
 
 class ActualApplication : Application(), AndroidAppGraph.Holder {
-  private var nullableGraph: AndroidAppGraph? = null
-
   @Suppress("UNNECESSARY_SAFE_CALL", "UnreachableCode")
   override val graph: AndroidAppGraph by lazy {
     val factory = createGraphFactory<AndroidAppGraph.Factory>()
@@ -39,6 +37,6 @@ class ActualApplication : Application(), AndroidAppGraph.Holder {
     }
 
     logcat.i { "onCreate" }
-    logcat.d { "buildConfig = ${nullableGraph?.buildConfig}" }
+    logcat.d { "buildConfig = ${graph.buildConfig}" }
   }
 }
