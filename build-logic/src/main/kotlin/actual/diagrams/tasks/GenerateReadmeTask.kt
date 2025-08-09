@@ -39,7 +39,8 @@ abstract class GenerateReadmeTask : DefaultTask() {
     fun String.cleaned() = replace(toRemove, replacement).removePrefix(":")
     val thisPath = thisPath.get().cleaned()
 
-    val links = ProjectLinks.read(linksFile)
+    val links = ProjectLinks
+      .read(linksFile)
       .map { l -> l.copy(fromPath = l.fromPath.cleaned(), toPath = l.toPath.cleaned()) }
       .toSet()
 
@@ -167,4 +168,3 @@ private fun generateMermaidContents(
 }
 
 private fun isImplementation(configuration: String) = configuration.contains("implementation", ignoreCase = true)
-
