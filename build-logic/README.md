@@ -5,6 +5,6 @@ flowchart TD
   CalculateProjectTreeTask -- depends on --> CollateProjectLinksTask
   CollateModuleTypesTask -- depends on --> DumpModuleTypeTask
   CollateProjectLinksTask -- depends on --> DumpProjectLinksTask
-  GenerateMermaidTask -- depends on --> CalculateProjectTreeTask
-  GenerateMermaidTask -- depends on --> CollateModuleTypesTask
+  GenerateReadmeTask -- depends on --> CalculateProjectTreeTask
+  GenerateReadmeTask -- depends on --> CollateModuleTypesTask
 ```
