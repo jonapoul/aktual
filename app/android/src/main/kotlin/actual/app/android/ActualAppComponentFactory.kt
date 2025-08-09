@@ -15,7 +15,7 @@ import androidx.core.app.AppComponentFactory
 class ActualAppComponentFactory : AppComponentFactory() {
   override fun instantiateApplicationCompat(cl: ClassLoader, className: String): Application =
     super.instantiateApplicationCompat(cl, className).also { app ->
-      val graph = (app as AndroidAppGraph.Holder).graph()
+      val graph = (app as AndroidAppGraph.Holder).graph
       activityProviders = graph.activityProviders
       broadcastReceiverProviders = graph.broadcastReceiverProviders
       contentProviderProviders = graph.contentProviderProviders
@@ -45,10 +45,10 @@ class ActualAppComponentFactory : AppComponentFactory() {
   }
 
   // AppComponentFactory can be created multiple times
-  companion object {
-    private lateinit var activityProviders: ProviderMap<Activity>
-    private lateinit var broadcastReceiverProviders: ProviderMap<BroadcastReceiver>
-    private lateinit var contentProviderProviders: ProviderMap<ContentProvider>
-    private lateinit var serviceProviders: ProviderMap<Service>
+  private companion object {
+    lateinit var activityProviders: ProviderMap<Activity>
+    lateinit var broadcastReceiverProviders: ProviderMap<BroadcastReceiver>
+    lateinit var contentProviderProviders: ProviderMap<ContentProvider>
+    lateinit var serviceProviders: ProviderMap<Service>
   }
 }

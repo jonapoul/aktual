@@ -1,5 +1,6 @@
 plugins {
   alias(libs.plugins.module.compose)
+  alias(libs.plugins.kotlin.serialization)
 }
 
 kotlin {

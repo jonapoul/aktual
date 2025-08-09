@@ -22,17 +22,18 @@ interface AndroidAppGraph : AppGraph {
   @Multibinds(allowEmpty = true) val contentProviderProviders: ProviderMap<ContentProvider>
   @Multibinds(allowEmpty = true) val serviceProviders: ProviderMap<Service>
 
+  val buildConfig: BuildConfig
+
   @DependencyGraph.Factory
   fun interface Factory {
     fun create(
       @Provides context: Context,
-      @Provides buildConfig: BuildConfig,
       @Provides defaultPassword: Password.Provider,
       @Provides defaultServerUrl: ServerUrl.Provider,
     ): AndroidAppGraph
   }
 
-  fun interface Holder {
-    fun graph(): AndroidAppGraph
+  interface Holder {
+    val graph: AndroidAppGraph
   }
 }
