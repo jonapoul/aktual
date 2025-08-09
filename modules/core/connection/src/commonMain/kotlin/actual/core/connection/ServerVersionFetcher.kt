@@ -5,16 +5,17 @@ import actual.api.client.ActualApisStateHolder
 import actual.core.model.ActualVersionsStateHolder
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.LoopController
+import dev.zacsweers.metro.Inject
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import logcat.logcat
-import javax.inject.Inject
 import kotlin.time.Duration.Companion.seconds
 
-class ServerVersionFetcher @Inject internal constructor(
+@Inject
+class ServerVersionFetcher internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
   private val versionsStateHolder: ActualVersionsStateHolder,

@@ -2,38 +2,28 @@ package actual.gradle
 
 import blueprint.core.getLibrary
 import blueprint.core.libs
-import com.autonomousapps.DependencyAnalysisPlugin
+import commonMainDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
-import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
+import org.gradle.kotlin.dsl.apply
 
 class ModuleViewModel : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
     with(pluginManager) {
-      apply(KotlinAndroidPluginWrapper::class.java)
-      apply(ConventionAndroidLibrary::class.java)
-      apply(ConventionCompose::class.java)
-      apply(ConventionDiagrams::class.java)
-      apply(ConventionHilt::class.java)
-      apply(ConventionKotlinJvm::class.java)
-      apply(ConventionKover::class.java)
-      apply(ConventionIdea::class.java)
-      apply(ConventionStyle::class.java)
-      apply(ConventionTest::class.java)
-      apply(DependencyAnalysisPlugin::class.java)
-      apply(ConventionSortDependencies::class.java)
+      apply(ModuleMultiplatform::class)
+      apply(ConventionCompose::class)
     }
 
-    dependencies {
-      "api"(libs.getLibrary("androidx.lifecycle.viewmodel.core"))
-      "api"(libs.getLibrary("dagger.core"))
-      "implementation"(libs.getLibrary("hilt.android"))
-      "implementation"(libs.getLibrary("kotlinx.coroutines"))
-      "implementation"(libs.getLibrary("molecule"))
-      "implementation"(project(":modules:logging"))
-      "testImplementation"(project(":modules:test:android"))
-      "testImplementation"(project(":modules:test:kotlin"))
+    kotlin {
+      commonMainDependencies {
+        api(project(":modules:core:di"))
+        api(libs.getLibrary("androidx.lifecycle.viewmodel.core"))
+        api(libs.getLibrary("kotlinx.coroutines"))
+        api(libs.getLibrary("kotlinx.immutable"))
+        implementation(project(":modules:logging"))
+        implementation(libs.getLibrary("molecule"))
+        implementation(compose.runtime)
+      }
     }
   }
 }

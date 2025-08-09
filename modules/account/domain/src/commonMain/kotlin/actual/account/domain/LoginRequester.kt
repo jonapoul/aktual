@@ -7,13 +7,14 @@ import actual.api.model.account.LoginResponse
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import dev.zacsweers.metro.Inject
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import java.io.IOException
-import javax.inject.Inject
 
-class LoginRequester @Inject constructor(
+@Inject
+class LoginRequester(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
   private val preferences: AppGlobalPreferences,

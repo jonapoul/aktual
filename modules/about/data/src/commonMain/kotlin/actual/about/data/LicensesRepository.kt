@@ -3,12 +3,13 @@ package actual.about.data
 import actual.core.model.Assets
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.ListSerializer
-import javax.inject.Inject
 
-class LicensesRepository @Inject internal constructor(
+@Inject
+class LicensesRepository internal constructor(
   private val assets: Assets,
   private val contexts: CoroutineContexts,
 ) {

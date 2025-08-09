@@ -24,13 +24,12 @@ enum class ModuleType {
 
 internal fun moduleType(project: Project): ModuleType = with(project) {
   when {
-    name.startsWith("app-") -> App
     hasPlugin("actual.module.viewmodel") -> ViewModel
-    hasPlugin("actual.module.hilt") -> DI
+    hasPlugin("actual.module.di") -> DI
     hasPlugin("actual.module.compose") -> Compose
     hasPlugin("actual.module.android") -> Android
-    hasPlugin("actual.module.compose.mp") -> Compose
     hasPlugin("actual.module.multiplatform") -> Multiplatform
+    path.contains("app:") -> App
     hasPlugin("actual.module.jvm") -> Jvm
     else -> Other
   }
@@ -42,7 +41,7 @@ internal val ModuleType.label: String
   get() = when (this) {
     App -> "App"
     ViewModel -> "ViewModel"
-    DI -> "Hilt"
+    DI -> "DI"
     Compose -> "Compose"
     Android -> "Android"
     Multiplatform -> "Multiplatform"

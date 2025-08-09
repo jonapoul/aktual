@@ -1,9 +1,0 @@
-<resources>
-  <dimen name="zero">0dp</dimen>
-  <dimen name="tiny">1dp</dimen>
-  <dimen name="small">2dp</dimen>
-  <dimen name="medium">4dp</dimen>
-  <dimen name="large">8dp</dimen>
-  <dimen name="very_large">12dp</dimen>
-  <dimen name="huge">16dp</dimen>
-</resources>

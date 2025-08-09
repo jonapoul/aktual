@@ -39,7 +39,7 @@ class ActualAndroidLogcatLoggerTest {
       actual = ShadowLog.getLogs().last(),
       expected = ShadowLog.LogItem(
         Log.INFO,
-        "ActualAndroidLogcatLogg", // trimmed tag
+        "ActualAndroidLogcatLoggerTest",
         "ACTUAL: Hello world",
         null,
       ),

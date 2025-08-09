@@ -8,7 +8,6 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin.core)
-    api(libs.javaxInject)
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
     api(libs.okio)

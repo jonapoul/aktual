@@ -45,11 +45,13 @@ style:
     ignoreCompanionObjectPropertyDeclaration: true
     ignoreAnnotated:
       - "Preview"
-      - "ScreenPreview"
+      - "SingleScreenPreview"
+      - "TripleScreenPreview"
   UnusedPrivateMember:
     ignoreAnnotated:
       - "Preview"
-      - "ScreenPreview"
+      - "SingleScreenPreview"
+      - "TripleScreenPreview"
   ForbiddenComment:
     active: false
   UnnecessaryAbstractClass:

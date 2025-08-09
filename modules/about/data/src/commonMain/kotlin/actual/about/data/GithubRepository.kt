@@ -2,6 +2,7 @@ package actual.about.data
 
 import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.core.CoroutineContexts
+import dev.zacsweers.metro.Inject
 import github.api.client.GithubApi
 import github.api.model.GithubRelease
 import io.ktor.client.plugins.ResponseException
@@ -11,9 +12,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import java.io.IOException
-import javax.inject.Inject
 
-class GithubRepository @Inject constructor(
+@Inject
+class GithubRepository internal constructor(
   private val contexts: CoroutineContexts,
   private val apiFactory: GithubApi.Factory,
   private val buildConfig: BuildConfig,

@@ -1,12 +1,16 @@
 package actual.budget.model
 
 import android.content.Context
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
-import javax.inject.Inject
 
-class AndroidBudgetFiles @Inject constructor(
+@Inject
+@ContributesBinding(AppScope::class)
+class AndroidBudgetFiles(
   context: Context,
   override val fileSystem: FileSystem,
 ) : BudgetFiles {

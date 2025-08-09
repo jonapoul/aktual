@@ -1,22 +1,23 @@
+@file:OptIn(ExperimentalComposeLibrary::class)
+
+import org.jetbrains.compose.ExperimentalComposeLibrary
+
 plugins {
-  alias(libs.plugins.module.composeMp)
+  alias(libs.plugins.module.compose)
 }
 
 kotlin {
   commonMainDependencies {
-    api(libs.androidx.compose.runtime)
-    api(libs.androidx.compose.ui.text)
-    api(libs.test.androidx.compose.ui.core)
+    api(project(":modules:core:ui"))
+    api(compose.components.resources)
+    api(compose.runtime)
+    api(compose.ui)
+    api(compose.uiTest)
+    api(libs.test.androidx.compose.ui.junit4)
     api(libs.test.kotlinx.coroutines)
-    implementation(libs.androidx.compose.ui.core)
   }
 
   jvmMainDependencies {
-    api(libs.test.androidx.compose.ui.junit4)
-  }
-
-  androidMainDependencies {
-    api(project(":modules:core:ui")) // TODO: move to commonMain
-    api(libs.test.androidx.compose.ui.junit4)
+    api(compose.desktop.currentOs)
   }
 }

@@ -7,15 +7,16 @@ import actual.api.model.account.ChangePasswordResponse
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
+import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import java.io.IOException
-import javax.inject.Inject
 
-class PasswordChanger @Inject internal constructor(
+@Inject
+class PasswordChanger internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
   private val preferences: AppGlobalPreferences,

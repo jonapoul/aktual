@@ -13,17 +13,19 @@ import actual.api.client.SyncDownloadApi
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.collectFlow
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.update
 import logcat.logcat
 import okio.FileSystem
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ConnectionMonitor @Inject constructor(
+@Inject
+@SingleIn(AppScope::class)
+class ConnectionMonitor(
   private val scope: CoroutineScope,
   private val clientFactory: ClientFactory,
   private val apiStateHolder: ActualApisStateHolder,

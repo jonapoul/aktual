@@ -33,7 +33,7 @@ private class AndroidCallback(
   override fun onOpen(db: SupportSQLiteDatabase) {
     logcat.d { "onOpen ${db.path}" }
     super.onOpen(db)
-    @Suppress("KotlinConstantConditions") // BuildConfig is compile-time constant
+    @Suppress("KotlinConstantConditions") // DatabaseBuildConfig is compile-time constant
     db.setForeignKeyConstraintsEnabled(DatabaseBuildConfig.FOREIGN_KEY_CONSTRAINTS)
   }
 

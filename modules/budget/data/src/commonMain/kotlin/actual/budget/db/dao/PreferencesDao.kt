@@ -8,12 +8,13 @@ import actual.budget.model.SyncedPrefKey
 import alakazam.kotlin.core.CoroutineContexts
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class PreferencesDao @Inject constructor(
+@Inject
+class PreferencesDao(
   database: BudgetDatabase,
   private val contexts: CoroutineContexts,
 ) {

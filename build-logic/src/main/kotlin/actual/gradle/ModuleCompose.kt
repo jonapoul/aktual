@@ -1,32 +1,60 @@
+@file:OptIn(ExperimentalKotlinGradlePluginApi::class)
+
 package actual.gradle
 
-import com.autonomousapps.DependencyAnalysisPlugin
+import androidUnitTestDependencies
+import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
+import blueprint.core.getLibrary
+import blueprint.core.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
-import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.invoke
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 class ModuleCompose : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
-      apply(KotlinAndroidPluginWrapper::class.java)
-      apply(ConventionAndroidLibrary::class.java)
-      apply(ConventionCompose::class.java)
-      apply(ConventionDiagrams::class.java)
-      apply(ConventionHilt::class.java)
-      apply(ConventionKover::class.java)
-      apply(ConventionIdea::class.java)
-      apply(ConventionStyle::class.java)
-      apply(ConventionTest::class.java)
-      apply(DependencyAnalysisPlugin::class.java)
-      apply(ConventionSortDependencies::class.java)
+      apply(ModuleMultiplatform::class)
+      apply(ConventionCompose::class)
     }
 
-    dependencies {
-      if (path != ":test:compose") {
-        "testImplementation"(project(":modules:test:android"))
-        "testImplementation"(project(":modules:test:compose"))
-        "testImplementation"(project(":modules:test:kotlin"))
+    kotlin {
+      sourceSets {
+        invokeWhenCreated("androidDebug") {
+          dependencies {
+            implementation(compose.preview)
+          }
+        }
+      }
+
+      commonMainDependencies {
+        api(compose.runtime)
+        implementation(compose.animation)
+        implementation(compose.foundation)
+        implementation(compose.material3)
+        implementation(compose.materialIconsExtended)
+        implementation(compose.ui)
+        implementation(compose.uiTooling)
+        implementation(compose.uiUtil)
+        implementation(libs.getLibrary("alakazam.kotlin.compose"))
+        implementation(libs.getLibrary("androidx.lifecycle.runtime.compose"))
+        implementation(libs.getLibrary("androidx.lifecycle.viewmodel.compose"))
+        implementation(libs.getLibrary("kotlinx.immutable"))
+      }
+
+      commonTestDependencies {
+        implementation(project(":modules:test:kotlin"))
+
+        if (name != ":modules:test:compose") {
+          implementation(project(":modules:test:compose"))
+        }
+      }
+
+      androidUnitTestDependencies {
+        implementation(project(":modules:test:android"))
+        implementation(libs.getLibrary("test.androidx.compose.ui.junit4"))
       }
     }
   }

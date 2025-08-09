@@ -4,13 +4,14 @@ import com.android.build.api.dsl.LibraryExtension
 import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 
 class ConventionAndroidLibrary : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
     with(pluginManager) {
-      apply(LibraryPlugin::class.java)
-      apply(ConventionAndroidBase::class.java)
+      apply(LibraryPlugin::class)
+      apply(ConventionAndroidBase::class)
     }
 
     extensions.configure<LibraryExtension> {

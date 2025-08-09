@@ -2,6 +2,9 @@ package actual.core.model
 
 import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.core.StateHolder
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.update
 
 data class ActualVersions(
@@ -21,6 +24,8 @@ data class ActualVersions(
   }
 }
 
+@Inject
+@SingleIn(AppScope::class)
 class ActualVersionsStateHolder(
   private val buildConfig: BuildConfig,
 ) : StateHolder<ActualVersions>(from(buildConfig, server = null)) {
