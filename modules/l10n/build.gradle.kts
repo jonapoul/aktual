@@ -1,5 +1,4 @@
 import dev.jonpoulton.catalog.gradle.CatalogParameterNaming
-import dev.jonpoulton.catalog.gradle.GenerateResourcesTask
 import dev.jonpoulton.catalog.gradle.NameTransform
 
 plugins {
@@ -21,14 +20,17 @@ catalog {
   generateAtSync = true
 }
 
-tasks.register("generateResourceCatalog") {
-  dependsOn(tasks.withType<GenerateResourcesTask>())
+compose.resources {
+  generateResClass = always
+  nameOfResClass = "Res"
+  packageOfResClass = "actual.l10n"
+  publicResClass = true
 }
 
 kotlin {
   commonMainDependencies {
-    implementation(project.dependencies.platform(libs.androidx.compose.bom))
-    api(libs.androidx.compose.runtime)
-    api(libs.androidx.compose.ui.core)
+    api(compose.components.resources)
+    api(compose.runtime)
+    api(compose.ui)
   }
 }

@@ -4,7 +4,6 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(libs.javaxInject)
     api(project(":modules:account:model"))
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.kotlinx.coroutines)
@@ -12,7 +11,7 @@ kotlin {
     implementation(project(":modules:api:actual"))
     implementation(project(":modules:logging"))
     implementation(project(":modules:prefs"))
-    compileOnly(libs.alakazam.kotlin.compose.annotations)
+    compileOnly(libs.alakazam.kotlin.composeAnnotations)
   }
 
   androidUnitTestDependencies {

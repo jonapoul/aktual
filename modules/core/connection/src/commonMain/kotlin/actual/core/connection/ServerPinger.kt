@@ -6,18 +6,20 @@ import actual.core.model.PingState
 import actual.core.model.PingStateHolder
 import alakazam.kotlin.core.LoopController
 import alakazam.kotlin.core.launchInfiniteLoop
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.update
 import logcat.logcat
-import javax.inject.Inject
-import javax.inject.Singleton
 import kotlin.time.Duration.Companion.seconds
 
-@Singleton
-class ServerPinger @Inject constructor(
+@Inject
+@SingleIn(AppScope::class)
+class ServerPinger internal constructor(
   private val scope: CoroutineScope,
   private val apiStateHolder: ActualApisStateHolder,
   private val pingStateHolder: PingStateHolder,

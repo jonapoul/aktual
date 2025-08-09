@@ -4,7 +4,6 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(libs.javaxInject)
     api(libs.preferences.core)
     api(project(":modules:account:model"))
     api(project(":modules:core:model"))

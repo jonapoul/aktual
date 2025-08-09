@@ -17,14 +17,7 @@ class ConventionTestDependencies : Plugin<Project> {
         testLibraries.forEach { lib -> testImplementation(lib) }
 
         if (isAndroid) {
-          testImplementation(libs.getLibrary("test.androidx.arch"))
-          testImplementation(libs.getLibrary("test.androidx.coreKtx"))
-          testImplementation(libs.getLibrary("test.androidx.junit"))
-          testImplementation(libs.getLibrary("test.androidx.rules"))
-          testImplementation(libs.getLibrary("test.androidx.runner"))
-          testImplementation(libs.getLibrary("test.mockk.android"))
-          testImplementation(libs.getLibrary("test.robolectric"))
-
+          androidTestLibraries.forEach { lib -> testImplementation(lib) }
           "debugImplementation"(libs.getLibrary("test.androidx.monitor"))
         }
       }

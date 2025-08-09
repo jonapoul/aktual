@@ -1,0 +1,28 @@
+main:
+  namespace: dev.jonpoulton.actual.app
+  minSDK: 28
+  targetSDK: 35
+  permissions:
+  - android.permission.ACCESS_NETWORK_STATE
+  - android.permission.INTERNET
+  - dev.jonpoulton.actual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+  libraries:
+  - androidx.window.extensions:
+      required: false
+  - androidx.window.sidecar:
+      required: false
+  nativeLibraries:
+  - libandroidx.graphics.path:
+      requiredBy: androidx.graphics:graphics-path
+      abis:
+      - arm64-v8a
+      - armeabi-v7a
+      - x86
+      - x86_64
+  exports:
+    activity:
+    - actual.app.android.ActualActivity
+    - androidx.compose.ui.tooling.PreviewActivity
+    receiver:
+    - androidx.profileinstaller.ProfileInstallReceiver
+fingerprint: cd651fd1e2bd0d149d779432dd4f58db

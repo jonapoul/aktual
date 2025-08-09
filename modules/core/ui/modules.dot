@@ -3,7 +3,7 @@ edge ["dir"="forward"]
 graph ["dpi"="100","label"=":core:ui","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
-":core:android" ["fillcolor"="#55FF55","shape"="none"]
+":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -13,7 +13,7 @@ graph ["rank"="same"]
 ":core:ui"
 }
 ":core:ui" -> ":budget:model"
-":core:ui" -> ":core:android" ["style"="dotted"]
+":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":l10n" ["style"="dotted"]
 subgraph "cluster_legend" {
@@ -21,8 +21,8 @@ edge ["dir"="none"]
 graph ["label"="Legend","fontsize"="20"]
 "Legend" ["style"="filled","fillcolor"="#FFFFFF","shape"="none","margin"="0","fontsize"="15","label"=<
 <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
+<TR><TD>DI</TD><TD BGCOLOR="#FCB103">module-name</TD></TR>
 <TR><TD>Compose</TD><TD BGCOLOR="#FFFF55">module-name</TD></TR>
-<TR><TD>Android</TD><TD BGCOLOR="#55FF55">module-name</TD></TR>
 <TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
 </TABLE>
 >]

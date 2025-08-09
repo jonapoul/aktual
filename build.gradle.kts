@@ -11,7 +11,6 @@ plugins {
   alias(libs.plugins.compose) apply false
   alias(libs.plugins.composeHotReload) apply false
   alias(libs.plugins.detekt) apply false
-  alias(libs.plugins.hilt) apply false
   alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.kotlin.compose) apply false
   alias(libs.plugins.kotlin.jvm) apply false
@@ -21,12 +20,11 @@ plugins {
   alias(libs.plugins.ksp) apply false
   alias(libs.plugins.licensee) apply false
   alias(libs.plugins.manifestLock) apply false
+  alias(libs.plugins.metro) apply false
   alias(libs.plugins.redacted) apply false
   alias(libs.plugins.sqldelight) apply false
 
-  alias(libs.plugins.dependencyAnalysis)
   alias(libs.plugins.dependencyGuard)
-  alias(libs.plugins.dependencySort)
   alias(libs.plugins.dependencyVersions)
   alias(libs.plugins.doctor)
   alias(libs.plugins.kover)
@@ -39,66 +37,6 @@ plugins {
 // Place all local properties in the project-level gradle properties map
 rootLocalPropertiesOrNull()?.forEach { (key, value) ->
   ext[key.toString()] = value.toString()
-}
-
-dependencyAnalysis {
-  useTypesafeProjectAccessors(true)
-
-  usage {
-    analysis {
-      checkSuperClasses(true)
-    }
-  }
-
-  structure {
-    ignoreKtx(ignore = true)
-    bundle(name = "kotlin") { includeGroup("org.jetbrains.kotlin:*") }
-    bundle(name = "modules") { include("^:.*$".toRegex()) }
-    bundle(name = "ktor") { includeGroup(group = "io.ktor") }
-    bundle(name = "viewModel") { include(regex = "androidx.lifecycle:lifecycle-viewmodel.*".toRegex()) }
-    bundle(name = "logging") {
-      includeGroup("com.squareup.logcat")
-      include(":modules:logging".toRegex())
-    }
-  }
-
-  reporting {
-    printBuildHealth(true)
-    onlyOnFailure(true)
-  }
-
-  abi {
-    exclusions {
-      ignoreInternalPackages()
-      ignoreGeneratedCode()
-    }
-  }
-
-  issues {
-    all {
-      onAny { severity(value = "fail") }
-
-      onRuntimeOnly { severity(value = "ignore") }
-
-      onUnusedDependencies {
-        exclude(
-          ":modules:logging",
-        )
-        exclude(
-          libs.androidx.compose.ui.tooling,
-          libs.androidx.compose.ui.toolingPreview,
-          libs.hilt.core,
-          libs.logcat,
-          libs.molecule,
-          libs.test.androidx.monitor,
-        )
-      }
-
-      ignoreSourceSet(
-        "androidTest",
-      )
-    }
-  }
 }
 
 doctor {

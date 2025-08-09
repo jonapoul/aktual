@@ -22,8 +22,8 @@ graph ["rank"="same"]
 ":api:actual" -> ":core:model"
 ":api:builder" -> ":core:model"
 ":api:builder" -> ":logging" ["style"="dotted"]
-":core:connection" -> ":api:actual" ["style"="dotted"]
-":core:connection" -> ":api:builder" ["style"="dotted"]
+":core:connection" -> ":api:actual"
+":core:connection" -> ":api:builder"
 ":core:connection" -> ":core:model" ["style"="dotted"]
 ":core:connection" -> ":logging" ["style"="dotted"]
 ":core:connection" -> ":prefs" ["style"="dotted"]

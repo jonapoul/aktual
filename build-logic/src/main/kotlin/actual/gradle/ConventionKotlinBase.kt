@@ -4,13 +4,18 @@ package actual.gradle
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
 import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 
 class ConventionKotlinBase : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
-    extensions.getByType(HasConfigurableKotlinCompilerOptions::class).apply {
+    with(pluginManager) {
+      apply(ConventionDi::class)
+    }
+
+    extensions.configure(HasConfigurableKotlinCompilerOptions::class) {
       compilerOptions { configure() }
     }
   }

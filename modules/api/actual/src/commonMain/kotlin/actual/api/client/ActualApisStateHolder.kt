@@ -1,11 +1,13 @@
 package actual.api.client
 
 import alakazam.kotlin.core.StateHolder
-import javax.inject.Inject
-import javax.inject.Singleton
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
-@Singleton
-class ActualApisStateHolder @Inject constructor() : StateHolder<ActualApis?>(initialState = null) {
+@Inject
+@SingleIn(AppScope::class)
+class ActualApisStateHolder : StateHolder<ActualApis?>(initialState = null) {
   override var value: ActualApis?
     get() = super.value
     set(value) {

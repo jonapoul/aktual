@@ -8,12 +8,13 @@ import dev.jonpoulton.preferences.core.Preference
 import dev.jonpoulton.preferences.core.Preferences
 import dev.jonpoulton.preferences.core.SimpleNullableStringSerializer
 import dev.jonpoulton.preferences.core.enumOrdinalSerializer
-import javax.inject.Inject
+import dev.zacsweers.metro.Inject
 
 /**
  * Prefs which are kept on this device, but apply across all budgets
  */
-class AppGlobalPreferences @Inject constructor(private val preferences: Preferences) {
+@Inject
+class AppGlobalPreferences(preferences: Preferences) {
   val loginToken: Preference<LoginToken?> = preferences
     .getNullableObject(key = "token", LoginTokenSerializer, default = null)
 

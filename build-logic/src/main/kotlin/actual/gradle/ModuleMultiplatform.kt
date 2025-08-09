@@ -4,26 +4,29 @@ import blueprint.core.androidUnitTestDependencies
 import blueprint.core.commonTestDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.ExtensionAware
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 
+internal fun ExtensionAware.kotlin(action: KotlinMultiplatformExtension.() -> Unit) =
+  extensions.configure<KotlinMultiplatformExtension>(action)
+
 class ModuleMultiplatform : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
-      apply(KotlinMultiplatformPluginWrapper::class.java)
-      apply(ConventionKotlinBase::class.java)
-      apply(ConventionAndroidLibrary::class.java)
-      apply(ConventionDiagrams::class.java)
-      apply(ConventionKover::class.java)
-      apply(ConventionIdea::class.java)
-      apply(ConventionStyle::class.java)
-      apply(ConventionTest::class.java)
-      // apply(DependencyAnalysisPlugin::class.java) // doesn't support KMP
-      // apply(ConventionSortDependencies::class.java) // doesn't support KMP
+      apply(KotlinMultiplatformPluginWrapper::class)
+      apply(ConventionKotlinBase::class)
+      apply(ConventionAndroidLibrary::class)
+      apply(ConventionDiagrams::class)
+      apply(ConventionKover::class)
+      apply(ConventionIdea::class)
+      apply(ConventionStyle::class)
+      apply(ConventionTest::class)
     }
 
-    extensions.configure<KotlinMultiplatformExtension> {
+    kotlin {
       jvm()
       androidTarget()
 
@@ -33,6 +36,7 @@ class ModuleMultiplatform : Plugin<Project> {
       }
 
       androidUnitTestDependencies {
+        androidTestLibraries.forEach { lib -> implementation(lib) }
         implementation(project(":modules:test:android"))
       }
     }
