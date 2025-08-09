@@ -1,3 +1,42 @@
 # core:connection
 
-![modules.png](modules.png)
+<table>
+<tr><th colspan='2'>Legend</th></tr>
+<tr><td style='text-align:center;'>Multiplatform</td><td style='text-align:center; background-color:#9D8DF1; color:black'>module-name</td></tr>
+</table>
+
+```mermaid
+graph TD
+classDef titleStyle fill:none,stroke:none,font-size:24px,font-weight:bold
+accountmodel["account:model"]
+apiactual["api:actual"]
+apibuilder["api:builder"]
+budgetmodel["budget:model"]
+codegenannotation["codegen:annotation"]
+coreconnection["core:connection"]
+coremodel["core:model"]
+logging["logging"]
+prefs["prefs"]
+style accountmodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style apiactual fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style apibuilder fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetmodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style codegenannotation fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style coreconnection fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style coremodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style logging fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style prefs fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+apiactual --> accountmodel
+apiactual --> budgetmodel
+apiactual -.-> codegenannotation
+apiactual --> coremodel
+apibuilder --> coremodel
+apibuilder -.-> logging
+coreconnection --> apiactual
+coreconnection --> apibuilder
+coreconnection -.-> coremodel
+coreconnection -.-> logging
+coreconnection -.-> prefs
+prefs --> accountmodel
+prefs --> coremodel
+```

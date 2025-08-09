@@ -8,7 +8,6 @@ import actual.diagrams.ModuleType.Jvm
 import actual.diagrams.ModuleType.Multiplatform
 import actual.diagrams.ModuleType.Other
 import actual.diagrams.ModuleType.ViewModel
-import guru.nidi.graphviz.attribute.Color
 import org.gradle.api.Project
 
 enum class ModuleType {
@@ -49,7 +48,7 @@ internal val ModuleType.label: String
     Other -> "Other"
   }
 
-internal val ModuleType.color: Color
+internal val ModuleType.color: String
   get() = when (this) {
     App -> "#FF5555" // red
     ViewModel -> "#F5A6A6" // pink
@@ -59,4 +58,4 @@ internal val ModuleType.color: Color
     Multiplatform -> "#9D8DF1" // indigo
     Jvm -> "#8000FF" // violet
     Other -> "#808080" // grey
-  }.let(Color::rgb).fill()
+  }

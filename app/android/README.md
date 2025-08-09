@@ -1,3 +1,211 @@
 # app:android
 
-![modules.png](modules.png)
+<table>
+<tr><th colspan='2'>Legend</th></tr>
+<tr><td style='text-align:center;'>App</td><td style='text-align:center; background-color:#FF5555; color:black'>module-name</td></tr>
+<tr><td style='text-align:center;'>ViewModel</td><td style='text-align:center; background-color:#F5A6A6; color:black'>module-name</td></tr>
+<tr><td style='text-align:center;'>DI</td><td style='text-align:center; background-color:#FCB103; color:black'>module-name</td></tr>
+<tr><td style='text-align:center;'>Compose</td><td style='text-align:center; background-color:#FFFF55; color:black'>module-name</td></tr>
+<tr><td style='text-align:center;'>Multiplatform</td><td style='text-align:center; background-color:#9D8DF1; color:black'>module-name</td></tr>
+</table>
+
+```mermaid
+graph TD
+classDef titleStyle fill:none,stroke:none,font-size:24px,font-weight:bold
+aboutdata["about:data"]
+aboutui["about:ui"]
+aboutvm["about:vm"]
+accountdomain["account:domain"]
+accountmodel["account:model"]
+accountui["account:ui"]
+accountvm["account:vm"]
+apiactual["api:actual"]
+apibuilder["api:builder"]
+apigithub["api:github"]
+appandroid["app:android"]
+appdi["app:di"]
+appnav["app:nav"]
+budgetdata["budget:data"]
+budgetdi["budget:di"]
+budgetencryption["budget:encryption"]
+budgetlistui["budget:list:ui"]
+budgetlistvm["budget:list:vm"]
+budgetmodel["budget:model"]
+budgetreportsui["budget:reports:ui"]
+budgetreportsvm["budget:reports:vm"]
+budgetsyncui["budget:sync:ui"]
+budgetsyncvm["budget:sync:vm"]
+budgettransactionsui["budget:transactions:ui"]
+budgettransactionsvm["budget:transactions:vm"]
+codegenannotation["codegen:annotation"]
+coreconnection["core:connection"]
+coredi["core:di"]
+coremodel["core:model"]
+coreui["core:ui"]
+l10n["l10n"]
+logging["logging"]
+prefs["prefs"]
+settingsui["settings:ui"]
+settingsvm["settings:vm"]
+style aboutdata fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style aboutui fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style aboutvm fill:#F5A6A6,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style accountdomain fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style accountmodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style accountui fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style accountvm fill:#F5A6A6,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style apiactual fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style apibuilder fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style apigithub fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style appandroid fill:#FF5555,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style appdi fill:#FCB103,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style appnav fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetdata fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetdi fill:#FCB103,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetencryption fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetlistui fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetlistvm fill:#F5A6A6,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetmodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetreportsui fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetreportsvm fill:#F5A6A6,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetsyncui fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetsyncvm fill:#F5A6A6,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgettransactionsui fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgettransactionsvm fill:#F5A6A6,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style codegenannotation fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style coreconnection fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style coredi fill:#FCB103,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style coremodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style coreui fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style l10n fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style logging fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style prefs fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style settingsui fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style settingsvm fill:#F5A6A6,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+appandroid -.-> appdi
+appandroid -.-> appnav
+appandroid -.-> budgetdi
+appandroid -.-> coreconnection
+appandroid -.-> coredi
+appandroid -.-> l10n
+appandroid -.-> prefs
+appdi -.-> apibuilder
+appdi --> apigithub
+appdi --> budgetmodel
+appdi --> coredi
+appdi --> coremodel
+appdi --> prefs
+appnav --> aboutui
+appnav --> accountui
+appnav --> budgetlistui
+appnav --> budgetreportsui
+appnav --> budgetsyncui
+appnav --> budgettransactionsui
+appnav --> coreui
+appnav --> logging
+appnav --> settingsui
+aboutdata --> apigithub
+aboutui --> aboutvm
+aboutui --> coreui
+aboutui -.-> l10n
+aboutvm --> aboutdata
+aboutvm --> coredi
+aboutvm -.-> logging
+accountdomain --> accountmodel
+accountdomain -.-> apiactual
+accountdomain -.-> logging
+accountdomain -.-> prefs
+accountui -.-> accountdomain
+accountui --> accountvm
+accountui --> coremodel
+accountui --> coreui
+accountui -.-> l10n
+accountui -.-> logging
+accountvm --> accountdomain
+accountvm --> accountmodel
+accountvm -.-> apiactual
+accountvm --> coredi
+accountvm --> coremodel
+accountvm -.-> logging
+accountvm --> prefs
+apiactual --> accountmodel
+apiactual --> budgetmodel
+apiactual -.-> codegenannotation
+apiactual --> coremodel
+apibuilder --> coremodel
+apibuilder -.-> logging
+apigithub -.-> codegenannotation
+apigithub --> coremodel
+budgetdata --> budgetmodel
+budgetdata --> coremodel
+budgetdata -.-> logging
+budgetdi --> budgetdata
+budgetencryption --> accountmodel
+budgetencryption --> budgetmodel
+budgetencryption --> coremodel
+budgetlistui -.-> accountmodel
+budgetlistui --> budgetlistvm
+budgetlistui -.-> budgetmodel
+budgetlistui --> coreui
+budgetlistui -.-> l10n
+budgetlistvm -.-> accountmodel
+budgetlistvm -.-> apiactual
+budgetlistvm --> budgetmodel
+budgetlistvm --> coredi
+budgetlistvm --> coremodel
+budgetlistvm -.-> logging
+budgetlistvm -.-> prefs
+budgetreportsui -.-> accountmodel
+budgetreportsui --> budgetreportsvm
+budgetreportsui --> coreui
+budgetreportsui -.-> l10n
+budgetreportsvm -.-> accountmodel
+budgetreportsvm -.-> budgetdi
+budgetreportsvm --> budgetmodel
+budgetreportsvm --> coredi
+budgetreportsvm -.-> coremodel
+budgetreportsvm -.-> logging
+budgetsyncui -.-> accountmodel
+budgetsyncui --> budgetsyncvm
+budgetsyncui --> coreui
+budgetsyncui -.-> l10n
+budgetsyncvm -.-> accountmodel
+budgetsyncvm -.-> apiactual
+budgetsyncvm --> budgetdi
+budgetsyncvm --> budgetencryption
+budgetsyncvm --> budgetmodel
+budgetsyncvm --> coredi
+budgetsyncvm -.-> coremodel
+budgetsyncvm -.-> logging
+budgetsyncvm -.-> prefs
+budgettransactionsui -.-> accountmodel
+budgettransactionsui --> budgetmodel
+budgettransactionsui --> budgettransactionsvm
+budgettransactionsui --> coreui
+budgettransactionsui -.-> l10n
+budgettransactionsvm -.-> accountmodel
+budgettransactionsvm --> budgetdata
+budgettransactionsvm -.-> budgetdi
+budgettransactionsvm --> budgetmodel
+budgettransactionsvm --> coredi
+budgettransactionsvm -.-> logging
+budgettransactionsvm -.-> prefs
+coreconnection --> apiactual
+coreconnection --> apibuilder
+coreconnection -.-> coremodel
+coreconnection -.-> logging
+coreconnection -.-> prefs
+coreui --> budgetmodel
+coreui -.-> coredi
+coreui --> coremodel
+coreui -.-> l10n
+prefs --> accountmodel
+prefs --> coremodel
+settingsui --> coremodel
+settingsui --> coreui
+settingsui -.-> l10n
+settingsui --> settingsvm
+settingsvm --> coredi
+settingsvm -.-> logging
+settingsvm --> prefs
+```

@@ -1,11 +1,10 @@
 # Diagram Task Dependencies
+
 ```mermaid
 flowchart TD
-  CalculateProjectTreeTask --> CollateProjectLinksTask
-  CheckDotFileTask --> GenerateDotFileTask
-  CollateModuleTypesTask --> DumpModuleTypeTask
-  CollateProjectLinksTask --> DumpProjectLinksTask
-  GenerateDotFileTask --> CalculateProjectTreeTask
-  GenerateDotFileTask --> CollateModuleTypesTask
-  GeneratePngFileTask --> GenerateDotFileTask
+  CalculateProjectTreeTask -- depends on --> CollateProjectLinksTask
+  CollateModuleTypesTask -- depends on --> DumpModuleTypeTask
+  CollateProjectLinksTask -- depends on --> DumpProjectLinksTask
+  GenerateMermaidTask -- depends on --> CalculateProjectTreeTask
+  GenerateMermaidTask -- depends on --> CollateModuleTypesTask
 ```

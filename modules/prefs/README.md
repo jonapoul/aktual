@@ -1,3 +1,19 @@
 # prefs
 
-![modules.png](modules.png)
+<table>
+<tr><th colspan='2'>Legend</th></tr>
+<tr><td style='text-align:center;'>Multiplatform</td><td style='text-align:center; background-color:#9D8DF1; color:black'>module-name</td></tr>
+</table>
+
+```mermaid
+graph TD
+classDef titleStyle fill:none,stroke:none,font-size:24px,font-weight:bold
+accountmodel["account:model"]
+coremodel["core:model"]
+prefs["prefs"]
+style accountmodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style coremodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style prefs fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+prefs --> accountmodel
+prefs --> coremodel
+```

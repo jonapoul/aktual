@@ -1,3 +1,54 @@
 # budget:reports:ui
 
-![modules.png](modules.png)
+<table>
+<tr><th colspan='2'>Legend</th></tr>
+<tr><td style='text-align:center;'>ViewModel</td><td style='text-align:center; background-color:#F5A6A6; color:black'>module-name</td></tr>
+<tr><td style='text-align:center;'>DI</td><td style='text-align:center; background-color:#FCB103; color:black'>module-name</td></tr>
+<tr><td style='text-align:center;'>Compose</td><td style='text-align:center; background-color:#FFFF55; color:black'>module-name</td></tr>
+<tr><td style='text-align:center;'>Multiplatform</td><td style='text-align:center; background-color:#9D8DF1; color:black'>module-name</td></tr>
+</table>
+
+```mermaid
+graph TD
+classDef titleStyle fill:none,stroke:none,font-size:24px,font-weight:bold
+accountmodel["account:model"]
+budgetdata["budget:data"]
+budgetdi["budget:di"]
+budgetmodel["budget:model"]
+budgetreportsui["budget:reports:ui"]
+budgetreportsvm["budget:reports:vm"]
+coredi["core:di"]
+coremodel["core:model"]
+coreui["core:ui"]
+l10n["l10n"]
+logging["logging"]
+style accountmodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetdata fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetdi fill:#FCB103,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetmodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetreportsui fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style budgetreportsvm fill:#F5A6A6,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style coredi fill:#FCB103,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style coremodel fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style coreui fill:#FFFF55,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style l10n fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+style logging fill:#9D8DF1,stroke:#333,stroke-width:2px,color:black,font-weight:bold
+budgetdata --> budgetmodel
+budgetdata --> coremodel
+budgetdata -.-> logging
+budgetdi --> budgetdata
+budgetreportsui -.-> accountmodel
+budgetreportsui --> budgetreportsvm
+budgetreportsui --> coreui
+budgetreportsui -.-> l10n
+budgetreportsvm -.-> accountmodel
+budgetreportsvm -.-> budgetdi
+budgetreportsvm --> budgetmodel
+budgetreportsvm --> coredi
+budgetreportsvm -.-> coremodel
+budgetreportsvm -.-> logging
+coreui --> budgetmodel
+coreui -.-> coredi
+coreui --> coremodel
+coreui -.-> l10n
+```

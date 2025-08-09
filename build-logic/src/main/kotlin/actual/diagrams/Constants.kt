@@ -1,3 +1,3 @@
 package actual.diagrams
 
-internal const val FILENAME_ROOT = "modules"
+internal const val FILENAME = "README.md"

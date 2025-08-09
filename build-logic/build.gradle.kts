@@ -44,13 +44,13 @@ dependencies {
   implementation(libs.okio)
   implementation(libs.plugin.blueprint.core)
   implementation(libs.plugin.blueprint.recipes)
-  implementation(libs.plugin.graphviz)
   implementation(libs.plugin.jacoco)
 }
 
 tasks.validatePlugins {
   enableStricterValidation = true
   failOnWarning = true
+  ignoreFailures = false
 }
 
 gradlePlugin {

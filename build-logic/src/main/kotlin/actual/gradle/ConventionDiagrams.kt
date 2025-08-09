@@ -1,15 +1,13 @@
 package actual.gradle
 
-import actual.diagrams.FILENAME_ROOT
+import actual.diagrams.FILENAME
 import actual.diagrams.tasks.CalculateProjectTreeTask
-import actual.diagrams.tasks.CheckDotFileTask
 import actual.diagrams.tasks.CheckReadmeTask
 import actual.diagrams.tasks.CollateModuleTypesTask
 import actual.diagrams.tasks.CollateProjectLinksTask
 import actual.diagrams.tasks.DumpModuleTypeTask
 import actual.diagrams.tasks.DumpProjectLinksTask
-import actual.diagrams.tasks.GenerateDotFileTask
-import actual.diagrams.tasks.GeneratePngFileTask
+import actual.diagrams.tasks.GenerateReadmeTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -21,34 +19,30 @@ class ConventionDiagrams : Plugin<Project> {
       return@with
     }
 
-    val realDotFile = layout.projectDirectory.file("$FILENAME_ROOT.dot")
+    val realDotFile = layout.projectDirectory.file(FILENAME)
 
     DumpModuleTypeTask.register(target)
     DumpProjectLinksTask.register(target)
     CalculateProjectTreeTask.register(target)
 
-    val generateDotFileTask = GenerateDotFileTask.register(
+    GenerateReadmeTask.register(
       target = target,
-      name = GenerateDotFileTask.TASK_NAME,
-      dotFile = provider { realDotFile },
+      name = GenerateReadmeTask.TASK_NAME,
+      readme = provider { realDotFile },
       printOutput = true,
     )
 
-    val generateTempDotFileTask = GenerateDotFileTask.register(
+    val generateTempReadmeTask = GenerateReadmeTask.register(
       target = target,
-      name = "generateTempDotFile",
-      dotFile = layout.buildDirectory.file("diagrams-modules-temp/$FILENAME_ROOT.dot"),
+      name = "generateTempReadme",
+      readme = layout.buildDirectory.file("diagrams-modules-temp/$FILENAME"),
       printOutput = false,
     )
 
-    GeneratePngFileTask.register(target, generateDotFileTask)
-
-    val checkDotFiles = CheckDotFileTask.register(target, generateTempDotFileTask, realDotFile)
-    val checkModulesReadmeTask = CheckReadmeTask.register(target)
+    val checkReadmeTask = CheckReadmeTask.register(target, generateTempReadmeTask, realDotFile)
 
     tasks.named("check").configure {
-      dependsOn(checkModulesReadmeTask)
-      dependsOn(checkDotFiles)
+      dependsOn(checkReadmeTask)
     }
   }
 }
