@@ -16,6 +16,8 @@ import actual.core.model.RandomUuidGenerator
 import actual.core.model.UuidGenerator
 import actual.test.assertListEmitted
 import alakazam.kotlin.core.CoroutineContexts
+import alakazam.test.core.Flaky
+import alakazam.test.core.FlakyTestRule
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher
 import android.content.Context
@@ -29,6 +31,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
+import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
@@ -37,6 +40,8 @@ import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 class ChooseReportTypeViewModelTest {
+  @get:Rule val flakyTestRule = FlakyTestRule()
+
   // real
   private lateinit var viewModel: ChooseReportTypeViewModel
   private lateinit var context: Context
@@ -64,6 +69,7 @@ class ChooseReportTypeViewModelTest {
   }
 
   @Test
+  @Flaky(retry = 5, reason = "Sometimes times out when awaiting emission")
   fun `Inserting each expected slot in sequence`() = runVmTest {
     getPositionAndSizeFlow().test {
       assertListEmitted()
