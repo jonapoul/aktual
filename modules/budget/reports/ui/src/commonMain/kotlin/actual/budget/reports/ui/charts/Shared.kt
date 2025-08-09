@@ -79,7 +79,7 @@ internal fun axisLabelComponent(compact: Boolean, theme: Theme = LocalTheme.curr
   null
 } else {
   rememberAxisLabelComponent(
-    style = TextStyle(color = theme.pageText, fontSize = 12.sp)
+    style = TextStyle(color = theme.pageText, fontSize = 12.sp),
   )
 }
 

@@ -25,7 +25,8 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 fun PreviewContextConfigurationEffect() {
   CompositionLocalProvider(LocalInspectionMode provides true) {
-    org.jetbrains.compose.resources.PreviewContextConfigurationEffect()
+    org.jetbrains.compose.resources
+      .PreviewContextConfigurationEffect()
   }
 }
 
@@ -45,7 +46,8 @@ fun PreviewThemedColumn(
   LazyColumn {
     items(
       SchemeTypes,
-      key = { it.ordinal }) { schemeType ->
+      key = { it.ordinal },
+    ) { schemeType ->
       Box(modifier = modifier.heightIn(max = maxHeight)) {
         PreviewWithColorScheme(
           schemeType = schemeType,
@@ -66,7 +68,8 @@ fun PreviewThemedRow(
   LazyRow {
     items(
       SchemeTypes,
-      key = { it.ordinal }) { schemeType ->
+      key = { it.ordinal },
+    ) { schemeType ->
       Box(modifier = modifier) {
         PreviewWithColorScheme(
           schemeType = schemeType,
@@ -87,7 +90,8 @@ fun PreviewThemedScreen(
   LazyRow {
     items(
       SchemeTypes,
-      key = { it.ordinal }) { schemeType ->
+      key = { it.ordinal },
+    ) { schemeType ->
       PreviewWithColorScheme(
         modifier = modifier
           .width(MY_PHONE_WIDTH_DP.dp)

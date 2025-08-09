@@ -116,4 +116,3 @@ private fun InfoScreenContent(
     )
   }
 }
-

@@ -131,9 +131,7 @@ dependencies {
   implementation(project(":modules:budget:di"))
   implementation(project(":modules:core:connection"))
   implementation(project(":modules:core:di"))
-  implementation(project(":modules:core:ui"))
   implementation(project(":modules:l10n"))
-  implementation(project(":modules:logging"))
   implementation(project(":modules:prefs"))
   implementation(compose.runtime)
   implementation(compose.uiTooling)
@@ -154,8 +152,4 @@ dependencies {
   implementation(libs.material)
   implementation(libs.molecule)
   implementation(libs.preferences.android)
-}
-
-metro {
-  debug = true
 }

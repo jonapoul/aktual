@@ -15,7 +15,7 @@ import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provides
 
-@DependencyGraph(AppScope::class)
+@DependencyGraph(AppScope::class, isExtendable = true)
 interface AndroidAppGraph : AppGraph {
   @Multibinds val activityProviders: ProviderMap<Activity>
   @Multibinds(allowEmpty = true) val broadcastReceiverProviders: ProviderMap<BroadcastReceiver>

@@ -33,7 +33,6 @@ private fun PreviewCheckFailedContent() = PreviewThemedColumn {
   )
 }
 
-
 @Preview
 @Composable
 private fun PreviewUpdateFoundContent() = PreviewThemedColumn {

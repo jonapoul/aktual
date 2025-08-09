@@ -47,7 +47,7 @@ object AndroidPreferencesContainer {
       "encrypted-prefs",
       masterKey,
       PrefKeyEncryptionScheme.AES256_SIV,
-      PrefValueEncryptionScheme.AES256_GCM
+      PrefValueEncryptionScheme.AES256_GCM,
     )
     return AndroidEncryptedPreferences(prefs, contexts.io)
   }

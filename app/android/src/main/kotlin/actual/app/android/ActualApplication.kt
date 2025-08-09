@@ -43,7 +43,7 @@ class ActualApplication : Application(), AndroidAppGraph.Holder {
     }
   }
 
-  @Suppress("UNNECESSARY_SAFE_CALL")
+  @Suppress("UNNECESSARY_SAFE_CALL", "UnreachableCode")
   private fun setUpDi(
     buildConfig: BuildConfig,
     context: Context,

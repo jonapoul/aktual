@@ -79,9 +79,7 @@ graph ["rank"="same"]
 ":app:android" -> ":budget:di" ["style"="dotted"]
 ":app:android" -> ":core:connection" ["style"="dotted"]
 ":app:android" -> ":core:di" ["style"="dotted"]
-":app:android" -> ":core:ui" ["style"="dotted"]
 ":app:android" -> ":l10n" ["style"="dotted"]
-":app:android" -> ":logging" ["style"="dotted"]
 ":app:android" -> ":prefs" ["style"="dotted"]
 ":app:di" -> ":api:builder" ["style"="dotted"]
 ":app:di" -> ":api:github"
@@ -89,15 +87,15 @@ graph ["rank"="same"]
 ":app:di" -> ":core:di"
 ":app:di" -> ":core:model"
 ":app:di" -> ":prefs"
-":app:nav" -> ":about:ui" ["style"="dotted"]
-":app:nav" -> ":account:ui" ["style"="dotted"]
-":app:nav" -> ":budget:list:ui" ["style"="dotted"]
-":app:nav" -> ":budget:reports:ui" ["style"="dotted"]
-":app:nav" -> ":budget:sync:ui" ["style"="dotted"]
-":app:nav" -> ":budget:transactions:ui" ["style"="dotted"]
-":app:nav" -> ":core:ui" ["style"="dotted"]
-":app:nav" -> ":logging" ["style"="dotted"]
-":app:nav" -> ":settings:ui" ["style"="dotted"]
+":app:nav" -> ":about:ui"
+":app:nav" -> ":account:ui"
+":app:nav" -> ":budget:list:ui"
+":app:nav" -> ":budget:reports:ui"
+":app:nav" -> ":budget:sync:ui"
+":app:nav" -> ":budget:transactions:ui"
+":app:nav" -> ":core:ui"
+":app:nav" -> ":logging"
+":app:nav" -> ":settings:ui"
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:data" -> ":logging" ["style"="dotted"]
@@ -134,7 +132,7 @@ graph ["rank"="same"]
 ":budget:sync:vm" -> ":account:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:di"
-":budget:sync:vm" -> ":budget:encryption" ["style"="dotted"]
+":budget:sync:vm" -> ":budget:encryption"
 ":budget:sync:vm" -> ":budget:model"
 ":budget:sync:vm" -> ":core:di"
 ":budget:sync:vm" -> ":core:model" ["style"="dotted"]
@@ -152,8 +150,8 @@ graph ["rank"="same"]
 ":budget:transactions:vm" -> ":core:di"
 ":budget:transactions:vm" -> ":logging" ["style"="dotted"]
 ":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
-":core:connection" -> ":api:actual" ["style"="dotted"]
-":core:connection" -> ":api:builder" ["style"="dotted"]
+":core:connection" -> ":api:actual"
+":core:connection" -> ":api:builder"
 ":core:connection" -> ":core:model" ["style"="dotted"]
 ":core:connection" -> ":logging" ["style"="dotted"]
 ":core:connection" -> ":prefs" ["style"="dotted"]

@@ -23,5 +23,5 @@ private fun ScreenState(
 private class StateParameters : PreviewParameters<ListBudgetsState>(
   ListBudgetsState.Success(persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken)),
   ListBudgetsState.Loading,
-  ListBudgetsState.Failure(reason = "Something broke lol")
+  ListBudgetsState.Failure(reason = "Something broke lol"),
 )

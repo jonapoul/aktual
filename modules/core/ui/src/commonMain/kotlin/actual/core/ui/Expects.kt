@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 @Composable
 expect fun BackHandler(
   enabled: Boolean = true,
-  onBack: () -> Unit
+  onBack: () -> Unit,
 )
 
 @Composable
