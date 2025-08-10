@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package actual.about.ui.info
 
 import actual.core.ui.DialogContent
@@ -7,7 +5,6 @@ import actual.core.ui.LocalTheme
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
