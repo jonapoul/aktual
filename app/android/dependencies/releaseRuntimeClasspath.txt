@@ -160,8 +160,8 @@ com.squareup.logcat:logcat-android:0.4
 com.squareup.logcat:logcat:0.4
 com.squareup.okio:okio-jvm:3.16.0
 com.squareup.okio:okio:3.16.0
-dev.chrisbanes.haze:haze-android:1.6.9
-dev.chrisbanes.haze:haze:1.6.9
+dev.chrisbanes.haze:haze-android:1.6.10
+dev.chrisbanes.haze:haze:1.6.10
 dev.jonpoulton.alakazam:db-sqldelight-android:6.2.0
 dev.jonpoulton.alakazam:db-sqldelight:6.2.0
 dev.jonpoulton.alakazam:kotlin-compose-android:6.2.0
