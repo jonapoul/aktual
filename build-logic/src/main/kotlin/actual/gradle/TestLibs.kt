@@ -21,11 +21,11 @@ internal val Project.testLibraries: List<Provider<MinimalExternalModuleDependenc
 internal val Project.androidTestLibraries: List<Provider<MinimalExternalModuleDependency>>
   get() = with(libs) {
     listOf(
-      libs.getLibrary("test.androidx.arch"),
-      libs.getLibrary("test.androidx.coreKtx"),
-      libs.getLibrary("test.androidx.junit"),
-      libs.getLibrary("test.androidx.rules"),
-      libs.getLibrary("test.androidx.runner"),
-      libs.getLibrary("test.robolectric"),
+      getLibrary("test.androidx.arch"),
+      getLibrary("test.androidx.coreKtx"),
+      getLibrary("test.androidx.junit"),
+      getLibrary("test.androidx.rules"),
+      getLibrary("test.androidx.runner"),
+      getLibrary("test.robolectric"),
     )
   }
