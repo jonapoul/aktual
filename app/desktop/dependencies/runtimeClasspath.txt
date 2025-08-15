@@ -31,8 +31,8 @@ dev.jonpoulton.alakazam:kotlin-time-jvm:6.2.0
 dev.jonpoulton.alakazam:kotlin-time:6.2.0
 dev.jonpoulton.preferences:core-jvm:2.2.0
 dev.jonpoulton.preferences:core:2.2.0
-dev.zacsweers.metro:runtime-jvm:0.5.5
-dev.zacsweers.metro:runtime:0.5.5
+dev.zacsweers.metro:runtime-jvm:0.6.0
+dev.zacsweers.metro:runtime:0.6.0
 dev.zacsweers.redacted:redacted-compiler-plugin-annotations-jvm:1.14.1
 dev.zacsweers.redacted:redacted-compiler-plugin-annotations:1.14.1
 io.ktor:ktor-client-auth-jvm:3.2.3
