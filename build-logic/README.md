@@ -2,10 +2,11 @@
 ```mermaid
 flowchart TD
   CalculateProjectTreeTask --> CollateProjectLinksTask
-  CheckDotFileTask --> GenerateDotFileTask
+  CheckDotFileTask --> GenerateModulesDotFileTask
   CollateModuleTypesTask --> DumpModuleTypeTask
   CollateProjectLinksTask --> DumpProjectLinksTask
-  GenerateDotFileTask --> CalculateProjectTreeTask
-  GenerateDotFileTask --> CollateModuleTypesTask
-  GeneratePngFileTask --> GenerateDotFileTask
+  GenerateModulesDotFileTask --> CalculateProjectTreeTask
+  GenerateModulesDotFileTask --> CollateModuleTypesTask
+  GeneratePngFileTask --> GenerateModulesDotFileTask
+  GeneratePngFileTask --> GenerateLegendDotFileTask
 ```
