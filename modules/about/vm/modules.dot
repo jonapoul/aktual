@@ -1,6 +1,6 @@
 digraph {
 edge ["dir"="forward"]
-graph ["dpi"="100","label"=":about:vm","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
+graph ["dpi"="100","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":about:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":about:vm" ["fillcolor"="#F5A6A6","color"="black","penwidth"="3","shape"="box"]
@@ -9,11 +9,6 @@ node ["style"="filled"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
-{
-edge ["dir"="none"]
-graph ["rank"="same"]
-":about:vm"
-}
 ":about:data" -> ":api:github"
 ":about:vm" -> ":about:data"
 ":about:vm" -> ":core:di"

@@ -1,6 +1,6 @@
 digraph {
 edge ["dir"="forward"]
-graph ["dpi"="100","label"=":app:android","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
+graph ["dpi"="100","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":about:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":about:ui" ["fillcolor"="#FFFF55","shape"="none"]
@@ -37,11 +37,6 @@ node ["style"="filled"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":settings:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":settings:vm" ["fillcolor"="#F5A6A6","shape"="none"]
-{
-edge ["dir"="none"]
-graph ["rank"="same"]
-":app:android"
-}
 ":about:data" -> ":api:github"
 ":about:ui" -> ":about:vm"
 ":about:ui" -> ":core:ui"

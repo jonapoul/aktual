@@ -1,16 +1,11 @@
 digraph {
 edge ["dir"="forward"]
-graph ["dpi"="100","label"=":budget:encryption","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
+graph ["dpi"="100","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:encryption" ["fillcolor"="#9D8DF1","color"="black","penwidth"="3","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
-{
-edge ["dir"="none"]
-graph ["rank"="same"]
-":budget:encryption"
-}
 ":budget:encryption" -> ":account:model"
 ":budget:encryption" -> ":budget:model"
 ":budget:encryption" -> ":core:model"

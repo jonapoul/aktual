@@ -1,18 +1,6 @@
 package actual.diagrams.tasks
 
 import actual.diagrams.color
-import guru.nidi.graphviz.attribute.Attributes
-import guru.nidi.graphviz.attribute.Color
-import guru.nidi.graphviz.attribute.Font
-import guru.nidi.graphviz.attribute.GraphAttr
-import guru.nidi.graphviz.attribute.Label
-import guru.nidi.graphviz.attribute.Rank
-import guru.nidi.graphviz.attribute.Rank.RankType
-import guru.nidi.graphviz.attribute.Shape
-import guru.nidi.graphviz.attribute.Style
-import guru.nidi.graphviz.model.Factory
-import guru.nidi.graphviz.model.Link
-import guru.nidi.graphviz.model.MutableGraph
 import okio.buffer
 import okio.sink
 import org.gradle.api.DefaultTask
@@ -42,19 +30,19 @@ abstract class GenerateModulesDotFileTask : DefaultTask() {
 
   @TaskAction
   fun execute() {
-    val thisPath = thisPath.get()
     val linksFile = linksFile.get().asFile
     val moduleTypesFile = moduleTypesFile.get().asFile
+    val thisPath = thisPath.get().cleaned()
     val links = ProjectLinks.read(linksFile)
     val typedModules = TypedModules.read(moduleTypesFile)
 
-    val dotFileContents = generateGraph(links, typedModules, thisPath)
-      .toString()
-      .replace(toRemove.get(), replacement.get())
-      .withoutUnusedModuleTypes()
-      .withSortedModuleDeclarations()
-      .withSortedModuleLinks()
-      .withoutEmptyLines()
+    val dotFileContents = buildString {
+      appendLine("digraph {")
+      appendHeader()
+      appendNodes(typedModules, links, thisPath)
+      appendLinks(links)
+      appendLine("}")
+    }
 
     val dotFile = dotFile.get().asFile
     dotFile.sink().buffer().use { sink ->
@@ -65,6 +53,51 @@ abstract class GenerateModulesDotFileTask : DefaultTask() {
       logger.lifecycle(dotFile.absolutePath)
     }
   }
+
+  private fun StringBuilder.appendHeader() {
+    appendLine("edge [\"dir\"=\"forward\"]")
+    appendLine("graph [\"dpi\"=\"100\",\"fontsize\"=\"30\",\"ranksep\"=\"1.5\",\"rankdir\"=\"TB\"]")
+    appendLine("node [\"style\"=\"filled\"]")
+  }
+
+  private fun StringBuilder.appendNodes(
+    typedModules: Set<TypedModule>,
+    links: Set<ProjectLink>,
+    thisPath: String,
+  ) {
+    typedModules
+      .filter { module -> module in links }
+      .map { it.copy(projectPath = it.projectPath.cleaned()) }
+      .sortedBy { module -> module.projectPath }
+      .forEach { module ->
+        val attrs = if (module.projectPath == thisPath) {
+          "\"color\"=\"black\",\"penwidth\"=\"3\",\"shape\"=\"box\""
+        } else {
+          "\"shape\"=\"none\""
+        }
+
+        appendLine("\"${module.projectPath}\" [\"fillcolor\"=\"${module.type.color}\",$attrs]")
+      }
+  }
+
+  private fun StringBuilder.appendLinks(links: Set<ProjectLink>) {
+    links
+      .map { link -> link.copy(fromPath = link.fromPath.cleaned(), toPath = link.toPath.cleaned()) }
+      .sortedWith(compareBy({ it.fromPath }, { it.toPath }))
+      .forEach { (fromPath, toPath, configuration) ->
+        val attrs = if (configuration.contains("implementation", ignoreCase = true)) {
+          " [\"style\"=\"dotted\"]"
+        } else {
+          ""
+        }
+        appendLine("\"$fromPath\" -> \"$toPath\"$attrs")
+      }
+  }
+
+  private operator fun Set<ProjectLink>.contains(module: TypedModule): Boolean =
+    any { (from, to, _) -> from == module.projectPath || to == module.projectPath }
+
+  private fun String.cleaned() = replace(toRemove.get(), replacement.get())
 
   companion object {
     const val TASK_NAME = "generateModulesDotFile"
@@ -101,168 +134,3 @@ abstract class GenerateModulesDotFileTask : DefaultTask() {
     }
   }
 }
-
-private fun generateGraph(links: Set<ProjectLink>, types: Set<TypedModule>, thisPath: String): MutableGraph {
-  val projectPaths = links
-    .map { it.fromPath }
-    .plus(links.map { it.toPath })
-    .plus(thisPath)
-    .toSet()
-
-  val typeMap = types.associate { (path, type) -> path to type }
-
-  val graph = Factory
-    .mutGraph()
-    .setDirected(true)
-    .graphAttrs()
-    .add(GraphAttr.dpi(DPI))
-
-  graph.nodeAttrs().add(Style.FILLED)
-
-  projectPaths.forEach { path ->
-    val moduleType = requireNotNull(typeMap[path]) { "Null module type for $path in $typeMap" }
-    val node = Factory.mutNode(path)
-    node.add(moduleType.color)
-    if (path == thisPath) {
-      node.add(Color.BLACK, Attributes.attr("penwidth", "3"))
-      node.add(Shape.BOX)
-    } else {
-      node.add(Shape.NONE)
-    }
-    graph.add(node)
-  }
-
-  graph.add(
-    Factory
-      .graph()
-      .graphAttr()
-      .with(Rank.inSubgraph(RankType.SAME))
-      .with(Factory.mutNode(thisPath)),
-  )
-
-  val rootNodes = graph
-    .rootNodes()
-    .filterNotNull()
-    .filter { it.links().isEmpty() }
-
-  links
-    .filter { it.fromPath != it.toPath }
-    .distinctBy { it.fromPath to it.toPath }
-    .forEach { (from, to, configuration) ->
-      val fromNode = rootNodes.single { it.name().toString() == from }
-      val toNode = rootNodes.singleOrNull { it.name().toString() == to } ?: return@forEach
-      val link = Link.to(toNode)
-      val styledLink = if (isImplementation(configuration)) link.with(Style.DOTTED) else link
-      graph.add(fromNode.addLink(styledLink))
-    }
-
-  graph.graphAttrs().add(
-    Label.of(thisPath).locate(Label.Location.TOP),
-    Font.size(LABEL_FONT_SIZE),
-  )
-
-  graph.graphAttrs().add(
-    Rank.sep(RANK_SEPARATION),
-    Font.size(NODE_FONT_SIZE),
-    Rank.dir(Rank.RankDir.TOP_TO_BOTTOM),
-  )
-
-  return graph
-}
-
-private fun isImplementation(configuration: String) = configuration.contains("implementation", ignoreCase = true)
-
-private fun String.withoutUnusedModuleTypes(): String = buildString {
-  val usedColours = mutableSetOf<String>()
-  val moduleTypeColorsAppended = mutableSetOf<String>()
-
-  val lines = this@withoutUnusedModuleTypes.lineSequence()
-  for (line in lines) {
-    val fillColorMatch = FILL_COLOR_REGEX.matchEntire(line)
-    if (fillColorMatch != null) {
-      val color = fillColorMatch.groupValues[1]
-      usedColours.add(color)
-    }
-
-    val tableLineMatch = TABLE_LINE_REGEX.matchEntire(line)
-    if (tableLineMatch != null) {
-      val color = tableLineMatch.groupValues[1]
-      if (color in usedColours && color !in moduleTypeColorsAppended) {
-        appendLine(line)
-        moduleTypeColorsAppended.add(color)
-      }
-      continue
-    }
-
-    appendLine(line)
-  }
-}
-
-private fun String.withSortedModuleDeclarations(): String = buildString {
-  val lines = this@withSortedModuleDeclarations.lineSequence()
-  val moduleDeclarations = mutableSetOf<String>()
-  var isInModuleDeclarations = false
-
-  for (line in lines) {
-    if (line.startsWith("\":") && line.contains("fillcolor")) {
-      isInModuleDeclarations = true
-      moduleDeclarations.add(line)
-    } else if (isInModuleDeclarations) {
-      // we were in declarations before but not now, so print them all sorted
-      isInModuleDeclarations = false
-      for (module in moduleDeclarations.sorted()) {
-        appendLine(module)
-      }
-    }
-
-    if (!isInModuleDeclarations) {
-      appendLine(line)
-    }
-  }
-
-  appendLine()
-}
-
-private fun String.withSortedModuleLinks(): String = buildString {
-  val lines = this@withSortedModuleLinks.lineSequence()
-  val linkDeclarations = mutableSetOf<String>()
-  var isInLinkDeclarations = false
-
-  for (line in lines) {
-    if (line.startsWith("\":") && line.contains("->")) {
-      isInLinkDeclarations = true
-      linkDeclarations.add(line)
-    } else if (isInLinkDeclarations) {
-      // we were in declarations before but not now, so print them all sorted
-      isInLinkDeclarations = false
-      for (module in linkDeclarations.sorted()) {
-        appendLine(module)
-      }
-    }
-
-    if (!isInLinkDeclarations) {
-      appendLine(line)
-    }
-  }
-
-  appendLine()
-}
-
-private fun String.withoutEmptyLines(): String = buildString {
-  for (line in this@withoutEmptyLines.lineSequence()) {
-    if (line.isNotEmpty()) appendLine(line)
-  }
-}
-
-private const val DPI = 100
-private const val LABEL_FONT_SIZE = 35
-private const val NODE_FONT_SIZE = 30
-private const val RANK_SEPARATION = 1.5
-
-private val FILL_COLOR_REGEX = """
-  ^.*?"fillcolor"="#(\w+)".*?$
-""".trimIndent().toRegex()
-
-private val TABLE_LINE_REGEX = """
-  ^<TR><TD>.*?</TD><TD BGCOLOR="#(.*?)">module-name</TD></TR>$
-""".trimIndent().toRegex()

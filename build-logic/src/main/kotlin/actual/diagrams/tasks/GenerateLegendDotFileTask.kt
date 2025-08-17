@@ -26,7 +26,7 @@ abstract class GenerateLegendDotFileTask : DefaultTask() {
       appendLine("table1 [label=<")
       appendLine("<TABLE BORDER=\"0\" CELLBORDER=\"1\" CELLSPACING=\"0\" CELLPADDING=\"4\">")
       ModuleType.entries.forEach { type ->
-        appendLine("<TR><TD>${type.label}</TD><TD BGCOLOR=\"${type.color.value}\">module-name</TD></TR>")
+        appendLine("<TR><TD>${type.label}</TD><TD BGCOLOR=\"${type.color}\">module-name</TD></TR>")
       }
       appendLine("</TABLE>")
       appendLine(">];")
