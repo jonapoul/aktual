@@ -1,3 +1,3 @@
 # budget:encryption
-
-![modules.png](modules.png)
+![modules](modules.png)
+![legend](../../../docs/legend/legend.png)

@@ -12,6 +12,7 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity.ABSOLUTE
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.TaskProvider
+import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 
 @CacheableTask
@@ -42,13 +43,28 @@ abstract class GeneratePngFileTask : DefaultTask() {
   }
 
   companion object {
-    fun register(target: Project, generateDotFile: TaskProvider<GenerateDotFileTask>) = with(target) {
-      tasks.register<GeneratePngFileTask>("generateModulesPng") {
+    const val NAME_MODULES = "generateModulesPng"
+    const val NAME_LEGEND = "generateLegendPng"
+
+    fun get(target: Project, name: String) = target.tasks.named<GeneratePngFileTask>(name)
+
+    fun register(target: Project, generateModules: TaskProvider<GenerateModulesDotFileTask>) = with(target) {
+      val legend = get(rootProject, NAME_LEGEND)
+      tasks.register<GeneratePngFileTask>(NAME_MODULES) {
         group = "reporting"
-        val reportDir = layout.projectDirectory
-        dotFile.set(generateDotFile.map { it.dotFile.get() })
-        pngFile.set(reportDir.file("$FILENAME_ROOT.png"))
-        errorFile.set(reportDir.file("$FILENAME_ROOT-error.log"))
+        dotFile.set(generateModules.map { it.dotFile.get() })
+        pngFile.set(layout.projectDirectory.file("$FILENAME_ROOT.png"))
+        errorFile.set(layout.projectDirectory.file("$FILENAME_ROOT-error.log"))
+        dependsOn(legend)
+      }
+    }
+
+    fun registerLegend(target: Project, generateLegend: TaskProvider<GenerateLegendDotFileTask>) = with(target) {
+      tasks.register<GeneratePngFileTask>(NAME_LEGEND) {
+        group = "reporting"
+        dotFile.set(generateLegend.map { it.dotFile.get() })
+        pngFile.set(layout.projectDirectory.file(GenerateLegendDotFileTask.PNG_PATH))
+        errorFile.set(layout.projectDirectory.file("${GenerateLegendDotFileTask.PNG_PATH}.log"))
       }
     }
   }

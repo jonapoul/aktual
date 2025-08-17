@@ -1,3 +1,3 @@
 # codegen:ksp
-
-![modules.png](modules.png)
+![modules](modules.png)
+![legend](../../../docs/legend/legend.png)

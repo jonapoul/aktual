@@ -1,3 +1,3 @@
 # budget:list:vm
-
-![modules.png](modules.png)
+![modules](modules.png)
+![legend](../../../../docs/legend/legend.png)
