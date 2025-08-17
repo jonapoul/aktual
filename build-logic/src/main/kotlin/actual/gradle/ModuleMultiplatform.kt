@@ -1,7 +1,10 @@
 package actual.gradle
 
 import blueprint.core.androidUnitTestDependencies
+import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
+import blueprint.core.getLibrary
+import blueprint.core.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
@@ -29,6 +32,10 @@ class ModuleMultiplatform : Plugin<Project> {
     kotlin {
       jvm()
       androidTarget()
+
+      commonMainDependencies {
+        implementation(libs.getLibrary("metro.runtime"))
+      }
 
       commonTestDependencies {
         testLibraries.forEach { lib -> implementation(lib) }
