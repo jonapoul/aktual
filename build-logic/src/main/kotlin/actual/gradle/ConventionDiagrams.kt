@@ -3,13 +3,13 @@ package actual.gradle
 import actual.diagrams.FILENAME_ROOT
 import actual.diagrams.tasks.CalculateProjectTreeTask
 import actual.diagrams.tasks.CheckDotFileTask
-import actual.diagrams.tasks.CheckReadmeTask
 import actual.diagrams.tasks.CollateModuleTypesTask
 import actual.diagrams.tasks.CollateProjectLinksTask
 import actual.diagrams.tasks.DumpModuleTypeTask
 import actual.diagrams.tasks.DumpProjectLinksTask
 import actual.diagrams.tasks.GenerateDotFileTask
 import actual.diagrams.tasks.GeneratePngFileTask
+import actual.diagrams.tasks.WriteReadmeTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -42,12 +42,11 @@ class ConventionDiagrams : Plugin<Project> {
     )
 
     GeneratePngFileTask.register(target, generateDotFileTask)
+    WriteReadmeTask.register(target)
 
     val checkDotFiles = CheckDotFileTask.register(target, generateTempDotFileTask, realDotFile)
-    val checkModulesReadmeTask = CheckReadmeTask.register(target)
 
     tasks.named("check").configure {
-      dependsOn(checkModulesReadmeTask)
       dependsOn(checkDotFiles)
     }
   }
