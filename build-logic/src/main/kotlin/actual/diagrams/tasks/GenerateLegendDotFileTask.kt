@@ -33,7 +33,8 @@ abstract class GenerateLegendDotFileTask : DefaultTask() {
       appendLine("}")
     }
 
-    dotFile.get()
+    dotFile
+      .get()
       .asFile
       .sink()
       .buffer()
