@@ -7,6 +7,7 @@ import actual.diagrams.tasks.CollateModuleTypesTask
 import actual.diagrams.tasks.CollateProjectLinksTask
 import actual.diagrams.tasks.DumpModuleTypeTask
 import actual.diagrams.tasks.DumpProjectLinksTask
+import actual.diagrams.tasks.GenerateLegendDotFileTask
 import actual.diagrams.tasks.GenerateModulesDotFileTask
 import actual.diagrams.tasks.GeneratePngFileTask
 import actual.diagrams.tasks.WriteReadmeTask
@@ -18,7 +19,9 @@ class ConventionDiagrams : Plugin<Project> {
     if (target == rootProject) {
       CollateProjectLinksTask.register(this)
       CollateModuleTypesTask.register(this)
-      return@with
+      val generateLegend = GenerateLegendDotFileTask.register(this)
+      GeneratePngFileTask.registerLegend(this, generateLegend)
+      return
     }
 
     val realDotFile = layout.projectDirectory.file("$FILENAME_ROOT.dot")

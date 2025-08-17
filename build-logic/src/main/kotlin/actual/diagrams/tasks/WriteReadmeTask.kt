@@ -40,13 +40,15 @@ abstract class WriteReadmeTask : DefaultTask() {
   companion object {
     fun register(target: Project) = with(target) {
       val removeModulePrefix = providers.gradleProperty("actual.diagram.removeModulePrefix")
-      val legendPng = rootProject.file("docs/legend/legend.dot")
+      val legendPng = rootProject.file(GenerateLegendDotFileTask.PNG_PATH)
       val projectDir = target.layout.projectDirectory.asFile
+      val legendTask = GenerateLegendDotFileTask.get(rootProject)
       tasks.register<WriteReadmeTask>("writeReadme") {
         group = "reporting"
         readmeFile.set(file("README.md"))
         projectPath.set(target.path.removePrefix(removeModulePrefix.get()))
         legendPngRelativePath.set(legendPng.relativeTo(projectDir).toString())
+        dependsOn(legendTask)
       }
     }
   }
