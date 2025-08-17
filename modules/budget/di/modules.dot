@@ -1,29 +1,14 @@
 digraph {
 edge ["dir"="forward"]
-graph ["dpi"="100","label"=":budget:di","labelloc"="t","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
+graph ["dpi"="100","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:di" ["fillcolor"="#FCB103","color"="black","penwidth"="3","shape"="box"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
-{
-edge ["dir"="none"]
-graph ["rank"="same"]
-":budget:di"
-}
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:data" -> ":logging" ["style"="dotted"]
 ":budget:di" -> ":budget:data"
-subgraph "cluster_legend" {
-edge ["dir"="none"]
-graph ["label"="Legend","fontsize"="20"]
-"Legend" ["style"="filled","fillcolor"="#FFFFFF","shape"="none","margin"="0","fontsize"="15","label"=<
-<TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
-<TR><TD>DI</TD><TD BGCOLOR="#FCB103">module-name</TD></TR>
-<TR><TD>Multiplatform</TD><TD BGCOLOR="#9D8DF1">module-name</TD></TR>
-</TABLE>
->]
-} -> ":budget:di" ["style"="invis"]
 }

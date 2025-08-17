@@ -40,14 +40,17 @@ abstract class CheckDotFileTask : DefaultTask() {
   }
 
   companion object {
-    fun register(target: Project, generateDotFile: TaskProvider<GenerateDotFileTask>, realDotFile: RegularFile) =
-      with(target) {
-        tasks.register<CheckDotFileTask>("checkDotFiles") {
-          group = JavaBasePlugin.VERIFICATION_GROUP
-          taskPath.set("$path:${GenerateDotFileTask.TASK_NAME}")
-          expectedDotFile.set(generateDotFile.map { it.dotFile.get() })
-          actualDotFile.set(realDotFile)
-        }
+    fun register(
+      target: Project,
+      generateDotFile: TaskProvider<GenerateModulesDotFileTask>,
+      realDotFile: RegularFile,
+    ) = with(target) {
+      tasks.register<CheckDotFileTask>("checkDotFiles") {
+        group = JavaBasePlugin.VERIFICATION_GROUP
+        taskPath.set("$path:${GenerateModulesDotFileTask.TASK_NAME}")
+        expectedDotFile.set(generateDotFile.map { it.dotFile.get() })
+        actualDotFile.set(realDotFile)
       }
+    }
   }
 }
