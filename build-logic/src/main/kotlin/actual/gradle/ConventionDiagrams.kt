@@ -7,7 +7,7 @@ import actual.diagrams.tasks.CollateModuleTypesTask
 import actual.diagrams.tasks.CollateProjectLinksTask
 import actual.diagrams.tasks.DumpModuleTypeTask
 import actual.diagrams.tasks.DumpProjectLinksTask
-import actual.diagrams.tasks.GenerateDotFileTask
+import actual.diagrams.tasks.GenerateModulesDotFileTask
 import actual.diagrams.tasks.GeneratePngFileTask
 import actual.diagrams.tasks.WriteReadmeTask
 import org.gradle.api.Plugin
@@ -27,21 +27,21 @@ class ConventionDiagrams : Plugin<Project> {
     DumpProjectLinksTask.register(target)
     CalculateProjectTreeTask.register(target)
 
-    val generateDotFileTask = GenerateDotFileTask.register(
+    val generateModulesDotFileTask = GenerateModulesDotFileTask.register(
       target = target,
-      name = GenerateDotFileTask.TASK_NAME,
+      name = GenerateModulesDotFileTask.TASK_NAME,
       dotFile = provider { realDotFile },
       printOutput = true,
     )
 
-    val generateTempDotFileTask = GenerateDotFileTask.register(
+    val generateTempDotFileTask = GenerateModulesDotFileTask.register(
       target = target,
       name = "generateTempDotFile",
       dotFile = layout.buildDirectory.file("diagrams-modules-temp/$FILENAME_ROOT.dot"),
       printOutput = false,
     )
 
-    GeneratePngFileTask.register(target, generateDotFileTask)
+    GeneratePngFileTask.register(target, generateModulesDotFileTask)
     WriteReadmeTask.register(target)
 
     val checkDotFiles = CheckDotFileTask.register(target, generateTempDotFileTask, realDotFile)

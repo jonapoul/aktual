@@ -1,8 +1,6 @@
 package actual.diagrams.tasks
 
-import actual.diagrams.ModuleType
 import actual.diagrams.color
-import actual.diagrams.label
 import guru.nidi.graphviz.attribute.Attributes
 import guru.nidi.graphviz.attribute.Color
 import guru.nidi.graphviz.attribute.Font
@@ -15,7 +13,6 @@ import guru.nidi.graphviz.attribute.Style
 import guru.nidi.graphviz.model.Factory
 import guru.nidi.graphviz.model.Link
 import guru.nidi.graphviz.model.MutableGraph
-import guru.nidi.graphviz.parse.Parser
 import okio.buffer
 import okio.sink
 import org.gradle.api.DefaultTask
@@ -34,7 +31,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.register
 
 @CacheableTask
-abstract class GenerateDotFileTask : DefaultTask() {
+abstract class GenerateModulesDotFileTask : DefaultTask() {
   @get:[PathSensitive(ABSOLUTE) InputFile] abstract val linksFile: RegularFileProperty
   @get:[PathSensitive(ABSOLUTE) InputFile] abstract val moduleTypesFile: RegularFileProperty
   @get:Input abstract val thisPath: Property<String>
@@ -81,7 +78,7 @@ abstract class GenerateDotFileTask : DefaultTask() {
       val toRemove = providers.gradleProperty("actual.diagram.removeModulePrefix")
       val replacement = providers.gradleProperty("actual.diagram.replacementModulePrefix")
 
-      val task = tasks.register<GenerateDotFileTask>(name) {
+      val task = tasks.register<GenerateModulesDotFileTask>(name) {
         group = "reporting"
         description = "Generates a project dependency graph for $path"
         this.dotFile.set(dotFile)
@@ -159,8 +156,6 @@ private fun generateGraph(links: Set<ProjectLink>, types: Set<TypedModule>, this
       graph.add(fromNode.addLink(styledLink))
     }
 
-  graph.addLegend(thisPath)
-
   graph.graphAttrs().add(
     Label.of(thisPath).locate(Label.Location.TOP),
     Font.size(LABEL_FONT_SIZE),
@@ -176,42 +171,6 @@ private fun generateGraph(links: Set<ProjectLink>, types: Set<TypedModule>, this
 }
 
 private fun isImplementation(configuration: String) = configuration.contains("implementation", ignoreCase = true)
-
-private fun MutableGraph.addLegend(thisPath: String) {
-  val rootNode = rootNodes()
-    .filterNotNull()
-    .distinct()
-    .firstOrNull { it.name().toString() == thisPath }
-    ?: return
-
-  // Add the actual legend
-  val legend = buildLegend()
-  add(legend)
-
-  // Add a link from the legend to the root module
-  val link = Link.to(rootNode).with(Style.INVIS)
-  add(legend.addLink(link))
-}
-
-private fun buildLegend(): MutableGraph {
-  val rows = ModuleType.values().map { type ->
-    "<TR><TD>${type.label}</TD><TD BGCOLOR=\"${type.color.value}\">module-name</TD></TR>"
-  }
-  return Parser().read(
-    """
-      graph cluster_legend {
-        label="$LEGEND_LABEL"
-        graph [fontsize=$LEGEND_TITLE_FONT_SIZE]
-        node [style=filled, fillcolor="$LEGEND_BACKGROUND"];
-        Legend [shape=none, margin=0, fontsize=$LEGEND_FONT_SIZE, label=<
-          <TABLE BORDER="0" CELLBORDER="0" CELLSPACING="0" CELLPADDING="4">
-            ${rows.joinToString(separator = "\n")}
-          </TABLE>
-        >];
-      }
-    """.trimIndent(),
-  )
-}
 
 private fun String.withoutUnusedModuleTypes(): String = buildString {
   val usedColours = mutableSetOf<String>()
@@ -297,10 +256,6 @@ private fun String.withoutEmptyLines(): String = buildString {
 
 private const val DPI = 100
 private const val LABEL_FONT_SIZE = 35
-private const val LEGEND_BACKGROUND = "#FFFFFF"
-private const val LEGEND_FONT_SIZE = 15
-private const val LEGEND_LABEL = "Legend"
-private const val LEGEND_TITLE_FONT_SIZE = 20
 private const val NODE_FONT_SIZE = 30
 private const val RANK_SEPARATION = 1.5
 

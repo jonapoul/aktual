@@ -42,7 +42,7 @@ abstract class GeneratePngFileTask : DefaultTask() {
   }
 
   companion object {
-    fun register(target: Project, generateDotFile: TaskProvider<GenerateDotFileTask>) = with(target) {
+    fun register(target: Project, generateDotFile: TaskProvider<GenerateModulesDotFileTask>) = with(target) {
       tasks.register<GeneratePngFileTask>("generateModulesPng") {
         group = "reporting"
         val reportDir = layout.projectDirectory
