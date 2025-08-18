@@ -2,6 +2,7 @@ package actual.core.ui
 
 import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelGraphProvider
+import actual.core.di.assisted
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.lifecycle.ViewModel
@@ -44,17 +45,10 @@ inline fun <reified VM : ViewModel, reified VMAF : ViewModelAssistedFactory> ass
     key = key,
     factory = object : ViewModelProvider.Factory {
       override fun <T : ViewModel> create(modelClass: KClass<T>, extras: CreationExtras): T {
-        val nullableProvider = graphProvider
+        val vm = graphProvider
           .buildViewModelGraph(extras)
-          .assistedFactoryProviders[VMAF::class]
-          ?.invoke()
-          ?.let(VMAF::class::cast)
-
-        val factoryProvider = requireNotNull(nullableProvider) {
-          "No factory found for class ${VMAF::class.qualifiedName}"
-        }
-
-        return modelClass.cast(factoryProvider.buildViewModel())
+          .assisted(buildViewModel)
+        return modelClass.cast(vm)
       }
     },
   )

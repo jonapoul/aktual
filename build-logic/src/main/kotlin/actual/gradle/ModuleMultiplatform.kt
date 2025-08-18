@@ -1,10 +1,7 @@
 package actual.gradle
 
 import blueprint.core.androidUnitTestDependencies
-import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
-import blueprint.core.getLibrary
-import blueprint.core.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
@@ -23,8 +20,8 @@ class ModuleMultiplatform : Plugin<Project> {
       apply(ConventionKotlinBase::class)
       apply(ConventionAndroidLibrary::class)
       apply(ConventionDiagrams::class)
-      apply(ConventionKover::class)
       apply(ConventionIdea::class)
+      apply(ConventionKover::class)
       apply(ConventionStyle::class)
       apply(ConventionTest::class)
     }
@@ -33,12 +30,9 @@ class ModuleMultiplatform : Plugin<Project> {
       jvm()
       androidTarget()
 
-      commonMainDependencies {
-        implementation(libs.getLibrary("metro.runtime"))
-      }
-
       commonTestDependencies {
         testLibraries.forEach { lib -> implementation(lib) }
+        implementation(project(":modules:test:di"))
         implementation(project(":modules:test:kotlin"))
       }
 

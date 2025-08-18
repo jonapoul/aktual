@@ -1,6 +1,7 @@
 package actual.app.android
 
 import actual.account.model.Password
+import actual.app.di.AndroidViewModelGraph
 import actual.core.di.AppGraph
 import actual.core.di.ProviderMap
 import actual.core.model.ServerUrl
@@ -15,8 +16,8 @@ import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provides
 
-@DependencyGraph(AppScope::class, isExtendable = true)
-interface AndroidAppGraph : AppGraph {
+@DependencyGraph(AppScope::class)
+interface AndroidAppGraph : AppGraph, AndroidViewModelGraph.Factory {
   @Multibinds val activityProviders: ProviderMap<Activity>
   @Multibinds(allowEmpty = true) val broadcastReceiverProviders: ProviderMap<BroadcastReceiver>
   @Multibinds(allowEmpty = true) val contentProviderProviders: ProviderMap<ContentProvider>
@@ -28,12 +29,10 @@ interface AndroidAppGraph : AppGraph {
   fun interface Factory {
     fun create(
       @Provides context: Context,
+      @Provides buildConfig: BuildConfig,
       @Provides defaultPassword: Password.Provider,
       @Provides defaultServerUrl: ServerUrl.Provider,
+      @Provides graphHolder: AppGraph.Holder,
     ): AndroidAppGraph
-  }
-
-  interface Holder {
-    val graph: AndroidAppGraph
   }
 }
