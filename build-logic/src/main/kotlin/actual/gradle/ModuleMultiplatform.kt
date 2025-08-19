@@ -20,8 +20,8 @@ class ModuleMultiplatform : Plugin<Project> {
       apply(ConventionKotlinBase::class)
       apply(ConventionAndroidLibrary::class)
       apply(ConventionDiagrams::class)
-      apply(ConventionKover::class)
       apply(ConventionIdea::class)
+      apply(ConventionKover::class)
       apply(ConventionStyle::class)
       apply(ConventionTest::class)
     }
@@ -32,6 +32,7 @@ class ModuleMultiplatform : Plugin<Project> {
 
       commonTestDependencies {
         testLibraries.forEach { lib -> implementation(lib) }
+        implementation(project(":modules:test:di"))
         implementation(project(":modules:test:kotlin"))
       }
 

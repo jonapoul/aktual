@@ -4,9 +4,9 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(project(":modules:budget:di"))
     api(project(":modules:budget:encryption"))
     api(project(":modules:budget:model"))
+    api(project(":modules:core:di"))
     api(libs.alakazam.kotlin.core)
     api(libs.alakazam.kotlin.time)
     api(libs.kotlinx.datetime)

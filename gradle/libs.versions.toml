@@ -18,7 +18,7 @@ kover = "0.9.1"
 ksp = "2.2.10-2.0.2"
 licensee = "1.13.0"
 manifestLock = "1.3.5"
-metro = "0.5.5"
+metro = "0.6.0"
 molecule = "2.1.0"
 redacted = "1.14.1"
 
@@ -131,7 +131,6 @@ logcat = { module = "com.squareup.logcat:logcat", version.ref = "logcat" }
 markdown-core = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdown" }
 markdown-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdown" }
 material = { module = "com.google.android.material:material", version.ref = "material" }
-metro-runtime = { module = "dev.zacsweers.metro:runtime", version.ref = "metro" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version.ref = "molecule" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
 preferences-android = { module = "dev.jonpoulton.preferences:android", version.ref = "preferences" }

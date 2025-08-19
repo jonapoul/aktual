@@ -4,14 +4,14 @@ import actual.budget.db.dao.DashboardDao
 import actual.budget.db.dao.DashboardDao.Companion.DEFAULT_HEIGHT
 import actual.budget.db.dao.DashboardDao.Companion.DEFAULT_WIDTH
 import actual.budget.db.dao.DashboardDao.Companion.MAX_WIDTH
-import actual.budget.di.BudgetGraphHolder
-import actual.budget.di.throwIfWrongBudget
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
 import actual.budget.model.WidgetType
 import actual.core.di.AssistedFactoryKey
+import actual.core.di.BudgetGraphHolder
 import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
+import actual.core.di.throwIfWrongBudget
 import actual.core.model.Empty
 import actual.core.model.UuidGenerator
 import androidx.lifecycle.ViewModel
@@ -35,8 +35,8 @@ class ChooseReportTypeViewModel(
   @Assisted budgetId: BudgetId,
 ) : ViewModel() {
   // data sources
-  private val component = budgetComponents.require()
-  private val dao = DashboardDao(component.database)
+  private val budgetGraph = budgetComponents.require()
+  private val dao = DashboardDao(budgetGraph.database)
 
   // state
   private var job: Job? = null
@@ -44,7 +44,7 @@ class ChooseReportTypeViewModel(
   val shouldNavigateEvent: Flow<ShouldNavigateEvent> = shouldNavigateChannel.receiveAsFlow()
 
   init {
-    component.throwIfWrongBudget(budgetId)
+    budgetGraph.throwIfWrongBudget(budgetId)
   }
 
   override fun onCleared() {

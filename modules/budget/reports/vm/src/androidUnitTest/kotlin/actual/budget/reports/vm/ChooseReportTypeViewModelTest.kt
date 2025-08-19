@@ -2,18 +2,19 @@
 
 package actual.budget.reports.vm
 
+import actual.app.di.AndroidViewModelGraph
+import actual.app.di.CoroutineContainer
+import actual.app.di.GithubApiContainer
 import actual.budget.db.BudgetDatabase
 import actual.budget.db.GetPositionAndSize
 import actual.budget.db.dao.DashboardDao
 import actual.budget.db.dao.DashboardDao.Companion.DEFAULT_HEIGHT
 import actual.budget.db.dao.DashboardDao.Companion.DEFAULT_WIDTH
-import actual.budget.di.AndroidBudgetGraphBuilder
-import actual.budget.di.BudgetGraphHolder
-import actual.budget.model.AndroidBudgetFiles
-import actual.budget.model.BudgetFiles
 import actual.budget.model.WidgetType
-import actual.core.model.RandomUuidGenerator
-import actual.core.model.UuidGenerator
+import actual.core.di.AppGraph
+import actual.core.di.BudgetGraphHolder
+import actual.core.di.assisted
+import actual.test.DummyViewModelContainer
 import actual.test.assertListEmitted
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.Flaky
@@ -21,51 +22,47 @@ import alakazam.test.core.FlakyTestRule
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher
 import android.content.Context
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ApplicationProvider
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import app.cash.turbine.test
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.createGraphFactory
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import okio.FileSystem
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
-class ChooseReportTypeViewModelTest {
+class ChooseReportTypeViewModelTest : AppGraph.Holder {
   @get:Rule val flakyTestRule = FlakyTestRule()
 
   // real
   private lateinit var viewModel: ChooseReportTypeViewModel
   private lateinit var context: Context
-  private lateinit var components: BudgetGraphHolder
-  private lateinit var fileSystem: FileSystem
+  private lateinit var budgetGraphHolder: BudgetGraphHolder
   private lateinit var dashboardDao: DashboardDao
   private lateinit var database: BudgetDatabase
   private lateinit var contexts: CoroutineContexts
 
   // fake
-  private lateinit var uuidGenerator: UuidGenerator
-  private lateinit var files: BudgetFiles
+  private lateinit var appGraph: TestAppGraph
 
-  @BeforeTest
-  fun before() {
-    uuidGenerator = RandomUuidGenerator()
-    context = ApplicationProvider.getApplicationContext()
-    fileSystem = FileSystem.SYSTEM
-    files = AndroidBudgetFiles(context, fileSystem)
-  }
+  override fun invoke(): AppGraph = appGraph
 
   @AfterTest
   fun after() {
-    components.close()
+    budgetGraphHolder.close()
   }
 
   @Test
@@ -119,17 +116,24 @@ class ChooseReportTypeViewModelTest {
 
   private inline fun runVmTest(crossinline testBody: suspend TestScope.() -> Unit) = runTest {
     contexts = TestCoroutineContexts(standardDispatcher)
-    val builder = AndroidBudgetGraphBuilder(context, this, contexts, files)
-    components = BudgetGraphHolder(builder)
-    val component = components.update(TEST_METADATA)
-    database = component.database
+    context = ApplicationProvider.getApplicationContext()
+
+    val appGraphHolder = this@ChooseReportTypeViewModelTest
+    appGraph = createGraphFactory<TestAppGraph.Factory>().create(
+      scope = this,
+      contexts = contexts,
+      context = context,
+      holder = appGraphHolder,
+    )
+
+    budgetGraphHolder = appGraph.budgetGraphHolder
+    val budgetGraph = budgetGraphHolder.update(TEST_METADATA)
+    database = budgetGraph.database
     dashboardDao = DashboardDao(database)
 
-    viewModel = ChooseReportTypeViewModel(
-      uuidGenerator = uuidGenerator,
-      budgetComponents = components,
-      budgetId = TEST_BUDGET_ID,
-    )
+    viewModel = appGraph
+      .create(CreationExtras.Empty)
+      .assisted<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory> { create(TEST_BUDGET_ID) }
 
     testBody()
   }
@@ -142,4 +146,23 @@ class ChooseReportTypeViewModelTest {
     .distinctUntilChanged()
 
   private fun position(x: Long, y: Long) = GetPositionAndSize(x, y, width = DEFAULT_WIDTH, height = DEFAULT_HEIGHT)
+
+  @DependencyGraph(
+    scope = AppScope::class,
+    excludes = [CoroutineContainer::class, GithubApiContainer::class],
+    bindingContainers = [DummyViewModelContainer::class],
+  )
+  internal interface TestAppGraph : AppGraph, AndroidViewModelGraph.Factory {
+    val budgetGraphHolder: BudgetGraphHolder
+
+    @DependencyGraph.Factory
+    fun interface Factory {
+      fun create(
+        @Provides scope: CoroutineScope,
+        @Provides contexts: CoroutineContexts,
+        @Provides context: Context,
+        @Provides holder: AppGraph.Holder,
+      ): TestAppGraph
+    }
+  }
 }

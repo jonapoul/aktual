@@ -4,7 +4,6 @@ graph ["dpi"="100","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
 ":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
-":budget:di" ["fillcolor"="#FCB103","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:transactions:vm" ["fillcolor"="#F5A6A6","color"="black","penwidth"="3","shape"="box"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
@@ -14,14 +13,15 @@ node ["style"="filled"]
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:data" -> ":logging" ["style"="dotted"]
-":budget:di" -> ":budget:data"
 ":budget:transactions:vm" -> ":account:model" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:data"
-":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:model"
 ":budget:transactions:vm" -> ":core:di"
+":budget:transactions:vm" -> ":core:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":logging" ["style"="dotted"]
 ":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
+":core:di" -> ":budget:data"
+":core:di" -> ":budget:model"
 ":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 }

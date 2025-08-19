@@ -1,10 +1,11 @@
 package actual.budget.transactions.vm
 
+import actual.app.di.AndroidViewModelGraph
+import actual.app.di.CoroutineContainer
+import actual.app.di.GithubApiContainer
 import actual.budget.db.AndroidSqlDriverFactory
 import actual.budget.db.BudgetDatabase
 import actual.budget.db.buildDatabase
-import actual.budget.di.AndroidBudgetGraphBuilder
-import actual.budget.di.BudgetGraphHolder
 import actual.budget.model.AccountId
 import actual.budget.model.AccountSpec
 import actual.budget.model.AccountSpec.AllAccounts
@@ -14,12 +15,23 @@ import actual.budget.model.BudgetFiles
 import actual.budget.model.CategoryId
 import actual.budget.model.PayeeId
 import actual.budget.model.TransactionsSpec
+import actual.core.di.AppGraph
+import actual.core.di.BudgetGraphHolder
+import actual.core.di.assisted
+import actual.test.DummyViewModelContainer
+import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
 import android.content.Context
+import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ApplicationProvider
 import app.cash.sqldelight.db.SqlDriver
 import app.cash.turbine.test
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.createGraphFactory
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -29,34 +41,23 @@ import okio.FileSystem
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
-class TransactionsViewModelTest {
+class TransactionsViewModelTest : AppGraph.Holder {
   // real
   private lateinit var viewModel: TransactionsViewModel
-  private lateinit var context: Context
-  private lateinit var components: BudgetGraphHolder
   private lateinit var fileSystem: FileSystem
   private lateinit var driver: SqlDriver
 
   // fake
+  private lateinit var appGraph: TestAppGraph
   private lateinit var files: BudgetFiles
   private lateinit var database: BudgetDatabase
 
-  @BeforeTest
-  fun before() {
-    context = ApplicationProvider.getApplicationContext()
-    fileSystem = FileSystem.SYSTEM
-    files = AndroidBudgetFiles(context, fileSystem)
-
-    val factory = AndroidSqlDriverFactory(BUDGET_ID, context, files)
-    driver = factory.create()
-    database = buildDatabase(driver)
-  }
+  override fun invoke(): AppGraph = appGraph
 
   @AfterTest
   fun after() {
@@ -64,6 +65,14 @@ class TransactionsViewModelTest {
   }
 
   private suspend fun TestScope.buildViewModel(spec: AccountSpec) {
+    val context = ApplicationProvider.getApplicationContext<Context>()
+    fileSystem = FileSystem.SYSTEM
+    files = AndroidBudgetFiles(context, fileSystem)
+
+    val factory = AndroidSqlDriverFactory(BUDGET_ID, context, files)
+    driver = factory.create()
+    database = buildDatabase(driver)
+
     // add some utility entities
     with(database) {
       insertAccount(AccountId("a"), "Amex")
@@ -79,17 +88,20 @@ class TransactionsViewModelTest {
       insertCategory(CategoryId("c"), "Car")
     }
 
-    val contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
-    val builder = AndroidBudgetGraphBuilder(context, this, contexts, files)
-    components = BudgetGraphHolder(builder)
-    components.update(METADATA)
-    viewModel = TransactionsViewModel(
-      token = TOKEN,
-      budgetId = BUDGET_ID,
-      spec = TransactionsSpec(spec),
-      components = components,
-      contexts = contexts,
+    appGraph = createGraphFactory<TestAppGraph.Factory>().create(
+      scope = this,
+      contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
+      context = context,
+      holder = this@TransactionsViewModelTest,
     )
+
+    appGraph.budgetGraphHolder.update(METADATA)
+
+    viewModel = appGraph
+      .create(CreationExtras.Empty)
+      .assisted<TransactionsViewModel, TransactionsViewModel.Factory> {
+        create(TOKEN, BUDGET_ID, TransactionsSpec(spec))
+      }
   }
 
   @Test
@@ -200,4 +212,23 @@ class TransactionsViewModelTest {
 //    assertEquals(actual = viewModel.observe(ID_B).first(), expected = TRANSACTION_B)
 //    assertEquals(actual = viewModel.observe(ID_C).first(), expected = TRANSACTION_C)
 //  }
+
+  @DependencyGraph(
+    scope = AppScope::class,
+    excludes = [CoroutineContainer::class, GithubApiContainer::class],
+    bindingContainers = [DummyViewModelContainer::class],
+  )
+  internal interface TestAppGraph : AppGraph, AndroidViewModelGraph.Factory {
+    val budgetGraphHolder: BudgetGraphHolder
+
+    @DependencyGraph.Factory
+    fun interface Factory {
+      fun create(
+        @Provides scope: CoroutineScope,
+        @Provides contexts: CoroutineContexts,
+        @Provides context: Context,
+        @Provides holder: AppGraph.Holder,
+      ): TestAppGraph
+    }
+  }
 }

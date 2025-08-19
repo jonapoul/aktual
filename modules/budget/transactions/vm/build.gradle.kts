@@ -9,11 +9,12 @@ kotlin {
     api(libs.alakazam.kotlin.core)
     api(libs.kotlinx.datetime)
     implementation(project(":modules:account:model"))
-    implementation(project(":modules:budget:di"))
+    implementation(project(":modules:core:di"))
     implementation(project(":modules:prefs"))
   }
 
   androidUnitTestDependencies {
     implementation(libs.sqldelight.driver.android)
+    implementation(project(":app:di"))
   }
 }

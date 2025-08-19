@@ -16,7 +16,6 @@ node ["style"="filled"]
 ":app:di" ["fillcolor"="#FCB103","shape"="none"]
 ":app:nav" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
-":budget:di" ["fillcolor"="#FCB103","shape"="none"]
 ":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","shape"="none"]
 ":budget:list:vm" ["fillcolor"="#F5A6A6","shape"="none"]
@@ -71,9 +70,7 @@ node ["style"="filled"]
 ":api:github" -> ":core:model"
 ":app:android" -> ":app:di" ["style"="dotted"]
 ":app:android" -> ":app:nav" ["style"="dotted"]
-":app:android" -> ":budget:di" ["style"="dotted"]
 ":app:android" -> ":core:connection" ["style"="dotted"]
-":app:android" -> ":core:di" ["style"="dotted"]
 ":app:android" -> ":l10n" ["style"="dotted"]
 ":app:android" -> ":prefs" ["style"="dotted"]
 ":app:di" -> ":api:builder" ["style"="dotted"]
@@ -94,7 +91,6 @@ node ["style"="filled"]
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:data" -> ":logging" ["style"="dotted"]
-":budget:di" -> ":budget:data"
 ":budget:encryption" -> ":account:model"
 ":budget:encryption" -> ":budget:model"
 ":budget:encryption" -> ":core:model"
@@ -115,9 +111,9 @@ node ["style"="filled"]
 ":budget:reports:ui" -> ":core:ui"
 ":budget:reports:ui" -> ":l10n" ["style"="dotted"]
 ":budget:reports:vm" -> ":account:model" ["style"="dotted"]
-":budget:reports:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:reports:vm" -> ":budget:model"
 ":budget:reports:vm" -> ":core:di"
+":budget:reports:vm" -> ":core:di" ["style"="dotted"]
 ":budget:reports:vm" -> ":core:model" ["style"="dotted"]
 ":budget:reports:vm" -> ":logging" ["style"="dotted"]
 ":budget:sync:ui" -> ":account:model" ["style"="dotted"]
@@ -126,7 +122,6 @@ node ["style"="filled"]
 ":budget:sync:ui" -> ":l10n" ["style"="dotted"]
 ":budget:sync:vm" -> ":account:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
-":budget:sync:vm" -> ":budget:di"
 ":budget:sync:vm" -> ":budget:encryption"
 ":budget:sync:vm" -> ":budget:model"
 ":budget:sync:vm" -> ":core:di"
@@ -140,9 +135,9 @@ node ["style"="filled"]
 ":budget:transactions:ui" -> ":l10n" ["style"="dotted"]
 ":budget:transactions:vm" -> ":account:model" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:data"
-":budget:transactions:vm" -> ":budget:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:model"
 ":budget:transactions:vm" -> ":core:di"
+":budget:transactions:vm" -> ":core:di" ["style"="dotted"]
 ":budget:transactions:vm" -> ":logging" ["style"="dotted"]
 ":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":core:connection" -> ":api:actual"
@@ -150,6 +145,8 @@ node ["style"="filled"]
 ":core:connection" -> ":core:model" ["style"="dotted"]
 ":core:connection" -> ":logging" ["style"="dotted"]
 ":core:connection" -> ":prefs" ["style"="dotted"]
+":core:di" -> ":budget:data"
+":core:di" -> ":budget:model"
 ":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"

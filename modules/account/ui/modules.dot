@@ -7,6 +7,7 @@ node ["style"="filled"]
 ":account:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
 ":account:vm" ["fillcolor"="#F5A6A6","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
+":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
@@ -36,6 +37,11 @@ node ["style"="filled"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
+":budget:data" -> ":budget:model"
+":budget:data" -> ":core:model"
+":budget:data" -> ":logging" ["style"="dotted"]
+":core:di" -> ":budget:data"
+":core:di" -> ":budget:model"
 ":core:ui" -> ":budget:model"
 ":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"

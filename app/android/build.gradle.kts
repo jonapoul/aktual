@@ -94,10 +94,10 @@ android {
   buildTypes {
     debug {
       signingConfig = signingConfigs.findByName("debug")
-      val defaultUrl = stringPropertyOrNull(key = "actual.defaultUrl")
-      val defaultPassword = stringPropertyOrNull(key = "actual.defaultPassword")
-      buildConfigField("String", "DEFAULT_URL", if (defaultUrl == null) "null" else "\"${defaultUrl}\"")
-      buildConfigField("String", "DEFAULT_PASSWORD", if (defaultPassword == null) "null" else "\"${defaultPassword}\"")
+      val url = stringPropertyOrNull(key = "actual.defaultUrl")
+      val password = stringPropertyOrNull(key = "actual.defaultPassword")
+      buildConfigField("String", "DEFAULT_URL", if (url == null) "null" else "\"${url}\"")
+      buildConfigField("String", "DEFAULT_PASSWORD", if (password == null) "null" else "\"${password}\"")
     }
 
     release {
@@ -128,9 +128,7 @@ licensee {
 dependencies {
   implementation(project(":app:di"))
   implementation(project(":app:nav"))
-  implementation(project(":modules:budget:di"))
   implementation(project(":modules:core:connection"))
-  implementation(project(":modules:core:di"))
   implementation(project(":modules:l10n"))
   implementation(project(":modules:prefs"))
   implementation(compose.runtime)
@@ -141,15 +139,12 @@ dependencies {
   implementation(libs.androidx.activity.core)
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.annotation)
-  implementation(libs.androidx.crypto)
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
-  implementation(libs.androidx.preference.ktx)
   implementation(libs.androidx.splash)
   implementation(libs.kotlin.stdlib)
   implementation(libs.kotlinx.coroutines)
   implementation(libs.logcat)
   implementation(libs.material)
   implementation(libs.molecule)
-  implementation(libs.preferences.android)
 }

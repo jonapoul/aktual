@@ -1,6 +1,7 @@
 package actual.app.android
 
 import actual.account.model.Password
+import actual.core.di.AppGraph
 import actual.core.model.ServerUrl
 import actual.logging.ActualAndroidLogcatLogger
 import actual.logging.AndroidLogStorage
@@ -12,9 +13,9 @@ import logcat.LogcatLogger
 import logcat.logcat
 import actual.app.android.BuildConfig as ActualBuildConfig
 
-class ActualApplication : Application(), AndroidAppGraph.Holder {
+class ActualApplication : Application(), AppGraph.Holder {
   @Suppress("UNNECESSARY_SAFE_CALL", "UnreachableCode")
-  override val graph: AndroidAppGraph by lazy {
+  private val graph by lazy {
     val factory = createGraphFactory<AndroidAppGraph.Factory>()
     val defaultPassword = ActualBuildConfig.DEFAULT_PASSWORD?.let(::Password) ?: Password.Empty
     val defaultServerUrl = ActualBuildConfig.DEFAULT_URL?.let(::ServerUrl)
@@ -22,8 +23,11 @@ class ActualApplication : Application(), AndroidAppGraph.Holder {
       context = this,
       defaultPassword = { defaultPassword },
       defaultServerUrl = { defaultServerUrl },
+      graphHolder = this,
     )
   }
+
+  override fun invoke(): AndroidAppGraph = graph
 
   override fun onCreate() {
     super.onCreate()

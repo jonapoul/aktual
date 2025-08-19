@@ -4,7 +4,6 @@ import actual.account.model.LoginToken
 import actual.account.model.Password
 import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
-import actual.budget.di.BudgetGraphHolder
 import actual.budget.encryption.KeyGenerator
 import actual.budget.model.BudgetFiles
 import actual.budget.model.BudgetId
@@ -14,6 +13,7 @@ import actual.budget.sync.vm.SyncStep.DownloadingDatabase
 import actual.budget.sync.vm.SyncStep.FetchingFileInfo
 import actual.budget.sync.vm.SyncStep.ValidatingDatabase
 import actual.core.di.AssistedFactoryKey
+import actual.core.di.BudgetGraphHolder
 import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
 import actual.core.model.Percent
@@ -64,7 +64,7 @@ class SyncBudgetViewModel(
   private val keyGenerator: KeyGenerator,
   private val keyFetcher: KeyFetcher,
   private val keyPreferences: KeyPreferences,
-  private val budgetComponents: BudgetGraphHolder,
+  private val budgetGraphs: BudgetGraphHolder,
 ) : ViewModel() {
   private var cachedData: CachedEncryptedData? = null
 
@@ -74,7 +74,7 @@ class SyncBudgetViewModel(
   private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
   val stepStates: StateFlow<ImmutableMap<SyncStep, SyncStepState>> = mutableSteps.asStateFlow()
 
-  val budgetIsLoaded: StateFlow<Boolean> = budgetComponents
+  val budgetIsLoaded: StateFlow<Boolean> = budgetGraphs
     .map { it?.budgetId == budgetId }
     .stateIn(viewModelScope, Eagerly, initialValue = false)
 
@@ -111,7 +111,7 @@ class SyncBudgetViewModel(
 
   fun clearBudget() {
     logcat.v { "clearBudget" }
-    budgetComponents.clear()
+    budgetGraphs.clear()
   }
 
   fun enterKeyPassword(input: Password) = mutablePasswordState.update { KeyPasswordState.Active(input) }
@@ -289,8 +289,8 @@ class SyncBudgetViewModel(
       }
 
       is ImportResult.Success -> {
-        val component = budgetComponents.update(result.meta)
-        logcat.i { "Built new budget component from $budgetId: $component" }
+        val budgetGraph = budgetGraphs.update(result.meta)
+        logcat.i { "Built new budget component from $budgetId: $budgetGraph" }
         setStepState(ValidatingDatabase, SyncStepState.Succeeded)
       }
     }
