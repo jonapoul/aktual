@@ -29,7 +29,6 @@ interface AndroidAppGraph : AppGraph, AndroidViewModelGraph.Factory {
   fun interface Factory {
     fun create(
       @Provides context: Context,
-      @Provides buildConfig: BuildConfig,
       @Provides defaultPassword: Password.Provider,
       @Provides defaultServerUrl: ServerUrl.Provider,
       @Provides graphHolder: AppGraph.Holder,
