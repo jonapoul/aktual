@@ -5,8 +5,6 @@ import actual.budget.db.dao.AccountsDao
 import actual.budget.db.dao.PreferencesDao
 import actual.budget.db.dao.TransactionsDao
 import actual.budget.db.transactions.GetById
-import actual.budget.di.BudgetGraphHolder
-import actual.budget.di.throwIfWrongBudget
 import actual.budget.model.AccountSpec
 import actual.budget.model.Amount
 import actual.budget.model.BudgetId
@@ -18,8 +16,10 @@ import actual.budget.transactions.vm.LoadedAccount.AllAccounts
 import actual.budget.transactions.vm.LoadedAccount.Loading
 import actual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import actual.core.di.AssistedFactoryKey
+import actual.core.di.BudgetGraphHolder
 import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
+import actual.core.di.throwIfWrongBudget
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,15 +50,15 @@ class TransactionsViewModel(
   @Suppress("unused") @Assisted private val token: LoginToken,
   @Assisted private val budgetId: BudgetId,
   @Assisted private val spec: TransactionsSpec,
-  components: BudgetGraphHolder,
+  budgetGraphs: BudgetGraphHolder,
   contexts: CoroutineContexts,
 ) : ViewModel() {
   // data sources
-  private val component = components.require()
-  private val accountsDao = AccountsDao(component.database, contexts)
-  private val transactionsDao = TransactionsDao(component.database, contexts)
-  private val prefs = component.localPreferences
-  private val syncedPrefs = PreferencesDao(component.database, contexts)
+  private val budgetGraph = budgetGraphs.require()
+  private val accountsDao = AccountsDao(budgetGraph.database, contexts)
+  private val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
+  private val prefs = budgetGraph.localPreferences
+  private val syncedPrefs = PreferencesDao(budgetGraph.database, contexts)
 
   // local data
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
@@ -83,7 +83,7 @@ class TransactionsViewModel(
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsSorting.Default)
 
   init {
-    component.throwIfWrongBudget(budgetId)
+    budgetGraph.throwIfWrongBudget(budgetId)
 
     when (val spec = spec.accountSpec) {
       is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }

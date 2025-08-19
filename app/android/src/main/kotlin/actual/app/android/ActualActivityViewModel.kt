@@ -4,7 +4,6 @@ package actual.app.android
 
 import actual.account.model.LoginToken
 import actual.budget.db.dao.PreferencesDao
-import actual.budget.di.BudgetGraphHolder
 import actual.budget.model.BudgetFiles
 import actual.budget.model.DbMetadata
 import actual.budget.model.NumberFormat
@@ -12,6 +11,7 @@ import actual.budget.model.SyncedPrefKey
 import actual.core.connection.ConnectionMonitor
 import actual.core.connection.ServerPinger
 import actual.core.connection.ServerVersionFetcher
+import actual.core.di.BudgetGraphHolder
 import actual.core.di.ViewModelKey
 import actual.core.di.ViewModelScope
 import actual.core.model.DarkColorSchemeType
@@ -56,11 +56,11 @@ class ActualActivityViewModel(
   budgetComponents: BudgetGraphHolder,
   preferences: AppGlobalPreferences,
 ) : ViewModel() {
-  private val component = budgetComponents.stateIn(viewModelScope, Eagerly, initialValue = null)
+  private val budgetGraph = budgetComponents.stateIn(viewModelScope, Eagerly, initialValue = null)
 
-  private val syncedPrefs: StateFlow<PreferencesDao?> = component
+  private val syncedPrefs: StateFlow<PreferencesDao?> = budgetGraph
     .filterNotNull()
-    .map { c -> PreferencesDao(c.database, contexts) }
+    .map { bg -> PreferencesDao(bg.database, contexts) }
     .stateIn(viewModelScope, Eagerly, initialValue = null)
 
   val numberFormat: StateFlow<NumberFormat> = observeSyncedPref(
@@ -89,8 +89,8 @@ class ActualActivityViewModel(
 
   private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 
-  private val budgetName: Flow<String?> = component.flatMapLatest { component ->
-    component
+  private val budgetName: Flow<String?> = budgetGraph.flatMapLatest { bg ->
+    bg
       ?.localPreferences
       ?.map { meta -> meta[DbMetadata.BudgetName] }
       ?: flowOf(null)

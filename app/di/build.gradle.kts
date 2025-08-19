@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.implementation
+
 plugins {
   alias(libs.plugins.module.di)
 }
@@ -18,5 +20,11 @@ kotlin {
     implementation(project(":modules:api:builder"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.core)
+  }
+
+  androidMainDependencies {
+    implementation(libs.androidx.crypto)
+    implementation(libs.androidx.preference.ktx)
+    implementation(libs.preferences.android)
   }
 }
