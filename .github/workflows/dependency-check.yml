@@ -51,7 +51,7 @@ jobs:
         with:
           add-job-summary: on-failure
 
-      - name: Cache OWASP Dependency Check data
+      - name: Cache
         uses: actions/cache@v3
         with:
           path: ~/.gradle/dependency-check-data
@@ -69,11 +69,21 @@ jobs:
           name: dependency-check-reports
           path: "**/build/reports/dependency-check/"
 
+      - name: Move SARIF results
+        if: always()
+        run: |
+          DEST_DIR="./build/reports/dependency-check"
+          mkdir -p "$DEST_DIR"
+          while IFS= read -r -d '' SARIF; do
+            MODULE=$(echo "$SARIF" | sed 's|/build/reports/.*||' | sed 's|^./||' | sed 's|/|-|g')
+            cp "$SARIF" "$DEST_DIR/$MODULE.sarif"
+          done < <(find . -path "**/build/reports/dependency-check/*.sarif" -print0)
+
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: "**/build/reports/dependency-check/*.sarif"
+          sarif_file: "build/reports/dependency-check/"
           category: dependency-check
 
       - name: Print summary
