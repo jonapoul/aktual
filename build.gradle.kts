@@ -10,6 +10,7 @@ plugins {
   alias(libs.plugins.catalog) apply false
   alias(libs.plugins.compose) apply false
   alias(libs.plugins.composeHotReload) apply false
+  alias(libs.plugins.dependencyCheck) apply false
   alias(libs.plugins.detekt) apply false
   alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.kotlin.compose) apply false
