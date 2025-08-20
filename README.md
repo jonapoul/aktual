@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://opensource.org/licenses/Apache-2.0"><img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-blue.svg"/></a>
-  <a href="https://android-arsenal.com/api?level=24"><img alt="API" src="https://img.shields.io/badge/API-24%2B-brightgreen.svg?style=flat"/></a>
+  <a href="https://android-arsenal.com/api?level=28"><img alt="API" src="https://img.shields.io/badge/API-28%2B-brightgreen.svg?style=flat"/></a>
   <a href="https://github.com/jonapoul/actual-android/releases"><img alt="Release" src="https://img.shields.io/github/v/release/jonapoul/actual-android"/></a>
   <a href="https://github.com/jonapoul/actual-android"><img alt="Coverage" src="https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/jonapoul/6bf1b7a292bc61bcca966bee22e8b456/raw/a73e61ed9b6626786d12bc9991f6a516a3d2c4b9/coverage-badge.json"/></a>
   <a href="https://github.com/jonapoul/actual-android"><img alt="Downloads" src="https://img.shields.io/github/downloads/jonapoul/actual-android/total"/></a>

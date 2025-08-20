@@ -5,7 +5,6 @@ import blueprint.core.jvmTarget
 import blueprint.core.rootLocalPropertiesOrNull
 import blueprint.core.stringProperty
 import blueprint.core.stringPropertyOrNull
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.time.LocalDate
 
@@ -148,3 +147,22 @@ dependencies {
   implementation(libs.material)
   implementation(libs.molecule)
 }
+
+val exportMinSdk by tasks.registering {
+  group = "documentation"
+  description = "Updates the API level badge in README.md"
+  val minSdk = android.defaultConfig.minSdk
+  val readmeFile = rootDir.resolve("README.md")
+  doLast {
+    val originalContent = readmeFile.readText()
+    val newContent = originalContent
+      .replace("API-\\d+%2B".toRegex(), "API-$minSdk%2B")
+      .replace("level=\\d+".toRegex(), "level=$minSdk")
+    readmeFile.writeText(newContent)
+    if (originalContent != newContent) {
+      throw GradleException("Updated $readmeFile with minSdk=$minSdk - you need to commit it!")
+    }
+  }
+}
+
+tasks.named("preBuild") { dependsOn(exportMinSdk) }
