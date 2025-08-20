@@ -1,0 +1,89 @@
+name: Dependency Check
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          java-version-file: .github/workflows/.java-version
+          distribution: "zulu"
+
+      - name: Add permissions
+        run: chmod +x ./gradlew
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          add-job-summary: on-failure
+
+      - name: Cache OWASP Dependency Check data
+        uses: actions/cache@v3
+        with:
+          path: ~/.gradle/dependency-check-data
+          key: ${{ runner.os }}-dependency-check-${{ hashFiles('**/build.gradle*') }}
+          restore-keys: |
+            ${{ runner.os }}-dependency-check-
+
+      - name: Analyze
+        run: ./gradlew dependencyCheckAnalyze --info -Pactual.nvdApiKey=${{ secrets.NVD_API_KEY }}
+
+      - name: Upload reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dependency-check-reports
+          path: |
+            **/build/reports/dependency-check-report.*
+            !**/dependency-check-report.sarif
+
+      - name: Upload SARIF results
+        uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: "**/build/reports/dependency-check-report.sarif"
+
+      - name: Print summary
+        run: |
+          TOTAL_VULNERABILITIES=0
+
+          # Find all dependency-check-report.json files recursively
+          for report in $(find . -name "dependency-check-report.json" -path "*/build/reports/*" 2>/dev/null); do
+            if [ -f "$report" ]; then
+              MODULE_PATH=$(dirname $(dirname $(dirname "$report")))
+              MODULE_NAME=$(basename "$MODULE_PATH")
+              if [ "$MODULE_NAME" = "." ]; then
+                MODULE_NAME="root"
+              fi
+
+              VULNS=$(cat "$report" | jq '[.dependencies[]?.vulnerabilities // [] | length] | add // 0' 2>/dev/null || echo "0")
+              echo "Module '$MODULE_NAME' vulnerabilities: $VULNS"
+              TOTAL_VULNERABILITIES=$((TOTAL_VULNERABILITIES + VULNS))
+            fi
+          done
+
+          echo "Total vulnerabilities found across all modules: $TOTAL_VULNERABILITIES"
+          if [ "$TOTAL_VULNERABILITIES" -gt 0 ]; then
+            echo "::error::Security vulnerabilities found in dependencies across modules!"
+            exit 1
+          fi

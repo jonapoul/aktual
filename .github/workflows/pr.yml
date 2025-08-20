@@ -32,6 +32,7 @@ jobs:
               - '**.kts'
               - '**.properties'
               - '**.conf'
+              - '**.toml'
               - 'build-logic/**'
               - 'gradle/**'
             github:
