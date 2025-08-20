@@ -1,6 +1,9 @@
 name: gitleaks
 
-on: [ pull_request, push, workflow_dispatch ]
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
 
 concurrency:
   group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
