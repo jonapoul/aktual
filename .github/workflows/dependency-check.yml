@@ -3,8 +3,18 @@ name: Dependency Check
 on:
   push:
     branches: [ main ]
+    paths:
+      - '**/*.kts'
+      - '**/*.properties'
+      - 'build-logic/**'
+      - 'gradle/**'
   pull_request:
     branches: [ main ]
+    paths:
+      - '**/*.kts'
+      - '**/*.properties'
+      - 'build-logic/**'
+      - 'gradle/**'
   schedule:
     # Run daily at 2 AM UTC
     - cron: '0 2 * * *'
