@@ -1,0 +1,9 @@
+[[allowlists]]
+paths = [
+  # Actual API docs and examples
+  '''api/''',
+
+  # Unit tests
+  '''src/test/''',
+  '''src/.*Test/''',
+]
