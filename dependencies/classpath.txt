@@ -111,8 +111,8 @@ dev.jonpoulton.blueprint:core:1.0.0
 dev.jonpoulton.blueprint:recipes:1.0.0
 dev.jonpoulton.catalog:catalog-gradle-plugin:0.4.0
 dev.jonpoulton.catalog:dev.jonpoulton.catalog.gradle.plugin:0.4.0
-dev.zacsweers.metro:dev.zacsweers.metro.gradle.plugin:0.6.0
-dev.zacsweers.metro:gradle-plugin:0.6.0
+dev.zacsweers.metro:dev.zacsweers.metro.gradle.plugin:0.6.1
+dev.zacsweers.metro:gradle-plugin:0.6.1
 dev.zacsweers.redacted:dev.zacsweers.redacted.gradle.plugin:1.14.1
 dev.zacsweers.redacted:redacted-compiler-plugin-gradle:1.14.1
 gradle.plugin.org.gradle.android:android-cache-fix-gradle-plugin:3.0.1
