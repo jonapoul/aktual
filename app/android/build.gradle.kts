@@ -156,7 +156,7 @@ val exportMinSdk by tasks.registering {
   doLast {
     val originalContent = readmeFile.readText()
     val newContent = originalContent
-      .replace("API-\\d+%2B".toRegex(), "API-${minSdk}%2B")
+      .replace("API-\\d+%2B".toRegex(), "API-$minSdk%2B")
       .replace("level=\\d+".toRegex(), "level=$minSdk")
     readmeFile.writeText(newContent)
     if (originalContent != newContent) {
