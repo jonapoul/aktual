@@ -18,7 +18,7 @@ kover = "0.9.1"
 ksp = "2.2.10-2.0.2"
 licensee = "1.13.0"
 manifestLock = "1.3.5"
-metro = "0.6.0"
+metro = "0.6.1"
 molecule = "2.1.0"
 redacted = "1.14.1"
 
