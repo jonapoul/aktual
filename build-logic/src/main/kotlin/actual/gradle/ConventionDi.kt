@@ -15,7 +15,7 @@ class ConventionDi : Plugin<Project> {
 
     extensions.configure<MetroPluginExtension> {
       enableKotlinVersionCompatibilityChecks.set(true)
-      enableStrictValidation.set(true)
+      enableFullBindingGraphValidation.set(true)
       enableTopLevelFunctionInjection.set(false)
       generateAssistedFactories.set(false)
       generateContributionHints.set(true)
