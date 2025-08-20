@@ -67,15 +67,14 @@ jobs:
         if: always()
         with:
           name: dependency-check-reports
-          path: |
-            **/build/reports/dependency-check-report.*
-            !**/dependency-check-report.sarif
+          path: "**/build/reports/dependency-check/"
 
       - name: Upload SARIF results
         uses: github/codeql-action/upload-sarif@v3
         if: always()
         with:
-          sarif_file: "**/build/reports/dependency-check-report.sarif"
+          sarif_file: "**/build/reports/dependency-check/*.sarif"
+          category: dependency-check
 
       - name: Print summary
         run: |

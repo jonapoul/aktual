@@ -10,7 +10,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.owasp.dependencycheck.gradle.DependencyCheckPlugin
 import org.owasp.dependencycheck.gradle.extension.DependencyCheckExtension
-import org.owasp.dependencycheck.reporting.ReportGenerator
+import org.owasp.dependencycheck.reporting.ReportGenerator.Format
 
 class ConventionDependencyCheck : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
@@ -19,7 +19,8 @@ class ConventionDependencyCheck : Plugin<Project> {
     extensions.configure<DependencyCheckExtension> {
       failBuildOnUnusedSuppressionRule = true
       failOnError = false
-      format = ReportGenerator.Format.ALL.toString()
+      formats = listOf(Format.HTML, Format.SARIF).map { it.toString() }
+      outputDirectory = file("build/reports/dependency-check/").absolutePath
       scanBuildEnv = false
       scanDependencies = true
       showSummary = true
