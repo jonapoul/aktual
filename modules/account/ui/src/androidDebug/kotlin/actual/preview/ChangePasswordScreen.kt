@@ -1,9 +1,9 @@
 package actual.preview
 
-import actual.core.model.Password
 import actual.account.ui.password.ChangePasswordScaffold
 import actual.account.vm.ChangePasswordState
 import actual.core.model.ActualVersions
+import actual.core.model.Password
 import actual.core.ui.PreviewThemedScreen
 import actual.core.ui.TripleScreenPreview
 import androidx.compose.runtime.Composable

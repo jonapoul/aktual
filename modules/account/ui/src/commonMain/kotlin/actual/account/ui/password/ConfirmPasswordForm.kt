@@ -1,7 +1,7 @@
 package actual.account.ui.password
 
-import actual.core.model.Password
 import actual.account.vm.ChangePasswordState
+import actual.core.model.Password
 import actual.core.ui.PrimaryTextButtonWithLoading
 import actual.core.ui.keyboardFocusRequester
 import actual.l10n.Strings

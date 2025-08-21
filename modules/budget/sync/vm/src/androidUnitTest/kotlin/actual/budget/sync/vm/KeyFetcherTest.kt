@@ -1,12 +1,12 @@
 package actual.budget.sync.vm
 
-import actual.core.model.LoginToken
-import actual.core.model.Password
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.api.client.SyncApi
 import actual.budget.encryption.KeyGenerator
 import actual.budget.model.BudgetId
+import actual.core.model.LoginToken
+import actual.core.model.Password
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.core.model.base64

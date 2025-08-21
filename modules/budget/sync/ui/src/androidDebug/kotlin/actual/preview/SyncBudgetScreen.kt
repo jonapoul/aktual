@@ -1,10 +1,10 @@
 package actual.preview
 
-import actual.core.model.Password
 import actual.budget.sync.ui.SyncBudgetScaffold
 import actual.budget.sync.vm.KeyPasswordState
 import actual.budget.sync.vm.SyncStep
 import actual.budget.sync.vm.SyncStepState
+import actual.core.model.Password
 import actual.core.model.percent
 import actual.core.ui.PreviewThemedScreen
 import actual.core.ui.TripleScreenPreview

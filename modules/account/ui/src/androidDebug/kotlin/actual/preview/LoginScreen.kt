@@ -1,9 +1,9 @@
 package actual.preview
 
 import actual.account.domain.LoginResult
-import actual.core.model.Password
 import actual.account.ui.login.LoginScaffold
 import actual.core.model.ActualVersions
+import actual.core.model.Password
 import actual.core.model.ServerUrl
 import actual.core.ui.PreviewThemedScreen
 import actual.core.ui.TripleScreenPreview

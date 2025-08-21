@@ -1,6 +1,5 @@
 package actual.budget.sync.vm
 
-import actual.core.model.LoginToken
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
@@ -10,6 +9,7 @@ import actual.api.model.sync.UserFile
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.BudgetInfoFetcher.Result
 import actual.core.model.KeyId
+import actual.core.model.LoginToken
 import actual.core.model.ServerUrl
 import actual.core.model.base64
 import actual.test.emptyMockEngine

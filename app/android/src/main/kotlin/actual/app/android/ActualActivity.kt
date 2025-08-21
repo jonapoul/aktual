@@ -1,11 +1,11 @@
 package actual.app.android
 
-import actual.core.model.LoginToken
 import actual.app.nav.ActualNavHost
 import actual.core.di.ActivityKey
 import actual.core.di.ViewModelGraphProvider
 import actual.core.model.ColorSchemeType
 import actual.core.model.DarkColorSchemeType
+import actual.core.model.LoginToken
 import actual.core.model.RegularColorSchemeType
 import actual.core.ui.ActualTheme
 import actual.core.ui.LocalViewModelGraphProvider

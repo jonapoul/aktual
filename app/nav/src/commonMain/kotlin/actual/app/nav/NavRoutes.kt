@@ -1,8 +1,8 @@
 package actual.app.nav
 
-import actual.core.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
+import actual.core.model.LoginToken
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import java.io.Serializable as JSerializable

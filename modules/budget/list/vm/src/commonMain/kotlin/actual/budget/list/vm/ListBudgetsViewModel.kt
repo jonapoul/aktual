@@ -1,6 +1,5 @@
 package actual.budget.list.vm
 
-import actual.core.model.LoginToken
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.sync.DeleteUserFileRequest
 import actual.budget.model.BudgetFiles
@@ -10,6 +9,7 @@ import actual.budget.model.metadata
 import actual.core.di.AssistedFactoryKey
 import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
+import actual.core.model.LoginToken
 import actual.core.model.ServerUrl
 import actual.core.model.UrlOpener
 import actual.prefs.AppGlobalPreferences

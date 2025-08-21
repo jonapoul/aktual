@@ -1,9 +1,9 @@
 package actual.account.ui.password
 
-import actual.core.model.Password
 import actual.account.vm.ChangePasswordState
 import actual.account.vm.ChangePasswordViewModel
 import actual.core.model.ActualVersions
+import actual.core.model.Password
 import actual.core.ui.ActualTypography
 import actual.core.ui.LocalTheme
 import actual.core.ui.Theme

@@ -1,6 +1,5 @@
 package actual.budget.transactions.ui
 
-import actual.core.model.LoginToken
 import actual.budget.model.AccountSpec
 import actual.budget.model.BudgetId
 import actual.budget.model.TransactionId
@@ -10,6 +9,7 @@ import actual.budget.transactions.vm.DatedTransactions
 import actual.budget.transactions.vm.LoadedAccount
 import actual.budget.transactions.vm.TransactionsSorting
 import actual.budget.transactions.vm.TransactionsViewModel
+import actual.core.model.LoginToken
 import actual.core.ui.LocalPrivacyEnabled
 import actual.core.ui.LocalTheme
 import actual.core.ui.Theme

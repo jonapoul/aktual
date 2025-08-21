@@ -1,11 +1,11 @@
 package actual.budget.sync.ui
 
-import actual.core.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.sync.vm.KeyPasswordState
 import actual.budget.sync.vm.SyncBudgetViewModel
 import actual.budget.sync.vm.SyncStep
 import actual.budget.sync.vm.SyncStepState
+import actual.core.model.LoginToken
 import actual.core.model.Percent
 import actual.core.ui.BackHandler
 import actual.core.ui.LocalTheme

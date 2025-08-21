@@ -1,8 +1,8 @@
 package actual.app.nav
 
-import actual.core.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
+import actual.core.model.LoginToken
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry

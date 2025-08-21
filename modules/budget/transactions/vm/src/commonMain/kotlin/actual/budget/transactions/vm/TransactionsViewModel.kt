@@ -1,6 +1,5 @@
 package actual.budget.transactions.vm
 
-import actual.core.model.LoginToken
 import actual.budget.db.dao.AccountsDao
 import actual.budget.db.dao.PreferencesDao
 import actual.budget.db.dao.TransactionsDao
@@ -20,6 +19,7 @@ import actual.core.di.BudgetGraphHolder
 import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
 import actual.core.di.throwIfWrongBudget
+import actual.core.model.LoginToken
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

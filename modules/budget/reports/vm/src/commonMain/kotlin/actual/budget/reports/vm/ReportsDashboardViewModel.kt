@@ -1,11 +1,11 @@
 package actual.budget.reports.vm
 
-import actual.core.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
 import actual.core.di.AssistedFactoryKey
 import actual.core.di.ViewModelAssistedFactory
 import actual.core.di.ViewModelScope
+import actual.core.model.LoginToken
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
