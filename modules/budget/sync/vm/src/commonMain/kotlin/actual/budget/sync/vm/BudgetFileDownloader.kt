@@ -1,6 +1,5 @@
 package actual.budget.sync.vm
 
-import actual.account.model.LoginToken
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.SyncDownloadApi
 import actual.api.client.SyncDownloadState
@@ -11,6 +10,7 @@ import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
 import actual.core.model.Bytes.Companion.Zero
+import actual.core.model.LoginToken
 import actual.core.model.bytes
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage

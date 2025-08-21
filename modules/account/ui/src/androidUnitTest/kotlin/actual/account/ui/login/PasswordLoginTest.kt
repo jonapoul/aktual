@@ -1,6 +1,6 @@
 package actual.account.ui.login
 
-import actual.account.model.Password
+import actual.core.model.Password
 import actual.test.assertEditableTextEquals
 import actual.test.runTest
 import actual.test.setAndroidThemedContent

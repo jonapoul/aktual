@@ -1,9 +1,9 @@
 package actual.app.android
 
-import actual.account.model.Password
 import actual.app.di.AndroidViewModelGraph
 import actual.core.di.AppGraph
 import actual.core.di.ProviderMap
+import actual.core.model.Password
 import actual.core.model.ServerUrl
 import alakazam.kotlin.core.BuildConfig
 import android.app.Activity

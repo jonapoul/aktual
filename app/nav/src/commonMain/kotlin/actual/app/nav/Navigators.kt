@@ -2,7 +2,6 @@ package actual.app.nav
 
 import actual.about.ui.info.InfoNavigator
 import actual.about.ui.licenses.LicensesNavigator
-import actual.account.model.LoginToken
 import actual.account.ui.login.LoginNavigator
 import actual.account.ui.password.ChangePasswordNavigator
 import actual.account.ui.url.ServerUrlNavigator
@@ -13,6 +12,7 @@ import actual.budget.reports.ui.ChooseReportTypeNavigator
 import actual.budget.reports.ui.ReportsDashboardNavigator
 import actual.budget.sync.ui.SyncBudgetNavigator
 import actual.budget.transactions.ui.TransactionsNavigator
+import actual.core.model.LoginToken
 import actual.settings.ui.SettingsNavigator
 import androidx.navigation.NavHostController
 

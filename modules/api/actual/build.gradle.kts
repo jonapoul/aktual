@@ -11,7 +11,6 @@ kotlin {
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
     api(libs.okio)
-    api(project(":modules:account:model"))
     api(project(":modules:budget:model"))
     api(project(":modules:core:model"))
     implementation(libs.ktor.serialization.core)

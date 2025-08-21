@@ -1,6 +1,5 @@
 package actual.budget.list.vm
 
-import actual.account.model.LoginToken
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
@@ -8,6 +7,7 @@ import actual.api.client.SyncApi
 import actual.budget.model.Budget
 import actual.budget.model.BudgetId
 import actual.budget.model.BudgetState
+import actual.core.model.LoginToken
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.prefs.KeyPreferences

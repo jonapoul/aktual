@@ -1,7 +1,7 @@
 package actual.app.android
 
-import actual.account.model.Password
 import actual.core.di.AppGraph
+import actual.core.model.Password
 import actual.core.model.ServerUrl
 import actual.logging.ActualAndroidLogcatLogger
 import actual.logging.AndroidLogStorage

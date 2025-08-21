@@ -12,7 +12,7 @@ kotlin {
     api(project(":modules:budget:model"))
     api(project(":modules:budget:transactions:vm"))
     api(project(":modules:core:ui"))
-    implementation(project(":modules:account:model"))
+    implementation(project(":modules:core:model"))
     implementation(project(":modules:l10n"))
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.datetime)

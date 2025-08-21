@@ -1,7 +1,7 @@
 package actual.api.model.sync
 
-import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
+import actual.core.model.LoginToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

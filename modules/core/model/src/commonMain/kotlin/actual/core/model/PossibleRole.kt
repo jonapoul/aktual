@@ -1,4 +1,4 @@
-package actual.account.model
+package actual.core.model
 
 import alakazam.kotlin.serialization.SerializableByString
 import alakazam.kotlin.serialization.enumStringSerializer

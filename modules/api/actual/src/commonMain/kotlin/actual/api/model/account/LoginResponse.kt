@@ -1,7 +1,7 @@
 package actual.api.model.account
 
-import actual.account.model.LoginToken
 import actual.api.model.internal.LoginResponseDataSerializer
+import actual.core.model.LoginToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

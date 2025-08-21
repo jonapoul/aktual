@@ -1,4 +1,4 @@
-package actual.account.model
+package actual.core.model
 
 import dev.zacsweers.redacted.annotations.Redacted
 import kotlinx.serialization.Serializable

@@ -2,7 +2,6 @@ package actual.app.nav
 
 import actual.about.ui.info.InfoScreen
 import actual.about.ui.licenses.LicensesScreen
-import actual.account.model.LoginToken
 import actual.account.ui.login.LoginScreen
 import actual.account.ui.password.ChangePasswordScreen
 import actual.account.ui.url.ServerUrlScreen
@@ -11,6 +10,7 @@ import actual.budget.reports.ui.ChooseReportTypeScreen
 import actual.budget.reports.ui.ReportsDashboardScreen
 import actual.budget.sync.ui.SyncBudgetScreen
 import actual.budget.transactions.ui.TransactionsScreen
+import actual.core.model.LoginToken
 import actual.settings.ui.SettingsScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
