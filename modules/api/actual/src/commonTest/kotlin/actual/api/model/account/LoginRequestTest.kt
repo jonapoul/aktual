@@ -1,6 +1,6 @@
 package actual.api.model.account
 
-import actual.account.model.Password
+import actual.core.model.Password
 import actual.test.testEncoding
 import kotlin.test.Test
 import kotlin.test.assertEquals

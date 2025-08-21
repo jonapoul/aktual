@@ -1,6 +1,6 @@
 package actual.account.domain
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import androidx.compose.runtime.Immutable
 
 @Immutable

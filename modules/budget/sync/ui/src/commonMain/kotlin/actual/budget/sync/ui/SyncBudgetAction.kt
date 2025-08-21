@@ -1,6 +1,6 @@
 package actual.budget.sync.ui
 
-import actual.account.model.Password
+import actual.core.model.Password
 import androidx.compose.runtime.Immutable
 
 @Immutable

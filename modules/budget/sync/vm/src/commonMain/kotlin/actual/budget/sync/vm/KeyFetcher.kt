@@ -1,12 +1,12 @@
 package actual.budget.sync.vm
 
-import actual.account.model.LoginToken
-import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.sync.GetUserKeyRequest
 import actual.api.model.sync.GetUserKeyResponse
 import actual.budget.encryption.KeyGenerator
 import actual.budget.model.BudgetId
+import actual.core.model.LoginToken
+import actual.core.model.Password
 import actual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage

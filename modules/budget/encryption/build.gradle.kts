@@ -5,7 +5,6 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.okio)
-    api(project(":modules:account:model"))
     api(project(":modules:budget:model"))
     api(project(":modules:core:model"))
   }

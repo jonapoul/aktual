@@ -10,7 +10,6 @@ kotlin {
     api(libs.alakazam.kotlin.core)
     api(libs.alakazam.kotlin.time)
     api(libs.kotlinx.datetime)
-    implementation(project(":modules:account:model"))
     implementation(project(":modules:api:actual"))
     implementation(project(":modules:core:model"))
     implementation(project(":modules:prefs"))

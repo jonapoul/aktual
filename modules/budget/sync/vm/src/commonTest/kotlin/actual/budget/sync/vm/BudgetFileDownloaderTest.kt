@@ -1,6 +1,5 @@
 package actual.budget.sync.vm
 
-import actual.account.model.LoginToken
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
@@ -10,6 +9,7 @@ import actual.budget.model.encryptedZip
 import actual.budget.sync.vm.DownloadState.Done
 import actual.budget.sync.vm.DownloadState.Failure
 import actual.budget.sync.vm.DownloadState.InProgress
+import actual.core.model.LoginToken
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.core.model.bytes

@@ -1,6 +1,6 @@
 package actual.budget.sync.vm
 
-import actual.account.model.Password
+import actual.core.model.Password
 
 sealed interface KeyPasswordState {
   data class Active(val input: Password) : KeyPasswordState

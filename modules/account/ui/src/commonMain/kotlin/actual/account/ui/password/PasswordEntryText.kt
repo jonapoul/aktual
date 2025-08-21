@@ -1,6 +1,6 @@
 package actual.account.ui.password
 
-import actual.account.model.Password
+import actual.core.model.Password
 import actual.core.ui.TextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions

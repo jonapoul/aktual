@@ -11,8 +11,8 @@ kotlin {
   commonMainDependencies {
     api(project(":modules:budget:list:vm"))
     api(project(":modules:core:ui"))
-    implementation(project(":modules:account:model"))
     implementation(project(":modules:budget:model"))
+    implementation(project(":modules:core:model"))
     implementation(project(":modules:l10n"))
     implementation(libs.kotlinx.coroutines)
   }

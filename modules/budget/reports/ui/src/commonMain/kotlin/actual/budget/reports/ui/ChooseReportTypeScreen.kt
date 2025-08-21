@@ -1,6 +1,5 @@
 package actual.budget.reports.ui
 
-import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetType
 import actual.budget.reports.ui.charts.PreviewCalendar
@@ -13,6 +12,7 @@ import actual.budget.reports.ui.charts.PreviewText
 import actual.budget.reports.ui.charts.ReportChart
 import actual.budget.reports.vm.ChartData
 import actual.budget.reports.vm.ChooseReportTypeViewModel
+import actual.core.model.LoginToken
 import actual.core.ui.ActualTypography
 import actual.core.ui.BackHandler
 import actual.core.ui.CardShape

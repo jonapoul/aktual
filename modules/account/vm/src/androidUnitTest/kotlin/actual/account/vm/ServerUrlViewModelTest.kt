@@ -2,12 +2,12 @@
 
 package actual.account.vm
 
-import actual.account.model.LoginToken
 import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.ActualJson
 import actual.core.model.ActualVersionsStateHolder
+import actual.core.model.LoginToken
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences

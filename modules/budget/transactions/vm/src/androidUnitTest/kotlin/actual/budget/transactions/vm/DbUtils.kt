@@ -1,6 +1,5 @@
 package actual.budget.transactions.vm
 
-import actual.account.model.LoginToken
 import actual.budget.db.BudgetDatabase
 import actual.budget.db.Categories
 import actual.budget.db.Transactions
@@ -12,6 +11,7 @@ import actual.budget.model.CategoryId
 import actual.budget.model.DbMetadata
 import actual.budget.model.PayeeId
 import actual.budget.model.TransactionId
+import actual.core.model.LoginToken
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDate

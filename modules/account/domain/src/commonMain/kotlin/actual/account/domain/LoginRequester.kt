@@ -1,9 +1,9 @@
 package actual.account.domain
 
-import actual.account.model.Password
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse
+import actual.core.model.Password
 import actual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage

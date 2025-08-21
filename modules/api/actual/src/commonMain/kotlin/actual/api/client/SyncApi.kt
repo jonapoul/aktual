@@ -1,6 +1,5 @@
 package actual.api.client
 
-import actual.account.model.LoginToken
 import actual.api.model.internal.ActualHeaders
 import actual.api.model.sync.DeleteUserFileRequest
 import actual.api.model.sync.DeleteUserFileResponse
@@ -14,6 +13,7 @@ import actual.codegen.GET
 import actual.codegen.Header
 import actual.codegen.KtorApi
 import actual.codegen.POST
+import actual.core.model.LoginToken
 import actual.core.model.ServerUrl
 import io.ktor.client.HttpClient
 

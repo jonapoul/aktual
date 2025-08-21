@@ -1,4 +1,4 @@
-package actual.account.model
+package actual.core.model
 
 import kotlin.test.Test
 import kotlin.test.assertEquals

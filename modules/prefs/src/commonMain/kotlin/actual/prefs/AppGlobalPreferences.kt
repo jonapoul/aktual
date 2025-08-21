@@ -1,7 +1,7 @@
 package actual.prefs
 
-import actual.account.model.LoginToken
 import actual.core.model.DarkColorSchemeType
+import actual.core.model.LoginToken
 import actual.core.model.RegularColorSchemeType
 import actual.core.model.ServerUrl
 import dev.jonpoulton.preferences.core.Preference

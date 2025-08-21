@@ -4,7 +4,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(project(":modules:account:model"))
+    api(project(":modules:core:model"))
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.preferences.core)

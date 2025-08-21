@@ -2,7 +2,6 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:list:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
@@ -15,19 +14,17 @@ node ["style"="filled"]
 ":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
-":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:data" -> ":logging" ["style"="dotted"]
-":budget:list:ui" -> ":account:model" ["style"="dotted"]
 ":budget:list:ui" -> ":budget:list:vm"
 ":budget:list:ui" -> ":budget:model" ["style"="dotted"]
+":budget:list:ui" -> ":core:model" ["style"="dotted"]
 ":budget:list:ui" -> ":core:ui"
 ":budget:list:ui" -> ":l10n" ["style"="dotted"]
-":budget:list:vm" -> ":account:model" ["style"="dotted"]
 ":budget:list:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:list:vm" -> ":budget:model"
 ":budget:list:vm" -> ":core:di"
@@ -40,6 +37,5 @@ node ["style"="filled"]
 ":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":l10n" ["style"="dotted"]
-":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 }

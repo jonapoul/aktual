@@ -1,9 +1,9 @@
 package actual.budget.list.ui
 
-import actual.account.model.LoginToken
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.budget.model.Budget
+import actual.core.model.LoginToken
 import actual.core.ui.BasicIconButton
 import actual.core.ui.LocalTheme
 import actual.core.ui.Theme

@@ -2,7 +2,6 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:transactions:ui" ["fillcolor"="#FFFF55","color"="black","penwidth"="3","shape"="box"]
@@ -16,16 +15,16 @@ node ["style"="filled"]
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:data" -> ":logging" ["style"="dotted"]
-":budget:transactions:ui" -> ":account:model" ["style"="dotted"]
 ":budget:transactions:ui" -> ":budget:model"
 ":budget:transactions:ui" -> ":budget:transactions:vm"
+":budget:transactions:ui" -> ":core:model" ["style"="dotted"]
 ":budget:transactions:ui" -> ":core:ui"
 ":budget:transactions:ui" -> ":l10n" ["style"="dotted"]
-":budget:transactions:vm" -> ":account:model" ["style"="dotted"]
 ":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:model"
 ":budget:transactions:vm" -> ":core:di"
 ":budget:transactions:vm" -> ":core:di" ["style"="dotted"]
+":budget:transactions:vm" -> ":core:model" ["style"="dotted"]
 ":budget:transactions:vm" -> ":logging" ["style"="dotted"]
 ":budget:transactions:vm" -> ":prefs" ["style"="dotted"]
 ":core:di" -> ":budget:data"
@@ -34,6 +33,5 @@ node ["style"="filled"]
 ":core:ui" -> ":core:di" ["style"="dotted"]
 ":core:ui" -> ":core:model"
 ":core:ui" -> ":l10n" ["style"="dotted"]
-":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 }

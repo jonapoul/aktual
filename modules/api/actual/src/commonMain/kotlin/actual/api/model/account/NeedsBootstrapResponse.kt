@@ -1,6 +1,6 @@
 package actual.api.model.account
 
-import actual.account.model.LoginMethod
+import actual.core.model.LoginMethod
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

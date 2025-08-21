@@ -1,7 +1,7 @@
 package actual.budget.list.ui
 
-import actual.account.model.LoginToken
 import actual.budget.model.BudgetId
+import actual.core.model.LoginToken
 import androidx.compose.runtime.Immutable
 
 @Immutable

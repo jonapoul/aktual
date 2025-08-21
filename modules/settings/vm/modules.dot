@@ -2,7 +2,6 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
@@ -15,7 +14,6 @@ node ["style"="filled"]
 ":budget:data" -> ":logging" ["style"="dotted"]
 ":core:di" -> ":budget:data"
 ":core:di" -> ":budget:model"
-":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 ":settings:vm" -> ":core:di"
 ":settings:vm" -> ":logging" ["style"="dotted"]

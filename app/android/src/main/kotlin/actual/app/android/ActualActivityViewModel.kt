@@ -2,7 +2,6 @@
 
 package actual.app.android
 
-import actual.account.model.LoginToken
 import actual.budget.db.dao.PreferencesDao
 import actual.budget.model.BudgetFiles
 import actual.budget.model.DbMetadata
@@ -15,6 +14,7 @@ import actual.core.di.BudgetGraphHolder
 import actual.core.di.ViewModelKey
 import actual.core.di.ViewModelScope
 import actual.core.model.DarkColorSchemeType
+import actual.core.model.LoginToken
 import actual.core.model.PingStateHolder
 import actual.core.model.RegularColorSchemeType
 import actual.prefs.AppGlobalPreferences

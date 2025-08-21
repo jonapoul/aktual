@@ -8,8 +8,8 @@ kotlin {
     api(project(":modules:budget:model"))
     api(libs.alakazam.kotlin.core)
     api(libs.kotlinx.datetime)
-    implementation(project(":modules:account:model"))
     implementation(project(":modules:core:di"))
+    implementation(project(":modules:core:model"))
     implementation(project(":modules:prefs"))
   }
 

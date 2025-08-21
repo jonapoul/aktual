@@ -1,6 +1,7 @@
 plugins {
   alias(libs.plugins.module.multiplatform)
   alias(libs.plugins.kotlin.serialization)
+  alias(libs.plugins.redacted)
 }
 
 kotlin {
@@ -10,7 +11,9 @@ kotlin {
     api(libs.kotlinx.immutable)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
+    implementation(libs.alakazam.kotlin.serialization)
     compileOnly(libs.alakazam.kotlin.composeAnnotations)
+    compileOnly(libs.redacted.annotations)
   }
 
   androidMainDependencies {

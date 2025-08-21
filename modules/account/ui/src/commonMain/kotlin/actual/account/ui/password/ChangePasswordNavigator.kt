@@ -1,6 +1,6 @@
 package actual.account.ui.password
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import androidx.compose.runtime.Immutable
 
 @Immutable

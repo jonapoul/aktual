@@ -1,7 +1,7 @@
 package actual.api.model.account
 
-import actual.account.model.LoginMethod
-import actual.account.model.PossibleRole
+import actual.core.model.LoginMethod
+import actual.core.model.PossibleRole
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

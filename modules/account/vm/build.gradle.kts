@@ -5,7 +5,6 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(project(":modules:account:domain"))
-    api(project(":modules:account:model"))
     api(project(":modules:core:model"))
     api(project(":modules:prefs"))
     api(libs.alakazam.kotlin.core)

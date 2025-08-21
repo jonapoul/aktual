@@ -1,4 +1,4 @@
-package actual.account.model
+package actual.core.model
 
 import kotlinx.serialization.Serializable
 import java.io.Serializable as JavaIoSerializable
