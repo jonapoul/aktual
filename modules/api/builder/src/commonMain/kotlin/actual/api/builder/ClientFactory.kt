@@ -1,6 +1,6 @@
 package actual.api.builder
 
-import alakazam.kotlin.core.BuildConfig
+import actual.core.model.BuildConfig
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -14,5 +14,5 @@ fun interface ClientFactory {
 @Inject
 @ContributesBinding(AppScope::class)
 class ClientFactoryImpl(private val buildConfig: BuildConfig) : ClientFactory {
-  override fun build(json: Json) = buildKtorClient(json, isDebug = buildConfig.debug, tag = "ACTUAL")
+  override fun build(json: Json) = buildKtorClient(json, isDebug = buildConfig.isDebug, tag = "ACTUAL")
 }

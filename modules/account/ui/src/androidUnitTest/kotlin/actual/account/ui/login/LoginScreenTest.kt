@@ -67,7 +67,7 @@ class LoginScreenTest {
       loginRequester = loginRequester,
       versionsStateHolder = versionsStateHolder,
       preferences = preferences,
-      passwordProvider = { password },
+      buildConfig = TestBuildConfig.copy(defaultPassword = password),
     )
   }
 

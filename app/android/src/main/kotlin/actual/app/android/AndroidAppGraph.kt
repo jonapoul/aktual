@@ -3,9 +3,7 @@ package actual.app.android
 import actual.app.di.AndroidViewModelGraph
 import actual.core.di.AppGraph
 import actual.core.di.ProviderMap
-import actual.core.model.Password
-import actual.core.model.ServerUrl
-import alakazam.kotlin.core.BuildConfig
+import actual.core.model.BuildConfig
 import android.app.Activity
 import android.app.Service
 import android.content.BroadcastReceiver
@@ -29,8 +27,6 @@ interface AndroidAppGraph : AppGraph, AndroidViewModelGraph.Factory {
   fun interface Factory {
     fun create(
       @Provides context: Context,
-      @Provides defaultPassword: Password.Provider,
-      @Provides defaultServerUrl: ServerUrl.Provider,
       @Provides graphHolder: AppGraph.Holder,
     ): AndroidAppGraph
   }

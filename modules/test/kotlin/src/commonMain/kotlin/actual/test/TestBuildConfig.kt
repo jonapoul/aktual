@@ -1,21 +1,17 @@
 package actual.test
 
-import alakazam.kotlin.core.BasicBuildConfig
+import actual.core.model.BuildConfig
+import actual.core.model.Password
 import kotlin.time.Instant
 
 val TestInstant = Instant.fromEpochMilliseconds(1710786854286L) // Mon Mar 18 2024 18:34:14
 
-val TestBuildConfig = BasicBuildConfig(
-  applicationId = "dev.jonpoulton.actual.app",
+val TestBuildConfig = BuildConfig(
   buildTime = TestInstant,
-  debug = false,
-  gitId = "abcd1234",
-  manufacturer = "Acme, Inc",
-  model = "Doodad",
-  os = 34,
-  platform = "Acme Doodad",
-  repoName = "whatever",
-  repoUrl = "https://github.com/jonapoul/actual-android",
+  isDebug = false,
+  gitHash = "abcd1234",
   versionCode = 123,
   versionName = "1.2.3",
+  defaultPassword = Password.Empty,
+  defaultServerUrl = null,
 )

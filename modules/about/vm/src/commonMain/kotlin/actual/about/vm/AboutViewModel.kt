@@ -6,8 +6,8 @@ import actual.core.di.ViewModelKey
 import actual.core.di.ViewModelScope
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
+import actual.core.model.BuildConfig
 import actual.core.model.UrlOpener
-import alakazam.kotlin.core.BuildConfig
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel

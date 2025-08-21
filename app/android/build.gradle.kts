@@ -1,12 +1,9 @@
+import actual.gradle.versionName
 import blueprint.core.gitVersionCode
-import blueprint.core.gitVersionHash
 import blueprint.core.intProperty
 import blueprint.core.jvmTarget
 import blueprint.core.rootLocalPropertiesOrNull
 import blueprint.core.stringProperty
-import blueprint.core.stringPropertyOrNull
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import java.time.LocalDate
 
 plugins {
   alias(libs.plugins.kotlin.android)
@@ -27,16 +24,11 @@ dependencyGuard {
   configuration("releaseRuntimeClasspath")
 }
 
-tasks.withType<KotlinCompile>().configureEach {
+kotlin {
   compilerOptions {
     jvmTarget = jvmTarget()
   }
 }
-
-val gitCommitHash = project.gitVersionHash()
-val gitCode = project.gitVersionCode()
-
-fun versionName(): String = with(LocalDate.now()) { "%04d.%02d.%02d".format(year, monthValue, dayOfMonth) }
 
 android {
   namespace = "actual.app.android"
@@ -46,14 +38,10 @@ android {
     applicationId = "dev.jonpoulton.actual.app"
     minSdk = intProperty(key = "blueprint.android.minSdk")
     targetSdk = intProperty(key = "blueprint.android.targetSdk")
-    versionCode = gitCode
+    versionCode = gitVersionCode()
     versionName = versionName()
     multiDexEnabled = true
     base.archivesName = "$applicationId-$versionName"
-
-    val kotlinTime = "kotlin.time.Instant.Companion.fromEpochMilliseconds(${System.currentTimeMillis()}L)"
-    buildConfigField("kotlin.time.Instant", "BUILD_TIME", kotlinTime)
-    buildConfigField("String", "GIT_HASH", "\"${gitCommitHash}\"")
   }
 
   packaging {
@@ -93,16 +81,10 @@ android {
   buildTypes {
     debug {
       signingConfig = signingConfigs.findByName("debug")
-      val url = stringPropertyOrNull(key = "actual.defaultUrl")
-      val password = stringPropertyOrNull(key = "actual.defaultPassword")
-      buildConfigField("String", "DEFAULT_URL", if (url == null) "null" else "\"${url}\"")
-      buildConfigField("String", "DEFAULT_PASSWORD", if (password == null) "null" else "\"${password}\"")
     }
 
     release {
       signingConfig = signingConfigs.findByName("release")
-      buildConfigField("String", "DEFAULT_URL", "null")
-      buildConfigField("String", "DEFAULT_PASSWORD", "null")
     }
   }
 
