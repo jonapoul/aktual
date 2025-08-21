@@ -5,7 +5,6 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.preferences.core)
-    api(project(":modules:account:model"))
     api(project(":modules:core:model"))
   }
 

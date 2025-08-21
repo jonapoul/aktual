@@ -6,7 +6,6 @@ kotlin {
   commonMainDependencies {
     api(project(":modules:budget:model"))
     api(libs.kotlinx.datetime)
-    implementation(project(":modules:account:model"))
     implementation(project(":modules:core:di"))
     implementation(project(":modules:core:model"))
   }
