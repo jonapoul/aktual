@@ -2,7 +2,7 @@ package actual.app.nav
 
 import actual.about.ui.info.InfoScreen
 import actual.about.ui.licenses.LicensesScreen
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.account.ui.login.LoginScreen
 import actual.account.ui.password.ChangePasswordScreen
 import actual.account.ui.url.ServerUrlScreen

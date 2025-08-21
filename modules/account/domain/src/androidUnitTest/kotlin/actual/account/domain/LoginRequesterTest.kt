@@ -1,7 +1,7 @@
 package actual.account.domain
 
-import actual.account.model.LoginToken
-import actual.account.model.Password
+import actual.core.model.LoginToken
+import actual.core.model.Password
 import actual.api.client.AccountApi
 import actual.api.client.ActualApis
 import actual.api.client.ActualApisStateHolder

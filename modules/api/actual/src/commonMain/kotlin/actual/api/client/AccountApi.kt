@@ -1,7 +1,7 @@
 package actual.api.client
 
-import actual.account.model.LoginToken
-import actual.account.model.Password
+import actual.core.model.LoginToken
+import actual.core.model.Password
 import actual.api.model.account.BootstrapRequest
 import actual.api.model.account.BootstrapResponse
 import actual.api.model.account.ChangePasswordRequest

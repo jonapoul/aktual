@@ -1,6 +1,6 @@
 package actual.budget.transactions.vm
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.budget.db.BudgetDatabase
 import actual.budget.db.Categories
 import actual.budget.db.Transactions

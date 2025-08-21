@@ -1,7 +1,7 @@
 package actual.account.ui.login
 
 import actual.account.domain.LoginResult
-import actual.account.model.Password
+import actual.core.model.Password
 import actual.account.vm.LoginViewModel
 import actual.core.model.ActualVersions
 import actual.core.model.ServerUrl

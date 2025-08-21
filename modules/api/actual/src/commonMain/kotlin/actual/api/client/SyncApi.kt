@@ -1,6 +1,6 @@
 package actual.api.client
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.api.model.internal.ActualHeaders
 import actual.api.model.sync.DeleteUserFileRequest
 import actual.api.model.sync.DeleteUserFileResponse

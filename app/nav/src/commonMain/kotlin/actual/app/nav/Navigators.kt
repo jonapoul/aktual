@@ -2,7 +2,7 @@ package actual.app.nav
 
 import actual.about.ui.info.InfoNavigator
 import actual.about.ui.licenses.LicensesNavigator
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.account.ui.login.LoginNavigator
 import actual.account.ui.password.ChangePasswordNavigator
 import actual.account.ui.url.ServerUrlNavigator

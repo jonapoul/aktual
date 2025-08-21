@@ -4,8 +4,8 @@ package actual.account.ui.login
 
 import actual.account.domain.LoginRequester
 import actual.account.domain.LoginResult
-import actual.account.model.LoginToken
-import actual.account.model.Password
+import actual.core.model.LoginToken
+import actual.core.model.Password
 import actual.account.vm.LoginViewModel
 import actual.core.model.ActualVersionsStateHolder
 import actual.prefs.AppGlobalPreferences

@@ -1,6 +1,6 @@
 package actual.budget.sync.vm
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.api.client.ActualApisStateHolder
 import actual.api.client.SyncDownloadApi
 import actual.api.client.SyncDownloadState

@@ -1,6 +1,6 @@
 package actual.budget.reports.vm
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
 import actual.core.di.AssistedFactoryKey

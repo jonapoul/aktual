@@ -1,6 +1,6 @@
 package actual.api.model.account
 
-import actual.account.model.LoginMethod.Password
+import actual.core.model.LoginMethod.Password
 import actual.test.AccountResponses
 import actual.test.testDecoding
 import kotlin.test.Test

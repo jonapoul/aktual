@@ -1,6 +1,6 @@
 package actual.app.nav
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.model.WidgetId
 import androidx.compose.runtime.Immutable

@@ -1,6 +1,6 @@
 package actual.account.ui.password
 
-import actual.account.model.Password
+import actual.core.model.Password
 import actual.account.vm.ChangePasswordState
 import actual.account.vm.ChangePasswordViewModel
 import actual.core.model.ActualVersions

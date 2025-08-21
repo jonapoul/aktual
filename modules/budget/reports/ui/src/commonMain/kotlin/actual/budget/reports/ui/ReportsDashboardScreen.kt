@@ -1,6 +1,6 @@
 package actual.budget.reports.ui
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.budget.model.BudgetId
 import actual.budget.reports.vm.DashboardState
 import actual.budget.reports.vm.ReportDashboardItem

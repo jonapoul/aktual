@@ -1,6 +1,6 @@
 package actual.budget.transactions.ui
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.budget.model.AccountSpec
 import actual.budget.model.BudgetId
 import actual.budget.model.TransactionId

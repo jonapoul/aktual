@@ -1,6 +1,6 @@
 package actual.budget.sync.ui
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.budget.model.BudgetId
 import androidx.compose.runtime.Immutable
 

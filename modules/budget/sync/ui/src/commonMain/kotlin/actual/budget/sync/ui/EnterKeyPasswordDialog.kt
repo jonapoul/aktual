@@ -1,6 +1,6 @@
 package actual.budget.sync.ui
 
-import actual.account.model.Password
+import actual.core.model.Password
 import actual.core.ui.AlertDialog
 import actual.core.ui.LocalTheme
 import actual.core.ui.TextField

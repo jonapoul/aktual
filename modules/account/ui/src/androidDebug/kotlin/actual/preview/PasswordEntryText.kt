@@ -1,6 +1,6 @@
 package actual.preview
 
-import actual.account.model.Password
+import actual.core.model.Password
 import actual.account.ui.password.PasswordEntryText
 import actual.core.ui.PreviewThemedColumn
 import androidx.compose.runtime.Composable

@@ -1,6 +1,6 @@
 package actual.app.android
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.app.nav.ActualNavHost
 import actual.core.di.ActivityKey
 import actual.core.di.ViewModelGraphProvider

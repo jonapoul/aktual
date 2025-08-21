@@ -2,7 +2,7 @@
 
 package actual.app.android
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.budget.db.dao.PreferencesDao
 import actual.budget.model.BudgetFiles
 import actual.budget.model.DbMetadata

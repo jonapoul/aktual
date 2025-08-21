@@ -1,10 +1,10 @@
 package actual.api.model.account
 
-import actual.account.model.LoginMethod
+import actual.core.model.LoginMethod
 import dev.zacsweers.redacted.annotations.Redacted
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import actual.account.model.Password as PasswordModel
+import actual.core.model.Password as PasswordModel
 
 sealed interface LoginRequest {
   @Serializable

@@ -1,6 +1,6 @@
 package actual.budget.list.vm
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.sync.ListUserFilesResponse
 import actual.api.model.sync.UserFile

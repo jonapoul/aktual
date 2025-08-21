@@ -1,7 +1,7 @@
 package actual.budget.sync.vm
 
-import actual.account.model.LoginToken
-import actual.account.model.Password
+import actual.core.model.LoginToken
+import actual.core.model.Password
 import actual.api.model.sync.EncryptMeta
 import actual.api.model.sync.UserFile
 import actual.budget.encryption.KeyGenerator

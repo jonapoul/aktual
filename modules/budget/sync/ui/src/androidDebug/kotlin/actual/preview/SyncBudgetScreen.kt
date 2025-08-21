@@ -1,6 +1,6 @@
 package actual.preview
 
-import actual.account.model.Password
+import actual.core.model.Password
 import actual.budget.sync.ui.SyncBudgetScaffold
 import actual.budget.sync.vm.KeyPasswordState
 import actual.budget.sync.vm.SyncStep

@@ -1,6 +1,6 @@
 package actual.api.client
 
-import actual.account.model.LoginToken
+import actual.core.model.LoginToken
 import actual.api.model.internal.ActualHeaders
 import actual.budget.model.BudgetId
 import actual.core.model.Protocol

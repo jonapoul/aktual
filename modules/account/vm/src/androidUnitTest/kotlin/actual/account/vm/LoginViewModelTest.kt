@@ -2,8 +2,8 @@ package actual.account.vm
 
 import actual.account.domain.LoginRequester
 import actual.account.domain.LoginResult
-import actual.account.model.LoginToken
-import actual.account.model.Password
+import actual.core.model.LoginToken
+import actual.core.model.Password
 import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl

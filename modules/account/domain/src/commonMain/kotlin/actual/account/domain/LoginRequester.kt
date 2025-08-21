@@ -1,6 +1,6 @@
 package actual.account.domain
 
-import actual.account.model.Password
+import actual.core.model.Password
 import actual.api.client.ActualApisStateHolder
 import actual.api.model.account.LoginRequest
 import actual.api.model.account.LoginResponse

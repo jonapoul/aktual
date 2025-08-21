@@ -1,6 +1,6 @@
 package actual.budget.encryption
 
-import actual.account.model.Password
+import actual.core.model.Password
 import actual.core.model.Base64String
 import actual.core.model.Key
 import actual.core.model.base64
