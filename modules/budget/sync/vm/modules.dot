@@ -2,7 +2,6 @@ digraph {
 edge ["dir"="forward"]
 graph ["dpi"="100","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
 node ["style"="filled"]
-":account:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:actual" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:data" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:encryption" ["fillcolor"="#9D8DF1","shape"="none"]
@@ -13,17 +12,14 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
-":api:actual" -> ":account:model"
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:data" -> ":logging" ["style"="dotted"]
-":budget:encryption" -> ":account:model"
 ":budget:encryption" -> ":budget:model"
 ":budget:encryption" -> ":core:model"
-":budget:sync:vm" -> ":account:model" ["style"="dotted"]
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:encryption"
 ":budget:sync:vm" -> ":budget:model"
@@ -33,6 +29,5 @@ node ["style"="filled"]
 ":budget:sync:vm" -> ":prefs" ["style"="dotted"]
 ":core:di" -> ":budget:data"
 ":core:di" -> ":budget:model"
-":prefs" -> ":account:model"
 ":prefs" -> ":core:model"
 }
