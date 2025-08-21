@@ -1,7 +1,7 @@
 package actual.app.di
 
 import actual.api.builder.buildKtorClient
-import alakazam.kotlin.core.BuildConfig
+import actual.core.model.BuildConfig
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
@@ -20,7 +20,7 @@ object GithubApiContainer {
       client = buildKtorClient(
         json = GithubJson,
         tag = "GITHUB",
-        isDebug = buildConfig.debug,
+        isDebug = buildConfig.isDebug,
       ),
     )
   }

@@ -1,6 +1,6 @@
 package actual.about.data
 
-import alakazam.kotlin.core.BuildConfig
+import actual.core.model.BuildConfig
 import alakazam.kotlin.core.CoroutineContexts
 import dev.zacsweers.metro.Inject
 import github.api.client.GithubApi

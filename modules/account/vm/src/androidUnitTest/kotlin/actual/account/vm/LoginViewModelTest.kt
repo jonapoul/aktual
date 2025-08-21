@@ -54,7 +54,7 @@ internal class LoginViewModelTest {
       versionsStateHolder = versionsStateHolder,
       loginRequester = loginRequester,
       preferences = preferences,
-      passwordProvider = { Password.Empty },
+      buildConfig = TestBuildConfig.copy(defaultPassword = Password.Empty),
     )
   }
 

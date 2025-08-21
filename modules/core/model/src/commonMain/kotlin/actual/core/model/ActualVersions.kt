@@ -1,6 +1,5 @@
 package actual.core.model
 
-import alakazam.kotlin.core.BuildConfig
 import alakazam.kotlin.core.StateHolder
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject

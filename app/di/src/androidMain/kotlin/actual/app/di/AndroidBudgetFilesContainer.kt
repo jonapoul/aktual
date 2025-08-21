@@ -9,6 +9,6 @@ import dev.zacsweers.metro.ContributesTo
 
 @BindingContainer
 @ContributesTo(AppScope::class)
-actual interface BudgetFilesContainer {
+interface AndroidBudgetFilesContainer {
   @Binds val AndroidBudgetFiles.binds: BudgetFiles
 }

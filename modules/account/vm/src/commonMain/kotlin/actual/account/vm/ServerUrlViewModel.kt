@@ -6,6 +6,7 @@ import actual.core.di.ViewModelKey
 import actual.core.di.ViewModelScope
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
+import actual.core.model.BuildConfig
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
@@ -49,13 +50,11 @@ class ServerUrlViewModel internal constructor(
   private val apiStateHolder: ActualApisStateHolder,
   private val preferences: AppGlobalPreferences,
   versionsStateHolder: ActualVersionsStateHolder,
-  urlProvider: ServerUrl.Provider,
+  buildConfig: BuildConfig,
 ) : ViewModel() {
-  private val defaultUrl = urlProvider.default()
-
   private val mutableIsLoading = ResettableStateFlow(value = false)
-  private val mutableBaseUrl = MutableStateFlow(defaultUrl?.baseUrl.orEmpty())
-  private val mutableProtocol = MutableStateFlow(defaultUrl?.protocol ?: Protocol.Https)
+  private val mutableBaseUrl = MutableStateFlow(buildConfig.defaultServerUrl?.baseUrl.orEmpty())
+  private val mutableProtocol = MutableStateFlow(buildConfig.defaultServerUrl?.protocol ?: Protocol.Https)
   private val mutableConfirmResult = ResettableStateFlow<ConfirmResult?>(value = null)
   private val mutableNavDestination = Channel<NavDestination>()
 

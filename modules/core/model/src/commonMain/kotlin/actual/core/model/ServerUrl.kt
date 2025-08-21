@@ -12,10 +12,6 @@ data class ServerUrl(
 
   override fun toString(): String = "$protocol://$baseUrl"
 
-  fun interface Provider {
-    fun default(): ServerUrl?
-  }
-
   companion object {
     val Demo = ServerUrl(protocol = Protocol.Https, baseUrl = "demo.actualbudget.org")
   }

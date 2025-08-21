@@ -1,3 +1,4 @@
+import actual.gradle.versionName
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -19,6 +20,7 @@ compose.desktop {
     nativeDistributions {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
       packageName = "Actual Desktop"
+      packageVersion = versionName()
       packageVersion = "1.0.0"
 
       windows {

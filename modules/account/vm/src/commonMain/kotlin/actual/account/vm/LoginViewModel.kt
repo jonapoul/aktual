@@ -6,6 +6,7 @@ import actual.core.di.ViewModelKey
 import actual.core.di.ViewModelScope
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
+import actual.core.model.BuildConfig
 import actual.core.model.LoginToken
 import actual.core.model.Password
 import actual.core.model.ServerUrl
@@ -34,9 +35,9 @@ class LoginViewModel(
   private val loginRequester: LoginRequester,
   versionsStateHolder: ActualVersionsStateHolder,
   preferences: AppGlobalPreferences,
-  passwordProvider: Password.Provider,
+  buildConfig: BuildConfig,
 ) : ViewModel() {
-  private val mutableEnteredPassword = ResettableStateFlow(passwordProvider.default())
+  private val mutableEnteredPassword = ResettableStateFlow(buildConfig.defaultPassword)
   private val mutableIsLoading = ResettableStateFlow(false)
   private val mutableLoginFailure = ResettableStateFlow<LoginResult.Failure?>(null)
 
