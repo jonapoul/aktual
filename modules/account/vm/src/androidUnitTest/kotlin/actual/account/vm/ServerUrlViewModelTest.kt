@@ -89,7 +89,7 @@ class ServerUrlViewModelTest {
       apiStateHolder = apisStateHolder,
       preferences = preferences,
       versionsStateHolder = versionsStateHolder,
-      urlProvider = { null },
+      buildConfig = TestBuildConfig.copy(defaultServerUrl = null),
     )
   }
 

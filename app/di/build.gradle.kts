@@ -1,7 +1,12 @@
-import org.gradle.kotlin.dsl.implementation
+import actual.gradle.versionName
+import blueprint.core.boolPropertyOrElse
+import blueprint.core.gitVersionCode
+import blueprint.core.gitVersionHash
+import blueprint.core.stringPropertyOrNull
 
 plugins {
   alias(libs.plugins.module.di)
+  alias(libs.plugins.buildconfig)
 }
 
 kotlin {
@@ -27,4 +32,32 @@ kotlin {
     implementation(libs.androidx.preference.ktx)
     implementation(libs.preferences.android)
   }
+}
+
+android {
+  buildFeatures {
+    buildConfig = true
+  }
+}
+
+buildConfig {
+  packageName("actual.app.di")
+  generateAtSync.set(true)
+
+  useKotlinOutput {
+    internalVisibility = true
+    topLevelConstants = true
+  }
+
+  val debugBuild = boolPropertyOrElse(key = "debugBuild", default = false)
+  val url = stringPropertyOrNull(key = "actual.defaultUrl")
+  val password = stringPropertyOrNull(key = "actual.defaultPassword")
+
+  buildConfigField("BUILD_TIME_MS", System.currentTimeMillis())
+  buildConfigField("DEBUG", debugBuild)
+  buildConfigField("GIT_HASH", gitVersionHash())
+  buildConfigField("VERSION_CODE", gitVersionCode())
+  buildConfigField("VERSION_NAME", versionName())
+  buildConfigField<String?>("DEFAULT_PASSWORD", password.takeIf { debugBuild })
+  buildConfigField<String?>("DEFAULT_URL", url.takeIf { debugBuild })
 }

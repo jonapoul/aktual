@@ -15,7 +15,7 @@ import logcat.logcat
 import kotlin.time.Duration.Companion.seconds
 
 @Inject
-class ServerVersionFetcher internal constructor(
+class ServerVersionFetcher(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: ActualApisStateHolder,
   private val versionsStateHolder: ActualVersionsStateHolder,
