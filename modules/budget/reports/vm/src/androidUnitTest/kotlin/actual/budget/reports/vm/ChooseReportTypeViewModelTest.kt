@@ -99,8 +99,8 @@ class ChooseReportTypeViewModelTest : AppGraph.Holder {
 
       createReport()
       assertListEmitted(
-        position(x = 1 * DEFAULT_WIDTH, y = 2),
-        position(x = 0, y = 2),
+        position(x = 1 * DEFAULT_WIDTH, y = 1 * DEFAULT_HEIGHT),
+        position(x = 0, y = 1 * DEFAULT_HEIGHT),
         position(x = 2 * DEFAULT_WIDTH, y = 0),
         position(x = 1 * DEFAULT_WIDTH, y = 0),
         position(x = 0, y = 0),
@@ -118,12 +118,11 @@ class ChooseReportTypeViewModelTest : AppGraph.Holder {
     contexts = TestCoroutineContexts(standardDispatcher)
     context = ApplicationProvider.getApplicationContext()
 
-    val appGraphHolder = this@ChooseReportTypeViewModelTest
     appGraph = createGraphFactory<TestAppGraph.Factory>().create(
       scope = this,
       contexts = contexts,
       context = context,
-      holder = appGraphHolder,
+      holder = this@ChooseReportTypeViewModelTest,
     )
 
     budgetGraphHolder = appGraph.budgetGraphHolder

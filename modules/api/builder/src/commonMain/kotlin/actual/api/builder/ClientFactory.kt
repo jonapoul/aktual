@@ -8,11 +8,11 @@ import io.ktor.client.HttpClient
 import kotlinx.serialization.json.Json
 
 fun interface ClientFactory {
-  fun build(json: Json): HttpClient
+  operator fun invoke(json: Json): HttpClient
 }
 
 @Inject
 @ContributesBinding(AppScope::class)
 class ClientFactoryImpl(private val buildConfig: BuildConfig) : ClientFactory {
-  override fun build(json: Json) = buildKtorClient(json, isDebug = buildConfig.isDebug, tag = "ACTUAL")
+  override fun invoke(json: Json) = buildKtorClient(json, isDebug = buildConfig.isDebug, tag = "ACTUAL")
 }

@@ -22,7 +22,7 @@ import kotlin.test.assertNotNull
 class SyncDownloadApiTest {
   @get:Rule val temporaryFolder = TemporaryFolder()
 
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var syncDownloadApi: SyncDownloadApi
   private lateinit var fileSystem: FileSystem
   private lateinit var destinationPath: Path

@@ -13,7 +13,6 @@ import actual.prefs.AppGlobalPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
-import actual.test.plusAssign
 import actual.test.respondJson
 import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
@@ -49,7 +48,7 @@ internal class LoginRequesterTest {
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var connectionMonitor: ConnectionMonitor
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var fileSystem: FileSystem
 
   @AfterTest

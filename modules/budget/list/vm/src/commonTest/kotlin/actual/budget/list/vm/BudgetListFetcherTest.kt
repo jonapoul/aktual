@@ -12,7 +12,6 @@ import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.prefs.KeyPreferences
 import actual.test.emptyMockEngine
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
@@ -34,7 +33,7 @@ import kotlin.test.assertIs
 class BudgetListFetcherTest {
   private lateinit var budgetListFetcher: BudgetListFetcher
   private lateinit var apisStateHolder: ActualApisStateHolder
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var keyPreferences: KeyPreferences
 
   private fun TestScope.before() {

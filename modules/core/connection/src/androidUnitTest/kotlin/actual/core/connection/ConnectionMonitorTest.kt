@@ -37,7 +37,7 @@ class ConnectionMonitorTest {
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var apiStateHolder: ActualApisStateHolder
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var fileSystem: FileSystem
 
   private fun TestScope.before() {

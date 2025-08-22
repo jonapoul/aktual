@@ -6,7 +6,6 @@ import actual.test.BaseResponses
 import actual.test.emptyMockEngine
 import actual.test.latestRequestHeaders
 import actual.test.latestRequestUrl
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.assertThrows
@@ -21,7 +20,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class BaseApiTest {
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var baseApi: BaseApi
 
   @BeforeTest

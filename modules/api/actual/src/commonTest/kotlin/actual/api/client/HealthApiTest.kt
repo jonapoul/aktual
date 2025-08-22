@@ -3,7 +3,6 @@ package actual.api.client
 import actual.api.model.health.GetHealthResponse
 import actual.test.HealthResponses
 import actual.test.emptyMockEngine
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -14,7 +13,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class HealthApiTest {
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var healthApi: HealthApi
 
   @BeforeTest
