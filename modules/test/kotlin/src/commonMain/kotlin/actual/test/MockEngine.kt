@@ -2,7 +2,6 @@ package actual.test
 
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.MockRequestHandleScope
-import io.ktor.client.engine.mock.MockRequestHandler
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpResponseData
 import io.ktor.http.HttpHeaders
@@ -20,13 +19,7 @@ fun MockRequestHandleScope.respondJson(
   headers = headersOf(HttpHeaders.ContentType, "application/json"),
 )
 
-fun emptyMockEngine(): MockEngine = MockEngine(ThrowingRequestHandler).also { it.clear() }
-
-fun MockEngine.enqueue(handler: MockRequestHandler) = config.requestHandlers.add(handler)
-
-operator fun MockEngine.plusAssign(handler: MockRequestHandler) {
-  enqueue(handler)
-}
+fun emptyMockEngine(): MockEngine.Queue = MockEngine.Queue()
 
 fun MockEngine.clear() = config.requestHandlers.clear()
 
@@ -36,7 +29,7 @@ fun MockEngine.latestRequestHeaders() = latestRequest().headers.toMap()
 
 fun MockEngine.latestRequestUrl() = latestRequest().url.toString()
 
-fun MockEngine.enqueueResponse(content: ByteArray) = enqueue {
+fun MockEngine.Queue.enqueueResponse(content: ByteArray) = enqueue {
   respond(
     content = content,
     status = HttpStatusCode.OK,
@@ -44,6 +37,4 @@ fun MockEngine.enqueueResponse(content: ByteArray) = enqueue {
   )
 }
 
-fun MockEngine.enqueueResponse(content: String) = enqueueResponse(content.toByteArray())
-
-val ThrowingRequestHandler: MockRequestHandler = { error("No-op") }
+fun MockEngine.Queue.enqueueResponse(content: String) = enqueueResponse(content.toByteArray())

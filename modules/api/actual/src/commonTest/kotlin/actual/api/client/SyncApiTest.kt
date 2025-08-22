@@ -14,7 +14,6 @@ import actual.core.model.base64
 import actual.test.SyncResponses
 import actual.test.emptyMockEngine
 import actual.test.latestRequestHeaders
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import io.ktor.client.call.body
@@ -33,7 +32,7 @@ import kotlin.test.assertIs
 import kotlin.test.fail
 
 class SyncApiTest {
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var syncApi: SyncApi
 
   @BeforeTest
