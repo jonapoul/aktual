@@ -2,7 +2,6 @@ package actual.about.data
 
 import actual.test.TestBuildConfig
 import actual.test.emptyMockEngine
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
@@ -26,7 +25,7 @@ import kotlin.time.Instant
 
 class GithubRepositoryTest {
   private lateinit var githubRepository: GithubRepository
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
 
   @AfterTest
   fun after() {

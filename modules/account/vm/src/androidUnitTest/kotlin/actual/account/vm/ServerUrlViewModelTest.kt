@@ -16,7 +16,6 @@ import actual.test.assertEmitted
 import actual.test.buildPreferences
 import actual.test.clear
 import actual.test.emptyMockEngine
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
@@ -56,7 +55,7 @@ class ServerUrlViewModelTest {
   // Mock
   private lateinit var apis: ActualApis
   private lateinit var accountApi: AccountApi
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
 
   @BeforeTest
   fun before() {

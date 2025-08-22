@@ -13,7 +13,6 @@ import actual.core.model.LoginToken
 import actual.core.model.ServerUrl
 import actual.core.model.base64
 import actual.test.emptyMockEngine
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
@@ -35,7 +34,7 @@ import kotlin.test.assertIs
 class BudgetInfoFetcherTest {
   private lateinit var budgetInfoFetcher: BudgetInfoFetcher
   private lateinit var apisStateHolder: ActualApisStateHolder
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var client: HttpClient
   private lateinit var syncApi: SyncApi
 

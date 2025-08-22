@@ -2,7 +2,6 @@ package github.api.client
 
 import actual.core.model.ServerUrl
 import actual.test.emptyMockEngine
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import io.ktor.client.engine.mock.MockEngine
@@ -14,7 +13,7 @@ import kotlin.test.assertEquals
 
 class GithubApiTest {
   private lateinit var githubApi: GithubApi
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
 
   @BeforeTest
   fun before() {

@@ -49,7 +49,7 @@ class ConnectionMonitor(
   }
 
   private fun tryToBuildApis(url: ServerUrl) = try {
-    val client = clientFactory.build(ActualJson)
+    val client = clientFactory(ActualJson)
     val apis = ActualApis(
       serverUrl = url,
       client = client,

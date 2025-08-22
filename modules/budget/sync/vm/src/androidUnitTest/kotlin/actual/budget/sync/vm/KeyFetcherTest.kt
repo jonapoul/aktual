@@ -14,7 +14,6 @@ import actual.prefs.EncryptedPreferences
 import actual.prefs.KeyPreferences
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
-import actual.test.plusAssign
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
@@ -39,7 +38,7 @@ class KeyFetcherTest {
   private lateinit var keyPreferences: KeyPreferences
   private lateinit var decrypter: Decrypter
 
-  private lateinit var mockEngine: MockEngine
+  private lateinit var mockEngine: MockEngine.Queue
   private lateinit var syncApi: SyncApi
 
   @BeforeTest
