@@ -114,12 +114,15 @@ class ConnectionMonitorTest {
     apiStateHolder.test {
       // Nothing initially
       assertNull(awaitItem())
+      expectNoEvents()
 
       // when the monitor starts
       connectionMonitor.start()
+      advanceUntilIdle()
 
       // then an API is built and emitted
       assertNotNull(awaitItem())
+      expectNoEvents()
 
       // When the URL is cleared
       preferences.serverUrl.delete()
@@ -127,8 +130,6 @@ class ConnectionMonitorTest {
 
       // Then the null API is emitted
       assertNull(awaitItem())
-
-      // and nothing else is done
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }
