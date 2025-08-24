@@ -35,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -130,9 +131,14 @@ class ChooseReportTypeViewModelTest : AppGraph.Holder {
     database = budgetGraph.database
     dashboardDao = DashboardDao(database)
 
+    advanceUntilIdle()
+    println("Dashboard contents before test: " + dashboardDao.getPositionAndSize())
+
     viewModel = appGraph
       .create(CreationExtras.Empty)
       .assisted<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory> { create(TEST_BUDGET_ID) }
+
+    advanceUntilIdle()
 
     testBody()
   }
