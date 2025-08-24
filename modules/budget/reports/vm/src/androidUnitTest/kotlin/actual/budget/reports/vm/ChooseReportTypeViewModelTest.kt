@@ -59,6 +59,11 @@ class ChooseReportTypeViewModelTest : AppGraph.Holder {
   @AfterTest
   fun after() {
     budgetGraphHolder.close()
+
+    // Make sure no databases stick around
+    with(appGraph.files) {
+      fileSystem.deleteRecursively(directory(TEST_BUDGET_ID))
+    }
   }
 
   @Test
@@ -119,11 +124,6 @@ class ChooseReportTypeViewModelTest : AppGraph.Holder {
       context = context,
       holder = this@ChooseReportTypeViewModelTest,
     )
-
-    // Make sure no databases stick around from previous runs
-    with(appGraph.files) {
-      fileSystem.deleteRecursively(directory(TEST_BUDGET_ID))
-    }
 
     budgetGraphHolder = appGraph.budgetGraphHolder
     val budgetGraph = budgetGraphHolder.update(TEST_METADATA)
