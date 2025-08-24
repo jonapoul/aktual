@@ -8,8 +8,6 @@ import actual.prefs.AppGlobalPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
-import alakazam.test.core.Flaky
-import alakazam.test.core.FlakyTestRule
 import alakazam.test.core.MainDispatcherRule
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
@@ -26,13 +24,11 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.time.Duration.Companion.seconds
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
   @get:Rule val temporaryFolder = TemporaryFolder()
   @get:Rule val mainDispatcherRule = MainDispatcherRule()
-  @get:Rule val flakyTestRule = FlakyTestRule()
 
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var preferences: AppGlobalPreferences
@@ -108,12 +104,12 @@ class ConnectionMonitorTest {
   }
 
   @Test
-  @Flaky(retry = 5, reason = "Sometimes times out on assertNotNull after starting")
-  fun `Remove APIs when URL is cleared`() = runTest(timeout = 10.seconds) {
+  fun `Remove APIs when URL is cleared`() = runTest {
     before()
 
     // Given we've set a URL and started
     preferences.serverUrl.set(ServerUrl.Demo)
+    advanceUntilIdle()
 
     apiStateHolder.test {
       // Nothing initially
@@ -127,6 +123,7 @@ class ConnectionMonitorTest {
 
       // When the URL is cleared
       preferences.serverUrl.delete()
+      advanceUntilIdle()
 
       // Then the null API is emitted
       assertNull(awaitItem())

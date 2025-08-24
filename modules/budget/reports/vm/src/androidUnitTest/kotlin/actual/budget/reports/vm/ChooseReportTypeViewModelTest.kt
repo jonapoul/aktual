@@ -10,6 +10,7 @@ import actual.budget.db.GetPositionAndSize
 import actual.budget.db.dao.DashboardDao
 import actual.budget.db.dao.DashboardDao.Companion.DEFAULT_HEIGHT
 import actual.budget.db.dao.DashboardDao.Companion.DEFAULT_WIDTH
+import actual.budget.model.BudgetFiles
 import actual.budget.model.WidgetType
 import actual.core.di.AppGraph
 import actual.core.di.BudgetGraphHolder
@@ -17,8 +18,6 @@ import actual.core.di.assisted
 import actual.test.DummyViewModelContainer
 import actual.test.assertListEmitted
 import alakazam.kotlin.core.CoroutineContexts
-import alakazam.test.core.Flaky
-import alakazam.test.core.FlakyTestRule
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher
 import android.content.Context
@@ -37,7 +36,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
@@ -45,8 +43,6 @@ import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 class ChooseReportTypeViewModelTest : AppGraph.Holder {
-  @get:Rule val flakyTestRule = FlakyTestRule()
-
   // real
   private lateinit var viewModel: ChooseReportTypeViewModel
   private lateinit var context: Context
@@ -66,7 +62,6 @@ class ChooseReportTypeViewModelTest : AppGraph.Holder {
   }
 
   @Test
-  @Flaky(retry = 5, reason = "Sometimes times out when awaiting emission")
   fun `Inserting each expected slot in sequence`() = runVmTest {
     getPositionAndSizeFlow().test {
       assertListEmitted()
@@ -125,6 +120,11 @@ class ChooseReportTypeViewModelTest : AppGraph.Holder {
       holder = this@ChooseReportTypeViewModelTest,
     )
 
+    // Make sure no databases stick around from previous runs
+    with(appGraph.files) {
+      fileSystem.deleteRecursively(directory(TEST_BUDGET_ID))
+    }
+
     budgetGraphHolder = appGraph.budgetGraphHolder
     val budgetGraph = budgetGraphHolder.update(TEST_METADATA)
     database = budgetGraph.database
@@ -153,6 +153,7 @@ class ChooseReportTypeViewModelTest : AppGraph.Holder {
   )
   internal interface TestAppGraph : AppGraph, AndroidViewModelGraph.Factory {
     val budgetGraphHolder: BudgetGraphHolder
+    val files: BudgetFiles
 
     @DependencyGraph.Factory
     fun interface Factory {
