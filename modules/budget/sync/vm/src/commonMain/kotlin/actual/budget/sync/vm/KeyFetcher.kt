@@ -51,7 +51,7 @@ class KeyFetcher(
     // test the new key
     try {
       val buffer = Buffer()
-      buffer.write(test.value.toByteArray())
+      buffer.write(test.value.decode())
       val decrypted = decrypter(test.meta, buffer)
       if (decrypted is DecryptResult.Failure) {
         error("Invalid password $keyPassword: $decrypted")
