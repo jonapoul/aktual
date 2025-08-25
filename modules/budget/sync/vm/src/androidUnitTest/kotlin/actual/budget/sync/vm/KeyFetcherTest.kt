@@ -27,7 +27,6 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -71,7 +70,6 @@ class KeyFetcherTest {
     mockEngine.close()
   }
 
-  @Ignore("Key generation doesn't work at the mo. See https://github.com/jonapoul/actual-android/issues/208")
   @Test
   fun `Fetch and test successfully`() = runTest {
     // given
