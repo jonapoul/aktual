@@ -16,12 +16,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -239,9 +241,9 @@ private fun StateContent(
 ) {
   when (state) {
     is ListBudgetsState.Loading -> {
-      ContentLoading(
+      // Empty content - we've already got the pull-to-refresh indicator
+      Box(
         modifier = Modifier.fillMaxSize(),
-        theme = theme,
       )
     }
 
