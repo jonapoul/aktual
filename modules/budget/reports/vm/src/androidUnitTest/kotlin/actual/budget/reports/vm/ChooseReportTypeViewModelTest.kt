@@ -35,6 +35,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -59,6 +60,11 @@ class ChooseReportTypeViewModelTest : AppGraph.Holder {
   @AfterTest
   fun after() {
     budgetGraphHolder.close()
+
+    // Make sure no databases stick around
+    with(appGraph.files) {
+      fileSystem.deleteRecursively(directory(TEST_BUDGET_ID))
+    }
   }
 
   @Test
@@ -120,19 +126,19 @@ class ChooseReportTypeViewModelTest : AppGraph.Holder {
       holder = this@ChooseReportTypeViewModelTest,
     )
 
-    // Make sure no databases stick around from previous runs
-    with(appGraph.files) {
-      fileSystem.deleteRecursively(directory(TEST_BUDGET_ID))
-    }
-
     budgetGraphHolder = appGraph.budgetGraphHolder
     val budgetGraph = budgetGraphHolder.update(TEST_METADATA)
     database = budgetGraph.database
     dashboardDao = DashboardDao(database)
 
+    advanceUntilIdle()
+    println("Dashboard contents before test: " + dashboardDao.getPositionAndSize())
+
     viewModel = appGraph
       .create(CreationExtras.Empty)
       .assisted<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory> { create(TEST_BUDGET_ID) }
+
+    advanceUntilIdle()
 
     testBody()
   }
