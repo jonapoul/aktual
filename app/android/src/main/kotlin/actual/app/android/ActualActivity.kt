@@ -19,10 +19,11 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
@@ -30,6 +31,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
@@ -117,26 +119,28 @@ private fun Content(
   loginToken: LoginToken?,
   bottomBarState: BottomBarState,
   modifier: Modifier = Modifier,
+) = Box(
+  modifier = modifier,
+  contentAlignment = Alignment.BottomCenter,
 ) {
-  Column(
-    modifier = modifier,
-    verticalArrangement = Arrangement.Bottom,
-  ) {
-    ActualNavHost(
-      modifier = Modifier.weight(1f),
-      isServerUrlSet = isServerUrlSet,
-      loginToken = loginToken,
-    )
+  ActualNavHost(
+    modifier = Modifier.fillMaxSize(1f),
+    isServerUrlSet = isServerUrlSet,
+    loginToken = loginToken,
+  )
 
-    if (bottomBarState is BottomBarState.Visible) {
+  if (bottomBarState is BottomBarState.Visible) {
+    Column(
+      modifier = Modifier.wrapContentHeight(),
+    ) {
       BottomStatusBar(
         modifier = Modifier.wrapContentHeight(),
         state = bottomBarState,
       )
-    }
 
-    // space to block out the bottom navigation bar, so we don't need to adjust layouts to account for it
-    val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-    VerticalSpacer(navigationBarHeight)
+      // space to block out the bottom navigation bar, so we don't need to adjust layouts to account for it
+      val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
+      VerticalSpacer(navigationBarHeight)
+    }
   }
 }
