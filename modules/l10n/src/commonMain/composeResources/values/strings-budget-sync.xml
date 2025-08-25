@@ -3,7 +3,7 @@
   <string name="sync_step_downloading">Downloading Database</string>
   <string name="sync_step_validating">Validating Database</string>
 
-  <string name="sync_state_definite">In progress: %1$d%%</string>
+  <string name="sync_state_definite">In progress: %1$d%</string>
   <string name="sync_state_indefinite">In progress</string>
   <string name="sync_state_not_started">Not started</string>
   <string name="sync_state_failed">Failed: %1$s</string>
