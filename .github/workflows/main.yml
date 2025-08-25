@@ -22,7 +22,8 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - uses: gitleaks/gitleaks-action@v2
+      - name: Gitleaks
+        uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: ./config/gitleaks.toml
@@ -58,3 +59,9 @@ jobs:
           valColorRange: ${{ env.COVERAGE }}
           minColorRange: 0
           maxColorRange: 100
+
+      - name: Publish test reports
+        uses: mikepenz/action-junit-report@v5
+        if: failure()
+        with:
+          report_paths: "**/build/test-results/*/TEST-*.xml"
