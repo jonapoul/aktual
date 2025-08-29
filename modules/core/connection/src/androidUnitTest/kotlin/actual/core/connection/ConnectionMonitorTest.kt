@@ -8,6 +8,7 @@ import actual.prefs.AppGlobalPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
+import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
@@ -40,6 +41,7 @@ class ConnectionMonitorTest {
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,
+      contexts = TestCoroutineContexts(unconfinedDispatcher),
       clientFactory = TestClientFactory(mockEngine),
       apiStateHolder = apiStateHolder,
       preferences = preferences,

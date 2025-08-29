@@ -61,6 +61,7 @@ internal class LoginRequesterTest {
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,
+      contexts = TestCoroutineContexts(dispatcher),
       clientFactory = TestClientFactory(mockEngine),
       apiStateHolder = apisStateHolder,
       preferences = preferences,
