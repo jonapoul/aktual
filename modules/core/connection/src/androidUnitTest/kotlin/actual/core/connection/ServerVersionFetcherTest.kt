@@ -12,9 +12,9 @@ import actual.core.model.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
 import alakazam.kotlin.core.LoopController
 import alakazam.test.core.FiniteLoopController
-import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.SingleLoopController
 import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.every
@@ -24,18 +24,15 @@ import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
 import java.io.IOException
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
 class ServerVersionFetcherTest {
-  @get:Rule val mainDispatcherRule = MainDispatcherRule()
-
   // real
   private lateinit var fetcher: ServerVersionFetcher
   private lateinit var apisStateHolder: ActualApisStateHolder
@@ -45,8 +42,9 @@ class ServerVersionFetcherTest {
   private lateinit var apis: ActualApis
   private lateinit var baseApi: BaseApi
 
-  @BeforeTest
-  fun before() {
+  private fun TestScope.before(
+    loopController: LoopController = SingleLoopController(),
+  ) {
     baseApi = mockk()
     apis = mockk {
       every { base } returns baseApi
@@ -55,17 +53,10 @@ class ServerVersionFetcherTest {
 
     apisStateHolder = ActualApisStateHolder()
     apisStateHolder.update { apis }
-
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
 
-    build()
-  }
-
-  private fun build(
-    loopController: LoopController = SingleLoopController(),
-  ) {
     fetcher = ServerVersionFetcher(
-      contexts = TestCoroutineContexts(mainDispatcherRule),
+      contexts = TestCoroutineContexts(unconfinedDispatcher),
       apisStateHolder = apisStateHolder,
       versionsStateHolder = versionsStateHolder,
       loopController = loopController,
@@ -75,6 +66,7 @@ class ServerVersionFetcherTest {
   @Test
   fun `No APIs means nothing is fetched`() = runTest(timeout = 5.seconds) {
     // Given
+    before()
     apisStateHolder.reset()
     advanceUntilIdle()
 
@@ -96,6 +88,7 @@ class ServerVersionFetcherTest {
   @Test
   fun `Valid fetch response`() = runTest(timeout = 5.seconds) {
     // Given
+    before()
     coEvery { baseApi.fetchInfo() } returns InfoResponse(
       build = Build(
         name = "ABC",
@@ -120,15 +113,14 @@ class ServerVersionFetcherTest {
   @Test
   fun `Failed then successful fetch response`() = runTest(timeout = 5.seconds) {
     // Given
+    before(loopController = FiniteLoopController(maxLoops = 2))
+
     val validResponse = InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
     val failureReason = "SOMETHING BROKE"
     coEvery { baseApi.fetchInfo() } answers {
       coEvery { baseApi.fetchInfo() } returns validResponse
       throw IOException(failureReason)
     }
-
-    val loopController = FiniteLoopController(maxLoops = 2)
-    build(loopController)
 
     // When
     versionsStateHolder.test {

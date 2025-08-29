@@ -8,7 +8,7 @@ import actual.prefs.AppGlobalPreferences
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
-import alakazam.test.core.MainDispatcherRule
+import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,7 +16,6 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
-import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
@@ -26,8 +25,6 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
-  @get:Rule val mainDispatcherRule = MainDispatcherRule()
-
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var apiStateHolder: ActualApisStateHolder
@@ -35,7 +32,7 @@ class ConnectionMonitorTest {
   private lateinit var fileSystem: FileSystem
 
   private fun TestScope.before() {
-    val prefs = buildPreferences(mainDispatcherRule.dispatcher)
+    val prefs = buildPreferences(unconfinedDispatcher)
     preferences = AppGlobalPreferences(prefs)
     apiStateHolder = ActualApisStateHolder()
     mockEngine = emptyMockEngine()

@@ -15,13 +15,11 @@ class TemporaryFolder(
   lateinit var root: Path
     private set
 
-  override fun intercept(testFunction: TestFunction) {
+  override fun intercept(testFunction: TestFunction) = try {
     root = createTempDirectory().toOkioPath()
-    try {
-      testFunction()
-    } finally {
-      fileSystem.deleteRecursively(root)
-    }
+    testFunction()
+  } finally {
+    fileSystem.deleteRecursively(root)
   }
 
   fun newFolder(name: String): Path = resolve(name)

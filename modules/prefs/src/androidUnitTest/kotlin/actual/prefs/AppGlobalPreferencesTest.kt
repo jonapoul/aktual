@@ -7,31 +7,28 @@ import actual.core.model.RegularColorSchemeType.System
 import actual.core.model.ServerUrl
 import actual.test.assertEmitted
 import actual.test.buildPreferences
-import alakazam.test.core.MainDispatcherRule
+import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class AppGlobalPreferencesTest {
-  @get:Rule val mainDispatcherRule = MainDispatcherRule()
-
   private lateinit var preferences: AppGlobalPreferences
 
-  @BeforeTest
-  fun before() {
-    val prefs = buildPreferences(mainDispatcherRule.dispatcher)
+  private fun TestScope.before() {
+    val prefs = buildPreferences(unconfinedDispatcher)
     preferences = AppGlobalPreferences(prefs)
   }
 
   @Test
   fun `Server URL`() = runTest {
+    before()
     with(preferences.serverUrl) {
       asFlow().test {
         // Given
@@ -63,6 +60,7 @@ class AppGlobalPreferencesTest {
 
   @Test
   fun `Colour scheme types`() = runTest {
+    before()
     with(preferences.regularColorScheme) {
       asFlow().test {
         // Given
