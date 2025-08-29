@@ -29,7 +29,6 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
@@ -42,7 +41,6 @@ import kotlin.test.assertNull
 @RunWith(RobolectricTestRunner::class)
 internal class LoginRequesterTest {
   @get:Rule val mainDispatcherRule = MainDispatcherRule()
-  @get:Rule val temporaryFolder = TemporaryFolder()
 
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: ActualApisStateHolder

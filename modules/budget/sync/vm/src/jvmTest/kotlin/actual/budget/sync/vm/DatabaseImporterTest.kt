@@ -7,11 +7,13 @@ import actual.budget.model.DbMetadata
 import actual.budget.model.Timestamp
 import actual.budget.model.database
 import actual.budget.model.metadata
+import actual.test.TemporaryFolder
 import actual.test.TestBudgetFiles
 import actual.test.copyTo
 import actual.test.resource
 import alakazam.test.core.TestClock
 import alakazam.test.core.TestCoroutineContexts
+import app.cash.burst.InterceptTest
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -19,10 +21,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.Json
 import okio.FileSystem
 import okio.Path
-import okio.Path.Companion.toOkioPath
 import okio.buffer
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -32,7 +31,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class DatabaseImporterTest {
-  @get:Rule val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = TemporaryFolder()
 
   private lateinit var fileSystem: FileSystem
   private lateinit var root: Path
@@ -42,7 +41,7 @@ class DatabaseImporterTest {
   @BeforeTest
   fun before() {
     fileSystem = FileSystem.Companion.SYSTEM
-    root = temporaryFolder.root.toOkioPath()
+    root = temporaryFolder.root
     budgetFiles = TestBudgetFiles(fileSystem, root)
     importer = DatabaseImporter(
       contexts = TestCoroutineContexts(EmptyCoroutineContext),

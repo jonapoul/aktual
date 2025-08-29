@@ -17,7 +17,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
@@ -27,7 +26,6 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
-  @get:Rule val temporaryFolder = TemporaryFolder()
   @get:Rule val mainDispatcherRule = MainDispatcherRule()
 
   private lateinit var connectionMonitor: ConnectionMonitor

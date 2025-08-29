@@ -10,6 +10,7 @@ kotlin {
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
     api(libs.test.alakazam.core)
+    api(libs.test.burst)
     api(libs.test.junit)
     api(libs.test.kotlin.common)
     api(libs.test.kotlinx.coroutines)
