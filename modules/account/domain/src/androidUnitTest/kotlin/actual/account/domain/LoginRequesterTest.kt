@@ -39,7 +39,6 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 internal class LoginRequesterTest {
-
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var preferences: AppGlobalPreferences
