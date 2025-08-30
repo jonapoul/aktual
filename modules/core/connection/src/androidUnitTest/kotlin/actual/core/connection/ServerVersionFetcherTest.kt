@@ -9,8 +9,8 @@ import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
-import actual.test.TestBuildConfig
 import actual.test.LogcatInterceptor
+import actual.test.TestBuildConfig
 import alakazam.kotlin.core.LoopController
 import alakazam.test.core.FiniteLoopController
 import alakazam.test.core.SingleLoopController
@@ -20,7 +20,9 @@ import app.cash.burst.InterceptTest
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.every
+import io.mockk.just
 import io.mockk.mockk
+import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -45,18 +47,21 @@ class ServerVersionFetcherTest {
   private lateinit var apis: ActualApis
   private lateinit var baseApi: BaseApi
 
-  private fun TestScope.before(
-    loopController: LoopController = SingleLoopController(),
-  ) {
+  private fun TestScope.before() {
     baseApi = mockk()
-    apis = mockk(relaxed = true) {
+    apis = mockk {
       every { base } returns baseApi
+      every { close() } just runs
     }
 
     apisStateHolder = ActualApisStateHolder()
     apisStateHolder.update { apis }
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
 
+    build()
+  }
+
+  private fun TestScope.build(loopController: LoopController = SingleLoopController()) {
     fetcher = ServerVersionFetcher(
       contexts = TestCoroutineContexts(unconfinedDispatcher),
       apisStateHolder = apisStateHolder,
@@ -116,7 +121,7 @@ class ServerVersionFetcherTest {
   fun `Failed then successful fetch response`() = runTest(timeout = 5.seconds) {
     // Given
     logcat.i { "Starting test" }
-    before(loopController = FiniteLoopController(maxLoops = 2))
+    before()
 
     val validResponse = InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
     val failureReason = "SOMETHING BROKE"
@@ -126,6 +131,9 @@ class ServerVersionFetcherTest {
       coEvery { baseApi.fetchInfo() } returns validResponse
       throw IOException(failureReason)
     }
+
+    val loopController = FiniteLoopController(maxLoops = 2)
+    build(loopController)
 
     // When
     logcat.i { "versionsStateHolder.test $versionsStateHolder" }
