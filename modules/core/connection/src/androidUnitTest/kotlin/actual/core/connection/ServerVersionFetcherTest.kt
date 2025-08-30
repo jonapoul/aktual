@@ -10,6 +10,7 @@ import actual.api.model.base.InfoResponse
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import actual.test.LogcatInterceptor
+import actual.test.MainDispatcherInterceptor
 import actual.test.TestBuildConfig
 import alakazam.kotlin.core.LoopController
 import alakazam.test.core.FiniteLoopController
@@ -30,6 +31,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import logcat.logcat
+import org.junit.Before
 import java.io.IOException
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -37,6 +39,7 @@ import kotlin.time.Duration.Companion.seconds
 
 class ServerVersionFetcherTest {
   @InterceptTest val logger = LogcatInterceptor()
+  @InterceptTest val mainDispatcher = MainDispatcherInterceptor()
 
   // real
   private lateinit var fetcher: ServerVersionFetcher
@@ -47,7 +50,8 @@ class ServerVersionFetcherTest {
   private lateinit var apis: ActualApis
   private lateinit var baseApi: BaseApi
 
-  private fun TestScope.before() {
+  @Before
+  fun before() {
     baseApi = mockk()
     apis = mockk {
       every { base } returns baseApi
@@ -57,8 +61,6 @@ class ServerVersionFetcherTest {
     apisStateHolder = ActualApisStateHolder()
     apisStateHolder.update { apis }
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
-
-    build()
   }
 
   private fun TestScope.build(loopController: LoopController = SingleLoopController()) {
@@ -73,7 +75,7 @@ class ServerVersionFetcherTest {
   @Test
   fun `No APIs means nothing is fetched`() = runTest(timeout = 5.seconds) {
     // Given
-    before()
+    build()
     apisStateHolder.reset()
     advanceUntilIdle()
 
@@ -95,7 +97,7 @@ class ServerVersionFetcherTest {
   @Test
   fun `Valid fetch response`() = runTest(timeout = 5.seconds) {
     // Given
-    before()
+    build()
     coEvery { baseApi.fetchInfo() } returns InfoResponse(
       build = Build(
         name = "ABC",
@@ -121,7 +123,6 @@ class ServerVersionFetcherTest {
   fun `Failed then successful fetch response`() = runTest(timeout = 5.seconds) {
     // Given
     logcat.i { "Starting test" }
-    before()
 
     val validResponse = InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
     val failureReason = "SOMETHING BROKE"
@@ -136,7 +137,7 @@ class ServerVersionFetcherTest {
     build(loopController)
 
     // When
-    logcat.i { "versionsStateHolder.test $versionsStateHolder" }
+    logcat.i { "versionsStateHolder.test $versionsStateHolder = ${versionsStateHolder.value}" }
     versionsStateHolder.test {
       logcat.i { "assert empty state" }
       assertEquals(expected = emptyState(), actual = awaitItem())
