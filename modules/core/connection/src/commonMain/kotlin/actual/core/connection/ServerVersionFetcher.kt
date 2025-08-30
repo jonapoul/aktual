@@ -22,7 +22,9 @@ class ServerVersionFetcher(
   private val loopController: LoopController,
 ) {
   suspend fun startFetching() {
+    logcat.v { "startFetching" }
     apisStateHolder.collectLatest { apis ->
+      logcat.v { "startFetching collected $apis" }
       if (apis != null) {
         fetchVersion(apis)
       }

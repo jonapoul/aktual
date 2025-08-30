@@ -9,6 +9,7 @@ kotlin {
     api(libs.kotlinx.serialization.core)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
+    api(libs.logcat)
     api(libs.test.alakazam.core)
     api(libs.test.burst)
     api(libs.test.junit)

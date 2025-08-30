@@ -6,10 +6,12 @@ import actual.api.client.ActualApisStateHolder
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import actual.test.TestClientFactory
+import actual.test.LogcatInterceptor
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.unconfinedDispatcher
+import app.cash.burst.InterceptTest
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -26,6 +28,8 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
+  @InterceptTest val logger = LogcatInterceptor()
+
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var apiStateHolder: ActualApisStateHolder
