@@ -5,8 +5,8 @@ package actual.core.connection
 import actual.api.client.ActualApisStateHolder
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
-import actual.test.TestClientFactory
 import actual.test.LogcatInterceptor
+import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
 import alakazam.test.core.TestCoroutineContexts
