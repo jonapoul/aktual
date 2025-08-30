@@ -5,6 +5,7 @@ import actual.logging.ActualAndroidLogcatLogger
 import actual.logging.AndroidLogStorage
 import actual.logging.LogbackLogger
 import android.app.Application
+import android.os.StrictMode
 import dev.zacsweers.metro.createGraphFactory
 import logcat.LogPriority
 import logcat.LogcatLogger
@@ -21,6 +22,11 @@ class ActualApplication : Application(), AppGraph.Holder {
   override fun invoke(): AndroidAppGraph = graph
 
   override fun onCreate() {
+    if (BuildConfig.DEBUG) {
+      StrictMode.setThreadPolicy(threadPolicy())
+      StrictMode.setVmPolicy(vmPolicy())
+    }
+
     super.onCreate()
 
     val logStorage = AndroidLogStorage(context = this)
@@ -34,4 +40,18 @@ class ActualApplication : Application(), AppGraph.Holder {
     logcat.i { "onCreate" }
     logcat.d { "buildConfig = ${graph.buildConfig}" }
   }
+
+  private fun threadPolicy() = StrictMode.ThreadPolicy
+    .Builder()
+    .detectAll()
+    .penaltyLog()
+    .penaltyDeath()
+    .build()
+
+  private fun vmPolicy() = StrictMode.VmPolicy
+    .Builder()
+    .detectAll()
+    .penaltyLog()
+    .penaltyDeath()
+    .build()
 }
