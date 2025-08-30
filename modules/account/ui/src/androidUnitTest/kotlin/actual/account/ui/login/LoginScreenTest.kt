@@ -14,7 +14,6 @@ import actual.test.assertEditableTextEquals
 import actual.test.buildPreferences
 import actual.test.runTest
 import actual.test.setAndroidThemedContent
-import alakazam.test.core.MainDispatcherRule
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertTextEquals
@@ -28,6 +27,8 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import io.mockk.verify
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -35,9 +36,9 @@ import org.robolectric.shadows.ShadowLog
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class LoginScreenTest {
-  @get:Rule val mainDispatcherRule = MainDispatcherRule()
   @get:Rule val composeRule = createComposeRule()
 
   // real
@@ -58,7 +59,7 @@ class LoginScreenTest {
     setLoginResult { LoginResult.Success(TOKEN) }
 
     versionsStateHolder = ActualVersionsStateHolder(BUILD_CONFIG)
-    val prefs = buildPreferences(mainDispatcherRule.dispatcher)
+    val prefs = buildPreferences(UnconfinedTestDispatcher())
     preferences = AppGlobalPreferences(prefs)
   }
 

@@ -1,17 +1,16 @@
 package actual.api.client
 
+import actual.test.TemporaryFolder
 import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
 import actual.test.latestRequestHeaders
 import actual.test.testHttpClient
+import app.cash.burst.InterceptTest
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import okio.Path
-import okio.Path.Companion.toOkioPath
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -20,7 +19,7 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 
 class SyncDownloadApiTest {
-  @get:Rule val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = TemporaryFolder()
 
   private lateinit var mockEngine: MockEngine.Queue
   private lateinit var syncDownloadApi: SyncDownloadApi
@@ -31,7 +30,7 @@ class SyncDownloadApiTest {
   fun before() {
     mockEngine = emptyMockEngine()
     fileSystem = FileSystem.SYSTEM
-    destinationPath = temporaryFolder.root.resolve("my-file.txt").toOkioPath()
+    destinationPath = temporaryFolder.resolve("my-file.txt")
     syncDownloadApi = SyncDownloadApi(
       serverUrl = SERVER_URL,
       client = testHttpClient(mockEngine, ActualJson),

@@ -1,28 +1,32 @@
 package actual.budget.encryption
 
+import actual.test.TemporaryFolder
 import actual.test.readBytes
 import actual.test.resource
-import okio.sink
-import okio.source
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
+import app.cash.burst.InterceptTest
 import kotlin.io.encoding.Base64
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertFailsWith
 
 class DecryptTest {
-  @get:Rule val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = TemporaryFolder()
 
   @Test
   fun decryptSuccessfully() {
     val source = resource("encrypted.zip")
-    val destination = temporaryFolder.root.resolve("decrypted.zip")
+    val destination = temporaryFolder.resolve("decrypted.zip")
 
-    source.decryptToSink(KEY, IV, AUTH_TAG, EXPECTED_ALGORITHM, destination.sink())
+    source.decryptToSink(
+      key = KEY,
+      iv = IV,
+      authTag = AUTH_TAG,
+      algorithm = EXPECTED_ALGORITHM,
+      sink = temporaryFolder.sink(destination),
+    )
 
     assertContentEquals(
-      actual = destination.source().readBytes(),
+      actual = temporaryFolder.source(destination).readBytes(),
       expected = resource("expected.zip").readBytes(),
     )
   }
@@ -33,7 +37,13 @@ class DecryptTest {
     val destination = temporaryFolder.root.resolve("decrypted.zip")
 
     assertFailsWith<UnknownAlgorithmException> {
-      source.decryptToSink(KEY, IV, AUTH_TAG, algorithm = "something-unknown", destination.sink())
+      source.decryptToSink(
+        key = KEY,
+        iv = IV,
+        authTag = AUTH_TAG,
+        algorithm = "something-unknown",
+        sink = temporaryFolder.sink(destination),
+      )
     }
   }
 

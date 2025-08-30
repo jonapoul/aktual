@@ -13,12 +13,14 @@ import actual.core.model.LoginToken
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.core.model.bytes
+import actual.test.TemporaryFolder
 import actual.test.TestBudgetFiles
 import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.unconfinedDispatcher
+import app.cash.burst.InterceptTest
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
@@ -29,8 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
+import okio.Path
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
 import kotlin.test.Test
@@ -40,7 +41,7 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class BudgetFileDownloaderTest {
-  @get:Rule val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = TemporaryFolder()
 
   private lateinit var budgetFileDownloader: BudgetFileDownloader
   private lateinit var budgetFiles: TestBudgetFiles
@@ -143,7 +144,7 @@ class BudgetFileDownloaderTest {
 
       // and only the temp dir was created
       assertEquals(
-        actual = temporaryFolder.root.listFiles()?.toList(),
+        actual = temporaryFolder.list().map(Path::toFile),
         expected = listOf(budgetFiles.tmp().toFile()),
       )
 
@@ -173,7 +174,7 @@ class BudgetFileDownloaderTest {
 
     // and only the temp dir was created
     assertEquals(
-      actual = temporaryFolder.root.listFiles()?.toList(),
+      actual = temporaryFolder.list().map(Path::toFile),
       expected = listOf(budgetFiles.tmp().toFile()),
     )
   }

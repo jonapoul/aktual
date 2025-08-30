@@ -6,17 +6,17 @@ import actual.budget.model.DbMetadata
 import actual.budget.model.Timestamp
 import actual.budget.model.metadata
 import actual.budget.model.writeMetadata
+import actual.test.TemporaryFolder
 import actual.test.TestBudgetFiles
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
+import app.cash.burst.InterceptTest
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -27,7 +27,7 @@ import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BudgetLocalPreferencesTest {
-  @get:Rule val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = TemporaryFolder()
 
   private lateinit var files: BudgetFiles
   private lateinit var contexts: CoroutineContexts

@@ -9,12 +9,15 @@ import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
+import actual.test.LogcatInterceptor
+import actual.test.MainDispatcherInterceptor
 import actual.test.TestBuildConfig
 import alakazam.kotlin.core.LoopController
 import alakazam.test.core.FiniteLoopController
-import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.SingleLoopController
 import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.core.unconfinedDispatcher
+import app.cash.burst.InterceptTest
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.every
@@ -24,17 +27,19 @@ import io.mockk.runs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Rule
+import logcat.logcat
+import org.junit.Before
 import java.io.IOException
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
 class ServerVersionFetcherTest {
-  @get:Rule val mainDispatcherRule = MainDispatcherRule()
+  @InterceptTest val logger = LogcatInterceptor()
+  @InterceptTest val mainDispatcher = MainDispatcherInterceptor()
 
   // real
   private lateinit var fetcher: ServerVersionFetcher
@@ -45,7 +50,7 @@ class ServerVersionFetcherTest {
   private lateinit var apis: ActualApis
   private lateinit var baseApi: BaseApi
 
-  @BeforeTest
+  @Before
   fun before() {
     baseApi = mockk()
     apis = mockk {
@@ -55,17 +60,12 @@ class ServerVersionFetcherTest {
 
     apisStateHolder = ActualApisStateHolder()
     apisStateHolder.update { apis }
-
     versionsStateHolder = ActualVersionsStateHolder(TestBuildConfig)
-
-    build()
   }
 
-  private fun build(
-    loopController: LoopController = SingleLoopController(),
-  ) {
+  private fun TestScope.build(loopController: LoopController = SingleLoopController()) {
     fetcher = ServerVersionFetcher(
-      contexts = TestCoroutineContexts(mainDispatcherRule),
+      contexts = TestCoroutineContexts(unconfinedDispatcher),
       apisStateHolder = apisStateHolder,
       versionsStateHolder = versionsStateHolder,
       loopController = loopController,
@@ -75,6 +75,7 @@ class ServerVersionFetcherTest {
   @Test
   fun `No APIs means nothing is fetched`() = runTest(timeout = 5.seconds) {
     // Given
+    build()
     apisStateHolder.reset()
     advanceUntilIdle()
 
@@ -96,6 +97,7 @@ class ServerVersionFetcherTest {
   @Test
   fun `Valid fetch response`() = runTest(timeout = 5.seconds) {
     // Given
+    build()
     coEvery { baseApi.fetchInfo() } returns InfoResponse(
       build = Build(
         name = "ABC",
@@ -120,9 +122,13 @@ class ServerVersionFetcherTest {
   @Test
   fun `Failed then successful fetch response`() = runTest(timeout = 5.seconds) {
     // Given
+    logcat.i { "Starting test" }
+
     val validResponse = InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
     val failureReason = "SOMETHING BROKE"
+    logcat.i { "coEvery baseinfo" }
     coEvery { baseApi.fetchInfo() } answers {
+      logcat.i { "fetchInfo called. setting up second response" }
       coEvery { baseApi.fetchInfo() } returns validResponse
       throw IOException(failureReason)
     }
@@ -131,14 +137,20 @@ class ServerVersionFetcherTest {
     build(loopController)
 
     // When
+    logcat.i { "versionsStateHolder.test $versionsStateHolder = ${versionsStateHolder.value}" }
     versionsStateHolder.test {
+      logcat.i { "assert empty state" }
       assertEquals(expected = emptyState(), actual = awaitItem())
 
+      logcat.i { "launch startFetching" }
       val fetchJob = launch { fetcher.startFetching() }
 
       // Then
+      logcat.i { "assert 1.2.3" }
       assertEquals(expected = "1.2.3", actual = awaitItem().server)
+      logcat.i { "cancelAndIgnoreRemainingEvents" }
       cancelAndIgnoreRemainingEvents()
+      logcat.i { "cancel fetchJob" }
       fetchJob.cancel()
     }
   }

@@ -12,6 +12,7 @@ import actual.api.client.SyncApi
 import actual.api.client.SyncDownloadApi
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
+import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.collectFlow
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
@@ -27,6 +28,7 @@ import okio.FileSystem
 @SingleIn(AppScope::class)
 class ConnectionMonitor(
   private val scope: CoroutineScope,
+  private val contexts: CoroutineContexts,
   private val clientFactory: ClientFactory,
   private val apiStateHolder: ActualApisStateHolder,
   private val preferences: AppGlobalPreferences,
@@ -36,15 +38,21 @@ class ConnectionMonitor(
 
   fun start() {
     job?.cancel()
-    job = scope.collectFlow(preferences.serverUrl.asFlow()) { url ->
-      logcat.v { "ConnectionMonitor url=$url" }
-      if (url == null) {
-        apiStateHolder.reset()
-      } else {
-        // Close previous client's resources before rebuilding
-        apiStateHolder.value?.close()
-        tryToBuildApis(url)
-      }
+    job = scope.collectFlow(
+      flow = preferences.serverUrl.asFlow(),
+      context = contexts.unconfined,
+      call = ::handleServerUrl,
+    )
+  }
+
+  private fun handleServerUrl(url: ServerUrl?) {
+    logcat.v { "handleServerUrl url=$url" }
+    if (url == null) {
+      apiStateHolder.reset()
+    } else {
+      // Close previous client's resources before rebuilding
+      apiStateHolder.value?.close()
+      tryToBuildApis(url)
     }
   }
 
