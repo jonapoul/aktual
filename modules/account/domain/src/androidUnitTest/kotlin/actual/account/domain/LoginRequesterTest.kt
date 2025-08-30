@@ -14,8 +14,8 @@ import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
 import actual.test.respondJson
-import alakazam.test.core.MainDispatcherRule
 import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpStatusCode
@@ -28,8 +28,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import java.io.IOException
@@ -41,9 +39,6 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 internal class LoginRequesterTest {
-  @get:Rule val mainDispatcherRule = MainDispatcherRule()
-  @get:Rule val temporaryFolder = TemporaryFolder()
-
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: ActualApisStateHolder
   private lateinit var preferences: AppGlobalPreferences
@@ -57,7 +52,8 @@ internal class LoginRequesterTest {
   }
 
   private fun TestScope.before() {
-    val flowPrefs = buildPreferences(mainDispatcherRule.dispatcher)
+    val dispatcher = unconfinedDispatcher
+    val flowPrefs = buildPreferences(dispatcher)
     preferences = AppGlobalPreferences(flowPrefs)
     apisStateHolder = ActualApisStateHolder()
     mockEngine = emptyMockEngine()
@@ -65,6 +61,7 @@ internal class LoginRequesterTest {
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,
+      contexts = TestCoroutineContexts(dispatcher),
       clientFactory = TestClientFactory(mockEngine),
       apiStateHolder = apisStateHolder,
       preferences = preferences,
@@ -72,7 +69,7 @@ internal class LoginRequesterTest {
     )
 
     loginRequester = LoginRequester(
-      contexts = TestCoroutineContexts(mainDispatcherRule),
+      contexts = TestCoroutineContexts(dispatcher),
       apisStateHolder = apisStateHolder,
       preferences = preferences,
     )

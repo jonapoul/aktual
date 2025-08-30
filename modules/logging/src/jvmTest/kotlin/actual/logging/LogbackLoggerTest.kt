@@ -1,14 +1,13 @@
 package actual.logging
 
+import actual.test.TemporaryFolder
+import app.cash.burst.InterceptTest
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
 import okio.FileSystem
 import okio.Path
-import okio.Path.Companion.toOkioPath
 import okio.buffer
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -16,7 +15,7 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class LogbackLoggerTest {
-  @get:Rule val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = TemporaryFolder()
 
   private lateinit var fileSystem: FileSystem
   private lateinit var logStorage: JvmLogStorage
@@ -27,7 +26,7 @@ class LogbackLoggerTest {
     LogcatLogger.uninstall()
     LogcatLogger.install()
     fileSystem = FileSystem.SYSTEM
-    logStorageRoot = temporaryFolder.newFolder("log").toOkioPath()
+    logStorageRoot = temporaryFolder.newFolder("log")
     logStorage = JvmLogStorage(logStorageRoot)
   }
 
@@ -39,7 +38,10 @@ class LogbackLoggerTest {
   @Test
   fun `Log to file asynchronously`() {
     // given
-    LogcatLogger.loggers += LogbackLogger(logStorage, minPriority = LogPriority.DEBUG)
+    LogcatLogger.loggers += LogbackLogger(
+      storage = logStorage,
+      minPriority = LogPriority.DEBUG,
+    )
 
     // when
     logcat.i { "Hello world" }

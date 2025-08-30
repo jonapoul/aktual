@@ -5,10 +5,13 @@ package actual.core.connection
 import actual.api.client.ActualApisStateHolder
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
+import actual.test.LogcatInterceptor
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
-import alakazam.test.core.MainDispatcherRule
+import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.core.unconfinedDispatcher
+import app.cash.burst.InterceptTest
 import app.cash.turbine.test
 import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,8 +19,6 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
@@ -27,8 +28,7 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
-  @get:Rule val temporaryFolder = TemporaryFolder()
-  @get:Rule val mainDispatcherRule = MainDispatcherRule()
+  @InterceptTest val logger = LogcatInterceptor()
 
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var preferences: AppGlobalPreferences
@@ -37,7 +37,7 @@ class ConnectionMonitorTest {
   private lateinit var fileSystem: FileSystem
 
   private fun TestScope.before() {
-    val prefs = buildPreferences(mainDispatcherRule.dispatcher)
+    val prefs = buildPreferences(unconfinedDispatcher)
     preferences = AppGlobalPreferences(prefs)
     apiStateHolder = ActualApisStateHolder()
     mockEngine = emptyMockEngine()
@@ -45,6 +45,7 @@ class ConnectionMonitorTest {
 
     connectionMonitor = ConnectionMonitor(
       scope = backgroundScope,
+      contexts = TestCoroutineContexts(unconfinedDispatcher),
       clientFactory = TestClientFactory(mockEngine),
       apiStateHolder = apiStateHolder,
       preferences = preferences,

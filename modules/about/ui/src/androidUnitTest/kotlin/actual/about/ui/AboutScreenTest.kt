@@ -13,7 +13,6 @@ import actual.test.onDisplayedNodeWithTag
 import actual.test.printTreeToLog
 import actual.test.runTest
 import actual.test.setAndroidThemedContent
-import alakazam.test.core.MainDispatcherRule
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsNotDisplayed
 import androidx.compose.ui.test.assertTextEquals
@@ -39,7 +38,6 @@ import kotlin.time.Instant
 
 @RunWith(RobolectricTestRunner::class)
 class AboutScreenTest {
-  @get:Rule val mainDispatcherRule = MainDispatcherRule()
   @get:Rule val composeRule = createComposeRule()
 
   // real
