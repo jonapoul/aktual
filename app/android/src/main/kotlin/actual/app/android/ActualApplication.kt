@@ -40,18 +40,4 @@ class ActualApplication : Application(), AppGraph.Holder {
     logcat.i { "onCreate" }
     logcat.d { "buildConfig = ${graph.buildConfig}" }
   }
-
-  private fun threadPolicy() = StrictMode.ThreadPolicy
-    .Builder()
-    .detectAll()
-    .penaltyLog()
-    .penaltyDeath()
-    .build()
-
-  private fun vmPolicy() = StrictMode.VmPolicy
-    .Builder()
-    .detectAll()
-    .penaltyLog()
-    .penaltyDeath()
-    .build()
 }
