@@ -37,7 +37,7 @@ internal fun BottomStatusBar(
   theme: Theme = LocalTheme.current,
 ) = Row(
   modifier = modifier
-    .background(theme.cardBackground.copy(alpha = 0.8f))
+    .background(theme.cardBackground)
     .padding(vertical = 3.dp, horizontal = 8.dp)
     .fillMaxWidth(),
   verticalAlignment = Alignment.CenterVertically,

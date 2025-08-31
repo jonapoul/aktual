@@ -1,5 +1,13 @@
 package actual.budget.list.ui
 
+import actual.budget.list.ui.ListBudgetsAction.ChangePassword
+import actual.budget.list.ui.ListBudgetsAction.ChangeServer
+import actual.budget.list.ui.ListBudgetsAction.Delete
+import actual.budget.list.ui.ListBudgetsAction.Open
+import actual.budget.list.ui.ListBudgetsAction.OpenAbout
+import actual.budget.list.ui.ListBudgetsAction.OpenInBrowser
+import actual.budget.list.ui.ListBudgetsAction.OpenSettings
+import actual.budget.list.ui.ListBudgetsAction.Reload
 import actual.budget.list.vm.ListBudgetsState
 import actual.budget.list.vm.ListBudgetsViewModel
 import actual.budget.model.Budget
@@ -16,14 +24,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -35,7 +41,6 @@ import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +51,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ListBudgetsScreen(
@@ -92,14 +96,14 @@ fun ListBudgetsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        ListBudgetsAction.ChangeServer -> nav.toUrl()
-        ListBudgetsAction.ChangePassword -> nav.toChangePassword()
-        ListBudgetsAction.OpenAbout -> nav.toAbout()
-        ListBudgetsAction.OpenSettings -> nav.toSettings()
-        ListBudgetsAction.OpenInBrowser -> viewModel.open(serverUrl)
-        ListBudgetsAction.Reload -> viewModel.retry()
-        is ListBudgetsAction.Delete -> budgetToDelete = action.budget
-        is ListBudgetsAction.Open -> nav.toSyncBudget(token, action.budget.cloudFileId)
+        ChangeServer -> nav.toUrl()
+        ChangePassword -> nav.toChangePassword()
+        OpenAbout -> nav.toAbout()
+        OpenSettings -> nav.toSettings()
+        OpenInBrowser -> viewModel.open(serverUrl)
+        Reload -> viewModel.retry()
+        is Delete -> budgetToDelete = action.budget
+        is Open -> nav.toSyncBudget(token, action.budget.cloudFileId)
       }
     },
   )
@@ -148,63 +152,60 @@ internal fun ListBudgetsScaffold(
 @Composable
 private inline fun TopBarActions(
   crossinline onAction: (ListBudgetsAction) -> Unit,
-) {
-  Row {
-    BasicIconButton(
-      modifier = Modifier.padding(horizontal = 5.dp),
-      onClick = { onAction(ListBudgetsAction.OpenSettings) },
-      imageVector = Icons.Filled.Settings,
-      contentDescription = Strings.listBudgetsSettings,
-      colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+) = Row {
+  BasicIconButton(
+    modifier = Modifier.padding(horizontal = 5.dp),
+    onClick = { onAction(OpenSettings) },
+    imageVector = Icons.Filled.Settings,
+    contentDescription = Strings.listBudgetsSettings,
+    colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+  )
+
+  var showMenu by remember { mutableStateOf(false) }
+  BasicIconButton(
+    modifier = Modifier.padding(horizontal = 5.dp),
+    onClick = { showMenu = !showMenu },
+    imageVector = Icons.Filled.MoreVert,
+    contentDescription = Strings.listBudgetsMenu,
+    colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+  )
+
+  DropdownMenu(
+    expanded = showMenu,
+    onDismissRequest = { showMenu = false },
+  ) {
+    val serverText = Strings.listBudgetsChangeServer
+    DropdownMenuItem(
+      text = { Text(serverText) },
+      onClick = {
+        showMenu = false
+        onAction(ChangeServer)
+      },
+      leadingIcon = { Icon(Icons.Filled.Cloud, contentDescription = serverText) },
     )
 
-    var showMenu by remember { mutableStateOf(false) }
-    BasicIconButton(
-      modifier = Modifier.padding(horizontal = 5.dp),
-      onClick = { showMenu = !showMenu },
-      imageVector = Icons.Filled.MoreVert,
-      contentDescription = Strings.listBudgetsMenu,
-      colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+    val passwordText = Strings.listBudgetsChangePassword
+    DropdownMenuItem(
+      text = { Text(passwordText) },
+      onClick = {
+        showMenu = false
+        onAction(ChangePassword)
+      },
+      leadingIcon = { Icon(Icons.Filled.Key, contentDescription = passwordText) },
     )
 
-    DropdownMenu(
-      expanded = showMenu,
-      onDismissRequest = { showMenu = false },
-    ) {
-      val serverText = Strings.listBudgetsChangeServer
-      DropdownMenuItem(
-        text = { Text(serverText) },
-        onClick = {
-          showMenu = false
-          onAction(ListBudgetsAction.ChangeServer)
-        },
-        leadingIcon = { Icon(Icons.Filled.Cloud, contentDescription = serverText) },
-      )
-
-      val passwordText = Strings.listBudgetsChangePassword
-      DropdownMenuItem(
-        text = { Text(passwordText) },
-        onClick = {
-          showMenu = false
-          onAction(ListBudgetsAction.ChangePassword)
-        },
-        leadingIcon = { Icon(Icons.Filled.Key, contentDescription = passwordText) },
-      )
-
-      val aboutText = Strings.listBudgetsAbout
-      DropdownMenuItem(
-        text = { Text(aboutText) },
-        onClick = {
-          showMenu = false
-          onAction(ListBudgetsAction.OpenAbout)
-        },
-        leadingIcon = { Icon(Icons.Filled.Info, contentDescription = aboutText) },
-      )
-    }
+    val aboutText = Strings.listBudgetsAbout
+    DropdownMenuItem(
+      text = { Text(aboutText) },
+      onClick = {
+        showMenu = false
+        onAction(OpenAbout)
+      },
+      leadingIcon = { Icon(Icons.Filled.Info, contentDescription = aboutText) },
+    )
   }
 }
 
-@Stable
 @Composable
 private fun ScaffoldTitle(theme: Theme) = Text(
   text = Strings.listBudgetsToolbar,
@@ -213,65 +214,59 @@ private fun ScaffoldTitle(theme: Theme) = Text(
   color = theme.pageText,
 )
 
-@Stable
 @Composable
 private fun Content(
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) {
-  PullToRefreshBox(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(16.dp),
-    contentAlignment = Alignment.Center,
-    onRefresh = { onAction(ListBudgetsAction.Reload) },
-    isRefreshing = state is ListBudgetsState.Loading,
-  ) {
-    StateContent(state, onAction, theme)
-  }
-}
+) = PullToRefreshBox(
+  modifier = modifier
+    .fillMaxSize()
+    .padding(16.dp),
+  contentAlignment = Alignment.Center,
+  onRefresh = { onAction(Reload) },
+  isRefreshing = state is ListBudgetsState.Loading,
+  content = { StateContent(state, onAction, theme) },
+)
 
 @Composable
 private fun StateContent(
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
   theme: Theme = LocalTheme.current,
-) {
-  when (state) {
-    is ListBudgetsState.Loading -> {
-      // Empty content - we've already got the pull-to-refresh indicator
-      Box(
-        modifier = Modifier.fillMaxSize(),
-      )
-    }
+) = when (state) {
+  is ListBudgetsState.Loading -> {
+    // Empty content - we've already got the pull-to-refresh indicator
+    Box(
+      modifier = Modifier.fillMaxSize(),
+    )
+  }
 
-    is ListBudgetsState.Failure -> {
-      ContentFailure(
+  is ListBudgetsState.Failure -> {
+    ContentFailure(
+      modifier = Modifier.fillMaxSize(),
+      reason = state.reason,
+      onClickRetry = { onAction(Reload) },
+      theme = theme,
+    )
+  }
+
+  is ListBudgetsState.Success -> {
+    if (state.budgets.isEmpty()) {
+      ContentEmpty(
         modifier = Modifier.fillMaxSize(),
-        reason = state.reason,
-        onClickRetry = { onAction(ListBudgetsAction.Reload) },
         theme = theme,
+        onCreateBudgetInBrowser = { onAction(OpenInBrowser) },
       )
-    }
-
-    is ListBudgetsState.Success -> {
-      if (state.budgets.isEmpty()) {
-        ContentEmpty(
-          modifier = Modifier.fillMaxSize(),
-          theme = theme,
-          onCreateBudgetInBrowser = { onAction(ListBudgetsAction.OpenInBrowser) },
-        )
-      } else {
-        ContentSuccess(
-          modifier = Modifier.fillMaxSize(),
-          budgets = state.budgets,
-          theme = theme,
-          onClickOpen = { budget -> onAction(ListBudgetsAction.Open(budget)) },
-          onClickDelete = { budget -> onAction(ListBudgetsAction.Delete(budget)) },
-        )
-      }
+    } else {
+      ContentSuccess(
+        modifier = Modifier.fillMaxSize(),
+        budgets = state.budgets,
+        theme = theme,
+        onClickOpen = { budget -> onAction(Open(budget)) },
+        onClickDelete = { budget -> onAction(Delete(budget)) },
+      )
     }
   }
 }

@@ -49,15 +49,13 @@ buildConfig {
     topLevelConstants = true
   }
 
-  val debugBuild = boolPropertyOrElse(key = "debugBuild", default = false)
   val url = stringPropertyOrNull(key = "actual.defaultUrl")
   val password = stringPropertyOrNull(key = "actual.defaultPassword")
 
   buildConfigField("BUILD_TIME_MS", System.currentTimeMillis())
-  buildConfigField("DEBUG", debugBuild)
   buildConfigField("GIT_HASH", gitVersionHash())
   buildConfigField("VERSION_CODE", gitVersionCode())
   buildConfigField("VERSION_NAME", versionName())
-  buildConfigField<String?>("DEFAULT_PASSWORD", password.takeIf { debugBuild })
-  buildConfigField<String?>("DEFAULT_URL", url.takeIf { debugBuild })
+  buildConfigField<String?>("DEFAULT_PASSWORD", password)
+  buildConfigField<String?>("DEFAULT_URL", url)
 }

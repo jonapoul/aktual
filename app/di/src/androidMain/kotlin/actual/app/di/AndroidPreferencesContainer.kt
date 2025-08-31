@@ -7,6 +7,7 @@ import actual.prefs.EncryptedPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import android.content.Context
 import android.content.SharedPreferences
+import android.os.StrictMode
 import android.preference.PreferenceManager
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.EncryptedSharedPreferences.PrefKeyEncryptionScheme
@@ -18,6 +19,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 
 @BindingContainer
 @ContributesTo(AppScope::class)
@@ -33,11 +35,14 @@ object AndroidPreferencesContainer {
     context: Context,
   ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
 
+  // This takes time to initialize, so allow disk reads on the main thread (but only for this)
+  // https://developer.android.com/reference/android/os/StrictMode.ThreadPolicy.Builder#permitDisk
   @Provides
+  @SingleIn(AppScope::class)
   fun encrypted(
     context: Context,
     contexts: CoroutineContexts,
-  ): EncryptedPreferences {
+  ): EncryptedPreferences = allowDiskAndSlowCalls {
     val masterKey = MasterKey
       .Builder(context)
       .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
@@ -49,6 +54,23 @@ object AndroidPreferencesContainer {
       PrefKeyEncryptionScheme.AES256_SIV,
       PrefValueEncryptionScheme.AES256_GCM,
     )
-    return AndroidEncryptedPreferences(prefs, contexts.io)
+    AndroidEncryptedPreferences(prefs, contexts.io)
+  }
+}
+
+private fun <T> allowDiskAndSlowCalls(block: () -> T): T {
+  val old = StrictMode.getThreadPolicy()
+  StrictMode.setThreadPolicy(
+    StrictMode.ThreadPolicy
+      .Builder(old)
+      .permitDiskReads()
+      .permitDiskWrites()
+      .permitCustomSlowCalls()
+      .build(),
+  )
+  return try {
+    block()
+  } finally {
+    StrictMode.setThreadPolicy(old)
   }
 }
