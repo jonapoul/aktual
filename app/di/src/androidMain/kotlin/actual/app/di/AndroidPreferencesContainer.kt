@@ -66,7 +66,11 @@ private fun <T> allowDiskAndSlowCalls(block: () -> T): T {
       .permitDiskReads()
       .permitDiskWrites()
       .permitCustomSlowCalls()
-      .build()
+      .build(),
   )
-  return try { block() } finally { StrictMode.setThreadPolicy(old) }
+  return try {
+    block()
+  } finally {
+    StrictMode.setThreadPolicy(old)
+  }
 }

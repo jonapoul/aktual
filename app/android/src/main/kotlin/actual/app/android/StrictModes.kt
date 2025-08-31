@@ -44,4 +44,3 @@ internal fun vmPolicy() = StrictMode.VmPolicy
 @ChecksSdkIntAtLeast(parameter = 0, lambda = 1)
 private inline fun <B> B.ifVersionAtLeast(version: Int, action: B.() -> B): B =
   if (Build.VERSION.SDK_INT >= version) action() else this
-
