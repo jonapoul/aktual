@@ -38,7 +38,7 @@ class BudgetGraphHolderTest : AppGraph.Holder {
   private lateinit var appGraph: TestAppGraph
   private lateinit var holder: BudgetGraphHolder
 
-  override fun invoke(): AppGraph = appGraph
+  override fun get(): AppGraph = appGraph
 
   private fun TestScope.before() {
     val context = ApplicationProvider.getApplicationContext<Context>()

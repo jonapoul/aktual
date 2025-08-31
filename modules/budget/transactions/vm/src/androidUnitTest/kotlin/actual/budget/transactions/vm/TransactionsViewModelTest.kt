@@ -48,7 +48,7 @@ class TransactionsViewModelTest : AppGraph.Holder {
   // fake
   private lateinit var appGraph: TestAppGraph
 
-  override fun invoke(): AppGraph = appGraph
+  override fun get(): AppGraph = appGraph
 
   @AfterTest
   fun after() {
