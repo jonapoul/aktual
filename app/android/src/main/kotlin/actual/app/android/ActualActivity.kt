@@ -8,9 +8,9 @@ import actual.core.model.DarkColorSchemeType
 import actual.core.model.LoginToken
 import actual.core.model.RegularColorSchemeType
 import actual.core.ui.ActualTheme
+import actual.core.ui.BottomNavBarSpacing
 import actual.core.ui.LocalViewModelGraphProvider
 import actual.core.ui.WithCompositionLocals
-import alakazam.kotlin.compose.VerticalSpacer
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -21,10 +21,7 @@ import androidx.activity.viewModels
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -67,30 +64,41 @@ class ActualActivity(vmGraphProvider: ViewModelGraphProvider) : ComponentActivit
     )
 
     setContent {
-      val regular by viewModel.regularSchemeType.collectAsStateWithLifecycle()
-      val darkScheme by viewModel.darkSchemeType.collectAsStateWithLifecycle()
-      val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
-      val numberFormat by viewModel.numberFormat.collectAsStateWithLifecycle()
-      val hideFraction by viewModel.hideFraction.collectAsStateWithLifecycle()
-      val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
-      val colorSchemeType = chooseSchemeType(regular, darkScheme)
+      Content(
+        viewModel = viewModel,
+        defaultViewModelProviderFactory = defaultViewModelProviderFactory,
+      )
+    }
+  }
+}
 
-      CompositionLocalProvider(
-        LocalViewModelGraphProvider provides defaultViewModelProviderFactory,
-      ) {
-        WithCompositionLocals(
-          isPrivacyEnabled = isPrivacyEnabled,
-          format = numberFormat,
-          hideFractions = hideFraction,
-        ) {
-          ActualTheme(colorSchemeType) {
-            Content(
-              isServerUrlSet = viewModel.isServerUrlSet,
-              loginToken = viewModel.loginToken,
-              bottomBarState = bottomBarState,
-            )
-          }
-        }
+@Composable
+private fun Content(
+  viewModel: ActualActivityViewModel,
+  defaultViewModelProviderFactory: ViewModelGraphProvider,
+) {
+  val regular by viewModel.regularSchemeType.collectAsStateWithLifecycle()
+  val darkScheme by viewModel.darkSchemeType.collectAsStateWithLifecycle()
+  val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
+  val numberFormat by viewModel.numberFormat.collectAsStateWithLifecycle()
+  val hideFraction by viewModel.hideFraction.collectAsStateWithLifecycle()
+  val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
+  val colorSchemeType = chooseSchemeType(regular, darkScheme)
+
+  CompositionLocalProvider(
+    LocalViewModelGraphProvider provides defaultViewModelProviderFactory,
+  ) {
+    WithCompositionLocals(
+      isPrivacyEnabled = isPrivacyEnabled,
+      format = numberFormat,
+      hideFractions = hideFraction,
+    ) {
+      ActualTheme(colorSchemeType) {
+        Content(
+          isServerUrlSet = viewModel.isServerUrlSet,
+          loginToken = viewModel.loginToken,
+          bottomBarState = bottomBarState,
+        )
       }
     }
   }
@@ -124,23 +132,18 @@ private fun Content(
   contentAlignment = Alignment.BottomCenter,
 ) {
   ActualNavHost(
-    modifier = Modifier.fillMaxSize(1f),
+    modifier = Modifier.fillMaxWidth(),
     isServerUrlSet = isServerUrlSet,
     loginToken = loginToken,
   )
 
   if (bottomBarState is BottomBarState.Visible) {
-    Column(
-      modifier = Modifier.wrapContentHeight(),
-    ) {
+    Column {
       BottomStatusBar(
         modifier = Modifier.wrapContentHeight(),
         state = bottomBarState,
       )
-
-      // space to block out the bottom navigation bar, so we don't need to adjust layouts to account for it
-      val navigationBarHeight = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding()
-      VerticalSpacer(navigationBarHeight)
+      BottomNavBarSpacing()
     }
   }
 }
