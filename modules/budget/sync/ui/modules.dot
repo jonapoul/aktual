@@ -23,6 +23,7 @@ node ["style"="filled"]
 ":budget:data" -> ":logging" ["style"="dotted"]
 ":budget:encryption" -> ":budget:model"
 ":budget:encryption" -> ":core:model"
+":budget:model" -> ":core:model"
 ":budget:sync:ui" -> ":budget:sync:vm"
 ":budget:sync:ui" -> ":core:model" ["style"="dotted"]
 ":budget:sync:ui" -> ":core:ui"

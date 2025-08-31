@@ -20,6 +20,7 @@ node ["style"="filled"]
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:data" -> ":logging" ["style"="dotted"]
+":budget:model" -> ":core:model"
 ":core:di" -> ":budget:data"
 ":core:di" -> ":budget:model"
 }

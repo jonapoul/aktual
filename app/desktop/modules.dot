@@ -11,6 +11,7 @@ node ["style"="filled"]
 ":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
 ":core:di" ["fillcolor"="#FCB103","shape"="none"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
+":l10n" ["fillcolor"="#9D8DF1","shape"="none"]
 ":logging" ["fillcolor"="#9D8DF1","shape"="none"]
 ":prefs" ["fillcolor"="#9D8DF1","shape"="none"]
 ":api:builder" -> ":core:model"
@@ -18,6 +19,8 @@ node ["style"="filled"]
 ":api:github" -> ":codegen:annotation" ["style"="dotted"]
 ":api:github" -> ":core:model"
 ":app:desktop" -> ":app:di" ["style"="dotted"]
+":app:desktop" -> ":l10n" ["style"="dotted"]
+":app:desktop" -> ":logging" ["style"="dotted"]
 ":app:di" -> ":api:builder" ["style"="dotted"]
 ":app:di" -> ":api:github"
 ":app:di" -> ":budget:model"
@@ -27,6 +30,7 @@ node ["style"="filled"]
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:data" -> ":logging" ["style"="dotted"]
+":budget:model" -> ":core:model"
 ":core:di" -> ":budget:data"
 ":core:di" -> ":budget:model"
 ":prefs" -> ":core:model"

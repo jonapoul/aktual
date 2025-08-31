@@ -15,6 +15,7 @@ node ["style"="filled"]
 ":api:actual" -> ":core:model"
 ":api:builder" -> ":core:model"
 ":api:builder" -> ":logging" ["style"="dotted"]
+":budget:model" -> ":core:model"
 ":core:connection" -> ":api:actual"
 ":core:connection" -> ":api:builder"
 ":core:connection" -> ":core:model" ["style"="dotted"]

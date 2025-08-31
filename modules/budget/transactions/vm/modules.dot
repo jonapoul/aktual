@@ -12,6 +12,7 @@ node ["style"="filled"]
 ":budget:data" -> ":budget:model"
 ":budget:data" -> ":core:model"
 ":budget:data" -> ":logging" ["style"="dotted"]
+":budget:model" -> ":core:model"
 ":budget:transactions:vm" -> ":budget:data"
 ":budget:transactions:vm" -> ":budget:model"
 ":budget:transactions:vm" -> ":core:di"

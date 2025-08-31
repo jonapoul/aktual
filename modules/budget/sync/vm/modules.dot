@@ -20,6 +20,7 @@ node ["style"="filled"]
 ":budget:data" -> ":logging" ["style"="dotted"]
 ":budget:encryption" -> ":budget:model"
 ":budget:encryption" -> ":core:model"
+":budget:model" -> ":core:model"
 ":budget:sync:vm" -> ":api:actual" ["style"="dotted"]
 ":budget:sync:vm" -> ":budget:encryption"
 ":budget:sync:vm" -> ":budget:model"

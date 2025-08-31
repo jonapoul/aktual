@@ -16,5 +16,6 @@ node ["style"="filled"]
 ":api:actual" -> ":budget:model"
 ":api:actual" -> ":codegen:annotation" ["style"="dotted"]
 ":api:actual" -> ":core:model"
+":budget:model" -> ":core:model"
 ":prefs" -> ":core:model"
 }

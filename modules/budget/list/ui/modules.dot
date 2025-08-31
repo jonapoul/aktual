@@ -31,6 +31,7 @@ node ["style"="filled"]
 ":budget:list:vm" -> ":core:model"
 ":budget:list:vm" -> ":logging" ["style"="dotted"]
 ":budget:list:vm" -> ":prefs" ["style"="dotted"]
+":budget:model" -> ":core:model"
 ":core:di" -> ":budget:data"
 ":core:di" -> ":budget:model"
 ":core:ui" -> ":budget:model"

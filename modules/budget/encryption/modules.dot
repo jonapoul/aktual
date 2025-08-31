@@ -7,4 +7,5 @@ node ["style"="filled"]
 ":core:model" ["fillcolor"="#9D8DF1","shape"="none"]
 ":budget:encryption" -> ":budget:model"
 ":budget:encryption" -> ":core:model"
+":budget:model" -> ":core:model"
 }

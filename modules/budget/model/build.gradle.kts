@@ -9,6 +9,7 @@ tasks.withType<Test>().configureEach {
 
 kotlin {
   commonMainDependencies {
+    api(project(":modules:core:model"))
     api(libs.alakazam.kotlin.serialization)
     api(libs.kotlinx.coroutines)
     api(libs.kotlinx.datetime)

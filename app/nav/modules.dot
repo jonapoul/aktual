@@ -84,6 +84,7 @@ node ["style"="filled"]
 ":budget:list:vm" -> ":core:model"
 ":budget:list:vm" -> ":logging" ["style"="dotted"]
 ":budget:list:vm" -> ":prefs" ["style"="dotted"]
+":budget:model" -> ":core:model"
 ":budget:reports:ui" -> ":budget:reports:vm"
 ":budget:reports:ui" -> ":core:model" ["style"="dotted"]
 ":budget:reports:ui" -> ":core:ui"
