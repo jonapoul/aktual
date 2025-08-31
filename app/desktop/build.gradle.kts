@@ -47,6 +47,9 @@ compose.desktop {
 
 dependencies {
   implementation(project(":app:di"))
+  implementation(project(":modules:l10n"))
+  implementation(project(":modules:logging"))
   implementation(compose.desktop.currentOs)
   implementation(compose.material3)
+  implementation(compose.runtime)
 }
