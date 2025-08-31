@@ -88,8 +88,8 @@ com.google.protobuf:protobuf-java:3.25.5
 com.google.testing.platform:core-proto:0.0.9-alpha03
 com.googlecode.juniversalchardet:juniversalchardet:1.0.3
 com.gradle:develocity-gradle-plugin-adapters:1.2.1
-com.osacky.doctor:com.osacky.doctor.gradle.plugin:0.12.0
-com.osacky.doctor:doctor-plugin:0.12.0
+com.osacky.doctor:com.osacky.doctor.gradle.plugin:0.12.1
+com.osacky.doctor:doctor-plugin:0.12.1
 com.squareup.moshi:moshi-kotlin:1.12.0
 com.squareup.moshi:moshi:1.12.0
 com.squareup.okhttp3:okhttp:4.12.0
