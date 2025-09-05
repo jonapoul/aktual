@@ -2,20 +2,9 @@
 
 rootProject.name = "build-logic"
 
-dependencyResolutionManagement {
-  repositories {
-    google {
-      mavenContent {
-        includeGroupByRegex(".*android.*")
-        includeGroupByRegex(".*google.*")
-      }
-    }
-    gradlePluginPortal()
-    mavenCentral()
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-    mavenLocal()
-  }
+apply(from = "../gradle/repositories.gradle.kts")
 
+dependencyResolutionManagement {
   versionCatalogs {
     create("libs") {
       from(files("../gradle/libs.versions.toml"))
