@@ -11,7 +11,7 @@ kotlin {
     implementation(project(":modules:api:actual"))
     implementation(project(":modules:logging"))
     implementation(project(":modules:prefs"))
-    compileOnly(libs.alakazam.kotlin.composeAnnotations)
+    compileOnly(libs.androidx.compose.annotation)
   }
 
   androidUnitTestDependencies {

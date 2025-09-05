@@ -10,6 +10,6 @@ kotlin {
     api(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.coroutines)
     implementation(libs.kotlinx.serialization.json)
-    compileOnly(libs.alakazam.kotlin.composeAnnotations)
+    compileOnly(libs.androidx.compose.annotation)
   }
 }
