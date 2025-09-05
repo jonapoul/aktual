@@ -1,6 +1,7 @@
 package actual.budget.db.test
 
 import actual.budget.db.Accounts
+import actual.budget.db.Banks
 import actual.budget.db.BudgetDatabase
 import actual.budget.db.withResult
 import actual.budget.db.withoutResult
@@ -20,10 +21,14 @@ import kotlin.time.Instant
 internal suspend fun BudgetDatabase.getAccountById(id: AccountId): Accounts? =
   accountsQueries.withResult { getById(id).executeAsOneOrNull() }
 
-internal suspend fun BudgetDatabase.insertAccount(account: Accounts) = accountsQueries.withoutResult {
-  with(account) {
-    insert(id, account_id, name, official_name, bank, offbudget, account_sync_source)
+internal suspend fun BudgetDatabase.insertAccounts(vararg accounts: Accounts) = accountsQueries.withoutResult {
+  accounts.forEach { account ->
+    with(account) { insert(id, account_id, name, official_name, bank, offbudget, account_sync_source) }
   }
+}
+
+internal suspend fun BudgetDatabase.insertBanks(vararg banks: Banks) = banksQueries.withoutResult {
+  banks.forEach { bank -> with(bank) { insert(id, bank_id, name) } }
 }
 
 internal suspend fun BudgetDatabase.getMetaValue(key: String): String? =
