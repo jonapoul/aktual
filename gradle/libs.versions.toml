@@ -24,10 +24,8 @@ redacted = "1.14.1"
 
 # Libraries
 alakazam = "6.3.0"
-android-desugaring = "2.1.5"
 androidx-activity = "1.10.1"
 androidx-annotation = "1.9.1"
-androidx-compose-lint = "1.4.2"
 androidx-compose-rules = "0.4.27"
 androidx-coreKtx = "1.17.0"
 androidx-crypto = "1.1.0"
@@ -92,12 +90,12 @@ alakazam-kotlin-composeAnnotations = { module = "dev.jonpoulton.alakazam:kotlin-
 alakazam-kotlin-core = { module = "dev.jonpoulton.alakazam:kotlin-core", version.ref = "alakazam" }
 alakazam-kotlin-serialization = { module = "dev.jonpoulton.alakazam:kotlin-serialization", version.ref = "alakazam" }
 alakazam-kotlin-time = { module = "dev.jonpoulton.alakazam:kotlin-time", version.ref = "alakazam" }
-android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version.ref = "android-desugaring" }
+android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.5" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-activity-core = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
 androidx-activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "androidx-activity" }
 androidx-annotation = { module = "androidx.annotation:annotation", version.ref = "androidx-annotation" }
-androidx-compose-lint = { module = "com.slack.lint.compose:compose-lint-checks", version.ref = "androidx-compose-lint" }
+androidx-compose-lint = { module = "com.slack.lint.compose:compose-lint-checks", version = "1.4.2" }
 androidx-coreKtx = { module = "androidx.core:core-ktx", version.ref = "androidx-coreKtx" }
 androidx-crypto = { module = "androidx.security:security-crypto", version.ref = "androidx-crypto" }
 androidx-lifecycle-runtime-compose = { module = "androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
