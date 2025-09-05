@@ -1,10 +1,10 @@
 androidx.databinding:databinding-common:8.13.0
 androidx.databinding:databinding-compiler-common:8.13.0
-app.cash.burst:app.cash.burst.gradle.plugin:2.7.1
-app.cash.burst:burst-gradle-plugin:2.7.1
-app.cash.burst:burst-jvm:2.7.1
-app.cash.burst:burst-kotlin-plugin:2.7.1
-app.cash.burst:burst:2.7.1
+app.cash.burst:app.cash.burst.gradle.plugin:2.8.1
+app.cash.burst:burst-gradle-plugin:2.8.1
+app.cash.burst:burst-jvm:2.8.1
+app.cash.burst:burst-kotlin-plugin:2.8.1
+app.cash.burst:burst:2.8.1
 app.cash.licensee:app.cash.licensee.gradle.plugin:1.13.0
 app.cash.licensee:licensee-gradle-plugin:1.13.0
 app.cash.sql-psi:core:0.6.0
