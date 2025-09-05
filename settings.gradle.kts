@@ -1,35 +1,9 @@
-@file:Suppress("UnstableApiUsage", "HasPlatformType")
-
 rootProject.name = "actual-android"
+
+apply(from = "gradle/repositories.gradle.kts")
 
 pluginManagement {
   includeBuild("build-logic")
-  repositories {
-    google {
-      mavenContent {
-        includeGroupByRegex(".*android.*")
-        includeGroupByRegex(".*google.*")
-      }
-    }
-    mavenCentral()
-    gradlePluginPortal()
-    maven("https://oss.sonatype.org/content/repositories/snapshots")
-    mavenLocal()
-  }
-}
-
-dependencyResolutionManagement {
-  repositories {
-    google {
-      mavenContent {
-        includeGroupByRegex(".*android.*")
-        includeGroupByRegex(".*google.*")
-      }
-    }
-    mavenCentral()
-    maven("https://jitpack.io")
-    mavenLocal()
-  }
 }
 
 plugins {
