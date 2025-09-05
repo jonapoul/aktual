@@ -15,6 +15,6 @@ kotlin {
     api(libs.kotlinx.immutable)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
-    compileOnly(libs.alakazam.kotlin.composeAnnotations)
+    compileOnly(libs.androidx.compose.annotation)
   }
 }
