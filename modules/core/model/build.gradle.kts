@@ -12,7 +12,7 @@ kotlin {
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
     implementation(libs.alakazam.kotlin.serialization)
-    compileOnly(libs.alakazam.kotlin.composeAnnotations)
+    compileOnly(libs.androidx.compose.annotation)
     compileOnly(libs.redacted.annotations)
   }
 
