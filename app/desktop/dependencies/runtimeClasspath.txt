@@ -45,8 +45,8 @@ dev.jonpoulton.preferences:core-jvm:2.2.0
 dev.jonpoulton.preferences:core:2.2.0
 dev.zacsweers.metro:runtime-jvm:0.6.4
 dev.zacsweers.metro:runtime:0.6.4
-dev.zacsweers.redacted:redacted-compiler-plugin-annotations-jvm:1.14.1
-dev.zacsweers.redacted:redacted-compiler-plugin-annotations:1.14.1
+dev.zacsweers.redacted:redacted-compiler-plugin-annotations-jvm:1.15.0
+dev.zacsweers.redacted:redacted-compiler-plugin-annotations:1.15.0
 io.ktor:ktor-client-auth-jvm:3.2.3
 io.ktor:ktor-client-auth:3.2.3
 io.ktor:ktor-client-cio-jvm:3.2.3
@@ -131,10 +131,10 @@ org.jetbrains.compose.ui:ui-unit:1.9.0-rc01
 org.jetbrains.compose.ui:ui-util-desktop:1.9.0-rc01
 org.jetbrains.compose.ui:ui-util:1.9.0-rc01
 org.jetbrains.compose.ui:ui:1.9.0-rc01
-org.jetbrains.kotlin:kotlin-stdlib-common:2.2.10
+org.jetbrains.kotlin:kotlin-stdlib-common:2.2.20
 org.jetbrains.kotlin:kotlin-stdlib-jdk7:2.1.21
 org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.21
-org.jetbrains.kotlin:kotlin-stdlib:2.2.10
+org.jetbrains.kotlin:kotlin-stdlib:2.2.20
 org.jetbrains.kotlinx:atomicfu-jvm:0.29.0
 org.jetbrains.kotlinx:atomicfu:0.29.0
 org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.4.0
