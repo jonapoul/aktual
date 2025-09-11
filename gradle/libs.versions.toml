@@ -12,7 +12,7 @@ kotlin = "2.2.10"
 kover = "0.9.1"
 ksp = "2.2.10-2.0.2"
 licensee = "1.13.0"
-metro = "0.6.4"
+metro = "0.6.6"
 redacted = "1.14.1"
 
 # Libraries
