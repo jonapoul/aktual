@@ -13,7 +13,7 @@ kover = "0.9.1"
 ksp = "2.2.10-2.0.2"
 licensee = "1.13.0"
 metro = "0.6.4"
-redacted = "1.14.1"
+redacted = "1.15.0"
 
 # Libraries
 alakazam = "6.3.0"
