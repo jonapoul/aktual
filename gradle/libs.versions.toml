@@ -123,6 +123,7 @@ test-androidx-monitor = { module = "androidx.test:monitor", version = "1.8.0" }
 test-androidx-rules = { module = "androidx.test:rules", version = "1.7.0" }
 test-androidx-runner = { module = "androidx.test:runner", version = "1.7.0" }
 test-burst = { module = "app.cash.burst:burst", version.ref = "burst" }
+test-burstCoroutines = { module = "app.cash.burst:burst-coroutines", version.ref = "burst" }
 test-junit = { module = "junit:junit", version = "4.13.2" }
 test-kotlin-common = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }

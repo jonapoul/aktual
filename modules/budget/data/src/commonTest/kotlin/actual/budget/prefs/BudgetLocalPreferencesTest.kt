@@ -6,7 +6,7 @@ import actual.budget.model.DbMetadata
 import actual.budget.model.Timestamp
 import actual.budget.model.metadata
 import actual.budget.model.writeMetadata
-import actual.test.TemporaryFolder
+import actual.test.CoTemporaryFolder
 import actual.test.TestBudgetFiles
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
@@ -27,7 +27,7 @@ import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class BudgetLocalPreferencesTest {
-  @InterceptTest val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
   private lateinit var files: BudgetFiles
   private lateinit var contexts: CoroutineContexts

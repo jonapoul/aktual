@@ -9,7 +9,7 @@ import actual.api.model.base.Build
 import actual.api.model.base.InfoResponse
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
-import actual.test.LogcatInterceptor
+import actual.test.CoLogcatInterceptor
 import actual.test.MainDispatcherInterceptor
 import actual.test.TestBuildConfig
 import alakazam.kotlin.core.LoopController
@@ -38,7 +38,7 @@ import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
 class ServerVersionFetcherTest {
-  @InterceptTest val logger = LogcatInterceptor()
+  @InterceptTest val logger = CoLogcatInterceptor()
   @InterceptTest val mainDispatcher = MainDispatcherInterceptor()
 
   // real

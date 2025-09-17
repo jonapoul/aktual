@@ -9,7 +9,7 @@ class TestBudgetFiles(
   override val fileSystem: FileSystem,
   private val root: Path,
 ) : BudgetFiles {
-  constructor(temporaryFolder: TemporaryFolder) : this(FileSystem.SYSTEM, temporaryFolder.root)
+  constructor(temporaryFolder: ITemporaryFolder) : this(FileSystem.SYSTEM, temporaryFolder.root)
 
   override fun directory(id: BudgetId, mkdirs: Boolean): Path = root
     .resolve(id.value)
