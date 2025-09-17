@@ -19,7 +19,8 @@ jobs:
     name: gitleaks
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout repo
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           fetch-tags: true
@@ -30,46 +31,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITLEAKS_CONFIG: ./config/gitleaks.toml
 
-  identify:
-    runs-on: ubuntu-latest
-    outputs:
-      build: ${{ steps.filter.outputs.build }}
-      github: ${{ steps.filter.outputs.github }}
-      kotlin: ${{ steps.filter.outputs.kotlin }}
-      src: ${{ steps.filter.outputs.src }}
-    steps:
-      - uses: actions/checkout@v5
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            build:
-              - '**.kts'
-              - '**.properties'
-              - '**.conf'
-              - 'build-logic/**'
-              - 'gradle/**'
-            github:
-              - '.github/**'
-            kotlin:
-              - '**.kt'
-              - '**.kts'
-            src:
-              - '**.kt'
-              - '**.kts'
-              - '**/src/**'
-
-  ktlint:
-    needs: [ identify ]
-    if: needs.identify.outputs.kotlin == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-
       - name: Install ktlint
         run: |
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.7.1/ktlint
@@ -78,57 +39,6 @@ jobs:
 
       - name: Run ktlint
         run: scripts/ktlintCheck.sh
-
-  baseline:
-    needs: [ identify ]
-    if: |
-      needs.identify.outputs.build == 'true' &&
-      github.event.pull_request.user.login == 'renovate[bot]'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-          ref: ${{ github.head_ref }}
-
-      - name: Setup JDK
-        uses: actions/setup-java@v5
-        with:
-          java-version-file: .github/workflows/.java-version
-          distribution: "zulu"
-
-      - name: Add permissions
-        run: chmod +x ./gradlew
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
-        with:
-          add-job-summary: on-failure
-
-      - name: Run baseline
-        run: ./gradlew dependencyGuardBaseline :dependencyGuardBaseline --no-configuration-cache --no-parallel
-
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action@v6
-        with:
-          commit_message: Baseline dependencies
-
-  check:
-    needs: [ identify, baseline ]
-    if: |
-      always() &&
-      (needs.identify.outputs.src == 'true' || needs.identify.outputs.build == 'true' || needs.identify.outputs.github == 'true') &&
-      (needs.baseline.result == 'skipped' || needs.baseline.result == 'success')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repo
-        uses: actions/checkout@v5
-        with:
-          fetch-depth: 0
-          fetch-tags: true
-          ref: ${{ github.head_ref }}
 
       - name: Setup JDK
         uses: actions/setup-java@v5

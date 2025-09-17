@@ -141,7 +141,6 @@ burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.4.0" }
 compose = { id = "org.jetbrains.compose", version.ref = "composeJetbrains" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
-dependencyGuard = { id = "com.dropbox.dependency-guard", version = "0.5.0" }
 dependencyVersions = { id = "com.github.ben-manes.versions", version = "0.52.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 doctor = { id = "com.osacky.doctor", version = "0.12.1" }
