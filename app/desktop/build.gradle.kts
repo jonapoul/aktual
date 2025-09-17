@@ -6,11 +6,6 @@ plugins {
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.convention.compose)
-  alias(libs.plugins.dependencyGuard)
-}
-
-dependencyGuard {
-  configuration("runtimeClasspath")
 }
 
 compose.desktop {

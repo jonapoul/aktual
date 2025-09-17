@@ -41,8 +41,8 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
+import com.patrykandpatrick.vico.multiplatform.common.Fill
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberLineComponent
-import com.patrykandpatrick.vico.multiplatform.common.fill
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.runBlocking
 
@@ -84,18 +84,18 @@ internal fun CashFlowChart(
     chart = rememberCartesianChart(
       rememberColumnCartesianLayer(
         ColumnCartesianLayer.ColumnProvider.series(
-          rememberLineComponent(fill = fill(theme.reportsBlue), thickness = 16.dp),
+          rememberLineComponent(fill = Fill(theme.reportsBlue), thickness = 16.dp),
         ),
       ),
       rememberColumnCartesianLayer(
         ColumnCartesianLayer.ColumnProvider.series(
-          rememberLineComponent(fill = fill(theme.reportsRed), thickness = 16.dp),
+          rememberLineComponent(fill = Fill(theme.reportsRed), thickness = 16.dp),
         ),
       ),
       rememberLineCartesianLayer(
         lineProvider = LineCartesianLayer.LineProvider.series(
           LineCartesianLayer.rememberLine(
-            fill = LineCartesianLayer.LineFill.single(fill(theme.pageTextLight)),
+            fill = LineCartesianLayer.LineFill.single(Fill(theme.pageTextLight)),
             stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
           ),
         ),

@@ -13,7 +13,7 @@ import actual.core.model.LoginToken
 import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.core.model.bytes
-import actual.test.TemporaryFolder
+import actual.test.CoTemporaryFolder
 import actual.test.TestBudgetFiles
 import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
@@ -41,7 +41,7 @@ import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
 class BudgetFileDownloaderTest {
-  @InterceptTest val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
   private lateinit var budgetFileDownloader: BudgetFileDownloader
   private lateinit var budgetFiles: TestBudgetFiles

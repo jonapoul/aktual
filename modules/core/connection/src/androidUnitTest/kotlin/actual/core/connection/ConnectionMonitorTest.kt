@@ -5,7 +5,7 @@ package actual.core.connection
 import actual.api.client.ActualApisStateHolder
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
-import actual.test.LogcatInterceptor
+import actual.test.CoLogcatInterceptor
 import actual.test.TestClientFactory
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
@@ -28,7 +28,7 @@ import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
-  @InterceptTest val logger = LogcatInterceptor()
+  @InterceptTest val logger = CoLogcatInterceptor()
 
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var preferences: AppGlobalPreferences

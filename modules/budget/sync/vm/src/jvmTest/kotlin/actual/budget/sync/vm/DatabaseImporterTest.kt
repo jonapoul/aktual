@@ -7,7 +7,7 @@ import actual.budget.model.DbMetadata
 import actual.budget.model.Timestamp
 import actual.budget.model.database
 import actual.budget.model.metadata
-import actual.test.TemporaryFolder
+import actual.test.CoTemporaryFolder
 import actual.test.TestBudgetFiles
 import actual.test.copyTo
 import actual.test.resource
@@ -31,7 +31,7 @@ import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class DatabaseImporterTest {
-  @InterceptTest val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
   private lateinit var fileSystem: FileSystem
   private lateinit var root: Path
