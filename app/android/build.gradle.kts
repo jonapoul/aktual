@@ -17,11 +17,6 @@ plugins {
   alias(libs.plugins.convention.kotlin.jvm)
   alias(libs.plugins.convention.style)
   alias(libs.plugins.convention.test)
-  alias(libs.plugins.dependencyGuard)
-}
-
-dependencyGuard {
-  configuration("releaseRuntimeClasspath")
 }
 
 kotlin {

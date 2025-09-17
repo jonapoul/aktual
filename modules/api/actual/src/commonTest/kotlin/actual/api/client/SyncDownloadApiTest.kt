@@ -1,6 +1,6 @@
 package actual.api.client
 
-import actual.test.TemporaryFolder
+import actual.test.CoTemporaryFolder
 import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
 import actual.test.latestRequestHeaders
@@ -19,7 +19,7 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 
 class SyncDownloadApiTest {
-  @InterceptTest val temporaryFolder = TemporaryFolder()
+  @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
   private lateinit var mockEngine: MockEngine.Queue
   private lateinit var syncDownloadApi: SyncDownloadApi

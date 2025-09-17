@@ -24,7 +24,6 @@ plugins {
   alias(libs.plugins.redacted) apply false
   alias(libs.plugins.sqldelight) apply false
 
-  alias(libs.plugins.dependencyGuard)
   alias(libs.plugins.dependencyVersions)
   alias(libs.plugins.doctor)
   alias(libs.plugins.kover)
@@ -45,10 +44,6 @@ doctor {
     ensureJavaHomeIsSet = true
     failOnError = true
   }
-}
-
-dependencyGuard {
-  configuration("classpath")
 }
 
 dependencyVersionsBlueprint()

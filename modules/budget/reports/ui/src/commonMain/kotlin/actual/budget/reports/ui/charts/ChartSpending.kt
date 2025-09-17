@@ -48,7 +48,7 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.multiplatform.common.fill
+import com.patrykandpatrick.vico.multiplatform.common.Fill
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.runBlocking
 import kotlin.math.roundToInt
@@ -121,9 +121,9 @@ private fun Chart(
       rememberLineCartesianLayer(
         lineProvider = LineCartesianLayer.LineProvider.series(
           LineCartesianLayer.rememberLine(
-            fill = LineCartesianLayer.LineFill.single(fill(theme.reportsGreen)),
+            fill = LineCartesianLayer.LineFill.single(Fill(theme.reportsGreen)),
             areaFill = LineCartesianLayer.AreaFill.single(
-              fill = fill(theme.reportsGreen.copy(alpha = 0.2f)),
+              fill = Fill(theme.reportsGreen.copy(alpha = 0.2f)),
             ),
           ),
         ),
@@ -131,10 +131,10 @@ private fun Chart(
       rememberLineCartesianLayer(
         lineProvider = LineCartesianLayer.LineProvider.series(
           LineCartesianLayer.rememberLine(
-            fill = LineCartesianLayer.LineFill.single(fill(theme.reportsGray)),
+            fill = LineCartesianLayer.LineFill.single(Fill(theme.reportsGray)),
             stroke = LineCartesianLayer.LineStroke.Dashed(thickness = 1.dp),
             areaFill = LineCartesianLayer.AreaFill.single(
-              fill = fill(theme.reportsGray.copy(alpha = 0.2f)),
+              fill = Fill(theme.reportsGray.copy(alpha = 0.2f)),
             ),
           ),
         ),

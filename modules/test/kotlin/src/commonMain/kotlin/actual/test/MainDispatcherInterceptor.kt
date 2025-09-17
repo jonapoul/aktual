@@ -1,7 +1,9 @@
+@file:OptIn(ExperimentalCoroutinesApi::class)
+
 package actual.test
 
-import app.cash.burst.TestFunction
-import app.cash.burst.TestInterceptor
+import app.cash.burst.coroutines.CoroutineTestFunction
+import app.cash.burst.coroutines.CoroutineTestInterceptor
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -9,11 +11,10 @@ import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class MainDispatcherInterceptor(
   val main: CoroutineDispatcher = UnconfinedTestDispatcher(),
-) : TestInterceptor {
-  override fun intercept(testFunction: TestFunction) {
+) : CoroutineTestInterceptor {
+  override suspend fun intercept(testFunction: CoroutineTestFunction) {
     try {
       Dispatchers.setMain(main)
       testFunction()

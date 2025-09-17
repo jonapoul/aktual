@@ -2,6 +2,8 @@ package actual.test
 
 import app.cash.burst.TestFunction
 import app.cash.burst.TestInterceptor
+import app.cash.burst.coroutines.CoroutineTestFunction
+import app.cash.burst.coroutines.CoroutineTestInterceptor
 import okio.FileSystem
 import okio.Path
 import okio.Path.Companion.toOkioPath
@@ -10,17 +12,36 @@ import okio.Source
 import kotlin.io.path.createTempDirectory
 
 class TemporaryFolder(
-  val fileSystem: FileSystem = FileSystem.SYSTEM,
-) : TestInterceptor {
-  lateinit var root: Path
-    private set
+  override val fileSystem: FileSystem = FileSystem.SYSTEM,
+) : ITemporaryFolder, TestInterceptor {
+  private lateinit var mutableRoot: Path
+  override val root: Path get() = mutableRoot
 
   override fun intercept(testFunction: TestFunction) = try {
-    root = createTempDirectory().toOkioPath()
+    mutableRoot = createTempDirectory().toOkioPath()
     testFunction()
   } finally {
     fileSystem.deleteRecursively(root)
   }
+}
+
+class CoTemporaryFolder(
+  override val fileSystem: FileSystem = FileSystem.SYSTEM,
+) : ITemporaryFolder, CoroutineTestInterceptor {
+  private lateinit var mutableRoot: Path
+  override val root: Path get() = mutableRoot
+
+  override suspend fun intercept(testFunction: CoroutineTestFunction) = try {
+    mutableRoot = createTempDirectory().toOkioPath()
+    testFunction()
+  } finally {
+    fileSystem.deleteRecursively(root)
+  }
+}
+
+interface ITemporaryFolder {
+  val fileSystem: FileSystem
+  val root: Path
 
   fun newFolder(name: String): Path = resolve(name)
     .also { fileSystem.createDirectory(it) }

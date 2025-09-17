@@ -34,13 +34,13 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.data.CartesianValueForm
 import com.patrykandpatrick.vico.multiplatform.cartesian.marker.CartesianMarker
 import com.patrykandpatrick.vico.multiplatform.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.multiplatform.cartesian.marker.rememberDefaultCartesianMarker
+import com.patrykandpatrick.vico.multiplatform.common.Fill
 import com.patrykandpatrick.vico.multiplatform.common.Insets
 import com.patrykandpatrick.vico.multiplatform.common.LayeredComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.ShapeComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.TextComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberShapeComponent
 import com.patrykandpatrick.vico.multiplatform.common.component.rememberTextComponent
-import com.patrykandpatrick.vico.multiplatform.common.fill
 import com.patrykandpatrick.vico.multiplatform.common.shape.CorneredShape
 import com.patrykandpatrick.vico.multiplatform.common.shape.Shape
 import kotlinx.collections.immutable.ImmutableCollection
@@ -69,7 +69,7 @@ internal fun axisGuidelineComponent(compact: Boolean) = if (compact) {
 
 @Composable
 internal fun axisTickComponent(compact: Boolean) = if (compact) {
-  rememberAxisTickComponent(fill = fill(Color.Transparent))
+  rememberAxisTickComponent(fill = Fill(Color.Transparent))
 } else {
   rememberAxisTickComponent()
 }
@@ -136,7 +136,7 @@ internal fun rememberMarker(
     minWidth = TextComponent.MinWidth.fixed(40.dp),
   )
   val indicatorFrontComponent = rememberShapeComponent(
-    fill = fill(color = theme.pageBackground),
+    fill = Fill(color = theme.pageBackground),
     shape = markerShape,
   )
   val guideline = rememberAxisGuidelineComponent()
@@ -145,9 +145,9 @@ internal fun rememberMarker(
     valueFormatter = DefaultCartesianMarker.ValueFormatter.default(),
     indicator = { color ->
       LayeredComponent(
-        back = ShapeComponent(fill(color.copy(alpha = 0.15f)), markerShape),
+        back = ShapeComponent(Fill(color.copy(alpha = 0.15f)), markerShape),
         front = LayeredComponent(
-          back = ShapeComponent(fill = fill(color), shape = markerShape),
+          back = ShapeComponent(fill = Fill(color), shape = markerShape),
           front = indicatorFrontComponent,
           padding = Insets(5.dp),
         ),

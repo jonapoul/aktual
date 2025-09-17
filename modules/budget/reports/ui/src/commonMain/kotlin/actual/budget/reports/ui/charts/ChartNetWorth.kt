@@ -32,7 +32,7 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLine
 import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCartesianLayer
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
-import com.patrykandpatrick.vico.multiplatform.common.fill
+import com.patrykandpatrick.vico.multiplatform.common.Fill
 import kotlinx.coroutines.runBlocking
 
 @Composable
@@ -148,10 +148,10 @@ private fun Chart(
       rememberLineCartesianLayer(
         lineProvider = LineCartesianLayer.LineProvider.series(
           LineCartesianLayer.rememberLine(
-            fill = LineCartesianLayer.LineFill.single(fill(theme.reportsBlue)),
+            fill = LineCartesianLayer.LineFill.single(Fill(theme.reportsBlue)),
             areaFill = LineCartesianLayer.AreaFill.double(
-              topFill = fill(theme.reportsBlue.copy(alpha = 0.2f)),
-              bottomFill = fill(theme.reportsRed.copy(alpha = 0.2f)),
+              topFill = Fill(theme.reportsBlue.copy(alpha = 0.2f)),
+              bottomFill = Fill(theme.reportsRed.copy(alpha = 0.2f)),
             ),
           ),
         ),
