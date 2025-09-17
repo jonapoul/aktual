@@ -15,8 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  gitleaks:
-    name: gitleaks
+  pr:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
