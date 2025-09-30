@@ -1,5 +1,4 @@
 import blueprint.core.rootLocalPropertiesOrNull
-import blueprint.recipes.dependencyVersionsBlueprint
 
 plugins {
   alias(libs.plugins.agp.app) apply false
@@ -24,7 +23,6 @@ plugins {
   alias(libs.plugins.redacted) apply false
   alias(libs.plugins.sqldelight) apply false
 
-  alias(libs.plugins.dependencyVersions)
   alias(libs.plugins.doctor)
   alias(libs.plugins.kover)
 
@@ -45,5 +43,3 @@ doctor {
     failOnError = true
   }
 }
-
-dependencyVersionsBlueprint()
