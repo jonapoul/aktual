@@ -3,17 +3,17 @@
 agp = "8.13.0"
 androidCacheFix = "3.0.1"
 blueprint = "1.0.0"
-burst = "2.9.0"
-composeAndroidx = "1.9.1"
+burst = "2.10.2"
+composeAndroidx = "1.9.2"
 composeJetbrains = "1.10.0-alpha01"
-composeHotReload = "1.0.0-beta07"
+composeHotReload = "1.0.0-beta09"
 detekt = "1.23.8"
 jacoco = "0.8.13"
 kotlin = "2.2.20"
 kover = "0.9.2"
 ksp = "2.2.20-2.0.3"
 licensee = "1.13.0"
-metro = "0.6.6"
+metro = "0.6.8"
 redacted = "1.15.0"
 
 # Libraries
@@ -92,12 +92,12 @@ ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-serialization-core = { module = "io.ktor:ktor-serialization", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 logback-android = { module = "com.github.tony19:logback-android", version = "3.0.0" }
-logback-classic = { module = "ch.qos.logback:logback-classic", version = "1.5.18" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version = "1.5.19" }
 logcat = { module = "com.squareup.logcat:logcat", version = "0.4" }
 markdown-core = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdown" }
 markdown-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdown" }
 material = { module = "com.google.android.material:material", version = "1.13.0" }
-molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.1.0" }
+molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
 okio = { module = "com.squareup.okio:okio", version = "3.16.0" }
 preferences-android = { module = "dev.jonpoulton.preferences:android", version.ref = "preferences" }
 preferences-core = { module = "dev.jonpoulton.preferences:core", version.ref = "preferences" }
@@ -141,7 +141,6 @@ burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.4.0" }
 compose = { id = "org.jetbrains.compose", version.ref = "composeJetbrains" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
-dependencyVersions = { id = "com.github.ben-manes.versions", version = "0.52.0" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 doctor = { id = "com.osacky.doctor", version = "0.12.1" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
