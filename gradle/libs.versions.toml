@@ -2,7 +2,7 @@
 # Plugins
 agp = "8.13.0"
 androidCacheFix = "3.0.2"
-blueprint = "1.0.0"
+blueprint = "1.1.0"
 burst = "2.10.2"
 composeAndroidx = "1.9.2"
 composeJetbrains = "1.10.0-alpha01"
