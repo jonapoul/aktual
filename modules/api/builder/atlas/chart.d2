@@ -1,0 +1,15 @@
+...@../../../../atlas/classes.d2
+api_builder: :api:builder { class: module-Multiplatform }
+core_model: :core:model { class: module-Multiplatform }
+logging: :logging { class: module-Multiplatform }
+api_builder -> core_model { class: link-api }
+api_builder -> logging { class: link-implementation }
+vars: {
+  d2-legend: {
+    module-Multiplatform: Multiplatform { class: module-Multiplatform }
+    module-dummy1.class: hidden
+    module-dummy2.class: hidden
+    module-dummy1 -> module-dummy2: api { class: link-api }
+    module-dummy1 -> module-dummy2: implementation { class: link-implementation }
+  }
+}

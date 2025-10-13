@@ -19,7 +19,6 @@ class ModuleMultiplatform : Plugin<Project> {
       apply(KotlinMultiplatformPluginWrapper::class)
       apply(ConventionKotlinBase::class)
       apply(ConventionAndroidLibrary::class)
-      apply(ConventionDiagrams::class)
       apply(ConventionIdea::class)
       apply(ConventionKover::class)
       apply(ConventionStyle::class)

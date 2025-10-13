@@ -1,0 +1,14 @@
+...@../../../../atlas/classes.d2
+budget_encryption: :budget:encryption { class: module-Multiplatform }
+budget_model: :budget:model { class: module-Multiplatform }
+core_model: :core:model { class: module-Multiplatform }
+budget_encryption -> budget_model { class: link-api }
+budget_encryption -> core_model { class: link-api }
+vars: {
+  d2-legend: {
+    module-Multiplatform: Multiplatform { class: module-Multiplatform }
+    module-dummy1.class: hidden
+    module-dummy2.class: hidden
+    module-dummy1 -> module-dummy2: api { class: link-api }
+  }
+}

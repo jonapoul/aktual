@@ -1,0 +1,37 @@
+...@../../../atlas/classes.d2
+api_builder: :api:builder { class: module-Multiplatform }
+api_github: :api:github { class: module-Multiplatform }
+app_di: :app:di { class: module-DI }
+budget_data: :budget:data { class: module-Multiplatform }
+budget_model: :budget:model { class: module-Multiplatform }
+codegen_annotation: :codegen:annotation { class: module-Multiplatform }
+core_di: :core:di { class: module-DI }
+core_model: :core:model { class: module-Multiplatform }
+logging: :logging { class: module-Multiplatform }
+prefs: :prefs { class: module-Multiplatform }
+api_builder -> core_model { class: link-api }
+api_builder -> logging { class: link-implementation }
+api_github -> codegen_annotation { class: link-implementation }
+api_github -> core_model { class: link-api }
+app_di -> api_builder { class: link-implementation }
+app_di -> api_github { class: link-api }
+app_di -> budget_model { class: link-api }
+app_di -> core_di { class: link-api }
+app_di -> core_model { class: link-api }
+app_di -> prefs { class: link-api }
+budget_data -> budget_model { class: link-api }
+budget_data -> core_model { class: link-api }
+budget_data -> logging { class: link-implementation }
+core_di -> budget_data { class: link-api }
+core_di -> budget_model { class: link-api }
+prefs -> core_model { class: link-api }
+vars: {
+  d2-legend: {
+    module-DI: DI { class: module-DI }
+    module-Multiplatform: Multiplatform { class: module-Multiplatform }
+    module-dummy1.class: hidden
+    module-dummy2.class: hidden
+    module-dummy1 -> module-dummy2: implementation { class: link-implementation }
+    module-dummy1 -> module-dummy2: api { class: link-api }
+  }
+}

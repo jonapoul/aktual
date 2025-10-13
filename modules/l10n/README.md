@@ -1,3 +1,5 @@
-# l10n
-![modules](modules.png)
-![legend](../../docs/legend/legend.png)
+# modules:l10n
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

@@ -1,3 +1,5 @@
-# test:kotlin
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:test:kotlin
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

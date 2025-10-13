@@ -1,3 +1,5 @@
-# test:di
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:test:di
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

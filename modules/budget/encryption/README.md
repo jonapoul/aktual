@@ -1,3 +1,5 @@
-# budget:encryption
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:budget:encryption
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

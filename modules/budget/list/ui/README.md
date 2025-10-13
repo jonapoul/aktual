@@ -1,3 +1,5 @@
-# budget:list:ui
-![modules](modules.png)
-![legend](../../../../docs/legend/legend.png)
+# modules:budget:list:ui
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->
