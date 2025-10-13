@@ -1,6 +1,6 @@
 package actual.gradle
 
-import blueprint.core.getLibrary
+import blueprint.core.invoke
 import blueprint.core.libs
 import com.android.build.gradle.api.AndroidBasePlugin
 import org.gradle.api.Plugin
@@ -18,7 +18,7 @@ class ConventionTestDependencies : Plugin<Project> {
 
         if (isAndroid) {
           androidTestLibraries.forEach { lib -> testImplementation(lib) }
-          "debugImplementation"(libs.getLibrary("test.androidx.monitor"))
+          "debugImplementation"(libs("test.androidx.monitor"))
         }
       }
     }

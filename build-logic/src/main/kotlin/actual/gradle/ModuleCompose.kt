@@ -5,7 +5,7 @@ package actual.gradle
 import androidUnitTestDependencies
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
-import blueprint.core.getLibrary
+import blueprint.core.invoke
 import blueprint.core.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -38,10 +38,10 @@ class ModuleCompose : Plugin<Project> {
         implementation(compose.ui)
         implementation(compose.uiTooling)
         implementation(compose.uiUtil)
-        implementation(libs.getLibrary("alakazam.kotlin.compose"))
-        implementation(libs.getLibrary("androidx.lifecycle.runtime.compose"))
-        implementation(libs.getLibrary("androidx.lifecycle.viewmodel.compose"))
-        implementation(libs.getLibrary("kotlinx.immutable"))
+        implementation(libs("alakazam.kotlin.compose"))
+        implementation(libs("androidx.lifecycle.runtime.compose"))
+        implementation(libs("androidx.lifecycle.viewmodel.compose"))
+        implementation(libs("kotlinx.immutable"))
       }
 
       commonTestDependencies {
@@ -54,7 +54,7 @@ class ModuleCompose : Plugin<Project> {
 
       androidUnitTestDependencies {
         implementation(project(":modules:test:android"))
-        implementation(libs.getLibrary("test.androidx.compose.ui.junit4"))
+        implementation(libs("test.androidx.compose.ui.junit4"))
       }
     }
   }

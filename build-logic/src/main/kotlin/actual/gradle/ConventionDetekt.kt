@@ -1,6 +1,6 @@
 package actual.gradle
 
-import blueprint.core.getLibrary
+import blueprint.core.invoke
 import blueprint.core.libs
 import io.gitlab.arturbosch.detekt.Detekt
 import io.gitlab.arturbosch.detekt.DetektPlugin
@@ -39,7 +39,7 @@ class ConventionDetekt : Plugin<Project> {
     }
 
     dependencies {
-      "detektPlugins"(libs.getLibrary("plugin.detektCompose"))
+      "detektPlugins"(libs("plugin.detektCompose"))
     }
   }
 }
