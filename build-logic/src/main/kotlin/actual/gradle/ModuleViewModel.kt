@@ -1,6 +1,6 @@
 package actual.gradle
 
-import blueprint.core.getLibrary
+import blueprint.core.invoke
 import blueprint.core.libs
 import commonMainDependencies
 import org.gradle.api.Plugin
@@ -17,11 +17,11 @@ class ModuleViewModel : Plugin<Project> {
     kotlin {
       commonMainDependencies {
         api(project(":modules:core:di"))
-        api(libs.getLibrary("androidx.lifecycle.viewmodel.core"))
-        api(libs.getLibrary("kotlinx.coroutines"))
-        api(libs.getLibrary("kotlinx.immutable"))
+        api(libs("androidx.lifecycle.viewmodel.core"))
+        api(libs("kotlinx.coroutines"))
+        api(libs("kotlinx.immutable"))
         implementation(project(":modules:logging"))
-        implementation(libs.getLibrary("molecule"))
+        implementation(libs("molecule"))
         implementation(compose.runtime)
       }
     }

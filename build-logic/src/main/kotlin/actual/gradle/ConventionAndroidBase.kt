@@ -2,7 +2,7 @@
 
 package actual.gradle
 
-import blueprint.core.getLibrary
+import blueprint.core.invoke
 import blueprint.core.libs
 import blueprint.recipes.androidBaseBlueprint
 import com.android.build.api.dsl.CommonExtension
@@ -39,7 +39,7 @@ class ConventionAndroidBase : Plugin<Project> {
     }
 
     dependencies {
-      "coreLibraryDesugaring"(libs.getLibrary("android.desugaring"))
+      "coreLibraryDesugaring"(libs("android.desugaring"))
     }
   }
 }

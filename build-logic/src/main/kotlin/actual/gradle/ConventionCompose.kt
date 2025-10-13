@@ -1,6 +1,6 @@
 package actual.gradle
 
-import blueprint.core.getLibrary
+import blueprint.core.invoke
 import blueprint.core.libs
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.LintPlugin
@@ -57,7 +57,7 @@ class ConventionCompose : Plugin<Project> {
     }
 
     dependencies {
-      lintChecks(libs.getLibrary("androidx.compose.lint"))
+      lintChecks(libs("androidx.compose.lint"))
     }
   }
 }
