@@ -5,9 +5,12 @@ services:
 #      dockerfile: docker/Dockerfile
     image: ghcr.io/jonapoul/actual-android:latest
     volumes:
-      - $HOME/.gradle:/home/gradle/.gradle
-      - ..:/project
-    working_dir: /project
+      - ${ANDROID_HOME}:${ANDROID_HOME}
+      - ./:/workspace
+      - ~/.gradle:/root/.gradle
+    environment:
+      - ANDROID_HOME=${ANDROID_HOME}
+    working_dir: /workspace
 
   check:
     extends: base

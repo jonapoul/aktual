@@ -4,7 +4,7 @@ RUN apt-get update
 RUN apt-get install -y git
 RUN rm -rf /var/lib/apt/lists/*
 
-WORKDIR /project
-RUN git config --global --add safe.directory /project
+WORKDIR /workspace
+RUN git config --global --add safe.directory /workspace
 
 CMD ["/bin/bash"]

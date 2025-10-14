@@ -39,6 +39,8 @@ jobs:
 
       - name: Check
         run: docker compose -f docker/docker-compose.yml run --rm check
+        env:
+          ANDROID_HOME: ${{ env.ANDROID_HOME }}
 
       - name: Fix permissions
         run: sudo chown -R runner:runner .
