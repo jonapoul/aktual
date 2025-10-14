@@ -5,4 +5,6 @@ RUN apt-get install -y git
 RUN rm -rf /var/lib/apt/lists/*
 
 WORKDIR /project
+RUN git config --global --add safe.directory /project
+
 CMD ["/bin/bash"]
