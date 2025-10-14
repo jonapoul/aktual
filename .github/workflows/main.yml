@@ -13,7 +13,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  main-check:
+  main:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
@@ -27,7 +27,7 @@ jobs:
         with:
           add-job-summary: on-failure
 
-      - name: Generate test coverage
+      - name: Run tests
         run: |
           docker run --rm \
             -v "{$PWD}:/project" \
@@ -36,7 +36,7 @@ jobs:
             gradle:9.1.0-jdk21 \
             gradle :koverLog | tee kover-report.txt
 
-      - name: Generate test coverage
+      - name: Parse coverage
         shell: bash
         run: |
           COVERAGE=$(cat kover-report.txt | grep "application line coverage:" | tail -n1 | cut -d ":" -f 2 | tr -d '[:space:]%')

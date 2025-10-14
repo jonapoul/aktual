@@ -23,7 +23,6 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-          ref: ${{ github.head_ref }}
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
