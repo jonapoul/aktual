@@ -95,7 +95,7 @@ markdown-core = { module = "com.mikepenz:multiplatform-markdown-renderer", versi
 markdown-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdown" }
 material = { module = "com.google.android.material:material", version = "1.13.0" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
-okio = { module = "com.squareup.okio:okio", version = "3.16.1" }
+okio = { module = "com.squareup.okio:okio", version = "3.16.2" }
 preferences-android = { module = "dev.jonpoulton.preferences:android", version.ref = "preferences" }
 preferences-core = { module = "dev.jonpoulton.preferences:core", version.ref = "preferences" }
 redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
