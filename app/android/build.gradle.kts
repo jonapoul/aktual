@@ -24,24 +24,6 @@ kotlin {
   }
 }
 
-val hashResult = providers.exec {
-  commandLine("git", "rev-parse", "--short=8", "HEAD")
-  isIgnoreExitValue = true
-}
-
-println("Exit: ${hashResult.result.get().exitValue}")
-println("Output: ${hashResult.standardOutput.asText.get()}")
-println("Error: ${hashResult.standardError.asText.get()}")
-
-val codeResult = providers.exec {
-  commandLine("git", "show", "-s", "--format=%ct")
-  isIgnoreExitValue = true
-}
-
-println("Exit: ${codeResult.result.get().exitValue}")
-println("Output: ${codeResult.standardOutput.asText.get()}")
-println("Error: ${codeResult.standardError.asText.get()}")
-
 android {
   namespace = "actual.app.android"
   compileSdk = intProperty(key = "blueprint.android.compileSdk")
