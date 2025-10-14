@@ -1,3 +1,5 @@
-# test:compose
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:test:compose
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

@@ -1,0 +1,17 @@
+...@../../../../atlas/classes.d2
+budget_data: :budget:data { class: module-Multiplatform }
+budget_model: :budget:model { class: module-Multiplatform }
+core_model: :core:model { class: module-Multiplatform }
+logging: :logging { class: module-Multiplatform }
+budget_data -> budget_model { class: link-api }
+budget_data -> core_model { class: link-api }
+budget_data -> logging { class: link-implementation }
+vars: {
+  d2-legend: {
+    module-Multiplatform: Multiplatform { class: module-Multiplatform }
+    module-dummy1.class: hidden
+    module-dummy2.class: hidden
+    module-dummy1 -> module-dummy2: api { class: link-api }
+    module-dummy1 -> module-dummy2: implementation { class: link-implementation }
+  }
+}

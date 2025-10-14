@@ -1,0 +1,32 @@
+...@../../../../atlas/classes.d2
+about_data: :about:data { class: module-Multiplatform }
+about_vm: :about:vm { class: module-ViewModel }
+api_github: :api:github { class: module-Multiplatform }
+budget_data: :budget:data { class: module-Multiplatform }
+budget_model: :budget:model { class: module-Multiplatform }
+codegen_annotation: :codegen:annotation { class: module-Multiplatform }
+core_di: :core:di { class: module-DI }
+core_model: :core:model { class: module-Multiplatform }
+logging: :logging { class: module-Multiplatform }
+about_data -> api_github { class: link-api }
+about_vm -> about_data { class: link-api }
+about_vm -> core_di { class: link-api }
+about_vm -> logging { class: link-implementation }
+api_github -> codegen_annotation { class: link-implementation }
+api_github -> core_model { class: link-api }
+budget_data -> budget_model { class: link-api }
+budget_data -> core_model { class: link-api }
+budget_data -> logging { class: link-implementation }
+core_di -> budget_data { class: link-api }
+core_di -> budget_model { class: link-api }
+vars: {
+  d2-legend: {
+    module-Multiplatform: Multiplatform { class: module-Multiplatform }
+    module-ViewModel: ViewModel { class: module-ViewModel }
+    module-DI: DI { class: module-DI }
+    module-dummy1.class: hidden
+    module-dummy2.class: hidden
+    module-dummy1 -> module-dummy2: api { class: link-api }
+    module-dummy1 -> module-dummy2: implementation { class: link-implementation }
+  }
+}

@@ -1,3 +1,5 @@
-# account:domain
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:account:domain
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

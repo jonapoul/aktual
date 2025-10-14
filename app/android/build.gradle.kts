@@ -13,7 +13,6 @@ plugins {
   alias(libs.plugins.convention.android.base)
   alias(libs.plugins.convention.compose)
   alias(libs.plugins.convention.di)
-  alias(libs.plugins.convention.diagrams)
   alias(libs.plugins.convention.kotlin.jvm)
   alias(libs.plugins.convention.style)
   alias(libs.plugins.convention.test)

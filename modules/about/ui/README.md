@@ -1,3 +1,5 @@
-# about:ui
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:about:ui
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

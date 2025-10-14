@@ -10,7 +10,6 @@ class ModuleJvm : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
       apply(KotlinPluginWrapper::class)
-      apply(ConventionDiagrams::class)
       apply(ConventionKotlinJvm::class)
       apply(ConventionKover::class)
       apply(ConventionIdea::class)

@@ -1,3 +1,5 @@
-# account:vm
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:account:vm
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

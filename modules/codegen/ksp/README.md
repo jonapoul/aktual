@@ -1,3 +1,5 @@
-# codegen:ksp
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:codegen:ksp
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

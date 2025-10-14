@@ -1,8 +1,0 @@
-digraph {
-edge ["dir"="forward"]
-graph ["dpi"="100","fontsize"="30","ranksep"="1.5","rankdir"="TB"]
-node ["style"="filled"]
-":codegen:annotation" ["fillcolor"="#9D8DF1","shape"="none"]
-":codegen:ksp" ["fillcolor"="#8000FF","color"="black","penwidth"="3","shape"="box"]
-":codegen:ksp" -> ":codegen:annotation" ["style"="dotted"]
-}

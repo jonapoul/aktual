@@ -1,3 +1,5 @@
-# budget:transactions:vm
-![modules](modules.png)
-![legend](../../../../docs/legend/legend.png)
+# modules:budget:transactions:vm
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

@@ -1,3 +1,5 @@
-# test:api
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:test:api
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

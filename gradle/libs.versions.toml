@@ -132,6 +132,7 @@ test-turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-lib = { id = "com.android.library", version.ref = "agp" }
+atlas = { id = "dev.jonpoulton.atlas.d2", version = "0.1.1" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version.ref = "androidCacheFix" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "5.7.0" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
@@ -157,7 +158,6 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 convention-android-base = { id = "actual.convention.android.base" }
 convention-compose = { id = "actual.convention.compose" }
 convention-di = { id = "actual.convention.di" }
-convention-diagrams = { id = "actual.convention.diagrams" }
 convention-idea = { id = "actual.convention.idea" }
 convention-kotlin-jvm = { id = "actual.convention.kotlin.jvm" }
 convention-kover = { id = "actual.convention.kover" }

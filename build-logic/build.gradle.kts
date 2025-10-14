@@ -58,7 +58,6 @@ gradlePlugin {
     create(id = "actual.convention.android.library", impl = "actual.gradle.ConventionAndroidLibrary")
     create(id = "actual.convention.compose", impl = "actual.gradle.ConventionCompose")
     create(id = "actual.convention.detekt", impl = "actual.gradle.ConventionDetekt")
-    create(id = "actual.convention.diagrams", impl = "actual.gradle.ConventionDiagrams")
     create(id = "actual.convention.idea", impl = "actual.gradle.ConventionIdea")
     create(id = "actual.convention.kotlin.base", impl = "actual.gradle.ConventionKotlinBase")
     create(id = "actual.convention.kotlin.jvm", impl = "actual.gradle.ConventionKotlinJvm")

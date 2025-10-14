@@ -1,3 +1,5 @@
-# api:github
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:api:github
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

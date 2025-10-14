@@ -1,3 +1,5 @@
-# core:model
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:core:model
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->
