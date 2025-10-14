@@ -6,8 +6,8 @@ services:
     image: ghcr.io/jonapoul/actual-android:latest
     volumes:
       - ${ANDROID_HOME}:${ANDROID_HOME}
-      - ./:/workspace
-      - ~/.gradle:/root/.gradle
+      - $HOME/.gradle:/home/gradle/.gradle
+      - ..:/workspace
     environment:
       - ANDROID_HOME=${ANDROID_HOME}
     working_dir: /workspace
