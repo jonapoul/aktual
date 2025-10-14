@@ -1,5 +1,4 @@
 import actual.gradle.versionName
-import blueprint.core.boolPropertyOrElse
 import blueprint.core.gitVersionCode
 import blueprint.core.gitVersionHash
 import blueprint.core.stringPropertyOrNull

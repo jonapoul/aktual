@@ -1,0 +1,27 @@
+name: ktlint
+
+on:
+  push:
+    paths:
+      - "**.kt"
+      - "**.kts"
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  ktlint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Install
+        run: |
+          curl -sSLO https://github.com/pinterest/ktlint/releases/download/1.7.1/ktlint
+          chmod a+x ktlint
+          sudo mv ktlint /usr/local/bin/
+
+      - name: Run
+        run: scripts/ktlintCheck.sh
