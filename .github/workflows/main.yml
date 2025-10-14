@@ -30,8 +30,8 @@ jobs:
       - name: Generate test coverage
         run: |
           docker run --rm \
-            -v $PWD:/project \
-            -v $HOME/.gradle:/root/.gradle \
+            -v "{$PWD}:/project" \
+            -v "{$HOME}/.gradle":/root/.gradle \
             -w /project \
             gradle:9.1.0-jdk21 \
             gradle :koverLog | tee kover-report.txt
