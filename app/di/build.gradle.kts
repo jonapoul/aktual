@@ -1,6 +1,6 @@
-import actual.gradle.gitVersionCode
-import actual.gradle.gitVersionHash
 import actual.gradle.versionName
+import blueprint.core.gitVersionCode
+import blueprint.core.gitVersionHash
 import blueprint.core.stringPropertyOrNull
 
 plugins {
