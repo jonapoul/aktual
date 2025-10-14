@@ -1,3 +1,5 @@
-# api:builder
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:api:builder
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

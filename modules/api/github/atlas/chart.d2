@@ -1,0 +1,15 @@
+...@../../../../atlas/classes.d2
+api_github: :api:github { class: module-Multiplatform }
+codegen_annotation: :codegen:annotation { class: module-Multiplatform }
+core_model: :core:model { class: module-Multiplatform }
+api_github -> codegen_annotation { class: link-implementation }
+api_github -> core_model { class: link-api }
+vars: {
+  d2-legend: {
+    module-Multiplatform: Multiplatform { class: module-Multiplatform }
+    module-dummy1.class: hidden
+    module-dummy2.class: hidden
+    module-dummy1 -> module-dummy2: implementation { class: link-implementation }
+    module-dummy1 -> module-dummy2: api { class: link-api }
+  }
+}

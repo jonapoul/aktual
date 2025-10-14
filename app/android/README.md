@@ -1,3 +1,5 @@
 # app:android
-![modules](modules.png)
-![legend](../../docs/legend/legend.png)
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

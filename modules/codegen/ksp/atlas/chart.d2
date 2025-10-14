@@ -1,0 +1,13 @@
+...@../../../../atlas/classes.d2
+codegen_annotation: :codegen:annotation { class: module-Multiplatform }
+codegen_ksp: :codegen:ksp { class: module-JVM }
+codegen_ksp -> codegen_annotation { class: link-implementation }
+vars: {
+  d2-legend: {
+    module-Multiplatform: Multiplatform { class: module-Multiplatform }
+    module-JVM: JVM { class: module-JVM }
+    module-dummy1.class: hidden
+    module-dummy2.class: hidden
+    module-dummy1 -> module-dummy2: implementation { class: link-implementation }
+  }
+}

@@ -11,7 +11,6 @@ class ModuleAndroid : Plugin<Project> {
     with(pluginManager) {
       apply(KotlinAndroidPluginWrapper::class)
       apply(ConventionAndroidLibrary::class)
-      apply(ConventionDiagrams::class)
       apply(ConventionKover::class)
       apply(ConventionKotlinJvm::class)
       apply(ConventionIdea::class)

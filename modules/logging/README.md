@@ -1,3 +1,5 @@
-# logging
-![modules](modules.png)
-![legend](../../docs/legend/legend.png)
+# modules:logging
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

@@ -1,3 +1,5 @@
-# prefs
-![modules](modules.png)
-![legend](../../docs/legend/legend.png)
+# modules:prefs
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->

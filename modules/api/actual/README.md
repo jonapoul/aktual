@@ -1,3 +1,5 @@
-# api:actual
-![modules](modules.png)
-![legend](../../../docs/legend/legend.png)
+# modules:api:actual
+
+<!--region chart-->
+![chart](atlas/chart.svg)
+<!--endregion-->
