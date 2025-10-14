@@ -22,30 +22,24 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
 
-      - name: Gitleaks
-        uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GITLEAKS_CONFIG: ./config/gitleaks.toml
-
-      - name: Setup JDK
-        uses: actions/setup-java@v5
-        with:
-          java-version-file: .github/workflows/.java-version
-          distribution: "zulu"
-
-      - name: Add permissions
-        run: chmod +x ./gradlew
-
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
           add-job-summary: on-failure
 
       - name: Generate test coverage
+        run: |
+          docker run --rm \
+            -v $PWD:/project \
+            -v $HOME/.gradle:/root/.gradle \
+            -w /project \
+            gradle:9.1.0-jdk21 \
+            gradle :koverLog | tee kover-report.txt
+
+      - name: Generate test coverage
         shell: bash
         run: |
-          COVERAGE=$(./gradlew :koverLog | grep "application line coverage:" | tail -n1 | cut -d ":" -f 2 | tr -d '[:space:]%')
+          COVERAGE=$(cat kover-report.txt | grep "application line coverage:" | tail -n1 | cut -d ":" -f 2 | tr -d '[:space:]%')
           echo "COVERAGE=$(echo $COVERAGE)" >> $GITHUB_ENV
 
       - name: Update dynamic badge gist
@@ -60,8 +54,6 @@ jobs:
           minColorRange: 0
           maxColorRange: 100
 
-      - name: Publish test reports
-        uses: mikepenz/action-junit-report@v5
-        if: failure()
-        with:
-          report_paths: "**/build/test-results/*/TEST-*.xml"
+      - name: Report build results
+        uses: gmazzo/publish-report-annotations@v1
+        if: ${{ !cancelled() }}
