@@ -1,5 +1,5 @@
+import actual.gradle.gitVersionCode
 import actual.gradle.versionName
-import blueprint.core.gitVersionCode
 import blueprint.core.intProperty
 import blueprint.core.jvmTarget
 import blueprint.core.rootLocalPropertiesOrNull

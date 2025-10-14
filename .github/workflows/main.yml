@@ -36,6 +36,10 @@ jobs:
             gradle:9.1.0-jdk21 \
             gradle :koverLog | tee kover-report.txt
 
+      - name: Fix permissions
+        run: sudo chown -R runner:runner .
+        if: ${{ !cancelled() }}
+
       - name: Parse coverage
         shell: bash
         run: |

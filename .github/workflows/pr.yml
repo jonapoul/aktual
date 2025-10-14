@@ -38,6 +38,10 @@ jobs:
             gradle:9.1.0-jdk21 \
             gradle check
 
+      - name: Fix permissions
+        run: sudo chown -R runner:runner .
+        if: ${{ !cancelled() }}
+
       - name: Report build results
         uses: gmazzo/publish-report-annotations@v1
         if: ${{ !cancelled() }}
