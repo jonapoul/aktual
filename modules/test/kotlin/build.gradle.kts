@@ -11,6 +11,7 @@ kotlin {
     api(libs.okio)
     api(libs.logcat)
     api(libs.test.alakazam.core)
+    api(libs.test.assertk)
     api(libs.test.burst)
     api(libs.test.burstCoroutines)
     api(libs.test.junit)

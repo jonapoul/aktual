@@ -39,7 +39,7 @@ class ConventionDetekt : Plugin<Project> {
     }
 
     dependencies {
-      "detektPlugins"(libs("plugin.detektCompose"))
+      "detektPlugins"(libs("detektCompose"))
     }
   }
 }
