@@ -106,7 +106,7 @@ test-turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.2" }
-atlas = { id = "dev.jonpoulton.atlas.d2", version = "0.1.1" }
+atlas = { id = "dev.jonpoulton.atlas.d2", version = "0.1.2" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "5.7.0" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.4.0" }
