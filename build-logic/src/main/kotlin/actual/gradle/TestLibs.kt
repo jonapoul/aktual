@@ -9,6 +9,7 @@ import org.gradle.api.provider.Provider
 internal val Project.testLibraries: List<Provider<MinimalExternalModuleDependency>>
   get() = listOf(
     libs("test.alakazam.core"),
+    libs("test.assertk"),
     libs("test.kotlin.common"),
     libs("test.kotlinx.coroutines"),
     libs("test.ktor"),
