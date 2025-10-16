@@ -2,8 +2,9 @@ package actual.budget.model
 
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
-import org.junit.Test
-import kotlin.test.assertEquals
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import kotlin.test.Test
 
 @Burst
 class SyncedPrefKeyGlobalTest(
@@ -20,9 +21,7 @@ class SyncedPrefKeyGlobalTest(
 ) {
   @Test
   fun decoding() {
-    assertEquals(
-      expected = key,
-      actual = SyncedPrefKey.decode(key.key),
-    )
+    assertThat(SyncedPrefKey.decode(key.key))
+      .isEqualTo(key)
   }
 }

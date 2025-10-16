@@ -10,12 +10,15 @@ import actual.api.model.base.InfoResponse
 import actual.core.model.ActualVersions
 import actual.core.model.ActualVersionsStateHolder
 import actual.test.TestBuildConfig
+import actual.test.assertThatNextEmissionIsEqualTo
 import alakazam.kotlin.core.LoopController
 import alakazam.test.core.FiniteLoopController
 import alakazam.test.core.SingleLoopController
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.just
@@ -31,7 +34,6 @@ import org.junit.Before
 import java.io.IOException
 import kotlin.test.Ignore
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.time.Duration.Companion.seconds
 
 class ServerVersionFetcherTest {
@@ -79,7 +81,7 @@ class ServerVersionFetcherTest {
     advanceUntilIdle()
     versionsStateHolder.test {
       // Then
-      assertEquals(expected = emptyState(), actual = awaitItem())
+      assertThatNextEmissionIsEqualTo(emptyState())
       advanceUntilIdle()
 
       expectNoEvents()
@@ -102,12 +104,12 @@ class ServerVersionFetcherTest {
 
     // When
     versionsStateHolder.test {
-      assertEquals(expected = emptyState(), actual = awaitItem())
+      assertThatNextEmissionIsEqualTo(emptyState())
 
       val fetchJob = launch { fetcher.startFetching() }
 
       // Then
-      assertEquals(expected = "1.2.3", actual = awaitItem().server)
+      assertThat(awaitItem().server).isEqualTo("1.2.3")
       cancelAndIgnoreRemainingEvents()
       fetchJob.cancel()
     }
@@ -129,12 +131,12 @@ class ServerVersionFetcherTest {
 
     // When
     versionsStateHolder.test {
-      assertEquals(expected = emptyState(), actual = awaitItem())
+      assertThatNextEmissionIsEqualTo(emptyState())
 
       val fetchJob = launch { fetcher.startFetching() }
 
       // Then
-      assertEquals(expected = "1.2.3", actual = awaitItem().server)
+      assertThat(awaitItem().server).isEqualTo("1.2.3")
       cancelAndIgnoreRemainingEvents()
       fetchJob.cancel()
     }

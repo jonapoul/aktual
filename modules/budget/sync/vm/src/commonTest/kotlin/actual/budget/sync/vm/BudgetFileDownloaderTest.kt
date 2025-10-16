@@ -15,13 +15,18 @@ import actual.core.model.ServerUrl
 import actual.core.model.bytes
 import actual.test.CoTemporaryFolder
 import actual.test.TestBudgetFiles
+import actual.test.assertThatNextEmissionIsEqualTo
 import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
+import actual.test.existsOn
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.unconfinedDispatcher
 import app.cash.burst.InterceptTest
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
@@ -35,10 +40,6 @@ import okio.Path
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
 
 class BudgetFileDownloaderTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
@@ -88,7 +89,7 @@ class BudgetFileDownloaderTest {
     // when
     budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
       // then
-      assertEquals(expected = Failure.NotLoggedIn, actual = awaitItem())
+      assertThatNextEmissionIsEqualTo(Failure.NotLoggedIn)
       awaitComplete()
     }
   }
@@ -106,20 +107,20 @@ class BudgetFileDownloaderTest {
       // Then progress state is emitted
       var state = awaitItem()
       while (state !is Done) {
-        assertIs<InProgress>(state, "Should be in progress, got $state")
+        assertThat(state).isInstanceOf<InProgress>()
         state = awaitItem()
       }
 
       // and the final state is done
       val finalState = state
-      assertIs<Done>(finalState)
-      assertEquals(expected = dataSize, actual = finalState.total)
+      assertThat(finalState).isInstanceOf<Done>()
+      assertThat(finalState.total).isEqualTo(dataSize)
 
       // and it contains all our data, nothing more or less
       val path = budgetFiles.encryptedZip(BUDGET_ID)
-      assertTrue(fileSystem.exists(path))
+      assertThat(path).existsOn(fileSystem)
       val downloadedData = fileSystem.read(path) { readByteArray() }
-      assertContentEquals(expected = data, actual = downloadedData)
+      assertThat(downloadedData).isEqualTo(data)
 
       awaitComplete()
     }
@@ -140,13 +141,11 @@ class BudgetFileDownloaderTest {
       }
 
       // and the final state is a network failure
-      assertIs<Failure.IO>(state)
+      assertThat(state).isInstanceOf<Failure.IO>()
 
       // and only the temp dir was created
-      assertEquals(
-        actual = temporaryFolder.list().map(Path::toFile),
-        expected = listOf(budgetFiles.tmp().toFile()),
-      )
+      assertThat(temporaryFolder.list().map(Path::toFile))
+        .isEqualTo(listOf(budgetFiles.tmp().toFile()))
 
       awaitComplete()
     }
@@ -166,17 +165,14 @@ class BudgetFileDownloaderTest {
         state = awaitItem()
       }
 
-      // Then HTTP state is emitted
-      val httpState = state
-      assertIs<Failure.Http>(httpState)
+      // Then HTTP state is the result
+      assertThat(state).isInstanceOf<Failure.Http>()
       awaitComplete()
     }
 
     // and only the temp dir was created
-    assertEquals(
-      actual = temporaryFolder.list().map(Path::toFile),
-      expected = listOf(budgetFiles.tmp().toFile()),
-    )
+    assertThat(temporaryFolder.list().map(Path::toFile))
+      .isEqualTo(listOf(budgetFiles.tmp().toFile()))
   }
 
   private companion object {

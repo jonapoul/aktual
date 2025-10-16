@@ -9,10 +9,11 @@ import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import assertk.assertThat
+import assertk.assertions.isFalse
 import org.junit.Rule
 import org.junit.runner.RunWith
 import kotlin.test.Test
-import kotlin.test.assertFalse
 import actual.core.ui.Tags as CoreUiTags
 
 @RunWith(AndroidJUnit4::class)
@@ -39,7 +40,7 @@ class PasswordLoginTest {
 
     // and clicking the button does nothing
     onNodeWithTag(Tags.PasswordLoginButton, useUnmergedTree = true).performClick()
-    assertFalse(wasClicked)
+    assertThat(wasClicked).isFalse()
   }
 
   @Test

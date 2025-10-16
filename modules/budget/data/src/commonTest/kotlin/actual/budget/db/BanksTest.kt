@@ -5,9 +5,10 @@ import actual.budget.db.test.insertAccounts
 import actual.budget.db.test.insertBanks
 import actual.budget.model.AccountId
 import actual.budget.model.BankId
+import actual.test.isEqualToList
 import actual.test.runDatabaseTest
+import assertk.assertThat
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.uuid.Uuid
 
 internal class BanksTest {
@@ -53,12 +54,11 @@ internal class BanksTest {
     val result = banksQueries.withResult { getAccountsWithBank().executeAsList() }
 
     // Then
-    val expected = listOf(
+    assertThat(result).isEqualToList(
       toExpected(accountA, bankA),
       toExpected(accountB, bankB),
       toExpected(accountC, bank = null),
     )
-    assertEquals(expected = expected, actual = result)
   }
 
   private fun toExpected(account: Accounts, bank: Banks?) = with(account) {

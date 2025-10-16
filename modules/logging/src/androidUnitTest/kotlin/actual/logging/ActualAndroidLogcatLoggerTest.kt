@@ -1,6 +1,8 @@
 package actual.logging
 
 import android.util.Log
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.LogcatLogger.Companion.loggers
@@ -11,7 +13,6 @@ import org.robolectric.shadows.ShadowLog
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class ActualAndroidLogcatLoggerTest {
@@ -35,14 +36,12 @@ class ActualAndroidLogcatLoggerTest {
     logcat.i { "Hello world" }
 
     // then
-    assertEquals(
-      actual = ShadowLog.getLogs().last(),
-      expected = ShadowLog.LogItem(
-        Log.INFO,
-        "ActualAndroidLogcatLoggerTest",
-        "ACTUAL: Hello world",
-        null,
-      ),
+    val expected = ShadowLog.LogItem(
+      Log.INFO,
+      "ActualAndroidLogcatLoggerTest",
+      "ACTUAL: Hello world",
+      null,
     )
+    assertThat(ShadowLog.getLogs().last()).isEqualTo(expected)
   }
 }

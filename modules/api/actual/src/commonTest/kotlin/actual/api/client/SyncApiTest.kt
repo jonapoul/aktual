@@ -16,6 +16,13 @@ import actual.test.emptyMockEngine
 import actual.test.latestRequestHeaders
 import actual.test.respondJson
 import actual.test.testHttpClient
+import assertk.Assert
+import assertk.all
+import assertk.assertThat
+import assertk.assertions.isDataClassEqualTo
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.prop
 import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.plugins.ClientRequestException
@@ -27,8 +34,6 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
 import kotlin.test.fail
 
 class SyncApiTest {
@@ -50,13 +55,10 @@ class SyncApiTest {
   fun `Fetch user files request headers`() = runTest {
     mockEngine += { respondJson(SyncResponses.LIST_USER_FILES_SUCCESS_200) }
     syncApi.fetchUserFiles(TOKEN)
-    assertEquals(
-      actual = mockEngine.latestRequestHeaders(),
-      expected = mapOf(
-        "X-ACTUAL-TOKEN" to listOf("abc-123"),
-        "Accept" to listOf("application/json"),
-        "Accept-Charset" to listOf("UTF-8"),
-      ),
+    assertThat(mockEngine.latestRequestHeaders()).isEqualToMap(
+      "X-ACTUAL-TOKEN" to listOf("abc-123"),
+      "Accept" to listOf("application/json"),
+      "Accept-Charset" to listOf("UTF-8"),
     )
   }
 
@@ -64,14 +66,11 @@ class SyncApiTest {
   fun `Fetch user file info request headers`() = runTest {
     mockEngine += { respondJson(SyncResponses.GET_USER_FILE_INFO_SUCCESS_200) }
     syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
-    assertEquals(
-      actual = mockEngine.latestRequestHeaders(),
-      expected = mapOf(
-        "X-ACTUAL-TOKEN" to listOf("abc-123"),
-        "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
-        "Accept" to listOf("application/json"),
-        "Accept-Charset" to listOf("UTF-8"),
-      ),
+    assertThat(mockEngine.latestRequestHeaders()).isEqualToMap(
+      "X-ACTUAL-TOKEN" to listOf("abc-123"),
+      "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
+      "Accept" to listOf("application/json"),
+      "Accept-Charset" to listOf("UTF-8"),
     )
   }
 
@@ -81,16 +80,16 @@ class SyncApiTest {
     val body = GetUserKeyRequest(BUDGET_ID, TOKEN)
     syncApi.fetchUserKey(body)
     val request = mockEngine.requestHistory.last()
-    assertEquals(
-      actual = request.headers.toMap(),
-      expected = mapOf(
-        "Accept" to listOf("application/json"),
-        "Accept-Charset" to listOf("UTF-8"),
-      ),
+    assertThat(request.headers.toMap()).isEqualToMap(
+      "Accept" to listOf("application/json"),
+      "Accept-Charset" to listOf("UTF-8"),
     )
-    val actualBody = assertIs<TextContent>(request.body)
-    assertEquals(actual = actualBody.text, expected = """{"fileId":"xyz-789","token":"abc-123"}""")
-    assertEquals(actual = actualBody.contentType, expected = ContentType.Application.Json)
+    assertThat(request.body)
+      .isInstanceOf<TextContent>()
+      .all {
+        prop(TextContent::text).isEqualTo("""{"fileId":"xyz-789","token":"abc-123"}""")
+        prop(TextContent::contentType).isEqualTo(ContentType.Application.Json)
+      }
   }
 
   @Test
@@ -108,9 +107,8 @@ class SyncApiTest {
       userName = "",
       isOwner = true,
     )
-    assertEquals(
-      actual = response,
-      expected = ListUserFilesResponse.Success(
+    assertThat(response).isEqualTo(
+      ListUserFilesResponse.Success(
         data = listOf(
           UserFile(
             deleted = 0,
@@ -152,10 +150,8 @@ class SyncApiTest {
       fail("Should have thrown!")
     } catch (e: ClientRequestException) {
       // Then
-      assertEquals(
-        actual = e.response.body<ListUserFilesResponse.Failure>(),
-        expected = ListUserFilesResponse.Failure(reason = FailureReason.Unauthorized, details = "token-not-found"),
-      )
+      assertThat(e.response.body<ListUserFilesResponse.Failure>())
+        .isEqualTo(ListUserFilesResponse.Failure(reason = FailureReason.Unauthorized, details = "token-not-found"))
     }
   }
 
@@ -172,9 +168,8 @@ class SyncApiTest {
     val keyId = KeyId("b98636ab-200f-46be-9763-2af439aa40cb")
     val value = "nrhpJgUnl8lZvWxSRMIT0aTRKCOHeddlIuGPfNw0NQR/d81m/ZYRqaOjMwoQHpduSzuAivfVZZEslZihl8W" +
       "hOs7GVkdghwCjqr083G0261M464wHvQl2v5sB+l8f0/mQE2fco7zUagbA7Q=="
-    assertEquals(
-      actual = response,
-      expected = GetUserKeyResponse.Success(
+    assertThat(response).isEqualTo(
+      GetUserKeyResponse.Success(
         data = GetUserKeyResponse.Data(
           id = keyId,
           salt = "PpZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=".base64,
@@ -207,9 +202,8 @@ class SyncApiTest {
     }
 
     // then
-    assertEquals(
-      actual = response,
-      expected = GetUserKeyResponse.Failure(reason = FailureReason.Unauthorized, details = "token-not-found"),
+    assertThat(response).isDataClassEqualTo(
+      GetUserKeyResponse.Failure(reason = FailureReason.Unauthorized, details = "token-not-found"),
     )
   }
 
@@ -222,9 +216,8 @@ class SyncApiTest {
     val response = syncApi.fetchUserFileInfo(TOKEN, BUDGET_ID)
 
     // then
-    assertEquals(
-      actual = response,
-      expected = GetUserFileInfoResponse.Success(
+    assertThat(response).isDataClassEqualTo(
+      GetUserFileInfoResponse.Success(
         data = UserFile(
           deleted = 0,
           fileId = BudgetId("b328186c-c919-4333-959b-04e676c1ee46"),
@@ -255,9 +248,8 @@ class SyncApiTest {
     }
 
     // then
-    assertEquals(
-      actual = response,
-      expected = GetUserFileInfoResponse.Failure(FailureReason.FileNotFound),
+    assertThat(response).isDataClassEqualTo(
+      GetUserFileInfoResponse.Failure(FailureReason.FileNotFound),
     )
   }
 
@@ -275,9 +267,10 @@ class SyncApiTest {
     }
 
     // then
-    assertEquals(
-      actual = response,
-      expected = GetUserFileInfoResponse.Failure(FailureReason.Unauthorized, details = "token-not-found"),
+    assertThat(response).isDataClassEqualTo(
+      GetUserFileInfoResponse.Failure(FailureReason.Unauthorized, details = "token-not-found"),
     )
   }
+
+  private fun <K, V> Assert<Map<K, V>>.isEqualToMap(vararg expected: Pair<K, V>) = isEqualTo(expected.toMap())
 }

@@ -13,7 +13,7 @@ value class KeyId(val value: String) : Comparable<KeyId> {
   override fun compareTo(other: KeyId) = value.compareTo(other.value)
 
   companion object {
-    fun random(): KeyId = KeyId(Uuid.Companion.random())
+    fun random(): KeyId = KeyId(Uuid.random())
   }
 }
 

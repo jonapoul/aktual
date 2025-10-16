@@ -6,7 +6,7 @@ import actual.about.data.ArtifactScm
 import actual.about.data.LicensesLoadState
 import actual.about.data.LicensesRepository
 import actual.core.model.UrlOpener
-import actual.test.assertEmitted
+import actual.test.assertThatNextEmissionIsEqualTo
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -46,7 +46,7 @@ class LicensesViewModelTest {
 
     viewModel.licensesState.test {
       // Then an error state is returned
-      assertEmitted(LicensesState.Error(message))
+      assertThatNextEmissionIsEqualTo(LicensesState.Error(message))
 
       // Given the repo now fetches successfully
       coEvery { repository.loadLicenses() } returns LicensesLoadState.Success(listOf(EXAMPLE_MODEL))
@@ -55,7 +55,7 @@ class LicensesViewModelTest {
       viewModel.load()
 
       // Then a success state is returned
-      assertEmitted(LicensesState.Loading)
+      assertThatNextEmissionIsEqualTo(LicensesState.Loading)
       assertLoaded(EXAMPLE_MODEL)
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
@@ -72,7 +72,7 @@ class LicensesViewModelTest {
 
     viewModel.licensesState.test {
       // Then
-      assertEmitted(LicensesState.NoneFound)
+      assertThatNextEmissionIsEqualTo(LicensesState.NoneFound)
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }
@@ -101,16 +101,16 @@ class LicensesViewModelTest {
 
     // Then
     viewModel.searchBarState.test {
-      assertEmitted(SearchBarState.Gone)
+      assertThatNextEmissionIsEqualTo(SearchBarState.Gone)
 
       viewModel.toggleSearchBar()
-      assertEmitted(SearchBarState.Visible(text = ""))
+      assertThatNextEmissionIsEqualTo(SearchBarState.Visible(text = ""))
 
       viewModel.setSearchText(text = "Hello world")
-      assertEmitted(SearchBarState.Visible(text = "Hello world"))
+      assertThatNextEmissionIsEqualTo(SearchBarState.Visible(text = "Hello world"))
 
       viewModel.toggleSearchBar()
-      assertEmitted(SearchBarState.Gone)
+      assertThatNextEmissionIsEqualTo(SearchBarState.Gone)
 
       cancelAndIgnoreRemainingEvents()
     }
@@ -163,7 +163,7 @@ class LicensesViewModelTest {
   }
 
   private suspend fun TurbineTestContext<LicensesState>.assertLoaded(models: List<ArtifactDetail>) {
-    assertEmitted(LicensesState.Loaded(models.toImmutableList()))
+    assertThatNextEmissionIsEqualTo(LicensesState.Loaded(models.toImmutableList()))
   }
 
   private companion object {

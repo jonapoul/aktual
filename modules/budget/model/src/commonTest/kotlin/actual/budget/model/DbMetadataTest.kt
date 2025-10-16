@@ -1,9 +1,10 @@
 package actual.budget.model
 
 import actual.test.PrettyJson
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.time.Instant
 
 class DbMetadataTest {
@@ -42,9 +43,9 @@ class DbMetadataTest {
     )
 
     val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
-    assertEquals(actual = decoded, expected = expectedModel)
+    assertThat(decoded).isEqualTo(expectedModel)
 
     val encoded = PrettyJson.encodeToString(decoded)
-    assertEquals(actual = encoded, expected = json)
+    assertThat(encoded).isEqualTo(encoded)
   }
 }

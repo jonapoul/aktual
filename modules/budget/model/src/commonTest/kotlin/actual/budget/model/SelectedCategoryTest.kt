@@ -1,16 +1,17 @@
 package actual.budget.model
 
+import actual.test.isEqualToList
+import assertk.assertThat
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class SelectedCategoryTest {
   @Test
   fun `Parse categories list`() {
     val serializer = ListSerializer(SelectedCategory.serializer())
     val decoded = Json.decodeFromString(serializer, JSON)
-    assertEquals(expected = listOf(ITEM_1, ITEM_2), decoded)
+    assertThat(decoded).isEqualToList(ITEM_1, ITEM_2)
   }
 
   private companion object {

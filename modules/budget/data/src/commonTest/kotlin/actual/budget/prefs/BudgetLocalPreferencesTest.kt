@@ -11,6 +11,9 @@ import actual.test.TestBudgetFiles
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.burst.InterceptTest
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isGreaterThan
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
@@ -20,9 +23,6 @@ import kotlinx.datetime.LocalDate
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -60,7 +60,7 @@ class BudgetLocalPreferencesTest {
     // then
     advanceUntilIdle()
     val newWriteTime = fileModificationTime(metadata)
-    assertEquals(previousWriteTime, newWriteTime)
+    assertThat(newWriteTime).isEqualTo(previousWriteTime)
   }
 
   @Test
@@ -82,8 +82,7 @@ class BudgetLocalPreferencesTest {
     // then
     advanceUntilIdle()
     val newWriteTime = fileModificationTime(metadata)
-    assertNotEquals(previousWriteTime, newWriteTime)
-    assertTrue(newWriteTime > previousWriteTime)
+    assertThat(newWriteTime).isGreaterThan(previousWriteTime)
   }
 
   private fun fileModificationTime(metadata: DbMetadata): Long = files

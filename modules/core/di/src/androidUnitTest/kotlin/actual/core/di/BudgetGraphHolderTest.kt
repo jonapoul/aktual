@@ -9,13 +9,17 @@ import actual.budget.model.BankId
 import actual.budget.model.DbMetadata
 import actual.test.DummyViewModelAssistedFactoryContainer
 import actual.test.DummyViewModelContainer
+import actual.test.messageContains
 import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.requireMessage
 import alakazam.test.core.TestCoroutineContexts
-import alakazam.test.core.assertEmpty
 import alakazam.test.core.standardDispatcher
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
+import assertk.assertFailure
+import assertk.assertThat
+import assertk.assertions.hasSize
+import assertk.assertions.isEmpty
+import assertk.assertions.isInstanceOf
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
@@ -28,9 +32,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
-import kotlin.test.assertFailsWith
 import kotlin.uuid.Uuid
 
 @RunWith(RobolectricTestRunner::class)
@@ -70,28 +71,29 @@ class BudgetGraphHolderTest : AppGraph.Holder {
     val graph1 = holder.update(metadata1)
 
     // insert data and validate
-    assertEmpty(graph1.fetchData(bankId))
+    assertThat(graph1.fetchData(bankId)).isEmpty()
     graph1.insertData(bankId)
-    assertEquals(expected = 1, actual = graph1.fetchData(bankId).size)
+    assertThat(graph1.fetchData(bankId)).hasSize(1)
 
     // target a different database
     val metadata2 = metadata(id = "xyz-789")
     val graph2 = holder.update(metadata2)
 
     // insert data separately and re-validate
-    assertEmpty(graph2.fetchData(bankId))
+    assertThat(graph2.fetchData(bankId)).isEmpty()
     graph2.insertData(bankId)
-    assertEquals(expected = 1, actual = graph2.fetchData(bankId).size)
+    assertThat(graph2.fetchData(bankId)).hasSize(1)
 
     // try to access the first db, but it's closed
-    val e = assertFailsWith<IllegalStateException> { graph1.fetchData(bankId) }
-    assertContains(e.requireMessage(), "attempt to re-open an already-closed object")
+    assertFailure { graph1.fetchData(bankId) }
+      .isInstanceOf<IllegalStateException>()
+      .messageContains("attempt to re-open an already-closed object")
 
     // close the second one
     holder.close()
 
     // and accessing it fails
-    assertFailsWith<IllegalStateException> { graph2.fetchData(bankId) }
+    assertFailure { graph2.fetchData(bankId) }.isInstanceOf<IllegalStateException>()
   }
 
   private fun metadata(id: String) = DbMetadata(

@@ -16,6 +16,10 @@ import actual.test.emptyMockEngine
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.matchesPredicate
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpStatusCode
@@ -27,9 +31,6 @@ import kotlinx.coroutines.test.runTest
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlin.test.assertContains
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 class BudgetInfoFetcherTest {
   private lateinit var budgetInfoFetcher: BudgetInfoFetcher
@@ -95,7 +96,7 @@ class BudgetInfoFetcherTest {
         authTag = "25nafe0UpzehRCks/xQjoB==".base64,
       ),
     )
-    assertEquals(actual = budgetInfoFetcher.fetch(TOKEN, BUDGET_ID), expected = Result.Success(userFile))
+    assertThatFetchResult().isEqualTo(Result.Success(userFile))
   }
 
   @Test
@@ -105,10 +106,7 @@ class BudgetInfoFetcherTest {
     apisStateHolder.reset()
 
     // then
-    assertEquals(
-      actual = budgetInfoFetcher.fetch(TOKEN, BUDGET_ID),
-      expected = Result.NotLoggedIn,
-    )
+    assertThatFetchResult().isEqualTo(Result.NotLoggedIn)
   }
 
   @Test
@@ -123,10 +121,7 @@ class BudgetInfoFetcherTest {
     }
 
     // then
-    assertEquals(
-      actual = budgetInfoFetcher.fetch(TOKEN, BUDGET_ID),
-      expected = Result.HttpFailure("unauthorized"),
-    )
+    assertThatFetchResult().isEqualTo(Result.HttpFailure("unauthorized"))
   }
 
   @Test
@@ -140,12 +135,10 @@ class BudgetInfoFetcherTest {
       )
     }
 
-    // when
-    val result = budgetInfoFetcher.fetch(TOKEN, BUDGET_ID)
-
     // then
-    assertIs<Result.HttpFailure>(result)
-    assertContains(result.reason, "failed parsing")
+    assertThatFetchResult()
+      .isInstanceOf<Result.HttpFailure>()
+      .matchesPredicate { it.reason.contains("failed parsing") }
   }
 
   @Test
@@ -155,8 +148,11 @@ class BudgetInfoFetcherTest {
     mockEngine += { throw NoRouteToHostException() }
 
     // then
-    assertIs<Result.IOFailure>(budgetInfoFetcher.fetch(TOKEN, BUDGET_ID))
+    assertThatFetchResult()
+      .isInstanceOf<Result.IOFailure>()
   }
+
+  private suspend fun assertThatFetchResult() = assertThat(budgetInfoFetcher.fetch(TOKEN, BUDGET_ID))
 
   private fun actualApis() = ActualApis(
     serverUrl = SERVER_URL,

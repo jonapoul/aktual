@@ -9,12 +9,13 @@ import actual.budget.model.PayeeId
 import actual.budget.model.RuleId
 import actual.budget.model.ScheduleId
 import actual.test.runDatabaseTest
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import org.intellij.lang.annotations.Language
-import org.junit.Test
-import kotlin.test.assertEquals
+import kotlin.test.Test
 
 internal class VSchedulesTest {
   @Test
@@ -57,7 +58,7 @@ internal class VSchedulesTest {
       id = ScheduleId(scheduleId1),
       name = "A",
       rule = RuleId(ruleId1),
-      next_date = LocalDate.Companion.parse("2025-03-04"),
+      next_date = LocalDate.parse("2025-03-04"),
       completed = false,
       posts_transaction = true,
       tombstone = false,
@@ -68,14 +69,14 @@ internal class VSchedulesTest {
       _date = "{\"start\":\"2024-01-09\",\"interval\":1,\"frequency\":\"weekly\",\"patterns\":[]," +
         "\"skipWeekend\":false,\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1," +
         "\"endDate\":\"2024-01-14\"}",
-      _conditions = Json.Default.parseToJsonElement(RULE_1_CONDITIONS).jsonArray,
-      _actions = Json.Default.parseToJsonElement(RULE_1_ACTIONS).jsonArray,
+      _conditions = Json.parseToJsonElement(RULE_1_CONDITIONS).jsonArray,
+      _actions = Json.parseToJsonElement(RULE_1_ACTIONS).jsonArray,
     )
     val expected2 = V_schedules(
       id = ScheduleId(scheduleId2),
       name = "B",
       rule = RuleId(ruleId2),
-      next_date = LocalDate.Companion.parse("2026-02-20"),
+      next_date = LocalDate.parse("2026-02-20"),
       completed = false,
       posts_transaction = false,
       tombstone = false,
@@ -86,14 +87,14 @@ internal class VSchedulesTest {
       _date = "{\"start\":\"2023-02-20\",\"frequency\":\"yearly\",\"patterns\":[],\"skipWeekend\":false," +
         "\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1,\"endDate\":\"2024-01-14\"," +
         "\"interval\":1}",
-      _conditions = Json.Default.parseToJsonElement(RULE_2_CONDITIONS).jsonArray,
-      _actions = Json.Default.parseToJsonElement(RULE_2_ACTIONS).jsonArray,
+      _conditions = Json.parseToJsonElement(RULE_2_CONDITIONS).jsonArray,
+      _actions = Json.parseToJsonElement(RULE_2_ACTIONS).jsonArray,
     )
     val expected3 = V_schedules(
       id = ScheduleId(scheduleId3),
       name = "C",
       rule = RuleId(ruleId3),
-      next_date = LocalDate.Companion.parse("2025-03-03"),
+      next_date = LocalDate.parse("2025-03-03"),
       completed = false,
       posts_transaction = false,
       tombstone = false,
@@ -104,14 +105,12 @@ internal class VSchedulesTest {
       _date = "{\"start\":\"2024-02-01\",\"frequency\":\"monthly\",\"patterns\":[],\"skipWeekend\":true," +
         "\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1,\"endDate\":\"2024-01-14\"," +
         "\"interval\":1}",
-      _conditions = Json.Default.parseToJsonElement(RULE_3_CONDITIONS).jsonArray,
-      _actions = Json.Default.parseToJsonElement(RULE_3_ACTIONS).jsonArray,
+      _conditions = Json.parseToJsonElement(RULE_3_CONDITIONS).jsonArray,
+      _actions = Json.parseToJsonElement(RULE_3_ACTIONS).jsonArray,
     )
 
-    assertEquals(
-      expected = listOf(expected1, expected2, expected3),
-      actual = schedulesQueries.getFromVSchedules().executeAsList(),
-    )
+    assertThat(schedulesQueries.getFromVSchedules().executeAsList())
+      .isEqualTo(listOf(expected1, expected2, expected3))
   }
 }
 

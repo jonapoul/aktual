@@ -17,6 +17,8 @@ import actual.test.emptyMockEngine
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import dev.jonpoulton.preferences.core.Preferences
 import io.ktor.client.engine.mock.MockEngine
 import io.mockk.every
@@ -28,7 +30,6 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @RunWith(RobolectricTestRunner::class)
 class KeyFetcherTest {
@@ -79,10 +80,8 @@ class KeyFetcherTest {
     val result = keyFetcher(BUDGET_ID, TOKEN, CORRECT_PASSWORD)
 
     // then
-    assertEquals(
-      expected = FetchKeyResult.Success("KQWSxKj5Gc27pPk127N7QkIFxNJtopx0doU4O5pSWd0=".base64),
-      actual = result,
-    )
+    assertThat(result)
+      .isEqualTo(FetchKeyResult.Success("KQWSxKj5Gc27pPk127N7QkIFxNJtopx0doU4O5pSWd0=".base64))
   }
 
   private companion object {

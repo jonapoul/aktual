@@ -15,12 +15,15 @@ import actual.core.di.BudgetGraph
 import actual.core.di.BudgetGraphHolder
 import actual.core.di.assisted
 import actual.test.DummyViewModelContainer
+import actual.test.assertThatNextEmissionIsEqualTo
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
 import android.content.Context
 import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
@@ -36,7 +39,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -97,7 +99,7 @@ class TransactionsViewModelTest : AppGraph.Holder {
     // when
     viewModel.transactions.test {
       // then
-      assertEquals(expected = persistentListOf(), actual = awaitItem())
+      assertThat(awaitItem()).isEqualTo(persistentListOf())
       advanceUntilIdle()
       expectNoEvents()
       cancel()
@@ -118,9 +120,8 @@ class TransactionsViewModelTest : AppGraph.Holder {
     // when
     viewModel.transactions.test {
       // then
-      assertEquals(
-        actual = awaitItem(),
-        expected = persistentListOf(
+      assertThatNextEmissionIsEqualTo(
+        persistentListOf(
           DatedTransactions(DATE_1, persistentListOf(ID_A, ID_B, ID_C)),
         ),
       )
@@ -143,9 +144,8 @@ class TransactionsViewModelTest : AppGraph.Holder {
     // when
     viewModel.transactions.test {
       // then
-      assertEquals(
-        actual = awaitItem(),
-        expected = persistentListOf(DatedTransactions(DATE_1, persistentListOf(ID_A))),
+      assertThatNextEmissionIsEqualTo(
+        persistentListOf(DatedTransactions(DATE_1, persistentListOf(ID_A))),
       )
       expectNoEvents()
       cancel()
@@ -169,9 +169,8 @@ class TransactionsViewModelTest : AppGraph.Holder {
     // when
     viewModel.transactions.test {
       // then
-      assertEquals(
-        actual = awaitItem(),
-        expected = persistentListOf(
+      assertThatNextEmissionIsEqualTo(
+        persistentListOf(
           DatedTransactions(DATE_1, persistentListOfIds("a", "b", "c")),
           DatedTransactions(DATE_2, persistentListOfIds("d", "e")),
           DatedTransactions(DATE_3, persistentListOfIds("f")),
@@ -193,9 +192,9 @@ class TransactionsViewModelTest : AppGraph.Holder {
   //    }
   //    advanceUntilIdle()
   //
-  //    assertEquals(actual = viewModel.observe(ID_A).first(), expected = TRANSACTION_A)
-  //    assertEquals(actual = viewModel.observe(ID_B).first(), expected = TRANSACTION_B)
-  //    assertEquals(actual = viewModel.observe(ID_C).first(), expected = TRANSACTION_C)
+  //    assertThat(viewModel.observe(ID_A).first()).isEqualTo(TRANSACTION_A)
+  //    assertThat(viewModel.observe(ID_B).first()).isEqualTo(TRANSACTION_B)
+  //    assertThat(viewModel.observe(ID_C).first()).isEqualTo(TRANSACTION_C)
   //  }
 
   @DependencyGraph(

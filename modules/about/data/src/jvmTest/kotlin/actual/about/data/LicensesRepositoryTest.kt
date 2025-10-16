@@ -4,10 +4,11 @@ import actual.core.model.Assets
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.getResourceAsStream
 import alakazam.test.core.standardDispatcher
+import assertk.assertThat
+import assertk.assertions.isDataClassEqualTo
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class LicensesRepositoryTest {
   private lateinit var licensesRepository: LicensesRepository
@@ -58,9 +59,8 @@ class LicensesRepositoryTest {
       scm = ArtifactScm(url = "https://github.com/qos-ch/slf4j/slf4j-parent"),
     )
 
-    assertEquals(
-      actual = state,
-      expected = LicensesLoadState.Success(
+    assertThat(state).isDataClassEqualTo(
+      LicensesLoadState.Success(
         libraries = listOf(composeMaterialRipple, fragmentKtx, alakazamAndroidCore, slf4jApi),
       ),
     )

@@ -2,11 +2,11 @@ package actual.budget.model
 
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @Burst
-@Suppress("JUnitMalformedDeclaration")
 class AccountSyncSourceTest(
   val source: AccountSyncSource = burstValues(
     AccountSyncSource.SimpleFin,
@@ -18,7 +18,6 @@ class AccountSyncSourceTest(
   @Test
   fun `Encode and decode`() {
     val encoded = source.toString()
-    val decoded = AccountSyncSource.fromString(encoded)
-    assertEquals(decoded, source)
+    assertThat(source).isEqualTo(AccountSyncSource.fromString(encoded))
   }
 }

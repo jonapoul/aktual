@@ -16,6 +16,9 @@ import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
@@ -27,8 +30,6 @@ import kotlinx.coroutines.test.runTest
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
 
 class BudgetListFetcherTest {
   private lateinit var budgetListFetcher: BudgetListFetcher
@@ -57,7 +58,7 @@ class BudgetListFetcherTest {
     before()
     apisStateHolder.update { null }
     val result = budgetListFetcher.fetchBudgets(TOKEN)
-    assertEquals(actual = result, expected = FetchBudgetsResult.NotLoggedIn)
+    assertThat(result).isEqualTo(FetchBudgetsResult.NotLoggedIn)
   }
 
   @Test
@@ -72,9 +73,8 @@ class BudgetListFetcherTest {
     val result = budgetListFetcher.fetchBudgets(TOKEN)
 
     // then
-    assertEquals(
-      actual = result,
-      expected = FetchBudgetsResult.Success(
+    assertThat(result).isEqualTo(
+      FetchBudgetsResult.Success(
         budgets = listOf(
           Budget(
             name = "Main Budget",
@@ -107,7 +107,7 @@ class BudgetListFetcherTest {
     val result = budgetListFetcher.fetchBudgets(TOKEN)
 
     // then
-    assertIs<FetchBudgetsResult.InvalidResponse>(result)
+    assertThat(result).isInstanceOf<FetchBudgetsResult.InvalidResponse>()
   }
 
   @Test
@@ -125,7 +125,7 @@ class BudgetListFetcherTest {
     val result = budgetListFetcher.fetchBudgets(TOKEN)
 
     // then
-    assertIs<FetchBudgetsResult.NetworkFailure>(result)
+    assertThat(result).isInstanceOf<FetchBudgetsResult.NetworkFailure>()
   }
 
   @Test
@@ -146,9 +146,8 @@ class BudgetListFetcherTest {
     val result = budgetListFetcher.fetchBudgets(TOKEN)
 
     // then
-    assertEquals(
-      expected = FetchBudgetsResult.FailureResponse(reason = "something broke"),
-      actual = result,
+    assertThat(result).isEqualTo(
+      FetchBudgetsResult.FailureResponse(reason = "something broke"),
     )
   }
 

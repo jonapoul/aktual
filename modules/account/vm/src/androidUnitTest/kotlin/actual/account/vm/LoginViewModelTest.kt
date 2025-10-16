@@ -9,10 +9,17 @@ import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import actual.test.TestBuildConfig
+import actual.test.assertThatNextEmission
 import actual.test.buildPreferences
 import alakazam.test.core.standardDispatcher
 import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isFalse
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
+import assertk.assertions.isTrue
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -27,11 +34,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -67,13 +69,13 @@ internal class LoginViewModelTest {
   fun `Enter password`() = runTest {
     before()
     viewModel.enteredPassword.test {
-      assertEquals(expected = "", actual = awaitItem().value)
+      assertThatNextEmission().transform { it.value }.isEqualTo("")
 
       viewModel.onEnterPassword(password = "hello world")
-      assertEquals(expected = "hello world", actual = awaitItem().value)
+      assertThat(awaitItem().value).isEqualTo("hello world")
 
       viewModel.clearState()
-      assertEquals(expected = "", actual = awaitItem().value)
+      assertThat(awaitItem().value).isEqualTo("")
 
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
@@ -84,12 +86,12 @@ internal class LoginViewModelTest {
   fun `Server URL`() = runTest {
     before()
     viewModel.serverUrl.test {
-      assertNull(awaitItem())
+      assertThatNextEmission().isNull()
 
       val url = ServerUrl(Protocol.Https, baseUrl = "url.for.my.server.com")
       preferences.serverUrl.set(url)
 
-      assertEquals(expected = url, actual = awaitItem())
+      assertThat(awaitItem()).isEqualTo(url)
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }
@@ -103,8 +105,8 @@ internal class LoginViewModelTest {
       .test {
         // Initially not loading or failed
         val (failure1, loading1) = awaitItem()
-        assertNull(failure1)
-        assertFalse(loading1)
+        assertThat(failure1).isNull()
+        assertThat(loading1).isFalse()
 
         // When we make the failing request
         coEvery { loginRequester.logIn(any()) } returns LoginResult.InvalidPassword
@@ -112,18 +114,18 @@ internal class LoginViewModelTest {
 
         // Then we're loading but not failed
         val (failure2, loading2) = awaitItem()
-        assertNull(failure2)
-        assertTrue(loading2)
+        assertThat(failure2).isNull()
+        assertThat(loading2).isTrue()
 
         // Then not loading
         val (failure3, loading3) = awaitItem()
-        assertNull(failure3)
-        assertFalse(loading3)
+        assertThat(failure3).isNull()
+        assertThat(loading3).isFalse()
 
         // Then failed
         val (failure4, loading4) = awaitItem()
-        assertEquals(expected = LoginResult.InvalidPassword, actual = failure4)
-        assertFalse(loading4)
+        assertThat(failure4).isEqualTo(LoginResult.InvalidPassword)
+        assertThat(loading4).isFalse()
 
         expectNoEvents()
         cancelAndIgnoreRemainingEvents()
@@ -137,7 +139,7 @@ internal class LoginViewModelTest {
       expectNoEvents()
 
       preferences.loginToken.set(LoginToken(value = "abc123"))
-      assertNotNull(awaitItem())
+      assertThatNextEmission().isNotNull()
 
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()

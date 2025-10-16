@@ -6,7 +6,7 @@ import actual.core.model.ActualVersionsStateHolder
 import actual.core.model.UrlOpener
 import actual.test.TestBuildConfig
 import actual.test.TestInstant
-import actual.test.assertEmitted
+import actual.test.assertThatNextEmissionIsEqualTo
 import app.cash.turbine.test
 import github.api.model.GithubRelease
 import io.mockk.coEvery
@@ -15,7 +15,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
-import org.junit.Test
+import kotlin.test.Test
 
 class AboutViewModelTest {
   // real
@@ -49,20 +49,20 @@ class AboutViewModelTest {
     coEvery { repository.fetchLatestRelease() } returns LatestReleaseState.UpdateAvailable(model)
 
     viewModel.checkUpdatesState.test {
-      assertEmitted(CheckUpdatesState.Inactive)
+      assertThatNextEmissionIsEqualTo(CheckUpdatesState.Inactive)
 
       // When we fetch updates
       viewModel.fetchLatestRelease()
-      assertEmitted(CheckUpdatesState.Checking)
+      assertThatNextEmissionIsEqualTo(CheckUpdatesState.Checking)
 
       // Then an update is returned
-      assertEmitted(CheckUpdatesState.UpdateFound(version, url))
+      assertThatNextEmissionIsEqualTo(CheckUpdatesState.UpdateFound(version, url))
 
       // When we cancel the dialog
       viewModel.cancelUpdateCheck()
 
       // Then the dialog is dismissed
-      assertEmitted(CheckUpdatesState.Inactive)
+      assertThatNextEmissionIsEqualTo(CheckUpdatesState.Inactive)
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }
