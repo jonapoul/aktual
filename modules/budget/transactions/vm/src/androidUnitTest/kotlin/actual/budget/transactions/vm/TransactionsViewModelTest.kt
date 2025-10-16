@@ -145,7 +145,7 @@ class TransactionsViewModelTest : AppGraph.Holder {
     viewModel.transactions.test {
       // then
       assertThatNextEmissionIsEqualTo(
-        persistentListOf(DatedTransactions(DATE_1, persistentListOf(ID_A)))
+        persistentListOf(DatedTransactions(DATE_1, persistentListOf(ID_A))),
       )
       expectNoEvents()
       cancel()

@@ -62,7 +62,7 @@ class LicensesRepositoryTest {
     assertThat(state).isDataClassEqualTo(
       LicensesLoadState.Success(
         libraries = listOf(composeMaterialRipple, fragmentKtx, alakazamAndroidCore, slf4jApi),
-      )
+      ),
     )
   }
 

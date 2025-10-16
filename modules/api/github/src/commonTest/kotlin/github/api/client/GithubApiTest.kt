@@ -64,8 +64,12 @@ class GithubApiTest {
   }
 
   private fun assertThatRequestUrlEquals(expected: String) =
-    assertThat(mockEngine.requestHistory.last().url.toString())
-      .isEqualTo(expected)
+    assertThat(
+      mockEngine.requestHistory
+        .last()
+        .url
+        .toString(),
+    ).isEqualTo(expected)
 
   private companion object {
     val SERVER_URL = ServerUrl("https://test.com")

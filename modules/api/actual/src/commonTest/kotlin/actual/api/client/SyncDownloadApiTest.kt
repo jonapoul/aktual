@@ -109,8 +109,7 @@ class SyncDownloadApiTest {
             var savedFileSize = 0L
             fileSystem.read(it.path) { savedFileSize += readUtf8Line()?.length ?: error("Null line?") }
             savedFileSize
-          }
-          .isEqualTo(content)
+          }.isEqualTo(content)
 
         awaitComplete()
       }

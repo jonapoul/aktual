@@ -130,7 +130,7 @@ class SyncApiTest {
             usersWithAccess = listOf(user),
           ),
         ),
-      )
+      ),
     )
   }
 
