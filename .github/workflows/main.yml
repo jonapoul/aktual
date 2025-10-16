@@ -36,9 +36,12 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Run tests
+        run: ./gradlew koverLog
+
+      - name: Parse coverage
         shell: bash
         run: |
-          COVERAGE=$(./gradlew :koverLog | grep "application line coverage:" | tail -n1 | cut -d ":" -f 2 | tr -d '[:space:]%')
+          COVERAGE=$(cat build/kover/coverage.txt)
           echo "COVERAGE=$(echo $COVERAGE)" >> $GITHUB_ENV
 
       - name: Update dynamic badge gist
