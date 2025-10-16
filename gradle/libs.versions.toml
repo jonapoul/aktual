@@ -43,7 +43,7 @@ blueprint-core = { module = "dev.jonpoulton.blueprint:core", version.ref = "blue
 blueprint-recipes = { module = "dev.jonpoulton.blueprint:recipes", version.ref = "blueprint" }
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.27" }
 haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.6.10" }
-jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.0" }
+jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.1" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinpoet-core = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
