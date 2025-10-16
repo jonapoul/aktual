@@ -7,6 +7,9 @@ import actual.budget.model.database
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import app.cash.sqldelight.db.SqlDriver
+import assertk.assertThat
+import assertk.assertions.exists
+import assertk.assertions.isEqualTo
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import org.junit.runner.RunWith
@@ -16,8 +19,6 @@ import java.io.InputStream
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @RunWith(RobolectricTestRunner::class)
 class LoadExistingDatabaseFromFile {
@@ -50,8 +51,8 @@ class LoadExistingDatabaseFromFile {
         ?.value_
     }
 
-    assertEquals(expected = "c379fa428efd55a684aba4947ad054e0", actual = viewHash)
-    assertTrue(file.exists())
+    assertThat(viewHash).isEqualTo("c379fa428efd55a684aba4947ad054e0")
+    assertThat(file).exists()
   }
 
   private fun loadDatabaseIntoFile(): File {

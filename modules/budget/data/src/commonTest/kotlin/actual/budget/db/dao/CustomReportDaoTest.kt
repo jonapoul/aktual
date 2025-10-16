@@ -2,20 +2,24 @@ package actual.budget.db.dao
 
 import actual.budget.db.test.buildCustomReport
 import actual.budget.model.CustomReportId
+import actual.test.isEqualToList
 import actual.test.runDatabaseTest
 import alakazam.test.core.TestCoroutineContexts
+import assertk.assertThat
+import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @OptIn(ExperimentalCoroutinesApi::class)
 internal class CustomReportDaoTest {
   @Test
   fun `Fetching all IDs`() = runDaoTest { scope ->
     // given
-    assertEquals(expected = emptyList(), actual = getIds())
+    assertThat(getIds()).isEmpty()
 
     // when
     val a = buildCustomReport(id = CustomReportId("a"))
@@ -26,7 +30,9 @@ internal class CustomReportDaoTest {
     insert(c)
 
     // then
-    assertEquals(expected = listOf("a", "b", "c"), actual = getIds().map(CustomReportId::toString))
+    assertThat(getIds())
+      .transform { it.map(CustomReportId::toString) }
+      .isEqualToList("a", "b", "c")
   }
 
   @Test
@@ -34,20 +40,20 @@ internal class CustomReportDaoTest {
     // given
     val name = "hello world"
     val id = CustomReportId("abc-123")
-    assertEquals(expected = null, actual = getIdByName(name))
+    assertThat(getIdByName(name)).isNull()
 
     // when
     insert(buildCustomReport(id = CustomReportId("def-456"), name = "something else"))
     insert(buildCustomReport(id = CustomReportId("xyz-789"), name = "i dunno lol"))
 
     // then still nothing
-    assertEquals(expected = null, actual = getIdByName(name))
+    assertThat(getIdByName(name)).isNull()
 
     // when
     insert(buildCustomReport(id = id, name = name))
 
     // then
-    assertEquals(expected = id, actual = getIdByName(name))
+    assertThat(getIdByName(name)).isEqualTo(id)
   }
 
   private fun runDaoTest(action: suspend CustomReportsDao.(TestScope) -> Unit) =

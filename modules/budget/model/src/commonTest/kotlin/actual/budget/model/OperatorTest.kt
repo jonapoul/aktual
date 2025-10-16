@@ -1,9 +1,10 @@
 package actual.budget.model
 
 import actual.test.PrettyJson
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlinx.serialization.Serializable
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class OperatorTest {
   @Serializable
@@ -39,7 +40,7 @@ class OperatorTest {
     val serialized = PrettyJson.encodeToString(data)
     val deserialized = PrettyJson.decodeFromString<TestData>(json)
 
-    assertEquals(expected = data, actual = deserialized)
-    assertEquals(expected = json, actual = serialized)
+    assertThat(deserialized).isEqualTo(data)
+    assertThat(serialized).isEqualTo(json)
   }
 }

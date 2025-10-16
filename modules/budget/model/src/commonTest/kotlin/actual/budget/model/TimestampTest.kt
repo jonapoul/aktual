@@ -2,9 +2,10 @@ package actual.budget.model
 
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.time.Instant
 
 @Burst
@@ -14,9 +15,9 @@ class TimestampTest(
   @Test
   fun `Parse and stringify`() = runTest {
     val parsed = Timestamp.parse(case.string)
-    assertEquals(expected = case.timestamp, actual = parsed)
+    assertThat(parsed).isEqualTo(case.timestamp)
     val stringified = parsed.toString()
-    assertEquals(expected = case.string, actual = stringified)
+    assertThat(stringified).isEqualTo(case.string)
   }
 
   data class TestCase(

@@ -10,10 +10,14 @@ import actual.budget.model.metadata
 import actual.test.CoTemporaryFolder
 import actual.test.TestBudgetFiles
 import actual.test.copyTo
+import actual.test.doesNotExistOn
+import actual.test.existsOn
 import actual.test.resource
 import alakazam.test.core.TestClock
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.burst.InterceptTest
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -25,9 +29,6 @@ import okio.buffer
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class DatabaseImporterTest {
@@ -40,7 +41,7 @@ class DatabaseImporterTest {
 
   @BeforeTest
   fun before() {
-    fileSystem = FileSystem.Companion.SYSTEM
+    fileSystem = FileSystem.SYSTEM
     root = temporaryFolder.root
     budgetFiles = TestBudgetFiles(fileSystem, root)
     importer = DatabaseImporter(
@@ -48,7 +49,7 @@ class DatabaseImporterTest {
       fileSystem = fileSystem,
       budgetFiles = budgetFiles,
       clock = TestClock { INSTANT },
-      timeZones = { TimeZone.Companion.UTC },
+      timeZones = { TimeZone.UTC },
     )
   }
 
@@ -63,19 +64,19 @@ class DatabaseImporterTest {
     val result = importer(USER_FILE, zip)
 
     // then the metadata is parsed
-    assertEquals(actual = result, expected = ImportResult.Success(DB_METADATA))
+    assertThat(result).isEqualTo(ImportResult.Success(DB_METADATA))
 
     // and the database is saved too
     val dbPath = budgetFiles.database(BUDGET_ID)
-    assertTrue(fileSystem.exists(dbPath), "DB doesn't exist: $dbPath")
-    assertEquals(expected = 425_984L, actual = fileSystem.metadata(dbPath).size)
+    assertThat(dbPath).existsOn(fileSystem)
+    assertThat(fileSystem.metadata(dbPath).size).isEqualTo(425_984L)
 
     // and the updated metadata is written
     val metaPath = budgetFiles.metadata(BUDGET_ID)
-    assertTrue(fileSystem.exists(metaPath), "Meta doesn't exist: $metaPath")
+    assertThat(metaPath).existsOn(fileSystem)
     val contentsJson = fileSystem.source(metaPath).buffer().use { it.readUtf8() }
-    val contents = Json.Default.decodeFromString<DbMetadata>(contentsJson)
-    assertEquals(expected = LocalDate(2024, Month.MARCH, 18), actual = contents[DbMetadata.Companion.LastUploaded])
+    val contents = Json.decodeFromString<DbMetadata>(contentsJson)
+    assertThat(contents[DbMetadata.LastUploaded]).isEqualTo(LocalDate(2024, Month.MARCH, 18))
   }
 
   @Test
@@ -89,15 +90,16 @@ class DatabaseImporterTest {
     val result = importer(USER_FILE, zip)
 
     // then
-    assertEquals(expected = ImportResult.InvalidZipFile, actual = result)
+    assertThat(result).isEqualTo(ImportResult.InvalidZipFile)
 
     // and the budget dir doesn't exist
     val dir = budgetFiles.directory(BUDGET_ID)
-    assertFalse(fileSystem.exists(dir))
+
+    assertThat(dir).doesNotExistOn(fileSystem)
   }
 
   private companion object {
-    val INSTANT = Instant.Companion.fromEpochMilliseconds(1710786854286L) // Mon Mar 18 2024 18:34:14
+    val INSTANT = Instant.fromEpochMilliseconds(1710786854286L) // Mon Mar 18 2024 18:34:14
 
     val BUDGET_ID = BudgetId("cf2b43ee-8067-48ed-ab5b-4e4e5531056e")
 
@@ -121,13 +123,13 @@ class DatabaseImporterTest {
       cloudFileId = BUDGET_ID,
       groupId = USER_FILE.groupId,
       id = "My-Finances-e742ff8",
-      lastScheduleRun = LocalDate.Companion.parse("2025-03-03"),
+      lastScheduleRun = LocalDate.parse("2025-03-03"),
       lastSyncedTimestamp = Timestamp(
-        instant = Instant.Companion.parse("2025-02-27T19:18:25.454Z"),
+        instant = Instant.parse("2025-02-27T19:18:25.454Z"),
         counter = 0,
         node = "93836f5283a57c87",
       ),
-      lastUploaded = LocalDate.Companion.parse("2024-03-18"),
+      lastUploaded = LocalDate.parse("2024-03-18"),
       resetClock = true,
       userId = "583b50fe-3c55-42ca-9f09-a14ecd38677f",
     )

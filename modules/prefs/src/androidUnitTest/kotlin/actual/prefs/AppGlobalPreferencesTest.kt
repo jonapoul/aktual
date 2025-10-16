@@ -5,7 +5,7 @@ import actual.core.model.RegularColorSchemeType.Dark
 import actual.core.model.RegularColorSchemeType.Light
 import actual.core.model.RegularColorSchemeType.System
 import actual.core.model.ServerUrl
-import actual.test.assertEmitted
+import actual.test.assertThatNextEmissionIsEqualTo
 import actual.test.buildPreferences
 import alakazam.test.core.unconfinedDispatcher
 import app.cash.turbine.test
@@ -14,8 +14,6 @@ import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class AppGlobalPreferencesTest {
@@ -32,27 +30,27 @@ class AppGlobalPreferencesTest {
     with(preferences.serverUrl) {
       asFlow().test {
         // Given
-        assertNull(awaitItem())
+        assertThatNextEmissionIsEqualTo(null)
 
         // When
         val url1 = ServerUrl(protocol = Protocol.Https, baseUrl = "website.com")
         set(url1)
 
         // Then
-        assertEquals(expected = url1, actual = awaitItem())
+        assertThatNextEmissionIsEqualTo(url1)
 
         // When
         val url2 = ServerUrl(protocol = Protocol.Http, baseUrl = "some.other.domain.co.uk")
         set(url2)
 
         // Then
-        assertEquals(expected = url2, actual = awaitItem())
+        assertThatNextEmissionIsEqualTo(url2)
 
         // When
         delete()
 
         // Then
-        assertNull(awaitItem())
+        assertThatNextEmissionIsEqualTo(null)
         cancelAndIgnoreRemainingEvents()
       }
     }
@@ -64,19 +62,19 @@ class AppGlobalPreferencesTest {
     with(preferences.regularColorScheme) {
       asFlow().test {
         // Given
-        assertEmitted(System)
+        assertThatNextEmissionIsEqualTo(System)
 
         set(Light)
-        assertEmitted(Light)
+        assertThatNextEmissionIsEqualTo(Light)
 
         set(System)
-        assertEmitted(System)
+        assertThatNextEmissionIsEqualTo(System)
 
         set(Dark)
-        assertEmitted(Dark)
+        assertThatNextEmissionIsEqualTo(Dark)
 
         deleteAndCommit()
-        assertEmitted(System)
+        assertThatNextEmissionIsEqualTo(System)
 
         expectNoEvents()
         cancelAndIgnoreRemainingEvents()

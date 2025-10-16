@@ -6,6 +6,8 @@ import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import github.api.client.GithubApi
 import github.api.client.GithubJson
 import github.api.model.GithubRelease
@@ -44,8 +46,8 @@ class GithubRepositoryTest {
 
     // Then
     val expected = "https://api.github.com/repos/jonapoul/actual-android/releases/latest?per_page=1"
-    assertEquals(expected = expected, actual = request.url.toString())
-    assertEquals(expected = URLProtocol.HTTPS, actual = request.url.protocol)
+    assertThat(request.url.toString()).isEqualTo(expected)
+    assertThat(request.url.protocol).isEqualTo(URLProtocol.HTTPS)
   }
 
   @Test
@@ -58,7 +60,7 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertEquals(expected = "1.2.3", actual = TestBuildConfig.versionName)
+    assertThat(TestBuildConfig.versionName).isEqualTo("1.2.3")
     assertEquals(
       actual = state,
       expected = LatestReleaseState.UpdateAvailable(
@@ -82,8 +84,8 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertEquals(expected = "1.2.3", actual = TestBuildConfig.versionName)
-    assertEquals(actual = state, expected = LatestReleaseState.NoNewUpdate)
+    assertThat(TestBuildConfig.versionName).isEqualTo("1.2.3")
+    assertThat(state).isEqualTo(LatestReleaseState.NoNewUpdate)
   }
 
   @Test
@@ -97,7 +99,7 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertEquals(actual = state, expected = LatestReleaseState.NoReleases)
+    assertThat(state).isEqualTo(LatestReleaseState.NoReleases)
   }
 
   @Test
@@ -110,7 +112,7 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertEquals(actual = state, expected = LatestReleaseState.PrivateRepo)
+    assertThat(state).isEqualTo(LatestReleaseState.PrivateRepo)
   }
 
   @Test

@@ -3,7 +3,7 @@ package actual.budget.db
 import actual.budget.db.test.getMetaValue
 import actual.budget.db.test.insertMeta
 import actual.test.runDatabaseTest
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -17,6 +17,6 @@ internal class MetaQueriesTest {
   fun `Inserting then getting`() = runDatabaseTest {
     assertNull(getMetaValue(key = "myKey"))
     insertMeta(key = "myKey", value = "myValue")
-    assertEquals(expected = "myValue", actual = getMetaValue(key = "myKey"))
+    assertThat(getMetaValue(key = "myKey")).isEqualTo("myValue")
   }
 }

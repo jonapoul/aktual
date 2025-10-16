@@ -2,6 +2,9 @@ package actual.logging
 
 import actual.test.TemporaryFolder
 import app.cash.burst.InterceptTest
+import assertk.assertThat
+import assertk.assertions.endsWith
+import assertk.assertions.hasSize
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
@@ -11,8 +14,6 @@ import okio.buffer
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class LogbackLoggerTest {
   @InterceptTest val temporaryFolder = TemporaryFolder()
@@ -61,9 +62,9 @@ class LogbackLoggerTest {
       .buffer()
       .use { it.readUtf8().trim() }
       .lines()
-    assertEquals(expected = 3, actual = lines.size)
-    assertTrue(lines[0].endsWith("INFO  Hello world"))
-    assertTrue(lines[1].endsWith("DEBUG This is just on the edge"))
-    assertTrue(lines[2].endsWith("ERROR Here's an error, with a formatted argument: 0123"))
+    assertThat(lines).hasSize(3)
+    assertThat(lines[0]).endsWith("INFO  Hello world")
+    assertThat(lines[1]).endsWith("DEBUG This is just on the edge")
+    assertThat(lines[2]).endsWith("ERROR Here's an error, with a formatted argument: 0123")
   }
 }

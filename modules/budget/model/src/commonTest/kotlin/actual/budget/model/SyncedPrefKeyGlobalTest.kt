@@ -2,7 +2,7 @@ package actual.budget.model
 
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
-import org.junit.Test
+import kotlin.test.Test
 import kotlin.test.assertEquals
 
 @Burst

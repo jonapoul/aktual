@@ -3,10 +3,14 @@ package actual.api.client
 import actual.test.CoTemporaryFolder
 import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
+import actual.test.isEqualToMap
 import actual.test.latestRequestHeaders
 import actual.test.testHttpClient
 import app.cash.burst.InterceptTest
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
 import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
@@ -14,9 +18,6 @@ import okio.Path
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertNotNull
 
 class SyncDownloadApiTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
@@ -51,14 +52,11 @@ class SyncDownloadApiTest {
       // don't care for this test
     }
 
-    assertEquals(
-      actual = mockEngine.latestRequestHeaders(),
-      expected = mapOf(
-        "X-ACTUAL-TOKEN" to listOf("abc-123"),
-        "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
-        "Accept" to listOf("application/json"),
-        "Accept-Charset" to listOf("UTF-8"),
-      ),
+    assertThat(mockEngine.latestRequestHeaders()).isEqualToMap(
+      "X-ACTUAL-TOKEN" to listOf("abc-123"),
+      "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
+      "Accept" to listOf("application/json"),
+      "Accept-Charset" to listOf("UTF-8"),
     )
   }
 
@@ -73,16 +71,17 @@ class SyncDownloadApiTest {
       .test {
         var state: SyncDownloadState = awaitItem()
         while (state is SyncDownloadState.InProgress) {
-          assertNotNull(state.contentLength)
-          assertEquals(expected = length, actual = state.contentLength)
+          assertThat(state.contentLength).isEqualTo(length)
           assert(state.bytesSentTotal > 0)
           assert(state.bytesSentTotal <= state.contentLength)
           state = awaitItem()
         }
 
-        assertIs<SyncDownloadState.Done>(state)
-        val savedContent = fileSystem.read(state.path) { readUtf8() }
-        assertEquals(expected = content, actual = savedContent)
+        assertThat(state)
+          .isInstanceOf<SyncDownloadState.Done>()
+          .transform { s -> fileSystem.read(s.path) { readUtf8() } }
+          .isEqualTo(content)
+
         awaitComplete()
       }
   }
@@ -98,19 +97,21 @@ class SyncDownloadApiTest {
       .test {
         var state: SyncDownloadState = awaitItem()
         while (state is SyncDownloadState.InProgress) {
-          assertNotNull(state.contentLength)
-          assertEquals(expected = length, actual = state.contentLength)
+          assertThat(state.contentLength).isEqualTo(length)
           assert(state.bytesSentTotal > 0)
           assert(state.bytesSentTotal <= state.contentLength)
           state = awaitItem()
         }
 
-        assertIs<SyncDownloadState.Done>(state)
-        var savedFileSize = 0L
-        fileSystem.read(state.path) {
-          savedFileSize += readUtf8Line()?.length ?: error("Null line?")
-        }
-        assertEquals(expected = length, actual = savedFileSize)
+        assertThat(state)
+          .isInstanceOf<SyncDownloadState.Done>()
+          .transform {
+            var savedFileSize = 0L
+            fileSystem.read(it.path) { savedFileSize += readUtf8Line()?.length ?: error("Null line?") }
+            savedFileSize
+          }
+          .isEqualTo(content)
+
         awaitComplete()
       }
   }

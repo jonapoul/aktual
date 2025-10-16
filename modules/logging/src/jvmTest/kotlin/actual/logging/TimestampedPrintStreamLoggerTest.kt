@@ -1,6 +1,8 @@
 package actual.logging
 
 import alakazam.test.core.TestClock
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
@@ -9,7 +11,6 @@ import java.io.PrintStream
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlin.time.Instant
 
 class TimestampedPrintStreamLoggerTest {
@@ -39,12 +40,11 @@ class TimestampedPrintStreamLoggerTest {
     // then
     val contents = byteArrayOutputStream.toString().trim().lines()
     byteArrayOutputStream.flush()
-    assertEquals(
-      expected = contents,
-      actual = listOf(
+    assertThat(contents).isEqualTo(
+      listOf(
         "2025-05-24T07:53:33.000Z I/TimestampedPrintStreamLoggerTest: Hello world",
         "2025-05-24T07:53:33.000Z D/TAGGED: This one has a tag",
-      ),
+      )
     )
   }
 }

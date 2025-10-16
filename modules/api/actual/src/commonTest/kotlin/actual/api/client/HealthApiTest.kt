@@ -5,12 +5,13 @@ import actual.test.HealthResponses
 import actual.test.emptyMockEngine
 import actual.test.respondJson
 import actual.test.testHttpClient
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class HealthApiTest {
   private lateinit var mockEngine: MockEngine.Queue
@@ -30,9 +31,6 @@ class HealthApiTest {
   @Test
   fun `Get health successfully`() = runTest {
     mockEngine += { respondJson(HealthResponses.HEALTH_SUCCESS_200) }
-    assertEquals(
-      expected = GetHealthResponse(status = "UP"),
-      actual = healthApi.getHealth(),
-    )
+    assertThat(healthApi.getHealth()).isEqualTo(GetHealthResponse(status = "UP"))
   }
 }
