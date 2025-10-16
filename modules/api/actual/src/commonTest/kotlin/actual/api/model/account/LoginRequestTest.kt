@@ -2,18 +2,17 @@ package actual.api.model.account
 
 import actual.core.model.Password
 import actual.test.testEncoding
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class LoginRequestTest {
   private val password = Password("P@ssw0rd!")
 
   @Test
   fun `Convert to string with blocked out password`() {
-    assertEquals(
-      expected = "Password(password=██, loginMethod=Password)",
-      actual = LoginRequest.Password(password).toString(),
-    )
+    assertThat(LoginRequest.Password(password).toString())
+      .isEqualTo("Password(password=██, loginMethod=Password)")
   }
 
   @Test

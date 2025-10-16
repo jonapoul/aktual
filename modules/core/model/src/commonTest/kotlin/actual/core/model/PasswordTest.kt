@@ -1,13 +1,13 @@
 package actual.core.model
 
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class PasswordTest {
-  private val password = Password("P@ssw0rd!")
-
   @Test
   fun `Value redacted from toString`() {
-    assertEquals(expected = "Password(██)", actual = password.toString())
+    val password = Password("P@ssw0rd!")
+    assertThat(password.toString()).isEqualTo("Password(██)")
   }
 }

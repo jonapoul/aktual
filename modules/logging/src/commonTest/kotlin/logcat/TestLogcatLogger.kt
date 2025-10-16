@@ -1,6 +1,7 @@
 package logcat
 
-import kotlin.test.assertEquals
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 
 internal class TestLogcatLogger : LogcatLogger {
   var latestLog: Log? = null
@@ -22,8 +23,6 @@ internal class TestLogcatLogger : LogcatLogger {
     latestLog = Log(priority, tag, message)
   }
 
-  fun assertLatest(priority: LogPriority, tag: String, message: String) = assertEquals(
-    expected = Log(priority, tag, message),
-    actual = latestLog,
-  )
+  fun assertLatest(priority: LogPriority, tag: String, message: String) =
+    assertThat(latestLog).isEqualTo(Log(priority, tag, message))
 }

@@ -12,7 +12,8 @@ import actual.core.model.Protocol
 import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import actual.test.TestBuildConfig
-import actual.test.assertEmitted
+import actual.test.assertThatNextEmission
+import actual.test.assertThatNextEmissionIsEqualTo
 import actual.test.buildPreferences
 import actual.test.clear
 import actual.test.emptyMockEngine
@@ -20,6 +21,12 @@ import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotEqualTo
+import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpStatusCode
 import io.mockk.every
@@ -40,9 +47,6 @@ import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
-import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlViewModelTest {
@@ -108,7 +112,7 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertEquals(expected = NavDestination.ToLogin, actual = awaitItem())
+      assertThatNextEmissionIsEqualTo(NavDestination.ToLogin)
       advanceUntilIdle()
       ensureAllEventsConsumed()
       cancelAndIgnoreRemainingEvents()
@@ -131,7 +135,7 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertEquals(expected = NavDestination.ToBootstrap, actual = awaitItem())
+      assertThatNextEmissionIsEqualTo(NavDestination.ToBootstrap)
       advanceUntilIdle()
       ensureAllEventsConsumed()
       cancelAndIgnoreRemainingEvents()
@@ -151,8 +155,8 @@ class ServerUrlViewModelTest {
     // Then
     val protocol = viewModel.protocol.value
     val baseUrl = viewModel.baseUrl.value
-    assertEquals(expected = EXAMPLE_URL.protocol, actual = protocol)
-    assertEquals(expected = EXAMPLE_URL.baseUrl, actual = baseUrl)
+    assertThat(protocol).isEqualTo(EXAMPLE_URL.protocol)
+    assertThat(baseUrl).isEqualTo(EXAMPLE_URL.baseUrl)
   }
 
   @Test
@@ -162,7 +166,7 @@ class ServerUrlViewModelTest {
 
     viewModel.errorMessage.test {
       // Given we're currently not navigating
-      assertNull(awaitItem())
+      assertThatNextEmission().isNull()
 
       // and the API returns failure
       val reason = "SOMETHING BROKE"
@@ -181,12 +185,9 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      val emitted = awaitItem()
-      assertEquals(
-        expected = true,
-        actual = emitted?.contains(reason),
-        message = "Received $emitted",
-      )
+      assertThat(awaitItem())
+        .isNotNull()
+        .contains(reason)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -197,7 +198,7 @@ class ServerUrlViewModelTest {
     buildViewModel()
     viewModel.errorMessage.test {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
-      assertNull(awaitItem())
+      assertThatNextEmission().isNull()
 
       // and the API fails
       val reason = "SOMETHING BROKE"
@@ -210,12 +211,9 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      val emitted = awaitItem()
-      assertEquals(
-        expected = true,
-        actual = emitted?.contains(reason),
-        message = "Received $emitted",
-      )
+      assertThat(awaitItem())
+        .isNotNull()
+        .contains(reason)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -226,7 +224,7 @@ class ServerUrlViewModelTest {
     buildViewModel()
     preferences.loginToken.asFlow().test {
       // Given no token initially saved
-      assertNull(awaitItem())
+      assertThatNextEmission().isNull()
 
       // when we save a token and a URL
       val initialUrl = ServerUrl(Protocol.Https, "website.com")
@@ -235,17 +233,17 @@ class ServerUrlViewModelTest {
       preferences.loginToken.setAndCommit(token)
 
       // then the token has been saved
-      assertEmitted(token)
+      assertThatNextEmissionIsEqualTo(token)
 
       // when we enter a different url and click confirm
       val secondUrl = ServerUrl(Protocol.Http, "some.other.website.com")
-      assertNotEquals(initialUrl, secondUrl)
+      assertThat(initialUrl).isNotEqualTo(secondUrl)
       viewModel.onSelectProtocol(secondUrl.protocol)
       viewModel.onEnterUrl(secondUrl.baseUrl)
       viewModel.onClickConfirm()
 
       // then the saved token is cleared
-      assertNull(awaitItem())
+      assertThatNextEmission().isNull()
       cancelAndIgnoreRemainingEvents()
     }
   }

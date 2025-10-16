@@ -7,12 +7,17 @@ import actual.core.model.ServerUrl
 import actual.prefs.AppGlobalPreferences
 import actual.test.CoLogcatInterceptor
 import actual.test.TestClientFactory
+import actual.test.assertThatNextEmission
+import actual.test.assertThatNextEmissionIsEqualTo
 import actual.test.buildPreferences
 import actual.test.emptyMockEngine
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.unconfinedDispatcher
 import app.cash.burst.InterceptTest
 import app.cash.turbine.test
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNotNull
 import io.ktor.client.engine.mock.MockEngine
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
@@ -23,8 +28,6 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
@@ -64,10 +67,10 @@ class ConnectionMonitorTest {
 
     apiStateHolder.test {
       // Given no APIs are set
-      assertNull(awaitItem())
+      assertThatNextEmissionIsEqualTo(null)
 
       // and no URL is set
-      assertNull(preferences.serverUrl.get())
+      assertThat(preferences.serverUrl.get()).isEqualTo(null)
 
       // When we start and wait for things to settle
       connectionMonitor.start()
@@ -89,13 +92,13 @@ class ConnectionMonitorTest {
 
     apiStateHolder.test {
       // Given no APIs are set
-      assertNull(awaitItem())
+      assertThatNextEmissionIsEqualTo(null)
 
       // When the URL is set
       preferences.serverUrl.set(ServerUrl.Demo)
 
       // An API is built and emitted
-      assertNotNull(awaitItem())
+      assertThatNextEmission().isNotNull()
       advanceUntilIdle()
 
       // and nothing else is done
@@ -113,13 +116,13 @@ class ConnectionMonitorTest {
 
     apiStateHolder.test {
       // Nothing initially
-      assertNull(awaitItem())
+      assertThatNextEmissionIsEqualTo(null)
 
       // when the monitor starts
       connectionMonitor.start()
 
       // then an API is built and emitted
-      assertNotNull(awaitItem())
+      assertThatNextEmission().isNotNull()
 
       // When the monitor is stopped
       connectionMonitor.stop()

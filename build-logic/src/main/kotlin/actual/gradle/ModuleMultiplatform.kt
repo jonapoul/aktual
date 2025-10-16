@@ -23,6 +23,7 @@ class ModuleMultiplatform : Plugin<Project> {
       apply(ConventionKover::class)
       apply(ConventionStyle::class)
       apply(ConventionTest::class)
+      apply(ConventionTest::class)
     }
 
     kotlin {

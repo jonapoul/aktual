@@ -1,15 +1,14 @@
 package actual.budget.model
 
 import actual.budget.model.SyncedPrefKey.PerAccount
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class SyncedPrefKeyAccountTest {
   @Test
   fun decoding() {
-    assertEquals(
-      expected = PerAccount.CsvDelimiter(AccountId("abc-123")),
-      actual = SyncedPrefKey.decode("csv-delimiter-abc-123"),
-    )
+    assertThat(SyncedPrefKey.decode("csv-delimiter-abc-123"))
+      .isEqualTo(PerAccount.CsvDelimiter(AccountId("abc-123")))
   }
 }

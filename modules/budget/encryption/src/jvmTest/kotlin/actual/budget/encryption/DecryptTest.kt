@@ -1,13 +1,14 @@
 package actual.budget.encryption
 
 import actual.test.TemporaryFolder
+import actual.test.assertFailsWith
 import actual.test.readBytes
 import actual.test.resource
 import app.cash.burst.InterceptTest
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.io.encoding.Base64
 import kotlin.test.Test
-import kotlin.test.assertContentEquals
-import kotlin.test.assertFailsWith
 
 class DecryptTest {
   @InterceptTest val temporaryFolder = TemporaryFolder()
@@ -25,10 +26,8 @@ class DecryptTest {
       sink = temporaryFolder.sink(destination),
     )
 
-    assertContentEquals(
-      actual = temporaryFolder.source(destination).readBytes(),
-      expected = resource("expected.zip").readBytes(),
-    )
+    assertThat(temporaryFolder.source(destination).readBytes())
+      .isEqualTo(resource("expected.zip").readBytes())
   }
 
   @Test

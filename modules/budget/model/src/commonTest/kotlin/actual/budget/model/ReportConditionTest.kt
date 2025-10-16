@@ -1,10 +1,11 @@
 package actual.budget.model
 
 import actual.test.PrettyJson
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class ReportConditionTest {
   @Test
@@ -42,10 +43,10 @@ class ReportConditionTest {
     )
 
     val serialized = PrettyJson.encodeToString(data)
-    assertEquals(expected = json, actual = serialized)
+    assertThat(serialized).isEqualTo(json)
 
     val deserialized = PrettyJson.decodeFromString(ReportCondition.ListSerializer, serialized)
-    assertEquals(expected = data, actual = deserialized)
+    assertThat(deserialized).isEqualTo(data)
   }
   @Test
   fun `Single condition with array value`() {
@@ -90,9 +91,9 @@ class ReportConditionTest {
     )
 
     val serialized = PrettyJson.encodeToString(data)
-    assertEquals(expected = json, actual = serialized)
+    assertThat(serialized).isEqualTo(json)
 
     val deserialized = PrettyJson.decodeFromString(ReportCondition.ListSerializer, serialized)
-    assertEquals(expected = data, actual = deserialized)
+    assertThat(deserialized).isEqualTo(data)
   }
 }

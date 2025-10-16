@@ -6,6 +6,13 @@ import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.TestCoroutineContexts
 import alakazam.test.core.standardDispatcher
+import assertk.assertThat
+import assertk.assertions.contains
+import assertk.assertions.isDataClassEqualTo
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.matchesPredicate
+import assertk.assertions.prop
 import github.api.client.GithubApi
 import github.api.client.GithubJson
 import github.api.model.GithubRelease
@@ -18,9 +25,6 @@ import kotlinx.coroutines.test.runTest
 import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertIs
-import kotlin.test.assertTrue
 import kotlin.time.Instant
 
 class GithubRepositoryTest {
@@ -44,8 +48,8 @@ class GithubRepositoryTest {
 
     // Then
     val expected = "https://api.github.com/repos/jonapoul/actual-android/releases/latest?per_page=1"
-    assertEquals(expected = expected, actual = request.url.toString())
-    assertEquals(expected = URLProtocol.HTTPS, actual = request.url.protocol)
+    assertThat(request.url.toString()).isEqualTo(expected)
+    assertThat(request.url.protocol).isEqualTo(URLProtocol.HTTPS)
   }
 
   @Test
@@ -58,10 +62,9 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertEquals(expected = "1.2.3", actual = TestBuildConfig.versionName)
-    assertEquals(
-      actual = state,
-      expected = LatestReleaseState.UpdateAvailable(
+    assertThat(TestBuildConfig.versionName).isEqualTo("1.2.3")
+    assertThat(state).isDataClassEqualTo(
+      LatestReleaseState.UpdateAvailable(
         release = GithubRelease(
           versionName = "v2.3.4",
           publishedAt = Instant.parse("2024-03-30T09:57:02Z"),
@@ -82,8 +85,8 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertEquals(expected = "1.2.3", actual = TestBuildConfig.versionName)
-    assertEquals(actual = state, expected = LatestReleaseState.NoNewUpdate)
+    assertThat(TestBuildConfig.versionName).isEqualTo("1.2.3")
+    assertThat(state).isEqualTo(LatestReleaseState.NoNewUpdate)
   }
 
   @Test
@@ -97,7 +100,7 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertEquals(actual = state, expected = LatestReleaseState.NoReleases)
+    assertThat(state).isEqualTo(LatestReleaseState.NoReleases)
   }
 
   @Test
@@ -110,7 +113,7 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertEquals(actual = state, expected = LatestReleaseState.PrivateRepo)
+    assertThat(state).isEqualTo(LatestReleaseState.PrivateRepo)
   }
 
   @Test
@@ -124,8 +127,11 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertIs<LatestReleaseState.Failure>(state)
-    assertTrue(state.errorMessage.contains("Failed decoding JSON"), state.errorMessage)
+    assertThat(state)
+      .isInstanceOf<LatestReleaseState.Failure>()
+      .matchesPredicate {
+        it.errorMessage.contains("Failed decoding JSON")
+      }
   }
 
   @Test
@@ -138,8 +144,10 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertIs<LatestReleaseState.Failure>(state)
-    assertTrue(state.errorMessage.contains("IO failure"), state.errorMessage)
+    assertThat(state)
+      .isInstanceOf<LatestReleaseState.Failure>()
+      .prop(LatestReleaseState.Failure::errorMessage)
+      .contains("IO failure")
   }
 
   @Test
@@ -152,8 +160,10 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertIs<LatestReleaseState.Failure>(state)
-    assertTrue(state.errorMessage.contains("HTTP error 405"), state.errorMessage)
+    assertThat(state)
+      .isInstanceOf<LatestReleaseState.Failure>()
+      .prop(LatestReleaseState.Failure::errorMessage)
+      .contains("HTTP error 405")
   }
 
   private fun TestScope.buildRepo() {

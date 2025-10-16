@@ -30,7 +30,7 @@ internal class TimestampedPrintStreamLogger(
   }
 
   private companion object {
-    val TIMESTAMP_FORMAT = DateTimeComponents.Companion.Format {
+    val TIMESTAMP_FORMAT = DateTimeComponents.Format {
       date(LocalDate.Formats.ISO)
       char('T')
       hour()

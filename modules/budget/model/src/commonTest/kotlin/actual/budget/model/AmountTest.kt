@@ -3,38 +3,39 @@ package actual.budget.model
 import actual.budget.model.NumberFormat.ApostropheDot
 import actual.budget.model.NumberFormat.DotComma
 import actual.budget.model.NumberFormat.SpaceComma
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class AmountTest {
   @Test
   fun `Hide fraction`() {
-    assertEquals(actual = 123.45.amount.toString(hideFraction = true), expected = "123")
-    assertEquals(actual = 1234.56.amount.toString(format = ApostropheDot, hideFraction = true), expected = "1’235")
+    assertThat(123.45.amount.toString(hideFraction = true)).isEqualTo("123")
+    assertThat(1234.56.amount.toString(format = ApostropheDot, hideFraction = true)).isEqualTo("1’235")
   }
 
   @Test
   fun `Space comma`() {
-    assertEquals(actual = 123.0.amount.toString(format = SpaceComma), expected = "123,00")
-    assertEquals(actual = 123.45.amount.toString(format = SpaceComma), expected = "123,45")
-    assertEquals(actual = 1234.56.amount.toString(format = SpaceComma), expected = "1${WEIRD_SPACE}234,56")
+    assertThat(123.0.amount.toString(format = SpaceComma)).isEqualTo("123,00")
+    assertThat(123.45.amount.toString(format = SpaceComma)).isEqualTo("123,45")
+    assertThat(1234.56.amount.toString(format = SpaceComma)).isEqualTo("1${WEIRD_SPACE}234,56")
   }
 
   @Test
   fun `Dot comma`() {
-    assertEquals(actual = 123.0.amount.toString(format = DotComma), expected = "123,00")
-    assertEquals(actual = 123.45.amount.toString(format = DotComma), expected = "123,45")
-    assertEquals(actual = 1234.56.amount.toString(format = DotComma), expected = "1.234,56")
-    assertEquals(actual = 123456789.0.amount.toString(format = DotComma), expected = "123.456.789,00")
+    assertThat(123.0.amount.toString(format = DotComma)).isEqualTo("123,00")
+    assertThat(123.45.amount.toString(format = DotComma)).isEqualTo("123,45")
+    assertThat(1234.56.amount.toString(format = DotComma)).isEqualTo("1.234,56")
+    assertThat(123456789.0.amount.toString(format = DotComma)).isEqualTo("123.456.789,00")
   }
 
   // One dash per digit - not including commas/spaces/dots
   @Test
   fun `With privacy`() {
-    assertEquals(actual = 123.0.amount.toString(isPrivacyEnabled = true), expected = "~~~~~")
-    assertEquals(actual = 123.45.amount.toString(isPrivacyEnabled = true), expected = "~~~~~")
-    assertEquals(actual = 1234.56.amount.toString(isPrivacyEnabled = true), expected = "~~~~~~")
-    assertEquals(actual = 123456789.0.amount.toString(isPrivacyEnabled = true), expected = "~~~~~~~~~~~")
+    assertThat(123.0.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~")
+    assertThat(123.45.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~")
+    assertThat(1234.56.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~~")
+    assertThat(123456789.0.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~~~~~~~")
   }
 
   private val Double.amount get() = Amount(this)

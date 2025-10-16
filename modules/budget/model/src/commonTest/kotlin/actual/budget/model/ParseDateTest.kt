@@ -2,10 +2,11 @@ package actual.budget.model
 
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @Burst
 class ParseDateTest(
@@ -15,12 +16,17 @@ class ParseDateTest(
     TestCase(year = 9999, month = Month.DECEMBER, day = 31, expected = "9999-12-31"),
   ),
 ) {
-  data class TestCase(val year: Int, val month: Month, val day: Int, val expected: String)
+  data class TestCase(
+    val year: Int,
+    val month: Month,
+    val day: Int,
+    val expected: String,
+  )
 
   @Test
   fun `Parse and stringify`() {
     val date = ReportDate.Date(LocalDate(case.year, case.month, case.day))
-    assertEquals(expected = case.expected, actual = date.toString())
-    assertEquals(expected = date, actual = ReportDate.parse(case.expected))
+    assertThat(date.toString()).isEqualTo(case.expected)
+    assertThat(ReportDate.parse(case.expected)).isEqualTo(date)
   }
 }

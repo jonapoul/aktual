@@ -9,6 +9,8 @@ import actual.test.latestRequestUrl
 import actual.test.respondJson
 import actual.test.testHttpClient
 import alakazam.test.core.assertThrows
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
 import io.ktor.client.plugins.ClientRequestException
@@ -17,7 +19,6 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class BaseApiTest {
   private lateinit var mockEngine: MockEngine.Queue
@@ -39,18 +40,11 @@ class BaseApiTest {
     mockEngine += { respondJson(BaseResponses.INFO_SUCCESS_200) }
     baseApi.fetchInfo()
 
-    assertEquals(
-      actual = mockEngine.latestRequestUrl(),
-      expected = "https://test.server.com/info",
-    )
+    assertThat(mockEngine.latestRequestUrl())
+      .isEqualTo("https://test.server.com/info")
 
-    assertEquals(
-      actual = mockEngine.latestRequestHeaders(),
-      expected = mapOf(
-        "Accept" to listOf("application/json"),
-        "Accept-Charset" to listOf("UTF-8"),
-      ),
-    )
+    assertThat(mockEngine.latestRequestHeaders())
+      .isEqualTo(mapOf("Accept" to listOf("application/json"), "Accept-Charset" to listOf("UTF-8")))
   }
 
   @Test
@@ -62,9 +56,8 @@ class BaseApiTest {
     val response = baseApi.fetchInfo()
 
     // then
-    assertEquals(
-      actual = response,
-      expected = InfoResponse(
+    assertThat(response).isEqualTo(
+      InfoResponse(
         build = Build(
           name = "@actual-app/sync-server",
           description = "actual syncing server",
