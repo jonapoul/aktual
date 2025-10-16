@@ -3,7 +3,6 @@ name: Main
 on:
   push:
     branches: [ "main" ]
-  pull_request:
 
 permissions:
   contents: write
@@ -37,12 +36,12 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Run tests
-        run: ./gradlew :koverLog
+        run: ./gradlew koverLog
 
       - name: Parse coverage
         shell: bash
         run: |
-          COVERAGE=$(grep -oP '\d+\.\d+(?=%)' build/kover/coverage.txt)
+          COVERAGE=$(cat build/kover/coverage.txt)
           echo "COVERAGE=$(echo $COVERAGE)" >> $GITHUB_ENV
 
       - name: Update dynamic badge gist
