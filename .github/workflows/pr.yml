@@ -1,7 +1,7 @@
 name: PR
 
-on:
-  pull_request:
+#on:
+#  pull_request:
 
 env:
   CI: true
@@ -34,7 +34,7 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v5
         with:
-          add-job-summary: on-failure
+          add-job-summary-as-pr-comment: 'on-failure'
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Check
