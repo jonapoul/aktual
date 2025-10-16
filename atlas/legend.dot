@@ -1,0 +1,23 @@
+digraph {
+  node [shape=plaintext]
+  modules [label=<
+  <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+    <TR><TD COLSPAN="2" BGCOLOR="#DDDDDD"><B>Module Types</B></TD></TR>
+    <TR><TD>ViewModel</TD><TD BGCOLOR="#914141">&lt;module-name&gt;</TD></TR>
+    <TR><TD>DI</TD><TD BGCOLOR="#a17103">&lt;module-name&gt;</TD></TR>
+    <TR><TD>UI</TD><TD BGCOLOR="#6b6b01">&lt;module-name&gt;</TD></TR>
+    <TR><TD>Android</TD><TD BGCOLOR="#017001">&lt;module-name&gt;</TD></TR>
+    <TR><TD>Multiplatform</TD><TD BGCOLOR="#160185">&lt;module-name&gt;</TD></TR>
+    <TR><TD>App</TD><TD BGCOLOR="#7a0101">&lt;module-name&gt;</TD></TR>
+    <TR><TD>JVM</TD><TD BGCOLOR="#2f015c">&lt;module-name&gt;</TD></TR>
+    <TR><TD>Other</TD><TD BGCOLOR="#808080">&lt;module-name&gt;</TD></TR>
+  </TABLE>
+  >];
+  links [label=<
+  <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
+    <TR><TD COLSPAN="2" BGCOLOR="#DDDDDD"><B>Link Types</B></TD></TR>
+    <TR><TD>api</TD><TD>Bold</TD></TR>
+    <TR><TD>implementation</TD><TD>Dashed</TD></TR>
+  </TABLE>
+  >];
+}

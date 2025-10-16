@@ -1,9 +1,10 @@
-import atlas.d2.ArrowType
-import atlas.d2.Direction
-import atlas.d2.ElkAlgorithm
-import atlas.d2.FileFormat
-import atlas.d2.LinkStyle
-import atlas.d2.Theme
+import atlas.graphviz.ArrowType
+import atlas.graphviz.FileFormat
+import atlas.graphviz.LayoutEngine
+import atlas.graphviz.LinkStyle
+import atlas.graphviz.NodeStyle
+import atlas.graphviz.RankDir
+import atlas.graphviz.Shape
 import blueprint.core.rootLocalPropertiesOrNull
 
 plugins {
@@ -57,13 +58,13 @@ atlas {
   pathTransforms { replace(pattern = ":modules:", replacement = ":") }
 
   moduleTypes {
-    registerByPluginId(name = "ViewModel", pluginId = "actual.module.viewmodel", color = "#F5A6A6") // pink
-    registerByPluginId(name = "DI", pluginId = "actual.module.di", color = "#FCB103") // orange
-    registerByPluginId(name = "UI", pluginId = "actual.module.compose", color = "#FFFF55") // yellow
-    registerByPluginId(name = "Android", pluginId = "actual.module.android", color = "#55FF55") // green
-    registerByPluginId(name = "Multiplatform", pluginId = "actual.module.multiplatform", color = "#9D8DF1") // indigo
-    registerByPathContains(name = "App", pathContains = "app:", color = "#FF5555") // red
-    registerByPluginId(name = "JVM", pluginId = "actual.module.jvm", color = "#8000FF") // violet
+    registerByPluginId(name = "ViewModel", pluginId = "actual.module.viewmodel", color = "#914141") // pink
+    registerByPluginId(name = "DI", pluginId = "actual.module.di", color = "#a17103") // orange
+    registerByPluginId(name = "UI", pluginId = "actual.module.compose", color = "#6b6b01") // yellow
+    registerByPluginId(name = "Android", pluginId = "actual.module.android", color = "#017001") // green
+    registerByPluginId(name = "Multiplatform", pluginId = "actual.module.multiplatform", color = "#160185") // indigo
+    registerByPathContains(name = "App", pathContains = "app:", color = "#7a0101") // red
+    registerByPluginId(name = "JVM", pluginId = "actual.module.jvm", color = "#2f015c") // violet
     other(color = "#808080") // grey
   }
 
@@ -72,30 +73,26 @@ atlas {
     implementation(LinkStyle.Dashed)
   }
 
-  d2 {
-    animateLinks = true
-    center = true
-    direction = Direction.Down
-    fileFormat = FileFormat.Svg
-    pad = 5
-    sketch = true
-    theme = Theme.ShirleyTemple
-    themeDark = Theme.DarkMauve
+  graphviz {
+    fileFormat = FileFormat.Png
+    layoutEngine = LayoutEngine.Dot
 
-    layoutEngine.elk {
-      algorithm = ElkAlgorithm.Layered
-      edgeNodeBetweenLayers = 20
-      nodeNodeBetweenLayers = 20
-      nodeSelfLoop = 10
+    node {
+      shape = Shape.Box
+      style = NodeStyle.Filled
+      fontColor = "white"
+      lineColor = "transparent"
     }
 
-    rootStyle {
-      fill = "transparent"
+    edge {
+      arrowHead = ArrowType.Normal
+      linkColor = "white"
     }
 
-    globalProps {
-      arrowType = ArrowType.Arrow
-      fillArrowHeads = true
+    graph {
+      bgColor = "#1c1c1c"
+      rankDir = RankDir.TopToBottom
+      rankSep = 1.5
     }
   }
 }

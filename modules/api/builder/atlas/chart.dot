@@ -1,0 +1,10 @@
+digraph {
+  edge [arrowhead="normal",color="white"]
+  graph [layout="dot",bgcolor="#1c1c1c",rankdir="TB",ranksep="1.5"]
+  node [shape="box",style="filled",fontcolor="white",color="transparent"]
+  ":api:builder" [fillcolor="#160185"]
+  ":core:model" [fillcolor="#160185"]
+  ":logging" [fillcolor="#160185"]
+  ":api:builder" -> ":core:model" [style="bold"]
+  ":api:builder" -> ":logging" [style="dashed"]
+}
