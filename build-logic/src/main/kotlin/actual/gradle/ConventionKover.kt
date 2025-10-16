@@ -1,13 +1,18 @@
 package actual.gradle
 
 import blueprint.core.boolPropertyOrElse
-import blueprint.recipes.koverBlueprint
+import blueprint.core.intProperty
+import kotlinx.kover.gradle.plugin.KoverGradlePlugin
+import kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
+import kotlinx.kover.gradle.plugin.dsl.CoverageUnit.INSTRUCTION
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
 import kotlinx.kover.gradle.plugin.dsl.KoverReportFilter
 import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.dependencies
 
 class ConventionKover : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
@@ -15,28 +20,70 @@ class ConventionKover : Plugin<Project> {
       return@with
     }
 
-    val excludedAnnotations = listOf(
-      "actual.core.ui.SingleScreenPreview",
-      "actual.core.ui.TripleScreenPreview",
-      "androidx.compose.ui.tooling.preview.Preview",
-      "javax.annotation.processing.Generated",
-    )
-    val excludedClasses = listOf(
-      "*Activity*",
-      "*Application*",
-      "*BuildConfig*",
-      "*Preview*Kt*",
-    )
-    val excludedPackages = listOf(
-      "*.di.*",
-    )
+    with(plugins) {
+      apply(KoverGradlePlugin::class)
+    }
 
-    koverBlueprint(
-      useJacoco = false,
-      excludedAnnotations = excludedAnnotations,
-      excludedClasses = excludedClasses,
-      excludedPackages = excludedPackages,
-    )
+    extensions.configure<KoverProjectExtension> {
+      useJacoco.set(false)
+
+      reports {
+        total {
+          filters {
+            excludes {
+              androidGeneratedClasses()
+
+              classes(
+                "*Activity*",
+                "*Application*",
+                "*BuildConfig*",
+                "*Preview*Kt*",
+              )
+
+              packages(
+                "*.di.*",
+              )
+
+              annotatedBy(
+                "actual.core.ui.SingleScreenPreview",
+                "actual.core.ui.TripleScreenPreview",
+                "androidx.compose.runtime.Composable",
+                "androidx.compose.ui.tooling.preview.Preview",
+                "javax.annotation.processing.Generated",
+              )
+            }
+          }
+
+          html {
+            onCheck.set(true)
+          }
+
+          log {
+            onCheck.set(true)
+            format.set("<value>")
+            coverageUnits.set(INSTRUCTION)
+            aggregationForGroup.set(COVERED_PERCENTAGE)
+          }
+        }
+
+        verify {
+          rule {
+            disabled.set(project != project.rootProject)
+            minBound(
+              minValue = intProperty(key = "actual.kover.minCoverage"),
+              coverageUnits = INSTRUCTION,
+              aggregationForGroup = COVERED_PERCENTAGE,
+            )
+          }
+        }
+      }
+    }
+
+    val kover = configurations.getByName("kover")
+    rootProject.dependencies {
+      // Include this module in test coverage
+      kover(project)
+    }
   }
 }
 
