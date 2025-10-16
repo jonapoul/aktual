@@ -6,7 +6,6 @@ import assertk.assertions.isGreaterThanOrEqualTo
 import assertk.assertions.isLessThan
 import assertk.assertions.isLessThanOrEqualTo
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class BytesTest {
   @Test

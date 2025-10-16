@@ -2,10 +2,11 @@ package actual.budget.model
 
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
+import assertk.assertThat
+import assertk.assertions.isEqualTo
 import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
 import kotlin.test.Test
-import kotlin.test.assertEquals
 
 @Burst
 class ParseMonthTest(

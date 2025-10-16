@@ -13,4 +13,4 @@ inline fun <reified Model> testDecoding(
 inline fun <reified Model> testEncoding(
   @Language("JSON") expected: String,
   model: Model,
-) = assertThat(ActualJson.encodeToString<Model>(model)).isEqualTo(expected)
+) = assertThat(PrettyJson.encodeToString<Model>(model)).isEqualTo(expected)

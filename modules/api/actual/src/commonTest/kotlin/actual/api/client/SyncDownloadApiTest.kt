@@ -3,7 +3,6 @@ package actual.api.client
 import actual.test.CoTemporaryFolder
 import actual.test.emptyMockEngine
 import actual.test.enqueueResponse
-import actual.test.isEqualToMap
 import actual.test.latestRequestHeaders
 import actual.test.testHttpClient
 import app.cash.burst.InterceptTest
@@ -18,6 +17,7 @@ import okio.Path
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlin.test.assertIs
 
 class SyncDownloadApiTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
@@ -52,11 +52,13 @@ class SyncDownloadApiTest {
       // don't care for this test
     }
 
-    assertThat(mockEngine.latestRequestHeaders()).isEqualToMap(
-      "X-ACTUAL-TOKEN" to listOf("abc-123"),
-      "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
-      "Accept" to listOf("application/json"),
-      "Accept-Charset" to listOf("UTF-8"),
+    assertThat(mockEngine.latestRequestHeaders()).isEqualTo(
+      mapOf(
+        "X-ACTUAL-TOKEN" to listOf("abc-123"),
+        "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
+        "Accept" to listOf("application/json"),
+        "Accept-Charset" to listOf("UTF-8"),
+      ),
     )
   }
 
@@ -88,7 +90,7 @@ class SyncDownloadApiTest {
 
   @Test
   fun `Download bigger file`() = runTest {
-    val length = 50_000_000L // 50kB
+    val length = 50_000_000L // 50MB
     val content = "a".repeat(length.toInt())
     mockEngine.enqueueResponse(content)
 
@@ -103,14 +105,12 @@ class SyncDownloadApiTest {
           state = awaitItem()
         }
 
-        assertThat(state)
-          .isInstanceOf<SyncDownloadState.Done>()
-          .transform {
-            var savedFileSize = 0L
-            fileSystem.read(it.path) { savedFileSize += readUtf8Line()?.length ?: error("Null line?") }
-            savedFileSize
-          }.isEqualTo(content)
-
+        assertIs<SyncDownloadState.Done>(state)
+        var savedFileSize = 0L
+        fileSystem.read(state.path) {
+          savedFileSize += readUtf8Line()?.length ?: error("Null line?")
+        }
+        assertThat(savedFileSize).isEqualTo(length)
         awaitComplete()
       }
   }

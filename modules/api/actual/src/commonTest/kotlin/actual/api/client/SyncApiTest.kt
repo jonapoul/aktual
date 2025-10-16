@@ -13,13 +13,16 @@ import actual.core.model.KeyId
 import actual.core.model.base64
 import actual.test.SyncResponses
 import actual.test.emptyMockEngine
-import actual.test.isEqualToMap
 import actual.test.latestRequestHeaders
 import actual.test.respondJson
 import actual.test.testHttpClient
+import assertk.Assert
+import assertk.all
 import assertk.assertThat
 import assertk.assertions.isDataClassEqualTo
 import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.prop
 import io.ktor.client.call.body
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.plugins.ClientRequestException
@@ -31,7 +34,6 @@ import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlin.test.assertIs
 import kotlin.test.fail
 
 class SyncApiTest {
@@ -82,9 +84,12 @@ class SyncApiTest {
       "Accept" to listOf("application/json"),
       "Accept-Charset" to listOf("UTF-8"),
     )
-    val actualBody = assertIs<TextContent>(request.body)
-    assertThat(actualBody.text).isEqualTo("""{"fileId":"xyz-789","token":"abc-123"}""")
-    assertThat(actualBody.contentType).isEqualTo(ContentType.Application.Json)
+    assertThat(request.body)
+      .isInstanceOf<TextContent>()
+      .all {
+        prop(TextContent::text).isEqualTo("""{"fileId":"xyz-789","token":"abc-123"}""")
+        prop(TextContent::contentType).isEqualTo(ContentType.Application.Json)
+      }
   }
 
   @Test
@@ -266,4 +271,6 @@ class SyncApiTest {
       GetUserFileInfoResponse.Failure(FailureReason.Unauthorized, details = "token-not-found"),
     )
   }
+
+  private fun <K, V> Assert<Map<K, V>>.isEqualToMap(vararg expected: Pair<K, V>) = isEqualTo(expected.toMap())
 }
