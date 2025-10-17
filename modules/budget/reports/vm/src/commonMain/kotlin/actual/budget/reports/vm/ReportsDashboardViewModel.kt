@@ -9,8 +9,8 @@ import actual.core.model.LoginToken
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,7 +18,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import logcat.logcat
 
 @Suppress("unused")
-@Inject
+@AssistedInject
 class ReportsDashboardViewModel(
   @Assisted private val token: LoginToken,
   @Assisted private val budgetId: BudgetId,
