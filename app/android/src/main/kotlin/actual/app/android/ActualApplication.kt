@@ -19,7 +19,7 @@ class ActualApplication : Application(), AppGraph.Holder {
     )
   }
 
-  override fun invoke(): AndroidAppGraph = graph
+  override fun get(): AndroidAppGraph = graph
 
   override fun onCreate() {
     if (BuildConfig.DEBUG) {

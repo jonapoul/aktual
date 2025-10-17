@@ -22,6 +22,6 @@ class AndroidBudgetGraphBuilder(
       budgetFiles = files,
     )
 
-    return appGraphHolder().create(metadata.cloudFileId, metadata, driverFactory)
+    return appGraphHolder.get().create(metadata.cloudFileId, metadata, driverFactory)
   }
 }

@@ -7,7 +7,7 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin.core)
-    api(libs.kotlinx.coroutines)
+    api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.immutable)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)

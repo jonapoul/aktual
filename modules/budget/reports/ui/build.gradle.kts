@@ -14,7 +14,7 @@ kotlin {
     implementation(project(":modules:core:model"))
     implementation(project(":modules:l10n"))
     implementation(libs.alakazam.kotlin.core)
-    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.datetime)
     implementation(libs.markdown.core)
     implementation(libs.markdown.m3)

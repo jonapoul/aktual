@@ -8,8 +8,15 @@ import okio.buffer
 
 interface BudgetFiles {
   val fileSystem: FileSystem
-  fun directory(id: BudgetId, mkdirs: Boolean = false): Path
-  fun tmp(mkdirs: Boolean = false): Path
+  val directoryPath: Path
+
+  fun directory(id: BudgetId, mkdirs: Boolean = false): Path = directoryPath
+    .resolve(id.value)
+    .also { if (mkdirs) fileSystem.createDirectories(it) }
+
+  fun tmp(mkdirs: Boolean = false): Path = directoryPath
+    .resolve("tmp")
+    .also { if (mkdirs) fileSystem.createDirectories(it) }
 }
 
 fun BudgetFiles.database(id: BudgetId, mkdirs: Boolean = false): Path = directory(id, mkdirs).resolve("db.sqlite")
