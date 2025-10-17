@@ -14,6 +14,6 @@ kotlin {
     implementation(project(":modules:l10n"))
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.haze.core)
-    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines.core)
   }
 }

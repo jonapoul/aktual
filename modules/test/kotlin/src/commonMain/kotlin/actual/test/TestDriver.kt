@@ -11,7 +11,7 @@ import java.io.File
 
 fun inMemoryDriverFactory() = JvmSqlDriverFactory(JdbcSqliteDriver.IN_MEMORY)
 
-fun fileDriverFactory(file: File) = JvmSqlDriverFactory(url = "jdbc:sqlite:${file.absolutePath}")
+fun fileDriverFactory(file: File) = JvmSqlDriverFactory(file)
 
 fun runDatabaseTest(
   driverFactory: SqlDriverFactory = inMemoryDriverFactory(),

@@ -17,6 +17,6 @@ kotlin {
     implementation(project(":modules:logging"))
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.haze.core)
-    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines.core)
   }
 }

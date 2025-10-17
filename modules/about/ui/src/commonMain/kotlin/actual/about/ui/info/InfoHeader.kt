@@ -2,29 +2,23 @@ package actual.about.ui.info
 
 import actual.core.ui.LocalTheme
 import actual.core.ui.Theme
-import actual.l10n.Res
+import actual.l10n.Drawables
 import actual.l10n.Strings
-import actual.l10n.app_icon_background
-import actual.l10n.app_icon_foreground
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import org.jetbrains.compose.resources.painterResource
 
 @Composable
 internal fun InfoHeader(
@@ -41,20 +35,11 @@ internal fun InfoHeader(
   ) {
     val appName = Strings.appName
 
-    Box(
+    Image(
       modifier = Modifier.size(50.dp),
-    ) {
-      Image(
-        modifier = Modifier.clip(CircleShape),
-        painter = painterResource(Res.drawable.app_icon_background),
-        contentDescription = appName,
-      )
-
-      Image(
-        painter = painterResource(Res.drawable.app_icon_foreground),
-        contentDescription = appName,
-      )
-    }
+      painter = Drawables.appIcon192,
+      contentDescription = appName,
+    )
 
     HorizontalSpacer(10.dp)
 

@@ -25,7 +25,7 @@ compose.desktop {
       }
 
       macOS {
-        bundleID = "org.jetbrains.compose.demo.widgets"
+        bundleID = "actual.app.desktop"
       }
 
       linux {
@@ -42,6 +42,10 @@ compose.desktop {
 
 dependencies {
   implementation(project(":app:di"))
+  implementation(project(":app:nav"))
+  implementation(project(":modules:prefs"))
   implementation(compose.desktop.currentOs)
   implementation(compose.material3)
+  implementation(libs.jetbrains.lifecycle.viewmodel.compose)
+  implementation(libs.kotlinx.coroutines.swing)
 }

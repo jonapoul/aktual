@@ -2,9 +2,12 @@ package actual.budget.db
 
 import app.cash.sqldelight.async.coroutines.synchronous
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import java.io.File
 import java.util.Properties
 
 class JvmSqlDriverFactory(private val url: String) : SqlDriverFactory {
+  constructor(file: File) : this(url = "jdbc:sqlite:${file.absolutePath}")
+
   override fun create() = JdbcSqliteDriver(
     url = url,
     schema = BudgetDatabase.Schema.synchronous(),
