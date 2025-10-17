@@ -1,4 +1,4 @@
-package actual.app.android
+package actual.core.ui
 
 import actual.core.model.PingState
 import androidx.compose.runtime.Immutable

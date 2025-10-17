@@ -13,7 +13,7 @@ kotlin {
     api(project(":modules:core:ui"))
     implementation(project(":modules:core:model"))
     implementation(project(":modules:l10n"))
-    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines.core)
   }
 
   androidMainDependencies {

@@ -23,7 +23,7 @@ kotlin {
     api(libs.kotlinx.datetime)
     implementation(project(":modules:core:di"))
     implementation(project(":modules:l10n"))
-    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines.core)
   }
 
   androidMainDependencies {

@@ -14,6 +14,6 @@ kotlin {
     api(project(":modules:settings:vm"))
     implementation(project(":modules:l10n"))
     implementation(libs.haze.core)
-    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines.core)
   }
 }

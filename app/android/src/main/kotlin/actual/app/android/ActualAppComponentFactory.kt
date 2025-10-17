@@ -12,10 +12,11 @@ import androidx.core.app.AppComponentFactory
 /**
  * From https://github.com/ZacSweers/metro/blob/main/samples/compose-navigation-app/src/main/kotlin/dev/zacsweers/metro/sample/androidviewmodel/components/MetroAppComponentFactory.kt
  */
+@Suppress("unused") // referenced in XML
 class ActualAppComponentFactory : AppComponentFactory() {
   override fun instantiateApplicationCompat(cl: ClassLoader, className: String): Application =
     super.instantiateApplicationCompat(cl, className).also { app ->
-      val graph = (app as ActualApplication).invoke()
+      val graph = (app as ActualApplication).get()
       activityProviders = graph.activityProviders
       broadcastReceiverProviders = graph.broadcastReceiverProviders
       contentProviderProviders = graph.contentProviderProviders

@@ -18,7 +18,7 @@ kotlin {
     api(libs.alakazam.kotlin.core)
     api(libs.alakazam.kotlin.time)
     api(libs.androidx.lifecycle.viewmodel.core)
-    api(libs.kotlinx.coroutines)
+    api(libs.kotlinx.coroutines.core)
     api(libs.okio)
     api(libs.preferences.core)
     implementation(project(":modules:api:builder"))

@@ -20,6 +20,9 @@ class JvmLogStorage(private val overrideUserPath: Path? = null) : LogStorage {
       error("Not sure where to store logs! os='$os'")
     }
 
-    return path.toPath().resolve("actual/logs")
+    return path
+      .toPath()
+      .resolve(".actual")
+      .resolve("logs")
   }
 }

@@ -6,7 +6,7 @@ kotlin {
   commonMainDependencies {
     api(project(":modules:core:model"))
     implementation(libs.alakazam.kotlin.core)
-    implementation(libs.kotlinx.coroutines)
+    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.preferences.core)
     implementation(project(":modules:api:actual"))
     implementation(project(":modules:logging"))

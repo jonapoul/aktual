@@ -23,10 +23,11 @@ val LocalViewModelGraphProvider = staticCompositionLocalOf<ViewModelGraphProvide
 inline fun <reified VM : ViewModel> metroViewModel(
   owner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { "No ViewModelStoreOwner found" },
   key: String? = null,
+  graphProvider: ViewModelGraphProvider = LocalViewModelGraphProvider.current,
 ): VM = viewModel(
   viewModelStoreOwner = owner,
   key = key,
-  factory = LocalViewModelGraphProvider.current,
+  factory = graphProvider,
 )
 
 /**
@@ -37,9 +38,9 @@ inline fun <reified VM : ViewModel> metroViewModel(
 inline fun <reified VM : ViewModel, reified VMAF : ViewModelAssistedFactory> assistedMetroViewModel(
   owner: ViewModelStoreOwner = checkNotNull(LocalViewModelStoreOwner.current) { "No ViewModelStoreOwner found" },
   key: String? = null,
+  graphProvider: ViewModelGraphProvider = LocalViewModelGraphProvider.current,
   crossinline buildViewModel: VMAF.() -> VM,
 ): VM {
-  val graphProvider = LocalViewModelGraphProvider.current
   return viewModel(
     viewModelStoreOwner = owner,
     key = key,

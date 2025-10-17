@@ -10,7 +10,7 @@ import logcat.MinPriorityLogger
 import java.io.PrintStream
 import kotlin.time.Clock
 
-internal class TimestampedPrintStreamLogger(
+class TimestampedPrintStreamLogger(
   private val stream: PrintStream,
   private val clock: Clock,
   override val minPriority: LogPriority,

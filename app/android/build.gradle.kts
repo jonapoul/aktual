@@ -103,10 +103,7 @@ licensee {
 dependencies {
   implementation(project(":app:di"))
   implementation(project(":app:nav"))
-  implementation(project(":modules:core:connection"))
-  implementation(project(":modules:l10n"))
   implementation(project(":modules:prefs"))
-  implementation(compose.runtime)
   implementation(compose.uiTooling)
   implementation(libs.alakazam.kotlin.compose)
   implementation(libs.alakazam.kotlin.core)
@@ -118,10 +115,9 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
   implementation(libs.androidx.splash)
   implementation(libs.kotlin.stdlib)
-  implementation(libs.kotlinx.coroutines)
+  implementation(libs.kotlinx.coroutines.core)
   implementation(libs.logcat)
   implementation(libs.material)
-  implementation(libs.molecule)
 }
 
 val exportMinSdk by tasks.registering {
@@ -141,4 +137,4 @@ val exportMinSdk by tasks.registering {
   }
 }
 
-tasks.named("preBuild") { dependsOn(exportMinSdk) }
+tasks.named("preBuild").configure { dependsOn(exportMinSdk) }

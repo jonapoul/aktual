@@ -1,11 +1,11 @@
-package actual.app.android
+package actual.app.nav
 
 import actual.core.icons.ActualIcons
 import actual.core.icons.CloudCheck
 import actual.core.icons.CloudWarning
 import actual.core.model.PingState
+import actual.core.ui.BottomBarState
 import actual.core.ui.LocalTheme
-import actual.core.ui.PreviewThemedColumn
 import actual.core.ui.Theme
 import actual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
@@ -26,7 +26,6 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -102,37 +101,4 @@ private fun loadedString(budgetName: String): AnnotatedString = buildAnnotatedSt
   withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
     append(budgetName)
   }
-}
-
-@Preview
-@Composable
-private fun PreviewConnected() = PreviewThemedColumn {
-  BottomStatusBar(
-    state = BottomBarState.Visible(
-      pingState = PingState.Success,
-      budgetName = "My Budget",
-    ),
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewDisconnected() = PreviewThemedColumn {
-  BottomStatusBar(
-    state = BottomBarState.Visible(
-      pingState = PingState.Failure,
-      budgetName = null,
-    ),
-  )
-}
-
-@Preview
-@Composable
-private fun PreviewUnknown() = PreviewThemedColumn {
-  BottomStatusBar(
-    state = BottomBarState.Visible(
-      pingState = PingState.Unknown,
-      budgetName = null,
-    ),
-  )
 }

@@ -18,7 +18,7 @@ class ModuleViewModel : Plugin<Project> {
       commonMainDependencies {
         api(project(":modules:core:di"))
         api(libs("androidx.lifecycle.viewmodel.core"))
-        api(libs("kotlinx.coroutines"))
+        api(libs("kotlinx.coroutines.core"))
         api(libs("kotlinx.immutable"))
         implementation(project(":modules:logging"))
         implementation(libs("molecule"))
