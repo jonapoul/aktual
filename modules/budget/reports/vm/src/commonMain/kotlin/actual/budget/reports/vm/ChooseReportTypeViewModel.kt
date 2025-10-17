@@ -18,8 +18,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import logcat.logcat
 
-@Inject
+@AssistedInject
 class ChooseReportTypeViewModel(
   private val uuidGenerator: UuidGenerator,
   budgetComponents: BudgetGraphHolder,

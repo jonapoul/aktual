@@ -28,8 +28,8 @@ import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
@@ -51,7 +51,7 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
-@Inject
+@AssistedInject
 class SyncBudgetViewModel(
   @Assisted private val token: LoginToken,
   @Assisted private val budgetId: BudgetId,
