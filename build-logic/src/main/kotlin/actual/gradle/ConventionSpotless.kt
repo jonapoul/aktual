@@ -14,13 +14,6 @@ class ConventionSpotless : Plugin<Project> {
     }
 
     extensions.configure<SpotlessExtension> {
-      format("misc") {
-        target("*.md", ".gitignore")
-        trimTrailingWhitespace()
-        leadingTabsToSpaces(2)
-        endWithNewline()
-      }
-
       format("licenseKotlin") {
         licenseHeaderFile(rootProject.file("config/spotless.kt"), "(package|@file:)")
         target("src/**/*.kt")
