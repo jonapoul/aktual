@@ -33,9 +33,11 @@ plugins {
   alias(libs.plugins.atlas)
   alias(libs.plugins.doctor)
   alias(libs.plugins.kover)
+  alias(libs.plugins.spotless)
 
   alias(libs.plugins.convention.idea)
   alias(libs.plugins.convention.kover)
+  alias(libs.plugins.convention.spotless)
 }
 
 // Place all local properties in the project-level gradle properties map

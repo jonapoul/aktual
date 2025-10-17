@@ -47,6 +47,7 @@ dependencies {
   compileOnly(libs.plugins.ksp)
   compileOnly(libs.plugins.licensee)
   compileOnly(libs.plugins.metro)
+  compileOnly(libs.plugins.spotless)
 
   implementation(libs.okio)
   implementation(libs.blueprint.core)
@@ -76,6 +77,7 @@ gradlePlugin {
     "actual.convention.licensee"(impl = "actual.gradle.ConventionLicensee")
     "actual.convention.di"(impl = "actual.gradle.ConventionDi")
     "actual.convention.style"(impl = "actual.gradle.ConventionStyle")
+    "actual.convention.spotless"(impl = "actual.gradle.ConventionSpotless")
     "actual.convention.test"(impl = "actual.gradle.ConventionTest")
 
     "actual.module.android"(impl = "actual.gradle.ModuleAndroid")
