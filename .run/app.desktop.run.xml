@@ -4,7 +4,7 @@
     <module name="actual-android.app.desktop.main" />
     <shortenClasspath name="NONE" />
     <method v="2">
-      <option name="Make" enabled="true" />
+      <option name="Gradle.BeforeRunTask" enabled="true" tasks="shadowJar" externalProjectPath="$PROJECT_DIR$/app/desktop" vmOptions="" scriptParameters="" />
     </method>
   </configuration>
 </component>

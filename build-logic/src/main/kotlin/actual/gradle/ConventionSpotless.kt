@@ -16,7 +16,7 @@ class ConventionSpotless : Plugin<Project> {
     extensions.configure<SpotlessExtension> {
       format("licenseKotlin") {
         licenseHeaderFile(rootProject.file("config/spotless.kt"), "(package|@file:)")
-        target("src/**/*.kt")
+        target("src/*/kotlin/**/*.kt")
       }
     }
   }

@@ -23,5 +23,7 @@ import java.io.InputStream
 @Inject
 @ContributesBinding(AppScope::class)
 class JvmAssets : Assets {
-  override fun getStream(name: String): InputStream = error("Not supported yet?")
+  // Without the /, it looks relative to the class's package. With /, it looks at the classpath root
+  override fun getStream(name: String): InputStream =
+    javaClass.getResourceAsStream("/$name") ?: error("Failed to load '$name' from resources")
 }

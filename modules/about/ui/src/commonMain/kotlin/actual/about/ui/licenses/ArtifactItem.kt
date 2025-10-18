@@ -65,7 +65,7 @@ internal fun ArtifactItem(
       .background(Color.Transparent, CardShape)
       .hazeEffect(hazeState, hazeStyle)
       .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
-      .padding(Dimens.Huge),
+      .padding(Dimens.Large),
     verticalArrangement = Arrangement.Top,
   ) {
     Text(
