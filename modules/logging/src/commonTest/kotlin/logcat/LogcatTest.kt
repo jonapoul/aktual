@@ -54,7 +54,7 @@ class LogcatTest {
     assertThat(log?.tag).isEqualTo("LogcatTest")
     val msg = log?.message.orEmpty()
     assertThat(msg).contains("java.lang.IllegalStateException: SOMETHING BROKE")
-    assertThat(msg).contains("at logcat.LogcatTest.logException(LogcatTest.kt:35)")
+    assertThat(msg).contains("at logcat.LogcatTest.logException(LogcatTest.kt:50)")
   }
 
   @Test
