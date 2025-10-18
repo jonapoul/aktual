@@ -1,3 +1,4 @@
+import actual.gradle.LICENSEE_REPORT_ASSET_NAME
 import actual.gradle.versionName
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
@@ -5,6 +6,7 @@ plugins {
   alias(libs.plugins.module.jvm)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.kotlin.compose)
+  alias(libs.plugins.shadow)
   alias(libs.plugins.convention.compose)
 }
 
@@ -38,6 +40,16 @@ compose.desktop {
   nativeApplication {
     // TBC
   }
+}
+
+val copyLicenseeReportToResources by tasks.registering(Copy::class) {
+  from(tasks.licensee.map { it.jsonOutput })
+  into("src/main/resources")
+  rename { LICENSEE_REPORT_ASSET_NAME }
+}
+
+tasks.processResources.configure {
+  dependsOn(copyLicenseeReportToResources)
 }
 
 dependencies {

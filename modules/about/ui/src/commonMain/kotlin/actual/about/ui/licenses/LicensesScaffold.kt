@@ -94,6 +94,7 @@ internal fun LicensesScaffold(
         LicensesSearchInput(
           modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 20.dp)
             .wrapContentHeight(),
           searchState = searchBarState,
           licensesState = state,

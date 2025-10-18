@@ -1,3 +1,4 @@
+import actual.gradle.LICENSEE_REPORT_ASSET_NAME
 import actual.gradle.versionName
 import blueprint.core.gitVersionCode
 import blueprint.core.intProperty
@@ -12,7 +13,6 @@ plugins {
   alias(libs.plugins.manifestLock)
   alias(libs.plugins.convention.android.base)
   alias(libs.plugins.convention.compose)
-  alias(libs.plugins.convention.di)
   alias(libs.plugins.convention.kotlin.jvm)
   alias(libs.plugins.convention.style)
   alias(libs.plugins.convention.test)
@@ -98,6 +98,7 @@ android {
 
 licensee {
   bundleAndroidAsset = true
+  androidAssetReportPath = LICENSEE_REPORT_ASSET_NAME
 }
 
 dependencies {

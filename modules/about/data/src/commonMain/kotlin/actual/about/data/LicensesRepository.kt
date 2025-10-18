@@ -52,6 +52,6 @@ class LicensesRepository internal constructor(
   }
 
   private companion object {
-    const val LICENSES_FILENAME = "app/cash/licensee/artifacts.json"
+    const val LICENSES_FILENAME = "licensee.json"
   }
 }
