@@ -1,8 +1,10 @@
 digraph {
-  node [shape=plaintext]
+  node [shape="plaintext",style="filled",fontcolor="white",color="transparent"]
+  edge [arrowhead="normal",color="white"]
+  graph [bgcolor="#1c1c1c",rankdir="TB",ranksep="1.5"]
   modules [label=<
-  <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-    <TR><TD COLSPAN="2" BGCOLOR="#DDDDDD"><B>Module Types</B></TD></TR>
+  <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="white">
+    <TR><TD COLSPAN="2"><B>Module Types</B></TD></TR>
     <TR><TD>ViewModel</TD><TD BGCOLOR="#914141">&lt;module-name&gt;</TD></TR>
     <TR><TD>DI</TD><TD BGCOLOR="#a17103">&lt;module-name&gt;</TD></TR>
     <TR><TD>UI</TD><TD BGCOLOR="#6b6b01">&lt;module-name&gt;</TD></TR>
@@ -14,8 +16,8 @@ digraph {
   </TABLE>
   >];
   links [label=<
-  <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4">
-    <TR><TD COLSPAN="2" BGCOLOR="#DDDDDD"><B>Link Types</B></TD></TR>
+  <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" CELLPADDING="4" COLOR="white">
+    <TR><TD COLSPAN="2"><B>Link Types</B></TD></TR>
     <TR><TD>api</TD><TD>Bold</TD></TR>
     <TR><TD>implementation</TD><TD>Dashed</TD></TR>
   </TABLE>
