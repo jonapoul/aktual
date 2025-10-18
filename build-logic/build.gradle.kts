@@ -75,7 +75,6 @@ gradlePlugin {
     "actual.convention.kotlin.jvm"(impl = "actual.gradle.ConventionKotlinJvm")
     "actual.convention.kover"(impl = "actual.gradle.ConventionKover")
     "actual.convention.licensee"(impl = "actual.gradle.ConventionLicensee")
-    "actual.convention.di"(impl = "actual.gradle.ConventionDi")
     "actual.convention.style"(impl = "actual.gradle.ConventionStyle")
     "actual.convention.spotless"(impl = "actual.gradle.ConventionSpotless")
     "actual.convention.test"(impl = "actual.gradle.ConventionTest")

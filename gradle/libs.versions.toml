@@ -133,7 +133,6 @@ sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 convention-android-base = { id = "actual.convention.android.base" }
 convention-compose = { id = "actual.convention.compose" }
-convention-di = { id = "actual.convention.di" }
 convention-idea = { id = "actual.convention.idea" }
 convention-kotlin-jvm = { id = "actual.convention.kotlin.jvm" }
 convention-kover = { id = "actual.convention.kover" }
