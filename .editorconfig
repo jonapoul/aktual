@@ -33,3 +33,7 @@ ktlint_standard_string-template-indent = disabled
 # https://github.com/JLLeitschuh/ktlint-gradle/issues/266#issuecomment-2143319443
 [**/generated/**]
 ktlint = disabled
+
+# noinspection EditorConfigKeyCorrectness
+[config/spotless.kt]
+ktlint = disabled
