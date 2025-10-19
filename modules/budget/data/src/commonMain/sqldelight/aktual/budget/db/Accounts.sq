@@ -1,0 +1,72 @@
+import aktual.budget.model.AccountId;
+import aktual.budget.model.AccountSyncSource;
+import aktual.budget.model.Amount;
+import kotlin.Boolean;
+import kotlin.uuid.Uuid;
+import kotlin.time.Instant;
+
+CREATE TABLE IF NOT EXISTS accounts(
+  id TEXT AS AccountId PRIMARY KEY,
+  account_id TEXT,
+  name TEXT,
+  balance_current INTEGER AS Amount,
+  balance_available INTEGER AS Amount,
+  balance_limit INTEGER AS Amount,
+  mask TEXT,
+  official_name TEXT,
+  subtype TEXT,
+  bank TEXT AS Uuid,
+  offbudget INTEGER AS Boolean DEFAULT 0,
+  closed INTEGER AS Boolean DEFAULT 0,
+  tombstone INTEGER AS Boolean DEFAULT 0,
+  sort_order REAL,
+  type TEXT,
+  account_sync_source TEXT AS AccountSyncSource,
+  last_sync TEXT AS Instant,
+  last_reconciled TEXT AS Instant
+);
+
+getById:
+SELECT *
+  FROM accounts
+  WHERE id = ?
+  LIMIT 1;
+
+-- packages/loot-core/src/server/accounts/app.ts closeAccount()
+getFirstNotTombstoned:
+SELECT *
+  FROM accounts
+  WHERE id = ? AND tombstone = 0
+  LIMIT 1;
+
+-- packages/loot-core/src/server/accounts/sync.ts updateAccountBalance()
+updateBalance:
+UPDATE accounts
+  SET balance_current = ?
+  WHERE id = ?;
+
+closeAccount:
+UPDATE accounts
+  SET closed = 1
+  WHERE id = ?;
+
+openAccount:
+UPDATE accounts
+  SET closed = 0
+  WHERE id = ?;
+
+updateSyncTime:
+UPDATE accounts
+  SET last_sync = ?
+  WHERE id = ?;
+
+insert:
+INSERT INTO accounts(id, account_id, name, official_name, bank, offbudget, account_sync_source)
+  VALUES (?, ?, ?, ?, ?, ?, ?);
+
+-- packages/loot-core/src/server/accounts/app.ts getAccountBalance()
+getAccountBalance:
+SELECT SUM(amount)
+  AS balance
+  FROM transactions
+  WHERE acct = ? AND isParent = 0 AND tombstone = 0 AND date <= ?;

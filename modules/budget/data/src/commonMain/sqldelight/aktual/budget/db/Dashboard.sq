@@ -1,0 +1,27 @@
+import aktual.budget.model.WidgetId;
+import aktual.budget.model.WidgetType;
+import kotlin.Boolean;
+import kotlinx.serialization.json.JsonObject;
+
+CREATE TABLE IF NOT EXISTS dashboard(
+  id TEXT AS WidgetId PRIMARY KEY,
+  type TEXT AS WidgetType,
+  width INTEGER,
+  height INTEGER,
+  x INTEGER,
+  y INTEGER,
+  meta TEXT AS JsonObject,
+  tombstone INTEGER AS Boolean DEFAULT 0
+);
+
+delete:
+  DELETE FROM dashboard WHERE id = ?;
+
+getIds:
+  SELECT id FROM dashboard WHERE tombstone = 0 ORDER BY y DESC, x DESC;
+
+getPositionAndSize:
+  SELECT x, y, width, height FROM dashboard WHERE tombstone = 0 ORDER BY y DESC, x DESC;
+
+insert:
+  INSERT INTO dashboard(id, type, width, height, x, y, meta) VALUES (?,?,?,?,?,?,?);

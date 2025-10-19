@@ -1,5 +1,5 @@
-import actual.gradle.LICENSEE_REPORT_ASSET_NAME
-import actual.gradle.versionName
+import aktual.gradle.LICENSEE_REPORT_ASSET_NAME
+import aktual.gradle.versionName
 import blueprint.core.gitVersionCode
 import blueprint.core.intProperty
 import blueprint.core.jvmTarget
@@ -25,11 +25,11 @@ kotlin {
 }
 
 android {
-  namespace = "actual.app.android"
+  namespace = "aktual.app.android"
   compileSdk = intProperty(key = "blueprint.android.compileSdk")
 
   defaultConfig {
-    applicationId = "dev.jonpoulton.actual.app"
+    applicationId = "dev.jonpoulton.aktual.app"
     minSdk = intProperty(key = "blueprint.android.minSdk")
     targetSdk = intProperty(key = "blueprint.android.targetSdk")
     versionCode = gitVersionCode()
@@ -62,10 +62,10 @@ android {
     val localProps = rootLocalPropertiesOrNull()
     if (localProps != null) {
       release.apply {
-        storeFile = rootProject.file(stringProperty(key = "actual.keyFile"))
-        storePassword = stringProperty(key = "actual.keyFilePassword")
-        keyAlias = stringProperty(key = "actual.keyAlias")
-        keyPassword = stringProperty(key = "actual.keyPassword")
+        storeFile = rootProject.file(stringProperty(key = "aktual.keyFile"))
+        storePassword = stringProperty(key = "aktual.keyFilePassword")
+        keyAlias = stringProperty(key = "aktual.keyAlias")
+        keyPassword = stringProperty(key = "aktual.keyPassword")
       }
     } else {
       logger.warn("No local.properties found - skipping signing configs")

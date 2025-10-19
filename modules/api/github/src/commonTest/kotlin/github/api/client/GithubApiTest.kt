@@ -15,10 +15,10 @@
  */
 package github.api.client
 
-import actual.core.model.ServerUrl
-import actual.test.emptyMockEngine
-import actual.test.respondJson
-import actual.test.testHttpClient
+import aktual.core.model.ServerUrl
+import aktual.test.emptyMockEngine
+import aktual.test.respondJson
+import aktual.test.testHttpClient
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine

@@ -1,4 +1,4 @@
-import actual.gradle.versionName
+import aktual.gradle.versionName
 import blueprint.core.gitVersionCode
 import blueprint.core.gitVersionHash
 import blueprint.core.stringPropertyOrNull
@@ -40,7 +40,7 @@ android {
 }
 
 buildConfig {
-  packageName("actual.app.di")
+  packageName("aktual.app.di")
   generateAtSync.set(true)
 
   useKotlinOutput {
@@ -48,8 +48,8 @@ buildConfig {
     topLevelConstants = true
   }
 
-  val url = stringPropertyOrNull(key = "actual.defaultUrl")
-  val password = stringPropertyOrNull(key = "actual.defaultPassword")
+  val url = stringPropertyOrNull(key = "aktual.defaultUrl")
+  val password = stringPropertyOrNull(key = "aktual.defaultPassword")
 
   buildConfigField("BUILD_TIME_MS", System.currentTimeMillis())
   buildConfigField("GIT_HASH", gitVersionHash())

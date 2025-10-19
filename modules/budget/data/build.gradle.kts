@@ -9,7 +9,7 @@ plugins {
 sqldelight {
   databases {
     create("BudgetDatabase") {
-      packageName = "actual.budget.db"
+      packageName = "aktual.budget.db"
       schemaOutputDirectory = file("src/commonMain/sqldelight/schemas")
       verifyMigrations = true
       verifyDefinitions = true
@@ -21,9 +21,9 @@ sqldelight {
 }
 
 buildConfig {
-  packageName("actual.budget.db")
+  packageName("aktual.budget.db")
   className("DatabaseBuildConfig")
-  buildConfigField(name = "FOREIGN_KEY_CONSTRAINTS", value = boolProperty(key = "actual.db.foreignKeyConstraints"))
+  buildConfigField(name = "FOREIGN_KEY_CONSTRAINTS", value = boolProperty(key = "aktual.db.foreignKeyConstraints"))
 }
 
 kotlin {

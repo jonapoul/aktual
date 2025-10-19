@@ -1,0 +1,30 @@
+import aktual.budget.model.BankId;
+import kotlin.Boolean;
+import kotlin.uuid.Uuid;
+
+CREATE TABLE IF NOT EXISTS banks(
+  id TEXT AS Uuid PRIMARY KEY,
+  bank_id TEXT AS BankId,
+  name TEXT,
+  tombstone INTEGER AS Boolean DEFAULT 0
+);
+
+getBankId:
+SELECT bank_id
+  FROM banks
+  WHERE id = ?;
+
+getByBankId:
+SELECT id, bank_id, name
+  FROM banks
+  WHERE bank_id = ?;
+
+insert:
+INSERT INTO banks(id, bank_id, name)
+  VALUES (?, ?, ?);
+
+getAccountsWithBank:
+SELECT a.*, b.name AS bankName, b.id AS bankId FROM accounts a
+  LEFT JOIN banks b ON a.bank = b.id
+  WHERE a.tombstone = 0
+  ORDER BY sort_order, a.name;

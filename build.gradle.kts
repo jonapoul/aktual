@@ -61,13 +61,13 @@ atlas {
   pathTransforms { replace(pattern = ":modules:", replacement = ":") }
 
   moduleTypes {
-    registerByPluginId(name = "ViewModel", pluginId = "actual.module.viewmodel", color = "#914141") // pink
-    registerByPluginId(name = "DI", pluginId = "actual.module.di", color = "#a17103") // orange
-    registerByPluginId(name = "UI", pluginId = "actual.module.compose", color = "#6b6b01") // yellow
-    registerByPluginId(name = "Android", pluginId = "actual.module.android", color = "#017001") // green
-    registerByPluginId(name = "Multiplatform", pluginId = "actual.module.multiplatform", color = "#160185") // indigo
+    registerByPluginId(name = "ViewModel", pluginId = "aktual.module.viewmodel", color = "#914141") // pink
+    registerByPluginId(name = "DI", pluginId = "aktual.module.di", color = "#a17103") // orange
+    registerByPluginId(name = "UI", pluginId = "aktual.module.compose", color = "#6b6b01") // yellow
+    registerByPluginId(name = "Android", pluginId = "aktual.module.android", color = "#017001") // green
+    registerByPluginId(name = "Multiplatform", pluginId = "aktual.module.multiplatform", color = "#160185") // indigo
     registerByPathContains(name = "App", pathContains = "app:", color = "#7a0101") // red
-    registerByPluginId(name = "JVM", pluginId = "actual.module.jvm", color = "#2f015c") // violet
+    registerByPluginId(name = "JVM", pluginId = "aktual.module.jvm", color = "#2f015c") // violet
     other(color = "#808080") // grey
   }
 

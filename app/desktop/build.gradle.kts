@@ -1,5 +1,5 @@
-import actual.gradle.LICENSEE_REPORT_ASSET_NAME
-import actual.gradle.versionName
+import aktual.gradle.LICENSEE_REPORT_ASSET_NAME
+import aktual.gradle.versionName
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -12,11 +12,11 @@ plugins {
 
 compose.desktop {
   application {
-    mainClass = "actual.app.desktop.MainKt"
+    mainClass = "aktual.app.desktop.MainKt"
 
     nativeDistributions {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-      packageName = "Actual Desktop"
+      packageName = "Aktual Desktop"
       packageVersion = versionName()
       packageVersion = "1.0.0"
 
@@ -27,12 +27,12 @@ compose.desktop {
       }
 
       macOS {
-        bundleID = "actual.app.desktop"
+        bundleID = "aktual.app.desktop"
       }
 
       linux {
         shortcut = true
-        packageName = "actual.app.desktop"
+        packageName = "aktual.app.desktop"
       }
     }
   }

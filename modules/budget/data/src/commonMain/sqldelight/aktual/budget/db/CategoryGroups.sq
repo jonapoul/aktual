@@ -1,0 +1,21 @@
+import aktual.budget.model.CategoryGroupId;
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS category_groups(
+  id TEXT AS CategoryGroupId PRIMARY KEY,
+  name TEXT,
+  is_income INTEGER AS Boolean DEFAULT 0,
+  sort_order REAL,
+  tombstone INTEGER AS Boolean DEFAULT 0,
+  hidden INTEGER AS Boolean NOT NULL DEFAULT 0
+);
+
+insert:
+  INSERT OR REPLACE
+    INTO categories(id, name, is_income, sort_order, tombstone, hidden)
+    VALUES (?, ?, ?, ?, ?, ?);
+
+getWithIds:
+  SELECT * FROM category_groups
+    WHERE id IN :ids AND tombstone = 0
+    ORDER BY is_income, sort_order, id;

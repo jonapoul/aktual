@@ -1,0 +1,53 @@
+import aktual.budget.model.AccountId;
+import aktual.budget.model.PayeeId;
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS payees(
+  id TEXT AS PayeeId PRIMARY KEY,
+  name TEXT,
+  category TEXT, -- unused
+  tombstone INTEGER AS Boolean DEFAULT 0,
+  transfer_acct TEXT AS AccountId,
+  favorite INTEGER AS Boolean DEFAULT 0 DEFAULT FALSE,
+  learn_categories INTEGER DEFAULT 1
+);
+
+CREATE VIEW IF NOT EXISTS v_payees AS SELECT
+  p.id,
+  COALESCE(a.name, p.name) AS name,
+  p.transfer_acct,
+  p.tombstone,
+  p.favorite
+FROM payees p
+LEFT JOIN accounts
+  a ON (p.transfer_acct = a.id AND a.tombstone = 0)
+  -- We never want to show transfer payees that are pointing to deleted accounts.
+  -- Either this is not a transfer payee, if the account exists
+WHERE p.transfer_acct IS NULL OR a.id IS NOT NULL;
+
+getIdByTransferAccount:
+  SELECT id
+    FROM payees
+    WHERE transfer_acct = ?;
+
+getIdByName:
+  SELECT id
+    FROM payees
+    WHERE LOWER(name) = ?
+    AND tombstone = 0;
+
+getById:
+  SELECT *
+    FROM payees
+    WHERE id = ?
+    LIMIT 1;
+
+insert:
+  INSERT OR REPLACE
+    INTO payees(id, name, category, tombstone, transfer_acct, favorite, learn_categories)
+    VALUES(?,?,?,?,?,?,?);
+
+deleteById:
+  DELETE
+    FROM payees
+    WHERE id = ?;

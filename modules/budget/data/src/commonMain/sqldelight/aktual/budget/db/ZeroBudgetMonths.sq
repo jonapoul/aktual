@@ -1,0 +1,22 @@
+import aktual.budget.model.ZeroBudgetMonthId;
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS zero_budget_months(
+  id TEXT AS ZeroBudgetMonthId PRIMARY KEY,
+  buffered INTEGER AS Boolean DEFAULT 0
+);
+
+getAll:
+  SELECT * FROM zero_budget_months;
+
+update:
+  UPDATE zero_budget_months
+    SET buffered = ?
+    WHERE id = ?;
+
+idExists:
+  SELECT EXISTS(
+    SELECT 1
+      FROM zero_budget_months
+      WHERE id = ?
+  );

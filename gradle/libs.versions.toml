@@ -132,18 +132,18 @@ shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
 spotless = { id = "com.diffplug.spotless", version = "8.0.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
-convention-android-base = { id = "actual.convention.android.base" }
-convention-compose = { id = "actual.convention.compose" }
-convention-idea = { id = "actual.convention.idea" }
-convention-kotlin-jvm = { id = "actual.convention.kotlin.jvm" }
-convention-kover = { id = "actual.convention.kover" }
-convention-style = { id = "actual.convention.style" }
-convention-spotless = { id = "actual.convention.spotless" }
-convention-test = { id = "actual.convention.test" }
+convention-android-base = { id = "aktual.convention.android.base" }
+convention-compose = { id = "aktual.convention.compose" }
+convention-idea = { id = "aktual.convention.idea" }
+convention-kotlin-jvm = { id = "aktual.convention.kotlin.jvm" }
+convention-kover = { id = "aktual.convention.kover" }
+convention-style = { id = "aktual.convention.style" }
+convention-spotless = { id = "aktual.convention.spotless" }
+convention-test = { id = "aktual.convention.test" }
 
-module-android = { id = "actual.module.android" }
-module-compose = { id = "actual.module.compose" }
-module-di = { id = "actual.module.di" }
-module-jvm = { id = "actual.module.jvm" }
-module-multiplatform = { id = "actual.module.multiplatform" }
-module-viewmodel = { id = "actual.module.viewmodel" }
+module-android = { id = "aktual.module.android" }
+module-compose = { id = "aktual.module.compose" }
+module-di = { id = "aktual.module.di" }
+module-jvm = { id = "aktual.module.jvm" }
+module-multiplatform = { id = "aktual.module.multiplatform" }
+module-viewmodel = { id = "aktual.module.viewmodel" }

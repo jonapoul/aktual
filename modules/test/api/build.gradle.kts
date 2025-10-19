@@ -16,7 +16,7 @@ kotlin {
 val allowedExtensions = setOf("json", "txt")
 
 buildConfig {
-  packageName("actual.test")
+  packageName("aktual.test")
   className("Responses")
   useKotlinOutput { internalVisibility = false }
 

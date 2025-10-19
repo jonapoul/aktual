@@ -1,11 +1,11 @@
 main:
-  namespace: dev.jonpoulton.actual.app
+  namespace: dev.jonpoulton.aktual.app
   minSDK: 28
   targetSDK: 36
   permissions:
   - android.permission.ACCESS_NETWORK_STATE
   - android.permission.INTERNET
-  - dev.jonpoulton.actual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+  - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
   libraries:
   - androidx.window.extensions:
       required: false
@@ -21,8 +21,8 @@ main:
       - x86_64
   exports:
     activity:
-    - actual.app.android.ActualActivity
+    - aktual.app.android.AktualActivity
     - androidx.compose.ui.tooling.PreviewActivity
     receiver:
     - androidx.profileinstaller.ProfileInstallReceiver
-fingerprint: e09f0ac1370460c77da3cc0a06599779
+fingerprint: 60b4bcd24df8dc46930c5bcaf4f75e0b

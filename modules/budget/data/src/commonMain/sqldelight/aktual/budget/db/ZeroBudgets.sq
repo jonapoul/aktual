@@ -1,0 +1,24 @@
+import aktual.budget.model.Amount;
+import aktual.budget.model.CategoryId;
+import kotlinx.datetime.YearMonth;
+
+CREATE TABLE IF NOT EXISTS zero_budgets(
+  id TEXT PRIMARY KEY,
+  month INTEGER AS YearMonth,
+  category TEXT AS CategoryId,
+  amount INTEGER AS Amount DEFAULT 0,
+  carryover INTEGER DEFAULT 0,
+  goal INTEGER DEFAULT NULL,
+  long_goal INTEGER DEFAULT NULL
+);
+
+getWithCategory:
+  SELECT *
+    FROM zero_budgets b
+    LEFT JOIN categories c ON c.id = b.category
+    WHERE c.tombstone = 0;
+
+getCarryover:
+  SELECT carryover
+    FROM zero_budgets
+    WHERE month = ? AND category = ?;
