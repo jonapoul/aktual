@@ -1,5 +1,5 @@
-import actual.gradle.EXPERIMENTAL_MATERIAL_3
-import actual.gradle.optIn
+import aktual.gradle.EXPERIMENTAL_MATERIAL_3
+import aktual.gradle.optIn
 
 plugins {
   alias(libs.plugins.module.compose)

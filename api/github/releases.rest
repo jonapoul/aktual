@@ -5,7 +5,7 @@ GET https://api.github.com/repos/actualbudget/actual/releases/latest?per_page=1
 <> list-releases-actual.200.json
 
 ###
-# @name releases jonapoul/actual-android
-GET https://api.github.com/repos/jonapoul/actual-android/releases/latest?per_page=1
+# @name releases jonapoul/aktual
+GET https://api.github.com/repos/jonapoul/aktual/releases/latest?per_page=1
 
 <> list-releases-not-found.404.json

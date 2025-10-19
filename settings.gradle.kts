@@ -1,4 +1,4 @@
-rootProject.name = "actual-android"
+rootProject.name = "aktual"
 
 apply(from = "gradle/repositories.gradle.kts")
 

@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="app.desktop" type="JetRunConfigurationType">
-    <option name="MAIN_CLASS_NAME" value="actual.app.desktop.MainKt" />
-    <module name="actual-android.app.desktop.main" />
+    <option name="MAIN_CLASS_NAME" value="aktual.app.desktop.MainKt" />
+    <module name="aktual.app.desktop.main" />
     <shortenClasspath name="NONE" />
     <method v="2">
       <option name="Gradle.BeforeRunTask" enabled="true" tasks="shadowJar" externalProjectPath="$PROJECT_DIR$/app/desktop" vmOptions="" scriptParameters="" />

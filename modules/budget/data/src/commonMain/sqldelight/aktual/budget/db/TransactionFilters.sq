@@ -1,0 +1,22 @@
+import aktual.budget.model.Operator;
+import aktual.budget.model.TransactionFilterId;
+import kotlin.Boolean;
+import kotlinx.serialization.json.JsonArray;
+
+CREATE TABLE IF NOT EXISTS transaction_filters(
+  id TEXT AS TransactionFilterId PRIMARY KEY,
+  name TEXT,
+  conditions TEXT AS JsonArray,
+  conditions_op TEXT AS Operator DEFAULT 'and',
+  tombstone INTEGER AS Boolean DEFAULT 0
+);
+
+getIdByName:
+  SELECT id
+    FROM transaction_filters
+    WHERE tombstone = 0 AND name = ?;
+
+deleteById:
+  DELETE
+    FROM transaction_filters
+    WHERE id = ?;

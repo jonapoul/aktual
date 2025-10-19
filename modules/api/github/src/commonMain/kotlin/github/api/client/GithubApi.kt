@@ -15,11 +15,11 @@
  */
 package github.api.client
 
-import actual.codegen.GET
-import actual.codegen.KtorApi
-import actual.codegen.Path
-import actual.codegen.Query
-import actual.core.model.ServerUrl
+import aktual.codegen.GET
+import aktual.codegen.KtorApi
+import aktual.codegen.Path
+import aktual.codegen.Query
+import aktual.core.model.ServerUrl
 import github.api.model.GithubRelease
 import io.ktor.client.HttpClient
 

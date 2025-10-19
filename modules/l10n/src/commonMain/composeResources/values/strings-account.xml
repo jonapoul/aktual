@@ -1,5 +1,5 @@
 <resources>
-=  <string name="login_title">Sign in to this Actual instance</string>
+=  <string name="login_title">Sign in to this Aktual instance</string>
   <string name="login_message">If you lost your password, you likely still have access to your server to manually reset it.</string>
   <string name="login_password_hint">Password</string>
   <string name="login_sign_in">Sign In</string>
@@ -21,7 +21,7 @@
   <string name="password_failure_other">Internal error</string>
   <string name="password_failure_logged_out">Can't change password - logged out</string>
 
-  <string name="server_url_toolbar">Actual Budget</string>
+  <string name="server_url_toolbar">Aktual Budget</string>
   <string name="server_url_title">Where's the server?</string>
   <string name="server_url_menu_about">About</string>
   <string name="server_url_message">There is no server configured. After running the server, specify the URL here to use the app. You can always change this later. We will validate that Actual is running at this URL.</string>

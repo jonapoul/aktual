@@ -1,0 +1,48 @@
+import aktual.budget.model.BalanceType;
+import aktual.budget.model.CustomReportId;
+import aktual.budget.model.CustomReportMode;
+import aktual.budget.model.DateRangeType;
+import aktual.budget.model.GraphType;
+import aktual.budget.model.GroupBy;
+import aktual.budget.model.Interval;
+import aktual.budget.model.Operator;
+import aktual.budget.model.ReportCondition;
+import aktual.budget.model.ReportDate;
+import aktual.budget.model.SelectedCategory;
+import aktual.budget.model.SortBy;
+import kotlin.Boolean;
+import kotlin.collections.List;
+import kotlinx.serialization.json.JsonObject;
+
+CREATE TABLE IF NOT EXISTS custom_reports(
+  id TEXT AS CustomReportId PRIMARY KEY,
+  name TEXT,
+  start_date TEXT AS ReportDate,
+  end_date TEXT AS ReportDate,
+  date_static INTEGER AS Boolean DEFAULT 0,
+  date_range TEXT AS DateRangeType,
+  mode TEXT AS CustomReportMode DEFAULT 'total',
+  group_by TEXT AS GroupBy DEFAULT 'Category',
+  balance_type TEXT AS BalanceType DEFAULT 'Expense',
+  show_empty INTEGER AS Boolean DEFAULT 0,
+  show_offbudget INTEGER AS Boolean DEFAULT 0,
+  show_hidden INTEGER AS Boolean DEFAULT 0,
+  show_uncategorized INTEGER AS Boolean DEFAULT 0,
+  selected_categories TEXT AS List<SelectedCategory>,
+  graph_type TEXT AS GraphType DEFAULT 'BarGraph',
+  conditions TEXT AS List<ReportCondition>,
+  conditions_op TEXT AS Operator DEFAULT 'and',
+  metadata TEXT AS JsonObject,
+  interval TEXT AS Interval DEFAULT 'Monthly',
+  color_scheme TEXT,
+  tombstone INTEGER AS Boolean DEFAULT 0,
+  include_current INTEGER AS Boolean DEFAULT 0,
+  sort_by TEXT AS SortBy DEFAULT 'desc'
+);
+
+delete: DELETE FROM custom_reports WHERE id = ?;
+getById: SELECT * FROM custom_reports WHERE id = ?;
+getIdByName: SELECT id FROM custom_reports WHERE tombstone = 0 AND name = ? LIMIT 1;
+getIds: SELECT id FROM custom_reports;
+getMetadataById: SELECT metadata FROM custom_reports WHERE id = ?;
+insert: INSERT INTO custom_reports VALUES ?;

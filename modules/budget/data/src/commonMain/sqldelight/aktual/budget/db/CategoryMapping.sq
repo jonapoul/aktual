@@ -1,0 +1,21 @@
+import aktual.budget.model.CategoryId;
+
+CREATE TABLE IF NOT EXISTS category_mapping(
+  id TEXT AS CategoryId PRIMARY KEY,
+  transferId TEXT AS CategoryId
+);
+
+insert:
+  INSERT OR REPLACE
+    INTO category_mapping(id, transferId)
+    VALUES (?, ?);
+
+selectByTransferId:
+  SELECT *
+    FROM category_mapping
+    WHERE transferId = ?;
+
+update:
+  UPDATE category_mapping
+  SET transferId = ?
+  WHERE id = ?;

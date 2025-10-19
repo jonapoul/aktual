@@ -1,0 +1,15 @@
+import aktual.budget.model.ScheduleId;
+import aktual.budget.model.ScheduleJsonPathIndex;
+
+CREATE TABLE IF NOT EXISTS schedules_json_paths(
+  schedule_id TEXT AS ScheduleId PRIMARY KEY,
+  payee TEXT AS ScheduleJsonPathIndex,
+  account TEXT AS ScheduleJsonPathIndex,
+  amount TEXT AS ScheduleJsonPathIndex,
+  date TEXT AS ScheduleJsonPathIndex
+);
+
+insert:
+  INSERT OR REPLACE
+    INTO schedules_json_paths (schedule_id, payee, account, amount, date)
+    VALUES (?, ?, ?, ?, ?);
