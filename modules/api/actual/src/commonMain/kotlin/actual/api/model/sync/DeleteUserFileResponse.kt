@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.model.sync
+package aktual.api.model.sync
 
-import actual.api.model.account.FailureReason
+import aktual.api.model.account.FailureReason
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.model.account
+package aktual.api.model.account
 
-import actual.core.model.Password
-import actual.test.testEncoding
+import aktual.core.model.Password
+import aktual.test.testEncoding
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.model.account
+package aktual.api.model.account
 
-import actual.api.model.metrics.GetMetricsResponse
-import actual.core.model.bytes
-import actual.test.MetricsResponses
-import actual.test.testDecoding
+import aktual.api.model.metrics.GetMetricsResponse
+import aktual.core.model.bytes
+import aktual.test.MetricsResponses
+import aktual.test.testDecoding
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.seconds
 

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.model.sync
+package aktual.api.model.sync
 
-import actual.api.model.account.FailureReason
-import actual.core.model.Base64String
-import actual.core.model.KeyId
-import actual.core.model.base64
+import aktual.api.model.account.FailureReason
+import aktual.core.model.Base64String
+import aktual.core.model.KeyId
+import aktual.core.model.base64
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

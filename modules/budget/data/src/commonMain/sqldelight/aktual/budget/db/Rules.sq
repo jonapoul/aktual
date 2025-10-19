@@ -1,0 +1,29 @@
+import aktual.budget.model.Operator;
+import aktual.budget.model.RuleId;
+import aktual.budget.model.RuleStage;
+import kotlin.Boolean;
+import kotlinx.serialization.json.JsonArray;
+
+CREATE TABLE IF NOT EXISTS rules(
+  id TEXT AS RuleId PRIMARY KEY,
+  stage TEXT AS RuleStage,
+  conditions TEXT AS JsonArray,
+  actions TEXT AS JsonArray,
+  tombstone INTEGER AS Boolean DEFAULT 0,
+  conditions_op TEXT AS Operator DEFAULT 'and'
+);
+
+getWithConditionsAndActions:
+  SELECT *
+    FROM rules
+    WHERE conditions IS NOT NULL AND actions IS NOT NULL AND tombstone = 0;
+
+insert:
+  INSERT OR REPLACE
+    INTO rules(id, stage, conditions, actions, tombstone, conditions_op)
+    VALUES (?,?,?,?,?,?);
+
+delete:
+  DELETE
+    FROM rules
+    WHERE id = ?;

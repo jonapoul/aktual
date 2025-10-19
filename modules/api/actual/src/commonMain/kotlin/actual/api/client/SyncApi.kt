@@ -13,36 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.client
+package aktual.api.client
 
-import actual.api.model.internal.ActualHeaders
-import actual.api.model.sync.DeleteUserFileRequest
-import actual.api.model.sync.DeleteUserFileResponse
-import actual.api.model.sync.GetUserFileInfoResponse
-import actual.api.model.sync.GetUserKeyRequest
-import actual.api.model.sync.GetUserKeyResponse
-import actual.api.model.sync.ListUserFilesResponse
-import actual.budget.model.BudgetId
-import actual.codegen.Body
-import actual.codegen.GET
-import actual.codegen.Header
-import actual.codegen.KtorApi
-import actual.codegen.POST
-import actual.core.model.LoginToken
-import actual.core.model.ServerUrl
+import aktual.api.model.internal.AktualHeaders
+import aktual.api.model.sync.DeleteUserFileRequest
+import aktual.api.model.sync.DeleteUserFileResponse
+import aktual.api.model.sync.GetUserFileInfoResponse
+import aktual.api.model.sync.GetUserKeyRequest
+import aktual.api.model.sync.GetUserKeyResponse
+import aktual.api.model.sync.ListUserFilesResponse
+import aktual.budget.model.BudgetId
+import aktual.codegen.Body
+import aktual.codegen.GET
+import aktual.codegen.Header
+import aktual.codegen.KtorApi
+import aktual.codegen.POST
+import aktual.core.model.LoginToken
+import aktual.core.model.ServerUrl
 import io.ktor.client.HttpClient
 
 @KtorApi
 interface SyncApi {
   @GET("/sync/list-user-files")
   suspend fun fetchUserFiles(
-    @Header(ActualHeaders.TOKEN) token: LoginToken,
+    @Header(AktualHeaders.TOKEN) token: LoginToken,
   ): ListUserFilesResponse.Success
 
   @GET("/sync/get-user-file-info")
   suspend fun fetchUserFileInfo(
-    @Header(ActualHeaders.TOKEN) token: LoginToken,
-    @Header(ActualHeaders.FILE_ID) budgetId: BudgetId,
+    @Header(AktualHeaders.TOKEN) token: LoginToken,
+    @Header(AktualHeaders.FILE_ID) budgetId: BudgetId,
   ): GetUserFileInfoResponse.Success
 
   @POST("/sync/user-get-key")

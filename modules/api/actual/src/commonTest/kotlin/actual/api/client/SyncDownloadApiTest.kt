@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.client
+package aktual.api.client
 
-import actual.test.CoTemporaryFolder
-import actual.test.emptyMockEngine
-import actual.test.enqueueResponse
-import actual.test.latestRequestHeaders
-import actual.test.testHttpClient
+import aktual.test.CoTemporaryFolder
+import aktual.test.emptyMockEngine
+import aktual.test.enqueueResponse
+import aktual.test.latestRequestHeaders
+import aktual.test.testHttpClient
 import app.cash.burst.InterceptTest
 import app.cash.turbine.test
 import assertk.assertThat
@@ -49,7 +49,7 @@ class SyncDownloadApiTest {
     destinationPath = temporaryFolder.resolve("my-file.txt")
     syncDownloadApi = SyncDownloadApi(
       serverUrl = SERVER_URL,
-      client = testHttpClient(mockEngine, ActualJson),
+      client = testHttpClient(mockEngine, AktualJson),
       fileSystem = fileSystem,
     )
   }

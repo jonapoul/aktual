@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.client
+package aktual.api.client
 
-import actual.api.model.internal.ActualHeaders
-import actual.budget.model.BudgetId
-import actual.core.model.LoginToken
-import actual.core.model.Protocol
-import actual.core.model.ServerUrl
+import aktual.api.model.internal.AktualHeaders
+import aktual.budget.model.BudgetId
+import aktual.core.model.LoginToken
+import aktual.core.model.Protocol
+import aktual.core.model.ServerUrl
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -63,8 +63,8 @@ class SyncDownloadApi(
         host = serverUrl.baseUrl
         path("/sync/download-user-file")
       }
-      header(ActualHeaders.TOKEN, token)
-      header(ActualHeaders.FILE_ID, budgetId)
+      header(AktualHeaders.TOKEN, token)
+      header(AktualHeaders.FILE_ID, budgetId)
     }
 
     return flow {

@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.model.sync
+package aktual.api.model.sync
 
-import actual.budget.model.BudgetId
-import actual.core.model.LoginToken
+import aktual.budget.model.BudgetId
+import aktual.core.model.LoginToken
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

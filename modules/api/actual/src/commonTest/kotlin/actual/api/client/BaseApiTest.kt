@@ -13,16 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.client
+package aktual.api.client
 
-import actual.api.model.base.Build
-import actual.api.model.base.InfoResponse
-import actual.test.BaseResponses
-import actual.test.emptyMockEngine
-import actual.test.latestRequestHeaders
-import actual.test.latestRequestUrl
-import actual.test.respondJson
-import actual.test.testHttpClient
+import aktual.api.model.base.Build
+import aktual.api.model.base.InfoResponse
+import aktual.test.BaseResponses
+import aktual.test.emptyMockEngine
+import aktual.test.latestRequestHeaders
+import aktual.test.latestRequestUrl
+import aktual.test.respondJson
+import aktual.test.testHttpClient
 import alakazam.test.core.assertThrows
 import assertk.assertThat
 import assertk.assertions.isEqualTo
@@ -42,7 +42,7 @@ class BaseApiTest {
   @BeforeTest
   fun before() {
     mockEngine = emptyMockEngine()
-    baseApi = BaseApi(SERVER_URL, testHttpClient(mockEngine, ActualJson))
+    baseApi = BaseApi(SERVER_URL, testHttpClient(mockEngine, AktualJson))
   }
 
   @AfterTest

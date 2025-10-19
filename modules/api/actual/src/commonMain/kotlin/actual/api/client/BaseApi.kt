@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.client
+package aktual.api.client
 
-import actual.api.model.base.InfoResponse
-import actual.codegen.GET
-import actual.codegen.KtorApi
-import actual.core.model.ServerUrl
+import aktual.api.model.base.InfoResponse
+import aktual.codegen.GET
+import aktual.codegen.KtorApi
+import aktual.core.model.ServerUrl
 import io.ktor.client.HttpClient
 
 @KtorApi

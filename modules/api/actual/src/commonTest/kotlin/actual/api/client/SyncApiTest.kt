@@ -13,24 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.client
+package aktual.api.client
 
-import actual.api.model.account.FailureReason
-import actual.api.model.sync.EncryptMeta
-import actual.api.model.sync.GetUserFileInfoResponse
-import actual.api.model.sync.GetUserKeyRequest
-import actual.api.model.sync.GetUserKeyResponse
-import actual.api.model.sync.ListUserFilesResponse
-import actual.api.model.sync.UserFile
-import actual.api.model.sync.UserWithAccess
-import actual.budget.model.BudgetId
-import actual.core.model.KeyId
-import actual.core.model.base64
-import actual.test.SyncResponses
-import actual.test.emptyMockEngine
-import actual.test.latestRequestHeaders
-import actual.test.respondJson
-import actual.test.testHttpClient
+import aktual.api.model.account.FailureReason
+import aktual.api.model.sync.EncryptMeta
+import aktual.api.model.sync.GetUserFileInfoResponse
+import aktual.api.model.sync.GetUserKeyRequest
+import aktual.api.model.sync.GetUserKeyResponse
+import aktual.api.model.sync.ListUserFilesResponse
+import aktual.api.model.sync.UserFile
+import aktual.api.model.sync.UserWithAccess
+import aktual.budget.model.BudgetId
+import aktual.core.model.KeyId
+import aktual.core.model.base64
+import aktual.test.SyncResponses
+import aktual.test.emptyMockEngine
+import aktual.test.latestRequestHeaders
+import aktual.test.respondJson
+import aktual.test.testHttpClient
 import assertk.Assert
 import assertk.all
 import assertk.assertThat
@@ -58,7 +58,7 @@ class SyncApiTest {
   @BeforeTest
   fun before() {
     mockEngine = emptyMockEngine()
-    syncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, ActualJson))
+    syncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, AktualJson))
   }
 
   @AfterTest

@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.client
+package aktual.api.client
 
-import actual.budget.model.BudgetId
-import actual.core.model.LoginToken
-import actual.core.model.Protocol
-import actual.core.model.ServerUrl
+import aktual.budget.model.BudgetId
+import aktual.core.model.LoginToken
+import aktual.core.model.Protocol
+import aktual.core.model.ServerUrl
 
 val TOKEN = LoginToken("abc-123")
 val BUDGET_ID = BudgetId("xyz-789")

@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.model.account
+package aktual.api.model.account
 
-import actual.core.model.Empty
+import aktual.core.model.Empty
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JsonObject

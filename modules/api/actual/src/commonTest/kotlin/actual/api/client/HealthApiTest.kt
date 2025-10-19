@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.client
+package aktual.api.client
 
-import actual.api.model.health.GetHealthResponse
-import actual.test.HealthResponses
-import actual.test.emptyMockEngine
-import actual.test.respondJson
-import actual.test.testHttpClient
+import aktual.api.model.health.GetHealthResponse
+import aktual.test.HealthResponses
+import aktual.test.emptyMockEngine
+import aktual.test.respondJson
+import aktual.test.testHttpClient
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine
@@ -35,7 +35,7 @@ class HealthApiTest {
   @BeforeTest
   fun before() {
     mockEngine = emptyMockEngine()
-    healthApi = HealthApi(SERVER_URL, testHttpClient(mockEngine, ActualJson))
+    healthApi = HealthApi(SERVER_URL, testHttpClient(mockEngine, AktualJson))
   }
 
   @AfterTest

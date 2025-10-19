@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.model.metrics
+package aktual.api.model.metrics
 
-import actual.core.model.Bytes
+import aktual.core.model.Bytes
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

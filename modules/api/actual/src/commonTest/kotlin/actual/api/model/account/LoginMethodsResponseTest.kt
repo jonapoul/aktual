@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package actual.api.model.account
+package aktual.api.model.account
 
-import actual.core.model.LoginMethod.Password
-import actual.test.AccountResponses
-import actual.test.testDecoding
+import aktual.core.model.LoginMethod.Password
+import aktual.test.AccountResponses
+import aktual.test.testDecoding
 import kotlin.test.Test
 
 class LoginMethodsResponseTest {

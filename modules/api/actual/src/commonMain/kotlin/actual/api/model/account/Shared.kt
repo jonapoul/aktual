@@ -18,10 +18,10 @@
   "ktlint:standard:filename",
 )
 
-package actual.api.model.account
+package aktual.api.model.account
 
-import actual.api.model.internal.BoolAsInt
-import actual.core.model.LoginMethod
+import aktual.api.model.internal.BoolAsInt
+import aktual.core.model.LoginMethod
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
