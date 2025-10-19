@@ -5,6 +5,8 @@ on:
     paths:
       - "**.kt"
       - "**.kts"
+      - "scripts/ktlint*"
+      - ".run/ktlint*"
 
 permissions:
   contents: read
