@@ -31,8 +31,8 @@ fun Source.readBytes() = buffer().use { it.readByteArray() }
 fun Source.copyTo(file: File) = copyTo(file.sink())
 
 fun Source.copyTo(sink: Sink): Unit = buffer().use { source ->
-  sink.buffer().use { sink ->
-    sink.writeAll(source)
+  sink.buffer().use { buffer ->
+    buffer.writeAll(source)
   }
 }
 

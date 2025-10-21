@@ -87,8 +87,8 @@ class BudgetLocalPreferencesTest {
 
     // when
     buildPreferences(metadata)
-    preferences.update { metadata ->
-      metadata + mapOf(
+    preferences.update { existing ->
+      existing + mapOf(
         "some-new-key" to 123,
         "budgetName" to "Hello World",
       )

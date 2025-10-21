@@ -2,14 +2,14 @@ package aktual.gradle
 
 import blueprint.core.invoke
 import blueprint.core.libs
-import io.gitlab.arturbosch.detekt.Detekt
-import io.gitlab.arturbosch.detekt.DetektPlugin
-import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import dev.detekt.gradle.Detekt
+import dev.detekt.gradle.extensions.DetektExtension
+import dev.detekt.gradle.plugin.DetektPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.registering
@@ -21,9 +21,9 @@ class ConventionDetekt : Plugin<Project> {
       apply(DetektPlugin::class)
     }
 
-    extensions.getByType(DetektExtension::class).apply {
+    extensions.configure<DetektExtension> {
       config.setFrom(rootProject.file("config/detekt.yml"))
-      buildUponDefaultConfig = true
+      buildUponDefaultConfig.set(true)
     }
 
     val detektTasks = tasks

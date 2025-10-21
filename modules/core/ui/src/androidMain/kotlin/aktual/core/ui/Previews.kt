@@ -45,7 +45,7 @@ fun PreviewContextConfigurationEffect() {
   }
 }
 
-abstract class PreviewParameters<T>(private val collection: Collection<T>) : PreviewParameterProvider<T> {
+open class PreviewParameters<T>(private val collection: Collection<T>) : PreviewParameterProvider<T> {
   override val values: Sequence<T> get() = collection.asSequence()
 
   constructor(vararg values: T) : this(values.toList())

@@ -33,11 +33,11 @@ private class ConcatSource(sources: Iterable<Source>) : Source {
 
   override fun read(sink: Buffer, byteCount: Long): Long {
     while (current != null) {
-      val result = current!!.read(sink, byteCount)
+      val result = current?.read(sink, byteCount) ?: -1L
       if (result != -1L) {
         return result
       } else {
-        current!!.close()
+        current?.close()
         current = iterator.nextOrNull()
       }
     }

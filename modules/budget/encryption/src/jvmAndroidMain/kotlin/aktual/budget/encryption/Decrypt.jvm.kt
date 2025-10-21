@@ -48,8 +48,8 @@ actual fun Source.decryptToSink(
   val taggedSource = this + authTagBuffer
 
   CipherSource(taggedSource.buffer(), cipher).buffer().use { source ->
-    sink.buffer().use { sink ->
-      sink.writeAll(source)
+    sink.buffer().use { s ->
+      s.writeAll(source)
     }
   }
 }

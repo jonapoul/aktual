@@ -32,7 +32,7 @@ class TemporaryFolder(
   private lateinit var mutableRoot: Path
   override val root: Path get() = mutableRoot
 
-  override fun intercept(testFunction: TestFunction) = try {
+  override fun intercept(testFunction: TestFunction): Unit = try {
     mutableRoot = createTempDirectory().toOkioPath()
     testFunction()
   } finally {

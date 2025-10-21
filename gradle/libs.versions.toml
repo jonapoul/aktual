@@ -114,7 +114,7 @@ burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.4.0" }
 compose = { id = "org.jetbrains.compose", version = "1.10.0-alpha02" }
 composeHotReload = { id = "org.jetbrains.compose.hot-reload", version = "1.0.0-rc02" }
-detekt = { id = "io.gitlab.arturbosch.detekt", version = "1.23.8" }
+detekt = { id = "dev.detekt", version = "2.0.0-alpha.1" }
 doctor = { id = "com.osacky.doctor", version = "0.12.1" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
