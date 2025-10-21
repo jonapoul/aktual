@@ -54,6 +54,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import logcat.logcat
 
+@Suppress("AbstractClassCanBeConcreteClass")
 abstract class RootViewModel(
   protected val appScope: CoroutineScope,
   protected val contexts: CoroutineContexts,

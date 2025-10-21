@@ -2,19 +2,19 @@
 complexity:
   LongParameterList:
     ignoreDefaultParameters: true
-    functionThreshold: 10
-    constructorThreshold: 10
+    allowedFunctionParameters: 10
+    allowedConstructorParameters: 10
   TooManyFunctions:
-    thresholdInObjects: 20
-    thresholdInClasses: 20
-    thresholdInInterfaces: 20
-    thresholdInFiles: 20
+    allowedFunctionsPerObject: 20
+    allowedFunctionsPerClass: 20
+    allowedFunctionsPerInterface: 20
+    allowedFunctionsPerFile: 20
     ignorePrivate: true
   LongMethod:
-    threshold: 100
+    allowedLines: 100
   CyclomaticComplexMethod:
     ignoreSingleWhenExpression: true
-    threshold: 20
+    allowedComplexity: 20
 
 coroutines:
   SuspendFunSwallowedCancellation:
@@ -37,6 +37,10 @@ naming:
   FunctionNaming:
     functionPattern: "[a-zA-Z][a-zA-Z0-9]*"
 
+potential-bugs:
+  ImplicitDefaultLocale:
+    active: false
+
 style:
   MaxLineLength:
     maxLineLength: 120
@@ -47,14 +51,12 @@ style:
       - "Preview"
       - "SingleScreenPreview"
       - "TripleScreenPreview"
-  UnusedPrivateMember:
+  UnusedPrivateFunction:
     ignoreAnnotated:
       - "Preview"
       - "SingleScreenPreview"
       - "TripleScreenPreview"
   ForbiddenComment:
-    active: false
-  UnnecessaryAbstractClass:
     active: false
   ReturnCount:
     max: 5

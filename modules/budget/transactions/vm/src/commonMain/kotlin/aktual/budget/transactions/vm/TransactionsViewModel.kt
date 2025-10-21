@@ -100,10 +100,10 @@ class TransactionsViewModel(
   init {
     budgetGraph.throwIfWrongBudget(budgetId)
 
-    when (val spec = spec.accountSpec) {
+    when (val s = spec.accountSpec) {
       is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }
       is AccountSpec.SpecificAccount -> viewModelScope.launch {
-        val account = accountsDao[spec.id] ?: error("No account matching $spec")
+        val account = accountsDao[s.id] ?: error("No account matching $s")
         mutableLoadedAccount.update { SpecificAccount(account) }
       }
     }
@@ -156,7 +156,7 @@ class TransactionsViewModel(
 
   private fun toDatedTransactions(datedIds: List<DatedId>) = datedIds
     .groupBy { it.date }
-    .map { (date, datedIds) -> DatedTransactions(date, datedIds.map { it.id }.toImmutableList()) }
+    .map { (date, ids) -> DatedTransactions(date, ids.map { it.id }.toImmutableList()) }
     .toImmutableList()
 
   private fun toTransaction(data: GetById): Transaction = with(data) {

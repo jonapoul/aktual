@@ -24,7 +24,7 @@ fun <T> SqlDriver.lastInsertRowId(mapper: SqlCursor.(index: Int) -> T?): T {
     identifier = null,
     parameters = 0,
     sql = "SELECT last_insert_rowid()",
-    mapper = { cursor -> QueryResult.Value(cursor.mapper(0)!!) },
+    mapper = { cursor -> QueryResult.Value(cursor.mapper(0) ?: error("No value matching mapper!")) },
   )
   return result.value
 }
