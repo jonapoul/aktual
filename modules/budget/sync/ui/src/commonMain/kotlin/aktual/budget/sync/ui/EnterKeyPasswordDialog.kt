@@ -118,7 +118,7 @@ internal fun Content(
         .fillMaxWidth()
         .focusRequester(keyboardFocusRequester(keyboard)),
       value = input.value,
-      onValueChange = { input -> onAction(SyncBudgetAction.EnterKeyPassword(Password(input))) },
+      onValueChange = { i -> onAction(SyncBudgetAction.EnterKeyPassword(Password(i))) },
       placeholderText = Strings.syncPasswordDialogPlaceholder,
       singleLine = true,
       visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
