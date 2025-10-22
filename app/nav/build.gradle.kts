@@ -23,6 +23,7 @@ kotlin {
     implementation(project(":modules:core:ui"))
     implementation(compose.material3)
     implementation(libs.jetbrains.navigation)
+    implementation(libs.jetbrains.savedstate)
     implementation(libs.logcat)
   }
 }

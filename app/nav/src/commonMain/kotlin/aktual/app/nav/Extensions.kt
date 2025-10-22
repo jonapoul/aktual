@@ -10,20 +10,17 @@ import androidx.navigation.navOptions
 import logcat.logcat
 
 internal fun <T : Any> NavHostController.debugNav(route: T, builder: NavOptionsBuilder.() -> Unit) {
-  printBackStack()
-  logcat.v("debugNavigate") { "debugNavigate to $route with builder" }
+  logcat.v(TAG) { "Nav to $route with builder - backStack=[$backStack]" }
   navigate(route, navOptions(builder))
 }
 
 internal fun <T : Any> NavHostController.debugNav(route: T) {
-  printBackStack()
-  logcat.v("debugNavigate") { "debugNavigate to $route" }
+  logcat.v(TAG) { "Nav to $route - backStack=[$backStack]" }
   navigate(route)
 }
 
-@Suppress("RestrictedApi")
-private fun NavHostController.printBackStack() {
-  val backstack = currentBackStack.value
-  val str = backstack.joinToString { it.destination.toString() }
-  logcat.v("printBackStack") { "backstack = $str" }
+private val NavHostController.backStack get() = currentBackStack.value.joinToString { entry ->
+  "route=${entry.destination.route.toString()},args=${entry.arguments}"
 }
+
+private const val TAG = "debugNavigate"

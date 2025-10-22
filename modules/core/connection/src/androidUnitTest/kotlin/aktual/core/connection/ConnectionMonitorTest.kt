@@ -112,6 +112,37 @@ class ConnectionMonitorTest {
   }
 
   @Test
+  fun `Remove APIs when URL is cleared`() = runTest {
+    before()
+
+    // Given we've set a URL and started
+    preferences.serverUrl.set(ServerUrl.Demo)
+    advanceUntilIdle()
+
+    apiStateHolder.test {
+      // Nothing initially
+      assertNull(awaitItem())
+
+      // when the monitor starts
+      connectionMonitor.start()
+
+      // then an API is built and emitted
+      assertNotNull(awaitItem())
+
+      // When the URL is cleared
+      preferences.serverUrl.delete()
+      advanceUntilIdle()
+
+      // Then the null API is emitted
+      assertNull(awaitItem())
+
+      // and nothing else is done
+      expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Ignore URL changes if stopped`() = runTest {
     before()
 
