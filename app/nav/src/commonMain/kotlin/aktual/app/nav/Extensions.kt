@@ -20,7 +20,7 @@ internal fun <T : Any> NavHostController.debugNav(route: T) {
 }
 
 private val NavHostController.backStack get() = currentBackStack.value.joinToString { entry ->
-  "route=${entry.destination.route.toString()},args=${entry.arguments}"
+  "route=${entry.destination.route},args=${entry.arguments}"
 }
 
 private const val TAG = "debugNavigate"

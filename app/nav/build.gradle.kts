@@ -19,10 +19,10 @@ kotlin {
     api(project(":modules:settings:ui"))
     api(compose.components.resources)
     api(compose.runtime)
+    api(libs.jetbrains.navigation)
     api(libs.molecule)
     implementation(project(":modules:core:ui"))
     implementation(compose.material3)
-    implementation(libs.jetbrains.navigation)
     implementation(libs.jetbrains.savedstate)
     implementation(libs.logcat)
   }

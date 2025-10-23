@@ -21,14 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun AktualNavHost(
+  nav: NavHostController,
   isServerUrlSet: Boolean,
   loginToken: LoginToken?,
   modifier: Modifier = Modifier,
-  nav: NavHostController = rememberNavController(),
 ) {
   NavHost(
     modifier = modifier,
