@@ -24,6 +24,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.compose.rememberNavController
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -86,6 +87,7 @@ private fun Content(
     ) {
       AktualTheme(colorSchemeType) {
         AktualAppContent(
+          navController = rememberNavController(),
           isPrivacyEnabled = isPrivacyEnabled,
           numberFormat = numberFormat,
           hideFraction = hideFraction,

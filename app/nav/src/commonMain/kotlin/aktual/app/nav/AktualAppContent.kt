@@ -18,9 +18,11 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavHostController
 
 @Composable
 fun AktualAppContent(
+  navController: NavHostController,
   isPrivacyEnabled: Boolean,
   numberFormat: NumberFormat,
   hideFraction: Boolean,
@@ -36,6 +38,7 @@ fun AktualAppContent(
   ) {
     AktualTheme(colorSchemeType) {
       AktualAppLayout(
+        navController = navController,
         isServerUrlSet = isServerUrlSet,
         loginToken = loginToken,
         bottomBarState = bottomBarState,
@@ -46,6 +49,7 @@ fun AktualAppContent(
 
 @Composable
 private fun AktualAppLayout(
+  navController: NavHostController,
   isServerUrlSet: Boolean,
   loginToken: LoginToken?,
   bottomBarState: BottomBarState,
@@ -56,6 +60,7 @@ private fun AktualAppLayout(
 ) {
   AktualNavHost(
     modifier = Modifier.fillMaxWidth(),
+    nav = navController,
     isServerUrlSet = isServerUrlSet,
     loginToken = loginToken,
   )

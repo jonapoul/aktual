@@ -89,7 +89,10 @@ private class SettingsNavigatorImpl(private val nav: NavHostController) : Settin
 
 private class SyncBudgetNavigatorImpl(private val nav: NavHostController) : SyncBudgetNavigator {
   override fun back() = nav.popBackStack()
-  override fun toBudget(token: LoginToken, budgetId: BudgetId) = nav.debugNav(TransactionsNavRoute(token, budgetId))
+  override fun toBudget(token: LoginToken, budgetId: BudgetId) =
+    nav.debugNav(TransactionsNavRoute(token, budgetId)) {
+      popUpTo<ListBudgetsNavRoute> { inclusive = false }
+    }
 }
 
 private class TransactionsNavigatorImpl(private val nav: NavHostController) : TransactionsNavigator {

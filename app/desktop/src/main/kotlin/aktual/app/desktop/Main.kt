@@ -27,6 +27,8 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
@@ -58,6 +60,9 @@ fun main() = application(exitProcessOnExit = true) {
     viewModel.start()
   }
 
+  val navController = rememberNavController()
+  val keyHandler = remember { KeyboardEventHandler(navController) }
+
   Window(
     title = Strings.appName,
     icon = Drawables.appIcon48,
@@ -65,6 +70,8 @@ fun main() = application(exitProcessOnExit = true) {
     enabled = true,
     focusable = true,
     state = state,
+    onKeyEvent = keyHandler::onKeyEvent,
+    onPreviewKeyEvent = keyHandler::onPreviewKeyEvent,
     onCloseRequest = {
       logcat.i { "onCloseRequest" }
       windowPrefs.save(state)
@@ -73,6 +80,7 @@ fun main() = application(exitProcessOnExit = true) {
     },
   ) {
     WindowContents(
+      navController = navController,
       viewModel = viewModel,
       viewModelStoreOwner = viewModelStoreOwner,
       factory = factory,
@@ -82,6 +90,7 @@ fun main() = application(exitProcessOnExit = true) {
 
 @Composable
 private fun WindowContents(
+  navController: NavHostController,
   viewModel: AktualDesktopViewModel,
   viewModelStoreOwner: ViewModelStoreOwner,
   factory: ViewModelFactory,
@@ -104,6 +113,7 @@ private fun WindowContents(
   ) {
     AktualTheme(colorSchemeType) {
       AktualAppContent(
+        navController = navController,
         isPrivacyEnabled = isPrivacyEnabled,
         numberFormat = numberFormat,
         hideFraction = hideFraction,

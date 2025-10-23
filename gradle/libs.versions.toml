@@ -45,6 +45,7 @@ detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.27" 
 haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.6.10" }
 jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.1" }
 jetbrains-lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.9.5" }
+jetbrains-savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version = "1.3.5" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinpoet-core = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
