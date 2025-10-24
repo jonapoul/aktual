@@ -1,3 +1,7 @@
+/**
+ * Copyright 2025 Jon Poulton
+ * SPDX-License-Identifier: Apache-2.0
+ */
 package aktual.budget.list.ui
 
 import androidx.compose.foundation.layout.Row
