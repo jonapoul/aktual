@@ -1,6 +1,7 @@
 package aktual.gradle
 
 import com.android.build.api.dsl.LibraryExtension
+import com.android.build.api.dsl.Packaging
 import com.android.build.gradle.LibraryPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -25,9 +26,7 @@ class ConventionAndroidLibrary : Plugin<Project> {
         prefabPublishing = false
       }
 
-      packaging {
-        resources.excludes.add("META-INF/*")
-      }
+      packaging.configurePackaging()
 
       buildTypes.configureEach {
         // If you enable these with Kover in the same module, you'll get jacoco being loaded twice.
@@ -37,4 +36,8 @@ class ConventionAndroidLibrary : Plugin<Project> {
       }
     }
   }
+}
+
+internal fun Packaging.configurePackaging() {
+  resources.excludes.add("META-INF/*")
 }

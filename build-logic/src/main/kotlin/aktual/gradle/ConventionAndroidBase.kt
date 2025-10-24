@@ -16,11 +16,7 @@ class ConventionAndroidBase : Plugin<Project> {
     androidBaseBlueprint()
 
     extensions.findByType(CommonExtension::class)?.apply {
-      // ":modules:path:to:module" -> "aktual.path.to.module", or ":app-android" -> "aktual.app.android"
-      namespace = "aktual" + path
-        .removePrefix(":modules")
-        .split(":", "-")
-        .joinToString(".")
+      namespace = buildNamespace()
 
       testOptions {
         unitTests {
@@ -43,3 +39,9 @@ class ConventionAndroidBase : Plugin<Project> {
     }
   }
 }
+
+// ":modules:path:to:module" -> "aktual.path.to.module", or ":app-android" -> "aktual.app.android"
+internal fun Project.buildNamespace() = "aktual" + path
+  .removePrefix(":modules")
+  .split(":", "-")
+  .joinToString(".")
