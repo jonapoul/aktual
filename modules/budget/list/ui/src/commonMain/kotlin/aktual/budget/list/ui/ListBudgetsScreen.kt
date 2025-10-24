@@ -154,63 +154,6 @@ internal fun ListBudgetsScaffold(
 }
 
 @Composable
-private inline fun TopBarActions(
-  crossinline onAction: (ListBudgetsAction) -> Unit,
-) = Row {
-  BasicIconButton(
-    modifier = Modifier.padding(horizontal = 5.dp),
-    onClick = { onAction(OpenSettings) },
-    imageVector = Icons.Filled.Settings,
-    contentDescription = Strings.listBudgetsSettings,
-    colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
-  )
-
-  var showMenu by remember { mutableStateOf(false) }
-  BasicIconButton(
-    modifier = Modifier.padding(horizontal = 5.dp),
-    onClick = { showMenu = !showMenu },
-    imageVector = Icons.Filled.MoreVert,
-    contentDescription = Strings.listBudgetsMenu,
-    colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
-  )
-
-  DropdownMenu(
-    expanded = showMenu,
-    onDismissRequest = { showMenu = false },
-  ) {
-    val serverText = Strings.listBudgetsChangeServer
-    DropdownMenuItem(
-      text = { Text(serverText) },
-      onClick = {
-        showMenu = false
-        onAction(ChangeServer)
-      },
-      leadingIcon = { Icon(Icons.Filled.Cloud, contentDescription = serverText) },
-    )
-
-    val passwordText = Strings.listBudgetsChangePassword
-    DropdownMenuItem(
-      text = { Text(passwordText) },
-      onClick = {
-        showMenu = false
-        onAction(ChangePassword)
-      },
-      leadingIcon = { Icon(Icons.Filled.Key, contentDescription = passwordText) },
-    )
-
-    val aboutText = Strings.listBudgetsAbout
-    DropdownMenuItem(
-      text = { Text(aboutText) },
-      onClick = {
-        showMenu = false
-        onAction(OpenAbout)
-      },
-      leadingIcon = { Icon(Icons.Filled.Info, contentDescription = aboutText) },
-    )
-  }
-}
-
-@Composable
 private fun ScaffoldTitle(theme: Theme) = Text(
   text = Strings.listBudgetsToolbar,
   maxLines = 1,

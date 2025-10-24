@@ -9,6 +9,7 @@
   <string name="list_budgets_encrypted_with_key">This file is encrypted and you do not have the key for it.</string>
   <string name="list_budgets_offline">This is a cloud-based file but its state is unknown because you are offline.</string>
   <string name="list_budgets_unencrypted">This file is unencrypted.</string>
+  <string name="list_budgets_refresh">Refresh</string>
 
   <string name="budget_state_local">Local</string>
   <string name="budget_state_remote">Remote</string>
