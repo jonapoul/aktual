@@ -1,0 +1,330 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## Project Overview
+
+Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal budgeting software](https://github.com/actualbudget/actual). The project supports Android and Desktop (JVM) platforms with shared Kotlin code. This is a pet project and not affiliated with the main Actual project.
+
+## Build Commands
+
+### Building
+```bash
+# Build everything
+./gradlew build
+
+# Build Android app
+./gradlew :app:android:build
+
+# Build Desktop app
+./gradlew :app:desktop:build
+
+# Create Desktop distribution
+./gradlew :app:desktop:packageDistributionForCurrentOS
+```
+
+### Testing
+```bash
+# Run all tests across all targets
+./gradlew allTests
+
+# Run tests for a specific module
+./gradlew :modules:account:vm:test
+
+# Run all checks (includes tests, detekt, and other verifications)
+./gradlew check
+```
+
+### Code Quality
+```bash
+# Run detekt static analysis
+./gradlew detektCheck
+
+# Format code with Spotless. Run this after creating any new files
+./gradlew spotlessApply
+
+# Check code formatting
+./gradlew spotlessCheck
+
+# Format code
+./scripts/ktlintFormat.sh
+
+# Generate code coverage report
+./gradlew koverHtmlReport
+```
+
+### Development
+```bash
+# Run Android app
+./gradlew :app:android:installDebug
+
+# Run Desktop app
+./gradlew :app:desktop:run
+
+# Generate dependency graph visualization. Only needs to be run when changing dependencies between gradle modules
+./gradlew atlasGenerate
+
+# Clean build artifacts
+./gradlew clean
+```
+
+## Architecture
+
+### Module Organization
+
+The project follows a strict **feature-based modular architecture** with clear layer separation:
+
+```
+/app                    # Application entry points
+  /android              # Android app
+  /desktop              # Desktop app (JVM)
+  /di                   # Application-level DI setup
+  /nav                  # Navigation infrastructure
+
+/modules
+  /feature              # Feature modules follow: domain/ui/vm pattern
+    /domain             # Business logic, use cases, repositories
+    /ui                 # Compose UI screens and components
+    /vm                 # ViewModels with presentation logic
+
+  /core                 # Shared infrastructure
+    /connection         # Network connectivity utilities
+    /di                 # Core DI abstractions (AppGraph, ViewModelGraph, BudgetGraph)
+    /model              # Core domain models (LoginToken, ServerUrl, etc.)
+    /ui                 # Shared UI components, themes, Material3 setup
+
+  /api                  # API clients
+    /actual             # Actual server API client
+    /builder            # API builder utilities
+    /github             # GitHub API client
+
+  /budget               # Budget feature modules
+    /data               # SQLDelight database layer
+    /encryption         # Budget encryption
+    /model              # Budget domain models
+    /list               # Budget list feature (ui + vm)
+    /reports            # Reports feature (ui + vm)
+    /sync               # Sync feature (ui + vm)
+    /transactions       # Transactions feature (ui + vm)
+
+  /test                 # Test utilities
+    /kotlin             # Common test utilities (AssertK, Turbine, MockK)
+    /android            # Android test utilities (Robolectric)
+    /compose            # Compose test utilities
+    /di                 # Test DI utilities
+    /api                # API test utilities
+```
+
+### Layer Responsibilities
+
+**Domain Layer** (`domain` modules):
+- Contains business logic, use cases, and repository interfaces
+- No UI dependencies, pure Kotlin
+- Dependencies: Core models, API clients, preferences
+- Example: `LoginRequester` handles authentication logic
+
+**ViewModel Layer** (`vm` modules):
+- Presentation logic and state management
+- Uses **Molecule** for reactive composition (`launchMolecule`)
+- Exposes `StateFlow` for UI state
+- Registered in Metro DI with `@ViewModelKey` and `@ContributesIntoMap`
+- Dependencies: Domain layer, Core DI, Lifecycle ViewModel
+
+**UI Layer** (`ui` modules):
+- Jetpack Compose screens and components (Material3)
+- Stateless composables that collect state from ViewModels
+- Retrieves ViewModels via `metroViewModel()` composable
+- Navigator interfaces for navigation actions
+- Dependencies: VM layer (API), Core UI, L10n
+
+### Dependency Injection (Metro)
+
+The project uses **Metro** (by Zac Sweers), a modern KSP-based DI framework:
+
+**Scopes:**
+- `AppScope` - Application-level singletons
+- `ViewModelScope` - ViewModel instances
+- `BudgetScope` - Budget-specific instances (per-budget data)
+
+**Core DI Structure:**
+- `AppGraph` - Root DI graph, creates ViewModelGraph and BudgetGraph
+- `ViewModelGraph` - Provides ViewModels via multibinding map
+- `BudgetGraph` - Budget-scoped dependencies
+
+**ViewModel Registration:**
+```kotlin
+@Inject
+@ViewModelKey(YourViewModel::class)
+@ContributesIntoMap(ViewModelScope::class)
+class YourViewModel(...) : ViewModel()
+```
+
+**Assisted Injection for runtime parameters:**
+```kotlin
+@AssistedInject
+class YourViewModel(
+  @Assisted private val runtimeParam: Type,
+  // ... injected dependencies
+) : ViewModel()
+
+@AssistedFactory
+@AssistedFactoryKey(Factory::class)
+@ContributesIntoMap(ViewModelScope::class)
+fun interface Factory : ViewModelAssistedFactory {
+  fun create(runtimeParam: Type): YourViewModel
+}
+```
+
+**Retrieving ViewModels in Compose:**
+```kotlin
+@Composable
+fun YourScreen(viewModel: YourViewModel = metroViewModel()) {
+  val state by viewModel.state.collectAsStateWithLifecycle()
+  // UI composition
+}
+```
+
+### Navigation
+
+Uses **Jetpack Navigation Compose** with type-safe routes defined in `/app/nav/`:
+
+- Serializable route objects (e.g., `@Serializable data class TransactionsNavRoute(val token: LoginToken, val budgetId: BudgetId)`)
+- Centralized `AktualNavHost` composable
+- Navigator interfaces passed to screens for navigation actions
+- Type-safe parameter passing with custom `NavType` implementations
+
+### Build System
+
+**Convention Plugins** (`/build-logic`):
+The project uses Gradle convention plugins to centralize build configuration:
+
+**Module Plugins** (use these when creating new modules):
+- `aktual.module.multiplatform` - Base KMP module (jvm + android targets)
+- `aktual.module.compose` - Multiplatform + Compose + Material3
+- `aktual.module.viewmodel` - Compose + Molecule + lifecycle-viewmodel
+- `aktual.module.di` - Multiplatform + Metro DI
+- `aktual.module.android` - Android-only module
+- `aktual.module.jvm` - JVM-only module
+
+**Convention Plugins** (applied automatically):
+- `aktual.convention.kotlin.base` - Kotlin compilation settings
+- `aktual.convention.compose` - Compose compiler configuration
+- `aktual.convention.test` - Test dependencies
+- `aktual.convention.detekt` - Static analysis
+- `aktual.convention.kover` - Code coverage
+- `aktual.convention.spotless` - Code formatting
+
+**Key Build Properties:**
+- Java version: 21
+- Min SDK: 28
+- Target/Compile SDK: 36
+- KSP2 enabled
+- Configuration cache enabled
+
+### Key Technologies
+
+**Core Stack:**
+- Kotlin Multiplatform (2.2.21)
+- Jetpack Compose (1.9.4) with Material3
+- Kotlin Coroutines & Flow (1.10.2)
+- Lifecycle ViewModel
+
+**Specialized Libraries:**
+- **Molecule** - Reactive composition in ViewModels (alternative to MVI frameworks)
+- **Metro** - KSP-based dependency injection
+- **SQLDelight** (2.2.0-SNAPSHOT) - Type-safe SQL database
+- **Ktor** (3.3.1) - HTTP client
+- **Kotlinx Serialization** - JSON serialization
+- **Navigation Compose** - Type-safe navigation
+
+**Testing:**
+- **AssertK** - Fluent assertions
+- **Turbine** - Flow testing
+- **MockK** - Mocking framework
+- **Burst** - Parameterized tests
+- **Robolectric** - Android unit tests without emulator
+
+## Development Patterns
+
+### Creating a New Feature Module
+
+1. **Create module directories:**
+   ```
+   /modules/yourfeature/domain
+   /modules/yourfeature/vm
+   /modules/yourfeature/ui
+   ```
+
+2. **Add to `settings.gradle.kts`:**
+   ```kotlin
+   module("yourfeature:domain")
+   module("yourfeature:ui")
+   module("yourfeature:vm")
+   ```
+
+3. **Create `build.gradle.kts` for each module:**
+   ```kotlin
+   // domain/build.gradle.kts
+   plugins {
+     id("aktual.module.multiplatform")
+   }
+
+   // vm/build.gradle.kts
+   plugins {
+     id("aktual.module.viewmodel")
+   }
+
+   // ui/build.gradle.kts
+   plugins {
+     id("aktual.module.compose")
+   }
+   ```
+
+4. **Set up dependencies:**
+   - Domain: Depend on core models, API clients
+   - VM: Depend on domain (API), core DI (API)
+   - UI: Depend on VM (API), core UI (API), L10n
+
+### Testing Patterns
+
+**ViewModel tests** use Turbine for Flow testing:
+```kotlin
+@Test
+fun `test state changes`() = runTest {
+  viewModel.stateFlow.test {
+    viewModel.onAction()
+    assertEquals(expectedState, awaitItem())
+  }
+}
+```
+
+**Robolectric** is used for Android unit tests - ViewModels and other Android-dependent code can be tested without an emulator.
+
+### Code Generation
+
+**KSP** is used for generating API requests, implemented in the `:modules:codegen:ksp` module as a KSP processor. This generates implementations for creating KSP requests.
+
+### Module Dependencies
+
+**Visibility:**
+- Use `api()` for dependencies that leak into the module's public API
+- Use `implementation()` for internal dependencies
+- Test modules are auto-included by convention plugins
+
+**Typical dependency patterns:**
+- UI → VM (api) → Domain (api) → Core Models (api)
+- All modules can depend on: Core UI, L10n, Logging
+
+To see a full picture of dependencies between modules, see the `chart.dot` files in each module's root directory.
+
+## Important Notes
+
+- **Molecule Usage**: ViewModels use Molecule's `launchMolecule` for reactive composition. This is an alternative to traditional MVI patterns - state is composed reactively using Compose-style code inside ViewModels.
+
+- **Metro vs Dagger/Hilt**: This project uses Metro instead of Dagger/Hilt for better KMP support and faster build times with KSP.
+
+- **SQLDelight Snapshots**: The project uses SQLDelight snapshot versions for latest KMP features. Check `/gradle/libs.versions.toml` for current version.
+
+- **Type Safety**: Navigation routes, DI keys, SQL queries, and JSON serialization are all type-safe via code generation.
+
+- **Multiplatform First**: All code should be in common sourcesets by default. Only use platform-specific code (`androidMain`, `jvmMain`) when absolutely necessary.
