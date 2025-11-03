@@ -145,7 +145,9 @@ private object DbMetadataSerializer : KSerializer<DbMetadata> {
 
   override fun serialize(encoder: Encoder, value: DbMetadata) = delegate.serialize(
     encoder = encoder,
-    value = value.associate { (k, v) -> k.name to k.encode(v) },
+    value = value
+      .mapNotNull { (k, v) -> if (v == null) null else k to v }
+      .associate { (k, v) -> k.name to k.encode(v) },
   )
 
   override fun deserialize(decoder: Decoder): DbMetadata {
