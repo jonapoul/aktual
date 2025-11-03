@@ -1,0 +1,15 @@
+plugins {
+  alias(libs.plugins.module.multiplatform)
+  alias(libs.plugins.kotlin.serialization)
+}
+
+kotlin {
+  commonMainDependencies {
+    api(libs.preferences.core)
+    api(project(":aktual-core:model"))
+  }
+
+  androidMainDependencies {
+    implementation(libs.preferences.android)
+  }
+}

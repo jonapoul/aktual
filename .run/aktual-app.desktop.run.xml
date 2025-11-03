@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="aktual-app.desktop" type="JetRunConfigurationType">
+    <option name="MAIN_CLASS_NAME" value="aktual.app.desktop.MainKt" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Gradle.BeforeRunTask" enabled="false" tasks="shadowJar" externalProjectPath="$PROJECT_DIR$/aktual-app/desktop" vmOptions="" scriptParameters="" />
+    </method>
+  </configuration>
+</component>

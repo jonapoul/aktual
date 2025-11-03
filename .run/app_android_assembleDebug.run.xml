@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="app:android:assembleDebug" />
+          <option value="aktual-app:android:assembleDebug" />
         </list>
       </option>
       <option name="vmOptions" />

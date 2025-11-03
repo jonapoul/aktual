@@ -14,13 +14,13 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./gradlew build
 
 # Build Android app
-./gradlew :app:android:build
+./gradlew :aktual-app:android:build
 
 # Build Desktop app
-./gradlew :app:desktop:build
+./gradlew :aktual-app:desktop:build
 
 # Create Desktop distribution
-./gradlew :app:desktop:packageDistributionForCurrentOS
+./gradlew :aktual-app:desktop:packageDistributionForCurrentOS
 ```
 
 ### Testing
@@ -29,7 +29,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./gradlew allTests
 
 # Run tests for a specific module
-./gradlew :modules:account:vm:test
+./gradlew :aktual-account:vm:test
 
 # Run all checks (includes tests, detekt, and other verifications)
 ./gradlew check
@@ -56,10 +56,10 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ### Development
 ```bash
 # Run Android app
-./gradlew :app:android:installDebug
+./gradlew :aktual-app:android:installDebug
 
 # Run Desktop app
-./gradlew :app:desktop:run
+./gradlew :aktual-app:desktop:run
 
 # Generate dependency graph visualization. Only needs to be run when changing dependencies between gradle modules
 ./gradlew atlasGenerate
@@ -302,7 +302,7 @@ fun `test state changes`() = runTest {
 
 ### Code Generation
 
-**KSP** is used for generating API requests, implemented in the `:modules:codegen:ksp` module as a KSP processor. This generates implementations for creating KSP requests.
+**KSP** is used for generating API requests, implemented in the `:aktual-codegen:ksp` module as a KSP processor. This generates implementations for creating KSP requests.
 
 ### Module Dependencies
 
