@@ -20,6 +20,6 @@ data class TransactionsSorting(
 }
 
 fun TransactionsSorting(metadata: DbMetadata) = TransactionsSorting(
-  column = metadata[SortColumnDelegate],
-  direction = metadata[SortDirectionDelegate],
+  column = metadata[SortColumnKey] ?: SortColumn.Default,
+  direction = metadata[SortDirectionKey] ?: SortDirection.Default,
 )

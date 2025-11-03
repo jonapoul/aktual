@@ -52,4 +52,25 @@ class DbMetadataTest {
     val encoded = PrettyJson.encodeToString(decoded)
     assertThat(encoded).isEqualTo(encoded)
   }
+
+  @Test
+  fun `Handle metadata with string list`() {
+    val json = """
+      {
+        "budget.collapsed": [
+          "2E1F5BDB-209B-43F9-AF2C-3CE28E380C00"
+        ]
+      }
+    """.trimIndent()
+
+    val expectedModel = DbMetadata(
+      budgetCollapsed = listOf("2E1F5BDB-209B-43F9-AF2C-3CE28E380C00")
+    )
+
+    val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
+    assertThat(decoded).isEqualTo(expectedModel)
+
+    val encoded = PrettyJson.encodeToString(decoded)
+    assertThat(encoded).isEqualTo(encoded)
+  }
 }

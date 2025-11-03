@@ -3,10 +3,6 @@ plugins {
   alias(libs.plugins.kotlin.serialization)
 }
 
-tasks.withType<Test>().configureEach {
-  systemProperty("test.resourcesDir", file("src/commonTest/resources").absolutePath)
-}
-
 kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin.serialization)
@@ -15,6 +11,7 @@ kotlin {
     api(libs.kotlinx.immutable)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
+    implementation(libs.alakazam.kotlin.core)
     compileOnly(libs.androidx.compose.annotation)
   }
 }
