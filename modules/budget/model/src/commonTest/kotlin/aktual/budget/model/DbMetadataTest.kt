@@ -64,7 +64,7 @@ class DbMetadataTest {
     """.trimIndent()
 
     val expectedModel = DbMetadata(
-      budgetCollapsed = listOf("2E1F5BDB-209B-43F9-AF2C-3CE28E380C00")
+      budgetCollapsed = listOf("2E1F5BDB-209B-43F9-AF2C-3CE28E380C00"),
     )
 
     val decoded = PrettyJson.decodeFromString<DbMetadata>(json)
