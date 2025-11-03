@@ -10,6 +10,7 @@ import aktual.app.di.GithubApiContainer
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.BankId
+import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.test.DummyViewModelAssistedFactoryContainer
 import aktual.test.DummyViewModelContainer
@@ -102,7 +103,7 @@ class BudgetGraphHolderTest : AppGraph.Holder {
 
   private fun metadata(id: String) = DbMetadata(
     data = persistentMapOf(
-      "cloudFileId" to id,
+      DbMetadata.CloudFileId to BudgetId(id),
     ),
   )
 
