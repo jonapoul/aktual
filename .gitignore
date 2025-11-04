@@ -19,3 +19,6 @@ dependency-graph-reports/
 
 # API secrets
 *.private.env.json
+
+# Atlas charts
+*.d2

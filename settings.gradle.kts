@@ -3,7 +3,7 @@ rootProject.name = "aktual"
 apply(from = "gradle/repositories.gradle.kts")
 
 pluginManagement {
-  includeBuild("build-logic")
+  includeBuild("gradle/build-logic")
 }
 
 plugins {
@@ -13,12 +13,8 @@ plugins {
 
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
-private fun module(path: String) = include(":modules:$path")
+private fun module(path: String) = include(":aktual-$path")
 
-include(":app:android")
-include(":app:desktop")
-include(":app:di")
-include(":app:nav")
 module("about:data")
 module("about:ui")
 module("about:vm")
@@ -28,6 +24,10 @@ module("account:vm")
 module("api:actual")
 module("api:builder")
 module("api:github")
+module("app:android")
+module("app:desktop")
+module("app:di")
+module("app:nav")
 module("budget:data")
 module("budget:encryption")
 module("budget:list:ui")
@@ -52,6 +52,6 @@ module("settings:ui")
 module("settings:vm")
 module("test:android")
 module("test:api")
-module("test:di")
 module("test:compose")
+module("test:di")
 module("test:kotlin")

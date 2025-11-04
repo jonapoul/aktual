@@ -10,7 +10,7 @@
       </option>
       <option name="taskNames">
         <list>
-          <option value="app:android:androidManifestLock" />
+          <option value="androidManifestLock" />
         </list>
       </option>
       <option name="vmOptions" />

@@ -1,10 +1,9 @@
-import atlas.graphviz.ArrowType
-import atlas.graphviz.FileFormat
-import atlas.graphviz.LayoutEngine
-import atlas.graphviz.LinkStyle
-import atlas.graphviz.NodeStyle
-import atlas.graphviz.RankDir
-import atlas.graphviz.Shape
+import atlas.d2.ArrowType
+import atlas.d2.Direction
+import atlas.d2.ElkAlgorithm
+import atlas.d2.FileFormat
+import atlas.d2.LinkStyle
+import atlas.d2.Theme
 import blueprint.core.rootLocalPropertiesOrNull
 
 plugins {
@@ -55,10 +54,11 @@ doctor {
 }
 
 atlas {
+  checkOutputs = false
   generateOnSync = false
   groupModules = false
 
-  pathTransforms { replace(pattern = ":modules:", replacement = ":") }
+  pathTransforms { remove(":aktual-") }
 
   moduleTypes {
     registerByPluginId(name = "ViewModel", pluginId = "aktual.module.viewmodel", color = "#914141") // pink
@@ -66,7 +66,7 @@ atlas {
     registerByPluginId(name = "UI", pluginId = "aktual.module.compose", color = "#6b6b01") // yellow
     registerByPluginId(name = "Android", pluginId = "aktual.module.android", color = "#017001") // green
     registerByPluginId(name = "Multiplatform", pluginId = "aktual.module.multiplatform", color = "#160185") // indigo
-    registerByPathContains(name = "App", pathContains = "app:", color = "#7a0101") // red
+    registerByPathContains(name = "App", pathContains = ":aktual-app:", color = "#7a0101") // red
     registerByPluginId(name = "JVM", pluginId = "aktual.module.jvm", color = "#2f015c") // violet
     other(color = "#808080") // grey
   }
@@ -76,26 +76,31 @@ atlas {
     implementation(LinkStyle.Dashed)
   }
 
-  graphviz {
-    fileFormat = FileFormat.Png
-    layoutEngine = LayoutEngine.Dot
+  d2 {
+    animateLinks = false
+    center = true
+    direction = Direction.Down
+    fileFormat = FileFormat.Svg
+    pad = 20
+    theme = Theme.DarkFlagshipTerrastruct
 
-    node {
-      shape = Shape.Box
-      style = NodeStyle.Filled
-      fontColor = "white"
-      lineColor = "transparent"
+    rootStyle {
+      fill = "#1C1C1C"
     }
 
-    edge {
-      arrowHead = ArrowType.Normal
-      linkColor = "white"
+    globalProps {
+      arrowType = ArrowType.Arrow
+      fillArrowHeads = true
+      fontSize = 20
     }
 
-    graph {
-      bgColor = "#1c1c1c"
-      rankDir = RankDir.TopToBottom
-      rankSep = 1.5
+    layoutEngine {
+      elk {
+        algorithm = ElkAlgorithm.Layered
+        edgeNodeBetweenLayers = 15
+        nodeNodeBetweenLayers = 25
+        padding = "top=10,left=10,bottom=10,right=10"
+      }
     }
   }
 }
