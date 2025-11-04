@@ -1,0 +1,33 @@
+import aktual.gradle.EXPERIMENTAL_MATERIAL_3
+import aktual.gradle.koverExcludes
+import aktual.gradle.optIn
+
+plugins {
+  alias(libs.plugins.module.compose)
+}
+
+optIn(EXPERIMENTAL_MATERIAL_3)
+
+koverExcludes {
+  packages(
+    "aktual.core.icons",
+    "aktual.core.ui",
+  )
+}
+
+kotlin {
+  commonMainDependencies {
+    api(project(":aktual-budget:model"))
+    api(project(":aktual-core:model"))
+    api(libs.haze.core)
+    api(libs.kotlinx.datetime)
+    implementation(project(":aktual-core:di"))
+    implementation(project(":aktual-l10n"))
+    implementation(libs.kotlinx.coroutines.core)
+  }
+
+  androidMainDependencies {
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.coreKtx)
+  }
+}

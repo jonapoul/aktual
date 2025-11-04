@@ -1,6 +1,0 @@
-digraph {
-  edge [arrowhead="normal",color="white"]
-  graph [layout="dot",bgcolor="#1c1c1c",rankdir="TB",ranksep="1.5"]
-  node [shape="box",style="filled",fontcolor="white",color="transparent"]
-  ":l10n" [fillcolor="#160185"]
-}
