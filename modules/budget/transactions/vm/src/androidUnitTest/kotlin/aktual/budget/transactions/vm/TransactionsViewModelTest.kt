@@ -27,7 +27,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
 import assertk.assertThat
-import assertk.assertions.isEqualTo
+import assertk.assertions.isEmpty
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
@@ -103,7 +103,7 @@ class TransactionsViewModelTest : AppGraph.Holder {
     // when
     viewModel.transactions.test {
       // then
-      assertThat(awaitItem()).isEqualTo(persistentListOf())
+      assertThat(awaitItem()).isEmpty()
       advanceUntilIdle()
       expectNoEvents()
       cancel()
@@ -185,21 +185,53 @@ class TransactionsViewModelTest : AppGraph.Holder {
     }
   }
 
-  //  @Test
-  //  fun `Observing transaction`() = runTest {
-  //    // given
-  //    buildViewModel(AllAccounts)
-  //    with(database) {
-  //      insertTransaction(id = ID_A.toString(), account = "a", category = "a", payee = "a", date = DATE_1)
-  //      insertTransaction(id = ID_B.toString(), account = "b", category = "b", payee = "b", date = DATE_2)
-  //      insertTransaction(id = ID_C.toString(), account = "c", category = "c", payee = "c", date = DATE_3)
-  //    }
-  //    advanceUntilIdle()
-  //
-  //    assertThat(viewModel.observe(ID_A).first()).isEqualTo(TRANSACTION_A)
-  //    assertThat(viewModel.observe(ID_B).first()).isEqualTo(TRANSACTION_B)
-  //    assertThat(viewModel.observe(ID_C).first()).isEqualTo(TRANSACTION_C)
-  //  }
+//  @Test
+//  fun `Transactions sorting by date`() = runTest {
+//    // given
+//    buildViewModel(AllAccounts)
+//    with(budgetGraph.database) {
+//      insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
+//      insertTransaction(id = "b", account = "b", category = "b", payee = "b", date = DATE_1)
+//      insertTransaction(id = "c", account = "c", category = "c", payee = "c", date = DATE_1)
+//      insertTransaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
+//      insertTransaction(id = "e", account = "c", category = "c", payee = "c", date = DATE_2)
+//      insertTransaction(id = "f", account = "c", category = "c", payee = "c", date = DATE_3)
+//    }
+//
+//    setSortingDirection(Descending)
+//    advanceUntilIdle()
+//
+//    viewModel.transactions.test {
+//      // latest date first
+//      assertThatNextEmissionIsEqualTo(
+//        persistentListOf(
+//          DatedTransactions(DATE_1, persistentListOfIds("a", "b", "c")),
+//          DatedTransactions(DATE_2, persistentListOfIds("d", "e")),
+//          DatedTransactions(DATE_3, persistentListOfIds("f")),
+//        ),
+//      )
+//
+//      // then opposite sorting
+//      setSortingDirection(Ascending)
+//      assertThatNextEmissionIsEqualTo(
+//        persistentListOf(
+//          DatedTransactions(DATE_1, persistentListOfIds("a", "b", "c")),
+//          DatedTransactions(DATE_2, persistentListOfIds("d", "e")),
+//          DatedTransactions(DATE_3, persistentListOfIds("f")),
+//        ),
+//      )
+//
+//      cancelAndIgnoreRemainingEvents()
+//    }
+//  }
+//
+//  private fun setSortingDirection(
+//    direction: SortDirection = Ascending,
+//  ) = budgetGraph.localPreferences.update { metadata ->
+//    metadata
+//      .set(SortColumnKey, Date)
+//      .set(SortDirectionKey, direction)
+//  }
 
   @DependencyGraph(
     scope = AppScope::class,

@@ -7,6 +7,7 @@ package aktual.core.di
 import aktual.budget.db.AndroidSqlDriverFactory
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.cloudFileId
 import android.content.Context
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding

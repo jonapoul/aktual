@@ -8,13 +8,16 @@ import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Timestamp
+import aktual.budget.model.cloudFileId
 import aktual.budget.model.metadata
 import aktual.budget.model.writeMetadata
 import aktual.test.CoTemporaryFolder
 import aktual.test.TestBudgetFiles
+import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.burst.InterceptTest
+import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
@@ -78,8 +81,8 @@ class BudgetLocalPreferencesTest {
     buildPreferences(metadata)
     preferences.update { existing ->
       existing + mapOf(
-        "some-new-key" to 123,
-        "budgetName" to "Hello World",
+        DbMetadata.Key("some-new-key") to 123,
+        DbMetadata.BudgetName to "Hello World",
       )
     }
 
@@ -87,6 +90,32 @@ class BudgetLocalPreferencesTest {
     advanceUntilIdle()
     val newWriteTime = fileModificationTime(metadata)
     assertThat(newWriteTime).isGreaterThan(previousWriteTime)
+  }
+
+  @Test
+  fun `Observe key`() = runTest {
+    // given
+    val userId = "abc-123"
+    val metadata = TEST_METADATA + (DbMetadata.UserId to userId)
+    files.writeMetadata(metadata)
+
+    // when
+    buildPreferences(metadata)
+    advanceUntilIdle()
+
+    // then
+    preferences.observe(DbMetadata.UserId).test {
+      assertThatNextEmissionIsEqualTo(userId)
+
+      preferences.update { metadata -> metadata - DbMetadata.UserId }
+      assertThatNextEmissionIsEqualTo(null)
+
+      preferences.update { metadata -> metadata + (DbMetadata.UserId to "def-456") }
+      assertThatNextEmissionIsEqualTo("def-456")
+
+      expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
   }
 
   private fun fileModificationTime(metadata: DbMetadata): Long = files

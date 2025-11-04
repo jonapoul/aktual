@@ -11,6 +11,7 @@ import aktual.budget.db.transactions.GetById
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
+import aktual.budget.model.SortDirection
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsFormat
@@ -74,17 +75,17 @@ class TransactionsViewModel(
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
 
   val format: StateFlow<TransactionsFormat> = prefs
-    .map { meta -> meta[TransactionFormatDelegate] }
+    .map { meta -> meta[TransactionFormatKey] ?: TransactionsFormat.Default }
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsFormat.Default)
-
-  val transactions: StateFlow<ImmutableList<DatedTransactions>> = getIdsFlow()
-    .distinctUntilChanged()
-    .map(::toDatedTransactions)
-    .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
 
   val sorting: StateFlow<TransactionsSorting> = prefs
     .map(::TransactionsSorting)
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsSorting.Default)
+
+  val transactions: StateFlow<ImmutableList<DatedTransactions>> = combine(getIdsFlow(), sorting, ::Pair)
+    .distinctUntilChanged()
+    .map { (datedIds, sorting) -> toDatedTransactions(datedIds, sorting) }
+    .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
 
   init {
     budgetGraph.throwIfWrongBudget(budgetId)
@@ -99,7 +100,7 @@ class TransactionsViewModel(
   }
 
   fun setFormat(format: TransactionsFormat) {
-    prefs.update { meta -> meta.set(TransactionFormatDelegate, format) }
+    prefs.update { meta -> meta.set(TransactionFormatKey, format) }
   }
 
   fun isChecked(id: TransactionId): Flow<Boolean> = checkedTransactionIds.map { it.getOrDefault(id, false) }
@@ -143,10 +144,17 @@ class TransactionsViewModel(
         .map { list -> list.map { (id, date) -> DatedId(id, date) } }
   }
 
-  private fun toDatedTransactions(datedIds: List<DatedId>) = datedIds
+  private fun toDatedTransactions(datedIds: List<DatedId>, sorting: TransactionsSorting) = datedIds
     .groupBy { it.date }
-    .map { (date, ids) -> DatedTransactions(date, ids.map { it.id }.toImmutableList()) }
-    .toImmutableList()
+    .map { (date, ids) ->
+      DatedTransactions(
+        date = date,
+        ids = ids
+          .sorted(sorting)
+          .map { it.id }
+          .toImmutableList(),
+      )
+    }.toImmutableList()
 
   private fun toTransaction(data: GetById): Transaction = with(data) {
     Transaction(
@@ -158,6 +166,11 @@ class TransactionsViewModel(
       category = categoryName,
       amount = Amount(amount),
     )
+  }
+
+  private fun List<DatedId>.sorted(sorting: TransactionsSorting) = when (sorting.direction) {
+    SortDirection.Ascending -> sortedBy { it.date }
+    SortDirection.Descending -> sortedByDescending { it.date }
   }
 
   private data class DatedId(val id: TransactionId, val date: LocalDate)
