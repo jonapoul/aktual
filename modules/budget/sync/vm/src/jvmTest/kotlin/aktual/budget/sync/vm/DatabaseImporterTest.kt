@@ -98,7 +98,6 @@ class DatabaseImporterTest {
 
     // and the budget dir doesn't exist
     val dir = budgetFiles.directory(BUDGET_ID)
-
     assertThat(dir).doesNotExistOn(fileSystem)
   }
 

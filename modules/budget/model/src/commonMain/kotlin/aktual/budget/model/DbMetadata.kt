@@ -7,7 +7,9 @@ package aktual.budget.model
 import alakazam.kotlin.core.parse
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.PersistentMap
+import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.collections.immutable.putAll
 import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.KSerializer
@@ -29,9 +31,14 @@ import kotlinx.serialization.json.jsonPrimitive
 @Immutable
 @Serializable(DbMetadataSerializer::class)
 data class DbMetadata(
-  val data: PersistentMap<Key<*>, Any?> = persistentMapOf(),
+  val data: PersistentMap<Key<*>, Any> = persistentMapOf(),
 ) : Iterable<Map.Entry<DbMetadata.Key<*>, Any?>> {
-  constructor(vararg data: Pair<Key<*>, Any?>) : this(data.toMap().toPersistentMap())
+  constructor(vararg data: Pair<Key<*>, Any?>) : this(
+    data = data
+      .mapNotNull { (k, v) -> if (v == null) null else k to v }
+      .toMap()
+      .toPersistentMap()
+  )
 
   constructor(
     budgetName: String? = null,
@@ -61,11 +68,26 @@ data class DbMetadata(
 
   @Suppress("UNCHECKED_CAST")
   operator fun <T : Any> get(key: Key<T>): T? = data[key] as? T
-  operator fun <T : Any> set(key: Key<T>, value: T?) = DbMetadata(data.put(key, value))
-  operator fun plus(other: Map<Key<*>, Any?>) = DbMetadata(data.putAll(other))
-  operator fun plus(other: Pair<Key<*>, Any?>) = DbMetadata(data.put(other.first, other.second))
-  operator fun minus(key: Key<*>) = DbMetadata(data.remove(key))
-  operator fun minus(keys: Collection<Key<*>>) = DbMetadata(data.minus(keys).toPersistentMap())
+
+  operator fun <T : Any> set(key: Key<T>, value: T?): DbMetadata = DbMetadata(
+    if (value == null) data.remove(key) else data.put(key, value)
+  )
+
+  operator fun plus(other: Map<Key<*>, Any?>): DbMetadata {
+    val toRemove = other.mapNotNull { if (it.value == null) it.key else null }
+    val toAdd = other.mapNotNull { (k, v) -> if (v == null) null else k to v }
+    return DbMetadata(data.putAll(toAdd).minus(toRemove))
+  }
+
+  operator fun plus(other: Pair<Key<*>, Any?>): DbMetadata {
+    val (k, v) = other
+    return if (v == null) this else DbMetadata(data.put(k, v))
+  }
+
+  operator fun minus(key: Key<*>): DbMetadata = DbMetadata(data.remove(key))
+
+  operator fun minus(keys: Collection<Key<*>>): DbMetadata = DbMetadata(data.minus(keys))
+
   override fun iterator() = data.iterator()
 
   sealed interface Key<T : Any> {
@@ -86,11 +108,12 @@ data class DbMetadata(
     override fun decode(element: JsonPrimitive) = element.content
   }
 
-  class TypedKey<T : Any>(override val name: String, private val fromString: (String) -> T) : PrimitiveKey<T> {
+  data class TypedKey<T : Any>(override val name: String, private val fromString: (String) -> T) : PrimitiveKey<T> {
     override fun decode(element: JsonPrimitive) = fromString(element.content)
   }
 
-  class ListKey(override val name: String) : Key<List<String>> {
+  @JvmInline
+  value class ListKey(override val name: String) : Key<List<String>> {
     fun decode(array: JsonArray) = array.map { element -> element.jsonPrimitive.content }
   }
 
@@ -151,12 +174,12 @@ private object DbMetadataSerializer : KSerializer<DbMetadata> {
   )
 
   override fun deserialize(decoder: Decoder): DbMetadata {
-    val jsonMap = delegate.deserialize(decoder).map { (k, v) ->
+    val jsonMap = delegate.deserialize(decoder).mapNotNull { (k, v) ->
       val key = DbMetadata.Key(k)
       key to when (v) {
+        null, is JsonNull -> return@mapNotNull null
         is JsonPrimitive -> (key as DbMetadata.PrimitiveKey<*>).decode(v)
         is JsonArray -> (key as DbMetadata.ListKey).decode(v)
-        null, is JsonNull -> null
         is JsonObject -> throw SerializationException("Can't decode yet: $v")
       }
     }
