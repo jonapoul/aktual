@@ -9,6 +9,7 @@ import blueprint.core.rootLocalPropertiesOrNull
 
 plugins {
   alias(libs.plugins.agp.app) apply false
+  alias(libs.plugins.agp.kmp) apply false
   alias(libs.plugins.agp.lib) apply false
   alias(libs.plugins.androidCacheFix) apply false
   alias(libs.plugins.buildconfig) apply false

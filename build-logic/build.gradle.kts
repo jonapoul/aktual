@@ -67,7 +67,6 @@ gradlePlugin {
     }
 
     "aktual.convention.android.base"(impl = "aktual.gradle.ConventionAndroidBase")
-    "aktual.convention.android.library"(impl = "aktual.gradle.ConventionAndroidLibrary")
     "aktual.convention.compose"(impl = "aktual.gradle.ConventionCompose")
     "aktual.convention.detekt"(impl = "aktual.gradle.ConventionDetekt")
     "aktual.convention.idea"(impl = "aktual.gradle.ConventionIdea")
