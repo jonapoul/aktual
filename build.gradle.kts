@@ -80,7 +80,7 @@ atlas {
     animateLinks = false
     center = true
     direction = Direction.Down
-    fileFormat = FileFormat.Png
+    fileFormat = FileFormat.Svg
     pad = 20
     theme = Theme.DarkFlagshipTerrastruct
 
@@ -91,14 +91,14 @@ atlas {
     globalProps {
       arrowType = ArrowType.Arrow
       fillArrowHeads = true
-      fontSize = 25
+      fontSize = 20
     }
 
     layoutEngine {
       elk {
         algorithm = ElkAlgorithm.Layered
-        edgeNodeBetweenLayers = 10
-        nodeNodeBetweenLayers = 20
+        edgeNodeBetweenLayers = 15
+        nodeNodeBetweenLayers = 25
         padding = "top=10,left=10,bottom=10,right=10"
       }
     }
