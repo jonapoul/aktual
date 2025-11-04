@@ -11,7 +11,9 @@ import alakazam.kotlin.core.CoroutineContexts
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
@@ -47,4 +49,6 @@ class BudgetLocalPreferences(
     }
     return updated
   }
+
+  fun <T : Any> observe(key: DbMetadata.Key<T>): Flow<T?> = map { metadata -> metadata[key] }
 }

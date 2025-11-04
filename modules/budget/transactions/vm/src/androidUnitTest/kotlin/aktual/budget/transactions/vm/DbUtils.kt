@@ -28,7 +28,7 @@ internal val DATE_3 = LocalDate(2025, Month.JUNE, 3)
 
 internal val TOKEN = LoginToken("abc-123")
 internal val BUDGET_ID = BudgetId("xyz-789")
-internal val METADATA = DbMetadata(data = persistentMapOf("cloudFileId" to BUDGET_ID.value))
+internal val METADATA = DbMetadata(data = persistentMapOf(DbMetadata.CloudFileId to BUDGET_ID))
 
 internal val ID_A = TransactionId("a")
 internal val ID_B = TransactionId("b")
