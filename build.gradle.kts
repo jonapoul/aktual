@@ -1,4 +1,9 @@
-import atlas.d2.*
+import atlas.d2.ArrowType
+import atlas.d2.Direction
+import atlas.d2.ElkAlgorithm
+import atlas.d2.FileFormat
+import atlas.d2.LinkStyle
+import atlas.d2.Theme
 import blueprint.core.rootLocalPropertiesOrNull
 
 plugins {
@@ -49,6 +54,7 @@ doctor {
 }
 
 atlas {
+  checkOutputs = false
   generateOnSync = false
   groupModules = false
 
@@ -74,7 +80,7 @@ atlas {
     animateLinks = false
     center = true
     direction = Direction.Down
-    fileFormat = FileFormat.Svg
+    fileFormat = FileFormat.Png
     pad = 20
     theme = Theme.DarkFlagshipTerrastruct
 
