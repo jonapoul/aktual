@@ -37,7 +37,7 @@ data class DbMetadata(
     data = data
       .mapNotNull { (k, v) -> if (v == null) null else k to v }
       .toMap()
-      .toPersistentMap()
+      .toPersistentMap(),
   )
 
   constructor(
@@ -70,7 +70,7 @@ data class DbMetadata(
   operator fun <T : Any> get(key: Key<T>): T? = data[key] as? T
 
   operator fun <T : Any> set(key: Key<T>, value: T?): DbMetadata = DbMetadata(
-    if (value == null) data.remove(key) else data.put(key, value)
+    if (value == null) data.remove(key) else data.put(key, value),
   )
 
   operator fun plus(other: Map<Key<*>, Any?>): DbMetadata {
