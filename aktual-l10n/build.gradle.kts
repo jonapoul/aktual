@@ -29,8 +29,8 @@ compose.resources {
 
 kotlin {
   commonMainDependencies {
-    api(compose.components.resources)
-    api(compose.runtime)
-    api(compose.ui)
+    api(libs.jetbrains.resources)
+    api(libs.jetbrains.runtime)
+    api(libs.jetbrains.ui)
   }
 }

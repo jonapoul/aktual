@@ -24,23 +24,23 @@ class ModuleCompose : Plugin<Project> {
       sourceSets {
         invokeWhenCreated("androidDebug") {
           dependencies {
-            implementation(compose.preview)
+            implementation(libs("jetbrains.preview"))
           }
         }
       }
 
       commonMainDependencies {
-        api(compose.runtime)
-        implementation(compose.animation)
-        implementation(compose.foundation)
-        implementation(compose.material3)
-        implementation(compose.materialIconsExtended)
-        implementation(compose.ui)
-        implementation(compose.uiTooling)
-        implementation(compose.uiUtil)
+        api(libs("jetbrains.runtime"))
         implementation(libs("alakazam.kotlin.compose"))
         implementation(libs("androidx.lifecycle.runtime.compose"))
         implementation(libs("androidx.lifecycle.viewmodel.compose"))
+        implementation(libs("jetbrains.animation"))
+        implementation(libs("jetbrains.foundation"))
+        implementation(libs("jetbrains.material3"))
+        implementation(libs("jetbrains.materialIcons"))
+        implementation(libs("jetbrains.ui"))
+        implementation(libs("jetbrains.uiTooling"))
+        implementation(libs("jetbrains.uiUtil"))
         implementation(libs("kotlinx.immutable"))
       }
 
