@@ -21,8 +21,8 @@ class ModuleViewModel : Plugin<Project> {
         api(libs("kotlinx.coroutines.core"))
         api(libs("kotlinx.immutable"))
         implementation(project(":aktual-logging"))
+        implementation(libs("jetbrains.runtime"))
         implementation(libs("molecule"))
-        implementation(compose.runtime)
       }
     }
   }

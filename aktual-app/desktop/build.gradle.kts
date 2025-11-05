@@ -57,7 +57,7 @@ dependencies {
   implementation(project(":aktual-app:nav"))
   implementation(project(":aktual-prefs"))
   implementation(compose.desktop.currentOs)
-  implementation(compose.material3)
-  implementation(libs.jetbrains.lifecycle.viewmodel.compose)
+  implementation(libs.jetbrains.material3)
+  implementation(libs.jetbrains.viewmodel)
   implementation(libs.kotlinx.coroutines.swing)
 }
