@@ -35,7 +35,6 @@ dependencies {
   compileOnly(libs.plugins.androidCacheFix)
   compileOnly(libs.plugins.burst)
   compileOnly(libs.plugins.compose)
-  compileOnly(libs.plugins.composeHotReload)
   compileOnly(libs.plugins.detekt)
   compileOnly(libs.plugins.kotlin.android)
   compileOnly(libs.plugins.kotlin.compose)

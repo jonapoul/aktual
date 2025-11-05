@@ -25,9 +25,6 @@ class ConventionCompose : Plugin<Project> {
       apply(ConventionKotlinBase::class)
       apply(ComposeCompilerGradleSubplugin::class)
       apply(ComposePlugin::class)
-
-      // TODO: Re-enable once https://github.com/JetBrains/compose-hot-reload/issues/96 is fixed
-      // apply(ComposeHotReloadPlugin::class)
     }
 
     extensions.findByType(CommonExtension::class)?.apply {
