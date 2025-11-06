@@ -57,7 +57,7 @@ jetbrains-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeJ
 jetbrains-uiTest = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "composeJetbrains" }
 jetbrains-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeJetbrains" }
 jetbrains-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "composeJetbrains" }
-jetbrains-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.9.5" }
+jetbrains-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.9.6" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinpoet-core = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
