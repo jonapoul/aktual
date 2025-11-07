@@ -138,7 +138,7 @@ kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.3" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 licensee = { id = "app.cash.licensee", version = "1.14.1" }
 manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.0" }
-metro = { id = "dev.zacsweers.metro", version = "0.7.4" }
+metro = { id = "dev.zacsweers.metro", version = "0.7.5" }
 redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
 shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
 spotless = { id = "com.diffplug.spotless", version = "8.0.0" }
