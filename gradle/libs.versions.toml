@@ -11,7 +11,7 @@ kotlin = "2.2.21"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
-ksp = "2.3.1"
+ksp = "2.3.2"
 ktor = "3.3.2"
 markdown = "0.38.1"
 preferences = "2.2.0"
@@ -52,12 +52,12 @@ jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-
 jetbrains-preview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeJetbrains" }
 jetbrains-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeJetbrains" }
 jetbrains-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeJetbrains" }
-jetbrains-savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version = "1.3.5" }
+jetbrains-savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version = "1.3.6" }
 jetbrains-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeJetbrains" }
 jetbrains-uiTest = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "composeJetbrains" }
 jetbrains-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeJetbrains" }
 jetbrains-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "composeJetbrains" }
-jetbrains-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.9.5" }
+jetbrains-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.9.6" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinpoet-core = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinpoet-ksp = { module = "com.squareup:kotlinpoet-ksp", version.ref = "kotlinpoet" }
