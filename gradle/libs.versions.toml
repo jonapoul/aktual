@@ -43,7 +43,7 @@ androidx-splash = { module = "androidx.core:core-splashscreen", version = "1.2.0
 blueprint-core = { module = "dev.jonpoulton.blueprint:core", version.ref = "blueprint" }
 blueprint-recipes = { module = "dev.jonpoulton.blueprint:recipes", version.ref = "blueprint" }
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.27" }
-haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.6.10" }
+haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.7.0" }
 jetbrains-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeJetbrains" }
 jetbrains-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeJetbrains" }
 jetbrains-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.9.0" }
