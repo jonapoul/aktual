@@ -16,7 +16,7 @@ ktor = "3.3.2"
 markdown = "0.38.1"
 preferences = "2.2.0"
 redacted = "1.15.0"
-sqldelight = "2.2.0-SNAPSHOT"
+sqldelight = "2.2.1"
 
 [libraries]
 alakazam-db-sqldelight = { module = "dev.jonpoulton.alakazam:db-sqldelight", version.ref = "alakazam" }
