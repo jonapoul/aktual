@@ -94,7 +94,7 @@ sqldelight-driver-sqlite = { module = "app.cash.sqldelight:sqlite-driver", versi
 sqldelight-json = { module = "app.cash.sqldelight:sqlite-json-module", version.ref = "sqldelight" }
 sqldelight-primitive = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
-vico-multiplatform = { module = "com.patrykandpatrick.vico:multiplatform", version = "2.3.0" }
+vico-multiplatform = { module = "com.patrykandpatrick.vico:multiplatform", version = "2.3.4" }
 
 # Testing
 test-alakazam-core = { module = "dev.jonpoulton.alakazam:testing-core", version.ref = "alakazam" }
