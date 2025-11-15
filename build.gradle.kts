@@ -1,11 +1,12 @@
-import atlas.d2.ArrowType.Arrow
-import atlas.d2.Direction.Down
-import atlas.d2.ElkAlgorithm.Layered
-import atlas.d2.FileFormat.Svg
-import atlas.d2.LinkStyle.Bold
-import atlas.d2.LinkStyle.Dashed
-import atlas.d2.Theme.DarkFlagshipTerrastruct
-import atlas.d2.tasks.SvgToPng.Converter.ImageMagick6
+import atlas.graphviz.ArrowType.None
+import atlas.graphviz.ArrowType.Normal
+import atlas.graphviz.FileFormat.Png
+import atlas.graphviz.LayoutEngine.Dot
+import atlas.graphviz.LinkStyle.Dashed
+import atlas.graphviz.LinkStyle.Solid
+import atlas.graphviz.NodeStyle.Filled
+import atlas.graphviz.RankDir.TopToBottom
+import atlas.graphviz.Shape.Box
 import blueprint.core.rootLocalPropertiesOrNull
 
 plugins {
@@ -70,36 +71,31 @@ atlas {
   }
 
   linkTypes {
-    api(Bold)
-    implementation(Dashed)
+    "commonMainApi"(Solid, "white", displayName = "api")
+    "commonMainImplementation"(Dashed, "aqua", displayName = "implementation")
   }
 
-  d2 {
-    animateLinks = false
-    center = true
-    direction = Down
-    fileFormat = Svg
-    pad = 20
-    theme = DarkFlagshipTerrastruct
-    convertSvgToPng(ImageMagick6)
+  graphviz {
+    fileFormat = Png
+    layoutEngine = Dot
 
-    rootStyle {
-      fill = "#1C1C1C"
+    graph {
+      bgColor = "#00000A"
+      rankDir = TopToBottom
+      rankSep = 1.5
     }
 
-    globalProps {
-      arrowType = Arrow
-      fillArrowHeads = true
-      fontSize = 20
+    node {
+      style = Filled
+      shape = Box
+      fontColor = "white"
+      fillColor = "black"
     }
 
-    layoutEngine {
-      elk {
-        algorithm = Layered
-        edgeNodeBetweenLayers = 15
-        nodeNodeBetweenLayers = 25
-        padding = "top=10,left=10,bottom=10,right=10"
-      }
+    edge {
+      arrowHead = Normal
+      arrowTail = None
+      linkColor = "white"
     }
   }
 }

@@ -21,5 +21,4 @@ dependency-graph-reports/
 *.private.env.json
 
 # Atlas charts
-*.d2
-chart.svg
+*.dot
