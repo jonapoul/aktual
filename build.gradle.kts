@@ -1,9 +1,12 @@
-import atlas.d2.ArrowType
-import atlas.d2.Direction
-import atlas.d2.ElkAlgorithm
-import atlas.d2.FileFormat
-import atlas.d2.LinkStyle
-import atlas.d2.Theme
+import atlas.graphviz.ArrowType.None
+import atlas.graphviz.ArrowType.Normal
+import atlas.graphviz.FileFormat.Png
+import atlas.graphviz.LayoutEngine.Dot
+import atlas.graphviz.LinkStyle.Dashed
+import atlas.graphviz.LinkStyle.Solid
+import atlas.graphviz.NodeStyle.Filled
+import atlas.graphviz.RankDir.TopToBottom
+import atlas.graphviz.Shape.Box
 import blueprint.core.rootLocalPropertiesOrNull
 
 plugins {
@@ -54,52 +57,45 @@ doctor {
 
 atlas {
   checkOutputs = false
-  generateOnSync = false
-  groupModules = false
-
   pathTransforms { remove(":aktual-") }
 
-  moduleTypes {
-    registerByPluginId(name = "ViewModel", pluginId = "aktual.module.viewmodel", color = "#914141") // pink
-    registerByPluginId(name = "DI", pluginId = "aktual.module.di", color = "#a17103") // orange
-    registerByPluginId(name = "UI", pluginId = "aktual.module.compose", color = "#6b6b01") // yellow
-    registerByPluginId(name = "Android", pluginId = "aktual.module.android", color = "#017001") // green
-    registerByPluginId(name = "Multiplatform", pluginId = "aktual.module.multiplatform", color = "#160185") // indigo
-    registerByPathContains(name = "App", pathContains = ":aktual-app:", color = "#7a0101") // red
-    registerByPluginId(name = "JVM", pluginId = "aktual.module.jvm", color = "#2f015c") // violet
+  projectTypes {
+    hasPluginId(name = "ViewModel", pluginId = "aktual.module.viewmodel", color = "#914141") // pink
+    hasPluginId(name = "DI", pluginId = "aktual.module.di", color = "#a17103") // orange
+    hasPluginId(name = "UI", pluginId = "aktual.module.compose", color = "#6b6b01") // yellow
+    hasPluginId(name = "Android", pluginId = "aktual.module.android", color = "#017001") // green
+    hasPluginId(name = "Multiplatform", pluginId = "aktual.module.multiplatform", color = "#160185") // indigo
+    pathContains(name = "App", pathContains = ":aktual-app:", color = "#7a0101") // red
+    hasPluginId(name = "JVM", pluginId = "aktual.module.jvm", color = "#2f015c") // violet
     other(color = "#808080") // grey
   }
 
   linkTypes {
-    api(LinkStyle.Bold)
-    implementation(LinkStyle.Dashed)
+    "commonMainApi"(Solid, "white", displayName = "api")
+    "commonMainImplementation"(Dashed, "aqua", displayName = "implementation")
   }
 
-  d2 {
-    animateLinks = false
-    center = true
-    direction = Direction.Down
-    fileFormat = FileFormat.Svg
-    pad = 20
-    theme = Theme.DarkFlagshipTerrastruct
+  graphviz {
+    fileFormat = Png
+    layoutEngine = Dot
 
-    rootStyle {
-      fill = "#1C1C1C"
+    graph {
+      bgColor = "#00000A"
+      rankDir = TopToBottom
+      rankSep = 1.5
     }
 
-    globalProps {
-      arrowType = ArrowType.Arrow
-      fillArrowHeads = true
-      fontSize = 20
+    node {
+      style = Filled
+      shape = Box
+      fontColor = "white"
+      fillColor = "black"
     }
 
-    layoutEngine {
-      elk {
-        algorithm = ElkAlgorithm.Layered
-        edgeNodeBetweenLayers = 15
-        nodeNodeBetweenLayers = 25
-        padding = "top=10,left=10,bottom=10,right=10"
-      }
+    edge {
+      arrowHead = Normal
+      arrowTail = None
+      linkColor = "white"
     }
   }
 }
