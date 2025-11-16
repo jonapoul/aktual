@@ -43,3 +43,9 @@ jobs:
       - name: Report build results
         uses: gmazzo/publish-report-annotations@v1
         if: ${{ !cancelled() }}
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v4
+        if: success() || failure()
+        with:
+          sarif_file: build/reports/detekt/merge.sarif.json
