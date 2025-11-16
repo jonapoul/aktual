@@ -1,7 +1,5 @@
 package aktual.gradle
 
-import blueprint.core.get
-import blueprint.core.libs
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.LintPlugin
 import org.gradle.api.Plugin

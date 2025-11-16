@@ -7,7 +7,6 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
-import org.jetbrains.kotlin.gradle.dsl.KotlinCommonCompilerOptions
 
 class ConventionKotlinBase : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
@@ -16,13 +15,11 @@ class ConventionKotlinBase : Plugin<Project> {
     }
 
     extensions.configure(HasConfigurableKotlinCompilerOptions::class) {
-      compilerOptions { configure() }
+      compilerOptions {
+        allWarningsAsErrors.set(true)
+        freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
+      }
     }
-  }
-
-  private fun KotlinCommonCompilerOptions.configure() {
-    allWarningsAsErrors.set(true)
-    freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
   }
 
   private companion object {

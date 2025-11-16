@@ -1,10 +1,10 @@
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
+import aktual.gradle.gitVersionCode
+import aktual.gradle.intProperty
+import aktual.gradle.jvmTarget
+import aktual.gradle.localPropertiesOrNull
+import aktual.gradle.stringProperty
 import aktual.gradle.versionName
-import blueprint.core.gitVersionCode
-import blueprint.core.intProperty
-import blueprint.core.jvmTarget
-import blueprint.core.rootLocalPropertiesOrNull
-import blueprint.core.stringProperty
 
 plugins {
   alias(libs.plugins.kotlin.android)
@@ -26,12 +26,12 @@ kotlin {
 
 android {
   namespace = "aktual.app.android"
-  compileSdk = intProperty(key = "blueprint.android.compileSdk")
+  compileSdk = intProperty(key = "aktual.android.compileSdk").get()
 
   defaultConfig {
     applicationId = "dev.jonpoulton.aktual.app"
-    minSdk = intProperty(key = "blueprint.android.minSdk")
-    targetSdk = intProperty(key = "blueprint.android.targetSdk")
+    minSdk = intProperty(key = "aktual.android.minSdk").get()
+    targetSdk = intProperty(key = "aktual.android.targetSdk").get()
     versionCode = gitVersionCode()
     versionName = versionName()
     multiDexEnabled = true
@@ -59,13 +59,13 @@ android {
   signingConfigs {
     val release by creating
 
-    val localProps = rootLocalPropertiesOrNull()
+    val localProps = rootProject.localPropertiesOrNull()
     if (localProps != null) {
       release.apply {
-        storeFile = rootProject.file(stringProperty(key = "aktual.keyFile"))
-        storePassword = stringProperty(key = "aktual.keyFilePassword")
-        keyAlias = stringProperty(key = "aktual.keyAlias")
-        keyPassword = stringProperty(key = "aktual.keyPassword")
+        storeFile = rootProject.file(stringProperty(key = "aktual.keyFile").get())
+        storePassword = stringProperty(key = "aktual.keyFilePassword").get()
+        keyAlias = stringProperty(key = "aktual.keyAlias").get()
+        keyPassword = stringProperty(key = "aktual.keyPassword").get()
       }
     } else {
       logger.warn("No local.properties found - skipping signing configs")

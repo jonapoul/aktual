@@ -1,7 +1,7 @@
+import aktual.gradle.gitVersionCode
+import aktual.gradle.gitVersionHash
+import aktual.gradle.stringProperty
 import aktual.gradle.versionName
-import blueprint.core.gitVersionCode
-import blueprint.core.gitVersionHash
-import blueprint.core.stringPropertyOrNull
 
 plugins {
   alias(libs.plugins.module.di)
@@ -48,8 +48,8 @@ buildConfig {
     topLevelConstants = true
   }
 
-  val url = stringPropertyOrNull(key = "aktual.defaultUrl")
-  val password = stringPropertyOrNull(key = "aktual.defaultPassword")
+  val url = stringProperty(key = "aktual.defaultUrl").orNull
+  val password = stringProperty(key = "aktual.defaultPassword").orNull
 
   buildConfigField("BUILD_TIME_MS", System.currentTimeMillis())
   buildConfigField("GIT_HASH", gitVersionHash())

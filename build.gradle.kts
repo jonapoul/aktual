@@ -1,4 +1,5 @@
 import aktual.gradle.detektTasks
+import aktual.gradle.localPropertiesOrNull
 import atlas.graphviz.ArrowType.None
 import atlas.graphviz.ArrowType.Normal
 import atlas.graphviz.FileFormat.Png
@@ -8,7 +9,6 @@ import atlas.graphviz.LinkStyle.Solid
 import atlas.graphviz.NodeStyle.Filled
 import atlas.graphviz.RankDir.TopToBottom
 import atlas.graphviz.Shape.Box
-import blueprint.core.rootLocalPropertiesOrNull
 import dev.detekt.gradle.report.ReportMergeTask
 
 plugins {
@@ -45,7 +45,7 @@ plugins {
 }
 
 // Place all local properties in the project-level gradle properties map
-rootLocalPropertiesOrNull()?.forEach { (key, value) ->
+localPropertiesOrNull()?.forEach { (key, value) ->
   ext[key.toString()] = value.toString()
 }
 
