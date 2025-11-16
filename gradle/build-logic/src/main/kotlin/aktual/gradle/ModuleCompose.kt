@@ -5,7 +5,7 @@ package aktual.gradle
 import androidUnitTestDependencies
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
-import blueprint.core.invoke
+import blueprint.core.get
 import blueprint.core.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -24,24 +24,24 @@ class ModuleCompose : Plugin<Project> {
       sourceSets {
         invokeWhenCreated("androidDebug") {
           dependencies {
-            implementation(libs("jetbrains.preview"))
+            implementation(libs["jetbrains.preview"])
           }
         }
       }
 
       commonMainDependencies {
-        api(libs("jetbrains.runtime"))
-        implementation(libs("alakazam.kotlin.compose"))
-        implementation(libs("androidx.lifecycle.runtime.compose"))
-        implementation(libs("androidx.lifecycle.viewmodel.compose"))
-        implementation(libs("jetbrains.animation"))
-        implementation(libs("jetbrains.foundation"))
-        implementation(libs("jetbrains.material3"))
-        implementation(libs("jetbrains.materialIcons"))
-        implementation(libs("jetbrains.ui"))
-        implementation(libs("jetbrains.uiTooling"))
-        implementation(libs("jetbrains.uiUtil"))
-        implementation(libs("kotlinx.immutable"))
+        api(libs["jetbrains.runtime"])
+        implementation(libs["alakazam.kotlin.compose"])
+        implementation(libs["androidx.lifecycle.runtime.compose"])
+        implementation(libs["androidx.lifecycle.viewmodel.compose"])
+        implementation(libs["jetbrains.animation"])
+        implementation(libs["jetbrains.foundation"])
+        implementation(libs["jetbrains.material3"])
+        implementation(libs["jetbrains.materialIcons"])
+        implementation(libs["jetbrains.ui"])
+        implementation(libs["jetbrains.uiTooling"])
+        implementation(libs["jetbrains.uiUtil"])
+        implementation(libs["kotlinx.immutable"])
       }
 
       commonTestDependencies {
@@ -54,7 +54,7 @@ class ModuleCompose : Plugin<Project> {
 
       androidUnitTestDependencies {
         implementation(project(":aktual-test:android"))
-        implementation(libs("test.androidx.compose.ui.junit4"))
+        implementation(libs["test.androidx.compose.ui.junit4"])
       }
     }
   }

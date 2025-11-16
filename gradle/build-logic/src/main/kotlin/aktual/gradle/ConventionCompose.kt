@@ -1,6 +1,6 @@
 package aktual.gradle
 
-import blueprint.core.invoke
+import blueprint.core.get
 import blueprint.core.libs
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.LintPlugin
@@ -54,7 +54,7 @@ class ConventionCompose : Plugin<Project> {
     }
 
     dependencies {
-      lintChecks(libs("androidx.compose.lint"))
+      lintChecks(libs["androidx.compose.lint"])
     }
   }
 }
