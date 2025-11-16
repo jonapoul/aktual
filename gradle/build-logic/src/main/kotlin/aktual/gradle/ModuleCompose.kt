@@ -8,7 +8,7 @@ import commonTestDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 class ModuleCompose : Plugin<Project> {
@@ -19,13 +19,13 @@ class ModuleCompose : Plugin<Project> {
     }
 
     kotlin {
-      sourceSets {
-        invokeWhenCreated("androidDebug") {
-          dependencies {
-            implementation(libs["jetbrains.preview"])
-          }
-        }
-      }
+//      sourceSets {
+//        invokeWhenCreated("androidDebug") {
+//          dependencies {
+//            implementation(libs("jetbrains.preview"))
+//          }
+//        }
+//      }
 
       commonMainDependencies {
         api(libs["jetbrains.runtime"])
@@ -54,6 +54,10 @@ class ModuleCompose : Plugin<Project> {
         implementation(project(":aktual-test:android"))
         implementation(libs["test.androidx.compose.ui.junit4"])
       }
+    }
+
+    dependencies {
+      "androidRuntimeClasspath"(libs["jetbrains.preview"])
     }
   }
 }

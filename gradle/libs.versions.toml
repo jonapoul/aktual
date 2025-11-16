@@ -116,6 +116,7 @@ test-turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
+agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
 atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.3.0" }

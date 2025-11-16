@@ -2,7 +2,7 @@
  * Copyright 2025 Jon Poulton
  * SPDX-License-Identifier: Apache-2.0
  */
-package aktual.app.di
+package aktual.app.desktop
 
 import aktual.core.model.BuildConfig
 import dev.zacsweers.metro.AppScope
@@ -13,8 +13,8 @@ import dev.zacsweers.metro.SingleIn
 
 @BindingContainer
 @ContributesTo(AppScope::class)
-object JvmBuildConfigContainer {
+object DesktopBuildConfigContainer {
   @Provides
   @SingleIn(AppScope::class)
-  fun buildConfig(): BuildConfig = buildConfig(isDebug = false)
+  fun buildConfig(): BuildConfig = aktual.app.di.buildConfig(isDebug = false)
 }
