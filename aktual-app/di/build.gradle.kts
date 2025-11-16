@@ -1,6 +1,6 @@
 import aktual.gradle.gitVersionCode
 import aktual.gradle.gitVersionHash
-import aktual.gradle.stringProperty
+import aktual.gradle.localPropertiesOrNull
 import aktual.gradle.versionName
 
 plugins {
@@ -48,8 +48,9 @@ buildConfig {
     topLevelConstants = true
   }
 
-  val url = stringProperty(key = "aktual.defaultUrl").orNull
-  val password = stringProperty(key = "aktual.defaultPassword").orNull
+  val localProps = rootProject.localPropertiesOrNull()
+  val url = localProps?.get("aktual.defaultUrl")?.toString()
+  val password = localProps?.get("aktual.defaultPassword")?.toString()
 
   buildConfigField("BUILD_TIME_MS", System.currentTimeMillis())
   buildConfigField("GIT_HASH", gitVersionHash())

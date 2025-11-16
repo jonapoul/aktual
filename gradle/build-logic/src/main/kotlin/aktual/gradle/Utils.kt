@@ -75,3 +75,5 @@ fun Project.localPropertiesOrNull(filename: String = DEFAULT_FILENAME): Properti
   logger.warn(e.toString())
   null
 }
+
+fun Properties.requireString(key: String) = get(key)?.toString() ?: error("Failed getting '$key' from properties")

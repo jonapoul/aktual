@@ -3,7 +3,7 @@ import aktual.gradle.gitVersionCode
 import aktual.gradle.intProperty
 import aktual.gradle.jvmTarget
 import aktual.gradle.localPropertiesOrNull
-import aktual.gradle.stringProperty
+import aktual.gradle.requireString
 import aktual.gradle.versionName
 
 plugins {
@@ -58,14 +58,13 @@ android {
 
   signingConfigs {
     val release by creating
-
     val localProps = rootProject.localPropertiesOrNull()
     if (localProps != null) {
       release.apply {
-        storeFile = rootProject.file(stringProperty(key = "aktual.keyFile").get())
-        storePassword = stringProperty(key = "aktual.keyFilePassword").get()
-        keyAlias = stringProperty(key = "aktual.keyAlias").get()
-        keyPassword = stringProperty(key = "aktual.keyPassword").get()
+        storeFile = rootProject.file(localProps.requireString("aktual.keyFile"))
+        storePassword = localProps.requireString("aktual.keyFilePassword")
+        keyAlias = localProps.requireString("aktual.keyAlias")
+        keyPassword = localProps.requireString("aktual.keyPassword")
       }
     } else {
       logger.warn("No local.properties found - skipping signing configs")
