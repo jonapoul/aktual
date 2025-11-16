@@ -1,9 +1,10 @@
 package aktual.gradle
 
+import androidUnitTestDependencies
+import commonTestDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 
 class ModuleMultiplatform : Plugin<Project> {
@@ -23,21 +24,15 @@ class ModuleMultiplatform : Plugin<Project> {
       jvm()
       androidTarget()
 
-      sourceSets {
-        "commonTest" {
-          dependencies {
-            testLibraries.forEach { lib -> implementation(lib) }
-            implementation(project(":aktual-test:di"))
-            implementation(project(":aktual-test:kotlin"))
-          }
-        }
+      commonTestDependencies {
+        testLibraries.forEach { lib -> implementation(lib) }
+        implementation(project(":aktual-test:di"))
+        implementation(project(":aktual-test:kotlin"))
+      }
 
-        "androidUnitTest" {
-          dependencies {
-            androidTestLibraries.forEach { lib -> implementation(lib) }
-            implementation(project(":aktual-test:android"))
-          }
-        }
+      androidUnitTestDependencies {
+        androidTestLibraries.forEach { lib -> implementation(lib) }
+        implementation(project(":aktual-test:android"))
       }
     }
   }
