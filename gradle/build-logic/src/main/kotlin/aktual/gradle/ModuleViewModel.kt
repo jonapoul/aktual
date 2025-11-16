@@ -1,6 +1,6 @@
 package aktual.gradle
 
-import blueprint.core.invoke
+import blueprint.core.get
 import blueprint.core.libs
 import commonMainDependencies
 import org.gradle.api.Plugin
@@ -17,12 +17,12 @@ class ModuleViewModel : Plugin<Project> {
     kotlin {
       commonMainDependencies {
         api(project(":aktual-core:di"))
-        api(libs("androidx.lifecycle.viewmodel.core"))
-        api(libs("kotlinx.coroutines.core"))
-        api(libs("kotlinx.immutable"))
+        api(libs["androidx.lifecycle.viewmodel.core"])
+        api(libs["kotlinx.coroutines.core"])
+        api(libs["kotlinx.immutable"])
         implementation(project(":aktual-logging"))
-        implementation(libs("jetbrains.runtime"))
-        implementation(libs("molecule"))
+        implementation(libs["jetbrains.runtime"])
+        implementation(libs["molecule"])
       }
     }
   }
