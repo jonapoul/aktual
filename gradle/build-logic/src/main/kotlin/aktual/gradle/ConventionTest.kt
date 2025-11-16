@@ -1,8 +1,6 @@
 package aktual.gradle
 
 import app.cash.burst.gradle.BurstPlugin
-import blueprint.recipes.DEFAULT_POWER_ASSERT_FUNCTIONS
-import blueprint.recipes.testBaseBlueprint
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.tasks.testing.Test
@@ -29,10 +27,35 @@ class ConventionTest : Plugin<Project> {
       pluginManager.apply(BurstPlugin::class)
     }
 
-    testBaseBlueprint()
+    tasks.withType<Test> {
+      val disableReleaseTests = boolProperty(key = "aktual.test.disableRelease").getOrElse(false)
+      if (disableReleaseTests) {
+        if (name.contains("release", ignoreCase = true)) {
+          enabled = false
+        }
+      }
+
+      testLogging.apply {
+        events = setOf(PASSED, SKIPPED, FAILED)
+        exceptionFormat = FULL
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+        showStandardStreams = true
+        displayGranularity = 2
+      }
+    }
 
     extensions.configure<PowerAssertGradleExtension> {
-      functions.addAll(DEFAULT_POWER_ASSERT_FUNCTIONS)
+      functions.addAll(
+        "kotlin.assert",
+        "kotlin.test.assertEquals",
+        "kotlin.test.assertFalse",
+        "kotlin.test.assertIs",
+        "kotlin.test.assertNotNull",
+        "kotlin.test.assertNull",
+        "kotlin.test.assertTrue",
+      )
     }
 
     tasks.withType<Test>().configureEach {

@@ -1,17 +1,11 @@
 package aktual.gradle
 
-import blueprint.core.androidUnitTestDependencies
-import blueprint.core.commonTestDependencies
+import androidUnitTestDependencies
+import commonTestDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
-
-internal fun ExtensionAware.kotlin(action: KotlinMultiplatformExtension.() -> Unit) =
-  extensions.configure<KotlinMultiplatformExtension>(action)
 
 class ModuleMultiplatform : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {

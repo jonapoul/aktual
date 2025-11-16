@@ -3,7 +3,6 @@ agp = "8.13.1"
 alakazam = "6.3.0"
 androidx-activity = "1.11.0"
 androidx-lifecycle = "2.9.4"
-blueprint = "1.1.1"
 burst = "2.10.2"
 composeAndroidx = "1.9.4"
 composeJetbrains = "1.10.0-beta01"
@@ -40,8 +39,6 @@ androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-view
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
-blueprint-core = { module = "dev.jonpoulton.blueprint:core", version.ref = "blueprint" }
-blueprint-recipes = { module = "dev.jonpoulton.blueprint:recipes", version.ref = "blueprint" }
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.4.27" }
 haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.7.0" }
 jetbrains-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeJetbrains" }
