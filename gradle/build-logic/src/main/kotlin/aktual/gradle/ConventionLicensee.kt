@@ -27,6 +27,8 @@ class ConventionLicensee : Plugin<Project> {
       unusedAction(IGNORE)
     }
   }
-}
 
-const val LICENSEE_REPORT_ASSET_NAME = "licensee.json"
+  companion object {
+    const val LICENSEE_REPORT_ASSET_NAME = "licensee.json"
+  }
+}

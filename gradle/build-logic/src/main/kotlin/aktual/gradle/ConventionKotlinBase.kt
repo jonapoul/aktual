@@ -24,15 +24,17 @@ class ConventionKotlinBase : Plugin<Project> {
     allWarningsAsErrors.set(true)
     freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
   }
-}
 
-val FREE_COMPILER_ARGS = listOf(
-  "-Xcontext-parameters", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-parameters
-  "-Xcontext-sensitive-resolution", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-sensitive-resolution
-  "-Xexpect-actual-classes",
-  "-Xnested-type-aliases", // https://kotlinlang.org/docs/whatsnew22.html#support-for-nested-type-aliases
-  "-opt-in=kotlin.RequiresOptIn",
-  "-opt-in=kotlin.io.encoding.ExperimentalEncodingApi",
-  "-opt-in=kotlin.time.ExperimentalTime",
-  "-opt-in=kotlin.uuid.ExperimentalUuidApi",
-)
+  private companion object {
+    val FREE_COMPILER_ARGS = listOf(
+      "-Xcontext-parameters", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-parameters
+      "-Xcontext-sensitive-resolution", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-sensitive-resolution
+      "-Xexpect-actual-classes",
+      "-Xnested-type-aliases", // https://kotlinlang.org/docs/whatsnew22.html#support-for-nested-type-aliases
+      "-opt-in=kotlin.RequiresOptIn",
+      "-opt-in=kotlin.io.encoding.ExperimentalEncodingApi",
+      "-opt-in=kotlin.time.ExperimentalTime",
+      "-opt-in=kotlin.uuid.ExperimentalUuidApi",
+    )
+  }
+}

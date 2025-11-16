@@ -6,8 +6,6 @@ import kotlinx.kover.gradle.plugin.KoverGradlePlugin
 import kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit.INSTRUCTION
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
-import kotlinx.kover.gradle.plugin.dsl.KoverReportFilter
-import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -83,18 +81,6 @@ class ConventionKover : Plugin<Project> {
     rootProject.dependencies {
       // Include this module in test coverage
       kover(project)
-    }
-  }
-}
-
-fun Project.koverExcludes(config: Action<KoverReportFilter>) {
-  extensions.configure<KoverProjectExtension> {
-    reports {
-      total {
-        filters {
-          excludes(config)
-        }
-      }
     }
   }
 }
