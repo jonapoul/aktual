@@ -25,6 +25,7 @@ class ConventionDetekt : Plugin<Project> {
     extensions.configure<DetektExtension> {
       config.setFrom(rootProject.file("config/detekt.yml"))
       buildUponDefaultConfig.set(true)
+      debug.set(true)
     }
 
     val detektTasks = detektTasks
@@ -32,7 +33,12 @@ class ConventionDetekt : Plugin<Project> {
     tasks.getByName("check") { dependsOn(detektCheck) }
 
     detektTasks.configureEach {
-      reports.html.required.set(true)
+      reports {
+        html.required.set(true)
+        sarif.required.set(true)
+        checkstyle.required.set(false)
+        markdown.required.set(false)
+      }
       exclude { it.file.path.contains("generated") }
     }
 
