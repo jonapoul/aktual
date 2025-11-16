@@ -1,6 +1,6 @@
 package aktual.gradle
 
-import blueprint.core.invoke
+import blueprint.core.get
 import blueprint.core.libs
 import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.extensions.DetektExtension
@@ -39,7 +39,7 @@ class ConventionDetekt : Plugin<Project> {
     }
 
     dependencies {
-      "detektPlugins"(libs("detektCompose"))
+      "detektPlugins"(libs["detektCompose"])
     }
   }
 }
