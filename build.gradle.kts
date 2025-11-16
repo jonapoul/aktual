@@ -1,3 +1,4 @@
+import aktual.gradle.detektTasks
 import atlas.graphviz.ArrowType.None
 import atlas.graphviz.ArrowType.Normal
 import atlas.graphviz.FileFormat.Png
@@ -8,6 +9,7 @@ import atlas.graphviz.NodeStyle.Filled
 import atlas.graphviz.RankDir.TopToBottom
 import atlas.graphviz.Shape.Box
 import blueprint.core.rootLocalPropertiesOrNull
+import dev.detekt.gradle.report.ReportMergeTask
 
 plugins {
   alias(libs.plugins.agp.app) apply false
@@ -45,6 +47,20 @@ plugins {
 // Place all local properties in the project-level gradle properties map
 rootLocalPropertiesOrNull()?.forEach { (key, value) ->
   ext[key.toString()] = value.toString()
+}
+
+val detektReportMergeSarif by tasks.registering(ReportMergeTask::class) {
+  output = layout.buildDirectory.file("reports/detekt/merge.sarif.json")
+}
+
+tasks.check.configure {
+  dependsOn(detektReportMergeSarif)
+}
+
+allprojects {
+  detektReportMergeSarif.configure {
+    input.from(detektTasks.map { it.reports.sarif.outputLocation })
+  }
 }
 
 doctor {

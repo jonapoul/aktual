@@ -1,11 +1,10 @@
+*.jks
+*.keystore
+.claude/
 .gradle/
 .kotlin/
 build/
 local.properties
-
-# Keystore files
-*.keystore
-*.jks
 
 # Ignore all IDEA files, except those excluded below
 .idea/*
@@ -13,9 +12,6 @@ local.properties
 !.idea/detekt.xml
 !.idea/icon.png
 !.idea/icon_dark.png
-
-# CI
-dependency-graph-reports/
 
 # API secrets
 *.private.env.json

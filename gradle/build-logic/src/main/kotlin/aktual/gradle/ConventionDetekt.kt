@@ -7,6 +7,7 @@ import dev.detekt.gradle.extensions.DetektExtension
 import dev.detekt.gradle.plugin.DetektPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.TaskCollection
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
@@ -26,10 +27,7 @@ class ConventionDetekt : Plugin<Project> {
       buildUponDefaultConfig.set(true)
     }
 
-    val detektTasks = tasks
-      .withType<Detekt>()
-      .matching { task -> !task.name.contains("release", ignoreCase = true) }
-
+    val detektTasks = detektTasks
     val detektCheck by tasks.registering { dependsOn(detektTasks) }
     tasks.getByName("check") { dependsOn(detektCheck) }
 
@@ -43,3 +41,8 @@ class ConventionDetekt : Plugin<Project> {
     }
   }
 }
+
+val Project.detektTasks: TaskCollection<Detekt>
+  get() = tasks
+    .withType<Detekt>()
+    .matching { task -> !task.name.contains("release", ignoreCase = true) }
