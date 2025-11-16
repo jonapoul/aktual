@@ -124,7 +124,7 @@ androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
 atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.3.0" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "5.7.1" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
-catalog = { id = "dev.jonpoulton.catalog", version = "0.4.0" }
+catalog = { id = "dev.jonpoulton.catalog", version = "0.5.0" }
 compose = { id = "org.jetbrains.compose", version.ref = "composeJetbrains" }
 detekt = { id = "dev.detekt", version = "2.0.0-alpha.1" }
 doctor = { id = "com.osacky.doctor", version = "0.12.1" }
