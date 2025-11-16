@@ -8,7 +8,6 @@ import atlas.graphviz.LinkStyle.Solid
 import atlas.graphviz.NodeStyle.Filled
 import atlas.graphviz.RankDir.TopToBottom
 import atlas.graphviz.Shape.Box
-import blueprint.core.rootLocalPropertiesOrNull
 import dev.detekt.gradle.report.ReportMergeTask
 
 plugins {
@@ -42,11 +41,6 @@ plugins {
   alias(libs.plugins.convention.idea)
   alias(libs.plugins.convention.kover)
   alias(libs.plugins.convention.spotless)
-}
-
-// Place all local properties in the project-level gradle properties map
-rootLocalPropertiesOrNull()?.forEach { (key, value) ->
-  ext[key.toString()] = value.toString()
 }
 
 val detektReportMergeSarif by tasks.registering(ReportMergeTask::class) {

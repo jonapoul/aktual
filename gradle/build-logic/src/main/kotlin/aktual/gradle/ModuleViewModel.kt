@@ -1,7 +1,5 @@
 package aktual.gradle
 
-import blueprint.core.get
-import blueprint.core.libs
 import commonMainDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project

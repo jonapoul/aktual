@@ -1,4 +1,4 @@
-import aktual.gradle.LICENSEE_REPORT_ASSET_NAME
+import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
 import aktual.gradle.versionName
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 

@@ -1,20 +1,15 @@
 package aktual.gradle
 
-import blueprint.core.get
-import blueprint.core.libs
-import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.extensions.DetektExtension
 import dev.detekt.gradle.plugin.DetektPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.tasks.TaskCollection
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.provideDelegate
 import org.gradle.kotlin.dsl.registering
-import org.gradle.kotlin.dsl.withType
 
 class ConventionDetekt : Plugin<Project> {
   override fun apply(target: Project) = with(target) {
@@ -25,12 +20,11 @@ class ConventionDetekt : Plugin<Project> {
     extensions.configure<DetektExtension> {
       config.setFrom(rootProject.file("config/detekt.yml"))
       buildUponDefaultConfig.set(true)
-      debug.set(true)
     }
 
-    val detektTasks = detektTasks
+    val detektTasks = this.detektTasks
     val detektCheck by tasks.registering { dependsOn(detektTasks) }
-    tasks.getByName("check") { dependsOn(detektCheck) }
+    tasks.named("check") { dependsOn(detektCheck) }
 
     detektTasks.configureEach {
       reports {
@@ -47,8 +41,3 @@ class ConventionDetekt : Plugin<Project> {
     }
   }
 }
-
-val Project.detektTasks: TaskCollection<Detekt>
-  get() = tasks
-    .withType<Detekt>()
-    .matching { task -> !task.name.contains("release", ignoreCase = true) }

@@ -1,4 +1,4 @@
-import blueprint.core.boolProperty
+import aktual.gradle.boolProperty
 
 plugins {
   alias(libs.plugins.module.multiplatform)
@@ -23,7 +23,7 @@ sqldelight {
 buildConfig {
   packageName("aktual.budget.db")
   className("DatabaseBuildConfig")
-  buildConfigField(name = "FOREIGN_KEY_CONSTRAINTS", value = boolProperty(key = "aktual.db.foreignKeyConstraints"))
+  buildConfigField("FOREIGN_KEY_CONSTRAINTS", boolProperty(key = "aktual.db.foreignKeyConstraints"))
 }
 
 kotlin {

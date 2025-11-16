@@ -3,10 +3,8 @@
 package aktual.gradle
 
 import androidUnitTestDependencies
-import blueprint.core.commonMainDependencies
-import blueprint.core.commonTestDependencies
-import blueprint.core.get
-import blueprint.core.libs
+import commonMainDependencies
+import commonTestDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply

@@ -1,13 +1,9 @@
 package aktual.gradle
 
-import blueprint.core.boolPropertyOrElse
-import blueprint.core.intProperty
 import kotlinx.kover.gradle.plugin.KoverGradlePlugin
 import kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit.INSTRUCTION
 import kotlinx.kover.gradle.plugin.dsl.KoverProjectExtension
-import kotlinx.kover.gradle.plugin.dsl.KoverReportFilter
-import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -16,47 +12,40 @@ import org.gradle.kotlin.dsl.dependencies
 
 class ConventionKover : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
-    if (!boolPropertyOrElse(key = "aktual.includeInKover", default = true)) {
-      return@with
-    }
+    val includeInKover = boolProperty("aktual.includeInKover").getOrElse(true)
+    if (!includeInKover) return
 
-    with(plugins) {
-      apply(KoverGradlePlugin::class)
-    }
+    pluginManager.apply(KoverGradlePlugin::class)
 
     extensions.configure<KoverProjectExtension> {
       useJacoco.set(false)
 
       reports {
         total {
-          filters {
-            excludes {
-              androidGeneratedClasses()
+          filters.excludes {
+            androidGeneratedClasses()
 
-              classes(
-                "*Activity*",
-                "*Application*",
-                "*BuildConfig*",
-                "*Preview*Kt*",
-              )
+            classes(
+              "*Activity*",
+              "*Application*",
+              "*BuildConfig*",
+              "*Preview*Kt*",
+            )
 
-              packages(
-                "*.di.*",
-              )
+            packages(
+              "*.di.*",
+            )
 
-              annotatedBy(
-                "aktual.core.ui.SingleScreenPreview",
-                "aktual.core.ui.TripleScreenPreview",
-                "androidx.compose.runtime.Composable",
-                "androidx.compose.ui.tooling.preview.Preview",
-                "javax.annotation.processing.Generated",
-              )
-            }
+            annotatedBy(
+              "aktual.core.ui.SingleScreenPreview",
+              "aktual.core.ui.TripleScreenPreview",
+              "androidx.compose.runtime.Composable",
+              "androidx.compose.ui.tooling.preview.Preview",
+              "javax.annotation.processing.Generated",
+            )
           }
 
-          html {
-            onCheck.set(true)
-          }
+          html.onCheck.set(true)
 
           log {
             onCheck.set(true)
@@ -66,35 +55,19 @@ class ConventionKover : Plugin<Project> {
           }
         }
 
-        verify {
-          rule {
-            disabled.set(project != project.rootProject)
-            minBound(
-              minValue = intProperty(key = "aktual.kover.minCoverage"),
-              coverageUnits = INSTRUCTION,
-              aggregationForGroup = COVERED_PERCENTAGE,
-            )
-          }
+        verify.rule {
+          disabled.set(project != project.rootProject)
+          minBound(
+            minValue = intProperty("aktual.kover.minCoverage").get(),
+            coverageUnits = INSTRUCTION,
+            aggregationForGroup = COVERED_PERCENTAGE,
+          )
         }
       }
     }
 
+    // Include this module in test coverage
     val kover = configurations.getByName("kover")
-    rootProject.dependencies {
-      // Include this module in test coverage
-      kover(project)
-    }
-  }
-}
-
-fun Project.koverExcludes(config: Action<KoverReportFilter>) {
-  extensions.configure<KoverProjectExtension> {
-    reports {
-      total {
-        filters {
-          excludes(config)
-        }
-      }
-    }
+    rootProject.dependencies { kover(project) }
   }
 }
