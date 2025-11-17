@@ -25,3 +25,8 @@ kotlin {
 }
 
 kspAllConfigs(project(":aktual-codegen:ksp"))
+
+// Fix a task dependency error?
+val generateAndroidHostTestLintModel by tasks.getting
+val kspAndroidHostTest by tasks.getting
+kspAndroidHostTest.dependsOn(generateAndroidHostTestLintModel)
