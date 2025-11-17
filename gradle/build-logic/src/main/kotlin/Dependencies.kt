@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension as KMPExtens
 fun Project.kspAllConfigs(dependency: Any) = dependencies {
   configurations
     .map { config -> config.name }
-    .filter { name -> name.startsWith("ksp") && name != "ksp" }
+    .filter { name -> name.startsWith("ksp") && name != "ksp" && !name.contains("test", ignoreCase = true) }
     .ifEmpty { error("No KSP configurations found in $path") }
     .onEach { name -> logger.info("Applying $dependency to config $name") }
     .forEach { name -> add(name, dependency) }
