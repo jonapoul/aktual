@@ -1,5 +1,0 @@
-import kotlinx.datetime.YearMonth;
-
-CREATE TABLE IF NOT EXISTS created_budgets (
-  month TEXT AS YearMonth PRIMARY KEY
-);
