@@ -33,7 +33,7 @@ class ConventionDetekt : Plugin<Project> {
         checkstyle.required.set(false)
         markdown.required.set(false)
       }
-      exclude { it.file.path.contains("generated") }
+      exclude { node -> !node.isDirectory && node.file.absolutePath.contains("generated", ignoreCase = true) }
     }
 
     dependencies {

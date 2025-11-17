@@ -2,13 +2,14 @@
 
 package aktual.gradle
 
-import androidUnitTestDependencies
+import androidHostTestDependencies
+import androidMainDependencies
 import commonMainDependencies
 import commonTestDependencies
+import jvmMainDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 class ModuleCompose : Plugin<Project> {
@@ -19,14 +20,6 @@ class ModuleCompose : Plugin<Project> {
     }
 
     kotlin {
-      sourceSets {
-        invokeWhenCreated("androidDebug") {
-          dependencies {
-            implementation(libs["jetbrains.preview"])
-          }
-        }
-      }
-
       commonMainDependencies {
         api(libs["jetbrains.runtime"])
         implementation(libs["alakazam.kotlin.compose"])
@@ -38,6 +31,7 @@ class ModuleCompose : Plugin<Project> {
         implementation(libs["jetbrains.materialIcons"])
         implementation(libs["jetbrains.ui"])
         implementation(libs["jetbrains.uiTooling"])
+        implementation(libs["jetbrains.uiToolingPreview"]) // TODO: remove from runtime classpath
         implementation(libs["jetbrains.uiUtil"])
         implementation(libs["kotlinx.immutable"])
       }
@@ -50,9 +44,19 @@ class ModuleCompose : Plugin<Project> {
         }
       }
 
-      androidUnitTestDependencies {
+      androidMainDependencies {
+        implementation(libs["androidx.poolingcontainer"])
+        implementation(libs["jetbrains.uiTooling"])
+        implementation(libs["jetbrains.uiToolingPreview"])
+      }
+
+      androidHostTestDependencies {
         implementation(project(":aktual-test:android"))
         implementation(libs["test.androidx.compose.ui.junit4"])
+      }
+
+      jvmMainDependencies {
+        implementation(compose.desktop.currentOs)
       }
     }
   }

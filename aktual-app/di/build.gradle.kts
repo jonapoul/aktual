@@ -33,12 +33,6 @@ kotlin {
   }
 }
 
-android {
-  buildFeatures {
-    buildConfig = true
-  }
-}
-
 buildConfig {
   packageName("aktual.app.di")
   generateAtSync.set(true)

@@ -13,7 +13,7 @@ kotlin {
     implementation(libs.slf4j)
   }
 
-  androidUnitTestDependencies {
+  androidHostTestDependencies {
     implementation(libs.logback.classic)
   }
 
