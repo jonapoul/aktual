@@ -1,9 +1,9 @@
 package aktual.gradle
 
 import androidHostTestDependencies
-import commonTestDependencies
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
+import commonTestDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
