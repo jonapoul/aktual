@@ -25,9 +25,7 @@ class ConventionAndroidLibrary : Plugin<Project> {
         prefabPublishing = false
       }
 
-      packaging {
-        resources.excludes.add("META-INF/*")
-      }
+      packaging.configurePackaging()
 
       buildTypes.configureEach {
         // If you enable these with Kover in the same module, you'll get jacoco being loaded twice.

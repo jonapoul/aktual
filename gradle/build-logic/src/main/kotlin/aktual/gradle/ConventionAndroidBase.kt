@@ -20,12 +20,7 @@ class ConventionAndroidBase : Plugin<Project> {
     }
 
     extensions.configure(CommonExtension::class) {
-      // ":aktual-path:to:module" -> "aktual.path.to.module", or ":aktual-app:android" -> "aktual.app.android"
-      namespace = path
-        .split(":", "-")
-        .filter { it.isNotBlank() }
-        .joinToString(".")
-
+      namespace = buildNamespace()
       compileSdk = intProperty("aktual.android.compileSdk").get()
 
       defaultConfig {

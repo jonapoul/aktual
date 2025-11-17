@@ -34,6 +34,7 @@ class ConventionKover : Plugin<Project> {
 
             packages(
               "*.di.*",
+              "*.generated.*",
             )
 
             annotatedBy(

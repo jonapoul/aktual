@@ -9,7 +9,7 @@ import aktual.core.model.Password
 import aktual.core.model.ServerUrl
 import kotlin.time.Instant
 
-internal fun buildConfig(isDebug: Boolean) = BuildConfig(
+fun buildConfig(isDebug: Boolean) = BuildConfig(
   isDebug = isDebug,
   versionCode = VERSION_CODE,
   versionName = VERSION_NAME,

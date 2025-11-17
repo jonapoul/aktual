@@ -36,6 +36,7 @@ exceptions:
 naming:
   FunctionNaming:
     functionPattern: "[a-zA-Z][a-zA-Z0-9]*"
+    excludeClassPattern: ".*Test$"
 
 potential-bugs:
   ImplicitDefaultLocale:

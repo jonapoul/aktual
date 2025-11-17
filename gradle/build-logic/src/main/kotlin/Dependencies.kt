@@ -8,7 +8,7 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension as KMPExtens
 fun Project.kspAllConfigs(dependency: Any) = dependencies {
   configurations
     .map { config -> config.name }
-    .filter { name -> name.startsWith("ksp") && name != "ksp" }
+    .filter { name -> name.startsWith("ksp") && name != "ksp" && !name.contains("test", ignoreCase = true) }
     .ifEmpty { error("No KSP configurations found in $path") }
     .onEach { name -> logger.info("Applying $dependency to config $name") }
     .forEach { name -> add(name, dependency) }
@@ -29,8 +29,8 @@ fun KMPExtension.jvmTestDependencies(handler: Action<KotlinDependencyHandler>) =
 fun KMPExtension.androidMainDependencies(handler: Action<KotlinDependencyHandler>) =
   multiplatformDependencies(name = "androidMain", handler)
 
-fun KMPExtension.androidUnitTestDependencies(handler: Action<KotlinDependencyHandler>) =
-  multiplatformDependencies(name = "androidUnitTest", handler)
+fun KMPExtension.androidHostTestDependencies(handler: Action<KotlinDependencyHandler>) =
+  multiplatformDependencies(name = "androidHostTest", handler)
 
 private fun KMPExtension.multiplatformDependencies(
   name: String,

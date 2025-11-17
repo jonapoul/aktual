@@ -12,6 +12,7 @@ import dev.detekt.gradle.report.ReportMergeTask
 
 plugins {
   alias(libs.plugins.agp.app) apply false
+  alias(libs.plugins.agp.kmp) apply false
   alias(libs.plugins.agp.lib) apply false
   alias(libs.plugins.androidCacheFix) apply false
   alias(libs.plugins.buildconfig) apply false
@@ -81,8 +82,8 @@ atlas {
   }
 
   linkTypes {
-    "commonMainApi"(Solid, "white", displayName = "api")
-    "commonMainImplementation"(Dashed, "aqua", displayName = "implementation")
+    "commonMainApi"(style = Solid, displayName = "api")
+    "commonMainImplementation"(style = Dashed, color = "aqua", displayName = "implementation")
   }
 
   graphviz {

@@ -7,11 +7,6 @@ plugins {
   alias(libs.plugins.catalog)
 }
 
-android {
-  androidResources.enable = true
-  buildFeatures.resValues = true
-}
-
 catalog {
   generateInternal = false
   parameterNaming = CatalogParameterNaming.ByType
@@ -28,6 +23,10 @@ compose.resources {
 }
 
 kotlin {
+  androidLibrary {
+    androidResources.enable = true
+  }
+
   commonMainDependencies {
     api(libs.jetbrains.resources)
     api(libs.jetbrains.runtime)

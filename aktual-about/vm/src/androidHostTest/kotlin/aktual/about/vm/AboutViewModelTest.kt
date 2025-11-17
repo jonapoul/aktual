@@ -19,8 +19,11 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 import kotlin.test.Test
 
+@RunWith(RobolectricTestRunner::class)
 class AboutViewModelTest {
   // real
   private lateinit var viewModel: AboutViewModel
