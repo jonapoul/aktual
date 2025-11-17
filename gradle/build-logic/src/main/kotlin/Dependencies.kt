@@ -29,8 +29,8 @@ fun KMPExtension.jvmTestDependencies(handler: Action<KotlinDependencyHandler>) =
 fun KMPExtension.androidMainDependencies(handler: Action<KotlinDependencyHandler>) =
   multiplatformDependencies(name = "androidMain", handler)
 
-fun KMPExtension.androidUnitTestDependencies(handler: Action<KotlinDependencyHandler>) =
-  multiplatformDependencies(name = "androidUnitTest", handler)
+fun KMPExtension.androidHostTestDependencies(handler: Action<KotlinDependencyHandler>) =
+  multiplatformDependencies(name = "androidHostTest", handler)
 
 private fun KMPExtension.multiplatformDependencies(
   name: String,

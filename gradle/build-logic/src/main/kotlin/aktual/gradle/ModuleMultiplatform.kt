@@ -1,12 +1,13 @@
 package aktual.gradle
 
-import androidUnitTestDependencies
+import androidHostTestDependencies
 import commonTestDependencies
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 
 class ModuleMultiplatform : Plugin<Project> {
@@ -27,8 +28,8 @@ class ModuleMultiplatform : Plugin<Project> {
 
       extensions.configure<KotlinMultiplatformAndroidLibraryTarget> {
         namespace = buildNamespace()
-        minSdk = intProperty("blueprint.android.minSdk")
-        compileSdk = intProperty("blueprint.android.compileSdk")
+        minSdk = intProperty("aktual.android.minSdk").get()
+        compileSdk = intProperty("aktual.android.compileSdk").get()
         lint.lintConfig = rootProject.file("config/lint.xml")
         packaging.configurePackaging()
         withHostTest {
@@ -43,7 +44,7 @@ class ModuleMultiplatform : Plugin<Project> {
         implementation(project(":aktual-test:kotlin"))
       }
 
-      androidUnitTestDependencies {
+      androidHostTestDependencies {
         androidTestLibraries.forEach { lib -> implementation(lib) }
         implementation(project(":aktual-test:android"))
       }
