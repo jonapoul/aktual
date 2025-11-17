@@ -40,13 +40,13 @@ class ModuleMultiplatform : Plugin<Project> {
 
       commonTestDependencies {
         testLibraries.forEach { lib -> implementation(lib) }
-        implementation(project(":aktual-test:di"))
-        implementation(project(":aktual-test:kotlin"))
+//        implementation(project(":aktual-test:di"))
+//        implementation(project(":aktual-test:kotlin"))
       }
 
       androidHostTestDependencies {
         androidTestLibraries.forEach { lib -> implementation(lib) }
-        implementation(project(":aktual-test:android"))
+//        implementation(project(":aktual-test:android"))
       }
     }
   }
