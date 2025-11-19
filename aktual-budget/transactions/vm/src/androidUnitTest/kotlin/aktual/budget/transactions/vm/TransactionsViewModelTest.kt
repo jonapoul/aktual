@@ -34,7 +34,6 @@ import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -44,7 +43,6 @@ import org.robolectric.RobolectricTestRunner
 import kotlin.test.AfterTest
 import kotlin.test.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 class TransactionsViewModelTest : AppGraph.Holder {
   // real

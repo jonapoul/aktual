@@ -21,7 +21,6 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isGreaterThan
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -32,7 +31,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.time.Instant
 
-@OptIn(ExperimentalCoroutinesApi::class)
 class BudgetLocalPreferencesTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
 

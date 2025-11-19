@@ -14,6 +14,5 @@ kotlin {
     api(project(":aktual-settings:vm"))
     implementation(project(":aktual-l10n"))
     implementation(libs.haze.core)
-    implementation(libs.kotlinx.coroutines.core)
   }
 }
