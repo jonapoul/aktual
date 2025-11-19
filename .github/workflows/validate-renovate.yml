@@ -1,0 +1,38 @@
+name: Validate Renovate Config
+
+on:
+  pull_request:
+    paths:
+      - '.github/renovate.json'
+      - '.github/renovate.json5'
+      - 'renovate.json'
+      - 'renovate.json5'
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/renovate.json'
+      - '.github/renovate.json5'
+      - 'renovate.json'
+      - 'renovate.json5'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 'lts/*'
+
+      - name: Install Renovate
+        run: npm install -g renovate
+
+      - name: Validate Renovate config
+        run: renovate-config-validator
