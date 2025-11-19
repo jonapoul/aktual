@@ -2,8 +2,6 @@
  * Copyright 2025 Jon Poulton
  * SPDX-License-Identifier: Apache-2.0
  */
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package aktual.core.connection
 
 import aktual.api.client.AktualApis
@@ -28,7 +26,6 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope

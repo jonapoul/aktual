@@ -6,7 +6,6 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-core:model"))
     implementation(libs.alakazam.kotlin.core)
-    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.preferences.core)
     implementation(project(":aktual-api:actual"))
     implementation(project(":aktual-logging"))

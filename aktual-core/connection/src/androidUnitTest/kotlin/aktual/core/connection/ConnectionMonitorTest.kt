@@ -2,8 +2,6 @@
  * Copyright 2025 Jon Poulton
  * SPDX-License-Identifier: Apache-2.0
  */
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package aktual.core.connection
 
 import aktual.api.client.AktualApisStateHolder
@@ -23,7 +21,6 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import io.ktor.client.engine.mock.MockEngine
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest

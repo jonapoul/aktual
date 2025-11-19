@@ -3,6 +3,7 @@ package aktual.gradle
 import androidHostTestDependencies
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
+import commonMainDependencies
 import commonTestDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -36,6 +37,16 @@ class ModuleMultiplatform : Plugin<Project> {
           // For Robolectric
           isIncludeAndroidResources = true
         }
+      }
+
+      compilerOptions {
+        freeCompilerArgs.addAll(
+          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
+        )
+      }
+
+      commonMainDependencies {
+        implementation(libs["kotlinx.coroutines.core"])
       }
 
       commonTestDependencies {

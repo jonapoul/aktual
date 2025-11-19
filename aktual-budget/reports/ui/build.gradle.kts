@@ -14,7 +14,6 @@ kotlin {
     implementation(project(":aktual-core:model"))
     implementation(project(":aktual-l10n"))
     implementation(libs.alakazam.kotlin.core)
-    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.datetime)
     implementation(libs.markdown.core)
     implementation(libs.markdown.m3)

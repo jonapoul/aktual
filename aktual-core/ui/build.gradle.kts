@@ -23,7 +23,6 @@ kotlin {
     api(libs.kotlinx.datetime)
     implementation(project(":aktual-core:di"))
     implementation(project(":aktual-l10n"))
-    implementation(libs.kotlinx.coroutines.core)
   }
 
   androidMainDependencies {

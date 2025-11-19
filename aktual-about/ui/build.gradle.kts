@@ -14,6 +14,5 @@ kotlin {
     implementation(project(":aktual-l10n"))
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.haze.core)
-    implementation(libs.kotlinx.coroutines.core)
   }
 }

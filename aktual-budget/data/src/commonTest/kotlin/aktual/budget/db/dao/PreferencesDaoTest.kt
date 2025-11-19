@@ -13,13 +13,11 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlin.test.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class PreferencesDaoTest {
   @Test
   fun `Getting from empty table returns null`() = runDaoTest {

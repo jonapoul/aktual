@@ -14,7 +14,6 @@ kotlin {
     api(project(":aktual-core:ui"))
     implementation(project(":aktual-core:model"))
     implementation(project(":aktual-l10n"))
-    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.datetime)
   }
 }

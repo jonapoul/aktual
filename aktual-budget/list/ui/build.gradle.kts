@@ -14,7 +14,6 @@ kotlin {
     implementation(project(":aktual-budget:model"))
     implementation(project(":aktual-core:model"))
     implementation(project(":aktual-l10n"))
-    implementation(libs.kotlinx.coroutines.core)
   }
 
   androidMainDependencies {
