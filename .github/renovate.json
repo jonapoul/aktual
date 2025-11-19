@@ -9,5 +9,12 @@
     "group:kotlin",
     "monorepo:androidx",
     "monorepo:kotlinx"
+  ],
+  "packageRules": [
+    {
+      "matchManagers": ["github-actions"],
+      "groupName": "actions",
+      "groupSlug": "github-actions"
+    }
   ]
 }
