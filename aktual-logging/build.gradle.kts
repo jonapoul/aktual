@@ -17,23 +17,13 @@ kotlin {
     implementation(libs.logback.classic)
   }
 
-  jvmMainDependencies {
+  desktopMainDependencies {
     api(libs.kotlinx.datetime)
     implementation(libs.logback.classic)
   }
 
-  sourceSets {
-    val commonMain by getting
-    val androidMain by getting
-    val jvmMain by getting
-
-    val jvmSharedMain by creating {
-      dependsOn(commonMain)
-      dependencies { compileOnly(libs.logback.classic) }
-    }
-
-    androidMain.dependsOn(jvmSharedMain)
-    jvmMain.dependsOn(jvmSharedMain)
+  jvmSharedMainDependencies {
+    compileOnly(libs.logback.classic)
   }
 }
 
