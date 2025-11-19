@@ -13,12 +13,10 @@ import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlin.test.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
 internal class CustomReportDaoTest {
   @Test
   fun `Fetching all IDs`() = runDaoTest { scope ->

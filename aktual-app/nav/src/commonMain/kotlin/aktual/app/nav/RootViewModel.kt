@@ -2,8 +2,6 @@
  * Copyright 2025 Jon Poulton
  * SPDX-License-Identifier: Apache-2.0
  */
-@file:OptIn(ExperimentalCoroutinesApi::class)
-
 package aktual.app.nav
 
 import aktual.budget.db.dao.PreferencesDao
@@ -30,7 +28,6 @@ import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly

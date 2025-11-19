@@ -17,6 +17,5 @@ kotlin {
     implementation(project(":aktual-logging"))
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.haze.core)
-    implementation(libs.kotlinx.coroutines.core)
   }
 }
