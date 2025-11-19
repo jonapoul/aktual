@@ -23,7 +23,8 @@ class ConventionDi : Plugin<Project> {
       transformProvidersToPrivate.set(true)
       warnOnInjectAnnotationPlacement.set(true)
 
-      reportsDestination.set(layout.buildDirectory.dir("reports/metro"))
+      // Causes occasional compile errors when AGP-KMP is applied, see https://github.com/ZacSweers/metro/issues/1379
+      // reportsDestination.set(layout.buildDirectory.dir("reports/metro"))
     }
   }
 }
