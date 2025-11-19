@@ -4,6 +4,10 @@
     "dependencies"
   ],
   "extends": [
-    "config:recommended"
+    "config:best-practices",
+    "group:compose",
+    "group:kotlin",
+    "monorepo:androidx",
+    "monorepo:kotlinx"
   ]
 }
