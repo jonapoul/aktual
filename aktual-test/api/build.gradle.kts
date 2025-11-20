@@ -24,7 +24,9 @@ buildConfig {
     .layout
     .projectDirectory
     .dir("api/actual")
-    .asFileTree
+    .asFile
+    .listFiles()
+    .orEmpty()
     .filter { it.isDirectory }
     .forEach { dir ->
       forClass(dir.name.capitalized() + "Responses") {
