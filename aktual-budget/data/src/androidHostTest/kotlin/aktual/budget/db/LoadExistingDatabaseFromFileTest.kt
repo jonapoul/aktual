@@ -25,7 +25,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
-class LoadExistingDatabaseFromFile {
+class LoadExistingDatabaseFromFileTest {
   private lateinit var fileSystem: FileSystem
   private lateinit var context: Context
   private lateinit var budgetFiles: BudgetFiles
