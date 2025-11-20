@@ -20,9 +20,6 @@ fun KMPExtension.commonMainDependencies(handler: Action<KotlinDependencyHandler>
 fun KMPExtension.commonTestDependencies(handler: Action<KotlinDependencyHandler>) =
   multiplatformDependencies(name = "commonTest", handler)
 
-fun KMPExtension.jvmSharedMainDependencies(handler: Action<KotlinDependencyHandler>) =
-  multiplatformDependencies(name = "jvmSharedMain", handler)
-
 fun KMPExtension.desktopMainDependencies(handler: Action<KotlinDependencyHandler>) =
   multiplatformDependencies(name = "desktopMain", handler)
 
