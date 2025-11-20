@@ -12,45 +12,45 @@ plugins {
 
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
-private fun module(path: String) = include(":aktual-$path")
-
-module("about:data")
-module("about:ui")
-module("about:vm")
-module("account:domain")
-module("account:ui")
-module("account:vm")
-module("api:actual")
-module("api:builder")
-module("api:github")
-module("app:android")
-module("app:desktop")
-module("app:di")
-module("app:nav")
-module("budget:data")
-module("budget:encryption")
-module("budget:list:ui")
-module("budget:list:vm")
-module("budget:model")
-module("budget:reports:ui")
-module("budget:reports:vm")
-module("budget:sync:ui")
-module("budget:sync:vm")
-module("budget:transactions:ui")
-module("budget:transactions:vm")
-module("codegen:annotation")
-module("codegen:ksp")
-module("core:connection")
-module("core:di")
-module("core:model")
-module("core:ui")
-module("l10n")
-module("logging")
-module("prefs")
-module("settings:ui")
-module("settings:vm")
-module("test:android")
-module("test:api")
-module("test:compose")
-module("test:di")
-module("test:kotlin")
+include(
+  ":aktual-about:data",
+  ":aktual-about:ui",
+  ":aktual-about:vm",
+  ":aktual-account:domain",
+  ":aktual-account:ui",
+  ":aktual-account:vm",
+  ":aktual-api:actual",
+  ":aktual-api:builder",
+  ":aktual-api:github",
+  ":aktual-app:android",
+  ":aktual-app:desktop",
+  ":aktual-app:di",
+  ":aktual-app:nav",
+  ":aktual-budget:data",
+  ":aktual-budget:encryption",
+  ":aktual-budget:list:ui",
+  ":aktual-budget:list:vm",
+  ":aktual-budget:model",
+  ":aktual-budget:reports:ui",
+  ":aktual-budget:reports:vm",
+  ":aktual-budget:sync:ui",
+  ":aktual-budget:sync:vm",
+  ":aktual-budget:transactions:ui",
+  ":aktual-budget:transactions:vm",
+  ":aktual-codegen:annotation",
+  ":aktual-codegen:ksp",
+  ":aktual-core:connection",
+  ":aktual-core:di",
+  ":aktual-core:model",
+  ":aktual-core:ui",
+  ":aktual-l10n",
+  ":aktual-logging",
+  ":aktual-prefs",
+  ":aktual-settings:ui",
+  ":aktual-settings:vm",
+  ":aktual-test:android",
+  ":aktual-test:api",
+  ":aktual-test:compose",
+  ":aktual-test:di",
+  ":aktual-test:kotlin",
+)
