@@ -35,7 +35,7 @@ kotlin {
 
 buildConfig {
   packageName("aktual.app.di")
-  generateAtSync.set(true)
+  generateAtSync = true
 
   useKotlinOutput {
     internalVisibility = true

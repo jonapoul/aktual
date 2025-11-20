@@ -13,7 +13,7 @@ kotlin {
     api(libs.test.kotlinx.coroutines)
   }
 
-  desktopMainDependencies {
+  jvmMainDependencies {
     api(compose.desktop.currentOs)
   }
 }

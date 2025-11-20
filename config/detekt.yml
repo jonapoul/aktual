@@ -55,8 +55,7 @@ style:
     excludes:
       - "**/test/**"
       - "**/androidHostTest/**"
-      - "**/desktopTest/**"
-      - "**/jvmSharedTest/**"
+      - "**/jvmTest/**"
       - "**/commonTest/**"
   UnusedPrivateFunction:
     ignoreAnnotated:

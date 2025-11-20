@@ -193,45 +193,14 @@ Uses **Jetpack Navigation Compose** with type-safe routes defined in `/app/nav/`
 - Navigator interfaces passed to screens for navigation actions
 - Type-safe parameter passing with custom `NavType` implementations
 
-### Source Set Structure
-
-The `aktual.module.multiplatform` plugin configures a specific source set hierarchy optimized for sharing code between Android and Desktop (both JVM platforms):
-
-```
-commonMain (shared across all platforms)
-    ├── jvmSharedMain (shared between Android & Desktop)
-    │   ├── androidMain (Android-specific)
-    │   └── desktopMain (Desktop/JVM-specific)
-    │
-    └── ... (other platform targets)
-
-commonTest
-    └── jvmSharedTest (shared JVM tests)
-        ├── androidHostTest (Android unit tests with Robolectric)
-        └── desktopTest (Desktop unit tests)
-```
-
-**Source Set Guidelines:**
-- `commonMain` - Pure Kotlin code that works on all platforms (no platform-specific APIs)
-- `jvmSharedMain` - Code that uses JVM-specific APIs but works on both Android and Desktop (e.g., java.io, java.nio)
-- `androidMain` - Android-specific code (Android SDK APIs)
-- `desktopMain` - Desktop-specific code (JVM APIs not available on Android, desktop UI components)
-- `androidHostTest` - Android unit tests using Robolectric (runs on JVM without emulator)
-- `desktopTest` - Desktop unit tests
-- `jvmSharedTest` - Shared test code for JVM platforms
-
-**Dependency Helper Functions:**
+### Dependency Helper Functions
 ```kotlin
 kotlin {
   commonMainDependencies {
     implementation(libs["some.common.lib"])
   }
 
-  jvmSharedMainDependencies {
-    implementation(libs["some.jvm.lib"])
-  }
-
-  desktopMainDependencies {
+  jvmMainDependencies {
     implementation(compose.desktop.currentOs)
   }
 
@@ -243,7 +212,7 @@ kotlin {
     implementation(libs["robolectric"])
   }
 
-  desktopTestDependencies {
+  jvmTestDependencies {
     implementation(libs["some.test.lib"])
   }
 }
@@ -255,7 +224,7 @@ kotlin {
 The project uses Gradle convention plugins to centralize build configuration:
 
 **Module Plugins** (use these when creating new modules):
-- `aktual.module.multiplatform` - Base KMP module (desktop + android targets with jvmSharedMain)
+- `aktual.module.multiplatform` - Base KMP module (desktop + android targets)
 - `aktual.module.compose` - Multiplatform + Compose + Material3
 - `aktual.module.viewmodel` - Compose + Molecule + lifecycle-viewmodel
 - `aktual.module.di` - Multiplatform + Metro DI
@@ -385,7 +354,4 @@ To see a full picture of dependencies between modules, see the `chart.dot` files
 
 - **Multiplatform First**: Follow this hierarchy when choosing where to place code:
   1. `commonMain` - Default choice for pure Kotlin code
-  2. `jvmSharedMain` - For JVM-specific code shared between Android and Desktop
-  3. `androidMain` / `desktopMain` - Only when truly platform-specific
-
-  Use `jvmSharedMain` when you need JVM standard library features (java.io, java.nio, java.util) that work on both Android and Desktop. This maximizes code sharing between the two JVM-based platforms.
+  3. `androidMain` / `jvmMain` - Only when truly platform-specific
