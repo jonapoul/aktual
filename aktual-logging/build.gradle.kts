@@ -11,18 +11,16 @@ kotlin {
   androidMainDependencies {
     implementation(libs.logback.android)
     implementation(libs.slf4j)
+    compileOnly(libs.logback.classic)
   }
 
   androidHostTestDependencies {
     implementation(libs.logback.classic)
   }
 
-  desktopMainDependencies {
+  jvmMainDependencies {
     api(libs.kotlinx.datetime)
     implementation(libs.logback.classic)
-  }
-
-  jvmSharedMainDependencies {
     compileOnly(libs.logback.classic)
   }
 }
