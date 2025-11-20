@@ -52,6 +52,12 @@ style:
       - "Preview"
       - "SingleScreenPreview"
       - "TripleScreenPreview"
+    excludes:
+      - "**/test/**"
+      - "**/androidHostTest/**"
+      - "**/desktopTest/**"
+      - "**/jvmSharedTest/**"
+      - "**/commonTest/**"
   UnusedPrivateFunction:
     ignoreAnnotated:
       - "Preview"

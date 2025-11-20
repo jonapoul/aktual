@@ -6,7 +6,7 @@ import androidHostTestDependencies
 import androidMainDependencies
 import commonMainDependencies
 import commonTestDependencies
-import jvmMainDependencies
+import desktopMainDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -55,7 +55,7 @@ class ModuleCompose : Plugin<Project> {
         implementation(libs["test.androidx.compose.ui.junit4"])
       }
 
-      jvmMainDependencies {
+      desktopMainDependencies {
         implementation(compose.desktop.currentOs)
       }
     }
