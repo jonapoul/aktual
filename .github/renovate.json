@@ -4,17 +4,6 @@
     "dependencies"
   ],
   "extends": [
-    "config:best-practices",
-    "group:compose",
-    "group:kotlin",
-    "monorepo:androidx",
-    "monorepo:kotlinx"
-  ],
-  "packageRules": [
-    {
-      "matchManagers": ["github-actions"],
-      "groupName": "actions",
-      "groupSlug": "github-actions"
-    }
+    "config:best-practices"
   ]
 }
