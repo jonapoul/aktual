@@ -9,6 +9,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getValue
+import org.gradle.kotlin.dsl.getting
+import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.registering
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 
 class ModuleMultiplatform : Plugin<Project> {
@@ -25,7 +30,9 @@ class ModuleMultiplatform : Plugin<Project> {
     }
 
     kotlin {
-      jvm()
+      applyDefaultHierarchyTemplate()
+
+      jvm(name = "desktop")
 
       extensions.configure<KotlinMultiplatformAndroidLibraryTarget> {
         namespace = buildNamespace()
@@ -36,6 +43,23 @@ class ModuleMultiplatform : Plugin<Project> {
         withHostTest {
           // For Robolectric
           isIncludeAndroidResources = true
+        }
+      }
+
+      sourceSets {
+        val desktopMain by getting
+        val androidMain by getting
+        val commonMain by getting
+        val jvmSharedMain by registering {
+          dependsOn(commonMain)
+          androidMain.dependsOn(this)
+          desktopMain.dependsOn(this)
+        }
+
+        val commonTest by getting
+        register("jvmSharedTest") {
+          dependsOn(commonTest)
+          dependsOn(jvmSharedMain.get())
         }
       }
 
