@@ -200,7 +200,7 @@ kotlin {
     implementation(libs["some.common.lib"])
   }
 
-  desktopMainDependencies {
+  jvmMainDependencies {
     implementation(compose.desktop.currentOs)
   }
 
@@ -212,7 +212,7 @@ kotlin {
     implementation(libs["robolectric"])
   }
 
-  desktopTestDependencies {
+  jvmTestDependencies {
     implementation(libs["some.test.lib"])
   }
 }
@@ -354,4 +354,4 @@ To see a full picture of dependencies between modules, see the `chart.dot` files
 
 - **Multiplatform First**: Follow this hierarchy when choosing where to place code:
   1. `commonMain` - Default choice for pure Kotlin code
-  3. `androidMain` / `desktopMain` - Only when truly platform-specific
+  3. `androidMain` / `jvmMain` - Only when truly platform-specific

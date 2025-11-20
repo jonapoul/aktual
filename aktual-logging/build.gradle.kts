@@ -18,7 +18,7 @@ kotlin {
     implementation(libs.logback.classic)
   }
 
-  desktopMainDependencies {
+  jvmMainDependencies {
     api(libs.kotlinx.datetime)
     implementation(libs.logback.classic)
     compileOnly(libs.logback.classic)
