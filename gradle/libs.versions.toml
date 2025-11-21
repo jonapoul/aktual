@@ -14,7 +14,7 @@ ksp = "2.3.3"
 ktor = "3.3.2"
 markdown = "0.38.1"
 preferences = "2.2.0"
-redacted = "1.15.0"
+redacted = "1.15.1"
 sqldelight = "2.2.1"
 
 [libraries]
