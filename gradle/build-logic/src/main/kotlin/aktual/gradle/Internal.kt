@@ -1,5 +1,6 @@
 package aktual.gradle
 
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
@@ -12,8 +13,8 @@ import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
-internal fun ExtensionAware.kotlin(action: KotlinMultiplatformExtension.() -> Unit) =
-  extensions.configure<KotlinMultiplatformExtension>(action)
+internal fun ExtensionAware.kotlin(action: Action<KotlinMultiplatformExtension>) =
+  extensions.configure(KotlinMultiplatformExtension::class, action)
 
 internal val ExtensionAware.compose get() = extensions.getByType<ComposePlugin.Dependencies>()
 

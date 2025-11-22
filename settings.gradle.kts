@@ -11,6 +11,10 @@ plugins {
   id("com.gradle.develocity") version "4.2.2"
 }
 
+develocity {
+  buildScan.publishing.onlyIf { false }
+}
+
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 include(
@@ -50,7 +54,6 @@ include(
   ":aktual-settings:ui",
   ":aktual-settings:vm",
   ":aktual-test:android",
-  ":aktual-test:api",
   ":aktual-test:compose",
   ":aktual-test:di",
   ":aktual-test:kotlin",
