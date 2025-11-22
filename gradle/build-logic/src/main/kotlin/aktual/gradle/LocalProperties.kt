@@ -23,7 +23,6 @@ fun Provider<Map<String, String>>.getOptional(key: String): String? =
 
 private abstract class LocalPropertiesValueSource :
   ValueSource<Map<String, String>, LocalPropertiesValueSource.Parameters> {
-
   interface Parameters : ValueSourceParameters {
     @get:[InputFile PathSensitive(NONE)] val propertiesFile: RegularFileProperty
   }
