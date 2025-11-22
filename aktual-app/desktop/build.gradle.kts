@@ -1,5 +1,5 @@
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
-import aktual.gradle.versionName
+import aktual.gradle.gitVersionName
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -17,7 +17,7 @@ compose.desktop {
     nativeDistributions {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
       packageName = "Aktual Desktop"
-      packageVersion = versionName()
+      packageVersion = gitVersionName().get()
       packageVersion = "1.0.0"
 
       windows {

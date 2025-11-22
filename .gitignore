@@ -18,3 +18,7 @@ local.properties
 
 # Atlas charts
 *.dot
+
+# Profiling/benchmarking
+profiling/gradle-user-home
+profiling/profile-out

@@ -1,10 +1,10 @@
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
+import aktual.gradle.getOptional
 import aktual.gradle.gitVersionCode
+import aktual.gradle.gitVersionName
 import aktual.gradle.intProperty
 import aktual.gradle.jvmTarget
-import aktual.gradle.localPropertiesOrNull
-import aktual.gradle.requireString
-import aktual.gradle.versionName
+import aktual.gradle.localProperties
 
 plugins {
   alias(libs.plugins.kotlin.android)
@@ -32,8 +32,8 @@ android {
     applicationId = "dev.jonpoulton.aktual.app"
     minSdk = intProperty(key = "aktual.android.minSdk").get()
     targetSdk = intProperty(key = "aktual.android.targetSdk").get()
-    versionCode = gitVersionCode()
-    versionName = versionName()
+    versionCode = gitVersionCode().get()
+    versionName = gitVersionName().get()
     multiDexEnabled = true
     base.archivesName = "$applicationId-$versionName"
   }
@@ -57,17 +57,13 @@ android {
   }
 
   signingConfigs {
-    val release by creating
-    val localProps = rootProject.localPropertiesOrNull()
-    if (localProps != null) {
-      release.apply {
-        storeFile = rootProject.file(localProps.requireString("aktual.keyFile"))
-        storePassword = localProps.requireString("aktual.keyFilePassword")
-        keyAlias = localProps.requireString("aktual.keyAlias")
-        keyPassword = localProps.requireString("aktual.keyPassword")
+    register("release") {
+      with(rootProject.localProperties()) {
+        storeFile = getOptional("aktual.keyFile")?.let(rootProject::file)
+        storePassword = getOptional("aktual.keyFilePassword")
+        keyAlias = getOptional("aktual.keyAlias")
+        keyPassword = getOptional("aktual.keyPassword")
       }
-    } else {
-      logger.warn("No local.properties found - skipping signing configs")
     }
   }
 

@@ -1,17 +1,13 @@
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.invoke
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension as KMPExtension
 
 fun Project.kspAllConfigs(dependency: Any) = dependencies {
   configurations
-    .map { config -> config.name }
-    .filter { name -> name.startsWith("ksp") && name != "ksp" && !name.contains("test", ignoreCase = true) }
-    .ifEmpty { error("No KSP configurations found in $path") }
-    .onEach { name -> logger.info("Applying $dependency to config $name") }
-    .forEach { name -> add(name, dependency) }
+    .matching { c -> c.name.startsWith("ksp") && c.name != "ksp" && !c.name.contains("test", ignoreCase = true) }
+    .configureEach { add(name, dependency) }
 }
 
 fun KMPExtension.commonMainDependencies(handler: Action<KotlinDependencyHandler>) =
@@ -35,4 +31,4 @@ fun KMPExtension.androidHostTestDependencies(handler: Action<KotlinDependencyHan
 private fun KMPExtension.multiplatformDependencies(
   name: String,
   handler: Action<KotlinDependencyHandler>,
-) = sourceSets { getByName(name) { dependencies(handler) } }
+) = sourceSets.getByName(name).dependencies(handler)
