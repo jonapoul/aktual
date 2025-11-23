@@ -25,8 +25,6 @@ class ConventionAndroidLibrary : Plugin<Project> {
         prefabPublishing = false
       }
 
-      packaging.configurePackaging()
-
       buildTypes.configureEach {
         // If you enable these with Kover in the same module, you'll get jacoco being loaded twice.
         // See https://github.com/Kotlin/kotlinx-kover/issues/739

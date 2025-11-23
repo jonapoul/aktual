@@ -3,7 +3,7 @@ import aktual.gradle.boolProperty
 plugins {
   alias(libs.plugins.module.multiplatform)
   alias(libs.plugins.sqldelight)
-  alias(libs.plugins.buildconfig)
+  alias(libs.plugins.convention.buildconfig)
 }
 
 sqldelight {

@@ -7,6 +7,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class ConventionKotlinBase : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
@@ -20,6 +21,9 @@ class ConventionKotlinBase : Plugin<Project> {
         freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
       }
     }
+
+    val compileTasks = tasks.withType(KotlinCompile::class.java)
+    tasks.register("compileAll") { dependsOn(compileTasks) }
   }
 
   private companion object {

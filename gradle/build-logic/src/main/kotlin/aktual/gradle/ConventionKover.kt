@@ -68,7 +68,6 @@ class ConventionKover : Plugin<Project> {
     }
 
     // Include this module in test coverage
-    val kover = configurations.getByName("kover")
-    rootProject.dependencies { kover(project) }
+    rootProject.dependencies { "kover"(project) }
   }
 }
