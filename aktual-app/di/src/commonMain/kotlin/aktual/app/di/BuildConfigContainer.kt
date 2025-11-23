@@ -9,6 +9,7 @@ import aktual.core.model.Password
 import aktual.core.model.ServerUrl
 import kotlin.time.Instant
 
+@Suppress("UNNECESSARY_SAFE_CALL")
 fun buildConfig(isDebug: Boolean) = BuildConfig(
   isDebug = isDebug,
   versionCode = VERSION_CODE,

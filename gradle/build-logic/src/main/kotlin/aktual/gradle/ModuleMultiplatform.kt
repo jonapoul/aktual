@@ -21,19 +21,18 @@ class ModuleMultiplatform : Plugin<Project> {
       apply(ConventionKover::class)
       apply(ConventionStyle::class)
       apply(ConventionTest::class)
-      apply(ConventionTest::class)
     }
 
     kotlin {
       applyDefaultHierarchyTemplate()
       jvm()
 
-      extensions.configure<KotlinMultiplatformAndroidLibraryTarget> {
+      extensions.configure(KotlinMultiplatformAndroidLibraryTarget::class) {
         namespace = buildNamespace()
         minSdk = intProperty("aktual.android.minSdk").get()
         compileSdk = intProperty("aktual.android.compileSdk").get()
-        lint.lintConfig = rootProject.file("config/lint.xml")
-        packaging.configurePackaging()
+        packaging.commonConfigure()
+        lint.commonConfigure(target)
         withHostTest {
           // For Robolectric
           isIncludeAndroidResources = true

@@ -2,11 +2,16 @@
 
 package aktual.gradle
 
+import com.android.build.gradle.internal.lint.AndroidLintAnalysisTask
+import com.android.build.gradle.internal.lint.AndroidLintGlobalTask
+import com.android.build.gradle.internal.lint.AndroidLintTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.Task
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.dsl.HasConfigurableKotlinCompilerOptions
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 class ConventionKotlinBase : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
@@ -20,6 +25,19 @@ class ConventionKotlinBase : Plugin<Project> {
         freeCompilerArgs.addAll(FREE_COMPILER_ARGS)
       }
     }
+
+    pluginManager.withPlugin("com.android.lint") {
+      disableTasksOfType<AndroidLintAnalysisTask>()
+      disableTasksOfType<AndroidLintGlobalTask>()
+      disableTasksOfType<AndroidLintTask>()
+    }
+
+    val compileTasks = tasks.withType(KotlinCompile::class.java)
+    tasks.register("compileAll") { dependsOn(compileTasks) }
+  }
+
+  private inline fun <reified T : Task> Project.disableTasksOfType() {
+    tasks.withType(T::class.java).configureEach { enabled = false }
   }
 
   private companion object {

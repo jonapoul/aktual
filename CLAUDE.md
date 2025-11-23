@@ -66,6 +66,27 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 
 # Clean build artifacts
 ./gradlew clean
+
+# Invalidate configuration cache (e.g., to refresh git versions)
+./gradlew --rerun-tasks
+```
+
+### Build Performance
+
+**Configuration Cache:** The project uses Gradle's configuration cache for optimal build performance:
+
+- **Typical configuration time:** ~800ms (with cache)
+- **Cold start:** ~5-7 seconds (first build or cache invalidation)
+- **After code changes:** Sub-second (cache reused)
+- **After commits:** Sub-second (cache reused)
+
+**Important:** Git version information (`gitVersionHash()`, `gitVersionCode()`) is cached for performance. The cache does NOT invalidate when you make commits, keeping builds fast. Git versions are refreshed when:
+- Configuration cache is invalidated (cold start, `--rerun-tasks`, gradle.properties changes)
+- Building for CI/release (typically has cold cache)
+
+To manually refresh git versions during development:
+```bash
+./gradlew --rerun-tasks build
 ```
 
 ## Architecture
@@ -244,7 +265,7 @@ The project uses Gradle convention plugins to centralize build configuration:
 - Min SDK: 28
 - Target/Compile SDK: 36
 - KSP2 enabled
-- Configuration cache enabled
+- Configuration cache: enabled and optimized
 
 ### Key Technologies
 
@@ -344,6 +365,10 @@ To see a full picture of dependencies between modules, see the `chart.dot` files
 
 ## Important Notes
 
+- **Configuration Cache Optimization**: The build is optimized for Gradle's configuration cache to achieve sub-second build times. Git version tracking intentionally does NOT invalidate the cache on commits to maintain fast iteration. Use `./gradlew --rerun-tasks` when you need fresh git version values.
+
+- **Gradle Best Practices**: Convention plugins use lazy APIs (`configureEach`, `matching`) instead of eager APIs (`all`, `forEach`) to avoid unnecessary configuration overhead and maintain configuration cache compatibility.
+
 - **Molecule Usage**: ViewModels use Molecule's `launchMolecule` for reactive composition. This is an alternative to traditional MVI patterns - state is composed reactively using Compose-style code inside ViewModels.
 
 - **Metro vs Dagger/Hilt**: This project uses Metro instead of Dagger/Hilt for better KMP support and faster build times with KSP.
@@ -354,4 +379,4 @@ To see a full picture of dependencies between modules, see the `chart.dot` files
 
 - **Multiplatform First**: Follow this hierarchy when choosing where to place code:
   1. `commonMain` - Default choice for pure Kotlin code
-  3. `androidMain` / `jvmMain` - Only when truly platform-specific
+  2. `androidMain` / `jvmMain` - Only when truly platform-specific

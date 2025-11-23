@@ -21,9 +21,11 @@ sqldelight {
 }
 
 buildConfig {
-  packageName("aktual.budget.db")
-  className("DatabaseBuildConfig")
-  buildConfigField("FOREIGN_KEY_CONSTRAINTS", boolProperty(key = "aktual.db.foreignKeyConstraints"))
+  sourceSets.named("main") {
+    packageName("aktual.budget.db")
+    className("DatabaseBuildConfig")
+    buildConfigField("FOREIGN_KEY_CONSTRAINTS", boolProperty(key = "aktual.db.foreignKeyConstraints"))
+  }
 }
 
 kotlin {

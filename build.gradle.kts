@@ -60,7 +60,7 @@ allprojects {
 
 doctor {
   javaHome {
-    ensureJavaHomeMatches = false
+    ensureJavaHomeMatches = true
     ensureJavaHomeIsSet = true
     failOnError = true
   }

@@ -27,25 +27,6 @@ class ConventionTest : Plugin<Project> {
       pluginManager.apply(BurstPlugin::class)
     }
 
-    tasks.withType<Test> {
-      val disableReleaseTests = boolProperty(key = "aktual.test.disableRelease").getOrElse(false)
-      if (disableReleaseTests) {
-        if (name.contains("release", ignoreCase = true)) {
-          enabled = false
-        }
-      }
-
-      testLogging.apply {
-        events = setOf(PASSED, SKIPPED, FAILED)
-        exceptionFormat = FULL
-        showCauses = true
-        showExceptions = true
-        showStackTraces = true
-        showStandardStreams = true
-        displayGranularity = 2
-      }
-    }
-
     extensions.configure<PowerAssertGradleExtension> {
       functions.addAll(
         "kotlin.assert",
