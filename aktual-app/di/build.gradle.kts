@@ -6,7 +6,7 @@ import aktual.gradle.localProperties
 
 plugins {
   alias(libs.plugins.module.di)
-  alias(libs.plugins.buildconfig)
+  alias(libs.plugins.convention.buildconfig)
 }
 
 kotlin {
@@ -36,12 +36,7 @@ kotlin {
 
 buildConfig {
   packageName("aktual.app.di")
-  generateAtSync = true
-
-  useKotlinOutput {
-    internalVisibility = true
-    topLevelConstants = true
-  }
+  useKotlinOutput { topLevelConstants = true }
 
   buildConfigField("BUILD_TIME_MS", providers.provider { System.currentTimeMillis() })
   buildConfigField("GIT_HASH", gitVersionHash())

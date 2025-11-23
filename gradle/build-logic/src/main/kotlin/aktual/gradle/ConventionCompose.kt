@@ -40,7 +40,7 @@ class ConventionCompose : Plugin<Project> {
       )
     }
 
-    pluginManager.withPlugin("com.android.lint") {
+    plugins.withAnyId("com.android.lint", "com.android.base") {
       dependencies {
         "lintChecks"(libs["androidx.compose.lint"])
       }

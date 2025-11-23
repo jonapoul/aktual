@@ -1,12 +1,14 @@
 package aktual.gradle
 
 import org.gradle.api.Action
+import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.artifacts.VersionCatalog
 import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.VersionConstraint
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.api.plugins.PluginContainer
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByType
@@ -52,4 +54,6 @@ internal operator fun VersionCatalog.invoke(alias: String): Provider<MinimalExte
 internal operator fun VersionCatalog.get(alias: String): Provider<MinimalExternalModuleDependency> =
   invoke(alias)
 
-internal fun VersionCatalog.version(alias: String): VersionConstraint = findVersion(alias).get()
+internal fun PluginContainer.withAnyId(vararg ids: String, action: Action<in Plugin<*>>) {
+  ids.forEach { withId(it, action) }
+}

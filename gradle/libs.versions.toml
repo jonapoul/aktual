@@ -144,6 +144,7 @@ spotless = { id = "com.diffplug.spotless", version = "8.1.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 convention-android-base = { id = "aktual.convention.android.base" }
+convention-buildconfig = { id = "aktual.convention.buildconfig" }
 convention-compose = { id = "aktual.convention.compose" }
 convention-idea = { id = "aktual.convention.idea" }
 convention-kotlin-jvm = { id = "aktual.convention.kotlin.jvm" }
