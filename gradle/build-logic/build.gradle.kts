@@ -27,26 +27,27 @@ kotlin {
 }
 
 dependencies {
-  fun compileOnly(plugin: Provider<PluginDependency>) =
-    with(plugin.get()) { compileOnly("$pluginId:$pluginId.gradle.plugin:$version") }
+  fun compileOnlyPlugin(plugin: Provider<PluginDependency>) =
+    compileOnly(plugin.map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version.requiredVersion}" })
 
-  compileOnly(libs.plugins.agp.app)
-  compileOnly(libs.plugins.agp.lib)
-  compileOnly(libs.plugins.androidCacheFix)
-  compileOnly(libs.plugins.burst)
-  compileOnly(libs.plugins.compose)
-  compileOnly(libs.plugins.detekt)
-  compileOnly(libs.plugins.kotlin.android)
-  compileOnly(libs.plugins.kotlin.compose)
-  compileOnly(libs.plugins.kotlin.jvm)
-  compileOnly(libs.plugins.kotlin.multiplatform)
-  compileOnly(libs.plugins.kotlin.serialization)
-  compileOnly(libs.plugins.kotlin.powerAssert)
-  compileOnly(libs.plugins.kover)
-  compileOnly(libs.plugins.ksp)
-  compileOnly(libs.plugins.licensee)
-  compileOnly(libs.plugins.metro)
-  compileOnly(libs.plugins.spotless)
+  compileOnlyPlugin(libs.plugins.agp.app)
+  compileOnlyPlugin(libs.plugins.agp.lib)
+  compileOnlyPlugin(libs.plugins.androidCacheFix)
+  compileOnlyPlugin(libs.plugins.buildconfig)
+  compileOnlyPlugin(libs.plugins.burst)
+  compileOnlyPlugin(libs.plugins.compose)
+  compileOnlyPlugin(libs.plugins.detekt)
+  compileOnlyPlugin(libs.plugins.kotlin.android)
+  compileOnlyPlugin(libs.plugins.kotlin.compose)
+  compileOnlyPlugin(libs.plugins.kotlin.jvm)
+  compileOnlyPlugin(libs.plugins.kotlin.multiplatform)
+  compileOnlyPlugin(libs.plugins.kotlin.serialization)
+  compileOnlyPlugin(libs.plugins.kotlin.powerAssert)
+  compileOnlyPlugin(libs.plugins.kover)
+  compileOnlyPlugin(libs.plugins.ksp)
+  compileOnlyPlugin(libs.plugins.licensee)
+  compileOnlyPlugin(libs.plugins.metro)
+  compileOnlyPlugin(libs.plugins.spotless)
 
   implementation(libs.okio)
 }
@@ -64,6 +65,7 @@ gradlePlugin {
     }
 
     "aktual.convention.android.base"(impl = "aktual.gradle.ConventionAndroidBase")
+    "aktual.convention.buildconfig"(impl = "aktual.gradle.ConventionBuildConfig")
     "aktual.convention.compose"(impl = "aktual.gradle.ConventionCompose")
     "aktual.convention.detekt"(impl = "aktual.gradle.ConventionDetekt")
     "aktual.convention.idea"(impl = "aktual.gradle.ConventionIdea")

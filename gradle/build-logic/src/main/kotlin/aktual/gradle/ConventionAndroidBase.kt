@@ -9,8 +9,6 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.findByType
-import org.jetbrains.kotlin.gradle.dsl.KotlinJvmCompilerOptions
 
 class ConventionAndroidBase : Plugin<Project> {
   @Suppress("LongMethod")
@@ -28,12 +26,8 @@ class ConventionAndroidBase : Plugin<Project> {
         testInstrumentationRunnerArguments["disableAnalytics"] = "true"
       }
 
-      extensions.findByType(KotlinJvmCompilerOptions::class)?.apply {
-        jvmTarget.set(project.jvmTarget())
-      }
-
-      val version = javaVersion()
       compileOptions {
+        val version = javaVersion().get()
         sourceCompatibility = version
         targetCompatibility = version
       }
@@ -59,26 +53,17 @@ class ConventionAndroidBase : Plugin<Project> {
         }
       }
 
-      extensions.findByType(AndroidComponentsExtension::class)?.apply {
+      extensions.configure(AndroidComponentsExtension::class) {
         // disable instrumented tests if androidTest folder doesn't exist
-        beforeVariants {
-          if (it is HasAndroidTestBuilder) {
-            it.enableAndroidTest = it.enableAndroidTest && projectDir.resolve("src/androidTest").exists()
+        beforeVariants { variant ->
+          if (variant is HasAndroidTestBuilder) {
+            variant.enableAndroidTest = variant.enableAndroidTest && projectDir.resolve("src/androidTest").exists()
           }
         }
       }
 
-      lint {
-        abortOnError = false
-        checkGeneratedSources = false
-        checkReleaseBuilds = false
-        checkReleaseBuilds = false
-        checkTestSources = true
-        explainIssues = true
-        htmlReport = true
-        xmlReport = true
-        lintConfig = rootProject.file("config/lint.xml")
-      }
+      lint.commonConfigure(target)
+      packaging.commonConfigure()
 
       compileOptions {
         isCoreLibraryDesugaringEnabled = true

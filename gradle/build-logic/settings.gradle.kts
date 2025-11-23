@@ -6,7 +6,7 @@ apply(from = "../repositories.gradle.kts")
 
 dependencyResolutionManagement {
   versionCatalogs {
-    create("libs") {
+    register("libs") {
       from(files("../libs.versions.toml"))
     }
   }

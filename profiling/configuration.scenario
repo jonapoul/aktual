@@ -1,0 +1,6 @@
+default-scenarios = ["build_dry_run"]
+build_dry_run {
+    title = "Build dry run"
+    tasks = ["build"]
+    gradle-args = ["--dry-run"]
+}

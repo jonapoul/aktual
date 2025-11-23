@@ -1,13 +1,11 @@
 package aktual.gradle
 
 import com.android.build.api.dsl.CommonExtension
-import com.android.build.gradle.LintPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.findByType
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradleSubplugin
@@ -21,9 +19,9 @@ class ConventionCompose : Plugin<Project> {
       apply(ComposePlugin::class)
     }
 
-    extensions.findByType(CommonExtension::class)?.apply {
-      buildFeatures {
-        compose = true
+    pluginManager.withPlugin("com.android.base") {
+      extensions.configure(CommonExtension::class) {
+        buildFeatures.compose = true
       }
     }
 
@@ -42,13 +40,10 @@ class ConventionCompose : Plugin<Project> {
       )
     }
 
-    val lintChecks = configurations.findByName("lintChecks") ?: run {
-      pluginManager.apply(LintPlugin::class)
-      configurations.getByName("lintChecks")
-    }
-
-    dependencies {
-      lintChecks(libs["androidx.compose.lint"])
+    plugins.withAnyId("com.android.lint", "com.android.base") {
+      dependencies {
+        "lintChecks"(libs["androidx.compose.lint"])
+      }
     }
   }
 }

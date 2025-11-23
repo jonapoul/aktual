@@ -1,11 +1,12 @@
+import aktual.gradle.getOptional
 import aktual.gradle.gitVersionCode
 import aktual.gradle.gitVersionHash
-import aktual.gradle.localPropertiesOrNull
-import aktual.gradle.versionName
+import aktual.gradle.gitVersionName
+import aktual.gradle.localProperties
 
 plugins {
   alias(libs.plugins.module.di)
-  alias(libs.plugins.buildconfig)
+  alias(libs.plugins.convention.buildconfig)
 }
 
 kotlin {
@@ -35,21 +36,15 @@ kotlin {
 
 buildConfig {
   packageName("aktual.app.di")
-  generateAtSync = true
+  useKotlinOutput { topLevelConstants = true }
 
-  useKotlinOutput {
-    internalVisibility = true
-    topLevelConstants = true
-  }
-
-  val localProps = rootProject.localPropertiesOrNull()
-  val url = localProps?.get("aktual.defaultUrl")?.toString()
-  val password = localProps?.get("aktual.defaultPassword")?.toString()
-
-  buildConfigField("BUILD_TIME_MS", System.currentTimeMillis())
+  buildConfigField("BUILD_TIME_MS", providers.provider { System.currentTimeMillis() })
   buildConfigField("GIT_HASH", gitVersionHash())
   buildConfigField("VERSION_CODE", gitVersionCode())
-  buildConfigField("VERSION_NAME", versionName())
-  buildConfigField<String?>("DEFAULT_PASSWORD", password)
-  buildConfigField<String?>("DEFAULT_URL", url)
+  buildConfigField("VERSION_NAME", gitVersionName())
+
+  with(rootProject.localProperties()) {
+    buildConfigField("DEFAULT_PASSWORD", getOptional("aktual.defaultPassword"))
+    buildConfigField("DEFAULT_URL", getOptional("aktual.defaultUrl"))
+  }
 }
