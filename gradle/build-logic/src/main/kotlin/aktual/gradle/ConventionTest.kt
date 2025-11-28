@@ -9,34 +9,18 @@ import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.powerassert.gradle.PowerAssertGradleExtension
-import org.jetbrains.kotlin.powerassert.gradle.PowerAssertGradlePlugin
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
 class ConventionTest : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
       apply(ConventionTestDependencies::class)
-      apply(PowerAssertGradlePlugin::class.java)
     }
 
     pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
       pluginManager.apply(BurstPlugin::class)
-    }
-
-    extensions.configure<PowerAssertGradleExtension> {
-      functions.addAll(
-        "kotlin.assert",
-        "kotlin.test.assertEquals",
-        "kotlin.test.assertFalse",
-        "kotlin.test.assertIs",
-        "kotlin.test.assertNotNull",
-        "kotlin.test.assertNull",
-        "kotlin.test.assertTrue",
-      )
     }
 
     tasks.withType<Test>().configureEach {
