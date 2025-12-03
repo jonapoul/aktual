@@ -3,6 +3,7 @@ import atlas.graphviz.ArrowType.None
 import atlas.graphviz.ArrowType.Normal
 import atlas.graphviz.FileFormat.Png
 import atlas.graphviz.LayoutEngine.Dot
+import atlas.graphviz.LinkStyle.Bold
 import atlas.graphviz.LinkStyle.Dashed
 import atlas.graphviz.LinkStyle.Solid
 import atlas.graphviz.NodeStyle.Filled
@@ -68,6 +69,8 @@ doctor {
 
 atlas {
   checkOutputs = false
+  ignoredConfigs = setOf("debug", "kover", "test", "classpath")
+
   pathTransforms { remove(":aktual-") }
 
   projectTypes {
@@ -84,6 +87,7 @@ atlas {
   linkTypes {
     "commonMainApi"(style = Solid, displayName = "api")
     "commonMainImplementation"(style = Dashed, color = "aqua", displayName = "implementation")
+    "kspCommonMainMetadata"(style = Bold, color = "Red", displayName = "ksp")
   }
 
   graphviz {
