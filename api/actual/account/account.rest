@@ -14,7 +14,7 @@ POST {{ACTUAL_BASE_URL}}/account/change-password
 X-ACTUAL-TOKEN: {{ACTUAL_TOKEN}}
 Content-Type: application/json
 
-{"password": "{{PASSWORD}}"}
+{"password": "{{ACTUAL_PASSWORD}}"}
 
 <> change-password-success.200.json
 <> change-password-token-not-found.401.json
