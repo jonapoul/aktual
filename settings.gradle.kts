@@ -11,8 +11,12 @@ plugins {
   id("com.gradle.develocity") version "4.2.2"
 }
 
-develocity {
-  buildScan.publishing.onlyIf { false }
+develocity.buildScan {
+  if (!gradle.startParameter.isBuildScan) {
+    publishing.onlyIf { it.isAuthenticated }
+  }
+
+  uploadInBackground = false
 }
 
 enableFeaturePreview("STABLE_CONFIGURATION_CACHE")

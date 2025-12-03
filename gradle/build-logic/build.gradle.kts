@@ -42,7 +42,6 @@ dependencies {
   compileOnlyPlugin(libs.plugins.kotlin.jvm)
   compileOnlyPlugin(libs.plugins.kotlin.multiplatform)
   compileOnlyPlugin(libs.plugins.kotlin.serialization)
-  compileOnlyPlugin(libs.plugins.kotlin.powerAssert)
   compileOnlyPlugin(libs.plugins.kover)
   compileOnlyPlugin(libs.plugins.ksp)
   compileOnlyPlugin(libs.plugins.licensee)
