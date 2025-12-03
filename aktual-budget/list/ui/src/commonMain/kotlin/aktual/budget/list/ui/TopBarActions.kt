@@ -31,8 +31,8 @@ internal expect fun TopBarActions(
 
 @Composable
 internal fun SettingsButton(
-  modifier: Modifier = Modifier,
   onAction: (ListBudgetsAction) -> Unit,
+  modifier: Modifier = Modifier,
 ) = BasicIconButton(
   modifier = modifier,
   onClick = { onAction(OpenSettings) },
@@ -43,8 +43,8 @@ internal fun SettingsButton(
 
 @Composable
 internal fun MoreButton(
-  modifier: Modifier = Modifier,
   onClick: () -> Unit,
+  modifier: Modifier = Modifier,
 ) = BasicIconButton(
   modifier = modifier,
   onClick = onClick,
