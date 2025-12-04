@@ -4,26 +4,23 @@
  */
 package aktual.app.android
 
-import aktual.core.di.AppGraph
 import aktual.logging.AktualAndroidLogcatLogger
 import aktual.logging.AndroidLogStorage
 import aktual.logging.LogbackLogger
 import android.app.Application
 import android.os.StrictMode
 import dev.zacsweers.metro.createGraphFactory
+import dev.zacsweers.metrox.android.MetroAppComponentProviders
+import dev.zacsweers.metrox.android.MetroApplication
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
 
-class AktualApplication : Application(), AppGraph.Holder {
+class AktualApplication : Application(), MetroApplication {
   private val graph by lazy {
-    createGraphFactory<AndroidAppGraph.Factory>().create(
-      context = this,
-      graphHolder = this,
-    )
+    createGraphFactory<AndroidAppGraph.Factory>().create(context = this)
   }
-
-  override fun get(): AndroidAppGraph = graph
+  override val appComponentProviders: MetroAppComponentProviders get() = graph
 
   override fun onCreate() {
     if (BuildConfig.DEBUG) {

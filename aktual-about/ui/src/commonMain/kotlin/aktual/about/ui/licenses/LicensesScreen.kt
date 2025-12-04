@@ -5,10 +5,10 @@
 package aktual.about.ui.licenses
 
 import aktual.about.vm.LicensesViewModel
-import aktual.core.ui.metroViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 fun LicensesScreen(

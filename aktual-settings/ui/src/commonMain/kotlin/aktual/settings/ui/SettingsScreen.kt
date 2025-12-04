@@ -7,7 +7,6 @@ package aktual.settings.ui
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.metroViewModel
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
@@ -42,6 +41,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable

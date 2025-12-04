@@ -6,8 +6,6 @@ package aktual.account.vm
 
 import aktual.account.domain.LoginRequester
 import aktual.account.domain.LoginResult
-import aktual.core.di.ViewModelKey
-import aktual.core.di.ViewModelScope
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
@@ -19,8 +17,10 @@ import alakazam.kotlin.core.ResettableStateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.jonpoulton.preferences.core.asStateFlow
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +34,7 @@ import logcat.logcat
 
 @Inject
 @ViewModelKey(LoginViewModel::class)
-@ContributesIntoMap(ViewModelScope::class)
+@ContributesIntoMap(AppScope::class)
 class LoginViewModel(
   private val loginRequester: LoginRequester,
   versionsStateHolder: AktualVersionsStateHolder,

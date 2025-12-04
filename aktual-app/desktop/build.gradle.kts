@@ -60,4 +60,5 @@ dependencies {
   implementation(libs.jetbrains.material3)
   implementation(libs.jetbrains.viewmodel)
   implementation(libs.kotlinx.coroutines.swing)
+  implementation(libs.metrox.viewmodel.compose)
 }

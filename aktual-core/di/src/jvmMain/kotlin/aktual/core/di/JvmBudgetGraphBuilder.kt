@@ -17,11 +17,11 @@ import dev.zacsweers.metro.Inject
 @ContributesBinding(AppScope::class)
 class JvmBudgetGraphBuilder(
   private val files: BudgetFiles,
-  private val appGraphHolder: AppGraph.Holder,
+  private val factory: BudgetGraph.Factory,
 ) : BudgetGraph.Builder {
   override fun invoke(metadata: DbMetadata): BudgetGraph {
     val dbFile = files.database(metadata.cloudFileId, mkdirs = true).toFile()
     val driverFactory = JvmSqlDriverFactory(dbFile)
-    return appGraphHolder.get().create(metadata.cloudFileId, metadata, driverFactory)
+    return factory.create(metadata.cloudFileId, metadata, driverFactory)
   }
 }

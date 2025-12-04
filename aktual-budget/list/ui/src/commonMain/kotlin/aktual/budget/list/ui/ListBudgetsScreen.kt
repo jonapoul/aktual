@@ -20,7 +20,6 @@ import aktual.core.ui.BasicIconButton
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.Theme
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.assistedMetroViewModel
 import aktual.core.ui.normalIconButton
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
@@ -55,6 +54,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
 fun ListBudgetsScreen(

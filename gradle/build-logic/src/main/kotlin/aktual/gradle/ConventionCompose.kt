@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 package aktual.gradle
 
 import com.android.build.api.dsl.CommonExtension
@@ -26,7 +28,7 @@ class ConventionCompose : Plugin<Project> {
     }
 
     val metricReportDir = project.layout.buildDirectory.dir("compose_metrics")
-    val stabilityFile = rootProject.layout.projectDirectory.file("config/compose-stability.conf")
+    val stabilityFile = rootProject.isolated.projectDirectory.file("config/compose-stability.conf")
 
     extensions.configure<ComposeCompilerGradlePluginExtension> {
       metricsDestination.set(metricReportDir)

@@ -18,7 +18,7 @@ import dev.zacsweers.metro.Inject
 class AndroidBudgetGraphBuilder(
   private val context: Context,
   private val files: BudgetFiles,
-  private val appGraphHolder: AppGraph.Holder,
+  private val factory: BudgetGraph.Factory,
 ) : BudgetGraph.Builder {
   override fun invoke(metadata: DbMetadata): BudgetGraph {
     val driverFactory = AndroidSqlDriverFactory(
@@ -27,6 +27,6 @@ class AndroidBudgetGraphBuilder(
       budgetFiles = files,
     )
 
-    return appGraphHolder.get().create(metadata.cloudFileId, metadata, driverFactory)
+    return factory.create(metadata.cloudFileId, metadata, driverFactory)
   }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 package aktual.gradle
 
 import dev.detekt.gradle.extensions.DetektExtension
@@ -18,7 +20,7 @@ class ConventionDetekt : Plugin<Project> {
     }
 
     extensions.configure<DetektExtension> {
-      config.setFrom(rootProject.file("config/detekt.yml"))
+      config.setFrom(rootProject.isolated.projectDirectory.file("config/detekt.yml"))
       buildUponDefaultConfig.set(true)
     }
 

@@ -10,11 +10,12 @@ import org.gradle.api.tasks.PathSensitive
 import org.gradle.api.tasks.PathSensitivity.NONE
 import java.util.Properties
 
+@Suppress("UnstableApiUsage")
 fun Project.localProperties(
   filename: String = DEFAULT_FILENAME,
 ): Provider<Map<String, String>> = providers.of(LocalPropertiesValueSource::class.java) {
   parameters {
-    propertiesFile.set(rootProject.layout.projectDirectory.file(filename))
+    propertiesFile.set(rootProject.isolated.projectDirectory.file(filename))
   }
 }
 

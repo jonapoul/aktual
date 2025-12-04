@@ -34,6 +34,7 @@ class ModuleCompose : Plugin<Project> {
         implementation(libs["jetbrains.uiToolingPreview"]) // TODO: remove from runtime classpath
         implementation(libs["jetbrains.uiUtil"])
         implementation(libs["kotlinx.immutable"])
+        implementation(libs["metrox.viewmodel.compose"])
       }
 
       commonTestDependencies {

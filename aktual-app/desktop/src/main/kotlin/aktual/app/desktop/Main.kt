@@ -4,13 +4,10 @@
  */
 package aktual.app.desktop
 
-import aktual.app.di.ViewModelFactory
 import aktual.app.nav.AktualAppContent
 import aktual.core.ui.AktualTheme
-import aktual.core.ui.LocalViewModelGraphProvider
 import aktual.core.ui.WithCompositionLocals
 import aktual.core.ui.chooseSchemeType
-import aktual.core.ui.metroViewModel
 import aktual.l10n.Drawables
 import aktual.l10n.Strings
 import aktual.logging.JvmLogStorage
@@ -27,23 +24,32 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import dev.zacsweers.metro.createGraph
+import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
+import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
 
-fun main() = application(exitProcessOnExit = true) {
-  val viewModelStoreOwner = remember { JvmViewModelStoreOwner() }
-  val graphHolder = remember { JvmAppGraphHolder() }
-  val graph = remember(graphHolder) { graphHolder.get() }
-  val factory = remember(graph) { ViewModelFactory(graph) }
+fun main() {
+  val graph = createGraph<JvmAppGraph>()
+  initLogging(graph)
+  logcat.i { "App started" }
+  logcat.d { "buildConfig = ${graph.buildConfig}" }
+
+  val viewModelStoreOwner = JvmViewModelStoreOwner()
+  composeApp(graph, viewModelStoreOwner)
+}
+
+private fun composeApp(
+  graph: JvmAppGraph,
+  viewModelStoreOwner: JvmViewModelStoreOwner,
+) = application(exitProcessOnExit = true) {
   val windowPrefs = remember(graph) { graph.windowPreferences }
-
-  LaunchedEffect(Unit) {
-    initLogging(graph)
-  }
-
   val state = rememberWindowState(
     placement = windowPrefs.placement.get(),
     isMinimized = windowPrefs.isMinimized.get(),
@@ -51,14 +57,10 @@ fun main() = application(exitProcessOnExit = true) {
     size = windowPrefs.size.get(),
   )
 
-  val viewModel = metroViewModel<AktualDesktopViewModel>(
-    owner = viewModelStoreOwner,
-    graphProvider = factory,
+  val viewModel = viewModel<AktualDesktopViewModel>(
+    viewModelStoreOwner = viewModelStoreOwner,
+    factory = graph.metroViewModelFactory,
   )
-
-  LaunchedEffect(Unit) {
-    viewModel.start()
-  }
 
   val navController = rememberNavController()
   val keyHandler = remember { KeyboardEventHandler(navController) }
@@ -83,7 +85,7 @@ fun main() = application(exitProcessOnExit = true) {
       navController = navController,
       viewModel = viewModel,
       viewModelStoreOwner = viewModelStoreOwner,
-      factory = factory,
+      factory = graph.metroViewModelFactory,
     )
   }
 }
@@ -93,10 +95,10 @@ private fun WindowContents(
   navController: NavHostController,
   viewModel: AktualDesktopViewModel,
   viewModelStoreOwner: ViewModelStoreOwner,
-  factory: ViewModelFactory,
+  factory: MetroViewModelFactory,
 ) = CompositionLocalProvider(
   LocalViewModelStoreOwner provides viewModelStoreOwner,
-  LocalViewModelGraphProvider provides factory,
+  LocalMetroViewModelFactory provides factory,
 ) {
   val regular by viewModel.regularSchemeType.collectAsState()
   val darkScheme by viewModel.darkSchemeType.collectAsState()

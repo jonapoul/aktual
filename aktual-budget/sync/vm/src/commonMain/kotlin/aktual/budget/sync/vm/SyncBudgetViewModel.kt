@@ -14,10 +14,7 @@ import aktual.budget.model.encryptedZip
 import aktual.budget.sync.vm.SyncStep.DownloadingDatabase
 import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
-import aktual.core.di.AssistedFactoryKey
 import aktual.core.di.BudgetGraphHolder
-import aktual.core.di.ViewModelAssistedFactory
-import aktual.core.di.ViewModelScope
 import aktual.core.model.LoginToken
 import aktual.core.model.Password
 import aktual.core.model.Percent
@@ -30,10 +27,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
@@ -307,9 +307,9 @@ class SyncBudgetViewModel(
   )
 
   @AssistedFactory
-  @AssistedFactoryKey(Factory::class)
-  @ContributesIntoMap(ViewModelScope::class)
-  fun interface Factory : ViewModelAssistedFactory {
+  @ManualViewModelAssistedFactoryKey(Factory::class)
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted token: LoginToken,
       @Assisted budgetId: BudgetId,

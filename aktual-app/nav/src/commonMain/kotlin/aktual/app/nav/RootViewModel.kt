@@ -106,7 +106,7 @@ abstract class RootViewModel(
     }
   }
 
-  fun start() {
+  init {
     serverPinger.start()
     connectionMonitor.start()
     viewModelScope.launch {

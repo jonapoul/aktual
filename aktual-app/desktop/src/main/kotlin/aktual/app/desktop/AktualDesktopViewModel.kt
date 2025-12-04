@@ -12,20 +12,20 @@ import aktual.core.connection.ConnectionMonitor
 import aktual.core.connection.ServerPinger
 import aktual.core.connection.ServerVersionFetcher
 import aktual.core.di.BudgetGraphHolder
-import aktual.core.di.ViewModelKey
-import aktual.core.di.ViewModelScope
 import aktual.core.model.PingStateHolder
 import aktual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.CoroutineScope
 
 @Inject
 @ViewModelKey(AktualDesktopViewModel::class)
-@ContributesIntoMap(ViewModelScope::class, binding<ViewModel>())
+@ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class AktualDesktopViewModel(
   appScope: CoroutineScope,
   contexts: CoroutineContexts,
