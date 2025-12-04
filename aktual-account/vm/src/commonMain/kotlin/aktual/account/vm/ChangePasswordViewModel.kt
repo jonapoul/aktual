@@ -8,8 +8,6 @@ import aktual.account.domain.ChangePasswordResult
 import aktual.account.domain.LoginRequester
 import aktual.account.domain.LoginResult
 import aktual.account.domain.PasswordChanger
-import aktual.core.di.ViewModelKey
-import aktual.core.di.ViewModelScope
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.LoginToken
@@ -17,8 +15,10 @@ import aktual.core.model.Password
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -37,7 +37,7 @@ import kotlin.time.Duration.Companion.seconds
 
 @Inject
 @ViewModelKey(ChangePasswordViewModel::class)
-@ContributesIntoMap(ViewModelScope::class)
+@ContributesIntoMap(AppScope::class)
 class ChangePasswordViewModel internal constructor(
   versionsStateHolder: AktualVersionsStateHolder,
   private val passwordChanger: PasswordChanger,

@@ -6,8 +6,6 @@ package aktual.about.vm
 
 import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
-import aktual.core.di.ViewModelKey
-import aktual.core.di.ViewModelScope
 import aktual.core.model.UrlOpener
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -15,8 +13,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +26,7 @@ import logcat.logcat
 
 @Inject
 @ViewModelKey(LicensesViewModel::class)
-@ContributesIntoMap(ViewModelScope::class)
+@ContributesIntoMap(AppScope::class)
 class LicensesViewModel internal constructor(
   private val licensesRepository: LicensesRepository,
   private val urlOpener: UrlOpener,

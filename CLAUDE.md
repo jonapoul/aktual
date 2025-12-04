@@ -189,9 +189,9 @@ class YourViewModel(
 ) : ViewModel()
 
 @AssistedFactory
-@AssistedFactoryKey(Factory::class)
+@ManualViewModelAssistedFactoryKey(Factory::class)
 @ContributesIntoMap(ViewModelScope::class)
-fun interface Factory : ViewModelAssistedFactory {
+fun interface Factory : ManualViewModelAssistedFactory {
   fun create(runtimeParam: Type): YourViewModel
 }
 ```

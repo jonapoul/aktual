@@ -10,9 +10,6 @@ import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.database
 import aktual.budget.model.metadata
-import aktual.core.di.AssistedFactoryKey
-import aktual.core.di.ViewModelAssistedFactory
-import aktual.core.di.ViewModelScope
 import aktual.core.model.LoginToken
 import aktual.core.model.ServerUrl
 import aktual.core.model.UrlOpener
@@ -21,10 +18,13 @@ import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.jonpoulton.preferences.core.asStateFlow
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
@@ -168,9 +168,9 @@ class ListBudgetsViewModel(
   }
 
   @AssistedFactory
-  @AssistedFactoryKey(Factory::class)
-  @ContributesIntoMap(ViewModelScope::class)
-  interface Factory : ViewModelAssistedFactory {
+  @ManualViewModelAssistedFactoryKey(Factory::class)
+  @ContributesIntoMap(AppScope::class)
+  interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted token: LoginToken,
     ): ListBudgetsViewModel

@@ -68,6 +68,7 @@ class ConventionKover : Plugin<Project> {
     }
 
     // Include this module in test coverage
+    // TODO: use isolated projects
     rootProject.dependencies { "kover"(project) }
   }
 }

@@ -4,8 +4,6 @@
  */
 package aktual.settings.vm
 
-import aktual.core.di.ViewModelKey
-import aktual.core.di.ViewModelScope
 import aktual.prefs.AppGlobalPreferences
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -14,15 +12,17 @@ import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.jonpoulton.preferences.core.asStateFlow
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.StateFlow
 
 @Inject
 @ViewModelKey(SettingsViewModel::class)
-@ContributesIntoMap(ViewModelScope::class)
+@ContributesIntoMap(AppScope::class)
 class SettingsViewModel internal constructor(
   preferences: AppGlobalPreferences,
 ) : ViewModel() {

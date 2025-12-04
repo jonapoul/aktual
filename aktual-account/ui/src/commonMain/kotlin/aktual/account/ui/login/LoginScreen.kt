@@ -15,7 +15,6 @@ import aktual.core.ui.Theme
 import aktual.core.ui.UsingServerText
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.metroViewModel
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
@@ -48,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 fun LoginScreen(

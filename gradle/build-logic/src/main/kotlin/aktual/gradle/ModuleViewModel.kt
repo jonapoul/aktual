@@ -18,6 +18,7 @@ class ModuleViewModel : Plugin<Project> {
         api(libs["androidx.lifecycle.viewmodel.core"])
         api(libs["kotlinx.coroutines.core"])
         api(libs["kotlinx.immutable"])
+        api(libs["metrox.viewmodel"])
         implementation(project(":aktual-logging"))
         implementation(libs["jetbrains.runtime"])
         implementation(libs["molecule"])

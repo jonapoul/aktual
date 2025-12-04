@@ -4,7 +4,6 @@
  */
 package aktual.core.di
 
-import aktual.app.di.AndroidViewModelGraph
 import aktual.app.di.CoroutineContainer
 import aktual.app.di.GithubApiContainer
 import aktual.budget.db.withResult
@@ -12,8 +11,6 @@ import aktual.budget.db.withoutResult
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
-import aktual.test.DummyViewModelAssistedFactoryContainer
-import aktual.test.DummyViewModelContainer
 import aktual.test.messageContains
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
@@ -40,21 +37,17 @@ import kotlin.test.Test
 import kotlin.uuid.Uuid
 
 @RunWith(RobolectricTestRunner::class)
-class BudgetGraphHolderTest : AppGraph.Holder {
+class BudgetGraphHolderTest {
   private lateinit var appGraph: TestAppGraph
   private lateinit var holder: BudgetGraphHolder
-
-  override fun get(): AppGraph = appGraph
 
   private fun TestScope.before() {
     val context = ApplicationProvider.getApplicationContext<Context>()
     val contexts = TestCoroutineContexts(standardDispatcher)
-    val appGraphHolder = this@BudgetGraphHolderTest
     appGraph = createGraphFactory<TestAppGraph.Factory>().create(
       scope = this,
       contexts = contexts,
       context = context,
-      holder = appGraphHolder,
     )
 
     holder = appGraph.budgetGraphHolder
@@ -122,9 +115,8 @@ class BudgetGraphHolderTest : AppGraph.Holder {
   @DependencyGraph(
     scope = AppScope::class,
     excludes = [CoroutineContainer::class, GithubApiContainer::class],
-    bindingContainers = [DummyViewModelContainer::class, DummyViewModelAssistedFactoryContainer::class],
   )
-  internal interface TestAppGraph : AppGraph, AndroidViewModelGraph.Factory {
+  internal interface TestAppGraph : AppGraph {
     val budgetGraphHolder: BudgetGraphHolder
 
     @DependencyGraph.Factory
@@ -133,7 +125,6 @@ class BudgetGraphHolderTest : AppGraph.Holder {
         @Provides scope: CoroutineScope,
         @Provides contexts: CoroutineContexts,
         @Provides context: Context,
-        @Provides holder: AppGraph.Holder,
       ): TestAppGraph
     }
   }

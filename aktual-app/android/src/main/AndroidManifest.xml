@@ -6,7 +6,6 @@
 
   <application
     android:name="aktual.app.android.AktualApplication"
-    android:appComponentFactory="aktual.app.android.AktualAppComponentFactory"
     android:allowBackup="true"
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
@@ -14,8 +13,7 @@
     android:roundIcon="@mipmap/ic_launcher_round"
     android:supportsRtl="true"
     android:theme="@style/Theme.Aktual"
-    android:usesCleartextTraffic="true"
-    tools:replace="android:appComponentFactory">
+    android:usesCleartextTraffic="true">
 
     <activity
       android:name="aktual.app.android.AktualActivity"

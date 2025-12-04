@@ -4,7 +4,6 @@
  */
 package aktual.budget.transactions.vm
 
-import aktual.app.di.AndroidViewModelGraph
 import aktual.app.di.CoroutineContainer
 import aktual.app.di.GithubApiContainer
 import aktual.budget.model.AccountId
@@ -17,13 +16,10 @@ import aktual.budget.model.TransactionsSpec
 import aktual.core.di.AppGraph
 import aktual.core.di.BudgetGraph
 import aktual.core.di.BudgetGraphHolder
-import aktual.core.di.assisted
-import aktual.test.DummyViewModelContainer
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
 import android.content.Context
-import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
 import assertk.assertThat
@@ -44,15 +40,13 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
-class TransactionsViewModelTest : AppGraph.Holder {
+class TransactionsViewModelTest {
   // real
   private lateinit var viewModel: TransactionsViewModel
   private lateinit var budgetGraph: BudgetGraph
 
   // fake
   private lateinit var appGraph: TestAppGraph
-
-  override fun get(): AppGraph = appGraph
 
   @AfterTest
   fun after() {
@@ -66,7 +60,6 @@ class TransactionsViewModelTest : AppGraph.Holder {
       scope = this,
       contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
       context = context,
-      holder = this@TransactionsViewModelTest,
     )
 
     budgetGraph = appGraph.budgetGraphHolder.update(METADATA)
@@ -87,10 +80,10 @@ class TransactionsViewModelTest : AppGraph.Holder {
     }
 
     viewModel = appGraph
-      .create(CreationExtras.Empty)
-      .assisted<TransactionsViewModel, TransactionsViewModel.Factory> {
-        create(TOKEN, BUDGET_ID, TransactionsSpec(spec))
-      }
+      .metroViewModelFactory
+      .createManuallyAssistedFactory(TransactionsViewModel.Factory::class)
+      .invoke()
+      .create(TOKEN, BUDGET_ID, TransactionsSpec(spec))
   }
 
   @Test
@@ -234,9 +227,8 @@ class TransactionsViewModelTest : AppGraph.Holder {
   @DependencyGraph(
     scope = AppScope::class,
     excludes = [CoroutineContainer::class, GithubApiContainer::class],
-    bindingContainers = [DummyViewModelContainer::class],
   )
-  internal interface TestAppGraph : AppGraph, AndroidViewModelGraph.Factory {
+  internal interface TestAppGraph : AppGraph {
     val budgetGraphHolder: BudgetGraphHolder
 
     @DependencyGraph.Factory
@@ -245,7 +237,6 @@ class TransactionsViewModelTest : AppGraph.Holder {
         @Provides scope: CoroutineScope,
         @Provides contexts: CoroutineContexts,
         @Provides context: Context,
-        @Provides holder: AppGraph.Holder,
       ): TestAppGraph
     }
   }
