@@ -11,19 +11,19 @@ import aktual.budget.db.dao.DashboardDao.Companion.MAX_WIDTH
 import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
-import aktual.core.di.AssistedFactoryKey
 import aktual.core.di.BudgetGraphHolder
-import aktual.core.di.ViewModelAssistedFactory
-import aktual.core.di.ViewModelScope
 import aktual.core.di.throwIfWrongBudget
 import aktual.core.model.Empty
 import aktual.core.model.UuidGenerator
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -101,9 +101,9 @@ class ChooseReportTypeViewModel(
   )
 
   @AssistedFactory
-  @AssistedFactoryKey(Factory::class)
-  @ContributesIntoMap(ViewModelScope::class)
-  fun interface Factory : ViewModelAssistedFactory {
+  @ManualViewModelAssistedFactoryKey(Factory::class)
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
       @Assisted budgetId: BudgetId,
     ): ChooseReportTypeViewModel

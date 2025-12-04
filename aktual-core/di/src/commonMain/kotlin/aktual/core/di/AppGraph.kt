@@ -4,10 +4,6 @@
  */
 package aktual.core.di
 
-interface AppGraph : BudgetGraph.Factory, ViewModelGraph.Factory {
-  val viewModelGraphProvider: ViewModelGraphProvider
+import dev.zacsweers.metrox.viewmodel.ViewModelGraph
 
-  fun interface Holder {
-    fun get(): AppGraph
-  }
-}
+interface AppGraph : BudgetGraph.Factory, ViewModelGraph

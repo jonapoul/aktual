@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
 import aktual.gradle.getOptional
 import aktual.gradle.gitVersionCode
@@ -58,8 +60,12 @@ android {
 
   signingConfigs {
     register("release") {
-      with(rootProject.localProperties()) {
-        storeFile = getOptional("aktual.keyFile")?.let(rootProject::file)
+      with(localProperties()) {
+        storeFile = getOptional("aktual.keyFile")?.let {
+          rootProject.isolated.projectDirectory
+            .file(it)
+            .asFile
+        }
         storePassword = getOptional("aktual.keyFilePassword")
         keyAlias = getOptional("aktual.keyAlias")
         keyPassword = getOptional("aktual.keyPassword")
@@ -114,6 +120,8 @@ dependencies {
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.logcat)
   implementation(libs.material)
+  implementation(libs.metrox.android)
+  implementation(libs.metrox.viewmodel.compose)
 }
 
 val exportMinSdk by tasks.registering {

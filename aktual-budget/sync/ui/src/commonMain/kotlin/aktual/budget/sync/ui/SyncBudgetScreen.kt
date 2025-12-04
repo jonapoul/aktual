@@ -16,7 +16,6 @@ import aktual.core.ui.LocalTheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.Theme
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.assistedMetroViewModel
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
@@ -52,6 +51,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 

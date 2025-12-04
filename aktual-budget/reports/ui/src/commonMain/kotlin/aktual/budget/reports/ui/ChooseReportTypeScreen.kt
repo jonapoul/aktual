@@ -23,7 +23,6 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.Theme
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.assistedMetroViewModel
 import aktual.core.ui.defaultHazeStyle
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -55,6 +54,7 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
 

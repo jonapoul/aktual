@@ -39,7 +39,7 @@ interface BudgetGraph {
     ): BudgetGraph
   }
 
-  // Platform-specific implementation to call the above
+  // Platform-specific implementation to invoke BudgetGraph.Factory
   fun interface Builder {
     operator fun invoke(metadata: DbMetadata): BudgetGraph
   }

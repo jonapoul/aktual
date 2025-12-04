@@ -13,6 +13,7 @@ kotlinx-serialization = "1.9.0"
 ksp = "2.3.3"
 ktor = "3.3.3"
 markdown = "0.38.1"
+metro = "0.8.1"
 preferences = "2.2.0"
 redacted = "1.15.1"
 sqldelight = "2.2.1"
@@ -79,6 +80,9 @@ logcat = { module = "com.squareup.logcat:logcat", version = "0.4" }
 markdown-core = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdown" }
 markdown-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdown" }
 material = { module = "com.google.android.material:material", version = "1.13.0" }
+metrox-android = { module = "dev.zacsweers.metro:metrox-android", version.ref = "metro" }
+metrox-viewmodel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
+metrox-viewmodel-compose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
 okio = { module = "com.squareup.okio:okio", version = "3.16.4" }
 preferences-android = { module = "dev.jonpoulton.preferences:android", version.ref = "preferences" }
@@ -136,7 +140,7 @@ kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.3" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 licensee = { id = "app.cash.licensee", version = "1.14.1" }
 manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.0" }
-metro = { id = "dev.zacsweers.metro", version = "0.8.1" }
+metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
 shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
 spotless = { id = "com.diffplug.spotless", version = "8.1.0" }

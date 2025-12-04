@@ -6,9 +6,7 @@ package aktual.app.android
 
 import aktual.app.nav.AktualAppContent
 import aktual.core.di.ActivityKey
-import aktual.core.di.ViewModelGraphProvider
 import aktual.core.ui.AktualTheme
-import aktual.core.ui.LocalViewModelGraphProvider
 import aktual.core.ui.WithCompositionLocals
 import aktual.core.ui.chooseSchemeType
 import android.app.Activity
@@ -29,14 +27,16 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
+import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 
 @Inject
 @ActivityKey(AktualActivity::class)
 @ContributesIntoMap(AppScope::class, binding<Activity>())
-class AktualActivity(vmGraphProvider: ViewModelGraphProvider) : ComponentActivity() {
-  override val defaultViewModelProviderFactory = vmGraphProvider
+class AktualActivity(private val viewModelFactory: MetroViewModelFactory) : ComponentActivity() {
+  override val defaultViewModelProviderFactory = viewModelFactory
 
-  private val viewModel by viewModels<AktualActivityViewModel> { vmGraphProvider }
+  private val viewModel by viewModels<AktualActivityViewModel> { viewModelFactory }
 
   override fun onDestroy() {
     super.onDestroy()
@@ -45,8 +45,6 @@ class AktualActivity(vmGraphProvider: ViewModelGraphProvider) : ComponentActivit
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
-    viewModel.start()
-
     installSplashScreen()
 
     val transparent = Color.Transparent.value.toInt()
@@ -58,7 +56,7 @@ class AktualActivity(vmGraphProvider: ViewModelGraphProvider) : ComponentActivit
     setContent {
       Content(
         viewModel = viewModel,
-        defaultViewModelProviderFactory = defaultViewModelProviderFactory,
+        viewModelFactory = viewModelFactory,
       )
     }
   }
@@ -67,7 +65,7 @@ class AktualActivity(vmGraphProvider: ViewModelGraphProvider) : ComponentActivit
 @Composable
 private fun Content(
   viewModel: AktualActivityViewModel,
-  defaultViewModelProviderFactory: ViewModelGraphProvider,
+  viewModelFactory: MetroViewModelFactory,
 ) {
   val regular by viewModel.regularSchemeType.collectAsStateWithLifecycle()
   val darkScheme by viewModel.darkSchemeType.collectAsStateWithLifecycle()
@@ -78,7 +76,7 @@ private fun Content(
   val colorSchemeType = chooseSchemeType(regular, darkScheme)
 
   CompositionLocalProvider(
-    LocalViewModelGraphProvider provides defaultViewModelProviderFactory,
+    LocalMetroViewModelFactory provides viewModelFactory,
   ) {
     WithCompositionLocals(
       isPrivacyEnabled = isPrivacyEnabled,

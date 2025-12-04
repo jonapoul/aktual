@@ -18,7 +18,6 @@ import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.Theme
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.assistedMetroViewModel
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Box
@@ -38,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate

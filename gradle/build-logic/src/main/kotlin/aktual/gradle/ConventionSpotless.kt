@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 package aktual.gradle
 
 import com.diffplug.gradle.spotless.SpotlessExtension
@@ -15,7 +17,10 @@ class ConventionSpotless : Plugin<Project> {
 
     extensions.configure<SpotlessExtension> {
       format("licenseKotlin") {
-        licenseHeaderFile(rootProject.file("config/spotless.kt"), "(package|@file:)")
+        licenseHeaderFile(
+          rootProject.isolated.projectDirectory.file("config/spotless.kt"),
+          "(package|@file:)",
+        )
         target("src/*/kotlin/**/*.kt")
       }
     }

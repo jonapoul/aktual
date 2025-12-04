@@ -13,7 +13,6 @@ import aktual.core.ui.LocalTheme
 import aktual.core.ui.Theme
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.metroViewModel
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
@@ -42,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 fun ChangePasswordScreen(

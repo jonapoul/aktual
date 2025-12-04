@@ -51,7 +51,6 @@ class ModuleMultiplatform : Plugin<Project> {
 
       commonTestDependencies {
         testLibraries.forEach { lib -> implementation(lib) }
-        implementation(project(":aktual-test:di"))
         implementation(project(":aktual-test:kotlin"))
       }
 

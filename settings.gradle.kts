@@ -59,6 +59,5 @@ include(
   ":aktual-settings:vm",
   ":aktual-test:android",
   ":aktual-test:compose",
-  ":aktual-test:di",
   ":aktual-test:kotlin",
 )

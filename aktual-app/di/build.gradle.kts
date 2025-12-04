@@ -20,6 +20,7 @@ kotlin {
     api(libs.alakazam.kotlin.time)
     api(libs.androidx.lifecycle.viewmodel.core)
     api(libs.kotlinx.coroutines.core)
+    api(libs.metrox.viewmodel)
     api(libs.okio)
     api(libs.preferences.core)
     implementation(project(":aktual-api:builder"))
@@ -43,7 +44,7 @@ buildConfig {
   buildConfigField("VERSION_CODE", gitVersionCode())
   buildConfigField("VERSION_NAME", gitVersionName())
 
-  with(rootProject.localProperties()) {
+  with(localProperties()) {
     buildConfigField("DEFAULT_PASSWORD", getOptional("aktual.defaultPassword"))
     buildConfigField("DEFAULT_URL", getOptional("aktual.defaultUrl"))
   }

@@ -7,11 +7,11 @@ package aktual.about.ui.info
 import aktual.about.vm.AboutViewModel
 import aktual.about.vm.CheckUpdatesState
 import aktual.core.ui.LocalTheme
-import aktual.core.ui.metroViewModel
 import alakazam.kotlin.core.noOp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 fun InfoScreen(

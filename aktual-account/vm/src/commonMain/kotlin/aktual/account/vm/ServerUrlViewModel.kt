@@ -6,8 +6,6 @@ package aktual.account.vm
 
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.model.account.NeedsBootstrapResponse
-import aktual.core.di.ViewModelKey
-import aktual.core.di.ViewModelScope
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
@@ -25,8 +23,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
@@ -48,7 +48,7 @@ import logcat.logcat
 
 @Inject
 @ViewModelKey(ServerUrlViewModel::class)
-@ContributesIntoMap(ViewModelScope::class)
+@ContributesIntoMap(AppScope::class)
 class ServerUrlViewModel internal constructor(
   private val contexts: CoroutineContexts,
   private val apiStateHolder: AktualApisStateHolder,
