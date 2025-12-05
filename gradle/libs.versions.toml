@@ -142,7 +142,7 @@ licensee = { id = "app.cash.licensee", version = "1.14.1" }
 manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.0" }
 metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
-shadow = { id = "com.gradleup.shadow", version = "9.2.2" }
+shadow = { id = "com.gradleup.shadow", version = "9.3.0" }
 spotless = { id = "com.diffplug.spotless", version = "8.1.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
