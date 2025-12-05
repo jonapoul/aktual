@@ -5,7 +5,6 @@ main:
   permissions:
   - android.permission.ACCESS_NETWORK_STATE
   - android.permission.INTERNET
-  - android.permission.REORDER_TASKS
   - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
   libraries:
   - androidx.window.extensions:
@@ -24,9 +23,6 @@ main:
     activity:
     - aktual.app.android.AktualActivity
     - androidx.compose.ui.tooling.PreviewActivity
-    - androidx.test.core.app.InstrumentationActivityInvoker$BootstrapActivity
-    - androidx.test.core.app.InstrumentationActivityInvoker$EmptyActivity
-    - androidx.test.core.app.InstrumentationActivityInvoker$EmptyFloatingActivity
     receiver:
     - androidx.profileinstaller.ProfileInstallReceiver
-fingerprint: 17b7c95647449166ef6f21f5818f93b3
+fingerprint: 60b4bcd24df8dc46930c5bcaf4f75e0b
