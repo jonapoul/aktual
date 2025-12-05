@@ -115,7 +115,6 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
   implementation(libs.androidx.splash)
-  implementation(libs.jetbrains.uiTooling)
   implementation(libs.kotlin.stdlib)
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.logcat)
