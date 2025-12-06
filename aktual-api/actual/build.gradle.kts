@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage")
+
 import com.github.gmazzo.buildconfig.BuildConfigSourceSet
 import org.gradle.internal.extensions.stdlib.capitalized
 
@@ -31,7 +33,7 @@ buildConfig {
 
   sourceSets.named("test") {
     rootProject
-      .layout
+      .isolated
       .projectDirectory
       .dir("api/actual")
       .asFile
