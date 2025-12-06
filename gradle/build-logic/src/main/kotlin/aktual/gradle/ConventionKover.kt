@@ -12,9 +12,6 @@ import org.gradle.kotlin.dsl.dependencies
 
 class ConventionKover : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
-    val includeInKover = boolProperty("aktual.includeInKover").getOrElse(true)
-    if (!includeInKover) return
-
     pluginManager.apply(KoverGradlePlugin::class)
 
     extensions.configure<KoverProjectExtension> {
@@ -43,6 +40,11 @@ class ConventionKover : Plugin<Project> {
               "androidx.compose.runtime.Composable",
               "androidx.compose.ui.tooling.preview.Preview",
               "javax.annotation.processing.Generated",
+            )
+
+            projects.addAll(
+              ":aktual-codegen:ksp",
+              ":aktual-core:ui",
             )
           }
 
