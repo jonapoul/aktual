@@ -1,3 +1,5 @@
+@file:Suppress("UnstableApiUsage", "LongMethod")
+
 package aktual.gradle
 
 import com.android.build.api.dsl.CommonExtension
@@ -11,14 +13,18 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 
 class ConventionAndroidBase : Plugin<Project> {
-  @Suppress("LongMethod")
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
       apply(AndroidCacheFixPlugin::class)
     }
 
     extensions.configure(CommonExtension::class) {
-      namespace = buildNamespace()
+      // ":aktual-path:to:module" -> "aktual.path.to.module", or ":aktual-app:android" -> "aktual.app.android"
+      namespace = path
+        .split(":", "-")
+        .filter { it.isNotBlank() }
+        .joinToString(".")
+
       compileSdk = intProperty("aktual.android.compileSdk").get()
 
       defaultConfig {
@@ -62,8 +68,25 @@ class ConventionAndroidBase : Plugin<Project> {
         }
       }
 
-      lint.commonConfigure(target)
-      packaging.commonConfigure()
+      lint {
+        abortOnError = true
+        checkGeneratedSources = false
+        checkReleaseBuilds = false
+        checkReleaseBuilds = false
+        checkTestSources = true
+        explainIssues = true
+        htmlReport = true
+        xmlReport = true
+        lintConfig = project.rootProject
+          .isolated
+          .projectDirectory
+          .file("config/lint.xml")
+          .asFile
+      }
+
+      packaging {
+        resources.excludes.add("META-INF/*")
+      }
 
       compileOptions {
         isCoreLibraryDesugaringEnabled = true
