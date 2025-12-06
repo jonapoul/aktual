@@ -1,5 +1,4 @@
 import aktual.gradle.EXPERIMENTAL_MATERIAL_3
-import aktual.gradle.koverExcludes
 import aktual.gradle.optIn
 
 plugins {
@@ -7,13 +6,6 @@ plugins {
 }
 
 optIn(EXPERIMENTAL_MATERIAL_3)
-
-koverExcludes {
-  packages(
-    "aktual.core.icons",
-    "aktual.core.ui",
-  )
-}
 
 kotlin {
   commonMainDependencies {
