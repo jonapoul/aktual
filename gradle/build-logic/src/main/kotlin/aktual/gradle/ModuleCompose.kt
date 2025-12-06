@@ -2,8 +2,8 @@
 
 package aktual.gradle
 
-import androidHostTestDependencies
 import androidMainDependencies
+import androidUnitTestDependencies
 import commonMainDependencies
 import commonTestDependencies
 import jvmMainDependencies
@@ -51,7 +51,7 @@ class ModuleCompose : Plugin<Project> {
         implementation(libs["jetbrains.uiToolingPreview"])
       }
 
-      androidHostTestDependencies {
+      androidUnitTestDependencies {
         implementation(project(":aktual-test:android"))
         implementation(libs["test.androidx.compose.ui.junit4"])
       }

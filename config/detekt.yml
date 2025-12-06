@@ -54,7 +54,7 @@ style:
       - "TripleScreenPreview"
     excludes:
       - "**/test/**"
-      - "**/androidHostTest/**"
+      - "**/androidUnitTest/**"
       - "**/jvmTest/**"
       - "**/commonTest/**"
   UnusedPrivateFunction:

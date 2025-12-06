@@ -1,22 +1,19 @@
 package aktual.gradle
 
-import androidHostTestDependencies
-import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
-import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
+import androidUnitTestDependencies
 import commonMainDependencies
 import commonTestDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 
 class ModuleMultiplatform : Plugin<Project> {
   override fun apply(target: Project): Unit = with(target) {
     with(pluginManager) {
       apply(KotlinMultiplatformPluginWrapper::class)
-      apply(KotlinMultiplatformAndroidPlugin::class)
       apply(ConventionKotlinBase::class)
+      apply(ConventionAndroidLibrary::class)
       apply(ConventionIdea::class)
       apply(ConventionKover::class)
       apply(ConventionStyle::class)
@@ -25,19 +22,9 @@ class ModuleMultiplatform : Plugin<Project> {
 
     kotlin {
       applyDefaultHierarchyTemplate()
-      jvm()
 
-      extensions.configure(KotlinMultiplatformAndroidLibraryTarget::class) {
-        namespace = buildNamespace()
-        minSdk = intProperty("aktual.android.minSdk").get()
-        compileSdk = intProperty("aktual.android.compileSdk").get()
-        packaging.commonConfigure()
-        lint.commonConfigure(target)
-        withHostTest {
-          // For Robolectric
-          isIncludeAndroidResources = true
-        }
-      }
+      jvm()
+      androidTarget()
 
       compilerOptions {
         freeCompilerArgs.addAll(
@@ -54,7 +41,7 @@ class ModuleMultiplatform : Plugin<Project> {
         implementation(project(":aktual-test:kotlin"))
       }
 
-      androidHostTestDependencies {
+      androidUnitTestDependencies {
         androidTestLibraries.forEach { lib -> implementation(lib) }
         implementation(project(":aktual-test:android"))
       }
