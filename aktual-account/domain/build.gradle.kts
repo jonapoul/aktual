@@ -13,7 +13,7 @@ kotlin {
     compileOnly(libs.androidx.compose.annotation)
   }
 
-  androidHostTestDependencies {
+  androidUnitTestDependencies {
     implementation(project(":aktual-api:builder"))
     implementation(project(":aktual-core:connection"))
   }

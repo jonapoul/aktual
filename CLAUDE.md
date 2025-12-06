@@ -229,7 +229,7 @@ kotlin {
     implementation(libs["androidx.core.ktx"])
   }
 
-  androidHostTestDependencies {
+  androidUnitTestDependencies {
     implementation(libs["robolectric"])
   }
 
