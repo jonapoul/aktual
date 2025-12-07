@@ -4,8 +4,11 @@
  */
 package aktual.about.ui.info
 
+import aktual.core.model.ColorSchemeType
+import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.DialogContent
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
@@ -19,6 +22,8 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 
@@ -78,5 +83,15 @@ internal fun CheckUpdatesLoadingDialogContent(
         )
       }
     },
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewCheckUpdatesContent(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  CheckUpdatesLoadingDialogContent(
+    onCancel = {},
   )
 }

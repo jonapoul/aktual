@@ -16,26 +16,20 @@ import aktual.budget.list.vm.ListBudgetsState
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
 import aktual.core.model.LoginToken
-import aktual.core.ui.BasicIconButton
+import aktual.core.ui.DesktopPreview
+import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewParameters
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.normalIconButton
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -52,9 +46,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ListBudgetsScreen(
@@ -217,3 +213,22 @@ private fun StateContent(
     }
   }
 }
+
+@PortraitPreview
+@LandscapePreview
+@DesktopPreview
+@Composable
+private fun PreviewListBudgetsScaffold(
+  @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ThemedParams<ListBudgetsState>,
+) = PreviewWithColorScheme(params.type) {
+  ListBudgetsScaffold(
+    state = params.data,
+    onAction = {},
+  )
+}
+
+private class ListBudgetsScaffoldProvider : PreviewParameters<ListBudgetsState>(
+  ListBudgetsState.Success(persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken)),
+  ListBudgetsState.Loading,
+  ListBudgetsState.Failure(reason = "Something broke lol"),
+)

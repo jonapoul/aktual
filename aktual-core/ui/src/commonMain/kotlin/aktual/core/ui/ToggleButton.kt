@@ -4,6 +4,8 @@
  */
 package aktual.core.ui
 
+import aktual.budget.model.Interval
+import aktual.core.model.ColorSchemeType
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -14,17 +16,23 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -32,9 +40,11 @@ import androidx.compose.ui.unit.isUnspecified
 import androidx.compose.ui.unit.times
 import androidx.compose.ui.util.fastForEachIndexed
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun <T> SlidingToggleButton(
+fun <T : Any> SlidingToggleButton(
   options: ImmutableList<T>,
   onSelectOption: (index: Int) -> Unit,
   modifier: Modifier = Modifier,
@@ -100,4 +110,41 @@ fun <T> SlidingToggleButton(
       }
     }
   }
+}
+
+@Preview
+@Composable
+private fun PreviewStrings(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  var selectedA by remember { mutableIntStateOf(0) }
+  SlidingToggleButton(
+    modifier = Modifier.padding(4.dp),
+    options = persistentListOf("Option A", "Option B"),
+    selectedIndex = selectedA,
+    onSelectOption = { newOption -> selectedA = newOption },
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewEnum(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  var selectedB by remember { mutableIntStateOf(3) }
+  SlidingToggleButton(
+    modifier = Modifier.padding(4.dp),
+    options = Interval.entries.toImmutableList(),
+    selectedIndex = selectedB,
+    string = { interval ->
+      when (interval) {
+        Interval.Daily -> "Daily"
+        Interval.Weekly -> "Weekly"
+        Interval.Monthly -> "Monthly"
+        Interval.Yearly -> "Yearly with loads more text clipped off"
+      }
+    },
+    onSelectOption = { newOption -> selectedB = newOption },
+    singleOptionWidth = 75.dp,
+  )
 }

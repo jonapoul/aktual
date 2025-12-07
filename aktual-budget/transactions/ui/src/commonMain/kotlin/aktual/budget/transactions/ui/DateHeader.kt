@@ -4,16 +4,19 @@
  */
 package aktual.budget.transactions.ui
 
+import aktual.core.model.ColorSchemeType
+import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -27,6 +30,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.datetime.LocalDate
@@ -43,17 +48,21 @@ internal fun DateHeader(
   Column(
     modifier = modifier
       .fillMaxWidth()
+      .wrapContentHeight()
       .background(theme.tableRowHeaderBackground)
       .clickable(
         onClick = { onAction(Action.ExpandGroup(date, !isExpanded)) },
       ),
     verticalArrangement = Arrangement.Bottom,
   ) {
-    Box(
-      contentAlignment = Alignment.CenterVertically + Alignment.End,
+    Row(
+      verticalAlignment = Alignment.CenterVertically,
+      horizontalArrangement = Arrangement.Center,
     ) {
       Text(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+          .wrapContentHeight()
+          .weight(1f),
         text = date.toString(),
         textAlign = TextAlign.Center,
         fontWeight = FontWeight.Bold,
@@ -77,4 +86,16 @@ internal fun DateHeader(
 private fun contentDescription(isExpanded: Boolean): String = when (isExpanded) {
   true -> Strings.transactionsCollapse
   false -> Strings.transactionsExpand
+}
+
+@Preview
+@Composable
+private fun PreviewDateHeader(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  DateHeader(
+    date = PREVIEW_DATE,
+    source = StateSource.Empty,
+    onAction = {},
+  )
 }

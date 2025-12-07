@@ -9,8 +9,13 @@ import aktual.account.vm.ChangePasswordViewModel
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
@@ -39,6 +44,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -204,3 +210,36 @@ private fun ChangePasswordState.Failure.errorMessage(): String = when (this) {
   ChangePasswordState.PasswordsDontMatch -> Strings.passwordFailureMatch
   ChangePasswordState.NotLoggedIn -> Strings.passwordFailureLoggedOut
 }
+
+@PortraitPreview
+@LandscapePreview
+@Composable
+private fun PreviewChangePassword(
+  @PreviewParameter(ChangePasswordProvider::class) params: ThemedParams<ChangePasswordParams>,
+) = PreviewWithColorScheme(params.type) {
+  ChangePasswordScaffold(
+    inputPassword1 = params.data.password1,
+    inputPassword2 = params.data.password2,
+    showPasswords = params.data.showPasswords,
+    passwordsMatch = params.data.passwordsMatch,
+    state = params.data.state,
+    versions = AktualVersions.Dummy,
+    onAction = {},
+  )
+}
+
+private data class ChangePasswordParams(
+  val password1: Password = Password.Dummy,
+  val password2: Password = Password.Dummy,
+  val showPasswords: Boolean = false,
+  val passwordsMatch: Boolean = false,
+  val state: ChangePasswordState? = null,
+)
+
+private class ChangePasswordProvider : ThemedParameterProvider<ChangePasswordParams>(
+  ChangePasswordParams(password1 = Empty, password2 = Empty),
+  ChangePasswordParams(showPasswords = true, passwordsMatch = true),
+  ChangePasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
+  ChangePasswordParams(state = ChangePasswordState.Success, passwordsMatch = true),
+  ChangePasswordParams(state = ChangePasswordState.NetworkFailure, passwordsMatch = true),
+)

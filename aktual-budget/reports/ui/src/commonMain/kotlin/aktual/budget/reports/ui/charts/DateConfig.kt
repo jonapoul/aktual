@@ -7,8 +7,11 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.model.DateRangeType
 import aktual.budget.reports.vm.ChartDateConfig
 import aktual.budget.reports.vm.DateRangeMode
+import aktual.core.model.ColorSchemeType
+import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.NormalTextButton
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.SlidingToggleButton
 import aktual.core.ui.Theme
 import aktual.core.ui.YearMonthPicker
@@ -20,6 +23,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,9 +33,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.Month
+import kotlinx.datetime.YearMonth
+import kotlinx.datetime.YearMonthRange
 
 @Composable
 internal fun ChartDateConfig(
@@ -132,4 +141,25 @@ private val SPACING = 8.dp
 private fun DateRangeMode.string() = when (this) {
   DateRangeMode.Live -> Strings.reportsDateConfigLive
   DateRangeMode.Static -> Strings.reportsDateConfigStatic
+}
+
+@Preview
+@Composable
+private fun PreviewChartDateConfig(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  ChartDateConfig(
+    modifier = Modifier.padding(8.dp),
+    onNewConfig = {},
+    onDateRangeType = {},
+    config = ChartDateConfig(
+      mode = DateRangeMode.Static,
+      start = YearMonth(2025, Month.FEBRUARY),
+      end = YearMonth(2025, Month.JULY),
+      range = YearMonthRange(
+        start = YearMonth(2011, Month.SEPTEMBER),
+        endInclusive = YearMonth(2025, Month.JULY),
+      ),
+    ),
+  )
 }

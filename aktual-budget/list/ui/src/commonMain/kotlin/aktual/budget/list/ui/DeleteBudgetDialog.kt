@@ -10,7 +10,10 @@ import aktual.core.ui.AktualTypography
 import aktual.core.ui.AlertDialog
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.buttonTextStyle
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
@@ -41,6 +44,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -204,4 +209,29 @@ private fun Theme.errorPrimary(isPressed: Boolean) = ButtonDefaults.buttonColors
 private fun Theme.errorBare(isPressed: Boolean) = ButtonDefaults.outlinedButtonColors(
   containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
   contentColor = if (isPressed) buttonBareText else errorText,
+)
+
+@Preview
+@Composable
+private fun PreviewDeleteBudgetDialog(
+  @PreviewParameter(DeleteBudgetDialogProvider::class) params: ThemedParams<DeleteBudgetDialogParams>,
+) = PreviewWithColorScheme(params.type) {
+  Content(
+    deletingState = params.data.state,
+    localFileExists = params.data.localFileExists,
+    onDeleteLocal = {},
+    onDeleteRemote = {},
+  )
+}
+
+private class DeleteBudgetDialogParams(
+  val state: DeletingState,
+  val localFileExists: Boolean,
+)
+
+private class DeleteBudgetDialogProvider : ThemedParameterProvider<DeleteBudgetDialogParams>(
+  DeleteBudgetDialogParams(state = DeletingState.Inactive, localFileExists = true),
+  DeleteBudgetDialogParams(state = DeletingState.Active(deletingLocal = true), localFileExists = true),
+  DeleteBudgetDialogParams(state = DeletingState.Active(deletingRemote = true), localFileExists = true),
+  DeleteBudgetDialogParams(state = DeletingState.Active(deletingRemote = true), localFileExists = false),
 )

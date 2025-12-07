@@ -4,12 +4,15 @@
  */
 package aktual.settings.ui.items
 
+import aktual.core.model.ColorSchemeType
 import aktual.core.model.DarkColorSchemeType
 import aktual.core.model.RegularColorSchemeType
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.AlertDialog
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewParameters
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.l10n.Strings
 import aktual.settings.ui.BasicPreferenceItem
@@ -40,6 +43,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import dev.chrisbanes.haze.HazeState
@@ -263,3 +268,32 @@ private fun DarkColorSchemeType.icon(): ImageVector = when (this) {
   DarkColorSchemeType.Dark -> Icons.Filled.Brightness2
   DarkColorSchemeType.Midnight -> Icons.Filled.Brightness3
 }
+
+@Preview
+@Composable
+private fun PreviewThemePreferenceItem(
+  @PreviewParameter(ThemePreferenceItemProvider::class) input: ThemeConfig,
+) {
+  var config by remember { mutableStateOf(input) }
+  val schemeType = when (config.regular) {
+    RegularColorSchemeType.System -> ColorSchemeType.Light
+    RegularColorSchemeType.Light -> ColorSchemeType.Light
+    RegularColorSchemeType.Dark -> when (config.dark) {
+      DarkColorSchemeType.Dark -> ColorSchemeType.Dark
+      DarkColorSchemeType.Midnight -> ColorSchemeType.Midnight
+    }
+  }
+  PreviewWithColorScheme(schemeType) {
+    ThemePreferenceItem(
+      config = config,
+      onChange = { newValue -> config = newValue },
+    )
+  }
+}
+
+private class ThemePreferenceItemProvider : PreviewParameters<ThemeConfig>(
+  ThemeConfig(RegularColorSchemeType.System, DarkColorSchemeType.Dark),
+  ThemeConfig(RegularColorSchemeType.Light, DarkColorSchemeType.Dark),
+  ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Dark),
+  ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Midnight),
+)

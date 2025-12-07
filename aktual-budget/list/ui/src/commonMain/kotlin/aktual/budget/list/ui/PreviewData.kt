@@ -2,7 +2,7 @@
  * Copyright 2025 Jon Poulton
  * SPDX-License-Identifier: Apache-2.0
  */
-package aktual.preview
+package aktual.budget.list.ui
 
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId

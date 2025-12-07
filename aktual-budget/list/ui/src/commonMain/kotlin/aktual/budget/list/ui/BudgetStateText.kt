@@ -12,7 +12,10 @@ import aktual.core.icons.CloudUnknown
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.FileDouble
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Row
@@ -28,6 +31,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -91,3 +96,13 @@ private fun BudgetState.iconColor(theme: Theme): Color = when (this) {
   BudgetState.Broken, BudgetState.Detached -> theme.warningText
   else -> theme.pageText
 }
+
+@Preview
+@Composable
+private fun PreviewBudgetStateText(
+  @PreviewParameter(BudgetStateProvider::class) params: ThemedParams<BudgetState>,
+) = PreviewWithColorScheme(params.type) {
+  BudgetStateText(params.data)
+}
+
+private class BudgetStateProvider : ThemedParameterProvider<BudgetState>(BudgetState.entries)
