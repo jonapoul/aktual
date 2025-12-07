@@ -4,19 +4,28 @@
  */
 package aktual.budget.reports.ui.charts
 
+import aktual.budget.model.Amount
+import aktual.budget.reports.ui.charts.WIDTH
 import aktual.budget.reports.vm.NetWorthData
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,6 +34,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import com.patrykandpatrick.vico.multiplatform.cartesian.CartesianChartHost
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
@@ -37,7 +48,9 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.layer.rememberLineCarte
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberCartesianChart
 import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.multiplatform.common.Fill
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Month
 
 @Composable
 internal fun NetWorthChart(
@@ -191,3 +204,49 @@ private suspend fun CartesianChartModelProducer.populate(data: NetWorthData) = w
     }
   }
 }
+
+@Preview
+@Composable
+private fun PreviewNetWorthChart(
+  @PreviewParameter(NetWorthChartProvider::class) params: ThemedParams<NetWorthChartParams>,
+) = PreviewWithColorScheme(schemeType = params.type, isPrivacyEnabled = params.data.private) {
+  NetWorthChart(
+    modifier = Modifier
+      .background(LocalTheme.current.tableBackground, CardShape)
+      .width(WIDTH.dp)
+      .let { m -> if (params.data.compact) m.height(300.dp) else m }
+      .padding(5.dp),
+    data = params.data.data,
+    compact = params.data.compact,
+  )
+}
+
+private data class NetWorthChartParams(
+  val data: NetWorthData,
+  val compact: Boolean,
+  val private: Boolean,
+)
+
+private class NetWorthChartProvider : ThemedParameterProvider<NetWorthChartParams>(
+  NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = true, private = false),
+  NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = true, private = true),
+  NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = false, private = false),
+  NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = false, private = true),
+)
+
+internal val PREVIEW_NET_WORTH_DATA = NetWorthData(
+  title = "My Net Worth",
+  items = persistentMapOf(
+    date(2023, Month.JANUARY) to Amount(-44_000.00),
+    date(2024, Month.JANUARY) to Amount(-18_000.00),
+    date(2024, Month.FEBRUARY) to Amount(21_000.34),
+    date(2024, Month.MARCH) to Amount(25_000.67),
+    date(2024, Month.JULY) to Amount(-10123.98),
+    date(2024, Month.AUGUST) to Amount(-5123.69),
+    date(2024, Month.DECEMBER) to Amount(-6789.12),
+    date(2025, Month.JANUARY) to Amount(198.0),
+    date(2025, Month.FEBRUARY) to Amount(1.98),
+    date(2025, Month.MARCH) to Amount(256.0),
+    date(2025, Month.JUNE) to Amount(30000.0),
+  ),
+)

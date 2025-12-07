@@ -2,7 +2,7 @@
  * Copyright 2025 Jon Poulton
  * SPDX-License-Identifier: Apache-2.0
  */
-package aktual.preview
+package aktual.budget.transactions.ui
 
 import aktual.budget.db.Accounts
 import aktual.budget.model.AccountId

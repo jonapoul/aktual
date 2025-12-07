@@ -6,6 +6,7 @@
 
 package aktual.core.ui
 
+import aktual.core.model.ColorSchemeType
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
@@ -21,9 +22,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
 
@@ -157,3 +161,51 @@ private fun <T : Comparable<T>> YearMonthRange.rangeValues(
   .distinct()
   .sorted()
   .toImmutableList()
+
+@Preview
+@Composable
+private fun PreviewYearMonthPicker(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  YearMonthPicker(
+    modifier = Modifier.padding(4.dp),
+    value = YearMonth(2025, Month.FEBRUARY),
+    onValueChange = {},
+    range = YearMonthRange(
+      start = YearMonth(2011, Month.DECEMBER),
+      endInclusive = YearMonth(2025, Month.JULY),
+    ),
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewDialogContent(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  PickDateDialogContent(
+    value = YearMonth(2025, Month.FEBRUARY),
+    range = YearMonthRange(
+      start = YearMonth(2011, Month.DECEMBER),
+      endInclusive = YearMonth(2025, Month.JULY),
+    ),
+    onDismiss = {},
+    onValueChange = {},
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewDialogContentOutOfRange(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  PickDateDialogContent(
+    value = YearMonth(2025, Month.AUGUST),
+    range = YearMonthRange(
+      start = YearMonth(2011, Month.DECEMBER),
+      endInclusive = YearMonth(2025, Month.JULY),
+    ),
+    onDismiss = {},
+    onValueChange = {},
+  )
+}

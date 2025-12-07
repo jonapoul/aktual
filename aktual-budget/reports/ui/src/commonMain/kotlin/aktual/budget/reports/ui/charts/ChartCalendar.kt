@@ -2,13 +2,13 @@
  * Copyright 4297-0473 Jon Poulton
  * SPDX-License-Identifier: Apache-2.0
  */
-@file:Suppress("UnusedBoxWithConstraintsScope")
-
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
+import aktual.budget.reports.ui.charts.HEIGHT
+import aktual.budget.reports.ui.charts.WIDTH
 import aktual.budget.reports.vm.CalendarData
 import aktual.budget.reports.vm.CalendarDay
 import aktual.budget.reports.vm.CalendarMonth
@@ -17,8 +17,11 @@ import aktual.core.icons.ArrowThickDown
 import aktual.core.icons.ArrowThickUp
 import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
@@ -37,6 +40,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -59,12 +63,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.Month
+import kotlinx.datetime.YearMonth
 
 @Composable
 internal fun CalendarChart(
@@ -321,6 +330,7 @@ internal fun CalendarSummary(
   }
 }
 
+@Suppress("UnusedBoxWithConstraintsScope")
 @Composable
 internal fun DayButton(
   day: CalendarDay,
@@ -494,3 +504,188 @@ private fun CalendarMonth.toWeeks(): ImmutableList<ImmutableList<CalendarDay>> {
 
 private const val DAYS_PER_WEEK = 7
 private val TABLE_SPACING = 2.dp
+
+@Preview
+@Composable
+private fun PreviewCalendarChart(
+  @PreviewParameter(CalendarChartProvider::class) params: ThemedParams<CalendarChartParams>,
+) = PreviewWithColorScheme(params.type) {
+  CalendarChart(
+    modifier = Modifier
+      .background(LocalTheme.current.tableBackground, CardShape)
+      .width(WIDTH.dp)
+      .height(HEIGHT.dp)
+      .padding(5.dp),
+    compact = params.data.compact,
+    data = params.data.data,
+    onAction = {},
+  )
+}
+
+private data class CalendarChartParams(val data: CalendarData, val compact: Boolean)
+
+private class CalendarChartProvider : ThemedParameterProvider<CalendarChartParams>(
+  CalendarChartParams(ONE_MONTH, compact = true),
+  CalendarChartParams(THREE_MONTHS, compact = true),
+  CalendarChartParams(ONE_MONTH, compact = false),
+  CalendarChartParams(THREE_MONTHS, compact = false),
+)
+
+@Preview
+@Composable
+private fun PreviewMonthHeader(
+  @PreviewParameter(MonthHeaderProvider::class) params: ThemedParams<MonthHeaderParams>,
+) = PreviewWithColorScheme(params.type) {
+  MonthHeader(
+    month = params.data.month,
+    compact = params.data.compact,
+  )
+}
+
+private data class MonthHeaderParams(val month: CalendarMonth, val compact: Boolean)
+
+private class MonthHeaderProvider : ThemedParameterProvider<MonthHeaderParams>(
+  MonthHeaderParams(JAN_2025.copy(expenses = Amount.Zero), compact = false),
+  MonthHeaderParams(JAN_2025, compact = true),
+)
+
+@Preview
+@Composable
+private fun PreviewCalendarSummary(
+  @PreviewParameter(CalendarSummaryProvider::class) params: ThemedParams<CalendarSummaryParams>,
+) = PreviewWithColorScheme(params.type) {
+  CalendarSummary(
+    data = params.data.data,
+    compact = params.data.compact,
+  )
+}
+
+private data class CalendarSummaryParams(val data: CalendarData, val compact: Boolean)
+
+private class CalendarSummaryProvider : ThemedParameterProvider<CalendarSummaryParams>(
+  CalendarSummaryParams(ONE_MONTH, compact = false),
+  CalendarSummaryParams(THREE_MONTHS, compact = false),
+  CalendarSummaryParams(THREE_MONTHS, compact = true),
+)
+
+@Preview
+@Composable
+private fun PreviewDayButton(
+  @PreviewParameter(DayButtonProvider::class) params: ThemedParams<DayButtonParams>,
+) = PreviewWithColorScheme(params.type) {
+  DayButton(
+    modifier = Modifier.size(params.data.size),
+    day = params.data.day,
+    month = params.data.month,
+    onAction = {},
+  )
+}
+
+private data class DayButtonParams(val day: CalendarDay, val month: CalendarMonth, val size: Dp = 100.dp)
+
+private class DayButtonProvider : ThemedParameterProvider<DayButtonParams>(
+  DayButtonParams(
+    day = day(day = 26, income = 5345.67, expenses = 1234.56),
+    month = JAN_2025.copy(income = Amount(value = 10345.89), expenses = Amount(value = 3456.90)),
+  ),
+  DayButtonParams(day = day(day = 26, income = 2345.67), month = JAN_2025),
+  DayButtonParams(day = day(day = 26, expenses = 1234.56), month = JAN_2025),
+  DayButtonParams(day = day(day = 26), month = JAN_2025),
+  DayButtonParams(day = day(day = 26), month = JAN_2025, size = 35.dp),
+)
+
+@Preview
+@Composable
+private fun PreviewCalendarMonth(
+  @PreviewParameter(CalendarMonthProvider::class) params: ThemedParams<CalendarMonthParams>,
+) = PreviewWithColorScheme(
+  schemeType = params.type,
+  isPrivacyEnabled = params.data.isPrivacyEnabled,
+) {
+  CalendarMonth(
+    month = params.data.month,
+    compact = params.data.compact,
+    onAction = {},
+  )
+}
+
+private data class CalendarMonthParams(
+  val month: CalendarMonth,
+  val compact: Boolean,
+  val isPrivacyEnabled: Boolean = false,
+)
+
+private class CalendarMonthProvider : ThemedParameterProvider<CalendarMonthParams>(
+  CalendarMonthParams(month = JAN_2025, compact = false),
+  CalendarMonthParams(month = JAN_2025, compact = false, isPrivacyEnabled = true),
+  CalendarMonthParams(month = JAN_2025, compact = true),
+)
+
+private val JAN_2025 = CalendarMonth(
+  income = Amount(5678.90),
+  expenses = Amount(3456.78),
+  month = YearMonth(2025, Month.JANUARY),
+  days = persistentListOf(
+    day(day = -2),
+    day(day = -1),
+    day(day = 1, income = 301.72),
+    day(day = 2, expenses = 25.05),
+    day(day = 3, expenses = 152.60),
+    day(day = 4),
+    day(day = 5, income = 9.99, expenses = 56.63),
+    day(day = 6, income = 265, expenses = 227.62),
+    day(day = 7, expenses = 10.20),
+    day(day = 8, income = 510.52, expenses = 28.1),
+    day(day = 9, expenses = 15.2),
+    day(day = 10, expenses = 10.2),
+    day(day = 11, expenses = 64.78),
+    day(day = 12, income = 751.27, expenses = 64.53),
+    day(day = 13, income = 80, expenses = 134.85),
+    day(day = 14, expenses = 46.66),
+    day(day = 15, expenses = 20.4),
+    day(day = 16, expenses = 17.85),
+    day(day = 17, income = 666.1),
+    day(day = 18, income = 714.76, expenses = 745.96),
+    day(day = 19, income = 123.45),
+    day(day = 20),
+    day(day = 21, income = 45.9, expenses = 41.23),
+    day(day = 22, expenses = 65.2),
+    day(day = 23, expenses = 13.65),
+    day(day = 24, income = 589),
+    day(day = 25),
+    day(day = 26),
+    day(day = 27),
+    day(day = 28),
+    day(day = 29, income = 24, expenses = 24),
+    day(day = 30, expenses = 166),
+    day(day = 31, income = 2345.67),
+  ),
+)
+
+private val ONE_MONTH = CalendarData(
+  title = "My Calendar",
+  start = YearMonth(2025, Month.JANUARY),
+  end = YearMonth(2025, Month.JANUARY),
+  income = Amount(5795.88),
+  expenses = Amount(3822.78),
+  months = persistentListOf(JAN_2025),
+)
+
+internal val THREE_MONTHS = CalendarData(
+  title = "My Calendar",
+  start = YearMonth(2025, Month.JANUARY),
+  end = YearMonth(2025, Month.MARCH),
+  income = Amount(57958.8),
+  expenses = Amount(38227.8),
+  months = persistentListOf(
+    JAN_2025,
+    JAN_2025.copy(month = YearMonth(2025, Month.FEBRUARY)),
+    JAN_2025.copy(month = YearMonth(2025, Month.MARCH)),
+  ),
+)
+
+private fun day(day: Int, income: Number = 0, expenses: Number = 0) = CalendarDay(
+  day = day,
+  income = Amount(income.toDouble()),
+  expenses = Amount(expenses.toDouble()),
+)

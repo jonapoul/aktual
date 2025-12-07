@@ -4,6 +4,7 @@
  */
 package aktual.core.ui
 
+import aktual.core.model.ColorSchemeType
 import aktual.l10n.Res
 import aktual.l10n.inter_black
 import aktual.l10n.inter_bold
@@ -14,16 +15,32 @@ import aktual.l10n.inter_medium
 import aktual.l10n.inter_regular
 import aktual.l10n.inter_semibold
 import aktual.l10n.inter_thin
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.collections.immutable.persistentMapOf
 import org.jetbrains.compose.resources.Font
 
 val AktualTypography: Typography
@@ -78,3 +95,58 @@ private fun FontFamily.textStyle(
   color = color,
   lineHeight = height,
 )
+
+@Preview(widthDp = 1200)
+@Composable
+private fun PreviewTypography(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  Column {
+    for ((name, style) in styles()) {
+      Row(
+        modifier = Modifier.height(IntrinsicSize.Min),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Box(
+          modifier = Modifier
+            .fillMaxHeight()
+            .width(150.dp),
+          contentAlignment = Alignment.Center,
+        ) {
+          Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = name,
+            textAlign = TextAlign.Start,
+          )
+        }
+
+        Text(
+          modifier = Modifier.weight(1f),
+          text = "Quick brown fox? Jumped over the lazy dog!",
+          style = style,
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun styles() = with(aktualTypography()) {
+  persistentMapOf(
+    "displayLarge" to displayLarge,
+    "displayMedium" to displayMedium,
+    "displaySmall" to displaySmall,
+    "headlineLarge" to headlineLarge,
+    "headlineMedium" to headlineMedium,
+    "headlineSmall" to headlineSmall,
+    "titleLarge" to titleLarge,
+    "titleMedium" to titleMedium,
+    "titleSmall" to titleSmall,
+    "bodyLarge" to bodyLarge,
+    "bodyMedium" to bodyMedium,
+    "bodySmall" to bodySmall,
+    "labelLarge" to labelLarge,
+    "labelMedium" to labelMedium,
+    "labelSmall" to labelSmall,
+  )
+}

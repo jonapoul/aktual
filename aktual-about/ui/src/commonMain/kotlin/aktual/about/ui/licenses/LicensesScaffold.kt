@@ -7,8 +7,12 @@ package aktual.about.ui.licenses
 import aktual.about.data.ArtifactDetail
 import aktual.about.vm.LicensesState
 import aktual.about.vm.SearchBarState
+import aktual.core.model.ColorSchemeType
+import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TextField
 import aktual.core.ui.Theme
@@ -54,11 +58,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun LicensesScaffold(
@@ -285,4 +291,54 @@ private fun ErrorContent(
       onClick = { onAction(LicensesAction.Reload) },
     )
   }
+}
+
+@PortraitPreview
+@Composable
+private fun PreviewNoneFound(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  LicensesScaffold(
+    state = LicensesState.NoneFound,
+    searchBarState = SearchBarState.Gone,
+    onAction = {},
+  )
+}
+
+@PortraitPreview
+@Composable
+private fun PreviewLoading(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  LicensesScaffold(
+    state = LicensesState.Loading,
+    searchBarState = SearchBarState.Gone,
+    onAction = {},
+  )
+}
+
+@PortraitPreview
+@Composable
+private fun PreviewLoaded(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  LicensesScaffold(
+    state = LicensesState.Loaded(
+      artifacts = persistentListOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi),
+    ),
+    searchBarState = SearchBarState.Visible(text = "My wicked search query"),
+    onAction = {},
+  )
+}
+
+@PortraitPreview
+@Composable
+private fun PreviewError(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  LicensesScaffold(
+    state = LicensesState.Error(errorMessage = "Something broke lol! Here's some more shite to show how it looks"),
+    searchBarState = SearchBarState.Gone,
+    onAction = {},
+  )
 }

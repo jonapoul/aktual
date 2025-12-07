@@ -7,6 +7,10 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.model.Amount
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
+import aktual.budget.reports.ui.charts.AMOUNT
+import aktual.budget.reports.ui.charts.END_DATE
+import aktual.budget.reports.ui.charts.START_DATE
+import aktual.budget.reports.ui.charts.WIDTH
 import aktual.budget.reports.vm.DateRange
 import aktual.budget.reports.vm.PercentageDivisor
 import aktual.budget.reports.vm.SummaryChartType
@@ -17,21 +21,28 @@ import aktual.core.icons.Equals
 import aktual.core.icons.OpenBracket
 import aktual.core.icons.Sum
 import aktual.core.model.Percent
+import aktual.core.model.percent
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.CardShape
 import aktual.core.ui.ExposedDropDownMenu
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.stringShort
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -45,6 +56,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.ImmutableMap
@@ -578,3 +591,77 @@ private fun string(type: SummaryChartType): String = when (type) {
   SummaryChartType.AveragePerTransaction -> Strings.reportsSummaryPerTransaction
   SummaryChartType.Percentage -> Strings.reportsSummaryPercentage
 }
+
+@Preview
+@Composable
+private fun PreviewSummaryChart(
+  @PreviewParameter(SummaryChartProvider::class) params: ThemedParams<SummaryChartParams>,
+) = PreviewWithColorScheme(schemeType = params.type, isPrivacyEnabled = params.data.private) {
+  SummaryChart(
+    modifier = Modifier
+      .background(LocalTheme.current.tableBackground, CardShape)
+      .width(WIDTH.dp)
+      .let { m -> if (params.data.compact) m.height(300.dp) else m }
+      .padding(5.dp),
+    data = params.data.data,
+    compact = params.data.compact,
+    onAction = {},
+  )
+}
+
+private data class SummaryChartParams(
+  val data: SummaryData,
+  val compact: Boolean,
+  val private: Boolean = false,
+)
+
+private class SummaryChartProvider : ThemedParameterProvider<SummaryChartParams>(
+  SummaryChartParams(SUM_DATA, compact = true),
+  SummaryChartParams(SUM_DATA, compact = false),
+  SummaryChartParams(SUM_DATA, compact = false, private = true),
+  SummaryChartParams(PERCENT_DATA, compact = true),
+  SummaryChartParams(PER_MONTH_DATA, compact = false),
+  SummaryChartParams(PER_TRANSACTION_DATA, compact = false),
+  SummaryChartParams(PER_TRANSACTION_DATA, compact = false, private = true),
+  SummaryChartParams(PERCENT_DATA.copy(divisor = PercentageDivisor.AllTime), compact = false, private = true),
+  SummaryChartParams(
+    PERCENT_DATA.copy(divisor = PercentageDivisor.Specific(START_DATE, END_DATE)),
+    compact = false,
+    private = true,
+  ),
+)
+
+private val SUM_DATA = SummaryData.Sum(
+  title = "My Sum Summary",
+  start = START_DATE,
+  end = END_DATE,
+  value = AMOUNT,
+)
+
+private val PER_MONTH_DATA = SummaryData.AveragePerMonth(
+  title = "My Per-Month Summary",
+  start = START_DATE,
+  end = END_DATE,
+  numMonths = 18.19f,
+  total = Amount(6198.55),
+  average = Amount(340.70),
+)
+
+internal val PER_TRANSACTION_DATA = SummaryData.AveragePerTransaction(
+  title = "My Per-Transaction Summary",
+  start = START_DATE,
+  end = END_DATE,
+  numTransactions = 1327,
+  total = Amount(6198.55),
+  average = Amount(340.70),
+)
+
+private val PERCENT_DATA = SummaryData.Percentage(
+  title = "My Percent Summary",
+  start = START_DATE,
+  end = END_DATE,
+  numerator = Amount(6198.55),
+  denominator = Amount(4043.87),
+  percent = 153.28.percent,
+  divisor = PercentageDivisor.AllTime,
+)

@@ -11,8 +11,12 @@ import aktual.core.model.Protocol
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.appCloser
@@ -47,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -105,7 +110,7 @@ fun ServerUrlScreen(
 }
 
 @Composable
-internal fun ServerUrlScaffold(
+private fun ServerUrlScaffold(
   url: String,
   protocol: Protocol,
   versions: AktualVersions,
@@ -243,3 +248,41 @@ private fun ServerUrlContent(
     }
   }
 }
+
+@Composable
+@PortraitPreview
+private fun PreviewServerUrlScaffold(
+  @PreviewParameter(ServerUrlScaffoldProvider::class) params: ThemedParams<ServerUrlScaffoldParams>,
+) = PreviewWithColorScheme(params.type) {
+  ServerUrlScaffold(
+    url = params.data.url,
+    protocol = params.data.protocol,
+    versions = AktualVersions.Dummy,
+    isEnabled = true,
+    isLoading = params.data.isLoading,
+    onAction = {},
+    errorMessage = params.data.errorMessage,
+  )
+}
+
+private data class ServerUrlScaffoldParams(
+  val url: String,
+  val protocol: Protocol,
+  val isLoading: Boolean,
+  val errorMessage: String?,
+)
+
+private class ServerUrlScaffoldProvider : ThemedParameterProvider<ServerUrlScaffoldParams>(
+  ServerUrlScaffoldParams(
+    url = "",
+    protocol = Protocol.Https,
+    isLoading = false,
+    errorMessage = null,
+  ),
+  ServerUrlScaffoldParams(
+    url = "my.server.com:1234/path",
+    protocol = Protocol.Http,
+    isLoading = true,
+    errorMessage = "Hello this is an error message, split over multiple lines so you can see how it behaves",
+  ),
+)

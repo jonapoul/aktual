@@ -6,21 +6,25 @@ package aktual.budget.reports.ui
 
 import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetType
-import aktual.budget.reports.ui.charts.PreviewCalendar
-import aktual.budget.reports.ui.charts.PreviewCashFlow
-import aktual.budget.reports.ui.charts.PreviewCustom
-import aktual.budget.reports.ui.charts.PreviewNetWorth
-import aktual.budget.reports.ui.charts.PreviewSpending
-import aktual.budget.reports.ui.charts.PreviewSummary
-import aktual.budget.reports.ui.charts.PreviewText
+import aktual.budget.reports.ui.charts.JUL_2025
+import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_CUSTOM_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_SHORT_TEXT_DATA
 import aktual.budget.reports.ui.charts.ReportChart
+import aktual.budget.reports.ui.charts.THREE_MONTHS
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChooseReportTypeViewModel
+import aktual.core.model.ColorSchemeType
 import aktual.core.model.LoginToken
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.defaultHazeStyle
@@ -49,6 +53,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -189,13 +194,13 @@ private fun WidgetType.string() = when (this) {
 
 @Stable
 private fun WidgetType.sampleData(): ChartData = when (this) {
-  WidgetType.NetWorth -> PreviewNetWorth.DATA
-  WidgetType.CashFlow -> PreviewCashFlow.DATA
-  WidgetType.Spending -> PreviewSpending.JUL_2025
-  WidgetType.Custom -> PreviewCustom.DATA
-  WidgetType.Markdown -> PreviewText.SHORT_DATA
-  WidgetType.Summary -> PreviewSummary.PER_TRANSACTION_DATA
-  WidgetType.Calendar -> PreviewCalendar.THREE_MONTHS
+  WidgetType.NetWorth -> PREVIEW_NET_WORTH_DATA
+  WidgetType.CashFlow -> PREVIEW_CASH_FLOW_DATA
+  WidgetType.Spending -> JUL_2025
+  WidgetType.Custom -> PREVIEW_CUSTOM_DATA
+  WidgetType.Markdown -> PREVIEW_SHORT_TEXT_DATA
+  WidgetType.Summary -> PER_TRANSACTION_DATA
+  WidgetType.Calendar -> THREE_MONTHS
 }
 
 @Composable
@@ -217,3 +222,13 @@ internal fun interface ChooseReportTypeActionListener {
 
 private val WIDGET_TYPES = WidgetType.entries.toImmutableList()
 private val REPORT_HEIGHT = 250.dp
+
+@PortraitPreview
+@Composable
+private fun PreviewLoaded(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  ChooseReportTypeScaffold(
+    onAction = {},
+  )
+}

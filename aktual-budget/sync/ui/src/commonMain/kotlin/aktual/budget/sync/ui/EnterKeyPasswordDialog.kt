@@ -7,8 +7,11 @@ package aktual.budget.sync.ui
 import aktual.core.model.Password
 import aktual.core.ui.AlertDialog
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TextField
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
@@ -45,6 +48,8 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -159,3 +164,19 @@ private fun buildDialogText(
     }
   }
 }
+
+@Preview
+@Composable
+private fun PreviewEnterKeyPasswordDialog(
+  @PreviewParameter(PasswordProvider::class) params: ThemedParams<Password>,
+) = PreviewWithColorScheme(params.type) {
+  Content(
+    input = params.data,
+    onAction = {},
+  )
+}
+
+private class PasswordProvider : ThemedParameterProvider<Password>(
+  Password.Empty,
+  Password("abc-123"),
+)

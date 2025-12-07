@@ -5,7 +5,10 @@
 package aktual.settings.ui.items
 
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedBooleanParameters
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.switch
 import aktual.l10n.Strings
 import aktual.settings.ui.BasicPreferenceItem
@@ -23,6 +26,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 
@@ -58,4 +63,15 @@ internal fun ShowBottomBarPreferenceItem(
 private fun icon(isVisible: Boolean) = when (isVisible) {
   true -> Icons.Filled.Visibility
   false -> Icons.Filled.VisibilityOff
+}
+
+@Preview
+@Composable
+private fun PreviewShowBottomBarPreferenceItem(
+  @PreviewParameter(ThemedBooleanParameters::class) params: ThemedParams<Boolean>,
+) = PreviewWithColorScheme(params.type) {
+  ShowBottomBarPreferenceItem(
+    value = params.data,
+    onChange = {},
+  )
 }

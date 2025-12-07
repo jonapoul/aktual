@@ -6,6 +6,8 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.BudgetId
+import aktual.budget.model.SortColumn
+import aktual.budget.model.SortDirection
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsFormat
 import aktual.budget.model.TransactionsSpec
@@ -13,10 +15,16 @@ import aktual.budget.transactions.vm.DatedTransactions
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.TransactionsSorting
 import aktual.budget.transactions.vm.TransactionsViewModel
+import aktual.core.model.ColorSchemeType
 import aktual.core.model.LoginToken
+import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
@@ -36,9 +44,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.datetime.LocalDate
 
@@ -162,5 +173,38 @@ internal fun TransactionsTitleBar(
         )
       }
     },
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewTransactionsTitleBar(
+  @PreviewParameter(TransactionsTitleBarProvider::class) params: ThemedParams<LoadedAccount>,
+) = PreviewWithColorScheme(params.type) {
+  TransactionsTitleBar(
+    loadedAccount = params.data,
+    onAction = {},
+  )
+}
+
+private class TransactionsTitleBarProvider : ThemedParameterProvider<LoadedAccount>(
+  LoadedAccount.AllAccounts,
+  LoadedAccount.Loading,
+  LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
+)
+
+@Composable
+@PortraitPreview
+private fun PreviewTransactionsScaffold(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  TransactionsScaffold(
+    loadedAccount = LoadedAccount.AllAccounts,
+    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
+    format = TransactionsFormat.Table,
+    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Descending),
+    source = StateSource.Empty,
+    transactions = persistentListOf(),
+    onAction = {},
   )
 }

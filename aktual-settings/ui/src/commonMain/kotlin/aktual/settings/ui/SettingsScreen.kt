@@ -4,8 +4,14 @@
  */
 package aktual.settings.ui
 
+import aktual.core.model.DarkColorSchemeType
+import aktual.core.model.RegularColorSchemeType
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -14,6 +20,7 @@ import aktual.settings.ui.items.ShowBottomBarPreferenceItem
 import aktual.settings.ui.items.ThemePreferenceItem
 import aktual.settings.vm.PreferenceValue
 import aktual.settings.vm.SettingsViewModel
+import aktual.settings.vm.ThemeConfig
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,11 +45,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun SettingsScreen(
@@ -161,3 +170,25 @@ private fun PreferenceItem(
     }
   }
 }
+
+@PortraitPreview
+@Composable
+private fun PreviewSettingsScaffold(
+  @PreviewParameter(SettingsScaffoldProvider::class) params: ThemedParams<List<PreferenceValue>>,
+) = PreviewWithColorScheme(params.type) {
+  SettingsScaffold(
+    onAction = {},
+    values = params.data.toImmutableList(),
+  )
+}
+
+private class SettingsScaffoldProvider : ThemedParameterProvider<List<PreferenceValue>>(
+  listOf(
+    PreferenceValue.Theme(ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Dark)),
+    PreferenceValue.ShowBottomBar(show = false),
+  ),
+  listOf(
+    PreferenceValue.Theme(ThemeConfig(RegularColorSchemeType.Light, DarkColorSchemeType.Dark)),
+    PreferenceValue.ShowBottomBar(show = true),
+  ),
+)

@@ -13,6 +13,7 @@ sealed interface LoginResult {
     val token: LoginToken,
   ) : LoginResult
 
+  @Immutable
   sealed interface Failure : LoginResult
 
   data object InvalidPassword : Failure
