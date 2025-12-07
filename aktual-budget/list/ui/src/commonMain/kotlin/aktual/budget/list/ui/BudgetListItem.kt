@@ -11,8 +11,11 @@ import aktual.core.icons.Key
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.RowShape
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.background
@@ -21,8 +24,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.MoreVert
@@ -38,6 +43,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -151,3 +159,27 @@ private fun budgetDescription(budget: Budget) = when {
   budget.encryptKeyId != null -> Strings.listBudgetsEncryptedWithoutKey
   else -> Strings.listBudgetsUnencrypted
 }
+
+@Preview
+@Composable
+private fun PreviewBudgetListItem(
+  @PreviewParameter(BudgetListItemProvider::class) params: ThemedParams<BudgetListItemParams>,
+) = PreviewWithColorScheme(params.type) {
+  BudgetListItem(
+    modifier = params.data.width?.let { w -> Modifier.width(w) } ?: Modifier.fillMaxWidth(),
+    budget = params.data.budget,
+    onClickOpen = {},
+    onClickDelete = {},
+  )
+}
+
+private class BudgetListItemParams(
+  val budget: Budget,
+  val width: Dp? = null,
+)
+
+private class BudgetListItemProvider : ThemedParameterProvider<BudgetListItemParams>(
+  BudgetListItemParams(PreviewBudgetSynced),
+  BudgetListItemParams(PreviewBudgetSynced, width = 300.dp),
+  BudgetListItemParams(PreviewBudgetSynced.copy(state = BudgetState.Broken, encryptKeyId = null)),
+)

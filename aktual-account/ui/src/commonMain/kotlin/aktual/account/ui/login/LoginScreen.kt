@@ -8,10 +8,17 @@ import aktual.account.domain.LoginResult
 import aktual.account.vm.LoginViewModel
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
+import aktual.core.model.Password.Companion.Dummy
+import aktual.core.model.Password.Companion.Empty
 import aktual.core.model.ServerUrl
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.UsingServerText
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
@@ -43,6 +50,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.chrisbanes.haze.HazeState
@@ -215,3 +223,32 @@ private fun Content(
     )
   }
 }
+
+@Composable
+@PortraitPreview
+@LandscapePreview
+private fun PreviewLoginScaffold(
+  @PreviewParameter(LoginScaffoldProvider::class) params: ThemedParams<LoginScaffoldParams>,
+) = PreviewWithColorScheme(params.type) {
+  LoginScaffold(
+    versions = AktualVersions.Dummy,
+    enteredPassword = Empty,
+    url = ServerUrl.Demo,
+    isLoading = false,
+    loginFailure = null,
+    onAction = {},
+  )
+}
+
+private data class LoginScaffoldParams(
+  val versions: AktualVersions = AktualVersions.Dummy,
+  val password: Password = Dummy,
+  val url: ServerUrl = ServerUrl.Demo,
+  val isLoading: Boolean = false,
+  val loginFailure: LoginResult.Failure? = null,
+)
+
+private class LoginScaffoldProvider : ThemedParameterProvider<LoginScaffoldParams>(
+  LoginScaffoldParams(password = Empty, isLoading = false),
+  LoginScaffoldParams(password = Dummy, isLoading = true, loginFailure = LoginResult.InvalidPassword),
+)

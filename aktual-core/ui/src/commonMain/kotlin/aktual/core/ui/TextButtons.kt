@@ -29,6 +29,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -45,7 +47,7 @@ fun PrimaryTextButton(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = AktualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
-  prefix: ComposableLambda? = null,
+  prefix: (@Composable () -> Unit)? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primaryButton(pressed) },
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
 ) {
@@ -78,7 +80,7 @@ fun PrimaryTextButtonWithLoading(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = AktualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
-  prefix: ComposableLambda? = null,
+  prefix: (@Composable () -> Unit)? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primaryButton(pressed) },
 ) {
   PrimaryTextButton(
@@ -131,7 +133,7 @@ fun NormalTextButton(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = AktualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
-  prefix: ComposableLambda? = null,
+  prefix: (@Composable () -> Unit)? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { t, pressed -> t.normalButton(pressed) },
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
 ) {
@@ -163,7 +165,7 @@ fun BareTextButton(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = AktualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
-  prefix: ComposableLambda? = null,
+  prefix: (@Composable () -> Unit)? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { theme, pressed -> theme.bareButton(pressed) },
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
 ) {
@@ -196,7 +198,7 @@ fun BasicTextButton(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   style: TextStyle = LocalTextStyle.current,
   fontSize: TextUnit = TextUnit.Unspecified,
-  prefix: ComposableLambda? = null,
+  prefix: (@Composable () -> Unit)? = null,
   content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
 ) {
   val theme = LocalTheme.current
@@ -220,7 +222,7 @@ private fun RowScope.DefaultTextButtonContent(
   text: String,
   style: TextStyle,
   fontSize: TextUnit,
-  prefix: ComposableLambda?,
+  prefix: (@Composable () -> Unit)?,
 ) {
   prefix?.invoke()
 
@@ -235,3 +237,53 @@ private val ButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
 
 val Typography.buttonTextStyle: TextStyle
   get() = bodyMedium.copy(fontSize = 15.sp)
+
+@Preview
+@Composable
+private fun PreviewBare(
+  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>,
+) = PreviewWithColorScheme(params.type) {
+  BareTextButton(
+    text = "Bare",
+    isEnabled = params.data,
+    onClick = {},
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewPrimary(
+  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>,
+) = PreviewWithColorScheme(params.type) {
+  PrimaryTextButton(
+    text = "Primary",
+    isEnabled = params.data,
+    onClick = {},
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewNormal(
+  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>,
+) = PreviewWithColorScheme(params.type) {
+  NormalTextButton(
+    text = "Normal",
+    isEnabled = params.data,
+    onClick = {},
+  )
+}
+
+@Preview
+@Composable
+private fun PreviewPrimaryWithLoadingNotLoading(
+  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>,
+) = PreviewWithColorScheme(params.type) {
+  PrimaryTextButtonWithLoading(
+    text = "OK",
+    isLoading = params.data,
+    onClick = {},
+  )
+}
+
+private class BoolColorSchemeParameters : ThemedParameterProvider<Boolean>(true, false)

@@ -4,6 +4,7 @@
  */
 package aktual.core.ui
 
+import aktual.core.model.ColorSchemeType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -20,6 +21,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 
 @Stable
@@ -142,5 +145,41 @@ private fun DefaultIconButtonContent(
     modifier = if (size == null) Modifier else Modifier.size(size),
     imageVector = imageVector,
     contentDescription = contentDescription,
+  )
+}
+
+@Preview
+@Composable
+private fun Bare(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  BareIconButton(
+    imageVector = Icons.Filled.Check,
+    contentDescription = "Cancel",
+    onClick = {},
+  )
+}
+
+@Preview
+@Composable
+private fun Normal(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  NormalIconButton(
+    imageVector = Icons.Filled.Check,
+    contentDescription = "Cancel",
+    onClick = {},
+  )
+}
+
+@Preview
+@Composable
+private fun Primary(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  PrimaryIconButton(
+    imageVector = Icons.Filled.Check,
+    contentDescription = "OK",
+    onClick = {},
   )
 }

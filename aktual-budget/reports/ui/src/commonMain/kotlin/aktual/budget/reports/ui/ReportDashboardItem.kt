@@ -4,11 +4,18 @@
  */
 package aktual.budget.reports.ui
 
+import aktual.budget.model.WidgetId
+import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
+import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.vm.ReportDashboardItem
 import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -29,6 +36,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -97,3 +106,38 @@ private fun ReportDropDownMenu(
     },
   )
 }
+
+@Preview
+@Composable
+private fun PreviewReportDashboardItem(
+  @PreviewParameter(ReportDashboardItemProvider::class) params: ThemedParams<ReportDashboardItem>,
+) = PreviewWithColorScheme(schemeType = params.type) {
+  ReportDashboardItem(
+    item = params.data,
+    onAction = {},
+  )
+}
+
+private class ReportDashboardItemProvider : ThemedParameterProvider<ReportDashboardItem>(
+  PREVIEW_DASHBOARD_ITEM_1,
+  PREVIEW_DASHBOARD_ITEM_2,
+  PREVIEW_DASHBOARD_ITEM_3,
+)
+
+internal val PREVIEW_DASHBOARD_ITEM_1 = ReportDashboardItem(
+  id = WidgetId("abc-123"),
+  name = "Pensions",
+  data = PREVIEW_CASH_FLOW_DATA,
+)
+
+internal val PREVIEW_DASHBOARD_ITEM_2 = ReportDashboardItem(
+  id = WidgetId("def-456"),
+  name = "Groceries",
+  data = PREVIEW_NET_WORTH_DATA,
+)
+
+internal val PREVIEW_DASHBOARD_ITEM_3 = ReportDashboardItem(
+  id = WidgetId("xyz-789"),
+  name = "Pensions",
+  data = PER_TRANSACTION_DATA,
+)

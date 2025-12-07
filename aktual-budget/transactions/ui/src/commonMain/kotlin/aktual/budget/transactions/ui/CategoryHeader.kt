@@ -16,7 +16,10 @@ import aktual.budget.model.SortDirection.Ascending
 import aktual.budget.model.SortDirection.Descending
 import aktual.budget.transactions.vm.TransactionsSorting
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,6 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -168,3 +173,19 @@ private fun CategoryHeaderText(
     }
   }
 }
+
+@Preview
+@Composable
+private fun PreviewTransactionsSorting(
+  @PreviewParameter(TransactionsSortingProvider::class) params: ThemedParams<TransactionsSorting>,
+) = PreviewWithColorScheme(params.type) {
+  CategoryHeader(
+    onSort = {},
+    sorting = params.data,
+  )
+}
+
+private class TransactionsSortingProvider : ThemedParameterProvider<TransactionsSorting>(
+  TransactionsSorting(column = Date, direction = Descending),
+  TransactionsSorting(column = Amount, direction = Ascending),
+)

@@ -18,6 +18,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,3 +66,13 @@ fun UsingServerText(
     )
   }
 }
+
+@Preview
+@Composable
+private fun PreviewUsingServerText(
+  @PreviewParameter(ServerUrlProvider::class) params: ThemedParams<ServerUrl?>,
+) = PreviewWithColorScheme(params.type) {
+  UsingServerText(url = params.data, onClickChange = {})
+}
+
+private class ServerUrlProvider : ThemedParameterProvider<ServerUrl?>(ServerUrl.Demo, null)

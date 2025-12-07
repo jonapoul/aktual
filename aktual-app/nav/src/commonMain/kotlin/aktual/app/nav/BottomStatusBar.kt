@@ -10,7 +10,10 @@ import aktual.core.icons.CloudWarning
 import aktual.core.model.PingState
 import aktual.core.ui.BottomBarState
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
@@ -30,6 +33,8 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -106,3 +111,27 @@ private fun loadedString(budgetName: String): AnnotatedString = buildAnnotatedSt
     append(budgetName)
   }
 }
+
+@Preview
+@Composable
+private fun PreviewBottomBar(
+  @PreviewParameter(BottomBarProvider::class) params: ThemedParams<BottomBarParams>,
+) = PreviewWithColorScheme(params.type) {
+  BottomStatusBar(
+    state = BottomBarState.Visible(
+      pingState = params.data.state,
+      budgetName = params.data.budgetName,
+    ),
+  )
+}
+
+private data class BottomBarParams(
+  val state: PingState,
+  val budgetName: String? = null,
+)
+
+private class BottomBarProvider : ThemedParameterProvider<BottomBarParams>(
+  BottomBarParams(state = PingState.Success, budgetName = "My Budget"),
+  BottomBarParams(state = PingState.Failure),
+  BottomBarParams(state = PingState.Unknown),
+)

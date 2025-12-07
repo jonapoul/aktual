@@ -9,7 +9,10 @@ import aktual.budget.model.TransactionsFormat
 import aktual.budget.transactions.vm.Transaction
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
@@ -31,6 +34,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 @Composable
@@ -250,3 +255,27 @@ private fun RowScope.TransactionTableItem(
 
 @Composable
 private fun String?.orEmptyString() = this ?: Strings.transactionsItemEmpty
+
+@Preview
+@Composable
+private fun PreviewTransactionItem(
+  @PreviewParameter(TransactionItemProvider::class) params: ThemedParams<TransactionItemParams>,
+) = PreviewWithColorScheme(params.type) {
+  TransactionItem(
+    transaction = params.data.transaction,
+    format = params.data.format,
+    source = params.data.source,
+    onAction = {},
+  )
+}
+
+private data class TransactionItemParams(
+  val transaction: Transaction,
+  val format: TransactionsFormat,
+  val source: StateSource,
+)
+
+private class TransactionItemProvider : ThemedParameterProvider<TransactionItemParams>(
+  TransactionItemParams(TRANSACTION_1, TransactionsFormat.List, StateSource.Empty),
+  TransactionItemParams(TRANSACTION_1, TransactionsFormat.Table, StateSource.Empty),
+)

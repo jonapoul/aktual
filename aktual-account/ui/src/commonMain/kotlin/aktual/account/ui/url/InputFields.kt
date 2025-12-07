@@ -7,8 +7,11 @@ package aktual.account.ui.url
 import aktual.core.model.Protocol
 import aktual.core.ui.ExposedDropDownMenu
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TextField
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
 import alakazam.kotlin.core.parse
 import androidx.compose.foundation.layout.Arrangement
@@ -24,6 +27,8 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 
@@ -78,3 +83,25 @@ private val PROTOCOLS = Protocol
   .toImmutableList()
 
 private const val EXAMPLE_URL = "example.com"
+
+@Preview
+@Composable
+private fun PreviewInputFields(
+  @PreviewParameter(InputFieldsProvider::class) params: ThemedParams<InputFieldsParams>,
+) = PreviewWithColorScheme(params.type) {
+  InputFields(
+    url = params.data.url,
+    protocol = params.data.protocol,
+    onAction = {},
+  )
+}
+
+private data class InputFieldsParams(
+  val url: String,
+  val protocol: Protocol,
+)
+
+private class InputFieldsProvider : ThemedParameterProvider<InputFieldsParams>(
+  InputFieldsParams(url = "", protocol = Protocol.Http),
+  InputFieldsParams(url = "my.server.com:1234/path", protocol = Protocol.Https),
+)

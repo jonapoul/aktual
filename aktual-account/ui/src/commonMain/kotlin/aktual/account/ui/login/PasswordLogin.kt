@@ -6,9 +6,12 @@ package aktual.account.ui.login
 
 import aktual.core.model.Password
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.TextField
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
@@ -26,6 +29,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -79,3 +84,26 @@ internal fun PasswordLogin(
     )
   }
 }
+
+@Preview
+@Composable
+private fun PreviewPasswordLogin(
+  @PreviewParameter(PasswordLoginProvider::class) params: ThemedParams<PasswordLoginParams>,
+) = PreviewWithColorScheme(params.type) {
+  PasswordLogin(
+    isLoading = false,
+    enteredPassword = Password.Dummy,
+    onAction = {},
+  )
+}
+
+private data class PasswordLoginParams(
+  val isLoading: Boolean,
+  val password: Password,
+)
+
+private class PasswordLoginProvider : ThemedParameterProvider<PasswordLoginParams>(
+  PasswordLoginParams(password = Password.Dummy, isLoading = true),
+  PasswordLoginParams(password = Password.Dummy, isLoading = false),
+  PasswordLoginParams(password = Password.Empty, isLoading = false),
+)

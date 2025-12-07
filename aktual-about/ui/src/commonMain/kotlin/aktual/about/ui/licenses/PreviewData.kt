@@ -2,20 +2,12 @@
  * Copyright 2025 Jon Poulton
  * SPDX-License-Identifier: Apache-2.0
  */
-package aktual.preview
+package aktual.about.ui.licenses
 
 import aktual.about.data.Apache2
 import aktual.about.data.ArtifactDetail
 import aktual.about.data.ArtifactScm
 import aktual.about.data.UnknownLicense
-import aktual.about.vm.BuildState
-import aktual.core.model.AktualVersions
-
-internal val PreviewBuildState = BuildState(
-  versions = AktualVersions(app = "1.2.3", server = "2.3.4"),
-  buildDate = "12:34 GMT, 1st Feb 2024",
-  year = 2024,
-)
 
 internal val AlakazamAndroidCore = ArtifactDetail(
   groupId = "dev.jonpoulton.alakazam",

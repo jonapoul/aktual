@@ -6,12 +6,16 @@ package aktual.account.ui.password
 
 import aktual.account.vm.ChangePasswordState
 import aktual.core.model.Password
+import aktual.core.model.Password.Companion.Empty
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
 import aktual.l10n.Strings
-import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -27,6 +31,8 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -50,6 +56,7 @@ internal fun ConfirmPasswordForm(
 
   Column(
     modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
     PasswordEntryText(
       modifier = Modifier
@@ -63,8 +70,6 @@ internal fun ConfirmPasswordForm(
       onGo = { focusManager.moveFocus(FocusDirection.Next) },
     )
 
-    VerticalSpacer(10.dp)
-
     PasswordEntryText(
       modifier = Modifier.fillMaxWidth(),
       password = inputPassword2,
@@ -77,8 +82,6 @@ internal fun ConfirmPasswordForm(
         keyboard?.hide()
       },
     )
-
-    VerticalSpacer(10.dp)
 
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -105,8 +108,6 @@ internal fun ConfirmPasswordForm(
       )
     }
 
-    VerticalSpacer(10.dp)
-
     PrimaryTextButtonWithLoading(
       modifier = Modifier.fillMaxWidth(),
       text = Strings.passwordConfirm,
@@ -116,3 +117,32 @@ internal fun ConfirmPasswordForm(
     )
   }
 }
+
+@Preview
+@Composable
+private fun PreviewConfirmPassword(
+  @PreviewParameter(ConfirmPasswordProvider::class) params: ThemedParams<ConfirmPasswordParams>,
+) = PreviewWithColorScheme(params.type) {
+  ConfirmPasswordForm(
+    inputPassword1 = params.data.password1,
+    inputPassword2 = params.data.password2,
+    showPasswords = params.data.showPasswords,
+    state = params.data.state,
+    passwordsMatch = params.data.passwordsMatch,
+    onAction = {},
+  )
+}
+
+private data class ConfirmPasswordParams(
+  val password1: Password = Password.Dummy,
+  val password2: Password = Password.Dummy,
+  val showPasswords: Boolean = true,
+  val state: ChangePasswordState? = null,
+  val passwordsMatch: Boolean = false,
+)
+
+private class ConfirmPasswordProvider : ThemedParameterProvider<ConfirmPasswordParams>(
+  ConfirmPasswordParams(password1 = Empty, password2 = Empty, showPasswords = false),
+  ConfirmPasswordParams(showPasswords = true, passwordsMatch = true),
+  ConfirmPasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
+)

@@ -4,8 +4,11 @@
  */
 package aktual.about.ui.info
 
+import aktual.core.model.ColorSchemeType
+import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.DialogContent
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Row
@@ -18,6 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
 internal fun UpdateFoundDialog(
@@ -111,4 +116,18 @@ private fun TextContent(
       textAlign = TextAlign.End,
     )
   }
+}
+
+@Preview
+@Composable
+private fun PreviewUpdateFoundContent(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  UpdateFoundDialogContent(
+    currentVersion = "v1.2.3",
+    latestVersion = "v2.3.4",
+    latestUrl = "https://github.com/jonapoul/aktual/releases/v2.3.4",
+    onOpenUrl = {},
+    onDismiss = {},
+  )
 }

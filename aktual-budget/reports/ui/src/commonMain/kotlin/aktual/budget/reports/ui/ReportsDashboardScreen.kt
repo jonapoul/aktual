@@ -11,7 +11,10 @@ import aktual.budget.reports.vm.ReportsDashboardViewModel
 import aktual.core.model.LoginToken
 import aktual.core.ui.BackHandler
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -37,10 +40,13 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ReportsDashboardScreen(
@@ -180,3 +186,22 @@ private fun ContentList(
     }
   }
 }
+
+@Preview
+@Composable
+private fun PreviewReportDashboardItem(
+  @PreviewParameter(DashboardStateProvider::class) params: ThemedParams<DashboardState>,
+) = PreviewWithColorScheme(schemeType = params.type) {
+  ReportsDashboardScaffold(
+    state = params.data,
+    onAction = {},
+  )
+}
+
+private class DashboardStateProvider : ThemedParameterProvider<DashboardState>(
+  DashboardState.Loaded(
+    items = persistentListOf(PREVIEW_DASHBOARD_ITEM_1, PREVIEW_DASHBOARD_ITEM_2, PREVIEW_DASHBOARD_ITEM_3),
+  ),
+  DashboardState.Loading,
+  DashboardState.Empty,
+)

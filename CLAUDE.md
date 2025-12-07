@@ -10,17 +10,14 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 
 ### Building
 ```bash
-# Build everything
+# Build everything. This will take a long time, don't do it without asking
 ./gradlew build
 
 # Build Android app
-./gradlew :aktual-app:android:build
+./gradlew :aktual-app:android:assemble
 
 # Build Desktop app
-./gradlew :aktual-app:desktop:build
-
-# Create Desktop distribution
-./gradlew :aktual-app:desktop:packageDistributionForCurrentOS
+./gradlew :aktual-app:desktop:assemble
 ```
 
 ### Testing

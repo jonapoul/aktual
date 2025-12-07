@@ -4,8 +4,12 @@
  */
 package aktual.budget.list.ui
 
+import aktual.core.model.ColorSchemeType
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.Theme
 import aktual.l10n.Strings
@@ -20,6 +24,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -59,4 +64,14 @@ internal fun ContentEmpty(
       onClick = onCreateBudgetInBrowser,
     )
   }
+}
+
+@PortraitPreview
+@Composable
+private fun PreviewContentEmpty(
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) {
+  ContentEmpty(
+    onCreateBudgetInBrowser = {},
+  )
 }

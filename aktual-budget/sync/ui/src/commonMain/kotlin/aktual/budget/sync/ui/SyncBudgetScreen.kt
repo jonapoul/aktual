@@ -10,11 +10,16 @@ import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.sync.vm.SyncStep
 import aktual.budget.sync.vm.SyncStepState
 import aktual.core.model.LoginToken
+import aktual.core.model.Password
 import aktual.core.model.Percent
+import aktual.core.model.percent
 import aktual.core.ui.BackHandler
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
@@ -49,10 +54,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableMap
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
@@ -334,3 +342,65 @@ private fun SyncStepState.color(theme: Theme): Color = when (this) {
   is SyncStepState.Failed -> theme.errorText
   SyncStepState.Succeeded -> theme.successText
 }
+
+@Preview
+@Composable
+private fun PreviewSyncBudgetScaffold(
+  @PreviewParameter(SyncBudgetScaffoldProvider::class) params: ThemedParams<SyncBudgetScaffoldParams>,
+) = PreviewWithColorScheme(params.type) {
+  SyncBudgetScaffold(
+    onAction = {},
+    passwordState = params.data.passwordState,
+    stepStates = params.data.stepStates,
+  )
+}
+
+private data class SyncBudgetScaffoldParams(
+  val passwordState: KeyPasswordState,
+  val stepStates: ImmutableMap<SyncStep, SyncStepState>,
+)
+
+private class SyncBudgetScaffoldProvider : ThemedParameterProvider<SyncBudgetScaffoldParams>(
+  SyncBudgetScaffoldParams(
+    passwordState = KeyPasswordState.Inactive,
+    stepStates = persistentMapOf(
+      SyncStep.FetchingFileInfo to SyncStepState.NotStarted,
+      SyncStep.DownloadingDatabase to SyncStepState.NotStarted,
+      SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
+    ),
+  ),
+  SyncBudgetScaffoldParams(
+    passwordState = KeyPasswordState.Inactive,
+    stepStates = persistentMapOf(
+      SyncStep.FetchingFileInfo to SyncStepState.InProgress.Indefinite,
+      SyncStep.DownloadingDatabase to SyncStepState.InProgress.Definite(50.percent),
+      SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
+    ),
+  ),
+  SyncBudgetScaffoldParams(
+    passwordState = KeyPasswordState.Inactive,
+    stepStates = persistentMapOf(
+      SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
+      SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
+      SyncStep.ValidatingDatabase to SyncStepState.Succeeded,
+    ),
+  ),
+  SyncBudgetScaffoldParams(
+    passwordState = KeyPasswordState.Inactive,
+    stepStates = persistentMapOf(
+      SyncStep.FetchingFileInfo to SyncStepState.Failed("Some error"),
+      SyncStep.DownloadingDatabase to SyncStepState.Failed("Whatever"),
+      SyncStep.ValidatingDatabase to SyncStepState.Failed(
+        "Another error but this one's a lot longer, to see how it handles wrapping text",
+      ),
+    ),
+  ),
+  SyncBudgetScaffoldParams(
+    passwordState = KeyPasswordState.Active(input = Password.Empty),
+    stepStates = persistentMapOf(
+      SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
+      SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
+      SyncStep.ValidatingDatabase to SyncStepState.Failed("Missing Key"),
+    ),
+  ),
+)

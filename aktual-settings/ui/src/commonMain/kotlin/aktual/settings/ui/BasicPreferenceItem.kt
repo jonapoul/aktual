@@ -7,7 +7,10 @@ package aktual.settings.ui
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.defaultHazeStyle
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,6 +21,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -29,6 +34,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -113,3 +120,35 @@ internal fun BasicPreferenceItem(
     }
   }
 }
+
+@Preview
+@Composable
+private fun PreviewBasicPreferenceItem(
+  @PreviewParameter(BasicPreferenceItemProvider::class) params: ThemedParams<BasicPreferenceItemParams>,
+) = PreviewWithColorScheme(params.type) {
+  BasicPreferenceItem(
+    title = params.data.title,
+    subtitle = params.data.subtitle,
+    icon = params.data.icon,
+    clickability = Clickable { },
+  )
+}
+
+private data class BasicPreferenceItemParams(
+  val title: String,
+  val subtitle: String?,
+  val icon: ImageVector?,
+)
+
+private class BasicPreferenceItemProvider : ThemedParameterProvider<BasicPreferenceItemParams>(
+  BasicPreferenceItemParams(
+    title = "Change the doodad",
+    subtitle = "When you change this setting, the doodad will update. This might also affect the thingybob.",
+    icon = Icons.Filled.Info,
+  ),
+  BasicPreferenceItemParams(
+    title = "This one has no subtitle and no icon",
+    subtitle = null,
+    icon = null,
+  ),
+)

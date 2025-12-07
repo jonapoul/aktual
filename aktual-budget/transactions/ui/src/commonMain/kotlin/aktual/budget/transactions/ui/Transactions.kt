@@ -4,12 +4,18 @@
  */
 package aktual.budget.transactions.ui
 
+import aktual.budget.model.SortColumn
+import aktual.budget.model.SortDirection
 import aktual.budget.model.TransactionsFormat
 import aktual.budget.transactions.vm.DatedTransactions
 import aktual.budget.transactions.vm.TransactionsSorting
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.scrollbar
 import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Box
@@ -28,8 +34,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 internal fun Transactions(
@@ -151,3 +160,53 @@ private fun TransactionsFilled(
     }
   }
 }
+
+@PortraitPreview
+@Composable
+private fun PreviewTransactions(
+  @PreviewParameter(TransactionsProvider::class) params: ThemedParams<TransactionsParams>,
+) = PreviewWithColorScheme(params.type) {
+  Transactions(
+    transactions = params.data.transactions.toImmutableList(),
+    format = params.data.format,
+    source = params.data.source,
+    sorting = params.data.sorting,
+    observer = params.data.observer,
+    onAction = {},
+  )
+}
+
+private data class TransactionsParams(
+  val sorting: TransactionsSorting,
+  val observer: TransactionObserver,
+  val format: TransactionsFormat,
+  val source: StateSource = StateSource.Empty,
+  val transactions: List<DatedTransactions>,
+)
+
+private class TransactionsProvider : ThemedParameterProvider<TransactionsParams>(
+  TransactionsParams(
+    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
+    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
+    format = TransactionsFormat.List,
+    transactions = persistentListOf(
+      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1.id, TRANSACTION_2.id)),
+      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3.id)),
+    ),
+  ),
+  TransactionsParams(
+    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
+    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
+    format = TransactionsFormat.Table,
+    transactions = persistentListOf(
+      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1.id, TRANSACTION_2.id)),
+      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3.id)),
+    ),
+  ),
+  TransactionsParams(
+    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
+    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
+    format = TransactionsFormat.Table,
+    transactions = persistentListOf(),
+  ),
+)

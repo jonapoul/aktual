@@ -10,6 +10,7 @@ import jvmMainDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 class ModuleCompose : Plugin<Project> {
@@ -30,8 +31,7 @@ class ModuleCompose : Plugin<Project> {
         implementation(libs["jetbrains.material3"])
         implementation(libs["jetbrains.materialIcons"])
         implementation(libs["jetbrains.ui"])
-        implementation(libs["jetbrains.uiTooling"])
-        implementation(libs["jetbrains.uiToolingPreview"]) // TODO: remove from runtime classpath
+        implementation(libs["jetbrains.uiToolingPreview"])
         implementation(libs["jetbrains.uiUtil"])
         implementation(libs["kotlinx.immutable"])
         implementation(libs["metrox.viewmodel.compose"])
@@ -47,8 +47,6 @@ class ModuleCompose : Plugin<Project> {
 
       androidMainDependencies {
         implementation(libs["androidx.poolingcontainer"])
-        implementation(libs["jetbrains.uiTooling"])
-        implementation(libs["jetbrains.uiToolingPreview"])
       }
 
       androidUnitTestDependencies {
@@ -59,6 +57,10 @@ class ModuleCompose : Plugin<Project> {
       jvmMainDependencies {
         implementation(compose.desktop.currentOs)
       }
+    }
+
+    dependencies {
+      "debugImplementation"(libs["jetbrains.uiTooling"])
     }
   }
 }

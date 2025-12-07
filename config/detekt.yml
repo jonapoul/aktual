@@ -50,8 +50,9 @@ style:
     ignoreCompanionObjectPropertyDeclaration: true
     ignoreAnnotated:
       - "Preview"
-      - "SingleScreenPreview"
-      - "TripleScreenPreview"
+      - "DesktopPreview"
+      - "LandscapePreview"
+      - "PortraitPreview"
     excludes:
       - "**/test/**"
       - "**/androidUnitTest/**"
@@ -60,8 +61,9 @@ style:
   UnusedPrivateFunction:
     ignoreAnnotated:
       - "Preview"
-      - "SingleScreenPreview"
-      - "TripleScreenPreview"
+      - "DesktopPreview"
+      - "LandscapePreview"
+      - "PortraitPreview"
   ForbiddenComment:
     active: false
   ReturnCount:
