@@ -13,9 +13,9 @@ import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.core.collectFlow
 import alakazam.kotlin.core.requireMessage
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
@@ -71,7 +71,7 @@ class ServerUrlViewModel internal constructor(
   val navDestination: ReceiveChannel<NavDestination> = mutableNavDestination
 
   val errorMessage: StateFlow<String?> = viewModelScope.launchMolecule(Immediate) {
-    val confirmResult by mutableConfirmResult.collectAsStateWithLifecycle()
+    val confirmResult by mutableConfirmResult.collectAsState()
     val result = confirmResult
     if (result is ConfirmResult.Failed) {
       "Failed: ${result.reason}"
