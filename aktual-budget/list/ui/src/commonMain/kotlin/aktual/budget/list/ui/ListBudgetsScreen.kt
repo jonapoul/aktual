@@ -13,6 +13,7 @@ import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
 import aktual.core.model.LoginToken
 import aktual.core.ui.DesktopPreview
+import aktual.core.ui.FailureScreen
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
@@ -189,9 +190,11 @@ private fun StateContent(
   }
 
   is ListBudgetsState.Failure -> {
-    ContentFailure(
+    FailureScreen(
       modifier = Modifier.fillMaxSize(),
-      reason = state.reason,
+      title = Strings.budgetFailureMessage,
+      reason = state.reason ?: Strings.budgetFailureDefaultMessage,
+      retryText = Strings.budgetFailureRetry,
       onClickRetry = { onAction(Reload) },
       theme = theme,
     )
