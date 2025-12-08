@@ -90,7 +90,7 @@ abstract class RootViewModel(
 
   val bottomBarState: StateFlow<BottomBarState> = viewModelScope.launchMolecule(Immediate) {
     val showStatusBar by showStatusBar.collectAsStateWithLifecycle()
-    val budgetName by budgetName.collectAsStateWithLifecycle(initial = null)
+    val budgetName by budgetName.collectAsStateWithLifecycle(initialValue = null)
     val pingState by pingStateHolder.collectAsStateWithLifecycle()
     if (showStatusBar) {
       BottomBarState.Visible(
