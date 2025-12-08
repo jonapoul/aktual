@@ -17,9 +17,9 @@ import aktual.core.model.Percent
 import aktual.core.model.UrlOpener
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.core.launchInfiniteLoop
-import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule

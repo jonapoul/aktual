@@ -16,9 +16,9 @@ import aktual.core.model.RegularColorSchemeType
 import aktual.core.ui.BottomBarState
 import aktual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
-import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule

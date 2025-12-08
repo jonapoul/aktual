@@ -3,9 +3,9 @@ package aktual.about.vm
 import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
 import aktual.core.model.UrlOpener
-import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule

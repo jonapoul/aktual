@@ -13,9 +13,9 @@ import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.core.collectFlow
 import alakazam.kotlin.core.requireMessage
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
