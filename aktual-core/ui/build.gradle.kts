@@ -13,7 +13,6 @@ kotlin {
     api(project(":aktual-core:model"))
     api(libs.haze.core)
     api(libs.kotlinx.datetime)
-    implementation(project(":aktual-core:di"))
     implementation(project(":aktual-l10n"))
   }
 

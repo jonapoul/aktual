@@ -6,20 +6,8 @@
 build/
 local.properties
 
-# Ignore all IDEA files, except those excluded below
-.idea/*
-!.idea/codeInsightSettings.xml
-!.idea/detekt.xml
-!.idea/icon.png
-!.idea/icon_dark.png
-
 # API secrets
 *.private.env.json
 
 # Atlas charts
 *.dot
-
-# Profiling/benchmarking
-profiling/gradle-user-home
-profiling/benchmark-out
-profiling/profile-out
