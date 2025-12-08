@@ -16,7 +16,7 @@ import aktual.core.model.RegularColorSchemeType
 import aktual.core.ui.BottomBarState
 import aktual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -89,9 +89,9 @@ abstract class RootViewModel(
   }
 
   val bottomBarState: StateFlow<BottomBarState> = viewModelScope.launchMolecule(Immediate) {
-    val showStatusBar by showStatusBar.collectAsState()
-    val budgetName by budgetName.collectAsState(initial = null)
-    val pingState by pingStateHolder.collectAsState()
+    val showStatusBar by showStatusBar.collectAsStateWithLifecycle()
+    val budgetName by budgetName.collectAsStateWithLifecycle(initial = null)
+    val pingState by pingStateHolder.collectAsStateWithLifecycle()
     if (showStatusBar) {
       BottomBarState.Visible(
         pingState = pingState,

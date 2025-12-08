@@ -17,7 +17,7 @@ import aktual.core.model.Percent
 import aktual.core.model.UrlOpener
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.core.launchInfiniteLoop
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -79,7 +79,7 @@ class SyncBudgetViewModel(
     .stateIn(viewModelScope, Eagerly, initialValue = false)
 
   val overallState: StateFlow<SyncOverallState> = viewModelScope.launchMolecule(Immediate) {
-    val stepStates by mutableSteps.collectAsState()
+    val stepStates by mutableSteps.collectAsStateWithLifecycle()
     val states = stepStates.values
     when {
       states.all { it == SyncStepState.NotStarted } -> SyncOverallState.NotStarted

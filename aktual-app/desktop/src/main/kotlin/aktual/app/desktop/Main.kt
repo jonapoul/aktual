@@ -12,7 +12,7 @@ import aktual.logging.TimestampedPrintStreamLogger
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
@@ -96,12 +96,12 @@ private fun WindowContents(
   LocalViewModelStoreOwner provides viewModelStoreOwner,
   LocalMetroViewModelFactory provides factory,
 ) {
-  val regular by viewModel.regularSchemeType.collectAsState()
-  val darkScheme by viewModel.darkSchemeType.collectAsState()
-  val bottomBarState by viewModel.bottomBarState.collectAsState()
-  val numberFormat by viewModel.numberFormat.collectAsState()
-  val hideFraction by viewModel.hideFraction.collectAsState()
-  val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsState()
+  val regular by viewModel.regularSchemeType.collectAsStateWithLifecycle()
+  val darkScheme by viewModel.darkSchemeType.collectAsStateWithLifecycle()
+  val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
+  val numberFormat by viewModel.numberFormat.collectAsStateWithLifecycle()
+  val hideFraction by viewModel.hideFraction.collectAsStateWithLifecycle()
+  val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
   val colorSchemeType = chooseSchemeType(regular, darkScheme)
 
   WithCompositionLocals(

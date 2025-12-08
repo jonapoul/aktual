@@ -3,7 +3,7 @@ package aktual.about.vm
 import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
 import aktual.core.model.UrlOpener
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,14 +32,14 @@ class LicensesViewModel internal constructor(
   private val searchTerm = MutableStateFlow(value = "")
 
   val searchBarState: StateFlow<SearchBarState> = viewModelScope.launchMolecule(Immediate) {
-    val showSearchBar by showSearchBar.collectAsState()
-    val searchTerm by searchTerm.collectAsState()
+    val showSearchBar by showSearchBar.collectAsStateWithLifecycle()
+    val searchTerm by searchTerm.collectAsStateWithLifecycle()
     if (showSearchBar) SearchBarState.Visible(searchTerm) else SearchBarState.Gone
   }
 
   val licensesState: StateFlow<LicensesState> = viewModelScope.launchMolecule(Immediate) {
-    val licensesState by mutableState.collectAsState()
-    val searchBarState by searchBarState.collectAsState()
+    val licensesState by mutableState.collectAsStateWithLifecycle()
+    val searchBarState by searchBarState.collectAsStateWithLifecycle()
     when (val searchState = searchBarState) {
       SearchBarState.Gone -> licensesState
 

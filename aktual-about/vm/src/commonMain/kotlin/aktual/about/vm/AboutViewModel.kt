@@ -6,7 +6,7 @@ import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.core.model.UrlOpener
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -37,7 +37,7 @@ class AboutViewModel(
   private val aktualVersionsStateHolder: AktualVersionsStateHolder,
 ) : ViewModel() {
   val buildState: StateFlow<BuildState> = viewModelScope.launchMolecule(Immediate) {
-    val versions by aktualVersionsStateHolder.collectAsState()
+    val versions by aktualVersionsStateHolder.collectAsStateWithLifecycle()
     buildState(versions)
   }
 

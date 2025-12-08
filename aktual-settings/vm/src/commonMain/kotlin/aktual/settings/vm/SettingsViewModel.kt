@@ -1,7 +1,7 @@
 package aktual.settings.vm
 
 import aktual.prefs.AppGlobalPreferences
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.collectAsStateWithLifecycle
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -32,9 +32,9 @@ class SettingsViewModel internal constructor(
   private val showBottomBar = showBottomBarPref.asStateFlow(viewModelScope)
 
   val prefValues: StateFlow<ImmutableList<PreferenceValue>> = viewModelScope.launchMolecule(Immediate) {
-    val colorScheme by colorSchemeFlow.collectAsState()
-    val darkScheme by darkSchemeFlow.collectAsState()
-    val showBottomBar by showBottomBar.collectAsState()
+    val colorScheme by colorSchemeFlow.collectAsStateWithLifecycle()
+    val darkScheme by darkSchemeFlow.collectAsStateWithLifecycle()
+    val showBottomBar by showBottomBar.collectAsStateWithLifecycle()
     persistentListOf(
       PreferenceValue.Theme(ThemeConfig(colorScheme, darkScheme)),
       PreferenceValue.ShowBottomBar(showBottomBar),
