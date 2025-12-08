@@ -35,7 +35,3 @@ ktlint_standard_string-template-indent = disabled
 # https://pinterest.github.io/ktlint/dev-snapshot/faq/#how-do-i-disable-ktlint-for-generated-code
 [**/generated/**]
 ktlint = disabled
-
-# noinspection EditorConfigKeyCorrectness
-[config/spotless.kt]
-ktlint = disabled

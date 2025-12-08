@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 @file:OptIn(ExperimentalTestApi::class)
 
 package aktual.account.ui.login

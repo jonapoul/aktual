@@ -37,12 +37,6 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 # Run detekt static analysis
 ./gradlew detektCheck
 
-# Format code with Spotless. Run this after creating any new files
-./gradlew spotlessApply
-
-# Check code formatting
-./gradlew spotlessCheck
-
 # Format code
 ./scripts/ktlintFormat.sh
 
@@ -255,7 +249,6 @@ The project uses Gradle convention plugins to centralize build configuration:
 - `aktual.convention.test` - Test dependencies
 - `aktual.convention.detekt` - Static analysis
 - `aktual.convention.kover` - Code coverage
-- `aktual.convention.spotless` - Code formatting
 
 **Key Build Properties:**
 - Java version: 21
