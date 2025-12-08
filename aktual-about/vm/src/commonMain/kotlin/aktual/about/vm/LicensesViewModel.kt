@@ -46,6 +46,7 @@ class LicensesViewModel internal constructor(
     val searchBarState by searchBarState.collectAsState()
     when (val searchState = searchBarState) {
       SearchBarState.Gone -> licensesState
+
       is SearchBarState.Visible -> when (val licenses = licensesState) {
         is LicensesState.Loaded -> licenses.filteredBy(searchState.text)
         else -> licenses

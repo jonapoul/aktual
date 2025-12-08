@@ -57,6 +57,7 @@ internal fun BasicPreferenceItem(
 ) {
   val clickableModifier = when (clickability) {
     NotClickable -> Modifier
+
     is Clickable -> Modifier.clickable(
       interactionSource = interactionSource,
       indication = ripple(),

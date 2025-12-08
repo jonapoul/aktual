@@ -277,7 +277,9 @@ private fun PreviewThemePreferenceItem(
   var config by remember { mutableStateOf(input) }
   val schemeType = when (config.regular) {
     RegularColorSchemeType.System -> ColorSchemeType.Light
+
     RegularColorSchemeType.Light -> ColorSchemeType.Light
+
     RegularColorSchemeType.Dark -> when (config.dark) {
       DarkColorSchemeType.Dark -> ColorSchemeType.Dark
       DarkColorSchemeType.Midnight -> ColorSchemeType.Midnight

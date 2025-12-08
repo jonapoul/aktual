@@ -142,7 +142,9 @@ class SyncBudgetViewModel(
     viewModelScope.launch {
       val fetched = keyFetcher(budgetId, token, state.input)
       when (fetched) {
-        is FetchKeyResult.Failure -> logcat.w { "Failed fetching keys: $fetched" }
+        is FetchKeyResult.Failure -> {
+          logcat.w { "Failed fetching keys: $fetched" }
+        }
 
         is FetchKeyResult.Success -> {
           // val key = keyGenerator(fetched.key)
@@ -224,8 +226,14 @@ class SyncBudgetViewModel(
 
     fileDownloader.download(token, budgetId).collect { state ->
       val stepState = when (state) {
-        is DownloadState.InProgress -> SyncStepState.InProgress.Definite(state.toPercent())
-        is DownloadState.Failure -> SyncStepState.Failed(state.message)
+        is DownloadState.InProgress -> {
+          SyncStepState.InProgress.Definite(state.toPercent())
+        }
+
+        is DownloadState.Failure -> {
+          SyncStepState.Failed(state.message)
+        }
+
         is DownloadState.Done -> {
           downloadedDbPath = state.path
           SyncStepState.Succeeded
@@ -264,9 +272,13 @@ class SyncBudgetViewModel(
     meta: EncryptMeta?,
   ) {
     val message = when (result) {
-      is DecryptResult.UnknownAlgorithm -> "Unknown algorithm: ${result.algorithm}"
+      is DecryptResult.UnknownAlgorithm -> {
+        "Unknown algorithm: ${result.algorithm}"
+      }
 
-      is DecryptResult.OtherFailure -> "Other failure: ${result.message}"
+      is DecryptResult.OtherFailure -> {
+        "Other failure: ${result.message}"
+      }
 
       DecryptResult.MissingKey -> {
         cachedData = CachedEncryptedData(encryptedPath, userFile, meta)

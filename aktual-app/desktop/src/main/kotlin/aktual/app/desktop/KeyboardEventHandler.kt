@@ -38,7 +38,9 @@ internal class KeyboardEventHandler(private val navController: NavHostController
         navController.navigateUp()
       }
 
-      else -> false
+      else -> {
+        false
+      }
     }
   }
 

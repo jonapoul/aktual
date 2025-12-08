@@ -73,8 +73,14 @@ fun ListBudgetsScreen(
       localFileExists = thisFileExists,
       onAction = { action ->
         when (action) {
-          DeleteDialogAction.DeleteLocal -> viewModel.deleteLocal(budget.cloudFileId)
-          DeleteDialogAction.DeleteRemote -> viewModel.deleteRemote(budget.cloudFileId)
+          DeleteDialogAction.DeleteLocal -> {
+            viewModel.deleteLocal(budget.cloudFileId)
+          }
+
+          DeleteDialogAction.DeleteRemote -> {
+            viewModel.deleteRemote(budget.cloudFileId)
+          }
+
           DeleteDialogAction.Dismiss -> {
             budgetToDelete = null
             viewModel.clearDeletingState()

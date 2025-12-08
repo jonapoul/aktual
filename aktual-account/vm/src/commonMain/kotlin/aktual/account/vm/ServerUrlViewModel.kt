@@ -188,8 +188,14 @@ class ServerUrlViewModel internal constructor(
   }
 
   private fun ConfirmResult?.navDestination(): NavDestination? = when (this) {
-    null -> null
-    is ConfirmResult.Failed -> null
+    null -> {
+      null
+    }
+
+    is ConfirmResult.Failed -> {
+      null
+    }
+
     is ConfirmResult.Succeeded -> {
       if (isBootstrapped) {
         NavDestination.ToLogin
