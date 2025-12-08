@@ -25,7 +25,6 @@
   <string name="budget_success_empty_second">Creating new budgets isn't currently supported in this app - you\'ll need to do this from the browser.</string>
   <string name="budget_success_empty_launch">Open Browser</string>
 
-  <string name="budget_failure_desc">Failure</string>
   <string name="budget_failure_message">Failed syncing the list of budgets</string>
   <string name="budget_failure_default_message">Unknown reason</string>
   <string name="budget_failure_retry">Retry</string>

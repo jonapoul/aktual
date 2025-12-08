@@ -9,15 +9,10 @@ optIn(EXPERIMENTAL_MATERIAL_3)
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:model"))
     api(project(":aktual-core:model"))
-    api(libs.haze.core)
-    api(libs.kotlinx.datetime)
+    api(project(":aktual-core:ui"))
+    api(project(":aktual-metrics:vm"))
     implementation(project(":aktual-l10n"))
-  }
-
-  androidMainDependencies {
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.coreKtx)
+    implementation(libs.haze.core)
   }
 }

@@ -6,6 +6,7 @@ import aktual.budget.list.ui.ListBudgetsAction.Delete
 import aktual.budget.list.ui.ListBudgetsAction.Open
 import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
 import aktual.budget.list.ui.ListBudgetsAction.OpenInBrowser
+import aktual.budget.list.ui.ListBudgetsAction.OpenServerMetrics
 import aktual.budget.list.ui.ListBudgetsAction.OpenSettings
 import aktual.budget.list.ui.ListBudgetsAction.Reload
 import aktual.budget.list.vm.ListBudgetsState
@@ -13,6 +14,7 @@ import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
 import aktual.core.model.LoginToken
 import aktual.core.ui.DesktopPreview
+import aktual.core.ui.FailureScreen
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
@@ -102,6 +104,7 @@ fun ListBudgetsScreen(
         ChangePassword -> nav.toChangePassword()
         OpenAbout -> nav.toAbout()
         OpenSettings -> nav.toSettings()
+        OpenServerMetrics -> nav.toMetrics()
         OpenInBrowser -> viewModel.open(serverUrl)
         Reload -> viewModel.retry()
         is Delete -> budgetToDelete = action.budget
@@ -189,9 +192,11 @@ private fun StateContent(
   }
 
   is ListBudgetsState.Failure -> {
-    ContentFailure(
+    FailureScreen(
       modifier = Modifier.fillMaxSize(),
-      reason = state.reason,
+      title = Strings.budgetFailureMessage,
+      reason = state.reason ?: Strings.budgetFailureDefaultMessage,
+      retryText = Strings.budgetFailureRetry,
       onClickRetry = { onAction(Reload) },
       theme = theme,
     )

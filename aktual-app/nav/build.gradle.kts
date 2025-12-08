@@ -16,6 +16,7 @@ kotlin {
     api(project(":aktual-core:ui"))
     api(project(":aktual-l10n"))
     api(project(":aktual-logging"))
+    api(project(":aktual-metrics:ui"))
     api(project(":aktual-settings:ui"))
     api(libs.jetbrains.navigation)
     api(libs.jetbrains.resources)

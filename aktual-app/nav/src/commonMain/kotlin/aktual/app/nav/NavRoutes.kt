@@ -21,6 +21,10 @@ data object LicensesNavRoute
 
 @Immutable
 @Serializable
+data object MetricsNavRoute
+
+@Immutable
+@Serializable
 data class ListBudgetsNavRoute(
   val token: LoginToken,
 ) : JSerializable

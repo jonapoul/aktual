@@ -8,6 +8,7 @@ import aktual.core.ui.BasicIconButton
 import aktual.core.ui.normalIconButton
 import aktual.l10n.Strings
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Key
@@ -78,6 +79,16 @@ internal fun MoreMenu(
       onAction(ChangePassword)
     },
     leadingIcon = { Icon(Icons.Filled.Key, contentDescription = passwordText) },
+  )
+
+  val metricsText = Strings.metricsToolbar
+  DropdownMenuItem(
+    text = { Text(metricsText) },
+    onClick = {
+      onDismissRequest()
+      onAction(OpenServerMetrics)
+    },
+    leadingIcon = { Icon(Icons.Filled.BarChart, contentDescription = metricsText) },
   )
 
   val aboutText = Strings.listBudgetsAbout

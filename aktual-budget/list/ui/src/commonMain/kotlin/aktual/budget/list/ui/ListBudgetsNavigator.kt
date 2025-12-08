@@ -10,5 +10,6 @@ interface ListBudgetsNavigator {
   fun toChangePassword()
   fun toUrl()
   fun toSettings()
+  fun toMetrics()
   fun toSyncBudget(token: LoginToken, id: BudgetId)
 }
