@@ -37,7 +37,7 @@ class LicensesViewModel internal constructor(
     if (showSearchBar) SearchBarState.Visible(searchTerm) else SearchBarState.Gone
   }
 
-  val licensesState: StateFlow<LicensesState> = viewMcollectAsStateWithLifecycleodelScope.launchMolecule(Immediate) {
+  val licensesState: StateFlow<LicensesState> = viewModelScope.launchMolecule(Immediate) {
     val licensesState by mutableState.collectAsState()
     val searchBarState by searchBarState.collectAsState()
     when (val searchState = searchBarState) {
