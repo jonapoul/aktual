@@ -7,9 +7,9 @@ import aktual.api.model.metrics.GetMetricsResponse
 import aktual.core.model.ServerUrl
 import aktual.core.model.bytes
 import aktual.test.assertThatNextEmissionIsEqualTo
+import alakazam.test.core.TestClock
 import alakazam.test.core.TestCoroutineContexts
 import app.cash.turbine.test
-import assertk.assertThat
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -25,6 +25,7 @@ import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
+import kotlin.time.Instant
 
 class MetricsViewModelTest {
   private lateinit var metricsApi: MetricsApi
@@ -41,6 +42,7 @@ class MetricsViewModelTest {
     viewModel = MetricsViewModel(
       apisStateHolder = apisStateHolder,
       contexts = TestCoroutineContexts(EmptyCoroutineContext),
+      clock = TestClock(EXAMPLE_INSTANT),
     )
   }
 
@@ -58,7 +60,7 @@ class MetricsViewModelTest {
     viewModel.state.test {
       // then
       assertThatNextEmissionIsEqualTo(MetricsState.Loading)
-      assertThatNextEmissionIsEqualTo(MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME))
+      assertThatNextEmissionIsEqualTo(MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT))
       coVerify(exactly = 1) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
 
@@ -67,7 +69,7 @@ class MetricsViewModelTest {
 
       // then
       assertThatNextEmissionIsEqualTo(MetricsState.Loading)
-      assertThatNextEmissionIsEqualTo(MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME))
+      assertThatNextEmissionIsEqualTo(MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT))
       coVerify(exactly = 2) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
 
@@ -140,6 +142,8 @@ class MetricsViewModelTest {
   private companion object {
     private val SERVER_URL = ServerUrl("https://server.com/actual-budget")
 
+    // Mon Dec 08 2025 16:37:13.825
+    private val EXAMPLE_INSTANT = Instant.fromEpochMilliseconds(1765211833825L)
     private val EXAMPLE_UPTIME = 123.days + 4.hours + 5.seconds + 678.milliseconds
     private val EXAMPLE_MEMORY = GetMetricsResponse.Memory(
       rss = 112377856L.bytes,

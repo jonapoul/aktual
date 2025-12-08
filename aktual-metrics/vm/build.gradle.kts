@@ -4,6 +4,6 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    implementation(project(":aktual-api:actual"))
+    api(project(":aktual-api:actual"))
   }
 }

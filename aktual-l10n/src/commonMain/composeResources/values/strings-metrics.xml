@@ -1,0 +1,18 @@
+<resources>
+  <string name="metrics_toolbar">Server Metrics</string>
+  <string name="metrics_refresh">Refresh</string>
+
+  <string name="metrics_last_update">Last fetched</string>
+
+  <string name="metrics_uptime">Uptime</string>
+  <string name="metrics_disconnected">Not currently connected to the server!</string>
+  <string name="metrics_failure">Failed fetching metrics</string>
+  <string name="metrics_failure_retry">Retry</string>
+
+  <string name="metrics_memory">Memory</string>
+  <string name="metrics_memory_rss">RSS</string>
+  <string name="metrics_memory_heap_total">Heap Total</string>
+  <string name="metrics_memory_heap_used">Heap Used</string>
+  <string name="metrics_memory_external">External</string>
+  <string name="metrics_memory_array_buffers">Array Buffers</string>
+</resources>

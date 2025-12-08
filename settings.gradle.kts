@@ -54,6 +54,7 @@ include(
   ":aktual-core:ui",
   ":aktual-l10n",
   ":aktual-logging",
+  ":aktual-metrics:ui",
   ":aktual-metrics:vm",
   ":aktual-prefs",
   ":aktual-settings:ui",

@@ -57,7 +57,7 @@ class MetricsApiTest {
           external = 3925760L.bytes,
           arrayBuffers = 387791L.bytes,
         ),
-      )
+      ),
     )
   }
 }

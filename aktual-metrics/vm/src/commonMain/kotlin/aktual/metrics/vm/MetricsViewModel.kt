@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import logcat.logcat
+import kotlin.time.Clock
 
 @Inject
 @ViewModelKey(MetricsViewModel::class)
@@ -30,6 +31,7 @@ import logcat.logcat
 class MetricsViewModel internal constructor(
   apisStateHolder: AktualApisStateHolder,
   private val contexts: CoroutineContexts,
+  private val clock: Clock,
 ) : ViewModel() {
   private val fetchCount = MutableStateFlow(value = 0)
   private val mutableState = MutableStateFlow<MetricsState>(MetricsState.Loading)
@@ -61,7 +63,7 @@ class MetricsViewModel internal constructor(
     try {
       val response = withContext(contexts.io) { metricsApi.getMetrics() }
       logcat.v { "fetchMetrics success: $response" }
-      val state = MetricsState.Success(response.memory, response.uptime)
+      val state = MetricsState.Success(response.memory, response.uptime, lastUpdate = clock.now())
       mutableState.update { state }
     } catch (e: CancellationException) {
       throw e
