@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.about.vm
 
 import aktual.about.data.GithubRepository
@@ -73,9 +69,13 @@ class AboutViewModel(
       mutableCheckUpdatesState.update {
         when (state) {
           LatestReleaseState.NoNewUpdate -> CheckUpdatesState.NoUpdateFound
+
           LatestReleaseState.NoReleases -> CheckUpdatesState.NoUpdateFound
+
           LatestReleaseState.PrivateRepo -> CheckUpdatesState.Failed(cause = "Repo inaccessible")
+
           is LatestReleaseState.Failure -> CheckUpdatesState.Failed(state.errorMessage)
+
           is LatestReleaseState.UpdateAvailable -> CheckUpdatesState.UpdateFound(
             version = state.release.versionName,
             url = state.release.htmlUrl,

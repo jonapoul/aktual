@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.settings.ui
 
 import aktual.core.ui.AktualTypography
@@ -57,6 +53,7 @@ internal fun BasicPreferenceItem(
 ) {
   val clickableModifier = when (clickability) {
     NotClickable -> Modifier
+
     is Clickable -> Modifier.clickable(
       interactionSource = interactionSource,
       indication = ripple(),

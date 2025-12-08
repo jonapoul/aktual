@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package logcat
 
 import assertk.assertThat
@@ -43,7 +39,7 @@ class LogcatTest {
     assertThat(log?.tag).isEqualTo("LogcatTest")
     val msg = log?.message.orEmpty()
     assertThat(msg).contains("java.lang.IllegalStateException: SOMETHING BROKE")
-    assertThat(msg).contains("at logcat.LogcatTest.logException(LogcatTest.kt:39)")
+    assertThat(msg).contains("at logcat.LogcatTest.logException(LogcatTest.kt:35)")
   }
 
   @Test

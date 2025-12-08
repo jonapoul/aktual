@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.account.vm
 
 import aktual.api.client.AktualApisStateHolder
@@ -188,8 +184,14 @@ class ServerUrlViewModel internal constructor(
   }
 
   private fun ConfirmResult?.navDestination(): NavDestination? = when (this) {
-    null -> null
-    is ConfirmResult.Failed -> null
+    null -> {
+      null
+    }
+
+    is ConfirmResult.Failed -> {
+      null
+    }
+
     is ConfirmResult.Succeeded -> {
       if (isBootstrapped) {
         NavDestination.ToLogin

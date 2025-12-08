@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.budget.transactions.vm
 
 import aktual.budget.db.dao.AccountsDao
@@ -92,6 +88,7 @@ class TransactionsViewModel(
 
     when (val s = spec.accountSpec) {
       is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }
+
       is AccountSpec.SpecificAccount -> viewModelScope.launch {
         val account = accountsDao[s.id] ?: error("No account matching $s")
         mutableLoadedAccount.update { SpecificAccount(account) }
@@ -133,15 +130,17 @@ class TransactionsViewModel(
     .map(::toTransaction)
 
   private fun getIdsFlow(): Flow<List<DatedId>> = when (val spec = spec.accountSpec) {
-    AccountSpec.AllAccounts ->
+    AccountSpec.AllAccounts -> {
       transactionsDao
         .observeIds()
         .map { list -> list.map { (id, date) -> DatedId(id, date) } }
+    }
 
-    is AccountSpec.SpecificAccount ->
+    is AccountSpec.SpecificAccount -> {
       transactionsDao
         .observeIdsByAccount(spec.id)
         .map { list -> list.map { (id, date) -> DatedId(id, date) } }
+    }
   }
 
   private fun toDatedTransactions(datedIds: List<DatedId>, sorting: TransactionsSorting) = datedIds

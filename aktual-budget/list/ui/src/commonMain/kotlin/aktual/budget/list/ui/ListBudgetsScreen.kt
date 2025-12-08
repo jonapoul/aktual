@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.budget.list.ui
 
 import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
@@ -73,8 +69,14 @@ fun ListBudgetsScreen(
       localFileExists = thisFileExists,
       onAction = { action ->
         when (action) {
-          DeleteDialogAction.DeleteLocal -> viewModel.deleteLocal(budget.cloudFileId)
-          DeleteDialogAction.DeleteRemote -> viewModel.deleteRemote(budget.cloudFileId)
+          DeleteDialogAction.DeleteLocal -> {
+            viewModel.deleteLocal(budget.cloudFileId)
+          }
+
+          DeleteDialogAction.DeleteRemote -> {
+            viewModel.deleteRemote(budget.cloudFileId)
+          }
+
           DeleteDialogAction.Dismiss -> {
             budgetToDelete = null
             viewModel.clearDeletingState()

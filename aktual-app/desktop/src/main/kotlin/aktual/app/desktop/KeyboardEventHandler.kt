@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.app.desktop
 
 import androidx.compose.ui.input.key.Key
@@ -38,7 +34,9 @@ internal class KeyboardEventHandler(private val navController: NavHostController
         navController.navigateUp()
       }
 
-      else -> false
+      else -> {
+        false
+      }
     }
   }
 
