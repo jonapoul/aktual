@@ -19,26 +19,22 @@ class ConventionAndroidBase : Plugin<Project> {
     }
 
     extensions.configure(CommonExtension::class) {
-      // ":aktual-path:to:module" -> "aktual.path.to.module", or ":aktual-app:android" -> "aktual.app.android"
-      namespace = path
-        .split(":", "-")
-        .filter { it.isNotBlank() }
-        .joinToString(".")
-
+      namespace = buildNamespace()
       compileSdk = intProperty("aktual.android.compileSdk").get()
 
-      defaultConfig {
+      defaultConfig.apply {
         minSdk = intProperty("aktual.android.minSdk").get()
         testInstrumentationRunnerArguments["disableAnalytics"] = "true"
       }
 
-      compileOptions {
+      compileOptions.apply {
         val version = javaVersion().get()
         sourceCompatibility = version
         targetCompatibility = version
+        isCoreLibraryDesugaringEnabled = true
       }
 
-      buildFeatures {
+      buildFeatures.apply {
         // Enabled in modules that need them
         resValues = false
         viewBinding = false
@@ -48,48 +44,28 @@ class ConventionAndroidBase : Plugin<Project> {
         buildConfig = false
         compose = false
         prefab = false
-        renderScript = false
         shaders = false
       }
 
-      testOptions {
+      testOptions.apply {
         unitTests {
           isIncludeAndroidResources = true
           isReturnDefaultValues = true
         }
       }
 
-      extensions.configure(AndroidComponentsExtension::class) {
-        // disable instrumented tests if androidTest folder doesn't exist
-        beforeVariants { variant ->
-          if (variant is HasAndroidTestBuilder) {
-            variant.enableAndroidTest = variant.enableAndroidTest && projectDir.resolve("src/androidTest").exists()
-          }
+      lint.commonConfigure(target)
+      packaging.commonConfigure()
+    }
+
+    extensions.configure(AndroidComponentsExtension::class) {
+      // disable instrumented tests if the relevant folder doesn't exist
+      beforeVariants { variant ->
+        if (variant is HasAndroidTestBuilder) {
+          val testDirExists = projectDir.resolve("src/androidDeviceTest").exists() // AGP-KMP
+            || projectDir.resolve("src/androidTest").exists() // Regular AGP
+          variant.enableAndroidTest = variant.enableAndroidTest && testDirExists
         }
-      }
-
-      lint {
-        abortOnError = true
-        checkGeneratedSources = false
-        checkReleaseBuilds = false
-        checkReleaseBuilds = false
-        checkTestSources = true
-        explainIssues = true
-        htmlReport = true
-        xmlReport = true
-        lintConfig = project.rootProject
-          .isolated
-          .projectDirectory
-          .file("config/lint.xml")
-          .asFile
-      }
-
-      packaging {
-        resources.excludes.add("META-INF/*")
-      }
-
-      compileOptions {
-        isCoreLibraryDesugaringEnabled = true
       }
     }
 

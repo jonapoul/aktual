@@ -23,9 +23,7 @@ class ConventionKover : Plugin<Project> {
             androidGeneratedClasses()
 
             classes(
-              "*Activity*",
               "*Application*",
-              "*BuildConfig*",
               "*Preview*Kt*",
             )
 
@@ -35,8 +33,9 @@ class ConventionKover : Plugin<Project> {
             )
 
             annotatedBy(
-              "aktual.core.ui.SingleScreenPreview",
-              "aktual.core.ui.TripleScreenPreview",
+              "aktual.core.ui.DesktopPreview",
+              "aktual.core.ui.LandscapePreview",
+              "aktual.core.ui.PortraitPreview",
               "androidx.compose.runtime.Composable",
               "androidx.compose.ui.tooling.preview.Preview",
               "javax.annotation.processing.Generated",
@@ -45,6 +44,7 @@ class ConventionKover : Plugin<Project> {
             projects.addAll(
               ":aktual-codegen:ksp",
               ":aktual-core:ui",
+              ":aktual-l10n",
             )
           }
 
