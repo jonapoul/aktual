@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.settings.ui.items
 
 import aktual.core.model.ColorSchemeType
@@ -277,7 +273,9 @@ private fun PreviewThemePreferenceItem(
   var config by remember { mutableStateOf(input) }
   val schemeType = when (config.regular) {
     RegularColorSchemeType.System -> ColorSchemeType.Light
+
     RegularColorSchemeType.Light -> ColorSchemeType.Light
+
     RegularColorSchemeType.Dark -> when (config.dark) {
       DarkColorSchemeType.Dark -> ColorSchemeType.Dark
       DarkColorSchemeType.Midnight -> ColorSchemeType.Midnight

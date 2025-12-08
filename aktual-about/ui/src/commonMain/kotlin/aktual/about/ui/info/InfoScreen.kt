@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.about.ui.info
 
 import aktual.about.vm.AboutViewModel
@@ -28,8 +24,11 @@ fun InfoScreen(
   val checkUpdatesState by viewModel.checkUpdatesState.collectAsStateWithLifecycle()
   when (val state = checkUpdatesState) {
     CheckUpdatesState.Inactive -> noOp()
+
     CheckUpdatesState.Checking -> CheckUpdatesLoadingDialog(onCancel, theme = theme)
+
     CheckUpdatesState.NoUpdateFound -> NoUpdateFoundDialog(onCancel, theme = theme)
+
     is CheckUpdatesState.Failed -> UpdateCheckFailedDialog(state.cause, onCancel, theme = theme)
 
     is CheckUpdatesState.UpdateFound -> UpdateFoundDialog(

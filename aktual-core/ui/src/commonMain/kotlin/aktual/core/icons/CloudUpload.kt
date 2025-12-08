@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 @file:Suppress("BooleanLiteralArgument", "UnsafeCallOnNullableType", "UnusedReceiverParameter")
 
 package aktual.core.icons

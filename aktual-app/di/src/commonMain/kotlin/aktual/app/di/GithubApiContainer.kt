@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.app.di
 
 import aktual.api.builder.buildKtorClient

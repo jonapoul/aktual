@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.about.data
 
 import aktual.core.model.BuildConfig
@@ -37,11 +33,13 @@ class GithubRepository internal constructor(
 
       val latest = releases.maxByOrNull { it.publishedAt }
       return when {
-        releases.isEmpty() || latest == null ->
+        releases.isEmpty() || latest == null -> {
           LatestReleaseState.NoReleases
+        }
 
-        buildConfig.versionName == latest.clippedVersion() ->
+        buildConfig.versionName == latest.clippedVersion() -> {
           LatestReleaseState.NoNewUpdate
+        }
 
         else -> {
           if (latest.publishedAt > buildConfig.buildTime) {
@@ -67,7 +65,9 @@ class GithubRepository internal constructor(
       }
 
       is SerializationException, is JsonConvertException -> "Failed decoding JSON: $message"
+
       is IOException -> "IO failure: $message"
+
       else -> "Other error - ${javaClass.simpleName}: $message"
     }
     return LatestReleaseState.Failure(errorMessage)

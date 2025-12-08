@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.codegen
 
 import com.google.devtools.ksp.symbol.KSClassDeclaration

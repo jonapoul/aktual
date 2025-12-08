@@ -1,7 +1,3 @@
-/**
- * Copyright 2025 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.about.vm
 
 import aktual.about.data.LicensesLoadState
@@ -46,6 +42,7 @@ class LicensesViewModel internal constructor(
     val searchBarState by searchBarState.collectAsState()
     when (val searchState = searchBarState) {
       SearchBarState.Gone -> licensesState
+
       is SearchBarState.Visible -> when (val licenses = licensesState) {
         is LicensesState.Loaded -> licenses.filteredBy(searchState.text)
         else -> licenses

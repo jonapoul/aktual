@@ -36,11 +36,9 @@ plugins {
   alias(libs.plugins.atlas)
   alias(libs.plugins.doctor)
   alias(libs.plugins.kover)
-  alias(libs.plugins.spotless)
 
   alias(libs.plugins.convention.idea)
   alias(libs.plugins.convention.kover)
-  alias(libs.plugins.convention.spotless)
 }
 
 val detektReportMergeSarif by tasks.registering(ReportMergeTask::class) {

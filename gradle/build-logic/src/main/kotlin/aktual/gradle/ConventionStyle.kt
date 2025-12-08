@@ -9,7 +9,6 @@ class ConventionStyle : Plugin<Project> {
     with(pluginManager) {
       apply(ConventionDetekt::class)
       apply(ConventionLicensee::class)
-      apply(ConventionSpotless::class)
     }
   }
 }

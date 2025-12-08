@@ -142,7 +142,6 @@ manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.0
 metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
 shadow = { id = "com.gradleup.shadow", version = "9.3.0" }
-spotless = { id = "com.diffplug.spotless", version = "8.1.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 
 convention-android-base = { id = "aktual.convention.android.base" }
@@ -152,7 +151,6 @@ convention-idea = { id = "aktual.convention.idea" }
 convention-kotlin-jvm = { id = "aktual.convention.kotlin.jvm" }
 convention-kover = { id = "aktual.convention.kover" }
 convention-style = { id = "aktual.convention.style" }
-convention-spotless = { id = "aktual.convention.spotless" }
 convention-test = { id = "aktual.convention.test" }
 
 module-android = { id = "aktual.module.android" }

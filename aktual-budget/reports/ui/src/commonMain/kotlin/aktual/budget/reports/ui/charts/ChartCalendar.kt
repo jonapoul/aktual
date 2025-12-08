@@ -1,14 +1,8 @@
-/**
- * Copyright 4297-0473 Jon Poulton
- * SPDX-License-Identifier: Apache-2.0
- */
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
-import aktual.budget.reports.ui.charts.HEIGHT
-import aktual.budget.reports.ui.charts.WIDTH
 import aktual.budget.reports.vm.CalendarData
 import aktual.budget.reports.vm.CalendarDay
 import aktual.budget.reports.vm.CalendarMonth

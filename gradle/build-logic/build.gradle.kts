@@ -46,7 +46,6 @@ dependencies {
   compileOnlyPlugin(libs.plugins.ksp)
   compileOnlyPlugin(libs.plugins.licensee)
   compileOnlyPlugin(libs.plugins.metro)
-  compileOnlyPlugin(libs.plugins.spotless)
 
   implementation(libs.okio)
 }
@@ -73,7 +72,6 @@ gradlePlugin {
     "aktual.convention.kover"(impl = "aktual.gradle.ConventionKover")
     "aktual.convention.licensee"(impl = "aktual.gradle.ConventionLicensee")
     "aktual.convention.style"(impl = "aktual.gradle.ConventionStyle")
-    "aktual.convention.spotless"(impl = "aktual.gradle.ConventionSpotless")
     "aktual.convention.test"(impl = "aktual.gradle.ConventionTest")
 
     "aktual.module.android"(impl = "aktual.gradle.ModuleAndroid")
