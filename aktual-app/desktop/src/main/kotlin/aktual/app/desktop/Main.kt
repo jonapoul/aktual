@@ -11,7 +11,6 @@ import aktual.logging.LogbackLogger
 import aktual.logging.TimestampedPrintStreamLogger
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
@@ -26,7 +25,6 @@ import androidx.navigation.compose.rememberNavController
 import dev.zacsweers.metro.createGraph
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
-import dev.zacsweers.metrox.viewmodel.metroViewModel
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
