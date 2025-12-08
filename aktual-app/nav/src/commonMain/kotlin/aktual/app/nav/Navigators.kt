@@ -13,6 +13,7 @@ import aktual.budget.reports.ui.ReportsDashboardNavigator
 import aktual.budget.sync.ui.SyncBudgetNavigator
 import aktual.budget.transactions.ui.TransactionsNavigator
 import aktual.core.model.LoginToken
+import aktual.metrics.ui.MetricsNavigator
 import aktual.settings.ui.SettingsNavigator
 import androidx.navigation.NavHostController
 
@@ -22,6 +23,7 @@ fun InfoNavigator(nav: NavHostController): InfoNavigator = InfoNavigatorImpl(nav
 fun LicensesNavigator(nav: NavHostController): LicensesNavigator = LicensesNavigatorImpl(nav)
 fun ListBudgetsNavigator(nav: NavHostController): ListBudgetsNavigator = ListBudgetsNavigatorImpl(nav)
 fun LoginNavigator(nav: NavHostController): LoginNavigator = LoginNavigatorImpl(nav)
+fun MetricsNavigator(nav: NavHostController): MetricsNavigator = MetricsNavigatorImpl(nav)
 fun ReportsDashboardNavigator(nav: NavHostController): ReportsDashboardNavigator = ReportsDashboardNavigatorImpl(nav)
 fun ServerUrlNavigator(nav: NavHostController): ServerUrlNavigator = ServerUrlNavigatorImpl(nav)
 fun SettingsNavigator(nav: NavHostController): SettingsNavigator = SettingsNavigatorImpl(nav)
@@ -51,6 +53,10 @@ private class LoginNavigatorImpl(private val nav: NavHostController) : LoginNavi
   override fun toUrl() = nav.debugNav(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
   override fun toListBudgets(token: LoginToken) =
     nav.debugNav(ListBudgetsNavRoute(token)) { popUpTo(LoginNavRoute) { inclusive = true } }
+}
+
+private class MetricsNavigatorImpl(private val nav: NavHostController) : MetricsNavigator {
+  override fun back() = nav.popBackStack()
 }
 
 private class ServerUrlNavigatorImpl(private val nav: NavHostController) : ServerUrlNavigator {

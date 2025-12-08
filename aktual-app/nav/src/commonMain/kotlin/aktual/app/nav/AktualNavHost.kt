@@ -11,6 +11,7 @@ import aktual.budget.reports.ui.ReportsDashboardScreen
 import aktual.budget.sync.ui.SyncBudgetScreen
 import aktual.budget.transactions.ui.TransactionsScreen
 import aktual.core.model.LoginToken
+import aktual.metrics.ui.MetricsScreen
 import aktual.settings.ui.SettingsScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -39,6 +40,8 @@ fun AktualNavHost(
     composable<InfoNavRoute> { InfoScreen(InfoNavigator(nav)) }
 
     composable<LicensesNavRoute> { LicensesScreen(LicensesNavigator(nav)) }
+
+    composable<MetricsNavRoute> { MetricsScreen(MetricsNavigator(nav)) }
 
     composableWithArg<ListBudgetsNavRoute>(mapOf(LoginTokenType)) { route, _ ->
       ListBudgetsScreen(ListBudgetsNavigator(nav), route.token)
