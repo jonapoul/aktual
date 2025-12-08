@@ -57,6 +57,7 @@ dependencies {
   implementation(project(":aktual-app:nav"))
   implementation(project(":aktual-prefs"))
   implementation(compose.desktop.currentOs)
+  implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.jetbrains.material3)
   implementation(libs.jetbrains.viewmodel)
   implementation(libs.kotlinx.coroutines.swing)
