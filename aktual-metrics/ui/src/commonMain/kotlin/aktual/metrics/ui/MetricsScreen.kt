@@ -45,6 +45,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -58,6 +59,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
@@ -250,7 +252,7 @@ private fun SuccessContent(
     state = hazeState,
     padding = PaddingValues(25.dp),
   ) {
-    SuccessContentRow(title = Strings.metricsUptime, value = state.uptime.toString())
+    SuccessContentRow(title = Strings.metricsUptime, value = state.uptime.formattedString())
   }
 
   HazedBox(
@@ -275,6 +277,22 @@ private fun SuccessContent(
         SuccessContentRow(title = Strings.metricsMemoryArrayBuffers, value = arrayBuffers.toString())
       }
     }
+  }
+}
+
+@Stable
+@Suppress("MagicNumber")
+private fun Duration.formattedString(): String {
+  val d = inWholeDays
+  val h = inWholeHours % 24
+  val m = inWholeMinutes % 60
+  val s = inWholeSeconds % 60
+  return when {
+    d >= 1 -> "${d}d ${h}h ${m}m ${s}s"
+    h >= 1 -> "${h}h ${m}m ${s}s"
+    m >= 1 -> "${m}m ${s}s"
+    s >= 1 -> "${s}s"
+    else -> "0s"
   }
 }
 

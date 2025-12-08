@@ -6,6 +6,7 @@ import aktual.budget.list.ui.ListBudgetsAction.Delete
 import aktual.budget.list.ui.ListBudgetsAction.Open
 import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
 import aktual.budget.list.ui.ListBudgetsAction.OpenInBrowser
+import aktual.budget.list.ui.ListBudgetsAction.OpenServerMetrics
 import aktual.budget.list.ui.ListBudgetsAction.OpenSettings
 import aktual.budget.list.ui.ListBudgetsAction.Reload
 import aktual.budget.list.vm.ListBudgetsState
@@ -103,6 +104,7 @@ fun ListBudgetsScreen(
         ChangePassword -> nav.toChangePassword()
         OpenAbout -> nav.toAbout()
         OpenSettings -> nav.toSettings()
+        OpenServerMetrics -> nav.toMetrics()
         OpenInBrowser -> viewModel.open(serverUrl)
         Reload -> viewModel.retry()
         is Delete -> budgetToDelete = action.budget

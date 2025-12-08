@@ -43,6 +43,7 @@ private class InfoNavigatorImpl(private val nav: NavHostController) : InfoNaviga
 private class ListBudgetsNavigatorImpl(private val nav: NavHostController) : ListBudgetsNavigator {
   override fun toAbout() = nav.debugNav(InfoNavRoute)
   override fun toChangePassword() = nav.debugNav(ChangePasswordNavRoute)
+  override fun toMetrics() = nav.debugNav(MetricsNavRoute)
   override fun toSettings() = nav.debugNav(SettingsNavRoute)
   override fun toSyncBudget(token: LoginToken, id: BudgetId) = nav.debugNav(SyncBudgetsNavRoute(token, id))
   override fun toUrl() = nav.debugNav(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
