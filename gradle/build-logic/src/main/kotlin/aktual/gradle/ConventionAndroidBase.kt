@@ -62,8 +62,8 @@ class ConventionAndroidBase : Plugin<Project> {
       // disable instrumented tests if the relevant folder doesn't exist
       beforeVariants { variant ->
         if (variant is HasAndroidTestBuilder) {
-          val testDirExists = projectDir.resolve("src/androidDeviceTest").exists() // AGP-KMP
-            || projectDir.resolve("src/androidTest").exists() // Regular AGP
+          val testDirExists = projectDir.resolve("src/androidDeviceTest").exists() || // AGP-KMP
+            projectDir.resolve("src/androidTest").exists() // Regular AGP
           variant.enableAndroidTest = variant.enableAndroidTest && testDirExists
         }
       }

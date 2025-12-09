@@ -2,8 +2,8 @@
 
 package aktual.gradle
 
-import androidMainDependencies
 import androidHostTestDependencies
+import androidMainDependencies
 import commonMainDependencies
 import commonTestDependencies
 import jvmMainDependencies
