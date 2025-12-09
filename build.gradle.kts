@@ -13,6 +13,7 @@ import dev.detekt.gradle.report.ReportMergeTask
 
 plugins {
   alias(libs.plugins.agp.app) apply false
+  alias(libs.plugins.agp.kmp) apply false
   alias(libs.plugins.agp.lib) apply false
   alias(libs.plugins.androidCacheFix) apply false
   alias(libs.plugins.buildconfig) apply false
@@ -20,7 +21,6 @@ plugins {
   alias(libs.plugins.catalog) apply false
   alias(libs.plugins.compose) apply false
   alias(libs.plugins.detekt) apply false
-  alias(libs.plugins.kotlin.android) apply false
   alias(libs.plugins.kotlin.compose) apply false
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.kotlin.multiplatform) apply false

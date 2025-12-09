@@ -37,7 +37,6 @@ dependencies {
   compileOnlyPlugin(libs.plugins.burst)
   compileOnlyPlugin(libs.plugins.compose)
   compileOnlyPlugin(libs.plugins.detekt)
-  compileOnlyPlugin(libs.plugins.kotlin.android)
   compileOnlyPlugin(libs.plugins.kotlin.compose)
   compileOnlyPlugin(libs.plugins.kotlin.jvm)
   compileOnlyPlugin(libs.plugins.kotlin.multiplatform)

@@ -2,8 +2,8 @@
 
 package aktual.gradle
 
+import androidHostTestDependencies
 import androidMainDependencies
-import androidUnitTestDependencies
 import commonMainDependencies
 import commonTestDependencies
 import jvmMainDependencies
@@ -49,7 +49,7 @@ class ModuleCompose : Plugin<Project> {
         implementation(libs["androidx.poolingcontainer"])
       }
 
-      androidUnitTestDependencies {
+      androidHostTestDependencies {
         implementation(project(":aktual-test:android"))
         implementation(libs["test.androidx.compose.ui.junit4"])
       }
@@ -60,7 +60,8 @@ class ModuleCompose : Plugin<Project> {
     }
 
     dependencies {
-      "debugImplementation"(libs["jetbrains.uiTooling"])
+      // This workaround is only available in Android Gradle plugin version 9.0.0-beta01 and higher.
+      "androidRuntimeClasspath"(libs["jetbrains.uiTooling"])
     }
   }
 }

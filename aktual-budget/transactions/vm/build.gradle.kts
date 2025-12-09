@@ -13,7 +13,7 @@ kotlin {
     implementation(project(":aktual-prefs"))
   }
 
-  androidUnitTestDependencies {
+  androidHostTestDependencies {
     implementation(libs.sqldelight.driver.android)
     implementation(project(":aktual-app:di"))
   }

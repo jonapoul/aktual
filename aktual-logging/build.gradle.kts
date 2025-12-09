@@ -14,7 +14,7 @@ kotlin {
     compileOnly(libs.logback.classic)
   }
 
-  androidUnitTestDependencies {
+  androidHostTestDependencies {
     implementation(libs.logback.classic)
   }
 

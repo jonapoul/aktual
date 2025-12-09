@@ -8,14 +8,14 @@ plugins {
 
 sqldelight {
   databases {
-    create("BudgetDatabase") {
+    register("BudgetDatabase") {
       packageName = "aktual.budget.db"
       schemaOutputDirectory = file("src/commonMain/sqldelight/schemas")
       verifyMigrations = true
       verifyDefinitions = true
       generateAsync = true
       dialect(libs.sqldelight.dialect)
-      module(libs.sqldelight.json.get())
+      module(libs.sqldelight.json)
     }
   }
 }

@@ -5,11 +5,9 @@ import aktual.gradle.getOptional
 import aktual.gradle.gitVersionCode
 import aktual.gradle.gitVersionName
 import aktual.gradle.intProperty
-import aktual.gradle.jvmTarget
 import aktual.gradle.localProperties
 
 plugins {
-  alias(libs.plugins.kotlin.android)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.agp.app)
   alias(libs.plugins.manifestLock)
@@ -18,12 +16,6 @@ plugins {
   alias(libs.plugins.convention.kotlin.jvm)
   alias(libs.plugins.convention.style)
   alias(libs.plugins.convention.test)
-}
-
-kotlin {
-  compilerOptions {
-    jvmTarget = jvmTarget()
-  }
 }
 
 android {

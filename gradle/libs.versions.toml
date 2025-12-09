@@ -1,5 +1,5 @@
 [versions]
-agp = "8.13.1"
+agp = "9.0.0-beta04"
 alakazam = "6.4.0"
 androidx-activity = "1.12.1"
 androidx-lifecycle = "2.10.0"
@@ -121,6 +121,7 @@ test-turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
+agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
 atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.3.0" }
@@ -130,12 +131,11 @@ catalog = { id = "dev.jonpoulton.catalog", version = "0.5.0" }
 compose = { id = "org.jetbrains.compose", version.ref = "composeJetbrains" }
 detekt = { id = "dev.detekt", version = "2.0.0-alpha.1" }
 doctor = { id = "com.osacky.doctor", version = "0.12.1" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.3" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.4" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 licensee = { id = "app.cash.licensee", version = "1.14.1" }
 manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.0" }
