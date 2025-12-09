@@ -63,7 +63,10 @@ data class DbMetadata(
   )
 
   @Suppress("UNCHECKED_CAST")
-  operator fun <T : Any> get(key: Key<T>): T? = data[key] as? T
+  operator fun <T : Any> get(key: Key<T>): T? {
+    val datum = data[key] ?: return null
+    return requireNotNull(data[key] as? T) { "The value for metadata key $key is the wrong type: $datum" }
+  }
 
   operator fun <T : Any> set(key: Key<T>, value: T?): DbMetadata = DbMetadata(
     if (value == null) data.remove(key) else data.put(key, value),

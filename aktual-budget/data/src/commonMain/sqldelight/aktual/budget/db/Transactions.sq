@@ -133,10 +133,10 @@ SELECT *
 
 -- packages/loot-core/src/server/accounts/app.ts closeAccount()
 getIdsByAccount:
-SELECT id, date FROM v_transactions WHERE account = ? ORDER BY sort_order;
+SELECT id FROM v_transactions WHERE account = ? ORDER BY date DESC;
 
 getIds:
-SELECT id, date FROM v_transactions ORDER BY sort_order;
+SELECT id FROM v_transactions ORDER BY date DESC;
 
 getById:
 SELECT
@@ -147,8 +147,8 @@ SELECT
   vt.notes,
   c.name AS categoryName,
   vt.amount
-  FROM v_transactions AS vt
-  JOIN categories AS c ON vt.category = c.id
-  JOIN accounts AS a ON vt.account = a.id
-  JOIN payees AS p ON vt.payee = p.id
+  FROM v_transactions_internal_alive AS vt
+  LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
+  LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+  LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
   WHERE vt.id = ?;

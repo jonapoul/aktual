@@ -6,9 +6,9 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-internal val LocalTableDimens = compositionLocalOf { TableSpacings() }
+internal val LocalTableDimens = compositionLocalOf { TransactionSpacings() }
 
-internal data class TableSpacings(
+internal data class TransactionSpacings(
   val interColumn: Dp = 5.dp,
   val rowVertical: Dp = 3.dp,
   val rowHorizontal: Dp = 3.dp,

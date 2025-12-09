@@ -1,8 +1,6 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.GetIds
-import aktual.budget.db.GetIdsByAccount
 import aktual.budget.db.transactions.GetById
 import aktual.budget.model.AccountId
 import aktual.budget.model.TransactionId
@@ -25,13 +23,13 @@ class TransactionsDao(
     .mapToOneOrNull(contexts.default)
     .distinctUntilChanged()
 
-  fun observeIds(): Flow<List<GetIds>> = queries
+  fun observeAllIds(): Flow<List<TransactionId>> = queries
     .getIds()
     .asFlow()
     .mapToList(contexts.default)
     .distinctUntilChanged()
 
-  fun observeIdsByAccount(account: AccountId): Flow<List<GetIdsByAccount>> = queries
+  fun observeIdsByAccount(account: AccountId): Flow<List<TransactionId>> = queries
     .getIdsByAccount(account)
     .asFlow()
     .mapToList(contexts.default)

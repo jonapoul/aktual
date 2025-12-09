@@ -58,26 +58,26 @@ class Decrypter(
     source: Source,
     sink: Sink,
     result: () -> DecryptResult.Success,
-  ): DecryptResult {
+  ): DecryptResult = try {
     val key = keys[meta.keyId] ?: return DecryptResult.MissingKey
-
-    return try {
-      withContext(contexts.io) {
-        source.decryptToSink(
-          key = key.decode(),
-          iv = meta.iv.decode(),
-          authTag = meta.authTag.decode(),
-          algorithm = meta.algorithm,
-          sink = sink,
-        )
-      }
-      result()
-    } catch (e: UnknownAlgorithmException) {
-      DecryptResult.UnknownAlgorithm(e.algorithm)
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      DecryptResult.OtherFailure(e.requireMessage())
+    withContext(contexts.io) {
+      source.decryptToSink(
+        key = key.decode(),
+        iv = meta.iv.decode(),
+        authTag = meta.authTag.decode(),
+        algorithm = meta.algorithm,
+        sink = sink,
+      )
     }
+    result()
+  } catch (e: UnknownAlgorithmException) {
+    DecryptResult.UnknownAlgorithm(e.algorithm)
+  } catch (e: CancellationException) {
+    throw e
+  } catch (e: Exception) {
+    DecryptResult.OtherFailure(e.requireMessage())
+  } finally {
+    runCatching { source.close() }
+    runCatching { sink.close() }
   }
 }

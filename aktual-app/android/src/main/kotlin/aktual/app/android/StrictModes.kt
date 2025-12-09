@@ -35,7 +35,7 @@ internal fun vmPolicy() = StrictMode.VmPolicy
   .detectLeakedRegistrationObjects()
   .detectLeakedSqlLiteObjects()
   // .detectNonSdkApiUsage() // blocks usage of layout inspector
-  .ifVersionAtLeast(S) { detectUnsafeIntentLaunch() }
+  // .ifVersionAtLeast(S) { detectUnsafeIntentLaunch() } // blocks bitwarden - too much faff
   // .detectUntaggedSockets() // need to add manual tags to all network requests - too much faff
   .penaltyLog()
   .penaltyDeath()

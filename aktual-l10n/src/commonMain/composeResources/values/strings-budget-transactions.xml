@@ -8,10 +8,12 @@
   <string name="transactions_header_notes">Notes</string>
   <string name="transactions_header_category">Category</string>
   <string name="transactions_header_amount">Amount</string>
+  <string name="transactions_header_privacy_on">Enable privacy mode</string>
+  <string name="transactions_header_privacy_off">Disable privacy mode</string>
   <string name="transactions_sort_asc">Ascending</string>
   <string name="transactions_sort_desc">Descending</string>
   <string name="transactions_title_all">All Accounts</string>
   <string name="transactions_title_loading">Loading…</string>
   <string name="transactions_title_none">&lt;No title&gt;</string>
-  <string name="transactions_item_empty">&lt;Empty&gt;</string>
+  <string name="transactions_item_not_found">Transaction not found with ID %1$s</string>
 </resources>
