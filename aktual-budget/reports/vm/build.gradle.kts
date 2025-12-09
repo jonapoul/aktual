@@ -14,7 +14,7 @@ kotlin {
     implementation(libs.sqldelight.coroutines)
   }
 
-  androidUnitTestDependencies {
+  androidHostTestDependencies {
     implementation(libs.sqldelight.driver.android)
     implementation(project(":aktual-app:di"))
   }

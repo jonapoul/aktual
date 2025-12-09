@@ -22,13 +22,11 @@ compose.resources {
   publicResClass = true
 }
 
-android {
-  androidResources {
-    enable = true
-  }
-}
-
 kotlin {
+  android {
+    androidResources.enable = true
+  }
+
   commonMainDependencies {
     api(libs.jetbrains.resources)
     api(libs.jetbrains.runtime)
