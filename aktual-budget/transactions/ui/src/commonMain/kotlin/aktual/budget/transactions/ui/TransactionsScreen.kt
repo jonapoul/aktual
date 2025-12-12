@@ -2,22 +2,14 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.BudgetId
-import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsFormat
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount
-import aktual.budget.transactions.vm.Transaction
+import aktual.budget.transactions.vm.PagingDataSource
 import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.budget.transactions.vm.TransactionsViewModel
-import aktual.core.model.ColorSchemeType
 import aktual.core.model.LoginToken
-import aktual.core.ui.ColorSchemeParameters
-import aktual.core.ui.DesktopPreview
-import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
-import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -25,11 +17,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun TransactionsScreen(
@@ -39,12 +28,11 @@ fun TransactionsScreen(
   spec: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
   viewModel: TransactionsViewModel = metroViewModel(token, budgetId, spec),
 ) {
-  val transactionIds by viewModel.transactionIds.collectAsStateWithLifecycle()
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
   val format by viewModel.format.collectAsStateWithLifecycle()
 
   TransactionsScaffold(
-    transactionIds = transactionIds,
+    pagingSource = viewModel,
     loadedAccount = loadedAccount,
     format = format,
     source = viewModel,
@@ -69,7 +57,7 @@ private fun metroViewModel(
 
 @Composable
 internal fun TransactionsScaffold(
-  transactionIds: ImmutableList<TransactionId>,
+  pagingSource: PagingDataSource,
   loadedAccount: LoadedAccount,
   format: TransactionsFormat,
   source: TransactionStateSource,
@@ -84,7 +72,7 @@ internal fun TransactionsScaffold(
 
       Transactions(
         modifier = Modifier.padding(innerPadding),
-        transactionIds = transactionIds,
+        pagingSource = pagingSource,
         format = format,
         source = source,
         onAction = onAction,
@@ -95,24 +83,25 @@ internal fun TransactionsScaffold(
 }
 
 
-@Composable
-@PortraitPreview
-@LandscapePreview
-@TabletPreview
-private fun PreviewTransactionsScaffold(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  TransactionsScaffold(
-    transactionIds = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)
-      .map(Transaction::id)
-      .toImmutableList(),
-    loadedAccount = LoadedAccount.AllAccounts,
-    format = TransactionsFormat.Table,
-    source = previewTransactionStateSource(
-      TRANSACTION_1 to false,
-      TRANSACTION_2 to true,
-      TRANSACTION_3 to false,
-    ),
-    onAction = {},
-  )
-}
+// TODO: Update preview to use LazyPagingItems
+// @Composable
+// @PortraitPreview
+// @LandscapePreview
+// @TabletPreview
+// private fun PreviewTransactionsScaffold(
+//   @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+// ) = PreviewWithColorScheme(type) {
+//   TransactionsScaffold(
+//     transactionIds = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)
+//       .map(Transaction::id)
+//       .toImmutableList(),
+//     loadedAccount = LoadedAccount.AllAccounts,
+//     format = TransactionsFormat.Table,
+//     source = previewTransactionStateSource(
+//       TRANSACTION_1 to false,
+//       TRANSACTION_2 to true,
+//       TRANSACTION_3 to false,
+//     ),
+//     onAction = {},
+//   )
+// }

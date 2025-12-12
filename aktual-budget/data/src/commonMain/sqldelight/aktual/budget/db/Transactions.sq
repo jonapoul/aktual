@@ -152,3 +152,21 @@ SELECT
   LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
   LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
   WHERE vt.id = ?;
+
+-- Paginated queries for Paging 3
+getIdsPaged:
+SELECT id FROM v_transactions
+ORDER BY date DESC
+LIMIT :limit OFFSET :offset;
+
+getIdsByAccountPaged:
+SELECT id FROM v_transactions
+WHERE account = :account
+ORDER BY date DESC
+LIMIT :limit OFFSET :offset;
+
+getIdsCount:
+SELECT COUNT(*) FROM v_transactions;
+
+getIdsByAccountCount:
+SELECT COUNT(*) FROM v_transactions WHERE account = :account;

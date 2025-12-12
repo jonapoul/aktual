@@ -21,6 +21,11 @@ import aktual.core.model.LoginToken
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.PagingSource
+import androidx.paging.cachedIn
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -28,10 +33,7 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
@@ -51,7 +53,7 @@ class TransactionsViewModel(
   @Assisted private val spec: TransactionsSpec,
   budgetGraphs: BudgetGraphHolder,
   contexts: CoroutineContexts,
-) : ViewModel(), TransactionStateSource {
+) : ViewModel(), TransactionStateSource, PagingDataSource {
 
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey(Factory::class)
@@ -82,9 +84,10 @@ class TransactionsViewModel(
     .map { meta -> meta[TransactionFormatKey] ?: TransactionsFormat.Default }
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsFormat.Default)
 
-  val transactionIds: StateFlow<ImmutableList<TransactionId>> = transactionIdsFlow()
-    .map { it.toImmutableList() }
-    .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
+  override val pagingData: Flow<PagingData<TransactionId>> = Pager(
+    config = PagingConfig(pageSize = 50, enablePlaceholders = false),
+    pagingSourceFactory = ::buildPagingSource,
+  ).flow.cachedIn(viewModelScope)
 
   init {
     budgetGraph.throwIfWrongBudget(budgetId)
@@ -120,11 +123,6 @@ class TransactionsViewModel(
     .distinctUntilChanged()
     .map { toTransactionState(it, id) }
 
-  private fun transactionIdsFlow(): Flow<List<TransactionId>> = when (val spec = spec.accountSpec) {
-    AccountSpec.AllAccounts -> transactionsDao.observeAllIds()
-    is AccountSpec.SpecificAccount -> transactionsDao.observeIdsByAccount(spec.id)
-  }
-
   private fun toTransactionState(data: GetById?, id: TransactionId): TransactionState {
     if (data == null) return TransactionState.DoesntExist(id)
     val transaction = with(data) {
@@ -139,6 +137,14 @@ class TransactionsViewModel(
       )
     }
     return TransactionState.Loaded(transaction)
+  }
+
+  private fun buildPagingSource(): PagingSource<Int, TransactionId> {
+    val accountId = when (val spec = spec.accountSpec) {
+      AccountSpec.AllAccounts -> null
+      is AccountSpec.SpecificAccount -> spec.id
+    }
+    return TransactionsPagingSource(transactionsDao, accountId)
   }
 
   private companion object {

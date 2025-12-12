@@ -7,6 +7,7 @@ kotlin {
     api(project(":aktual-budget:data"))
     api(project(":aktual-budget:model"))
     api(libs.alakazam.kotlin.core)
+    api(libs.androidx.paging.common)
     api(libs.kotlinx.datetime)
     implementation(project(":aktual-core:di"))
     implementation(project(":aktual-core:model"))

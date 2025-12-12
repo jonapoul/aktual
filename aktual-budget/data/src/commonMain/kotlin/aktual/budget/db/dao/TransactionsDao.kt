@@ -6,7 +6,6 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.TransactionId
 import alakazam.kotlin.core.CoroutineContexts
 import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -23,15 +22,11 @@ class TransactionsDao(
     .mapToOneOrNull(contexts.default)
     .distinctUntilChanged()
 
-  fun observeAllIds(): Flow<List<TransactionId>> = queries
-    .getIds()
-    .asFlow()
-    .mapToList(contexts.default)
-    .distinctUntilChanged()
+  fun getIdsPaged(limit: Long, offset: Long): List<TransactionId> = queries
+    .getIdsPaged(limit, offset)
+    .executeAsList()
 
-  fun observeIdsByAccount(account: AccountId): Flow<List<TransactionId>> = queries
-    .getIdsByAccount(account)
-    .asFlow()
-    .mapToList(contexts.default)
-    .distinctUntilChanged()
+  fun getIdsByAccountPaged(account: AccountId, limit: Long, offset: Long): List<TransactionId> = queries
+    .getIdsByAccountPaged(account, limit, offset)
+    .executeAsList()
 }
