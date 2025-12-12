@@ -17,12 +17,7 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
+import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -42,21 +37,22 @@ import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.ShimmerBounds
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
+import com.valentinilk.shimmer.unclippedBoundsInWindow
 
 @Composable
 internal fun TransactionItem(
@@ -90,72 +86,169 @@ private fun TransactionItem(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = when (state) {
-  is TransactionState.Loading -> LoadingTransactionItem(modifier, theme)
+  is TransactionState.Loading -> LoadingTransactionItem(format, modifier, theme)
   is TransactionState.Loaded -> LoadedTransactionItem(state.transaction, format, source, onAction, modifier, theme)
   is TransactionState.DoesntExist -> FailedTransactionItem(state.id, modifier, theme)
 }
 
+private val ShimmerShape = RoundedCornerShape(4.dp)
+private val ShimmerRowHeight = 16.dp
+
 @Composable
 private fun LoadingTransactionItem(
+  format: TransactionsFormat,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   val dimens = LocalTableDimens.current
+  val shimmer = rememberShimmer(ShimmerBounds.Custom)
+
   Row(
     modifier = modifier
       .fillMaxWidth()
       .height(LocalMinimumInteractiveComponentSize.current)
       .background(theme.tableBackground)
-      .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
+      .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal)
+      .shimmer(shimmer)
+      .onGloballyPositioned { layoutCoordinates ->
+        val position = layoutCoordinates.unclippedBoundsInWindow()
+        shimmer.updateBounds(position)
+      },
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    // Checkbox placeholder
-    Box(
-      modifier = Modifier
-        .minimumInteractiveComponentSize()
-        .shimmer(theme),
-    )
-
-    HorizontalSpacer(dimens.interColumn)
-
-    // Main content placeholder
-    Column(
-      modifier = Modifier.weight(1f),
-    ) {
-      Box(
-        modifier = Modifier
-          .fillMaxWidth(0.6f)
-          .height(16.dp)
-          .shimmer(theme),
-      )
-      Spacer(modifier = Modifier.height(4.dp))
-      Box(
-        modifier = Modifier
-          .fillMaxWidth(0.8f)
-          .height(16.dp)
-          .shimmer(theme),
-      )
+    when (format) {
+      List -> LoadingTransactionListItem(dimens, theme)
+      Table -> LoadingTransactionTableItem(dimens, theme)
     }
+  }
+}
 
-    HorizontalSpacer(dimens.interColumn)
+@Composable
+@Suppress("MagicNumber")
+private fun RowScope.LoadingTransactionListItem(
+  dimens: TransactionSpacings,
+  theme: Theme,
+) {
+  // Checkbox placeholder
+  Box(
+    modifier = Modifier.minimumInteractiveComponentSize(),
+  )
 
-    // Amount placeholder
+  HorizontalSpacer(dimens.interColumn)
+
+  // Main content placeholder
+  Column(
+    modifier = Modifier.weight(1f),
+  ) {
     Box(
       modifier = Modifier
-        .width(80.dp)
-        .height(16.dp)
-        .shimmer(theme),
+        .fillMaxWidth(0.6f)
+        .height(ShimmerRowHeight)
+        .background(theme.tableText, ShimmerShape),
     )
 
-    HorizontalSpacer(dimens.interColumn)
+    VerticalSpacer(4.dp)
 
-    // Menu button placeholder
     Box(
       modifier = Modifier
-        .minimumInteractiveComponentSize()
-        .shimmer(theme),
+        .fillMaxWidth(0.8f)
+        .height(ShimmerRowHeight)
+        .background(theme.tableText, ShimmerShape),
     )
   }
+
+  HorizontalSpacer(dimens.interColumn)
+
+  // Amount placeholder
+  Box(
+    modifier = Modifier
+      .width(80.dp)
+      .height(ShimmerRowHeight)
+      .background(theme.tableText, ShimmerShape),
+  )
+
+  HorizontalSpacer(dimens.interColumn)
+
+  // Menu button placeholder
+  Box(
+    modifier = Modifier.minimumInteractiveComponentSize(),
+  )
+}
+
+@Stable
+@Suppress("MagicNumber")
+private val TransactionSpacings.loadingInterColumn: Dp get() = interColumn * 10
+
+@Composable
+private fun RowScope.LoadingTransactionTableItem(
+  dimens: TransactionSpacings,
+  theme: Theme,
+) {
+  // Checkbox placeholder
+  Box(
+    modifier = Modifier.minimumInteractiveComponentSize(),
+  )
+
+  HorizontalSpacer(dimens.loadingInterColumn)
+
+  Box(
+    modifier = Modifier
+      .weight(1f)
+      .height(ShimmerRowHeight)
+      .background(theme.tableText, ShimmerShape),
+  )
+
+  HorizontalSpacer(dimens.loadingInterColumn)
+
+  Box(
+    modifier = Modifier
+      .weight(1f)
+      .height(ShimmerRowHeight)
+      .background(theme.tableText, ShimmerShape),
+  )
+
+  HorizontalSpacer(dimens.loadingInterColumn)
+
+  Box(
+    modifier = Modifier
+      .weight(1f)
+      .height(ShimmerRowHeight)
+      .background(theme.tableText, ShimmerShape),
+  )
+
+  HorizontalSpacer(dimens.loadingInterColumn)
+
+  Box(
+    modifier = Modifier
+      .weight(1f)
+      .height(ShimmerRowHeight)
+      .background(theme.tableText, ShimmerShape),
+  )
+
+  HorizontalSpacer(dimens.loadingInterColumn)
+
+  Box(
+    modifier = Modifier
+      .weight(1f)
+      .height(ShimmerRowHeight)
+      .background(theme.tableText, ShimmerShape),
+  )
+
+  HorizontalSpacer(dimens.loadingInterColumn)
+
+  Box(
+    modifier = Modifier
+      .weight(1f)
+      .height(ShimmerRowHeight)
+      .background(theme.tableText, ShimmerShape),
+  )
+
+  HorizontalSpacer(dimens.loadingInterColumn)
+
+  // Menu button placeholder
+  Box(
+    modifier = Modifier.minimumInteractiveComponentSize(),
+  )
 }
 
 @Composable
@@ -175,53 +268,21 @@ private fun FailedTransactionItem(
   ) {
     // Checkbox placeholder
     Box(
-      modifier = Modifier
-        .minimumInteractiveComponentSize()
-        .shimmer(theme),
+      modifier = Modifier.minimumInteractiveComponentSize(),
     )
 
     Text(
       modifier = Modifier.weight(1f),
       text = Strings.transactionsItemNotFound(id.toString()),
       color = theme.errorText,
-      fontWeight = FontWeight.Bold,
       maxLines = 3,
     )
 
     // Button placeholder
     Box(
-      modifier = Modifier
-        .minimumInteractiveComponentSize()
-        .shimmer(theme),
+      modifier = Modifier.minimumInteractiveComponentSize(),
     )
   }
-}
-
-private fun Modifier.shimmer(theme: Theme): Modifier = composed {
-  val transition = rememberInfiniteTransition(label = "shimmer")
-  val translateAnim by transition.animateFloat(
-    initialValue = 0f,
-    targetValue = 1000f,
-    animationSpec = infiniteRepeatable(
-      animation = tween(durationMillis = 1200, easing = LinearEasing),
-      repeatMode = RepeatMode.Restart,
-    ),
-    label = "shimmer-translate",
-  )
-
-  val shimmerColors = listOf(
-    theme.tableText.copy(alpha = 0.1f),
-    theme.tableText.copy(alpha = 0.2f),
-    theme.tableText.copy(alpha = 0.1f),
-  )
-
-  val brush = Brush.linearGradient(
-    colors = shimmerColors,
-    start = Offset(translateAnim, translateAnim),
-    end = Offset(translateAnim + 200f, translateAnim + 200f),
-  )
-
-  background(brush = brush, shape = RoundedCornerShape(4.dp))
 }
 
 @Composable
@@ -283,7 +344,7 @@ private fun RowScope.TransactionListItem(
     modifier = Modifier.weight(1f),
   ) {
     Text(
-      text = transaction.account.orEmptyString(),
+      text = transaction.account.orEmpty(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
@@ -292,7 +353,7 @@ private fun RowScope.TransactionListItem(
     )
 
     Text(
-      text = transaction.payee.orEmptyString(),
+      text = transaction.payee.orEmpty(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
@@ -310,7 +371,7 @@ private fun RowScope.TransactionListItem(
     )
 
     Text(
-      text = transaction.category.orEmptyString(),
+      text = transaction.category.orEmpty(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
@@ -357,7 +418,7 @@ private fun RowScope.TransactionTableItem(
 
   Text(
     modifier = Modifier.weight(1f),
-    text = transaction.date.toString().orEmptyString(),
+    text = transaction.date.toString(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.Start,
@@ -369,7 +430,7 @@ private fun RowScope.TransactionTableItem(
 
   Text(
     modifier = Modifier.weight(1f),
-    text = transaction.account.orEmptyString(),
+    text = transaction.account.orEmpty(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.Start,
@@ -381,7 +442,7 @@ private fun RowScope.TransactionTableItem(
 
   Text(
     modifier = Modifier.weight(1f),
-    text = transaction.payee.orEmptyString(),
+    text = transaction.payee.orEmpty(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.Start,
@@ -405,7 +466,7 @@ private fun RowScope.TransactionTableItem(
 
   Text(
     modifier = Modifier.weight(1f),
-    text = transaction.category.orEmptyString(),
+    text = transaction.category.orEmpty(),
     overflow = TextOverflow.Ellipsis,
     maxLines = 1,
     textAlign = TextAlign.Start,
@@ -434,11 +495,6 @@ private fun RowScope.TransactionTableItem(
     onClick = {},
   )
 }
-
-@Stable
-@Composable
-@ReadOnlyComposable
-private fun String?.orEmptyString() = this ?: ""
 
 @Preview
 @Composable

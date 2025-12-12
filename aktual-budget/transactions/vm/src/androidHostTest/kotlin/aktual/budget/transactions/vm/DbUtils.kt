@@ -29,6 +29,9 @@ internal val METADATA = DbMetadata(data = persistentMapOf(DbMetadata.CloudFileId
 internal val ID_A = TransactionId("a")
 internal val ID_B = TransactionId("b")
 internal val ID_C = TransactionId("c")
+internal val ID_D = TransactionId("d")
+internal val ID_E = TransactionId("e")
+internal val ID_F = TransactionId("f")
 
 internal val TRANSACTION_A = Transaction(ID_A, DATE_1, "Amex", "Argos", null, "Additional", Amount(123.45))
 internal val TRANSACTION_B = Transaction(ID_B, DATE_2, "Barclays", "B&Q", null, "Building", Amount(123.45))

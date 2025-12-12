@@ -2,29 +2,33 @@ package aktual.budget.transactions.vm
 
 import aktual.app.di.CoroutineContainer
 import aktual.app.di.GithubApiContainer
+import aktual.budget.db.dao.TransactionsDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.AccountSpec.AllAccounts
 import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
 import aktual.core.di.AppGraph
 import aktual.core.di.BudgetGraph
 import aktual.core.di.BudgetGraphHolder
-import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
 import android.content.Context
+import androidx.paging.PagingSource
 import androidx.test.core.app.ApplicationProvider
-import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.isEmpty
+import assertk.assertions.isEqualTo
+import assertk.assertions.isInstanceOf
+import assertk.assertions.isNull
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
@@ -40,6 +44,7 @@ class TransactionsViewModelTest {
   // real
   private lateinit var viewModel: TransactionsViewModel
   private lateinit var budgetGraph: BudgetGraph
+  private lateinit var contexts: CoroutineContexts
 
   // fake
   private lateinit var appGraph: TestAppGraph
@@ -52,9 +57,10 @@ class TransactionsViewModelTest {
   private suspend fun TestScope.buildViewModel(spec: AccountSpec) {
     val context = ApplicationProvider.getApplicationContext<Context>()
 
+    contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
     appGraph = createGraphFactory<TestAppGraph.Factory>().create(
       scope = this,
-      contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
+      contexts = contexts,
       context = context,
     )
 
@@ -82,147 +88,185 @@ class TransactionsViewModelTest {
       .create(TOKEN, BUDGET_ID, TransactionsSpec(spec))
   }
 
-  // TODO: Update tests to work with Paging 3
-  // These tests reference the old `transactions` StateFlow which has been replaced with `transactionsPager` Flow<PagingData>
-  // Testing PagingData requires a different approach - consider using PagingSource.load() directly or AsyncPagingDataDiffer
+  @Test
+  fun `Empty transaction list from all accounts`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
+    val pagingSource = TransactionsPagingSource(transactionsDao, accountId = null)
 
-  // @Test
-  // fun `Empty transaction list from all accounts`() = runTest {
-  //   // given
-  //   buildViewModel(AllAccounts)
-  //
-  //   // when
-  //   viewModel.transactions.test {
-  //     // then
-  //     assertThat(awaitItem()).isEmpty()
-  //     advanceUntilIdle()
-  //     expectNoEvents()
-  //     cancel()
-  //   }
-  // }
-  //
-  // @Test
-  // fun `Transactions from all accounts grouped in one date`() = runTest {
-  //   // given
-  //   buildViewModel(AllAccounts)
-  //   with(budgetGraph.database) {
-  //     insertTransaction(id = "a", account = "a", category = "a", payee = "a")
-  //     insertTransaction(id = "b", account = "b", category = "b", payee = "b")
-  //     insertTransaction(id = "c", account = "c", category = "c", payee = "c")
-  //   }
-  //   advanceUntilIdle()
-  //
-  //   // when
-  //   viewModel.transactions.test {
-  //     // then
-  //     assertThatNextEmissionIsEqualTo(
-  //       persistentListOf(
-  //         DatedTransactions(DATE_1, persistentListOf(ID_A, ID_B, ID_C)),
-  //       ),
-  //     )
-  //     expectNoEvents()
-  //     cancel()
-  //   }
-  // }
-  //
-  // @Test
-  // fun `Transactions from one account`() = runTest {
-  //   // given
-  //   buildViewModel(SpecificAccount(AccountId("a")))
-  //   with(budgetGraph.database) {
-  //     insertTransaction(id = "a", account = "a", category = "a", payee = "a") // included
-  //     insertTransaction(id = "b", account = "b", category = "b", payee = "b") // ignored
-  //     insertTransaction(id = "c", account = "c", category = "c", payee = "c") // ignored
-  //   }
-  //   advanceUntilIdle()
-  //
-  //   // when
-  //   viewModel.transactions.test {
-  //     // then
-  //     assertThatNextEmissionIsEqualTo(
-  //       persistentListOf(DatedTransactions(DATE_1, persistentListOf(ID_A))),
-  //     )
-  //     expectNoEvents()
-  //     cancel()
-  //   }
-  // }
-  //
-  // @Test
-  // fun `Transactions grouped by date`() = runTest {
-  //   // given
-  //   buildViewModel(AllAccounts)
-  //   with(budgetGraph.database) {
-  //     insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
-  //     insertTransaction(id = "b", account = "b", category = "b", payee = "b", date = DATE_1)
-  //     insertTransaction(id = "c", account = "c", category = "c", payee = "c", date = DATE_1)
-  //     insertTransaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
-  //     insertTransaction(id = "e", account = "c", category = "c", payee = "c", date = DATE_2)
-  //     insertTransaction(id = "f", account = "c", category = "c", payee = "c", date = DATE_3)
-  //   }
-  //   advanceUntilIdle()
-  //
-  //   // when
-  //   viewModel.transactions.test {
-  //     // then
-  //     assertThatNextEmissionIsEqualTo(
-  //       persistentListOf(
-  //         DatedTransactions(DATE_1, persistentListOfIds("a", "b", "c")),
-  //         DatedTransactions(DATE_2, persistentListOfIds("d", "e")),
-  //         DatedTransactions(DATE_3, persistentListOfIds("f")),
-  //       ),
-  //     )
-  //     expectNoEvents()
-  //     cancel()
-  //   }
-  // }
+    // when
+    val result = pagingSource.load(
+      PagingSource.LoadParams.Refresh(
+        key = null,
+        loadSize = 50,
+        placeholdersEnabled = false,
+      ),
+    )
 
-//  @Test
-//  fun `Transactions sorting by date`() = runTest {
-//    // given
-//    buildViewModel(AllAccounts)
-//    with(budgetGraph.database) {
-//      insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
-//      insertTransaction(id = "b", account = "b", category = "b", payee = "b", date = DATE_1)
-//      insertTransaction(id = "c", account = "c", category = "c", payee = "c", date = DATE_1)
-//      insertTransaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
-//      insertTransaction(id = "e", account = "c", category = "c", payee = "c", date = DATE_2)
-//      insertTransaction(id = "f", account = "c", category = "c", payee = "c", date = DATE_3)
-//    }
-//
-//    setSortingDirection(Descending)
-//    advanceUntilIdle()
-//
-//    viewModel.transactions.test {
-//      // latest date first
-//      assertThatNextEmissionIsEqualTo(
-//        persistentListOf(
-//          DatedTransactions(DATE_1, persistentListOfIds("a", "b", "c")),
-//          DatedTransactions(DATE_2, persistentListOfIds("d", "e")),
-//          DatedTransactions(DATE_3, persistentListOfIds("f")),
-//        ),
-//      )
-//
-//      // then opposite sorting
-//      setSortingDirection(Ascending)
-//      assertThatNextEmissionIsEqualTo(
-//        persistentListOf(
-//          DatedTransactions(DATE_1, persistentListOfIds("a", "b", "c")),
-//          DatedTransactions(DATE_2, persistentListOfIds("d", "e")),
-//          DatedTransactions(DATE_3, persistentListOfIds("f")),
-//        ),
-//      )
-//
-//      cancelAndIgnoreRemainingEvents()
-//    }
-//  }
-//
-//  private fun setSortingDirection(
-//    direction: SortDirection = Ascending,
-//  ) = budgetGraph.localPreferences.update { metadata ->
-//    metadata
-//      .set(SortColumnKey, Date)
-//      .set(SortDirectionKey, direction)
-//  }
+    // then
+    assertThat(result).isInstanceOf<PagingSource.LoadResult.Page<Int, TransactionId>>()
+    val page = result as PagingSource.LoadResult.Page
+    assertThat(page.data).isEmpty()
+    assertThat(page.prevKey).isNull()
+    assertThat(page.nextKey).isNull()
+  }
+
+  @Test
+  fun `Transactions from all accounts`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(budgetGraph.database) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a")
+      insertTransaction(id = "b", account = "b", category = "b", payee = "b")
+      insertTransaction(id = "c", account = "c", category = "c", payee = "c")
+    }
+    advanceUntilIdle()
+
+    val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
+    val pagingSource = TransactionsPagingSource(transactionsDao, accountId = null)
+
+    // when
+    val result = pagingSource.load(
+      PagingSource.LoadParams.Refresh(
+        key = null,
+        loadSize = 50,
+        placeholdersEnabled = false,
+      ),
+    )
+
+    // then
+    assertThat(result).isInstanceOf<PagingSource.LoadResult.Page<Int, TransactionId>>()
+    val page = result as PagingSource.LoadResult.Page
+    assertThat(page.data).containsExactly(ID_C, ID_B, ID_A) // Returned in reverse insertion order
+    assertThat(page.prevKey).isNull()
+    assertThat(page.nextKey).isEqualTo(1) // PagingSource always returns nextKey unless data is empty
+  }
+
+  @Test
+  fun `Transactions from one account`() = runTest {
+    // given
+    buildViewModel(SpecificAccount(AccountId("a")))
+    with(budgetGraph.database) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a") // included
+      insertTransaction(id = "b", account = "b", category = "b", payee = "b") // ignored
+      insertTransaction(id = "c", account = "c", category = "c", payee = "c") // ignored
+    }
+    advanceUntilIdle()
+
+    val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
+    val pagingSource = TransactionsPagingSource(transactionsDao, accountId = AccountId("a"))
+
+    // when
+    val result = pagingSource.load(
+      PagingSource.LoadParams.Refresh(
+        key = null,
+        loadSize = 50,
+        placeholdersEnabled = false,
+      ),
+    )
+
+    // then
+    assertThat(result).isInstanceOf<PagingSource.LoadResult.Page<Int, TransactionId>>()
+    val page = result as PagingSource.LoadResult.Page
+    assertThat(page.data).containsExactly(ID_A)
+    assertThat(page.prevKey).isNull()
+    assertThat(page.nextKey).isEqualTo(1) // PagingSource always returns nextKey unless data is empty
+  }
+
+  @Test
+  fun `Multiple transactions with different dates`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(budgetGraph.database) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
+      insertTransaction(id = "b", account = "b", category = "b", payee = "b", date = DATE_1)
+      insertTransaction(id = "c", account = "c", category = "c", payee = "c", date = DATE_1)
+      insertTransaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
+      insertTransaction(id = "e", account = "c", category = "c", payee = "c", date = DATE_2)
+      insertTransaction(id = "f", account = "c", category = "c", payee = "c", date = DATE_3)
+    }
+    advanceUntilIdle()
+
+    val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
+    val pagingSource = TransactionsPagingSource(transactionsDao, accountId = null)
+
+    // when
+    val result = pagingSource.load(
+      PagingSource.LoadParams.Refresh(
+        key = null,
+        loadSize = 50,
+        placeholdersEnabled = false,
+      ),
+    )
+
+    // then
+    assertThat(result).isInstanceOf<PagingSource.LoadResult.Page<Int, TransactionId>>()
+    val page = result as PagingSource.LoadResult.Page
+    assertThat(page.data).containsExactly(ID_F, ID_E, ID_D, ID_C, ID_B, ID_A) // Returned in reverse order
+    assertThat(page.prevKey).isNull()
+    assertThat(page.nextKey).isEqualTo(1) // PagingSource always returns nextKey unless data is empty
+  }
+
+  @Test
+  fun `Paging loads data in pages`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    with(budgetGraph.database) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
+      insertTransaction(id = "b", account = "b", category = "b", payee = "b", date = DATE_1)
+      insertTransaction(id = "c", account = "c", category = "c", payee = "c", date = DATE_1)
+      insertTransaction(id = "d", account = "c", category = "c", payee = "c", date = DATE_2)
+      insertTransaction(id = "e", account = "c", category = "c", payee = "c", date = DATE_2)
+      insertTransaction(id = "f", account = "c", category = "c", payee = "c", date = DATE_3)
+    }
+    advanceUntilIdle()
+
+    val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
+    val pagingSource = TransactionsPagingSource(transactionsDao, accountId = null)
+
+    // when - load first page with size 2
+    val firstPage = pagingSource.load(
+      PagingSource.LoadParams.Refresh(
+        key = null,
+        loadSize = 2,
+        placeholdersEnabled = false,
+      ),
+    ) as PagingSource.LoadResult.Page
+
+    // then - first page contains first 2 items (in reverse order)
+    assertThat(firstPage.data).containsExactly(ID_F, ID_E)
+    assertThat(firstPage.prevKey).isNull()
+    assertThat(firstPage.nextKey).isEqualTo(1)
+
+    // when - load second page
+    val secondPage = pagingSource.load(
+      PagingSource.LoadParams.Append(
+        key = 1,
+        loadSize = 2,
+        placeholdersEnabled = false,
+      ),
+    ) as PagingSource.LoadResult.Page
+
+    // then - second page contains next 2 items
+    assertThat(secondPage.data).containsExactly(ID_D, ID_C)
+    assertThat(secondPage.prevKey).isEqualTo(0)
+    assertThat(secondPage.nextKey).isEqualTo(2)
+
+    // when - load third page
+    val thirdPage = pagingSource.load(
+      PagingSource.LoadParams.Append(
+        key = 2,
+        loadSize = 2,
+        placeholdersEnabled = false,
+      ),
+    ) as PagingSource.LoadResult.Page
+
+    // then - third page contains remaining items
+    assertThat(thirdPage.data).containsExactly(ID_B, ID_A)
+    assertThat(thirdPage.prevKey).isEqualTo(1)
+    assertThat(thirdPage.nextKey).isEqualTo(3) // Has next key because data is not empty
+  }
 
   @DependencyGraph(
     scope = AppScope::class,

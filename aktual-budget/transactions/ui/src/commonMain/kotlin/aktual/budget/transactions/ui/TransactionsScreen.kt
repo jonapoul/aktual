@@ -28,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
+@Suppress("ViewModelForwarding")
 fun TransactionsScreen(
   nav: TransactionsNavigator,
   budgetId: BudgetId,
