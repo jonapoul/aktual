@@ -40,7 +40,9 @@ import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.skip
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -75,6 +77,7 @@ class TransactionsViewModel(
   // local data
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
   private val checkedTransactionIds = MutableStateFlow(persistentMapOf<TransactionId, Boolean>())
+  private var currentPagingSource: PagingSource<Int, TransactionId>? = null
 
   // API
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
@@ -97,6 +100,19 @@ class TransactionsViewModel(
       is AccountSpec.SpecificAccount -> viewModelScope.launch {
         val account = accountsDao[s.id] ?: error("No account matching $s")
         mutableLoadedAccount.update { SpecificAccount(account) }
+      }
+    }
+
+    // Invalidate PagingSource when transaction data changes.
+    // Ignore the first item from the flow, that'll be the initial table state.
+    viewModelScope.launch {
+      val countFlow = when (val s = spec.accountSpec) {
+        AccountSpec.AllAccounts -> transactionsDao.observeCount()
+        is AccountSpec.SpecificAccount -> transactionsDao.observeCountByAccount(s.id)
+      }
+      countFlow.drop(count = 1).collect {
+        logcat.d { "Transactions table updated, invalidating paging source..." }
+        currentPagingSource?.invalidate()
       }
     }
   }
@@ -138,13 +154,8 @@ class TransactionsViewModel(
     return TransactionState.Loaded(transaction)
   }
 
-  private fun buildPagingSource(): PagingSource<Int, TransactionId> {
-    val accountId = when (val spec = spec.accountSpec) {
-      AccountSpec.AllAccounts -> null
-      is AccountSpec.SpecificAccount -> spec.id
-    }
-    return TransactionsPagingSource(transactionsDao, accountId)
-  }
+  private fun buildPagingSource() = TransactionsPagingSource(transactionsDao, spec.accountSpec)
+    .also { currentPagingSource = it }
 
   private companion object {
     val TransactionFormatKey = DbMetadata.enumKey<TransactionsFormat>("transactionFormat")

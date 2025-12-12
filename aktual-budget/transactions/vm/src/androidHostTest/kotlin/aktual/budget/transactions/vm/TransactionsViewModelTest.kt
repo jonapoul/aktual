@@ -87,7 +87,7 @@ class TransactionsViewModelTest {
     // given
     buildViewModel(AllAccounts)
     val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val source = TransactionsPagingSource(transactionsDao, accountId = null)
+    val source = TransactionsPagingSource(transactionsDao, AllAccounts)
 
     // when
     val result = source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
@@ -112,7 +112,7 @@ class TransactionsViewModelTest {
     advanceUntilIdle()
 
     val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val source = TransactionsPagingSource(transactionsDao, accountId = null)
+    val source = TransactionsPagingSource(transactionsDao, AllAccounts)
 
     // when
     val result = source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
@@ -122,7 +122,7 @@ class TransactionsViewModelTest {
       .isPage()
       .withData(ID_C, ID_B, ID_A) // Returned in reverse insertion order
       .withPrevKey(null)
-      .withNextKey(1) // PagingSource always returns nextKey unless data is empty
+      .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
 
   @Test
@@ -137,7 +137,7 @@ class TransactionsViewModelTest {
     advanceUntilIdle()
 
     val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val source = TransactionsPagingSource(transactionsDao, accountId = AccountId("a"))
+    val source = TransactionsPagingSource(transactionsDao, SpecificAccount(AccountId("a")))
 
     // when
     val result = source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
@@ -147,7 +147,7 @@ class TransactionsViewModelTest {
       .isPage()
       .withData(ID_A)
       .withPrevKey(null)
-      .withNextKey(1) // PagingSource always returns nextKey unless data is empty
+      .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
 
   @Test
@@ -165,7 +165,7 @@ class TransactionsViewModelTest {
     advanceUntilIdle()
 
     val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val pagingSource = TransactionsPagingSource(transactionsDao, accountId = null)
+    val pagingSource = TransactionsPagingSource(transactionsDao, AllAccounts)
 
     // when
     val result = pagingSource.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
@@ -175,7 +175,7 @@ class TransactionsViewModelTest {
       .isPage()
       .withData(ID_F, ID_E, ID_D, ID_C, ID_B, ID_A)
       .withPrevKey(null)
-      .withNextKey(1)
+      .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
 
   @Test
@@ -193,7 +193,7 @@ class TransactionsViewModelTest {
     advanceUntilIdle()
 
     val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val source = TransactionsPagingSource(transactionsDao, accountId = null)
+    val source = TransactionsPagingSource(transactionsDao, AllAccounts)
 
     // when - load first page with size 2
     val firstPage = source.load(LoadParams.Refresh(key = null, loadSize = 2, placeholdersEnabled = false))
@@ -224,7 +224,7 @@ class TransactionsViewModelTest {
       .isPage()
       .withData(ID_B, ID_A)
       .withPrevKey(1)
-      .withNextKey(3)
+      .withNextKey(3) // More pages possible since we loaded exactly the page size
   }
 
   @DependencyGraph(
