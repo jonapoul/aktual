@@ -4,8 +4,8 @@ import aktual.budget.db.Accounts
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
-import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.Transaction
+import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.TransactionState
 import aktual.budget.transactions.vm.TransactionStateSource
 import androidx.compose.runtime.Immutable

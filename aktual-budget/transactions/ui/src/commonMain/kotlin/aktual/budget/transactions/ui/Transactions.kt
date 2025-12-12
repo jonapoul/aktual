@@ -3,8 +3,8 @@ package aktual.budget.transactions.ui
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsFormat
 import aktual.budget.model.TransactionsFormat.Table
-import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.Transaction
+import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
@@ -159,7 +159,10 @@ private data class TransactionsParams(
 )
 
 private class TransactionsProvider : ThemedParameterProvider<TransactionsParams>(
-  TransactionsParams(format = TransactionsFormat.List, transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),
+  TransactionsParams(
+    format = TransactionsFormat.List,
+    transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
+  ),
   TransactionsParams(format = Table, transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),
   TransactionsParams(Table),
   TransactionsParams(TransactionsFormat.List),

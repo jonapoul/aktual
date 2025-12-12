@@ -89,7 +89,6 @@ internal fun TransactionsScaffold(
   }
 }
 
-
 @Composable
 @PortraitPreview
 @LandscapePreview

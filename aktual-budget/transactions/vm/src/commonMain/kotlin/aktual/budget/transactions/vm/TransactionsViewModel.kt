@@ -54,7 +54,6 @@ class TransactionsViewModel(
   budgetGraphs: BudgetGraphHolder,
   contexts: CoroutineContexts,
 ) : ViewModel(), TransactionStateSource, TransactionIdSource {
-
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey(Factory::class)
   @ContributesIntoMap(AppScope::class)

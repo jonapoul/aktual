@@ -113,7 +113,7 @@ private fun LoadingTransactionItem(
     Box(
       modifier = Modifier
         .minimumInteractiveComponentSize()
-        .shimmer(theme)
+        .shimmer(theme),
     )
 
     HorizontalSpacer(dimens.interColumn)
@@ -126,14 +126,14 @@ private fun LoadingTransactionItem(
         modifier = Modifier
           .fillMaxWidth(0.6f)
           .height(16.dp)
-          .shimmer(theme)
+          .shimmer(theme),
       )
       Spacer(modifier = Modifier.height(4.dp))
       Box(
         modifier = Modifier
           .fillMaxWidth(0.8f)
           .height(16.dp)
-          .shimmer(theme)
+          .shimmer(theme),
       )
     }
 
@@ -144,7 +144,7 @@ private fun LoadingTransactionItem(
       modifier = Modifier
         .width(80.dp)
         .height(16.dp)
-        .shimmer(theme)
+        .shimmer(theme),
     )
 
     HorizontalSpacer(dimens.interColumn)
@@ -153,7 +153,7 @@ private fun LoadingTransactionItem(
     Box(
       modifier = Modifier
         .minimumInteractiveComponentSize()
-        .shimmer(theme)
+        .shimmer(theme),
     )
   }
 }
@@ -177,7 +177,7 @@ private fun FailedTransactionItem(
     Box(
       modifier = Modifier
         .minimumInteractiveComponentSize()
-        .shimmer(theme)
+        .shimmer(theme),
     )
 
     Text(
@@ -192,7 +192,7 @@ private fun FailedTransactionItem(
     Box(
       modifier = Modifier
         .minimumInteractiveComponentSize()
-        .shimmer(theme)
+        .shimmer(theme),
     )
   }
 }
@@ -204,9 +204,9 @@ private fun Modifier.shimmer(theme: Theme): Modifier = composed {
     targetValue = 1000f,
     animationSpec = infiniteRepeatable(
       animation = tween(durationMillis = 1200, easing = LinearEasing),
-      repeatMode = RepeatMode.Restart
+      repeatMode = RepeatMode.Restart,
     ),
-    label = "shimmer-translate"
+    label = "shimmer-translate",
   )
 
   val shimmerColors = listOf(
@@ -218,7 +218,7 @@ private fun Modifier.shimmer(theme: Theme): Modifier = composed {
   val brush = Brush.linearGradient(
     colors = shimmerColors,
     start = Offset(translateAnim, translateAnim),
-    end = Offset(translateAnim + 200f, translateAnim + 200f)
+    end = Offset(translateAnim + 200f, translateAnim + 200f),
   )
 
   background(brush = brush, shape = RoundedCornerShape(4.dp))
