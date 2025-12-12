@@ -7,6 +7,8 @@ import aktual.core.model.TB
 import aktual.core.model.bytes
 import aktual.core.model.kB
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedBox
@@ -18,6 +20,7 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.core.ui.verticalScrollWithBar
 import aktual.l10n.Strings
 import aktual.metrics.vm.MetricsState
 import aktual.metrics.vm.MetricsViewModel
@@ -235,14 +238,16 @@ private fun SuccessContent(
   hazeState: HazeState,
   modifier: Modifier = Modifier,
 ) = Column(
-  modifier = modifier.padding(horizontal = 10.dp),
-  verticalArrangement = Arrangement.spacedBy(15.dp),
+  modifier = modifier
+    .padding(horizontal = 10.dp)
+    .verticalScrollWithBar(),
+  verticalArrangement = Arrangement.spacedBy(Dimens.Large, Alignment.Top),
   horizontalAlignment = Alignment.Start,
 ) {
   HazedBox(
     modifier = Modifier.fillMaxWidth(),
     state = hazeState,
-    padding = PaddingValues(25.dp),
+    padding = PaddingValues(Dimens.Huge),
   ) {
     SuccessContentRow(title = Strings.metricsLastUpdate, value = state.lastUpdate.toString())
   }
@@ -250,7 +255,7 @@ private fun SuccessContent(
   HazedBox(
     modifier = Modifier.fillMaxWidth(),
     state = hazeState,
-    padding = PaddingValues(25.dp),
+    padding = PaddingValues(Dimens.Huge),
   ) {
     SuccessContentRow(title = Strings.metricsUptime, value = state.uptime.formattedString())
   }
@@ -258,7 +263,7 @@ private fun SuccessContent(
   HazedBox(
     modifier = Modifier.fillMaxWidth(),
     state = hazeState,
-    padding = PaddingValues(25.dp),
+    padding = PaddingValues(Dimens.Huge),
   ) {
     Column {
       Text(
@@ -278,6 +283,9 @@ private fun SuccessContent(
       }
     }
   }
+
+  BottomStatusBarSpacing()
+  BottomNavBarSpacing()
 }
 
 @Stable

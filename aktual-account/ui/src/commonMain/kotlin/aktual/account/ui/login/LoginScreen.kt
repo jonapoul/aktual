@@ -8,6 +8,8 @@ import aktual.core.model.Password.Companion.Dummy
 import aktual.core.model.Password.Companion.Empty
 import aktual.core.model.ServerUrl
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
@@ -217,6 +219,9 @@ private fun Content(
       modifier = Modifier.align(Alignment.End),
       versions = versions,
     )
+
+    BottomStatusBarSpacing()
+    BottomNavBarSpacing()
   }
 }
 

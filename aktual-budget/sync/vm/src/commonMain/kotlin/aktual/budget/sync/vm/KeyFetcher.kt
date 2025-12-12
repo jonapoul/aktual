@@ -54,7 +54,7 @@ class KeyFetcher(
       buffer.write(test.value.decode())
       val decrypted = decrypter(test.meta, buffer)
       if (decrypted is DecryptResult.Failure) {
-        error("Invalid password $keyPassword: $decrypted")
+        error("Invalid password ${keyPassword.value}: $decrypted")
       }
 
       logcat.i { "Decrypted data successfully with test!" }

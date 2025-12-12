@@ -6,6 +6,8 @@ import aktual.budget.model.TransactionsFormat.Table
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.TransactionStateSource
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
@@ -135,6 +137,11 @@ private fun TransactionsFilled(
 
         HorizontalDivider(color = theme.tableBorderSeparator)
       }
+    }
+
+    item {
+      BottomStatusBarSpacing()
+      BottomNavBarSpacing()
     }
   }
 }

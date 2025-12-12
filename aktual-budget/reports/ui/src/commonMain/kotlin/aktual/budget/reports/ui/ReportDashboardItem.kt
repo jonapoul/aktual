@@ -7,7 +7,9 @@ import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.vm.ReportDashboardItem
 import aktual.core.ui.CardShape
+import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
+import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
@@ -32,7 +34,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
@@ -103,7 +104,8 @@ private fun ReportDropDownMenu(
   )
 }
 
-@Preview
+@PortraitPreview
+@LandscapePreview
 @Composable
 private fun PreviewReportDashboardItem(
   @PreviewParameter(ReportDashboardItemProvider::class) params: ThemedParams<ReportDashboardItem>,

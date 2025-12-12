@@ -3,6 +3,7 @@ package aktual.about.ui.info
 import aktual.about.vm.BuildState
 import aktual.core.model.AktualVersions
 import aktual.core.model.ColorSchemeType
+import aktual.core.ui.CardShape
 import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
@@ -20,6 +21,7 @@ import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -39,6 +41,7 @@ internal fun InfoBuildState(
   BuildStateItem(
     modifier = Modifier
       .padding(ItemMargin)
+      .clip(CardShape)
       .hazeEffect(hazeState, hazeStyle),
     icon = Icons.Filled.Apps,
     title = Strings.infoAppVersion,
@@ -49,6 +52,7 @@ internal fun InfoBuildState(
     modifier = Modifier
       .testTag(Tags.ServerVersionText)
       .padding(ItemMargin)
+      .clip(CardShape)
       .hazeEffect(hazeState, hazeStyle),
     icon = Icons.Filled.Cloud,
     title = Strings.infoServerVersion,
@@ -58,6 +62,7 @@ internal fun InfoBuildState(
   BuildStateItem(
     modifier = Modifier
       .padding(ItemMargin)
+      .clip(CardShape)
       .hazeEffect(hazeState, hazeStyle),
     icon = Icons.Filled.CalendarToday,
     title = Strings.infoDate,

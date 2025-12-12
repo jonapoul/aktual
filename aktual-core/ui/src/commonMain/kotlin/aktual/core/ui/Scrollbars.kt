@@ -9,6 +9,7 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -52,7 +53,7 @@ fun Modifier.scrollbar(
 
 @Composable
 fun Modifier.verticalScrollWithBar(
-  scrollState: ScrollState,
+  scrollState: ScrollState = rememberScrollState(),
   autoHide: Boolean = false,
   enabled: Boolean = true,
   flingBehavior: FlingBehavior? = null,
@@ -62,7 +63,7 @@ fun Modifier.verticalScrollWithBar(
 
 @Composable
 fun Modifier.verticalScrollbar(
-  scrollState: ScrollState,
+  scrollState: ScrollState = rememberScrollState(),
   autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
 ): Modifier = scrollbar(
   scrollbarState = remember(scrollState) { ScrollbarState(scrollState, Orientation.Vertical) },
@@ -71,7 +72,7 @@ fun Modifier.verticalScrollbar(
 
 @Composable
 fun Modifier.horizontalScrollWithBar(
-  scrollState: ScrollState,
+  scrollState: ScrollState = rememberScrollState(),
   autoHide: Boolean = false,
   enabled: Boolean = true,
   flingBehavior: FlingBehavior? = null,
@@ -81,7 +82,7 @@ fun Modifier.horizontalScrollWithBar(
 
 @Composable
 fun Modifier.horizontalScrollbar(
-  scrollState: ScrollState,
+  scrollState: ScrollState = rememberScrollState(),
   autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
 ): Modifier = scrollbar(
   scrollbarState = remember(scrollState) { ScrollbarState(scrollState, Orientation.Horizontal) },

@@ -33,7 +33,6 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -136,10 +135,10 @@ class SyncBudgetViewModel(
 
     setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
     viewModelScope.launch {
-      val fetched = keyFetcher(budgetId, token, state.input)
-      when (fetched) {
+      when (val fetched = keyFetcher(budgetId, token, state.input)) {
         is FetchKeyResult.Failure -> {
           logcat.w { "Failed fetching keys: $fetched" }
+          handleDecryptFailure(DecryptResult.FailedFetchingKey, cachedData.encryptedPath, cachedData.userFile, meta)
         }
 
         is FetchKeyResult.Success -> {
@@ -201,7 +200,7 @@ class SyncBudgetViewModel(
     logcat.v { "stepState=$stateMap" }
   }
 
-  private suspend fun CoroutineScope.fetchUserFileInfo(): UserFile? {
+  private suspend fun fetchUserFileInfo(): UserFile? {
     setStepState(FetchingFileInfo, SyncStepState.InProgress.Indefinite)
     return when (val result = infoFetcher.fetch(token, budgetId)) {
       is BudgetInfoFetcher.Result.Failure -> {
@@ -216,7 +215,7 @@ class SyncBudgetViewModel(
     }
   }
 
-  private suspend fun CoroutineScope.downloadBudgetFileAsync(): Path? {
+  private suspend fun downloadBudgetFileAsync(): Path? {
     var downloadedDbPath: Path? = null
     setStepState(DownloadingDatabase, SyncStepState.InProgress.Indefinite)
 
@@ -268,6 +267,10 @@ class SyncBudgetViewModel(
     meta: EncryptMeta?,
   ) {
     val message = when (result) {
+      is DecryptResult.FailedFetchingKey -> {
+        "Fetching key"
+      }
+
       is DecryptResult.UnknownAlgorithm -> {
         "Unknown algorithm: ${result.algorithm}"
       }

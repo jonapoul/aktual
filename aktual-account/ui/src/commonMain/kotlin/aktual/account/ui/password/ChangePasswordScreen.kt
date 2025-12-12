@@ -5,6 +5,8 @@ import aktual.account.vm.ChangePasswordViewModel
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
@@ -195,6 +197,9 @@ private fun ChangePasswordContent(
       modifier = Modifier.align(Alignment.End),
       versions = versions,
     )
+
+    BottomStatusBarSpacing()
+    BottomNavBarSpacing()
   }
 }
 
