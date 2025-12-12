@@ -6,6 +6,8 @@ import aktual.core.model.AktualVersions
 import aktual.core.model.Protocol
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BasicIconButton
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
@@ -242,6 +244,9 @@ private fun ServerUrlContent(
         versions = versions,
       )
     }
+
+    BottomStatusBarSpacing()
+    BottomNavBarSpacing()
   }
 }
 

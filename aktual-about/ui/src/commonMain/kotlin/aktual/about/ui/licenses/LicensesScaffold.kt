@@ -4,6 +4,8 @@ import aktual.about.data.ArtifactDetail
 import aktual.about.vm.LicensesState
 import aktual.about.vm.SearchBarState
 import aktual.core.model.ColorSchemeType
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
@@ -246,6 +248,11 @@ private fun LoadedContent(
       )
 
       VerticalSpacer(5.dp)
+    }
+
+    item {
+      BottomStatusBarSpacing()
+      BottomNavBarSpacing()
     }
   }
 }

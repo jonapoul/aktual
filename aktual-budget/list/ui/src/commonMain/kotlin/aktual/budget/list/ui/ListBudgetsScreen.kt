@@ -18,9 +18,9 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewParameters
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
+import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
@@ -31,9 +31,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -42,11 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.persistentListOf
 
@@ -125,28 +124,29 @@ internal fun ListBudgetsScaffold(
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
 ) {
-  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
 
   Scaffold(
-    modifier = Modifier
-      .fillMaxSize()
-      .nestedScroll(scrollBehavior.nestedScrollConnection),
+    modifier = Modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
         title = { ScaffoldTitle(theme) },
-        scrollBehavior = scrollBehavior,
         actions = { TopBarActions(onAction) },
       )
     },
   ) { innerPadding ->
     Box {
-      WavyBackground()
+      val hazeState = remember { HazeState() }
+
+      WavyBackground(
+        modifier = Modifier.hazeSource(hazeState),
+      )
 
       Content(
         modifier = Modifier.padding(innerPadding),
         state = state,
+        hazeState = hazeState,
         onAction = onAction,
         theme = theme,
       )
@@ -165,6 +165,7 @@ private fun ScaffoldTitle(theme: Theme) = Text(
 @Composable
 private fun Content(
   state: ListBudgetsState,
+  hazeState: HazeState,
   onAction: (ListBudgetsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -175,12 +176,13 @@ private fun Content(
   contentAlignment = Alignment.Center,
   onRefresh = { onAction(Reload) },
   isRefreshing = state is ListBudgetsState.Loading,
-  content = { StateContent(state, onAction, theme) },
+  content = { StateContent(state, hazeState, onAction, theme) },
 )
 
 @Composable
 private fun StateContent(
   state: ListBudgetsState,
+  hazeState: HazeState,
   onAction: (ListBudgetsAction) -> Unit,
   theme: Theme = LocalTheme.current,
 ) = when (state) {
@@ -213,6 +215,7 @@ private fun StateContent(
       ContentSuccess(
         modifier = Modifier.fillMaxSize(),
         budgets = state.budgets,
+        hazeState = hazeState,
         theme = theme,
         onClickOpen = { budget -> onAction(Open(budget)) },
         onClickDelete = { budget -> onAction(Delete(budget)) },
@@ -234,7 +237,7 @@ private fun PreviewListBudgetsScaffold(
   )
 }
 
-private class ListBudgetsScaffoldProvider : PreviewParameters<ListBudgetsState>(
+private class ListBudgetsScaffoldProvider : ThemedParameterProvider<ListBudgetsState>(
   ListBudgetsState.Success(persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken)),
   ListBudgetsState.Loading,
   ListBudgetsState.Failure(reason = "Something broke lol"),
