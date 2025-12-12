@@ -10,6 +10,7 @@ sealed interface DecryptResult {
   data class NotNeeded(val path: Path) : Success
 
   sealed interface Failure : DecryptResult
+  data object FailedFetchingKey : Failure
   data object MissingKey : Failure
   data class UnknownAlgorithm(val algorithm: String) : Failure
   data class OtherFailure(val message: String) : Failure
