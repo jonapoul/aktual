@@ -77,7 +77,7 @@ class Decrypter(
   } catch (e: Exception) {
     DecryptResult.OtherFailure(e.requireMessage())
   } finally {
-    runCatching { source.close() }
-    runCatching { sink.close() }
+    if (sink !is Buffer) runCatching { sink.close() }
+    if (source !is Buffer) runCatching { source.close() }
   }
 }
