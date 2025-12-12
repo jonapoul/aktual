@@ -4,10 +4,12 @@ import aktual.budget.db.Accounts
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.TransactionId
+import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionState
 import aktual.budget.transactions.vm.TransactionStateSource
 import androidx.compose.runtime.Immutable
+import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.datetime.DateTimeUnit.Companion.DAY
@@ -41,6 +43,14 @@ internal fun previewTransactionStateSource(vararg transactions: Transaction) =
 
 internal fun previewTransactionStateSource(transactions: List<Transaction>) =
   PreviewTransactionStateSource(transactions.map { t -> TransactionState.Loaded(t) to false })
+
+@Immutable
+internal class PreviewTransactionIdSource(
+  transactions: List<Transaction>,
+) : TransactionIdSource {
+  override val pagingData: Flow<PagingData<TransactionId>> =
+    flowOf(PagingData.from(transactions.map { it.id }))
+}
 
 internal val PREVIEW_DATE = LocalDate(2025, JUNE, 9)
 

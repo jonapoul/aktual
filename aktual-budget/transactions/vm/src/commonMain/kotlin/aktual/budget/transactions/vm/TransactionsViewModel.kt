@@ -53,7 +53,7 @@ class TransactionsViewModel(
   @Assisted private val spec: TransactionsSpec,
   budgetGraphs: BudgetGraphHolder,
   contexts: CoroutineContexts,
-) : ViewModel(), TransactionStateSource, PagingDataSource {
+) : ViewModel(), TransactionStateSource, TransactionIdSource {
 
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey(Factory::class)

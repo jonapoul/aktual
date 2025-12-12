@@ -6,6 +6,6 @@ import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 
 @Immutable
-interface PagingDataSource {
+interface TransactionIdSource {
   val pagingData: Flow<PagingData<TransactionId>>
 }
