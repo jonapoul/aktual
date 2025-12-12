@@ -30,7 +30,7 @@ fun AktualAppContent(
   WithCompositionLocals(
     isPrivacyEnabled = isPrivacyEnabled,
     format = numberFormat,
-    hideFractions = hideFraction,
+    hideFraction = hideFraction,
   ) {
     AktualTheme(colorSchemeType) {
       AktualAppLayout(

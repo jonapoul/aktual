@@ -22,11 +22,11 @@ fun Amount.formattedString(
 fun WithCompositionLocals(
   isPrivacyEnabled: Boolean = false,
   format: NumberFormat = NumberFormat.Default,
-  hideFractions: Boolean = false,
+  hideFraction: Boolean = false,
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
-    LocalNumberFormatConfig provides NumberFormatConfig(format, hideFractions),
+    LocalNumberFormatConfig provides NumberFormatConfig(format, hideFraction),
     LocalPrivacyEnabled provides isPrivacyEnabled,
   ) {
     content()
