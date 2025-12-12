@@ -13,7 +13,6 @@ import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.core.model.LoginToken
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.collections.immutable.toPersistentList
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlin.time.Duration.Companion.days
@@ -38,18 +37,49 @@ internal val TRANSACTION_B = Transaction(ID_B, DATE_2, "Barclays", "B&Q", null, 
 internal val TRANSACTION_C = Transaction(ID_C, DATE_3, "Chase", "Co-op", null, "Car", Amount(123.45))
 
 internal suspend fun BudgetDatabase.insertAccount(id: AccountId, name: String) {
-  accountsQueries.withoutResult { insert(id, id.toString(), name, name, null, false, null) }
+  accountsQueries.withoutResult {
+    insert(
+      id = id,
+      account_id = id.toString(),
+      name = name,
+      official_name = name,
+      bank = null,
+      offbudget = false,
+      account_sync_source = null,
+    )
+  }
 }
 
 internal suspend fun BudgetDatabase.insertPayee(id: PayeeId, name: String) {
-  payeesQueries.withoutResult { insert(id, name, null, false, null, false, null) }
+  payeesQueries.withoutResult {
+    insert(
+      id = id,
+      name = name,
+      category = null,
+      tombstone = false,
+      transfer_acct = null,
+      favorite = false,
+      learn_categories = null,
+    )
+  }
 }
 
 internal suspend fun BudgetDatabase.insertCategory(id: CategoryId, name: String) {
-  categoriesQueries.withoutResult { insert(Categories(id, name, false, null, null, false, false, null)) }
+  categoriesQueries.withoutResult {
+    insert(
+      Categories(
+        id = id,
+        name = name,
+        is_income = false,
+        cat_group = null,
+        sort_order = null,
+        tombstone = false,
+        hidden = false,
+        goal_def = null,
+      ),
+    )
+  }
 }
-
-internal fun persistentListOfIds(vararg ids: String) = ids.map(::TransactionId).toPersistentList()
 
 internal suspend fun BudgetDatabase.insertTransaction(
   id: String,

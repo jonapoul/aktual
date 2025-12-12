@@ -9,7 +9,6 @@ import aktual.budget.model.AccountSpec.AllAccounts
 import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
-import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
 import aktual.core.di.AppGraph
 import aktual.core.di.BudgetGraph
@@ -17,14 +16,9 @@ import aktual.core.di.BudgetGraphHolder
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
 import android.content.Context
-import androidx.paging.PagingSource
+import androidx.paging.PagingSource.LoadParams
 import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
-import assertk.assertions.containsExactly
-import assertk.assertions.isEmpty
-import assertk.assertions.isEqualTo
-import assertk.assertions.isInstanceOf
-import assertk.assertions.isNull
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
@@ -93,23 +87,17 @@ class TransactionsViewModelTest {
     // given
     buildViewModel(AllAccounts)
     val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val pagingSource = TransactionsPagingSource(transactionsDao, accountId = null)
+    val source = TransactionsPagingSource(transactionsDao, accountId = null)
 
     // when
-    val result = pagingSource.load(
-      PagingSource.LoadParams.Refresh(
-        key = null,
-        loadSize = 50,
-        placeholdersEnabled = false,
-      ),
-    )
+    val result = source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
 
     // then
-    assertThat(result).isInstanceOf<PagingSource.LoadResult.Page<Int, TransactionId>>()
-    val page = result as PagingSource.LoadResult.Page
-    assertThat(page.data).isEmpty()
-    assertThat(page.prevKey).isNull()
-    assertThat(page.nextKey).isNull()
+    assertThat(result)
+      .isPage()
+      .withData(emptyList())
+      .withPrevKey(null)
+      .withNextKey(null)
   }
 
   @Test
@@ -124,23 +112,17 @@ class TransactionsViewModelTest {
     advanceUntilIdle()
 
     val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val pagingSource = TransactionsPagingSource(transactionsDao, accountId = null)
+    val source = TransactionsPagingSource(transactionsDao, accountId = null)
 
     // when
-    val result = pagingSource.load(
-      PagingSource.LoadParams.Refresh(
-        key = null,
-        loadSize = 50,
-        placeholdersEnabled = false,
-      ),
-    )
+    val result = source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
 
     // then
-    assertThat(result).isInstanceOf<PagingSource.LoadResult.Page<Int, TransactionId>>()
-    val page = result as PagingSource.LoadResult.Page
-    assertThat(page.data).containsExactly(ID_C, ID_B, ID_A) // Returned in reverse insertion order
-    assertThat(page.prevKey).isNull()
-    assertThat(page.nextKey).isEqualTo(1) // PagingSource always returns nextKey unless data is empty
+    assertThat(result)
+      .isPage()
+      .withData(ID_C, ID_B, ID_A) // Returned in reverse insertion order
+      .withPrevKey(null)
+      .withNextKey(1) // PagingSource always returns nextKey unless data is empty
   }
 
   @Test
@@ -155,23 +137,17 @@ class TransactionsViewModelTest {
     advanceUntilIdle()
 
     val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val pagingSource = TransactionsPagingSource(transactionsDao, accountId = AccountId("a"))
+    val source = TransactionsPagingSource(transactionsDao, accountId = AccountId("a"))
 
     // when
-    val result = pagingSource.load(
-      PagingSource.LoadParams.Refresh(
-        key = null,
-        loadSize = 50,
-        placeholdersEnabled = false,
-      ),
-    )
+    val result = source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
 
     // then
-    assertThat(result).isInstanceOf<PagingSource.LoadResult.Page<Int, TransactionId>>()
-    val page = result as PagingSource.LoadResult.Page
-    assertThat(page.data).containsExactly(ID_A)
-    assertThat(page.prevKey).isNull()
-    assertThat(page.nextKey).isEqualTo(1) // PagingSource always returns nextKey unless data is empty
+    assertThat(result)
+      .isPage()
+      .withData(ID_A)
+      .withPrevKey(null)
+      .withNextKey(1) // PagingSource always returns nextKey unless data is empty
   }
 
   @Test
@@ -192,20 +168,14 @@ class TransactionsViewModelTest {
     val pagingSource = TransactionsPagingSource(transactionsDao, accountId = null)
 
     // when
-    val result = pagingSource.load(
-      PagingSource.LoadParams.Refresh(
-        key = null,
-        loadSize = 50,
-        placeholdersEnabled = false,
-      ),
-    )
+    val result = pagingSource.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
 
     // then
-    assertThat(result).isInstanceOf<PagingSource.LoadResult.Page<Int, TransactionId>>()
-    val page = result as PagingSource.LoadResult.Page
-    assertThat(page.data).containsExactly(ID_F, ID_E, ID_D, ID_C, ID_B, ID_A) // Returned in reverse order
-    assertThat(page.prevKey).isNull()
-    assertThat(page.nextKey).isEqualTo(1) // PagingSource always returns nextKey unless data is empty
+    assertThat(result)
+      .isPage()
+      .withData(ID_F, ID_E, ID_D, ID_C, ID_B, ID_A)
+      .withPrevKey(null)
+      .withNextKey(1)
   }
 
   @Test
@@ -223,49 +193,38 @@ class TransactionsViewModelTest {
     advanceUntilIdle()
 
     val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val pagingSource = TransactionsPagingSource(transactionsDao, accountId = null)
+    val source = TransactionsPagingSource(transactionsDao, accountId = null)
 
     // when - load first page with size 2
-    val firstPage = pagingSource.load(
-      PagingSource.LoadParams.Refresh(
-        key = null,
-        loadSize = 2,
-        placeholdersEnabled = false,
-      ),
-    ) as PagingSource.LoadResult.Page
+    val firstPage = source.load(LoadParams.Refresh(key = null, loadSize = 2, placeholdersEnabled = false))
 
     // then - first page contains first 2 items (in reverse order)
-    assertThat(firstPage.data).containsExactly(ID_F, ID_E)
-    assertThat(firstPage.prevKey).isNull()
-    assertThat(firstPage.nextKey).isEqualTo(1)
+    assertThat(firstPage)
+      .isPage()
+      .withData(ID_F, ID_E)
+      .withPrevKey(null)
+      .withNextKey(1)
 
     // when - load second page
-    val secondPage = pagingSource.load(
-      PagingSource.LoadParams.Append(
-        key = 1,
-        loadSize = 2,
-        placeholdersEnabled = false,
-      ),
-    ) as PagingSource.LoadResult.Page
+    val secondPage = source.load(LoadParams.Append(key = 1, loadSize = 2, placeholdersEnabled = false))
 
     // then - second page contains next 2 items
-    assertThat(secondPage.data).containsExactly(ID_D, ID_C)
-    assertThat(secondPage.prevKey).isEqualTo(0)
-    assertThat(secondPage.nextKey).isEqualTo(2)
+    assertThat(secondPage)
+      .isPage()
+      .withData(ID_D, ID_C)
+      .withPrevKey(0)
+      .withNextKey(2)
 
     // when - load third page
-    val thirdPage = pagingSource.load(
-      PagingSource.LoadParams.Append(
-        key = 2,
-        loadSize = 2,
-        placeholdersEnabled = false,
-      ),
-    ) as PagingSource.LoadResult.Page
+    val thirdPage =
+      source.load(LoadParams.Append(key = 2, loadSize = 2, placeholdersEnabled = false))
 
     // then - third page contains remaining items
-    assertThat(thirdPage.data).containsExactly(ID_B, ID_A)
-    assertThat(thirdPage.prevKey).isEqualTo(1)
-    assertThat(thirdPage.nextKey).isEqualTo(3) // Has next key because data is not empty
+    assertThat(thirdPage)
+      .isPage()
+      .withData(ID_B, ID_A)
+      .withPrevKey(1)
+      .withNextKey(3)
   }
 
   @DependencyGraph(
