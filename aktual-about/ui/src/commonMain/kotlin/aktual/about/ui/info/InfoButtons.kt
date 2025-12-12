@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 @Composable
+@Suppress("MagicNumber")
 internal fun InfoButtons(
   onAction: (InfoAction) -> Unit,
   modifier: Modifier = Modifier,
