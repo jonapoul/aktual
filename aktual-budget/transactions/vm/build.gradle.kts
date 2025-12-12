@@ -1,5 +1,17 @@
 plugins {
   alias(libs.plugins.module.viewmodel)
+  alias(libs.plugins.convention.buildconfig)
+}
+
+buildConfig {
+  packageName("aktual.budget.transactions.vm")
+  useKotlinOutput { topLevelConstants = true }
+
+  buildConfigField("PAGING_SIZE", expect<Int>())
+  sourceSets {
+    named("androidMain") { buildConfigField("PAGING_SIZE", 50) }
+    named("jvmMain") { buildConfigField("PAGING_SIZE", 100) }
+  }
 }
 
 kotlin {

@@ -85,7 +85,7 @@ class TransactionsViewModel(
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsFormat.Default)
 
   override val pagingData: Flow<PagingData<TransactionId>> = Pager(
-    config = PagingConfig(pageSize = 50, enablePlaceholders = false),
+    config = PagingConfig(pageSize = PAGING_SIZE, enablePlaceholders = false),
     pagingSourceFactory = ::buildPagingSource,
   ).flow.cachedIn(viewModelScope)
 
