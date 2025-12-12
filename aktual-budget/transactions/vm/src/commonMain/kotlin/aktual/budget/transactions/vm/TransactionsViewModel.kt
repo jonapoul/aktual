@@ -7,7 +7,7 @@ import aktual.budget.db.transactions.GetById
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
-import aktual.budget.model.SortDirection
+import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsFormat
@@ -21,6 +21,11 @@ import aktual.core.model.LoginToken
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.PagingSource
+import androidx.paging.cachedIn
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -28,23 +33,20 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.skip
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.LocalDate
+import logcat.logcat
 
 @AssistedInject
 class TransactionsViewModel(
@@ -53,7 +55,18 @@ class TransactionsViewModel(
   @Assisted private val spec: TransactionsSpec,
   budgetGraphs: BudgetGraphHolder,
   contexts: CoroutineContexts,
-) : ViewModel() {
+) : ViewModel(), TransactionStateSource, TransactionIdSource {
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey(Factory::class)
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ManualViewModelAssistedFactory {
+    fun create(
+      @Assisted token: LoginToken,
+      @Assisted budgetId: BudgetId,
+      @Assisted spec: TransactionsSpec,
+    ): TransactionsViewModel
+  }
+
   // data sources
   private val budgetGraph = budgetGraphs.require()
   private val accountsDao = AccountsDao(budgetGraph.database, contexts)
@@ -63,9 +76,8 @@ class TransactionsViewModel(
 
   // local data
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
-  private val expandedGroups = MutableStateFlow(persistentMapOf<LocalDate, Boolean>())
-  private val expandAllGroups = MutableStateFlow(false)
   private val checkedTransactionIds = MutableStateFlow(persistentMapOf<TransactionId, Boolean>())
+  private var currentPagingSource: PagingSource<Int, TransactionId>? = null
 
   // API
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
@@ -74,14 +86,10 @@ class TransactionsViewModel(
     .map { meta -> meta[TransactionFormatKey] ?: TransactionsFormat.Default }
     .stateIn(viewModelScope, Eagerly, initialValue = TransactionsFormat.Default)
 
-  val sorting: StateFlow<TransactionsSorting> = prefs
-    .map(::TransactionsSorting)
-    .stateIn(viewModelScope, Eagerly, initialValue = TransactionsSorting.Default)
-
-  val transactions: StateFlow<ImmutableList<DatedTransactions>> = combine(getIdsFlow(), sorting, ::Pair)
-    .distinctUntilChanged()
-    .map { (datedIds, sorting) -> toDatedTransactions(datedIds, sorting) }
-    .stateIn(viewModelScope, Eagerly, initialValue = persistentListOf())
+  override val pagingData: Flow<PagingData<TransactionId>> = Pager(
+    config = PagingConfig(pageSize = PAGING_SIZE, enablePlaceholders = false),
+    pagingSourceFactory = ::buildPagingSource,
+  ).flow.cachedIn(viewModelScope)
 
   init {
     budgetGraph.throwIfWrongBudget(budgetId)
@@ -94,23 +102,29 @@ class TransactionsViewModel(
         mutableLoadedAccount.update { SpecificAccount(account) }
       }
     }
+
+    // Invalidate PagingSource when transaction data changes.
+    // Ignore the first item from the flow, that'll be the initial table state.
+    viewModelScope.launch {
+      val countFlow = when (val s = spec.accountSpec) {
+        AccountSpec.AllAccounts -> transactionsDao.observeCount()
+        is AccountSpec.SpecificAccount -> transactionsDao.observeCountByAccount(s.id)
+      }
+      countFlow.drop(count = 1).collect {
+        logcat.d { "Transactions table updated, invalidating paging source..." }
+        currentPagingSource?.invalidate()
+      }
+    }
   }
 
   fun setFormat(format: TransactionsFormat) {
     prefs.update { meta -> meta.set(TransactionFormatKey, format) }
   }
 
-  fun isChecked(id: TransactionId): Flow<Boolean> = checkedTransactionIds.map { it.getOrDefault(id, false) }
-
-  fun isExpanded(date: LocalDate): Flow<Boolean> = combine(
-    expandAllGroups,
-    expandedGroups,
-    transform = { expandAll, expanded -> expandAll || expanded.getOrDefault(date, true) },
-  )
+  override fun isChecked(id: TransactionId): Flow<Boolean> =
+    checkedTransactionIds.map { it.getOrDefault(id, false) }
 
   fun setChecked(id: TransactionId, isChecked: Boolean) = checkedTransactionIds.update { it.put(id, isChecked) }
-
-  fun setExpanded(date: LocalDate, isExpanded: Boolean) = expandedGroups.update { it.put(date, isExpanded) }
 
   fun setPrivacyMode(privacyMode: Boolean) {
     viewModelScope.launch {
@@ -118,70 +132,32 @@ class TransactionsViewModel(
     }
   }
 
-  fun expandAll(expand: Boolean) {
-    expandAllGroups.update { expand }
-    if (expand) expandedGroups.update { persistentMapOf() }
-  }
-
-  fun observe(id: TransactionId): Flow<Transaction> = transactionsDao
+  override fun transactionState(id: TransactionId) = transactionsDao
     .observeById(id)
-    .filterNotNull()
+    .also { logcat.d { "Observing transaction with ID $id" } }
     .distinctUntilChanged()
-    .map(::toTransaction)
+    .map { toTransactionState(it, id) }
 
-  private fun getIdsFlow(): Flow<List<DatedId>> = when (val spec = spec.accountSpec) {
-    AccountSpec.AllAccounts -> {
-      transactionsDao
-        .observeIds()
-        .map { list -> list.map { (id, date) -> DatedId(id, date) } }
-    }
-
-    is AccountSpec.SpecificAccount -> {
-      transactionsDao
-        .observeIdsByAccount(spec.id)
-        .map { list -> list.map { (id, date) -> DatedId(id, date) } }
-    }
-  }
-
-  private fun toDatedTransactions(datedIds: List<DatedId>, sorting: TransactionsSorting) = datedIds
-    .groupBy { it.date }
-    .map { (date, ids) ->
-      DatedTransactions(
+  private fun toTransactionState(data: GetById?, id: TransactionId): TransactionState {
+    if (data == null) return TransactionState.DoesntExist(id)
+    val transaction = with(data) {
+      Transaction(
+        id = id,
         date = date,
-        ids = ids
-          .sorted(sorting)
-          .map { it.id }
-          .toImmutableList(),
+        account = accountName,
+        payee = payeeName,
+        notes = notes,
+        category = categoryName,
+        amount = Amount(amount),
       )
-    }.toImmutableList()
-
-  private fun toTransaction(data: GetById): Transaction = with(data) {
-    Transaction(
-      id = id,
-      date = date,
-      account = accountName,
-      payee = payeeName,
-      notes = notes,
-      category = categoryName,
-      amount = Amount(amount),
-    )
+    }
+    return TransactionState.Loaded(transaction)
   }
 
-  private fun List<DatedId>.sorted(sorting: TransactionsSorting) = when (sorting.direction) {
-    SortDirection.Ascending -> sortedBy { it.date }
-    SortDirection.Descending -> sortedByDescending { it.date }
-  }
+  private fun buildPagingSource() = TransactionsPagingSource(transactionsDao, spec.accountSpec)
+    .also { currentPagingSource = it }
 
-  private data class DatedId(val id: TransactionId, val date: LocalDate)
-
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey(Factory::class)
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted token: LoginToken,
-      @Assisted budgetId: BudgetId,
-      @Assisted spec: TransactionsSpec,
-    ): TransactionsViewModel
+  private companion object {
+    val TransactionFormatKey = DbMetadata.enumKey<TransactionsFormat>("transactionFormat")
   }
 }

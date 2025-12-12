@@ -1,14 +1,12 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.GetIds
-import aktual.budget.db.GetIdsByAccount
 import aktual.budget.db.transactions.GetById
 import aktual.budget.model.AccountId
 import aktual.budget.model.TransactionId
 import alakazam.kotlin.core.CoroutineContexts
 import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToList
+import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -25,15 +23,23 @@ class TransactionsDao(
     .mapToOneOrNull(contexts.default)
     .distinctUntilChanged()
 
-  fun observeIds(): Flow<List<GetIds>> = queries
-    .getIds()
+  fun getIdsPaged(limit: Long, offset: Long): List<TransactionId> = queries
+    .getIdsPaged(limit, offset)
+    .executeAsList()
+
+  fun getIdsByAccountPaged(account: AccountId, limit: Long, offset: Long): List<TransactionId> = queries
+    .getIdsByAccountPaged(account, limit, offset)
+    .executeAsList()
+
+  fun observeCount(): Flow<Long> = queries
+    .getIdsCount()
     .asFlow()
-    .mapToList(contexts.default)
+    .mapToOne(contexts.default)
     .distinctUntilChanged()
 
-  fun observeIdsByAccount(account: AccountId): Flow<List<GetIdsByAccount>> = queries
-    .getIdsByAccount(account)
+  fun observeCountByAccount(account: AccountId): Flow<Long> = queries
+    .getIdsByAccountCount(account)
     .asFlow()
-    .mapToList(contexts.default)
+    .mapToOne(contexts.default)
     .distinctUntilChanged()
 }

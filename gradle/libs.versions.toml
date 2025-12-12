@@ -3,6 +3,8 @@ agp = "9.0.0-beta05"
 alakazam = "6.4.0"
 androidx-activity = "1.12.1"
 androidx-lifecycle = "2.10.0"
+androidx-paging = "3.3.6"
+androidx-paging-compose = "3.4.0-alpha04"
 burst = "2.10.2"
 composeAndroidx = "1.10.0"
 composeJetbrains = "1.10.0-rc02"
@@ -38,6 +40,8 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-lifecycle-viewmodel-core = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
+androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "androidx-paging" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging-compose" }
 androidx-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
@@ -88,6 +92,7 @@ okio = { module = "com.squareup.okio:okio", version = "3.16.4" }
 preferences-android = { module = "dev.jonpoulton.preferences:android", version.ref = "preferences" }
 preferences-core = { module = "dev.jonpoulton.preferences:core", version.ref = "preferences" }
 redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
+shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version = "1.3.3" }
 slf4j = { module = "org.slf4j:slf4j-api", version = "2.0.17" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-dialect = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqldelight" }

@@ -14,4 +14,6 @@ data class Transaction(
   val notes: String?,
   val category: String?,
   val amount: Amount,
-)
+) : Comparable<Transaction> {
+  override fun compareTo(other: Transaction) = date.compareTo(other.date)
+}
