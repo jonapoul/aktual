@@ -16,6 +16,8 @@ import aktual.core.model.ColorSchemeType
 import aktual.core.model.LoginToken
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.LocalTheme
@@ -27,7 +29,6 @@ import aktual.core.ui.defaultHazeStyle
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,7 +49,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
@@ -140,6 +141,11 @@ private fun Content(
         hazeStyle = hazeStyle,
       )
     }
+
+    item {
+      BottomStatusBarSpacing()
+      BottomNavBarSpacing()
+    }
   }
 }
 
@@ -153,7 +159,7 @@ private fun WidgetType(
   theme: Theme = LocalTheme.current,
 ) = Column(
   modifier = modifier
-    .background(Color.Transparent, CardShape)
+    .clip(CardShape)
     .hazeEffect(hazeState, hazeStyle)
     .clickable { onAction(ChooseReportTypeAction.Create(type)) }
     .padding(8.dp),
@@ -202,9 +208,10 @@ private fun WidgetType.sampleData(): ChartData = when (this) {
 @Composable
 private fun metroViewModel(
   budgetId: BudgetId,
-) = assistedMetroViewModel<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory> {
-  create(budgetId)
-}
+) = assistedMetroViewModel<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory>(
+  key = budgetId.value,
+  createViewModel = { create(budgetId) },
+)
 
 @Immutable
 internal sealed interface ChooseReportTypeAction {

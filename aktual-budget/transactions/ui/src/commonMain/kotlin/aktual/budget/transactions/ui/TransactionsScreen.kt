@@ -59,9 +59,10 @@ private fun metroViewModel(
   token: LoginToken,
   budgetId: BudgetId,
   spec: TransactionsSpec,
-) = assistedMetroViewModel<TransactionsViewModel, TransactionsViewModel.Factory> {
-  create(token, budgetId, spec)
-}
+) = assistedMetroViewModel<TransactionsViewModel, TransactionsViewModel.Factory>(
+  key = "$token-$budgetId-$spec",
+  createViewModel = { create(token, budgetId, spec) },
+)
 
 @Composable
 internal fun TransactionsScaffold(

@@ -24,6 +24,8 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -31,19 +33,28 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun BottomStatusBar(
   state: BottomBarState.Visible,
+  onMeasureHeight: (Dp) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+  density: Density = LocalDensity.current,
 ) = Row(
   modifier = modifier
     .background(theme.cardBackground)
     .padding(vertical = 3.dp, horizontal = 8.dp)
-    .fillMaxWidth(),
+    .fillMaxWidth()
+    .onGloballyPositioned { layoutCoordinates ->
+      with(density) {
+        onMeasureHeight(layoutCoordinates.size.height.toDp())
+      }
+    },
   verticalAlignment = Alignment.CenterVertically,
 ) {
   val (pingState, budgetName) = state
@@ -118,6 +129,7 @@ private fun PreviewBottomBar(
       pingState = params.data.state,
       budgetName = params.data.budgetName,
     ),
+    onMeasureHeight = {},
   )
 }
 

@@ -27,7 +27,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,7 +49,6 @@ internal fun ArtifactItem(
   val interactionSource = remember { MutableInteractionSource() }
   Column(
     modifier = modifier
-      .shadow(Dimens.Medium)
       .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
       .background(Color.Transparent, CardShape)
       .hazeEffect(hazeState, hazeStyle)

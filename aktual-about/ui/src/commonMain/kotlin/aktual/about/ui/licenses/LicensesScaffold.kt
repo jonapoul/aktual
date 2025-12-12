@@ -4,6 +4,8 @@ import aktual.about.data.ArtifactDetail
 import aktual.about.vm.LicensesState
 import aktual.about.vm.SearchBarState
 import aktual.core.model.ColorSchemeType
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
@@ -48,6 +50,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -246,6 +249,11 @@ private fun LoadedContent(
       )
 
       VerticalSpacer(5.dp)
+    }
+
+    item {
+      BottomStatusBarSpacing()
+      BottomNavBarSpacing()
     }
   }
 }

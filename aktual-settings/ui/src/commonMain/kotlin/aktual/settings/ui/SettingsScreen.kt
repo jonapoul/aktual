@@ -2,6 +2,8 @@ package aktual.settings.ui
 
 import aktual.core.model.DarkColorSchemeType
 import aktual.core.model.RegularColorSchemeType
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
@@ -137,6 +139,11 @@ private fun SettingsContent(
       if (i != values.size - 1) {
         VerticalSpacer(10.dp)
       }
+    }
+
+    item {
+      BottomStatusBarSpacing()
+      BottomNavBarSpacing()
     }
   }
 }
