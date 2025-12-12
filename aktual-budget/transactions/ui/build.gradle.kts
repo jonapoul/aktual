@@ -14,6 +14,8 @@ kotlin {
     api(project(":aktual-core:ui"))
     implementation(project(":aktual-core:model"))
     implementation(project(":aktual-l10n"))
+    implementation(libs.androidx.paging.compose)
     implementation(libs.kotlinx.datetime)
+    implementation(libs.shimmer)
   }
 }

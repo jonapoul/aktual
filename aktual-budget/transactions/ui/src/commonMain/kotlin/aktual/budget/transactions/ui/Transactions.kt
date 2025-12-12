@@ -1,14 +1,16 @@
 package aktual.budget.transactions.ui
 
-import aktual.budget.model.SortColumn
-import aktual.budget.model.SortDirection
+import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsFormat
-import aktual.budget.transactions.vm.DatedTransactions
-import aktual.budget.transactions.vm.TransactionsSorting
+import aktual.budget.model.TransactionsFormat.Table
+import aktual.budget.transactions.vm.Transaction
+import aktual.budget.transactions.vm.TransactionIdSource
+import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.TabletPreview
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -21,7 +23,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
@@ -31,34 +32,29 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.util.fastForEach
-import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 
 @Composable
 internal fun Transactions(
-  transactions: ImmutableList<DatedTransactions>,
-  observer: TransactionObserver,
+  transactionIdSource: TransactionIdSource,
   format: TransactionsFormat,
-  sorting: TransactionsSorting,
-  source: StateSource,
+  source: TransactionStateSource,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  if (transactions.isEmpty()) {
+  val pagingItems = transactionIdSource.pagingData.collectAsLazyPagingItems()
+  if (pagingItems.itemCount == 0) {
     TransactionsEmpty(
-      sorting = sorting,
       modifier = modifier,
       theme = theme,
     )
   } else {
     TransactionsFilled(
-      transactions = transactions,
-      observer = observer,
+      pagingItems = pagingItems,
       format = format,
-      sorting = sorting,
       source = source,
       onAction = onAction,
       modifier = modifier,
@@ -69,7 +65,6 @@ internal fun Transactions(
 
 @Composable
 private fun TransactionsEmpty(
-  sorting: TransactionsSorting,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -78,8 +73,6 @@ private fun TransactionsEmpty(
   ) {
     CategoryHeader(
       modifier = Modifier.fillMaxWidth(),
-      sorting = sorting,
-      onSort = {},
       theme = theme,
     )
 
@@ -101,11 +94,9 @@ private fun TransactionsEmpty(
 
 @Composable
 private fun TransactionsFilled(
-  transactions: ImmutableList<DatedTransactions>,
-  observer: TransactionObserver,
+  pagingItems: LazyPagingItems<TransactionId>,
   format: TransactionsFormat,
-  sorting: TransactionsSorting,
-  source: StateSource,
+  source: TransactionStateSource,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -118,33 +109,24 @@ private fun TransactionsFilled(
       .scrollbar(listState),
     state = listState,
   ) {
-    if (format == TransactionsFormat.Table) {
+    if (format == Table) {
       stickyHeader {
         CategoryHeader(
           modifier = Modifier.fillMaxWidth(),
-          sorting = sorting,
-          onSort = {},
           theme = theme,
         )
       }
     }
 
-    transactions.fastForEach { (date, ids) ->
-      stickyHeader {
-        DateHeader(
-          modifier = Modifier.fillMaxWidth(),
-          date = date,
-          source = source,
-          onAction = onAction,
-          theme = theme,
-        )
-      }
-
-      items(ids) { id ->
+    items(
+      count = pagingItems.itemCount,
+      key = pagingItems.itemKey { it.toString() },
+    ) { index ->
+      val id = pagingItems[index]
+      if (id != null) {
         TransactionItem(
           modifier = Modifier.fillMaxWidth(),
           id = id,
-          observer = observer,
           format = format,
           source = source,
           onAction = onAction,
@@ -158,51 +140,30 @@ private fun TransactionsFilled(
 }
 
 @PortraitPreview
+@TabletPreview
 @Composable
 private fun PreviewTransactions(
   @PreviewParameter(TransactionsProvider::class) params: ThemedParams<TransactionsParams>,
 ) = PreviewWithColorScheme(params.type) {
   Transactions(
-    transactions = params.data.transactions.toImmutableList(),
+    transactionIdSource = PreviewTransactionIdSource(params.data.transactions),
     format = params.data.format,
-    source = params.data.source,
-    sorting = params.data.sorting,
-    observer = params.data.observer,
+    source = previewTransactionStateSource(params.data.transactions),
     onAction = {},
   )
 }
 
 private data class TransactionsParams(
-  val sorting: TransactionsSorting,
-  val observer: TransactionObserver,
   val format: TransactionsFormat,
-  val source: StateSource = StateSource.Empty,
-  val transactions: List<DatedTransactions>,
+  val transactions: List<Transaction> = emptyList(),
 )
 
 private class TransactionsProvider : ThemedParameterProvider<TransactionsParams>(
   TransactionsParams(
-    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
-    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
     format = TransactionsFormat.List,
-    transactions = persistentListOf(
-      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1.id, TRANSACTION_2.id)),
-      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3.id)),
-    ),
+    transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
   ),
-  TransactionsParams(
-    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
-    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
-    format = TransactionsFormat.Table,
-    transactions = persistentListOf(
-      DatedTransactions(TRANSACTION_1.date, persistentListOf(TRANSACTION_1.id, TRANSACTION_2.id)),
-      DatedTransactions(TRANSACTION_3.date, persistentListOf(TRANSACTION_3.id)),
-    ),
-  ),
-  TransactionsParams(
-    sorting = TransactionsSorting(SortColumn.Date, SortDirection.Ascending),
-    observer = previewObserver(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
-    format = TransactionsFormat.Table,
-    transactions = persistentListOf(),
-  ),
+  TransactionsParams(format = Table, transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),
+  TransactionsParams(Table),
+  TransactionsParams(TransactionsFormat.List),
 )

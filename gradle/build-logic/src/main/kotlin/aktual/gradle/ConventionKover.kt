@@ -36,6 +36,7 @@ class ConventionKover : Plugin<Project> {
               "aktual.core.ui.DesktopPreview",
               "aktual.core.ui.LandscapePreview",
               "aktual.core.ui.PortraitPreview",
+              "aktual.core.ui.TabletPreview",
               "androidx.compose.runtime.Composable",
               "androidx.compose.ui.tooling.preview.Preview",
               "javax.annotation.processing.Generated",

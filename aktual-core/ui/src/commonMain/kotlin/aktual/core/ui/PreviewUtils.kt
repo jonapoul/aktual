@@ -7,6 +7,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.AndroidUiModes
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 
@@ -36,11 +37,18 @@ annotation class LandscapePreview
 )
 annotation class DesktopPreview
 
+@Preview(
+  name = "Tablet",
+  showBackground = true,
+  device = Devices.PIXEL_TABLET,
+)
+annotation class TabletPreview
+
 const val MY_PHONE_WIDTH_DP = 540 // 1080px * 160 / 400dpi
 const val MY_PHONE_HEIGHT_DP = 1140 // 2280px * 160 / 400dpi
 
-private const val MY_MONITOR_HEIGHT_DP = 1920 // 1440px * 160 / 111dpi
-private const val MY_MONITOR_WIDTH_DP = 3413 // 2560px × 160 / 111dpi
+const val MY_MONITOR_HEIGHT_DP = 1920 // 1440px * 160 / 111dpi
+const val MY_MONITOR_WIDTH_DP = 3413 // 2560px × 160 / 111dpi
 
 open class PreviewParameters<T>(protected val data: List<T>) : PreviewParameterProvider<T> {
   private var labels = listOf<String>()

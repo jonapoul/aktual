@@ -60,7 +60,6 @@ class ModuleCompose : Plugin<Project> {
     }
 
     dependencies {
-      // This workaround is only available in Android Gradle plugin version 9.0.0-beta01 and higher.
       "androidRuntimeClasspath"(libs["jetbrains.uiTooling"])
     }
   }
