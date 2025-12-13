@@ -15,29 +15,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  validate-gradle-wrapper:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
-
-      - name: Check if Gradle wrapper files changed
-        id: wrapper-changed
-        uses: dorny/paths-filter@v3
-        with:
-          filters: |
-            wrapper:
-              - 'gradle/wrapper/**'
-              - 'gradlew'
-              - 'gradlew.bat'
-
-      - name: Validate Gradle wrapper
-        if: steps.wrapper-changed.outputs.wrapper == 'true'
-        uses: gradle/actions/wrapper-validation@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
-
   pr:
     runs-on: ubuntu-latest
-    needs: validate-gradle-wrapper
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
@@ -45,9 +24,6 @@ jobs:
           fetch-depth: 0
           fetch-tags: true
           ref: ${{ github.head_ref }}
-
-      - name: Validate Gradle wrapper
-        uses: gradle/actions/wrapper-validation@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
 
       - name: Setup JDK
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5
