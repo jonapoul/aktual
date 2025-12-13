@@ -36,7 +36,6 @@ include(
   ":aktual-app:di",
   ":aktual-app:nav",
   ":aktual-budget:data",
-  ":aktual-budget:encryption",
   ":aktual-budget:list:ui",
   ":aktual-budget:list:vm",
   ":aktual-budget:model",

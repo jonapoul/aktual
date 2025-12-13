@@ -1,14 +1,19 @@
 package aktual.prefs
 
+import aktual.budget.encryption.EncryptionKeys
 import aktual.core.model.Base64String
 import aktual.core.model.KeyId
 import dev.jonpoulton.preferences.core.SimpleNullableStringSerializer
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 
 @Inject
-class KeyPreferences(private val prefs: EncryptedPreferences) {
+@ContributesBinding(AppScope::class, binding<EncryptionKeys>())
+class KeyPreferences(private val prefs: EncryptedPreferences) : EncryptionKeys {
   operator fun contains(keyId: KeyId?): Boolean = keyId?.let { prefs.contains(key(it)) } == true
-  operator fun get(keyId: KeyId?): Base64String? = keyId?.let { preference(it).get() }
+  override operator fun get(keyId: KeyId?): Base64String? = keyId?.let { preference(it).get() }
   operator fun set(keyId: KeyId, value: Base64String) = preference(keyId).set(value)
 
   suspend fun setAndCommit(keyId: KeyId, value: Base64String) = preference(keyId).setAndCommit(value)

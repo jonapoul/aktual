@@ -3,6 +3,7 @@ import aktual.gradle.boolProperty
 plugins {
   alias(libs.plugins.module.multiplatform)
   alias(libs.plugins.sqldelight)
+  alias(libs.plugins.wire)
   alias(libs.plugins.convention.buildconfig)
 }
 
@@ -20,15 +21,27 @@ sqldelight {
   }
 }
 
+wire {
+  kotlin {}
+}
+
 buildConfig {
-  packageName("aktual.budget.db")
-  className("DatabaseBuildConfig")
-  buildConfigField("FOREIGN_KEY_CONSTRAINTS", boolProperty(key = "aktual.db.foreignKeyConstraints"))
+  forClass("DatabaseBuildConfig") {
+    packageName("aktual.budget.db")
+    buildConfigField<Boolean>("FOREIGN_KEY_CONSTRAINTS", boolProperty(key = "aktual.db.foreignKeyConstraints"))
+  }
+
+  sourceSets.named("test") {
+    packageName("aktual.test")
+    useKotlinOutput { topLevelConstants = true }
+    buildConfigField<File>("RESOURCES_DIR", layout.projectDirectory.dir("src/commonTest/resources").asFile)
+  }
 }
 
 kotlin {
   commonMainDependencies {
     api(libs.kotlinx.datetime)
+    api(libs.okio)
     api(libs.preferences.core)
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:model"))

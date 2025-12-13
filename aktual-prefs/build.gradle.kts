@@ -6,6 +6,7 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.preferences.core)
+    api(project(":aktual-budget:data"))
     api(project(":aktual-core:model"))
   }
 
