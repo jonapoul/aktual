@@ -23,7 +23,6 @@ import kotlin.test.Test
 import aktual.budget.model.MessageValue.Number as MsgNum
 import aktual.budget.model.MessageValue.String as MsgStr
 
-@Suppress("FloatingPointLiteralPrecision")
 class SyncResponseDecoderTest {
   private lateinit var metadata: DbMetadata
   private lateinit var decoder: SyncResponseDecoder
@@ -57,13 +56,13 @@ class SyncResponseDecoderTest {
     assertThat(response.messages.map(MessageEnvelope::content)).isEqualToList(
       Message(dataset, row, "acct", MsgStr("e0f919d2-7e0c-4d32-801c-9f907de3b65c")),
       Message(dataset, row, "category", MsgStr("711b4c36-86f5-4206-a815-01bfa83cc5b0")),
-      Message(dataset, row, "cleared", MsgNum(0f)),
-      Message(dataset, row, "amount", MsgNum(-12345f)),
+      Message(dataset, row, "cleared", MsgNum(0.0)),
+      Message(dataset, row, "amount", MsgNum(-12345.0)),
       Message(dataset, row, "description", MsgStr("8843776a-7041-4e04-9908-110053214806")),
       Message(dataset, row, "notes", MsgStr("sagese")),
-      Message(dataset, row, "date", MsgNum(20251213f)),
-      Message(dataset, row, "sort_order", MsgNum(1_765_617_408_523f)),
-      Message(dataset, row, "reconciled", MsgNum(0f)),
+      Message(dataset, row, "date", MsgNum(20251213.0)),
+      Message(dataset, row, "sort_order", MsgNum(1_765_617_408_523.0)),
+      Message(dataset, row, "reconciled", MsgNum(0.0)),
     )
   }
 
@@ -76,13 +75,13 @@ class SyncResponseDecoderTest {
     assertThat(response.messages.map(MessageEnvelope::content)).isEqualToList(
       Message(dataset, row, "acct", MsgStr("e0f919d2-7e0c-4d32-801c-9f907de3b65c")),
       Message(dataset, row, "category", MsgStr("711b4c36-86f5-4206-a815-01bfa83cc5b0")),
-      Message(dataset, row, "cleared", MsgNum(1f)),
-      Message(dataset, row, "amount", MsgNum(-12345f)),
+      Message(dataset, row, "cleared", MsgNum(1.0)),
+      Message(dataset, row, "amount", MsgNum(-12345.0)),
       Message(dataset, row, "description", MsgStr("8843776a-7041-4e04-9908-110053214806")),
       Message(dataset, row, "notes", MsgStr("Notes go here")),
-      Message(dataset, row, "date", MsgNum(20251213f)),
-      Message(dataset, row, "sort_order", MsgNum(1765627806804f)),
-      Message(dataset, row, "reconciled", MsgNum(0f)),
+      Message(dataset, row, "date", MsgNum(20251213.0)),
+      Message(dataset, row, "sort_order", MsgNum(1765627806804.0)),
+      Message(dataset, row, "reconciled", MsgNum(0.0)),
     )
   }
 
@@ -98,7 +97,7 @@ class SyncResponseDecoderTest {
           dataset = "transactions",
           row = "b5d4b867-78ed-436b-afcf-29ed8f26b59a",
           column = "tombstone",
-          value = MsgNum(1f),
+          value = MsgNum(1.0),
         ),
       ),
     )
@@ -116,7 +115,7 @@ class SyncResponseDecoderTest {
           dataset = "transactions",
           row = "dbad3b3c-df72-4469-a083-4b3e606ad30d",
           column = "tombstone",
-          value = MsgNum(1f),
+          value = MsgNum(1.0),
         ),
       ),
     )
