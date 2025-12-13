@@ -25,6 +25,9 @@ jobs:
           fetch-tags: true
           ref: ${{ github.head_ref }}
 
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
+
       - name: Setup JDK
         uses: actions/setup-java@f2beeb24e141e01a676f977032f5a29d81c9e27e # v5
         with:
@@ -37,8 +40,13 @@ jobs:
           add-job-summary: 'on-failure'
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
-      - name: Check
-        run: ./gradlew check
+      - run: ./gradlew build --dry-run
+      - run: ./gradlew licensee
+      - run: ./gradlew compileAll
+      - run: ./gradlew assemble
+      - run: ./gradlew detektCheck
+      - run: ./gradlew lint
+      - run: ./gradlew koverVerify
 
       - name: Report build results
         uses: gmazzo/publish-report-annotations@8bec9f79d4fb200c6d42faeeb2e04879646ba04f # v1
