@@ -35,19 +35,20 @@ jobs:
         id: claude-review
         uses: anthropics/claude-code-action@f0c8eb29807907de7f5412d04afceb5e24817127 # v1
         with:
+          use_sticky_comment: true
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
 
-            Review this pull request and provide feedback on the following, if any issues should be addressed:
+            Review this pull request and provide feedback on the following:
             - Code quality and best practices
             - Potential bugs or issues
             - Performance considerations
             - Security concerns
             - Test coverage
 
-            Keep the review brief unless anything should be addressed.
+            Keep the review brief unless anything should be addressed. Don't tell me what I did well, if it's all fine just give me a one-line review.
 
             Use the repository's CLAUDE.md for guidance on style and conventions. Be constructive and helpful in your feedback.
 
