@@ -1,4 +1,4 @@
-package aktual.budget.sync.vm
+package aktual.budget.encryption
 
 import okio.Buffer
 import okio.Path

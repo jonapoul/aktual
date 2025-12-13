@@ -37,12 +37,11 @@ class SyncDownloadApi(
     Protocol.Https -> URLProtocol.HTTPS
   }
 
-  @Suppress("SuspendFunWithFlowReturnType")
-  suspend fun downloadUserFile(
+  fun downloadUserFile(
     token: LoginToken,
     budgetId: BudgetId,
     path: Path,
-  ): Flow<SyncDownloadState> {
+  ): Flow<SyncDownloadState> = flow {
     val statement = client.prepareGet {
       url {
         protocol = urlProtocol
@@ -53,23 +52,21 @@ class SyncDownloadApi(
       header(AktualHeaders.FILE_ID, budgetId)
     }
 
-    return flow {
-      statement.execute { response ->
-        val channel = response.body<ByteReadChannel>()
-        val contentLength = response.contentLength() ?: error("No content length in response? $response")
-        val sink = fileSystem.sink(path)
-        var count = 0L
-        sink.use { s ->
-          while (!channel.exhausted()) {
-            val chunk = channel.readRemaining(CHANNEL_BUFFER_SIZE)
-            count += chunk.remaining
-            chunk.transferTo(s)
-            emit(SyncDownloadState.InProgress(count, contentLength))
-          }
-        } // use
-        emit(SyncDownloadState.Done(path, contentLength))
-      } // execute
-    } // flow
+    statement.execute { response ->
+      val channel = response.body<ByteReadChannel>()
+      val contentLength = response.contentLength() ?: error("No content length in response? $response")
+      val sink = fileSystem.sink(path)
+      var count = 0L
+      sink.use { s ->
+        while (!channel.exhausted()) {
+          val chunk = channel.readRemaining(CHANNEL_BUFFER_SIZE)
+          count += chunk.remaining
+          chunk.transferTo(s)
+          emit(SyncDownloadState.InProgress(count, contentLength))
+        }
+      }
+      emit(SyncDownloadState.Done(path, contentLength))
+    }
   }
 
   /**
