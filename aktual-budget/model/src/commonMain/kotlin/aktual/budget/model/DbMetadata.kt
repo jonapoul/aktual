@@ -62,9 +62,9 @@ data class DbMetadata(
     EncryptKeyId to encryptKeyId,
   )
 
-  @Suppress("UNCHECKED_CAST")
   operator fun <T : Any> get(key: Key<T>): T? {
     val datum = data[key] ?: return null
+    @Suppress("UNCHECKED_CAST")
     return requireNotNull(datum as? T) { "The value for metadata key $key is the wrong type: $datum" }
   }
 

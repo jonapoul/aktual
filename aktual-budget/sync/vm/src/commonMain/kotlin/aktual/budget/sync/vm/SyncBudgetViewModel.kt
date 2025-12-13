@@ -2,6 +2,8 @@ package aktual.budget.sync.vm
 
 import aktual.api.model.sync.EncryptMeta
 import aktual.api.model.sync.UserFile
+import aktual.budget.encryption.DecryptResult
+import aktual.budget.encryption.FileDecrypter
 import aktual.budget.encryption.KeyGenerator
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
@@ -56,7 +58,7 @@ class SyncBudgetViewModel(
   @Assisted private val budgetId: BudgetId,
   private val fileDownloader: BudgetFileDownloader,
   private val infoFetcher: BudgetInfoFetcher,
-  private val decrypter: Decrypter,
+  private val decrypter: FileDecrypter,
   private val importer: DatabaseImporter,
   private val files: BudgetFiles,
   private val urlOpener: UrlOpener,

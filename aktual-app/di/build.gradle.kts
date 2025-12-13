@@ -12,7 +12,6 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(project(":aktual-api:github"))
-    api(project(":aktual-budget:model"))
     api(project(":aktual-core:di"))
     api(project(":aktual-core:model"))
     api(project(":aktual-prefs"))

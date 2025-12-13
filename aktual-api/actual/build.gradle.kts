@@ -21,6 +21,7 @@ kotlin {
     api(project(":aktual-core:model"))
     implementation(libs.ktor.serialization.core)
     implementation(libs.ktor.serialization.json)
+    implementation(project(":aktual-budget:data"))
     implementation(project(":aktual-codegen:annotation"))
     compileOnly(libs.redacted.annotations)
   }

@@ -1,6 +1,7 @@
 package aktual.core.model
 
 import kotlinx.serialization.Serializable
+import okio.ByteString
 import java.util.stream.IntStream
 import kotlin.io.encoding.Base64
 
@@ -8,6 +9,7 @@ import kotlin.io.encoding.Base64
 @Serializable
 value class Base64String(val value: String) : Comparable<Base64String>, CharSequence by value {
   constructor(bytes: ByteArray) : this(Base64.encode(bytes))
+  constructor(data: ByteString) : this(data.base64())
 
   override fun toString() = value
   override fun compareTo(other: Base64String) = value.compareTo(other.value)

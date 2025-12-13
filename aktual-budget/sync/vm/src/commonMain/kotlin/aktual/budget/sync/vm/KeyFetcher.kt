@@ -3,6 +3,8 @@ package aktual.budget.sync.vm
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.model.sync.GetUserKeyRequest
 import aktual.api.model.sync.GetUserKeyResponse
+import aktual.budget.encryption.BufferDecrypter
+import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.KeyGenerator
 import aktual.budget.model.BudgetId
 import aktual.core.model.LoginToken
@@ -24,7 +26,7 @@ class KeyFetcher(
   private val contexts: CoroutineContexts,
   private val keyGenerator: KeyGenerator,
   private val keyPreferences: KeyPreferences,
-  private val decrypter: Decrypter,
+  private val decrypter: BufferDecrypter,
 ) {
   suspend operator fun invoke(budgetId: BudgetId, token: LoginToken, keyPassword: Password): FetchKeyResult {
     logcat.d { "KeyFetcher $budgetId $token $keyPassword" }

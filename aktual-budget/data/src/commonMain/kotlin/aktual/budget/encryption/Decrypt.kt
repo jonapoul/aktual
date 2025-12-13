@@ -12,7 +12,7 @@ import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 @Throws(UnknownAlgorithmException::class)
-fun Source.decryptToSink(
+internal fun Source.decryptToSink(
   key: ByteArray,
   iv: ByteArray,
   authTag: ByteArray,

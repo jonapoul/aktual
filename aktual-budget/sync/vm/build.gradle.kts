@@ -4,7 +4,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:encryption"))
+    api(project(":aktual-budget:data"))
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:di"))
     api(libs.alakazam.kotlin.core)

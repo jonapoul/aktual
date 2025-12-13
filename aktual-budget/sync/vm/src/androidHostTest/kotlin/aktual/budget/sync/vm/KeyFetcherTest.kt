@@ -3,6 +3,8 @@ package aktual.budget.sync.vm
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.AktualJson
 import aktual.api.client.SyncApi
+import aktual.budget.encryption.BufferDecrypter
+import aktual.budget.encryption.BufferDecrypterImpl
 import aktual.budget.encryption.KeyGenerator
 import aktual.budget.model.BudgetId
 import aktual.core.model.LoginToken
@@ -36,7 +38,7 @@ class KeyFetcherTest {
   private lateinit var keyFetcher: KeyFetcher
   private lateinit var keyGenerator: KeyGenerator
   private lateinit var keyPreferences: KeyPreferences
-  private lateinit var decrypter: Decrypter
+  private lateinit var decrypter: BufferDecrypter
 
   private lateinit var mockEngine: MockEngine.Queue
   private lateinit var syncApi: SyncApi
@@ -50,7 +52,7 @@ class KeyFetcherTest {
     val encryptedPrefs = object : EncryptedPreferences, Preferences by prefs {}
 
     keyPreferences = KeyPreferences(encryptedPrefs)
-    decrypter = Decrypter(contexts, keyPreferences, files = mockk())
+    decrypter = BufferDecrypterImpl(contexts, keyPreferences)
 
     mockEngine = emptyMockEngine()
     syncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, AktualJson))
