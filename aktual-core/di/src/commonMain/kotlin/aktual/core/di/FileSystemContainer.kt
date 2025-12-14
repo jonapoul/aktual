@@ -1,4 +1,4 @@
-package aktual.app.di
+package aktual.core.di
 
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
@@ -12,5 +12,5 @@ import okio.FileSystem
 object FileSystemContainer {
   @Provides
   @SingleIn(AppScope::class)
-  fun provides(): FileSystem = FileSystem.SYSTEM
+  fun provides(): FileSystem = FileSystem.Companion.SYSTEM
 }

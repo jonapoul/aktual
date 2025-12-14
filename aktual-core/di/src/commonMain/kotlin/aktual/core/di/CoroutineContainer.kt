@@ -1,4 +1,4 @@
-package aktual.app.di
+package aktual.core.di
 
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.DefaultCoroutineContexts

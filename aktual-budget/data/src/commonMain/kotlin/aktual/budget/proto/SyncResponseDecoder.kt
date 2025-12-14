@@ -74,7 +74,7 @@ class SyncResponseDecoderImpl(
   }
 
   private fun parseValue(value: String): MessageValue = when (val type = value[0]) {
-    'N' -> MessageValue.Number(value.substring(startIndex = 2).toFloat())
+    'N' -> MessageValue.Number(value.substring(startIndex = 2).toDouble())
     'S' -> MessageValue.String(value.substring(startIndex = 2))
     '0' -> MessageValue.Null
     else -> throw IllegalArgumentException("Unexpected type '$type' for content '$value'")

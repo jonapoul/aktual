@@ -31,7 +31,7 @@ data class Message(
 
 sealed interface MessageValue {
   @JvmInline
-  value class Number(val value: Float) : MessageValue
+  value class Number(val value: Double) : MessageValue
 
   @JvmInline
   value class String(val value: kotlin.String) : MessageValue

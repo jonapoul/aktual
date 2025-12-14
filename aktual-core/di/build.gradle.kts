@@ -6,6 +6,7 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:data"))
     api(project(":aktual-budget:model"))
+    api(libs.alakazam.kotlin.time)
     api(libs.androidx.lifecycle.viewmodel.core)
     api(libs.metrox.viewmodel)
   }
