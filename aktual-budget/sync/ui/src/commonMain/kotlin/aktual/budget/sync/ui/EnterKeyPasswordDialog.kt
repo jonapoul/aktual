@@ -62,13 +62,21 @@ internal fun EnterKeyPasswordDialog(
     onDismissRequest = { onAction(SyncBudgetAction.DismissPasswordDialog) },
     buttons = {
       TextButton(onClick = { onAction(SyncBudgetAction.DismissPasswordDialog) }) {
-        Text(text = Strings.syncPasswordDialogDismiss)
+        Text(
+          text = Strings.syncPasswordDialogDismiss,
+          color = theme.buttonPrimaryText,
+        )
       }
+
+      val confirmEnabled = remember(input) { input.isNotEmpty() }
       TextButton(
-        enabled = input.isNotEmpty(),
+        enabled = confirmEnabled,
         onClick = { onAction(SyncBudgetAction.ConfirmKeyPassword) },
       ) {
-        Text(text = Strings.syncPasswordDialogConfirm)
+        Text(
+          text = Strings.syncPasswordDialogConfirm,
+          color = if (confirmEnabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText,
+        )
       }
     },
     content = {
@@ -166,7 +174,7 @@ private fun buildDialogText(
 private fun PreviewEnterKeyPasswordDialog(
   @PreviewParameter(PasswordProvider::class) params: ThemedParams<Password>,
 ) = PreviewWithColorScheme(params.type) {
-  Content(
+  EnterKeyPasswordDialog(
     input = params.data,
     onAction = {},
   )
