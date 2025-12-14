@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,9 +18,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.hazeEffect
 
 @Stable
 @Composable
@@ -31,12 +27,10 @@ fun UsingServerText(
   modifier: Modifier = Modifier,
   fontSize: TextUnit = 16.sp,
   theme: Theme = LocalTheme.current,
-  hazeState: HazeState = remember { HazeState() },
-  hazeStyle: HazeStyle = defaultHazeStyle(theme),
 ) {
   Column(
     modifier = modifier
-      .hazeEffect(hazeState, hazeStyle)
+      .aktualHaze()
       .background(Color.Transparent, RounderCardShape)
       .padding(20.dp),
     horizontalAlignment = Alignment.CenterHorizontally,

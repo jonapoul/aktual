@@ -4,7 +4,6 @@ import aktual.about.vm.BuildState
 import aktual.core.model.ColorSchemeType
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.LandscapePreview
@@ -15,10 +14,10 @@ import aktual.core.ui.RounderCardShape
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.Theme
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.defaultHazeStyle
+import aktual.core.ui.WithHazeState
+import aktual.core.ui.aktualHaze
 import aktual.core.ui.verticalScrollWithBar
 import alakazam.kotlin.compose.VerticalSpacer
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,11 +29,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 
 @Composable
@@ -55,13 +51,14 @@ internal fun InfoScaffold(
         modifier = Modifier.hazeSource(hazeState),
       )
 
-      InfoScreenContent(
-        modifier = Modifier.padding(innerPadding),
-        buildState = buildState,
-        hazeState = hazeState,
-        onAction = onAction,
-        theme = theme,
-      )
+      WithHazeState(hazeState) {
+        InfoScreenContent(
+          modifier = Modifier.padding(innerPadding),
+          buildState = buildState,
+          onAction = onAction,
+          theme = theme,
+        )
+      }
     }
   }
 }
@@ -69,21 +66,18 @@ internal fun InfoScaffold(
 @Composable
 private fun InfoScreenContent(
   buildState: BuildState,
-  hazeState: HazeState,
   onAction: (InfoAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = Column(
   modifier = modifier.verticalScrollWithBar(),
 ) {
-  val hazeStyle = defaultHazeStyle(theme)
-
   Box(
     modifier = Modifier
       .fillMaxWidth()
       .padding(Dimens.VeryLarge)
       .clip(RounderCardShape)
-      .hazeEffect(hazeState, hazeStyle),
+      .aktualHaze(),
   ) {
     InfoHeader(
       modifier = Modifier.fillMaxWidth(),
@@ -97,8 +91,6 @@ private fun InfoScreenContent(
       .fillMaxWidth()
       .padding(Dimens.VeryLarge),
     buildState = buildState,
-    hazeState = hazeState,
-    hazeStyle = hazeStyle,
     theme = theme,
   )
 

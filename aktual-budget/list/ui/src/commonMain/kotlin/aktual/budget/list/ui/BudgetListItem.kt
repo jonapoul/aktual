@@ -12,10 +12,9 @@ import aktual.core.ui.RowShape
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.defaultHazeStyle
+import aktual.core.ui.aktualHaze
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -45,8 +44,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeEffect
 
 /**
  * actual/packages/desktop-client/src/components/manager/BudgetList.tsx
@@ -54,7 +51,6 @@ import dev.chrisbanes.haze.hazeEffect
 @Composable
 internal fun BudgetListItem(
   budget: Budget,
-  hazeState: HazeState,
   onClickOpen: () -> Unit,
   onClickDelete: () -> Unit,
   modifier: Modifier = Modifier,
@@ -63,7 +59,7 @@ internal fun BudgetListItem(
   Row(
     modifier = modifier
       .clip(RowShape)
-      .hazeEffect(hazeState, defaultHazeStyle(theme))
+      .aktualHaze()
       .clickable(onClick = onClickOpen)
       .padding(horizontal = 15.dp, vertical = 12.dp),
     horizontalArrangement = Arrangement.Start,
@@ -168,7 +164,6 @@ private fun PreviewBudgetListItem(
   BudgetListItem(
     modifier = params.data.width?.let { w -> Modifier.width(w) } ?: Modifier.fillMaxWidth(),
     budget = params.data.budget,
-    hazeState = remember { HazeState() },
     onClickOpen = {},
     onClickDelete = {},
   )

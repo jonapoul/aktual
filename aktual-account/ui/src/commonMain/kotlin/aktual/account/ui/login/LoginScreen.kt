@@ -20,6 +20,7 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.UsingServerText
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.WithHazeState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
@@ -129,17 +130,18 @@ internal fun LoginScaffold(
         modifier = Modifier.hazeSource(hazeState),
       )
 
-      Content(
-        modifier = Modifier.padding(innerPadding),
-        versions = versions,
-        enteredPassword = enteredPassword,
-        url = url,
-        isLoading = isLoading,
-        loginFailure = loginFailure,
-        hazeState = hazeState,
-        onAction = onAction,
-        theme = theme,
-      )
+      WithHazeState(hazeState) {
+        Content(
+          modifier = Modifier.padding(innerPadding),
+          versions = versions,
+          enteredPassword = enteredPassword,
+          url = url,
+          isLoading = isLoading,
+          loginFailure = loginFailure,
+          onAction = onAction,
+          theme = theme,
+        )
+      }
     }
   }
 }
@@ -152,7 +154,6 @@ private fun Content(
   url: ServerUrl?,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
-  hazeState: HazeState,
   onAction: (LoginAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -208,7 +209,6 @@ private fun Content(
 
     UsingServerText(
       url = url,
-      hazeState = hazeState,
       theme = theme,
       onClickChange = { onAction(LoginAction.ChangeServer) },
     )
