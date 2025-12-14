@@ -19,7 +19,7 @@ import okio.buffer
 import okio.source
 
 interface BudgetSyncApi {
-  suspend fun resyncUserFile(
+  suspend fun syncBudget(
     token: LoginToken,
     budgetId: BudgetId,
   ): SyncResponse
@@ -36,7 +36,7 @@ class BudgetSyncApiImpl(
     Protocol.Https -> URLProtocol.HTTPS
   }
 
-  override suspend fun resyncUserFile(
+  override suspend fun syncBudget(
     token: LoginToken,
     budgetId: BudgetId,
   ): SyncResponse {

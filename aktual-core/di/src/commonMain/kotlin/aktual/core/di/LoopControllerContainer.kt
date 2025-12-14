@@ -1,4 +1,4 @@
-package aktual.app.di
+package aktual.core.di
 
 import alakazam.kotlin.core.InfiniteLoopController
 import alakazam.kotlin.core.LoopController
@@ -10,5 +10,6 @@ import dev.zacsweers.metro.ContributesTo
 @BindingContainer
 @ContributesTo(AppScope::class)
 interface LoopControllerContainer {
-  @Binds val InfiniteLoopController.loopController: LoopController
+  @Binds
+  val InfiniteLoopController.loopController: LoopController
 }
