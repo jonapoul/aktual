@@ -15,7 +15,7 @@ import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TextField
 import aktual.core.ui.Theme
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.defaultHazeStyle
+import aktual.core.ui.WithHazeState
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
@@ -95,12 +95,13 @@ internal fun LicensesScaffold(
           theme = theme,
         )
 
-        Content(
-          state = state,
-          hazeState = hazeState,
-          theme = theme,
-          onAction = onAction,
-        )
+        WithHazeState(hazeState) {
+          Content(
+            state = state,
+            theme = theme,
+            onAction = onAction,
+          )
+        }
       }
     }
   }
@@ -164,7 +165,6 @@ private fun LicensesSearchInput(
 @Composable
 private fun Content(
   state: LicensesState,
-  hazeState: HazeState,
   onAction: (LicensesAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -172,7 +172,7 @@ private fun Content(
   when (state) {
     LicensesState.Loading -> LoadingContent(theme, modifier)
     LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
-    is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, hazeState, onAction, modifier)
+    is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, onAction, modifier)
     is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
   }.exhaustive
 }
@@ -225,12 +225,10 @@ private fun NoneFoundContent(
 private fun LoadedContent(
   theme: Theme,
   artifacts: ImmutableList<ArtifactDetail>,
-  hazeState: HazeState,
   onAction: (LicensesAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   val listState = rememberLazyListState()
-  val hazeStyle = defaultHazeStyle(theme)
   LazyColumn(
     modifier = modifier
       .fillMaxSize()
@@ -241,8 +239,6 @@ private fun LoadedContent(
     items(artifacts) { artifact ->
       ArtifactItem(
         artifact = artifact,
-        hazeState = hazeState,
-        hazeStyle = hazeStyle,
         onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },
         theme = theme,
       )

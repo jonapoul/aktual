@@ -21,23 +21,20 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 
 @Composable
 fun HazedBox(
-  state: HazeState,
   modifier: Modifier = Modifier,
+  state: HazeState = LocalHazeState.current,
   contentAlignment: Alignment = Alignment.TopStart,
   padding: PaddingValues = PaddingValues(30.dp),
   shape: Shape = RounderCardShape,
-  style: HazeStyle = defaultHazeStyle(LocalTheme.current),
   content: @Composable BoxScope.() -> Unit,
 ) = Box(
   modifier
     .clip(shape)
-    .hazeEffect(state, style)
+    .aktualHaze(state)
     .padding(padding),
   contentAlignment = contentAlignment,
   content = content,

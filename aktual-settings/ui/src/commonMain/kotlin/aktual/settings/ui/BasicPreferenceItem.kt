@@ -2,12 +2,10 @@ package aktual.settings.ui
 
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.defaultHazeStyle
+import aktual.core.ui.aktualHaze
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -32,9 +30,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.hazeEffect
 
 @Composable
 internal fun BasicPreferenceItem(
@@ -43,10 +38,7 @@ internal fun BasicPreferenceItem(
   icon: ImageVector?,
   clickability: Clickability,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  hazeState: HazeState = remember { HazeState() },
-  hazeStyle: HazeStyle = defaultHazeStyle(theme),
   rightContent: (@Composable () -> Unit)? = null,
   bottomContent: (@Composable () -> Unit)? = null,
 ) {
@@ -64,7 +56,7 @@ internal fun BasicPreferenceItem(
   Row(
     modifier = modifier
       .clip(CardShape)
-      .hazeEffect(hazeState, hazeStyle)
+      .aktualHaze()
       .padding(5.dp)
       then clickableModifier,
     horizontalArrangement = Arrangement.Center,

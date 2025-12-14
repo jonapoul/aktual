@@ -25,7 +25,8 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.defaultHazeStyle
+import aktual.core.ui.WithHazeState
+import aktual.core.ui.aktualHaze
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
@@ -44,6 +45,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -53,8 +55,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.toImmutableList
@@ -105,24 +105,23 @@ internal fun ChooseReportTypeScaffold(
       modifier = Modifier.hazeSource(hazeState),
     )
 
-    Content(
-      modifier = Modifier.padding(innerPadding),
-      onAction = onAction,
-      hazeState = hazeState,
-      theme = theme,
-    )
+    WithHazeState(hazeState) {
+      Content(
+        modifier = Modifier.padding(innerPadding),
+        onAction = onAction,
+        theme = theme,
+      )
+    }
   }
 }
 
 @Composable
 private fun Content(
-  hazeState: HazeState,
   onAction: ChooseReportTypeActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   val lazyListState = rememberLazyListState()
-  val hazeStyle = defaultHazeStyle(theme)
   LazyColumn(
     modifier = modifier
       .fillMaxWidth()
@@ -137,8 +136,6 @@ private fun Content(
         type = type,
         onAction = onAction,
         theme = theme,
-        hazeState = hazeState,
-        hazeStyle = hazeStyle,
       )
     }
 
@@ -153,14 +150,12 @@ private fun Content(
 private fun WidgetType(
   type: WidgetType,
   onAction: ChooseReportTypeActionListener,
-  hazeState: HazeState,
-  hazeStyle: HazeStyle,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = Column(
   modifier = modifier
     .clip(CardShape)
-    .hazeEffect(hazeState, hazeStyle)
+    .aktualHaze()
     .clickable { onAction(ChooseReportTypeAction.Create(type)) }
     .padding(8.dp),
 ) {

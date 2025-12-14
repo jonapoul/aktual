@@ -14,5 +14,5 @@ import kotlin.random.asKotlinRandom
 object RandomContainer {
   @Provides
   @SingleIn(AppScope::class)
-  fun random(): Random = SecureRandom().asKotlinRandom()
+  fun random(): Random = SecureRandom.getInstanceStrong().asKotlinRandom()
 }

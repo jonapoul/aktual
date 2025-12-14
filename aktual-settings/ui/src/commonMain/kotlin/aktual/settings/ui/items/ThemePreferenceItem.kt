@@ -43,7 +43,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
-import dev.chrisbanes.haze.HazeState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
@@ -53,7 +52,6 @@ internal fun ThemePreferenceItem(
   config: ThemeConfig,
   onChange: (ThemeConfig) -> Unit,
   modifier: Modifier = Modifier,
-  hazeState: HazeState = remember { HazeState() },
 ) {
   var openRegularDialog by remember { mutableStateOf(false) }
   var openDarkDialog by remember { mutableStateOf(false) }
@@ -67,7 +65,6 @@ internal fun ThemePreferenceItem(
       subtitle = null,
       icon = theme.icon(),
       clickability = NotClickable,
-      hazeState = hazeState,
     ) {
       TypeButton(
         modifier = Modifier
@@ -86,7 +83,6 @@ internal fun ThemePreferenceItem(
         subtitle = null,
         icon = darkTheme.icon(),
         clickability = NotClickable,
-        hazeState = hazeState,
       ) {
         TypeButton(
           modifier = Modifier

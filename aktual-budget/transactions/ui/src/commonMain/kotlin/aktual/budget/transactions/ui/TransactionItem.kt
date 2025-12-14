@@ -8,12 +8,14 @@ import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionState
 import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.aktualHaze
 import aktual.core.ui.formattedString
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
@@ -40,6 +42,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -85,16 +88,16 @@ private fun TransactionItem(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) = when (state) {
-  is TransactionState.Loading -> LoadingTransactionItem(format, modifier, theme)
-  is TransactionState.Loaded -> LoadedTransactionItem(state.transaction, format, source, onAction, modifier, theme)
-  is TransactionState.DoesntExist -> FailedTransactionItem(state.id, modifier, theme)
+  is TransactionState.Loading -> LoadingItem(format, modifier, theme)
+  is TransactionState.Loaded -> LoadedItem(state.transaction, format, source, onAction, modifier, theme)
+  is TransactionState.DoesntExist -> FailedItem(state.id, modifier, theme)
 }
 
 private val ShimmerShape = RoundedCornerShape(4.dp)
 private val ShimmerRowHeight = 16.dp
 
 @Composable
-private fun LoadingTransactionItem(
+private fun LoadingItem(
   format: TransactionsFormat,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -106,9 +109,10 @@ private fun LoadingTransactionItem(
     modifier = modifier
       .fillMaxWidth()
       .height(LocalMinimumInteractiveComponentSize.current)
-      .background(theme.tableBackground)
+      .clip(CardShape)
       .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal)
       .shimmer(shimmer)
+      .aktualHaze()
       .onGloballyPositioned { layoutCoordinates ->
         val position = layoutCoordinates.unclippedBoundsInWindow()
         shimmer.updateBounds(position)
@@ -251,7 +255,7 @@ private fun RowScope.LoadingTransactionTableItem(
 }
 
 @Composable
-private fun FailedTransactionItem(
+private fun FailedItem(
   id: TransactionId,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -261,7 +265,8 @@ private fun FailedTransactionItem(
     modifier = modifier
       .fillMaxWidth()
       .height(LocalMinimumInteractiveComponentSize.current)
-      .background(theme.tableBackground)
+      .clip(CardShape)
+      .aktualHaze()
       .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -285,7 +290,7 @@ private fun FailedTransactionItem(
 }
 
 @Composable
-private fun LoadedTransactionItem(
+private fun LoadedItem(
   transaction: Transaction,
   format: TransactionsFormat,
   source: TransactionStateSource,
@@ -298,7 +303,8 @@ private fun LoadedTransactionItem(
     modifier = modifier
       .fillMaxWidth()
       .height(IntrinsicSize.Min)
-      .background(theme.tableBackground)
+      .clip(CardShape)
+      .aktualHaze()
       .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
     verticalAlignment = Alignment.CenterVertically,
   ) {

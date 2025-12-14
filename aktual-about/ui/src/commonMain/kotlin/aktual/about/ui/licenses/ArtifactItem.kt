@@ -8,7 +8,7 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.defaultHazeStyle
+import aktual.core.ui.aktualHaze
 import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.background
@@ -33,9 +33,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.hazeEffect
 
 @Composable
 internal fun ArtifactItem(
@@ -43,15 +40,13 @@ internal fun ArtifactItem(
   onLaunchUrl: (url: String) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-  hazeState: HazeState = remember { HazeState() },
-  hazeStyle: HazeStyle = defaultHazeStyle(theme),
 ) {
   val interactionSource = remember { MutableInteractionSource() }
   Column(
     modifier = modifier
       .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
       .background(Color.Transparent, CardShape)
-      .hazeEffect(hazeState, hazeStyle)
+      .aktualHaze()
       .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
       .padding(Dimens.Large),
     verticalArrangement = Arrangement.Top,

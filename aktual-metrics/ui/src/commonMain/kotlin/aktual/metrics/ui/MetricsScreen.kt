@@ -19,6 +19,7 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.WithHazeState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
 import aktual.l10n.Strings
@@ -105,12 +106,13 @@ internal fun MetricsScaffold(
         modifier = Modifier.hazeSource(hazeState),
       )
 
-      MetricsContent(
-        modifier = Modifier.padding(innerPadding),
-        state = state,
-        hazeState = hazeState,
-        onAction = onAction,
-      )
+      WithHazeState(hazeState) {
+        MetricsContent(
+          modifier = Modifier.padding(innerPadding),
+          state = state,
+          onAction = onAction,
+        )
+      }
     }
   }
 }
@@ -150,7 +152,6 @@ private fun MetricsTopAppBar(
 @Composable
 private fun MetricsContent(
   state: MetricsState,
-  hazeState: HazeState,
   onAction: (MetricsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -162,7 +163,6 @@ private fun MetricsContent(
   when (state) {
     MetricsState.Loading -> {
       LoadingContent(
-        hazeState = hazeState,
         theme = theme,
       )
     }
@@ -171,7 +171,6 @@ private fun MetricsContent(
       FailureContent(
         message = Strings.metricsDisconnected,
         onAction = onAction,
-        hazeState = hazeState,
         theme = theme,
         modifier = modifier,
       )
@@ -181,7 +180,6 @@ private fun MetricsContent(
       FailureContent(
         message = state.cause,
         onAction = onAction,
-        hazeState = hazeState,
         theme = theme,
         modifier = modifier,
       )
@@ -190,7 +188,6 @@ private fun MetricsContent(
     is MetricsState.Success -> {
       SuccessContent(
         state = state,
-        hazeState = hazeState,
         modifier = modifier,
       )
     }
@@ -199,11 +196,9 @@ private fun MetricsContent(
 
 @Composable
 private fun BoxScope.LoadingContent(
-  hazeState: HazeState,
   theme: Theme,
 ) = HazedBox(
   modifier = Modifier.align(Alignment.Center),
-  state = hazeState,
   contentAlignment = Alignment.Center,
 ) {
   CircularProgressIndicator(
@@ -218,7 +213,6 @@ private fun BoxScope.LoadingContent(
 @Composable
 private fun FailureContent(
   message: String,
-  hazeState: HazeState,
   onAction: (MetricsAction) -> Unit,
   theme: Theme,
   modifier: Modifier = Modifier,
@@ -226,7 +220,6 @@ private fun FailureContent(
   modifier = modifier.fillMaxSize(),
   title = Strings.metricsFailure,
   reason = message,
-  hazeState = hazeState,
   retryText = Strings.metricsFailureRetry,
   onClickRetry = { onAction(MetricsAction.Refresh) },
   theme = theme,
@@ -235,7 +228,6 @@ private fun FailureContent(
 @Composable
 private fun SuccessContent(
   state: MetricsState.Success,
-  hazeState: HazeState,
   modifier: Modifier = Modifier,
 ) = Column(
   modifier = modifier
@@ -246,7 +238,6 @@ private fun SuccessContent(
 ) {
   HazedBox(
     modifier = Modifier.fillMaxWidth(),
-    state = hazeState,
     padding = PaddingValues(Dimens.Huge),
   ) {
     SuccessContentRow(title = Strings.metricsLastUpdate, value = state.lastUpdate.toString())
@@ -254,7 +245,6 @@ private fun SuccessContent(
 
   HazedBox(
     modifier = Modifier.fillMaxWidth(),
-    state = hazeState,
     padding = PaddingValues(Dimens.Huge),
   ) {
     SuccessContentRow(title = Strings.metricsUptime, value = state.uptime.formattedString())
@@ -262,7 +252,6 @@ private fun SuccessContent(
 
   HazedBox(
     modifier = Modifier.fillMaxWidth(),
-    state = hazeState,
     padding = PaddingValues(Dimens.Huge),
   ) {
     Column {

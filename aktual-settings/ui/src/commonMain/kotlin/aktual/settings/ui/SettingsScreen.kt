@@ -11,6 +11,7 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.WithHazeState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
@@ -102,12 +103,13 @@ internal fun SettingsScaffold(
         modifier = Modifier.hazeSource(hazeState),
       )
 
-      SettingsContent(
-        modifier = Modifier.padding(innerPadding),
-        values = values,
-        hazeState = hazeState,
-        onAction = onAction,
-      )
+      WithHazeState(hazeState) {
+        SettingsContent(
+          modifier = Modifier.padding(innerPadding),
+          values = values,
+          onAction = onAction,
+        )
+      }
     }
   }
 }
@@ -116,7 +118,6 @@ internal fun SettingsScaffold(
 @Composable
 private fun SettingsContent(
   values: ImmutableList<PreferenceValue>,
-  hazeState: HazeState,
   onAction: (SettingsAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -132,7 +133,6 @@ private fun SettingsContent(
       PreferenceItem(
         modifier = Modifier.fillMaxWidth(),
         value = value,
-        hazeState = hazeState,
         onChange = { onAction(SettingsAction.PreferenceChange(it)) },
       )
 
@@ -151,7 +151,6 @@ private fun SettingsContent(
 @Composable
 private fun PreferenceItem(
   value: PreferenceValue,
-  hazeState: HazeState,
   onChange: (PreferenceValue) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -161,13 +160,11 @@ private fun PreferenceItem(
     when (value) {
       is PreferenceValue.Theme -> ThemePreferenceItem(
         config = value.config,
-        hazeState = hazeState,
         onChange = { onChange(PreferenceValue.Theme(it)) },
       )
 
       is PreferenceValue.ShowBottomBar -> ShowBottomBarPreferenceItem(
         value = value.show,
-        hazeState = hazeState,
         onChange = { onChange(PreferenceValue.ShowBottomBar(it)) },
       )
     }

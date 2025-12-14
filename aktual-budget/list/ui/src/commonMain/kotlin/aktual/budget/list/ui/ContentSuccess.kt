@@ -18,10 +18,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import dev.chrisbanes.haze.HazeState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -29,7 +27,6 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun ContentSuccess(
   budgets: ImmutableList<Budget>,
-  hazeState: HazeState,
   onClickOpen: (Budget) -> Unit,
   onClickDelete: (Budget) -> Unit,
   modifier: Modifier = Modifier,
@@ -44,7 +41,6 @@ internal fun ContentSuccess(
     items(budgets) { budget ->
       BudgetListItem(
         budget = budget,
-        hazeState = hazeState,
         theme = theme,
         onClickOpen = { onClickOpen(budget) },
         onClickDelete = { onClickDelete(budget) },
@@ -66,7 +62,6 @@ private fun PreviewContentSuccess(
   ContentSuccess(
     modifier = Modifier.background(LocalTheme.current.pageBackground),
     budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
-    hazeState = remember { HazeState() },
     onClickOpen = {},
     onClickDelete = {},
   )
