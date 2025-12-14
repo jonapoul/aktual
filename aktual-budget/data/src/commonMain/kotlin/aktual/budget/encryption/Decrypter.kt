@@ -12,9 +12,17 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import okio.Buffer
+import okio.ByteString
+import okio.CipherSource
+import okio.IOException
 import okio.Path
 import okio.Sink
 import okio.Source
+import okio.buffer
+import okio.use
+import javax.crypto.Cipher
+import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.SecretKeySpec
 
 // Adapted from packages/loot-core/src/server/encryption/encryption-internals.ts
 
@@ -30,6 +38,19 @@ fun interface FileDecrypter {
  */
 fun interface BufferDecrypter {
   suspend operator fun invoke(meta: Meta, buffer: Buffer): DecryptResult
+}
+
+sealed interface DecryptResult {
+  sealed interface Success : DecryptResult
+  data class DecryptedBuffer(val buffer: Buffer) : Success
+  data class DecryptedFile(val path: Path) : Success
+  data class NotNeeded(val path: Path) : Success
+
+  sealed interface Failure : DecryptResult
+  data object FailedFetchingKey : Failure
+  data object MissingKey : Failure
+  data class UnknownAlgorithm(val algorithm: String) : Failure
+  data class OtherFailure(val message: String) : Failure
 }
 
 @Inject
@@ -83,11 +104,12 @@ private suspend fun decrypt(
 ): DecryptResult = try {
   val key = keys[meta.keyId] ?: return DecryptResult.MissingKey
   withContext(contexts.io) {
-    source.decryptToSink(
-      key = key.decode(),
-      iv = meta.iv.decode(),
-      authTag = meta.authTag.decode(),
+    decryptToSink(
+      key = key.toByteArray(),
+      iv = meta.iv.toByteArray(),
+      authTag = meta.authTag.toByteArray(),
       algorithm = meta.algorithm,
+      source = source,
       sink = sink,
     )
   }
@@ -102,3 +124,40 @@ private suspend fun decrypt(
   if (sink !is Buffer) runCatching { sink.close() }
   if (source !is Buffer) runCatching { source.close() }
 }
+
+@Throws(UnknownAlgorithmException::class)
+internal fun decryptToSink(
+  key: ByteArray,
+  iv: ByteArray,
+  authTag: ByteArray,
+  algorithm: String,
+  source: Source,
+  sink: Sink,
+) {
+  val cipherTransformation = when (algorithm.lowercase()) {
+    EXPECTED_ALGORITHM -> AES_GCM_CIPHER_TRANSFORMATION
+    else -> throw UnknownAlgorithmException(algorithm)
+  }
+
+  val cipher = Cipher.getInstance(cipherTransformation)
+  val keySpec = SecretKeySpec(key, CIPHER_ALGORITHM)
+  val gcmSpec = GCMParameterSpec(AUTH_TAG_LENGTH, iv)
+  cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec)
+
+  // We need to append the auth tag to our encrypted source
+  val authTagBuffer = Buffer().also { it.write(authTag) }
+  val taggedSource = source + authTagBuffer
+
+  CipherSource(taggedSource.buffer(), cipher).buffer().use { source ->
+    sink.buffer().use { s ->
+      s.writeAll(source)
+    }
+  }
+}
+
+internal const val EXPECTED_ALGORITHM = "aes-256-gcm"
+internal const val AES_GCM_CIPHER_TRANSFORMATION = "AES/GCM/NoPadding"
+internal const val AUTH_TAG_LENGTH = 128
+internal const val CIPHER_ALGORITHM = "AES"
+
+class UnknownAlgorithmException(val algorithm: String) : IOException()
