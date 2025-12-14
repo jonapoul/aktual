@@ -5,11 +5,14 @@ package aktual.core.ui
 import aktual.core.model.ColorSchemeType
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.AndroidUiModes
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
+import dev.chrisbanes.haze.HazeState
 
 @Preview(
   name = "Portrait",
@@ -94,7 +97,10 @@ fun PreviewWithColorScheme(
 ) {
   AktualTheme(schemeType) {
     Surface(modifier = modifier) {
-      content(schemeType)
+      val hazeState = remember { HazeState() }
+      CompositionLocalProvider(LocalHazeState provides hazeState) {
+        content(schemeType)
+      }
     }
   }
 }

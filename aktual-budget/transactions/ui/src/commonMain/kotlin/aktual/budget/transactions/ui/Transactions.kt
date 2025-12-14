@@ -18,6 +18,7 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.scrollbar
 import aktual.l10n.Strings
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -26,7 +27,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -110,6 +110,7 @@ private fun TransactionsFilled(
       .padding(horizontal = Dimens.Large)
       .scrollbar(listState),
     state = listState,
+    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     if (format == Table) {
       stickyHeader {
@@ -134,8 +135,6 @@ private fun TransactionsFilled(
           onAction = onAction,
           theme = theme,
         )
-
-        HorizontalDivider(color = theme.tableBorderSeparator)
       }
     }
 

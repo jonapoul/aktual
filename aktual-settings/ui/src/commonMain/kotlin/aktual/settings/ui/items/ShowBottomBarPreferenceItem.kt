@@ -25,14 +25,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import dev.chrisbanes.haze.HazeState
 
 @Composable
 internal fun ShowBottomBarPreferenceItem(
   value: Boolean,
   onChange: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
-  hazeState: HazeState = remember { HazeState() },
   theme: Theme = LocalTheme.current,
 ) {
   BasicPreferenceItem(
@@ -41,7 +39,6 @@ internal fun ShowBottomBarPreferenceItem(
     subtitle = null,
     icon = icon(value),
     clickability = Clickable { onChange(!value) },
-    hazeState = hazeState,
     rightContent = {
       val interactionSource = remember { MutableInteractionSource() }
       val isPressed by interactionSource.collectIsPressedAsState()

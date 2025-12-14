@@ -23,6 +23,7 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.WithHazeState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Box
@@ -143,13 +144,14 @@ internal fun ListBudgetsScaffold(
         modifier = Modifier.hazeSource(hazeState),
       )
 
-      Content(
-        modifier = Modifier.padding(innerPadding),
-        state = state,
-        hazeState = hazeState,
-        onAction = onAction,
-        theme = theme,
-      )
+      WithHazeState(hazeState) {
+        Content(
+          modifier = Modifier.padding(innerPadding),
+          state = state,
+          onAction = onAction,
+          theme = theme,
+        )
+      }
     }
   }
 }
@@ -165,7 +167,6 @@ private fun ScaffoldTitle(theme: Theme) = Text(
 @Composable
 private fun Content(
   state: ListBudgetsState,
-  hazeState: HazeState,
   onAction: (ListBudgetsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -176,13 +177,12 @@ private fun Content(
   contentAlignment = Alignment.Center,
   onRefresh = { onAction(Reload) },
   isRefreshing = state is ListBudgetsState.Loading,
-  content = { StateContent(state, hazeState, onAction, theme) },
+  content = { StateContent(state, onAction, theme) },
 )
 
 @Composable
 private fun StateContent(
   state: ListBudgetsState,
-  hazeState: HazeState,
   onAction: (ListBudgetsAction) -> Unit,
   theme: Theme = LocalTheme.current,
 ) = when (state) {
@@ -215,7 +215,6 @@ private fun StateContent(
       ContentSuccess(
         modifier = Modifier.fillMaxSize(),
         budgets = state.budgets,
-        hazeState = hazeState,
         theme = theme,
         onClickOpen = { budget -> onAction(Open(budget)) },
         onClickDelete = { budget -> onAction(Delete(budget)) },
