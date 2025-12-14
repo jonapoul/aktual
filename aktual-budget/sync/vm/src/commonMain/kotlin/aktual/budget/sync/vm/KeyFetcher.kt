@@ -5,7 +5,7 @@ import aktual.api.model.sync.GetUserKeyRequest
 import aktual.api.model.sync.GetUserKeyResponse
 import aktual.budget.encryption.BufferDecrypter
 import aktual.budget.encryption.DecryptResult
-import aktual.budget.encryption.KeyGenerator
+import aktual.budget.encryption.generateKeyFromPassword
 import aktual.budget.model.BudgetId
 import aktual.core.model.LoginToken
 import aktual.core.model.Password
@@ -24,7 +24,6 @@ import okio.Buffer
 class KeyFetcher(
   private val stateHolder: AktualApisStateHolder,
   private val contexts: CoroutineContexts,
-  private val keyGenerator: KeyGenerator,
   private val keyPreferences: KeyPreferences,
   private val decrypter: BufferDecrypter,
 ) {
@@ -47,13 +46,13 @@ class KeyFetcher(
     }
 
     val (keyId, salt, test) = response.data
-    val key = keyGenerator(keyPassword, salt)
-    keyPreferences.setAndCommit(keyId, key.base64) // committed because we'll use it straight away
+    val key = generateKeyFromPassword(keyPassword, salt)
+    keyPreferences.setAndCommit(keyId, key.encoded) // committed because we'll use it straight away
 
     // test the new key
     try {
       val buffer = Buffer()
-      buffer.write(test.value.decode())
+      buffer.write(test.value)
       val decrypted = decrypter(test.meta, buffer)
       if (decrypted is DecryptResult.Failure) {
         error("Invalid password ${keyPassword.value}: $decrypted")
@@ -72,6 +71,6 @@ class KeyFetcher(
       keyPreferences.delete(keyId)
     }
 
-    return FetchKeyResult.Success(key.base64)
+    return FetchKeyResult.Success(key.encoded)
   }
 }

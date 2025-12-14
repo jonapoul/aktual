@@ -1,8 +1,8 @@
 package aktual.api.model.sync
 
 import aktual.api.model.account.FailureReason
-import aktual.core.model.Base64String
 import aktual.core.model.KeyId
+import aktual.core.model.SerializableByteString
 import aktual.core.model.base64
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
@@ -32,13 +32,13 @@ sealed interface GetUserKeyResponse {
   @Serializable
   data class Data(
     @SerialName("id") val id: KeyId,
-    @SerialName("salt") val salt: Base64String,
+    @SerialName("salt") val salt: SerializableByteString,
     @SerialName("test") val test: Test,
   )
 
   @Serializable
   data class Test(
-    @SerialName("value") val value: Base64String,
+    @SerialName("value") val value: SerializableByteString,
     @SerialName("meta") val meta: EncryptMeta,
   )
 }
@@ -58,7 +58,7 @@ private object Serializer : KSerializer<GetUserKeyResponse.Success> {
     return GetUserKeyResponse.Success(
       data = GetUserKeyResponse.Data(
         id = KeyId(data.string("id")),
-        salt = data.string("salt").base64,
+        salt = data.string("salt").base64(),
         test = test.requireNotNull(),
       ),
     )

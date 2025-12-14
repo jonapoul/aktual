@@ -1,5 +1,6 @@
 package aktual.budget.encryption
 
+import aktual.core.model.base64
 import aktual.test.TemporaryFolder
 import aktual.test.assertFailsWith
 import aktual.test.readBytes
@@ -7,7 +8,6 @@ import aktual.test.resource
 import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import kotlin.io.encoding.Base64
 import kotlin.test.Test
 
 class DecryptTest {
@@ -18,11 +18,12 @@ class DecryptTest {
     val source = resource("encrypted.zip")
     val destination = temporaryFolder.resolve("decrypted.zip")
 
-    source.decryptToSink(
-      key = KEY,
-      iv = IV,
-      authTag = AUTH_TAG,
+    decryptToSink(
+      key = KEY.toByteArray(),
+      iv = IV.toByteArray(),
+      authTag = AUTH_TAG.toByteArray(),
       algorithm = EXPECTED_ALGORITHM,
+      source = source,
       sink = temporaryFolder.sink(destination),
     )
 
@@ -36,19 +37,20 @@ class DecryptTest {
     val destination = temporaryFolder.root.resolve("decrypted.zip")
 
     assertFailsWith<UnknownAlgorithmException> {
-      source.decryptToSink(
-        key = KEY,
-        iv = IV,
-        authTag = AUTH_TAG,
+      decryptToSink(
+        key = KEY.toByteArray(),
+        iv = IV.toByteArray(),
+        authTag = AUTH_TAG.toByteArray(),
         algorithm = "something-unknown",
+        source = source,
         sink = temporaryFolder.sink(destination),
       )
     }
   }
 
   private companion object {
-    val KEY = Base64.decode("i1r2wyw7QrknexacWeQlXtPy/NMbS0CsgXNVD0epFAk=")
-    val IV = Base64.decode("VoXYpiD8z41ORncY")
-    val AUTH_TAG = Base64.decode("CULKUgCtF6/W2m/hwvyh0g==")
+    val KEY = "i1r2wyw7QrknexacWeQlXtPy/NMbS0CsgXNVD0epFAk=".base64()
+    val IV = "VoXYpiD8z41ORncY".base64()
+    val AUTH_TAG = "CULKUgCtF6/W2m/hwvyh0g==".base64()
   }
 }

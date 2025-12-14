@@ -1,9 +1,16 @@
+@file:OptIn(ExperimentalAtomicApi::class, ExperimentalForInheritanceCoroutinesApi::class)
+
 package aktual.budget.prefs
 
 import aktual.budget.model.BudgetFiles
+import aktual.budget.model.BudgetScope
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.DbMetadata.Key
 import aktual.budget.model.writeMetadata
 import alakazam.kotlin.core.CoroutineContexts
+import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.Binds
+import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
@@ -14,13 +21,26 @@ import kotlinx.coroutines.launch
 import kotlin.concurrent.atomics.AtomicBoolean
 import kotlin.concurrent.atomics.ExperimentalAtomicApi
 
-@OptIn(ExperimentalAtomicApi::class, ExperimentalForInheritanceCoroutinesApi::class)
-class BudgetLocalPreferences(
+interface BudgetLocalPreferences : MutableStateFlow<DbMetadata>
+
+operator fun <T : Any> BudgetLocalPreferences.get(key: Key<T>): T? = value[key]
+
+operator fun <T : Any> BudgetLocalPreferences.set(key: Key<T>, value: T?): DbMetadata = this.value.set(key, value)
+
+fun <T : Any> BudgetLocalPreferences.observe(key: Key<T>): Flow<T?> = map { metadata -> metadata[key] }
+
+@BindingContainer
+@ContributesTo(BudgetScope::class)
+internal interface BudgetLocalPreferencesContainer {
+  @Binds val BudgetLocalPreferencesImpl.binds: BudgetLocalPreferences
+}
+
+internal class BudgetLocalPreferencesImpl(
   private val files: BudgetFiles,
   private val coroutineScope: CoroutineScope,
   private val contexts: CoroutineContexts,
   private val delegate: MutableStateFlow<DbMetadata>,
-) : MutableStateFlow<DbMetadata> by delegate {
+) : BudgetLocalPreferences, MutableStateFlow<DbMetadata> by delegate {
   @Inject
   constructor(
     initial: DbMetadata,
@@ -45,6 +65,4 @@ class BudgetLocalPreferences(
     }
     return updated
   }
-
-  fun <T : Any> observe(key: DbMetadata.Key<T>): Flow<T?> = map { metadata -> metadata[key] }
 }

@@ -1,10 +1,10 @@
 package aktual.budget.sync.vm
 
 import aktual.api.model.account.FailureReason
-import aktual.core.model.Base64String
+import okio.ByteString
 
 interface FetchKeyResult {
-  data class Success(val key: Base64String) : FetchKeyResult
+  data class Success(val key: ByteString) : FetchKeyResult
 
   sealed interface Failure : FetchKeyResult
   data object NotLoggedIn : Failure

@@ -41,7 +41,7 @@ class BudgetLocalPreferencesTest {
   }
 
   private fun TestScope.buildPreferences(metadata: DbMetadata) {
-    preferences = BudgetLocalPreferences(metadata, files, this, contexts)
+    preferences = BudgetLocalPreferencesImpl(metadata, files, this, contexts)
   }
 
   @Test
