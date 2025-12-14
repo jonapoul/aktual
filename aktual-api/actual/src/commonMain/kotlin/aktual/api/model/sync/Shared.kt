@@ -2,8 +2,8 @@ package aktual.api.model.sync
 
 import aktual.budget.encryption.Meta
 import aktual.budget.model.BudgetId
-import aktual.core.model.Base64String
 import aktual.core.model.KeyId
+import aktual.core.model.SerializableByteString
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -31,6 +31,6 @@ data class UserWithAccess(
 data class EncryptMeta(
   @SerialName("keyId") override val keyId: KeyId?,
   @SerialName("algorithm") override val algorithm: String,
-  @SerialName("iv") override val iv: Base64String,
-  @SerialName("authTag") override val authTag: Base64String,
+  @SerialName("iv") override val iv: SerializableByteString,
+  @SerialName("authTag") override val authTag: SerializableByteString,
 ) : Meta

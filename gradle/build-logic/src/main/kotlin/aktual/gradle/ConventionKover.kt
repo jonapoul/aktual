@@ -39,6 +39,7 @@ class ConventionKover : Plugin<Project> {
               "aktual.core.ui.TabletPreview",
               "androidx.compose.runtime.Composable",
               "androidx.compose.ui.tooling.preview.Preview",
+              "dev.zacsweers.metro.BindingContainer",
               "javax.annotation.processing.Generated",
             )
 

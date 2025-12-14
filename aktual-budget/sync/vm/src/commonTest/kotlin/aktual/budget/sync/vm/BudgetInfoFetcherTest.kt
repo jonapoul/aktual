@@ -92,8 +92,8 @@ class BudgetInfoFetcherTest {
       encryptMeta = EncryptMeta(
         keyId = KeyId("2a66f5de-c530-4c06-8103-a48f26a0ce44"),
         algorithm = "aes-256-gcm",
-        iv = "7tzgaLCrSFxVfzZR".base64,
-        authTag = "25nafe0UpzehRCks/xQjoB==".base64,
+        iv = "7tzgaLCrSFxVfzZR".base64(),
+        authTag = "25nafe0UpzehRCks/xQjoB==".base64(),
       ),
     )
     assertThatFetchResult().isEqualTo(Result.Success(userFile))

@@ -5,7 +5,6 @@ import aktual.api.client.AktualJson
 import aktual.api.client.SyncApi
 import aktual.budget.encryption.BufferDecrypter
 import aktual.budget.encryption.BufferDecrypterImpl
-import aktual.budget.encryption.KeyGenerator
 import aktual.budget.model.BudgetId
 import aktual.core.model.LoginToken
 import aktual.core.model.Password
@@ -36,7 +35,6 @@ import kotlin.test.Test
 @RunWith(RobolectricTestRunner::class)
 class KeyFetcherTest {
   private lateinit var keyFetcher: KeyFetcher
-  private lateinit var keyGenerator: KeyGenerator
   private lateinit var keyPreferences: KeyPreferences
   private lateinit var decrypter: BufferDecrypter
 
@@ -46,11 +44,8 @@ class KeyFetcherTest {
   @BeforeTest
   fun before() {
     val contexts = TestCoroutineContexts(EmptyCoroutineContext)
-    keyGenerator = KeyGenerator()
-
     val prefs = buildPreferences(EmptyCoroutineContext)
     val encryptedPrefs = object : EncryptedPreferences, Preferences by prefs {}
-
     keyPreferences = KeyPreferences(encryptedPrefs)
     decrypter = BufferDecrypterImpl(contexts, keyPreferences)
 
@@ -62,7 +57,6 @@ class KeyFetcherTest {
     keyFetcher = KeyFetcher(
       stateHolder = stateHolder,
       contexts = contexts,
-      keyGenerator = keyGenerator,
       keyPreferences = keyPreferences,
       decrypter = decrypter,
     )
@@ -83,7 +77,7 @@ class KeyFetcherTest {
 
     // then
     assertThat(result)
-      .isEqualTo(FetchKeyResult.Success("KQWSxKj5Gc27pPk127N7QkIFxNJtopx0doU4O5pSWd0=".base64))
+      .isEqualTo(FetchKeyResult.Success("KQWSxKj5Gc27pPk127N7QkIFxNJtopx0doU4O5pSWd0=".base64()))
   }
 
   private companion object {

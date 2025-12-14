@@ -4,7 +4,6 @@ import aktual.api.model.sync.EncryptMeta
 import aktual.api.model.sync.UserFile
 import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.FileDecrypter
-import aktual.budget.encryption.KeyGenerator
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.decryptedZip
@@ -62,7 +61,6 @@ class SyncBudgetViewModel(
   private val importer: DatabaseImporter,
   private val files: BudgetFiles,
   private val urlOpener: UrlOpener,
-  private val keyGenerator: KeyGenerator,
   private val keyFetcher: KeyFetcher,
   private val keyPreferences: KeyPreferences,
   private val budgetGraphs: BudgetGraphHolder,

@@ -172,14 +172,14 @@ class SyncApiTest {
       GetUserKeyResponse.Success(
         data = GetUserKeyResponse.Data(
           id = keyId,
-          salt = "PpZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=".base64,
+          salt = "PpZ/z6DD6xtjF89wxZOszZ6CkKXNDoBXdtBlIztmneE=".base64(),
           test = GetUserKeyResponse.Test(
-            value = value.base64,
+            value = value.base64(),
             meta = EncryptMeta(
               keyId = keyId,
               algorithm = "aes-256-gcm",
-              iv = "8tzhaLCrSFyVfzZF".base64,
-              authTag = "35maee1UpzftRCks/yQjoB==".base64,
+              iv = "8tzhaLCrSFyVfzZF".base64(),
+              authTag = "35maee1UpzftRCks/yQjoB==".base64(),
             ),
           ),
         ),
@@ -226,8 +226,8 @@ class SyncApiTest {
           encryptMeta = EncryptMeta(
             keyId = KeyId("b98636ab-200f-46be-9763-2af439aa40cb"),
             algorithm = "aes-256-gcm",
-            iv = "8tzhaLCrSFyVfzZF".base64,
-            authTag = "35maee1UpzftRCks/yQjoB==".base64,
+            iv = "8tzhaLCrSFyVfzZF".base64(),
+            authTag = "35maee1UpzftRCks/yQjoB==".base64(),
           ),
         ),
       ),

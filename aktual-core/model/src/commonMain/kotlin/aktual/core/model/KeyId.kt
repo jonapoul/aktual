@@ -1,6 +1,7 @@
 package aktual.core.model
 
 import kotlinx.serialization.Serializable
+import okio.ByteString
 import javax.crypto.SecretKey
 import kotlin.uuid.Uuid
 
@@ -11,13 +12,9 @@ value class KeyId(val value: String) : Comparable<KeyId> {
 
   override fun toString(): String = value
   override fun compareTo(other: KeyId) = value.compareTo(other.value)
-
-  companion object {
-    fun random(): KeyId = KeyId(Uuid.random())
-  }
 }
 
 data class Key(
   val raw: SecretKey,
-  val base64: Base64String,
+  val encoded: ByteString,
 )

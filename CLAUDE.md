@@ -10,6 +10,10 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 
 ### Building
 ```bash
+# Check that the project kotlin files compile. This should be the first choice before going to the following.
+# This will compile all source sets, including tests.
+./gradlew compileAll
+
 # Build everything. This will take a long time, don't do it without asking
 ./gradlew build
 
