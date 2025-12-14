@@ -1,6 +1,5 @@
 package aktual.budget.transactions.vm
 
-import aktual.app.di.CoroutineContainer
 import aktual.app.di.GithubApiContainer
 import aktual.budget.db.dao.TransactionsDao
 import aktual.budget.model.AccountId
@@ -13,6 +12,7 @@ import aktual.budget.model.TransactionsSpec
 import aktual.core.di.AppGraph
 import aktual.core.di.BudgetGraph
 import aktual.core.di.BudgetGraphHolder
+import aktual.core.di.CoroutineContainer
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts
 import android.content.Context

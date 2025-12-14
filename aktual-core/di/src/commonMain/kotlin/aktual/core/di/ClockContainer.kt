@@ -1,4 +1,4 @@
-package aktual.app.di
+package aktual.core.di
 
 import alakazam.kotlin.time.TimeZoneProvider
 import dev.zacsweers.metro.AppScope
