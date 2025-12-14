@@ -173,18 +173,14 @@ internal fun encryptToSink(
   val totalSize = encryptedWithTag.size
   val ciphertextSize = totalSize - authTagLengthBytes
 
-  // Extract the ciphertext (everything except the last 16 bytes)
-  val ciphertext = Buffer()
-  ciphertext.write(encryptedWithTag, ciphertextSize)
+  // Write the ciphertext (without auth tag) directly to the sink
+  sink.buffer().use { s ->
+    s.write(encryptedWithTag, ciphertextSize)
+  }
 
   // Extract the auth tag (last 16 bytes)
   val authTag = ByteArray(authTagLengthBytes)
   encryptedWithTag.read(authTag)
-
-  // Write the ciphertext (without auth tag) to the sink
-  sink.buffer().use { s ->
-    s.writeAll(ciphertext)
-  }
 
   return DefaultMeta(
     keyId = keyId,

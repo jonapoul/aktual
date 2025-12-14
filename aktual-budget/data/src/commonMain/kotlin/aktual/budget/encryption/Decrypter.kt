@@ -145,12 +145,11 @@ internal fun decryptToSink(
   cipher.init(Cipher.DECRYPT_MODE, keySpec, gcmSpec)
 
   // We need to append the auth tag to our encrypted source
-  val authTagBuffer = Buffer().also { it.write(authTag) }
-  val taggedSource = source + authTagBuffer
+  val taggedSource = source + Buffer().apply { write(authTag) }
 
-  CipherSource(taggedSource.buffer(), cipher).buffer().use { source ->
+  CipherSource(taggedSource.buffer(), cipher).buffer().use { src ->
     sink.buffer().use { s ->
-      s.writeAll(source)
+      s.writeAll(src)
     }
   }
 }
