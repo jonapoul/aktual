@@ -18,7 +18,8 @@ compose.desktop {
 
     jvmArgs += listOf(
       // Make sure java.sql.DriverManager is included
-      "--add-modules", "java.sql"
+      "--add-modules",
+      "java.sql",
     )
 
     buildTypes.release.proguard {
