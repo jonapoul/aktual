@@ -56,7 +56,7 @@ private data class Size(val width: Float, val height: Float)
 
 private object WindowPositionSerializer : StringSerializer<WindowPosition> {
   override fun deserialize(value: String): WindowPosition = try {
-    val position = Json.decodeFromString<Position>(value)
+    val position = Json.decodeFromString(Position.serializer(), value)
     WindowPosition.Absolute(position.x.dp, position.y.dp)
   } catch (_: SerializationException) {
     WindowPosition.PlatformDefault
@@ -70,7 +70,7 @@ private object WindowPositionSerializer : StringSerializer<WindowPosition> {
 
 private object DpSizeSerializer : StringSerializer<DpSize> {
   override fun deserialize(value: String): DpSize {
-    val size = Json.decodeFromString<Size>(value)
+    val size = Json.decodeFromString(Size.serializer(), value)
     return DpSize(size.width.dp, size.height.dp)
   }
 

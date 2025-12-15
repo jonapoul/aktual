@@ -374,3 +374,13 @@ To see a full picture of dependencies between modules, see the `chart.dot` files
 - **Multiplatform First**: Follow this hierarchy when choosing where to place code:
   1. `commonMain` - Default choice for pure Kotlin code
   2. `androidMain` / `jvmMain` - Only when truly platform-specific
+
+## Debugging
+
+### Proguard Desktop
+
+`:aktual-app:desktop` is built with Proguard in release builds. If we need to investigate, the mapping file is output to `aktual-app/desktop/build/outputs/mapping.txt`.
+
+### R8 Android
+
+`:aktual-app:android` is built with R8.

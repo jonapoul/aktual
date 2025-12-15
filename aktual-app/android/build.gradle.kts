@@ -33,11 +33,11 @@ android {
   }
 
   packaging {
-    resources.excludes.addAll(
-      listOf(
-        "META-INF/DEPENDENCIES",
-        "META-INF/INDEX.LIST",
-      ),
+    resources.excludes += setOf(
+      "META-INF/DEPENDENCIES",
+      "META-INF/INDEX.LIST",
+      "**/native/Windows/**",
+      "**/native/Mac/**",
     )
 
     jniLibs {
@@ -67,11 +67,21 @@ android {
 
   buildTypes {
     debug {
+      applicationIdSuffix = ".dev"
+      versionNameSuffix = "-dev"
       signingConfig = signingConfigs.findByName("debug")
+      isMinifyEnabled = false
     }
 
     release {
       signingConfig = signingConfigs.findByName("release")
+      isMinifyEnabled = true
+      isShrinkResources = true
+      proguardFiles(
+        getDefaultProguardFile("proguard-android-optimize.txt"),
+        projectDir.resolve("proguard-rules.pro"),
+        layout.projectDirectory.file("../common-rules.pro"),
+      )
     }
   }
 

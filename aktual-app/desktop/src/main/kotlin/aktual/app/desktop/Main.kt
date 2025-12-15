@@ -31,7 +31,15 @@ import logcat.logcat
 
 fun main() {
   val graph = createGraph<JvmAppGraph>()
-  initLogging(graph)
+
+  val logStorage = JvmLogStorage()
+  val minPriority = LogPriority.VERBOSE
+  with(LogcatLogger) {
+    install()
+    loggers += TimestampedPrintStreamLogger(System.out, graph.clock, minPriority)
+    loggers += LogbackLogger(logStorage, minPriority)
+  }
+
   logcat.i { "App started" }
   logcat.d { "buildConfig = ${graph.buildConfig}" }
 
@@ -61,7 +69,7 @@ private fun composeApp(
 
   Window(
     title = Strings.appName,
-    icon = Drawables.appIcon48,
+    icon = Drawables.appIcon192,
     resizable = true,
     enabled = true,
     focusable = true,
@@ -120,17 +128,4 @@ private fun WindowContents(
       )
     }
   }
-}
-
-private fun initLogging(graph: JvmAppGraph) {
-  val logStorage = JvmLogStorage()
-  val minPriority = LogPriority.VERBOSE
-  with(LogcatLogger) {
-    install()
-    loggers += TimestampedPrintStreamLogger(System.out, graph.clock, minPriority)
-    loggers += LogbackLogger(logStorage, minPriority)
-  }
-
-  logcat.i { "onCreate" }
-  logcat.d { "buildConfig = ${graph.buildConfig}" }
 }
