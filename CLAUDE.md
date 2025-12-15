@@ -383,4 +383,4 @@ To see a full picture of dependencies between modules, see the `chart.dot` files
 
 ### R8 Android
 
-`:aktual-app:desktop` is built with R8.
+`:aktual-app:android` is built with R8.

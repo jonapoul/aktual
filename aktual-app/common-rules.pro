@@ -23,8 +23,8 @@
 -keep class kotlinx.serialization.internal.*Serializer { *; }
 -keep class kotlinx.serialization.internal.PluginGeneratedSerialDescriptor { *; }
 -keep class **$$serializer { *; }
--keepclassmembers class ** { *** Companion; }
 -keepclassmembers class **$$serializer { *; }
+-keepclassmembers @kotlinx.serialization.Serializable class ** { *** Companion; }
 
 # Enums, see http://proguard.sourceforge.net/manual/examples.html#enumerations
 -keepclassmembers enum * {
@@ -50,7 +50,6 @@
 # Additional dontwarn rules for common issues (handled at runtime)
 -dontwarn java.awt.**
 -dontwarn javax.annotation.**
--dontwarn kotlin.Metadata
 -dontwarn kotlin.concurrent.atomics.**
 -dontwarn kotlin.jvm.internal.**
 
@@ -61,6 +60,9 @@
 -keep,allowobfuscation class io.ktor.client.HttpClient
 -keep,allowobfuscation class io.ktor.client.HttpClientConfig
 -dontwarn io.ktor.**
+
+# Ktor network uses AtomicReferenceFieldUpdater on volatile fields (similar to coroutines)
+-keepclassmembers class io.ktor.network.** { volatile <fields>; }
 
 # Okio - Preserve type hierarchies to prevent VerifyError
 -keep,allowobfuscation interface okio.BufferedSource
