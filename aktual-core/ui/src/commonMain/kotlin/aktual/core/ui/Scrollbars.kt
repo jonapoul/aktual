@@ -404,7 +404,7 @@ internal data class ScrollbarState(private val delegate: ScrollableDelegate) {
     this(ScrollStateScrollableDelegate(state, orientation))
 }
 
-internal interface ScrollableDelegate : ScrollableState {
+internal sealed interface ScrollableDelegate : ScrollableState {
   val orientation: Orientation
   val scrollPosition: Int
   val viewportSize: Int
