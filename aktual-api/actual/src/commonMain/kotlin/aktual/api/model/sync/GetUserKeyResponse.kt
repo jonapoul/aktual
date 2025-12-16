@@ -41,31 +41,31 @@ sealed interface GetUserKeyResponse {
     @SerialName("value") val value: SerializableByteString,
     @SerialName("meta") val meta: EncryptMeta,
   )
-}
 
-private object Serializer : KSerializer<GetUserKeyResponse.Success> {
-  override val descriptor: SerialDescriptor = JsonObject.serializer().descriptor
+  object Serializer : KSerializer<Success> {
+    override val descriptor: SerialDescriptor = JsonObject.serializer().descriptor
 
-  override fun serialize(encoder: Encoder, value: GetUserKeyResponse.Success) = error("Don't need to serialize")
+    override fun serialize(encoder: Encoder, value: Success) = error("Don't need to serialize")
 
-  override fun deserialize(decoder: Decoder): GetUserKeyResponse.Success {
-    val jsonDecoder = decoder as JsonDecoder
-    val root = jsonDecoder.decodeJsonElement().jsonObject
-    val data = root["data"]?.jsonObject ?: throw SerializationException("Null data in $root")
-    val test = data.string("test").let {
-      jsonDecoder.json.decodeFromString(GetUserKeyResponse.Test.serializer(), it)
+    override fun deserialize(decoder: Decoder): Success {
+      val jsonDecoder = decoder as JsonDecoder
+      val root = jsonDecoder.decodeJsonElement().jsonObject
+      val data = root["data"]?.jsonObject ?: throw SerializationException("Null data in $root")
+      val test = data.string("test").let {
+        jsonDecoder.json.decodeFromString(Test.serializer(), it)
+      }
+      return Success(
+        data = Data(
+          id = KeyId(data.string("id")),
+          salt = data.string("salt").base64(),
+          test = test.requireNotNull(),
+        ),
+      )
     }
-    return GetUserKeyResponse.Success(
-      data = GetUserKeyResponse.Data(
-        id = KeyId(data.string("id")),
-        salt = data.string("salt").base64(),
-        test = test.requireNotNull(),
-      ),
-    )
+
+    private fun JsonObject.string(key: String): String =
+      get(key)?.jsonPrimitive?.contentOrNull ?: throw SerializationException("Null value of $key in $this")
+
+    private fun <T> T?.requireNotNull(): T = this ?: throw SerializationException("Null element")
   }
-
-  private fun JsonObject.string(key: String): String =
-    get(key)?.jsonPrimitive?.contentOrNull ?: throw SerializationException("Null value of $key in $this")
-
-  private fun <T> T?.requireNotNull(): T = this ?: throw SerializationException("Null element")
 }
