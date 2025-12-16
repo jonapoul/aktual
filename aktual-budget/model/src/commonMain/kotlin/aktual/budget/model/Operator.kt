@@ -5,7 +5,7 @@ import alakazam.kotlin.serialization.enumStringSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 
-@Serializable(OperatorSerializer::class)
+@Serializable(Operator.Serializer::class)
 enum class Operator(override val value: String) : SerializableByString {
   And("and"),
   Contains("contains"),
@@ -24,6 +24,7 @@ enum class Operator(override val value: String) : SerializableByString {
   OffBudget("offBudget"),
   OnBudget("onBudget"),
   OneOf("oneOf"),
-}
+  ;
 
-private object OperatorSerializer : KSerializer<Operator> by enumStringSerializer()
+  object Serializer : KSerializer<Operator> by enumStringSerializer()
+}

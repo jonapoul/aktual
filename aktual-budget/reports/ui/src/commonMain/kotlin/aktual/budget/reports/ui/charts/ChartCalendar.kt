@@ -271,7 +271,7 @@ internal fun CalendarSummary(
   compact: Boolean,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = Column(
+): Unit = Column(
   modifier = modifier.fillMaxWidth(),
 ) {
   Row(
@@ -380,7 +380,7 @@ private fun DayBarChart(
   monthValue: Amount,
   color: Color,
   modifier: Modifier = Modifier,
-) = Column(
+): Unit = Column(
   modifier = modifier,
   verticalArrangement = Arrangement.Bottom,
 ) {

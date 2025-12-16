@@ -26,11 +26,9 @@ fun Assert<Path>.doesNotExistOn(fileSystem: FileSystem) = given { path ->
   expected("Expected $path to not exist on $fileSystem")
 }
 
-fun <T : Throwable> Assert<T>.messageContains(expected: String) = given { t ->
-  val msg = t.message
-  if (msg == null) fail("No message found in $t")
-  if (msg.contains(expected)) return
-  expected("Expected message to contain '$expected', actually: '$msg'")
+fun <T : Throwable> Assert<T>.messageContains(expected: String) = transform { t ->
+  val msg = t.message ?: fail("No message found in $t")
+  if (msg.contains(expected)) t else expected("Expected message to contain '$expected', actually: '$msg'")
 }
 
 fun Assert<File>.contentEquals(expected: String) = given { file ->
@@ -43,17 +41,20 @@ fun Assert<File>.contentEquals(expected: String) = given { file ->
 
 // Copied from assertk repo but they haven't published in ages
 // https://github.com/assertk-org/assertk/blob/main/assertk/src/jvmMain/kotlin/assertk/assertions/file.kt
-fun Assert<File>.doesNotExist() = given { actual ->
-  if (!actual.exists()) return
-  expected("$actual not to exist")
+fun Assert<File>.doesNotExist() = transform { actual ->
+  if (!actual.exists()) actual else expected("$actual not to exist")
 }
 
-fun Assert<String>.equalsDiffed(expected: String) = given { actual ->
+fun Assert<String>.equalsDiffed(expected: String) = transform { actual ->
   val stripped = actual.removeSuffix("\n")
-  if (expected == stripped) return
-  expected(
-    "Unequal strings between expected{${expected.length}} and actual{${stripped.length}}:\n" + diff(expected, stripped),
-  )
+  if (expected == stripped) {
+    actual
+  } else {
+    expected(
+      "Unequal strings between expected{${expected.length}} and actual{${stripped.length}}:\n" +
+        diff(expected, stripped),
+    )
+  }
 }
 
 fun diff(expected: String, actual: String): String {
