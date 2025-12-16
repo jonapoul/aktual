@@ -176,10 +176,12 @@ private class ScrollbarNode(
     updateHoverState(position, bounds)
 
     if (isPointerOnThumb(position, bounds)) {
+      event.changes.forEach { it.consume() }
       gestureState = GestureState.CLICKING
       dragStartOffset = position
       showAndStateAutoFadeIfEnabled()
     } else if (isPointerOnScrollbar(position, bounds)) {
+      event.changes.forEach { it.consume() }
       scrollToPosition(position, bounds, animated = true)
       showAndStateAutoFadeIfEnabled()
     }
@@ -190,6 +192,8 @@ private class ScrollbarNode(
     updateHoverState(position, bounds)
 
     if (gestureState == GestureState.IDLE) return
+
+    event.changes.forEach { it.consume() }
 
     if (gestureState == GestureState.CLICKING) {
       gestureState = GestureState.DRAGGING
@@ -314,7 +318,7 @@ private class ScrollbarNode(
     return normalizedPosition in thumbStart..thumbEnd
   }
 
-  private fun scrollToPosition(position: Offset, bounds: IntSize, animated: Boolean) {
+  private fun calculateTargetScroll(position: Offset, bounds: IntSize): Int {
     val normalizedPosition = if (scrollbarState.orientation == Orientation.Vertical) {
       (position.y / bounds.height).coerceIn(0f, 1f)
     } else {
@@ -324,13 +328,17 @@ private class ScrollbarNode(
     val totalSize = scrollbarState.totalSize
     val viewportSize = scrollbarState.viewportSize
     val maxScroll = (totalSize - viewportSize).coerceAtLeast(0)
-    val targetScroll = (normalizedPosition * maxScroll).toInt().coerceIn(0, maxScroll)
+    return (normalizedPosition * maxScroll).toInt().coerceIn(0, maxScroll)
+  }
+
+  private fun scrollToPosition(position: Offset, bounds: IntSize, animated: Boolean) {
+    val targetScroll = calculateTargetScroll(position, bounds)
 
     coroutineScope.launch {
       if (animated) {
         scrollbarState.animateScrollTo(targetScroll)
       } else {
-        val delta = targetScroll - (scrollbarState.scrollPosition * scrollbarState.totalSize).toInt()
+        val delta = targetScroll - scrollbarState.scrollPositionPx
         scrollbarState.scrollBy(delta.toFloat())
       }
     }
@@ -384,6 +392,7 @@ internal data class ScrollbarState(private val delegate: ScrollableDelegate) {
 
   val totalSize: Int get() = delegate.totalSize
   val viewportSize: Int get() = delegate.viewportSize
+  val scrollPositionPx: Int get() = delegate.scrollPosition
 
   suspend fun animateScrollTo(value: Int) {
     delegate.animateScrollTo(value)
