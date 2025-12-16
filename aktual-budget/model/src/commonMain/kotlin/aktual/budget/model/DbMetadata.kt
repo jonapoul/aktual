@@ -25,7 +25,7 @@ import kotlinx.serialization.json.boolean
 import kotlinx.serialization.json.jsonPrimitive
 
 @Immutable
-@Serializable(DbMetadataSerializer::class)
+@Serializable(DbMetadata.Serializer::class)
 data class DbMetadata(
   val data: PersistentMap<Key<*>, Any> = persistentMapOf(),
 ) : Iterable<Map.Entry<DbMetadata.Key<*>, Any?>> {
@@ -149,6 +149,31 @@ data class DbMetadata(
       fromString = { E::class.parse(it) },
     )
   }
+
+  object Serializer : KSerializer<DbMetadata> {
+    private val delegate = MapSerializer(String.serializer(), JsonElement.serializer().nullable)
+    override val descriptor = delegate.descriptor
+
+    override fun serialize(encoder: Encoder, value: DbMetadata) = delegate.serialize(
+      encoder = encoder,
+      value = value
+        .mapNotNull { (k, v) -> if (v == null) null else k to v }
+        .associate { (k, v) -> k.name to k.encode(v) },
+    )
+
+    override fun deserialize(decoder: Decoder): DbMetadata {
+      val jsonMap = delegate.deserialize(decoder).mapNotNull { (k, v) ->
+        val key = Key(k)
+        key to when (v) {
+          null, is JsonNull -> return@mapNotNull null
+          is JsonPrimitive -> (key as PrimitiveKey<*>).decode(v)
+          is JsonArray -> (key as ListKey).decode(v)
+          is JsonObject -> throw SerializationException("Can't decode yet: $v")
+        }
+      }
+      return DbMetadata(jsonMap.toMap().toPersistentMap())
+    }
+  }
 }
 
 val DbMetadata.cloudFileId: BudgetId get() = get(DbMetadata.CloudFileId) ?: error("No cloudFileId found in $this")
@@ -159,29 +184,4 @@ private fun DbMetadata.Key<*>.encode(value: Any?): JsonElement? = when (this) {
   is DbMetadata.StringKey -> (value as? String)?.let(::JsonPrimitive)
   is DbMetadata.TypedKey<*> -> value?.toString()?.let(::JsonPrimitive)
   is DbMetadata.ListKey -> (value as? List<String>)?.map(::JsonPrimitive)?.let(::JsonArray)
-}
-
-private object DbMetadataSerializer : KSerializer<DbMetadata> {
-  private val delegate = MapSerializer(String.serializer(), JsonElement.serializer().nullable)
-  override val descriptor = delegate.descriptor
-
-  override fun serialize(encoder: Encoder, value: DbMetadata) = delegate.serialize(
-    encoder = encoder,
-    value = value
-      .mapNotNull { (k, v) -> if (v == null) null else k to v }
-      .associate { (k, v) -> k.name to k.encode(v) },
-  )
-
-  override fun deserialize(decoder: Decoder): DbMetadata {
-    val jsonMap = delegate.deserialize(decoder).mapNotNull { (k, v) ->
-      val key = DbMetadata.Key(k)
-      key to when (v) {
-        null, is JsonNull -> return@mapNotNull null
-        is JsonPrimitive -> (key as DbMetadata.PrimitiveKey<*>).decode(v)
-        is JsonArray -> (key as DbMetadata.ListKey).decode(v)
-        is JsonObject -> throw SerializationException("Can't decode yet: $v")
-      }
-    }
-    return DbMetadata(jsonMap.toMap().toPersistentMap())
-  }
 }

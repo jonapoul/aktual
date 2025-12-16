@@ -33,7 +33,7 @@ data class ReportCondition(
     val year: Boolean?,
   )
 
-  @Serializable(FieldSerializer::class)
+  @Serializable(Field.Serializer::class)
   enum class Field(override val value: String) : SerializableByString {
     Account("account"),
     Amount("amount"),
@@ -48,21 +48,24 @@ data class ReportCondition(
     Parent("parent"),
     Cleared("cleared"),
     Reconciled("reconciled"),
+    ;
+
+    object Serializer : KSerializer<Field> by enumStringSerializer()
   }
 
-  @Serializable(TypeSerializer::class)
+  @Serializable(Type.Serializer::class)
   enum class Type(override val value: String) : SerializableByString {
     Id("id"),
     Boolean("boolean"),
     Date("date"),
     Number("number"),
     String("string"),
+    ;
+
+    object Serializer : KSerializer<Type> by enumStringSerializer()
   }
 
   companion object {
-    val ListSerializer = ListSerializer(serializer())
-
-    private object FieldSerializer : KSerializer<Field> by enumStringSerializer()
-    private object TypeSerializer : KSerializer<Type> by enumStringSerializer()
+    val ListSerializer: KSerializer<List<ReportCondition>> = ListSerializer(serializer())
   }
 }

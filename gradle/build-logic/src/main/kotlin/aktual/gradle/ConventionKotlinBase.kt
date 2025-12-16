@@ -33,8 +33,6 @@ class ConventionKotlinBase : Plugin<Project> {
       "-Xexpect-actual-classes",
       "-Xnested-type-aliases", // https://kotlinlang.org/docs/whatsnew22.html#support-for-nested-type-aliases
       "-opt-in=kotlin.RequiresOptIn",
-      "-opt-in=kotlin.io.encoding.ExperimentalEncodingApi",
-      "-opt-in=kotlin.time.ExperimentalTime",
       "-opt-in=kotlin.uuid.ExperimentalUuidApi",
     )
   }

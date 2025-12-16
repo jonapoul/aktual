@@ -5,17 +5,17 @@ androidx-activity = "1.12.1"
 androidx-lifecycle = "2.10.0"
 androidx-paging = "3.3.6"
 androidx-paging-compose = "3.4.0-alpha04"
-burst = "2.10.2"
+burst = "2.11.0"
 composeAndroidx = "1.10.0"
-composeJetbrains = "1.10.0-rc02"
-kotlin = "2.2.21"
+composeJetbrains = "1.11.0-alpha01"
+kotlin = "2.3.0"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
-ksp = "2.3.3"
+ksp = "2.3.4"
 ktor = "3.3.3"
 markdown = "0.38.1"
-metro = "0.8.2"
+metro = "0.9.1"
 preferences = "2.2.0"
 redacted = "1.15.1"
 sqldelight = "2.2.1"
@@ -49,7 +49,7 @@ detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.2" }
 haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.7.1" }
 jetbrains-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeJetbrains" }
 jetbrains-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeJetbrains" }
-jetbrains-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.9.0" }
+jetbrains-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.10.0-alpha05" }
 jetbrains-materialIcons = { module = "org.jetbrains.compose.material:material-icons-extended", version = "1.7.3" }
 jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.1" }
 jetbrains-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeJetbrains" }
