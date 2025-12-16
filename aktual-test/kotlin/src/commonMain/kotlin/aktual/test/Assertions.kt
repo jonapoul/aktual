@@ -47,9 +47,14 @@ fun Assert<File>.doesNotExist() = transform { actual ->
 
 fun Assert<String>.equalsDiffed(expected: String) = transform { actual ->
   val stripped = actual.removeSuffix("\n")
-  if (expected == stripped) actual else expected(
-    "Unequal strings between expected{${expected.length}} and actual{${stripped.length}}:\n" + diff(expected, stripped),
-  )
+  if (expected == stripped) {
+    actual
+  } else {
+    expected(
+      "Unequal strings between expected{${expected.length}} and actual{${stripped.length}}:\n" +
+        diff(expected, stripped),
+    )
+  }
 }
 
 fun diff(expected: String, actual: String): String {
