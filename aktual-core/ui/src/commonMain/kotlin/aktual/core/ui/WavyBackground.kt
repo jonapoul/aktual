@@ -20,7 +20,7 @@ fun WavyBackground(
   modifier = modifier.fillMaxSize(),
   painter = backgroundImage(schemeType),
   contentDescription = null,
-  contentScale = ContentScale.FillHeight,
+  contentScale = ContentScale.Crop,
 )
 
 @Composable
