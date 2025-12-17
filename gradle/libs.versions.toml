@@ -1,7 +1,7 @@
 [versions]
 agp = "9.0.0-beta05"
 alakazam = "6.4.0"
-androidx-activity = "1.12.1"
+androidx-activity = "1.12.2"
 androidx-lifecycle = "2.10.0"
 androidx-paging = "3.3.6"
 androidx-paging-compose = "3.4.0-alpha04"
