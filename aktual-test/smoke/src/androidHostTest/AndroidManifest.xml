@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Remove ProfileInstallReceiver for tests since it causes initialization issues with Robolectric -->
+    <application>
+        <receiver
+            android:name="androidx.profileinstaller.ProfileInstallReceiver"
+            tools:node="remove" />
+    </application>
+
+</manifest>
