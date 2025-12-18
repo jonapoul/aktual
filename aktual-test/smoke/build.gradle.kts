@@ -6,7 +6,6 @@ kotlin {
   commonTestDependencies {
     implementation(project(":aktual-app:di"))
     implementation(project(":aktual-app:nav"))
-    implementation(project(":aktual-core:di"))
 
     implementation(project(":aktual-about:vm"))
     implementation(project(":aktual-account:vm"))
