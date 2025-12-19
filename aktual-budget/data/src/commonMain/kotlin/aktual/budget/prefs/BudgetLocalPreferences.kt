@@ -9,9 +9,10 @@ import aktual.budget.model.DbMetadata.Key
 import aktual.budget.model.writeMetadata
 import alakazam.kotlin.core.CoroutineContexts
 import dev.zacsweers.metro.BindingContainer
-import dev.zacsweers.metro.Binds
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.Provides
+import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -31,8 +32,12 @@ fun <T : Any> BudgetLocalPreferences.observe(key: Key<T>): Flow<T?> = map { meta
 
 @BindingContainer
 @ContributesTo(BudgetScope::class)
-internal interface BudgetLocalPreferencesContainer {
-  @Binds val BudgetLocalPreferencesImpl.binds: BudgetLocalPreferences
+object BudgetLocalPreferencesContainer {
+  @Provides
+  @SingleIn(BudgetScope::class)
+  internal fun prefs(
+    impl: BudgetLocalPreferencesImpl,
+  ): BudgetLocalPreferences = impl
 }
 
 internal class BudgetLocalPreferencesImpl(
