@@ -11,9 +11,11 @@ import aktual.budget.reports.vm.ReportsDashboardViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.di.AppGraph
+import aktual.core.di.BudgetGraph
 import aktual.metrics.vm.MetricsViewModel
 import aktual.settings.vm.SettingsViewModel
 import androidx.lifecycle.ViewModel
+import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
@@ -24,13 +26,18 @@ import kotlin.test.Test
 /**
  * To be implemented for each target - makes sure VMs are bound as expected to DI graph
  */
-abstract class ViewModelSmokeTest {
-  protected lateinit var graph: AppGraph
-  protected abstract fun buildGraph(): AppGraph
+abstract class ViewModelSmokeTest<G : AppGraph> {
+  @InterceptTest val temporaryFolder = TemporaryFolder()
+
+  protected lateinit var graph: G
+
+  protected abstract fun buildGraph(): G
+  protected abstract fun G.buildBudgetGraph(): BudgetGraph
 
   @BeforeTest
   fun before() {
     graph = buildGraph()
+    val budget = graph.buildBudgetGraph()
   }
 
   @Test

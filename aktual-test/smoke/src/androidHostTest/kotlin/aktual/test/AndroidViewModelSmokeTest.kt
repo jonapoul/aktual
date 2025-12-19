@@ -4,6 +4,7 @@ import aktual.app.android.AktualActivityViewModel
 import aktual.app.android.AktualApplication
 import aktual.app.android.AndroidAppGraph
 import aktual.core.di.AppGraph
+import aktual.core.di.BudgetGraph
 import aktual.prefs.EncryptedPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import android.content.SharedPreferences
@@ -24,17 +25,21 @@ import kotlin.test.Test
   minSdk = 28, // needed by MetroAppComponentFactory
   maxSdk = 28, // keep this for now, makes the tests take much less time
 )
-class AndroidViewModelSmokeTest : ViewModelSmokeTest() {
-  override fun buildGraph(): AppGraph =
+class AndroidViewModelSmokeTest : ViewModelSmokeTest<AndroidAppGraph>() {
+  override fun buildGraph() =
     createDynamicGraphFactory<AndroidAppGraph.Factory>(TestBindings)
       .create(context = ApplicationProvider.getApplicationContext())
+
+  override fun AndroidAppGraph.buildBudgetGraph(): BudgetGraph {
+
+  }
 
   @Test
   fun root() = testVm<AktualActivityViewModel>()
 }
 
 @BindingContainer
-private object TestBindings {
+internal object TestBindings {
   @Provides
   fun encryptedPrefs(
     prefs: SharedPreferences,

@@ -52,12 +52,16 @@ class ModuleMultiplatform : Plugin<Project> {
 
       commonTestDependencies {
         testLibraries.forEach { lib -> implementation(lib) }
-        implementation(project(":aktual-test:kotlin"))
+        if ("aktual-test" !in path) {
+          implementation(project(":aktual-test:kotlin"))
+        }
       }
 
       androidHostTestDependencies {
         androidTestLibraries.forEach { lib -> implementation(lib) }
-        implementation(project(":aktual-test:android"))
+        if ("aktual-test" !in path) {
+          implementation(project(":aktual-test:android"))
+        }
       }
     }
   }
