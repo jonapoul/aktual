@@ -4,7 +4,7 @@ alakazam = "6.4.0"
 androidx-activity = "1.12.2"
 androidx-lifecycle = "2.10.0"
 androidx-paging = "3.3.6"
-androidx-paging-compose = "3.4.0-alpha04"
+androidx-paging-compose = "3.4.0-beta01"
 burst = "2.11.0"
 composeAndroidx = "1.10.0"
 composeJetbrains = "1.11.0-alpha01"
@@ -14,8 +14,8 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
 ksp = "2.3.4"
 ktor = "3.3.3"
-markdown = "0.38.1"
-metro = "0.9.1"
+markdown = "0.39.0"
+metro = "0.9.2"
 preferences = "2.2.0"
 redacted = "1.15.1"
 sqldelight = "2.2.1"
@@ -45,7 +45,7 @@ androidx-paging-compose = { module = "androidx.paging:paging-compose", version.r
 androidx-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
-detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.2" }
+detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.3" }
 haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.7.1" }
 jetbrains-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeJetbrains" }
 jetbrains-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeJetbrains" }
