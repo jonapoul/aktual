@@ -6,6 +6,7 @@ import androidx.compose.runtime.Immutable
 @Immutable
 internal sealed interface Action {
   data object NavBack : Action
+  data object Sync : Action
   data class CheckItem(val id: TransactionId, val isChecked: Boolean) : Action
   data class SetPrivacyMode(val isPrivacyEnabled: Boolean) : Action
 }
