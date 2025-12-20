@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -43,6 +42,7 @@ fun TransactionsScreen(
 ) {
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
   val format by viewModel.format.collectAsStateWithLifecycle()
+  val syncState by viewModel.syncState.collectAsStateWithLifecycle()
 
   TransactionsScaffold(
     transactionIdSource = viewModel,
@@ -52,6 +52,7 @@ fun TransactionsScreen(
     onAction = { action ->
       when (action) {
         Action.NavBack -> nav.back()
+        Action.Sync -> viewModel.startSync()
         is Action.CheckItem -> viewModel.setChecked(action.id, action.isChecked)
         is Action.SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
       }

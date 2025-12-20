@@ -124,6 +124,10 @@ class TransactionsViewModel(
 
   fun setChecked(id: TransactionId, isChecked: Boolean) = checkedTransactionIds.update { it.put(id, isChecked) }
 
+  fun startSync() {
+
+  }
+
   fun setPrivacyMode(privacyMode: Boolean) {
     viewModelScope.launch {
       syncedPrefs[SyncedPrefKey.Global.IsPrivacyEnabled] = privacyMode.toString()

@@ -11,6 +11,7 @@ import aktual.core.ui.transparentTopAppBarColors
 import aktual.l10n.Strings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
@@ -52,6 +53,11 @@ internal fun TransactionsTitleBar(
       )
     },
     actions = {
+      IconButton(
+        onClick = { onAction(Action.Sync) },
+        content = { Icon(Icons.Filled.Sync, Strings.transactionsSync) },
+      )
+
       if (LocalPrivacyEnabled.current) {
         IconButton(
           onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = false)) },
