@@ -17,8 +17,8 @@
 
 An :warning: UNOFFICIAL :warning: set of clients for the [Actual personal budgeting software](https://github.com/actualbudget/actual) - all written in Kotlin:
 
-- [Android](app/android)
-- 🚧 [Desktop](app/desktop) 🚧
+- [Android](aktual-app/android)
+- 🚧 [Desktop](aktual-app/desktop) 🚧
 - 🚧 iOS - TBC? 🚧
 
 > [!IMPORTANT]
