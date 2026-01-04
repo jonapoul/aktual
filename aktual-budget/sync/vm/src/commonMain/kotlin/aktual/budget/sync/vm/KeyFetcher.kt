@@ -7,8 +7,8 @@ import aktual.budget.encryption.BufferDecrypter
 import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.generateKeyFromPassword
 import aktual.budget.model.BudgetId
-import aktual.core.model.LoginToken
 import aktual.core.model.Password
+import aktual.core.model.Token
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
@@ -27,7 +27,7 @@ class KeyFetcher(
   private val keyPreferences: KeyPreferences,
   private val decrypter: BufferDecrypter,
 ) {
-  suspend operator fun invoke(budgetId: BudgetId, token: LoginToken, keyPassword: Password): FetchKeyResult {
+  suspend operator fun invoke(budgetId: BudgetId, token: Token, keyPassword: Password): FetchKeyResult {
     logcat.d { "KeyFetcher $budgetId $token $keyPassword" }
     val syncApi = stateHolder.value?.sync ?: return FetchKeyResult.NotLoggedIn
 

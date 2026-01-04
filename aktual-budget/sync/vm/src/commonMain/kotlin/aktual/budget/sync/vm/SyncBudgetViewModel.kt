@@ -12,9 +12,9 @@ import aktual.budget.sync.vm.SyncStep.DownloadingDatabase
 import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
 import aktual.core.di.BudgetGraphHolder
-import aktual.core.model.LoginToken
 import aktual.core.model.Password
 import aktual.core.model.Percent
+import aktual.core.model.Token
 import aktual.core.model.UrlOpener
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.core.launchInfiniteLoop
@@ -53,7 +53,7 @@ import kotlin.time.Duration.Companion.seconds
 @Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
 @AssistedInject
 class SyncBudgetViewModel(
-  @Assisted private val token: LoginToken,
+  @Assisted private val token: Token,
   @Assisted private val budgetId: BudgetId,
   private val fileDownloader: BudgetFileDownloader,
   private val infoFetcher: BudgetInfoFetcher,
@@ -322,7 +322,7 @@ class SyncBudgetViewModel(
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
-      @Assisted token: LoginToken,
+      @Assisted token: Token,
       @Assisted budgetId: BudgetId,
     ): SyncBudgetViewModel
   }

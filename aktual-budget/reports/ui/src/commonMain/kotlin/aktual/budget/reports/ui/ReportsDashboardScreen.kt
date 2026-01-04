@@ -4,7 +4,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.reports.vm.DashboardState
 import aktual.budget.reports.vm.ReportDashboardItem
 import aktual.budget.reports.vm.ReportsDashboardViewModel
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import aktual.core.ui.BackHandler
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
@@ -48,7 +48,7 @@ import kotlinx.collections.immutable.persistentListOf
 fun ReportsDashboardScreen(
   nav: ReportsDashboardNavigator,
   budgetId: BudgetId,
-  token: LoginToken,
+  token: Token,
   viewModel: ReportsDashboardViewModel = metroViewModel(token, budgetId),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -74,7 +74,7 @@ fun ReportsDashboardScreen(
 
 @Composable
 private fun metroViewModel(
-  token: LoginToken,
+  token: Token,
   budgetId: BudgetId,
 ) = assistedMetroViewModel<ReportsDashboardViewModel, ReportsDashboardViewModel.Factory> {
   create(token, budgetId)

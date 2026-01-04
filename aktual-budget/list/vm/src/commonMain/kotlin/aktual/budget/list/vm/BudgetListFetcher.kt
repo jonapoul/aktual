@@ -5,7 +5,7 @@ import aktual.api.model.sync.ListUserFilesResponse
 import aktual.api.model.sync.UserFile
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetState
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
@@ -24,7 +24,7 @@ class BudgetListFetcher internal constructor(
   private val apisStateHolder: AktualApisStateHolder,
   private val keyPreferences: KeyPreferences,
 ) {
-  suspend fun fetchBudgets(token: LoginToken): FetchBudgetsResult {
+  suspend fun fetchBudgets(token: Token): FetchBudgetsResult {
     val apis = apisStateHolder.value ?: return FetchBudgetsResult.NotLoggedIn
     return try {
       val response = withContext(contexts.io) { apis.sync.fetchUserFiles(token) }

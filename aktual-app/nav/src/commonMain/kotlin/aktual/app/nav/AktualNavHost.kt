@@ -10,7 +10,7 @@ import aktual.budget.reports.ui.ChooseReportTypeScreen
 import aktual.budget.reports.ui.ReportsDashboardScreen
 import aktual.budget.sync.ui.SyncBudgetScreen
 import aktual.budget.transactions.ui.TransactionsScreen
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import aktual.metrics.ui.MetricsScreen
 import aktual.settings.ui.SettingsScreen
 import androidx.compose.runtime.Composable
@@ -23,14 +23,14 @@ import androidx.navigation.compose.composable
 fun AktualNavHost(
   nav: NavHostController,
   isServerUrlSet: Boolean,
-  loginToken: LoginToken?,
+  token: Token?,
   modifier: Modifier = Modifier,
 ) {
   NavHost(
     modifier = modifier,
     navController = nav,
     startDestination = when {
-      loginToken != null && isServerUrlSet -> ListBudgetsNavRoute(loginToken)
+      token != null && isServerUrlSet -> ListBudgetsNavRoute(token)
       isServerUrlSet -> LoginNavRoute
       else -> ServerUrlNavRoute
     },
@@ -43,21 +43,21 @@ fun AktualNavHost(
 
     composable<MetricsNavRoute> { MetricsScreen(MetricsNavigator(nav)) }
 
-    composableWithArg<ListBudgetsNavRoute>(mapOf(LoginTokenType)) { route, _ ->
+    composableWithArg<ListBudgetsNavRoute>(mapOf(TokenType)) { route, _ ->
       ListBudgetsScreen(ListBudgetsNavigator(nav), route.token)
     }
 
     composable<LoginNavRoute> { LoginScreen(LoginNavigator(nav)) }
 
-    composableWithArg<ReportsListNavRoute>(mapOf(BudgetIdType, LoginTokenType)) { route, _ ->
+    composableWithArg<ReportsListNavRoute>(mapOf(BudgetIdType, TokenType)) { route, _ ->
       ReportsDashboardScreen(ReportsDashboardNavigator(nav), route.budgetId, route.token)
     }
 
-    composableWithArg<ReportNavRoute>(mapOf(BudgetIdType, LoginTokenType, WidgetIdType)) { route, _ ->
+    composableWithArg<ReportNavRoute>(mapOf(BudgetIdType, TokenType, WidgetIdType)) { route, _ ->
       // TBC
     }
 
-    composableWithArg<CreateReportNavRoute>(mapOf(BudgetIdType, LoginTokenType)) { route, _ ->
+    composableWithArg<CreateReportNavRoute>(mapOf(BudgetIdType, TokenType)) { route, _ ->
       ChooseReportTypeScreen(ChooseReportTypeNavigator(nav), route.budgetId, route.token)
     }
 
@@ -65,11 +65,11 @@ fun AktualNavHost(
 
     composable<SettingsNavRoute> { SettingsScreen(SettingsNavigator(nav)) }
 
-    composableWithArg<SyncBudgetsNavRoute>(mapOf(BudgetIdType, LoginTokenType)) { route, _ ->
+    composableWithArg<SyncBudgetsNavRoute>(mapOf(BudgetIdType, TokenType)) { route, _ ->
       SyncBudgetScreen(SyncBudgetNavigator(nav), route.budgetId, route.token)
     }
 
-    composableWithArg<TransactionsNavRoute>(mapOf(BudgetIdType, LoginTokenType)) { route, _ ->
+    composableWithArg<TransactionsNavRoute>(mapOf(BudgetIdType, TokenType)) { route, _ ->
       TransactionsScreen(TransactionsNavigator(nav), route.budgetId, route.token)
     }
   }

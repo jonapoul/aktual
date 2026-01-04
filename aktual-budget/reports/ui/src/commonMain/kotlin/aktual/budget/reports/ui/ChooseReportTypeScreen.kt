@@ -13,7 +13,7 @@ import aktual.budget.reports.ui.charts.THREE_MONTHS
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChooseReportTypeViewModel
 import aktual.core.model.ColorSchemeType
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomNavBarSpacing
@@ -45,7 +45,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
@@ -64,7 +63,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun ChooseReportTypeScreen(
   nav: ChooseReportTypeNavigator,
   budgetId: BudgetId,
-  token: LoginToken,
+  token: Token,
   viewModel: ChooseReportTypeViewModel = metroViewModel(budgetId),
 ) {
   BackHandler { nav.back() }

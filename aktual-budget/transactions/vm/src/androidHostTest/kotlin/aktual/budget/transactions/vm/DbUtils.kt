@@ -11,7 +11,7 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -21,7 +21,7 @@ internal val DATE_1 = LocalDate(2025, Month.JUNE, 1)
 internal val DATE_2 = LocalDate(2025, Month.JUNE, 2)
 internal val DATE_3 = LocalDate(2025, Month.JUNE, 3)
 
-internal val TOKEN = LoginToken("abc-123")
+internal val TOKEN = Token("abc-123")
 internal val BUDGET_ID = BudgetId("xyz-789")
 internal val METADATA = DbMetadata(data = persistentMapOf(DbMetadata.CloudFileId to BUDGET_ID))
 

@@ -12,7 +12,7 @@ import aktual.budget.list.ui.ListBudgetsAction.Reload
 import aktual.budget.list.vm.ListBudgetsState
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LandscapePreview
@@ -53,7 +53,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 fun ListBudgetsScreen(
   nav: ListBudgetsNavigator,
-  token: LoginToken,
+  token: Token,
   viewModel: ListBudgetsViewModel = metroViewModel(token),
 ) {
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
@@ -115,7 +115,7 @@ fun ListBudgetsScreen(
 }
 
 @Composable
-private fun metroViewModel(token: LoginToken) =
+private fun metroViewModel(token: Token) =
   assistedMetroViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory> {
     create(token)
   }

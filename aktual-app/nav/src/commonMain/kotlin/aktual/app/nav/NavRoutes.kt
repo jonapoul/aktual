@@ -2,7 +2,7 @@ package aktual.app.nav
 
 import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetId
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 import java.io.Serializable as JSerializable
@@ -26,7 +26,7 @@ data object MetricsNavRoute
 @Immutable
 @Serializable
 data class ListBudgetsNavRoute(
-  val token: LoginToken,
+  val token: Token,
 ) : JSerializable
 
 @Immutable
@@ -44,28 +44,28 @@ data object SettingsNavRoute
 @Immutable
 @Serializable
 data class SyncBudgetsNavRoute(
-  val token: LoginToken,
+  val token: Token,
   val budgetId: BudgetId,
 ) : JSerializable
 
 @Immutable
 @Serializable
 data class TransactionsNavRoute(
-  val token: LoginToken,
+  val token: Token,
   val budgetId: BudgetId,
 ) : JSerializable
 
 @Immutable
 @Serializable
 data class ReportsListNavRoute(
-  val token: LoginToken,
+  val token: Token,
   val budgetId: BudgetId,
 ) : JSerializable
 
 @Immutable
 @Serializable
 data class ReportNavRoute(
-  val token: LoginToken,
+  val token: Token,
   val budgetId: BudgetId,
   val widgetId: WidgetId,
 ) : JSerializable
@@ -73,6 +73,6 @@ data class ReportNavRoute(
 @Immutable
 @Serializable
 data class CreateReportNavRoute(
-  val token: LoginToken,
+  val token: Token,
   val budgetId: BudgetId,
 ) : JSerializable

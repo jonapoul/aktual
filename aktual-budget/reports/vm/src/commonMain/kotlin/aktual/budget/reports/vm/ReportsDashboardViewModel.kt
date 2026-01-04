@@ -2,7 +2,7 @@ package aktual.budget.reports.vm
 
 import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetId
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
@@ -20,7 +20,7 @@ import logcat.logcat
 @Suppress("unused", "VarCouldBeVal")
 @AssistedInject
 class ReportsDashboardViewModel(
-  @Assisted private val token: LoginToken,
+  @Assisted private val token: Token,
   @Assisted private val budgetId: BudgetId,
 ) : ViewModel() {
   private var job: Job? = null
@@ -55,7 +55,7 @@ class ReportsDashboardViewModel(
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
-      @Assisted token: LoginToken,
+      @Assisted token: Token,
       @Assisted budgetId: BudgetId,
     ): ReportsDashboardViewModel
   }

@@ -5,9 +5,9 @@ import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.AktualJson
 import aktual.core.model.AktualVersionsStateHolder
-import aktual.core.model.LoginToken
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import aktual.prefs.AppGlobalPreferences
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
@@ -219,15 +219,15 @@ class ServerUrlViewModelTest {
   fun `Clear saved token if the confirmed URL is different from previously-saved`() = runTest {
     buildPreferences()
     buildViewModel()
-    preferences.loginToken.asFlow().test {
+    preferences.token.asFlow().test {
       // Given no token initially saved
       assertThatNextEmission().isNull()
 
       // when we save a token and a URL
       val initialUrl = ServerUrl(Protocol.Https, "website.com")
       preferences.serverUrl.setAndCommit(initialUrl)
-      val token = LoginToken("abc-123")
-      preferences.loginToken.setAndCommit(token)
+      val token = Token("abc-123")
+      preferences.token.setAndCommit(token)
 
       // then the token has been saved
       assertThatNextEmissionIsEqualTo(token)

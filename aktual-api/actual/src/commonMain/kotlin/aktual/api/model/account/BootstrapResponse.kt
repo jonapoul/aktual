@@ -1,6 +1,6 @@
 package aktual.api.model.account
 
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -17,6 +17,6 @@ sealed interface BootstrapResponse {
 
   @Serializable
   data class Data(
-    @SerialName("token") val token: LoginToken,
+    @SerialName("token") val token: Token,
   )
 }

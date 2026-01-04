@@ -5,10 +5,10 @@ import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.model.account.LoginRequest
 import aktual.core.connection.ConnectionMonitor
-import aktual.core.model.LoginToken
 import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import aktual.prefs.AppGlobalPreferences
 import aktual.test.TestClientFactory
 import aktual.test.assertThatNextEmission
@@ -88,7 +88,7 @@ internal class LoginRequesterTest {
     connectionMonitor.start()
     apisStateHolder.filterNotNull().first()
 
-    preferences.loginToken.asFlow().test {
+    preferences.token.asFlow().test {
       assertThatNextEmission().isNull()
 
       // When we log in with a successful response
@@ -174,7 +174,7 @@ internal class LoginRequesterTest {
 
   private companion object {
     val EXAMPLE_PASSWORD = Password(value = "P@ssw0rd")
-    val EXAMPLE_TOKEN = LoginToken(value = "abc123")
+    val EXAMPLE_TOKEN = Token(value = "abc123")
     val EXAMPLE_URL = ServerUrl(Protocol.Https, "website.com")
   }
 }

@@ -15,9 +15,9 @@ import aktual.codegen.GET
 import aktual.codegen.Header
 import aktual.codegen.KtorApi
 import aktual.codegen.POST
-import aktual.core.model.LoginToken
 import aktual.core.model.Password
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import io.ktor.client.HttpClient
 
 @KtorApi
@@ -52,12 +52,12 @@ interface AccountApi {
   @POST("/account/change-password")
   suspend fun changePassword(
     @Body body: ChangePasswordRequest,
-    @Header(AktualHeaders.TOKEN) token: LoginToken,
+    @Header(AktualHeaders.TOKEN) token: Token,
   ): ChangePasswordResponse.Success
 
   @POST("/account/validate")
   suspend fun validate(
-    @Header(AktualHeaders.TOKEN) token: LoginToken,
+    @Header(AktualHeaders.TOKEN) token: Token,
   ): ValidateResponse.Success
 }
 

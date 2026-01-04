@@ -9,8 +9,8 @@ import aktual.api.model.sync.UserFile
 import aktual.budget.model.BudgetId
 import aktual.budget.sync.vm.BudgetInfoFetcher.Result
 import aktual.core.model.KeyId
-import aktual.core.model.LoginToken
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import aktual.core.model.base64
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
@@ -166,7 +166,7 @@ class BudgetInfoFetcherTest {
   )
 
   private companion object {
-    val TOKEN = LoginToken("abc-123")
+    val TOKEN = Token("abc-123")
     val BUDGET_ID = BudgetId("xyz-789")
     val SERVER_URL = ServerUrl("https://website.com")
   }

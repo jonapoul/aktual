@@ -5,9 +5,9 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.SyncResponse
 import aktual.budget.prefs.BudgetLocalPreferences
 import aktual.budget.proto.SyncResponseDecoder
-import aktual.core.model.LoginToken
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -20,7 +20,7 @@ import okio.source
 
 interface BudgetSyncApi {
   suspend fun syncBudget(
-    token: LoginToken,
+    token: Token,
     budgetId: BudgetId,
   ): SyncResponse
 }
@@ -37,7 +37,7 @@ class BudgetSyncApiImpl(
   }
 
   override suspend fun syncBudget(
-    token: LoginToken,
+    token: Token,
     budgetId: BudgetId,
   ): SyncResponse {
     val response = client.post {

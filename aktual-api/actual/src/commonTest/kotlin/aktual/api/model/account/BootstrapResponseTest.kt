@@ -1,6 +1,6 @@
 package aktual.api.model.account
 
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import aktual.test.AccountResponses
 import aktual.test.testDecoding
 import kotlin.test.Test
@@ -19,7 +19,7 @@ class BootstrapResponseTest {
     json = AccountResponses.BOOTSTRAP_SUCCESS_200,
     expected = BootstrapResponse.Success(
       data = BootstrapResponse.Data(
-        token = LoginToken("92af386a-f727-431b-963a-f8cac5285878"),
+        token = Token("92af386a-f727-431b-963a-f8cac5285878"),
       ),
     ),
   )

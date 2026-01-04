@@ -2,9 +2,9 @@ package aktual.api.client
 
 import aktual.api.model.internal.AktualHeaders
 import aktual.budget.model.BudgetId
-import aktual.core.model.LoginToken
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.header
@@ -38,7 +38,7 @@ class SyncDownloadApi(
   }
 
   fun downloadUserFile(
-    token: LoginToken,
+    token: Token,
     budgetId: BudgetId,
     path: Path,
   ): Flow<SyncDownloadState> = flow {

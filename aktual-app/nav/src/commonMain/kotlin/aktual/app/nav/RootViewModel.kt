@@ -10,9 +10,9 @@ import aktual.core.connection.ServerPinger
 import aktual.core.connection.ServerVersionFetcher
 import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.DarkColorSchemeType
-import aktual.core.model.LoginToken
 import aktual.core.model.PingStateHolder
 import aktual.core.model.RegularColorSchemeType
+import aktual.core.model.Token
 import aktual.core.ui.BottomBarState
 import aktual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
@@ -77,7 +77,7 @@ abstract class RootViewModel(
   val darkSchemeType: StateFlow<DarkColorSchemeType> = preferences.darkColorScheme.asStateFlow(viewModelScope)
 
   val isServerUrlSet: Boolean = preferences.serverUrl.isSet()
-  val loginToken: LoginToken? = preferences.loginToken.get()
+  val token: Token? = preferences.token.get()
 
   private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 

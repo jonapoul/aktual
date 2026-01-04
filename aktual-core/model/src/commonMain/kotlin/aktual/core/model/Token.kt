@@ -5,6 +5,6 @@ import java.io.Serializable as JavaIoSerializable
 
 @Serializable
 @JvmInline
-value class LoginToken(val value: String) : JavaIoSerializable {
+value class Token(val value: String) : JavaIoSerializable {
   override fun toString(): String = value
 }

@@ -1,7 +1,7 @@
 package aktual.budget.list.ui
 
 import aktual.budget.model.BudgetId
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import androidx.compose.runtime.Immutable
 
 @Immutable
@@ -11,5 +11,5 @@ interface ListBudgetsNavigator {
   fun toUrl()
   fun toSettings()
   fun toMetrics()
-  fun toSyncBudget(token: LoginToken, id: BudgetId)
+  fun toSyncBudget(token: Token, id: BudgetId)
 }

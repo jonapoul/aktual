@@ -7,9 +7,9 @@ import aktual.api.client.SyncApi
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.BudgetState
-import aktual.core.model.LoginToken
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import aktual.prefs.KeyPreferences
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
@@ -156,7 +156,7 @@ class BudgetListFetcherTest {
   ) = mockk<AktualApis> { every { sync } returns syncApi }
 
   private companion object {
-    val TOKEN = LoginToken(value = "abc-123")
+    val TOKEN = Token(value = "abc-123")
     val SERVER_URL = ServerUrl(Protocol.Https, "test.unused.com")
 
     val VALID_RESPONSE = """

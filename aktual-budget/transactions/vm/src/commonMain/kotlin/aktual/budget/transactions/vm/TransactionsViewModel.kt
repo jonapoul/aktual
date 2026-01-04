@@ -16,7 +16,7 @@ import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.core.di.BudgetGraphHolder
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -48,7 +48,7 @@ import logcat.logcat
 
 @AssistedInject
 class TransactionsViewModel(
-  @Suppress("unused") @Assisted private val token: LoginToken,
+  @Suppress("unused") @Assisted private val token: Token,
   @Assisted private val budgetId: BudgetId,
   @Assisted private val spec: TransactionsSpec,
   budgetGraphs: BudgetGraphHolder,
@@ -59,7 +59,7 @@ class TransactionsViewModel(
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
-      @Assisted token: LoginToken,
+      @Assisted token: Token,
       @Assisted budgetId: BudgetId,
       @Assisted spec: TransactionsSpec,
     ): TransactionsViewModel
