@@ -123,7 +123,7 @@ private fun WindowContents(
         hideFraction = hideFraction,
         colorSchemeType = colorSchemeType,
         isServerUrlSet = viewModel.isServerUrlSet,
-        loginToken = viewModel.loginToken,
+        token = viewModel.token,
         bottomBarState = bottomBarState,
       )
     }

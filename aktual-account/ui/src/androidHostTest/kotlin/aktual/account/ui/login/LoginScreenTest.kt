@@ -6,8 +6,8 @@ import aktual.account.domain.LoginRequester
 import aktual.account.domain.LoginResult
 import aktual.account.vm.LoginViewModel
 import aktual.core.model.AktualVersionsStateHolder
-import aktual.core.model.LoginToken
 import aktual.core.model.Password
+import aktual.core.model.Token
 import aktual.prefs.AppGlobalPreferences
 import aktual.test.TestBuildConfig
 import aktual.test.assertEditableTextEquals
@@ -78,7 +78,7 @@ class LoginScreenTest {
 
     // and the login takes half a second before succeeding
     setLoginResult {
-      preferences.loginToken.setAndCommit(TOKEN) // to trigger nav behaviour
+      preferences.token.setAndCommit(TOKEN) // to trigger nav behaviour
       LoginResult.Success(TOKEN)
     }
 
@@ -142,7 +142,7 @@ class LoginScreenTest {
 
   private companion object {
     val PASSWORD = Password("P@ssw0rd!")
-    val TOKEN = LoginToken("abc-123")
+    val TOKEN = Token("abc-123")
 
     val BUILD_CONFIG = TestBuildConfig.copy(
       versionName = "1.2.3",

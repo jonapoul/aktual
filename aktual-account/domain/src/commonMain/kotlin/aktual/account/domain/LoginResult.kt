@@ -1,12 +1,12 @@
 package aktual.account.domain
 
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import androidx.compose.runtime.Immutable
 
 @Immutable
 sealed interface LoginResult {
   data class Success(
-    val token: LoginToken,
+    val token: Token,
   ) : LoginResult
 
   @Immutable

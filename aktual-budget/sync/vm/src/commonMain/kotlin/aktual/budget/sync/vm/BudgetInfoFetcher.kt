@@ -4,7 +4,7 @@ import aktual.api.client.AktualApisStateHolder
 import aktual.api.model.sync.GetUserFileInfoResponse
 import aktual.api.model.sync.UserFile
 import aktual.budget.model.BudgetId
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import dev.zacsweers.metro.Inject
@@ -36,7 +36,7 @@ class BudgetInfoFetcher internal constructor(
     data class HttpFailure(override val reason: String) : Failure
   }
 
-  suspend fun fetch(token: LoginToken, budgetId: BudgetId): Result {
+  suspend fun fetch(token: Token, budgetId: BudgetId): Result {
     val api = apisStateHolder.value?.sync
     if (api == null) {
       logcat.w { "Not logged in?" }

@@ -89,7 +89,7 @@ class ServerUrlViewModel internal constructor(
       }
 
       // Also clear any previous login state
-      preferences.loginToken.deleteAndCommit()
+      preferences.token.deleteAndCommit()
     }
 
     viewModelScope.collectFlow(mutableConfirmResult) { result ->
@@ -134,7 +134,7 @@ class ServerUrlViewModel internal constructor(
       if (url != previousUrl) {
         // saving a new URL, so the existing token and API objects are invalidated
         apiStateHolder.update { null }
-        preferences.loginToken.deleteAndCommit()
+        preferences.token.deleteAndCommit()
       }
 
       preferences.serverUrl.set(url)

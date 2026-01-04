@@ -5,9 +5,9 @@ import aktual.account.domain.LoginResult
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
-import aktual.core.model.LoginToken
 import aktual.core.model.Password
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import aktual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.ResettableStateFlow
 import androidx.lifecycle.ViewModel
@@ -50,8 +50,8 @@ class LoginViewModel(
     combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
       .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
-  val token: Flow<LoginToken> = preferences
-    .loginToken
+  val token: Flow<Token> = preferences
+    .token
     .asFlow()
     .filterNotNull()
 

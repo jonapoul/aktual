@@ -10,7 +10,7 @@ import aktual.budget.sync.vm.DownloadState.Done
 import aktual.budget.sync.vm.DownloadState.Failure
 import aktual.budget.sync.vm.DownloadState.InProgress
 import aktual.core.model.Bytes.Companion.Zero
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import aktual.core.model.bytes
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
@@ -30,12 +30,12 @@ class BudgetFileDownloader internal constructor(
   private val budgetFiles: BudgetFiles,
   private val apisStateHolder: AktualApisStateHolder,
 ) {
-  fun download(token: LoginToken, budgetId: BudgetId): Flow<DownloadState> {
+  fun download(token: Token, budgetId: BudgetId): Flow<DownloadState> {
     val api = apisStateHolder.value?.syncDownload ?: return flowOf(Failure.NotLoggedIn)
     return flow { emitState(api, token, budgetId) }.flowOn(contexts.io)
   }
 
-  private suspend fun FlowCollector<DownloadState>.emitState(api: SyncDownloadApi, token: LoginToken, id: BudgetId) {
+  private suspend fun FlowCollector<DownloadState>.emitState(api: SyncDownloadApi, token: Token, id: BudgetId) {
     val destinationPath = budgetFiles.encryptedZip(id, mkdirs = true)
     try {
       emit(InProgress(Zero, Zero))

@@ -12,7 +12,7 @@ import aktual.budget.reports.ui.ChooseReportTypeNavigator
 import aktual.budget.reports.ui.ReportsDashboardNavigator
 import aktual.budget.sync.ui.SyncBudgetNavigator
 import aktual.budget.transactions.ui.TransactionsNavigator
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import aktual.metrics.ui.MetricsNavigator
 import aktual.settings.ui.SettingsNavigator
 import androidx.navigation.NavHostController
@@ -32,7 +32,7 @@ fun TransactionsNavigator(nav: NavHostController): TransactionsNavigator = Trans
 
 private class ChangePasswordNavigatorImpl(private val nav: NavHostController) : ChangePasswordNavigator {
   override fun back() = nav.popBackStack()
-  override fun toListBudgets(token: LoginToken) = nav.debugNav(ListBudgetsNavRoute(token))
+  override fun toListBudgets(token: Token) = nav.debugNav(ListBudgetsNavRoute(token))
 }
 
 private class InfoNavigatorImpl(private val nav: NavHostController) : InfoNavigator {
@@ -45,14 +45,14 @@ private class ListBudgetsNavigatorImpl(private val nav: NavHostController) : Lis
   override fun toChangePassword() = nav.debugNav(ChangePasswordNavRoute)
   override fun toMetrics() = nav.debugNav(MetricsNavRoute)
   override fun toSettings() = nav.debugNav(SettingsNavRoute)
-  override fun toSyncBudget(token: LoginToken, id: BudgetId) = nav.debugNav(SyncBudgetsNavRoute(token, id))
+  override fun toSyncBudget(token: Token, id: BudgetId) = nav.debugNav(SyncBudgetsNavRoute(token, id))
   override fun toUrl() = nav.debugNav(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
 }
 
 private class LoginNavigatorImpl(private val nav: NavHostController) : LoginNavigator {
   override fun back() = nav.popBackStack()
   override fun toUrl() = nav.debugNav(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
-  override fun toListBudgets(token: LoginToken) =
+  override fun toListBudgets(token: Token) =
     nav.debugNav(ListBudgetsNavRoute(token)) { popUpTo(LoginNavRoute) { inclusive = true } }
 }
 
@@ -72,17 +72,17 @@ private class LicensesNavigatorImpl(private val nav: NavHostController) : Licens
 private class ReportsDashboardNavigatorImpl(private val nav: NavHostController) : ReportsDashboardNavigator {
   override fun back() = nav.popBackStack()
 
-  override fun toReport(token: LoginToken, budgetId: BudgetId, widgetId: WidgetId) =
+  override fun toReport(token: Token, budgetId: BudgetId, widgetId: WidgetId) =
     nav.debugNav(ReportNavRoute(token, budgetId, widgetId))
 
-  override fun createReport(token: LoginToken, budgetId: BudgetId) =
+  override fun createReport(token: Token, budgetId: BudgetId) =
     nav.debugNav(CreateReportNavRoute(token, budgetId))
 }
 
 private class ChooseReportTypeNavigatorImpl(private val nav: NavHostController) : ChooseReportTypeNavigator {
   override fun back() = nav.popBackStack()
 
-  override fun toReport(token: LoginToken, budgetId: BudgetId, widgetId: WidgetId) =
+  override fun toReport(token: Token, budgetId: BudgetId, widgetId: WidgetId) =
     nav.debugNav(ReportNavRoute(token, budgetId, widgetId))
 }
 
@@ -92,7 +92,7 @@ private class SettingsNavigatorImpl(private val nav: NavHostController) : Settin
 
 private class SyncBudgetNavigatorImpl(private val nav: NavHostController) : SyncBudgetNavigator {
   override fun back() = nav.popBackStack()
-  override fun toBudget(token: LoginToken, budgetId: BudgetId) =
+  override fun toBudget(token: Token, budgetId: BudgetId) =
     nav.debugNav(TransactionsNavRoute(token, budgetId)) {
       popUpTo<ListBudgetsNavRoute> { inclusive = false }
     }

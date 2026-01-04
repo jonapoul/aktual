@@ -87,7 +87,7 @@ private fun Content(
           hideFraction = hideFraction,
           colorSchemeType = colorSchemeType,
           isServerUrlSet = viewModel.isServerUrlSet,
-          loginToken = viewModel.loginToken,
+          token = viewModel.token,
           bottomBarState = bottomBarState,
         )
       }

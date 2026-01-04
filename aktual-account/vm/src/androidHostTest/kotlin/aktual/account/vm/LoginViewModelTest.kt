@@ -3,10 +3,10 @@ package aktual.account.vm
 import aktual.account.domain.LoginRequester
 import aktual.account.domain.LoginResult
 import aktual.core.model.AktualVersionsStateHolder
-import aktual.core.model.LoginToken
 import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import aktual.prefs.AppGlobalPreferences
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
@@ -136,7 +136,7 @@ internal class LoginViewModelTest {
     viewModel.token.test {
       expectNoEvents()
 
-      preferences.loginToken.set(LoginToken(value = "abc123"))
+      preferences.token.set(Token(value = "abc123"))
       assertThatNextEmission().isNotNull()
 
       expectNoEvents()

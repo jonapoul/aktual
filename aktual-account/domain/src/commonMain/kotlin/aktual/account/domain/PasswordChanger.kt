@@ -23,7 +23,7 @@ class PasswordChanger internal constructor(
 ) {
   suspend fun submit(password: Password): ChangePasswordResult {
     val apis = apisStateHolder.value
-    val token = preferences.loginToken.get()
+    val token = preferences.token.get()
     if (apis == null || token == null) {
       return ChangePasswordResult.NotLoggedIn
     }

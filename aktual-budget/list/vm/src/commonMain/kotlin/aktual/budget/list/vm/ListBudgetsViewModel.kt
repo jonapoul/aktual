@@ -6,8 +6,8 @@ import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.database
 import aktual.budget.model.metadata
-import aktual.core.model.LoginToken
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import aktual.core.model.UrlOpener
 import aktual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
@@ -41,7 +41,7 @@ import kotlin.time.Duration.Companion.milliseconds
 
 @AssistedInject
 class ListBudgetsViewModel(
-  @Assisted private val token: LoginToken,
+  @Assisted private val token: Token,
   preferences: AppGlobalPreferences,
   private val budgetListFetcher: BudgetListFetcher,
   private val files: BudgetFiles,
@@ -168,7 +168,7 @@ class ListBudgetsViewModel(
   @ContributesIntoMap(AppScope::class)
   interface Factory : ManualViewModelAssistedFactory {
     fun create(
-      @Assisted token: LoginToken,
+      @Assisted token: Token,
     ): ListBudgetsViewModel
   }
 }

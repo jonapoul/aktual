@@ -43,7 +43,7 @@ class LoginRequester(
     }
 
     // Also save the token
-    preferences.loginToken.set(response.data.token)
+    preferences.token.set(response.data.token)
 
     return result
   }

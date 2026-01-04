@@ -9,9 +9,9 @@ import aktual.budget.model.encryptedZip
 import aktual.budget.sync.vm.DownloadState.Done
 import aktual.budget.sync.vm.DownloadState.Failure
 import aktual.budget.sync.vm.DownloadState.InProgress
-import aktual.core.model.LoginToken
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import aktual.core.model.bytes
 import aktual.test.CoTemporaryFolder
 import aktual.test.TestBudgetFiles
@@ -176,7 +176,7 @@ class BudgetFileDownloaderTest {
   }
 
   private companion object {
-    val TOKEN = LoginToken("abc-123")
+    val TOKEN = Token("abc-123")
     val BUDGET_ID = BudgetId("xyz-789")
     val SERVER_URL = ServerUrl(Protocol.Https, "actual.website.com")
   }

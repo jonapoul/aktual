@@ -5,9 +5,9 @@ import aktual.budget.sync.vm.KeyPasswordState
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.sync.vm.SyncStep
 import aktual.budget.sync.vm.SyncStepState
-import aktual.core.model.LoginToken
 import aktual.core.model.Password
 import aktual.core.model.Percent
+import aktual.core.model.Token
 import aktual.core.model.percent
 import aktual.core.ui.BackHandler
 import aktual.core.ui.LocalTheme
@@ -63,7 +63,7 @@ import kotlinx.collections.immutable.toImmutableList
 fun SyncBudgetScreen(
   nav: SyncBudgetNavigator,
   budgetId: BudgetId,
-  token: LoginToken,
+  token: Token,
   viewModel: SyncBudgetViewModel = assistedViewModel(token, budgetId),
 ) {
   val stepStates by viewModel.stepStates.collectAsStateWithLifecycle()
@@ -93,7 +93,7 @@ fun SyncBudgetScreen(
 
 @Composable
 private fun assistedViewModel(
-  token: LoginToken,
+  token: Token,
   budgetId: BudgetId,
 ) = assistedMetroViewModel<SyncBudgetViewModel, SyncBudgetViewModel.Factory> {
   create(token, budgetId)

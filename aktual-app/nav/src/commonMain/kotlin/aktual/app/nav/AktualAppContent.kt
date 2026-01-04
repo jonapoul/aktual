@@ -2,7 +2,7 @@ package aktual.app.nav
 
 import aktual.budget.model.NumberFormat
 import aktual.core.model.ColorSchemeType
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.BottomBarState
 import aktual.core.ui.BottomNavBarSpacing
@@ -31,7 +31,7 @@ fun AktualAppContent(
   hideFraction: Boolean,
   colorSchemeType: ColorSchemeType,
   isServerUrlSet: Boolean,
-  loginToken: LoginToken?,
+  token: Token?,
   bottomBarState: BottomBarState,
 ) {
   WithCompositionLocals(
@@ -43,7 +43,7 @@ fun AktualAppContent(
       AktualAppLayout(
         navController = navController,
         isServerUrlSet = isServerUrlSet,
-        loginToken = loginToken,
+        token = token,
         bottomBarState = bottomBarState,
       )
     }
@@ -54,7 +54,7 @@ fun AktualAppContent(
 private fun AktualAppLayout(
   navController: NavHostController,
   isServerUrlSet: Boolean,
-  loginToken: LoginToken?,
+  token: Token?,
   bottomBarState: BottomBarState,
   modifier: Modifier = Modifier,
 ) = Box(
@@ -68,7 +68,7 @@ private fun AktualAppLayout(
       modifier = Modifier.fillMaxWidth(),
       nav = navController,
       isServerUrlSet = isServerUrlSet,
-      loginToken = loginToken,
+      token = token,
     )
   }
 

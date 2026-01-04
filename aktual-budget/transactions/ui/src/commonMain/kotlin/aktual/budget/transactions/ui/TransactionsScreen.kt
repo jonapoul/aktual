@@ -9,7 +9,7 @@ import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.model.ColorSchemeType
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -37,7 +36,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 fun TransactionsScreen(
   nav: TransactionsNavigator,
   budgetId: BudgetId,
-  token: LoginToken,
+  token: Token,
   spec: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
   viewModel: TransactionsViewModel = metroViewModel(token, budgetId, spec),
 ) {
@@ -61,7 +60,7 @@ fun TransactionsScreen(
 
 @Composable
 private fun metroViewModel(
-  token: LoginToken,
+  token: Token,
   budgetId: BudgetId,
   spec: TransactionsSpec,
 ) = assistedMetroViewModel<TransactionsViewModel, TransactionsViewModel.Factory>(

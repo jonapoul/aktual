@@ -58,7 +58,7 @@ fun ChangePasswordScreen(
   val showPasswords by viewModel.showPasswords.collectAsStateWithLifecycle()
   val passwordsMatch by viewModel.passwordsMatch.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
-  val newToken by viewModel.loginToken.collectAsStateWithLifecycle(initialValue = null)
+  val newToken by viewModel.token.collectAsStateWithLifecycle(initialValue = null)
 
   val token = newToken
   if (token != null) {

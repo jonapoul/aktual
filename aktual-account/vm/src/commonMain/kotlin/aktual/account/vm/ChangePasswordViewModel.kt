@@ -6,8 +6,8 @@ import aktual.account.domain.LoginResult
 import aktual.account.domain.PasswordChanger
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
-import aktual.core.model.LoginToken
 import aktual.core.model.Password
+import aktual.core.model.Token
 import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -43,7 +43,7 @@ class ChangePasswordViewModel internal constructor(
   private val mutablePassword1 = MutableStateFlow(Password.Empty)
   private val mutablePassword2 = MutableStateFlow(Password.Empty)
   private val mutableState = MutableStateFlow<ChangePasswordState?>(null)
-  private val mutableLoginToken = Channel<LoginToken?>()
+  private val mutableToken = Channel<Token?>()
 
   val versions: StateFlow<AktualVersions> = versionsStateHolder.asStateFlow()
 
@@ -51,7 +51,7 @@ class ChangePasswordViewModel internal constructor(
   val inputPassword2: StateFlow<Password> = mutablePassword2.asStateFlow()
   val showPasswords: StateFlow<Boolean> = mutableShowPasswords.asStateFlow()
   val state: StateFlow<ChangePasswordState?> = mutableState.asStateFlow()
-  val loginToken: Flow<LoginToken?> = mutableLoginToken.receiveAsFlow()
+  val token: Flow<Token?> = mutableToken.receiveAsFlow()
 
   val passwordsMatch: StateFlow<Boolean> = combine(mutablePassword1, mutablePassword2, ::Pair)
     .map { (p1, p2) -> validPasswords(p1, p2) }
@@ -99,7 +99,7 @@ class ChangePasswordViewModel internal constructor(
     if (loginResult is LoginResult.Success) {
       // wait for a second before triggering the navigation, so the user gets the success message
       delay(SUCCESS_DELAY)
-      mutableLoginToken.send(loginResult.token)
+      mutableToken.send(loginResult.token)
     }
   }
 

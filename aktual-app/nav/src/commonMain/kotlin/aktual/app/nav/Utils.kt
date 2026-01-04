@@ -2,7 +2,7 @@ package aktual.app.nav
 
 import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetId
-import aktual.core.model.LoginToken
+import aktual.core.model.Token
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
@@ -46,5 +46,5 @@ internal class SerializableType<T : Any>(
 }
 
 internal val BudgetIdType = typeMapEntry<BudgetId>()
-internal val LoginTokenType = typeMapEntry<LoginToken>()
+internal val TokenType = typeMapEntry<Token>()
 internal val WidgetIdType = typeMapEntry<WidgetId>()

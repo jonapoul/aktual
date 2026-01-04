@@ -13,20 +13,20 @@ import aktual.codegen.GET
 import aktual.codegen.Header
 import aktual.codegen.KtorApi
 import aktual.codegen.POST
-import aktual.core.model.LoginToken
 import aktual.core.model.ServerUrl
+import aktual.core.model.Token
 import io.ktor.client.HttpClient
 
 @KtorApi
 interface SyncApi {
   @GET("/sync/list-user-files")
   suspend fun fetchUserFiles(
-    @Header(AktualHeaders.TOKEN) token: LoginToken,
+    @Header(AktualHeaders.TOKEN) token: Token,
   ): ListUserFilesResponse.Success
 
   @GET("/sync/get-user-file-info")
   suspend fun fetchUserFileInfo(
-    @Header(AktualHeaders.TOKEN) token: LoginToken,
+    @Header(AktualHeaders.TOKEN) token: Token,
     @Header(AktualHeaders.FILE_ID) budgetId: BudgetId,
   ): GetUserFileInfoResponse.Success
 
