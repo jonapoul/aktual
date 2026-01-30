@@ -1,5 +1,5 @@
 [versions]
-agp = "9.1.0-alpha03"
+agp = "9.1.0-alpha07"
 alakazam = "6.4.0"
 androidx-activity = "1.12.2"
 androidx-lifecycle = "2.10.0"
