@@ -3,11 +3,9 @@ package aktual.gradle
 import blueprint.core.get
 import blueprint.core.libs
 import org.gradle.api.Action
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
 import org.gradle.api.plugins.ExtensionAware
-import org.gradle.api.plugins.PluginContainer
 import org.gradle.api.provider.Provider
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.getByType
@@ -43,7 +41,3 @@ internal val Project.androidTestLibraries: List<Provider<MinimalExternalModuleDe
       get("test.robolectric"),
     )
   }
-
-internal fun PluginContainer.withAnyId(vararg ids: String, action: Action<in Plugin<*>>) {
-  ids.forEach { withId(it, action) }
-}
