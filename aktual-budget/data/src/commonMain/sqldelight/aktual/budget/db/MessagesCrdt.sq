@@ -33,3 +33,8 @@ insert:
   INSERT
     INTO messages_crdt (timestamp, dataset, row, column, value)
     VALUES (?, ?, ?, ?, ?);
+
+getMessagesSince:
+  SELECT timestamp, dataset, row, column, value
+    FROM messages_crdt
+    WHERE timestamp > ?;

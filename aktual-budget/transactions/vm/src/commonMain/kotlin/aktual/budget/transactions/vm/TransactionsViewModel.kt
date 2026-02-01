@@ -8,6 +8,8 @@ import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.budget.model.SyncState
+import aktual.budget.model.SyncStateHolder
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsFormat
@@ -53,6 +55,7 @@ class TransactionsViewModel(
   @Assisted private val spec: TransactionsSpec,
   budgetGraphs: BudgetGraphHolder,
   contexts: CoroutineContexts,
+  syncStateHolder: SyncStateHolder,
 ) : ViewModel(), TransactionStateSource, TransactionIdSource {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey(Factory::class)
@@ -79,6 +82,8 @@ class TransactionsViewModel(
 
   // API
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
+
+  val syncState: StateFlow<SyncState> = syncStateHolder.asStateFlow()
 
   val format: StateFlow<TransactionsFormat> = prefs
     .map { meta -> meta[TransactionFormatKey] ?: TransactionsFormat.Default }
@@ -123,6 +128,10 @@ class TransactionsViewModel(
     checkedTransactionIds.map { it.getOrDefault(id, false) }
 
   fun setChecked(id: TransactionId, isChecked: Boolean) = checkedTransactionIds.update { it.put(id, isChecked) }
+
+  fun startSync() {
+    // TBC
+  }
 
   fun setPrivacyMode(privacyMode: Boolean) {
     viewModelScope.launch {

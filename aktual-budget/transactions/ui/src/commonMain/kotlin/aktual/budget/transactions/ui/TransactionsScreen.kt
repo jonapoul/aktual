@@ -2,6 +2,7 @@ package aktual.budget.transactions.ui
 
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.BudgetId
+import aktual.budget.model.SyncState
 import aktual.budget.model.TransactionsFormat
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount
@@ -42,15 +43,18 @@ fun TransactionsScreen(
 ) {
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
   val format by viewModel.format.collectAsStateWithLifecycle()
+  val syncState by viewModel.syncState.collectAsStateWithLifecycle()
 
   TransactionsScaffold(
     transactionIdSource = viewModel,
     loadedAccount = loadedAccount,
     format = format,
     source = viewModel,
+    syncState = syncState,
     onAction = { action ->
       when (action) {
         Action.NavBack -> nav.back()
+        Action.Sync -> viewModel.startSync()
         is Action.CheckItem -> viewModel.setChecked(action.id, action.isChecked)
         is Action.SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
       }
@@ -74,11 +78,12 @@ internal fun TransactionsScaffold(
   loadedAccount: LoadedAccount,
   format: TransactionsFormat,
   source: TransactionStateSource,
+  syncState: SyncState,
   onAction: ActionListener,
 ) {
   val theme = LocalTheme.current
   Scaffold(
-    topBar = { TransactionsTitleBar(loadedAccount, onAction, theme) },
+    topBar = { TransactionsTitleBar(loadedAccount, syncState, onAction, theme) },
   ) { innerPadding ->
     Box {
       val hazeState = remember { HazeState() }
@@ -117,6 +122,7 @@ private fun PreviewTransactionsScaffold(
       TRANSACTION_2 to true,
       TRANSACTION_3 to false,
     ),
+    syncState = SyncState.Inactive,
     onAction = {},
   )
 }

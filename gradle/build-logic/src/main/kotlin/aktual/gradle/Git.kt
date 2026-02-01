@@ -14,7 +14,13 @@ fun Project.gitVersionHash(): Provider<String> = providers.of(GitVersionHashValu
 
 fun Project.gitVersionCode(): Provider<Int> = providers.of(GitVersionCodeValueSource::class.java) {}
 
-fun Project.gitVersionName(): Provider<String> = providers.of(GitVersionNameValueSource::class.java) {}
+fun Project.gitVersionDate(): Provider<String> = gitVersionCode().map { seconds ->
+  val date = Instant
+    .ofEpochSecond(seconds.toLong())
+    .atZone(ZoneOffset.UTC)
+    .toLocalDate()
+  "%04d.%02d.%02d".format(date.year, date.monthValue, date.dayOfMonth)
+}
 
 private abstract class GitVersionHashValueSource : ValueSource<String, ValueSourceParameters.None> {
   @get:Inject abstract val execOperations: ExecOperations
@@ -39,20 +45,5 @@ private abstract class GitVersionCodeValueSource : ValueSource<Int, ValueSourceP
       standardOutput = output
     }
     return output.toString().trim().toInt()
-  }
-}
-
-private abstract class GitVersionNameValueSource : ValueSource<String, ValueSourceParameters.None> {
-  @get:Inject abstract val execOperations: ExecOperations
-
-  override fun obtain(): String {
-    val output = ByteArrayOutputStream()
-    execOperations.exec {
-      commandLine("git", "show", "-s", "--format=%ct")
-      standardOutput = output
-    }
-    val timestamp = output.toString().trim().toLong()
-    val date = Instant.ofEpochSecond(timestamp).atZone(ZoneOffset.UTC).toLocalDate()
-    return "%04d.%02d.%02d".format(date.year, date.monthValue, date.dayOfMonth)
   }
 }

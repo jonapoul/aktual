@@ -106,7 +106,7 @@ The project follows a strict **feature-based modular architecture** with clear l
   /core                 # Shared infrastructure
     /connection         # Network connectivity utilities
     /di                 # Core DI abstractions (AppGraph, ViewModelGraph, BudgetGraph)
-    /model              # Core domain models (LoginToken, ServerUrl, etc.)
+    /model              # Core domain models (Token, ServerUrl, etc.)
     /ui                 # Shared UI components, themes, Material3 setup
 
   /api                  # API clients
@@ -204,7 +204,7 @@ fun YourScreen(viewModel: YourViewModel = metroViewModel()) {
 
 Uses **Jetpack Navigation Compose** with type-safe routes defined in `/app/nav/`:
 
-- Serializable route objects (e.g., `@Serializable data class TransactionsNavRoute(val token: LoginToken, val budgetId: BudgetId)`)
+- Serializable route objects (e.g., `@Serializable data class TransactionsNavRoute(val token: Token, val budgetId: BudgetId)`)
 - Centralized `AktualNavHost` composable
 - Navigator interfaces passed to screens for navigation actions
 - Type-safe parameter passing with custom `NavType` implementations

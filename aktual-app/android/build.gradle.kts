@@ -3,7 +3,7 @@
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
 import aktual.gradle.getOptional
 import aktual.gradle.gitVersionCode
-import aktual.gradle.gitVersionName
+import aktual.gradle.gitVersionDate
 import aktual.gradle.intProperty
 import aktual.gradle.localProperties
 
@@ -27,7 +27,7 @@ android {
     minSdk = intProperty(key = "aktual.android.minSdk").get()
     targetSdk = intProperty(key = "aktual.android.targetSdk").get()
     versionCode = gitVersionCode().get()
-    versionName = gitVersionName().get()
+    versionName = gitVersionDate().get()
     multiDexEnabled = true
     base.archivesName = "$applicationId-$versionName"
   }

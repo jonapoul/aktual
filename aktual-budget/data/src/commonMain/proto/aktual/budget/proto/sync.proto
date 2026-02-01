@@ -1,35 +1,37 @@
 syntax = "proto3";
 
+// From https://github.com/actualbudget/actual/blob/master/packages/crdt/src/proto/sync.proto
+
 package aktual.budget.proto;
 
 message ProtoEncryptedData {
-        bytes iv = 1;
-        bytes authTag = 2;
-        bytes data = 3;
+  bytes iv = 1;
+  bytes authTag = 2;
+  bytes data = 3;
 }
 
 message ProtoMessage {
-        string dataset = 1;
-        string row = 2;
-        string column = 3;
-        string value = 4;
+  string dataset = 1;
+  string row = 2;
+  string column = 3;
+  string value = 4;
 }
 
 message ProtoMessageEnvelope {
-        string timestamp = 1;
-        bool isEncrypted = 2;
-        bytes content = 3;
+  string timestamp = 1;
+  bool isEncrypted = 2;
+  bytes content = 3;
 }
 
 message ProtoSyncRequest {
-        repeated ProtoMessageEnvelope messages = 1;
-        string fileId = 2;
-        string groupId = 3;
-        string keyId = 5;
-        string since = 6;
+  repeated ProtoMessageEnvelope messages = 1;
+  string fileId = 2;
+  string groupId = 3;
+  string keyId = 5;
+  string since = 6;
 }
 
 message ProtoSyncResponse {
-        repeated ProtoMessageEnvelope messages = 1;
-        string merkle = 2;
+  repeated ProtoMessageEnvelope messages = 1;
+  string merkle = 2;
 }

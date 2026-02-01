@@ -12,7 +12,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import okio.Buffer
-import okio.ByteString
 import okio.CipherSource
 import okio.IOException
 import okio.Path

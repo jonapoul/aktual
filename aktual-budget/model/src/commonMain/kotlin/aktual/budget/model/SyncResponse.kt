@@ -1,5 +1,7 @@
 package aktual.budget.model
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import java.util.stream.IntStream
@@ -15,6 +17,17 @@ class Merkle(private val encoded: String) : Lazy<JsonObject> by lazyMerkle(encod
 }
 
 private fun lazyMerkle(string: String) = lazy { Json.decodeFromString(JsonObject.serializer(), string) }
+
+/**
+ * Represents a node within a trinary radix trie. See TrieNode in actual/packages/crdt/src/crdt/merkle.ts
+ */
+@Serializable
+data class TrieNode(
+  @SerialName("0") val node0: TrieNode? = null,
+  @SerialName("1") val node1: TrieNode? = null,
+  @SerialName("2") val node2: TrieNode? = null,
+  @SerialName("hash") val hash: Int? = null,
+)
 
 data class MessageEnvelope(
   val timestamp: Timestamp,

@@ -1,7 +1,7 @@
 import aktual.gradle.getOptional
 import aktual.gradle.gitVersionCode
+import aktual.gradle.gitVersionDate
 import aktual.gradle.gitVersionHash
-import aktual.gradle.gitVersionName
 import aktual.gradle.localProperties
 
 plugins {
@@ -38,7 +38,7 @@ buildConfig {
   buildConfigField("BUILD_TIME_MS", providers.provider { System.currentTimeMillis() })
   buildConfigField("GIT_HASH", gitVersionHash())
   buildConfigField("VERSION_CODE", gitVersionCode())
-  buildConfigField("VERSION_NAME", gitVersionName())
+  buildConfigField("VERSION_NAME", gitVersionDate())
 
   with(localProperties()) {
     buildConfigField("DEFAULT_PASSWORD", getOptional("aktual.defaultPassword"))
