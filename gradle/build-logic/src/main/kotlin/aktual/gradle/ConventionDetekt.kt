@@ -2,6 +2,8 @@
 
 package aktual.gradle
 
+import blueprint.core.get
+import blueprint.core.libs
 import dev.detekt.gradle.extensions.DetektExtension
 import dev.detekt.gradle.plugin.DetektPlugin
 import org.gradle.api.Plugin

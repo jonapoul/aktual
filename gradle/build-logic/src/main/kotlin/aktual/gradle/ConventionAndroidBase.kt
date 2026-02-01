@@ -2,6 +2,8 @@
 
 package aktual.gradle
 
+import blueprint.core.get
+import blueprint.core.libs
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.AndroidComponentsExtension
 import com.android.build.api.variant.HasAndroidTestBuilder

@@ -4,6 +4,8 @@ package aktual.gradle
 
 import androidHostTestDependencies
 import androidMainDependencies
+import blueprint.core.get
+import blueprint.core.libs
 import commonMainDependencies
 import commonTestDependencies
 import jvmMainDependencies
