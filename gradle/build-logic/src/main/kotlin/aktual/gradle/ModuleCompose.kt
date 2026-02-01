@@ -3,14 +3,18 @@
 package aktual.gradle
 
 import androidHostTestDependencies
-import androidMainDependencies
-import commonMainDependencies
-import commonTestDependencies
-import jvmMainDependencies
+import blueprint.core.androidMainDependencies
+import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
+import blueprint.core.get
+import blueprint.core.jvmMainDependencies
+import blueprint.core.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getByType
+import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 class ModuleCompose : Plugin<Project> {
@@ -55,7 +59,7 @@ class ModuleCompose : Plugin<Project> {
       }
 
       jvmMainDependencies {
-        implementation(compose.desktop.currentOs)
+        implementation(extensions.getByType<ComposePlugin.Dependencies>().desktop.currentOs)
       }
     }
 

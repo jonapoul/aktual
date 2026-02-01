@@ -1,5 +1,7 @@
 import aktual.gradle.EXPERIMENTAL_MATERIAL_3
 import aktual.gradle.optIn
+import blueprint.core.androidMainDependencies
+import blueprint.core.commonMainDependencies
 
 plugins {
   alias(libs.plugins.module.compose)

@@ -1,3 +1,6 @@
+import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
+
 plugins {
   alias(libs.plugins.module.di)
 }
