@@ -46,7 +46,7 @@ dependencies {
   compileOnlyPlugin(libs.plugins.licensee)
   compileOnlyPlugin(libs.plugins.metro)
 
-  implementation(libs.okio)
+  implementation(libs.blueprint)
 }
 
 tasks.validatePlugins {
