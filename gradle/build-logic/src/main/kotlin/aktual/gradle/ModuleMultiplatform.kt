@@ -4,6 +4,7 @@ import androidHostTestDependencies
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
 import blueprint.core.get
+import blueprint.core.intProperty
 import blueprint.core.libs
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
@@ -32,8 +33,8 @@ class ModuleMultiplatform : Plugin<Project> {
 
       extensions.configure(KotlinMultiplatformAndroidLibraryTarget::class) {
         namespace = buildNamespace()
-        minSdk = intProperty("aktual.android.minSdk").get()
-        compileSdk = intProperty("aktual.android.compileSdk").get()
+        minSdk = providers.intProperty("aktual.android.minSdk").get()
+        compileSdk = providers.intProperty("aktual.android.compileSdk").get()
         packaging.commonConfigure()
         lint.commonConfigure(target)
         withHostTest {

@@ -1,5 +1,5 @@
-import aktual.gradle.boolProperty
 import blueprint.core.androidMainDependencies
+import blueprint.core.boolProperty
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
 
@@ -31,7 +31,7 @@ wire {
 buildConfig {
   forClass("DatabaseBuildConfig") {
     packageName("aktual.budget.db")
-    buildConfigField<Boolean>("FOREIGN_KEY_CONSTRAINTS", boolProperty(key = "aktual.db.foreignKeyConstraints"))
+    buildConfigField<Boolean>("FOREIGN_KEY_CONSTRAINTS", providers.boolProperty(key = "aktual.db.foreignKeyConstraints"))
   }
 
   sourceSets.named("test") {

@@ -3,6 +3,7 @@
 package aktual.gradle
 
 import blueprint.core.get
+import blueprint.core.intProperty
 import blueprint.core.libs
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.api.variant.AndroidComponentsExtension
@@ -22,17 +23,17 @@ class ConventionAndroidBase : Plugin<Project> {
 
     extensions.configure(CommonExtension::class) {
       namespace = buildNamespace()
-      compileSdk = intProperty("aktual.android.compileSdk").get()
+      compileSdk = providers.intProperty("aktual.android.compileSdk").get()
 
       defaultConfig.apply {
-        minSdk = intProperty("aktual.android.minSdk").get()
+        minSdk = providers.intProperty("aktual.android.minSdk").get()
         testInstrumentationRunnerArguments["disableAnalytics"] = "true"
       }
 
+      val version = providers.javaVersion()
       compileOptions.apply {
-        val version = javaVersion().get()
-        sourceCompatibility = version
-        targetCompatibility = version
+        sourceCompatibility = version.get()
+        targetCompatibility = version.get()
         isCoreLibraryDesugaringEnabled = true
       }
 
