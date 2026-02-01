@@ -16,14 +16,14 @@ class ConventionKotlinJvm : Plugin<Project> {
 
     tasks.withType<KotlinCompile>().configureEach {
       compilerOptions {
-        jvmTarget.set(jvmTarget())
+        jvmTarget.set(providers.jvmTarget())
       }
     }
 
+    val javaVersion = providers.javaVersion()
     extensions.configure<JavaPluginExtension> {
-      val javaVersion = javaVersion().get()
-      sourceCompatibility = javaVersion
-      targetCompatibility = javaVersion
+      sourceCompatibility = javaVersion.get()
+      targetCompatibility = javaVersion.get()
     }
   }
 }

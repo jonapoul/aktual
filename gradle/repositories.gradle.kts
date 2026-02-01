@@ -8,9 +8,7 @@ pluginManagement {
     }
     mavenCentral()
     gradlePluginPortal()
-    maven("https://central.sonatype.com/repository/maven-snapshots/") {
-      mavenContent { includeGroup("app.cash.sqldelight") }
-    }
+    maven("https://central.sonatype.com/repository/maven-snapshots/")
   }
 }
 
@@ -24,8 +22,6 @@ dependencyResolutionManagement {
     }
     mavenCentral()
     gradlePluginPortal()
-    maven("https://central.sonatype.com/repository/maven-snapshots/") {
-      mavenContent { includeGroup("app.cash.sqldelight") }
-    }
+    maven("https://central.sonatype.com/repository/maven-snapshots/")
   }
 }

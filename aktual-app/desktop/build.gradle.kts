@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
-import aktual.gradle.gitVersionName
+import blueprint.core.gitVersionDate
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -11,6 +11,8 @@ plugins {
   alias(libs.plugins.shadow)
   alias(libs.plugins.convention.compose)
 }
+
+val gitVersionDate = providers.gitVersionDate()
 
 compose.desktop {
   application {
@@ -34,7 +36,7 @@ compose.desktop {
     nativeDistributions {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
       packageName = "Aktual Desktop"
-      packageVersion = gitVersionName().get()
+      packageVersion = gitVersionDate.get()
       packageVersion = "1.0.0"
 
       modules("java.sql")

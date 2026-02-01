@@ -1,8 +1,10 @@
-import aktual.gradle.getOptional
-import aktual.gradle.gitVersionCode
-import aktual.gradle.gitVersionHash
-import aktual.gradle.gitVersionName
-import aktual.gradle.localProperties
+import blueprint.core.androidMainDependencies
+import blueprint.core.commonMainDependencies
+import blueprint.core.getOptional
+import blueprint.core.gitVersionCode
+import blueprint.core.gitVersionDate
+import blueprint.core.gitVersionHash
+import blueprint.core.localProperties
 
 plugins {
   alias(libs.plugins.module.di)
@@ -36,9 +38,9 @@ buildConfig {
   useKotlinOutput { topLevelConstants = true }
 
   buildConfigField("BUILD_TIME_MS", providers.provider { System.currentTimeMillis() })
-  buildConfigField("GIT_HASH", gitVersionHash())
-  buildConfigField("VERSION_CODE", gitVersionCode())
-  buildConfigField("VERSION_NAME", gitVersionName())
+  buildConfigField("GIT_HASH", providers.gitVersionHash())
+  buildConfigField("VERSION_CODE", providers.gitVersionCode())
+  buildConfigField("VERSION_NAME", providers.gitVersionDate())
 
   with(localProperties()) {
     buildConfigField("DEFAULT_PASSWORD", getOptional("aktual.defaultPassword"))

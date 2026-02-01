@@ -2,6 +2,9 @@
 
 package aktual.gradle
 
+import blueprint.core.get
+import blueprint.core.libs
+import blueprint.core.withAnyId
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project

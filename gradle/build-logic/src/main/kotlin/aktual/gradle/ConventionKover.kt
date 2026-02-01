@@ -1,5 +1,6 @@
 package aktual.gradle
 
+import blueprint.core.intProperty
 import kotlinx.kover.gradle.plugin.KoverGradlePlugin
 import kotlinx.kover.gradle.plugin.dsl.AggregationType.COVERED_PERCENTAGE
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit.INSTRUCTION
@@ -63,7 +64,7 @@ class ConventionKover : Plugin<Project> {
         verify.rule {
           disabled.set(project != project.rootProject)
           minBound(
-            minValue = intProperty("aktual.kover.minCoverage").get(),
+            minValue = providers.intProperty("aktual.kover.minCoverage").get(),
             coverageUnits = INSTRUCTION,
             aggregationForGroup = COVERED_PERCENTAGE,
           )

@@ -1,11 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
-import aktual.gradle.getOptional
-import aktual.gradle.gitVersionCode
-import aktual.gradle.gitVersionName
-import aktual.gradle.intProperty
-import aktual.gradle.localProperties
+import blueprint.core.getOptional
+import blueprint.core.gitVersionCode
+import blueprint.core.gitVersionDate
+import blueprint.core.intProperty
+import blueprint.core.localProperties
 
 plugins {
   alias(libs.plugins.kotlin.serialization)
@@ -18,16 +18,19 @@ plugins {
   alias(libs.plugins.convention.test)
 }
 
+val gitVersionCode = providers.gitVersionCode()
+val gitVersionName = providers.gitVersionDate()
+
 android {
   namespace = "aktual.app.android"
-  compileSdk = intProperty(key = "aktual.android.compileSdk").get()
+  compileSdk = providers.intProperty(key = "aktual.android.compileSdk").get()
 
   defaultConfig {
     applicationId = "dev.jonpoulton.aktual.app"
-    minSdk = intProperty(key = "aktual.android.minSdk").get()
-    targetSdk = intProperty(key = "aktual.android.targetSdk").get()
-    versionCode = gitVersionCode().get()
-    versionName = gitVersionName().get()
+    minSdk = providers.intProperty(key = "aktual.android.minSdk").get()
+    targetSdk = providers.intProperty(key = "aktual.android.targetSdk").get()
+    versionCode = gitVersionCode.get()
+    versionName = gitVersionName.get()
     multiDexEnabled = true
     base.archivesName = "$applicationId-$versionName"
   }

@@ -1,5 +1,5 @@
 [versions]
-agp = "9.1.0-alpha03"
+agp = "9.0.0"
 alakazam = "6.4.0"
 androidx-activity = "1.12.2"
 androidx-lifecycle = "2.10.0"
@@ -130,6 +130,7 @@ agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp"
 agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
 atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.4.0" }
+blueprint = { id = "dev.jonpoulton.blueprint", version = "2.0.0-SNAPSHOT" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.7" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.5.0" }

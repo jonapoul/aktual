@@ -33,6 +33,7 @@ dependencies {
   compileOnlyPlugin(libs.plugins.agp.app)
   compileOnlyPlugin(libs.plugins.agp.lib)
   compileOnlyPlugin(libs.plugins.androidCacheFix)
+  compileOnlyPlugin(libs.plugins.blueprint)
   compileOnlyPlugin(libs.plugins.buildconfig)
   compileOnlyPlugin(libs.plugins.burst)
   compileOnlyPlugin(libs.plugins.compose)
@@ -45,8 +46,6 @@ dependencies {
   compileOnlyPlugin(libs.plugins.ksp)
   compileOnlyPlugin(libs.plugins.licensee)
   compileOnlyPlugin(libs.plugins.metro)
-
-  implementation(libs.okio)
 }
 
 tasks.validatePlugins {
