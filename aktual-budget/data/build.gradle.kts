@@ -31,7 +31,10 @@ wire {
 buildConfig {
   forClass("DatabaseBuildConfig") {
     packageName("aktual.budget.db")
-    buildConfigField<Boolean>("FOREIGN_KEY_CONSTRAINTS", providers.boolProperty(key = "aktual.db.foreignKeyConstraints"))
+    buildConfigField<Boolean>(
+      "FOREIGN_KEY_CONSTRAINTS",
+      providers.boolProperty(key = "aktual.db.foreignKeyConstraints"),
+    )
   }
 
   sourceSets.named("test") {
