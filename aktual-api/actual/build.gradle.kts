@@ -1,5 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
+import aktual.gradle.kspAllConfigs
 import com.github.gmazzo.buildconfig.BuildConfigSourceSet
 import org.gradle.internal.extensions.stdlib.capitalized
 
