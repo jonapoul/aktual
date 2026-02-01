@@ -15,7 +15,7 @@ kotlinx-serialization = "1.9.0"
 ksp = "2.3.4"
 ktor = "3.3.3"
 markdown = "0.39.0"
-metro = "0.9.3"
+metro = "0.9.4"
 preferences = "2.2.0"
 redacted = "1.15.1"
 sqldelight = "2.2.1"
@@ -129,7 +129,7 @@ agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
-atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.3.0" }
+atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.4.0" }
 blueprint = { id = "dev.jonpoulton.blueprint", version = "2.0.0-SNAPSHOT" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.7" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
