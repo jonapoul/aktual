@@ -16,6 +16,7 @@ plugins {
   alias(libs.plugins.agp.kmp) apply false
   alias(libs.plugins.agp.lib) apply false
   alias(libs.plugins.androidCacheFix) apply false
+  alias(libs.plugins.blueprint) apply false
   alias(libs.plugins.buildconfig) apply false
   alias(libs.plugins.burst) apply false
   alias(libs.plugins.catalog) apply false

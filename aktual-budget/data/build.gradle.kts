@@ -1,4 +1,7 @@
 import aktual.gradle.boolProperty
+import blueprint.core.androidMainDependencies
+import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins {
   alias(libs.plugins.module.multiplatform)

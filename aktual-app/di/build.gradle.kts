@@ -1,8 +1,10 @@
-import aktual.gradle.getOptional
 import aktual.gradle.gitVersionCode
 import aktual.gradle.gitVersionHash
 import aktual.gradle.gitVersionName
-import aktual.gradle.localProperties
+import blueprint.core.androidMainDependencies
+import blueprint.core.commonMainDependencies
+import blueprint.core.getOptional
+import blueprint.core.localProperties
 
 plugins {
   alias(libs.plugins.module.di)

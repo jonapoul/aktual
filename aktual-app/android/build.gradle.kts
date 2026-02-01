@@ -1,11 +1,11 @@
 @file:Suppress("UnstableApiUsage")
 
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
-import aktual.gradle.getOptional
 import aktual.gradle.gitVersionCode
 import aktual.gradle.gitVersionName
 import aktual.gradle.intProperty
-import aktual.gradle.localProperties
+import blueprint.core.localProperties
+import blueprint.core.getOptional
 
 plugins {
   alias(libs.plugins.kotlin.serialization)

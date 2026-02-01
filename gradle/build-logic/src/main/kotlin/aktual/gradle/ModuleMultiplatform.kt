@@ -1,12 +1,12 @@
 package aktual.gradle
 
 import androidHostTestDependencies
+import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 import blueprint.core.get
 import blueprint.core.libs
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
-import commonMainDependencies
-import commonTestDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply

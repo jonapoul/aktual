@@ -3,12 +3,12 @@
 package aktual.gradle
 
 import androidHostTestDependencies
-import androidMainDependencies
+import blueprint.core.androidMainDependencies
+import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 import blueprint.core.get
+import blueprint.core.jvmMainDependencies
 import blueprint.core.libs
-import commonMainDependencies
-import commonTestDependencies
-import jvmMainDependencies
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply

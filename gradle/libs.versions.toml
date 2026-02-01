@@ -45,7 +45,6 @@ androidx-paging-compose = { module = "androidx.paging:paging-compose", version.r
 androidx-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
-blueprint = { module = "dev.jonpoulton.blueprint:core", version = "2.0.0-SNAPSHOT" }
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.3" }
 haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.7.1" }
 jetbrains-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeJetbrains" }
@@ -131,6 +130,7 @@ agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp"
 agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
 atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.3.0" }
+blueprint = { id = "dev.jonpoulton.blueprint", version = "2.0.0-SNAPSHOT" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.7" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.5.0" }

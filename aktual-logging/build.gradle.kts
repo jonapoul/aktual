@@ -1,3 +1,7 @@
+import blueprint.core.androidMainDependencies
+import blueprint.core.commonMainDependencies
+import blueprint.core.jvmMainDependencies
+
 plugins {
   alias(libs.plugins.module.multiplatform)
 }
