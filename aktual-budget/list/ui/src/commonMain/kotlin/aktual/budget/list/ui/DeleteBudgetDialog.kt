@@ -2,6 +2,7 @@ package aktual.budget.list.ui
 
 import aktual.budget.list.vm.DeletingState
 import aktual.budget.model.Budget
+import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.AlertDialog
 import aktual.core.ui.BareTextButton
@@ -11,7 +12,6 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.buttonTextStyle
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

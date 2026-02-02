@@ -3,6 +3,8 @@ package aktual.about.ui.licenses
 import aktual.about.data.ArtifactDetail
 import aktual.about.vm.LicensesState
 import aktual.about.vm.SearchBarState
+import aktual.core.l10n.Plurals
+import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
@@ -19,8 +21,6 @@ import aktual.core.ui.WithHazeState
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
-import aktual.l10n.Plurals
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
 import alakazam.kotlin.core.exhaustive
 import androidx.compose.animation.AnimatedVisibility

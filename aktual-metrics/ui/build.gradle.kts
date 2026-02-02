@@ -13,7 +13,7 @@ kotlin {
     api(project(":aktual-core:model"))
     api(project(":aktual-core:ui"))
     api(project(":aktual-metrics:vm"))
-    implementation(project(":aktual-l10n"))
+    implementation(project(":aktual-core:l10n"))
     implementation(libs.haze.core)
   }
 }

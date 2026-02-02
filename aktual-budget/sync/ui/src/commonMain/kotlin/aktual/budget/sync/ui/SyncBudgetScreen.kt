@@ -5,6 +5,7 @@ import aktual.budget.sync.vm.KeyPasswordState
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.sync.vm.SyncStep
 import aktual.budget.sync.vm.SyncStepState
+import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.model.Percent
 import aktual.core.model.Token
@@ -18,7 +19,6 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-# modules:core:model
+# aktual-core:model
 
 <!--region chart-->
 ![chart](atlas/chart.png)

@@ -2,6 +2,7 @@ package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
 import aktual.account.vm.LoginViewModel
+import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
 import aktual.core.model.Password.Companion.Dummy
@@ -22,7 +23,6 @@ import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithHazeState
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

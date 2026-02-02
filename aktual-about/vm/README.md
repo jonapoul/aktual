@@ -1,4 +1,4 @@
-# modules:about:vm
+# aktual-about:vm
 
 <!--region chart-->
 ![chart](atlas/chart.png)

@@ -2,7 +2,7 @@ package aktual.settings.vm
 
 import aktual.core.model.DarkColorSchemeType
 import aktual.core.model.RegularColorSchemeType
-import aktual.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferences
 import aktual.settings.vm.PreferenceValue.ShowBottomBar
 import aktual.settings.vm.PreferenceValue.Theme
 import aktual.test.buildPreferences

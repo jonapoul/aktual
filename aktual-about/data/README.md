@@ -1,4 +1,4 @@
-# modules:about:data
+# aktual-about:data
 
 <!--region chart-->
 ![chart](atlas/chart.png)

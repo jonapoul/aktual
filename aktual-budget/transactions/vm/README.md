@@ -1,4 +1,4 @@
-# modules:budget:transactions:vm
+# aktual-budget:transactions:vm
 
 <!--region chart-->
 ![chart](atlas/chart.png)

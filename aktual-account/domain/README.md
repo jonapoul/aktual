@@ -1,4 +1,4 @@
-# modules:account:domain
+# aktual-account:domain
 
 <!--region chart-->
 ![chart](atlas/chart.png)

@@ -1,12 +1,12 @@
 package aktual.settings.ui.items
 
+import aktual.core.l10n.Strings
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedBooleanParameters
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.switch
-import aktual.l10n.Strings
 import aktual.settings.ui.BasicPreferenceItem
 import aktual.settings.ui.Clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

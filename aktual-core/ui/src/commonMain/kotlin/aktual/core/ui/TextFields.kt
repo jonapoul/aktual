@@ -1,8 +1,8 @@
 package aktual.core.ui
 
 import aktual.budget.model.DateRangeType
+import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
-import aktual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource

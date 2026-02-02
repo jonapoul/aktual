@@ -1,4 +1,4 @@
-# modules:api:github
+# aktual-api:github
 
 <!--region chart-->
 ![chart](atlas/chart.png)

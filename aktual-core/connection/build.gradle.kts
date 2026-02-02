@@ -12,8 +12,8 @@ kotlin {
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.preferences.core)
+    implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:model"))
-    implementation(project(":aktual-logging"))
-    implementation(project(":aktual-prefs"))
+    implementation(project(":aktual-core:prefs"))
   }
 }

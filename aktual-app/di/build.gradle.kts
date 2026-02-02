@@ -16,7 +16,7 @@ kotlin {
     api(project(":aktual-api:github"))
     api(project(":aktual-core:di"))
     api(project(":aktual-core:model"))
-    api(project(":aktual-prefs"))
+    api(project(":aktual-core:prefs"))
     api(libs.alakazam.kotlin.core)
     api(libs.androidx.lifecycle.viewmodel.core)
     api(libs.metrox.viewmodel)

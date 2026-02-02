@@ -11,8 +11,8 @@ import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.base64
-import aktual.prefs.EncryptedPreferences
-import aktual.prefs.KeyPreferences
+import aktual.core.prefs.EncryptedPreferences
+import aktual.core.prefs.KeyPreferences
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson

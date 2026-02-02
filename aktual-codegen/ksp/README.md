@@ -1,4 +1,4 @@
-# modules:codegen:ksp
+# aktual-codegen:ksp
 
 <!--region chart-->
 ![chart](atlas/chart.png)

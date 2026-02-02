@@ -1,15 +1,7 @@
 package aktual.gradle
 
-import dev.detekt.gradle.Detekt
 import org.gradle.api.Project
-import org.gradle.api.tasks.TaskCollection
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.withType
-
-val Project.detektTasks: TaskCollection<Detekt>
-  get() = tasks
-    .withType<Detekt>()
-    .matching { task -> !task.name.contains("release", ignoreCase = true) }
 
 const val EXPERIMENTAL_MATERIAL_3 = "androidx.compose.material3.ExperimentalMaterial3Api"
 

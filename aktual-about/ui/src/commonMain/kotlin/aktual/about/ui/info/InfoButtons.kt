@@ -1,10 +1,10 @@
 package aktual.about.ui.info
 
+import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
 import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column

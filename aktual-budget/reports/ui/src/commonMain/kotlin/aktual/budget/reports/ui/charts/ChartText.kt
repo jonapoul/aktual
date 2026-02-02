@@ -3,6 +3,7 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.TextData
+import aktual.core.l10n.Strings
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
@@ -12,7 +13,6 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.verticalScrollWithBar
-import aktual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

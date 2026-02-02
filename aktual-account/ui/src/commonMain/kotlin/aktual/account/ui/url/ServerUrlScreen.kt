@@ -2,6 +2,7 @@ package aktual.account.ui.url
 
 import aktual.account.vm.NavDestination
 import aktual.account.vm.ServerUrlViewModel
+import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Protocol
 import aktual.core.ui.AktualTypography
@@ -20,7 +21,6 @@ import aktual.core.ui.WavyBackground
 import aktual.core.ui.appCloser
 import aktual.core.ui.normalIconButton
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

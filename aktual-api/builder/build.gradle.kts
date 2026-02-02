@@ -15,6 +15,6 @@ kotlin {
     implementation(libs.ktor.contentNegotiation)
     implementation(libs.ktor.serialization.json)
     implementation(libs.ktor.logging)
-    implementation(project(":aktual-logging"))
+    implementation(project(":aktual-core:logging"))
   }
 }

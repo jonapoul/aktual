@@ -2,8 +2,8 @@
 
 package aktual.app.di
 
-import aktual.prefs.AndroidEncryptedPreferences
-import aktual.prefs.EncryptedPreferences
+import aktual.core.prefs.AndroidEncryptedPreferences
+import aktual.core.prefs.EncryptedPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import android.content.Context
 import android.content.SharedPreferences

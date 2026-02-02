@@ -1,7 +1,7 @@
 package aktual.core.ui
 
+import aktual.core.l10n.Strings
 import aktual.core.model.ServerUrl
-import aktual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

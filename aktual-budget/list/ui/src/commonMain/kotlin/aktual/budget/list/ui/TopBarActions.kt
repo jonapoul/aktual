@@ -4,9 +4,9 @@ import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
 import aktual.budget.list.ui.ListBudgetsAction.ChangeServer
 import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
 import aktual.budget.list.ui.ListBudgetsAction.OpenSettings
+import aktual.core.l10n.Strings
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.normalIconButton
-import aktual.l10n.Strings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BarChart
 import androidx.compose.material.icons.filled.Cloud

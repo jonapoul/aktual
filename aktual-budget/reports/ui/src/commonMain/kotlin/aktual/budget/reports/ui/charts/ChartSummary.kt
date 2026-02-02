@@ -16,6 +16,7 @@ import aktual.core.icons.CloseBracket
 import aktual.core.icons.Equals
 import aktual.core.icons.OpenBracket
 import aktual.core.icons.Sum
+import aktual.core.l10n.Strings
 import aktual.core.model.Percent
 import aktual.core.model.percent
 import aktual.core.ui.AktualTypography
@@ -29,7 +30,6 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.stringShort
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

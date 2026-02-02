@@ -1,4 +1,4 @@
-# modules:core:connection
+# aktual-core:connection
 
 <!--region chart-->
 ![chart](atlas/chart.png)

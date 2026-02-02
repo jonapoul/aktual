@@ -3,6 +3,7 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.model.DateRangeType
 import aktual.budget.reports.vm.ChartDateConfig
 import aktual.budget.reports.vm.DateRangeMode
+import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
 import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.LocalTheme
@@ -11,7 +12,6 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.SlidingToggleButton
 import aktual.core.ui.Theme
 import aktual.core.ui.YearMonthPicker
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement

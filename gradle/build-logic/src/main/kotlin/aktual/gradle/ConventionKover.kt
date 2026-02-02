@@ -46,8 +46,8 @@ class ConventionKover : Plugin<Project> {
 
             projects.addAll(
               ":aktual-codegen:ksp",
+              ":aktual-core:l10n",
               ":aktual-core:ui",
-              ":aktual-l10n",
             )
           }
 

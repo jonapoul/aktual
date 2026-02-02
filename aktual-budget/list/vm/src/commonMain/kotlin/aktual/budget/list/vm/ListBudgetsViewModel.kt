@@ -9,7 +9,7 @@ import aktual.budget.model.metadata
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.UrlOpener
-import aktual.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

@@ -1,4 +1,4 @@
-# modules:core:di
+# aktual-core:di
 
 <!--region chart-->
 ![chart](atlas/chart.png)

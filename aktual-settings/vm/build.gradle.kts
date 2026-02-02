@@ -6,7 +6,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-prefs"))
+    api(project(":aktual-core:prefs"))
     implementation(libs.preferences.core)
   }
 }

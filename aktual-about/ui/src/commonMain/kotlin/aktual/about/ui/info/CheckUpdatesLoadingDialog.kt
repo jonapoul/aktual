@@ -1,12 +1,12 @@
 package aktual.about.ui.info
 
+import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
 import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.DialogContent
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

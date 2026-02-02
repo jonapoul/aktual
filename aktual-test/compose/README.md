@@ -1,4 +1,4 @@
-# modules:test:compose
+# aktual-test:compose
 
 <!--region chart-->
 ![chart](atlas/chart.png)

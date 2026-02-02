@@ -7,6 +7,7 @@ import aktual.budget.model.TransactionsFormat.Table
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionState
 import aktual.budget.transactions.vm.TransactionStateSource
+import aktual.core.l10n.Strings
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
@@ -17,7 +18,6 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.aktualHaze
 import aktual.core.ui.formattedString
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.background

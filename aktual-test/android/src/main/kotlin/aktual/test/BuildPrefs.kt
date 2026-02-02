@@ -1,7 +1,7 @@
 package aktual.test
 
-import aktual.prefs.AndroidEncryptedPreferences
-import aktual.prefs.EncryptedPreferences
+import aktual.core.prefs.AndroidEncryptedPreferences
+import aktual.core.prefs.EncryptedPreferences
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.test.core.app.ApplicationProvider

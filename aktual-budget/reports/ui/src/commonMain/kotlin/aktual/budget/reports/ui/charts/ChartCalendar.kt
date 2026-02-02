@@ -9,6 +9,7 @@ import aktual.budget.reports.vm.CalendarMonth
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.ArrowThickDown
 import aktual.core.icons.ArrowThickUp
+import aktual.core.l10n.Strings
 import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
@@ -20,7 +21,6 @@ import aktual.core.ui.formattedString
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
 import aktual.core.ui.stringShort
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.background

@@ -12,7 +12,7 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-about:vm"))
     api(project(":aktual-core:ui"))
-    implementation(project(":aktual-l10n"))
+    implementation(project(":aktual-core:l10n"))
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.haze.core)
   }

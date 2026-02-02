@@ -1,4 +1,4 @@
-# modules:test:kotlin
+# aktual-test:kotlin
 
 <!--region chart-->
 ![chart](atlas/chart.png)

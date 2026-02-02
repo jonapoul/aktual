@@ -1,4 +1,4 @@
-# modules:codegen:annotation
+# aktual-codegen:annotation
 
 <!--region chart-->
 ![chart](atlas/chart.png)

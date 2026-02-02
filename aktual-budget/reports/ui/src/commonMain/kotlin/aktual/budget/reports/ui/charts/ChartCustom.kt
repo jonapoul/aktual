@@ -4,6 +4,7 @@ import aktual.budget.reports.ui.charts.WIDTH
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.DateRangeMode
 import aktual.budget.reports.vm.ReportTimeRange
+import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
@@ -11,7 +12,6 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

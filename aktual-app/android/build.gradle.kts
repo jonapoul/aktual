@@ -110,7 +110,7 @@ licensee {
 dependencies {
   implementation(project(":aktual-app:di"))
   implementation(project(":aktual-app:nav"))
-  implementation(project(":aktual-prefs"))
+  implementation(project(":aktual-core:prefs"))
   implementation(libs.alakazam.kotlin.compose)
   implementation(libs.alakazam.kotlin.core)
   implementation(libs.androidx.activity.compose)

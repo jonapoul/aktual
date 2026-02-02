@@ -11,7 +11,7 @@ import aktual.api.client.MetricsApi
 import aktual.api.client.SyncApi
 import aktual.api.client.SyncDownloadApi
 import aktual.core.model.ServerUrl
-import aktual.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.collectFlow
 import dev.zacsweers.metro.AppScope

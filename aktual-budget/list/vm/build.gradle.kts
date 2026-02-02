@@ -10,7 +10,7 @@ kotlin {
     api(project(":aktual-core:model"))
     api(libs.alakazam.kotlin.core)
     implementation(project(":aktual-api:actual"))
-    implementation(project(":aktual-prefs"))
+    implementation(project(":aktual-core:prefs"))
     implementation(libs.ktor.core)
     implementation(libs.ktor.serialization.core)
     implementation(libs.okio)

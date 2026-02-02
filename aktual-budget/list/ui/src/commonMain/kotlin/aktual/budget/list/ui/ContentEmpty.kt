@@ -1,5 +1,6 @@
 package aktual.budget.list.ui
 
+import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.ColorSchemeParameters
@@ -8,7 +9,6 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.Theme
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

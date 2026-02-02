@@ -4,6 +4,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.reports.vm.DashboardState
 import aktual.budget.reports.vm.ReportDashboardItem
 import aktual.budget.reports.vm.ReportsDashboardViewModel
+import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.ui.BackHandler
 import aktual.core.ui.LocalTheme
@@ -14,7 +15,6 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
