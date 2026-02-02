@@ -101,7 +101,7 @@ afterEvaluate {
 dependencies {
   implementation(project(":aktual-app:di"))
   implementation(project(":aktual-app:nav"))
-  implementation(project(":aktual-prefs"))
+  implementation(project(":aktual-core:prefs"))
   implementation(compose.desktop.currentOs)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.jetbrains.material3)

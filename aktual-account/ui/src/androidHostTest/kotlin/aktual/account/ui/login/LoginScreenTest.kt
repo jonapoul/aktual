@@ -8,7 +8,7 @@ import aktual.account.vm.LoginViewModel
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password
 import aktual.core.model.Token
-import aktual.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferences
 import aktual.test.TestBuildConfig
 import aktual.test.assertEditableTextEquals
 import aktual.test.buildPreferences

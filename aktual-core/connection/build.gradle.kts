@@ -14,6 +14,6 @@ kotlin {
     implementation(libs.preferences.core)
     implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:model"))
-    implementation(project(":aktual-prefs"))
+    implementation(project(":aktual-core:prefs"))
   }
 }

@@ -2,7 +2,7 @@ package aktual.core.connection
 
 import aktual.api.client.AktualApisStateHolder
 import aktual.core.model.ServerUrl
-import aktual.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferences
 import aktual.test.CoLogcatInterceptor
 import aktual.test.TestClientFactory
 import aktual.test.assertThatNextEmission

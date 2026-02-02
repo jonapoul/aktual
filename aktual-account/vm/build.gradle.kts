@@ -9,7 +9,7 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-account:domain"))
     api(project(":aktual-core:model"))
-    api(project(":aktual-prefs"))
+    api(project(":aktual-core:prefs"))
     api(libs.alakazam.kotlin.core)
     implementation(project(":aktual-api:actual"))
     implementation(libs.ktor.core)

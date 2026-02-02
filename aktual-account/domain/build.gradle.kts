@@ -11,7 +11,7 @@ kotlin {
     implementation(libs.preferences.core)
     implementation(project(":aktual-api:actual"))
     implementation(project(":aktual-core:logging"))
-    implementation(project(":aktual-prefs"))
+    implementation(project(":aktual-core:prefs"))
     compileOnly(libs.androidx.compose.annotation)
   }
 
