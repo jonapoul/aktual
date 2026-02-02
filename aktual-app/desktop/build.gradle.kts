@@ -43,7 +43,7 @@ compose.desktop {
 
       val icon = rootProject.isolated
         .projectDirectory
-        .file("aktual-l10n/src/commonMain/composeResources/drawable/app_icon_192.png")
+        .file("aktual-core:l10n/src/commonMain/composeResources/drawable/app_icon_192.png")
 
       windows {
         menu = true
@@ -101,7 +101,7 @@ afterEvaluate {
 dependencies {
   implementation(project(":aktual-app:di"))
   implementation(project(":aktual-app:nav"))
-  implementation(project(":aktual-prefs"))
+  implementation(project(":aktual-core:prefs"))
   implementation(compose.desktop.currentOs)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.jetbrains.material3)

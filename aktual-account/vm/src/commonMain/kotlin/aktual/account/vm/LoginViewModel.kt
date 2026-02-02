@@ -8,7 +8,7 @@ import aktual.core.model.BuildConfig
 import aktual.core.model.Password
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.ResettableStateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

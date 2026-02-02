@@ -1,4 +1,3 @@
-import aktual.gradle.detektTasks
 import atlas.graphviz.ArrowType.None
 import atlas.graphviz.ArrowType.Normal
 import atlas.graphviz.FileFormat.Png
@@ -49,12 +48,6 @@ val detektReportMergeSarif by tasks.registering(ReportMergeTask::class) {
 
 tasks.check.configure {
   dependsOn(detektReportMergeSarif)
-}
-
-allprojects {
-  detektReportMergeSarif.configure {
-    input.from(detektTasks.map { it.reports.sarif.outputLocation })
-  }
 }
 
 doctor {

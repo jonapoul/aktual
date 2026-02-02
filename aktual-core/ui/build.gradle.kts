@@ -16,7 +16,7 @@ kotlin {
     api(libs.haze.core)
     api(libs.kotlinx.datetime)
     api(libs.shimmer)
-    implementation(project(":aktual-l10n"))
+    implementation(project(":aktual-core:l10n"))
   }
 
   androidMainDependencies {

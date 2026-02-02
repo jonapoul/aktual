@@ -1,7 +1,7 @@
 package aktual.core.ui
 
+import aktual.core.l10n.Drawables
 import aktual.core.model.ColorSchemeType
-import aktual.l10n.Drawables
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable

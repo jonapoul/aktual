@@ -2,7 +2,7 @@
 
 package aktual.core.ui
 
-import aktual.l10n.Strings
+import aktual.core.l10n.Strings
 import androidx.compose.runtime.Composable
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Month

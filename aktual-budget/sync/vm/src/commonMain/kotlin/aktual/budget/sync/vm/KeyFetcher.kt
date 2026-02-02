@@ -9,7 +9,7 @@ import aktual.budget.encryption.generateKeyFromPassword
 import aktual.budget.model.BudgetId
 import aktual.core.model.Password
 import aktual.core.model.Token
-import aktual.prefs.KeyPreferences
+import aktual.core.prefs.KeyPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import dev.zacsweers.metro.Inject

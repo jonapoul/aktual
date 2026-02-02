@@ -1,4 +1,4 @@
-# modules:budget:transactions:ui
+# aktual-budget:transactions:ui
 
 <!--region chart-->
 ![chart](atlas/chart.png)

@@ -1,8 +1,8 @@
 package aktual.budget.list.ui
 
+import aktual.core.l10n.Strings
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.normalIconButton
-import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons

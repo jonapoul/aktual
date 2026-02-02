@@ -13,8 +13,8 @@ import aktual.core.model.DarkColorSchemeType
 import aktual.core.model.PingStateHolder
 import aktual.core.model.RegularColorSchemeType
 import aktual.core.model.Token
+import aktual.core.prefs.AppGlobalPreferences
 import aktual.core.ui.BottomBarState
-import aktual.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

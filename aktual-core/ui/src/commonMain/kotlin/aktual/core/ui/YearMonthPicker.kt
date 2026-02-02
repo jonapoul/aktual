@@ -2,8 +2,8 @@
 
 package aktual.core.ui
 
+import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding

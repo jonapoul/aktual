@@ -16,7 +16,7 @@ import aktual.core.model.Password
 import aktual.core.model.Percent
 import aktual.core.model.Token
 import aktual.core.model.UrlOpener
-import aktual.prefs.KeyPreferences
+import aktual.core.prefs.KeyPreferences
 import alakazam.kotlin.core.launchInfiniteLoop
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

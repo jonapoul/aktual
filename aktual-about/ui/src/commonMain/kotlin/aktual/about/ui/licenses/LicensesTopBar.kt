@@ -1,9 +1,9 @@
 package aktual.about.ui.licenses
 
 import aktual.about.vm.SearchBarState
+import aktual.core.l10n.Strings
 import aktual.core.ui.Theme
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.l10n.Strings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search

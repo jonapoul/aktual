@@ -3,6 +3,7 @@ package aktual.app.nav
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudCheck
 import aktual.core.icons.CloudWarning
+import aktual.core.l10n.Strings
 import aktual.core.model.PingState
 import aktual.core.ui.BottomBarState
 import aktual.core.ui.LocalTheme
@@ -10,7 +11,6 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

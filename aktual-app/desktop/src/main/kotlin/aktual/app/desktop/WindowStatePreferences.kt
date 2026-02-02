@@ -1,6 +1,6 @@
 package aktual.app.desktop
 
-import aktual.prefs.JvmPreferences
+import aktual.core.prefs.JvmPreferences
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.WindowPlacement

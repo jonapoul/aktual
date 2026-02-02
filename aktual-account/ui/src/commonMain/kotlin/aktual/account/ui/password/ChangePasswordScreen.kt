@@ -2,6 +2,7 @@ package aktual.account.ui.password
 
 import aktual.account.vm.ChangePasswordState
 import aktual.account.vm.ChangePasswordViewModel
+import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
 import aktual.core.ui.AktualTypography
@@ -17,7 +18,6 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

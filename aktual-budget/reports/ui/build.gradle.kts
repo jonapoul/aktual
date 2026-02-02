@@ -12,8 +12,8 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:reports:vm"))
     api(project(":aktual-core:ui"))
+    implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:model"))
-    implementation(project(":aktual-l10n"))
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.kotlinx.datetime)
     implementation(libs.markdown.core)

@@ -1,4 +1,4 @@
-# modules:budget:sync:vm
+# aktual-budget:sync:vm
 
 <!--region chart-->
 ![chart](atlas/chart.png)

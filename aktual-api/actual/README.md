@@ -1,4 +1,4 @@
-# modules:api:actual
+# aktual-api:actual
 
 <!--region chart-->
 ![chart](atlas/chart.png)

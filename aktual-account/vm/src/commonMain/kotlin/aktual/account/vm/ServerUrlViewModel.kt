@@ -7,7 +7,7 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
-import aktual.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferences
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.ResettableStateFlow
 import alakazam.kotlin.core.collectFlow

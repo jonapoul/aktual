@@ -1,12 +1,12 @@
 package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
+import aktual.core.l10n.Strings
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.l10n.Strings
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable

@@ -1,4 +1,4 @@
-# modules:budget:reports:ui
+# aktual-budget:reports:ui
 
 <!--region chart-->
 ![chart](atlas/chart.png)

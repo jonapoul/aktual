@@ -1,5 +1,6 @@
 package aktual.account.ui.login
 
+import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
@@ -9,7 +10,6 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

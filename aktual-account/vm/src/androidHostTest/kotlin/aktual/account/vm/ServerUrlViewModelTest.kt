@@ -8,7 +8,7 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferences
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo

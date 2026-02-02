@@ -4,6 +4,7 @@ import aktual.budget.model.Amount
 import aktual.budget.reports.ui.charts.WIDTH
 import aktual.budget.reports.vm.CashFlowData
 import aktual.budget.reports.vm.CashFlowDatum
+import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
@@ -14,7 +15,6 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
-import aktual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues

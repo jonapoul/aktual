@@ -1,4 +1,4 @@
-# modules:settings:ui
+# aktual-settings:ui
 
 <!--region chart-->
 ![chart](atlas/chart.png)
