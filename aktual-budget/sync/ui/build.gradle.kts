@@ -13,8 +13,8 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:sync:vm"))
     api(project(":aktual-core:ui"))
+    implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:model"))
-    implementation(project(":aktual-l10n"))
   }
 
   androidMainDependencies {

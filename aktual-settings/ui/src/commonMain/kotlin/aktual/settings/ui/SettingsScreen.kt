@@ -1,5 +1,6 @@
 package aktual.settings.ui
 
+import aktual.core.l10n.Strings
 import aktual.core.model.DarkColorSchemeType
 import aktual.core.model.RegularColorSchemeType
 import aktual.core.ui.BottomNavBarSpacing
@@ -14,7 +15,6 @@ import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithHazeState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.l10n.Strings
 import aktual.settings.ui.items.ShowBottomBarPreferenceItem
 import aktual.settings.ui.items.ThemePreferenceItem
 import aktual.settings.vm.PreferenceValue

@@ -7,6 +7,7 @@ import aktual.budget.reports.vm.SpendingComparison
 import aktual.budget.reports.vm.SpendingData
 import aktual.budget.reports.vm.SpendingDay
 import aktual.budget.reports.vm.SpendingDayNumber
+import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
 import aktual.core.ui.LocalTheme
@@ -18,7 +19,6 @@ import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
 import aktual.core.ui.stringShort
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import alakazam.kotlin.core.capitalized
 import androidx.compose.foundation.background

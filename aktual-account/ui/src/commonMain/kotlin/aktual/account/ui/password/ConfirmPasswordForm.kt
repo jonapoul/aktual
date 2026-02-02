@@ -1,6 +1,7 @@
 package aktual.account.ui.password
 
 import aktual.account.vm.ChangePasswordState
+import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.model.Password.Companion.Empty
 import aktual.core.ui.PreviewWithColorScheme
@@ -8,7 +9,6 @@ import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
-import aktual.l10n.Strings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement

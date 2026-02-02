@@ -4,6 +4,7 @@ import aktual.budget.model.Budget
 import aktual.budget.model.BudgetState
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Key
+import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.LocalTheme
@@ -13,7 +14,6 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.aktualHaze
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

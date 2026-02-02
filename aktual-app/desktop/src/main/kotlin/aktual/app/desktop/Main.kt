@@ -1,14 +1,14 @@
 package aktual.app.desktop
 
 import aktual.app.nav.AktualAppContent
+import aktual.core.l10n.Drawables
+import aktual.core.l10n.Strings
 import aktual.core.logging.JvmLogStorage
 import aktual.core.logging.LogbackLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.WithCompositionLocals
 import aktual.core.ui.chooseSchemeType
-import aktual.l10n.Drawables
-import aktual.l10n.Strings
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue

@@ -1,6 +1,7 @@
 package aktual.about.ui.info
 
 import aktual.about.vm.BuildState
+import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.ColorSchemeType
 import aktual.core.ui.CardShape
@@ -9,7 +10,6 @@ import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.aktualHaze
-import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth

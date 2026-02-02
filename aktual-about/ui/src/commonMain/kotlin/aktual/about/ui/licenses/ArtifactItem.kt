@@ -1,6 +1,7 @@
 package aktual.about.ui.licenses
 
 import aktual.about.data.ArtifactDetail
+import aktual.core.l10n.Strings
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.LocalTheme
@@ -9,7 +10,6 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.aktualHaze
-import aktual.l10n.Strings
 import alakazam.kotlin.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

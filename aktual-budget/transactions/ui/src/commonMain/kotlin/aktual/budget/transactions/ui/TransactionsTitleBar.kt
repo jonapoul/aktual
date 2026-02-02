@@ -1,6 +1,7 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.transactions.vm.LoadedAccount
+import aktual.core.l10n.Strings
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
@@ -8,7 +9,6 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.l10n.Strings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Visibility

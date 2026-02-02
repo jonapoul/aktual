@@ -12,6 +12,7 @@ import aktual.budget.list.ui.ListBudgetsAction.Reload
 import aktual.budget.list.vm.ListBudgetsState
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
+import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.FailureScreen
@@ -25,7 +26,6 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithHazeState
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding

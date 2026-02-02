@@ -1,6 +1,7 @@
 package aktual.metrics.ui
 
 import aktual.api.model.metrics.GetMetricsResponse
+import aktual.core.l10n.Strings
 import aktual.core.model.GB
 import aktual.core.model.MB
 import aktual.core.model.TB
@@ -22,7 +23,6 @@ import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithHazeState
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
-import aktual.l10n.Strings
 import aktual.metrics.vm.MetricsState
 import aktual.metrics.vm.MetricsViewModel
 import alakazam.kotlin.compose.VerticalSpacer

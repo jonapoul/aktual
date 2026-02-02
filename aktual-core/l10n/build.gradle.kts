@@ -19,7 +19,7 @@ catalog {
 compose.resources {
   generateResClass = always
   nameOfResClass = "Res"
-  packageOfResClass = "aktual.l10n"
+  packageOfResClass = "aktual.core.l10n"
   publicResClass = true
 }
 

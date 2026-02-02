@@ -12,6 +12,7 @@ import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.ui.charts.THREE_MONTHS
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChooseReportTypeViewModel
+import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
 import aktual.core.model.Token
 import aktual.core.ui.AktualTypography
@@ -29,7 +30,6 @@ import aktual.core.ui.WithHazeState
 import aktual.core.ui.aktualHaze
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.l10n.Strings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

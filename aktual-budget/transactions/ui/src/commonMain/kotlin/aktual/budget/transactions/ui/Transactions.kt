@@ -6,6 +6,7 @@ import aktual.budget.model.TransactionsFormat.Table
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.TransactionStateSource
+import aktual.core.l10n.Strings
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
@@ -17,7 +18,6 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.scrollbar
-import aktual.l10n.Strings
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

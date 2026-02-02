@@ -1,5 +1,6 @@
 package aktual.settings.ui.items
 
+import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
 import aktual.core.model.DarkColorSchemeType
 import aktual.core.model.RegularColorSchemeType
@@ -10,7 +11,6 @@ import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewParameters
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
-import aktual.l10n.Strings
 import aktual.settings.ui.BasicPreferenceItem
 import aktual.settings.ui.NotClickable
 import aktual.settings.vm.ThemeConfig

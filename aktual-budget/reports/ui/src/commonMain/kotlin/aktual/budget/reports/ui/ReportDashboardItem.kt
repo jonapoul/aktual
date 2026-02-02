@@ -6,6 +6,7 @@ import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.vm.ReportDashboardItem
+import aktual.core.l10n.Strings
 import aktual.core.ui.CardShape
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalTheme
@@ -14,7 +15,6 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.l10n.Strings
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box

@@ -43,7 +43,7 @@ compose.desktop {
 
       val icon = rootProject.isolated
         .projectDirectory
-        .file("aktual-l10n/src/commonMain/composeResources/drawable/app_icon_192.png")
+        .file("aktual-core:l10n/src/commonMain/composeResources/drawable/app_icon_192.png")
 
       windows {
         menu = true

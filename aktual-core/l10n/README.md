@@ -1,7 +1,7 @@
-# aktual-l10n
+# aktual-core:l10n
 
 <!--region chart-->
 ![chart](atlas/chart.png)
 
-![legend](../atlas/legend.png)
+![legend](../../atlas/legend.png)
 <!--endregion-->
