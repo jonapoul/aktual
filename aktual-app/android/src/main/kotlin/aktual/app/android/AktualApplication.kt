@@ -1,8 +1,8 @@
 package aktual.app.android
 
-import aktual.logging.AktualAndroidLogcatLogger
-import aktual.logging.AndroidLogStorage
-import aktual.logging.LogbackLogger
+import aktual.core.logging.AktualAndroidLogcatLogger
+import aktual.core.logging.AndroidLogStorage
+import aktual.core.logging.LogbackLogger
 import android.app.Application
 import android.os.StrictMode
 import dev.zacsweers.metro.createGraphFactory

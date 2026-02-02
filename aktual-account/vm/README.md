@@ -1,4 +1,4 @@
-# modules:account:vm
+# aktual-account:vm
 
 <!--region chart-->
 ![chart](atlas/chart.png)

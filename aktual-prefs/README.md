@@ -1,4 +1,4 @@
-# modules:prefs
+# aktual-prefs
 
 <!--region chart-->
 ![chart](atlas/chart.png)

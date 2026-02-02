@@ -57,7 +57,7 @@ kotlin {
     implementation(libs.sqldelight.driver.sqlite)
     implementation(libs.sqldelight.primitive)
     implementation(libs.sqldelight.runtime)
-    implementation(project(":aktual-logging"))
+    implementation(project(":aktual-core:logging"))
   }
 
   commonTestDependencies {
