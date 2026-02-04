@@ -10,11 +10,12 @@ kotlin {
     api(project(":aktual-budget:data"))
     api(project(":aktual-budget:model"))
     api(libs.alakazam.kotlin.time)
-    api(libs.androidx.lifecycle.viewmodel.core)
     api(libs.metrox.viewmodel)
   }
 
   commonTestDependencies {
+    implementation(project(":aktual-about:di"))
     implementation(project(":aktual-app:di"))
+    implementation(project(":aktual-budget:di"))
   }
 }

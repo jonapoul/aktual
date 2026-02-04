@@ -14,7 +14,7 @@ kotlin {
     api(project(":aktual-budget:reports:ui"))
     api(project(":aktual-budget:sync:ui"))
     api(project(":aktual-budget:transactions:ui"))
-    api(project(":aktual-core:connection"))
+    api(project(":aktual-core:api"))
     api(project(":aktual-core:l10n"))
     api(project(":aktual-core:logging"))
     api(project(":aktual-core:ui"))

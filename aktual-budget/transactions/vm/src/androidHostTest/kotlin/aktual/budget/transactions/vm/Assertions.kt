@@ -9,8 +9,7 @@ internal inline fun <reified K : Any, reified V : Any> Assert<LoadResult<K, V>>.
   transform("is a LoadResult.Page") { result ->
     when (result) {
       is Page<K, V> -> result
-      is LoadResult.Error -> expected("Page, got ${result.throwable}")
-      is LoadResult.Invalid -> expected("Page, got Invalid")
+      else -> expected("Page, got $result")
     }
   }
 
@@ -18,7 +17,7 @@ internal fun <K : Any, V : Any> Assert<Page<K, V>>.withData(expected: List<V>) =
   if (page.data != expected) {
     expected("page with data $expected, got ${page.data}")
   }
-  return@transform page
+  page
 }
 
 internal fun <K : Any, V : Any> Assert<Page<K, V>>.withData(vararg expected: V) = withData(expected.toList())
@@ -27,12 +26,12 @@ internal fun <K : Any, V : Any> Assert<Page<K, V>>.withPrevKey(expected: K?) = t
   if (page.prevKey != expected) {
     expected("page with prevKey $expected, got ${page.prevKey}")
   }
-  return@transform page
+  page
 }
 
 internal fun <K : Any, V : Any> Assert<Page<K, V>>.withNextKey(expected: K?) = transform { page ->
   if (page.nextKey != expected) {
     expected("page with nextKey $expected, got ${page.nextKey}")
   }
-  return@transform page
+  page
 }
