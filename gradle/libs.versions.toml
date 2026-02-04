@@ -149,7 +149,7 @@ metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
 shadow = { id = "com.gradleup.shadow", version = "9.3.1" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
-wire = { id = "com.squareup.wire", version = "6.0.0-alpha01" }
+wire = { id = "com.squareup.wire", version = "6.0.0-alpha02" }
 
 convention-android-base = { id = "aktual.convention.android.base" }
 convention-buildconfig = { id = "aktual.convention.buildconfig" }
