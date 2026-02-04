@@ -121,7 +121,7 @@ test-kotlin-common = { module = "org.jetbrains.kotlin:kotlin-test", version.ref 
 test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 test-ktor = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 test-mockk = { module = "io.mockk:mockk", version = "1.14.7" }
-test-robolectric = { module = "org.robolectric:robolectric", version = "4.16" }
+test-robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
 test-turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 
 [plugins]
