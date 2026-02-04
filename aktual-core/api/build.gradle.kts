@@ -18,6 +18,7 @@ kotlin {
     api(libs.alakazam.kotlin.core)
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
+    api(project(":aktual-budget:data"))
     api(project(":aktual-core:model"))
     implementation(libs.ktor.auth)
     implementation(libs.ktor.cio)

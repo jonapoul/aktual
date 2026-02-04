@@ -1,6 +1,5 @@
-package aktual.budget.encryption
+package aktual.core.model
 
-import aktual.core.model.KeyId
 import okio.ByteString
 
 fun interface EncryptionKeys {

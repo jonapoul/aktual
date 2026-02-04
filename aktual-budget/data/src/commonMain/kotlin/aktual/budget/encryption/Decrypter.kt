@@ -3,6 +3,7 @@ package aktual.budget.encryption
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.decryptedZip
+import aktual.core.model.EncryptionKeys
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.kotlin.core.requireMessage
 import dev.zacsweers.metro.AppScope
@@ -12,7 +13,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import okio.Buffer
-import okio.ByteString
 import okio.CipherSource
 import okio.IOException
 import okio.Path

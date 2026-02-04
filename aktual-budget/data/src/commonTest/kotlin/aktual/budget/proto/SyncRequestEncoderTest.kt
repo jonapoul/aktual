@@ -1,7 +1,7 @@
 package aktual.budget.proto
 
 import aktual.budget.encryption.BufferEncrypterImpl
-import aktual.budget.encryption.EncryptionKeys
+import aktual.core.model.EncryptionKeys
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Message
