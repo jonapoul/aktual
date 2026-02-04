@@ -141,7 +141,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.4" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.5" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 licensee = { id = "app.cash.licensee", version = "1.14.1" }
 manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.0" }
