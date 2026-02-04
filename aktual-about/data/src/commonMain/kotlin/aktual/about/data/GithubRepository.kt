@@ -3,8 +3,6 @@ package aktual.about.data
 import aktual.core.model.BuildConfig
 import alakazam.kotlin.core.CoroutineContexts
 import dev.zacsweers.metro.Inject
-import github.api.client.GithubApi
-import github.api.model.GithubRelease
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
@@ -16,19 +14,13 @@ import java.io.IOException
 @Inject
 class GithubRepository internal constructor(
   private val contexts: CoroutineContexts,
-  private val apiFactory: GithubApi.Factory,
+  private val githubApi: GithubApi,
   private val buildConfig: BuildConfig,
 ) {
   suspend fun fetchLatestRelease(): LatestReleaseState {
     try {
       val releases = withContext(contexts.io) {
-        apiFactory.build().use { api ->
-          api.getReleases(
-            user = "jonapoul",
-            repo = "aktual",
-            perPage = 1,
-          )
-        }
+        githubApi.getReleases(user = "jonapoul", repo = "aktual", perPage = 1)
       }
 
       val latest = releases.maxByOrNull { it.publishedAt }

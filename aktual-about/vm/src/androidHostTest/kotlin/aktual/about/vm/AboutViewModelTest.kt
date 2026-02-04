@@ -1,5 +1,6 @@
 package aktual.about.vm
 
+import aktual.about.data.GithubRelease
 import aktual.about.data.GithubRepository
 import aktual.about.data.LatestReleaseState
 import aktual.core.model.AktualVersionsStateHolder
@@ -8,7 +9,6 @@ import aktual.test.TestBuildConfig
 import aktual.test.TestInstant
 import aktual.test.assertThatNextEmissionIsEqualTo
 import app.cash.turbine.test
-import github.api.model.GithubRelease
 import io.mockk.coEvery
 import io.mockk.confirmVerified
 import io.mockk.mockk

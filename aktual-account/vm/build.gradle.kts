@@ -11,12 +11,12 @@ kotlin {
     api(project(":aktual-core:model"))
     api(project(":aktual-core:prefs"))
     api(libs.alakazam.kotlin.core)
-    implementation(project(":aktual-api:actual"))
+    implementation(project(":aktual-core:api"))
     implementation(libs.ktor.core)
     implementation(libs.preferences.core)
   }
 
   commonTestDependencies {
-    implementation(project(":aktual-core:connection"))
+    implementation(project(":aktual-core:api"))
   }
 }

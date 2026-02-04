@@ -18,7 +18,7 @@ class EncryptTest {
   @Test
   fun encryptAndDecryptRoundTrip() {
     val plaintextResource = "expected.zip"
-    val encrypted = temporaryFolder.resolve("encrypted.zip")
+    val encrypted = temporaryFolder / "encrypted.zip"
 
     // Encrypt the plaintext
     val meta = encryptToSink(
@@ -30,7 +30,7 @@ class EncryptTest {
     )
 
     // Decrypt the encrypted data
-    val decrypted = temporaryFolder.resolve("decrypted.zip")
+    val decrypted = temporaryFolder / "decrypted.zip"
     decryptToSink(
       key = KEY.toByteArray(),
       iv = meta.iv.toByteArray(),

@@ -1,6 +1,6 @@
 package aktual.core.prefs
 
-import aktual.budget.encryption.EncryptionKeys
+import aktual.core.model.EncryptionKeys
 import aktual.core.model.KeyId
 import aktual.core.model.base64
 import dev.jonpoulton.preferences.core.NullableStringSerializer

@@ -13,9 +13,6 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.matchesPredicate
 import assertk.assertions.prop
-import github.api.client.GithubApi
-import github.api.client.GithubJson
-import github.api.model.GithubRelease
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
@@ -40,7 +37,7 @@ class GithubRepositoryTest {
   fun `Request is structured as expected`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NewRelease) }
+    mockEngine += { respondJson(NEW_RELEASE) }
 
     // When
     githubRepository.fetchLatestRelease()
@@ -56,7 +53,7 @@ class GithubRepositoryTest {
   fun `Update available from three returned`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NewRelease) }
+    mockEngine += { respondJson(NEW_RELEASE) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -79,7 +76,7 @@ class GithubRepositoryTest {
   fun `No new updates`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NoNewUpdate) }
+    mockEngine += { respondJson(NO_NEW_UPDATE) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -107,7 +104,7 @@ class GithubRepositoryTest {
   fun `Private repo`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NotFound, HttpStatusCode.NotFound) }
+    mockEngine += { respondJson(NOT_FOUND, HttpStatusCode.NotFound) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -168,11 +165,10 @@ class GithubRepositoryTest {
 
   private fun TestScope.buildRepo() {
     mockEngine = emptyMockEngine()
-    val githubApi = GithubApi(client = testHttpClient(mockEngine, GithubJson))
     githubRepository = GithubRepository(
       contexts = TestCoroutineContexts(standardDispatcher),
       buildConfig = TestBuildConfig,
-      apiFactory = GithubApi.Factory { githubApi },
+      githubApi = GithubApiImpl(client = testHttpClient(mockEngine, GithubJson)),
     )
   }
 }

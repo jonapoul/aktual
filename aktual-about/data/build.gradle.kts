@@ -7,10 +7,13 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-api:github"))
     api(libs.alakazam.kotlin.core)
     api(libs.kotlinx.serialization.core)
-    implementation(libs.kotlinx.serialization.json)
+    api(libs.ktor.core)
     compileOnly(libs.androidx.compose.annotation)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.ktor.serialization.json)
+    implementation(project(":aktual-core:api"))
+    implementation(project(":aktual-core:model"))
   }
 }

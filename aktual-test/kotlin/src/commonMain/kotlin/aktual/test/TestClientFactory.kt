@@ -1,7 +1,7 @@
 package aktual.test
 
-import aktual.api.builder.ClientFactory
-import aktual.api.builder.buildKtorClient
+import aktual.core.api.ClientFactory
+import aktual.core.api.buildKtorClient
 import io.ktor.client.engine.mock.MockEngine
 import kotlinx.serialization.json.Json
 

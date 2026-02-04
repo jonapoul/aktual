@@ -9,14 +9,13 @@ kotlin {
     api(project(":aktual-core:model"))
     implementation(libs.alakazam.kotlin.core)
     implementation(libs.preferences.core)
-    implementation(project(":aktual-api:actual"))
+    implementation(project(":aktual-core:api"))
     implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:prefs"))
     compileOnly(libs.androidx.compose.annotation)
   }
 
   androidHostTestDependencies {
-    implementation(project(":aktual-api:builder"))
-    implementation(project(":aktual-core:connection"))
+    implementation(project(":aktual-core:api"))
   }
 }

@@ -12,7 +12,7 @@ kotlin {
     api(libs.alakazam.kotlin.core)
     api(libs.alakazam.kotlin.time)
     api(libs.kotlinx.datetime)
-    implementation(project(":aktual-api:actual"))
+    implementation(project(":aktual-core:api"))
     implementation(project(":aktual-core:model"))
     implementation(project(":aktual-core:prefs"))
     implementation(libs.kotlinx.serialization.core)

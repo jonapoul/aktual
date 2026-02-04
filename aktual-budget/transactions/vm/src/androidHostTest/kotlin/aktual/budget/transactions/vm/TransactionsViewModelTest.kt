@@ -1,6 +1,6 @@
 package aktual.budget.transactions.vm
 
-import aktual.app.di.GithubApiContainer
+import aktual.about.di.GithubApiContainer
 import aktual.budget.db.dao.TransactionsDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec
