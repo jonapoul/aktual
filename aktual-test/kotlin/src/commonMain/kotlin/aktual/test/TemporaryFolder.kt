@@ -43,11 +43,12 @@ interface ITemporaryFolder {
   val fileSystem: FileSystem
   val root: Path
 
-  fun newFolder(name: String): Path = resolve(name)
+  fun newFolder(name: String): Path = div(name)
     .also { fileSystem.createDirectory(it) }
 
-  fun resolve(path: String): Path = root.resolve(path)
   fun list(path: Path = root): List<Path> = fileSystem.list(path)
   fun sink(path: Path): Sink = fileSystem.sink(path)
   fun source(path: Path): Source = fileSystem.source(path)
+
+  operator fun div(path: String) = root.resolve(path)
 }

@@ -25,8 +25,7 @@ kotlin {
     api(project(":aktual-budget:data"))
     implementation(libs.alakazam.db.sqldelight)
     implementation(libs.sqldelight.driver.sqlite)
-    implementation(project(":aktual-api:actual"))
-    implementation(project(":aktual-api:builder"))
+    implementation(project(":aktual-core:api"))
   }
 
   androidMainDependencies {

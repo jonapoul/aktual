@@ -16,7 +16,7 @@ class DecryptTest {
   @Test
   fun decryptSuccessfully() {
     val source = resource("encrypted.zip")
-    val destination = temporaryFolder.resolve("decrypted.zip")
+    val destination = temporaryFolder / "decrypted.zip"
 
     decryptToSink(
       key = KEY.toByteArray(),

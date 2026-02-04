@@ -13,7 +13,6 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-api:github"))
     api(project(":aktual-core:di"))
     api(project(":aktual-core:model"))
     api(project(":aktual-core:prefs"))
@@ -21,7 +20,7 @@ kotlin {
     api(libs.androidx.lifecycle.viewmodel.core)
     api(libs.metrox.viewmodel)
     api(libs.preferences.core)
-    implementation(project(":aktual-api:builder"))
+    implementation(project(":aktual-core:api"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.core)
   }

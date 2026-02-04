@@ -1,6 +1,6 @@
 package aktual.test
 
-import aktual.api.builder.buildKtorClient
+import aktual.core.api.buildKtorClient
 import aktual.api.client.AktualJson
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
