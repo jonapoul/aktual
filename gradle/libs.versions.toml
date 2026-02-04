@@ -45,7 +45,7 @@ androidx-paging-compose = { module = "androidx.paging:paging-compose", version.r
 androidx-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
-detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.3" }
+detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.6" }
 haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.7.1" }
 jetbrains-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeJetbrains" }
 jetbrains-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeJetbrains" }
