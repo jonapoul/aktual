@@ -23,6 +23,7 @@ enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 include(
   ":aktual-about:data",
+  ":aktual-about:di",
   ":aktual-about:ui",
   ":aktual-about:vm",
   ":aktual-account:domain",
@@ -33,6 +34,7 @@ include(
   ":aktual-app:di",
   ":aktual-app:nav",
   ":aktual-budget:data",
+  ":aktual-budget:di",
   ":aktual-budget:list:ui",
   ":aktual-budget:list:vm",
   ":aktual-budget:model",

@@ -1,12 +1,11 @@
 package aktual.core.di
 
-import aktual.app.di.GithubApiContainer
+import aktual.about.di.GithubApiContainer
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
-import aktual.core.di.CoroutineContainer
 import aktual.test.messageContains
 import alakazam.kotlin.core.CoroutineContexts
 import alakazam.test.core.TestCoroutineContexts

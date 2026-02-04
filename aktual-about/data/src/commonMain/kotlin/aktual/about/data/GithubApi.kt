@@ -1,11 +1,5 @@
 package aktual.about.data
 
-import aktual.core.api.buildKtorClient
-import aktual.core.model.BuildConfig
-import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.BindingContainer
-import dev.zacsweers.metro.ContributesTo
-import dev.zacsweers.metro.Provides
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -17,7 +11,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlin.time.Instant
 
-internal interface GithubApi {
+interface GithubApi {
   suspend fun getReleases(
     user: String,
     repo: String,
@@ -26,7 +20,7 @@ internal interface GithubApi {
   ): List<GithubRelease>
 }
 
-internal class GithubApiImpl(private val client: HttpClient) : GithubApi {
+class GithubApiImpl(private val client: HttpClient) : GithubApi {
   override suspend fun getReleases(
     user: String,
     repo: String,
@@ -40,28 +34,12 @@ internal class GithubApiImpl(private val client: HttpClient) : GithubApi {
     }
     parameter("per_page", perPage)
     parameter("page", pageNumber)
-  }
-  .body<List<GithubRelease>>()
-}
-
-@BindingContainer
-@ContributesTo(AppScope::class)
-internal object GithubApiContainer {
-  @Provides
-  fun githubApi(
-    buildConfig: BuildConfig,
-  ): GithubApi = GithubApiImpl(
-    client = buildKtorClient(
-      json = GithubJson,
-      tag = "GITHUB",
-      isDebug = buildConfig.isDebug,
-    ),
-  )
+  }.body<List<GithubRelease>>()
 }
 
 private const val GITHUB_URL = "api.github.com"
 
-internal val GithubJson = Json {
+val GithubJson = Json {
   ignoreUnknownKeys = true
 }
 
