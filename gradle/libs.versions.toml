@@ -12,7 +12,7 @@ kotlin = "2.3.0"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.9.0"
-ksp = "2.3.4"
+ksp = "2.3.5"
 ktor = "3.4.0"
 markdown = "0.39.2"
 metro = "0.9.4"
@@ -79,7 +79,7 @@ ktor-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-serialization-core = { module = "io.ktor:ktor-serialization", version.ref = "ktor" }
 ktor-serialization-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 logback-android = { module = "com.github.tony19:logback-android", version = "3.0.0" }
-logback-classic = { module = "ch.qos.logback:logback-classic", version = "1.5.24" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version = "1.5.27" }
 logcat = { module = "com.squareup.logcat:logcat", version = "0.4" }
 markdown-core = { module = "com.mikepenz:multiplatform-markdown-renderer", version.ref = "markdown" }
 markdown-m3 = { module = "com.mikepenz:multiplatform-markdown-renderer-m3", version.ref = "markdown" }
@@ -121,7 +121,7 @@ test-kotlin-common = { module = "org.jetbrains.kotlin:kotlin-test", version.ref 
 test-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 test-ktor = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 test-mockk = { module = "io.mockk:mockk", version = "1.14.7" }
-test-robolectric = { module = "org.robolectric:robolectric", version = "4.16" }
+test-robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
 test-turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
 
 [plugins]
@@ -141,7 +141,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.4" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.5" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 licensee = { id = "app.cash.licensee", version = "1.14.1" }
 manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.0" }
@@ -149,7 +149,7 @@ metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
 shadow = { id = "com.gradleup.shadow", version = "9.3.1" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
-wire = { id = "com.squareup.wire", version = "6.0.0-alpha01" }
+wire = { id = "com.squareup.wire", version = "6.0.0-alpha02" }
 
 convention-android-base = { id = "aktual.convention.android.base" }
 convention-buildconfig = { id = "aktual.convention.buildconfig" }
