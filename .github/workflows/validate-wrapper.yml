@@ -26,4 +26,4 @@ jobs:
 
       - name: Validate Gradle wrapper
         if: steps.wrapper-changed.outputs.wrapper == 'true'
-        uses: gradle/actions/wrapper-validation@4d9f0ba0025fe599b4ebab900eb7f3a1d93ef4c2 # v5
+        uses: gradle/actions/wrapper-validation@f29f5a9d7b09a7c6b29859002d29d24e1674c884 # v5
