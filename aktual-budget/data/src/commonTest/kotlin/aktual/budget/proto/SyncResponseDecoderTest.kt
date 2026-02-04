@@ -1,12 +1,12 @@
 package aktual.budget.proto
 
 import aktual.budget.encryption.BufferDecrypterImpl
-import aktual.core.model.EncryptionKeys
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Message
 import aktual.budget.model.MessageEnvelope
 import aktual.budget.model.SyncResponse
 import aktual.budget.model.Timestamp
+import aktual.core.model.EncryptionKeys
 import aktual.core.model.base64
 import aktual.test.RESOURCES_DIR
 import aktual.test.isEqualToList

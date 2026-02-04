@@ -2,8 +2,8 @@
 
 import aktual.gradle.kspAllConfigs
 import blueprint.core.commonMainDependencies
-import org.gradle.internal.extensions.stdlib.capitalized
 import com.github.gmazzo.buildconfig.BuildConfigSourceSet
+import org.gradle.internal.extensions.stdlib.capitalized
 
 plugins {
   alias(libs.plugins.module.multiplatform)

@@ -25,16 +25,17 @@ class GithubApiImpl(private val client: HttpClient) : GithubApi {
     user: String,
     repo: String,
     perPage: Int?,
-    pageNumber: Int?
-  ): List<GithubRelease> = client.get {
-    url {
-      protocol = URLProtocol.HTTPS
-      host = GITHUB_URL
-      path("/repos/$user/$repo/releases/latest")
-    }
-    parameter("per_page", perPage)
-    parameter("page", pageNumber)
-  }.body<List<GithubRelease>>()
+    pageNumber: Int?,
+  ): List<GithubRelease> = client
+    .get {
+      url {
+        protocol = URLProtocol.HTTPS
+        host = GITHUB_URL
+        path("/repos/$user/$repo/releases/latest")
+      }
+      parameter("per_page", perPage)
+      parameter("page", pageNumber)
+    }.body<List<GithubRelease>>()
 }
 
 private const val GITHUB_URL = "api.github.com"
