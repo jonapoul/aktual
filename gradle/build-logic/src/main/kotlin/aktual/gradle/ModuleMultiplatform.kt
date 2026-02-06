@@ -50,6 +50,7 @@ class ModuleMultiplatform : Plugin<Project> {
       }
 
       commonMainDependencies {
+        implementation(libs["alakazam.kotlin"])
         implementation(libs["kotlinx.coroutines.core"])
       }
 

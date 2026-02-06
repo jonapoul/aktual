@@ -1,8 +1,8 @@
 package aktual.core.ui
 
 import aktual.core.model.ColorSchemeType
-import alakazam.kotlin.compose.HorizontalSpacer
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.HorizontalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

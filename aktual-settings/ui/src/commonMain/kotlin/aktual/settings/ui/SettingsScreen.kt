@@ -20,7 +20,7 @@ import aktual.settings.ui.items.ThemePreferenceItem
 import aktual.settings.vm.PreferenceValue
 import aktual.settings.vm.SettingsViewModel
 import aktual.settings.vm.ThemeConfig
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth

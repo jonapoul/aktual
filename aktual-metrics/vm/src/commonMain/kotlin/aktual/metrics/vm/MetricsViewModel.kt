@@ -2,8 +2,8 @@ package aktual.metrics.vm
 
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.MetricsApi
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.requireMessage
+import alakazam.kotlin.CoroutineContexts
+import alakazam.kotlin.requireMessage
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.AppScope

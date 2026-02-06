@@ -3,7 +3,7 @@ import aktual.gradle.optIn
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.compose)
+  id("aktual.module.compose")
 }
 
 optIn(EXPERIMENTAL_MATERIAL_3)
@@ -13,7 +13,6 @@ kotlin {
     api(project(":aktual-about:vm"))
     api(project(":aktual-core:ui"))
     implementation(project(":aktual-core:l10n"))
-    implementation(libs.alakazam.kotlin.core)
     implementation(libs.haze.core)
   }
 }

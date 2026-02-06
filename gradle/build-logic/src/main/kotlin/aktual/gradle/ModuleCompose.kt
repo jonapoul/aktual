@@ -27,7 +27,7 @@ class ModuleCompose : Plugin<Project> {
     kotlin {
       commonMainDependencies {
         api(libs["jetbrains.runtime"])
-        implementation(libs["alakazam.kotlin.compose"])
+        implementation(libs["alakazam.compose"])
         implementation(libs["androidx.lifecycle.runtime.compose"])
         implementation(libs["androidx.lifecycle.viewmodel.compose"])
         implementation(libs["jetbrains.animation"])

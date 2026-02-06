@@ -1,5 +1,5 @@
 plugins {
-  alias(libs.plugins.module.jvm)
+  id("aktual.module.jvm")
 }
 
 dependencies {

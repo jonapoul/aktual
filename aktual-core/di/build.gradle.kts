@@ -2,14 +2,13 @@ import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
 
 plugins {
-  alias(libs.plugins.module.di)
+  id("aktual.module.di")
 }
 
 kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:data"))
     api(project(":aktual-budget:model"))
-    api(libs.alakazam.kotlin.time)
     api(libs.metrox.viewmodel)
   }
 

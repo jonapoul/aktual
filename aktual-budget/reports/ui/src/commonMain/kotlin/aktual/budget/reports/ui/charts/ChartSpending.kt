@@ -19,8 +19,7 @@ import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
 import aktual.core.ui.stringShort
-import alakazam.kotlin.compose.HorizontalSpacer
-import alakazam.kotlin.core.capitalized
+import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -208,6 +207,9 @@ private fun CompactHeader(
     color = if (data.difference.isPositive()) theme.errorText else theme.noticeTextLight,
   )
 }
+
+@Stable
+private fun String.capitalized() = replaceFirstChar { it.uppercaseChar() }
 
 @Composable
 private fun RegularLegend(

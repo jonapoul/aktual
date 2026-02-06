@@ -12,7 +12,7 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.buttonTextStyle
-import alakazam.kotlin.compose.HorizontalSpacer
+import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

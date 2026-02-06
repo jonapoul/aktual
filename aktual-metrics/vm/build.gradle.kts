@@ -1,7 +1,7 @@
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.viewmodel)
+  id("aktual.module.viewmodel")
 }
 
 kotlin {

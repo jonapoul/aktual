@@ -4,7 +4,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.SyncedPrefKey
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.runDatabaseTest
-import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo

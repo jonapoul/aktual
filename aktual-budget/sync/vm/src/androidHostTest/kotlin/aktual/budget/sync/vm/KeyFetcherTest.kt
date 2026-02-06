@@ -17,7 +17,7 @@ import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
 import aktual.test.testHttpClient
-import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import dev.jonpoulton.preferences.core.Preferences

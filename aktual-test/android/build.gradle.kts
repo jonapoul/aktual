@@ -1,5 +1,5 @@
 plugins {
-  alias(libs.plugins.module.android)
+  id("aktual.module.android")
 }
 
 dependencies {

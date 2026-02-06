@@ -1,6 +1,6 @@
 package aktual.core.model
 
-import alakazam.kotlin.core.parse
+import alakazam.kotlin.parse
 
 data class ServerUrl(
   val protocol: Protocol,

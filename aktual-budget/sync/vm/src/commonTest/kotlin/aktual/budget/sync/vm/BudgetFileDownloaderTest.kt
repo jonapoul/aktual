@@ -20,8 +20,8 @@ import aktual.test.emptyMockEngine
 import aktual.test.enqueueResponse
 import aktual.test.existsOn
 import aktual.test.testHttpClient
-import alakazam.test.core.TestCoroutineContexts
-import alakazam.test.core.unconfinedDispatcher
+import alakazam.test.TestCoroutineContexts
+import alakazam.test.unconfinedDispatcher
 import app.cash.burst.InterceptTest
 import app.cash.turbine.test
 import assertk.assertThat

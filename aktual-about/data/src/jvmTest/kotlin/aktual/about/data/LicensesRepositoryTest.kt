@@ -1,9 +1,9 @@
 package aktual.about.data
 
 import aktual.core.model.Assets
-import alakazam.test.core.TestCoroutineContexts
-import alakazam.test.core.getResourceAsStream
-import alakazam.test.core.standardDispatcher
+import alakazam.test.TestCoroutineContexts
+import alakazam.test.getResourceAsStream
+import alakazam.test.standardDispatcher
 import assertk.assertThat
 import assertk.assertions.isDataClassEqualTo
 import kotlinx.coroutines.test.TestScope

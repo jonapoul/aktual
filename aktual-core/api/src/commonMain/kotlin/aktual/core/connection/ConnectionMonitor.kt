@@ -12,8 +12,8 @@ import aktual.api.client.SyncDownloadApi
 import aktual.core.api.ClientFactory
 import aktual.core.model.ServerUrl
 import aktual.core.prefs.AppGlobalPreferences
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.collectFlow
+import alakazam.kotlin.CoroutineContexts
+import alakazam.kotlin.collectFlow
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
@@ -41,7 +41,7 @@ class ConnectionMonitor(
     job = scope.collectFlow(
       flow = preferences.serverUrl.asFlow(),
       context = contexts.unconfined,
-      call = ::handleServerUrl,
+      collector = ::handleServerUrl,
     )
   }
 

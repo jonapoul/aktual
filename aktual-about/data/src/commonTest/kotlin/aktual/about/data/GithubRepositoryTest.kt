@@ -4,8 +4,8 @@ import aktual.test.TestBuildConfig
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
 import aktual.test.testHttpClient
-import alakazam.test.core.TestCoroutineContexts
-import alakazam.test.core.standardDispatcher
+import alakazam.test.TestCoroutineContexts
+import alakazam.test.standardDispatcher
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.isDataClassEqualTo

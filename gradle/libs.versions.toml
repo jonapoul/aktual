@@ -1,6 +1,6 @@
 [versions]
 agp = "9.0.0"
-alakazam = "6.4.0"
+alakazam = "7.0.0"
 androidx-activity = "1.12.3"
 androidx-lifecycle = "2.10.0"
 androidx-paging = "3.4.0"
@@ -21,11 +21,8 @@ redacted = "1.15.1"
 sqldelight = "2.2.1"
 
 [libraries]
-alakazam-db-sqldelight = { module = "dev.jonpoulton.alakazam:db-sqldelight", version.ref = "alakazam" }
-alakazam-kotlin-compose = { module = "dev.jonpoulton.alakazam:kotlin-compose", version.ref = "alakazam" }
-alakazam-kotlin-core = { module = "dev.jonpoulton.alakazam:kotlin-core", version.ref = "alakazam" }
-alakazam-kotlin-serialization = { module = "dev.jonpoulton.alakazam:kotlin-serialization", version.ref = "alakazam" }
-alakazam-kotlin-time = { module = "dev.jonpoulton.alakazam:kotlin-time", version.ref = "alakazam" }
+alakazam-compose = { module = "dev.jonpoulton.alakazam:compose", version.ref = "alakazam" }
+alakazam-kotlin = { module = "dev.jonpoulton.alakazam:kotlin", version.ref = "alakazam" }
 android-desugaring = { module = "com.android.tools:desugar_jdk_libs", version = "2.1.5" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
 androidx-activity-core = { module = "androidx.activity:activity", version.ref = "androidx-activity" }
@@ -104,8 +101,7 @@ sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sq
 vico-multiplatform = { module = "com.patrykandpatrick.vico:multiplatform", version = "2.4.3" }
 
 # Testing
-test-alakazam-core = { module = "dev.jonpoulton.alakazam:testing-core", version.ref = "alakazam" }
-test-alakazam-sqldelight = { module = "dev.jonpoulton.alakazam:testing-sqldelight", version.ref = "alakazam" }
+test-alakazam = { module = "dev.jonpoulton.alakazam:testing", version.ref = "alakazam" }
 test-androidx-arch = { module = "androidx.arch.core:core-testing", version = "2.2.0" }
 test-androidx-compose-ui-junit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "composeAndroidx" }
 test-androidx-coreKtx = { module = "androidx.test:core-ktx", version = "1.7.0" }
@@ -130,7 +126,7 @@ agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp"
 agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
 atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.4.0" }
-blueprint = { id = "dev.jonpoulton.blueprint", version = "2.0.0-SNAPSHOT" }
+blueprint = { id = "dev.jonpoulton.blueprint", version = "2.0.0" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.7" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.5.0" }
@@ -150,19 +146,3 @@ redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
 shadow = { id = "com.gradleup.shadow", version = "9.3.1" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 wire = { id = "com.squareup.wire", version = "6.0.0-alpha02" }
-
-convention-android-base = { id = "aktual.convention.android.base" }
-convention-buildconfig = { id = "aktual.convention.buildconfig" }
-convention-compose = { id = "aktual.convention.compose" }
-convention-idea = { id = "aktual.convention.idea" }
-convention-kotlin-jvm = { id = "aktual.convention.kotlin.jvm" }
-convention-kover = { id = "aktual.convention.kover" }
-convention-style = { id = "aktual.convention.style" }
-convention-test = { id = "aktual.convention.test" }
-
-module-android = { id = "aktual.module.android" }
-module-compose = { id = "aktual.module.compose" }
-module-di = { id = "aktual.module.di" }
-module-jvm = { id = "aktual.module.jvm" }
-module-multiplatform = { id = "aktual.module.multiplatform" }
-module-viewmodel = { id = "aktual.module.viewmodel" }

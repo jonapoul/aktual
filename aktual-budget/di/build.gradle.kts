@@ -1,7 +1,7 @@
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.di)
+  id("aktual.module.di")
 }
 
 kotlin {

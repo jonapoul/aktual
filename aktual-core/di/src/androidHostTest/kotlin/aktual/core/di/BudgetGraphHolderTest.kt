@@ -7,9 +7,9 @@ import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.test.messageContains
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.test.core.TestCoroutineContexts
-import alakazam.test.core.standardDispatcher
+import alakazam.kotlin.CoroutineContexts
+import alakazam.test.TestCoroutineContexts
+import alakazam.test.standardDispatcher
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import assertk.assertFailure
