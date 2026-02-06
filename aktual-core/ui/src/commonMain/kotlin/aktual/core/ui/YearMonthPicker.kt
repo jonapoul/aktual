@@ -4,7 +4,7 @@ package aktual.core.ui
 
 import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth

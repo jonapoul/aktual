@@ -17,7 +17,7 @@ import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithHazeState
 import aktual.core.ui.aktualHaze
 import aktual.core.ui.verticalScrollWithBar
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize

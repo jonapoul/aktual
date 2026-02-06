@@ -9,11 +9,11 @@ import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmissionIsEqualTo
-import alakazam.kotlin.core.LoopController
-import alakazam.test.core.FiniteLoopController
-import alakazam.test.core.SingleLoopController
-import alakazam.test.core.TestCoroutineContexts
-import alakazam.test.core.unconfinedDispatcher
+import alakazam.kotlin.LoopController
+import alakazam.test.FiniteLoopController
+import alakazam.test.SingleLoopController
+import alakazam.test.TestCoroutineContexts
+import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo

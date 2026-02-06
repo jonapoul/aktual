@@ -17,7 +17,7 @@ import aktual.test.clear
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
 import aktual.test.testHttpClient
-import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.contains

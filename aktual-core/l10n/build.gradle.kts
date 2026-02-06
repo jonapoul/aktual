@@ -3,8 +3,8 @@ import dev.jonpoulton.catalog.gradle.CatalogParameterNaming
 import dev.jonpoulton.catalog.gradle.NameTransform
 
 plugins {
-  alias(libs.plugins.module.multiplatform)
-  alias(libs.plugins.convention.compose)
+  id("aktual.module.multiplatform")
+  id("aktual.convention.compose")
   alias(libs.plugins.catalog)
 }
 

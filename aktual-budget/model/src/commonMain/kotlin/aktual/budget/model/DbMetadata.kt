@@ -1,6 +1,6 @@
 package aktual.budget.model
 
-import alakazam.kotlin.core.parse
+import alakazam.kotlin.parse
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.minus

@@ -15,8 +15,8 @@ import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
-import alakazam.test.core.TestCoroutineContexts
-import alakazam.test.core.unconfinedDispatcher
+import alakazam.test.TestCoroutineContexts
+import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo

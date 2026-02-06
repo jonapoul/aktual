@@ -8,10 +8,10 @@ import aktual.core.model.BuildConfig
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.prefs.AppGlobalPreferences
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.ResettableStateFlow
-import alakazam.kotlin.core.collectFlow
-import alakazam.kotlin.core.requireMessage
+import alakazam.kotlin.CoroutineContexts
+import alakazam.kotlin.ResettableStateFlow
+import alakazam.kotlin.collectFlow
+import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue

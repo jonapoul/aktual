@@ -2,19 +2,18 @@ import blueprint.core.androidMainDependencies
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.multiplatform)
+  id("aktual.module.multiplatform")
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.redacted)
 }
 
 kotlin {
   commonMainDependencies {
-    api(libs.alakazam.kotlin.core)
+    api(libs.alakazam.kotlin)
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.immutable)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
-    implementation(libs.alakazam.kotlin.serialization)
     compileOnly(libs.androidx.compose.annotation)
     compileOnly(libs.redacted.annotations)
   }

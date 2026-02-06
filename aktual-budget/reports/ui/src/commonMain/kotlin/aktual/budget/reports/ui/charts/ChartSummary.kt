@@ -30,7 +30,7 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.stringShort
-import alakazam.kotlin.compose.HorizontalSpacer
+import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

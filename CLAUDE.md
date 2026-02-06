@@ -247,13 +247,6 @@ The project uses Gradle convention plugins to centralize build configuration:
 - `aktual.module.android` - Android-only module
 - `aktual.module.jvm` - JVM-only module
 
-**Convention Plugins** (applied automatically):
-- `aktual.convention.kotlin.base` - Kotlin compilation settings
-- `aktual.convention.compose` - Compose compiler configuration
-- `aktual.convention.test` - Test dependencies
-- `aktual.convention.detekt` - Static analysis
-- `aktual.convention.kover` - Code coverage
-
 **Key Build Properties:**
 - Java version: 21
 - Min SDK: 28

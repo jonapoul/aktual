@@ -10,8 +10,8 @@ import aktual.budget.model.BudgetId
 import aktual.core.model.Password
 import aktual.core.model.Token
 import aktual.core.prefs.KeyPreferences
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.requireMessage
+import alakazam.kotlin.CoroutineContexts
+import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException

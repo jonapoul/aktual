@@ -17,7 +17,7 @@ import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
 import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.Token
-import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager

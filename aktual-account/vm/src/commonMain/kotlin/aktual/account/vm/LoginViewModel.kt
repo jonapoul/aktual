@@ -9,7 +9,7 @@ import aktual.core.model.Password
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.prefs.AppGlobalPreferences
-import alakazam.kotlin.core.ResettableStateFlow
+import alakazam.kotlin.ResettableStateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.jonpoulton.preferences.core.asStateFlow

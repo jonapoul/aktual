@@ -10,7 +10,7 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

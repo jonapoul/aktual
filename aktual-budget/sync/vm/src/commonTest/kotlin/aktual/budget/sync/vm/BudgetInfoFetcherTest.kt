@@ -15,7 +15,7 @@ import aktual.core.model.base64
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
 import aktual.test.testHttpClient
-import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf

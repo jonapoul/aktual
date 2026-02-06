@@ -10,7 +10,7 @@ import aktual.core.connection.ServerVersionFetcher
 import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.PingStateHolder
 import aktual.core.prefs.AppGlobalPreferences
-import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap

@@ -14,7 +14,7 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.aktualHaze
-import alakazam.kotlin.compose.HorizontalSpacer
+import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

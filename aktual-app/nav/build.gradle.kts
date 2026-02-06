@@ -1,7 +1,7 @@
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.compose)
+  id("aktual.module.compose")
   alias(libs.plugins.kotlin.serialization)
 }
 

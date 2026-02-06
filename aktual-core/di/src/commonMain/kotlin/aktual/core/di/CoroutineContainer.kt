@@ -1,7 +1,7 @@
 package aktual.core.di
 
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.DefaultCoroutineContexts
+import alakazam.kotlin.CoroutineContexts
+import alakazam.kotlin.DefaultCoroutineContexts
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo

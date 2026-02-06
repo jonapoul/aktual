@@ -9,7 +9,7 @@ import aktual.core.model.EncryptionKeys
 import aktual.core.model.base64
 import aktual.test.RESOURCES_DIR
 import aktual.test.TestBudgetLocalPreferences
-import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.mockk.every

@@ -1,7 +1,7 @@
 package aktual.budget.model
 
-import alakazam.kotlin.serialization.SerializableByString
-import alakazam.kotlin.serialization.enumStringSerializer
+import alakazam.kotlin.SerializableByString
+import alakazam.kotlin.enumStringSerializer
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 

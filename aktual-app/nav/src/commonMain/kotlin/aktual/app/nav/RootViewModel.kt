@@ -15,7 +15,7 @@ import aktual.core.model.RegularColorSchemeType
 import aktual.core.model.Token
 import aktual.core.prefs.AppGlobalPreferences
 import aktual.core.ui.BottomBarState
-import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel

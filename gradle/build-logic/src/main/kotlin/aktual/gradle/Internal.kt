@@ -14,26 +14,22 @@ internal fun ExtensionAware.kotlin(action: Action<KotlinMultiplatformExtension>)
   extensions.configure(KotlinMultiplatformExtension::class, action)
 
 internal val Project.testLibraries: List<Provider<MinimalExternalModuleDependency>>
-  get() = with(libs) {
-    listOf(
-      get("test.alakazam.core"),
-      get("test.assertk"),
-      get("test.kotlin.common"),
-      get("test.kotlinx.coroutines"),
-      get("test.ktor"),
-      get("test.mockk"),
-      get("test.turbine"),
-    )
-  }
+  get() = listOf(
+    "test.alakazam",
+    "test.assertk",
+    "test.kotlin.common",
+    "test.kotlinx.coroutines",
+    "test.ktor",
+    "test.mockk",
+    "test.turbine",
+  ).map(libs::get)
 
 internal val Project.androidTestLibraries: List<Provider<MinimalExternalModuleDependency>>
-  get() = with(libs) {
-    listOf(
-      get("test.androidx.arch"),
-      get("test.androidx.coreKtx"),
-      get("test.androidx.junit"),
-      get("test.androidx.rules"),
-      get("test.androidx.runner"),
-      get("test.robolectric"),
-    )
-  }
+  get() = listOf(
+    "test.androidx.arch",
+    "test.androidx.coreKtx",
+    "test.androidx.junit",
+    "test.androidx.rules",
+    "test.androidx.runner",
+    "test.robolectric",
+  ).map(libs::get)

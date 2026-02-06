@@ -1,7 +1,7 @@
 package aktual.core.di
 
 import aktual.budget.model.DbMetadata
-import alakazam.kotlin.core.StateHolder
+import alakazam.kotlin.StateHolder
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn

@@ -3,7 +3,7 @@ package aktual.core.ui
 import aktual.budget.model.Amount
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf

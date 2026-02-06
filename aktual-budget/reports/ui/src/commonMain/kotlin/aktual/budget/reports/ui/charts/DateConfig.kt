@@ -12,8 +12,8 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.SlidingToggleButton
 import aktual.core.ui.Theme
 import aktual.core.ui.YearMonthPicker
-import alakazam.kotlin.compose.HorizontalSpacer
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.HorizontalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow

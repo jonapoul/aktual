@@ -13,8 +13,8 @@ import aktual.test.copyTo
 import aktual.test.doesNotExistOn
 import aktual.test.existsOn
 import aktual.test.resource
-import alakazam.test.core.TestClock
-import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.TestClock
+import alakazam.test.TestCoroutineContexts
 import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isEqualTo

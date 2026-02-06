@@ -38,8 +38,8 @@ plugins {
   alias(libs.plugins.doctor)
   alias(libs.plugins.kover)
 
-  alias(libs.plugins.convention.idea)
-  alias(libs.plugins.convention.kover)
+  id("aktual.convention.idea")
+  id("aktual.convention.kover")
 }
 
 val detektReportMergeSarif by tasks.registering(ReportMergeTask::class) {

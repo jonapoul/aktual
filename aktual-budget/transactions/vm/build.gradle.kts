@@ -1,8 +1,8 @@
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.viewmodel)
-  alias(libs.plugins.convention.buildconfig)
+  id("aktual.module.viewmodel")
+  alias(libs.plugins.buildconfig)
 }
 
 buildConfig {
@@ -20,7 +20,7 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:data"))
     api(project(":aktual-budget:model"))
-    api(libs.alakazam.kotlin.core)
+    api(libs.alakazam.kotlin)
     api(libs.androidx.paging.common)
     api(libs.kotlinx.datetime)
     implementation(project(":aktual-core:di"))

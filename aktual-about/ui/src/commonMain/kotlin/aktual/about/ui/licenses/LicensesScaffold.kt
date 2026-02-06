@@ -21,8 +21,7 @@ import aktual.core.ui.WithHazeState
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
-import alakazam.kotlin.compose.VerticalSpacer
-import alakazam.kotlin.core.exhaustive
+import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -168,13 +167,11 @@ private fun Content(
   onAction: (LicensesAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) {
-  when (state) {
-    LicensesState.Loading -> LoadingContent(theme, modifier)
-    LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
-    is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, onAction, modifier)
-    is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
-  }.exhaustive
+) = when (state) {
+  LicensesState.Loading -> LoadingContent(theme, modifier)
+  LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
+  is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, onAction, modifier)
+  is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
 }
 
 @Composable

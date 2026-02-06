@@ -13,8 +13,8 @@ import aktual.core.di.AppGraph
 import aktual.core.di.BudgetGraph
 import aktual.core.di.BudgetGraphHolder
 import aktual.core.di.CoroutineContainer
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.test.core.TestCoroutineContexts
+import alakazam.kotlin.CoroutineContexts
+import alakazam.test.TestCoroutineContexts
 import android.content.Context
 import androidx.paging.PagingSource.LoadParams
 import androidx.test.core.app.ApplicationProvider

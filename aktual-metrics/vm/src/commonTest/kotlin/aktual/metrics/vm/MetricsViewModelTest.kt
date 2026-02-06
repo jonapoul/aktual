@@ -7,8 +7,8 @@ import aktual.api.model.metrics.GetMetricsResponse
 import aktual.core.model.ServerUrl
 import aktual.core.model.bytes
 import aktual.test.assertThatNextEmissionIsEqualTo
-import alakazam.test.core.TestClock
-import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.TestClock
+import alakazam.test.TestCoroutineContexts
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.coVerify

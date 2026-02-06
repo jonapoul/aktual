@@ -6,7 +6,7 @@ import aktual.core.prefs.AppGlobalPreferences
 import aktual.settings.vm.PreferenceValue.ShowBottomBar
 import aktual.settings.vm.PreferenceValue.Theme
 import aktual.test.buildPreferences
-import alakazam.test.core.standardDispatcher
+import alakazam.test.standardDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.contains

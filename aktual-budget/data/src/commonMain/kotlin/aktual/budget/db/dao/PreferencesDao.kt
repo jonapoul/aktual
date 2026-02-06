@@ -5,7 +5,7 @@ import aktual.budget.db.PreferencesQueries
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.SyncedPrefKey
-import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.CoroutineContexts
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import dev.zacsweers.metro.Inject

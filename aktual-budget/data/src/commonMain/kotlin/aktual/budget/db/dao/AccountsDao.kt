@@ -4,7 +4,7 @@ import aktual.budget.db.Accounts
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.withResult
 import aktual.budget.model.AccountId
-import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.CoroutineContexts
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.flow.Flow

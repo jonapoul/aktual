@@ -2,7 +2,7 @@ import blueprint.core.androidMainDependencies
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.multiplatform)
+  id("aktual.module.multiplatform")
   alias(libs.plugins.kotlin.serialization)
 }
 

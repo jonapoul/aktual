@@ -1,7 +1,7 @@
 package aktual.core.di
 
-import alakazam.kotlin.core.InfiniteLoopController
-import alakazam.kotlin.core.LoopController
+import alakazam.kotlin.InfiniteLoopController
+import alakazam.kotlin.LoopController
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Binds

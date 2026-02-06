@@ -3,7 +3,7 @@ package aktual.about.ui.info
 import aktual.about.vm.AboutViewModel
 import aktual.about.vm.CheckUpdatesState
 import aktual.core.ui.LocalTheme
-import alakazam.kotlin.core.noOp
+import alakazam.kotlin.noOp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle

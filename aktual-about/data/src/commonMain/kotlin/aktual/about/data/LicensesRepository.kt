@@ -1,8 +1,8 @@
 package aktual.about.data
 
 import aktual.core.model.Assets
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.requireMessage
+import alakazam.kotlin.CoroutineContexts
+import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext

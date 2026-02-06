@@ -3,7 +3,7 @@ import aktual.gradle.optIn
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.compose)
+  id("aktual.module.compose")
 }
 
 optIn(EXPERIMENTAL_MATERIAL_3)

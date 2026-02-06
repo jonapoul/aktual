@@ -21,7 +21,7 @@ import aktual.core.ui.WavyBackground
 import aktual.core.ui.appCloser
 import aktual.core.ui.normalIconButton
 import aktual.core.ui.transparentTopAppBarColors
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column

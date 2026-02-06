@@ -7,7 +7,7 @@ import aktual.budget.model.BudgetScope
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.DbMetadata.Key
 import aktual.budget.model.writeMetadata
-import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Inject

@@ -2,18 +2,18 @@ import blueprint.core.androidMainDependencies
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.multiplatform)
+  id("aktual.module.multiplatform")
 }
 
 kotlin {
   commonMainDependencies {
-    api(libs.alakazam.kotlin.core)
+    api(libs.alakazam.kotlin)
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.serialization.core)
     api(libs.kotlinx.serialization.json)
     api(libs.okio)
     api(libs.logcat)
-    api(libs.test.alakazam.core)
+    api(libs.test.alakazam)
     api(libs.test.assertk)
     api(libs.test.burst)
     api(libs.test.burstCoroutines)
@@ -23,7 +23,6 @@ kotlin {
     api(libs.test.ktor)
     api(libs.test.turbine)
     api(project(":aktual-budget:data"))
-    implementation(libs.alakazam.db.sqldelight)
     implementation(libs.sqldelight.driver.sqlite)
     implementation(project(":aktual-core:api"))
   }

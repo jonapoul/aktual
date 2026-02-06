@@ -25,7 +25,7 @@ import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
 import aktual.metrics.vm.MetricsState
 import aktual.metrics.vm.MetricsViewModel
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope

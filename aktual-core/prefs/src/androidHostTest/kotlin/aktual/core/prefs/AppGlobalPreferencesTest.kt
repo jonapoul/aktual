@@ -5,7 +5,7 @@ import aktual.core.model.RegularColorSchemeType
 import aktual.core.model.ServerUrl
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
-import alakazam.test.core.unconfinedDispatcher
+import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest

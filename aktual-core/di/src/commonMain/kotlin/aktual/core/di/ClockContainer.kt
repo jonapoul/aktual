@@ -1,6 +1,6 @@
 package aktual.core.di
 
-import alakazam.kotlin.time.TimeZoneProvider
+import alakazam.kotlin.TimeZoneProvider
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo

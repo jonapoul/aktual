@@ -9,8 +9,8 @@ import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
-import alakazam.test.core.TestCoroutineContexts
-import alakazam.test.core.unconfinedDispatcher
+import alakazam.test.TestCoroutineContexts
+import alakazam.test.unconfinedDispatcher
 import app.cash.burst.InterceptTest
 import app.cash.turbine.test
 import assertk.assertThat

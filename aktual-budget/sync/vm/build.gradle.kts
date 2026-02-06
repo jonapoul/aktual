@@ -1,7 +1,7 @@
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.viewmodel)
+  id("aktual.module.viewmodel")
 }
 
 kotlin {
@@ -9,8 +9,7 @@ kotlin {
     api(project(":aktual-budget:data"))
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:di"))
-    api(libs.alakazam.kotlin.core)
-    api(libs.alakazam.kotlin.time)
+    api(libs.alakazam.kotlin)
     api(libs.kotlinx.datetime)
     implementation(project(":aktual-core:api"))
     implementation(project(":aktual-core:model"))

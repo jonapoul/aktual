@@ -31,9 +31,7 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.model.ZeroBudgetMonthId
-import alakazam.db.sqldelight.enumStringAdapter
-import alakazam.db.sqldelight.longAdapter
-import alakazam.db.sqldelight.stringAdapter
+import alakazam.kotlin.parse
 import app.cash.sqldelight.ColumnAdapter
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -49,6 +47,28 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
+
+private fun <T : Any> longAdapter(
+  decode: (Long) -> T,
+  encode: (T) -> Long,
+): ColumnAdapter<T, Long> = object : ColumnAdapter<T, Long> {
+  override fun encode(value: T): Long = encode.invoke(value)
+  override fun decode(databaseValue: Long): T = decode.invoke(databaseValue)
+}
+
+private fun <T : Any> stringAdapter(
+  decode: (String) -> T,
+  encode: (T) -> String,
+): ColumnAdapter<T, String> = object : ColumnAdapter<T, String> {
+  override fun encode(value: T): String = encode.invoke(value)
+  override fun decode(databaseValue: String): T = decode.invoke(databaseValue)
+}
+
+private fun <T : Any> stringAdapter(decode: (String) -> T): ColumnAdapter<T, String> =
+  stringAdapter(decode, encode = { it.toString() })
+
+private inline fun <reified E : Enum<E>> enumStringAdapter(): ColumnAdapter<E, String> =
+  stringAdapter { E::class.parse(it) }
 
 private inline fun <reified T : JsonElement> jsonElement(
   crossinline getter: JsonElement.() -> T,

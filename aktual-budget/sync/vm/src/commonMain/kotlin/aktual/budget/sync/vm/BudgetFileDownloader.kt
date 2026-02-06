@@ -12,8 +12,8 @@ import aktual.budget.sync.vm.DownloadState.InProgress
 import aktual.core.model.Bytes.Companion.Zero
 import aktual.core.model.Token
 import aktual.core.model.bytes
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.requireMessage
+import alakazam.kotlin.CoroutineContexts
+import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.Flow

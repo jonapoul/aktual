@@ -11,7 +11,7 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import alakazam.kotlin.compose.HorizontalSpacer
+import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row

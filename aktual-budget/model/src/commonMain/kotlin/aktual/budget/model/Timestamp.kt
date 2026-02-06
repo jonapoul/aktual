@@ -1,6 +1,6 @@
 package aktual.budget.model
 
-import alakazam.kotlin.serialization.SimpleSerializer
+import alakazam.kotlin.SimpleSerializer
 import kotlinx.serialization.Serializable
 import kotlin.time.Instant
 
