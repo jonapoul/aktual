@@ -8,8 +8,8 @@ import aktual.budget.model.DbMetadata
 import aktual.budget.model.database
 import aktual.budget.model.writeMetadata
 import alakazam.kotlin.CoroutineContexts
-import alakazam.kotlin.requireMessage
 import alakazam.kotlin.TimeZoneProvider
+import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
