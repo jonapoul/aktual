@@ -21,8 +21,8 @@ import aktual.core.ui.formattedString
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
 import aktual.core.ui.stringShort
-import alakazam.kotlin.compose.HorizontalSpacer
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.HorizontalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

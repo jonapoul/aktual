@@ -5,11 +5,11 @@ import blueprint.core.gitVersionDate
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
-  alias(libs.plugins.module.jvm)
+  id("aktual.module.jvm")
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.kotlin.compose)
   alias(libs.plugins.shadow)
-  alias(libs.plugins.convention.compose)
+  id("aktual.convention.compose")
 }
 
 val gitVersionDate = providers.gitVersionDate()

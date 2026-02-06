@@ -4,10 +4,10 @@ import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
 
 plugins {
-  alias(libs.plugins.module.multiplatform)
+  id("aktual.module.multiplatform")
   alias(libs.plugins.sqldelight)
   alias(libs.plugins.wire)
-  alias(libs.plugins.convention.buildconfig)
+  alias(libs.plugins.buildconfig)
 }
 
 sqldelight {
@@ -51,7 +51,6 @@ kotlin {
     api(libs.preferences.core)
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:model"))
-    implementation(libs.alakazam.db.sqldelight)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.coroutines)
     implementation(libs.sqldelight.driver.sqlite)
@@ -61,8 +60,7 @@ kotlin {
   }
 
   commonTestDependencies {
-    implementation(libs.test.alakazam.core)
-    implementation(libs.test.alakazam.sqldelight)
+    implementation(libs.test.alakazam)
   }
 
   androidMainDependencies {

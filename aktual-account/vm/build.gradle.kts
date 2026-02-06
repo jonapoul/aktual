@@ -2,7 +2,7 @@ import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
 
 plugins {
-  alias(libs.plugins.module.viewmodel)
+  id("aktual.module.viewmodel")
 }
 
 kotlin {
@@ -10,7 +10,7 @@ kotlin {
     api(project(":aktual-account:domain"))
     api(project(":aktual-core:model"))
     api(project(":aktual-core:prefs"))
-    api(libs.alakazam.kotlin.core)
+    api(libs.alakazam.kotlin)
     implementation(project(":aktual-core:api"))
     implementation(libs.ktor.core)
     implementation(libs.preferences.core)

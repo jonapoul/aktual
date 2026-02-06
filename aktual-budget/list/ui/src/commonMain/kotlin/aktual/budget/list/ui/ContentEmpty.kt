@@ -9,7 +9,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.Theme
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

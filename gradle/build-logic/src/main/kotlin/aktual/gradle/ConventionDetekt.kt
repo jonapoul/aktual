@@ -35,7 +35,10 @@ class ConventionDetekt : Plugin<Project> {
       .matching { task -> !task.name.contains("release", ignoreCase = true) }
 
     val detektCheck by tasks.registering { dependsOn(detektTasks) }
-    tasks.named("check") { dependsOn(detektCheck) }
+
+    pluginManager.withPlugin("base") {
+      tasks.named("check") { dependsOn(detektCheck) }
+    }
 
     detektTasks.configureEach {
       reports {

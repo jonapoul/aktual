@@ -1,12 +1,12 @@
 import blueprint.core.commonMainDependencies
 
 plugins {
-  alias(libs.plugins.module.viewmodel)
+  id("aktual.module.viewmodel")
 }
 
 kotlin {
   commonMainDependencies {
     api(project(":aktual-about:data"))
-    api(libs.alakazam.kotlin.core)
+    api(libs.alakazam.kotlin)
   }
 }

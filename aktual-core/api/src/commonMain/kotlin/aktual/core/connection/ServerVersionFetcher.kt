@@ -3,8 +3,8 @@ package aktual.core.connection
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.core.model.AktualVersionsStateHolder
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.kotlin.core.LoopController
+import alakazam.kotlin.CoroutineContexts
+import alakazam.kotlin.LoopController
 import dev.zacsweers.metro.Inject
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException

@@ -2,7 +2,7 @@ import blueprint.core.commonMainDependencies
 import blueprint.core.jvmMainDependencies
 
 plugins {
-  alias(libs.plugins.module.compose)
+  id("aktual.module.compose")
 }
 
 kotlin {

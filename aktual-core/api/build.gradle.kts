@@ -6,16 +6,16 @@ import com.github.gmazzo.buildconfig.BuildConfigSourceSet
 import org.gradle.internal.extensions.stdlib.capitalized
 
 plugins {
-  alias(libs.plugins.module.multiplatform)
+  id("aktual.module.multiplatform")
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.redacted)
   alias(libs.plugins.ksp)
-  alias(libs.plugins.convention.buildconfig)
+  alias(libs.plugins.buildconfig)
 }
 
 kotlin {
   commonMainDependencies {
-    api(libs.alakazam.kotlin.core)
+    api(libs.alakazam.kotlin)
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
     api(project(":aktual-budget:data"))

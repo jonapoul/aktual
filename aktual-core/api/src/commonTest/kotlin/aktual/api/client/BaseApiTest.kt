@@ -8,7 +8,7 @@ import aktual.test.latestRequestHeaders
 import aktual.test.latestRequestUrl
 import aktual.test.respondJson
 import aktual.test.testHttpClient
-import alakazam.test.core.assertThrows
+import alakazam.test.assertThrows
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine

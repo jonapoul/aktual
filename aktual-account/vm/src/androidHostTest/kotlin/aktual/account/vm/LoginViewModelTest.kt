@@ -11,8 +11,8 @@ import aktual.core.prefs.AppGlobalPreferences
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
-import alakazam.test.core.standardDispatcher
-import alakazam.test.core.unconfinedDispatcher
+import alakazam.test.standardDispatcher
+import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo

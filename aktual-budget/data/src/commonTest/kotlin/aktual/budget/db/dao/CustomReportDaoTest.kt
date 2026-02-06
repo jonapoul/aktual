@@ -4,7 +4,7 @@ import aktual.budget.db.test.buildCustomReport
 import aktual.budget.model.CustomReportId
 import aktual.test.isEqualToList
 import aktual.test.runDatabaseTest
-import alakazam.test.core.TestCoroutineContexts
+import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo

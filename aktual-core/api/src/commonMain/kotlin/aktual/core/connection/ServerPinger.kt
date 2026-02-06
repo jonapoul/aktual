@@ -4,8 +4,8 @@ import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.HealthApi
 import aktual.core.model.PingState
 import aktual.core.model.PingStateHolder
-import alakazam.kotlin.core.LoopController
-import alakazam.kotlin.core.launchInfiniteLoop
+import alakazam.kotlin.LoopController
+import alakazam.kotlin.launchInfiniteLoop
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn

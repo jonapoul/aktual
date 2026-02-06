@@ -9,7 +9,7 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
-import alakazam.kotlin.core.parse
+import alakazam.kotlin.parse
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth

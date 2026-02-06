@@ -13,7 +13,7 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
-import alakazam.kotlin.compose.VerticalSpacer
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

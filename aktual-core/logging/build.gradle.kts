@@ -3,7 +3,7 @@ import blueprint.core.commonMainDependencies
 import blueprint.core.jvmMainDependencies
 
 plugins {
-  alias(libs.plugins.module.multiplatform)
+  id("aktual.module.multiplatform")
 }
 
 kotlin {

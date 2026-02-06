@@ -7,13 +7,13 @@ import blueprint.core.gitVersionHash
 import blueprint.core.localProperties
 
 plugins {
-  alias(libs.plugins.module.di)
-  alias(libs.plugins.convention.buildconfig)
+  id("aktual.module.di")
+  alias(libs.plugins.buildconfig)
 }
 
 kotlin {
   commonMainDependencies {
-    api(libs.alakazam.kotlin.core)
+    api(libs.alakazam.kotlin)
     api(libs.androidx.lifecycle.viewmodel.core)
     api(libs.metrox.viewmodel)
     api(libs.preferences.core)

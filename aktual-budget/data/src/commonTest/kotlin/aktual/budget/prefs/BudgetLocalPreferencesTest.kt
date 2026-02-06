@@ -10,8 +10,8 @@ import aktual.budget.model.writeMetadata
 import aktual.test.CoTemporaryFolder
 import aktual.test.TestBudgetFiles
 import aktual.test.assertThatNextEmissionIsEqualTo
-import alakazam.kotlin.core.CoroutineContexts
-import alakazam.test.core.TestCoroutineContexts
+import alakazam.kotlin.CoroutineContexts
+import alakazam.test.TestCoroutineContexts
 import app.cash.burst.InterceptTest
 import app.cash.turbine.test
 import assertk.assertThat

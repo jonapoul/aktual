@@ -7,7 +7,7 @@ import aktual.core.ui.DialogContent
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
-import alakazam.kotlin.compose.HorizontalSpacer
+import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding

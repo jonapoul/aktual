@@ -1,15 +1,9 @@
+import dev.detekt.gradle.Detekt
 import java.util.Properties
 
 plugins {
   `kotlin-dsl`
-  idea
-}
-
-idea {
-  module {
-    isDownloadSources = true
-    isDownloadJavadoc = true
-  }
+  alias(libs.plugins.detekt)
 }
 
 // Pull java version property from project's root properties file, since build-logic doesn't have access to it
@@ -25,6 +19,15 @@ java {
 kotlin {
   jvmToolchain(javaInt)
 }
+
+detekt {
+  config.setFrom(file("../config/detekt.yml"))
+  source.from("build.gradle.kts")
+  buildUponDefaultConfig = true
+}
+
+val detektCheck by tasks.registering { dependsOn(tasks.withType(Detekt::class)) }
+tasks.check { dependsOn(detektCheck) }
 
 dependencies {
   fun compileOnlyPlugin(plugin: Provider<PluginDependency>) =
@@ -60,15 +63,12 @@ gradlePlugin {
       implementationClass = impl
     }
 
-    "aktual.convention.android.base"(impl = "aktual.gradle.ConventionAndroidBase")
+    "aktual.convention.android"(impl = "aktual.gradle.ConventionAndroidBase")
     "aktual.convention.buildconfig"(impl = "aktual.gradle.ConventionBuildConfig")
     "aktual.convention.compose"(impl = "aktual.gradle.ConventionCompose")
-    "aktual.convention.detekt"(impl = "aktual.gradle.ConventionDetekt")
     "aktual.convention.idea"(impl = "aktual.gradle.ConventionIdea")
-    "aktual.convention.kotlin.base"(impl = "aktual.gradle.ConventionKotlinBase")
-    "aktual.convention.kotlin.jvm"(impl = "aktual.gradle.ConventionKotlinJvm")
+    "aktual.convention.kotlin"(impl = "aktual.gradle.ConventionKotlinJvm")
     "aktual.convention.kover"(impl = "aktual.gradle.ConventionKover")
-    "aktual.convention.licensee"(impl = "aktual.gradle.ConventionLicensee")
     "aktual.convention.style"(impl = "aktual.gradle.ConventionStyle")
     "aktual.convention.test"(impl = "aktual.gradle.ConventionTest")
 

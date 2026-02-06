@@ -1,7 +1,7 @@
 package aktual.about.data
 
 import aktual.core.model.BuildConfig
-import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode

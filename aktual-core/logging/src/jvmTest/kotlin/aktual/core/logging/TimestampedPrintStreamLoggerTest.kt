@@ -1,6 +1,6 @@
 package aktual.core.logging
 
-import alakazam.test.core.TestClock
+import alakazam.test.TestClock
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import logcat.LogPriority

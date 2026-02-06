@@ -4,7 +4,7 @@ package aktual.app.di
 
 import aktual.core.prefs.AndroidEncryptedPreferences
 import aktual.core.prefs.EncryptedPreferences
-import alakazam.kotlin.core.CoroutineContexts
+import alakazam.kotlin.CoroutineContexts
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.StrictMode
