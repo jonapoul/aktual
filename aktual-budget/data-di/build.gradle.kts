@@ -8,7 +8,6 @@ kotlin {
   commonMainDependencies {
     api(libs.sqldelight.runtime)
     api(project(":aktual-budget:data"))
-    api(project(":aktual-budget:model"))
-    api(project(":aktual-core:di"))
+    api(project(":aktual-budget:data-impl"))
   }
 }

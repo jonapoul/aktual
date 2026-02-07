@@ -7,7 +7,6 @@ import blueprint.core.localProperties
 
 plugins {
   id("aktual.module.di")
-  alias(libs.plugins.buildconfig)
 }
 
 kotlin {
@@ -17,7 +16,7 @@ kotlin {
     api(libs.metrox.viewmodel)
     api(libs.preferences.core)
     api(project(":aktual-about:di"))
-    api(project(":aktual-budget:di"))
+    api(project(":aktual-budget:data-di"))
     api(project(":aktual-core:di"))
     api(project(":aktual-core:model"))
     api(project(":aktual-core:prefs-di"))

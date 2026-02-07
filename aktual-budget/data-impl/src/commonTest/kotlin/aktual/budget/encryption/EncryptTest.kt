@@ -2,13 +2,14 @@ package aktual.budget.encryption
 
 import aktual.core.model.KeyId
 import aktual.core.model.base64
+import aktual.test.RESOURCES_DIR
 import aktual.test.TemporaryFolder
 import aktual.test.readBytes
-import aktual.test.resource
 import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import okio.Buffer
+import okio.source
 import kotlin.random.Random
 import kotlin.test.Test
 
@@ -17,14 +18,14 @@ class EncryptTest {
 
   @Test
   fun encryptAndDecryptRoundTrip() {
-    val plaintextResource = "expected.zip"
+    val encryptedZip = RESOURCES_DIR.resolve("encrypted.zip")
     val encrypted = temporaryFolder / "encrypted.zip"
 
     // Encrypt the plaintext
     val meta = encryptToSink(
       key = KEY,
       keyId = KeyId("test-key"),
-      source = resource(plaintextResource),
+      source = encryptedZip.source(),
       sink = temporaryFolder.sink(encrypted),
       random = Random.Default,
     )
@@ -42,7 +43,7 @@ class EncryptTest {
 
     // Verify the decrypted data matches the original plaintext
     assertThat(temporaryFolder.source(decrypted).readBytes())
-      .isEqualTo(resource(plaintextResource).readBytes())
+      .isEqualTo(encryptedZip.source().readBytes())
   }
 
   @Test
