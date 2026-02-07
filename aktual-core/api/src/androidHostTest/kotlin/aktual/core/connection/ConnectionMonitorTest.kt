@@ -3,6 +3,7 @@ package aktual.core.connection
 import aktual.api.client.AktualApisStateHolder
 import aktual.core.model.ServerUrl
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferencesImpl
 import aktual.test.CoLogcatInterceptor
 import aktual.test.TestClientFactory
 import aktual.test.assertThatNextEmission
@@ -38,7 +39,7 @@ class ConnectionMonitorTest {
 
   private fun TestScope.before() {
     val prefs = buildPreferences(unconfinedDispatcher)
-    preferences = AppGlobalPreferences(prefs)
+    preferences = AppGlobalPreferencesImpl(prefs)
     apiStateHolder = AktualApisStateHolder()
     mockEngine = emptyMockEngine()
     fileSystem = FileSystem.SYSTEM

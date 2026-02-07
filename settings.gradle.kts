@@ -52,6 +52,8 @@ include(
   ":aktual-core:logging",
   ":aktual-core:model",
   ":aktual-core:prefs",
+  ":aktual-core:prefs-di",
+  ":aktual-core:prefs-impl",
   ":aktual-core:ui",
   ":aktual-metrics:ui",
   ":aktual-metrics:vm",

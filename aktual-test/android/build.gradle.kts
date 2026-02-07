@@ -3,7 +3,7 @@ plugins {
 }
 
 dependencies {
-  api(project(":aktual-core:prefs"))
+  api(project(":aktual-core:prefs-impl"))
   api(libs.preferences.core)
   implementation(libs.preferences.android)
   implementation(libs.test.androidx.coreKtx)

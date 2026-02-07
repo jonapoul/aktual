@@ -9,6 +9,7 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password
 import aktual.core.model.Token
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferencesImpl
 import aktual.test.TestBuildConfig
 import aktual.test.assertEditableTextEquals
 import aktual.test.buildPreferences
@@ -58,7 +59,7 @@ class LoginScreenTest {
 
     versionsStateHolder = AktualVersionsStateHolder(BUILD_CONFIG)
     val prefs = buildPreferences(UnconfinedTestDispatcher())
-    preferences = AppGlobalPreferences(prefs)
+    preferences = AppGlobalPreferencesImpl(prefs)
   }
 
   private fun buildViewModel(password: Password = Password.Empty) {
