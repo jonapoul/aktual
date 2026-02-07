@@ -40,7 +40,7 @@ class ConventionTest : Plugin<Project> {
         showCauses = true
         showExceptions = true
         showStackTraces = true
-        showStandardStreams = true
+        showStandardStreams = false
         displayGranularity = 2
       }
     }
