@@ -10,6 +10,19 @@ import okio.FileSystem
 import okio.Path
 import java.io.File
 
+fun <C : Collection<T>, T> Assert<C>.hasSize(size: Int): Assert<C> = transform { actual ->
+  assertThat(actual.size).isEqualTo(size)
+  actual
+}
+
+fun <L : List<T>, T> Assert<L>.atIndex(
+  index: Int,
+  subAssertion: Assert<T>.() -> Unit,
+): Assert<L> = transform { actual ->
+  assertThat(actual[index], name = "line index $index").subAssertion()
+  actual
+}
+
 fun <T> Assert<List<T>>.isEqualToList(vararg expected: T) = isEqualTo(expected.toList())
 
 fun <K, V> Assert<Map<K, V>>.isEqualToMap(vararg expected: Pair<K, V>) = isEqualTo(expected.toMap())

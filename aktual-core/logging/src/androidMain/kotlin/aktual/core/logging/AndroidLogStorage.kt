@@ -5,9 +5,5 @@ import okio.Path
 import okio.Path.Companion.toOkioPath
 
 class AndroidLogStorage(private val context: Context) : LogStorage {
-  override fun directory(): Path = context.filesDir
-    .resolve("..")
-    .resolve("logs")
-    .canonicalFile
-    .toOkioPath()
+  override fun directory(): Path = context.filesDir.toOkioPath() / ".." / "logs"
 }

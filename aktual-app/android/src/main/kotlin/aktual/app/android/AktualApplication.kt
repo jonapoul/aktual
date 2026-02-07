@@ -2,7 +2,7 @@ package aktual.app.android
 
 import aktual.core.logging.AktualAndroidLogcatLogger
 import aktual.core.logging.AndroidLogStorage
-import aktual.core.logging.LogbackLogger
+import aktual.core.logging.KermitFileLogger
 import android.app.Application
 import android.os.StrictMode
 import dev.zacsweers.metro.createGraphFactory
@@ -31,7 +31,7 @@ class AktualApplication : Application(), MetroApplication {
     with(LogcatLogger) {
       install()
       loggers += AktualAndroidLogcatLogger(minPriority)
-      loggers += LogbackLogger(logStorage, minPriority)
+      loggers += KermitFileLogger(logStorage, minPriority)
     }
 
     logcat.i { "onCreate" }
