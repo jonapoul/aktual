@@ -8,6 +8,7 @@ import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferencesImpl
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
@@ -47,7 +48,7 @@ internal class LoginViewModelTest {
   private fun TestScope.before() {
     Dispatchers.setMain(standardDispatcher)
     val prefs = buildPreferences(unconfinedDispatcher)
-    preferences = AppGlobalPreferences(prefs)
+    preferences = AppGlobalPreferencesImpl(prefs)
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
     viewModel = LoginViewModel(

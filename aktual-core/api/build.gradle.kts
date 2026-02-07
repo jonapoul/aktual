@@ -10,7 +10,6 @@ plugins {
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.redacted)
   alias(libs.plugins.ksp)
-  alias(libs.plugins.buildconfig)
 }
 
 kotlin {

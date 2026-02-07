@@ -13,6 +13,7 @@ import aktual.core.model.Token
 import aktual.core.model.base64
 import aktual.core.prefs.EncryptedPreferences
 import aktual.core.prefs.KeyPreferences
+import aktual.core.prefs.KeyPreferencesImpl
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
@@ -46,7 +47,7 @@ class KeyFetcherTest {
     val contexts = TestCoroutineContexts(EmptyCoroutineContext)
     val prefs = buildPreferences(EmptyCoroutineContext)
     val encryptedPrefs = object : EncryptedPreferences, Preferences by prefs {}
-    keyPreferences = KeyPreferences(encryptedPrefs)
+    keyPreferences = KeyPreferencesImpl(encryptedPrefs)
     decrypter = BufferDecrypterImpl(contexts, keyPreferences)
 
     mockEngine = emptyMockEngine()
