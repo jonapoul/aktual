@@ -28,7 +28,9 @@ import kotlinx.serialization.json.jsonPrimitive
 @Serializable(DbMetadata.Serializer::class)
 data class DbMetadata(
   val data: PersistentMap<Key<*>, Any> = persistentMapOf(),
-) : Iterable<Map.Entry<DbMetadata.Key<*>, Any?>> {
+) : Iterable<Pair<DbMetadata.Key<*>, Any?>> {
+  private val list by lazy { data.toList() }
+
   constructor(vararg data: Pair<Key<*>, Any?>) : this(
     data = data
       .mapNotNull { (k, v) -> if (v == null) null else k to v }
@@ -72,9 +74,11 @@ data class DbMetadata(
     if (value == null) data.remove(key) else data.put(key, value),
   )
 
-  operator fun plus(other: Map<Key<*>, Any?>): DbMetadata {
-    val toRemove = other.mapNotNull { if (it.value == null) it.key else null }
-    val toAdd = other.mapNotNull { (k, v) -> if (v == null) null else k to v }
+  operator fun plus(other: Map<Key<*>, Any?>): DbMetadata = plus(other.toList())
+
+  operator fun plus(other: Iterable<Pair<Key<*>, Any?>>): DbMetadata {
+    val toRemove = other.mapNotNull { (k, v) -> if (v == null) k else null }
+    val toAdd = other.mapNotNull { (k, v) -> v?.let { k to it } }
     return DbMetadata(data.putAll(toAdd).minus(toRemove))
   }
 
@@ -87,7 +91,7 @@ data class DbMetadata(
 
   operator fun minus(keys: Collection<Key<*>>): DbMetadata = DbMetadata(data.minus(keys))
 
-  override fun iterator() = data.iterator()
+  override fun iterator() = list.iterator()
 
   sealed interface Key<T : Any> {
     val name: String

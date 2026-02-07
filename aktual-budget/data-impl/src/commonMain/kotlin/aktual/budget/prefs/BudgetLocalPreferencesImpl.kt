@@ -12,10 +12,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import kotlin.concurrent.atomics.AtomicBoolean
-import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
-@OptIn(ExperimentalForInheritanceCoroutinesApi::class, ExperimentalAtomicApi::class)
+@OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 @ContributesBinding(BudgetScope::class, binding<BudgetLocalPreferences>())
 class BudgetLocalPreferencesImpl private constructor(
   private val files: BudgetFiles,
@@ -31,18 +31,15 @@ class BudgetLocalPreferencesImpl private constructor(
     contexts: CoroutineContexts,
   ) : this(files, coroutineScope, contexts, delegate = MutableStateFlow(initial))
 
-  private val isUpdating = AtomicBoolean(false)
+  private val writeMutex = Mutex()
 
   override fun compareAndSet(expect: DbMetadata, update: DbMetadata): Boolean {
     val updated = delegate.compareAndSet(expect, update)
     if (updated && expect != update) {
       coroutineScope.launch(contexts.io) {
-        var locked = false
-        while (!locked) {
-          locked = isUpdating.compareAndSet(expectedValue = false, newValue = true)
+        writeMutex.withLock {
+          files.writeMetadata(update)
         }
-        files.writeMetadata(update)
-        isUpdating.store(false)
       }
     }
     return updated
