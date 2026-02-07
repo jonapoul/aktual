@@ -2,7 +2,7 @@ package aktual.settings.vm
 
 import aktual.core.model.DarkColorSchemeType
 import aktual.core.model.RegularColorSchemeType
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferencesImpl
 import aktual.settings.vm.PreferenceValue.ShowBottomBar
 import aktual.settings.vm.PreferenceValue.Theme
 import aktual.test.buildPreferences
@@ -25,7 +25,7 @@ class SettingsViewModelTest {
     val prefs = buildPreferences(dispatcher)
 
     viewModel = SettingsViewModel(
-      preferences = AppGlobalPreferences(prefs),
+      preferences = AppGlobalPreferencesImpl(prefs),
     )
   }
 

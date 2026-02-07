@@ -2,7 +2,6 @@ import blueprint.core.commonMainDependencies
 
 plugins {
   id("aktual.module.viewmodel")
-  alias(libs.plugins.buildconfig)
 }
 
 buildConfig {
@@ -32,6 +31,6 @@ kotlin {
     implementation(libs.sqldelight.driver.android)
     implementation(project(":aktual-about:di"))
     implementation(project(":aktual-app:di"))
-    implementation(project(":aktual-budget:di"))
+    implementation(project(":aktual-budget:data-di"))
   }
 }

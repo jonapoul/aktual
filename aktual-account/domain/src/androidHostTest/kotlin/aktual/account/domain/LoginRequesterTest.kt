@@ -10,6 +10,7 @@ import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppGlobalPreferencesImpl
 import aktual.test.TestClientFactory
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
@@ -56,7 +57,7 @@ internal class LoginRequesterTest {
   private fun TestScope.before() {
     val dispatcher = unconfinedDispatcher
     val flowPrefs = buildPreferences(dispatcher)
-    preferences = AppGlobalPreferences(flowPrefs)
+    preferences = AppGlobalPreferencesImpl(flowPrefs)
     apisStateHolder = AktualApisStateHolder()
     mockEngine = emptyMockEngine()
     fileSystem = FileSystem.SYSTEM

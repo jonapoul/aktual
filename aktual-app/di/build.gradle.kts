@@ -1,4 +1,3 @@
-import blueprint.core.androidMainDependencies
 import blueprint.core.commonMainDependencies
 import blueprint.core.getOptional
 import blueprint.core.gitVersionCode
@@ -8,7 +7,6 @@ import blueprint.core.localProperties
 
 plugins {
   id("aktual.module.di")
-  alias(libs.plugins.buildconfig)
 }
 
 kotlin {
@@ -18,19 +16,13 @@ kotlin {
     api(libs.metrox.viewmodel)
     api(libs.preferences.core)
     api(project(":aktual-about:di"))
-    api(project(":aktual-budget:di"))
+    api(project(":aktual-budget:data-di"))
     api(project(":aktual-core:di"))
     api(project(":aktual-core:model"))
-    api(project(":aktual-core:prefs"))
+    api(project(":aktual-core:prefs-di"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.core)
     implementation(project(":aktual-core:api"))
-  }
-
-  androidMainDependencies {
-    implementation(libs.androidx.crypto)
-    implementation(libs.androidx.preference.ktx)
-    implementation(libs.preferences.android)
   }
 }
 

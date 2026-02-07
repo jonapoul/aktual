@@ -2,14 +2,11 @@ package aktual.test
 
 import okio.FileSystem
 import okio.Path
-import okio.Path.Companion.toPath
 import okio.Sink
 import okio.Source
 import okio.buffer
 import okio.sink
 import java.io.File
-
-fun resource(path: String) = FileSystem.RESOURCES.source(path.toPath())
 
 fun Source.readBytes() = buffer().use { it.readByteArray() }
 

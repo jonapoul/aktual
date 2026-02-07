@@ -1,4 +1,5 @@
 import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins {
   id("aktual.module.viewmodel")
@@ -18,5 +19,9 @@ kotlin {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.core)
     implementation(libs.okio)
+  }
+
+  commonTestDependencies {
+    implementation(project(":aktual-budget:data-di"))
   }
 }

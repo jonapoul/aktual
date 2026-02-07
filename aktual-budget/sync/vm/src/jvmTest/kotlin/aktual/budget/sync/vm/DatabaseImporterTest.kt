@@ -8,11 +8,11 @@ import aktual.budget.model.Timestamp
 import aktual.budget.model.database
 import aktual.budget.model.metadata
 import aktual.test.CoTemporaryFolder
+import aktual.test.RESOURCES_DIR
 import aktual.test.TestBudgetFiles
 import aktual.test.copyTo
 import aktual.test.doesNotExistOn
 import aktual.test.existsOn
-import aktual.test.resource
 import alakazam.test.TestClock
 import alakazam.test.TestCoroutineContexts
 import app.cash.burst.InterceptTest
@@ -26,6 +26,7 @@ import kotlinx.serialization.json.Json
 import okio.FileSystem
 import okio.Path
 import okio.buffer
+import okio.source
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -56,7 +57,7 @@ class DatabaseImporterTest {
   @Test
   fun `Successfully import`() = runTest {
     // given valid zip is downloaded/decrypted
-    val resource = resource("valid.zip")
+    val resource = RESOURCES_DIR.resolve("valid.zip").source()
     val zip = root.resolve("valid.zip")
     resource.copyTo(zip, fileSystem)
 
@@ -82,7 +83,7 @@ class DatabaseImporterTest {
   @Test
   fun `Fail on invalid ZIP`() = runTest {
     // given a non-zip file pretending to be a zip is downloaded
-    val resource = resource("invalid.zip")
+    val resource = RESOURCES_DIR.resolve("invalid.zip").source()
     val zip = root.resolve("invalid.zip")
     resource.copyTo(zip, fileSystem)
 
