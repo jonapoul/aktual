@@ -4,7 +4,7 @@ import aktual.app.nav.AktualAppContent
 import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
 import aktual.core.logging.JvmLogStorage
-import aktual.core.logging.LogbackLogger
+import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.WithCompositionLocals
@@ -37,7 +37,7 @@ fun main() {
   with(LogcatLogger) {
     install()
     loggers += TimestampedPrintStreamLogger(System.out, graph.clock, minPriority)
-    loggers += LogbackLogger(logStorage, minPriority)
+    loggers += KermitFileLogger(logStorage, minPriority)
   }
 
   logcat.i { "App started" }
