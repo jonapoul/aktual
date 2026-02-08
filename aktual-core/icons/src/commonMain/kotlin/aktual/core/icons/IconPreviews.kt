@@ -21,26 +21,28 @@ private fun PreviewAktualIcons(
   )
 }
 
-private class AktualIconsProvider : CollectionPreviewParameterProvider<ImageVector>(
-  with(AktualIcons) {
-    listOf(
-      ArrowThickDown,
-      ArrowThickUp,
-      CloseBracket,
-      Cloud,
-      CloudCheck,
-      CloudDownload,
-      CloudUnknown,
-      CloudUpload,
-      CloudWarning,
-      Equals,
-      FileDouble,
-      Key,
-      OpenBracket,
-      Sum,
-    )
-  },
-)
+private class AktualIconsProvider : CollectionPreviewParameterProvider<ImageVector>(materialIcons) {
+  override fun getDisplayName(index: Int) = materialIcons[index].name
+}
+
+private val materialIcons = with(AktualIcons) {
+  listOf(
+    ArrowThickDown,
+    ArrowThickUp,
+    CloseBracket,
+    Cloud,
+    CloudCheck,
+    CloudDownload,
+    CloudUnknown,
+    CloudUpload,
+    CloudWarning,
+    Equals,
+    FileDouble,
+    Key,
+    OpenBracket,
+    Sum,
+  )
+}
 
 @Preview
 @Composable
@@ -54,38 +56,40 @@ private fun PreviewMaterial(
   )
 }
 
-private class MaterialIconsProvider : CollectionPreviewParameterProvider<ImageVector>(
-  with(MaterialIcons) {
-    listOf(
-      Add,
-      Apps,
-      ArrowBack,
-      BarChart,
-      Block,
-      Brightness2,
-      Brightness3,
-      CalendarToday,
-      Check,
-      Clear,
-      Cloud,
-      Delete,
-      DeleteForever,
-      Edit,
-      Error,
-      Info,
-      Key,
-      LightMode,
-      MoreVert,
-      Numbers,
-      Refresh,
-      Search,
-      SearchOff,
-      Settings,
-      Sync,
-      Timer,
-      Visibility,
-      VisibilityOff,
-      Warning,
-    )
-  },
-)
+private class MaterialIconsProvider : CollectionPreviewParameterProvider<ImageVector>(aktualIcons) {
+  override fun getDisplayName(index: Int) = aktualIcons[index].name
+}
+
+private val aktualIcons = with(MaterialIcons) {
+  listOf(
+    Add,
+    Apps,
+    ArrowBack,
+    BarChart,
+    Block,
+    Brightness2,
+    Brightness3,
+    CalendarToday,
+    Check,
+    Clear,
+    Cloud,
+    Delete,
+    DeleteForever,
+    Edit,
+    Error,
+    Info,
+    Key,
+    LightMode,
+    MoreVert,
+    Numbers,
+    Refresh,
+    Search,
+    SearchOff,
+    Settings,
+    Sync,
+    Timer,
+    Visibility,
+    VisibilityOff,
+    Warning,
+  )
+}
