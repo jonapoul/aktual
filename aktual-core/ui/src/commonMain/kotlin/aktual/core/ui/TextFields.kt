@@ -1,6 +1,8 @@
 package aktual.core.ui
 
 import aktual.budget.model.DateRangeType
+import aktual.core.icons.Clear
+import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
 import androidx.compose.foundation.background
@@ -10,8 +12,6 @@ import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExposedDropdownMenuAnchorType
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -112,7 +112,7 @@ private fun ClearButton(
     onClick = onClick,
   ) {
     Icon(
-      imageVector = Icons.Default.Clear,
+      imageVector = MaterialIcons.Clear,
       contentDescription = Strings.inputClear,
       tint = tint,
     )

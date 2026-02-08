@@ -33,7 +33,6 @@ class ModuleCompose : Plugin<Project> {
         implementation(libs["jetbrains.animation"])
         implementation(libs["jetbrains.foundation"])
         implementation(libs["jetbrains.material3"])
-        implementation(libs["jetbrains.materialIcons"])
         implementation(libs["jetbrains.ui"])
         implementation(libs["jetbrains.uiToolingPreview"])
         implementation(libs["jetbrains.uiUtil"])

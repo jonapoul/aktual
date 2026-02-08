@@ -1,6 +1,10 @@
 package aktual.about.ui.info
 
 import aktual.about.vm.BuildState
+import aktual.core.icons.Apps
+import aktual.core.icons.CalendarToday
+import aktual.core.icons.Cloud
+import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.ColorSchemeType
@@ -14,10 +18,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Apps
-import androidx.compose.material.icons.filled.CalendarToday
-import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +37,7 @@ internal fun InfoBuildState(
       .padding(ItemMargin)
       .clip(CardShape)
       .aktualHaze(),
-    icon = Icons.Filled.Apps,
+    icon = MaterialIcons.Apps,
     title = Strings.infoAppVersion,
     subtitle = buildState.versions.app,
     theme = theme,
@@ -49,7 +49,7 @@ internal fun InfoBuildState(
       .padding(ItemMargin)
       .clip(CardShape)
       .aktualHaze(),
-    icon = Icons.Filled.Cloud,
+    icon = MaterialIcons.Cloud,
     title = Strings.infoServerVersion,
     subtitle = buildState.versions.server ?: Strings.infoServerVersionUnknown,
     theme = theme,
@@ -60,7 +60,7 @@ internal fun InfoBuildState(
       .padding(ItemMargin)
       .clip(CardShape)
       .aktualHaze(),
-    icon = Icons.Filled.CalendarToday,
+    icon = MaterialIcons.CalendarToday,
     title = Strings.infoDate,
     subtitle = buildState.buildDate,
     theme = theme,

@@ -1,6 +1,10 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.transactions.vm.LoadedAccount
+import aktual.core.icons.ArrowBack
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Visibility
+import aktual.core.icons.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.LocalTheme
@@ -9,10 +13,6 @@ import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.transparentTopAppBarColors
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -39,7 +39,7 @@ internal fun TransactionsTitleBar(
     navigationIcon = {
       IconButton(onClick = { onAction(Action.NavBack) }) {
         Icon(
-          imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+          imageVector = MaterialIcons.ArrowBack,
           contentDescription = Strings.navBack,
         )
       }
@@ -55,12 +55,12 @@ internal fun TransactionsTitleBar(
       if (LocalPrivacyEnabled.current) {
         IconButton(
           onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = false)) },
-          content = { Icon(Icons.Filled.VisibilityOff, Strings.transactionsHeaderPrivacyOff) },
+          content = { Icon(MaterialIcons.VisibilityOff, Strings.transactionsHeaderPrivacyOff) },
         )
       } else {
         IconButton(
           onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = true)) },
-          content = { Icon(Icons.Filled.Visibility, Strings.transactionsHeaderPrivacyOn) },
+          content = { Icon(MaterialIcons.Visibility, Strings.transactionsHeaderPrivacyOn) },
         )
       }
     },

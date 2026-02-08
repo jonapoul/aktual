@@ -49,6 +49,7 @@ include(
   ":aktual-codegen:ksp",
   ":aktual-core:api",
   ":aktual-core:di",
+  ":aktual-core:icons",
   ":aktual-core:l10n",
   ":aktual-core:logging",
   ":aktual-core:model",

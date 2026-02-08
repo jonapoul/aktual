@@ -6,6 +6,9 @@ import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.vm.ReportDashboardItem
+import aktual.core.icons.Delete
+import aktual.core.icons.Edit
+import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.CardShape
 import aktual.core.ui.LandscapePreview
@@ -21,9 +24,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -88,7 +88,7 @@ private fun ReportDropDownMenu(
 ) {
   DropdownMenuItem(
     text = { Text(Strings.reportsDashboardRename) },
-    leadingIcon = { Icon(Icons.Filled.Edit, Strings.reportsDashboardRename) },
+    leadingIcon = { Icon(MaterialIcons.Edit, Strings.reportsDashboardRename) },
     onClick = {
       onDismiss()
       onAction(Action.Rename(item.id))
@@ -96,7 +96,7 @@ private fun ReportDropDownMenu(
   )
   DropdownMenuItem(
     text = { Text(Strings.reportsDashboardDelete) },
-    leadingIcon = { Icon(Icons.Filled.Delete, Strings.reportsDashboardDelete) },
+    leadingIcon = { Icon(MaterialIcons.Delete, Strings.reportsDashboardDelete) },
     onClick = {
       onDismiss()
       onAction(Action.Delete(item.id))

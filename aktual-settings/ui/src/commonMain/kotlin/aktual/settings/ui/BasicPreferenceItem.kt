@@ -1,5 +1,7 @@
 package aktual.settings.ui
 
+import aktual.core.icons.Info
+import aktual.core.icons.MaterialIcons
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
 import aktual.core.ui.PreviewWithColorScheme
@@ -14,8 +16,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
@@ -132,7 +132,7 @@ private class BasicPreferenceItemProvider : ThemedParameterProvider<BasicPrefere
   BasicPreferenceItemParams(
     title = "Change the doodad",
     subtitle = "When you change this setting, the doodad will update. This might also affect the thingybob.",
-    icon = Icons.Filled.Info,
+    icon = MaterialIcons.Info,
   ),
   BasicPreferenceItemParams(
     title = "This one has no subtitle and no icon",

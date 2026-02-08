@@ -2,6 +2,9 @@ package aktual.account.ui.url
 
 import aktual.account.vm.NavDestination
 import aktual.account.vm.ServerUrlViewModel
+import aktual.core.icons.ArrowBack
+import aktual.core.icons.Info
+import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Protocol
@@ -30,9 +33,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -128,7 +128,7 @@ private fun ServerUrlScaffold(
         navigationIcon = {
           IconButton(onClick = { onAction(ServerUrlAction.NavBack) }) {
             Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              imageVector = MaterialIcons.ArrowBack,
               contentDescription = Strings.navBack,
             )
           }
@@ -139,7 +139,7 @@ private fun ServerUrlScaffold(
           BasicIconButton(
             modifier = Modifier.padding(horizontal = 5.dp),
             onClick = { onAction(ServerUrlAction.OpenAbout) },
-            imageVector = Icons.Filled.Info,
+            imageVector = MaterialIcons.Info,
             contentDescription = Strings.serverUrlMenuAbout,
             colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
           )

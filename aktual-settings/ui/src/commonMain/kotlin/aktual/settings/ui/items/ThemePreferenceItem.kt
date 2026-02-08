@@ -1,5 +1,10 @@
 package aktual.settings.ui.items
 
+import aktual.core.icons.Brightness2
+import aktual.core.icons.Brightness3
+import aktual.core.icons.LightMode
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Settings
 import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
 import aktual.core.model.DarkColorSchemeType
@@ -20,11 +25,6 @@ import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Brightness2
-import androidx.compose.material.icons.filled.Brightness3
-import androidx.compose.material.icons.filled.LightMode
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -250,15 +250,15 @@ private val RegularSchemeTypeStrings = SchemeTypeStrings<RegularColorSchemeType>
 
 @Stable
 private fun RegularColorSchemeType.icon(): ImageVector = when (this) {
-  RegularColorSchemeType.System -> Icons.Filled.Settings
-  RegularColorSchemeType.Light -> Icons.Filled.LightMode
-  RegularColorSchemeType.Dark -> Icons.Filled.Brightness2
+  RegularColorSchemeType.System -> MaterialIcons.Settings
+  RegularColorSchemeType.Light -> MaterialIcons.LightMode
+  RegularColorSchemeType.Dark -> MaterialIcons.Brightness2
 }
 
 @Stable
 private fun DarkColorSchemeType.icon(): ImageVector = when (this) {
-  DarkColorSchemeType.Dark -> Icons.Filled.Brightness2
-  DarkColorSchemeType.Midnight -> Icons.Filled.Brightness3
+  DarkColorSchemeType.Dark -> MaterialIcons.Brightness2
+  DarkColorSchemeType.Midnight -> MaterialIcons.Brightness3
 }
 
 @Preview

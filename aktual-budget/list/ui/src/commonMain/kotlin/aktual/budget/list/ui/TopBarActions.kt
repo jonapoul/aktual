@@ -3,17 +3,18 @@ package aktual.budget.list.ui
 import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
 import aktual.budget.list.ui.ListBudgetsAction.ChangeServer
 import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
+import aktual.budget.list.ui.ListBudgetsAction.OpenServerMetrics
 import aktual.budget.list.ui.ListBudgetsAction.OpenSettings
+import aktual.core.icons.BarChart
+import aktual.core.icons.Cloud
+import aktual.core.icons.Info
+import aktual.core.icons.Key
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.MoreVert
+import aktual.core.icons.Settings
 import aktual.core.l10n.Strings
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.normalIconButton
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Key
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -33,7 +34,7 @@ internal fun SettingsButton(
 ) = BasicIconButton(
   modifier = modifier,
   onClick = { onAction(OpenSettings) },
-  imageVector = Icons.Filled.Settings,
+  imageVector = MaterialIcons.Settings,
   contentDescription = Strings.listBudgetsSettings,
   colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
 )
@@ -45,7 +46,7 @@ internal fun MoreButton(
 ) = BasicIconButton(
   modifier = modifier,
   onClick = onClick,
-  imageVector = Icons.Filled.MoreVert,
+  imageVector = MaterialIcons.MoreVert,
   contentDescription = Strings.listBudgetsMenu,
   colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
 )
@@ -68,7 +69,7 @@ internal fun MoreMenu(
       onDismissRequest()
       onAction(ChangeServer)
     },
-    leadingIcon = { Icon(Icons.Filled.Cloud, contentDescription = serverText) },
+    leadingIcon = { Icon(MaterialIcons.Cloud, contentDescription = serverText) },
   )
 
   val passwordText = Strings.listBudgetsChangePassword
@@ -78,7 +79,7 @@ internal fun MoreMenu(
       onDismissRequest()
       onAction(ChangePassword)
     },
-    leadingIcon = { Icon(Icons.Filled.Key, contentDescription = passwordText) },
+    leadingIcon = { Icon(MaterialIcons.Key, contentDescription = passwordText) },
   )
 
   val metricsText = Strings.metricsToolbar
@@ -88,7 +89,7 @@ internal fun MoreMenu(
       onDismissRequest()
       onAction(OpenServerMetrics)
     },
-    leadingIcon = { Icon(Icons.Filled.BarChart, contentDescription = metricsText) },
+    leadingIcon = { Icon(MaterialIcons.BarChart, contentDescription = metricsText) },
   )
 
   val aboutText = Strings.listBudgetsAbout
@@ -98,6 +99,6 @@ internal fun MoreMenu(
       onDismissRequest()
       onAction(OpenAbout)
     },
-    leadingIcon = { Icon(Icons.Filled.Info, contentDescription = aboutText) },
+    leadingIcon = { Icon(MaterialIcons.Info, contentDescription = aboutText) },
   )
 }

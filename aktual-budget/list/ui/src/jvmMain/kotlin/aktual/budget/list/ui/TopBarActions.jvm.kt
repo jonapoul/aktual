@@ -1,12 +1,12 @@
 package aktual.budget.list.ui
 
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.normalIconButton
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,7 +22,7 @@ internal actual fun TopBarActions(
   BasicIconButton(
     modifier = Modifier.padding(horizontal = 5.dp),
     onClick = { onAction(ListBudgetsAction.Reload) },
-    imageVector = Icons.Filled.Refresh,
+    imageVector = MaterialIcons.Refresh,
     contentDescription = Strings.listBudgetsRefresh,
     colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
   )

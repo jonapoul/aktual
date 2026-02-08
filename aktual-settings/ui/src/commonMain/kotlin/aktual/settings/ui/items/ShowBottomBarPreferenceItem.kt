@@ -1,5 +1,8 @@
 package aktual.settings.ui.items
 
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Visibility
+import aktual.core.icons.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
@@ -13,9 +16,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -54,8 +54,8 @@ internal fun ShowBottomBarPreferenceItem(
 
 @Stable
 private fun icon(isVisible: Boolean) = when (isVisible) {
-  true -> Icons.Filled.Visibility
-  false -> Icons.Filled.VisibilityOff
+  true -> MaterialIcons.Visibility
+  false -> MaterialIcons.VisibilityOff
 }
 
 @Preview
