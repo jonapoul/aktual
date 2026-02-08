@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Check: ImageVector
   get() {
     if (_check != null) {
-      return _check!!
+      return requireNotNull(_check)
     }
     _check = materialIcon(name = "Filled.Check") {
       materialPath {
@@ -20,7 +20,7 @@ val MaterialIcons.Check: ImageVector
         close()
       }
     }
-    return _check!!
+    return requireNotNull(_check)
   }
 
 private var _check: ImageVector? = null

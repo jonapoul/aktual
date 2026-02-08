@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 val AktualIcons.CloudUpload: ImageVector
   get() {
     if (icon != null) {
-      return icon!!
+      return requireNotNull(icon)
     }
     icon = Builder(
       name = "CloudUpload",
@@ -53,7 +53,7 @@ val AktualIcons.CloudUpload: ImageVector
         close()
       }
     }.build()
-    return icon!!
+    return requireNotNull(icon)
   }
 
 private var icon: ImageVector? = null

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Timer: ImageVector
   get() {
     if (_timer != null) {
-      return _timer!!
+      return requireNotNull(_timer)
     }
     _timer = materialIcon(name = "Filled.Timer") {
       materialPath {
@@ -36,7 +36,7 @@ val MaterialIcons.Timer: ImageVector
         close()
       }
     }
-    return _timer!!
+    return requireNotNull(_timer)
   }
 
 private var _timer: ImageVector? = null

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Brightness2: ImageVector
   get() {
     if (_brightness2 != null) {
-      return _brightness2!!
+      return requireNotNull(_brightness2)
     }
     _brightness2 = materialIcon(name = "Filled.Brightness2") {
       materialPath {
@@ -21,7 +21,7 @@ val MaterialIcons.Brightness2: ImageVector
         close()
       }
     }
-    return _brightness2!!
+    return requireNotNull(_brightness2)
   }
 
 private var _brightness2: ImageVector? = null

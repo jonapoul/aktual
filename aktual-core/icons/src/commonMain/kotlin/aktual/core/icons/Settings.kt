@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Settings: ImageVector
   get() {
     if (_settings != null) {
-      return _settings!!
+      return requireNotNull(_settings)
     }
     _settings = materialIcon(name = "Filled.Settings") {
       materialPath {
@@ -59,7 +59,7 @@ val MaterialIcons.Settings: ImageVector
         close()
       }
     }
-    return _settings!!
+    return requireNotNull(_settings)
   }
 
 private var _settings: ImageVector? = null

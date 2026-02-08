@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Sync: ImageVector
   get() {
     if (_sync != null) {
-      return _sync!!
+      return requireNotNull(_sync)
     }
     _sync = materialIcon(name = "Filled.Sync") {
       materialPath {
@@ -35,7 +35,7 @@ val MaterialIcons.Sync: ImageVector
         close()
       }
     }
-    return _sync!!
+    return requireNotNull(_sync)
   }
 
 private var _sync: ImageVector? = null

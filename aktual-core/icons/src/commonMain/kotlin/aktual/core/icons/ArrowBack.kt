@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.ArrowBack: ImageVector
   get() {
     if (_arrowBack != null) {
-      return _arrowBack!!
+      return requireNotNull(_arrowBack)
     }
     _arrowBack = materialIcon(name = "MaterialIcons.ArrowBack", autoMirror = true) {
       materialPath {
@@ -24,7 +24,7 @@ val MaterialIcons.ArrowBack: ImageVector
         close()
       }
     }
-    return _arrowBack!!
+    return requireNotNull(_arrowBack)
   }
 
 private var _arrowBack: ImageVector? = null

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Key: ImageVector
   get() {
     if (_key != null) {
-      return _key!!
+      return requireNotNull(_key)
     }
     _key = materialIcon(name = "Filled.Key") {
       materialPath {
@@ -32,7 +32,7 @@ val MaterialIcons.Key: ImageVector
         close()
       }
     }
-    return _key!!
+    return requireNotNull(_key)
   }
 
 private var _key: ImageVector? = null

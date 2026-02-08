@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Error: ImageVector
   get() {
     if (_error != null) {
-      return _error!!
+      return requireNotNull(_error)
     }
     _error = materialIcon(name = "Filled.Error") {
       materialPath {
@@ -31,7 +31,7 @@ val MaterialIcons.Error: ImageVector
         close()
       }
     }
-    return _error!!
+    return requireNotNull(_error)
   }
 
 private var _error: ImageVector? = null

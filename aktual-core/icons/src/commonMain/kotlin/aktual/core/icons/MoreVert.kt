@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.MoreVert: ImageVector
   get() {
     if (_moreVert != null) {
-      return _moreVert!!
+      return requireNotNull(_moreVert)
     }
     _moreVert = materialIcon(name = "Filled.MoreVert") {
       materialPath {
@@ -31,7 +31,7 @@ val MaterialIcons.MoreVert: ImageVector
         close()
       }
     }
-    return _moreVert!!
+    return requireNotNull(_moreVert)
   }
 
 private var _moreVert: ImageVector? = null

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Visibility: ImageVector
   get() {
     if (_visibility != null) {
-      return _visibility!!
+      return requireNotNull(_visibility)
     }
     _visibility = materialIcon(name = "Filled.Visibility") {
       materialPath {
@@ -31,7 +31,7 @@ val MaterialIcons.Visibility: ImageVector
         close()
       }
     }
-    return _visibility!!
+    return requireNotNull(_visibility)
   }
 
 private var _visibility: ImageVector? = null

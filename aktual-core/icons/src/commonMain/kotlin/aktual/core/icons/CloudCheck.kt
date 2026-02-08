@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 val AktualIcons.CloudCheck: ImageVector
   get() {
     if (icon != null) {
-      return icon!!
+      return requireNotNull(icon)
     }
     icon = Builder(
       name = "CloudCheck",
@@ -90,7 +90,7 @@ val AktualIcons.CloudCheck: ImageVector
         close()
       }
     }.build()
-    return icon!!
+    return requireNotNull(icon)
   }
 
 private var icon: ImageVector? = null

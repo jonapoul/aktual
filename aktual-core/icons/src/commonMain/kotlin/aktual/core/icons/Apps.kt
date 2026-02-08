@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Apps: ImageVector
   get() {
     if (_apps != null) {
-      return _apps!!
+      return requireNotNull(_apps)
     }
     _apps = materialIcon(name = "Filled.Apps") {
       materialPath {
@@ -67,7 +67,7 @@ val MaterialIcons.Apps: ImageVector
         close()
       }
     }
-    return _apps!!
+    return requireNotNull(_apps)
   }
 
 private var _apps: ImageVector? = null

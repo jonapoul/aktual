@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Search: ImageVector
   get() {
     if (_search != null) {
-      return _search!!
+      return requireNotNull(_search)
     }
     _search = materialIcon(name = "Filled.Search") {
       materialPath {
@@ -33,7 +33,7 @@ val MaterialIcons.Search: ImageVector
         close()
       }
     }
-    return _search!!
+    return requireNotNull(_search)
   }
 
 private var _search: ImageVector? = null

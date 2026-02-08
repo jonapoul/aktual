@@ -17,7 +17,7 @@ internal inline fun materialIcon(
   name: String,
   block: ImageVector.Builder.() -> ImageVector.Builder,
 ): ImageVector = ImageVector
-  .Builder(name, IconSize.dp, IconSize.dp, IconSize, IconSize)
+  .Builder(name, ICON_SIZE.dp, ICON_SIZE.dp, ICON_SIZE, ICON_SIZE)
   .block()
   .build()
 
@@ -26,7 +26,7 @@ internal inline fun materialIcon(
   autoMirror: Boolean = false,
   block: ImageVector.Builder.() -> ImageVector.Builder,
 ): ImageVector = ImageVector
-  .Builder(name, IconSize.dp, IconSize.dp, IconSize, IconSize, autoMirror = autoMirror)
+  .Builder(name, ICON_SIZE.dp, ICON_SIZE.dp, ICON_SIZE, ICON_SIZE, autoMirror = autoMirror)
   .block()
   .build()
 
@@ -48,4 +48,4 @@ internal inline fun ImageVector.Builder.materialPath(
   pathBuilder = pathBuilder,
 )
 
-internal const val IconSize = 24f
+internal const val ICON_SIZE = 24f

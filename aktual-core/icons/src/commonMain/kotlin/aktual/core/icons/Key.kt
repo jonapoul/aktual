@@ -15,7 +15,7 @@ import androidx.compose.ui.unit.dp
 val AktualIcons.Key: ImageVector
   get() {
     if (icon != null) {
-      return icon!!
+      return requireNotNull(icon)
     }
     icon = Builder(
       name = "Key",
@@ -54,7 +54,7 @@ val AktualIcons.Key: ImageVector
         close()
       }
     }.build()
-    return icon!!
+    return requireNotNull(icon)
   }
 
 private var icon: ImageVector? = null

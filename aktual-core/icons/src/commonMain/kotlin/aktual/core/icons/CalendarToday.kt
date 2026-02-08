@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.CalendarToday: ImageVector
   get() {
     if (_calendarToday != null) {
-      return _calendarToday!!
+      return requireNotNull(_calendarToday)
     }
     _calendarToday = materialIcon(name = "Filled.CalendarToday") {
       materialPath {
@@ -37,7 +37,7 @@ val MaterialIcons.CalendarToday: ImageVector
         close()
       }
     }
-    return _calendarToday!!
+    return requireNotNull(_calendarToday)
   }
 
 private var _calendarToday: ImageVector? = null

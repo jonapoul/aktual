@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Edit: ImageVector
   get() {
     if (_edit != null) {
-      return _edit!!
+      return requireNotNull(_edit)
     }
     _edit = materialIcon(name = "Filled.Edit") {
       materialPath {
@@ -28,7 +28,7 @@ val MaterialIcons.Edit: ImageVector
         close()
       }
     }
-    return _edit!!
+    return requireNotNull(_edit)
   }
 
 private var _edit: ImageVector? = null

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Add: ImageVector
   get() {
     if (_add != null) {
-      return _add!!
+      return requireNotNull(_add)
     }
     _add = materialIcon(name = "Filled.Add") {
       materialPath {
@@ -27,7 +27,7 @@ val MaterialIcons.Add: ImageVector
         close()
       }
     }
-    return _add!!
+    return requireNotNull(_add)
   }
 
 private var _add: ImageVector? = null

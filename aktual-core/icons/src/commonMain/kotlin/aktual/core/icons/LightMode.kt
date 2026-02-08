@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.LightMode: ImageVector
   get() {
     if (_lightMode != null) {
-      return _lightMode!!
+      return requireNotNull(_lightMode)
     }
     _lightMode = materialIcon(name = "Filled.LightMode") {
       materialPath {
@@ -84,7 +84,7 @@ val MaterialIcons.LightMode: ImageVector
         close()
       }
     }
-    return _lightMode!!
+    return requireNotNull(_lightMode)
   }
 
 private var _lightMode: ImageVector? = null

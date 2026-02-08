@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Warning: ImageVector
   get() {
     if (_warning != null) {
-      return _warning!!
+      return requireNotNull(_warning)
     }
     _warning = materialIcon(name = "Filled.Warning") {
       materialPath {
@@ -30,7 +30,7 @@ val MaterialIcons.Warning: ImageVector
         close()
       }
     }
-    return _warning!!
+    return requireNotNull(_warning)
   }
 
 private var _warning: ImageVector? = null

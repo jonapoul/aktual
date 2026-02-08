@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Clear: ImageVector
   get() {
     if (_clear != null) {
-      return _clear!!
+      return requireNotNull(_clear)
     }
     _clear = materialIcon(name = "Filled.Clear") {
       materialPath {
@@ -26,7 +26,7 @@ val MaterialIcons.Clear: ImageVector
         close()
       }
     }
-    return _clear!!
+    return requireNotNull(_clear)
   }
 
 private var _clear: ImageVector? = null

@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Delete: ImageVector
   get() {
     if (_delete != null) {
-      return _delete!!
+      return requireNotNull(_delete)
     }
     _delete = materialIcon(name = "Filled.Delete") {
       materialPath {
@@ -31,7 +31,7 @@ val MaterialIcons.Delete: ImageVector
         close()
       }
     }
-    return _delete!!
+    return requireNotNull(_delete)
   }
 
 private var _delete: ImageVector? = null

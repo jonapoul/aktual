@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.BarChart: ImageVector
   get() {
     if (_barChart != null) {
-      return _barChart!!
+      return requireNotNull(_barChart)
     }
     _barChart = materialIcon(name = "Filled.BarChart") {
       materialPath {
@@ -32,7 +32,7 @@ val MaterialIcons.BarChart: ImageVector
         close()
       }
     }
-    return _barChart!!
+    return requireNotNull(_barChart)
   }
 
 private var _barChart: ImageVector? = null

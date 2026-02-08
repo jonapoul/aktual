@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Refresh: ImageVector
   get() {
     if (_refresh != null) {
-      return _refresh!!
+      return requireNotNull(_refresh)
     }
     _refresh = materialIcon(name = "Filled.Refresh") {
       materialPath {
@@ -28,7 +28,7 @@ val MaterialIcons.Refresh: ImageVector
         close()
       }
     }
-    return _refresh!!
+    return requireNotNull(_refresh)
   }
 
 private var _refresh: ImageVector? = null

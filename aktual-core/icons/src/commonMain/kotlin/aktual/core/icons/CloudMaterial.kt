@@ -7,7 +7,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 val MaterialIcons.Cloud: ImageVector
   get() {
     if (_cloud != null) {
-      return _cloud!!
+      return requireNotNull(_cloud)
     }
     _cloud = materialIcon(name = "Filled.Cloud") {
       materialPath {
@@ -22,7 +22,7 @@ val MaterialIcons.Cloud: ImageVector
         close()
       }
     }
-    return _cloud!!
+    return requireNotNull(_cloud)
   }
 
 private var _cloud: ImageVector? = null

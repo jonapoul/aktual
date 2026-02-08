@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 val AktualIcons.CloseBracket: ImageVector
   get() {
     if (icon != null) {
-      return icon!!
+      return requireNotNull(icon)
     }
     icon = ImageVector
       .Builder(
@@ -49,7 +49,7 @@ val AktualIcons.CloseBracket: ImageVector
         }
       }.build()
 
-    return icon!!
+    return requireNotNull(icon)
   }
 
 private var icon: ImageVector? = null
