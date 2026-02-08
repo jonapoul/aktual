@@ -5,6 +5,10 @@ import aktual.budget.sync.vm.KeyPasswordState
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.sync.vm.SyncStep
 import aktual.budget.sync.vm.SyncStepState
+import aktual.core.icons.Block
+import aktual.core.icons.Check
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Timer
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.model.Percent
@@ -31,10 +35,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Block
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ProgressIndicatorDefaults
@@ -250,9 +250,9 @@ private fun StateLeadingIcon(
     when (state) {
       is SyncStepState.InProgress.Definite -> DeterminateWheel(state.progress, theme)
       SyncStepState.InProgress.Indefinite -> IndeterminateWheel(theme)
-      SyncStepState.NotStarted -> StateIcon(text, color, Icons.Filled.Timer)
-      is SyncStepState.Failed -> StateIcon(text, color, Icons.Filled.Block)
-      SyncStepState.Succeeded -> StateIcon(text, color, Icons.Filled.Check)
+      SyncStepState.NotStarted -> StateIcon(text, color, MaterialIcons.Timer)
+      is SyncStepState.Failed -> StateIcon(text, color, MaterialIcons.Block)
+      SyncStepState.Succeeded -> StateIcon(text, color, MaterialIcons.Check)
     }
   }
 }

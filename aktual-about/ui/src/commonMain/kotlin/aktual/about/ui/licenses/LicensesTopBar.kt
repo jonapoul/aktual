@@ -1,13 +1,13 @@
 package aktual.about.ui.licenses
 
 import aktual.about.vm.SearchBarState
+import aktual.core.icons.ArrowBack
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Search
+import aktual.core.icons.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.ui.Theme
 import aktual.core.ui.transparentTopAppBarColors
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.SearchOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -25,7 +25,7 @@ internal fun LicensesTopBar(
   navigationIcon = {
     IconButton(onClick = { onAction(LicensesAction.NavBack) }) {
       Icon(
-        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+        imageVector = MaterialIcons.ArrowBack,
         contentDescription = Strings.licensesToolbarBack,
       )
     }
@@ -41,8 +41,8 @@ internal fun LicensesTopBar(
     IconButton(onClick = { onAction(LicensesAction.ToggleSearchBar) }) {
       Icon(
         imageVector = when (state) {
-          SearchBarState.Gone -> Icons.Filled.Search
-          is SearchBarState.Visible -> Icons.Filled.SearchOff
+          SearchBarState.Gone -> MaterialIcons.Search
+          is SearchBarState.Visible -> MaterialIcons.SearchOff
         },
         contentDescription = Strings.licensesToolbarSearch,
       )
