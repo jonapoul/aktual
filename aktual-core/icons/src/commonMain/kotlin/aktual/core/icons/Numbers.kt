@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Numbers: ImageVector by lazy {
-  materialIcon(name = "Material.Numbers") {
+  materialIcon(name = "Numbers") {
     materialPath {
       moveTo(20.5f, 10.0f)
       lineTo(21.0f, 8.0f)

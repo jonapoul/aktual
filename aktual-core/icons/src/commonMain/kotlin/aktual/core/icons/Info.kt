@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Info: ImageVector by lazy {
-  materialIcon(name = "Material.Info") {
+  materialIcon(name = "Info") {
     materialPath {
       moveTo(12.0f, 2.0f)
       curveTo(6.48f, 2.0f, 2.0f, 6.48f, 2.0f, 12.0f)

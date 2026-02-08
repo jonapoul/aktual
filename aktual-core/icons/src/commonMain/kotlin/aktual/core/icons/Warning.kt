@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Warning: ImageVector by lazy {
-  materialIcon(name = "Material.Warning") {
+  materialIcon(name = "Warning") {
     materialPath {
       moveTo(1.0f, 21.0f)
       horizontalLineToRelative(22.0f)

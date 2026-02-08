@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Refresh: ImageVector by lazy {
-  materialIcon(name = "Material.Refresh") {
+  materialIcon(name = "Refresh") {
     materialPath {
       moveTo(17.65f, 6.35f)
       curveTo(16.2f, 4.9f, 14.21f, 4.0f, 12.0f, 4.0f)

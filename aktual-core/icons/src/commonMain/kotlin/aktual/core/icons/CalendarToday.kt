@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.CalendarToday: ImageVector by lazy {
-  materialIcon(name = "Material.CalendarToday") {
+  materialIcon(name = "CalendarToday") {
     materialPath {
       moveTo(20.0f, 3.0f)
       horizontalLineToRelative(-1.0f)

@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Search: ImageVector by lazy {
-  materialIcon(name = "Material.Search") {
+  materialIcon(name = "Search") {
     materialPath {
       moveTo(15.5f, 14.0f)
       horizontalLineToRelative(-0.79f)

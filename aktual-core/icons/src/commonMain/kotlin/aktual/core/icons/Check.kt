@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Check: ImageVector by lazy {
-  materialIcon(name = "Material.Check") {
+  materialIcon(name = "Check") {
     materialPath {
       moveTo(9.0f, 16.17f)
       lineTo(4.83f, 12.0f)

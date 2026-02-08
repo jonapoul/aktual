@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Visibility: ImageVector by lazy {
-  materialIcon(name = "Material.Visibility") {
+  materialIcon(name = "Visibility") {
     materialPath {
       moveTo(12.0f, 4.5f)
       curveTo(7.0f, 4.5f, 2.73f, 7.61f, 1.0f, 12.0f)

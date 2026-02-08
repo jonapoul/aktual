@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.LightMode: ImageVector by lazy {
-  materialIcon(name = "Material.LightMode") {
+  materialIcon(name = "LightMode") {
     materialPath {
       moveTo(12.0f, 7.0f)
       curveToRelative(-2.76f, 0.0f, -5.0f, 2.24f, -5.0f, 5.0f)

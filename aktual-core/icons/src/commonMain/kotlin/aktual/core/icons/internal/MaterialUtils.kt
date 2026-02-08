@@ -15,7 +15,7 @@ internal inline fun materialIcon(
   name: String,
   block: ImageVector.Builder.() -> ImageVector.Builder,
 ): ImageVector = ImageVector
-  .Builder(name, ICON_SIZE.dp, ICON_SIZE.dp, ICON_SIZE, ICON_SIZE)
+  .Builder("Material.$name", ICON_SIZE.dp, ICON_SIZE.dp, ICON_SIZE, ICON_SIZE)
   .block()
   .build()
 
@@ -24,7 +24,7 @@ internal inline fun materialIcon(
   autoMirror: Boolean = false,
   block: ImageVector.Builder.() -> ImageVector.Builder,
 ): ImageVector = ImageVector
-  .Builder(name, ICON_SIZE.dp, ICON_SIZE.dp, ICON_SIZE, ICON_SIZE, autoMirror = autoMirror)
+  .Builder("Material.$name", ICON_SIZE.dp, ICON_SIZE.dp, ICON_SIZE, ICON_SIZE, autoMirror = autoMirror)
   .block()
   .build()
 

@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Cloud: ImageVector by lazy {
-  materialIcon(name = "Material.Cloud") {
+  materialIcon(name = "Cloud") {
     materialPath {
       moveTo(19.35f, 10.04f)
       curveTo(18.67f, 6.59f, 15.64f, 4.0f, 12.0f, 4.0f)

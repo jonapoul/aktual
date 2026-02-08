@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Brightness3: ImageVector by lazy {
-  materialIcon(name = "Material.Brightness3") {
+  materialIcon(name = "Brightness3") {
     materialPath {
       moveTo(9.0f, 2.0f)
       curveToRelative(-1.05f, 0.0f, -2.05f, 0.16f, -3.0f, 0.46f)

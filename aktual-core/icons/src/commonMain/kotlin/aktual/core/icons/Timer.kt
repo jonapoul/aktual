@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Timer: ImageVector by lazy {
-  materialIcon(name = "Material.Timer") {
+  materialIcon(name = "Timer") {
     materialPath {
       moveTo(9.0f, 1.0f)
       horizontalLineToRelative(6.0f)

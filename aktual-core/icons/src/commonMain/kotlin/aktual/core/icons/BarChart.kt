@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.BarChart: ImageVector by lazy {
-  materialIcon(name = "Material.BarChart") {
+  materialIcon(name = "BarChart") {
     materialPath {
       moveTo(4.0f, 9.0f)
       horizontalLineToRelative(4.0f)

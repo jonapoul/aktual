@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Sync: ImageVector by lazy {
-  materialIcon(name = "Material.Sync") {
+  materialIcon(name = "Sync") {
     materialPath {
       moveTo(12.0f, 4.0f)
       lineTo(12.0f, 1.0f)

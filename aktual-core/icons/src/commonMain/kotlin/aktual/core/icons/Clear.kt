@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Clear: ImageVector by lazy {
-  materialIcon(name = "Material.Clear") {
+  materialIcon(name = "Clear") {
     materialPath {
       moveTo(19.0f, 6.41f)
       lineTo(17.59f, 5.0f)

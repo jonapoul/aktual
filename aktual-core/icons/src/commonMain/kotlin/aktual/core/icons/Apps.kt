@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Apps: ImageVector by lazy {
-  materialIcon(name = "Material.Apps") {
+  materialIcon(name = "Apps") {
     materialPath {
       moveTo(4.0f, 8.0f)
       horizontalLineToRelative(4.0f)

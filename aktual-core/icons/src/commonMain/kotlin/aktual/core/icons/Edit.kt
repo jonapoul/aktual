@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Edit: ImageVector by lazy {
-  materialIcon(name = "Material.Edit") {
+  materialIcon(name = "Edit") {
     materialPath {
       moveTo(3.0f, 17.25f)
       verticalLineTo(21.0f)

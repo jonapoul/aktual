@@ -7,7 +7,7 @@ import aktual.core.icons.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.Delete: ImageVector by lazy {
-  materialIcon(name = "Material.Delete") {
+  materialIcon(name = "Delete") {
     materialPath {
       moveTo(6.0f, 19.0f)
       curveToRelative(0.0f, 1.1f, 0.9f, 2.0f, 2.0f, 2.0f)
