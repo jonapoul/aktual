@@ -3,6 +3,7 @@ package aktual.core.icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -10,16 +11,17 @@ import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameter
 
 @Preview
 @Composable
-private fun PreviewIcons(
-  @PreviewParameter(IconPreviewParameters::class) icon: ImageVector,
+private fun PreviewAktualIcons(
+  @PreviewParameter(AktualIconsProvider::class) icon: ImageVector,
 ) = MaterialTheme {
   Icon(
     imageVector = icon,
     contentDescription = null,
+    tint = Color.White,
   )
 }
 
-private class IconPreviewParameters : CollectionPreviewParameterProvider<ImageVector>(
+private class AktualIconsProvider : CollectionPreviewParameterProvider<ImageVector>(
   with(AktualIcons) {
     listOf(
       ArrowThickDown,
@@ -36,6 +38,54 @@ private class IconPreviewParameters : CollectionPreviewParameterProvider<ImageVe
       Key,
       OpenBracket,
       Sum,
+    )
+  },
+)
+
+@Preview
+@Composable
+private fun PreviewMaterial(
+  @PreviewParameter(MaterialIconsProvider::class) icon: ImageVector,
+) = MaterialTheme {
+  Icon(
+    imageVector = icon,
+    contentDescription = null,
+    tint = Color.White,
+  )
+}
+
+private class MaterialIconsProvider : CollectionPreviewParameterProvider<ImageVector>(
+  with(MaterialIcons) {
+    listOf(
+      Add,
+      Apps,
+      ArrowBack,
+      BarChart,
+      Block,
+      Brightness2,
+      Brightness3,
+      CalendarToday,
+      Check,
+      Clear,
+      Cloud,
+      Delete,
+      DeleteForever,
+      Edit,
+      Error,
+      Info,
+      Key,
+      LightMode,
+      MoreVert,
+      Numbers,
+      Refresh,
+      Search,
+      SearchOff,
+      Settings,
+      Sync,
+      Timer,
+      Visibility,
+      VisibilityOff,
+      Warning,
     )
   },
 )

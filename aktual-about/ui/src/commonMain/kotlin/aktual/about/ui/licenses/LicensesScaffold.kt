@@ -3,6 +3,10 @@ package aktual.about.ui.licenses
 import aktual.about.data.ArtifactDetail
 import aktual.about.vm.LicensesState
 import aktual.about.vm.SearchBarState
+import aktual.core.icons.Error
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Search
+import aktual.core.icons.Warning
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
@@ -39,10 +43,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Error
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -140,7 +140,7 @@ private fun LicensesSearchInput(
         value = text,
         onValueChange = { query -> onAction(LicensesAction.EditSearchText(query)) },
         placeholderText = Strings.licensesSearchPlaceholder,
-        leadingIcon = { Icon(imageVector = Icons.Filled.Search, contentDescription = null) },
+        leadingIcon = { Icon(imageVector = MaterialIcons.Search, contentDescription = null) },
         clearable = true,
         theme = theme,
         colors = colors,
@@ -202,7 +202,7 @@ private fun NoneFoundContent(
   ) {
     Icon(
       modifier = Modifier.size(80.dp),
-      imageVector = Icons.Filled.Warning,
+      imageVector = MaterialIcons.Warning,
       contentDescription = null,
       tint = theme.warningText,
     )
@@ -266,7 +266,7 @@ private fun ErrorContent(
   ) {
     Icon(
       modifier = Modifier.size(80.dp),
-      imageVector = Icons.Filled.Error,
+      imageVector = MaterialIcons.Error,
       contentDescription = null,
       tint = theme.errorText,
     )

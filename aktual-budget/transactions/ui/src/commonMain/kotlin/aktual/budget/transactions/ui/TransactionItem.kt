@@ -7,6 +7,8 @@ import aktual.budget.model.TransactionsFormat.Table
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionState
 import aktual.budget.transactions.vm.TransactionStateSource
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
@@ -31,8 +33,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
@@ -398,7 +398,7 @@ private fun RowScope.TransactionListItem(
 
   BareIconButton(
     modifier = Modifier.minimumInteractiveComponentSize(),
-    imageVector = Icons.Filled.MoreVert,
+    imageVector = MaterialIcons.MoreVert,
     contentDescription = "",
     onClick = {},
   )
@@ -495,7 +495,7 @@ private fun RowScope.TransactionTableItem(
 
   BareIconButton(
     modifier = Modifier.minimumInteractiveComponentSize(),
-    imageVector = Icons.Filled.MoreVert,
+    imageVector = MaterialIcons.MoreVert,
     contentDescription = "",
     onClick = {},
   )
