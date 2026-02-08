@@ -1,26 +1,25 @@
 package aktual.core.icons
 
-import aktual.core.model.ColorSchemeType
-import aktual.core.ui.PreviewParameters
-import aktual.core.ui.PreviewWithColorScheme
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
 
 @Preview
 @Composable
 private fun PreviewIcons(
-  @PreviewParameter(IconPreviewParameters::class) params: Pair<ColorSchemeType, ImageVector>,
-) = PreviewWithColorScheme(params.first) {
+  @PreviewParameter(IconPreviewParameters::class) icon: ImageVector,
+) = MaterialTheme {
   Icon(
-    imageVector = params.second,
+    imageVector = icon,
     contentDescription = null,
   )
 }
 
-private class IconPreviewParameters : PreviewParameters<Pair<ColorSchemeType, ImageVector>>(
+private class IconPreviewParameters : CollectionPreviewParameterProvider<ImageVector>(
   with(AktualIcons) {
     listOf(
       ArrowThickDown,
@@ -37,10 +36,6 @@ private class IconPreviewParameters : PreviewParameters<Pair<ColorSchemeType, Im
       Key,
       OpenBracket,
       Sum,
-    ).flatMap { icon ->
-      ColorSchemeType.entries.map { type ->
-        type to icon
-      }
-    }
+    )
   },
 )
