@@ -2,6 +2,8 @@ package aktual.core.ui
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudWarning
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Refresh
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,8 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -74,7 +74,7 @@ fun FailureScreen(
     VerticalSpacer(30.dp)
 
     PrimaryTextButton(
-      prefix = { Icon(imageVector = Icons.Filled.Refresh, contentDescription = retryText) },
+      prefix = { Icon(imageVector = MaterialIcons.Refresh, contentDescription = retryText) },
       text = retryText,
       onClick = onClickRetry,
     )

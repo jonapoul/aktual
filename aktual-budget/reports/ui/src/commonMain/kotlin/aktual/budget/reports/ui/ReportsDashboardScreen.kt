@@ -4,6 +4,8 @@ import aktual.budget.model.BudgetId
 import aktual.budget.reports.vm.DashboardState
 import aktual.budget.reports.vm.ReportDashboardItem
 import aktual.budget.reports.vm.ReportsDashboardViewModel
+import aktual.core.icons.Add
+import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.ui.BackHandler
@@ -23,8 +25,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -94,7 +94,7 @@ internal fun ReportsDashboardScaffold(
         actions = {
           IconButton(onClick = { onAction(Action.CreateNewReport) }) {
             Icon(
-              imageVector = Icons.Filled.Add,
+              imageVector = MaterialIcons.Add,
               contentDescription = Strings.reportsDashboardCreate,
             )
           }

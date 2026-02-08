@@ -1,10 +1,10 @@
 package aktual.about.ui.info
 
+import aktual.core.icons.ArrowBack
+import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.Theme
 import aktual.core.ui.transparentTopAppBarColors
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -22,7 +22,7 @@ internal fun InfoTopBar(
     navigationIcon = {
       IconButton(onClick = { onAction(InfoAction.NavBack) }) {
         Icon(
-          imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+          imageVector = MaterialIcons.ArrowBack,
           contentDescription = Strings.infoToolbarBack,
         )
       }

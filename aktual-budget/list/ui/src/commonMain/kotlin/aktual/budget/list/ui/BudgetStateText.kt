@@ -7,6 +7,8 @@ import aktual.core.icons.CloudDownload
 import aktual.core.icons.CloudUnknown
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.FileDouble
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Sync
 import aktual.core.l10n.Strings
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
@@ -16,8 +18,6 @@ import aktual.core.ui.ThemedParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -79,7 +79,7 @@ private fun BudgetState.icon(): ImageVector = when (this) {
   BudgetState.Local -> AktualIcons.FileDouble
   BudgetState.Remote -> AktualIcons.CloudDownload
   BudgetState.Synced -> AktualIcons.CloudCheck
-  BudgetState.Syncing -> Icons.Filled.Sync
+  BudgetState.Syncing -> MaterialIcons.Sync
   BudgetState.Detached -> AktualIcons.CloudWarning
   BudgetState.Broken -> AktualIcons.CloudWarning
   BudgetState.Unknown -> AktualIcons.CloudUnknown

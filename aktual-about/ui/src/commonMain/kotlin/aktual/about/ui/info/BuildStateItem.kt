@@ -1,5 +1,8 @@
 package aktual.about.ui.info
 
+import aktual.core.icons.Info
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Numbers
 import aktual.core.model.ColorSchemeType
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
@@ -14,9 +17,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Numbers
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -84,7 +84,7 @@ private fun PreviewRegularItem(
   @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
 ) = PreviewWithColorScheme(type) {
   BuildStateItem(
-    icon = Icons.Filled.Info,
+    icon = MaterialIcons.Info,
     title = "Info",
     subtitle = "More info",
     onClick = null,
@@ -97,7 +97,7 @@ private fun PreviewClickableItem(
   @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
 ) = PreviewWithColorScheme(type) {
   BuildStateItem(
-    icon = Icons.Filled.Numbers,
+    icon = MaterialIcons.Numbers,
     title = "Info",
     subtitle = "More info",
     onClick = {},

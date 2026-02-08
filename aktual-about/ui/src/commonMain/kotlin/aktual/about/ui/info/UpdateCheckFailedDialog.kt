@@ -1,5 +1,7 @@
 package aktual.about.ui.info
 
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Warning
 import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
 import aktual.core.ui.ColorSchemeParameters
@@ -7,8 +9,6 @@ import aktual.core.ui.DialogContent
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -48,7 +48,7 @@ internal fun UpdateCheckFailedDialogContent(
     modifier = modifier,
     theme = theme,
     title = Strings.infoCheckFailedTitle,
-    icon = Icons.Filled.Warning,
+    icon = MaterialIcons.Warning,
     titleColor = theme.errorText,
     content = { Text(cause) },
     buttons = {

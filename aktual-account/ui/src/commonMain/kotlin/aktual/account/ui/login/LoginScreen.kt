@@ -2,6 +2,8 @@ package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
 import aktual.account.vm.LoginViewModel
+import aktual.core.icons.ArrowBack
+import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
@@ -31,8 +33,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -113,7 +113,7 @@ internal fun LoginScaffold(
         navigationIcon = {
           IconButton(onClick = { onAction(LoginAction.NavBack) }) {
             Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              imageVector = MaterialIcons.ArrowBack,
               contentDescription = Strings.navBack,
             )
           }

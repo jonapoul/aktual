@@ -3,7 +3,10 @@ package aktual.budget.list.ui
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetState
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.DeleteForever
 import aktual.core.icons.Key
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
@@ -23,9 +26,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
@@ -112,7 +112,7 @@ internal fun BudgetListItem(
       var showDeleteMenu by remember { mutableStateOf(false) }
 
       BareIconButton(
-        imageVector = Icons.Filled.MoreVert,
+        imageVector = MaterialIcons.MoreVert,
         contentDescription = Strings.navBack,
         onClick = { showDeleteMenu = true },
       )
@@ -139,7 +139,7 @@ private fun DeleteMenu(
     val deleteText = Strings.budgetDelete
     DropdownMenuItem(
       text = { Text(deleteText) },
-      leadingIcon = { Icon(imageVector = Icons.Filled.DeleteForever, contentDescription = deleteText) },
+      leadingIcon = { Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = deleteText) },
       onClick = {
         onDismiss()
         onClickDelete()

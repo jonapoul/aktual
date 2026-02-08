@@ -337,6 +337,121 @@ fun `test state changes`() = runTest {
 
 **KSP** is used for generating API requests, implemented in the `:aktual-codegen:ksp` module as a KSP processor. This generates implementations for creating KSP requests.
 
+### Icons
+
+Icons are stored in the `:aktual-core:icons` module at `aktual-core/icons/src/commonMain/kotlin/aktual/core/icons/`. There are two types of icons:
+
+#### AktualIcons (Custom SVG Icons)
+
+Custom icons for Aktual-specific graphics. Use these for custom designs not available in Material Icons.
+
+**Creating a new Aktual icon:**
+
+```kotlin
+@file:Suppress("BooleanLiteralArgument", "UnusedReceiverParameter")
+
+package aktual.core.icons
+
+import aktual.core.icons.internal.aktualIcon
+import aktual.core.icons.internal.aktualPath
+import androidx.compose.ui.graphics.vector.ImageVector
+
+val AktualIcons.YourIcon: ImageVector by lazy {
+  aktualIcon(name = "YourIcon", size = 20f) {
+    aktualPath {
+      // SVG path commands
+      moveTo(x, y)
+      lineTo(x, y)
+      // ... etc
+      close()
+    }
+  }
+}
+```
+
+**Important:**
+- Use `by lazy` delegate for initialization
+- Use `aktualIcon()` with custom size (typically 20f or 24f, automatically prepends "Aktual." to name)
+- Use `aktualPath {}` for path definitions
+- Add to `AktualIconsProvider` list in `IconPreviews.kt`
+
+#### MaterialIcons (Material Design Icons)
+
+Material Design icons from the official Android/Compose Material library.
+
+**Source Repository:**
+- Material Icons: https://android.googlesource.com/platform//frameworks/support/+/1de65587b7e999a38df120bd8827c3594974864d/compose/material
+
+**Creating a new Material icon:**
+
+```kotlin
+@file:Suppress("UnusedReceiverParameter")
+
+package aktual.core.icons
+
+import aktual.core.icons.internal.materialIcon
+import aktual.core.icons.internal.materialPath
+import androidx.compose.ui.graphics.vector.ImageVector
+
+val MaterialIcons.YourIcon: ImageVector by lazy {
+  materialIcon(name = "YourIcon") {
+    materialPath {
+      // SVG path commands converted from Material source
+      moveTo(x, y)
+      lineTo(x, y)
+      close()
+    }
+  }
+}
+```
+
+**For autoMirror support (RTL languages):**
+```kotlin
+val MaterialIcons.YourIcon: ImageVector by lazy {
+  materialIcon(name = "YourIcon", autoMirror = true) {
+    materialPath { /* ... */ }
+  }
+}
+```
+
+**Important:**
+- Use `by lazy` delegate for initialization
+- Use `materialIcon()` helper (24dp fixed size, automatically prepends "Material." to name)
+- Use `materialPath {}` for path definitions
+- Add to `MaterialIconsProvider` list in `IconPreviews.kt`
+
+#### SVG Path Conversion Reference
+
+- `M x y` → `moveTo(x.0f, y.0f)`
+- `L x y` → `lineTo(x.0f, y.0f)`
+- `l x y` → `lineToRelative(x.0f, y.0f)`
+- `C x1 y1 x2 y2 x y` → `curveTo(x1.0f, y1.0f, x2.0f, y2.0f, x.0f, y.0f)`
+- `c x1 y1 x2 y2 x y` → `curveToRelative(x1.0f, y1.0f, x2.0f, y2.0f, x.0f, y.0f)`
+- `H x` → `horizontalLineTo(x.0f)`
+- `h x` → `horizontalLineToRelative(x.0f)`
+- `V y` → `verticalLineTo(y.0f)`
+- `v y` → `verticalLineToRelative(y.0f)`
+- `Z` → `close()`
+
+#### Using Icons
+
+```kotlin
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Cloud
+import aktual.core.icons.Check
+
+Icon(
+  imageVector = AktualIcons.Cloud,
+  contentDescription = "Cloud"
+)
+
+Icon(
+  imageVector = MaterialIcons.Check,
+  contentDescription = "Check"
+)
+```
+
 ### Module Dependencies
 
 **Visibility:**

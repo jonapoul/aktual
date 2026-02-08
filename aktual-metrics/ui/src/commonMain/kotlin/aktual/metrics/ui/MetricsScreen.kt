@@ -1,6 +1,9 @@
 package aktual.metrics.ui
 
 import aktual.api.model.metrics.GetMetricsResponse
+import aktual.core.icons.ArrowBack
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.model.GB
 import aktual.core.model.MB
@@ -36,9 +39,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -130,7 +130,7 @@ private fun MetricsTopAppBar(
   navigationIcon = {
     IconButton(onClick = { onAction(MetricsAction.NavBack) }) {
       Icon(
-        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+        imageVector = MaterialIcons.ArrowBack,
         contentDescription = Strings.navBack,
       )
     }
@@ -141,7 +141,7 @@ private fun MetricsTopAppBar(
     if (state is MetricsState.Success) {
       IconButton(onClick = { onAction(MetricsAction.Refresh) }) {
         Icon(
-          imageVector = Icons.Filled.Refresh,
+          imageVector = MaterialIcons.Refresh,
           contentDescription = Strings.metricsRefresh,
         )
       }

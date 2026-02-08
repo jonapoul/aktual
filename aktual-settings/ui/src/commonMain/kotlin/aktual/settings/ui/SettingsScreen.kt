@@ -1,5 +1,7 @@
 package aktual.settings.ui
 
+import aktual.core.icons.ArrowBack
+import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.DarkColorSchemeType
 import aktual.core.model.RegularColorSchemeType
@@ -28,8 +30,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -86,7 +86,7 @@ internal fun SettingsScaffold(
         navigationIcon = {
           IconButton(onClick = { onAction(SettingsAction.NavBack) }) {
             Icon(
-              imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+              imageVector = MaterialIcons.ArrowBack,
               contentDescription = Strings.navBack,
             )
           }

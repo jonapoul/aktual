@@ -1,12 +1,12 @@
 package aktual.core.ui
 
+import aktual.core.icons.Check
+import aktual.core.icons.MaterialIcons
 import aktual.core.model.ColorSchemeType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
@@ -150,7 +150,7 @@ private fun Bare(
   @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
 ) = PreviewWithColorScheme(type) {
   BareIconButton(
-    imageVector = Icons.Filled.Check,
+    imageVector = MaterialIcons.Check,
     contentDescription = "Cancel",
     onClick = {},
   )
@@ -162,7 +162,7 @@ private fun Normal(
   @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
 ) = PreviewWithColorScheme(type) {
   NormalIconButton(
-    imageVector = Icons.Filled.Check,
+    imageVector = MaterialIcons.Check,
     contentDescription = "Cancel",
     onClick = {},
   )
@@ -174,7 +174,7 @@ private fun Primary(
   @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
 ) = PreviewWithColorScheme(type) {
   PrimaryIconButton(
-    imageVector = Icons.Filled.Check,
+    imageVector = MaterialIcons.Check,
     contentDescription = "OK",
     onClick = {},
   )
