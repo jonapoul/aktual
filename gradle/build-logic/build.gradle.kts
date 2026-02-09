@@ -1,28 +1,24 @@
 import dev.detekt.gradle.Detekt
-import java.util.Properties
 
 plugins {
   `kotlin-dsl`
   alias(libs.plugins.detekt)
 }
 
-// Pull java version property from project's root properties file, since build-logic doesn't have access to it
-val props = Properties().also { it.load(file("../../gradle.properties").reader()) }
-val javaInt = props["aktual.javaVersion"]?.toString()?.toInt() ?: error("Failed getting java version from $props")
-val javaVersion = JavaVersion.toVersion(javaInt)
+val javaFile = layout.projectDirectory.file("../../.java-version")
 
-java {
-  sourceCompatibility = javaVersion
-  targetCompatibility = javaVersion
-}
+val jdkVersion = providers
+  .fileContents(javaFile)
+  .asText
+  .map { it.trim().toInt() }
 
 kotlin {
-  jvmToolchain(javaInt)
+  jvmToolchain(jdkVersion.get())
 }
 
 detekt {
-  config.setFrom(file("../config/detekt.yml"))
-  source.from("build.gradle.kts")
+  config.from(file("../../config/detekt.yml"))
+  source.from("**.kts", "**.kt")
   buildUponDefaultConfig = true
 }
 
@@ -64,7 +60,6 @@ gradlePlugin {
     }
 
     "aktual.convention.android"(impl = "aktual.gradle.ConventionAndroidBase")
-    "aktual.convention.buildconfig"(impl = "aktual.gradle.ConventionBuildConfig")
     "aktual.convention.compose"(impl = "aktual.gradle.ConventionCompose")
     "aktual.convention.idea"(impl = "aktual.gradle.ConventionIdea")
     "aktual.convention.kotlin"(impl = "aktual.gradle.ConventionKotlinJvm")

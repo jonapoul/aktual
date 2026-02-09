@@ -26,7 +26,9 @@ class ConventionDetekt : Plugin<Project> {
     }
 
     extensions.configure<DetektExtension> {
-      config.setFrom(rootProject.isolated.projectDirectory.file("config/detekt.yml"))
+      with(rootProject.isolated.projectDirectory) {
+        config.from(file("config/detekt.yml"), file("config/detekt-compose.yml"))
+      }
       buildUponDefaultConfig.set(true)
     }
 

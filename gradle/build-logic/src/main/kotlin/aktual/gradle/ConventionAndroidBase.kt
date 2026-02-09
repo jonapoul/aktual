@@ -30,7 +30,7 @@ class ConventionAndroidBase : Plugin<Project> {
         testInstrumentationRunnerArguments["disableAnalytics"] = "true"
       }
 
-      val version = providers.javaVersion()
+      val version = javaVersion()
       compileOptions.apply {
         sourceCompatibility = version.get()
         targetCompatibility = version.get()

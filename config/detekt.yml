@@ -20,15 +20,6 @@ coroutines:
   SuspendFunSwallowedCancellation:
     active: true
 
-# https://mrmans0n.github.io/compose-rules/detekt/
-Compose:
-  CompositionLocalAllowlist:
-    active: false
-  Material2:
-    active: true
-  UnstableCollections:
-    active: true
-
 exceptions:
   TooGenericExceptionCaught:
     active: false
