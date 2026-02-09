@@ -16,14 +16,15 @@ fun Project.javaVersion(): Provider<JavaVersion> = javaVersionString().map(JavaV
 fun Project.jvmTarget(): Provider<JvmTarget> = javaVersionString().map(JvmTarget::fromTarget)
 
 private fun Project.javaVersionString(): Provider<String> =
-    providers.of(JavaVersionValueSource::class.java) {
-      parameters.javaVersionFile.set(rootProject.layout.projectDirectory.file(".java-version"))
-    }
+  providers.of(JavaVersionValueSource::class.java) {
+    parameters.javaVersionFile.set(rootProject.layout.projectDirectory.file(".java-version"))
+  }
 
-private abstract class JavaVersionValueSource :
-    ValueSource<String, JavaVersionValueSource.Parameters> {
+private abstract class JavaVersionValueSource : ValueSource<String, JavaVersionValueSource.Parameters> {
   interface Parameters : ValueSourceParameters {
-    @get:InputFile @get:PathSensitive(NONE) val javaVersionFile: RegularFileProperty
+    @get:InputFile
+    @get:PathSensitive(NONE)
+    val javaVersionFile: RegularFileProperty
   }
 
   override fun obtain(): String {
