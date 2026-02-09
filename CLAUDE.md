@@ -248,11 +248,21 @@ The project uses Gradle convention plugins to centralize build configuration:
 - `aktual.module.jvm` - JVM-only module
 
 **Key Build Properties:**
-- Java version: 21
+- Java version: Sourced from `.java-version` file (currently 21)
 - Min SDK: 28
 - Target/Compile SDK: 36
 - KSP2 enabled
 - Configuration cache: enabled and optimized
+
+**Java Version Management:**
+The Java version is managed in a single source of truth: the `.java-version` file at the repository root.
+
+- **Gradle Build**: Uses a custom `JavaVersionValueSource` that reads from `.java-version` via Project extension functions `javaVersion()` and `jvmTarget()`
+- **GitHub Actions**: Workflows use `java-version-file: .java-version` in the `setup-java` action
+- **Configuration Cache**: The ValueSource is properly annotated with `@InputFile` and `@PathSensitive(NONE)` for optimal caching behavior
+- **Validation**: The ValueSource validates that the file exists, is not empty, and contains a valid integer
+
+To change the Java version, simply update the `.java-version` file. Both the Gradle build and CI will automatically pick up the change.
 
 ### Key Technologies
 
