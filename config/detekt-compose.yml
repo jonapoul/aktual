@@ -1,0 +1,10 @@
+---
+# https://mrmans0n.github.io/compose-rules/detekt/
+# This is a separate file because build-logic doesn't known about the compose plugin and fails parsing the config file
+Compose:
+  CompositionLocalAllowlist:
+    active: false
+  Material2:
+    active: true
+  UnstableCollections:
+    active: true

@@ -10,7 +10,7 @@ fun Project.optIn(klass: String) = optIn(listOf(klass))
 fun Project.optIn(vararg classes: String) = optIn(classes.toList())
 
 fun Project.optIn(classes: Collection<String>) {
-  kotlin { compilerOptions.freeCompilerArgs.addAll(classes.map { "-opt-in=$it" }) }
+  kotlin { compilerOptions.freeCompilerArgs.addAll(classes.map { name -> "-opt-in=$name" }) }
 }
 
 fun Project.kspAllConfigs(dependency: Any) = dependencies {
