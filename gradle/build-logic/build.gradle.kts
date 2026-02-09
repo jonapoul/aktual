@@ -5,9 +5,11 @@ plugins {
   alias(libs.plugins.detekt)
 }
 
-val javaVersionFile = layout.projectDirectory.file("../../.java-version")
-val javaInt = providers.fileContents(javaVersionFile).asText
+val javaInt = providers
+  .fileContents(layout.projectDirectory.file("../../.java-version"))
+  .asText
   .map { it.trim().toIntOrNull() ?: error("Java version must be a valid integer") }
+
 val javaVersion = javaInt.map(JavaVersion::toVersion)
 
 java {
