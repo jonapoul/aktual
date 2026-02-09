@@ -5,20 +5,15 @@ plugins {
   alias(libs.plugins.detekt)
 }
 
-val javaInt = providers
-  .fileContents(layout.projectDirectory.file("../../.java-version"))
+val javaFile = layout.projectDirectory.file("../../.java-version")
+
+val jdkVersion = providers
+  .fileContents(javaFile)
   .asText
-  .map { it.trim().toIntOrNull() ?: error("Java version must be a valid integer") }
-
-val javaVersion = javaInt.map(JavaVersion::toVersion)
-
-java {
-  sourceCompatibility = javaVersion.get()
-  targetCompatibility = javaVersion.get()
-}
+  .map { it.trim().toInt() }
 
 kotlin {
-  jvmToolchain(javaInt.get())
+  jvmToolchain(jdkVersion.get())
 }
 
 detekt {
