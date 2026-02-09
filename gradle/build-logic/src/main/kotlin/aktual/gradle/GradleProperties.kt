@@ -34,9 +34,7 @@ private abstract class JavaVersionValueSource : ValueSource<String, JavaVersionV
     val content = file.readText().trim()
     require(content.isNotEmpty()) { "Java version file is empty: ${file.absolutePath}" }
 
-    require(content.toIntOrNull() != null) {
-      "Java version must be a valid integer, but was: $content"
-    }
+    requireNotNull(content.toIntOrNull()) { "Java version must be a valid integer, but was: $content" }
 
     return content
   }

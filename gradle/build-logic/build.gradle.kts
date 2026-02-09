@@ -1,28 +1,27 @@
 import dev.detekt.gradle.Detekt
-import java.util.Properties
 
 plugins {
   `kotlin-dsl`
   alias(libs.plugins.detekt)
 }
 
-// Pull java version property from project's root properties file, since build-logic doesn't have access to it
-val props = Properties().also { it.load(file("../../gradle.properties").reader()) }
-val javaInt = props["aktual.javaVersion"]?.toString()?.toInt() ?: error("Failed getting java version from $props")
-val javaVersion = JavaVersion.toVersion(javaInt)
+val javaVersionFile = layout.projectDirectory.file("../../.java-version")
+val javaInt = providers.fileContents(javaVersionFile).asText
+  .map { it.trim().toIntOrNull() ?: error("Java version must be a valid integer") }
+val javaVersion = javaInt.map(JavaVersion::toVersion)
 
 java {
-  sourceCompatibility = javaVersion
-  targetCompatibility = javaVersion
+  sourceCompatibility = javaVersion.get()
+  targetCompatibility = javaVersion.get()
 }
 
 kotlin {
-  jvmToolchain(javaInt)
+  jvmToolchain(javaInt.get())
 }
 
 detekt {
-  config.setFrom(file("../config/detekt.yml"))
-  source.from("build.gradle.kts")
+  config.from(file("../../config/detekt.yml"))
+  source.from("**.kts", "**.kt")
   buildUponDefaultConfig = true
 }
 
