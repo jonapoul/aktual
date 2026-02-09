@@ -9,9 +9,9 @@ internal class TestLogcatLogger : LogcatLogger {
   var shouldLog = true
 
   data class Log(
-    val priority: LogPriority,
-    val tag: String,
-    val message: String,
+      val priority: LogPriority,
+      val tag: String,
+      val message: String,
   )
 
   override fun isLoggable(priority: LogPriority, tag: String): Boolean {
@@ -24,5 +24,5 @@ internal class TestLogcatLogger : LogcatLogger {
   }
 
   fun assertLatest(priority: LogPriority, tag: String, message: String) =
-    assertThat(latestLog).isEqualTo(Log(priority, tag, message))
+      assertThat(latestLog).isEqualTo(Log(priority, tag, message))
 }

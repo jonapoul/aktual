@@ -5,12 +5,11 @@ import androidx.compose.runtime.Immutable
 
 @Composable
 expect fun BackHandler(
-  enabled: Boolean = true,
-  onBack: () -> Unit,
+    enabled: Boolean = true,
+    onBack: () -> Unit,
 )
 
-@Composable
-expect fun appCloser(): AppCloser
+@Composable expect fun appCloser(): AppCloser
 
 @Immutable
 interface AppCloser {

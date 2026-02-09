@@ -35,70 +35,72 @@ import androidx.compose.ui.unit.sp
 @Stable
 @Composable
 internal fun BudgetStateText(
-  state: BudgetState,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    state: BudgetState,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   Row(
-    modifier = modifier,
-    verticalAlignment = Alignment.CenterVertically,
+      modifier = modifier,
+      verticalAlignment = Alignment.CenterVertically,
   ) {
     val text = state.text()
 
     Icon(
-      modifier = Modifier.size(18.dp),
-      imageVector = state.icon(),
-      contentDescription = text,
-      tint = state.iconColor(theme),
+        modifier = Modifier.size(18.dp),
+        imageVector = state.icon(),
+        contentDescription = text,
+        tint = state.iconColor(theme),
     )
 
     HorizontalSpacer(5.dp)
 
     Text(
-      text = text,
-      color = theme.budgetItemTextSecondary,
-      fontSize = 13.sp,
+        text = text,
+        color = theme.budgetItemTextSecondary,
+        fontSize = 13.sp,
     )
   }
 }
 
 @Composable
-private fun BudgetState.text(): String = when (this) {
-  BudgetState.Local -> Strings.budgetStateLocal
-  BudgetState.Remote -> Strings.budgetStateRemote
-  BudgetState.Synced -> Strings.budgetStateSynced
-  BudgetState.Syncing -> Strings.budgetStateSyncing
-  BudgetState.Detached -> Strings.budgetStateDetached
-  BudgetState.Broken -> Strings.budgetStateBroken
-  BudgetState.Unknown -> Strings.budgetStateUnknown
-}
+private fun BudgetState.text(): String =
+    when (this) {
+      BudgetState.Local -> Strings.budgetStateLocal
+      BudgetState.Remote -> Strings.budgetStateRemote
+      BudgetState.Synced -> Strings.budgetStateSynced
+      BudgetState.Syncing -> Strings.budgetStateSyncing
+      BudgetState.Detached -> Strings.budgetStateDetached
+      BudgetState.Broken -> Strings.budgetStateBroken
+      BudgetState.Unknown -> Strings.budgetStateUnknown
+    }
 
 @Stable
 @Composable
-private fun BudgetState.icon(): ImageVector = when (this) {
-  BudgetState.Local -> AktualIcons.FileDouble
-  BudgetState.Remote -> AktualIcons.CloudDownload
-  BudgetState.Synced -> AktualIcons.CloudCheck
-  BudgetState.Syncing -> MaterialIcons.Sync
-  BudgetState.Detached -> AktualIcons.CloudWarning
-  BudgetState.Broken -> AktualIcons.CloudWarning
-  BudgetState.Unknown -> AktualIcons.CloudUnknown
-}
+private fun BudgetState.icon(): ImageVector =
+    when (this) {
+      BudgetState.Local -> AktualIcons.FileDouble
+      BudgetState.Remote -> AktualIcons.CloudDownload
+      BudgetState.Synced -> AktualIcons.CloudCheck
+      BudgetState.Syncing -> MaterialIcons.Sync
+      BudgetState.Detached -> AktualIcons.CloudWarning
+      BudgetState.Broken -> AktualIcons.CloudWarning
+      BudgetState.Unknown -> AktualIcons.CloudUnknown
+    }
 
 @Stable
 @Composable
 @ReadOnlyComposable
-private fun BudgetState.iconColor(theme: Theme): Color = when (this) {
-  BudgetState.Broken, BudgetState.Detached -> theme.warningText
-  else -> theme.pageText
-}
+private fun BudgetState.iconColor(theme: Theme): Color =
+    when (this) {
+      BudgetState.Broken,
+      BudgetState.Detached -> theme.warningText
+      else -> theme.pageText
+    }
 
 @Preview
 @Composable
 private fun PreviewBudgetStateText(
-  @PreviewParameter(BudgetStateProvider::class) params: ThemedParams<BudgetState>,
-) = PreviewWithColorScheme(params.type) {
-  BudgetStateText(params.data)
-}
+    @PreviewParameter(BudgetStateProvider::class) params: ThemedParams<BudgetState>,
+) = PreviewWithColorScheme(params.type) { BudgetStateText(params.data) }
 
 private class BudgetStateProvider : ThemedParameterProvider<BudgetState>(BudgetState.entries)

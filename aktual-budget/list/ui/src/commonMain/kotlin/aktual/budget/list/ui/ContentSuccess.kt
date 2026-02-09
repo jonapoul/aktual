@@ -26,24 +26,24 @@ import kotlinx.collections.immutable.persistentListOf
 @Stable
 @Composable
 internal fun ContentSuccess(
-  budgets: ImmutableList<Budget>,
-  onClickOpen: (Budget) -> Unit,
-  onClickDelete: (Budget) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    budgets: ImmutableList<Budget>,
+    onClickOpen: (Budget) -> Unit,
+    onClickDelete: (Budget) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier.scrollbar(listState),
-    state = listState,
-    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+      modifier = modifier.scrollbar(listState),
+      state = listState,
+      verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     items(budgets) { budget ->
       BudgetListItem(
-        budget = budget,
-        theme = theme,
-        onClickOpen = { onClickOpen(budget) },
-        onClickDelete = { onClickDelete(budget) },
+          budget = budget,
+          theme = theme,
+          onClickOpen = { onClickOpen(budget) },
+          onClickDelete = { onClickDelete(budget) },
       )
     }
 
@@ -57,12 +57,13 @@ internal fun ContentSuccess(
 @PortraitPreview
 @Composable
 private fun PreviewContentSuccess(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  ContentSuccess(
-    modifier = Modifier.background(LocalTheme.current.pageBackground),
-    budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
-    onClickOpen = {},
-    onClickDelete = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      ContentSuccess(
+          modifier = Modifier.background(LocalTheme.current.pageBackground),
+          budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
+          onClickOpen = {},
+          onClickDelete = {},
+      )
+    }

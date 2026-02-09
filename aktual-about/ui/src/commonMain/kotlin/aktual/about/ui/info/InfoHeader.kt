@@ -27,44 +27,42 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun InfoHeader(
-  year: Int,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    year: Int,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   Row(
-    modifier = modifier
-      .wrapContentWidth()
-      .padding(10.dp),
-    horizontalArrangement = Arrangement.Center,
-    verticalAlignment = Alignment.CenterVertically,
+      modifier = modifier.wrapContentWidth().padding(10.dp),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically,
   ) {
     val appName = Strings.appName
 
     Image(
-      modifier = Modifier.size(50.dp),
-      painter = Drawables.appIcon192,
-      contentDescription = appName,
+        modifier = Modifier.size(50.dp),
+        painter = Drawables.appIcon192,
+        contentDescription = appName,
     )
 
     HorizontalSpacer(10.dp)
 
     Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
       Text(
-        text = appName,
-        fontSize = 25.sp,
-        fontWeight = FontWeight.W700,
-        color = theme.pageText,
+          text = appName,
+          fontSize = 25.sp,
+          fontWeight = FontWeight.W700,
+          color = theme.pageText,
       )
       Text(
-        text = Strings.infoSubtitle1(year),
-        color = theme.pageTextSubdued,
+          text = Strings.infoSubtitle1(year),
+          color = theme.pageTextSubdued,
       )
       Text(
-        text = Strings.infoSubtitle2,
-        color = theme.pageTextSubdued,
+          text = Strings.infoSubtitle2,
+          color = theme.pageTextSubdued,
       )
     }
   }
@@ -73,7 +71,5 @@ internal fun InfoHeader(
 @Preview
 @Composable
 private fun PreviewHeader(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  InfoHeader(year = 2025)
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) = PreviewWithColorScheme(type) { InfoHeader(year = 2025) }

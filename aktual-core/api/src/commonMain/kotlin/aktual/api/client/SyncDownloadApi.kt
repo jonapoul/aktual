@@ -18,43 +18,44 @@ import io.ktor.utils.io.exhausted
 import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
+import kotlinx.io.Source as KxSource
 import okio.FileSystem
 import okio.Path
-import okio.buffer
-import kotlinx.io.Source as KxSource
 import okio.Sink as OkioSink
+import okio.buffer
 
-/**
- * Extracted out of [SyncApi] to minimise hassle in KSP-generating download progress logic.
- */
+/** Extracted out of [SyncApi] to minimise hassle in KSP-generating download progress logic. */
 class SyncDownloadApi(
-  private val serverUrl: ServerUrl,
-  private val client: HttpClient,
-  private val fileSystem: FileSystem,
+    private val serverUrl: ServerUrl,
+    private val client: HttpClient,
+    private val fileSystem: FileSystem,
 ) : AutoCloseable by client {
-  private val urlProtocol = when (serverUrl.protocol) {
-    Protocol.Http -> URLProtocol.HTTP
-    Protocol.Https -> URLProtocol.HTTPS
-  }
+  private val urlProtocol =
+      when (serverUrl.protocol) {
+        Protocol.Http -> URLProtocol.HTTP
+        Protocol.Https -> URLProtocol.HTTPS
+      }
 
   fun downloadUserFile(
-    token: Token,
-    budgetId: BudgetId,
-    path: Path,
+      token: Token,
+      budgetId: BudgetId,
+      path: Path,
   ): Flow<SyncDownloadState> = channelFlow {
-    val statement = client.prepareGet {
-      url {
-        protocol = urlProtocol
-        host = serverUrl.baseUrl
-        path("/sync/download-user-file")
-      }
-      header(AktualHeaders.TOKEN, token)
-      header(AktualHeaders.FILE_ID, budgetId)
-    }
+    val statement =
+        client.prepareGet {
+          url {
+            protocol = urlProtocol
+            host = serverUrl.baseUrl
+            path("/sync/download-user-file")
+          }
+          header(AktualHeaders.TOKEN, token)
+          header(AktualHeaders.FILE_ID, budgetId)
+        }
 
     statement.execute { response ->
       val channel = response.body<ByteReadChannel>()
-      val contentLength = response.contentLength() ?: error("No content length in response? $response")
+      val contentLength =
+          response.contentLength() ?: error("No content length in response? $response")
       val sink = fileSystem.sink(path)
       var count = 0L
       sink.use { s ->
@@ -91,12 +92,12 @@ class SyncDownloadApi(
 
 sealed interface SyncDownloadState {
   data class InProgress(
-    val bytesSentTotal: Long,
-    val contentLength: Long,
+      val bytesSentTotal: Long,
+      val contentLength: Long,
   ) : SyncDownloadState
 
   data class Done(
-    val path: Path,
-    val contentLength: Long,
+      val path: Path,
+      val contentLength: Long,
   ) : SyncDownloadState
 }

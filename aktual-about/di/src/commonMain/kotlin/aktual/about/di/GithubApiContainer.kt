@@ -15,12 +15,13 @@ import dev.zacsweers.metro.Provides
 object GithubApiContainer {
   @Provides
   fun githubApi(
-    buildConfig: BuildConfig,
-  ): GithubApi = GithubApiImpl(
-    client = buildKtorClient(
-      json = GithubJson,
-      tag = "GITHUB",
-      isDebug = buildConfig.isDebug,
-    ),
-  )
+      buildConfig: BuildConfig,
+  ): GithubApi =
+      GithubApiImpl(
+          buildKtorClient(
+              json = GithubJson,
+              tag = "GITHUB",
+              isDebug = buildConfig.isDebug,
+          ),
+      )
 }

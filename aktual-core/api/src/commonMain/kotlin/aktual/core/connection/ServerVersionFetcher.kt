@@ -7,19 +7,19 @@ import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.LoopController
 import dev.zacsweers.metro.Inject
 import io.ktor.client.plugins.ResponseException
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import logcat.logcat
-import kotlin.time.Duration.Companion.seconds
 
 @Inject
 class ServerVersionFetcher(
-  private val contexts: CoroutineContexts,
-  private val apisStateHolder: AktualApisStateHolder,
-  private val versionsStateHolder: AktualVersionsStateHolder,
-  private val loopController: LoopController,
+    private val contexts: CoroutineContexts,
+    private val apisStateHolder: AktualApisStateHolder,
+    private val versionsStateHolder: AktualVersionsStateHolder,
+    private val loopController: LoopController,
 ) {
   suspend fun startFetching() {
     logcat.v { "startFetching" }

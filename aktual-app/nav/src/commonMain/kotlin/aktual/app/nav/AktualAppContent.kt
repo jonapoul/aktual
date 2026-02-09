@@ -25,26 +25,26 @@ import androidx.navigation.NavHostController
 
 @Composable
 fun AktualAppContent(
-  navController: NavHostController,
-  isPrivacyEnabled: Boolean,
-  numberFormat: NumberFormat,
-  hideFraction: Boolean,
-  colorSchemeType: ColorSchemeType,
-  isServerUrlSet: Boolean,
-  token: Token?,
-  bottomBarState: BottomBarState,
+    navController: NavHostController,
+    isPrivacyEnabled: Boolean,
+    numberFormat: NumberFormat,
+    hideFraction: Boolean,
+    colorSchemeType: ColorSchemeType,
+    isServerUrlSet: Boolean,
+    token: Token?,
+    bottomBarState: BottomBarState,
 ) {
   WithCompositionLocals(
-    isPrivacyEnabled = isPrivacyEnabled,
-    format = numberFormat,
-    hideFraction = hideFraction,
+      isPrivacyEnabled = isPrivacyEnabled,
+      format = numberFormat,
+      hideFraction = hideFraction,
   ) {
     AktualTheme(colorSchemeType) {
       AktualAppLayout(
-        navController = navController,
-        isServerUrlSet = isServerUrlSet,
-        token = token,
-        bottomBarState = bottomBarState,
+          navController = navController,
+          isServerUrlSet = isServerUrlSet,
+          token = token,
+          bottomBarState = bottomBarState,
       )
     }
   }
@@ -52,34 +52,35 @@ fun AktualAppContent(
 
 @Composable
 private fun AktualAppLayout(
-  navController: NavHostController,
-  isServerUrlSet: Boolean,
-  token: Token?,
-  bottomBarState: BottomBarState,
-  modifier: Modifier = Modifier,
-) = Box(
-  modifier = modifier,
-  contentAlignment = Alignment.BottomCenter,
-) {
-  var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
+    navController: NavHostController,
+    isServerUrlSet: Boolean,
+    token: Token?,
+    bottomBarState: BottomBarState,
+    modifier: Modifier = Modifier,
+) =
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.BottomCenter,
+    ) {
+      var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
 
-  CompositionLocalProvider(LocalBottomStatusBarHeight provides bottomStatusBarHeight) {
-    AktualNavHost(
-      modifier = Modifier.fillMaxWidth(),
-      nav = navController,
-      isServerUrlSet = isServerUrlSet,
-      token = token,
-    )
-  }
+      CompositionLocalProvider(LocalBottomStatusBarHeight provides bottomStatusBarHeight) {
+        AktualNavHost(
+            modifier = Modifier.fillMaxWidth(),
+            nav = navController,
+            isServerUrlSet = isServerUrlSet,
+            token = token,
+        )
+      }
 
-  if (bottomBarState is BottomBarState.Visible) {
-    Column {
-      BottomStatusBar(
-        modifier = Modifier.wrapContentHeight(),
-        state = bottomBarState,
-        onMeasureHeight = { bottomStatusBarHeight = it },
-      )
-      BottomNavBarSpacing()
+      if (bottomBarState is BottomBarState.Visible) {
+        Column {
+          BottomStatusBar(
+              modifier = Modifier.wrapContentHeight(),
+              state = bottomBarState,
+              onMeasureHeight = { bottomStatusBarHeight = it },
+          )
+          BottomNavBarSpacing()
+        }
+      }
     }
-  }
-}

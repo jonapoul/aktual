@@ -9,11 +9,11 @@ import kotlinx.serialization.Serializable
 sealed interface LoginMethodsResponse {
   @Serializable
   data class Success(
-    @SerialName("methods") val methods: List<AvailableLoginMethod>,
+      @SerialName("methods") val methods: List<AvailableLoginMethod>,
   ) : LoginMethodsResponse
 
   @Serializable
   data class Failure(
-    @SerialName("reason") val reason: FailureReason,
+      @SerialName("reason") val reason: FailureReason,
   ) : LoginMethodsResponse
 }

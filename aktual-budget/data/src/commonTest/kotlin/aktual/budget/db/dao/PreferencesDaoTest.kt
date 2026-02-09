@@ -9,10 +9,10 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import kotlin.test.Test
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
-import kotlin.test.Test
 
 internal class PreferencesDaoTest {
   @Test
@@ -50,28 +50,30 @@ internal class PreferencesDaoTest {
 
     set(key1, "value1")
     assertAllPreferences(
-      key1 to "value1",
+        key1 to "value1",
     )
 
     set(key2, "value2")
     assertAllPreferences(
-      key1 to "value1",
-      key2 to "value2",
+        key1 to "value1",
+        key2 to "value2",
     )
 
     set(key2, "value2.1")
     assertAllPreferences(
-      key1 to "value1",
-      key2 to "value2.1",
+        key1 to "value1",
+        key2 to "value2.1",
     )
   }
 
   private fun runDaoTest(action: suspend PreferencesDao.(TestScope) -> Unit) =
-    runDatabaseTest { scope ->
-      val dao = PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
-      action(dao, scope)
-    }
+      runDatabaseTest { scope ->
+        val dao =
+            PreferencesDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
+        action(dao, scope)
+      }
 
-  private suspend fun PreferencesDao.assertAllPreferences(vararg expected: Pair<SyncedPrefKey, String?>) =
-    assertThat(getAll()).isEqualTo(expected.toMap())
+  private suspend fun PreferencesDao.assertAllPreferences(
+      vararg expected: Pair<SyncedPrefKey, String?>
+  ) = assertThat(getAll()).isEqualTo(expected.toMap())
 }

@@ -19,56 +19,58 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
 internal fun UpdateCheckFailedDialog(
-  cause: String,
-  onDismiss: () -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    cause: String,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   BasicAlertDialog(
-    modifier = modifier,
-    onDismissRequest = onDismiss,
-    content = {
-      UpdateCheckFailedDialogContent(
-        cause = cause,
-        onDismiss = onDismiss,
-        theme = theme,
-      )
-    },
+      modifier = modifier,
+      onDismissRequest = onDismiss,
+      content = {
+        UpdateCheckFailedDialogContent(
+            cause = cause,
+            onDismiss = onDismiss,
+            theme = theme,
+        )
+      },
   )
 }
 
 @Composable
 internal fun UpdateCheckFailedDialogContent(
-  cause: String,
-  onDismiss: () -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    cause: String,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   DialogContent(
-    modifier = modifier,
-    theme = theme,
-    title = Strings.infoCheckFailedTitle,
-    icon = MaterialIcons.Warning,
-    titleColor = theme.errorText,
-    content = { Text(cause) },
-    buttons = {
-      TextButton(onClick = onDismiss) {
-        Text(
-          text = Strings.infoCheckFailedOk,
-          color = theme.errorText,
-        )
-      }
-    },
+      modifier = modifier,
+      theme = theme,
+      title = Strings.infoCheckFailedTitle,
+      icon = MaterialIcons.Warning,
+      titleColor = theme.errorText,
+      content = { Text(cause) },
+      buttons = {
+        TextButton(onClick = onDismiss) {
+          Text(
+              text = Strings.infoCheckFailedOk,
+              color = theme.errorText,
+          )
+        }
+      },
   )
 }
 
 @Preview
 @Composable
 private fun PreviewCheckFailedContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  UpdateCheckFailedDialogContent(
-    cause = "Something broke lol. And here's some other rubbish to show how the text looks when wrapping lines",
-    onDismiss = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      UpdateCheckFailedDialogContent(
+          cause =
+              "Something broke lol. And here's some other rubbish to show how the text looks when wrapping lines",
+          onDismiss = {},
+      )
+    }

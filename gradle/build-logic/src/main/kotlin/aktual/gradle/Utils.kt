@@ -15,6 +15,8 @@ fun Project.optIn(classes: Collection<String>) {
 
 fun Project.kspAllConfigs(dependency: Any) = dependencies {
   configurations
-    .matching { c -> c.name.startsWith("ksp") && c.name != "ksp" && !c.name.contains("test", ignoreCase = true) }
-    .configureEach { add(name, dependency) }
+      .matching { c ->
+        c.name.startsWith("ksp") && c.name != "ksp" && !c.name.contains("test", ignoreCase = true)
+      }
+      .configureEach { add(name, dependency) }
 }

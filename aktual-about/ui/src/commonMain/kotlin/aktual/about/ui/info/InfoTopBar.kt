@@ -14,25 +14,25 @@ import androidx.compose.ui.text.style.TextOverflow
 
 @Composable
 internal fun InfoTopBar(
-  theme: Theme,
-  onAction: (InfoAction) -> Unit,
+    theme: Theme,
+    onAction: (InfoAction) -> Unit,
 ) {
   TopAppBar(
-    colors = theme.transparentTopAppBarColors(),
-    navigationIcon = {
-      IconButton(onClick = { onAction(InfoAction.NavBack) }) {
-        Icon(
-          imageVector = MaterialIcons.ArrowBack,
-          contentDescription = Strings.infoToolbarBack,
+      colors = theme.transparentTopAppBarColors(),
+      navigationIcon = {
+        IconButton(onClick = { onAction(InfoAction.NavBack) }) {
+          Icon(
+              imageVector = MaterialIcons.ArrowBack,
+              contentDescription = Strings.infoToolbarBack,
+          )
+        }
+      },
+      title = {
+        Text(
+            text = Strings.infoToolbarTitle,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
-      }
-    },
-    title = {
-      Text(
-        text = Strings.infoToolbarTitle,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-      )
-    },
+      },
   )
 }

@@ -40,122 +40,128 @@ import kotlinx.datetime.YearMonthRange
 
 @Composable
 internal fun ChartDateConfig(
-  config: ChartDateConfig,
-  onNewConfig: (ChartDateConfig) -> Unit,
-  onDateRangeType: (DateRangeType) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = Column(
-  modifier = modifier,
-  horizontalAlignment = Alignment.Start,
-  verticalArrangement = Arrangement.Top,
-) {
-  val modes = remember { DateRangeMode.entries.toImmutableList() }
-  var selectedIndex by remember { mutableIntStateOf(modes.indexOf(config.mode)) }
-  SlidingToggleButton(
-    modifier = Modifier.wrapContentSize(),
-    options = modes,
-    onSelectOption = { index -> selectedIndex = index },
-    selectedIndex = selectedIndex,
-    theme = theme,
-    string = { type -> type.string() },
-  )
-
-  VerticalSpacer(SPACING)
-
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Text(
-      modifier = Modifier.weight(1f),
-      text = Strings.reportsDateConfigStart,
-    )
-
-    HorizontalSpacer(SPACING)
-
-    YearMonthPicker(
-      modifier = Modifier.weight(MONTH_PICKER_WEIGHT),
-      value = config.start,
-      range = config.range,
-      theme = theme,
-      onValueChange = { onNewConfig(config.copy(start = it)) },
-    )
-  }
-
-  VerticalSpacer(SPACING)
-
-  Row(
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Text(
-      modifier = Modifier.weight(1f),
-      text = Strings.reportsDateConfigEnd,
-    )
-
-    HorizontalSpacer(SPACING)
-
-    YearMonthPicker(
-      modifier = Modifier.weight(MONTH_PICKER_WEIGHT),
-      value = config.end,
-      range = config.range,
-      theme = theme,
-      onValueChange = { onNewConfig(config.copy(end = it)) },
-    )
-  }
-
-  VerticalSpacer(SPACING)
-
-  FlowRow(
-    modifier = Modifier.fillMaxWidth(),
-    itemVerticalAlignment = Alignment.CenterVertically,
-    horizontalArrangement = Arrangement.spacedBy(SPACING),
-  ) {
-    DateRangeType.entries.fastForEach { type ->
-      DateRangeTypeButton(
-        type = type,
-        onClick = onDateRangeType,
+    config: ChartDateConfig,
+    onNewConfig: (ChartDateConfig) -> Unit,
+    onDateRangeType: (DateRangeType) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
+) =
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Top,
+    ) {
+      val modes = remember { DateRangeMode.entries.toImmutableList() }
+      var selectedIndex by remember { mutableIntStateOf(modes.indexOf(config.mode)) }
+      SlidingToggleButton(
+          modifier = Modifier.wrapContentSize(),
+          options = modes,
+          onSelectOption = { index -> selectedIndex = index },
+          selectedIndex = selectedIndex,
+          theme = theme,
+          string = { type -> type.string() },
       )
+
+      VerticalSpacer(SPACING)
+
+      Row(
+          verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = Strings.reportsDateConfigStart,
+        )
+
+        HorizontalSpacer(SPACING)
+
+        YearMonthPicker(
+            modifier = Modifier.weight(MONTH_PICKER_WEIGHT),
+            value = config.start,
+            range = config.range,
+            theme = theme,
+            onValueChange = { onNewConfig(config.copy(start = it)) },
+        )
+      }
+
+      VerticalSpacer(SPACING)
+
+      Row(
+          verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = Strings.reportsDateConfigEnd,
+        )
+
+        HorizontalSpacer(SPACING)
+
+        YearMonthPicker(
+            modifier = Modifier.weight(MONTH_PICKER_WEIGHT),
+            value = config.end,
+            range = config.range,
+            theme = theme,
+            onValueChange = { onNewConfig(config.copy(end = it)) },
+        )
+      }
+
+      VerticalSpacer(SPACING)
+
+      FlowRow(
+          modifier = Modifier.fillMaxWidth(),
+          itemVerticalAlignment = Alignment.CenterVertically,
+          horizontalArrangement = Arrangement.spacedBy(SPACING),
+      ) {
+        DateRangeType.entries.fastForEach { type ->
+          DateRangeTypeButton(
+              type = type,
+              onClick = onDateRangeType,
+          )
+        }
+      }
     }
-  }
-}
 
 @Composable
 private fun DateRangeTypeButton(
-  type: DateRangeType,
-  onClick: (DateRangeType) -> Unit,
-  modifier: Modifier = Modifier,
-) = NormalTextButton(
-  modifier = modifier,
-  text = type.string(),
-  onClick = { onClick(type) },
-)
+    type: DateRangeType,
+    onClick: (DateRangeType) -> Unit,
+    modifier: Modifier = Modifier,
+) =
+    NormalTextButton(
+        modifier = modifier,
+        text = type.string(),
+        onClick = { onClick(type) },
+    )
 
 private const val MONTH_PICKER_WEIGHT = 1.5f
 private val SPACING = 8.dp
 
 @Composable
-private fun DateRangeMode.string() = when (this) {
-  DateRangeMode.Live -> Strings.reportsDateConfigLive
-  DateRangeMode.Static -> Strings.reportsDateConfigStatic
-}
+private fun DateRangeMode.string() =
+    when (this) {
+      DateRangeMode.Live -> Strings.reportsDateConfigLive
+      DateRangeMode.Static -> Strings.reportsDateConfigStatic
+    }
 
 @Preview
 @Composable
 private fun PreviewChartDateConfig(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  ChartDateConfig(
-    modifier = Modifier.padding(8.dp),
-    onNewConfig = {},
-    onDateRangeType = {},
-    config = ChartDateConfig(
-      mode = DateRangeMode.Static,
-      start = YearMonth(2025, Month.FEBRUARY),
-      end = YearMonth(2025, Month.JULY),
-      range = YearMonthRange(
-        start = YearMonth(2011, Month.SEPTEMBER),
-        endInclusive = YearMonth(2025, Month.JULY),
-      ),
-    ),
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      ChartDateConfig(
+          modifier = Modifier.padding(8.dp),
+          onNewConfig = {},
+          onDateRangeType = {},
+          config =
+              ChartDateConfig(
+                  mode = DateRangeMode.Static,
+                  start = YearMonth(2025, Month.FEBRUARY),
+                  end = YearMonth(2025, Month.JULY),
+                  range =
+                      YearMonthRange(
+                          start = YearMonth(2011, Month.SEPTEMBER),
+                          endInclusive = YearMonth(2025, Month.JULY),
+                      ),
+              ),
+      )
+    }

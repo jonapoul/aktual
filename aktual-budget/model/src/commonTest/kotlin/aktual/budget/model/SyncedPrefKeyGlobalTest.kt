@@ -8,20 +8,20 @@ import kotlin.test.Test
 
 @Burst
 class SyncedPrefKeyGlobalTest(
-  private val key: SyncedPrefKey.Global = burstValues(
-    SyncedPrefKey.Global.BudgetType,
-    SyncedPrefKey.Global.DateFormat,
-    SyncedPrefKey.Global.FirstDayOfWeekIdx,
-    SyncedPrefKey.Global.HideFraction,
-    SyncedPrefKey.Global.IsPrivacyEnabled,
-    SyncedPrefKey.Global.LearnCategories,
-    SyncedPrefKey.Global.NumberFormat,
-    SyncedPrefKey.Global.UpcomingScheduledTransactionLength,
-  ),
+    private val key: SyncedPrefKey.Global =
+        burstValues(
+            SyncedPrefKey.Global.BudgetType,
+            SyncedPrefKey.Global.DateFormat,
+            SyncedPrefKey.Global.FirstDayOfWeekIdx,
+            SyncedPrefKey.Global.HideFraction,
+            SyncedPrefKey.Global.IsPrivacyEnabled,
+            SyncedPrefKey.Global.LearnCategories,
+            SyncedPrefKey.Global.NumberFormat,
+            SyncedPrefKey.Global.UpcomingScheduledTransactionLength,
+        ),
 ) {
   @Test
   fun decoding() {
-    assertThat(SyncedPrefKey.decode(key.key))
-      .isEqualTo(key)
+    assertThat(SyncedPrefKey.decode(key.key)).isEqualTo(key)
   }
 }

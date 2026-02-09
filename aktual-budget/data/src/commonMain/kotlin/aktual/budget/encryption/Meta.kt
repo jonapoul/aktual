@@ -11,8 +11,8 @@ interface Meta {
 }
 
 data class DefaultMeta(
-  override val keyId: KeyId?,
-  override val algorithm: String,
-  override val iv: ByteString,
-  override val authTag: ByteString,
+    override val keyId: KeyId?,
+    override val algorithm: String,
+    override val iv: ByteString,
+    override val authTag: ByteString,
 ) : Meta

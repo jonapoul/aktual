@@ -15,6 +15,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -29,15 +30,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
-import kotlin.time.Duration.Companion.seconds
 
 @Inject
 @ViewModelKey(ChangePasswordViewModel::class)
 @ContributesIntoMap(AppScope::class)
-class ChangePasswordViewModel internal constructor(
-  versionsStateHolder: AktualVersionsStateHolder,
-  private val passwordChanger: PasswordChanger,
-  private val loginRequester: LoginRequester,
+class ChangePasswordViewModel
+internal constructor(
+    versionsStateHolder: AktualVersionsStateHolder,
+    private val passwordChanger: PasswordChanger,
+    private val loginRequester: LoginRequester,
 ) : ViewModel() {
   private val mutableShowPasswords = MutableStateFlow(false)
   private val mutablePassword1 = MutableStateFlow(Password.Empty)
@@ -53,9 +54,10 @@ class ChangePasswordViewModel internal constructor(
   val state: StateFlow<ChangePasswordState?> = mutableState.asStateFlow()
   val token: Flow<Token?> = mutableToken.receiveAsFlow()
 
-  val passwordsMatch: StateFlow<Boolean> = combine(mutablePassword1, mutablePassword2, ::Pair)
-    .map { (p1, p2) -> validPasswords(p1, p2) }
-    .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
+  val passwordsMatch: StateFlow<Boolean> =
+      combine(mutablePassword1, mutablePassword2, ::Pair)
+          .map { (p1, p2) -> validPasswords(p1, p2) }
+          .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
 
   fun setPasswordsVisible(visible: Boolean) = mutableShowPasswords.update { visible }
 
@@ -76,14 +78,15 @@ class ChangePasswordViewModel internal constructor(
     viewModelScope.launch {
       val changePasswordResult = passwordChanger.submit(password)
       logcat.d { "result = $changePasswordResult" }
-      val newState = when (changePasswordResult) {
-        ChangePasswordResult.Success -> ChangePasswordState.Success
-        ChangePasswordResult.InvalidPassword -> ChangePasswordState.InvalidPassword
-        ChangePasswordResult.NetworkFailure -> ChangePasswordState.NetworkFailure
-        ChangePasswordResult.NotLoggedIn -> ChangePasswordState.NotLoggedIn
-        is ChangePasswordResult.HttpFailure -> ChangePasswordState.OtherFailure
-        is ChangePasswordResult.OtherFailure -> ChangePasswordState.OtherFailure
-      }
+      val newState =
+          when (changePasswordResult) {
+            ChangePasswordResult.Success -> ChangePasswordState.Success
+            ChangePasswordResult.InvalidPassword -> ChangePasswordState.InvalidPassword
+            ChangePasswordResult.NetworkFailure -> ChangePasswordState.NetworkFailure
+            ChangePasswordResult.NotLoggedIn -> ChangePasswordState.NotLoggedIn
+            is ChangePasswordResult.HttpFailure -> ChangePasswordState.OtherFailure
+            is ChangePasswordResult.OtherFailure -> ChangePasswordState.OtherFailure
+          }
       mutableState.update { newState }
 
       if (changePasswordResult is ChangePasswordResult.Success) {
@@ -103,7 +106,8 @@ class ChangePasswordViewModel internal constructor(
     }
   }
 
-  private fun validPasswords(p1: Password, p2: Password) = p1.isNotEmpty() && p2.isNotEmpty() && p1 == p2
+  private fun validPasswords(p1: Password, p2: Password) =
+      p1.isNotEmpty() && p2.isNotEmpty() && p1 == p2
 
   private companion object {
     val SUCCESS_DELAY = 1.seconds
@@ -117,9 +121,14 @@ sealed interface ChangePasswordState {
   data object Success : ChangePasswordState
 
   sealed interface Failure : ChangePasswordState
+
   data object InvalidPassword : Failure
+
   data object NotLoggedIn : Failure
+
   data object PasswordsDontMatch : Failure
+
   data object NetworkFailure : Failure
+
   data object OtherFailure : Failure
 }

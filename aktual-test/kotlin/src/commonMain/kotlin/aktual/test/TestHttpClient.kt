@@ -7,6 +7,6 @@ import io.ktor.client.engine.HttpClientEngine
 import kotlinx.serialization.json.Json
 
 fun testHttpClient(
-  engine: HttpClientEngine,
-  json: Json = AktualJson,
+    engine: HttpClientEngine,
+    json: Json = AktualJson,
 ): HttpClient = buildKtorClient(json, tag = null, engine, isDebug = false)

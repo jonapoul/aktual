@@ -72,45 +72,45 @@ import kotlin.time.Instant
 
 @Composable
 fun MetricsScreen(
-  nav: MetricsNavigator,
-  viewModel: MetricsViewModel = metroViewModel<MetricsViewModel>(),
+    nav: MetricsNavigator,
+    viewModel: MetricsViewModel = metroViewModel<MetricsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   MetricsScaffold(
-    state = state,
-    onAction = { action ->
-      when (action) {
-        MetricsAction.NavBack -> nav.back()
-        MetricsAction.Refresh -> viewModel.refresh()
-      }
-    },
+      state = state,
+      onAction = { action ->
+        when (action) {
+          MetricsAction.NavBack -> nav.back()
+          MetricsAction.Refresh -> viewModel.refresh()
+        }
+      },
   )
 }
 
 @Composable
 internal fun MetricsScaffold(
-  state: MetricsState,
-  onAction: (MetricsAction) -> Unit,
+    state: MetricsState,
+    onAction: (MetricsAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
   Scaffold(
-    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-    topBar = { MetricsTopAppBar(state, scrollBehavior, onAction) },
+      modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+      topBar = { MetricsTopAppBar(state, scrollBehavior, onAction) },
   ) { innerPadding ->
     Box {
       val hazeState = remember { HazeState() }
 
       WavyBackground(
-        modifier = Modifier.hazeSource(hazeState),
+          modifier = Modifier.hazeSource(hazeState),
       )
 
       WithHazeState(hazeState) {
         MetricsContent(
-          modifier = Modifier.padding(innerPadding),
-          state = state,
-          onAction = onAction,
+            modifier = Modifier.padding(innerPadding),
+            state = state,
+            onAction = onAction,
         )
       }
     }
@@ -119,163 +119,165 @@ internal fun MetricsScaffold(
 
 @Composable
 private fun MetricsTopAppBar(
-  state: MetricsState,
-  scrollBehavior: TopAppBarScrollBehavior,
-  onAction: (MetricsAction) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = TopAppBar(
-  modifier = modifier,
-  colors = theme.transparentTopAppBarColors(),
-  navigationIcon = {
-    IconButton(onClick = { onAction(MetricsAction.NavBack) }) {
-      Icon(
-        imageVector = MaterialIcons.ArrowBack,
-        contentDescription = Strings.navBack,
-      )
-    }
-  },
-  title = { Text(Strings.metricsToolbar) },
-  scrollBehavior = scrollBehavior,
-  actions = {
-    if (state is MetricsState.Success) {
-      IconButton(onClick = { onAction(MetricsAction.Refresh) }) {
-        Icon(
-          imageVector = MaterialIcons.Refresh,
-          contentDescription = Strings.metricsRefresh,
-        )
-      }
-    }
-  },
-)
+    state: MetricsState,
+    scrollBehavior: TopAppBarScrollBehavior,
+    onAction: (MetricsAction) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
+) =
+    TopAppBar(
+        modifier = modifier,
+        colors = theme.transparentTopAppBarColors(),
+        navigationIcon = {
+          IconButton(onClick = { onAction(MetricsAction.NavBack) }) {
+            Icon(
+                imageVector = MaterialIcons.ArrowBack,
+                contentDescription = Strings.navBack,
+            )
+          }
+        },
+        title = { Text(Strings.metricsToolbar) },
+        scrollBehavior = scrollBehavior,
+        actions = {
+          if (state is MetricsState.Success) {
+            IconButton(onClick = { onAction(MetricsAction.Refresh) }) {
+              Icon(
+                  imageVector = MaterialIcons.Refresh,
+                  contentDescription = Strings.metricsRefresh,
+              )
+            }
+          }
+        },
+    )
 
 @Composable
 private fun MetricsContent(
-  state: MetricsState,
-  onAction: (MetricsAction) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = Box(
-  modifier = modifier
-    .fillMaxSize()
-    .padding(Dimens.Large),
-) {
-  when (state) {
-    MetricsState.Loading -> {
-      LoadingContent(
-        theme = theme,
-      )
-    }
+    state: MetricsState,
+    onAction: (MetricsAction) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
+) =
+    Box(
+        modifier = modifier.fillMaxSize().padding(Dimens.Large),
+    ) {
+      when (state) {
+        MetricsState.Loading -> {
+          LoadingContent(
+              theme = theme,
+          )
+        }
 
-    MetricsState.Disconnected -> {
-      FailureContent(
-        message = Strings.metricsDisconnected,
-        onAction = onAction,
-        theme = theme,
-        modifier = modifier,
-      )
-    }
+        MetricsState.Disconnected -> {
+          FailureContent(
+              message = Strings.metricsDisconnected,
+              onAction = onAction,
+              theme = theme,
+              modifier = modifier,
+          )
+        }
 
-    is MetricsState.Failure -> {
-      FailureContent(
-        message = state.cause,
-        onAction = onAction,
-        theme = theme,
-        modifier = modifier,
-      )
-    }
+        is MetricsState.Failure -> {
+          FailureContent(
+              message = state.cause,
+              onAction = onAction,
+              theme = theme,
+              modifier = modifier,
+          )
+        }
 
-    is MetricsState.Success -> {
-      SuccessContent(
-        state = state,
-        modifier = modifier,
-      )
+        is MetricsState.Success -> {
+          SuccessContent(
+              state = state,
+              modifier = modifier,
+          )
+        }
+      }
     }
-  }
-}
 
 @Composable
 private fun BoxScope.LoadingContent(
-  theme: Theme,
-) = HazedBox(
-  modifier = Modifier.align(Alignment.Center),
-  contentAlignment = Alignment.Center,
-) {
-  CircularProgressIndicator(
-    modifier = Modifier
-      .align(Alignment.Center)
-      .size(50.dp),
-    color = theme.buttonPrimaryBackground,
-    trackColor = theme.dialogProgressWheelTrack,
-  )
-}
+    theme: Theme,
+) =
+    HazedBox(
+        modifier = Modifier.align(Alignment.Center),
+        contentAlignment = Alignment.Center,
+    ) {
+      CircularProgressIndicator(
+          modifier = Modifier.align(Alignment.Center).size(50.dp),
+          color = theme.buttonPrimaryBackground,
+          trackColor = theme.dialogProgressWheelTrack,
+      )
+    }
 
 @Composable
 private fun FailureContent(
-  message: String,
-  onAction: (MetricsAction) -> Unit,
-  theme: Theme,
-  modifier: Modifier = Modifier,
-) = FailureScreen(
-  modifier = modifier.fillMaxSize(),
-  title = Strings.metricsFailure,
-  reason = message,
-  retryText = Strings.metricsFailureRetry,
-  onClickRetry = { onAction(MetricsAction.Refresh) },
-  theme = theme,
-)
+    message: String,
+    onAction: (MetricsAction) -> Unit,
+    theme: Theme,
+    modifier: Modifier = Modifier,
+) =
+    FailureScreen(
+        modifier = modifier.fillMaxSize(),
+        title = Strings.metricsFailure,
+        reason = message,
+        retryText = Strings.metricsFailureRetry,
+        onClickRetry = { onAction(MetricsAction.Refresh) },
+        theme = theme,
+    )
 
 @Composable
 private fun SuccessContent(
-  state: MetricsState.Success,
-  modifier: Modifier = Modifier,
-) = Column(
-  modifier = modifier
-    .padding(horizontal = 10.dp)
-    .verticalScrollWithBar(),
-  verticalArrangement = Arrangement.spacedBy(Dimens.Large, Alignment.Top),
-  horizontalAlignment = Alignment.Start,
-) {
-  HazedBox(
-    modifier = Modifier.fillMaxWidth(),
-    padding = PaddingValues(Dimens.Huge),
-  ) {
-    SuccessContentRow(title = Strings.metricsLastUpdate, value = state.lastUpdate.toString())
-  }
-
-  HazedBox(
-    modifier = Modifier.fillMaxWidth(),
-    padding = PaddingValues(Dimens.Huge),
-  ) {
-    SuccessContentRow(title = Strings.metricsUptime, value = state.uptime.formattedString())
-  }
-
-  HazedBox(
-    modifier = Modifier.fillMaxWidth(),
-    padding = PaddingValues(Dimens.Huge),
-  ) {
-    Column {
-      Text(
-        text = Strings.metricsMemory,
-        fontWeight = FontWeight.Bold,
-        style = AktualTypography.titleLarge,
-      )
-
-      VerticalSpacer(10.dp)
-
-      with(state.memory) {
-        SuccessContentRow(title = Strings.metricsMemoryRss, value = rss.toString())
-        SuccessContentRow(title = Strings.metricsMemoryHeapTotal, value = heapTotal.toString())
-        SuccessContentRow(title = Strings.metricsMemoryHeapUsed, value = heapUsed.toString())
-        SuccessContentRow(title = Strings.metricsMemoryExternal, value = external.toString())
-        SuccessContentRow(title = Strings.metricsMemoryArrayBuffers, value = arrayBuffers.toString())
+    state: MetricsState.Success,
+    modifier: Modifier = Modifier,
+) =
+    Column(
+        modifier = modifier.padding(horizontal = 10.dp).verticalScrollWithBar(),
+        verticalArrangement = Arrangement.spacedBy(Dimens.Large, Alignment.Top),
+        horizontalAlignment = Alignment.Start,
+    ) {
+      HazedBox(
+          modifier = Modifier.fillMaxWidth(),
+          padding = PaddingValues(Dimens.Huge),
+      ) {
+        SuccessContentRow(title = Strings.metricsLastUpdate, value = state.lastUpdate.toString())
       }
-    }
-  }
 
-  BottomStatusBarSpacing()
-  BottomNavBarSpacing()
-}
+      HazedBox(
+          modifier = Modifier.fillMaxWidth(),
+          padding = PaddingValues(Dimens.Huge),
+      ) {
+        SuccessContentRow(title = Strings.metricsUptime, value = state.uptime.formattedString())
+      }
+
+      HazedBox(
+          modifier = Modifier.fillMaxWidth(),
+          padding = PaddingValues(Dimens.Huge),
+      ) {
+        Column {
+          Text(
+              text = Strings.metricsMemory,
+              fontWeight = FontWeight.Bold,
+              style = AktualTypography.titleLarge,
+          )
+
+          VerticalSpacer(10.dp)
+
+          with(state.memory) {
+            SuccessContentRow(title = Strings.metricsMemoryRss, value = rss.toString())
+            SuccessContentRow(title = Strings.metricsMemoryHeapTotal, value = heapTotal.toString())
+            SuccessContentRow(title = Strings.metricsMemoryHeapUsed, value = heapUsed.toString())
+            SuccessContentRow(title = Strings.metricsMemoryExternal, value = external.toString())
+            SuccessContentRow(
+                title = Strings.metricsMemoryArrayBuffers,
+                value = arrayBuffers.toString(),
+            )
+          }
+        }
+      }
+
+      BottomStatusBarSpacing()
+      BottomNavBarSpacing()
+    }
 
 @Stable
 @Suppress("MagicNumber")
@@ -295,53 +297,60 @@ private fun Duration.formattedString(): String {
 
 @Composable
 private fun SuccessContentRow(
-  title: String,
-  value: String,
-  modifier: Modifier = Modifier,
-) = Row(
-  modifier = modifier.fillMaxWidth(),
-  verticalAlignment = Alignment.CenterVertically,
-) {
-  Text(
-    modifier = Modifier.weight(1f),
-    text = title,
-    style = AktualTypography.bodyLarge,
-    fontWeight = FontWeight.Bold,
-    textAlign = TextAlign.Start,
-  )
-  Text(
-    modifier = Modifier.weight(1f),
-    text = value,
-    style = AktualTypography.bodyMedium,
-    fontWeight = FontWeight.Normal,
-    textAlign = TextAlign.End,
-  )
-}
+    title: String,
+    value: String,
+    modifier: Modifier = Modifier,
+) =
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Text(
+          modifier = Modifier.weight(1f),
+          text = title,
+          style = AktualTypography.bodyLarge,
+          fontWeight = FontWeight.Bold,
+          textAlign = TextAlign.Start,
+      )
+      Text(
+          modifier = Modifier.weight(1f),
+          text = value,
+          style = AktualTypography.bodyMedium,
+          fontWeight = FontWeight.Normal,
+          textAlign = TextAlign.End,
+      )
+    }
 
 @PortraitPreview
 @Composable
 private fun PreviewMetricsScaffold(
-  @PreviewParameter(MetricsStateProvider::class) params: ThemedParams<MetricsState>,
-) = PreviewWithColorScheme(params.type) {
-  MetricsScaffold(
-    state = params.data,
-    onAction = {},
-  )
-}
+    @PreviewParameter(MetricsStateProvider::class) params: ThemedParams<MetricsState>,
+) =
+    PreviewWithColorScheme(params.type) {
+      MetricsScaffold(
+          state = params.data,
+          onAction = {},
+      )
+    }
 
-private class MetricsStateProvider : ThemedParameterProvider<MetricsState>(
-  MetricsState.Loading,
-  MetricsState.Disconnected,
-  MetricsState.Failure("Something broke"),
-  MetricsState.Success(
-    memory = GetMetricsResponse.Memory(
-      rss = 123.bytes,
-      heapTotal = 456.kB,
-      heapUsed = 789.MB,
-      external = 12.GB,
-      arrayBuffers = 34.TB,
-    ),
-    uptime = 123.days + 4.hours + 5.seconds + 678.milliseconds,
-    lastUpdate = Instant.fromEpochMilliseconds(epochMilliseconds = 1765211833825L), // Mon Dec 08 2025 16:37:13.825
-  ),
-)
+private class MetricsStateProvider :
+    ThemedParameterProvider<MetricsState>(
+        MetricsState.Loading,
+        MetricsState.Disconnected,
+        MetricsState.Failure("Something broke"),
+        MetricsState.Success(
+            memory =
+                GetMetricsResponse.Memory(
+                    rss = 123.bytes,
+                    heapTotal = 456.kB,
+                    heapUsed = 789.MB,
+                    external = 12.GB,
+                    arrayBuffers = 34.TB,
+                ),
+            uptime = 123.days + 4.hours + 5.seconds + 678.milliseconds,
+            lastUpdate =
+                Instant.fromEpochMilliseconds(
+                    epochMilliseconds = 1765211833825L
+                ), // Mon Dec 08 2025 16:37:13.825
+        ),
+    )

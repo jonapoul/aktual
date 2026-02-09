@@ -8,10 +8,10 @@ import aktual.test.testHttpClient
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine
-import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.test.runTest
 
 class HealthApiTest {
   private lateinit var mockEngine: MockEngine.Queue

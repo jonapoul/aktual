@@ -8,8 +8,8 @@ import aktual.test.readBytes
 import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import okio.source
 import kotlin.test.Test
+import okio.source
 
 class DecryptTest {
   @InterceptTest val temporaryFolder = TemporaryFolder()
@@ -20,16 +20,16 @@ class DecryptTest {
     val destination = temporaryFolder / "decrypted.zip"
 
     decryptToSink(
-      key = KEY.toByteArray(),
-      iv = IV.toByteArray(),
-      authTag = AUTH_TAG.toByteArray(),
-      algorithm = EXPECTED_ALGORITHM,
-      source = encryptedZip.source(),
-      sink = temporaryFolder.sink(destination),
+        key = KEY.toByteArray(),
+        iv = IV.toByteArray(),
+        authTag = AUTH_TAG.toByteArray(),
+        algorithm = EXPECTED_ALGORITHM,
+        source = encryptedZip.source(),
+        sink = temporaryFolder.sink(destination),
     )
 
     assertThat(temporaryFolder.source(destination).readBytes())
-      .isEqualTo(RESOURCES_DIR.resolve("expected.zip").source().readBytes())
+        .isEqualTo(RESOURCES_DIR.resolve("expected.zip").source().readBytes())
   }
 
   @Test
@@ -39,12 +39,12 @@ class DecryptTest {
 
     assertFailsWith<UnknownAlgorithmException> {
       decryptToSink(
-        key = KEY.toByteArray(),
-        iv = IV.toByteArray(),
-        authTag = AUTH_TAG.toByteArray(),
-        algorithm = "something-unknown",
-        source = source,
-        sink = temporaryFolder.sink(destination),
+          key = KEY.toByteArray(),
+          iv = IV.toByteArray(),
+          authTag = AUTH_TAG.toByteArray(),
+          algorithm = "something-unknown",
+          source = source,
+          sink = temporaryFolder.sink(destination),
       )
     }
   }

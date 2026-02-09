@@ -45,16 +45,18 @@ import logcat.logcat
 @Inject
 @ViewModelKey(ServerUrlViewModel::class)
 @ContributesIntoMap(AppScope::class)
-class ServerUrlViewModel internal constructor(
-  private val contexts: CoroutineContexts,
-  private val apiStateHolder: AktualApisStateHolder,
-  private val preferences: AppGlobalPreferences,
-  versionsStateHolder: AktualVersionsStateHolder,
-  buildConfig: BuildConfig,
+class ServerUrlViewModel
+internal constructor(
+    private val contexts: CoroutineContexts,
+    private val apiStateHolder: AktualApisStateHolder,
+    private val preferences: AppGlobalPreferences,
+    versionsStateHolder: AktualVersionsStateHolder,
+    buildConfig: BuildConfig,
 ) : ViewModel() {
   private val mutableIsLoading = ResettableStateFlow(value = false)
   private val mutableBaseUrl = MutableStateFlow(buildConfig.defaultServerUrl?.baseUrl.orEmpty())
-  private val mutableProtocol = MutableStateFlow(buildConfig.defaultServerUrl?.protocol ?: Protocol.Https)
+  private val mutableProtocol =
+      MutableStateFlow(buildConfig.defaultServerUrl?.protocol ?: Protocol.Https)
   private val mutableConfirmResult = ResettableStateFlow<ConfirmResult?>(value = null)
   private val mutableNavDestination = Channel<NavDestination>()
 
@@ -64,21 +66,23 @@ class ServerUrlViewModel internal constructor(
   val protocol: StateFlow<Protocol> = mutableProtocol.asStateFlow()
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
 
-  val isEnabled: StateFlow<Boolean> = baseUrl
-    .map { it.isNotBlank() }
-    .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
+  val isEnabled: StateFlow<Boolean> =
+      baseUrl
+          .map { it.isNotBlank() }
+          .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
 
   val navDestination: ReceiveChannel<NavDestination> = mutableNavDestination
 
-  val errorMessage: StateFlow<String?> = viewModelScope.launchMolecule(Immediate) {
-    val confirmResult by mutableConfirmResult.collectAsState()
-    val result = confirmResult
-    if (result is ConfirmResult.Failed) {
-      "Failed: ${result.reason}"
-    } else {
-      null
-    }
-  }
+  val errorMessage: StateFlow<String?> =
+      viewModelScope.launchMolecule(Immediate) {
+        val confirmResult by mutableConfirmResult.collectAsState()
+        val result = confirmResult
+        if (result is ConfirmResult.Failed) {
+          "Failed: ${result.reason}"
+        } else {
+          null
+        }
+      }
 
   init {
     viewModelScope.launch {
@@ -151,72 +155,78 @@ class ServerUrlViewModel internal constructor(
     mutableNavDestination.trySend(NavDestination.ToAbout)
   }
 
-  private suspend fun checkIfNeedsBootstrap(url: ServerUrl) = try {
-    logcat.v { "checkIfNeedsBootstrap $url" }
-    val apis = apiStateHolder
-      .filterNotNull()
-      .filter { it.serverUrl == url }
-      .first()
+  private suspend fun checkIfNeedsBootstrap(url: ServerUrl) =
+      try {
+        logcat.v { "checkIfNeedsBootstrap $url" }
+        val apis = apiStateHolder.filterNotNull().filter { it.serverUrl == url }.first()
 
-    logcat.v { "apis = $apis" }
-    val response = try {
-      withContext(contexts.io) { apis.account.needsBootstrap() }
-    } catch (e: ResponseException) {
-      logcat.e(e) { "HTTP failure checking bootstrap for $url" }
-      e.response.body<NeedsBootstrapResponse.Failure>()
-    }
+        logcat.v { "apis = $apis" }
+        val response =
+            try {
+              withContext(contexts.io) { apis.account.needsBootstrap() }
+            } catch (e: ResponseException) {
+              logcat.e(e) { "HTTP failure checking bootstrap for $url" }
+              e.response.body<NeedsBootstrapResponse.Failure>()
+            }
 
-    logcat.v { "response = $response" }
-    val confirmResult = when (response) {
-      is NeedsBootstrapResponse.Success -> ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
-      is NeedsBootstrapResponse.Failure -> ConfirmResult.Failed(reason = response.reason.reason)
-    }
-    mutableConfirmResult.update { confirmResult }
-  } catch (e: CancellationException) {
-    throw e
-  } catch (e: Exception) {
-    logcat.w(e) { "Failed checking bootstrap for $url" }
+        logcat.v { "response = $response" }
+        val confirmResult =
+            when (response) {
+              is NeedsBootstrapResponse.Success ->
+                  ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
+              is NeedsBootstrapResponse.Failure ->
+                  ConfirmResult.Failed(reason = response.reason.reason)
+            }
+        mutableConfirmResult.update { confirmResult }
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.w(e) { "Failed checking bootstrap for $url" }
 
-    // hit an error, we can't use this URL?
-    preferences.serverUrl.deleteAndCommit()
+        // hit an error, we can't use this URL?
+        preferences.serverUrl.deleteAndCommit()
 
-    mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
-  }
-
-  private fun ConfirmResult?.navDestination(): NavDestination? = when (this) {
-    null -> {
-      null
-    }
-
-    is ConfirmResult.Failed -> {
-      null
-    }
-
-    is ConfirmResult.Succeeded -> {
-      if (isBootstrapped) {
-        NavDestination.ToLogin
-      } else {
-        NavDestination.ToBootstrap
+        mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
       }
-    }
-  }
+
+  private fun ConfirmResult?.navDestination(): NavDestination? =
+      when (this) {
+        null -> {
+          null
+        }
+
+        is ConfirmResult.Failed -> {
+          null
+        }
+
+        is ConfirmResult.Succeeded -> {
+          if (isBootstrapped) {
+            NavDestination.ToLogin
+          } else {
+            NavDestination.ToBootstrap
+          }
+        }
+      }
 }
 
 @Immutable
 internal sealed interface ConfirmResult {
   data class Failed(
-    val reason: String,
+      val reason: String,
   ) : ConfirmResult
 
   data class Succeeded(
-    val isBootstrapped: Boolean,
+      val isBootstrapped: Boolean,
   ) : ConfirmResult
 }
 
 @Immutable
 sealed interface NavDestination {
   data object Back : NavDestination
+
   data object ToBootstrap : NavDestination
+
   data object ToLogin : NavDestination
+
   data object ToAbout : NavDestination
 }

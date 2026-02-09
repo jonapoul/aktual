@@ -1,3 +1,1 @@
-plugins {
-  id("aktual.module.multiplatform")
-}
+plugins { id("aktual.module.multiplatform") }

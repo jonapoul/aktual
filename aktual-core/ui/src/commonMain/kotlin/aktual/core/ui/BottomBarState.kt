@@ -8,7 +8,7 @@ sealed interface BottomBarState {
   data object Hidden : BottomBarState
 
   data class Visible(
-    val pingState: PingState,
-    val budgetName: String?,
+      val pingState: PingState,
+      val budgetName: String?,
   ) : BottomBarState
 }

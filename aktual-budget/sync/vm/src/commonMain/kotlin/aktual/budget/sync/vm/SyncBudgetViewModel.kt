@@ -31,6 +31,8 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlin.time.Duration.Companion.milliseconds
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.persistentMapOf
@@ -47,47 +49,48 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 import okio.Path
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 @Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
 @AssistedInject
 class SyncBudgetViewModel(
-  @Assisted private val token: Token,
-  @Assisted private val budgetId: BudgetId,
-  private val fileDownloader: BudgetFileDownloader,
-  private val infoFetcher: BudgetInfoFetcher,
-  private val decrypter: FileDecrypter,
-  private val importer: DatabaseImporter,
-  private val files: BudgetFiles,
-  private val urlOpener: UrlOpener,
-  private val keyFetcher: KeyFetcher,
-  private val keyPreferences: KeyPreferences,
-  private val budgetGraphs: BudgetGraphHolder,
+    @Assisted private val token: Token,
+    @Assisted private val budgetId: BudgetId,
+    private val fileDownloader: BudgetFileDownloader,
+    private val infoFetcher: BudgetInfoFetcher,
+    private val decrypter: FileDecrypter,
+    private val importer: DatabaseImporter,
+    private val files: BudgetFiles,
+    private val urlOpener: UrlOpener,
+    private val keyFetcher: KeyFetcher,
+    private val keyPreferences: KeyPreferences,
+    private val budgetGraphs: BudgetGraphHolder,
 ) : ViewModel() {
   private var cachedData: CachedEncryptedData? = null
 
   private val mutablePasswordState = MutableStateFlow<KeyPasswordState>(KeyPasswordState.Inactive)
   val passwordState: StateFlow<KeyPasswordState> = mutablePasswordState.asStateFlow()
 
-  private val mutableSteps = MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
+  private val mutableSteps =
+      MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
   val stepStates: StateFlow<ImmutableMap<SyncStep, SyncStepState>> = mutableSteps.asStateFlow()
 
-  val budgetIsLoaded: StateFlow<Boolean> = budgetGraphs
-    .map { it?.budgetId == budgetId }
-    .stateIn(viewModelScope, Eagerly, initialValue = false)
+  val budgetIsLoaded: StateFlow<Boolean> =
+      budgetGraphs
+          .map { it?.budgetId == budgetId }
+          .stateIn(viewModelScope, Eagerly, initialValue = false)
 
-  val overallState: StateFlow<SyncOverallState> = viewModelScope.launchMolecule(Immediate) {
-    val stepStates by mutableSteps.collectAsState()
-    val states = stepStates.values
-    when {
-      states.all { it == SyncStepState.NotStarted } -> SyncOverallState.NotStarted
-      states.all { it == SyncStepState.Succeeded } -> SyncOverallState.Succeeded
-      states.any { it is SyncStepState.InProgress } -> SyncOverallState.InProgress
-      states.any { it is SyncStepState.Failed } -> SyncOverallState.Failed
-      else -> SyncOverallState.InProgress
-    }
-  }
+  val overallState: StateFlow<SyncOverallState> =
+      viewModelScope.launchMolecule(Immediate) {
+        val stepStates by mutableSteps.collectAsState()
+        val states = stepStates.values
+        when {
+          states.all { it == SyncStepState.NotStarted } -> SyncOverallState.NotStarted
+          states.all { it == SyncStepState.Succeeded } -> SyncOverallState.Succeeded
+          states.any { it is SyncStepState.InProgress } -> SyncOverallState.InProgress
+          states.any { it is SyncStepState.Failed } -> SyncOverallState.Failed
+          else -> SyncOverallState.InProgress
+        }
+      }
 
   private var syncJob: Job? = null
   private var logStatesJob: Job? = null
@@ -113,7 +116,8 @@ class SyncBudgetViewModel(
     budgetGraphs.clear()
   }
 
-  fun enterKeyPassword(input: Password) = mutablePasswordState.update { KeyPasswordState.Active(input) }
+  fun enterKeyPassword(input: Password) =
+      mutablePasswordState.update { KeyPasswordState.Active(input) }
 
   fun dismissKeyPasswordDialog() = mutablePasswordState.update { KeyPasswordState.Inactive }
 
@@ -138,7 +142,12 @@ class SyncBudgetViewModel(
       when (val fetched = keyFetcher(budgetId, token, state.input)) {
         is FetchKeyResult.Failure -> {
           logcat.w { "Failed fetching keys: $fetched" }
-          handleDecryptFailure(DecryptResult.FailedFetchingKey, cachedData.encryptedPath, cachedData.userFile, meta)
+          handleDecryptFailure(
+              DecryptResult.FailedFetchingKey,
+              cachedData.encryptedPath,
+              cachedData.userFile,
+              meta,
+          )
         }
 
         is FetchKeyResult.Success -> {
@@ -159,40 +168,43 @@ class SyncBudgetViewModel(
     mutableSteps.update { defaultStates() }
     dismissKeyPasswordDialog()
 
-    logStatesJob = viewModelScope.launchInfiniteLoop {
-      logStates()
-      delay(duration = 0.1.seconds)
-    }
+    logStatesJob =
+        viewModelScope.launchInfiniteLoop {
+          logStates()
+          delay(duration = 0.1.seconds)
+        }
 
-    syncJob = viewModelScope.launch {
-      val userFileDeferred = async { fetchUserFileInfo() }
-      val fileDownloadDeferred = async { downloadBudgetFileAsync() }
-      val userFile = userFileDeferred.await()
-      val downloadedPath = fileDownloadDeferred.await()
+    syncJob =
+        viewModelScope.launch {
+          val userFileDeferred = async { fetchUserFileInfo() }
+          val fileDownloadDeferred = async { downloadBudgetFileAsync() }
+          val userFile = userFileDeferred.await()
+          val downloadedPath = fileDownloadDeferred.await()
 
-      logStatesJob?.cancel()
-      logStates() // make sure we log the final state
+          logStatesJob?.cancel()
+          logStates() // make sure we log the final state
 
-      if (userFile == null || downloadedPath == null) {
-        logcat.w { "Failed syncing?" }
-        return@launch
-      }
+          if (userFile == null || downloadedPath == null) {
+            logcat.w { "Failed syncing?" }
+            return@launch
+          }
 
-      setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
+          setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
 
-      logcat.i { "Succeeded syncing: $userFile and $downloadedPath" }
-      val meta = userFile.encryptMeta
-      val decryptResult = if (meta != null) {
-        // Encrypted payload, so decrypt it and return the decrypted zip's path
-        decrypter(userFile.fileId, meta, downloadedPath)
-      } else {
-        // Unencrypted, so just copy the payload to the expected place
-        val targetPath = files.decryptedZip(budgetId)
-        files.fileSystem.copy(source = downloadedPath, target = targetPath)
-        DecryptResult.NotNeeded(targetPath)
-      }
-      handleDecryptResult(decryptResult, downloadedPath, meta, userFile)
-    }
+          logcat.i { "Succeeded syncing: $userFile and $downloadedPath" }
+          val meta = userFile.encryptMeta
+          val decryptResult =
+              if (meta != null) {
+                // Encrypted payload, so decrypt it and return the decrypted zip's path
+                decrypter(userFile.fileId, meta, downloadedPath)
+              } else {
+                // Unencrypted, so just copy the payload to the expected place
+                val targetPath = files.decryptedZip(budgetId)
+                files.fileSystem.copy(source = downloadedPath, target = targetPath)
+                DecryptResult.NotNeeded(targetPath)
+              }
+          handleDecryptResult(decryptResult, downloadedPath, meta, userFile)
+        }
   }
 
   private fun logStates() {
@@ -220,20 +232,21 @@ class SyncBudgetViewModel(
     setStepState(DownloadingDatabase, SyncStepState.InProgress.Indefinite)
 
     fileDownloader.download(token, budgetId).collect { state ->
-      val stepState = when (state) {
-        is DownloadState.InProgress -> {
-          SyncStepState.InProgress.Definite(state.toPercent())
-        }
+      val stepState =
+          when (state) {
+            is DownloadState.InProgress -> {
+              SyncStepState.InProgress.Definite(state.toPercent())
+            }
 
-        is DownloadState.Failure -> {
-          SyncStepState.Failed(state.message)
-        }
+            is DownloadState.Failure -> {
+              SyncStepState.Failed(state.message)
+            }
 
-        is DownloadState.Done -> {
-          downloadedDbPath = state.path
-          SyncStepState.Succeeded
-        }
-      }
+            is DownloadState.Done -> {
+              downloadedDbPath = state.path
+              SyncStepState.Succeeded
+            }
+          }
       setStepState(DownloadingDatabase, stepState)
     }
     return downloadedDbPath
@@ -246,10 +259,10 @@ class SyncBudgetViewModel(
   }
 
   private suspend fun handleDecryptResult(
-    result: DecryptResult,
-    encryptedPath: Path,
-    meta: EncryptMeta?,
-    userFile: UserFile,
+      result: DecryptResult,
+      encryptedPath: Path,
+      meta: EncryptMeta?,
+      userFile: UserFile,
   ) {
     logcat.i { "decryptResult=$result" }
     when (result) {
@@ -261,36 +274,37 @@ class SyncBudgetViewModel(
   }
 
   private fun handleDecryptFailure(
-    result: DecryptResult.Failure,
-    encryptedPath: Path,
-    userFile: UserFile,
-    meta: EncryptMeta?,
+      result: DecryptResult.Failure,
+      encryptedPath: Path,
+      userFile: UserFile,
+      meta: EncryptMeta?,
   ) {
-    val message = when (result) {
-      is DecryptResult.FailedFetchingKey -> {
-        "Fetching key"
-      }
+    val message =
+        when (result) {
+          is DecryptResult.FailedFetchingKey -> {
+            "Fetching key"
+          }
 
-      is DecryptResult.UnknownAlgorithm -> {
-        "Unknown algorithm: ${result.algorithm}"
-      }
+          is DecryptResult.UnknownAlgorithm -> {
+            "Unknown algorithm: ${result.algorithm}"
+          }
 
-      is DecryptResult.OtherFailure -> {
-        "Other failure: ${result.message}"
-      }
+          is DecryptResult.OtherFailure -> {
+            "Other failure: ${result.message}"
+          }
 
-      DecryptResult.MissingKey -> {
-        cachedData = CachedEncryptedData(encryptedPath, userFile, meta)
+          DecryptResult.MissingKey -> {
+            cachedData = CachedEncryptedData(encryptedPath, userFile, meta)
 
-        // wait a little before showing the dialog
-        viewModelScope.launch {
-          delay(500.milliseconds)
-          mutablePasswordState.update { KeyPasswordState.Active(Password.Empty) }
+            // wait a little before showing the dialog
+            viewModelScope.launch {
+              delay(500.milliseconds)
+              mutablePasswordState.update { KeyPasswordState.Active(Password.Empty) }
+            }
+
+            "Missing key"
+          }
         }
-
-        "Missing key"
-      }
-    }
     setStepState(ValidatingDatabase, SyncStepState.Failed(message))
   }
 
@@ -312,9 +326,9 @@ class SyncBudgetViewModel(
   }
 
   private data class CachedEncryptedData(
-    val encryptedPath: Path,
-    val userFile: UserFile,
-    val meta: EncryptMeta?,
+      val encryptedPath: Path,
+      val userFile: UserFile,
+      val meta: EncryptMeta?,
   )
 
   @AssistedFactory
@@ -322,18 +336,20 @@ class SyncBudgetViewModel(
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
-      @Assisted token: Token,
-      @Assisted budgetId: BudgetId,
+        @Assisted token: Token,
+        @Assisted budgetId: BudgetId,
     ): SyncBudgetViewModel
   }
 
   private companion object {
-    const val LEARN_MORE_URL = "https://actualbudget.org/docs/getting-started/sync/#end-to-end-encryption"
+    const val LEARN_MORE_URL =
+        "https://actualbudget.org/docs/getting-started/sync/#end-to-end-encryption"
 
-    fun defaultStates() = persistentMapOf(
-      FetchingFileInfo to SyncStepState.NotStarted,
-      DownloadingDatabase to SyncStepState.NotStarted,
-      ValidatingDatabase to SyncStepState.NotStarted,
-    )
+    fun defaultStates() =
+        persistentMapOf(
+            FetchingFileInfo to SyncStepState.NotStarted,
+            DownloadingDatabase to SyncStepState.NotStarted,
+            ValidatingDatabase to SyncStepState.NotStarted,
+        )
   }
 }

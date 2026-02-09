@@ -11,26 +11,26 @@ import kotlinx.serialization.json.JsonElement
 /**
  * See packages/loot-core/src/types/models/rule.ts
  *
- * [value] is a stupidly complex typescript type, and no idea what [queryFilter] is meant to be. Both are [JsonElement]
- * for now.
+ * [value] is a stupidly complex typescript type, and no idea what [queryFilter] is meant to be.
+ * Both are [JsonElement] for now.
  */
 @Serializable
 data class ReportCondition(
-  @SerialName("field") val field: Field,
-  @SerialName("op") val operator: Operator,
-  @SerialName("value") val value: JsonElement,
-  @SerialName("options") val options: Options? = null,
-  @SerialName("conditionsOp") val conditionsOp: String? = null,
-  @SerialName("type") val type: Type? = null,
-  @SerialName("customName") val customName: String? = null,
-  @SerialName("queryFilter") val queryFilter: JsonElement? = null,
+    @SerialName("field") val field: Field,
+    @SerialName("op") val operator: Operator,
+    @SerialName("value") val value: JsonElement,
+    @SerialName("options") val options: Options? = null,
+    @SerialName("conditionsOp") val conditionsOp: String? = null,
+    @SerialName("type") val type: Type? = null,
+    @SerialName("customName") val customName: String? = null,
+    @SerialName("queryFilter") val queryFilter: JsonElement? = null,
 ) {
   @Serializable
   data class Options(
-    val inflow: Boolean?,
-    val outflow: Boolean?,
-    val month: Boolean?,
-    val year: Boolean?,
+      val inflow: Boolean?,
+      val outflow: Boolean?,
+      val month: Boolean?,
+      val year: Boolean?,
   )
 
   @Serializable(Field.Serializer::class)

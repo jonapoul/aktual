@@ -4,5 +4,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetHealthResponse(
-  val status: String = "UP",
+    val status: String = "UP",
 )

@@ -15,39 +15,36 @@ import kotlinx.coroutines.flow.map
 
 @Inject
 class PreferencesDao(
-  database: BudgetDatabase,
-  private val contexts: CoroutineContexts,
+    database: BudgetDatabase,
+    private val contexts: CoroutineContexts,
 ) {
   private val queries = database.preferencesQueries
 
   suspend fun getAll(): Map<SyncedPrefKey, String?> = withResult {
-    getAll()
-      .executeAsList()
-      .associate { (key, value) -> key to value }
+    getAll().executeAsList().associate { (key, value) -> key to value }
   }
 
   suspend operator fun get(key: SyncedPrefKey): String? = withResult {
-    getValue(key)
-      .executeAsOneOrNull()
-      ?.value_
+    getValue(key).executeAsOneOrNull()?.value_
   }
 
   suspend operator fun set(key: SyncedPrefKey, value: String?) = withoutResult {
     setValue(key, value)
   }
 
-  fun observe(key: SyncedPrefKey): Flow<String?> = queries
-    .getValue(key)
-    .asFlow()
-    .mapToOneOrNull(contexts.default)
-    .map { it?.value_ }
-    .distinctUntilChanged()
+  fun observe(key: SyncedPrefKey): Flow<String?> =
+      queries
+          .getValue(key)
+          .asFlow()
+          .mapToOneOrNull(contexts.default)
+          .map { it?.value_ }
+          .distinctUntilChanged()
 
   suspend fun <R> withResult(
-    query: suspend PreferencesQueries.() -> R,
+      query: suspend PreferencesQueries.() -> R,
   ): R = queries.withResult(query)
 
   suspend fun withoutResult(
-    query: suspend PreferencesQueries.() -> Unit,
+      query: suspend PreferencesQueries.() -> Unit,
   ) = queries.withoutResult(query)
 }

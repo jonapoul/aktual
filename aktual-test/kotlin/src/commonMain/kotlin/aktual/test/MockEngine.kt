@@ -11,13 +11,14 @@ import io.ktor.util.toMap
 import org.intellij.lang.annotations.Language
 
 fun MockRequestHandleScope.respondJson(
-  @Language("JSON") content: String,
-  status: HttpStatusCode = HttpStatusCode.OK,
-): HttpResponseData = respond(
-  content = content,
-  status = status,
-  headers = headersOf(HttpHeaders.ContentType, "application/json"),
-)
+    @Language("JSON") content: String,
+    status: HttpStatusCode = HttpStatusCode.OK,
+): HttpResponseData =
+    respond(
+        content = content,
+        status = status,
+        headers = headersOf(HttpHeaders.ContentType, "application/json"),
+    )
 
 fun emptyMockEngine(): MockEngine.Queue = MockEngine.Queue()
 
@@ -31,9 +32,9 @@ fun MockEngine.latestRequestUrl() = latestRequest().url.toString()
 
 fun MockEngine.Queue.enqueueResponse(content: ByteArray) = enqueue {
   respond(
-    content = content,
-    status = HttpStatusCode.OK,
-    headers = headersOf("Content-Length", content.size.toString()),
+      content = content,
+      status = HttpStatusCode.OK,
+      headers = headersOf("Content-Length", content.size.toString()),
   )
 }
 

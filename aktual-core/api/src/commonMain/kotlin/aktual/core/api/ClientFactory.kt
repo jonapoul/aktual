@@ -14,5 +14,6 @@ fun interface ClientFactory {
 @Inject
 @ContributesBinding(AppScope::class)
 class ClientFactoryImpl(private val buildConfig: BuildConfig) : ClientFactory {
-  override fun invoke(json: Json) = buildKtorClient(json, isDebug = buildConfig.isDebug, tag = "ACTUAL")
+  override fun invoke(json: Json) =
+      buildKtorClient(json, isDebug = buildConfig.isDebug, tag = "ACTUAL")
 }

@@ -1,8 +1,6 @@
 package aktual.budget.model
 
-/**
- * packages/loot-core/src/server/dashboard/app.ts, exportModel()
- */
+/** packages/loot-core/src/server/dashboard/app.ts, exportModel() */
 enum class WidgetType(private val value: String) {
   NetWorth("net-worth-card"),
   CashFlow("cash-flow-card"),

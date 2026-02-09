@@ -11,13 +11,13 @@ import androidx.compose.ui.test.junit4.ComposeContentTestRule
 import org.jetbrains.compose.resources.PreviewContextConfigurationEffect
 
 fun ComposeContentTestRule.setAndroidThemedContent(
-  theme: Theme = Theme.dark(),
-  type: ColorSchemeType = ColorSchemeType.Dark,
-  content: @Composable () -> Unit,
+    theme: Theme = Theme.dark(),
+    type: ColorSchemeType = ColorSchemeType.Dark,
+    content: @Composable () -> Unit,
 ) = setContent {
   CompositionLocalProvider(
-    LocalTheme provides theme,
-    LocalColorSchemeType provides type,
+      LocalTheme provides theme,
+      LocalColorSchemeType provides type,
   ) {
     // Needed to initialise context for resource-fetching during tests
     CompositionLocalProvider(LocalInspectionMode provides true) {

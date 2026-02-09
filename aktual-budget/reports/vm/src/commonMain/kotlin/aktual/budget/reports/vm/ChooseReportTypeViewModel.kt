@@ -29,9 +29,9 @@ import logcat.logcat
 
 @AssistedInject
 class ChooseReportTypeViewModel(
-  private val uuidGenerator: UuidGenerator,
-  budgetComponents: BudgetGraphHolder,
-  @Assisted budgetId: BudgetId,
+    private val uuidGenerator: UuidGenerator,
+    budgetComponents: BudgetGraphHolder,
+    @Assisted budgetId: BudgetId,
 ) : ViewModel() {
   // data sources
   private val budgetGraph = budgetComponents.require()
@@ -58,12 +58,13 @@ class ChooseReportTypeViewModel(
     }
 
     job?.cancel()
-    job = viewModelScope.launch {
-      val widgetId = WidgetId(uuidGenerator())
-      val (x, y) = newWidgetPosition()
-      dao.insert(widgetId, type, x, y, buildEmptyMetadata(type))
-      shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
-    }
+    job =
+        viewModelScope.launch {
+          val widgetId = WidgetId(uuidGenerator())
+          val (x, y) = newWidgetPosition()
+          dao.insert(widgetId, type, x, y, buildEmptyMetadata(type))
+          shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
+        }
   }
 
   private data class Coords(val x: Long = 0, val y: Long = 0)
@@ -86,13 +87,14 @@ class ChooseReportTypeViewModel(
     }
   }
 
-  private fun buildEmptyMetadata(type: WidgetType): JsonObject = when (type) {
-    // TODO: implement properly
-    else -> JsonObject.Empty
-  }
+  private fun buildEmptyMetadata(type: WidgetType): JsonObject =
+      when (type) {
+        // TODO: implement properly
+        else -> JsonObject.Empty
+      }
 
   data class ShouldNavigateEvent(
-    val id: WidgetId,
+      val id: WidgetId,
   )
 
   @AssistedFactory
@@ -100,7 +102,7 @@ class ChooseReportTypeViewModel(
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(
-      @Assisted budgetId: BudgetId,
+        @Assisted budgetId: BudgetId,
     ): ChooseReportTypeViewModel
   }
 }

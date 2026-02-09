@@ -1,8 +1,6 @@
 package aktual.budget.model
 
-/**
- * packages/loot-core/src/server/prefs.ts#BUDGET_TYPES
- */
+/** packages/loot-core/src/server/prefs.ts#BUDGET_TYPES */
 enum class BudgetType(val value: String) {
   Envelope("envelope"),
   Tracking("tracking"),

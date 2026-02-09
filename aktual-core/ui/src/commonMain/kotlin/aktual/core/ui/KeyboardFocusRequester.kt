@@ -6,18 +6,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.SoftwareKeyboardController
-import kotlinx.coroutines.delay
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+import kotlinx.coroutines.delay
 
 /**
- * Returns a [FocusRequester] which shows the system keyboard after the given [keyboardDelay] period. Make sure to
- * pass this into the [androidx.compose.ui.focus.focusRequester] modifier on the TextField in question.
+ * Returns a [FocusRequester] which shows the system keyboard after the given [keyboardDelay]
+ * period. Make sure to pass this into the [androidx.compose.ui.focus.focusRequester] modifier on
+ * the TextField in question.
  */
 @Composable
 fun keyboardFocusRequester(
-  keyboard: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current,
-  keyboardDelay: Duration = KEYBOARD_SHOW_DELAY,
+    keyboard: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current,
+    keyboardDelay: Duration = KEYBOARD_SHOW_DELAY,
 ): FocusRequester {
   val focusRequester = remember { FocusRequester() }
 

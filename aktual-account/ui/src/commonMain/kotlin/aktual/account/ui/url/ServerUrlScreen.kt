@@ -58,8 +58,8 @@ import logcat.logcat
 
 @Composable
 fun ServerUrlScreen(
-  nav: ServerUrlNavigator,
-  viewModel: ServerUrlViewModel = metroViewModel(),
+    nav: ServerUrlNavigator,
+    viewModel: ServerUrlViewModel = metroViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredUrl by viewModel.baseUrl.collectAsStateWithLifecycle()
@@ -68,11 +68,7 @@ fun ServerUrlScreen(
   val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
 
-  DisposableEffect(Unit) {
-    onDispose {
-      viewModel.clearState()
-    }
-  }
+  DisposableEffect(Unit) { onDispose { viewModel.clearState() } }
 
   val closeApp = appCloser()
 
@@ -88,78 +84,78 @@ fun ServerUrlScreen(
   }
 
   ServerUrlScaffold(
-    url = enteredUrl,
-    protocol = protocol,
-    versions = versions,
-    isEnabled = isEnabled,
-    isLoading = isLoading,
-    errorMessage = errorMessage,
-    onAction = { action ->
-      when (action) {
-        ServerUrlAction.ConfirmUrl -> viewModel.onClickConfirm()
-        ServerUrlAction.NavBack -> viewModel.onClickBack()
-        ServerUrlAction.OpenAbout -> viewModel.onClickAbout()
-        is ServerUrlAction.EnterUrl -> viewModel.onEnterUrl(action.url)
-        is ServerUrlAction.SelectProtocol -> viewModel.onSelectProtocol(action.protocol)
-        is ServerUrlAction.UseDemoServer -> viewModel.onUseDemoServer()
-      }
-    },
+      url = enteredUrl,
+      protocol = protocol,
+      versions = versions,
+      isEnabled = isEnabled,
+      isLoading = isLoading,
+      errorMessage = errorMessage,
+      onAction = { action ->
+        when (action) {
+          ServerUrlAction.ConfirmUrl -> viewModel.onClickConfirm()
+          ServerUrlAction.NavBack -> viewModel.onClickBack()
+          ServerUrlAction.OpenAbout -> viewModel.onClickAbout()
+          is ServerUrlAction.EnterUrl -> viewModel.onEnterUrl(action.url)
+          is ServerUrlAction.SelectProtocol -> viewModel.onSelectProtocol(action.protocol)
+          is ServerUrlAction.UseDemoServer -> viewModel.onUseDemoServer()
+        }
+      },
   )
 }
 
 @Composable
 private fun ServerUrlScaffold(
-  url: String,
-  protocol: Protocol,
-  versions: AktualVersions,
-  isEnabled: Boolean,
-  isLoading: Boolean,
-  errorMessage: String?,
-  onAction: (ServerUrlAction) -> Unit,
+    url: String,
+    protocol: Protocol,
+    versions: AktualVersions,
+    isEnabled: Boolean,
+    isLoading: Boolean,
+    errorMessage: String?,
+    onAction: (ServerUrlAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
 
   Scaffold(
-    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-    topBar = {
-      TopAppBar(
-        colors = theme.transparentTopAppBarColors(),
-        navigationIcon = {
-          IconButton(onClick = { onAction(ServerUrlAction.NavBack) }) {
-            Icon(
-              imageVector = MaterialIcons.ArrowBack,
-              contentDescription = Strings.navBack,
-            )
-          }
-        },
-        title = { },
-        scrollBehavior = scrollBehavior,
-        actions = {
-          BasicIconButton(
-            modifier = Modifier.padding(horizontal = 5.dp),
-            onClick = { onAction(ServerUrlAction.OpenAbout) },
-            imageVector = MaterialIcons.Info,
-            contentDescription = Strings.serverUrlMenuAbout,
-            colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
-          )
-        },
-      )
-    },
+      modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+      topBar = {
+        TopAppBar(
+            colors = theme.transparentTopAppBarColors(),
+            navigationIcon = {
+              IconButton(onClick = { onAction(ServerUrlAction.NavBack) }) {
+                Icon(
+                    imageVector = MaterialIcons.ArrowBack,
+                    contentDescription = Strings.navBack,
+                )
+              }
+            },
+            title = {},
+            scrollBehavior = scrollBehavior,
+            actions = {
+              BasicIconButton(
+                  modifier = Modifier.padding(horizontal = 5.dp),
+                  onClick = { onAction(ServerUrlAction.OpenAbout) },
+                  imageVector = MaterialIcons.Info,
+                  contentDescription = Strings.serverUrlMenuAbout,
+                  colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+              )
+            },
+        )
+      },
   ) { innerPadding ->
     Box {
       WavyBackground()
 
       ServerUrlContent(
-        modifier = Modifier.padding(innerPadding),
-        url = url,
-        protocol = protocol,
-        versions = versions,
-        isEnabled = isEnabled,
-        isLoading = isLoading,
-        errorMessage = errorMessage,
-        onAction = onAction,
-        theme = theme,
+          modifier = Modifier.padding(innerPadding),
+          url = url,
+          protocol = protocol,
+          versions = versions,
+          isEnabled = isEnabled,
+          isLoading = isLoading,
+          errorMessage = errorMessage,
+          onAction = onAction,
+          theme = theme,
       )
     }
   }
@@ -168,80 +164,75 @@ private fun ServerUrlScaffold(
 @Stable
 @Composable
 private fun ServerUrlContent(
-  url: String,
-  protocol: Protocol,
-  versions: AktualVersions,
-  isEnabled: Boolean,
-  isLoading: Boolean,
-  errorMessage: String?,
-  onAction: (ServerUrlAction) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    url: String,
+    protocol: Protocol,
+    versions: AktualVersions,
+    isEnabled: Boolean,
+    isLoading: Boolean,
+    errorMessage: String?,
+    onAction: (ServerUrlAction) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   Column(
-    modifier = modifier
-      .padding(horizontal = 16.dp)
-      .wrapContentWidth()
-      .wrapContentHeight(),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.Start,
+      modifier = modifier.padding(horizontal = 16.dp).wrapContentWidth().wrapContentHeight(),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.Start,
   ) {
     Text(
-      text = Strings.serverUrlTitle,
-      style = AktualTypography.headlineLarge,
+        text = Strings.serverUrlTitle,
+        style = AktualTypography.headlineLarge,
     )
 
     VerticalSpacer(height = 15.dp)
 
     Text(
-      text = Strings.serverUrlMessage,
-      color = theme.tableRowHeaderText,
-      style = AktualTypography.bodyLarge,
+        text = Strings.serverUrlMessage,
+        color = theme.tableRowHeaderText,
+        style = AktualTypography.bodyLarge,
     )
 
     VerticalSpacer(height = 20.dp)
 
     InputFields(
-      modifier = Modifier.fillMaxWidth(),
-      url = url,
-      protocol = protocol,
-      onAction = onAction,
-      theme = theme,
+        modifier = Modifier.fillMaxWidth(),
+        url = url,
+        protocol = protocol,
+        onAction = onAction,
+        theme = theme,
     )
 
     VerticalSpacer(height = 20.dp)
 
     PrimaryTextButtonWithLoading(
-      modifier = Modifier
-        .padding(5.dp)
-        .fillMaxWidth(),
-      text = Strings.serverUrlConfirm,
-      isLoading = isLoading,
-      isEnabled = isEnabled,
-      onClick = { onAction(ServerUrlAction.ConfirmUrl) },
+        modifier = Modifier.padding(5.dp).fillMaxWidth(),
+        text = Strings.serverUrlConfirm,
+        isLoading = isLoading,
+        isEnabled = isEnabled,
+        onClick = { onAction(ServerUrlAction.ConfirmUrl) },
     )
 
     if (errorMessage != null) {
       VerticalSpacer(20.dp)
 
       Text(
-        modifier = Modifier.fillMaxWidth(),
-        text = errorMessage,
-        color = theme.errorText,
-        textAlign = TextAlign.Center,
+          modifier = Modifier.fillMaxWidth(),
+          text = errorMessage,
+          color = theme.errorText,
+          textAlign = TextAlign.Center,
       )
     }
 
     Spacer(
-      modifier = Modifier.weight(1f),
+        modifier = Modifier.weight(1f),
     )
 
     Box(
-      modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
     ) {
       VersionsText(
-        modifier = Modifier.align(Alignment.BottomEnd),
-        versions = versions,
+          modifier = Modifier.align(Alignment.BottomEnd),
+          versions = versions,
       )
     }
 
@@ -253,37 +244,41 @@ private fun ServerUrlContent(
 @Composable
 @PortraitPreview
 private fun PreviewServerUrlScaffold(
-  @PreviewParameter(ServerUrlScaffoldProvider::class) params: ThemedParams<ServerUrlScaffoldParams>,
-) = PreviewWithColorScheme(params.type) {
-  ServerUrlScaffold(
-    url = params.data.url,
-    protocol = params.data.protocol,
-    versions = AktualVersions.Dummy,
-    isEnabled = true,
-    isLoading = params.data.isLoading,
-    onAction = {},
-    errorMessage = params.data.errorMessage,
-  )
-}
+    @PreviewParameter(ServerUrlScaffoldProvider::class)
+    params: ThemedParams<ServerUrlScaffoldParams>,
+) =
+    PreviewWithColorScheme(params.type) {
+      ServerUrlScaffold(
+          url = params.data.url,
+          protocol = params.data.protocol,
+          versions = AktualVersions.Dummy,
+          isEnabled = true,
+          isLoading = params.data.isLoading,
+          onAction = {},
+          errorMessage = params.data.errorMessage,
+      )
+    }
 
 private data class ServerUrlScaffoldParams(
-  val url: String,
-  val protocol: Protocol,
-  val isLoading: Boolean,
-  val errorMessage: String?,
+    val url: String,
+    val protocol: Protocol,
+    val isLoading: Boolean,
+    val errorMessage: String?,
 )
 
-private class ServerUrlScaffoldProvider : ThemedParameterProvider<ServerUrlScaffoldParams>(
-  ServerUrlScaffoldParams(
-    url = "",
-    protocol = Protocol.Https,
-    isLoading = false,
-    errorMessage = null,
-  ),
-  ServerUrlScaffoldParams(
-    url = "my.server.com:1234/path",
-    protocol = Protocol.Http,
-    isLoading = true,
-    errorMessage = "Hello this is an error message, split over multiple lines so you can see how it behaves",
-  ),
-)
+private class ServerUrlScaffoldProvider :
+    ThemedParameterProvider<ServerUrlScaffoldParams>(
+        ServerUrlScaffoldParams(
+            url = "",
+            protocol = Protocol.Https,
+            isLoading = false,
+            errorMessage = null,
+        ),
+        ServerUrlScaffoldParams(
+            url = "my.server.com:1234/path",
+            protocol = Protocol.Http,
+            isLoading = true,
+            errorMessage =
+                "Hello this is an error message, split over multiple lines so you can see how it behaves",
+        ),
+    )

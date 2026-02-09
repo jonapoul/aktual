@@ -32,10 +32,10 @@ import logcat.logcat
 @ViewModelKey(LoginViewModel::class)
 @ContributesIntoMap(AppScope::class)
 class LoginViewModel(
-  private val loginRequester: LoginRequester,
-  versionsStateHolder: AktualVersionsStateHolder,
-  preferences: AppGlobalPreferences,
-  buildConfig: BuildConfig,
+    private val loginRequester: LoginRequester,
+    versionsStateHolder: AktualVersionsStateHolder,
+    preferences: AppGlobalPreferences,
+    buildConfig: BuildConfig,
 ) : ViewModel() {
   private val mutableEnteredPassword = ResettableStateFlow(buildConfig.defaultPassword)
   private val mutableIsLoading = ResettableStateFlow(false)
@@ -47,13 +47,10 @@ class LoginViewModel(
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
 
   val loginFailure: StateFlow<LoginResult.Failure?> =
-    combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
-      .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
+      combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
+          .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
-  val token: Flow<Token> = preferences
-    .token
-    .asFlow()
-    .filterNotNull()
+  val token: Flow<Token> = preferences.token.asFlow().filterNotNull()
 
   fun clearState() {
     mutableEnteredPassword.reset()

@@ -3,7 +3,8 @@ package aktual.about.data
 import org.intellij.lang.annotations.Language
 
 @Language("JSON")
-internal const val NEW_RELEASE = """
+internal const val NEW_RELEASE =
+    """
 [
   {
     "url": "https://api.github.com/repos/jonapoul/aktual/releases/149086344",
@@ -127,7 +128,8 @@ internal const val NEW_RELEASE = """
 """
 
 @Language("JSON")
-internal const val NO_NEW_UPDATE = """
+internal const val NO_NEW_UPDATE =
+    """
 [
   {
     "url": "https://api.github.com/repos/jonapoul/aktual/releases/149086344",
@@ -251,7 +253,8 @@ internal const val NO_NEW_UPDATE = """
 """
 
 @Language("JSON")
-internal const val NOT_FOUND = """
+internal const val NOT_FOUND =
+    """
 {
   "message": "Not Found",
   "documentation_url": "https://docs.github.com/rest/releases/releases#list-releases"

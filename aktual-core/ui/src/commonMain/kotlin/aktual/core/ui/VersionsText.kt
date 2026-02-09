@@ -12,24 +12,24 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun VersionsText(
-  versions: AktualVersions,
-  modifier: Modifier = Modifier,
-  padding: Dp = 15.dp,
-) = Text(
-  modifier = modifier.padding(padding),
-  text = versions.toString(),
-  style = AktualTypography.labelMedium,
-)
+    versions: AktualVersions,
+    modifier: Modifier = Modifier,
+    padding: Dp = 15.dp,
+) =
+    Text(
+        modifier = modifier.padding(padding),
+        text = versions.toString(),
+        style = AktualTypography.labelMedium,
+    )
 
 @Preview
 @Composable
 private fun PreviewVersionsText(
-  @PreviewParameter(VersionsTextProvider::class) params: ThemedParams<AktualVersions>,
-) = PreviewWithColorScheme(params.type) {
-  VersionsText(params.data)
-}
+    @PreviewParameter(VersionsTextProvider::class) params: ThemedParams<AktualVersions>,
+) = PreviewWithColorScheme(params.type) { VersionsText(params.data) }
 
-private class VersionsTextProvider : ThemedParameterProvider<AktualVersions>(
-  AktualVersions(app = "1.2.3", server = null),
-  AktualVersions(app = "1.2.3", server = "2.3.4"),
-)
+private class VersionsTextProvider :
+    ThemedParameterProvider<AktualVersions>(
+        AktualVersions(app = "1.2.3", server = null),
+        AktualVersions(app = "1.2.3", server = "2.3.4"),
+    )

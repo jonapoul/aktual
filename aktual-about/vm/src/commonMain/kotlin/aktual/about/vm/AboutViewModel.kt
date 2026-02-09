@@ -16,6 +16,9 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import kotlin.time.toJavaInstant
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,25 +26,24 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-import kotlin.time.toJavaInstant
 
 @Inject
 @ViewModelKey(AboutViewModel::class)
 @ContributesIntoMap(AppScope::class)
 class AboutViewModel(
-  private val buildConfig: BuildConfig,
-  private val githubRepository: GithubRepository,
-  private val urlOpener: UrlOpener,
-  private val aktualVersionsStateHolder: AktualVersionsStateHolder,
+    private val buildConfig: BuildConfig,
+    private val githubRepository: GithubRepository,
+    private val urlOpener: UrlOpener,
+    private val aktualVersionsStateHolder: AktualVersionsStateHolder,
 ) : ViewModel() {
-  val buildState: StateFlow<BuildState> = viewModelScope.launchMolecule(Immediate) {
-    val versions by aktualVersionsStateHolder.collectAsState()
-    buildState(versions)
-  }
+  val buildState: StateFlow<BuildState> =
+      viewModelScope.launchMolecule(Immediate) {
+        val versions by aktualVersionsStateHolder.collectAsState()
+        buildState(versions)
+      }
 
-  private val mutableCheckUpdatesState = MutableStateFlow<CheckUpdatesState>(CheckUpdatesState.Inactive)
+  private val mutableCheckUpdatesState =
+      MutableStateFlow<CheckUpdatesState>(CheckUpdatesState.Inactive)
   val checkUpdatesState: StateFlow<CheckUpdatesState> = mutableCheckUpdatesState.asStateFlow()
 
   private var checkUpdatesJob: Job? = null
@@ -64,25 +66,28 @@ class AboutViewModel(
     checkUpdatesJob?.cancel()
     mutableCheckUpdatesState.update { CheckUpdatesState.Checking }
 
-    checkUpdatesJob = viewModelScope.launch {
-      val state = githubRepository.fetchLatestRelease()
-      mutableCheckUpdatesState.update {
-        when (state) {
-          LatestReleaseState.NoNewUpdate -> CheckUpdatesState.NoUpdateFound
+    checkUpdatesJob =
+        viewModelScope.launch {
+          val state = githubRepository.fetchLatestRelease()
+          mutableCheckUpdatesState.update {
+            when (state) {
+              LatestReleaseState.NoNewUpdate -> CheckUpdatesState.NoUpdateFound
 
-          LatestReleaseState.NoReleases -> CheckUpdatesState.NoUpdateFound
+              LatestReleaseState.NoReleases -> CheckUpdatesState.NoUpdateFound
 
-          LatestReleaseState.PrivateRepo -> CheckUpdatesState.Failed(cause = "Repo inaccessible")
+              LatestReleaseState.PrivateRepo ->
+                  CheckUpdatesState.Failed(cause = "Repo inaccessible")
 
-          is LatestReleaseState.Failure -> CheckUpdatesState.Failed(state.errorMessage)
+              is LatestReleaseState.Failure -> CheckUpdatesState.Failed(state.errorMessage)
 
-          is LatestReleaseState.UpdateAvailable -> CheckUpdatesState.UpdateFound(
-            version = state.release.versionName,
-            url = state.release.htmlUrl,
-          )
+              is LatestReleaseState.UpdateAvailable ->
+                  CheckUpdatesState.UpdateFound(
+                      version = state.release.versionName,
+                      url = state.release.htmlUrl,
+                  )
+            }
+          }
         }
-      }
-    }
   }
 
   fun cancelUpdateCheck() {
@@ -96,9 +101,9 @@ class AboutViewModel(
     val zone = ZoneId.systemDefault()
     val zonedDateTime = buildConfig.buildTime.toJavaInstant().atZone(zone)
     return BuildState(
-      versions = versions,
-      buildDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(zonedDateTime),
-      year = zonedDateTime.year,
+        versions = versions,
+        buildDate = DateTimeFormatter.RFC_1123_DATE_TIME.format(zonedDateTime),
+        year = zonedDateTime.year,
     )
   }
 }

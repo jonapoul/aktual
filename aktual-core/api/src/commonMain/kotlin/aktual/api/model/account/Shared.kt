@@ -1,7 +1,4 @@
-@file:Suppress(
-  "MatchingDeclarationName",
-  "ktlint:standard:filename",
-)
+@file:Suppress("MatchingDeclarationName")
 
 package aktual.api.model.account
 
@@ -12,7 +9,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AvailableLoginMethod(
-  @SerialName("method") val method: LoginMethod,
-  @SerialName("displayName") val displayName: String,
-  @SerialName("active") val active: BoolAsInt,
+    @SerialName("method") val method: LoginMethod,
+    @SerialName("displayName") val displayName: String,
+    @SerialName("active") val active: BoolAsInt,
 )

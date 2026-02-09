@@ -8,9 +8,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TransactionError(
-  @SerialName("difference") val difference: Int,
-  @SerialName("type") val type: Type = Type.SplitTransactionError,
-  @SerialName("version") val version: Int,
+    @SerialName("difference") val difference: Int,
+    @SerialName("type") val type: Type = Type.SplitTransactionError,
+    @SerialName("version") val version: Int,
 ) {
   @Serializable(Type.Serializer::class)
   enum class Type(override val value: String) : SerializableByString {

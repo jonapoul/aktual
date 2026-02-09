@@ -13,12 +13,12 @@ import io.mockk.coEvery
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.BeforeTest
-import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 class LicensesViewModelTest {
@@ -152,13 +152,16 @@ class LicensesViewModelTest {
   }
 
   private fun buildViewModel() {
-    viewModel = LicensesViewModel(
-      licensesRepository = repository,
-      urlOpener = urlOpener,
-    )
+    viewModel =
+        LicensesViewModel(
+            licensesRepository = repository,
+            urlOpener = urlOpener,
+        )
   }
 
-  private suspend fun TurbineTestContext<LicensesState>.assertLoaded(vararg models: ArtifactDetail) {
+  private suspend fun TurbineTestContext<LicensesState>.assertLoaded(
+      vararg models: ArtifactDetail
+  ) {
     assertLoaded(models.toList())
   }
 
@@ -167,13 +170,14 @@ class LicensesViewModelTest {
   }
 
   private companion object {
-    val EXAMPLE_MODEL = ArtifactDetail(
-      groupId = "com.website",
-      artifactId = "something",
-      name = "Something",
-      spdxLicenses = setOf(Apache2),
-      scm = ArtifactScm("www.website.com"),
-      version = "1.2.3",
-    )
+    val EXAMPLE_MODEL =
+        ArtifactDetail(
+            groupId = "com.website",
+            artifactId = "something",
+            name = "Something",
+            spdxLicenses = setOf(Apache2),
+            scm = ArtifactScm("www.website.com"),
+            version = "1.2.3",
+        )
   }
 }

@@ -13,13 +13,17 @@ import dev.chrisbanes.haze.HazeTint
 @Composable
 @ReadOnlyComposable
 fun defaultHazeStyle(
-  theme: Theme,
-  containerColor: Color = theme.pageBackground,
-  degree: Float = 0.35f,
-) = HazeStyle(
-  blurRadius = 30.dp,
-  backgroundColor = containerColor,
-  tint = HazeTint(
-    containerColor.copy(alpha = if (containerColor.luminance() >= 0.5) (1f - degree) else degree),
-  ),
-)
+    theme: Theme,
+    containerColor: Color = theme.pageBackground,
+    degree: Float = 0.35f,
+) =
+    HazeStyle(
+        blurRadius = 30.dp,
+        backgroundColor = containerColor,
+        tint =
+            HazeTint(
+                containerColor.copy(
+                    alpha = if (containerColor.luminance() >= 0.5) (1f - degree) else degree
+                ),
+            ),
+    )

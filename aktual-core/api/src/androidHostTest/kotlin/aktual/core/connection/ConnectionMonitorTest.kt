@@ -18,14 +18,14 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import io.ktor.client.engine.mock.MockEngine
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.AfterTest
-import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 class ConnectionMonitorTest {
@@ -44,14 +44,15 @@ class ConnectionMonitorTest {
     mockEngine = emptyMockEngine()
     fileSystem = FileSystem.SYSTEM
 
-    connectionMonitor = ConnectionMonitor(
-      scope = backgroundScope,
-      contexts = TestCoroutineContexts(unconfinedDispatcher),
-      clientFactory = TestClientFactory(mockEngine),
-      apiStateHolder = apiStateHolder,
-      preferences = preferences,
-      fileSystem = fileSystem,
-    )
+    connectionMonitor =
+        ConnectionMonitor(
+            scope = backgroundScope,
+            contexts = TestCoroutineContexts(unconfinedDispatcher),
+            clientFactory = TestClientFactory(mockEngine),
+            apiStateHolder = apiStateHolder,
+            preferences = preferences,
+            fileSystem = fileSystem,
+        )
   }
 
   @AfterTest

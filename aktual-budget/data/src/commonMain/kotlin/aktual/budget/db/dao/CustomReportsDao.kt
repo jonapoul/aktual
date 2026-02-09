@@ -17,18 +17,21 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
 
   suspend fun insert(reports: CustomReports): Long = queries.withResult { insert(reports) }
 
-  suspend operator fun get(id: CustomReportId): CustomReports? = queries.withResult { getById(id).executeAsOneOrNull() }
+  suspend operator fun get(id: CustomReportId): CustomReports? =
+      queries.withResult { getById(id).executeAsOneOrNull() }
 
-  fun observeMetadataById(id: CustomReportId): Flow<JsonObject?> = queries
-    .getMetadataById(id)
-    .asFlow()
-    .mapToOneOrNull(contexts.default)
-    .map { it?.metadata }
-    .distinctUntilChanged()
+  fun observeMetadataById(id: CustomReportId): Flow<JsonObject?> =
+      queries
+          .getMetadataById(id)
+          .asFlow()
+          .mapToOneOrNull(contexts.default)
+          .map { it?.metadata }
+          .distinctUntilChanged()
 
   suspend fun getIds(): List<CustomReportId> = queries.withResult { getIds().executeAsList() }
 
-  suspend fun getIdByName(name: String): CustomReportId? = queries.withResult { getIdByName(name).executeAsOneOrNull() }
+  suspend fun getIdByName(name: String): CustomReportId? =
+      queries.withResult { getIdByName(name).executeAsOneOrNull() }
 
   suspend fun deleteById(id: CustomReportId): Long = queries.withResult { delete(id) }
 }

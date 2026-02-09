@@ -40,55 +40,53 @@ import androidx.paging.compose.itemKey
 
 @Composable
 internal fun Transactions(
-  transactionIdSource: TransactionIdSource,
-  format: TransactionsFormat,
-  source: TransactionStateSource,
-  onAction: ActionListener,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    transactionIdSource: TransactionIdSource,
+    format: TransactionsFormat,
+    source: TransactionStateSource,
+    onAction: ActionListener,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   val pagingItems = transactionIdSource.pagingData.collectAsLazyPagingItems()
   if (pagingItems.itemCount == 0) {
     TransactionsEmpty(
-      modifier = modifier,
-      theme = theme,
+        modifier = modifier,
+        theme = theme,
     )
   } else {
     TransactionsFilled(
-      pagingItems = pagingItems,
-      format = format,
-      source = source,
-      onAction = onAction,
-      modifier = modifier,
-      theme = theme,
+        pagingItems = pagingItems,
+        format = format,
+        source = source,
+        onAction = onAction,
+        modifier = modifier,
+        theme = theme,
     )
   }
 }
 
 @Composable
 private fun TransactionsEmpty(
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   Column(
-    modifier = modifier.fillMaxHeight(),
+      modifier = modifier.fillMaxHeight(),
   ) {
     CategoryHeader(
-      modifier = Modifier.fillMaxWidth(),
-      theme = theme,
+        modifier = Modifier.fillMaxWidth(),
+        theme = theme,
     )
 
     Box(
-      modifier = Modifier
-        .fillMaxWidth()
-        .weight(1f),
-      contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxWidth().weight(1f),
+        contentAlignment = Alignment.Center,
     ) {
       Text(
-        text = Strings.transactionsEmpty,
-        textAlign = TextAlign.Center,
-        fontStyle = FontStyle.Italic,
-        color = theme.tableText,
+          text = Strings.transactionsEmpty,
+          textAlign = TextAlign.Center,
+          fontStyle = FontStyle.Italic,
+          color = theme.tableText,
       )
     }
   }
@@ -96,44 +94,41 @@ private fun TransactionsEmpty(
 
 @Composable
 private fun TransactionsFilled(
-  pagingItems: LazyPagingItems<TransactionId>,
-  format: TransactionsFormat,
-  source: TransactionStateSource,
-  onAction: ActionListener,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    pagingItems: LazyPagingItems<TransactionId>,
+    format: TransactionsFormat,
+    source: TransactionStateSource,
+    onAction: ActionListener,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(horizontal = Dimens.Large)
-      .scrollbar(listState),
-    state = listState,
-    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+      modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Large).scrollbar(listState),
+      state = listState,
+      verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     if (format == Table) {
       stickyHeader {
         CategoryHeader(
-          modifier = Modifier.fillMaxWidth(),
-          theme = theme,
+            modifier = Modifier.fillMaxWidth(),
+            theme = theme,
         )
       }
     }
 
     items(
-      count = pagingItems.itemCount,
-      key = pagingItems.itemKey { it.toString() },
+        count = pagingItems.itemCount,
+        key = pagingItems.itemKey { it.toString() },
     ) { index ->
       val id = pagingItems[index]
       if (id != null) {
         TransactionItem(
-          modifier = Modifier.fillMaxWidth(),
-          id = id,
-          format = format,
-          source = source,
-          onAction = onAction,
-          theme = theme,
+            modifier = Modifier.fillMaxWidth(),
+            id = id,
+            format = format,
+            source = source,
+            onAction = onAction,
+            theme = theme,
         )
       }
     }
@@ -149,27 +144,32 @@ private fun TransactionsFilled(
 @TabletPreview
 @Composable
 private fun PreviewTransactions(
-  @PreviewParameter(TransactionsProvider::class) params: ThemedParams<TransactionsParams>,
-) = PreviewWithColorScheme(params.type) {
-  Transactions(
-    transactionIdSource = PreviewTransactionIdSource(params.data.transactions),
-    format = params.data.format,
-    source = previewTransactionStateSource(params.data.transactions),
-    onAction = {},
-  )
-}
+    @PreviewParameter(TransactionsProvider::class) params: ThemedParams<TransactionsParams>,
+) =
+    PreviewWithColorScheme(params.type) {
+      Transactions(
+          transactionIdSource = PreviewTransactionIdSource(params.data.transactions),
+          format = params.data.format,
+          source = previewTransactionStateSource(params.data.transactions),
+          onAction = {},
+      )
+    }
 
 private data class TransactionsParams(
-  val format: TransactionsFormat,
-  val transactions: List<Transaction> = emptyList(),
+    val format: TransactionsFormat,
+    val transactions: List<Transaction> = emptyList(),
 )
 
-private class TransactionsProvider : ThemedParameterProvider<TransactionsParams>(
-  TransactionsParams(
-    format = TransactionsFormat.List,
-    transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
-  ),
-  TransactionsParams(format = Table, transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),
-  TransactionsParams(Table),
-  TransactionsParams(TransactionsFormat.List),
-)
+private class TransactionsProvider :
+    ThemedParameterProvider<TransactionsParams>(
+        TransactionsParams(
+            format = TransactionsFormat.List,
+            transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
+        ),
+        TransactionsParams(
+            format = Table,
+            transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
+        ),
+        TransactionsParams(Table),
+        TransactionsParams(TransactionsFormat.List),
+    )

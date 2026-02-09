@@ -11,7 +11,8 @@ class AmountTest {
   @Test
   fun `Hide fraction`() {
     assertThat(123.45.amount.toString(hideFraction = true)).isEqualTo("123")
-    assertThat(1234.56.amount.toString(format = ApostropheDot, hideFraction = true)).isEqualTo("1’235")
+    assertThat(1234.56.amount.toString(format = ApostropheDot, hideFraction = true))
+        .isEqualTo("1’235")
   }
 
   @Test
@@ -38,13 +39,14 @@ class AmountTest {
     assertThat(123456789.0.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~~~~~~~")
   }
 
-  private val Double.amount get() = Amount(this)
+  private val Double.amount
+    get() = Amount(this)
 
   private fun Amount.toString(
-    format: NumberFormat = NumberFormat.CommaDot,
-    hideFraction: Boolean = false,
-    includeSign: Boolean = false,
-    isPrivacyEnabled: Boolean = false,
+      format: NumberFormat = NumberFormat.CommaDot,
+      hideFraction: Boolean = false,
+      includeSign: Boolean = false,
+      isPrivacyEnabled: Boolean = false,
   ) = toString(NumberFormatConfig(format, hideFraction), includeSign, isPrivacyEnabled)
 
   private companion object {

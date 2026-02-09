@@ -27,37 +27,35 @@ import androidx.compose.ui.unit.sp
 @Stable
 @Composable
 internal fun ContentEmpty(
-  onCreateBudgetInBrowser: () -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    onCreateBudgetInBrowser: () -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   Column(
-    modifier = modifier
-      .fillMaxWidth()
-      .padding(40.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
-    verticalArrangement = Arrangement.Center,
+      modifier = modifier.fillMaxWidth().padding(40.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.Center,
   ) {
     Text(
-      text = Strings.budgetSuccessEmpty,
-      textAlign = TextAlign.Center,
-      style = AktualTypography.headlineLarge,
+        text = Strings.budgetSuccessEmpty,
+        textAlign = TextAlign.Center,
+        style = AktualTypography.headlineLarge,
     )
 
     VerticalSpacer(20.dp)
 
     Text(
-      text = Strings.budgetSuccessEmptySecond,
-      color = theme.pageText,
-      textAlign = TextAlign.Center,
-      fontSize = 20.sp,
+        text = Strings.budgetSuccessEmptySecond,
+        color = theme.pageText,
+        textAlign = TextAlign.Center,
+        fontSize = 20.sp,
     )
 
     VerticalSpacer(30.dp)
 
     PrimaryTextButton(
-      text = Strings.budgetSuccessEmptyLaunch,
-      onClick = onCreateBudgetInBrowser,
+        text = Strings.budgetSuccessEmptyLaunch,
+        onClick = onCreateBudgetInBrowser,
     )
   }
 }
@@ -65,9 +63,10 @@ internal fun ContentEmpty(
 @PortraitPreview
 @Composable
 private fun PreviewContentEmpty(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  ContentEmpty(
-    onCreateBudgetInBrowser = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      ContentEmpty(
+          onCreateBudgetInBrowser = {},
+      )
+    }

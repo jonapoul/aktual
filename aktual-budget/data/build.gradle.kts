@@ -25,8 +25,8 @@ buildConfig {
   forClass("DatabaseBuildConfig") {
     packageName("aktual.budget.db")
     buildConfigField<Boolean>(
-      "FOREIGN_KEY_CONSTRAINTS",
-      providers.boolProperty(key = "aktual.db.foreignKeyConstraints"),
+        "FOREIGN_KEY_CONSTRAINTS",
+        providers.boolProperty(key = "aktual.db.foreignKeyConstraints"),
     )
   }
 }
@@ -45,7 +45,5 @@ kotlin {
     implementation(project(":aktual-core:logging"))
   }
 
-  androidMainDependencies {
-    implementation(libs.sqldelight.driver.android)
-  }
+  androidMainDependencies { implementation(libs.sqldelight.driver.android) }
 }

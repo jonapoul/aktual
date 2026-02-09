@@ -22,37 +22,35 @@ import androidx.compose.ui.unit.sp
 @Stable
 @Composable
 fun UsingServerText(
-  url: ServerUrl?,
-  onClickChange: () -> Unit,
-  modifier: Modifier = Modifier,
-  fontSize: TextUnit = 16.sp,
-  theme: Theme = LocalTheme.current,
+    url: ServerUrl?,
+    onClickChange: () -> Unit,
+    modifier: Modifier = Modifier,
+    fontSize: TextUnit = 16.sp,
+    theme: Theme = LocalTheme.current,
 ) {
   Column(
-    modifier = modifier
-      .aktualHaze()
-      .background(Color.Transparent, RounderCardShape)
-      .padding(20.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
+      modifier =
+          modifier.aktualHaze().background(Color.Transparent, RounderCardShape).padding(20.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Text(
-      text = Strings.loginUsingServer,
-      fontSize = fontSize,
-      color = theme.pageText,
-      textAlign = TextAlign.Center,
+        text = Strings.loginUsingServer,
+        fontSize = fontSize,
+        color = theme.pageText,
+        textAlign = TextAlign.Center,
     )
 
     Text(
-      text = url?.toString().orEmpty(),
-      fontSize = fontSize,
-      color = theme.pageText,
-      fontWeight = FontWeight.Bold,
-      textAlign = TextAlign.Center,
+        text = url?.toString().orEmpty(),
+        fontSize = fontSize,
+        color = theme.pageText,
+        fontWeight = FontWeight.Bold,
+        textAlign = TextAlign.Center,
     )
 
     BareTextButton(
-      text = Strings.loginServerChange,
-      onClick = onClickChange,
+        text = Strings.loginServerChange,
+        onClick = onClickChange,
     )
   }
 }
@@ -60,9 +58,7 @@ fun UsingServerText(
 @Preview
 @Composable
 private fun PreviewUsingServerText(
-  @PreviewParameter(ServerUrlProvider::class) params: ThemedParams<ServerUrl?>,
-) = PreviewWithColorScheme(params.type) {
-  UsingServerText(url = params.data, onClickChange = {})
-}
+    @PreviewParameter(ServerUrlProvider::class) params: ThemedParams<ServerUrl?>,
+) = PreviewWithColorScheme(params.type) { UsingServerText(url = params.data, onClickChange = {}) }
 
 private class ServerUrlProvider : ThemedParameterProvider<ServerUrl?>(ServerUrl.Demo, null)

@@ -19,15 +19,10 @@ internal fun Lint.commonConfigure(project: Project) {
   explainIssues = true
   htmlReport = true
   xmlReport = true
-  lintConfig = project.rootProject
-    .isolated
-    .projectDirectory
-    .file("config/lint.xml")
-    .asFile
+  lintConfig = project.rootProject.isolated.projectDirectory.file("config/lint.xml").asFile
 }
 
-// ":aktual-path:to:module" -> "aktual.path.to.module", or ":aktual-app:android" -> "aktual.app.android"
-internal fun Project.buildNamespace() = path
-  .split(":", "-")
-  .filter { it.isNotBlank() }
-  .joinToString(".")
+// ":aktual-path:to:module" -> "aktual.path.to.module", or ":aktual-app:android" ->
+// "aktual.app.android"
+internal fun Project.buildNamespace() =
+    path.split(":", "-").filter { it.isNotBlank() }.joinToString(".")

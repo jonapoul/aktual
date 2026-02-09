@@ -5,9 +5,7 @@ plugins {
   alias(libs.plugins.wire)
 }
 
-wire {
-  kotlin {}
-}
+wire { kotlin {} }
 
 kotlin {
   commonMainDependencies {

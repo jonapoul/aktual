@@ -7,17 +7,17 @@ import alakazam.test.TestClock
 import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isEqualTo
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
+import kotlin.time.Clock
+import kotlin.time.Instant
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
 import okio.FileSystem
 import okio.Path
 import okio.buffer
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
-import kotlin.time.Clock
-import kotlin.time.Instant
 
 class KermitFileLoggerTest {
   @InterceptTest val temporaryFolder = TemporaryFolder()
@@ -45,11 +45,12 @@ class KermitFileLoggerTest {
   @Test
   fun `Log to file asynchronously`() {
     // given
-    LogcatLogger.loggers += KermitFileLogger(
-      storage = logStorage,
-      minPriority = LogPriority.DEBUG,
-      clock = clock,
-    )
+    LogcatLogger.loggers +=
+        KermitFileLogger(
+            storage = logStorage,
+            minPriority = LogPriority.DEBUG,
+            clock = clock,
+        )
 
     // when
     logcat.i { "Hello world" }
@@ -61,17 +62,13 @@ class KermitFileLoggerTest {
     val logFile = fileSystem.list(logStorage.directory()).first()
     assertThat(logFile.name).isEqualTo("log-2026-02-07.log")
 
-    val lines = fileSystem
-      .source(logFile)
-      .buffer()
-      .use { it.readUtf8().trim() }
-      .lines()
+    val lines = fileSystem.source(logFile).buffer().use { it.readUtf8().trim() }.lines()
 
     assertThat(lines)
-      .hasSize(3)
-      .atIndex(0) { isEqualTo("2026-02-07 16:15:22.572 / I / Hello world") }
-      .atIndex(1) { isEqualTo("2026-02-07 16:15:22.572 / D / This is just on the edge") }
-      .atIndex(2) { isEqualTo("2026-02-07 16:15:22.572 / E / Here's an error") }
+        .hasSize(3)
+        .atIndex(0) { isEqualTo("2026-02-07 16:15:22.572 / I / Hello world") }
+        .atIndex(1) { isEqualTo("2026-02-07 16:15:22.572 / D / This is just on the edge") }
+        .atIndex(2) { isEqualTo("2026-02-07 16:15:22.572 / E / Here's an error") }
   }
 }
 

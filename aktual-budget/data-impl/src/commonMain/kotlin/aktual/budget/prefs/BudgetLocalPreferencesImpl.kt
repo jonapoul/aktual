@@ -17,18 +17,19 @@ import kotlinx.coroutines.sync.withLock
 
 @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 @ContributesBinding(BudgetScope::class, binding<BudgetLocalPreferences>())
-class BudgetLocalPreferencesImpl private constructor(
-  private val files: BudgetFiles,
-  private val coroutineScope: CoroutineScope,
-  private val contexts: CoroutineContexts,
-  private val delegate: MutableStateFlow<DbMetadata>,
+class BudgetLocalPreferencesImpl
+private constructor(
+    private val files: BudgetFiles,
+    private val coroutineScope: CoroutineScope,
+    private val contexts: CoroutineContexts,
+    private val delegate: MutableStateFlow<DbMetadata>,
 ) : BudgetLocalPreferences, MutableStateFlow<DbMetadata> by delegate {
   @Inject
   constructor(
-    initial: DbMetadata,
-    files: BudgetFiles,
-    coroutineScope: CoroutineScope,
-    contexts: CoroutineContexts,
+      initial: DbMetadata,
+      files: BudgetFiles,
+      coroutineScope: CoroutineScope,
+      contexts: CoroutineContexts,
   ) : this(files, coroutineScope, contexts, delegate = MutableStateFlow(initial))
 
   private val writeMutex = Mutex()
@@ -36,11 +37,7 @@ class BudgetLocalPreferencesImpl private constructor(
   override fun compareAndSet(expect: DbMetadata, update: DbMetadata): Boolean {
     val updated = delegate.compareAndSet(expect, update)
     if (updated && expect != update) {
-      coroutineScope.launch(contexts.io) {
-        writeMutex.withLock {
-          files.writeMetadata(update)
-        }
-      }
+      coroutineScope.launch(contexts.io) { writeMutex.withLock { files.writeMetadata(update) } }
     }
     return updated
   }

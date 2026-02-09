@@ -14,7 +14,5 @@ kotlin {
     api(project(":aktual-core:prefs"))
   }
 
-  androidMainDependencies {
-    implementation(libs.preferences.android)
-  }
+  androidMainDependencies { implementation(libs.preferences.android) }
 }

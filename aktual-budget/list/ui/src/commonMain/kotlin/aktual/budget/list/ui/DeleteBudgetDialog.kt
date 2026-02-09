@@ -47,47 +47,47 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun DeleteBudgetDialog(
-  budget: Budget,
-  deletingState: DeletingState,
-  localFileExists: Boolean,
-  onAction: (DeleteDialogAction) -> Unit,
-  modifier: Modifier = Modifier,
+    budget: Budget,
+    deletingState: DeletingState,
+    localFileExists: Boolean,
+    onAction: (DeleteDialogAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
   AlertDialog(
-    modifier = modifier,
-    title = Strings.budgetDeleteDialogTitle(budget.name),
-    onDismissRequest = { onAction(DeleteDialogAction.Dismiss) },
-    buttons = {
-      TextButton(onClick = { onAction(DeleteDialogAction.Dismiss) }) {
-        Text(text = Strings.budgetDeleteDialogDismiss)
-      }
-    },
-    content = {
-      Content(
-        deletingState = deletingState,
-        localFileExists = localFileExists,
-        onDeleteLocal = { onAction(DeleteDialogAction.DeleteLocal) },
-        onDeleteRemote = { onAction(DeleteDialogAction.DeleteRemote) },
-      )
-    },
+      modifier = modifier,
+      title = Strings.budgetDeleteDialogTitle(budget.name),
+      onDismissRequest = { onAction(DeleteDialogAction.Dismiss) },
+      buttons = {
+        TextButton(onClick = { onAction(DeleteDialogAction.Dismiss) }) {
+          Text(text = Strings.budgetDeleteDialogDismiss)
+        }
+      },
+      content = {
+        Content(
+            deletingState = deletingState,
+            localFileExists = localFileExists,
+            onDeleteLocal = { onAction(DeleteDialogAction.DeleteLocal) },
+            onDeleteRemote = { onAction(DeleteDialogAction.DeleteRemote) },
+        )
+      },
   )
 }
 
 @Stable
 @Composable
 internal fun Content(
-  deletingState: DeletingState,
-  localFileExists: Boolean,
-  onDeleteLocal: () -> Unit,
-  onDeleteRemote: () -> Unit,
+    deletingState: DeletingState,
+    localFileExists: Boolean,
+    onDeleteLocal: () -> Unit,
+    onDeleteRemote: () -> Unit,
 ) {
   Column(
-    modifier = Modifier.fillMaxWidth(),
-    horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = Modifier.fillMaxWidth(),
+      horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Text(
-      text = annotatedString(),
-      fontSize = 14.sp,
+        text = annotatedString(),
+        fontSize = 14.sp,
     )
 
     var hasPressedDeleteButton by remember { mutableStateOf(false) }
@@ -98,44 +98,44 @@ internal fun Content(
 
     Row {
       Switch(
-        checked = firstCheckbox,
-        onCheckedChange = { firstCheckbox = !firstCheckbox },
+          checked = firstCheckbox,
+          onCheckedChange = { firstCheckbox = !firstCheckbox },
       )
 
       HorizontalSpacer(20.dp)
 
       Switch(
-        checked = secondCheckbox,
-        onCheckedChange = { secondCheckbox = !secondCheckbox },
+          checked = secondCheckbox,
+          onCheckedChange = { secondCheckbox = !secondCheckbox },
       )
     }
 
     LoadableBareTextButton(
-      text = Strings.budgetDeleteDialogHostedButton,
-      colors = { theme, pressed -> theme.errorPrimary(pressed) },
-      isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
-      isLoading = deletingState is DeletingState.Active && deletingState.deletingRemote,
-      onClick = {
-        hasPressedDeleteButton = true
-        onDeleteRemote()
-      },
+        text = Strings.budgetDeleteDialogHostedButton,
+        colors = { theme, pressed -> theme.errorPrimary(pressed) },
+        isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
+        isLoading = deletingState is DeletingState.Active && deletingState.deletingRemote,
+        onClick = {
+          hasPressedDeleteButton = true
+          onDeleteRemote()
+        },
     )
 
     if (localFileExists) {
       Text(
-        text = Strings.budgetDeleteDialogLocalTxt,
-        fontSize = 14.sp,
+          text = Strings.budgetDeleteDialogLocalTxt,
+          fontSize = 14.sp,
       )
 
       LoadableBareTextButton(
-        text = Strings.budgetDeleteDialogLocalButton,
-        colors = { theme, pressed -> theme.errorBare(pressed) },
-        isEnabled = isNotDeleting,
-        isLoading = deletingState is DeletingState.Active && deletingState.deletingLocal,
-        onClick = {
-          hasPressedDeleteButton = true
-          onDeleteLocal()
-        },
+          text = Strings.budgetDeleteDialogLocalButton,
+          colors = { theme, pressed -> theme.errorBare(pressed) },
+          isEnabled = isNotDeleting,
+          isLoading = deletingState is DeletingState.Active && deletingState.deletingLocal,
+          onClick = {
+            hasPressedDeleteButton = true
+            onDeleteLocal()
+          },
       )
     }
   }
@@ -147,39 +147,39 @@ private val ProgressWheelStrokeWidth = 5.dp
 
 @Composable
 private fun LoadableBareTextButton(
-  text: String,
-  onClick: () -> Unit,
-  isEnabled: Boolean,
-  isLoading: Boolean,
-  colors: @Composable (Theme, Boolean) -> ButtonColors,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = Box(
-  modifier = modifier,
-  contentAlignment = Alignment.Center,
-) {
-  BareTextButton(
-    text = text,
-    colors = colors,
-    isEnabled = isEnabled,
-    onClick = onClick,
-    style = if (isLoading) TextStyle(color = Transparent) else AktualTypography.buttonTextStyle,
-  )
+    text: String,
+    onClick: () -> Unit,
+    isEnabled: Boolean,
+    isLoading: Boolean,
+    colors: @Composable (Theme, Boolean) -> ButtonColors,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
+) =
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center,
+    ) {
+      BareTextButton(
+          text = text,
+          colors = colors,
+          isEnabled = isEnabled,
+          onClick = onClick,
+          style =
+              if (isLoading) TextStyle(color = Transparent) else AktualTypography.buttonTextStyle,
+      )
 
-  Box(
-    modifier = modifier.padding(IconPadding),
-    contentAlignment = Alignment.Center,
-  ) {
-    CircularProgressIndicator(
-      modifier = Modifier
-        .size(IconSize)
-        .alpha(if (isLoading) 1f else 0f),
-      color = theme.sliderActiveTrack,
-      trackColor = theme.sliderInactiveTrack,
-      strokeWidth = ProgressWheelStrokeWidth,
-    )
-  }
-}
+      Box(
+          modifier = modifier.padding(IconPadding),
+          contentAlignment = Alignment.Center,
+      ) {
+        CircularProgressIndicator(
+            modifier = Modifier.size(IconSize).alpha(if (isLoading) 1f else 0f),
+            color = theme.sliderActiveTrack,
+            trackColor = theme.sliderInactiveTrack,
+            strokeWidth = ProgressWheelStrokeWidth,
+        )
+      }
+    }
 
 @Stable
 @Composable
@@ -195,39 +195,53 @@ fun annotatedString() = buildAnnotatedString {
 
 @Stable
 @Composable
-private fun Theme.errorPrimary(isPressed: Boolean) = ButtonDefaults.buttonColors(
-  containerColor = if (isPressed) buttonPrimaryBackground else errorBackground,
-  contentColor = if (isPressed) buttonPrimaryText else errorText,
-)
+private fun Theme.errorPrimary(isPressed: Boolean) =
+    ButtonDefaults.buttonColors(
+        containerColor = if (isPressed) buttonPrimaryBackground else errorBackground,
+        contentColor = if (isPressed) buttonPrimaryText else errorText,
+    )
 
 @Stable
 @Composable
-private fun Theme.errorBare(isPressed: Boolean) = ButtonDefaults.outlinedButtonColors(
-  containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
-  contentColor = if (isPressed) buttonBareText else errorText,
-)
+private fun Theme.errorBare(isPressed: Boolean) =
+    ButtonDefaults.outlinedButtonColors(
+        containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
+        contentColor = if (isPressed) buttonBareText else errorText,
+    )
 
 @Preview
 @Composable
 private fun PreviewDeleteBudgetDialog(
-  @PreviewParameter(DeleteBudgetDialogProvider::class) params: ThemedParams<DeleteBudgetDialogParams>,
-) = PreviewWithColorScheme(params.type) {
-  Content(
-    deletingState = params.data.state,
-    localFileExists = params.data.localFileExists,
-    onDeleteLocal = {},
-    onDeleteRemote = {},
-  )
-}
+    @PreviewParameter(DeleteBudgetDialogProvider::class)
+    params: ThemedParams<DeleteBudgetDialogParams>,
+) =
+    PreviewWithColorScheme(params.type) {
+      Content(
+          deletingState = params.data.state,
+          localFileExists = params.data.localFileExists,
+          onDeleteLocal = {},
+          onDeleteRemote = {},
+      )
+    }
 
 private class DeleteBudgetDialogParams(
-  val state: DeletingState,
-  val localFileExists: Boolean,
+    val state: DeletingState,
+    val localFileExists: Boolean,
 )
 
-private class DeleteBudgetDialogProvider : ThemedParameterProvider<DeleteBudgetDialogParams>(
-  DeleteBudgetDialogParams(state = DeletingState.Inactive, localFileExists = true),
-  DeleteBudgetDialogParams(state = DeletingState.Active(deletingLocal = true), localFileExists = true),
-  DeleteBudgetDialogParams(state = DeletingState.Active(deletingRemote = true), localFileExists = true),
-  DeleteBudgetDialogParams(state = DeletingState.Active(deletingRemote = true), localFileExists = false),
-)
+private class DeleteBudgetDialogProvider :
+    ThemedParameterProvider<DeleteBudgetDialogParams>(
+        DeleteBudgetDialogParams(state = DeletingState.Inactive, localFileExists = true),
+        DeleteBudgetDialogParams(
+            state = DeletingState.Active(deletingLocal = true),
+            localFileExists = true,
+        ),
+        DeleteBudgetDialogParams(
+            state = DeletingState.Active(deletingRemote = true),
+            localFileExists = true,
+        ),
+        DeleteBudgetDialogParams(
+            state = DeletingState.Active(deletingRemote = true),
+            localFileExists = false,
+        ),
+    )

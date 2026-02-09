@@ -61,10 +61,10 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ChooseReportTypeScreen(
-  nav: ChooseReportTypeNavigator,
-  budgetId: BudgetId,
-  token: Token,
-  viewModel: ChooseReportTypeViewModel = metroViewModel(budgetId),
+    nav: ChooseReportTypeNavigator,
+    budgetId: BudgetId,
+    token: Token,
+    viewModel: ChooseReportTypeViewModel = metroViewModel(budgetId),
 ) {
   BackHandler { nav.back() }
 
@@ -75,66 +75,65 @@ fun ChooseReportTypeScreen(
   }
 
   ChooseReportTypeScaffold(
-    onAction = { action ->
-      when (action) {
-        is ChooseReportTypeAction.Create -> viewModel.createReport(action.type)
-      }
-    },
+      onAction = { action ->
+        when (action) {
+          is ChooseReportTypeAction.Create -> viewModel.createReport(action.type)
+        }
+      },
   )
 }
 
 @Composable
 internal fun ChooseReportTypeScaffold(
-  onAction: ChooseReportTypeActionListener,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = Scaffold(
-  modifier = modifier,
-  topBar = {
-    TopAppBar(
-      colors = theme.transparentTopAppBarColors(),
-      title = { Text(Strings.reportsChooseTypeTitle) },
-    )
-  },
-) { innerPadding ->
-  Box {
-    val hazeState = remember { HazeState() }
+    onAction: ChooseReportTypeActionListener,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
+) =
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+          TopAppBar(
+              colors = theme.transparentTopAppBarColors(),
+              title = { Text(Strings.reportsChooseTypeTitle) },
+          )
+        },
+    ) { innerPadding ->
+      Box {
+        val hazeState = remember { HazeState() }
 
-    WavyBackground(
-      modifier = Modifier.hazeSource(hazeState),
-    )
+        WavyBackground(
+            modifier = Modifier.hazeSource(hazeState),
+        )
 
-    WithHazeState(hazeState) {
-      Content(
-        modifier = Modifier.padding(innerPadding),
-        onAction = onAction,
-        theme = theme,
-      )
+        WithHazeState(hazeState) {
+          Content(
+              modifier = Modifier.padding(innerPadding),
+              onAction = onAction,
+              theme = theme,
+          )
+        }
+      }
     }
-  }
-}
 
 @Composable
 private fun Content(
-  onAction: ChooseReportTypeActionListener,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    onAction: ChooseReportTypeActionListener,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   val lazyListState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier
-      .fillMaxWidth()
-      .scrollbar(lazyListState),
-    state = lazyListState,
-    verticalArrangement = Arrangement.spacedBy(8.dp),
-    contentPadding = PaddingValues(8.dp),
+      modifier = modifier.fillMaxWidth().scrollbar(lazyListState),
+      state = lazyListState,
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+      contentPadding = PaddingValues(8.dp),
   ) {
     items(WIDGET_TYPES) { type ->
       WidgetType(
-        modifier = Modifier.fillMaxWidth(),
-        type = type,
-        onAction = onAction,
-        theme = theme,
+          modifier = Modifier.fillMaxWidth(),
+          type = type,
+          onAction = onAction,
+          theme = theme,
       )
     }
 
@@ -147,65 +146,68 @@ private fun Content(
 
 @Composable
 private fun WidgetType(
-  type: WidgetType,
-  onAction: ChooseReportTypeActionListener,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = Column(
-  modifier = modifier
-    .clip(CardShape)
-    .aktualHaze()
-    .clickable { onAction(ChooseReportTypeAction.Create(type)) }
-    .padding(8.dp),
-) {
-  Text(
-    modifier = Modifier.padding(8.dp),
-    text = type.string(),
-    color = theme.pageText,
-    style = AktualTypography.titleLarge,
-  )
+    type: WidgetType,
+    onAction: ChooseReportTypeActionListener,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
+) =
+    Column(
+        modifier =
+            modifier
+                .clip(CardShape)
+                .aktualHaze()
+                .clickable { onAction(ChooseReportTypeAction.Create(type)) }
+                .padding(8.dp),
+    ) {
+      Text(
+          modifier = Modifier.padding(8.dp),
+          text = type.string(),
+          color = theme.pageText,
+          style = AktualTypography.titleLarge,
+      )
 
-  ReportChart(
-    modifier = Modifier
-      .fillMaxWidth()
-      .height(REPORT_HEIGHT),
-    data = type.sampleData(),
-    compact = true,
-    includeHeader = false,
-    theme = theme,
-    onAction = {}, // no-op
-  )
-}
+      ReportChart(
+          modifier = Modifier.fillMaxWidth().height(REPORT_HEIGHT),
+          data = type.sampleData(),
+          compact = true,
+          includeHeader = false,
+          theme = theme,
+          onAction = {}, // no-op
+      )
+    }
 
 @Composable
-private fun WidgetType.string() = when (this) {
-  WidgetType.NetWorth -> Strings.reportsChooseTypeNetWorth
-  WidgetType.CashFlow -> Strings.reportsChooseTypeCashFlow
-  WidgetType.Spending -> Strings.reportsChooseTypeSpending
-  WidgetType.Custom -> Strings.reportsChooseTypeCustom
-  WidgetType.Markdown -> Strings.reportsChooseTypeMarkdown
-  WidgetType.Summary -> Strings.reportsChooseTypeSummary
-  WidgetType.Calendar -> Strings.reportsChooseTypeCalendar
-}
+private fun WidgetType.string() =
+    when (this) {
+      WidgetType.NetWorth -> Strings.reportsChooseTypeNetWorth
+      WidgetType.CashFlow -> Strings.reportsChooseTypeCashFlow
+      WidgetType.Spending -> Strings.reportsChooseTypeSpending
+      WidgetType.Custom -> Strings.reportsChooseTypeCustom
+      WidgetType.Markdown -> Strings.reportsChooseTypeMarkdown
+      WidgetType.Summary -> Strings.reportsChooseTypeSummary
+      WidgetType.Calendar -> Strings.reportsChooseTypeCalendar
+    }
 
 @Stable
-private fun WidgetType.sampleData(): ChartData = when (this) {
-  WidgetType.NetWorth -> PREVIEW_NET_WORTH_DATA
-  WidgetType.CashFlow -> PREVIEW_CASH_FLOW_DATA
-  WidgetType.Spending -> JUL_2025
-  WidgetType.Custom -> PREVIEW_CUSTOM_DATA
-  WidgetType.Markdown -> PREVIEW_SHORT_TEXT_DATA
-  WidgetType.Summary -> PER_TRANSACTION_DATA
-  WidgetType.Calendar -> THREE_MONTHS
-}
+private fun WidgetType.sampleData(): ChartData =
+    when (this) {
+      WidgetType.NetWorth -> PREVIEW_NET_WORTH_DATA
+      WidgetType.CashFlow -> PREVIEW_CASH_FLOW_DATA
+      WidgetType.Spending -> JUL_2025
+      WidgetType.Custom -> PREVIEW_CUSTOM_DATA
+      WidgetType.Markdown -> PREVIEW_SHORT_TEXT_DATA
+      WidgetType.Summary -> PER_TRANSACTION_DATA
+      WidgetType.Calendar -> THREE_MONTHS
+    }
 
 @Composable
 private fun metroViewModel(
-  budgetId: BudgetId,
-) = assistedMetroViewModel<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory>(
-  key = budgetId.value,
-  createViewModel = { create(budgetId) },
-)
+    budgetId: BudgetId,
+) =
+    assistedMetroViewModel<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory>(
+        key = budgetId.value,
+        createViewModel = { create(budgetId) },
+    )
 
 @Immutable
 internal sealed interface ChooseReportTypeAction {
@@ -223,9 +225,10 @@ private val REPORT_HEIGHT = 250.dp
 @PortraitPreview
 @Composable
 private fun PreviewLoaded(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  ChooseReportTypeScaffold(
-    onAction = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      ChooseReportTypeScaffold(
+          onAction = {},
+      )
+    }

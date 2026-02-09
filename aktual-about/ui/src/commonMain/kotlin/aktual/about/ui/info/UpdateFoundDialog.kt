@@ -22,94 +22,96 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
 internal fun UpdateFoundDialog(
-  currentVersion: String,
-  latestVersion: String,
-  latestUrl: String,
-  onDismiss: () -> Unit,
-  onOpenUrl: (String) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    currentVersion: String,
+    latestVersion: String,
+    latestUrl: String,
+    onDismiss: () -> Unit,
+    onOpenUrl: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   BasicAlertDialog(
-    modifier = modifier.testTag(Tags.UpdateFoundDialog),
-    onDismissRequest = onDismiss,
-    content = {
-      UpdateFoundDialogContent(
-        currentVersion = currentVersion,
-        latestVersion = latestVersion,
-        latestUrl = latestUrl,
-        onDismiss = onDismiss,
-        onOpenUrl = onOpenUrl,
-        theme = theme,
-      )
-    },
+      modifier = modifier.testTag(Tags.UpdateFoundDialog),
+      onDismissRequest = onDismiss,
+      content = {
+        UpdateFoundDialogContent(
+            currentVersion = currentVersion,
+            latestVersion = latestVersion,
+            latestUrl = latestUrl,
+            onDismiss = onDismiss,
+            onOpenUrl = onOpenUrl,
+            theme = theme,
+        )
+      },
   )
 }
 
 @Composable
 internal fun UpdateFoundDialogContent(
-  currentVersion: String,
-  latestVersion: String,
-  latestUrl: String,
-  onOpenUrl: (String) -> Unit,
-  onDismiss: () -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    currentVersion: String,
+    latestVersion: String,
+    latestUrl: String,
+    onOpenUrl: (String) -> Unit,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   DialogContent(
-    modifier = modifier,
-    theme = theme,
-    title = Strings.infoUpdateFoundTitle,
-    titleColor = theme.successText,
-    content = {
-      TextContent(Strings.infoUpdateFoundInstalled, currentVersion, Tags.UpdateAvailableCurrentVersion)
-      TextContent(Strings.infoUpdateFoundLatest, latestVersion, Tags.UpdateAvailableNewVersion)
-    },
-    buttons = {
-      TextButton(onClick = onDismiss) {
-        Text(
-          text = Strings.infoUpdateFoundDismiss,
-          color = theme.successText,
+      modifier = modifier,
+      theme = theme,
+      title = Strings.infoUpdateFoundTitle,
+      titleColor = theme.successText,
+      content = {
+        TextContent(
+            Strings.infoUpdateFoundInstalled,
+            currentVersion,
+            Tags.UpdateAvailableCurrentVersion,
         )
-      }
-      TextButton(
-        modifier = Modifier.testTag(Tags.UpdateAvailableDownloadButton),
-        onClick = {
-          onOpenUrl(latestUrl)
-          onDismiss()
-        },
-      ) {
-        Text(
-          text = Strings.infoUpdateFoundView,
-          color = theme.successText,
-        )
-      }
-    },
+        TextContent(Strings.infoUpdateFoundLatest, latestVersion, Tags.UpdateAvailableNewVersion)
+      },
+      buttons = {
+        TextButton(onClick = onDismiss) {
+          Text(
+              text = Strings.infoUpdateFoundDismiss,
+              color = theme.successText,
+          )
+        }
+        TextButton(
+            modifier = Modifier.testTag(Tags.UpdateAvailableDownloadButton),
+            onClick = {
+              onOpenUrl(latestUrl)
+              onDismiss()
+            },
+        ) {
+          Text(
+              text = Strings.infoUpdateFoundView,
+              color = theme.successText,
+          )
+        }
+      },
   )
 }
 
 @Composable
 private fun TextContent(
-  text: String,
-  value: String,
-  valueNodeTag: String,
-  modifier: Modifier = Modifier,
+    text: String,
+    value: String,
+    valueNodeTag: String,
+    modifier: Modifier = Modifier,
 ) {
   Row(
-    modifier = modifier.fillMaxWidth(),
+      modifier = modifier.fillMaxWidth(),
   ) {
     Text(
-      modifier = Modifier.weight(1f),
-      text = text,
-      textAlign = TextAlign.Start,
-      fontWeight = FontWeight.Bold,
+        modifier = Modifier.weight(1f),
+        text = text,
+        textAlign = TextAlign.Start,
+        fontWeight = FontWeight.Bold,
     )
     Text(
-      modifier = Modifier
-        .weight(1f)
-        .testTag(valueNodeTag),
-      text = value,
-      textAlign = TextAlign.End,
+        modifier = Modifier.weight(1f).testTag(valueNodeTag),
+        text = value,
+        textAlign = TextAlign.End,
     )
   }
 }
@@ -117,13 +119,14 @@ private fun TextContent(
 @Preview
 @Composable
 private fun PreviewUpdateFoundContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  UpdateFoundDialogContent(
-    currentVersion = "v1.2.3",
-    latestVersion = "v2.3.4",
-    latestUrl = "https://github.com/jonapoul/aktual/releases/v2.3.4",
-    onOpenUrl = {},
-    onDismiss = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      UpdateFoundDialogContent(
+          currentVersion = "v1.2.3",
+          latestVersion = "v2.3.4",
+          latestUrl = "https://github.com/jonapoul/aktual/releases/v2.3.4",
+          onOpenUrl = {},
+          onDismiss = {},
+      )
+    }

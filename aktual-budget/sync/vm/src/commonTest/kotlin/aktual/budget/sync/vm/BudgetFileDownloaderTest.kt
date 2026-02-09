@@ -32,14 +32,14 @@ import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
 import io.mockk.every
 import io.mockk.mockk
+import java.net.NoRouteToHostException
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import okio.Path
-import java.net.NoRouteToHostException
-import kotlin.test.AfterTest
-import kotlin.test.Test
 
 class BudgetFileDownloaderTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
@@ -55,24 +55,24 @@ class BudgetFileDownloaderTest {
     budgetFiles = TestBudgetFiles(temporaryFolder)
     mockEngine = emptyMockEngine()
 
-    val syncDownloadApi = SyncDownloadApi(
-      serverUrl = SERVER_URL,
-      client = testHttpClient(mockEngine, AktualJson),
-      fileSystem = fileSystem,
-    )
+    val syncDownloadApi =
+        SyncDownloadApi(
+            serverUrl = SERVER_URL,
+            client = testHttpClient(mockEngine, AktualJson),
+            fileSystem = fileSystem,
+        )
 
     apisStateHolder = AktualApisStateHolder()
     apisStateHolder.update {
-      mockk<AktualApis>(relaxed = true) {
-        every { syncDownload } returns syncDownloadApi
-      }
+      mockk<AktualApis>(relaxed = true) { every { syncDownload } returns syncDownloadApi }
     }
 
-    budgetFileDownloader = BudgetFileDownloader(
-      contexts = TestCoroutineContexts(unconfinedDispatcher),
-      budgetFiles = budgetFiles,
-      apisStateHolder = apisStateHolder,
-    )
+    budgetFileDownloader =
+        BudgetFileDownloader(
+            contexts = TestCoroutineContexts(unconfinedDispatcher),
+            budgetFiles = budgetFiles,
+            apisStateHolder = apisStateHolder,
+        )
   }
 
   @AfterTest
@@ -145,7 +145,7 @@ class BudgetFileDownloaderTest {
 
       // and only the temp dir was created
       assertThat(temporaryFolder.list().map(Path::toFile))
-        .isEqualTo(listOf(budgetFiles.tmp().toFile()))
+          .isEqualTo(listOf(budgetFiles.tmp().toFile()))
 
       awaitComplete()
     }
@@ -172,7 +172,7 @@ class BudgetFileDownloaderTest {
 
     // and only the temp dir was created
     assertThat(temporaryFolder.list().map(Path::toFile))
-      .isEqualTo(listOf(budgetFiles.tmp().toFile()))
+        .isEqualTo(listOf(budgetFiles.tmp().toFile()))
   }
 
   private companion object {

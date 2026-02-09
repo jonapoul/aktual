@@ -65,40 +65,37 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun LicensesScaffold(
-  state: LicensesState,
-  searchBarState: SearchBarState,
-  onAction: (LicensesAction) -> Unit,
+    state: LicensesState,
+    searchBarState: SearchBarState,
+    onAction: (LicensesAction) -> Unit,
 ) {
   val theme = LocalTheme.current
   Scaffold(
-    topBar = { LicensesTopBar(searchBarState, theme, onAction) },
+      topBar = { LicensesTopBar(searchBarState, theme, onAction) },
   ) { innerPadding ->
     Box {
       val hazeState = remember { HazeState() }
 
       WavyBackground(
-        modifier = Modifier.hazeSource(hazeState),
+          modifier = Modifier.hazeSource(hazeState),
       )
 
       Column(
-        modifier = Modifier.padding(innerPadding),
+          modifier = Modifier.padding(innerPadding),
       ) {
         LicensesSearchInput(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .wrapContentHeight(),
-          searchState = searchBarState,
-          licensesState = state,
-          onAction = onAction,
-          theme = theme,
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).wrapContentHeight(),
+            searchState = searchBarState,
+            licensesState = state,
+            onAction = onAction,
+            theme = theme,
         )
 
         WithHazeState(hazeState) {
           Content(
-            state = state,
-            theme = theme,
-            onAction = onAction,
+              state = state,
+              theme = theme,
+              onAction = onAction,
           )
         }
       }
@@ -108,54 +105,50 @@ internal fun LicensesScaffold(
 
 @Composable
 private fun LicensesSearchInput(
-  searchState: SearchBarState,
-  licensesState: LicensesState,
-  onAction: (LicensesAction) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    searchState: SearchBarState,
+    licensesState: LicensesState,
+    onAction: (LicensesAction) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   val keyboard = LocalSoftwareKeyboardController.current
   val isVisible = searchState is SearchBarState.Visible
   LaunchedEffect(isVisible) { if (isVisible) keyboard?.show() else keyboard?.hide() }
 
   AnimatedVisibility(
-    visible = isVisible,
-    enter = slideInVertically() + fadeIn(),
-    exit = slideOutVertically() + fadeOut(),
+      visible = isVisible,
+      enter = slideInVertically() + fadeIn(),
+      exit = slideOutVertically() + fadeOut(),
   ) {
     val text = (searchState as? SearchBarState.Visible)?.text.orEmpty()
-    val colors = theme.textField(
-      text = theme.mobileHeaderTextSubdued,
-      icon = theme.mobileHeaderTextSubdued,
-    )
+    val colors =
+        theme.textField(
+            text = theme.mobileHeaderTextSubdued,
+            icon = theme.mobileHeaderTextSubdued,
+        )
 
     Column(
-      modifier = modifier.fillMaxWidth(),
-      horizontalAlignment = Alignment.End,
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.End,
     ) {
       TextField(
-        modifier = Modifier
-          .fillMaxWidth()
-          .focusRequester(keyboardFocusRequester(keyboard)),
-        value = text,
-        onValueChange = { query -> onAction(LicensesAction.EditSearchText(query)) },
-        placeholderText = Strings.licensesSearchPlaceholder,
-        leadingIcon = { Icon(imageVector = MaterialIcons.Search, contentDescription = null) },
-        clearable = true,
-        theme = theme,
-        colors = colors,
+          modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester(keyboard)),
+          value = text,
+          onValueChange = { query -> onAction(LicensesAction.EditSearchText(query)) },
+          placeholderText = Strings.licensesSearchPlaceholder,
+          leadingIcon = { Icon(imageVector = MaterialIcons.Search, contentDescription = null) },
+          clearable = true,
+          theme = theme,
+          colors = colors,
       )
 
-      val numResults = remember(licensesState) {
-        (licensesState as? LicensesState.Loaded)?.artifacts?.size ?: 0
-      }
+      val numResults =
+          remember(licensesState) { (licensesState as? LicensesState.Loaded)?.artifacts?.size ?: 0 }
       Text(
-        modifier = Modifier
-          .wrapContentWidth()
-          .padding(horizontal = Dimens.Large),
-        text = Plurals.licensesSearchNumResults(numResults, numResults),
-        fontSize = 12.sp,
-        color = theme.mobileHeaderTextSubdued,
+          modifier = Modifier.wrapContentWidth().padding(horizontal = Dimens.Large),
+          text = Plurals.licensesSearchNumResults(numResults, numResults),
+          fontSize = 12.sp,
+          color = theme.mobileHeaderTextSubdued,
       )
     }
   }
@@ -163,81 +156,79 @@ private fun LicensesSearchInput(
 
 @Composable
 private fun Content(
-  state: LicensesState,
-  onAction: (LicensesAction) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = when (state) {
-  LicensesState.Loading -> LoadingContent(theme, modifier)
-  LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
-  is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, onAction, modifier)
-  is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
-}
+    state: LicensesState,
+    onAction: (LicensesAction) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
+) =
+    when (state) {
+      LicensesState.Loading -> LoadingContent(theme, modifier)
+      LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
+      is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, onAction, modifier)
+      is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
+    }
 
 @Composable
 private fun LoadingContent(
-  theme: Theme,
-  modifier: Modifier = Modifier,
+    theme: Theme,
+    modifier: Modifier = Modifier,
 ) {
   Box(
-    modifier = modifier.fillMaxSize(),
-    contentAlignment = Alignment.Center,
+      modifier = modifier.fillMaxSize(),
+      contentAlignment = Alignment.Center,
   ) {
     CircularProgressIndicator(
-      color = theme.buttonPrimaryBackground,
-      trackColor = theme.dialogProgressWheelTrack,
+        color = theme.buttonPrimaryBackground,
+        trackColor = theme.dialogProgressWheelTrack,
     )
   }
 }
 
 @Composable
 private fun NoneFoundContent(
-  theme: Theme,
-  modifier: Modifier = Modifier,
+    theme: Theme,
+    modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier.fillMaxSize(),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = modifier.fillMaxSize(),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Icon(
-      modifier = Modifier.size(80.dp),
-      imageVector = MaterialIcons.Warning,
-      contentDescription = null,
-      tint = theme.warningText,
+        modifier = Modifier.size(80.dp),
+        imageVector = MaterialIcons.Warning,
+        contentDescription = null,
+        tint = theme.warningText,
     )
 
     VerticalSpacer(Dimens.Large)
 
     Text(
-      text = Strings.licensesNoneFound,
-      fontSize = 20.sp,
-      textAlign = TextAlign.Center,
-      color = theme.warningText,
+        text = Strings.licensesNoneFound,
+        fontSize = 20.sp,
+        textAlign = TextAlign.Center,
+        color = theme.warningText,
     )
   }
 }
 
 @Composable
 private fun LoadedContent(
-  theme: Theme,
-  artifacts: ImmutableList<ArtifactDetail>,
-  onAction: (LicensesAction) -> Unit,
-  modifier: Modifier = Modifier,
+    theme: Theme,
+    artifacts: ImmutableList<ArtifactDetail>,
+    onAction: (LicensesAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(horizontal = Dimens.Large)
-      .scrollbar(listState),
-    state = listState,
+      modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Large).scrollbar(listState),
+      state = listState,
   ) {
     items(artifacts) { artifact ->
       ArtifactItem(
-        artifact = artifact,
-        onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },
-        theme = theme,
+          artifact = artifact,
+          onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },
+          theme = theme,
       )
 
       VerticalSpacer(5.dp)
@@ -252,39 +243,37 @@ private fun LoadedContent(
 
 @Composable
 private fun ErrorContent(
-  theme: Theme,
-  errorMessage: String,
-  onAction: (LicensesAction) -> Unit,
-  modifier: Modifier = Modifier,
+    theme: Theme,
+    errorMessage: String,
+    onAction: (LicensesAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(32.dp),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally,
+      modifier = modifier.fillMaxSize().padding(32.dp),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Icon(
-      modifier = Modifier.size(80.dp),
-      imageVector = MaterialIcons.Error,
-      contentDescription = null,
-      tint = theme.errorText,
+        modifier = Modifier.size(80.dp),
+        imageVector = MaterialIcons.Error,
+        contentDescription = null,
+        tint = theme.errorText,
     )
 
     VerticalSpacer(Dimens.Large)
 
     Text(
-      text = Strings.licensesFailed(errorMessage),
-      fontSize = 20.sp,
-      textAlign = TextAlign.Center,
-      color = theme.errorText,
+        text = Strings.licensesFailed(errorMessage),
+        fontSize = 20.sp,
+        textAlign = TextAlign.Center,
+        color = theme.errorText,
     )
 
     VerticalSpacer(Dimens.Large)
 
     PrimaryTextButton(
-      text = Strings.licensesFailedRetry,
-      onClick = { onAction(LicensesAction.Reload) },
+        text = Strings.licensesFailedRetry,
+        onClick = { onAction(LicensesAction.Reload) },
     )
   }
 }
@@ -292,49 +281,63 @@ private fun ErrorContent(
 @PortraitPreview
 @Composable
 private fun PreviewNoneFound(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  LicensesScaffold(
-    state = LicensesState.NoneFound,
-    searchBarState = SearchBarState.Gone,
-    onAction = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      LicensesScaffold(
+          state = LicensesState.NoneFound,
+          searchBarState = SearchBarState.Gone,
+          onAction = {},
+      )
+    }
 
 @PortraitPreview
 @Composable
 private fun PreviewLoading(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  LicensesScaffold(
-    state = LicensesState.Loading,
-    searchBarState = SearchBarState.Gone,
-    onAction = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      LicensesScaffold(
+          state = LicensesState.Loading,
+          searchBarState = SearchBarState.Gone,
+          onAction = {},
+      )
+    }
 
 @PortraitPreview
 @Composable
 private fun PreviewLoaded(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  LicensesScaffold(
-    state = LicensesState.Loaded(
-      artifacts = persistentListOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi),
-    ),
-    searchBarState = SearchBarState.Visible(text = "My wicked search query"),
-    onAction = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      LicensesScaffold(
+          state =
+              LicensesState.Loaded(
+                  artifacts =
+                      persistentListOf(
+                          AlakazamAndroidCore,
+                          ComposeMaterialRipple,
+                          FragmentKtx,
+                          Slf4jApi,
+                      ),
+              ),
+          searchBarState = SearchBarState.Visible(text = "My wicked search query"),
+          onAction = {},
+      )
+    }
 
 @PortraitPreview
 @Composable
 private fun PreviewError(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  LicensesScaffold(
-    state = LicensesState.Error(errorMessage = "Something broke lol! Here's some more shite to show how it looks"),
-    searchBarState = SearchBarState.Gone,
-    onAction = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      LicensesScaffold(
+          state =
+              LicensesState.Error(
+                  errorMessage = "Something broke lol! Here's some more shite to show how it looks"
+              ),
+          searchBarState = SearchBarState.Gone,
+          onAction = {},
+      )
+    }

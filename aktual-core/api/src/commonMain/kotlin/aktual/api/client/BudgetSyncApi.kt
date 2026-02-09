@@ -20,42 +20,40 @@ import okio.source
 
 interface BudgetSyncApi {
   suspend fun syncBudget(
-    token: Token,
-    budgetId: BudgetId,
+      token: Token,
+      budgetId: BudgetId,
   ): SyncResponse
 }
 
 class BudgetSyncApiImpl(
-  private val serverUrl: ServerUrl,
-  private val client: HttpClient,
-  private val prefs: BudgetLocalPreferences,
-  private val decoder: SyncResponseDecoder,
+    private val serverUrl: ServerUrl,
+    private val client: HttpClient,
+    private val prefs: BudgetLocalPreferences,
+    private val decoder: SyncResponseDecoder,
 ) : BudgetSyncApi {
-  private val urlProtocol = when (serverUrl.protocol) {
-    Protocol.Http -> URLProtocol.HTTP
-    Protocol.Https -> URLProtocol.HTTPS
-  }
+  private val urlProtocol =
+      when (serverUrl.protocol) {
+        Protocol.Http -> URLProtocol.HTTP
+        Protocol.Https -> URLProtocol.HTTPS
+      }
 
   override suspend fun syncBudget(
-    token: Token,
-    budgetId: BudgetId,
+      token: Token,
+      budgetId: BudgetId,
   ): SyncResponse {
-    val response = client.post {
-      url {
-        protocol = urlProtocol
-        host = serverUrl.baseUrl
-        path("/sync")
-      }
-      header(AktualHeaders.TOKEN, token)
-    }
+    val response =
+        client.post {
+          url {
+            protocol = urlProtocol
+            host = serverUrl.baseUrl
+            path("/sync")
+          }
+          header(AktualHeaders.TOKEN, token)
+        }
 
     return decoder(
-      source = response
-        .bodyAsChannel()
-        .toInputStream()
-        .source()
-        .buffer(),
-      metadata = prefs.value,
+        source = response.bodyAsChannel().toInputStream().source().buffer(),
+        metadata = prefs.value,
     )
   }
 }

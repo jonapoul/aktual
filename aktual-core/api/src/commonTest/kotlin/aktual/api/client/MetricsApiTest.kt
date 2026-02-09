@@ -11,11 +11,11 @@ import aktual.test.testHttpClient
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine
-import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.time.Duration.Companion.seconds
+import kotlinx.coroutines.test.runTest
 
 class MetricsApiTest {
   private lateinit var mockEngine: MockEngine.Queue
@@ -47,17 +47,19 @@ class MetricsApiTest {
     assertThat(headers["Accept-Charset"]).isEqualTo(listOf("UTF-8"))
 
     // and the response was parsed properly
-    assertThat(response).isEqualTo(
-      GetMetricsResponse(
-        uptime = 806662.711204594.seconds,
-        memory = GetMetricsResponse.Memory(
-          rss = 112377856L.bytes,
-          heapTotal = 32088064L.bytes,
-          heapUsed = 29558608L.bytes,
-          external = 3925760L.bytes,
-          arrayBuffers = 387791L.bytes,
-        ),
-      ),
-    )
+    assertThat(response)
+        .isEqualTo(
+            GetMetricsResponse(
+                uptime = 806662.711204594.seconds,
+                memory =
+                    GetMetricsResponse.Memory(
+                        rss = 112377856L.bytes,
+                        heapTotal = 32088064L.bytes,
+                        heapUsed = 29558608L.bytes,
+                        external = 3925760L.bytes,
+                        arrayBuffers = 387791L.bytes,
+                    ),
+            ),
+        )
   }
 }

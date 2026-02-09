@@ -6,6 +6,6 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class ThemeConfig(
-  val regular: RegularColorSchemeType,
-  val dark: DarkColorSchemeType,
+    val regular: RegularColorSchemeType,
+    val dark: DarkColorSchemeType,
 )

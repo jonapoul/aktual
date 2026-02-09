@@ -1,9 +1,9 @@
 package aktual.budget.model
 
 enum class NumberFormat(
-  val value: String,
-  val thousandsSeparator: String,
-  val decimalSeparator: String,
+    val value: String,
+    val thousandsSeparator: String,
+    val decimalSeparator: String,
 ) {
   // e.g. 1,000.33
   CommaDot(value = "comma-dot", thousandsSeparator = ",", decimalSeparator = "."),
@@ -23,11 +23,12 @@ enum class NumberFormat(
 
   companion object {
     val Default = CommaDot
+
     fun from(value: String?): NumberFormat = entries.firstOrNull { it.value == value } ?: Default
   }
 }
 
 data class NumberFormatConfig(
-  val format: NumberFormat,
-  val hideFraction: Boolean,
+    val format: NumberFormat,
+    val hideFraction: Boolean,
 )

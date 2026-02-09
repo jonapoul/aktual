@@ -7,7 +7,7 @@ sealed interface DeletingState {
   data object Inactive : DeletingState
 
   data class Active(
-    val deletingLocal: Boolean = false,
-    val deletingRemote: Boolean = false,
+      val deletingLocal: Boolean = false,
+      val deletingRemote: Boolean = false,
   ) : DeletingState
 }

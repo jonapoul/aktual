@@ -1,6 +1,4 @@
-plugins {
-  id("aktual.module.jvm")
-}
+plugins { id("aktual.module.jvm") }
 
 dependencies {
   api(libs.ksp.api)

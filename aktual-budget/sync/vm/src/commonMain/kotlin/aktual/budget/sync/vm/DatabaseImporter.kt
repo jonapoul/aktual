@@ -11,6 +11,9 @@ import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.TimeZoneProvider
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
+import java.util.zip.ZipException
+import java.util.zip.ZipInputStream
+import kotlin.time.Clock
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.datetime.todayIn
@@ -19,32 +22,28 @@ import logcat.logcat
 import okio.FileSystem
 import okio.Path
 import okio.buffer
-import java.util.zip.ZipException
-import java.util.zip.ZipInputStream
-import kotlin.time.Clock
 
-/**
- * Adapted from packages/loot-core/src/server/cloud-storage.ts importBuffer()
- */
+/** Adapted from packages/loot-core/src/server/cloud-storage.ts importBuffer() */
 @Inject
 class DatabaseImporter(
-  private val contexts: CoroutineContexts,
-  private val fileSystem: FileSystem,
-  private val budgetFiles: BudgetFiles,
-  private val clock: Clock,
-  private val timeZones: TimeZoneProvider,
+    private val contexts: CoroutineContexts,
+    private val fileSystem: FileSystem,
+    private val budgetFiles: BudgetFiles,
+    private val clock: Clock,
+    private val timeZones: TimeZoneProvider,
 ) {
   suspend operator fun invoke(userFile: UserFile, zipPath: Path): ImportResult {
     val directory = budgetFiles.directory(userFile.fileId, mkdirs = true)
 
-    val result = try {
-      invokeImpl(userFile, zipPath)
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.e(e) { "Unexpected failure importing $userFile from $zipPath" }
-      ImportResult.OtherFailure(e.requireMessage())
-    }
+    val result =
+        try {
+          invokeImpl(userFile, zipPath)
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          logcat.e(e) { "Unexpected failure importing $userFile from $zipPath" }
+          ImportResult.OtherFailure(e.requireMessage())
+        }
 
     if (result is ImportResult.Failure) {
       fileSystem.deleteRecursively(directory)
@@ -80,19 +79,21 @@ class DatabaseImporter(
       return ImportResult.InvalidZipFile
     }
 
-    val meta = try {
-      AktualJson.decodeFromString(DbMetadata.serializer(), metaJson)
-    } catch (e: SerializationException) {
-      logcat.e(e) { "Failed deserializing DbMetadata: '$metaJson'" }
-      return ImportResult.InvalidMetaFile
-    }
+    val meta =
+        try {
+          AktualJson.decodeFromString(DbMetadata.serializer(), metaJson)
+        } catch (e: SerializationException) {
+          logcat.e(e) { "Failed deserializing DbMetadata: '$metaJson'" }
+          return ImportResult.InvalidMetaFile
+        }
 
     // Update the metadata. The stored file on the server might be out-of-date with a few keys
-    val newMeta = meta
-      .set(DbMetadata.CloudFileId, userFile.fileId)
-      .set(DbMetadata.GroupId, userFile.groupId)
-      .set(DbMetadata.LastUploaded, clock.todayIn(timeZones.get()))
-      .set(DbMetadata.EncryptKeyId, userFile.encryptMeta?.keyId?.value)
+    val newMeta =
+        meta
+            .set(DbMetadata.CloudFileId, userFile.fileId)
+            .set(DbMetadata.GroupId, userFile.groupId)
+            .set(DbMetadata.LastUploaded, clock.todayIn(timeZones.get()))
+            .set(DbMetadata.EncryptKeyId, userFile.encryptMeta?.keyId?.value)
 
     budgetFiles.writeMetadata(newMeta)
     return ImportResult.Success(newMeta)
@@ -102,11 +103,7 @@ class DatabaseImporter(
     val dbPath = budgetFiles.database(id, mkdirs = true)
     fileSystem.delete(dbPath, mustExist = false)
 
-    fileSystem
-      .sink(dbPath)
-      .buffer()
-      .outputStream()
-      .use { output -> zip.copyTo(output) }
+    fileSystem.sink(dbPath).buffer().outputStream().use { output -> zip.copyTo(output) }
 
     return dbPath
   }

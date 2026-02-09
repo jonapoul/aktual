@@ -11,14 +11,15 @@ import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
+import java.io.IOException
 import kotlinx.coroutines.withContext
 import logcat.logcat
-import java.io.IOException
 
 @Inject
-class BudgetInfoFetcher internal constructor(
-  private val contexts: CoroutineContexts,
-  private val apisStateHolder: AktualApisStateHolder,
+class BudgetInfoFetcher
+internal constructor(
+    private val contexts: CoroutineContexts,
+    private val apisStateHolder: AktualApisStateHolder,
 ) {
   sealed interface Result {
     data class Success(val userFile: UserFile) : Result
@@ -45,26 +46,32 @@ class BudgetInfoFetcher internal constructor(
 
     logcat.d { "Fetching UserFile for budgetId=$budgetId" }
 
-    val response = try {
-      withContext(contexts.io) { api.fetchUserFileInfo(token, budgetId) }
-    } catch (e: ResponseException) {
-      logcat.e { "Failed fetching UserFile for $budgetId with $token! Response = ${e.response}" }
-      return e.parseFailure()
-    } catch (e: IOException) {
-      logcat.e(e) { "Failed fetching UserFile of $budgetId with $token" }
-      return Result.IOFailure(e.requireMessage())
-    }
+    val response =
+        try {
+          withContext(contexts.io) { api.fetchUserFileInfo(token, budgetId) }
+        } catch (e: ResponseException) {
+          logcat.e {
+            "Failed fetching UserFile for $budgetId with $token! Response = ${e.response}"
+          }
+          return e.parseFailure()
+        } catch (e: IOException) {
+          logcat.e(e) { "Failed fetching UserFile of $budgetId with $token" }
+          return Result.IOFailure(e.requireMessage())
+        }
 
     logcat.v { "Fetched UserFile for $budgetId: ${response.data}" }
     return Result.Success(response.data)
   }
 
   private suspend fun ResponseException.parseFailure(): Result {
-    val body = try {
-      response.body<GetUserFileInfoResponse.Failure>()
-    } catch (_: JsonConvertException) {
-      return Result.HttpFailure("Received failed HTTP response, but failed parsing body. Status = ${response.status}")
-    }
+    val body =
+        try {
+          response.body<GetUserFileInfoResponse.Failure>()
+        } catch (_: JsonConvertException) {
+          return Result.HttpFailure(
+              "Received failed HTTP response, but failed parsing body. Status = ${response.status}"
+          )
+        }
     return Result.HttpFailure(body.reason.reason)
   }
 }

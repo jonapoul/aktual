@@ -1,9 +1,7 @@
 import blueprint.core.commonMainDependencies
 import blueprint.core.jvmMainDependencies
 
-plugins {
-  id("aktual.module.compose")
-}
+plugins { id("aktual.module.compose") }
 
 kotlin {
   commonMainDependencies {
@@ -16,7 +14,5 @@ kotlin {
     api(libs.test.kotlinx.coroutines)
   }
 
-  jvmMainDependencies {
-    api(compose.desktop.currentOs)
-  }
+  jvmMainDependencies { api(compose.desktop.currentOs) }
 }

@@ -6,7 +6,7 @@ import okio.Source
 
 fun interface SyncResponseDecoder {
   suspend operator fun invoke(
-    source: Source,
-    metadata: DbMetadata,
+      source: Source,
+      metadata: DbMetadata,
   ): SyncResponse
 }

@@ -31,45 +31,44 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun BuildStateItem(
-  icon: ImageVector,
-  title: String,
-  subtitle: String,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-  onClick: (() -> Unit)? = null,
+    icon: ImageVector,
+    title: String,
+    subtitle: String,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
+    onClick: (() -> Unit)? = null,
 ) {
   Row(
-    modifier = modifier
-      .fillMaxWidth()
-      .height(ItemHeight)
-      .background(Color.Transparent, CardShape)
-      .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
-      .padding(horizontal = ItemPadding),
-    verticalAlignment = Alignment.CenterVertically,
+      modifier =
+          modifier
+              .fillMaxWidth()
+              .height(ItemHeight)
+              .background(Color.Transparent, CardShape)
+              .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
+              .padding(horizontal = ItemPadding),
+      verticalAlignment = Alignment.CenterVertically,
   ) {
     Icon(
-      modifier = Modifier.padding(ItemPadding),
-      imageVector = icon,
-      contentDescription = title,
-      tint = theme.pageText,
+        modifier = Modifier.padding(ItemPadding),
+        imageVector = icon,
+        contentDescription = title,
+        tint = theme.pageText,
     )
 
     Column(
-      modifier = Modifier
-        .weight(1f)
-        .padding(ItemPadding),
+        modifier = Modifier.weight(1f).padding(ItemPadding),
     ) {
       Text(
-        modifier = Modifier.testTag(Tags.BuildStateItemTitle),
-        text = title,
-        style = AktualTypography.bodyLarge,
-        color = theme.pageText,
+          modifier = Modifier.testTag(Tags.BuildStateItemTitle),
+          text = title,
+          style = AktualTypography.bodyLarge,
+          color = theme.pageText,
       )
       Text(
-        modifier = Modifier.testTag(Tags.BuildStateItemValue),
-        text = subtitle,
-        style = AktualTypography.labelMedium,
-        color = theme.pageTextSubdued,
+          modifier = Modifier.testTag(Tags.BuildStateItemValue),
+          text = subtitle,
+          style = AktualTypography.labelMedium,
+          color = theme.pageTextSubdued,
       )
     }
   }
@@ -81,25 +80,27 @@ private val ItemHeight = 50.dp
 @Preview
 @Composable
 private fun PreviewRegularItem(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  BuildStateItem(
-    icon = MaterialIcons.Info,
-    title = "Info",
-    subtitle = "More info",
-    onClick = null,
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      BuildStateItem(
+          icon = MaterialIcons.Info,
+          title = "Info",
+          subtitle = "More info",
+          onClick = null,
+      )
+    }
 
 @Preview
 @Composable
 private fun PreviewClickableItem(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  BuildStateItem(
-    icon = MaterialIcons.Numbers,
-    title = "Info",
-    subtitle = "More info",
-    onClick = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      BuildStateItem(
+          icon = MaterialIcons.Numbers,
+          title = "Info",
+          subtitle = "More info",
+          onClick = {},
+      )
+    }

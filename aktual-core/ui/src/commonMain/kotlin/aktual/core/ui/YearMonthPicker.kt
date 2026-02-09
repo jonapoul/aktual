@@ -29,11 +29,11 @@ import kotlinx.datetime.YearMonthRange
 
 @Composable
 fun YearMonthPicker(
-  value: YearMonth,
-  range: YearMonthRange,
-  onValueChange: (YearMonth) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    value: YearMonth,
+    range: YearMonthRange,
+    onValueChange: (YearMonth) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   require(value in range) { "Given month $value is not in range $range" }
 
@@ -41,167 +41,169 @@ fun YearMonthPicker(
   var selected by remember { mutableStateOf(value) }
 
   TextField(
-    modifier = modifier
-      .wrapContentWidth()
-      .clickable { showDialog = true },
-    readOnly = true,
-    placeholderText = null,
-    value = selected.stringLong(),
-    onValueChange = {},
-    colors = theme.exposedDropDownMenu(),
-    theme = theme,
+      modifier = modifier.wrapContentWidth().clickable { showDialog = true },
+      readOnly = true,
+      placeholderText = null,
+      value = selected.stringLong(),
+      onValueChange = {},
+      colors = theme.exposedDropDownMenu(),
+      theme = theme,
   )
 
   if (showDialog) {
     PickDateDialog(
-      value = selected,
-      range = range,
-      onDismiss = { showDialog = false },
-      onValueChange = { newValue ->
-        selected = newValue
-        onValueChange(newValue)
-        showDialog = false
-      },
+        value = selected,
+        range = range,
+        onDismiss = { showDialog = false },
+        onValueChange = { newValue ->
+          selected = newValue
+          onValueChange(newValue)
+          showDialog = false
+        },
     )
   }
 }
 
 @Composable
 private fun PickDateDialog(
-  value: YearMonth,
-  range: YearMonthRange,
-  onDismiss: () -> Unit,
-  onValueChange: (YearMonth) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = BasicAlertDialog(
-  modifier = modifier,
-  onDismissRequest = onDismiss,
-  content = {
-    PickDateDialogContent(
-      value = value,
-      range = range,
-      onDismiss = onDismiss,
-      onValueChange = onValueChange,
-      theme = theme,
+    value: YearMonth,
+    range: YearMonthRange,
+    onDismiss: () -> Unit,
+    onValueChange: (YearMonth) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
+) =
+    BasicAlertDialog(
+        modifier = modifier,
+        onDismissRequest = onDismiss,
+        content = {
+          PickDateDialogContent(
+              value = value,
+              range = range,
+              onDismiss = onDismiss,
+              onValueChange = onValueChange,
+              theme = theme,
+          )
+        },
     )
-  },
-)
 
 @Composable
 internal fun PickDateDialogContent(
-  value: YearMonth,
-  range: YearMonthRange,
-  onDismiss: () -> Unit,
-  onValueChange: (YearMonth) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
+    value: YearMonth,
+    range: YearMonthRange,
+    onDismiss: () -> Unit,
+    onValueChange: (YearMonth) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
 ) {
   var currentValue by remember { mutableStateOf(value) }
   val withinRange = currentValue in range
 
   DialogContent(
-    modifier = modifier,
-    theme = theme,
-    title = Strings.yearMonthPickerTitle,
-    buttons = {
-      TextButton(onClick = onDismiss) {
-        Text(text = Strings.yearMonthPickerCancel, color = theme.pageText)
-      }
+      modifier = modifier,
+      theme = theme,
+      title = Strings.yearMonthPickerTitle,
+      buttons = {
+        TextButton(onClick = onDismiss) {
+          Text(text = Strings.yearMonthPickerCancel, color = theme.pageText)
+        }
 
-      TextButton(
-        enabled = withinRange,
-        onClick = { onValueChange(currentValue) },
-      ) {
-        Text(
-          text = Strings.yearMonthPickerSave,
-          color = if (withinRange) theme.pageTextPositive else theme.pageTextSubdued,
-        )
-      }
-    },
+        TextButton(
+            enabled = withinRange,
+            onClick = { onValueChange(currentValue) },
+        ) {
+          Text(
+              text = Strings.yearMonthPickerSave,
+              color = if (withinRange) theme.pageTextPositive else theme.pageTextSubdued,
+          )
+        }
+      },
   ) {
     ExposedDropDownMenu(
-      value = currentValue.month,
-      onValueChange = { currentValue = YearMonth(currentValue.year, it) },
-      options = remember(range) { range.rangeValues { it.month } },
-      theme = theme,
-      string = { it.stringLong() },
+        value = currentValue.month,
+        onValueChange = { currentValue = YearMonth(currentValue.year, it) },
+        options = remember(range) { range.rangeValues { it.month } },
+        theme = theme,
+        string = { it.stringLong() },
     )
 
     VerticalSpacer(8.dp)
 
     ExposedDropDownMenu(
-      value = currentValue.year,
-      onValueChange = { currentValue = YearMonth(it, currentValue.month) },
-      options = remember(range) { range.rangeValues { it.year } },
-      theme = theme,
-      string = { it.toString() },
+        value = currentValue.year,
+        onValueChange = { currentValue = YearMonth(it, currentValue.month) },
+        options = remember(range) { range.rangeValues { it.year } },
+        theme = theme,
+        string = { it.toString() },
     )
 
     if (!withinRange) {
       val start = range.start.stringShort()
       val end = range.endInclusive.stringShort()
       Text(
-        modifier = Modifier.padding(8.dp),
-        text = Strings.yearMonthPickerOutOfRange(start, end),
-        color = theme.errorText,
-        textAlign = TextAlign.Center,
+          modifier = Modifier.padding(8.dp),
+          text = Strings.yearMonthPickerOutOfRange(start, end),
+          color = theme.errorText,
+          textAlign = TextAlign.Center,
       )
     }
   }
 }
 
 private fun <T : Comparable<T>> YearMonthRange.rangeValues(
-  picker: (YearMonth) -> T,
-): ImmutableList<T> = map { picker(it) }
-  .distinct()
-  .sorted()
-  .toImmutableList()
+    picker: (YearMonth) -> T,
+): ImmutableList<T> = map { picker(it) }.distinct().sorted().toImmutableList()
 
 @Preview
 @Composable
 private fun PreviewYearMonthPicker(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  YearMonthPicker(
-    modifier = Modifier.padding(4.dp),
-    value = YearMonth(2025, Month.FEBRUARY),
-    onValueChange = {},
-    range = YearMonthRange(
-      start = YearMonth(2011, Month.DECEMBER),
-      endInclusive = YearMonth(2025, Month.JULY),
-    ),
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      YearMonthPicker(
+          modifier = Modifier.padding(4.dp),
+          value = YearMonth(2025, Month.FEBRUARY),
+          onValueChange = {},
+          range =
+              YearMonthRange(
+                  start = YearMonth(2011, Month.DECEMBER),
+                  endInclusive = YearMonth(2025, Month.JULY),
+              ),
+      )
+    }
 
 @Preview
 @Composable
 private fun PreviewDialogContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  PickDateDialogContent(
-    value = YearMonth(2025, Month.FEBRUARY),
-    range = YearMonthRange(
-      start = YearMonth(2011, Month.DECEMBER),
-      endInclusive = YearMonth(2025, Month.JULY),
-    ),
-    onDismiss = {},
-    onValueChange = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      PickDateDialogContent(
+          value = YearMonth(2025, Month.FEBRUARY),
+          range =
+              YearMonthRange(
+                  start = YearMonth(2011, Month.DECEMBER),
+                  endInclusive = YearMonth(2025, Month.JULY),
+              ),
+          onDismiss = {},
+          onValueChange = {},
+      )
+    }
 
 @Preview
 @Composable
 private fun PreviewDialogContentOutOfRange(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  PickDateDialogContent(
-    value = YearMonth(2025, Month.AUGUST),
-    range = YearMonthRange(
-      start = YearMonth(2011, Month.DECEMBER),
-      endInclusive = YearMonth(2025, Month.JULY),
-    ),
-    onDismiss = {},
-    onValueChange = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      PickDateDialogContent(
+          value = YearMonth(2025, Month.AUGUST),
+          range =
+              YearMonthRange(
+                  start = YearMonth(2011, Month.DECEMBER),
+                  endInclusive = YearMonth(2025, Month.JULY),
+              ),
+          onDismiss = {},
+          onValueChange = {},
+      )
+    }

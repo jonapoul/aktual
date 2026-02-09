@@ -6,6 +6,6 @@ import dev.jonpoulton.preferences.core.Preferences
 import kotlin.coroutines.CoroutineContext
 
 class AndroidEncryptedPreferences(
-  prefs: SharedPreferences,
-  context: CoroutineContext,
+    prefs: SharedPreferences,
+    context: CoroutineContext,
 ) : EncryptedPreferences, Preferences by AndroidSharedPreferences(prefs, context)

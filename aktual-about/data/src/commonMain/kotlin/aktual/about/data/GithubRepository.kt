@@ -6,22 +6,24 @@ import dev.zacsweers.metro.Inject
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
+import java.io.IOException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
-import java.io.IOException
 
 @Inject
-class GithubRepository internal constructor(
-  private val contexts: CoroutineContexts,
-  private val githubApi: GithubApi,
-  private val buildConfig: BuildConfig,
+class GithubRepository
+internal constructor(
+    private val contexts: CoroutineContexts,
+    private val githubApi: GithubApi,
+    private val buildConfig: BuildConfig,
 ) {
   suspend fun fetchLatestRelease(): LatestReleaseState {
     try {
-      val releases = withContext(contexts.io) {
-        githubApi.getReleases(user = "jonapoul", repo = "aktual", perPage = 1)
-      }
+      val releases =
+          withContext(contexts.io) {
+            githubApi.getReleases(user = "jonapoul", repo = "aktual", perPage = 1)
+          }
 
       val latest = releases.maxByOrNull { it.publishedAt }
       return when {
@@ -50,22 +52,26 @@ class GithubRepository internal constructor(
   }
 
   private fun Exception.toFailure(): LatestReleaseState {
-    val errorMessage = when (this) {
-      is ResponseException -> when (response.status) {
-        HttpStatusCode.NotFound -> return LatestReleaseState.PrivateRepo
-        else -> with(response.status) { "HTTP error $value: $description" }
-      }
+    val errorMessage =
+        when (this) {
+          is ResponseException ->
+              when (response.status) {
+                HttpStatusCode.NotFound -> return LatestReleaseState.PrivateRepo
+                else -> with(response.status) { "HTTP error $value: $description" }
+              }
 
-      is SerializationException, is JsonConvertException -> "Failed decoding JSON: $message"
+          is SerializationException,
+          is JsonConvertException -> "Failed decoding JSON: $message"
 
-      is IOException -> "IO failure: $message"
+          is IOException -> "IO failure: $message"
 
-      else -> "Other error - ${javaClass.simpleName}: $message"
-    }
+          else -> "Other error - ${javaClass.simpleName}: $message"
+        }
     return LatestReleaseState.Failure(errorMessage)
   }
 
-  private fun GithubRelease.clippedVersion(): String = versionName.replace(ANY_LETTER, replacement = "")
+  private fun GithubRelease.clippedVersion(): String =
+      versionName.replace(ANY_LETTER, replacement = "")
 
   private companion object {
     val ANY_LETTER = "[a-zA-z]".toRegex()

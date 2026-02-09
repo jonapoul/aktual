@@ -17,30 +17,30 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal actual fun TopBarActions(
-  onAction: (ListBudgetsAction) -> Unit,
+    onAction: (ListBudgetsAction) -> Unit,
 ) = Row {
   BasicIconButton(
-    modifier = Modifier.padding(horizontal = 5.dp),
-    onClick = { onAction(ListBudgetsAction.Reload) },
-    imageVector = MaterialIcons.Refresh,
-    contentDescription = Strings.listBudgetsRefresh,
-    colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+      modifier = Modifier.padding(horizontal = 5.dp),
+      onClick = { onAction(ListBudgetsAction.Reload) },
+      imageVector = MaterialIcons.Refresh,
+      contentDescription = Strings.listBudgetsRefresh,
+      colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
   )
 
   SettingsButton(
-    modifier = Modifier.padding(horizontal = 5.dp),
-    onAction = onAction,
+      modifier = Modifier.padding(horizontal = 5.dp),
+      onAction = onAction,
   )
 
   var showMenu by remember { mutableStateOf(false) }
   MoreButton(
-    modifier = Modifier.padding(horizontal = 5.dp),
-    onClick = { showMenu = !showMenu },
+      modifier = Modifier.padding(horizontal = 5.dp),
+      onClick = { showMenu = !showMenu },
   )
 
   MoreMenu(
-    showMenu = showMenu,
-    onAction = onAction,
-    onDismissRequest = { showMenu = false },
+      showMenu = showMenu,
+      onAction = onAction,
+      onDismissRequest = { showMenu = false },
   )
 }

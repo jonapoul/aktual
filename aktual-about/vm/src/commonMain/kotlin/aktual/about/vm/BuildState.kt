@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class BuildState(
-  val versions: AktualVersions,
-  val buildDate: String,
-  val year: Int,
+    val versions: AktualVersions,
+    val buildDate: String,
+    val year: Int,
 )

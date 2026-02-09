@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.update
 @Inject
 @SingleIn(AppScope::class)
 class BudgetGraphHolder(
-  private val budgetGraphBuilder: BudgetGraph.Builder,
+    private val budgetGraphBuilder: BudgetGraph.Builder,
 ) : StateHolder<BudgetGraph?>(initialState = null), AutoCloseable {
   fun require(): BudgetGraph = requireNotNull(value) { "No budget graph loaded!" }
 

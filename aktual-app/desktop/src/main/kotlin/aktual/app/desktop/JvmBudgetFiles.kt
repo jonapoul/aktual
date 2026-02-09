@@ -10,10 +10,8 @@ import okio.FileSystem
 @Inject
 @ContributesBinding(AppScope::class)
 class JvmBudgetFiles(
-  files: Files,
-  override val fileSystem: FileSystem,
+    files: Files,
+    override val fileSystem: FileSystem,
 ) : BudgetFiles {
-  override val directoryPath = files
-    .userHome()
-    .resolve("budgets")
+  override val directoryPath = files.userHome().resolve("budgets")
 }

@@ -23,32 +23,36 @@ import logcat.logcat
 @Inject
 @ViewModelKey(LicensesViewModel::class)
 @ContributesIntoMap(AppScope::class)
-class LicensesViewModel internal constructor(
-  private val licensesRepository: LicensesRepository,
-  private val urlOpener: UrlOpener,
+class LicensesViewModel
+internal constructor(
+    private val licensesRepository: LicensesRepository,
+    private val urlOpener: UrlOpener,
 ) : ViewModel() {
   private val mutableState = MutableStateFlow<LicensesState>(LicensesState.Loading)
   private val showSearchBar = MutableStateFlow(value = false)
   private val searchTerm = MutableStateFlow(value = "")
 
-  val searchBarState: StateFlow<SearchBarState> = viewModelScope.launchMolecule(Immediate) {
-    val showSearchBar by showSearchBar.collectAsState()
-    val searchTerm by searchTerm.collectAsState()
-    if (showSearchBar) SearchBarState.Visible(searchTerm) else SearchBarState.Gone
-  }
-
-  val licensesState: StateFlow<LicensesState> = viewModelScope.launchMolecule(Immediate) {
-    val licensesState by mutableState.collectAsState()
-    val searchBarState by searchBarState.collectAsState()
-    when (val searchState = searchBarState) {
-      SearchBarState.Gone -> licensesState
-
-      is SearchBarState.Visible -> when (val licenses = licensesState) {
-        is LicensesState.Loaded -> licenses.filteredBy(searchState.text)
-        else -> licenses
+  val searchBarState: StateFlow<SearchBarState> =
+      viewModelScope.launchMolecule(Immediate) {
+        val showSearchBar by showSearchBar.collectAsState()
+        val searchTerm by searchTerm.collectAsState()
+        if (showSearchBar) SearchBarState.Visible(searchTerm) else SearchBarState.Gone
       }
-    }
-  }
+
+  val licensesState: StateFlow<LicensesState> =
+      viewModelScope.launchMolecule(Immediate) {
+        val licensesState by mutableState.collectAsState()
+        val searchBarState by searchBarState.collectAsState()
+        when (val searchState = searchBarState) {
+          SearchBarState.Gone -> licensesState
+
+          is SearchBarState.Visible ->
+              when (val licenses = licensesState) {
+                is LicensesState.Loaded -> licenses.filteredBy(searchState.text)
+                else -> licenses
+              }
+        }
+      }
 
   init {
     load()
@@ -58,20 +62,22 @@ class LicensesViewModel internal constructor(
     logcat.d { "load" }
     mutableState.update { LicensesState.Loading }
     viewModelScope.launch {
-      val licensesState = when (val loadState = licensesRepository.loadLicenses()) {
-        is LicensesLoadState.Failure -> LicensesState.Error(loadState.cause)
-        is LicensesLoadState.Success -> loadState.toLicensesState()
-      }
+      val licensesState =
+          when (val loadState = licensesRepository.loadLicenses()) {
+            is LicensesLoadState.Failure -> LicensesState.Error(loadState.cause)
+            is LicensesLoadState.Success -> loadState.toLicensesState()
+          }
 
       mutableState.update { licensesState }
     }
   }
 
-  private fun LicensesLoadState.Success.toLicensesState() = if (libraries.isEmpty()) {
-    LicensesState.NoneFound
-  } else {
-    LicensesState.Loaded(libraries.toImmutableList())
-  }
+  private fun LicensesLoadState.Success.toLicensesState() =
+      if (libraries.isEmpty()) {
+        LicensesState.NoneFound
+      } else {
+        LicensesState.Loaded(libraries.toImmutableList())
+      }
 
   fun openUrl(url: String) {
     logcat.d { "openUrl $url" }

@@ -35,28 +35,28 @@ import dev.chrisbanes.haze.hazeSource
 
 @Composable
 internal fun InfoScaffold(
-  buildState: BuildState,
-  onAction: (InfoAction) -> Unit,
-  modifier: Modifier = Modifier,
+    buildState: BuildState,
+    onAction: (InfoAction) -> Unit,
+    modifier: Modifier = Modifier,
 ) {
   val theme = LocalTheme.current
   Scaffold(
-    modifier = modifier,
-    topBar = { InfoTopBar(theme, onAction) },
+      modifier = modifier,
+      topBar = { InfoTopBar(theme, onAction) },
   ) { innerPadding ->
     Box {
       val hazeState = remember { HazeState() }
 
       WavyBackground(
-        modifier = Modifier.hazeSource(hazeState),
+          modifier = Modifier.hazeSource(hazeState),
       )
 
       WithHazeState(hazeState) {
         InfoScreenContent(
-          modifier = Modifier.padding(innerPadding),
-          buildState = buildState,
-          onAction = onAction,
-          theme = theme,
+            modifier = Modifier.padding(innerPadding),
+            buildState = buildState,
+            onAction = onAction,
+            theme = theme,
         )
       }
     }
@@ -65,59 +65,53 @@ internal fun InfoScaffold(
 
 @Composable
 private fun InfoScreenContent(
-  buildState: BuildState,
-  onAction: (InfoAction) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = Column(
-  modifier = modifier.verticalScrollWithBar(),
-) {
-  Box(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(Dimens.VeryLarge)
-      .clip(RounderCardShape)
-      .aktualHaze(),
-  ) {
-    InfoHeader(
-      modifier = Modifier.fillMaxWidth(),
-      year = buildState.year,
-      theme = theme,
-    )
-  }
+    buildState: BuildState,
+    onAction: (InfoAction) -> Unit,
+    modifier: Modifier = Modifier,
+    theme: Theme = LocalTheme.current,
+) =
+    Column(
+        modifier = modifier.verticalScrollWithBar(),
+    ) {
+      Box(
+          modifier =
+              Modifier.fillMaxWidth().padding(Dimens.VeryLarge).clip(RounderCardShape).aktualHaze(),
+      ) {
+        InfoHeader(
+            modifier = Modifier.fillMaxWidth(),
+            year = buildState.year,
+            theme = theme,
+        )
+      }
 
-  InfoBuildState(
-    modifier = Modifier
-      .fillMaxWidth()
-      .padding(Dimens.VeryLarge),
-    buildState = buildState,
-    theme = theme,
-  )
+      InfoBuildState(
+          modifier = Modifier.fillMaxWidth().padding(Dimens.VeryLarge),
+          buildState = buildState,
+          theme = theme,
+      )
 
-  VerticalSpacer(Dimens.Huge)
+      VerticalSpacer(Dimens.Huge)
 
-  InfoButtons(
-    modifier = Modifier
-      .wrapContentHeight()
-      .fillMaxWidth()
-      .padding(Dimens.VeryLarge),
-    onAction = onAction,
-  )
+      InfoButtons(
+          modifier = Modifier.wrapContentHeight().fillMaxWidth().padding(Dimens.VeryLarge),
+          onAction = onAction,
+      )
 
-  BottomStatusBarSpacing()
-  BottomNavBarSpacing()
-}
+      BottomStatusBarSpacing()
+      BottomNavBarSpacing()
+    }
 
 @PortraitPreview
 @LandscapePreview
 @TabletPreview
 @Composable
 private fun PreviewInfoScaffold(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  InfoScaffold(
-    modifier = Modifier.fillMaxSize(),
-    buildState = PreviewBuildState,
-    onAction = {},
-  )
-}
+    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+) =
+    PreviewWithColorScheme(type) {
+      InfoScaffold(
+          modifier = Modifier.fillMaxSize(),
+          buildState = PreviewBuildState,
+          onAction = {},
+      )
+    }
