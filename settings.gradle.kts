@@ -64,4 +64,5 @@ include(
   ":aktual-test:android",
   ":aktual-test:compose",
   ":aktual-test:kotlin",
+  ":aktual-test:smoke",
 )
