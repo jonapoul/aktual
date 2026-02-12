@@ -49,8 +49,8 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 fun ChangePasswordScreen(
-    navigator: ChangePasswordNavigator,
-    viewModel: ChangePasswordViewModel = metroViewModel(),
+  navigator: ChangePasswordNavigator,
+  viewModel: ChangePasswordViewModel = metroViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val inputPassword1 by viewModel.inputPassword1.collectAsStateWithLifecycle()
@@ -66,67 +66,64 @@ fun ChangePasswordScreen(
   }
 
   ChangePasswordScaffold(
-      inputPassword1 = inputPassword1,
-      inputPassword2 = inputPassword2,
-      showPasswords = showPasswords,
-      passwordsMatch = passwordsMatch,
-      state = state,
-      versions = versions,
-      onAction = { action ->
-        when (action) {
-          PasswordAction.NavBack -> navigator.back()
-          PasswordAction.Submit -> viewModel.submit()
-          is PasswordAction.SetPassword1 -> viewModel.setPassword1(action.value)
-          is PasswordAction.SetPassword2 -> viewModel.setPassword2(action.value)
-          is PasswordAction.SetPasswordsVisible -> viewModel.setPasswordsVisible(action.visible)
-        }
-      },
+    inputPassword1 = inputPassword1,
+    inputPassword2 = inputPassword2,
+    showPasswords = showPasswords,
+    passwordsMatch = passwordsMatch,
+    state = state,
+    versions = versions,
+    onAction = { action ->
+      when (action) {
+        PasswordAction.NavBack -> navigator.back()
+        PasswordAction.Submit -> viewModel.submit()
+        is PasswordAction.SetPassword1 -> viewModel.setPassword1(action.value)
+        is PasswordAction.SetPassword2 -> viewModel.setPassword2(action.value)
+        is PasswordAction.SetPasswordsVisible -> viewModel.setPasswordsVisible(action.visible)
+      }
+    },
   )
 }
 
 @Composable
 internal fun ChangePasswordScaffold(
-    inputPassword1: Password,
-    inputPassword2: Password,
-    showPasswords: Boolean,
-    passwordsMatch: Boolean,
-    state: ChangePasswordState?,
-    versions: AktualVersions,
-    onAction: (PasswordAction) -> Unit,
+  inputPassword1: Password,
+  inputPassword2: Password,
+  showPasswords: Boolean,
+  passwordsMatch: Boolean,
+  state: ChangePasswordState?,
+  versions: AktualVersions,
+  onAction: (PasswordAction) -> Unit,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
   Scaffold(
-      modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-      topBar = {
-        TopAppBar(
-            colors = theme.transparentTopAppBarColors(),
-            navigationIcon = {
-              IconButton(onClick = { onAction(PasswordAction.NavBack) }) {
-                Icon(
-                    imageVector = MaterialIcons.ArrowBack,
-                    contentDescription = Strings.navBack,
-                )
-              }
-            },
-            title = { /* empty */ },
-            scrollBehavior = scrollBehavior,
-        )
-      },
+    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    topBar = {
+      TopAppBar(
+        colors = theme.transparentTopAppBarColors(),
+        navigationIcon = {
+          IconButton(onClick = { onAction(PasswordAction.NavBack) }) {
+            Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
+          }
+        },
+        title = { /* empty */ },
+        scrollBehavior = scrollBehavior,
+      )
+    },
   ) { innerPadding ->
     Box {
       WavyBackground()
 
       ChangePasswordContent(
-          modifier = Modifier.padding(innerPadding),
-          inputPassword1 = inputPassword1,
-          inputPassword2 = inputPassword2,
-          showPasswords = showPasswords,
-          passwordsMatch = passwordsMatch,
-          state = state,
-          versions = versions,
-          onAction = onAction,
-          theme = theme,
+        modifier = Modifier.padding(innerPadding),
+        inputPassword1 = inputPassword1,
+        inputPassword2 = inputPassword2,
+        showPasswords = showPasswords,
+        passwordsMatch = passwordsMatch,
+        state = state,
+        versions = versions,
+        onAction = onAction,
+        theme = theme,
       )
     }
   }
@@ -135,47 +132,42 @@ internal fun ChangePasswordScaffold(
 @Stable
 @Composable
 private fun ChangePasswordContent(
-    inputPassword1: Password,
-    inputPassword2: Password,
-    showPasswords: Boolean,
-    passwordsMatch: Boolean,
-    state: ChangePasswordState?,
-    versions: AktualVersions,
-    onAction: (PasswordAction) -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  inputPassword1: Password,
+  inputPassword2: Password,
+  showPasswords: Boolean,
+  passwordsMatch: Boolean,
+  state: ChangePasswordState?,
+  versions: AktualVersions,
+  onAction: (PasswordAction) -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
-  Column(
-      modifier = modifier.fillMaxSize().padding(16.dp),
-  ) {
+  Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
     Column(
-        modifier = Modifier.wrapContentWidth().weight(1f),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start,
+      modifier = Modifier.wrapContentWidth().weight(1f),
+      verticalArrangement = Arrangement.Top,
+      horizontalAlignment = Alignment.Start,
     ) {
-      Text(
-          text = Strings.passwordTitle,
-          style = AktualTypography.headlineLarge,
-      )
+      Text(text = Strings.passwordTitle, style = AktualTypography.headlineLarge)
 
       VerticalSpacer(20.dp)
 
       Text(
-          text = Strings.passwordMessage,
-          color = theme.tableRowHeaderText,
-          style = AktualTypography.bodyLarge,
+        text = Strings.passwordMessage,
+        color = theme.tableRowHeaderText,
+        style = AktualTypography.bodyLarge,
       )
 
       VerticalSpacer(30.dp)
 
       ConfirmPasswordForm(
-          modifier = Modifier.fillMaxWidth(),
-          inputPassword1 = inputPassword1,
-          inputPassword2 = inputPassword2,
-          showPasswords = showPasswords,
-          state = state,
-          passwordsMatch = passwordsMatch,
-          onAction = onAction,
+        modifier = Modifier.fillMaxWidth(),
+        inputPassword1 = inputPassword1,
+        inputPassword2 = inputPassword2,
+        showPasswords = showPasswords,
+        state = state,
+        passwordsMatch = passwordsMatch,
+        onAction = onAction,
       )
 
       VerticalSpacer(20.dp)
@@ -183,17 +175,14 @@ private fun ChangePasswordContent(
       when (state) {
         is ChangePasswordState.Failure -> Text(text = state.errorMessage(), color = theme.errorText)
         ChangePasswordState.Success ->
-            Text(text = Strings.passwordSuccess, color = theme.successText)
+          Text(text = Strings.passwordSuccess, color = theme.successText)
         else -> Unit
       }
     }
 
     VerticalSpacer(20.dp)
 
-    VersionsText(
-        modifier = Modifier.align(Alignment.End),
-        versions = versions,
-    )
+    VersionsText(modifier = Modifier.align(Alignment.End), versions = versions)
 
     BottomStatusBarSpacing()
     BottomNavBarSpacing()
@@ -202,45 +191,45 @@ private fun ChangePasswordContent(
 
 @Composable
 private fun ChangePasswordState.Failure.errorMessage(): String =
-    when (this) {
-      ChangePasswordState.InvalidPassword -> Strings.passwordFailureEmpty
-      ChangePasswordState.NetworkFailure -> Strings.passwordFailureNetwork
-      ChangePasswordState.OtherFailure -> Strings.passwordFailureOther
-      ChangePasswordState.PasswordsDontMatch -> Strings.passwordFailureMatch
-      ChangePasswordState.NotLoggedIn -> Strings.passwordFailureLoggedOut
-    }
+  when (this) {
+    ChangePasswordState.InvalidPassword -> Strings.passwordFailureEmpty
+    ChangePasswordState.NetworkFailure -> Strings.passwordFailureNetwork
+    ChangePasswordState.OtherFailure -> Strings.passwordFailureOther
+    ChangePasswordState.PasswordsDontMatch -> Strings.passwordFailureMatch
+    ChangePasswordState.NotLoggedIn -> Strings.passwordFailureLoggedOut
+  }
 
 @PortraitPreview
 @LandscapePreview
 @Composable
 private fun PreviewChangePassword(
-    @PreviewParameter(ChangePasswordProvider::class) params: ThemedParams<ChangePasswordParams>,
+  @PreviewParameter(ChangePasswordProvider::class) params: ThemedParams<ChangePasswordParams>
 ) =
-    PreviewWithColorScheme(params.type) {
-      ChangePasswordScaffold(
-          inputPassword1 = params.data.password1,
-          inputPassword2 = params.data.password2,
-          showPasswords = params.data.showPasswords,
-          passwordsMatch = params.data.passwordsMatch,
-          state = params.data.state,
-          versions = AktualVersions.Dummy,
-          onAction = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    ChangePasswordScaffold(
+      inputPassword1 = params.data.password1,
+      inputPassword2 = params.data.password2,
+      showPasswords = params.data.showPasswords,
+      passwordsMatch = params.data.passwordsMatch,
+      state = params.data.state,
+      versions = AktualVersions.Dummy,
+      onAction = {},
+    )
+  }
 
 private data class ChangePasswordParams(
-    val password1: Password = Password.Dummy,
-    val password2: Password = Password.Dummy,
-    val showPasswords: Boolean = false,
-    val passwordsMatch: Boolean = false,
-    val state: ChangePasswordState? = null,
+  val password1: Password = Password.Dummy,
+  val password2: Password = Password.Dummy,
+  val showPasswords: Boolean = false,
+  val passwordsMatch: Boolean = false,
+  val state: ChangePasswordState? = null,
 )
 
 private class ChangePasswordProvider :
-    ThemedParameterProvider<ChangePasswordParams>(
-        ChangePasswordParams(password1 = Empty, password2 = Empty),
-        ChangePasswordParams(showPasswords = true, passwordsMatch = true),
-        ChangePasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
-        ChangePasswordParams(state = ChangePasswordState.Success, passwordsMatch = true),
-        ChangePasswordParams(state = ChangePasswordState.NetworkFailure, passwordsMatch = true),
-    )
+  ThemedParameterProvider<ChangePasswordParams>(
+    ChangePasswordParams(password1 = Empty, password2 = Empty),
+    ChangePasswordParams(showPasswords = true, passwordsMatch = true),
+    ChangePasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
+    ChangePasswordParams(state = ChangePasswordState.Success, passwordsMatch = true),
+    ChangePasswordParams(state = ChangePasswordState.NetworkFailure, passwordsMatch = true),
+  )

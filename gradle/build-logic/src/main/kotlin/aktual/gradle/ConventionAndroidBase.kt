@@ -17,61 +17,61 @@ import org.gradle.kotlin.dsl.dependencies
 
 class ConventionAndroidBase : Plugin<Project> {
   override fun apply(target: Project): Unit =
-      with(target) {
-        with(pluginManager) { apply(AndroidCacheFixPlugin::class) }
+    with(target) {
+      with(pluginManager) { apply(AndroidCacheFixPlugin::class) }
 
-        extensions.configure(CommonExtension::class) {
-          namespace = buildNamespace()
-          compileSdk = providers.intProperty("aktual.android.compileSdk").get()
+      extensions.configure(CommonExtension::class) {
+        namespace = buildNamespace()
+        compileSdk = providers.intProperty("aktual.android.compileSdk").get()
 
-          defaultConfig.apply {
-            minSdk = providers.intProperty("aktual.android.minSdk").get()
-            testInstrumentationRunnerArguments["disableAnalytics"] = "true"
-          }
-
-          val version = javaVersion()
-          compileOptions.apply {
-            sourceCompatibility = version.get()
-            targetCompatibility = version.get()
-            isCoreLibraryDesugaringEnabled = true
-          }
-
-          buildFeatures.apply {
-            // Enabled in modules that need them
-            resValues = false
-            viewBinding = false
-
-            // Disable useless build steps
-            aidl = false
-            buildConfig = false
-            compose = false
-            prefab = false
-            shaders = false
-          }
-
-          testOptions.apply {
-            unitTests {
-              isIncludeAndroidResources = true
-              isReturnDefaultValues = true
-            }
-          }
-
-          lint.commonConfigure(target)
-          packaging.commonConfigure()
+        defaultConfig.apply {
+          minSdk = providers.intProperty("aktual.android.minSdk").get()
+          testInstrumentationRunnerArguments["disableAnalytics"] = "true"
         }
 
-        extensions.configure(AndroidComponentsExtension::class) {
-          // disable instrumented tests if the relevant folder doesn't exist
-          beforeVariants { variant ->
-            if (variant is HasAndroidTestBuilder) {
-              val testDirExists =
-                  projectDir.resolve("src/androidDeviceTest").exists() || // AGP-KMP
-                      projectDir.resolve("src/androidTest").exists() // Regular AGP
-              variant.enableAndroidTest = variant.enableAndroidTest && testDirExists
-            }
+        val version = javaVersion()
+        compileOptions.apply {
+          sourceCompatibility = version.get()
+          targetCompatibility = version.get()
+          isCoreLibraryDesugaringEnabled = true
+        }
+
+        buildFeatures.apply {
+          // Enabled in modules that need them
+          resValues = false
+          viewBinding = false
+
+          // Disable useless build steps
+          aidl = false
+          buildConfig = false
+          compose = false
+          prefab = false
+          shaders = false
+        }
+
+        testOptions.apply {
+          unitTests {
+            isIncludeAndroidResources = true
+            isReturnDefaultValues = true
           }
         }
 
-        dependencies { "coreLibraryDesugaring"(libs["android.desugaring"]) }
+        lint.commonConfigure(target)
+        packaging.commonConfigure()
       }
+
+      extensions.configure(AndroidComponentsExtension::class) {
+        // disable instrumented tests if the relevant folder doesn't exist
+        beforeVariants { variant ->
+          if (variant is HasAndroidTestBuilder) {
+            val testDirExists =
+              projectDir.resolve("src/androidDeviceTest").exists() || // AGP-KMP
+                projectDir.resolve("src/androidTest").exists() // Regular AGP
+            variant.enableAndroidTest = variant.enableAndroidTest && testDirExists
+          }
+        }
+      }
+
+      dependencies { "coreLibraryDesugaring"(libs["android.desugaring"]) }
+    }
 }

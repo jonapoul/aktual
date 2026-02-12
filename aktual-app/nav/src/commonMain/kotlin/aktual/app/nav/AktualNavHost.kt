@@ -21,20 +21,20 @@ import androidx.navigation.compose.composable
 
 @Composable
 fun AktualNavHost(
-    nav: NavHostController,
-    isServerUrlSet: Boolean,
-    token: Token?,
-    modifier: Modifier = Modifier,
+  nav: NavHostController,
+  isServerUrlSet: Boolean,
+  token: Token?,
+  modifier: Modifier = Modifier,
 ) {
   NavHost(
-      modifier = modifier,
-      navController = nav,
-      startDestination =
-          when {
-            token != null && isServerUrlSet -> ListBudgetsNavRoute(token)
-            isServerUrlSet -> LoginNavRoute
-            else -> ServerUrlNavRoute
-          },
+    modifier = modifier,
+    navController = nav,
+    startDestination =
+      when {
+        token != null && isServerUrlSet -> ListBudgetsNavRoute(token)
+        isServerUrlSet -> LoginNavRoute
+        else -> ServerUrlNavRoute
+      },
   ) {
     composable<ChangePasswordNavRoute> { ChangePasswordScreen(ChangePasswordNavigator(nav)) }
 

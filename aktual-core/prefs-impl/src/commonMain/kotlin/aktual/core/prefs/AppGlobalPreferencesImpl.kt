@@ -16,27 +16,27 @@ import dev.zacsweers.metro.Inject
 @ContributesBinding(AppScope::class)
 class AppGlobalPreferencesImpl(preferences: Preferences) : AppGlobalPreferences {
   override val token: Preference<Token?> =
-      preferences.getNullableObject(key = "token", TokenSerializer, default = null)
+    preferences.getNullableObject(key = "token", TokenSerializer, default = null)
 
   override val regularColorScheme: Preference<RegularColorSchemeType> =
-      preferences.getObject(
-          key = "regularColorScheme",
-          RegularColorSchemeSerializer,
-          default = RegularColorSchemeType.System,
-      )
+    preferences.getObject(
+      key = "regularColorScheme",
+      RegularColorSchemeSerializer,
+      default = RegularColorSchemeType.System,
+    )
 
   override val darkColorScheme: Preference<DarkColorSchemeType> =
-      preferences.getObject(
-          key = "darkColorScheme",
-          DarkColorSchemeSerializer,
-          default = DarkColorSchemeType.Dark,
-      )
+    preferences.getObject(
+      key = "darkColorScheme",
+      DarkColorSchemeSerializer,
+      default = DarkColorSchemeType.Dark,
+    )
 
   override val serverUrl: Preference<ServerUrl?> =
-      preferences.getNullableObject(key = "serverUrl", ServerUrlSerializer, default = null)
+    preferences.getNullableObject(key = "serverUrl", ServerUrlSerializer, default = null)
 
   override val showBottomBar: Preference<Boolean> =
-      preferences.getBoolean(key = "bottomBar.show", default = true)
+    preferences.getBoolean(key = "bottomBar.show", default = true)
 
   private companion object {
     val RegularColorSchemeSerializer = enumOrdinalSerializer<RegularColorSchemeType>()

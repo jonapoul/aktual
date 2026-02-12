@@ -58,67 +58,67 @@ import com.valentinilk.shimmer.unclippedBoundsInWindow
 
 @Composable
 internal fun TransactionItem(
-    id: TransactionId,
-    format: TransactionsFormat,
-    source: TransactionStateSource,
-    onAction: ActionListener,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  id: TransactionId,
+  format: TransactionsFormat,
+  source: TransactionStateSource,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   val state by source.transactionState(id).collectAsStateWithLifecycle(TransactionState.Loading(id))
 
   TransactionItem(
-      state = state,
-      format = format,
-      source = source,
-      onAction = onAction,
-      modifier = modifier,
-      theme = theme,
+    state = state,
+    format = format,
+    source = source,
+    onAction = onAction,
+    modifier = modifier,
+    theme = theme,
   )
 }
 
 @Composable
 private fun TransactionItem(
-    state: TransactionState,
-    format: TransactionsFormat,
-    source: TransactionStateSource,
-    onAction: ActionListener,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  state: TransactionState,
+  format: TransactionsFormat,
+  source: TransactionStateSource,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) =
-    when (state) {
-      is TransactionState.Loading -> LoadingItem(format, modifier, theme)
-      is TransactionState.Loaded ->
-          LoadedItem(state.transaction, format, source, onAction, modifier, theme)
-      is TransactionState.DoesntExist -> FailedItem(state.id, modifier, theme)
-    }
+  when (state) {
+    is TransactionState.Loading -> LoadingItem(format, modifier, theme)
+    is TransactionState.Loaded ->
+      LoadedItem(state.transaction, format, source, onAction, modifier, theme)
+    is TransactionState.DoesntExist -> FailedItem(state.id, modifier, theme)
+  }
 
 private val ShimmerShape = RoundedCornerShape(4.dp)
 private val ShimmerRowHeight = 16.dp
 
 @Composable
 private fun LoadingItem(
-    format: TransactionsFormat,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  format: TransactionsFormat,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   val dimens = LocalTableDimens.current
   val shimmer = rememberShimmer(ShimmerBounds.Custom)
 
   Row(
-      modifier =
-          modifier
-              .fillMaxWidth()
-              .height(LocalMinimumInteractiveComponentSize.current)
-              .clip(CardShape)
-              .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal)
-              .shimmer(shimmer)
-              .aktualHaze()
-              .onGloballyPositioned { layoutCoordinates ->
-                val position = layoutCoordinates.unclippedBoundsInWindow()
-                shimmer.updateBounds(position)
-              },
-      verticalAlignment = Alignment.CenterVertically,
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .height(LocalMinimumInteractiveComponentSize.current)
+        .clip(CardShape)
+        .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal)
+        .shimmer(shimmer)
+        .aktualHaze()
+        .onGloballyPositioned { layoutCoordinates ->
+          val position = layoutCoordinates.unclippedBoundsInWindow()
+          shimmer.updateBounds(position)
+        },
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     when (format) {
       List -> LoadingTransactionListItem(dimens, theme)
@@ -129,35 +129,28 @@ private fun LoadingItem(
 
 @Composable
 @Suppress("MagicNumber")
-private fun RowScope.LoadingTransactionListItem(
-    dimens: TransactionSpacings,
-    theme: Theme,
-) {
+private fun RowScope.LoadingTransactionListItem(dimens: TransactionSpacings, theme: Theme) {
   // Checkbox placeholder
-  Box(
-      modifier = Modifier.minimumInteractiveComponentSize(),
-  )
+  Box(modifier = Modifier.minimumInteractiveComponentSize())
 
   HorizontalSpacer(dimens.interColumn)
 
   // Main content placeholder
-  Column(
-      modifier = Modifier.weight(1f),
-  ) {
+  Column(modifier = Modifier.weight(1f)) {
     Box(
-        modifier =
-            Modifier.fillMaxWidth(0.6f)
-                .height(ShimmerRowHeight)
-                .background(theme.tableText, ShimmerShape),
+      modifier =
+        Modifier.fillMaxWidth(0.6f)
+          .height(ShimmerRowHeight)
+          .background(theme.tableText, ShimmerShape)
     )
 
     VerticalSpacer(4.dp)
 
     Box(
-        modifier =
-            Modifier.fillMaxWidth(0.8f)
-                .height(ShimmerRowHeight)
-                .background(theme.tableText, ShimmerShape),
+      modifier =
+        Modifier.fillMaxWidth(0.8f)
+          .height(ShimmerRowHeight)
+          .background(theme.tableText, ShimmerShape)
     )
   }
 
@@ -165,16 +158,14 @@ private fun RowScope.LoadingTransactionListItem(
 
   // Amount placeholder
   Box(
-      modifier =
-          Modifier.width(80.dp).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape),
+    modifier =
+      Modifier.width(80.dp).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
   )
 
   HorizontalSpacer(dimens.interColumn)
 
   // Menu button placeholder
-  Box(
-      modifier = Modifier.minimumInteractiveComponentSize(),
-  )
+  Box(modifier = Modifier.minimumInteractiveComponentSize())
 }
 
 @Stable
@@ -183,361 +174,342 @@ private val TransactionSpacings.loadingInterColumn: Dp
   get() = interColumn * 10
 
 @Composable
-private fun RowScope.LoadingTransactionTableItem(
-    dimens: TransactionSpacings,
-    theme: Theme,
-) {
+private fun RowScope.LoadingTransactionTableItem(dimens: TransactionSpacings, theme: Theme) {
   // Checkbox placeholder
+  Box(modifier = Modifier.minimumInteractiveComponentSize())
+
+  HorizontalSpacer(dimens.loadingInterColumn)
+
   Box(
-      modifier = Modifier.minimumInteractiveComponentSize(),
+    modifier =
+      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
   )
 
   HorizontalSpacer(dimens.loadingInterColumn)
 
   Box(
-      modifier =
-          Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape),
+    modifier =
+      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
   )
 
   HorizontalSpacer(dimens.loadingInterColumn)
 
   Box(
-      modifier =
-          Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape),
+    modifier =
+      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
   )
 
   HorizontalSpacer(dimens.loadingInterColumn)
 
   Box(
-      modifier =
-          Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape),
+    modifier =
+      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
   )
 
   HorizontalSpacer(dimens.loadingInterColumn)
 
   Box(
-      modifier =
-          Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape),
+    modifier =
+      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
   )
 
   HorizontalSpacer(dimens.loadingInterColumn)
 
   Box(
-      modifier =
-          Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape),
-  )
-
-  HorizontalSpacer(dimens.loadingInterColumn)
-
-  Box(
-      modifier =
-          Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape),
+    modifier =
+      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
   )
 
   HorizontalSpacer(dimens.loadingInterColumn)
 
   // Menu button placeholder
-  Box(
-      modifier = Modifier.minimumInteractiveComponentSize(),
-  )
+  Box(modifier = Modifier.minimumInteractiveComponentSize())
 }
 
 @Composable
 private fun FailedItem(
-    id: TransactionId,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  id: TransactionId,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   val dimens = LocalTableDimens.current
   Row(
-      modifier =
-          modifier
-              .fillMaxWidth()
-              .height(LocalMinimumInteractiveComponentSize.current)
-              .clip(CardShape)
-              .aktualHaze()
-              .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
-      verticalAlignment = Alignment.CenterVertically,
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .height(LocalMinimumInteractiveComponentSize.current)
+        .clip(CardShape)
+        .aktualHaze()
+        .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     // Checkbox placeholder
-    Box(
-        modifier = Modifier.minimumInteractiveComponentSize(),
-    )
+    Box(modifier = Modifier.minimumInteractiveComponentSize())
 
     Text(
-        modifier = Modifier.weight(1f),
-        text = Strings.transactionsItemNotFound(id.toString()),
-        color = theme.errorText,
-        maxLines = 3,
+      modifier = Modifier.weight(1f),
+      text = Strings.transactionsItemNotFound(id.toString()),
+      color = theme.errorText,
+      maxLines = 3,
     )
 
     // Button placeholder
-    Box(
-        modifier = Modifier.minimumInteractiveComponentSize(),
-    )
+    Box(modifier = Modifier.minimumInteractiveComponentSize())
   }
 }
 
 @Composable
 private fun LoadedItem(
-    transaction: Transaction,
-    format: TransactionsFormat,
-    source: TransactionStateSource,
-    onAction: ActionListener,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  transaction: Transaction,
+  format: TransactionsFormat,
+  source: TransactionStateSource,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   val dimens = LocalTableDimens.current
   Row(
-      modifier =
-          modifier
-              .fillMaxWidth()
-              .height(IntrinsicSize.Min)
-              .clip(CardShape)
-              .aktualHaze()
-              .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
-      verticalAlignment = Alignment.CenterVertically,
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .height(IntrinsicSize.Min)
+        .clip(CardShape)
+        .aktualHaze()
+        .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
+    verticalAlignment = Alignment.CenterVertically,
   ) {
     when (format) {
       List ->
-          TransactionListItem(
-              transaction = transaction,
-              source = source,
-              onAction = onAction,
-              theme = theme,
-              dimens = dimens,
-          )
+        TransactionListItem(
+          transaction = transaction,
+          source = source,
+          onAction = onAction,
+          theme = theme,
+          dimens = dimens,
+        )
 
       Table ->
-          TransactionTableItem(
-              transaction = transaction,
-              source = source,
-              onAction = onAction,
-              theme = theme,
-              dimens = dimens,
-          )
+        TransactionTableItem(
+          transaction = transaction,
+          source = source,
+          onAction = onAction,
+          theme = theme,
+          dimens = dimens,
+        )
     }
   }
 }
 
 @Composable
 private fun RowScope.TransactionListItem(
-    transaction: Transaction,
-    source: TransactionStateSource,
-    onAction: ActionListener,
-    theme: Theme,
-    dimens: TransactionSpacings,
+  transaction: Transaction,
+  source: TransactionStateSource,
+  onAction: ActionListener,
+  theme: Theme,
+  dimens: TransactionSpacings,
 ) {
   val isChecked by
-      source.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
+    source.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
   Checkbox(
-      modifier = Modifier.minimumInteractiveComponentSize(),
-      checked = isChecked,
-      onCheckedChange = { newValue -> onAction(Action.CheckItem(transaction.id, newValue)) },
+    modifier = Modifier.minimumInteractiveComponentSize(),
+    checked = isChecked,
+    onCheckedChange = { newValue -> onAction(Action.CheckItem(transaction.id, newValue)) },
   )
 
   HorizontalSpacer(dimens.interColumn)
 
-  Column(
-      modifier = Modifier.weight(1f),
-  ) {
+  Column(modifier = Modifier.weight(1f)) {
     Text(
-        text = transaction.account.orEmpty(),
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        textAlign = TextAlign.Start,
-        fontSize = dimens.textSize,
-        color = theme.tableText,
-    )
-
-    Text(
-        text = transaction.payee.orEmpty(),
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        textAlign = TextAlign.Start,
-        fontSize = dimens.textSize,
-        color = theme.tableText,
-    )
-
-    Text(
-        text = transaction.notes.orEmpty(),
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        textAlign = TextAlign.Start,
-        fontSize = dimens.textSize,
-        color = theme.tableText,
-    )
-
-    Text(
-        text = transaction.category.orEmpty(),
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-        textAlign = TextAlign.Start,
-        fontSize = dimens.textSize,
-        color = theme.tableText,
-    )
-  }
-
-  Text(
-      text = transaction.amount.formattedString(),
-      overflow = TextOverflow.Ellipsis,
-      maxLines = 1,
-      textAlign = TextAlign.End,
-      fontSize = dimens.textSize,
-      color = theme.tableText,
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  BareIconButton(
-      modifier = Modifier.minimumInteractiveComponentSize(),
-      imageVector = MaterialIcons.MoreVert,
-      contentDescription = "",
-      onClick = {},
-  )
-}
-
-@Composable
-private fun RowScope.TransactionTableItem(
-    transaction: Transaction,
-    source: TransactionStateSource,
-    onAction: ActionListener,
-    theme: Theme,
-    dimens: TransactionSpacings,
-) {
-  val isChecked by
-      source.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
-  Checkbox(
-      modifier = Modifier.minimumInteractiveComponentSize(),
-      checked = isChecked,
-      onCheckedChange = { newValue -> onAction(Action.CheckItem(transaction.id, newValue)) },
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  Text(
-      modifier = Modifier.weight(1f),
-      text = transaction.date.toString(),
-      overflow = TextOverflow.Ellipsis,
-      maxLines = 1,
-      textAlign = TextAlign.Start,
-      fontSize = dimens.textSize,
-      color = theme.tableText,
-  )
-
-  HorizontalSpacer(dimens.interColumn)
-
-  Text(
-      modifier = Modifier.weight(1f),
       text = transaction.account.orEmpty(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
       fontSize = dimens.textSize,
       color = theme.tableText,
-  )
+    )
 
-  HorizontalSpacer(dimens.interColumn)
-
-  Text(
-      modifier = Modifier.weight(1f),
+    Text(
       text = transaction.payee.orEmpty(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
       fontSize = dimens.textSize,
       color = theme.tableText,
-  )
+    )
 
-  HorizontalSpacer(dimens.interColumn)
-
-  Text(
-      modifier = Modifier.weight(1f),
+    Text(
       text = transaction.notes.orEmpty(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
       fontSize = dimens.textSize,
       color = theme.tableText,
-  )
+    )
 
-  HorizontalSpacer(dimens.interColumn)
-
-  Text(
-      modifier = Modifier.weight(1f),
+    Text(
       text = transaction.category.orEmpty(),
       overflow = TextOverflow.Ellipsis,
       maxLines = 1,
       textAlign = TextAlign.Start,
       fontSize = dimens.textSize,
       color = theme.tableText,
-  )
-
-  HorizontalSpacer(dimens.interColumn)
+    )
+  }
 
   Text(
-      modifier = Modifier.weight(1f),
-      text = transaction.amount.formattedString(),
-      overflow = TextOverflow.Ellipsis,
-      maxLines = 1,
-      textAlign = TextAlign.End,
-      fontSize = dimens.textSize,
-      color = theme.tableText,
+    text = transaction.amount.formattedString(),
+    overflow = TextOverflow.Ellipsis,
+    maxLines = 1,
+    textAlign = TextAlign.End,
+    fontSize = dimens.textSize,
+    color = theme.tableText,
   )
 
   HorizontalSpacer(dimens.interColumn)
 
   BareIconButton(
-      modifier = Modifier.minimumInteractiveComponentSize(),
-      imageVector = MaterialIcons.MoreVert,
-      contentDescription = "",
-      onClick = {},
+    modifier = Modifier.minimumInteractiveComponentSize(),
+    imageVector = MaterialIcons.MoreVert,
+    contentDescription = "",
+    onClick = {},
+  )
+}
+
+@Composable
+private fun RowScope.TransactionTableItem(
+  transaction: Transaction,
+  source: TransactionStateSource,
+  onAction: ActionListener,
+  theme: Theme,
+  dimens: TransactionSpacings,
+) {
+  val isChecked by
+    source.isChecked(transaction.id).collectAsStateWithLifecycle(initialValue = false)
+  Checkbox(
+    modifier = Modifier.minimumInteractiveComponentSize(),
+    checked = isChecked,
+    onCheckedChange = { newValue -> onAction(Action.CheckItem(transaction.id, newValue)) },
+  )
+
+  HorizontalSpacer(dimens.interColumn)
+
+  Text(
+    modifier = Modifier.weight(1f),
+    text = transaction.date.toString(),
+    overflow = TextOverflow.Ellipsis,
+    maxLines = 1,
+    textAlign = TextAlign.Start,
+    fontSize = dimens.textSize,
+    color = theme.tableText,
+  )
+
+  HorizontalSpacer(dimens.interColumn)
+
+  Text(
+    modifier = Modifier.weight(1f),
+    text = transaction.account.orEmpty(),
+    overflow = TextOverflow.Ellipsis,
+    maxLines = 1,
+    textAlign = TextAlign.Start,
+    fontSize = dimens.textSize,
+    color = theme.tableText,
+  )
+
+  HorizontalSpacer(dimens.interColumn)
+
+  Text(
+    modifier = Modifier.weight(1f),
+    text = transaction.payee.orEmpty(),
+    overflow = TextOverflow.Ellipsis,
+    maxLines = 1,
+    textAlign = TextAlign.Start,
+    fontSize = dimens.textSize,
+    color = theme.tableText,
+  )
+
+  HorizontalSpacer(dimens.interColumn)
+
+  Text(
+    modifier = Modifier.weight(1f),
+    text = transaction.notes.orEmpty(),
+    overflow = TextOverflow.Ellipsis,
+    maxLines = 1,
+    textAlign = TextAlign.Start,
+    fontSize = dimens.textSize,
+    color = theme.tableText,
+  )
+
+  HorizontalSpacer(dimens.interColumn)
+
+  Text(
+    modifier = Modifier.weight(1f),
+    text = transaction.category.orEmpty(),
+    overflow = TextOverflow.Ellipsis,
+    maxLines = 1,
+    textAlign = TextAlign.Start,
+    fontSize = dimens.textSize,
+    color = theme.tableText,
+  )
+
+  HorizontalSpacer(dimens.interColumn)
+
+  Text(
+    modifier = Modifier.weight(1f),
+    text = transaction.amount.formattedString(),
+    overflow = TextOverflow.Ellipsis,
+    maxLines = 1,
+    textAlign = TextAlign.End,
+    fontSize = dimens.textSize,
+    color = theme.tableText,
+  )
+
+  HorizontalSpacer(dimens.interColumn)
+
+  BareIconButton(
+    modifier = Modifier.minimumInteractiveComponentSize(),
+    imageVector = MaterialIcons.MoreVert,
+    contentDescription = "",
+    onClick = {},
   )
 }
 
 @Preview
 @Composable
 private fun PreviewListFormat(
-    @PreviewParameter(TransactionItemProvider::class) params: ThemedParams<TransactionItemParams>,
+  @PreviewParameter(TransactionItemProvider::class) params: ThemedParams<TransactionItemParams>
 ) =
-    PreviewWithColorScheme(params.type) {
-      TransactionItem(
-          state = params.data.state,
-          format = List,
-          source = PreviewTransactionStateSource(params.data.state to params.data.isChecked),
-          onAction = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    TransactionItem(
+      state = params.data.state,
+      format = List,
+      source = PreviewTransactionStateSource(params.data.state to params.data.isChecked),
+      onAction = {},
+    )
+  }
 
 @TabletPreview
 @Composable
 private fun PreviewTableFormat(
-    @PreviewParameter(TransactionItemProvider::class) params: ThemedParams<TransactionItemParams>,
+  @PreviewParameter(TransactionItemProvider::class) params: ThemedParams<TransactionItemParams>
 ) =
-    PreviewWithColorScheme(params.type) {
-      TransactionItem(
-          state = params.data.state,
-          format = Table,
-          source = PreviewTransactionStateSource(params.data.state to params.data.isChecked),
-          onAction = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    TransactionItem(
+      state = params.data.state,
+      format = Table,
+      source = PreviewTransactionStateSource(params.data.state to params.data.isChecked),
+      onAction = {},
+    )
+  }
 
-private data class TransactionItemParams(
-    val state: TransactionState,
-    val isChecked: Boolean,
-)
+private data class TransactionItemParams(val state: TransactionState, val isChecked: Boolean)
 
 private class TransactionItemProvider :
-    ThemedParameterProvider<TransactionItemParams>(
-        TransactionItemParams(TransactionState.Loaded(TRANSACTION_1), isChecked = false),
-        TransactionItemParams(TransactionState.Loaded(TRANSACTION_1), isChecked = true),
-        TransactionItemParams(
-            TransactionState.Loading(id = TransactionId("abc")),
-            isChecked = false,
-        ),
-        TransactionItemParams(
-            TransactionState.DoesntExist(id = TransactionId("abc")),
-            isChecked = false,
-        ),
-    )
+  ThemedParameterProvider<TransactionItemParams>(
+    TransactionItemParams(TransactionState.Loaded(TRANSACTION_1), isChecked = false),
+    TransactionItemParams(TransactionState.Loaded(TRANSACTION_1), isChecked = true),
+    TransactionItemParams(TransactionState.Loading(id = TransactionId("abc")), isChecked = false),
+    TransactionItemParams(
+      TransactionState.DoesntExist(id = TransactionId("abc")),
+      isChecked = false,
+    ),
+  )

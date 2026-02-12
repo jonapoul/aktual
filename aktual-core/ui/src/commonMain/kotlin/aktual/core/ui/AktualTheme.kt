@@ -22,41 +22,36 @@ import com.valentinilk.shimmer.shimmerSpec
 import dev.chrisbanes.haze.LocalHazeStyle
 
 @Composable
-fun AktualTheme(
-    type: ColorSchemeType,
-    content: @Composable () -> Unit,
-) {
+fun AktualTheme(type: ColorSchemeType, content: @Composable () -> Unit) {
   val theme =
-      remember(type) {
-        when (type) {
-          ColorSchemeType.Light -> LightTheme()
-          ColorSchemeType.Dark -> DarkTheme()
-          ColorSchemeType.Midnight -> MidnightTheme()
-        }
+    remember(type) {
+      when (type) {
+        ColorSchemeType.Light -> LightTheme()
+        ColorSchemeType.Dark -> DarkTheme()
+        ColorSchemeType.Midnight -> MidnightTheme()
       }
+    }
 
   CompositionLocalProvider(
-      LocalTheme provides theme,
-      LocalColorSchemeType provides type,
-      LocalIndication provides ripple(),
-      LocalShimmerTheme provides aktualLocalShimmerTheme(theme),
-      LocalHazeStyle provides defaultHazeStyle(theme),
+    LocalTheme provides theme,
+    LocalColorSchemeType provides type,
+    LocalIndication provides ripple(),
+    LocalShimmerTheme provides aktualLocalShimmerTheme(theme),
+    LocalHazeStyle provides defaultHazeStyle(theme),
   ) {
-    SetStatusBarColors(
-        theme = theme,
-    )
+    SetStatusBarColors(theme = theme)
 
     val materialColorScheme =
-        when (theme) {
-          is LightTheme -> lightColorScheme()
-          is DarkTheme -> darkColorScheme()
-          is MidnightTheme -> darkColorScheme(surface = Color.Black)
-        }
+      when (theme) {
+        is LightTheme -> lightColorScheme()
+        is DarkTheme -> darkColorScheme()
+        is MidnightTheme -> darkColorScheme(surface = Color.Black)
+      }
 
     MaterialTheme(
-        colorScheme = materialColorScheme,
-        typography = aktualTypography(theme),
-        content = content,
+      colorScheme = materialColorScheme,
+      typography = aktualTypography(theme),
+      content = content,
     )
   }
 }
@@ -64,21 +59,20 @@ fun AktualTheme(
 @Stable
 @Suppress("MagicNumber")
 private fun aktualLocalShimmerTheme(theme: Theme) =
-    ShimmerTheme(
-        animationSpec =
-            infiniteRepeatable(
-                animation =
-                    shimmerSpec(durationMillis = 800, easing = LinearEasing, delayMillis = 1_500),
-                repeatMode = RepeatMode.Restart,
-            ),
-        blendMode = BlendMode.DstIn,
-        rotation = 15.0f,
-        shaderColors =
-            listOf(
-                theme.pageText.copy(alpha = 0.1f),
-                theme.pageText.copy(alpha = 0.3f),
-                theme.pageText.copy(alpha = 0.1f),
-            ),
-        shaderColorStops = listOf(0.0f, 0.5f, 1.0f),
-        shimmerWidth = 400.dp,
-    )
+  ShimmerTheme(
+    animationSpec =
+      infiniteRepeatable(
+        animation = shimmerSpec(durationMillis = 800, easing = LinearEasing, delayMillis = 1_500),
+        repeatMode = RepeatMode.Restart,
+      ),
+    blendMode = BlendMode.DstIn,
+    rotation = 15.0f,
+    shaderColors =
+      listOf(
+        theme.pageText.copy(alpha = 0.1f),
+        theme.pageText.copy(alpha = 0.3f),
+        theme.pageText.copy(alpha = 0.1f),
+      ),
+    shaderColorStops = listOf(0.0f, 0.5f, 1.0f),
+    shimmerWidth = 400.dp,
+  )

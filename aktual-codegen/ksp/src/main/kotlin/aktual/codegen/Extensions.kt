@@ -9,8 +9,8 @@ internal fun KSDeclaration.originatingFiles() = containingFile?.let { listOf(it)
 
 internal val KSClassDeclaration.companionObject
   get() =
-      declarations.filterIsInstance<KSClassDeclaration>().firstOrNull { it.isCompanionObject }
-          ?: error("No companion object on $this")
+    declarations.filterIsInstance<KSClassDeclaration>().firstOrNull { it.isCompanionObject }
+      ?: error("No companion object on $this")
 
 internal fun KSClassDeclaration.implements(type: ClassName) =
-    superTypes.any { it.toTypeName() == type }
+  superTypes.any { it.toTypeName() == type }

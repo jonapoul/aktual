@@ -27,71 +27,65 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
 
 @Composable
-internal fun CategoryHeader(
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
-) =
-    Row(
-        modifier =
-            modifier
-                .height(IntrinsicSize.Min)
-                .fillMaxWidth()
-                .background(theme.tableHeaderBackground),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-      val dimens = LocalTableDimens.current
+internal fun CategoryHeader(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) =
+  Row(
+    modifier =
+      modifier.height(IntrinsicSize.Min).fillMaxWidth().background(theme.tableHeaderBackground),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    val dimens = LocalTableDimens.current
 
-      // checkbox
-      Spacer(Modifier.size(LocalMinimumInteractiveComponentSize.current))
-      HorizontalSpacer(dimens.interColumn)
+    // checkbox
+    Spacer(Modifier.size(LocalMinimumInteractiveComponentSize.current))
+    HorizontalSpacer(dimens.interColumn)
 
-      // date
-      CategoryHeaderText(Strings.transactionsHeaderDate)
-      HorizontalSpacer(dimens.interColumn)
+    // date
+    CategoryHeaderText(Strings.transactionsHeaderDate)
+    HorizontalSpacer(dimens.interColumn)
 
-      // account
-      CategoryHeaderText(Strings.transactionsHeaderAccount)
-      HorizontalSpacer(dimens.interColumn)
+    // account
+    CategoryHeaderText(Strings.transactionsHeaderAccount)
+    HorizontalSpacer(dimens.interColumn)
 
-      // payee
-      CategoryHeaderText(Strings.transactionsHeaderPayee)
-      HorizontalSpacer(dimens.interColumn)
+    // payee
+    CategoryHeaderText(Strings.transactionsHeaderPayee)
+    HorizontalSpacer(dimens.interColumn)
 
-      // notes
-      CategoryHeaderText(Strings.transactionsHeaderNotes)
-      HorizontalSpacer(dimens.interColumn)
+    // notes
+    CategoryHeaderText(Strings.transactionsHeaderNotes)
+    HorizontalSpacer(dimens.interColumn)
 
-      // category
-      CategoryHeaderText(Strings.transactionsHeaderCategory)
-      HorizontalSpacer(dimens.interColumn)
+    // category
+    CategoryHeaderText(Strings.transactionsHeaderCategory)
+    HorizontalSpacer(dimens.interColumn)
 
-      // amount
-      CategoryHeaderText(Strings.transactionsHeaderAmount, textAlign = TextAlign.End)
-      HorizontalSpacer(dimens.interColumn)
+    // amount
+    CategoryHeaderText(Strings.transactionsHeaderAmount, textAlign = TextAlign.End)
+    HorizontalSpacer(dimens.interColumn)
 
-      // button
-      Spacer(Modifier.size(LocalMinimumInteractiveComponentSize.current))
-    }
+    // button
+    Spacer(Modifier.size(LocalMinimumInteractiveComponentSize.current))
+  }
 
 @Composable
 private fun RowScope.CategoryHeaderText(
-    text: String,
-    modifier: Modifier = Modifier,
-    textAlign: TextAlign = TextAlign.Start,
-    theme: Theme = LocalTheme.current,
+  text: String,
+  modifier: Modifier = Modifier,
+  textAlign: TextAlign = TextAlign.Start,
+  theme: Theme = LocalTheme.current,
 ) =
-    Text(
-        modifier = modifier.weight(1f),
-        text = text,
-        textAlign = textAlign,
-        fontSize = 14.sp,
-        color = theme.tableHeaderText,
-        overflow = TextOverflow.Ellipsis,
-        maxLines = 1,
-    )
+  Text(
+    modifier = modifier.weight(1f),
+    text = text,
+    textAlign = textAlign,
+    fontSize = 14.sp,
+    color = theme.tableHeaderText,
+    overflow = TextOverflow.Ellipsis,
+    maxLines = 1,
+  )
 
 @Preview
 @Composable
 private fun PreviewTransactionsSorting(
-    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
 ) = PreviewWithColorScheme(type) { CategoryHeader() }

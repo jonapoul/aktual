@@ -4,7 +4,7 @@ package aktual.budget.model
 enum class AllocationMethod(private val value: String) {
   FixedAmount("fixed-amount"), // a fixed amount
   FixedPercent("fixed-percent"), // a fixed percent of the remainder
-  Remainder("remainder"), // an equal portion of the remainder
+  Remainder("remainder") // an equal portion of the remainder
   ;
 
   override fun toString(): String = value

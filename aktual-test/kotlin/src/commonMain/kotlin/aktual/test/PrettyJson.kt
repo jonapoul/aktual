@@ -6,7 +6,7 @@ import kotlinx.serialization.json.Json
 
 @OptIn(ExperimentalSerializationApi::class)
 val PrettyJson =
-    Json(from = AktualJson) {
-      prettyPrint = true
-      prettyPrintIndent = "  "
-    }
+  Json(from = AktualJson) {
+    prettyPrint = true
+    prettyPrintIndent = "  "
+  }

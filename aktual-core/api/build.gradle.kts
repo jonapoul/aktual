@@ -38,27 +38,27 @@ buildConfig {
 
   sourceSets.named("test") {
     rootProject.isolated.projectDirectory
-        .dir("api/actual")
-        .asFile
-        .listFiles()
-        .orEmpty()
-        .filter { it.isDirectory }
-        .forEach { dir -> addResponsesClass(dir) }
+      .dir("api/actual")
+      .asFile
+      .listFiles()
+      .orEmpty()
+      .filter { it.isDirectory }
+      .forEach { dir -> addResponsesClass(dir) }
   }
 }
 
 fun BuildConfigSourceSet.addResponsesClass(directory: File) {
   forClass(directory.name.capitalized() + "Responses") {
     directory
-        .listFiles()
-        .orEmpty()
-        .filter { it.extension.lowercase() in setOf("json", "txt") }
-        .forEach { file ->
-          val name = file.nameWithoutExtension.replace("-", "_").replace(".", "_").uppercase()
-          val regularFile = layout.projectDirectory.file(file.absolutePath)
-          val value =
-              providers.fileContents(regularFile).asText.map { content -> "\"\"\"\n$content\"\"\"" }
-          buildConfigField("String", name, value)
-        }
+      .listFiles()
+      .orEmpty()
+      .filter { it.extension.lowercase() in setOf("json", "txt") }
+      .forEach { file ->
+        val name = file.nameWithoutExtension.replace("-", "_").replace(".", "_").uppercase()
+        val regularFile = layout.projectDirectory.file(file.absolutePath)
+        val value =
+          providers.fileContents(regularFile).asText.map { content -> "\"\"\"\n$content\"\"\"" }
+        buildConfigField("String", name, value)
+      }
   }
 }

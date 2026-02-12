@@ -36,12 +36,12 @@ class AboutViewModelTest {
     aktualVersionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
 
     viewModel =
-        AboutViewModel(
-            buildConfig = TestBuildConfig,
-            githubRepository = repository,
-            urlOpener = urlOpener,
-            aktualVersionsStateHolder = aktualVersionsStateHolder,
-        )
+      AboutViewModel(
+        buildConfig = TestBuildConfig,
+        githubRepository = repository,
+        urlOpener = urlOpener,
+        aktualVersionsStateHolder = aktualVersionsStateHolder,
+      )
   }
 
   @Test

@@ -42,9 +42,9 @@ fi
 
 # Determine ktfmt arguments based on mode
 if [ "$MODE" = "check" ]; then
-    KTFMT_ARGS="--dry-run --set-exit-if-changed"
+    KTFMT_ARGS="--google-style --dry-run --set-exit-if-changed"
 else
-    KTFMT_ARGS=""
+    KTFMT_ARGS="--google-style"
 fi
 
 # Function to run ktfmt on all Kotlin files, excluding build directories

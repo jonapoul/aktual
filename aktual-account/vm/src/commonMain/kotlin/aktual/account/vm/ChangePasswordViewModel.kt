@@ -36,9 +36,9 @@ import logcat.logcat
 @ContributesIntoMap(AppScope::class)
 class ChangePasswordViewModel
 internal constructor(
-    versionsStateHolder: AktualVersionsStateHolder,
-    private val passwordChanger: PasswordChanger,
-    private val loginRequester: LoginRequester,
+  versionsStateHolder: AktualVersionsStateHolder,
+  private val passwordChanger: PasswordChanger,
+  private val loginRequester: LoginRequester,
 ) : ViewModel() {
   private val mutableShowPasswords = MutableStateFlow(false)
   private val mutablePassword1 = MutableStateFlow(Password.Empty)
@@ -55,9 +55,9 @@ internal constructor(
   val token: Flow<Token?> = mutableToken.receiveAsFlow()
 
   val passwordsMatch: StateFlow<Boolean> =
-      combine(mutablePassword1, mutablePassword2, ::Pair)
-          .map { (p1, p2) -> validPasswords(p1, p2) }
-          .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
+    combine(mutablePassword1, mutablePassword2, ::Pair)
+      .map { (p1, p2) -> validPasswords(p1, p2) }
+      .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
 
   fun setPasswordsVisible(visible: Boolean) = mutableShowPasswords.update { visible }
 
@@ -79,14 +79,14 @@ internal constructor(
       val changePasswordResult = passwordChanger.submit(password)
       logcat.d { "result = $changePasswordResult" }
       val newState =
-          when (changePasswordResult) {
-            ChangePasswordResult.Success -> ChangePasswordState.Success
-            ChangePasswordResult.InvalidPassword -> ChangePasswordState.InvalidPassword
-            ChangePasswordResult.NetworkFailure -> ChangePasswordState.NetworkFailure
-            ChangePasswordResult.NotLoggedIn -> ChangePasswordState.NotLoggedIn
-            is ChangePasswordResult.HttpFailure -> ChangePasswordState.OtherFailure
-            is ChangePasswordResult.OtherFailure -> ChangePasswordState.OtherFailure
-          }
+        when (changePasswordResult) {
+          ChangePasswordResult.Success -> ChangePasswordState.Success
+          ChangePasswordResult.InvalidPassword -> ChangePasswordState.InvalidPassword
+          ChangePasswordResult.NetworkFailure -> ChangePasswordState.NetworkFailure
+          ChangePasswordResult.NotLoggedIn -> ChangePasswordState.NotLoggedIn
+          is ChangePasswordResult.HttpFailure -> ChangePasswordState.OtherFailure
+          is ChangePasswordResult.OtherFailure -> ChangePasswordState.OtherFailure
+        }
       mutableState.update { newState }
 
       if (changePasswordResult is ChangePasswordResult.Success) {
@@ -100,14 +100,15 @@ internal constructor(
   private suspend fun handleLoginResult(loginResult: LoginResult) {
     logcat.d { "loginResult = $loginResult" }
     if (loginResult is LoginResult.Success) {
-      // wait for a second before triggering the navigation, so the user gets the success message
+      // wait for a second before triggering the navigation, so the user gets the success
+      // message
       delay(SUCCESS_DELAY)
       mutableToken.send(loginResult.token)
     }
   }
 
   private fun validPasswords(p1: Password, p2: Password) =
-      p1.isNotEmpty() && p2.isNotEmpty() && p1 == p2
+    p1.isNotEmpty() && p2.isNotEmpty() && p1 == p2
 
   private companion object {
     val SUCCESS_DELAY = 1.seconds

@@ -15,7 +15,4 @@ value class KeyId(val value: String) : Comparable<KeyId> {
   override fun compareTo(other: KeyId) = value.compareTo(other.value)
 }
 
-data class Key(
-    val raw: SecretKey,
-    val encoded: ByteString,
-)
+data class Key(val raw: SecretKey, val encoded: ByteString)

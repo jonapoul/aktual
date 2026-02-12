@@ -46,7 +46,7 @@ class LoadExistingDatabaseFromFileTest {
     val db = buildDatabase(driver)
 
     val viewHash =
-        db.metaQueries.withResult { getValue(key = "view-hash").executeAsOneOrNull()?.value_ }
+      db.metaQueries.withResult { getValue(key = "view-hash").executeAsOneOrNull()?.value_ }
 
     assertThat(viewHash).isEqualTo("c379fa428efd55a684aba4947ad054e0")
     assertThat(file).exists()

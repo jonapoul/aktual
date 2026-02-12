@@ -23,9 +23,9 @@ tasks.check { dependsOn(detektCheck) }
 
 dependencies {
   fun compileOnlyPlugin(plugin: Provider<PluginDependency>) =
-      compileOnly(
-          plugin.map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version.requiredVersion}" }
-      )
+    compileOnly(
+      plugin.map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version.requiredVersion}" }
+    )
 
   compileOnlyPlugin(libs.plugins.agp.app)
   compileOnlyPlugin(libs.plugins.agp.lib)
@@ -53,10 +53,10 @@ tasks.validatePlugins {
 gradlePlugin {
   plugins {
     operator fun String.invoke(impl: String) =
-        register(this) {
-          id = this@invoke
-          implementationClass = impl
-        }
+      register(this) {
+        id = this@invoke
+        implementationClass = impl
+      }
 
     "aktual.convention.android"(impl = "aktual.gradle.ConventionAndroidBase")
     "aktual.convention.compose"(impl = "aktual.gradle.ConventionCompose")

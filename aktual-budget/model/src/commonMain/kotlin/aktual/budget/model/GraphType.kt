@@ -6,8 +6,7 @@ enum class GraphType(private val value: String) {
   DonutGraph(value = "DonutGraph"),
   LineGraph(value = "LineGraph"),
   StackedBarGraph(value = "StackedBarGraph"),
-  TableGraph(value = "TableGraph"),
-  ;
+  TableGraph(value = "TableGraph");
 
   override fun toString(): String = value
 }

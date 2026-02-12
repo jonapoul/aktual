@@ -11,14 +11,14 @@ import kotlinx.serialization.json.JsonElement
 /** Same as [aktual.budget.db.Categories], but serializable */
 @Serializable
 data class SelectedCategory(
-    @SerialName("id") val id: CategoryId,
-    @SerialName("name") val name: String,
-    @SerialName("cat_group") val groupId: CategoryGroupId,
-    @SerialName("is_income") val isIncome: BoolAsInt?,
-    @SerialName("sort_order") val sortOrder: Double,
-    @SerialName("goal_def") val goalDef: JsonElement? = null,
-    @SerialName("hidden") val isHidden: BoolAsInt? = false,
-    @SerialName("tombstone") val tombstone: BoolAsInt? = false,
+  @SerialName("id") val id: CategoryId,
+  @SerialName("name") val name: String,
+  @SerialName("cat_group") val groupId: CategoryGroupId,
+  @SerialName("is_income") val isIncome: BoolAsInt?,
+  @SerialName("sort_order") val sortOrder: Double,
+  @SerialName("goal_def") val goalDef: JsonElement? = null,
+  @SerialName("hidden") val isHidden: BoolAsInt? = false,
+  @SerialName("tombstone") val tombstone: BoolAsInt? = false,
 )
 
 private typealias BoolAsInt = @Serializable(IntToBoolSerializer::class) Boolean

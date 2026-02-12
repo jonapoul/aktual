@@ -15,36 +15,32 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import dev.chrisbanes.haze.HazeState
 
 @Preview(
-    name = "Portrait",
-    showBackground = true,
-    uiMode = AndroidUiModes.UI_MODE_NIGHT_UNDEFINED,
-    widthDp = MY_PHONE_WIDTH_DP,
-    heightDp = MY_PHONE_HEIGHT_DP,
+  name = "Portrait",
+  showBackground = true,
+  uiMode = AndroidUiModes.UI_MODE_NIGHT_UNDEFINED,
+  widthDp = MY_PHONE_WIDTH_DP,
+  heightDp = MY_PHONE_HEIGHT_DP,
 )
 annotation class PortraitPreview
 
 @Preview(
-    name = "Landscape",
-    showBackground = true,
-    uiMode = AndroidUiModes.UI_MODE_NIGHT_UNDEFINED,
-    widthDp = MY_PHONE_HEIGHT_DP,
-    heightDp = MY_PHONE_WIDTH_DP,
+  name = "Landscape",
+  showBackground = true,
+  uiMode = AndroidUiModes.UI_MODE_NIGHT_UNDEFINED,
+  widthDp = MY_PHONE_HEIGHT_DP,
+  heightDp = MY_PHONE_WIDTH_DP,
 )
 annotation class LandscapePreview
 
 @Preview(
-    name = "Desktop",
-    showBackground = true,
-    widthDp = MY_MONITOR_WIDTH_DP,
-    heightDp = MY_MONITOR_HEIGHT_DP,
+  name = "Desktop",
+  showBackground = true,
+  widthDp = MY_MONITOR_WIDTH_DP,
+  heightDp = MY_MONITOR_HEIGHT_DP,
 )
 annotation class DesktopPreview
 
-@Preview(
-    name = "Tablet",
-    showBackground = true,
-    device = Devices.PIXEL_TABLET,
-)
+@Preview(name = "Tablet", showBackground = true, device = Devices.PIXEL_TABLET)
 annotation class TabletPreview
 
 const val MY_PHONE_WIDTH_DP = 540 // 1080px * 160 / 400dpi
@@ -65,17 +61,15 @@ open class PreviewParameters<T>(protected val data: List<T>) : PreviewParameterP
   }
 
   override fun getDisplayName(index: Int): String? =
-      labels.getOrNull(index) ?: data[index]?.toString()
+    labels.getOrNull(index) ?: data[index]?.toString()
 }
 
 data class ThemedParams<T>(val type: ColorSchemeType, val data: T)
 
 open class ThemedParameterProvider<T>(collection: List<T>) :
-    PreviewParameterProvider<ThemedParams<T>> {
+  PreviewParameterProvider<ThemedParams<T>> {
   private val all: List<ThemedParams<T>> =
-      collection.flatMap { data ->
-        ColorSchemeType.entries.map { type -> ThemedParams(type, data) }
-      }
+    collection.flatMap { data -> ColorSchemeType.entries.map { type -> ThemedParams(type, data) } }
 
   override val values: Sequence<ThemedParams<T>>
     get() = all.asSequence()
@@ -83,7 +77,7 @@ open class ThemedParameterProvider<T>(collection: List<T>) :
   constructor(vararg values: T) : this(values.toList())
 
   override fun getDisplayName(index: Int): String? =
-      all.getOrNull(index)?.let { params -> "${params.type} - ${params.data}" }
+    all.getOrNull(index)?.let { params -> "${params.type} - ${params.data}" }
 }
 
 class ColorSchemeParameters : PreviewParameters<ColorSchemeType>(ColorSchemeType.entries)
@@ -92,18 +86,16 @@ class ThemedBooleanParameters : ThemedParameterProvider<Boolean>(true, false)
 
 @Composable
 fun PreviewWithColorScheme(
-    schemeType: ColorSchemeType,
-    modifier: Modifier = Modifier,
-    isPrivacyEnabled: Boolean = false,
-    content: @Composable (ColorSchemeType) -> Unit,
+  schemeType: ColorSchemeType,
+  modifier: Modifier = Modifier,
+  isPrivacyEnabled: Boolean = false,
+  content: @Composable (ColorSchemeType) -> Unit,
 ) =
-    WithCompositionLocals(
-        isPrivacyEnabled = isPrivacyEnabled,
-    ) {
-      AktualTheme(schemeType) {
-        Surface(modifier = modifier) {
-          val hazeState = remember { HazeState() }
-          CompositionLocalProvider(LocalHazeState provides hazeState) { content(schemeType) }
-        }
+  WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
+    AktualTheme(schemeType) {
+      Surface(modifier = modifier) {
+        val hazeState = remember { HazeState() }
+        CompositionLocalProvider(LocalHazeState provides hazeState) { content(schemeType) }
       }
     }
+  }

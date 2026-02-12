@@ -32,28 +32,28 @@ internal class VSchedulesTest {
     val nextDateId2 = "1e1fb1fd-6784-4e83-ab91-a16629f3a6c5"
     val nextDateId3 = "6a88ae43-0a87-4ad5-a172-f86a5cee3ba5"
     insertScheduleNextDate(
-        nextDateId1,
-        scheduleId1,
-        "2025-03-04",
-        1728210343464,
-        "2024-10-08",
-        1728210343464,
+      nextDateId1,
+      scheduleId1,
+      "2025-03-04",
+      1728210343464,
+      "2024-10-08",
+      1728210343464,
     )
     insertScheduleNextDate(
-        nextDateId2,
-        scheduleId2,
-        "2026-02-20",
-        1705230381831,
-        "2024-02-20",
-        1705230381831,
+      nextDateId2,
+      scheduleId2,
+      "2026-02-20",
+      1705230381831,
+      "2024-02-20",
+      1705230381831,
     )
     insertScheduleNextDate(
-        nextDateId3,
-        scheduleId3,
-        "2025-03-03",
-        1705229050908,
-        "2024-02-01",
-        1705229050908,
+      nextDateId3,
+      scheduleId3,
+      "2025-03-03",
+      1705229050908,
+      "2024-02-01",
+      1705229050908,
     )
 
     val ruleId1 = "6e02242a-ebe0-4c7b-83e2-50a0501ded39"
@@ -71,100 +71,100 @@ internal class VSchedulesTest {
     insertPayeeMapping(payeeId3)
 
     insertSchedule(
-        scheduleId1,
-        ruleId1,
-        completed = false,
-        postsTransaction = true,
-        tombstone = false,
-        name = "A",
+      scheduleId1,
+      ruleId1,
+      completed = false,
+      postsTransaction = true,
+      tombstone = false,
+      name = "A",
     )
     insertSchedule(
-        scheduleId2,
-        ruleId2,
-        completed = false,
-        postsTransaction = false,
-        tombstone = false,
-        name = "B",
+      scheduleId2,
+      ruleId2,
+      completed = false,
+      postsTransaction = false,
+      tombstone = false,
+      name = "B",
     )
     insertSchedule(
-        scheduleId3,
-        ruleId3,
-        completed = false,
-        postsTransaction = false,
-        tombstone = false,
-        name = "C",
+      scheduleId3,
+      ruleId3,
+      completed = false,
+      postsTransaction = false,
+      tombstone = false,
+      name = "C",
     )
 
     // then
     val expected1 =
-        V_schedules(
-            id = ScheduleId(scheduleId1),
-            name = "A",
-            rule = RuleId(ruleId1),
-            next_date = LocalDate.parse("2025-03-04"),
-            completed = false,
-            posts_transaction = true,
-            tombstone = false,
-            _payee = PayeeId(payeeId1),
-            _account = "78055dbe-680f-4605-bcd5-46a67feedcec",
-            _amount = "0",
-            _amountOp = "isapprox",
-            _date =
-                "{\"start\":\"2024-01-09\",\"interval\":1,\"frequency\":\"weekly\",\"patterns\":[]," +
-                    "\"skipWeekend\":false,\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1," +
-                    "\"endDate\":\"2024-01-14\"}",
-            _conditions = Json.parseToJsonElement(RULE_1_CONDITIONS).jsonArray,
-            _actions = Json.parseToJsonElement(RULE_1_ACTIONS).jsonArray,
-        )
+      V_schedules(
+        id = ScheduleId(scheduleId1),
+        name = "A",
+        rule = RuleId(ruleId1),
+        next_date = LocalDate.parse("2025-03-04"),
+        completed = false,
+        posts_transaction = true,
+        tombstone = false,
+        _payee = PayeeId(payeeId1),
+        _account = "78055dbe-680f-4605-bcd5-46a67feedcec",
+        _amount = "0",
+        _amountOp = "isapprox",
+        _date =
+          "{\"start\":\"2024-01-09\",\"interval\":1,\"frequency\":\"weekly\",\"patterns\":[]," +
+            "\"skipWeekend\":false,\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1," +
+            "\"endDate\":\"2024-01-14\"}",
+        _conditions = Json.parseToJsonElement(RULE_1_CONDITIONS).jsonArray,
+        _actions = Json.parseToJsonElement(RULE_1_ACTIONS).jsonArray,
+      )
     val expected2 =
-        V_schedules(
-            id = ScheduleId(scheduleId2),
-            name = "B",
-            rule = RuleId(ruleId2),
-            next_date = LocalDate.parse("2026-02-20"),
-            completed = false,
-            posts_transaction = false,
-            tombstone = false,
-            _payee = PayeeId(payeeId2),
-            _account = "eb08ea4f-bbb0-437f-873a-1fdee4154683",
-            _amount = "-864",
-            _amountOp = "isapprox",
-            _date =
-                "{\"start\":\"2023-02-20\",\"frequency\":\"yearly\",\"patterns\":[],\"skipWeekend\":false," +
-                    "\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1,\"endDate\":\"2024-01-14\"," +
-                    "\"interval\":1}",
-            _conditions = Json.parseToJsonElement(RULE_2_CONDITIONS).jsonArray,
-            _actions = Json.parseToJsonElement(RULE_2_ACTIONS).jsonArray,
-        )
+      V_schedules(
+        id = ScheduleId(scheduleId2),
+        name = "B",
+        rule = RuleId(ruleId2),
+        next_date = LocalDate.parse("2026-02-20"),
+        completed = false,
+        posts_transaction = false,
+        tombstone = false,
+        _payee = PayeeId(payeeId2),
+        _account = "eb08ea4f-bbb0-437f-873a-1fdee4154683",
+        _amount = "-864",
+        _amountOp = "isapprox",
+        _date =
+          "{\"start\":\"2023-02-20\",\"frequency\":\"yearly\",\"patterns\":[],\"skipWeekend\":false," +
+            "\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1,\"endDate\":\"2024-01-14\"," +
+            "\"interval\":1}",
+        _conditions = Json.parseToJsonElement(RULE_2_CONDITIONS).jsonArray,
+        _actions = Json.parseToJsonElement(RULE_2_ACTIONS).jsonArray,
+      )
     val expected3 =
-        V_schedules(
-            id = ScheduleId(scheduleId3),
-            name = "C",
-            rule = RuleId(ruleId3),
-            next_date = LocalDate.parse("2025-03-03"),
-            completed = false,
-            posts_transaction = false,
-            tombstone = false,
-            _payee = PayeeId(payeeId3),
-            _account = "78055dbe-680f-4605-bcd5-46a67feedcec",
-            _amount = "-20000",
-            _amountOp = "is",
-            _date =
-                "{\"start\":\"2024-02-01\",\"frequency\":\"monthly\",\"patterns\":[],\"skipWeekend\":true," +
-                    "\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1,\"endDate\":\"2024-01-14\"," +
-                    "\"interval\":1}",
-            _conditions = Json.parseToJsonElement(RULE_3_CONDITIONS).jsonArray,
-            _actions = Json.parseToJsonElement(RULE_3_ACTIONS).jsonArray,
-        )
+      V_schedules(
+        id = ScheduleId(scheduleId3),
+        name = "C",
+        rule = RuleId(ruleId3),
+        next_date = LocalDate.parse("2025-03-03"),
+        completed = false,
+        posts_transaction = false,
+        tombstone = false,
+        _payee = PayeeId(payeeId3),
+        _account = "78055dbe-680f-4605-bcd5-46a67feedcec",
+        _amount = "-20000",
+        _amountOp = "is",
+        _date =
+          "{\"start\":\"2024-02-01\",\"frequency\":\"monthly\",\"patterns\":[],\"skipWeekend\":true," +
+            "\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1,\"endDate\":\"2024-01-14\"," +
+            "\"interval\":1}",
+        _conditions = Json.parseToJsonElement(RULE_3_CONDITIONS).jsonArray,
+        _actions = Json.parseToJsonElement(RULE_3_ACTIONS).jsonArray,
+      )
 
     assertThat(schedulesQueries.getFromVSchedules().executeAsList())
-        .isEqualTo(listOf(expected1, expected2, expected3))
+      .isEqualTo(listOf(expected1, expected2, expected3))
   }
 }
 
 @Language("JSON")
 private const val RULE_1_CONDITIONS =
-    """
+  """
 [
   {
     "op": "is",
@@ -204,7 +204,7 @@ private const val RULE_1_CONDITIONS =
 
 @Language("JSON")
 private const val RULE_1_ACTIONS =
-    """
+  """
 [
   {
     "op": "link-schedule",
@@ -217,7 +217,7 @@ private const val RULE_1_ACTIONS =
 
 @Language("JSON")
 private const val RULE_2_CONDITIONS =
-    """
+  """
 [
   {
     "op": "is",
@@ -254,7 +254,7 @@ private const val RULE_2_CONDITIONS =
 
 @Language("JSON")
 private const val RULE_2_ACTIONS =
-    """
+  """
 [
   {
     "op": "link-schedule",
@@ -265,7 +265,7 @@ private const val RULE_2_ACTIONS =
 
 @Language("JSON")
 private const val RULE_3_CONDITIONS =
-    """
+  """
 [
   {
     "op": "is",
@@ -302,7 +302,7 @@ private const val RULE_3_CONDITIONS =
 
 @Language("JSON")
 private const val RULE_3_ACTIONS =
-    """
+  """
 [
   {
     "op": "link-schedule",

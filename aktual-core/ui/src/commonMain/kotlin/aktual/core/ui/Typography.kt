@@ -45,107 +45,103 @@ val AktualTypography: Typography
 @Composable
 internal fun aktualTypography(theme: Theme = LocalTheme.current): Typography {
   val font =
-      FontFamily(
-          Font(Res.font.inter_thin, FontWeight.W100),
-          Font(Res.font.inter_extralight, FontWeight.W200),
-          Font(Res.font.inter_light, FontWeight.W300),
-          Font(Res.font.inter_regular, FontWeight.W400),
-          Font(Res.font.inter_medium, FontWeight.W500),
-          Font(Res.font.inter_semibold, FontWeight.W600),
-          Font(Res.font.inter_bold, FontWeight.W700),
-          Font(Res.font.inter_extrabold, FontWeight.W800),
-          Font(Res.font.inter_black, FontWeight.W900),
-      )
+    FontFamily(
+      Font(Res.font.inter_thin, FontWeight.W100),
+      Font(Res.font.inter_extralight, FontWeight.W200),
+      Font(Res.font.inter_light, FontWeight.W300),
+      Font(Res.font.inter_regular, FontWeight.W400),
+      Font(Res.font.inter_medium, FontWeight.W500),
+      Font(Res.font.inter_semibold, FontWeight.W600),
+      Font(Res.font.inter_bold, FontWeight.W700),
+      Font(Res.font.inter_extrabold, FontWeight.W800),
+      Font(Res.font.inter_black, FontWeight.W900),
+    )
 
   return with(font) {
     Typography(
-        displayLarge = textStyle(weight = FontWeight.W700, size = 40.sp),
-        displayMedium = textStyle(weight = FontWeight.W600, size = 35.sp),
-        displaySmall = textStyle(weight = FontWeight.W500, size = 30.sp),
-        headlineLarge =
-            textStyle(weight = FontWeight.W700, size = 30.sp, color = theme.pageTextPositive),
-        headlineMedium =
-            textStyle(weight = FontWeight.W600, size = 25.sp, color = theme.pageTextPositive),
-        headlineSmall =
-            textStyle(weight = FontWeight.W500, size = 20.sp, color = theme.pageTextPositive),
-        titleLarge = textStyle(weight = FontWeight.W500, size = 25.sp),
-        titleMedium = textStyle(weight = FontWeight.W400, size = 23.sp),
-        titleSmall = textStyle(weight = FontWeight.W300, size = 22.sp),
-        bodyLarge = textStyle(size = 16.sp, height = 22.4.sp),
-        bodyMedium = textStyle(size = 15.sp, height = 21.4.sp),
-        bodySmall = textStyle(size = 14.sp, height = 20.4.sp),
-        labelLarge = textStyle(size = 14.sp, color = theme.pageTextSubdued),
-        labelMedium = textStyle(size = 13.sp, color = theme.pageTextSubdued),
-        labelSmall = textStyle(size = 12.sp, color = theme.pageTextSubdued),
+      displayLarge = textStyle(weight = FontWeight.W700, size = 40.sp),
+      displayMedium = textStyle(weight = FontWeight.W600, size = 35.sp),
+      displaySmall = textStyle(weight = FontWeight.W500, size = 30.sp),
+      headlineLarge =
+        textStyle(weight = FontWeight.W700, size = 30.sp, color = theme.pageTextPositive),
+      headlineMedium =
+        textStyle(weight = FontWeight.W600, size = 25.sp, color = theme.pageTextPositive),
+      headlineSmall =
+        textStyle(weight = FontWeight.W500, size = 20.sp, color = theme.pageTextPositive),
+      titleLarge = textStyle(weight = FontWeight.W500, size = 25.sp),
+      titleMedium = textStyle(weight = FontWeight.W400, size = 23.sp),
+      titleSmall = textStyle(weight = FontWeight.W300, size = 22.sp),
+      bodyLarge = textStyle(size = 16.sp, height = 22.4.sp),
+      bodyMedium = textStyle(size = 15.sp, height = 21.4.sp),
+      bodySmall = textStyle(size = 14.sp, height = 20.4.sp),
+      labelLarge = textStyle(size = 14.sp, color = theme.pageTextSubdued),
+      labelMedium = textStyle(size = 13.sp, color = theme.pageTextSubdued),
+      labelSmall = textStyle(size = 12.sp, color = theme.pageTextSubdued),
     )
   }
 }
 
 private fun FontFamily.textStyle(
-    weight: FontWeight? = null,
-    size: TextUnit = TextUnit.Unspecified,
-    color: Color = Color.Unspecified,
-    height: TextUnit = TextUnit.Unspecified,
+  weight: FontWeight? = null,
+  size: TextUnit = TextUnit.Unspecified,
+  color: Color = Color.Unspecified,
+  height: TextUnit = TextUnit.Unspecified,
 ): TextStyle =
-    TextStyle(
-        fontSize = size,
-        fontWeight = weight,
-        fontFamily = this,
-        color = color,
-        lineHeight = height,
-    )
+  TextStyle(
+    fontSize = size,
+    fontWeight = weight,
+    fontFamily = this,
+    color = color,
+    lineHeight = height,
+  )
 
 @Preview(widthDp = 1200)
 @Composable
 private fun PreviewTypography(
-    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
 ) =
-    PreviewWithColorScheme(type) {
-      Column {
-        for ((name, style) in styles()) {
-          Row(
-              modifier = Modifier.height(IntrinsicSize.Min),
-              verticalAlignment = Alignment.CenterVertically,
+  PreviewWithColorScheme(type) {
+    Column {
+      for ((name, style) in styles()) {
+        Row(
+          modifier = Modifier.height(IntrinsicSize.Min),
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          Box(
+            modifier = Modifier.fillMaxHeight().width(150.dp),
+            contentAlignment = Alignment.Center,
           ) {
-            Box(
-                modifier = Modifier.fillMaxHeight().width(150.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-              Text(
-                  modifier = Modifier.fillMaxWidth(),
-                  text = name,
-                  textAlign = TextAlign.Start,
-              )
-            }
-
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "Quick brown fox? Jumped over the lazy dog!",
-                style = style,
-            )
+            Text(modifier = Modifier.fillMaxWidth(), text = name, textAlign = TextAlign.Start)
           }
+
+          Text(
+            modifier = Modifier.weight(1f),
+            text = "Quick brown fox? Jumped over the lazy dog!",
+            style = style,
+          )
         }
       }
     }
+  }
 
 @Composable
 private fun styles() =
-    with(aktualTypography()) {
-      persistentMapOf(
-          "displayLarge" to displayLarge,
-          "displayMedium" to displayMedium,
-          "displaySmall" to displaySmall,
-          "headlineLarge" to headlineLarge,
-          "headlineMedium" to headlineMedium,
-          "headlineSmall" to headlineSmall,
-          "titleLarge" to titleLarge,
-          "titleMedium" to titleMedium,
-          "titleSmall" to titleSmall,
-          "bodyLarge" to bodyLarge,
-          "bodyMedium" to bodyMedium,
-          "bodySmall" to bodySmall,
-          "labelLarge" to labelLarge,
-          "labelMedium" to labelMedium,
-          "labelSmall" to labelSmall,
-      )
-    }
+  with(aktualTypography()) {
+    persistentMapOf(
+      "displayLarge" to displayLarge,
+      "displayMedium" to displayMedium,
+      "displaySmall" to displaySmall,
+      "headlineLarge" to headlineLarge,
+      "headlineMedium" to headlineMedium,
+      "headlineSmall" to headlineSmall,
+      "titleLarge" to titleLarge,
+      "titleMedium" to titleMedium,
+      "titleSmall" to titleSmall,
+      "bodyLarge" to bodyLarge,
+      "bodyMedium" to bodyMedium,
+      "bodySmall" to bodySmall,
+      "labelLarge" to labelLarge,
+      "labelMedium" to labelMedium,
+      "labelSmall" to labelSmall,
+    )
+  }

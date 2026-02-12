@@ -14,10 +14,10 @@ value class AccountSyncSource private constructor(val value: String) {
     fun Other(value: String) = AccountSyncSource(value)
 
     fun fromString(string: String): AccountSyncSource =
-        when (string) {
-          SimpleFin.value -> SimpleFin
-          GoCardless.value -> GoCardless
-          else -> Other(string)
-        }
+      when (string) {
+        SimpleFin.value -> SimpleFin
+        GoCardless.value -> GoCardless
+        else -> Other(string)
+      }
   }
 }

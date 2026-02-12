@@ -16,21 +16,21 @@ import kotlinx.serialization.json.JsonElement
  */
 @Serializable
 data class ReportCondition(
-    @SerialName("field") val field: Field,
-    @SerialName("op") val operator: Operator,
-    @SerialName("value") val value: JsonElement,
-    @SerialName("options") val options: Options? = null,
-    @SerialName("conditionsOp") val conditionsOp: String? = null,
-    @SerialName("type") val type: Type? = null,
-    @SerialName("customName") val customName: String? = null,
-    @SerialName("queryFilter") val queryFilter: JsonElement? = null,
+  @SerialName("field") val field: Field,
+  @SerialName("op") val operator: Operator,
+  @SerialName("value") val value: JsonElement,
+  @SerialName("options") val options: Options? = null,
+  @SerialName("conditionsOp") val conditionsOp: String? = null,
+  @SerialName("type") val type: Type? = null,
+  @SerialName("customName") val customName: String? = null,
+  @SerialName("queryFilter") val queryFilter: JsonElement? = null,
 ) {
   @Serializable
   data class Options(
-      val inflow: Boolean?,
-      val outflow: Boolean?,
-      val month: Boolean?,
-      val year: Boolean?,
+    val inflow: Boolean?,
+    val outflow: Boolean?,
+    val month: Boolean?,
+    val year: Boolean?,
   )
 
   @Serializable(Field.Serializer::class)
@@ -47,8 +47,7 @@ data class ReportCondition(
     Transfer("transfer"),
     Parent("parent"),
     Cleared("cleared"),
-    Reconciled("reconciled"),
-    ;
+    Reconciled("reconciled");
 
     object Serializer : KSerializer<Field> by enumStringSerializer()
   }
@@ -59,8 +58,7 @@ data class ReportCondition(
     Boolean("boolean"),
     Date("date"),
     Number("number"),
-    String("string"),
-    ;
+    String("string");
 
     object Serializer : KSerializer<Type> by enumStringSerializer()
   }

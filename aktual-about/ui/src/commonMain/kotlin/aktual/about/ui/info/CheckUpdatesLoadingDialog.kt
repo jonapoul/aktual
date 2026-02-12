@@ -25,70 +25,54 @@ import androidx.compose.ui.window.DialogProperties
 
 @Composable
 internal fun CheckUpdatesLoadingDialog(
-    onCancel: () -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  onCancel: () -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   BasicAlertDialog(
-      modifier = modifier,
-      properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
-      onDismissRequest = onCancel,
-      content = {
-        CheckUpdatesLoadingDialogContent(
-            onCancel = onCancel,
-            theme = theme,
-        )
-      },
+    modifier = modifier,
+    properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
+    onDismissRequest = onCancel,
+    content = { CheckUpdatesLoadingDialogContent(onCancel = onCancel, theme = theme) },
   )
 }
 
 @Composable
 internal fun CheckUpdatesLoadingDialogContent(
-    onCancel: () -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  onCancel: () -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   DialogContent(
-      modifier = modifier,
-      theme = theme,
-      title = null,
-      content = {
-        Row(
-            modifier = Modifier.padding(vertical = 15.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-          CircularProgressIndicator(
-              color = theme.pageTextPositive,
-              trackColor = theme.dialogProgressWheelTrack,
-          )
+    modifier = modifier,
+    theme = theme,
+    title = null,
+    content = {
+      Row(
+        modifier = Modifier.padding(vertical = 15.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        CircularProgressIndicator(
+          color = theme.pageTextPositive,
+          trackColor = theme.dialogProgressWheelTrack,
+        )
 
-          HorizontalSpacer(15.dp)
+        HorizontalSpacer(15.dp)
 
-          Text(
-              text = Strings.infoCheckingUpdatesLoading,
-              color = theme.pageText,
-          )
-        }
-      },
-      buttons = {
-        TextButton(onClick = onCancel) {
-          Text(
-              text = Strings.infoCheckingUpdatesCancel,
-              color = theme.pageTextPositive,
-          )
-        }
-      },
+        Text(text = Strings.infoCheckingUpdatesLoading, color = theme.pageText)
+      }
+    },
+    buttons = {
+      TextButton(onClick = onCancel) {
+        Text(text = Strings.infoCheckingUpdatesCancel, color = theme.pageTextPositive)
+      }
+    },
   )
 }
 
 @Preview
 @Composable
 private fun PreviewCheckUpdatesContent(
-    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) =
-    PreviewWithColorScheme(type) {
-      CheckUpdatesLoadingDialogContent(
-          onCancel = {},
-      )
-    }
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) = PreviewWithColorScheme(type) { CheckUpdatesLoadingDialogContent(onCancel = {}) }

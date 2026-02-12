@@ -53,12 +53,8 @@ class TransactionsViewModelTest {
 
     contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
     appGraph =
-        createGraphFactory<TestAppGraph.Factory>()
-            .create(
-                scope = this,
-                contexts = contexts,
-                context = context,
-            )
+      createGraphFactory<TestAppGraph.Factory>()
+        .create(scope = this, contexts = contexts, context = context)
 
     budgetGraph = appGraph.budgetGraphHolder.update(METADATA)
 
@@ -78,10 +74,10 @@ class TransactionsViewModelTest {
     }
 
     viewModel =
-        appGraph.metroViewModelFactory
-            .createManuallyAssistedFactory(TransactionsViewModel.Factory::class)
-            .invoke()
-            .create(TOKEN, BUDGET_ID, TransactionsSpec(spec))
+      appGraph.metroViewModelFactory
+        .createManuallyAssistedFactory(TransactionsViewModel.Factory::class)
+        .invoke()
+        .create(TOKEN, BUDGET_ID, TransactionsSpec(spec))
   }
 
   @Test
@@ -93,7 +89,7 @@ class TransactionsViewModelTest {
 
     // when
     val result =
-        source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
+      source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
 
     // then
     assertThat(result).isPage().withData(emptyList()).withPrevKey(null).withNextKey(null)
@@ -115,14 +111,14 @@ class TransactionsViewModelTest {
 
     // when
     val result =
-        source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
+      source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
 
     // then
     assertThat(result)
-        .isPage()
-        .withData(ID_C, ID_B, ID_A) // Returned in reverse insertion order
-        .withPrevKey(null)
-        .withNextKey(null) // No more pages since we loaded fewer items than page size
+      .isPage()
+      .withData(ID_C, ID_B, ID_A) // Returned in reverse insertion order
+      .withPrevKey(null)
+      .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
 
   @Test
@@ -141,14 +137,14 @@ class TransactionsViewModelTest {
 
     // when
     val result =
-        source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
+      source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
 
     // then
     assertThat(result)
-        .isPage()
-        .withData(ID_A)
-        .withPrevKey(null)
-        .withNextKey(null) // No more pages since we loaded fewer items than page size
+      .isPage()
+      .withData(ID_A)
+      .withPrevKey(null)
+      .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
 
   @Test
@@ -170,16 +166,14 @@ class TransactionsViewModelTest {
 
     // when
     val result =
-        pagingSource.load(
-            LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false)
-        )
+      pagingSource.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
 
     // then
     assertThat(result)
-        .isPage()
-        .withData(ID_F, ID_E, ID_D, ID_C, ID_B, ID_A)
-        .withPrevKey(null)
-        .withNextKey(null) // No more pages since we loaded fewer items than page size
+      .isPage()
+      .withData(ID_F, ID_E, ID_D, ID_C, ID_B, ID_A)
+      .withPrevKey(null)
+      .withNextKey(null) // No more pages since we loaded fewer items than page size
   }
 
   @Test
@@ -201,33 +195,33 @@ class TransactionsViewModelTest {
 
     // when - load first page with size 2
     val firstPage =
-        source.load(LoadParams.Refresh(key = null, loadSize = 2, placeholdersEnabled = false))
+      source.load(LoadParams.Refresh(key = null, loadSize = 2, placeholdersEnabled = false))
 
     // then - first page contains first 2 items (in reverse order)
     assertThat(firstPage).isPage().withData(ID_F, ID_E).withPrevKey(null).withNextKey(1)
 
     // when - load second page
     val secondPage =
-        source.load(LoadParams.Append(key = 1, loadSize = 2, placeholdersEnabled = false))
+      source.load(LoadParams.Append(key = 1, loadSize = 2, placeholdersEnabled = false))
 
     // then - second page contains next 2 items
     assertThat(secondPage).isPage().withData(ID_D, ID_C).withPrevKey(0).withNextKey(2)
 
     // when - load third page
     val thirdPage =
-        source.load(LoadParams.Append(key = 2, loadSize = 2, placeholdersEnabled = false))
+      source.load(LoadParams.Append(key = 2, loadSize = 2, placeholdersEnabled = false))
 
     // then - third page contains remaining items
     assertThat(thirdPage)
-        .isPage()
-        .withData(ID_B, ID_A)
-        .withPrevKey(1)
-        .withNextKey(3) // More pages possible since we loaded exactly the page size
+      .isPage()
+      .withData(ID_B, ID_A)
+      .withPrevKey(1)
+      .withNextKey(3) // More pages possible since we loaded exactly the page size
   }
 
   @DependencyGraph(
-      scope = AppScope::class,
-      excludes = [CoroutineContainer::class, GithubApiContainer::class],
+    scope = AppScope::class,
+    excludes = [CoroutineContainer::class, GithubApiContainer::class],
   )
   internal interface TestAppGraph : AppGraph {
     val budgetGraphHolder: BudgetGraphHolder
@@ -235,9 +229,9 @@ class TransactionsViewModelTest {
     @DependencyGraph.Factory
     fun interface Factory {
       fun create(
-          @Provides scope: CoroutineScope,
-          @Provides contexts: CoroutineContexts,
-          @Provides context: Context,
+        @Provides scope: CoroutineScope,
+        @Provides contexts: CoroutineContexts,
+        @Provides context: Context,
       ): TestAppGraph
     }
   }

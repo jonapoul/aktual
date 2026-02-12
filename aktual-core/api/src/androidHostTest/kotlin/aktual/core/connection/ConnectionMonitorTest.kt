@@ -45,14 +45,14 @@ class ConnectionMonitorTest {
     fileSystem = FileSystem.SYSTEM
 
     connectionMonitor =
-        ConnectionMonitor(
-            scope = backgroundScope,
-            contexts = TestCoroutineContexts(unconfinedDispatcher),
-            clientFactory = TestClientFactory(mockEngine),
-            apiStateHolder = apiStateHolder,
-            preferences = preferences,
-            fileSystem = fileSystem,
-        )
+      ConnectionMonitor(
+        scope = backgroundScope,
+        contexts = TestCoroutineContexts(unconfinedDispatcher),
+        clientFactory = TestClientFactory(mockEngine),
+        apiStateHolder = apiStateHolder,
+        preferences = preferences,
+        fileSystem = fileSystem,
+      )
   }
 
   @AfterTest

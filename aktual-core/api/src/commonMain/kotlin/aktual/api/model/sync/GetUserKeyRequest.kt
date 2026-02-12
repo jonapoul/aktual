@@ -7,6 +7,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetUserKeyRequest(
-    @SerialName("fileId") val id: BudgetId,
-    @SerialName("token") val token: Token,
+  @SerialName("fileId") val id: BudgetId,
+  @SerialName("token") val token: Token,
 )

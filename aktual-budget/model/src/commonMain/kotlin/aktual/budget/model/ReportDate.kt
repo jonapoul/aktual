@@ -26,10 +26,10 @@ sealed interface ReportDate {
 
     @Suppress("MagicNumber")
     fun parse(string: String): ReportDate =
-        when (string.split(SEPARATOR).size) {
-          2 -> Month(YearMonth.parse(string))
-          3 -> Date(LocalDate.parse(string))
-          else -> error("Unexpected ReportDate '$string'")
-        }
+      when (string.split(SEPARATOR).size) {
+        2 -> Month(YearMonth.parse(string))
+        3 -> Date(LocalDate.parse(string))
+        else -> error("Unexpected ReportDate '$string'")
+      }
   }
 }

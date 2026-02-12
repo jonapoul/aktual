@@ -31,21 +31,21 @@ import okio.use
 @Inject
 @ContributesBinding(AppScope::class)
 class BufferEncrypterImpl(
-    private val contexts: CoroutineContexts,
-    private val keys: EncryptionKeys,
-    private val random: Random,
+  private val contexts: CoroutineContexts,
+  private val keys: EncryptionKeys,
+  private val random: Random,
 ) : BufferEncrypter {
   override suspend operator fun invoke(keyId: KeyId, buffer: Buffer): EncryptResult {
     logcat.d { "Encrypting ${buffer.size} bytes with keyId=$keyId" }
     val output = Buffer()
     return encrypt(
-        contexts = contexts,
-        keys = keys,
-        keyId = keyId,
-        random = random,
-        source = buffer,
-        sink = output,
-        result = { meta -> EncryptResult.EncryptedBuffer(output, meta) },
+      contexts = contexts,
+      keys = keys,
+      keyId = keyId,
+      random = random,
+      source = buffer,
+      sink = output,
+      result = { meta -> EncryptResult.EncryptedBuffer(output, meta) },
     )
   }
 }
@@ -53,66 +53,60 @@ class BufferEncrypterImpl(
 @Inject
 @ContributesBinding(AppScope::class)
 class FileEncrypterImpl(
-    private val contexts: CoroutineContexts,
-    private val keys: EncryptionKeys,
-    private val random: Random,
-    private val files: BudgetFiles,
+  private val contexts: CoroutineContexts,
+  private val keys: EncryptionKeys,
+  private val random: Random,
+  private val files: BudgetFiles,
 ) : FileEncrypter {
   override suspend fun invoke(id: BudgetId, keyId: KeyId, filePath: Path): EncryptResult {
     val encryptedPath = files.encryptedZip(id, mkdirs = true)
     logcat.d { "Encrypting $id from $filePath into $encryptedPath with keyId=$keyId" }
     return encrypt(
-        contexts = contexts,
-        keys = keys,
-        keyId = keyId,
-        random = random,
-        source = files.fileSystem.source(filePath),
-        sink = files.fileSystem.sink(encryptedPath),
-        result = { meta -> EncryptResult.EncryptedFile(encryptedPath, meta) },
+      contexts = contexts,
+      keys = keys,
+      keyId = keyId,
+      random = random,
+      source = files.fileSystem.source(filePath),
+      sink = files.fileSystem.sink(encryptedPath),
+      result = { meta -> EncryptResult.EncryptedFile(encryptedPath, meta) },
     )
   }
 }
 
 private suspend fun encrypt(
-    keys: EncryptionKeys,
-    contexts: CoroutineContexts,
-    keyId: KeyId,
-    random: Random,
-    source: Source,
-    sink: Sink,
-    result: (Meta) -> EncryptResult.Success,
+  keys: EncryptionKeys,
+  contexts: CoroutineContexts,
+  keyId: KeyId,
+  random: Random,
+  source: Source,
+  sink: Sink,
+  result: (Meta) -> EncryptResult.Success,
 ): EncryptResult =
-    try {
-      val key = keys[keyId] ?: return EncryptResult.MissingKey
-      val meta =
-          withContext(contexts.io) {
-            encryptToSink(
-                key = key,
-                keyId = keyId,
-                random = random,
-                source = source,
-                sink = sink,
-            )
-          }
-      result(meta)
-    } catch (e: UnknownAlgorithmException) {
-      EncryptResult.UnknownAlgorithm(e.algorithm)
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      EncryptResult.OtherFailure(e.requireMessage())
-    } finally {
-      if (sink !is Buffer) runCatching { sink.close() }
-      if (source !is Buffer) runCatching { source.close() }
-    }
+  try {
+    val key = keys[keyId] ?: return EncryptResult.MissingKey
+    val meta =
+      withContext(contexts.io) {
+        encryptToSink(key = key, keyId = keyId, random = random, source = source, sink = sink)
+      }
+    result(meta)
+  } catch (e: UnknownAlgorithmException) {
+    EncryptResult.UnknownAlgorithm(e.algorithm)
+  } catch (e: CancellationException) {
+    throw e
+  } catch (e: Exception) {
+    EncryptResult.OtherFailure(e.requireMessage())
+  } finally {
+    if (sink !is Buffer) runCatching { sink.close() }
+    if (source !is Buffer) runCatching { source.close() }
+  }
 
 @Throws(UnknownAlgorithmException::class)
 internal fun encryptToSink(
-    key: ByteString,
-    keyId: KeyId,
-    source: Source,
-    sink: Sink,
-    random: Random,
+  key: ByteString,
+  keyId: KeyId,
+  source: Source,
+  sink: Sink,
+  random: Random,
 ): Meta {
   val iv = random.nextBytes(GCM_IV_LENGTH)
   val cipher = Cipher.getInstance(AES_GCM_CIPHER_TRANSFORMATION)
@@ -140,10 +134,10 @@ internal fun encryptToSink(
   encryptedWithTag.read(authTag)
 
   return DefaultMeta(
-      keyId = keyId,
-      algorithm = EXPECTED_ALGORITHM,
-      iv = iv.toByteString(),
-      authTag = authTag.toByteString(),
+    keyId = keyId,
+    algorithm = EXPECTED_ALGORITHM,
+    iv = iv.toByteString(),
+    authTag = authTag.toByteString(),
   )
 }
 

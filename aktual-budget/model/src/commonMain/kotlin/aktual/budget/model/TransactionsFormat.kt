@@ -2,8 +2,7 @@ package aktual.budget.model
 
 enum class TransactionsFormat {
   List,
-  Table,
-  ;
+  Table;
 
   companion object {
     val Default = List

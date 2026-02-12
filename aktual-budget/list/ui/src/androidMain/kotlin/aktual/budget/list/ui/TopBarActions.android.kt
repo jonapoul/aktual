@@ -11,23 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal actual fun TopBarActions(
-    onAction: (ListBudgetsAction) -> Unit,
-) = Row {
-  SettingsButton(
-      modifier = Modifier.padding(horizontal = 5.dp),
-      onAction = onAction,
-  )
+internal actual fun TopBarActions(onAction: (ListBudgetsAction) -> Unit) = Row {
+  SettingsButton(modifier = Modifier.padding(horizontal = 5.dp), onAction = onAction)
 
   var showMenu by remember { mutableStateOf(false) }
-  MoreButton(
-      modifier = Modifier.padding(horizontal = 5.dp),
-      onClick = { showMenu = !showMenu },
-  )
+  MoreButton(modifier = Modifier.padding(horizontal = 5.dp), onClick = { showMenu = !showMenu })
 
-  MoreMenu(
-      showMenu = showMenu,
-      onAction = onAction,
-      onDismissRequest = { showMenu = false },
-  )
+  MoreMenu(showMenu = showMenu, onAction = onAction, onDismissRequest = { showMenu = false })
 }

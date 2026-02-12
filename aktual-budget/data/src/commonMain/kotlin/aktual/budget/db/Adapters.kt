@@ -49,91 +49,87 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 
 private fun <T : Any> longAdapter(
-    decode: (Long) -> T,
-    encode: (T) -> Long,
+  decode: (Long) -> T,
+  encode: (T) -> Long,
 ): ColumnAdapter<T, Long> =
-    object : ColumnAdapter<T, Long> {
-      override fun encode(value: T): Long = encode.invoke(value)
+  object : ColumnAdapter<T, Long> {
+    override fun encode(value: T): Long = encode.invoke(value)
 
-      override fun decode(databaseValue: Long): T = decode.invoke(databaseValue)
-    }
+    override fun decode(databaseValue: Long): T = decode.invoke(databaseValue)
+  }
 
 private fun <T : Any> stringAdapter(
-    decode: (String) -> T,
-    encode: (T) -> String,
+  decode: (String) -> T,
+  encode: (T) -> String,
 ): ColumnAdapter<T, String> =
-    object : ColumnAdapter<T, String> {
-      override fun encode(value: T): String = encode.invoke(value)
+  object : ColumnAdapter<T, String> {
+    override fun encode(value: T): String = encode.invoke(value)
 
-      override fun decode(databaseValue: String): T = decode.invoke(databaseValue)
-    }
+    override fun decode(databaseValue: String): T = decode.invoke(databaseValue)
+  }
 
 private fun <T : Any> stringAdapter(decode: (String) -> T): ColumnAdapter<T, String> =
-    stringAdapter(decode, encode = { it.toString() })
+  stringAdapter(decode, encode = { it.toString() })
 
 private inline fun <reified E : Enum<E>> enumStringAdapter(): ColumnAdapter<E, String> =
-    stringAdapter {
-      E::class.parse(it)
-    }
+  stringAdapter {
+    E::class.parse(it)
+  }
 
-private inline fun <reified T : JsonElement> jsonElement(
-    crossinline getter: JsonElement.() -> T,
-) =
-    object : ColumnAdapter<T, String> {
-      override fun encode(value: T): String = Json.encodeToString(value)
+private inline fun <reified T : JsonElement> jsonElement(crossinline getter: JsonElement.() -> T) =
+  object : ColumnAdapter<T, String> {
+    override fun encode(value: T): String = Json.encodeToString(value)
 
-      override fun decode(databaseValue: String): T =
-          Json.parseToJsonElement(databaseValue).getter()
-    }
+    override fun decode(databaseValue: String): T = Json.parseToJsonElement(databaseValue).getter()
+  }
 
 private val jsonElement = jsonElement<JsonElement> { this }
 private val jsonObject = jsonElement<JsonObject> { jsonObject }
 private val jsonArray = jsonElement<JsonArray> { jsonArray }
 
 private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>) =
-    object : ColumnAdapter<T, String> {
-      override fun decode(databaseValue: String): T =
-          Json.decodeFromString(serializer, databaseValue)
+  object : ColumnAdapter<T, String> {
+    override fun decode(databaseValue: String): T = Json.decodeFromString(serializer, databaseValue)
 
-      override fun encode(value: T): String = Json.encodeToString(serializer, value)
-    }
+    override fun encode(value: T): String = Json.encodeToString(serializer, value)
+  }
 
 private val reportConditions = jsonSerializable(ReportCondition.ListSerializer)
 private val selectedCategories = jsonSerializable(ListSerializer(SelectedCategory.serializer()))
 
 private val localDate =
-    longAdapter(
-        encode = { date: LocalDate ->
-          with(date) { "%04d%02d%02d".format(year, month.number, day).toLong() }
-        },
-        decode = { value: Long ->
-          val str = value.toString()
-          val year = str.substring(startIndex = 0, endIndex = 4).toInt()
-          val month = str.substring(startIndex = 4, endIndex = 6).toInt()
-          val day = str.substring(startIndex = 6, endIndex = 8).toInt()
-          LocalDate(year, month, day)
-        },
-    )
+  longAdapter(
+    encode = { date: LocalDate ->
+      with(date) { "%04d%02d%02d".format(year, month.number, day).toLong() }
+    },
+    decode = { value: Long ->
+      val str = value.toString()
+      val year = str.substring(startIndex = 0, endIndex = 4).toInt()
+      val month = str.substring(startIndex = 4, endIndex = 6).toInt()
+      val day = str.substring(startIndex = 6, endIndex = 8).toInt()
+      LocalDate(year, month, day)
+    },
+  )
 
 private val instantMsFromString =
-    stringAdapter(
-        encode = { it.toEpochMilliseconds().toString() },
-        decode = { Instant.fromEpochMilliseconds(it.toLong()) },
-    )
+  stringAdapter(
+    encode = { it.toEpochMilliseconds().toString() },
+    decode = { Instant.fromEpochMilliseconds(it.toLong()) },
+  )
 private val amount = longAdapter(::Amount, Amount::toLong)
 private val instantFromLong =
-    longAdapter(Instant::fromEpochMilliseconds, Instant::toEpochMilliseconds)
+  longAdapter(Instant::fromEpochMilliseconds, Instant::toEpochMilliseconds)
 
 private const val YEAR_MONTH_FACTOR = 100
 private val yearMonth =
-    longAdapter(
-        decode = { long ->
-          val month = Month(long.toInt() % YEAR_MONTH_FACTOR)
-          val year = long.toInt() / YEAR_MONTH_FACTOR
-          YearMonth(year, month)
-        },
-        encode = { (it.year * YEAR_MONTH_FACTOR.toLong()) + it.month.number },
-    )
+  longAdapter(
+    decode = { long ->
+      val month = Month(long.toInt() % YEAR_MONTH_FACTOR)
+      val year = long.toInt() / YEAR_MONTH_FACTOR
+      YearMonth(year, month)
+    },
+    encode = { (it.year * YEAR_MONTH_FACTOR.toLong()) + it.month.number },
+  )
 
 private val accountId = stringAdapter(::AccountId)
 private val accountSyncSource = stringAdapter(AccountSyncSource::fromString)
@@ -167,164 +163,127 @@ private val ruleStage = enumStringAdapter<RuleStage>()
 private val widgetType = enumStringAdapter<WidgetType>()
 
 internal val AccountsAdapter =
-    Accounts.Adapter(
-        idAdapter = accountId,
-        balance_currentAdapter = amount,
-        balance_availableAdapter = amount,
-        balance_limitAdapter = amount,
-        bankAdapter = uuid,
-        account_sync_sourceAdapter = accountSyncSource,
-        last_syncAdapter = instantMsFromString,
-        last_reconciledAdapter = instantMsFromString,
-    )
+  Accounts.Adapter(
+    idAdapter = accountId,
+    balance_currentAdapter = amount,
+    balance_availableAdapter = amount,
+    balance_limitAdapter = amount,
+    bankAdapter = uuid,
+    account_sync_sourceAdapter = accountSyncSource,
+    last_syncAdapter = instantMsFromString,
+    last_reconciledAdapter = instantMsFromString,
+  )
 
-internal val BanksAdapter =
-    Banks.Adapter(
-        idAdapter = uuid,
-        bank_idAdapter = bankId,
-    )
+internal val BanksAdapter = Banks.Adapter(idAdapter = uuid, bank_idAdapter = bankId)
 
 internal val DashboardAdapter =
-    Dashboard.Adapter(
-        idAdapter = widgetId,
-        typeAdapter = widgetType,
-        metaAdapter = jsonObject,
-    )
+  Dashboard.Adapter(idAdapter = widgetId, typeAdapter = widgetType, metaAdapter = jsonObject)
 
-internal val PayeesAdapter =
-    Payees.Adapter(
-        idAdapter = payeeId,
-        transfer_acctAdapter = accountId,
-    )
+internal val PayeesAdapter = Payees.Adapter(idAdapter = payeeId, transfer_acctAdapter = accountId)
 
 internal val TransactionsAdapter =
-    Transactions.Adapter(
-        acctAdapter = accountId,
-        amountAdapter = amount,
-        idAdapter = transactionId,
-        categoryAdapter = categoryId,
-        dateAdapter = localDate,
-        errorAdapter = jsonObject,
-        imported_descriptionAdapter = payeeId,
-        transferred_idAdapter = transactionId,
-        parent_idAdapter = transactionId,
-        scheduleAdapter = scheduleId,
-        descriptionAdapter = payeeId,
-    )
+  Transactions.Adapter(
+    acctAdapter = accountId,
+    amountAdapter = amount,
+    idAdapter = transactionId,
+    categoryAdapter = categoryId,
+    dateAdapter = localDate,
+    errorAdapter = jsonObject,
+    imported_descriptionAdapter = payeeId,
+    transferred_idAdapter = transactionId,
+    parent_idAdapter = transactionId,
+    scheduleAdapter = scheduleId,
+    descriptionAdapter = payeeId,
+  )
 
 internal val CategoriesAdapter =
-    Categories.Adapter(
-        idAdapter = categoryId,
-        cat_groupAdapter = categoryGroupId,
-        goal_defAdapter = jsonElement,
-    )
+  Categories.Adapter(
+    idAdapter = categoryId,
+    cat_groupAdapter = categoryGroupId,
+    goal_defAdapter = jsonElement,
+  )
 
-internal val CategoryGroupsAdapter =
-    Category_groups.Adapter(
-        idAdapter = categoryGroupId,
-    )
+internal val CategoryGroupsAdapter = Category_groups.Adapter(idAdapter = categoryGroupId)
 
 internal val CategoryMappingAdapter =
-    Category_mapping.Adapter(
-        idAdapter = categoryId,
-        transferIdAdapter = categoryId,
-    )
+  Category_mapping.Adapter(idAdapter = categoryId, transferIdAdapter = categoryId)
 
 internal val CustomReportsAdapter =
-    Custom_reports.Adapter(
-        idAdapter = customReportsId,
-        start_dateAdapter = reportDate,
-        end_dateAdapter = reportDate,
-        date_rangeAdapter = dateRangeType,
-        modeAdapter = customReportMode,
-        group_byAdapter = groupBy,
-        balance_typeAdapter = balanceType,
-        graph_typeAdapter = graphType,
-        conditionsAdapter = reportConditions,
-        conditions_opAdapter = operator,
-        metadataAdapter = jsonObject,
-        sort_byAdapter = sortBy,
-        intervalAdapter = interval,
-        selected_categoriesAdapter = selectedCategories,
-    )
+  Custom_reports.Adapter(
+    idAdapter = customReportsId,
+    start_dateAdapter = reportDate,
+    end_dateAdapter = reportDate,
+    date_rangeAdapter = dateRangeType,
+    modeAdapter = customReportMode,
+    group_byAdapter = groupBy,
+    balance_typeAdapter = balanceType,
+    graph_typeAdapter = graphType,
+    conditionsAdapter = reportConditions,
+    conditions_opAdapter = operator,
+    metadataAdapter = jsonObject,
+    sort_byAdapter = sortBy,
+    intervalAdapter = interval,
+    selected_categoriesAdapter = selectedCategories,
+  )
 
-internal val MessagesClockAdapter =
-    Messages_clock.Adapter(
-        clockAdapter = jsonObject,
-    )
+internal val MessagesClockAdapter = Messages_clock.Adapter(clockAdapter = jsonObject)
 
-internal val MessagesCrdtAdapter =
-    Messages_crdt.Adapter(
-        timestampAdapter = timestamp,
-    )
+internal val MessagesCrdtAdapter = Messages_crdt.Adapter(timestampAdapter = timestamp)
 
 internal val PayeeMappingAdapter =
-    Payee_mapping.Adapter(
-        idAdapter = payeeId,
-        targetIdAdapter = payeeId,
-    )
+  Payee_mapping.Adapter(idAdapter = payeeId, targetIdAdapter = payeeId)
 
-internal val PreferencesAdapter =
-    Preferences.Adapter(
-        idAdapter = syncedPrefKey,
-    )
+internal val PreferencesAdapter = Preferences.Adapter(idAdapter = syncedPrefKey)
 
 internal val RulesAdapter =
-    Rules.Adapter(
-        idAdapter = ruleId,
-        stageAdapter = ruleStage,
-        conditionsAdapter = jsonArray,
-        actionsAdapter = jsonArray,
-        conditions_opAdapter = operator,
-    )
+  Rules.Adapter(
+    idAdapter = ruleId,
+    stageAdapter = ruleStage,
+    conditionsAdapter = jsonArray,
+    actionsAdapter = jsonArray,
+    conditions_opAdapter = operator,
+  )
 
-internal val SchedulesAdapter =
-    Schedules.Adapter(
-        idAdapter = scheduleId,
-        ruleAdapter = ruleId,
-    )
+internal val SchedulesAdapter = Schedules.Adapter(idAdapter = scheduleId, ruleAdapter = ruleId)
 
 internal val SchedulesJsonPathsAdapter =
-    Schedules_json_paths.Adapter(
-        schedule_idAdapter = scheduleId,
-        payeeAdapter = scheduleJsonPathIndex,
-        accountAdapter = scheduleJsonPathIndex,
-        amountAdapter = scheduleJsonPathIndex,
-        dateAdapter = scheduleJsonPathIndex,
-    )
+  Schedules_json_paths.Adapter(
+    schedule_idAdapter = scheduleId,
+    payeeAdapter = scheduleJsonPathIndex,
+    accountAdapter = scheduleJsonPathIndex,
+    amountAdapter = scheduleJsonPathIndex,
+    dateAdapter = scheduleJsonPathIndex,
+  )
 
 internal val SchedulesNextDateAdapter =
-    Schedules_next_date.Adapter(
-        idAdapter = scheduleNextDateId,
-        schedule_idAdapter = scheduleId,
-        local_next_dateAdapter = localDate,
-        local_next_date_tsAdapter = instantFromLong,
-        base_next_dateAdapter = localDate,
-        base_next_date_tsAdapter = instantFromLong,
-    )
+  Schedules_next_date.Adapter(
+    idAdapter = scheduleNextDateId,
+    schedule_idAdapter = scheduleId,
+    local_next_dateAdapter = localDate,
+    local_next_date_tsAdapter = instantFromLong,
+    base_next_dateAdapter = localDate,
+    base_next_date_tsAdapter = instantFromLong,
+  )
 
 internal val ReflectBudgetsAdapter =
-    Reflect_budgets.Adapter(
-        monthAdapter = yearMonth,
-        categoryAdapter = categoryId,
-        amountAdapter = amount,
-    )
+  Reflect_budgets.Adapter(
+    monthAdapter = yearMonth,
+    categoryAdapter = categoryId,
+    amountAdapter = amount,
+  )
 
 internal val TransactionFiltersAdapter =
-    Transaction_filters.Adapter(
-        idAdapter = transactionFilterId,
-        conditionsAdapter = jsonArray,
-        conditions_opAdapter = operator,
-    )
+  Transaction_filters.Adapter(
+    idAdapter = transactionFilterId,
+    conditionsAdapter = jsonArray,
+    conditions_opAdapter = operator,
+  )
 
-internal val ZeroBudgetMonthsAdapter =
-    Zero_budget_months.Adapter(
-        idAdapter = zeroBudgetMonthId,
-    )
+internal val ZeroBudgetMonthsAdapter = Zero_budget_months.Adapter(idAdapter = zeroBudgetMonthId)
 
 internal val ZeroBudgetsAdapter =
-    Zero_budgets.Adapter(
-        monthAdapter = yearMonth,
-        categoryAdapter = categoryId,
-        amountAdapter = amount,
-    )
+  Zero_budgets.Adapter(
+    monthAdapter = yearMonth,
+    categoryAdapter = categoryId,
+    amountAdapter = amount,
+  )

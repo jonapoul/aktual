@@ -21,24 +21,20 @@ import io.ktor.client.HttpClient
 interface SyncApi {
   @GET("/sync/list-user-files")
   suspend fun fetchUserFiles(
-      @Header(AktualHeaders.TOKEN) token: Token,
+    @Header(AktualHeaders.TOKEN) token: Token
   ): ListUserFilesResponse.Success
 
   @GET("/sync/get-user-file-info")
   suspend fun fetchUserFileInfo(
-      @Header(AktualHeaders.TOKEN) token: Token,
-      @Header(AktualHeaders.FILE_ID) budgetId: BudgetId,
+    @Header(AktualHeaders.TOKEN) token: Token,
+    @Header(AktualHeaders.FILE_ID) budgetId: BudgetId,
   ): GetUserFileInfoResponse.Success
 
   @POST("/sync/user-get-key")
-  suspend fun fetchUserKey(
-      @Body body: GetUserKeyRequest,
-  ): GetUserKeyResponse.Success
+  suspend fun fetchUserKey(@Body body: GetUserKeyRequest): GetUserKeyResponse.Success
 
   @POST("/sync/delete-user-file")
-  suspend fun delete(
-      @Body body: DeleteUserFileRequest,
-  ): DeleteUserFileResponse.Success
+  suspend fun delete(@Body body: DeleteUserFileRequest): DeleteUserFileResponse.Success
 }
 
 expect fun SyncApi(serverUrl: ServerUrl, client: HttpClient): SyncApi

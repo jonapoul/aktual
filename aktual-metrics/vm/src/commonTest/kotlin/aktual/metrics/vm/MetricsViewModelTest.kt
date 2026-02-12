@@ -40,11 +40,11 @@ class MetricsViewModelTest {
 
   private fun buildViewModel() {
     viewModel =
-        MetricsViewModel(
-            apisStateHolder = apisStateHolder,
-            contexts = TestCoroutineContexts(EmptyCoroutineContext),
-            clock = TestClock(EXAMPLE_INSTANT),
-        )
+      MetricsViewModel(
+        apisStateHolder = apisStateHolder,
+        contexts = TestCoroutineContexts(EmptyCoroutineContext),
+        clock = TestClock(EXAMPLE_INSTANT),
+      )
   }
 
   @Test
@@ -52,10 +52,10 @@ class MetricsViewModelTest {
     // given
     apisStateHolder.update { buildApis() }
     coEvery { metricsApi.getMetrics() } coAnswers
-        {
-          delay(200.milliseconds)
-          GetMetricsResponse(EXAMPLE_MEMORY, EXAMPLE_UPTIME)
-        }
+      {
+        delay(200.milliseconds)
+        GetMetricsResponse(EXAMPLE_MEMORY, EXAMPLE_UPTIME)
+      }
 
     // when
     buildViewModel()
@@ -63,7 +63,7 @@ class MetricsViewModelTest {
       // then
       assertThatNextEmissionIsEqualTo(MetricsState.Loading)
       assertThatNextEmissionIsEqualTo(
-          MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT)
+        MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT)
       )
       coVerify(exactly = 1) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
@@ -74,7 +74,7 @@ class MetricsViewModelTest {
       // then
       assertThatNextEmissionIsEqualTo(MetricsState.Loading)
       assertThatNextEmissionIsEqualTo(
-          MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT)
+        MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT)
       )
       coVerify(exactly = 2) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
@@ -130,21 +130,19 @@ class MetricsViewModelTest {
     }
   }
 
-  private fun buildApis(
-      metricsApi: MetricsApi? = this.metricsApi,
-  ) =
-      metricsApi?.let {
-        AktualApis(
-            serverUrl = SERVER_URL,
-            client = mockk(),
-            account = mockk(),
-            base = mockk(),
-            health = mockk(),
-            metrics = it,
-            sync = mockk(),
-            syncDownload = mockk(),
-        )
-      }
+  private fun buildApis(metricsApi: MetricsApi? = this.metricsApi) =
+    metricsApi?.let {
+      AktualApis(
+        serverUrl = SERVER_URL,
+        client = mockk(),
+        account = mockk(),
+        base = mockk(),
+        health = mockk(),
+        metrics = it,
+        sync = mockk(),
+        syncDownload = mockk(),
+      )
+    }
 
   private companion object {
     private val SERVER_URL = ServerUrl("https://server.com/actual-budget")
@@ -153,12 +151,12 @@ class MetricsViewModelTest {
     private val EXAMPLE_INSTANT = Instant.fromEpochMilliseconds(1765211833825L)
     private val EXAMPLE_UPTIME = 123.days + 4.hours + 5.seconds + 678.milliseconds
     private val EXAMPLE_MEMORY =
-        GetMetricsResponse.Memory(
-            rss = 112377856L.bytes,
-            heapTotal = 32088064L.bytes,
-            heapUsed = 29558608L.bytes,
-            external = 3925760L.bytes,
-            arrayBuffers = 387791L.bytes,
-        )
+      GetMetricsResponse.Memory(
+        rss = 112377856L.bytes,
+        heapTotal = 32088064L.bytes,
+        heapUsed = 29558608L.bytes,
+        external = 3925760L.bytes,
+        arrayBuffers = 387791L.bytes,
+      )
   }
 }

@@ -5,8 +5,5 @@ import aktual.budget.model.SyncResponse
 import okio.Source
 
 fun interface SyncResponseDecoder {
-  suspend operator fun invoke(
-      source: Source,
-      metadata: DbMetadata,
-  ): SyncResponse
+  suspend operator fun invoke(source: Source, metadata: DbMetadata): SyncResponse
 }

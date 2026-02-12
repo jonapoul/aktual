@@ -14,5 +14,5 @@ sealed interface MetricsState {
   data class Failure(val cause: String) : MetricsState
 
   data class Success(val memory: Memory, val uptime: Duration, val lastUpdate: Instant) :
-      MetricsState
+    MetricsState
 }

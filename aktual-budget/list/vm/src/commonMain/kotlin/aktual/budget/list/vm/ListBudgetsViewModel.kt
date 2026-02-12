@@ -41,13 +41,13 @@ import logcat.logcat
 
 @AssistedInject
 class ListBudgetsViewModel(
-    @Assisted private val token: Token,
-    preferences: AppGlobalPreferences,
-    private val budgetListFetcher: BudgetListFetcher,
-    private val files: BudgetFiles,
-    private val contexts: CoroutineContexts,
-    private val apisStateHolder: AktualApisStateHolder,
-    private val urlOpener: UrlOpener,
+  @Assisted private val token: Token,
+  preferences: AppGlobalPreferences,
+  private val budgetListFetcher: BudgetListFetcher,
+  private val files: BudgetFiles,
+  private val contexts: CoroutineContexts,
+  private val apisStateHolder: AktualApisStateHolder,
+  private val urlOpener: UrlOpener,
 ) : ViewModel() {
   val serverUrl: StateFlow<ServerUrl?> = preferences.serverUrl.asStateFlow(viewModelScope)
 
@@ -70,15 +70,15 @@ class ListBudgetsViewModel(
     // Periodically check whether our files still exist
     viewModelScope.launch {
       state
-          .filterIsInstance<ListBudgetsState.Success>()
-          .map { state -> state.budgets.map { it.cloudFileId } }
-          .collectLatest { budgetIds ->
-            while (true) {
-              delay(500.milliseconds)
-              val existing = budgetIds.associateWith(::localFilesExist)
-              mutableLocalFileExists.update { existing }
-            }
+        .filterIsInstance<ListBudgetsState.Success>()
+        .map { state -> state.budgets.map { it.cloudFileId } }
+        .collectLatest { budgetIds ->
+          while (true) {
+            delay(500.milliseconds)
+            val existing = budgetIds.associateWith(::localFilesExist)
+            mutableLocalFileExists.update { existing }
           }
+        }
     }
   }
 
@@ -149,30 +149,24 @@ class ListBudgetsViewModel(
       val result = budgetListFetcher.fetchBudgets(token)
       logcat.d { "Fetch budgets result = $result" }
       val newState =
-          when (result) {
-            is FetchBudgetsResult.Failure -> ListBudgetsState.Failure(result.reason)
-            is FetchBudgetsResult.Success ->
-                ListBudgetsState.Success(result.budgets.toImmutableList())
-          }
+        when (result) {
+          is FetchBudgetsResult.Failure -> ListBudgetsState.Failure(result.reason)
+          is FetchBudgetsResult.Success ->
+            ListBudgetsState.Success(result.budgets.toImmutableList())
+        }
       mutableState.update { newState }
     }
   }
 
   private fun localFilesExist(id: BudgetId): Boolean =
-      with(files) {
-        listOf(
-                database(id, mkdirs = false),
-                metadata(id, mkdirs = false),
-            )
-            .all(fileSystem::exists)
-      }
+    with(files) {
+      listOf(database(id, mkdirs = false), metadata(id, mkdirs = false)).all(fileSystem::exists)
+    }
 
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey(Factory::class)
   @ContributesIntoMap(AppScope::class)
   interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-        @Assisted token: Token,
-    ): ListBudgetsViewModel
+    fun create(@Assisted token: Token): ListBudgetsViewModel
   }
 }

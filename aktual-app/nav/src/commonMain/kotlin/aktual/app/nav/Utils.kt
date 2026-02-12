@@ -21,28 +21,25 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 
 internal inline fun <reified T> NavGraphBuilder.composableWithArg(
-    extraTypes: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
-    crossinline content: @Composable AnimatedContentScope.(T, NavBackStackEntry) -> Unit,
+  extraTypes: Map<KType, @JvmSuppressWildcards NavType<*>> = emptyMap(),
+  crossinline content: @Composable AnimatedContentScope.(T, NavBackStackEntry) -> Unit,
 ) where T : Any, T : Serializable =
-    composable<T>(
-        typeMap = extraTypes + mapOf(typeMapEntry<T>()),
-    ) { navBackStackEntry ->
-      val route = navBackStackEntry.toRoute<T>()
-      content(route, navBackStackEntry)
-    }
+  composable<T>(typeMap = extraTypes + mapOf(typeMapEntry<T>())) { navBackStackEntry ->
+    val route = navBackStackEntry.toRoute<T>()
+    content(route, navBackStackEntry)
+  }
 
 internal inline fun <reified T : Serializable> typeMapEntry(): Pair<KType, SerializableType<T>> {
   val serializer = Json.serializersModule.serializer<T>()
   return typeOf<T>() to SerializableType(serializer)
 }
 
-internal class SerializableType<T : Any>(
-    private val serializer: KSerializer<T>,
-) : NavType<T>(isNullableAllowed = false) {
+internal class SerializableType<T : Any>(private val serializer: KSerializer<T>) :
+  NavType<T>(isNullableAllowed = false) {
   override val name = serializer.descriptor.serialName
 
   override fun put(bundle: SavedState, key: String, value: T) =
-      bundle.write { putString(key, serializeAsValue(value)) }
+    bundle.write { putString(key, serializeAsValue(value)) }
 
   override fun get(bundle: SavedState, key: String): T = bundle.read { parseValue(getString(key)) }
 

@@ -20,8 +20,8 @@ import logcat.logcat
 @Suppress("unused", "VarCouldBeVal")
 @AssistedInject
 class ReportsDashboardViewModel(
-    @Assisted private val token: Token,
-    @Assisted private val budgetId: BudgetId,
+  @Assisted private val token: Token,
+  @Assisted private val budgetId: BudgetId,
 ) : ViewModel() {
   private var job: Job? = null
 
@@ -54,9 +54,6 @@ class ReportsDashboardViewModel(
   @ManualViewModelAssistedFactoryKey(Factory::class)
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-        @Assisted token: Token,
-        @Assisted budgetId: BudgetId,
-    ): ReportsDashboardViewModel
+    fun create(@Assisted token: Token, @Assisted budgetId: BudgetId): ReportsDashboardViewModel
   }
 }

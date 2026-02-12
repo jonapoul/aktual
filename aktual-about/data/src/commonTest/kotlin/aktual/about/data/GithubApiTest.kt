@@ -48,7 +48,7 @@ class GithubApiTest {
 
     // then
     assertThatRequestUrlEquals(
-        "https://api.github.com/repos/abc/123/releases/latest?per_page=420&page=69"
+      "https://api.github.com/repos/abc/123/releases/latest?per_page=420&page=69"
     )
   }
 
@@ -65,7 +65,5 @@ class GithubApiTest {
   }
 
   private fun assertThatRequestUrlEquals(expected: String) =
-      assertThat(mockEngine.requestHistory)
-          .transform { it.last().url.toString() }
-          .isEqualTo(expected)
+    assertThat(mockEngine.requestHistory).transform { it.last().url.toString() }.isEqualTo(expected)
 }

@@ -32,11 +32,7 @@ class TimestampedPrintStreamLoggerTest {
     val stream = PrintStream(byteArrayOutputStream)
     val clock = TestClock { Instant.fromEpochMilliseconds(timeMs) }
     LogcatLogger.loggers +=
-        TimestampedPrintStreamLogger(
-            stream,
-            clock,
-            minPriority = LogPriority.DEBUG,
-        )
+      TimestampedPrintStreamLogger(stream, clock, minPriority = LogPriority.DEBUG)
 
     // when
     logcat.i { "Hello world" }
@@ -46,11 +42,11 @@ class TimestampedPrintStreamLoggerTest {
     val contents = byteArrayOutputStream.toString().trim().lines()
     byteArrayOutputStream.flush()
     assertThat(contents)
-        .isEqualTo(
-            listOf(
-                "2025-05-24T07:53:33.000Z I/TimestampedPrintStreamLoggerTest: Hello world",
-                "2025-05-24T07:53:33.000Z D/TAGGED: This one has a tag",
-            ),
+      .isEqualTo(
+        listOf(
+          "2025-05-24T07:53:33.000Z I/TimestampedPrintStreamLoggerTest: Hello world",
+          "2025-05-24T07:53:33.000Z D/TAGGED: This one has a tag",
         )
+      )
   }
 }

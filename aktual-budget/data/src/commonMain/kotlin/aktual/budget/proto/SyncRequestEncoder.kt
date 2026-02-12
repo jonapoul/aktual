@@ -7,9 +7,9 @@ import okio.ByteString
 
 fun interface SyncRequestEncoder {
   suspend operator fun invoke(
-      groupId: String,
-      budgetId: BudgetId,
-      since: Timestamp,
-      messages: List<Message>,
+    groupId: String,
+    budgetId: BudgetId,
+    since: Timestamp,
+    messages: List<Message>,
   ): ByteString
 }

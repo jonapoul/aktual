@@ -86,13 +86,13 @@ class ServerUrlViewModelTest {
 
   private fun TestScope.buildViewModel() {
     viewModel =
-        ServerUrlViewModel(
-            contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
-            apiStateHolder = apisStateHolder,
-            preferences = preferences,
-            versionsStateHolder = versionsStateHolder,
-            buildConfig = TestBuildConfig.copy(defaultServerUrl = null),
-        )
+      ServerUrlViewModel(
+        contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
+        apiStateHolder = apisStateHolder,
+        preferences = preferences,
+        versionsStateHolder = versionsStateHolder,
+        buildConfig = TestBuildConfig.copy(defaultServerUrl = null),
+      )
   }
 
   @Test
@@ -170,13 +170,13 @@ class ServerUrlViewModelTest {
       // and the API returns failure
       val reason = "SOMETHING BROKE"
       val body =
-          """
+        """
         {
           "status": "error",
           "reason": "$reason"
         }
       """
-              .trimIndent()
+          .trimIndent()
       mockEngine.clear()
       mockEngine += { respondJson(body, HttpStatusCode.BadRequest) }
 
@@ -247,7 +247,7 @@ class ServerUrlViewModelTest {
 
   private fun setBootstrapResponse(bootstrapped: Boolean) {
     val json =
-        """
+      """
       {
           "status": "ok",
           "data": {
@@ -264,7 +264,7 @@ class ServerUrlViewModelTest {
           }
       }
     """
-            .trimIndent()
+        .trimIndent()
     mockEngine.clear()
     mockEngine += { respondJson(json) }
   }

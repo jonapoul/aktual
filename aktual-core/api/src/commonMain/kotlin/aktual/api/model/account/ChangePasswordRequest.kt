@@ -6,6 +6,4 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ChangePasswordRequest(
-    @Redacted @SerialName("password") val password: Password,
-)
+data class ChangePasswordRequest(@Redacted @SerialName("password") val password: Password)

@@ -15,20 +15,18 @@ fun <C : Collection<T>, T> Assert<C>.hasSize(size: Int): Assert<C> = transform {
   actual
 }
 
-fun <L : List<T>, T> Assert<L>.atIndex(
-    index: Int,
-    subAssertion: Assert<T>.() -> Unit,
-): Assert<L> = transform { actual ->
-  assertThat(actual[index], name = "line index $index").subAssertion()
-  actual
-}
+fun <L : List<T>, T> Assert<L>.atIndex(index: Int, subAssertion: Assert<T>.() -> Unit): Assert<L> =
+  transform { actual ->
+    assertThat(actual[index], name = "line index $index").subAssertion()
+    actual
+  }
 
 fun <T> Assert<List<T>>.isEqualToList(vararg expected: T) = isEqualTo(expected.toList())
 
 fun <K, V> Assert<Map<K, V>>.isEqualToMap(vararg expected: Pair<K, V>) = isEqualTo(expected.toMap())
 
 inline fun <reified T : Throwable> assertFailsWith(f: () -> Unit) =
-    assertFailure(f).isInstanceOf<T>()
+  assertFailure(f).isInstanceOf<T>()
 
 fun Assert<Path>.existsOn(fileSystem: FileSystem) = given { path ->
   if (fileSystem.exists(path)) return@given
@@ -50,8 +48,8 @@ fun Assert<File>.contentEquals(expected: String) = given { file ->
   val contents = file.readText().removeSuffix("\n")
   if (contents == expected) return@given
   expected(
-      "Unequal strings between expected{${expected.length}} and actual{${contents.length}}:\n" +
-          diff(expected, contents),
+    "Unequal strings between expected{${expected.length}} and actual{${contents.length}}:\n" +
+      diff(expected, contents)
   )
 }
 
@@ -67,8 +65,8 @@ fun Assert<String>.equalsDiffed(expected: String) = transform { actual ->
     actual
   } else {
     expected(
-        "Unequal strings between expected{${expected.length}} and actual{${stripped.length}}:\n" +
-            diff(expected, stripped),
+      "Unequal strings between expected{${expected.length}} and actual{${stripped.length}}:\n" +
+        diff(expected, stripped)
     )
   }
 }
@@ -82,11 +80,11 @@ fun diff(expected: String, actual: String): String {
   for (i in expectedLines.indices.reversed()) {
     for (j in actualLines.indices.reversed()) {
       dp[i][j] =
-          if (expectedLines[i] == actualLines[j]) {
-            1 + dp[i + 1][j + 1]
-          } else {
-            maxOf(dp[i + 1][j], dp[i][j + 1])
-          }
+        if (expectedLines[i] == actualLines[j]) {
+          1 + dp[i + 1][j + 1]
+        } else {
+          maxOf(dp[i + 1][j], dp[i][j + 1])
+        }
     }
   }
 
@@ -103,7 +101,8 @@ fun diff(expected: String, actual: String): String {
           j++
         }
 
-        // Case 2: Prefer consuming a line from actual if it leads to a longer match later. This
+        // Case 2: Prefer consuming a line from actual if it leads to a longer match later.
+        // This
         // means a line was
         // inserted in actual that doesn't exist in expected.
         j < actualLines.size && (i == expectedLines.size || dp[i][j + 1] >= dp[i + 1][j]) -> {
@@ -111,7 +110,8 @@ fun diff(expected: String, actual: String): String {
           j++
         }
 
-        // Case 3: consume a line from expected. This means a line was removed from actual compared
+        // Case 3: consume a line from expected. This means a line was removed from actual
+        // compared
         // to expected
         i < expectedLines.size -> {
           appendLine("+++ ${expectedLines[i]}")

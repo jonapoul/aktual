@@ -18,35 +18,35 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
 
 class ConventionCompose : Plugin<Project> {
   override fun apply(target: Project) =
-      with(target) {
-        with(pluginManager) {
-          apply(ConventionKotlinBase::class)
-          apply(ComposeCompilerGradleSubplugin::class)
-          apply(ComposePlugin::class)
-        }
-
-        pluginManager.withPlugin("com.android.base") {
-          extensions.configure(CommonExtension::class) { buildFeatures.compose = true }
-        }
-
-        val metricReportDir = project.layout.buildDirectory.dir("compose_metrics")
-        val stabilityFile =
-            rootProject.isolated.projectDirectory.file("config/compose-stability.conf")
-
-        extensions.configure<ComposeCompilerGradlePluginExtension> {
-          metricsDestination.set(metricReportDir)
-          reportsDestination.set(metricReportDir)
-          stabilityConfigurationFiles.add(stabilityFile)
-
-          targetKotlinPlatforms.addAll(
-              KotlinPlatformType.common,
-              KotlinPlatformType.jvm,
-              KotlinPlatformType.androidJvm,
-          )
-        }
-
-        plugins.withAnyId("com.android.lint", "com.android.base") {
-          dependencies { "lintChecks"(libs["androidx.compose.lint"]) }
-        }
+    with(target) {
+      with(pluginManager) {
+        apply(ConventionKotlinBase::class)
+        apply(ComposeCompilerGradleSubplugin::class)
+        apply(ComposePlugin::class)
       }
+
+      pluginManager.withPlugin("com.android.base") {
+        extensions.configure(CommonExtension::class) { buildFeatures.compose = true }
+      }
+
+      val metricReportDir = project.layout.buildDirectory.dir("compose_metrics")
+      val stabilityFile =
+        rootProject.isolated.projectDirectory.file("config/compose-stability.conf")
+
+      extensions.configure<ComposeCompilerGradlePluginExtension> {
+        metricsDestination.set(metricReportDir)
+        reportsDestination.set(metricReportDir)
+        stabilityConfigurationFiles.add(stabilityFile)
+
+        targetKotlinPlatforms.addAll(
+          KotlinPlatformType.common,
+          KotlinPlatformType.jvm,
+          KotlinPlatformType.androidJvm,
+        )
+      }
+
+      plugins.withAnyId("com.android.lint", "com.android.base") {
+        dependencies { "lintChecks"(libs["androidx.compose.lint"]) }
+      }
+    }
 }

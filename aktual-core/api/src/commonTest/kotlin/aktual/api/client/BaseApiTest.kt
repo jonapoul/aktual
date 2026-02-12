@@ -43,9 +43,7 @@ class BaseApiTest {
     assertThat(mockEngine.latestRequestUrl()).isEqualTo("https://test.server.com/info")
 
     assertThat(mockEngine.latestRequestHeaders())
-        .isEqualTo(
-            mapOf("Accept" to listOf("application/json"), "Accept-Charset" to listOf("UTF-8"))
-        )
+      .isEqualTo(mapOf("Accept" to listOf("application/json"), "Accept-Charset" to listOf("UTF-8")))
   }
 
   @Test
@@ -58,16 +56,16 @@ class BaseApiTest {
 
     // then
     assertThat(response)
-        .isEqualTo(
-            InfoResponse(
-                build =
-                    Build(
-                        name = "@actual-app/sync-server",
-                        description = "actual syncing server",
-                        version = "25.7.1",
-                    ),
-            ),
+      .isEqualTo(
+        InfoResponse(
+          build =
+            Build(
+              name = "@actual-app/sync-server",
+              description = "actual syncing server",
+              version = "25.7.1",
+            )
         )
+      )
   }
 
   @Test

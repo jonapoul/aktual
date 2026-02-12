@@ -17,51 +17,38 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
 internal fun NoUpdateFoundDialog(
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  onDismiss: () -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   BasicAlertDialog(
-      modifier = modifier,
-      onDismissRequest = onDismiss,
-      content = {
-        NoUpdateFoundDialogContent(
-            onDismiss = onDismiss,
-            theme = theme,
-        )
-      },
+    modifier = modifier,
+    onDismissRequest = onDismiss,
+    content = { NoUpdateFoundDialogContent(onDismiss = onDismiss, theme = theme) },
   )
 }
 
 @Composable
 internal fun NoUpdateFoundDialogContent(
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  onDismiss: () -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   DialogContent(
-      modifier = modifier,
-      theme = theme,
-      title = Strings.infoNoUpdateTitle,
-      content = { Text(text = Strings.infoNoUpdateMessage) },
-      buttons = {
-        TextButton(onClick = onDismiss) {
-          Text(
-              text = Strings.infoNoUpdateOk,
-              color = theme.pageTextPositive,
-          )
-        }
-      },
+    modifier = modifier,
+    theme = theme,
+    title = Strings.infoNoUpdateTitle,
+    content = { Text(text = Strings.infoNoUpdateMessage) },
+    buttons = {
+      TextButton(onClick = onDismiss) {
+        Text(text = Strings.infoNoUpdateOk, color = theme.pageTextPositive)
+      }
+    },
   )
 }
 
 @Preview
 @Composable
 private fun PreviewNoUpdatesContent(
-    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) =
-    PreviewWithColorScheme(type) {
-      NoUpdateFoundDialogContent(
-          onDismiss = {},
-      )
-    }
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) = PreviewWithColorScheme(type) { NoUpdateFoundDialogContent(onDismiss = {}) }

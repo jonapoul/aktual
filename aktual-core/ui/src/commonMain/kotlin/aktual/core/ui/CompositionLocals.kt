@@ -20,37 +20,37 @@ val LocalPrivacyEnabled = compositionLocalOf { false }
 val LocalBottomStatusBarHeight = compositionLocalOf { 0.dp }
 
 val LocalNumberFormatConfig =
-    compositionLocalOf<NumberFormatConfig> { error("No NumberFormatConfig value provided") }
+  compositionLocalOf<NumberFormatConfig> { error("No NumberFormatConfig value provided") }
 
 val LocalHazeState = compositionLocalOf<HazeState> { error("No HazeState supplied") }
 
 @Composable
 fun WithHazeState(state: HazeState, content: @Composable () -> Unit) =
-    CompositionLocalProvider(LocalHazeState provides state, content)
+  CompositionLocalProvider(LocalHazeState provides state, content)
 
 @Composable
 fun Modifier.aktualHaze(
-    state: HazeState = LocalHazeState.current,
-    style: HazeStyle = LocalHazeStyle.current,
+  state: HazeState = LocalHazeState.current,
+  style: HazeStyle = LocalHazeStyle.current,
 ): Modifier = hazeEffect(state, style)
 
 @Composable
 fun Amount.formattedString(
-    config: NumberFormatConfig = LocalNumberFormatConfig.current,
-    includeSign: Boolean = false,
-    isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
+  config: NumberFormatConfig = LocalNumberFormatConfig.current,
+  includeSign: Boolean = false,
+  isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
 ): String = toString(config, includeSign, isPrivacyEnabled)
 
 @Composable
 fun WithCompositionLocals(
-    isPrivacyEnabled: Boolean = false,
-    format: NumberFormat = NumberFormat.Default,
-    hideFraction: Boolean = false,
-    content: @Composable () -> Unit,
+  isPrivacyEnabled: Boolean = false,
+  format: NumberFormat = NumberFormat.Default,
+  hideFraction: Boolean = false,
+  content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
-      LocalNumberFormatConfig provides NumberFormatConfig(format, hideFraction),
-      LocalPrivacyEnabled provides isPrivacyEnabled,
+    LocalNumberFormatConfig provides NumberFormatConfig(format, hideFraction),
+    LocalPrivacyEnabled provides isPrivacyEnabled,
   ) {
     content()
   }

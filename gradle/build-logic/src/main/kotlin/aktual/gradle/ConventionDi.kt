@@ -9,21 +9,21 @@ import org.gradle.kotlin.dsl.configure
 
 class ConventionDi : Plugin<Project> {
   override fun apply(target: Project) =
-      with(target) {
-        with(pluginManager) { apply(MetroGradleSubplugin::class) }
+    with(target) {
+      with(pluginManager) { apply(MetroGradleSubplugin::class) }
 
-        extensions.configure<MetroPluginExtension> {
-          enableKotlinVersionCompatibilityChecks.set(true)
-          enableFullBindingGraphValidation.set(true)
-          generateAssistedFactories.set(false)
-          generateContributionHints.set(true)
-          shrinkUnusedBindings.set(true)
-          transformProvidersToPrivate.set(true)
-          warnOnInjectAnnotationPlacement.set(true)
+      extensions.configure<MetroPluginExtension> {
+        enableKotlinVersionCompatibilityChecks.set(true)
+        enableFullBindingGraphValidation.set(true)
+        generateAssistedFactories.set(false)
+        generateContributionHints.set(true)
+        shrinkUnusedBindings.set(true)
+        transformProvidersToPrivate.set(true)
+        warnOnInjectAnnotationPlacement.set(true)
 
-          // Causes occasional compile errors when AGP-KMP is applied, see
-          // https://github.com/ZacSweers/metro/issues/1379
-          // reportsDestination.set(layout.buildDirectory.dir("reports/metro"))
-        }
+        // Causes occasional compile errors when AGP-KMP is applied, see
+        // https://github.com/ZacSweers/metro/issues/1379
+        // reportsDestination.set(layout.buildDirectory.dir("reports/metro"))
       }
+    }
 }

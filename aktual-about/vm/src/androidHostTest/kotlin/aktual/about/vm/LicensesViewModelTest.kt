@@ -152,15 +152,11 @@ class LicensesViewModelTest {
   }
 
   private fun buildViewModel() {
-    viewModel =
-        LicensesViewModel(
-            licensesRepository = repository,
-            urlOpener = urlOpener,
-        )
+    viewModel = LicensesViewModel(licensesRepository = repository, urlOpener = urlOpener)
   }
 
   private suspend fun TurbineTestContext<LicensesState>.assertLoaded(
-      vararg models: ArtifactDetail
+    vararg models: ArtifactDetail
   ) {
     assertLoaded(models.toList())
   }
@@ -171,13 +167,13 @@ class LicensesViewModelTest {
 
   private companion object {
     val EXAMPLE_MODEL =
-        ArtifactDetail(
-            groupId = "com.website",
-            artifactId = "something",
-            name = "Something",
-            spdxLicenses = setOf(Apache2),
-            scm = ArtifactScm("www.website.com"),
-            version = "1.2.3",
-        )
+      ArtifactDetail(
+        groupId = "com.website",
+        artifactId = "something",
+        name = "Something",
+        spdxLicenses = setOf(Apache2),
+        scm = ArtifactScm("www.website.com"),
+        version = "1.2.3",
+      )
   }
 }

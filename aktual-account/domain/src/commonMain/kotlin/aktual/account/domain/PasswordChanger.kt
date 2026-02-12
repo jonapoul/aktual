@@ -18,9 +18,9 @@ import logcat.logcat
 @Inject
 class PasswordChanger
 internal constructor(
-    private val contexts: CoroutineContexts,
-    private val apisStateHolder: AktualApisStateHolder,
-    private val preferences: AppGlobalPreferences,
+  private val contexts: CoroutineContexts,
+  private val apisStateHolder: AktualApisStateHolder,
+  private val preferences: AppGlobalPreferences,
 ) {
   suspend fun submit(password: Password): ChangePasswordResult {
     val apis = apisStateHolder.value

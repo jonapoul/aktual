@@ -12,17 +12,13 @@ import dev.zacsweers.metro.Inject
 @Inject
 @ContributesBinding(AppScope::class)
 class AndroidBudgetGraphBuilder(
-    private val context: Context,
-    private val files: BudgetFiles,
-    private val factory: BudgetGraph.Factory,
+  private val context: Context,
+  private val files: BudgetFiles,
+  private val factory: BudgetGraph.Factory,
 ) : BudgetGraph.Builder {
   override fun invoke(metadata: DbMetadata): BudgetGraph {
     val driverFactory =
-        AndroidSqlDriverFactory(
-            id = metadata.cloudFileId,
-            context = context,
-            budgetFiles = files,
-        )
+      AndroidSqlDriverFactory(id = metadata.cloudFileId, context = context, budgetFiles = files)
 
     return factory.create(metadata.cloudFileId, metadata, driverFactory)
   }

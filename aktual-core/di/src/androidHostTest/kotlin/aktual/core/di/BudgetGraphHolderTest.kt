@@ -40,12 +40,8 @@ class BudgetGraphHolderTest {
     val context = ApplicationProvider.getApplicationContext<Context>()
     val contexts = TestCoroutineContexts(standardDispatcher)
     appGraph =
-        createGraphFactory<TestAppGraph.Factory>()
-            .create(
-                scope = this,
-                contexts = contexts,
-                context = context,
-            )
+      createGraphFactory<TestAppGraph.Factory>()
+        .create(scope = this, contexts = contexts, context = context)
 
     holder = appGraph.budgetGraphHolder
   }
@@ -81,8 +77,8 @@ class BudgetGraphHolderTest {
 
     // try to access the first db, but it's closed
     assertFailure { graph1.fetchData(bankId) }
-        .isInstanceOf<IllegalStateException>()
-        .messageContains("attempt to re-open an already-closed object")
+      .isInstanceOf<IllegalStateException>()
+      .messageContains("attempt to re-open an already-closed object")
 
     // close the second one
     holder.close()
@@ -92,25 +88,20 @@ class BudgetGraphHolderTest {
   }
 
   private fun metadata(id: String) =
-      DbMetadata(
-          data =
-              persistentMapOf(
-                  DbMetadata.CloudFileId to BudgetId(id),
-              ),
-      )
+    DbMetadata(data = persistentMapOf(DbMetadata.CloudFileId to BudgetId(id)))
 
   private suspend fun BudgetGraph.fetchData(bankId: BankId) =
-      database.banksQueries.withResult { getByBankId(bankId).executeAsList() }
+    database.banksQueries.withResult { getByBankId(bankId).executeAsList() }
 
   private suspend fun BudgetGraph.insertData(
-      bankId: BankId,
-      id: Uuid = Uuid.random(),
-      name: String = "my bank name",
+    bankId: BankId,
+    id: Uuid = Uuid.random(),
+    name: String = "my bank name",
   ) = database.banksQueries.withoutResult { insert(id, bankId, name) }
 
   @DependencyGraph(
-      scope = AppScope::class,
-      excludes = [CoroutineContainer::class, GithubApiContainer::class],
+    scope = AppScope::class,
+    excludes = [CoroutineContainer::class, GithubApiContainer::class],
   )
   internal interface TestAppGraph : AppGraph {
     val budgetGraphHolder: BudgetGraphHolder
@@ -118,9 +109,9 @@ class BudgetGraphHolderTest {
     @DependencyGraph.Factory
     fun interface Factory {
       fun create(
-          @Provides scope: CoroutineScope,
-          @Provides contexts: CoroutineContexts,
-          @Provides context: Context,
+        @Provides scope: CoroutineScope,
+        @Provides contexts: CoroutineContexts,
+        @Provides context: Context,
       ): TestAppGraph
     }
   }

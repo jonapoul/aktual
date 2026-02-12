@@ -20,9 +20,9 @@ interface BudgetGraph {
   @GraphExtension.Factory
   fun interface Factory {
     fun create(
-        @Provides budgetId: BudgetId,
-        @Provides metadata: DbMetadata,
-        @Provides driverFactory: SqlDriverFactory,
+      @Provides budgetId: BudgetId,
+      @Provides metadata: DbMetadata,
+      @Provides driverFactory: SqlDriverFactory,
     ): BudgetGraph
   }
 

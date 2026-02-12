@@ -14,14 +14,6 @@ import dev.zacsweers.metro.Provides
 @ContributesTo(AppScope::class)
 object GithubApiContainer {
   @Provides
-  fun githubApi(
-      buildConfig: BuildConfig,
-  ): GithubApi =
-      GithubApiImpl(
-          buildKtorClient(
-              json = GithubJson,
-              tag = "GITHUB",
-              isDebug = buildConfig.isDebug,
-          ),
-      )
+  fun githubApi(buildConfig: BuildConfig): GithubApi =
+    GithubApiImpl(buildKtorClient(json = GithubJson, tag = "GITHUB", isDebug = buildConfig.isDebug))
 }

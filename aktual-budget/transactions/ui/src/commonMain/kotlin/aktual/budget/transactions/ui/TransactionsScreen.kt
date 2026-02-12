@@ -34,68 +34,60 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 @Composable
 @Suppress("ViewModelForwarding")
 fun TransactionsScreen(
-    nav: TransactionsNavigator,
-    budgetId: BudgetId,
-    token: Token,
-    spec: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
-    viewModel: TransactionsViewModel = metroViewModel(token, budgetId, spec),
+  nav: TransactionsNavigator,
+  budgetId: BudgetId,
+  token: Token,
+  spec: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
+  viewModel: TransactionsViewModel = metroViewModel(token, budgetId, spec),
 ) {
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
   val format by viewModel.format.collectAsStateWithLifecycle()
 
   TransactionsScaffold(
-      transactionIdSource = viewModel,
-      loadedAccount = loadedAccount,
-      format = format,
-      source = viewModel,
-      onAction = { action ->
-        when (action) {
-          Action.NavBack -> nav.back()
-          is Action.CheckItem -> viewModel.setChecked(action.id, action.isChecked)
-          is Action.SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
-        }
-      },
+    transactionIdSource = viewModel,
+    loadedAccount = loadedAccount,
+    format = format,
+    source = viewModel,
+    onAction = { action ->
+      when (action) {
+        Action.NavBack -> nav.back()
+        is Action.CheckItem -> viewModel.setChecked(action.id, action.isChecked)
+        is Action.SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
+      }
+    },
   )
 }
 
 @Composable
-private fun metroViewModel(
-    token: Token,
-    budgetId: BudgetId,
-    spec: TransactionsSpec,
-) =
-    assistedMetroViewModel<TransactionsViewModel, TransactionsViewModel.Factory>(
-        key = "$token-$budgetId-$spec",
-        createViewModel = { create(token, budgetId, spec) },
-    )
+private fun metroViewModel(token: Token, budgetId: BudgetId, spec: TransactionsSpec) =
+  assistedMetroViewModel<TransactionsViewModel, TransactionsViewModel.Factory>(
+    key = "$token-$budgetId-$spec",
+    createViewModel = { create(token, budgetId, spec) },
+  )
 
 @Composable
 internal fun TransactionsScaffold(
-    transactionIdSource: TransactionIdSource,
-    loadedAccount: LoadedAccount,
-    format: TransactionsFormat,
-    source: TransactionStateSource,
-    onAction: ActionListener,
+  transactionIdSource: TransactionIdSource,
+  loadedAccount: LoadedAccount,
+  format: TransactionsFormat,
+  source: TransactionStateSource,
+  onAction: ActionListener,
 ) {
   val theme = LocalTheme.current
-  Scaffold(
-      topBar = { TransactionsTitleBar(loadedAccount, onAction, theme) },
-  ) { innerPadding ->
+  Scaffold(topBar = { TransactionsTitleBar(loadedAccount, onAction, theme) }) { innerPadding ->
     Box {
       val hazeState = remember { HazeState() }
 
-      WavyBackground(
-          modifier = Modifier.hazeSource(hazeState),
-      )
+      WavyBackground(modifier = Modifier.hazeSource(hazeState))
 
       WithHazeState(hazeState) {
         Transactions(
-            modifier = Modifier.padding(innerPadding),
-            transactionIdSource = transactionIdSource,
-            format = format,
-            source = source,
-            onAction = onAction,
-            theme = theme,
+          modifier = Modifier.padding(innerPadding),
+          transactionIdSource = transactionIdSource,
+          format = format,
+          source = source,
+          onAction = onAction,
+          theme = theme,
         )
       }
     }
@@ -107,20 +99,20 @@ internal fun TransactionsScaffold(
 @LandscapePreview
 @TabletPreview
 private fun PreviewTransactionsScaffold(
-    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
 ) =
-    PreviewWithColorScheme(type) {
-      TransactionsScaffold(
-          transactionIdSource =
-              PreviewTransactionIdSource(listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),
-          loadedAccount = LoadedAccount.AllAccounts,
-          format = TransactionsFormat.Table,
-          source =
-              previewTransactionStateSource(
-                  TRANSACTION_1 to false,
-                  TRANSACTION_2 to true,
-                  TRANSACTION_3 to false,
-              ),
-          onAction = {},
-      )
-    }
+  PreviewWithColorScheme(type) {
+    TransactionsScaffold(
+      transactionIdSource =
+        PreviewTransactionIdSource(listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),
+      loadedAccount = LoadedAccount.AllAccounts,
+      format = TransactionsFormat.Table,
+      source =
+        previewTransactionStateSource(
+          TRANSACTION_1 to false,
+          TRANSACTION_2 to true,
+          TRANSACTION_3 to false,
+        ),
+      onAction = {},
+    )
+  }

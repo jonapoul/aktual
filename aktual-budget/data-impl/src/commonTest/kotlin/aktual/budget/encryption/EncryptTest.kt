@@ -23,28 +23,28 @@ class EncryptTest {
 
     // Encrypt the plaintext
     val meta =
-        encryptToSink(
-            key = KEY,
-            keyId = KeyId("test-key"),
-            source = encryptedZip.source(),
-            sink = temporaryFolder.sink(encrypted),
-            random = Random.Default,
-        )
+      encryptToSink(
+        key = KEY,
+        keyId = KeyId("test-key"),
+        source = encryptedZip.source(),
+        sink = temporaryFolder.sink(encrypted),
+        random = Random.Default,
+      )
 
     // Decrypt the encrypted data
     val decrypted = temporaryFolder / "decrypted.zip"
     decryptToSink(
-        key = KEY.toByteArray(),
-        iv = meta.iv.toByteArray(),
-        authTag = meta.authTag.toByteArray(),
-        algorithm = meta.algorithm,
-        source = temporaryFolder.source(encrypted),
-        sink = temporaryFolder.sink(decrypted),
+      key = KEY.toByteArray(),
+      iv = meta.iv.toByteArray(),
+      authTag = meta.authTag.toByteArray(),
+      algorithm = meta.algorithm,
+      source = temporaryFolder.source(encrypted),
+      sink = temporaryFolder.sink(decrypted),
     )
 
     // Verify the decrypted data matches the original plaintext
     assertThat(temporaryFolder.source(decrypted).readBytes())
-        .isEqualTo(encryptedZip.source().readBytes())
+      .isEqualTo(encryptedZip.source().readBytes())
   }
 
   @Test
@@ -55,23 +55,23 @@ class EncryptTest {
     // Encrypt the buffer
     val encryptedBuffer = Buffer()
     val meta =
-        encryptToSink(
-            key = KEY,
-            keyId = KeyId("test-key"),
-            source = plaintextBuffer,
-            sink = encryptedBuffer,
-            random = Random.Default,
-        )
+      encryptToSink(
+        key = KEY,
+        keyId = KeyId("test-key"),
+        source = plaintextBuffer,
+        sink = encryptedBuffer,
+        random = Random.Default,
+      )
 
     // Decrypt the encrypted buffer
     val decryptedBuffer = Buffer()
     decryptToSink(
-        key = KEY.toByteArray(),
-        iv = meta.iv.toByteArray(),
-        authTag = meta.authTag.toByteArray(),
-        algorithm = meta.algorithm,
-        source = encryptedBuffer,
-        sink = decryptedBuffer,
+      key = KEY.toByteArray(),
+      iv = meta.iv.toByteArray(),
+      authTag = meta.authTag.toByteArray(),
+      algorithm = meta.algorithm,
+      source = encryptedBuffer,
+      sink = decryptedBuffer,
     )
 
     // Verify the decrypted data matches the original plaintext

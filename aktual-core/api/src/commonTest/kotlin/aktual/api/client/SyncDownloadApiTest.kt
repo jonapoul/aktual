@@ -33,11 +33,11 @@ class SyncDownloadApiTest {
     fileSystem = FileSystem.SYSTEM
     destinationPath = temporaryFolder / "my-file.txt"
     syncDownloadApi =
-        SyncDownloadApi(
-            serverUrl = SERVER_URL,
-            client = testHttpClient(mockEngine, AktualJson),
-            fileSystem = fileSystem,
-        )
+      SyncDownloadApi(
+        serverUrl = SERVER_URL,
+        client = testHttpClient(mockEngine, AktualJson),
+        fileSystem = fileSystem,
+      )
   }
 
   @AfterTest
@@ -54,14 +54,14 @@ class SyncDownloadApiTest {
     }
 
     assertThat(mockEngine.latestRequestHeaders())
-        .isEqualTo(
-            mapOf(
-                "X-ACTUAL-TOKEN" to listOf("abc-123"),
-                "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
-                "Accept" to listOf("application/json"),
-                "Accept-Charset" to listOf("UTF-8"),
-            ),
+      .isEqualTo(
+        mapOf(
+          "X-ACTUAL-TOKEN" to listOf("abc-123"),
+          "X-ACTUAL-FILE-ID" to listOf("xyz-789"),
+          "Accept" to listOf("application/json"),
+          "Accept-Charset" to listOf("UTF-8"),
         )
+      )
   }
 
   @Test
@@ -80,9 +80,9 @@ class SyncDownloadApiTest {
       }
 
       assertThat(state)
-          .isInstanceOf<SyncDownloadState.Done>()
-          .transform { s -> fileSystem.read(s.path) { readUtf8() } }
-          .isEqualTo(content)
+        .isInstanceOf<SyncDownloadState.Done>()
+        .transform { s -> fileSystem.read(s.path) { readUtf8() } }
+        .isEqualTo(content)
 
       awaitComplete()
     }

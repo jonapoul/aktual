@@ -26,42 +26,40 @@ import kotlinx.serialization.json.jsonPrimitive
 
 @Immutable
 @Serializable(DbMetadata.Serializer::class)
-data class DbMetadata(
-    val data: PersistentMap<Key<*>, Any> = persistentMapOf(),
-) : Iterable<Pair<DbMetadata.Key<*>, Any?>> {
+data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) :
+  Iterable<Pair<DbMetadata.Key<*>, Any?>> {
   private val list by lazy { data.toList() }
 
   constructor(
-      vararg data: Pair<Key<*>, Any?>
+    vararg data: Pair<Key<*>, Any?>
   ) : this(
-      data =
-          data.mapNotNull { (k, v) -> if (v == null) null else k to v }.toMap().toPersistentMap(),
+    data = data.mapNotNull { (k, v) -> if (v == null) null else k to v }.toMap().toPersistentMap()
   )
 
   constructor(
-      budgetName: String? = null,
-      budgetCollapsed: List<String>? = null,
-      cloudFileId: BudgetId? = null,
-      groupId: String? = null,
-      id: String? = null,
-      lastScheduleRun: LocalDate? = null,
-      lastSyncedTimestamp: Timestamp? = null,
-      lastUploaded: LocalDate? = null,
-      resetClock: Boolean? = null,
-      userId: String? = null,
-      encryptKeyId: String? = null,
+    budgetName: String? = null,
+    budgetCollapsed: List<String>? = null,
+    cloudFileId: BudgetId? = null,
+    groupId: String? = null,
+    id: String? = null,
+    lastScheduleRun: LocalDate? = null,
+    lastSyncedTimestamp: Timestamp? = null,
+    lastUploaded: LocalDate? = null,
+    resetClock: Boolean? = null,
+    userId: String? = null,
+    encryptKeyId: String? = null,
   ) : this(
-      BudgetName to budgetName,
-      BudgetCollapsed to budgetCollapsed,
-      CloudFileId to cloudFileId,
-      GroupId to groupId,
-      Id to id,
-      LastScheduleRun to lastScheduleRun,
-      LastSyncedTimestamp to lastSyncedTimestamp,
-      LastUploaded to lastUploaded,
-      ResetClock to resetClock,
-      UserId to userId,
-      EncryptKeyId to encryptKeyId,
+    BudgetName to budgetName,
+    BudgetCollapsed to budgetCollapsed,
+    CloudFileId to cloudFileId,
+    GroupId to groupId,
+    Id to id,
+    LastScheduleRun to lastScheduleRun,
+    LastSyncedTimestamp to lastSyncedTimestamp,
+    LastUploaded to lastUploaded,
+    ResetClock to resetClock,
+    UserId to userId,
+    EncryptKeyId to encryptKeyId,
   )
 
   operator fun <T : Any> get(key: Key<T>): T? {
@@ -73,9 +71,7 @@ data class DbMetadata(
   }
 
   operator fun <T : Any> set(key: Key<T>, value: T?): DbMetadata =
-      DbMetadata(
-          if (value == null) data.remove(key) else data.put(key, value),
-      )
+    DbMetadata(if (value == null) data.remove(key) else data.put(key, value))
 
   operator fun plus(other: Map<Key<*>, Any?>): DbMetadata = plus(other.toList())
 
@@ -115,7 +111,7 @@ data class DbMetadata(
   }
 
   data class TypedKey<T : Any>(override val name: String, private val fromString: (String) -> T) :
-      PrimitiveKey<T> {
+    PrimitiveKey<T> {
     override fun decode(element: JsonPrimitive) = fromString(element.content)
   }
 
@@ -138,26 +134,23 @@ data class DbMetadata(
     val EncryptKeyId: Key<String> = StringKey("encryptKeyId")
 
     fun Key(key: String): Key<*> =
-        when (key) {
-          BudgetName.name -> BudgetName
-          BudgetCollapsed.name -> BudgetCollapsed
-          CloudFileId.name -> CloudFileId
-          GroupId.name -> GroupId
-          Id.name -> Id
-          LastScheduleRun.name -> LastScheduleRun
-          LastSyncedTimestamp.name -> LastSyncedTimestamp
-          LastUploaded.name -> LastUploaded
-          ResetClock.name -> ResetClock
-          UserId.name -> UserId
-          EncryptKeyId.name -> EncryptKeyId
-          else -> StringKey(key)
-        }
+      when (key) {
+        BudgetName.name -> BudgetName
+        BudgetCollapsed.name -> BudgetCollapsed
+        CloudFileId.name -> CloudFileId
+        GroupId.name -> GroupId
+        Id.name -> Id
+        LastScheduleRun.name -> LastScheduleRun
+        LastSyncedTimestamp.name -> LastSyncedTimestamp
+        LastUploaded.name -> LastUploaded
+        ResetClock.name -> ResetClock
+        UserId.name -> UserId
+        EncryptKeyId.name -> EncryptKeyId
+        else -> StringKey(key)
+      }
 
     inline fun <reified E : Enum<E>> enumKey(name: String): Key<E> =
-        TypedKey(
-            name = name,
-            fromString = { E::class.parse(it) },
-        )
+      TypedKey(name = name, fromString = { E::class.parse(it) })
   }
 
   object Serializer : KSerializer<DbMetadata> {
@@ -165,27 +158,27 @@ data class DbMetadata(
     override val descriptor = delegate.descriptor
 
     override fun serialize(encoder: Encoder, value: DbMetadata) =
-        delegate.serialize(
-            encoder = encoder,
-            value =
-                value
-                    .mapNotNull { (k, v) -> if (v == null) null else k to v }
-                    .associate { (k, v) -> k.name to k.encode(v) },
-        )
+      delegate.serialize(
+        encoder = encoder,
+        value =
+          value
+            .mapNotNull { (k, v) -> if (v == null) null else k to v }
+            .associate { (k, v) -> k.name to k.encode(v) },
+      )
 
     override fun deserialize(decoder: Decoder): DbMetadata {
       val jsonMap =
-          delegate.deserialize(decoder).mapNotNull { (k, v) ->
-            val key = Key(k)
-            key to
-                when (v) {
-                  null,
-                  is JsonNull -> return@mapNotNull null
-                  is JsonPrimitive -> (key as PrimitiveKey<*>).decode(v)
-                  is JsonArray -> (key as ListKey).decode(v)
-                  is JsonObject -> throw SerializationException("Can't decode yet: $v")
-                }
-          }
+        delegate.deserialize(decoder).mapNotNull { (k, v) ->
+          val key = Key(k)
+          key to
+            when (v) {
+              null,
+              is JsonNull -> return@mapNotNull null
+              is JsonPrimitive -> (key as PrimitiveKey<*>).decode(v)
+              is JsonArray -> (key as ListKey).decode(v)
+              is JsonObject -> throw SerializationException("Can't decode yet: $v")
+            }
+        }
       return DbMetadata(jsonMap.toMap().toPersistentMap())
     }
   }
@@ -196,9 +189,9 @@ val DbMetadata.cloudFileId: BudgetId
 
 @Suppress("UNCHECKED_CAST")
 private fun DbMetadata.Key<*>.encode(value: Any?): JsonElement? =
-    when (this) {
-      is DbMetadata.BoolKey -> (value as? Boolean)?.let(::JsonPrimitive)
-      is DbMetadata.StringKey -> (value as? String)?.let(::JsonPrimitive)
-      is DbMetadata.TypedKey<*> -> value?.toString()?.let(::JsonPrimitive)
-      is DbMetadata.ListKey -> (value as? List<String>)?.map(::JsonPrimitive)?.let(::JsonArray)
-    }
+  when (this) {
+    is DbMetadata.BoolKey -> (value as? Boolean)?.let(::JsonPrimitive)
+    is DbMetadata.StringKey -> (value as? String)?.let(::JsonPrimitive)
+    is DbMetadata.TypedKey<*> -> value?.toString()?.let(::JsonPrimitive)
+    is DbMetadata.ListKey -> (value as? List<String>)?.map(::JsonPrimitive)?.let(::JsonArray)
+  }

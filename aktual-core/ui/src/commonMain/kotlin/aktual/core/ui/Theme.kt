@@ -19,23 +19,20 @@ val LocalTheme = compositionLocalOf<Theme> { error("CompositionLocal Theme not p
 
 @Composable
 @ReadOnlyComposable
-fun chooseSchemeType(
-    regular: RegularColorSchemeType,
-    dark: DarkColorSchemeType,
-) =
-    when (regular) {
-      RegularColorSchemeType.Light -> ColorSchemeType.Light
-      RegularColorSchemeType.Dark -> dark.toColorSchemeType()
-      RegularColorSchemeType.System ->
-          if (isSystemInDarkTheme()) dark.toColorSchemeType() else ColorSchemeType.Light
-    }
+fun chooseSchemeType(regular: RegularColorSchemeType, dark: DarkColorSchemeType) =
+  when (regular) {
+    RegularColorSchemeType.Light -> ColorSchemeType.Light
+    RegularColorSchemeType.Dark -> dark.toColorSchemeType()
+    RegularColorSchemeType.System ->
+      if (isSystemInDarkTheme()) dark.toColorSchemeType() else ColorSchemeType.Light
+  }
 
 @Stable
 fun DarkColorSchemeType.toColorSchemeType(): ColorSchemeType =
-    when (this) {
-      DarkColorSchemeType.Dark -> ColorSchemeType.Dark
-      DarkColorSchemeType.Midnight -> ColorSchemeType.Midnight
-    }
+  when (this) {
+    DarkColorSchemeType.Dark -> ColorSchemeType.Dark
+    DarkColorSchemeType.Midnight -> ColorSchemeType.Midnight
+  }
 
 @Immutable
 sealed interface Theme {

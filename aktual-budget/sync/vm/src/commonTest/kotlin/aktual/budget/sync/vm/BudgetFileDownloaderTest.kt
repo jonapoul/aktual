@@ -56,11 +56,11 @@ class BudgetFileDownloaderTest {
     mockEngine = emptyMockEngine()
 
     val syncDownloadApi =
-        SyncDownloadApi(
-            serverUrl = SERVER_URL,
-            client = testHttpClient(mockEngine, AktualJson),
-            fileSystem = fileSystem,
-        )
+      SyncDownloadApi(
+        serverUrl = SERVER_URL,
+        client = testHttpClient(mockEngine, AktualJson),
+        fileSystem = fileSystem,
+      )
 
     apisStateHolder = AktualApisStateHolder()
     apisStateHolder.update {
@@ -68,11 +68,11 @@ class BudgetFileDownloaderTest {
     }
 
     budgetFileDownloader =
-        BudgetFileDownloader(
-            contexts = TestCoroutineContexts(unconfinedDispatcher),
-            budgetFiles = budgetFiles,
-            apisStateHolder = apisStateHolder,
-        )
+      BudgetFileDownloader(
+        contexts = TestCoroutineContexts(unconfinedDispatcher),
+        budgetFiles = budgetFiles,
+        apisStateHolder = apisStateHolder,
+      )
   }
 
   @AfterTest
@@ -145,7 +145,7 @@ class BudgetFileDownloaderTest {
 
       // and only the temp dir was created
       assertThat(temporaryFolder.list().map(Path::toFile))
-          .isEqualTo(listOf(budgetFiles.tmp().toFile()))
+        .isEqualTo(listOf(budgetFiles.tmp().toFile()))
 
       awaitComplete()
     }
@@ -172,7 +172,7 @@ class BudgetFileDownloaderTest {
 
     // and only the temp dir was created
     assertThat(temporaryFolder.list().map(Path::toFile))
-        .isEqualTo(listOf(budgetFiles.tmp().toFile()))
+      .isEqualTo(listOf(budgetFiles.tmp().toFile()))
   }
 
   private companion object {

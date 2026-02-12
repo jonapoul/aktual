@@ -8,7 +8,8 @@ import java.io.InputStream
 @Inject
 @ContributesBinding(AppScope::class)
 class JvmAssets : Assets {
-  // Without the /, it looks relative to the class's package. With /, it looks at the classpath root
+  // Without the /, it looks relative to the class's package. With /, it looks at the classpath
+  // root
   override fun getStream(name: String): InputStream =
-      javaClass.getResourceAsStream("/$name") ?: error("Failed to load '$name' from resources")
+    javaClass.getResourceAsStream("/$name") ?: error("Failed to load '$name' from resources")
 }

@@ -14,11 +14,7 @@ import androidx.core.view.WindowCompat
  */
 @Suppress("DEPRECATION")
 @Composable
-actual fun SetStatusBarColors(
-    theme: Theme,
-    statusBarColor: Color,
-    navigationBarColor: Color,
-) {
+actual fun SetStatusBarColors(theme: Theme, statusBarColor: Color, navigationBarColor: Color) {
   val view = LocalView.current
 
   if (!view.isInEditMode) {

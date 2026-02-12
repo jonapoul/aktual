@@ -10,8 +10,7 @@ import kotlinx.serialization.Serializable
 enum class LoginMethod(override val value: String) : SerializableByString {
   Password("password"),
   Header("header"),
-  OpenId("openid"),
-  ;
+  OpenId("openid");
 
   internal object Serializer : KSerializer<LoginMethod> by enumStringSerializer()
 }

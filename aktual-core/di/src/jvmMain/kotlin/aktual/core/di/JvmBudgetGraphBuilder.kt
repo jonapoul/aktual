@@ -12,8 +12,8 @@ import dev.zacsweers.metro.Inject
 @Inject
 @ContributesBinding(AppScope::class)
 class JvmBudgetGraphBuilder(
-    private val files: BudgetFiles,
-    private val factory: BudgetGraph.Factory,
+  private val files: BudgetFiles,
+  private val factory: BudgetGraph.Factory,
 ) : BudgetGraph.Builder {
   override fun invoke(metadata: DbMetadata): BudgetGraph {
     val dbFile = files.database(metadata.cloudFileId, mkdirs = true).toFile()

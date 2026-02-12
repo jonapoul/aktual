@@ -7,8 +7,4 @@ import androidx.compose.ui.graphics.Color
 // No-op on desktop
 @Stable
 @Composable
-actual fun SetStatusBarColors(
-    theme: Theme,
-    statusBarColor: Color,
-    navigationBarColor: Color,
-) = Unit
+actual fun SetStatusBarColors(theme: Theme, statusBarColor: Color, navigationBarColor: Color) = Unit

@@ -7,12 +7,12 @@ import kotlin.time.Instant
 
 @Suppress("UNNECESSARY_SAFE_CALL")
 fun buildConfig(isDebug: Boolean) =
-    BuildConfig(
-        isDebug = isDebug,
-        versionCode = VERSION_CODE,
-        versionName = VERSION_NAME,
-        gitHash = GIT_HASH,
-        buildTime = Instant.fromEpochMilliseconds(BUILD_TIME_MS),
-        defaultPassword = DEFAULT_PASSWORD?.let(::Password) ?: Password.Empty,
-        defaultServerUrl = DEFAULT_URL?.let(::ServerUrl),
-    )
+  BuildConfig(
+    isDebug = isDebug,
+    versionCode = VERSION_CODE,
+    versionName = VERSION_NAME,
+    gitHash = GIT_HASH,
+    buildTime = Instant.fromEpochMilliseconds(BUILD_TIME_MS),
+    defaultPassword = DEFAULT_PASSWORD?.let(::Password) ?: Password.Empty,
+    defaultServerUrl = DEFAULT_URL?.let(::ServerUrl),
+  )

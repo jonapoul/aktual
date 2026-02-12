@@ -42,11 +42,11 @@ class BudgetListFetcherTest {
     apisStateHolder = AktualApisStateHolder()
     keyPreferences = mockk { every { contains(any()) } returns false }
     budgetListFetcher =
-        BudgetListFetcher(
-            contexts = TestCoroutineContexts(standardDispatcher),
-            apisStateHolder = apisStateHolder,
-            keyPreferences = keyPreferences,
-        )
+      BudgetListFetcher(
+        contexts = TestCoroutineContexts(standardDispatcher),
+        apisStateHolder = apisStateHolder,
+        keyPreferences = keyPreferences,
+      )
   }
 
   @AfterTest
@@ -75,21 +75,21 @@ class BudgetListFetcherTest {
 
     // then
     assertThat(result)
-        .isEqualTo(
-            FetchBudgetsResult.Success(
-                budgets =
-                    listOf(
-                        Budget(
-                            name = "Main Budget",
-                            state = BudgetState.Unknown,
-                            encryptKeyId = "7fe20d96-ab62-43bc-b69c-53f55a26cbbf",
-                            groupId = "16f9c400-cdf5-43ae-983f-4dbcccb10ccf",
-                            cloudFileId = BudgetId("525fecc4-5080-4d01-b2ea-6032e5ee25c1"),
-                            hasKey = false,
-                        ),
-                    ),
-            ),
+      .isEqualTo(
+        FetchBudgetsResult.Success(
+          budgets =
+            listOf(
+              Budget(
+                name = "Main Budget",
+                state = BudgetState.Unknown,
+                encryptKeyId = "7fe20d96-ab62-43bc-b69c-53f55a26cbbf",
+                groupId = "16f9c400-cdf5-43ae-983f-4dbcccb10ccf",
+                cloudFileId = BudgetId("525fecc4-5080-4d01-b2ea-6032e5ee25c1"),
+                hasKey = false,
+              )
+            )
         )
+      )
   }
 
   @Test
@@ -98,13 +98,13 @@ class BudgetListFetcherTest {
 
     // given
     val body =
-        """
-        {
-          "status": "ok",
-          "data": [ { "invalid_format": true } ]
-        }
-        """
-            .trimIndent()
+      """
+      {
+        "status": "ok",
+        "data": [ { "invalid_format": true } ]
+      }
+      """
+        .trimIndent()
     mockEngine += { respondJson(body) }
     apisStateHolder.update { buildApis() }
 
@@ -121,7 +121,7 @@ class BudgetListFetcherTest {
 
     // given
     val syncApi =
-        mockk<SyncApi> { coEvery { fetchUserFiles(TOKEN) } throws NoRouteToHostException() }
+      mockk<SyncApi> { coEvery { fetchUserFiles(TOKEN) } throws NoRouteToHostException() }
     mockEngine += { respondJson(VALID_RESPONSE) }
     apisStateHolder.update { buildApis(syncApi) }
 
@@ -138,13 +138,13 @@ class BudgetListFetcherTest {
 
     // given
     val responseJson =
-        """
-        {
-          "status": "error",
-          "reason": "something broke"
-        }
-        """
-            .trimIndent()
+      """
+      {
+        "status": "error",
+        "reason": "something broke"
+      }
+      """
+        .trimIndent()
     mockEngine += { respondJson(responseJson, HttpStatusCode.Forbidden) }
     apisStateHolder.update { buildApis() }
 
@@ -152,14 +152,11 @@ class BudgetListFetcherTest {
     val result = budgetListFetcher.fetchBudgets(TOKEN)
 
     // then
-    assertThat(result)
-        .isEqualTo(
-            FetchBudgetsResult.FailureResponse(reason = "something broke"),
-        )
+    assertThat(result).isEqualTo(FetchBudgetsResult.FailureResponse(reason = "something broke"))
   }
 
   private fun buildApis(
-      syncApi: SyncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, AktualJson)),
+    syncApi: SyncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, AktualJson))
   ) = mockk<AktualApis> { every { sync } returns syncApi }
 
   private companion object {
@@ -167,22 +164,22 @@ class BudgetListFetcherTest {
     val SERVER_URL = ServerUrl(Protocol.Https, "test.unused.com")
 
     val VALID_RESPONSE =
-        """
-        {
-          "status": "ok",
-          "data": [
-            {
-              "deleted": 0,
-              "fileId": "525fecc4-5080-4d01-b2ea-6032e5ee25c1",
-              "groupId": "16f9c400-cdf5-43ae-983f-4dbcccb10ccf",
-              "name": "Main Budget",
-              "encryptKeyId": "7fe20d96-ab62-43bc-b69c-53f55a26cbbf",
-              "owner": null,
-              "usersWithAccess": []
-            }
-          ]
-        }
-        """
-            .trimIndent()
+      """
+      {
+        "status": "ok",
+        "data": [
+          {
+            "deleted": 0,
+            "fileId": "525fecc4-5080-4d01-b2ea-6032e5ee25c1",
+            "groupId": "16f9c400-cdf5-43ae-983f-4dbcccb10ccf",
+            "name": "Main Budget",
+            "encryptKeyId": "7fe20d96-ab62-43bc-b69c-53f55a26cbbf",
+            "owner": null,
+            "usersWithAccess": []
+          }
+        ]
+      }
+      """
+        .trimIndent()
   }
 }

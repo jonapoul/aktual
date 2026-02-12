@@ -26,22 +26,19 @@ import okio.buffer
 
 /** Extracted out of [SyncApi] to minimise hassle in KSP-generating download progress logic. */
 class SyncDownloadApi(
-    private val serverUrl: ServerUrl,
-    private val client: HttpClient,
-    private val fileSystem: FileSystem,
+  private val serverUrl: ServerUrl,
+  private val client: HttpClient,
+  private val fileSystem: FileSystem,
 ) : AutoCloseable by client {
   private val urlProtocol =
-      when (serverUrl.protocol) {
-        Protocol.Http -> URLProtocol.HTTP
-        Protocol.Https -> URLProtocol.HTTPS
-      }
+    when (serverUrl.protocol) {
+      Protocol.Http -> URLProtocol.HTTP
+      Protocol.Https -> URLProtocol.HTTPS
+    }
 
-  fun downloadUserFile(
-      token: Token,
-      budgetId: BudgetId,
-      path: Path,
-  ): Flow<SyncDownloadState> = channelFlow {
-    val statement =
+  fun downloadUserFile(token: Token, budgetId: BudgetId, path: Path): Flow<SyncDownloadState> =
+    channelFlow {
+      val statement =
         client.prepareGet {
           url {
             protocol = urlProtocol
@@ -52,23 +49,23 @@ class SyncDownloadApi(
           header(AktualHeaders.FILE_ID, budgetId)
         }
 
-    statement.execute { response ->
-      val channel = response.body<ByteReadChannel>()
-      val contentLength =
+      statement.execute { response ->
+        val channel = response.body<ByteReadChannel>()
+        val contentLength =
           response.contentLength() ?: error("No content length in response? $response")
-      val sink = fileSystem.sink(path)
-      var count = 0L
-      sink.use { s ->
-        while (!channel.exhausted()) {
-          val chunk = channel.readRemaining(CHANNEL_BUFFER_SIZE)
-          count += chunk.remaining
-          chunk.transferTo(s)
-          send(SyncDownloadState.InProgress(count, contentLength))
+        val sink = fileSystem.sink(path)
+        var count = 0L
+        sink.use { s ->
+          while (!channel.exhausted()) {
+            val chunk = channel.readRemaining(CHANNEL_BUFFER_SIZE)
+            count += chunk.remaining
+            chunk.transferTo(s)
+            send(SyncDownloadState.InProgress(count, contentLength))
+          }
         }
+        send(SyncDownloadState.Done(path, contentLength))
       }
-      send(SyncDownloadState.Done(path, contentLength))
     }
-  }
 
   /**
    * Bridging between [kotlinx.io.Source] and [okio.Sink], since they don't interoperate out the box
@@ -91,13 +88,7 @@ class SyncDownloadApi(
 }
 
 sealed interface SyncDownloadState {
-  data class InProgress(
-      val bytesSentTotal: Long,
-      val contentLength: Long,
-  ) : SyncDownloadState
+  data class InProgress(val bytesSentTotal: Long, val contentLength: Long) : SyncDownloadState
 
-  data class Done(
-      val path: Path,
-      val contentLength: Long,
-  ) : SyncDownloadState
+  data class Done(val path: Path, val contentLength: Long) : SyncDownloadState
 }

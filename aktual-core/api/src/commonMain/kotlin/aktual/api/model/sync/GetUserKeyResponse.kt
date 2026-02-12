@@ -19,27 +19,25 @@ import kotlinx.serialization.json.jsonPrimitive
 
 sealed interface GetUserKeyResponse {
   @Serializable(Serializer::class)
-  data class Success(
-      @SerialName("data") val data: Data,
-  ) : GetUserKeyResponse
+  data class Success(@SerialName("data") val data: Data) : GetUserKeyResponse
 
   @Serializable
   data class Failure(
-      @SerialName("reason") val reason: FailureReason,
-      @SerialName("details") val details: String? = null,
+    @SerialName("reason") val reason: FailureReason,
+    @SerialName("details") val details: String? = null,
   ) : GetUserKeyResponse
 
   @Serializable
   data class Data(
-      @SerialName("id") val id: KeyId,
-      @SerialName("salt") val salt: SerializableByteString,
-      @SerialName("test") val test: Test,
+    @SerialName("id") val id: KeyId,
+    @SerialName("salt") val salt: SerializableByteString,
+    @SerialName("test") val test: Test,
   )
 
   @Serializable
   data class Test(
-      @SerialName("value") val value: SerializableByteString,
-      @SerialName("meta") val meta: EncryptMeta,
+    @SerialName("value") val value: SerializableByteString,
+    @SerialName("meta") val meta: EncryptMeta,
   )
 
   object Serializer : KSerializer<Success> {
@@ -52,20 +50,20 @@ sealed interface GetUserKeyResponse {
       val root = jsonDecoder.decodeJsonElement().jsonObject
       val data = root["data"]?.jsonObject ?: throw SerializationException("Null data in $root")
       val test =
-          data.string("test").let { jsonDecoder.json.decodeFromString(Test.serializer(), it) }
+        data.string("test").let { jsonDecoder.json.decodeFromString(Test.serializer(), it) }
       return Success(
-          data =
-              Data(
-                  id = KeyId(data.string("id")),
-                  salt = data.string("salt").base64(),
-                  test = test.requireNotNull(),
-              ),
+        data =
+          Data(
+            id = KeyId(data.string("id")),
+            salt = data.string("salt").base64(),
+            test = test.requireNotNull(),
+          )
       )
     }
 
     private fun JsonObject.string(key: String): String =
-        get(key)?.jsonPrimitive?.contentOrNull
-            ?: throw SerializationException("Null value of $key in $this")
+      get(key)?.jsonPrimitive?.contentOrNull
+        ?: throw SerializationException("Null value of $key in $this")
 
     private fun <T> T?.requireNotNull(): T = this ?: throw SerializationException("Null element")
   }

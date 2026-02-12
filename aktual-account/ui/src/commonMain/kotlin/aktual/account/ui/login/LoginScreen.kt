@@ -57,10 +57,7 @@ import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
-fun LoginScreen(
-    nav: LoginNavigator,
-    viewModel: LoginViewModel = metroViewModel(),
-) {
+fun LoginScreen(nav: LoginNavigator, viewModel: LoginViewModel = metroViewModel()) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
   val url by viewModel.serverUrl.collectAsStateWithLifecycle()
@@ -72,68 +69,63 @@ fun LoginScreen(
   DisposableEffect(Unit) { onDispose { viewModel.clearState() } }
 
   LoginScaffold(
-      versions = versions,
-      enteredPassword = enteredPassword,
-      url = url,
-      isLoading = isLoading,
-      loginFailure = loginFailure,
-      onAction = { action ->
-        when (action) {
-          LoginAction.ChangeServer -> nav.toUrl()
-          LoginAction.NavBack -> nav.back()
-          LoginAction.SignIn -> viewModel.onClickSignIn()
-          is LoginAction.EnterPassword -> viewModel.onEnterPassword(action.password)
-        }
-      },
+    versions = versions,
+    enteredPassword = enteredPassword,
+    url = url,
+    isLoading = isLoading,
+    loginFailure = loginFailure,
+    onAction = { action ->
+      when (action) {
+        LoginAction.ChangeServer -> nav.toUrl()
+        LoginAction.NavBack -> nav.back()
+        LoginAction.SignIn -> viewModel.onClickSignIn()
+        is LoginAction.EnterPassword -> viewModel.onEnterPassword(action.password)
+      }
+    },
   )
 }
 
 @Composable
 internal fun LoginScaffold(
-    versions: AktualVersions,
-    enteredPassword: Password,
-    url: ServerUrl?,
-    isLoading: Boolean,
-    loginFailure: LoginResult.Failure?,
-    onAction: (LoginAction) -> Unit,
-    theme: Theme = LocalTheme.current,
+  versions: AktualVersions,
+  enteredPassword: Password,
+  url: ServerUrl?,
+  isLoading: Boolean,
+  loginFailure: LoginResult.Failure?,
+  onAction: (LoginAction) -> Unit,
+  theme: Theme = LocalTheme.current,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   Scaffold(
-      modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-      topBar = {
-        TopAppBar(
-            colors = theme.transparentTopAppBarColors(),
-            navigationIcon = {
-              IconButton(onClick = { onAction(LoginAction.NavBack) }) {
-                Icon(
-                    imageVector = MaterialIcons.ArrowBack,
-                    contentDescription = Strings.navBack,
-                )
-              }
-            },
-            title = {},
-            scrollBehavior = scrollBehavior,
-        )
-      },
+    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+    topBar = {
+      TopAppBar(
+        colors = theme.transparentTopAppBarColors(),
+        navigationIcon = {
+          IconButton(onClick = { onAction(LoginAction.NavBack) }) {
+            Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
+          }
+        },
+        title = {},
+        scrollBehavior = scrollBehavior,
+      )
+    },
   ) { innerPadding ->
     Box {
       val hazeState = remember { HazeState() }
 
-      WavyBackground(
-          modifier = Modifier.hazeSource(hazeState),
-      )
+      WavyBackground(modifier = Modifier.hazeSource(hazeState))
 
       WithHazeState(hazeState) {
         Content(
-            modifier = Modifier.padding(innerPadding),
-            versions = versions,
-            enteredPassword = enteredPassword,
-            url = url,
-            isLoading = isLoading,
-            loginFailure = loginFailure,
-            onAction = onAction,
-            theme = theme,
+          modifier = Modifier.padding(innerPadding),
+          versions = versions,
+          enteredPassword = enteredPassword,
+          url = url,
+          isLoading = isLoading,
+          loginFailure = loginFailure,
+          onAction = onAction,
+          theme = theme,
         )
       }
     }
@@ -143,72 +135,62 @@ internal fun LoginScaffold(
 @Stable
 @Composable
 private fun Content(
-    versions: AktualVersions,
-    enteredPassword: Password,
-    url: ServerUrl?,
-    isLoading: Boolean,
-    loginFailure: LoginResult.Failure?,
-    onAction: (LoginAction) -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  versions: AktualVersions,
+  enteredPassword: Password,
+  url: ServerUrl?,
+  isLoading: Boolean,
+  loginFailure: LoginResult.Failure?,
+  onAction: (LoginAction) -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   Column(
-      modifier = modifier.fillMaxSize().padding(16.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = modifier.fillMaxSize().padding(16.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Column(
-        modifier = Modifier.wrapContentWidth().weight(1f),
-        verticalArrangement = Arrangement.Top,
-        horizontalAlignment = Alignment.Start,
+      modifier = Modifier.wrapContentWidth().weight(1f),
+      verticalArrangement = Arrangement.Top,
+      horizontalAlignment = Alignment.Start,
     ) {
-      Text(
-          text = Strings.loginTitle,
-          style = AktualTypography.headlineLarge,
-      )
+      Text(text = Strings.loginTitle, style = AktualTypography.headlineLarge)
 
       VerticalSpacer(15.dp)
 
       Text(
-          text = Strings.loginMessage,
-          color = theme.tableRowHeaderText,
-          style = AktualTypography.bodyLarge,
+        text = Strings.loginMessage,
+        color = theme.tableRowHeaderText,
+        style = AktualTypography.bodyLarge,
       )
 
       VerticalSpacer(20.dp)
 
       PasswordLogin(
-          modifier = Modifier.fillMaxWidth(),
-          isLoading = isLoading,
-          enteredPassword = enteredPassword,
-          theme = theme,
-          onAction = onAction,
+        modifier = Modifier.fillMaxWidth(),
+        isLoading = isLoading,
+        enteredPassword = enteredPassword,
+        theme = theme,
+        onAction = onAction,
       )
 
       if (loginFailure != null) {
         VerticalSpacer(20.dp)
 
-        LoginFailureText(
-            modifier = Modifier.fillMaxWidth(),
-            result = loginFailure,
-            theme = theme,
-        )
+        LoginFailureText(modifier = Modifier.fillMaxWidth(), result = loginFailure, theme = theme)
       }
     }
 
     VerticalSpacer(20.dp)
 
     UsingServerText(
-        url = url,
-        theme = theme,
-        onClickChange = { onAction(LoginAction.ChangeServer) },
+      url = url,
+      theme = theme,
+      onClickChange = { onAction(LoginAction.ChangeServer) },
     )
 
     VerticalSpacer(4.dp)
 
-    VersionsText(
-        modifier = Modifier.align(Alignment.End),
-        versions = versions,
-    )
+    VersionsText(modifier = Modifier.align(Alignment.End), versions = versions)
 
     BottomStatusBarSpacing()
     BottomNavBarSpacing()
@@ -219,33 +201,33 @@ private fun Content(
 @PortraitPreview
 @LandscapePreview
 private fun PreviewLoginScaffold(
-    @PreviewParameter(LoginScaffoldProvider::class) params: ThemedParams<LoginScaffoldParams>,
+  @PreviewParameter(LoginScaffoldProvider::class) params: ThemedParams<LoginScaffoldParams>
 ) =
-    PreviewWithColorScheme(params.type) {
-      LoginScaffold(
-          versions = AktualVersions.Dummy,
-          enteredPassword = Empty,
-          url = ServerUrl.Demo,
-          isLoading = false,
-          loginFailure = null,
-          onAction = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    LoginScaffold(
+      versions = AktualVersions.Dummy,
+      enteredPassword = Empty,
+      url = ServerUrl.Demo,
+      isLoading = false,
+      loginFailure = null,
+      onAction = {},
+    )
+  }
 
 private data class LoginScaffoldParams(
-    val versions: AktualVersions = AktualVersions.Dummy,
-    val password: Password = Dummy,
-    val url: ServerUrl = ServerUrl.Demo,
-    val isLoading: Boolean = false,
-    val loginFailure: LoginResult.Failure? = null,
+  val versions: AktualVersions = AktualVersions.Dummy,
+  val password: Password = Dummy,
+  val url: ServerUrl = ServerUrl.Demo,
+  val isLoading: Boolean = false,
+  val loginFailure: LoginResult.Failure? = null,
 )
 
 private class LoginScaffoldProvider :
-    ThemedParameterProvider<LoginScaffoldParams>(
-        LoginScaffoldParams(password = Empty, isLoading = false),
-        LoginScaffoldParams(
-            password = Dummy,
-            isLoading = true,
-            loginFailure = LoginResult.InvalidPassword,
-        ),
-    )
+  ThemedParameterProvider<LoginScaffoldParams>(
+    LoginScaffoldParams(password = Empty, isLoading = false),
+    LoginScaffoldParams(
+      password = Dummy,
+      isLoading = true,
+      loginFailure = LoginResult.InvalidPassword,
+    ),
+  )

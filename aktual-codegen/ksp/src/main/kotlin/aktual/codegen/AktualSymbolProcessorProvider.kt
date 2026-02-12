@@ -6,5 +6,5 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 
 class AktualSymbolProcessorProvider : SymbolProcessorProvider {
   override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-      AktualSymbolProcessor(environment.codeGenerator, environment.logger)
+    AktualSymbolProcessor(environment.codeGenerator, environment.logger)
 }

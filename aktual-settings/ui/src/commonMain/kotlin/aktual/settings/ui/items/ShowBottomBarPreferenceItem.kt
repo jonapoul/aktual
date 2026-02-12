@@ -28,45 +28,42 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun ShowBottomBarPreferenceItem(
-    value: Boolean,
-    onChange: (Boolean) -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  value: Boolean,
+  onChange: (Boolean) -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   BasicPreferenceItem(
-      modifier = modifier.fillMaxWidth(),
-      title = Strings.settingsShowBottomBar,
-      subtitle = null,
-      icon = icon(value),
-      clickability = Clickable { onChange(!value) },
-      rightContent = {
-        val interactionSource = remember { MutableInteractionSource() }
-        val isPressed by interactionSource.collectIsPressedAsState()
-        Switch(
-            modifier = Modifier.padding(10.dp),
-            checked = value,
-            onCheckedChange = null,
-            colors = theme.switch(isPressed),
-        )
-      },
+    modifier = modifier.fillMaxWidth(),
+    title = Strings.settingsShowBottomBar,
+    subtitle = null,
+    icon = icon(value),
+    clickability = Clickable { onChange(!value) },
+    rightContent = {
+      val interactionSource = remember { MutableInteractionSource() }
+      val isPressed by interactionSource.collectIsPressedAsState()
+      Switch(
+        modifier = Modifier.padding(10.dp),
+        checked = value,
+        onCheckedChange = null,
+        colors = theme.switch(isPressed),
+      )
+    },
   )
 }
 
 @Stable
 private fun icon(isVisible: Boolean) =
-    when (isVisible) {
-      true -> MaterialIcons.Visibility
-      false -> MaterialIcons.VisibilityOff
-    }
+  when (isVisible) {
+    true -> MaterialIcons.Visibility
+    false -> MaterialIcons.VisibilityOff
+  }
 
 @Preview
 @Composable
 private fun PreviewShowBottomBarPreferenceItem(
-    @PreviewParameter(ThemedBooleanParameters::class) params: ThemedParams<Boolean>,
+  @PreviewParameter(ThemedBooleanParameters::class) params: ThemedParams<Boolean>
 ) =
-    PreviewWithColorScheme(params.type) {
-      ShowBottomBarPreferenceItem(
-          value = params.data,
-          onChange = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    ShowBottomBarPreferenceItem(value = params.data, onChange = {})
+  }

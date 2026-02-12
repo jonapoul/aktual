@@ -10,4 +10,4 @@ import dev.zacsweers.metro.binding
 @Inject
 @ContributesBinding(AppScope::class, binding<EncryptedPreferences>())
 class JvmEncryptedPreferences(private val prefs: JvmPreferences) :
-    EncryptedPreferences, Preferences by prefs
+  EncryptedPreferences, Preferences by prefs

@@ -61,10 +61,10 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun SyncBudgetScreen(
-    nav: SyncBudgetNavigator,
-    budgetId: BudgetId,
-    token: Token,
-    viewModel: SyncBudgetViewModel = assistedViewModel(token, budgetId),
+  nav: SyncBudgetNavigator,
+  budgetId: BudgetId,
+  token: Token,
+  viewModel: SyncBudgetViewModel = assistedViewModel(token, budgetId),
 ) {
   val stepStates by viewModel.stepStates.collectAsStateWithLifecycle()
   val passwordState by viewModel.passwordState.collectAsStateWithLifecycle()
@@ -76,61 +76,49 @@ fun SyncBudgetScreen(
   }
 
   SyncBudgetScaffold(
-      stepStates = stepStates,
-      passwordState = passwordState,
-      onAction = { action ->
-        when (action) {
-          SyncBudgetAction.Continue -> nav.toBudget(token, budgetId)
-          SyncBudgetAction.Retry -> viewModel.start()
-          SyncBudgetAction.ConfirmKeyPassword -> viewModel.confirmKeyPassword()
-          is SyncBudgetAction.EnterKeyPassword -> viewModel.enterKeyPassword(action.input)
-          SyncBudgetAction.DismissPasswordDialog -> viewModel.dismissKeyPasswordDialog()
-          SyncBudgetAction.LearnMore -> viewModel.learnMore()
-        }
-      },
+    stepStates = stepStates,
+    passwordState = passwordState,
+    onAction = { action ->
+      when (action) {
+        SyncBudgetAction.Continue -> nav.toBudget(token, budgetId)
+        SyncBudgetAction.Retry -> viewModel.start()
+        SyncBudgetAction.ConfirmKeyPassword -> viewModel.confirmKeyPassword()
+        is SyncBudgetAction.EnterKeyPassword -> viewModel.enterKeyPassword(action.input)
+        SyncBudgetAction.DismissPasswordDialog -> viewModel.dismissKeyPasswordDialog()
+        SyncBudgetAction.LearnMore -> viewModel.learnMore()
+      }
+    },
   )
 }
 
 @Composable
-private fun assistedViewModel(
-    token: Token,
-    budgetId: BudgetId,
-) =
-    assistedMetroViewModel<SyncBudgetViewModel, SyncBudgetViewModel.Factory> {
-      create(token, budgetId)
-    }
+private fun assistedViewModel(token: Token, budgetId: BudgetId) =
+  assistedMetroViewModel<SyncBudgetViewModel, SyncBudgetViewModel.Factory> {
+    create(token, budgetId)
+  }
 
 @Composable
 internal fun SyncBudgetScaffold(
-    stepStates: ImmutableMap<SyncStep, SyncStepState>,
-    passwordState: KeyPasswordState,
-    onAction: (SyncBudgetAction) -> Unit,
+  stepStates: ImmutableMap<SyncStep, SyncStepState>,
+  passwordState: KeyPasswordState,
+  onAction: (SyncBudgetAction) -> Unit,
 ) {
   val theme = LocalTheme.current
 
   if (passwordState is KeyPasswordState.Active) {
-    EnterKeyPasswordDialog(
-        input = passwordState.input,
-        onAction = onAction,
-    )
+    EnterKeyPasswordDialog(input = passwordState.input, onAction = onAction)
   }
 
-  Scaffold(
-      topBar = {
-        TopAppBar(
-            colors = theme.transparentTopAppBarColors(),
-            title = {},
-        )
-      },
-  ) { innerPadding ->
+  Scaffold(topBar = { TopAppBar(colors = theme.transparentTopAppBarColors(), title = {}) }) {
+    innerPadding ->
     Box {
       WavyBackground()
 
       ListBudgetsContent(
-          modifier = Modifier.padding(innerPadding),
-          stepStates = stepStates,
-          onAction = onAction,
-          theme = theme,
+        modifier = Modifier.padding(innerPadding),
+        stepStates = stepStates,
+        onAction = onAction,
+        theme = theme,
       )
     }
   }
@@ -139,107 +127,80 @@ internal fun SyncBudgetScaffold(
 @Stable
 @Composable
 private fun ListBudgetsContent(
-    stepStates: ImmutableMap<SyncStep, SyncStepState>,
-    onAction: (SyncBudgetAction) -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  stepStates: ImmutableMap<SyncStep, SyncStepState>,
+  onAction: (SyncBudgetAction) -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   val stateList = remember(stepStates) { stepStates.toList().toImmutableList() }
   Column(
-      modifier = modifier.fillMaxSize().padding(30.dp),
-      verticalArrangement = Arrangement.Top,
-      horizontalAlignment = Alignment.CenterHorizontally,
+    modifier = modifier.fillMaxSize().padding(30.dp),
+    verticalArrangement = Arrangement.Top,
+    horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    LazyColumn(
-        modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth(),
-    ) {
-      items(stateList) { (step, state) ->
-        StepStateRow(
-            step = step,
-            state = state,
-            theme = theme,
-        )
-      }
+    LazyColumn(modifier = Modifier.padding(horizontal = 20.dp).fillMaxWidth()) {
+      items(stateList) { (step, state) -> StepStateRow(step = step, state = state, theme = theme) }
     }
 
     VerticalSpacer(1f)
 
     PrimaryTextButton(
-        modifier = Modifier.padding(ButtonPadding).fillMaxWidth(),
-        text = Strings.syncButtonContinue,
-        onClick = { onAction(SyncBudgetAction.Continue) },
-        contentPadding = ButtonContentPadding,
-        isEnabled = stepStates.allSuccess(),
+      modifier = Modifier.padding(ButtonPadding).fillMaxWidth(),
+      text = Strings.syncButtonContinue,
+      onClick = { onAction(SyncBudgetAction.Continue) },
+      contentPadding = ButtonContentPadding,
+      isEnabled = stepStates.allSuccess(),
     )
 
     PrimaryTextButton(
-        modifier = Modifier.padding(ButtonPadding).fillMaxWidth(),
-        text = Strings.syncButtonRetry,
-        onClick = { onAction(SyncBudgetAction.Retry) },
-        contentPadding = ButtonContentPadding,
-        isEnabled = stepStates.anyFailure(),
+      modifier = Modifier.padding(ButtonPadding).fillMaxWidth(),
+      text = Strings.syncButtonRetry,
+      onClick = { onAction(SyncBudgetAction.Retry) },
+      contentPadding = ButtonContentPadding,
+      isEnabled = stepStates.anyFailure(),
     )
   }
 }
 
 @Stable
 private fun ImmutableMap<*, SyncStepState>.allSuccess() =
-    values.all { it is SyncStepState.Succeeded }
+  values.all { it is SyncStepState.Succeeded }
 
 @Stable
 private fun ImmutableMap<*, SyncStepState>.anyFailure() = values.any { it is SyncStepState.Failed }
 
 @Composable
 private fun StepStateRow(
-    step: SyncStep,
-    state: SyncStepState,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  step: SyncStep,
+  state: SyncStepState,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) =
-    Row(
-        modifier = modifier.padding(vertical = 10.dp),
-        verticalAlignment = Alignment.Top,
+  Row(modifier = modifier.padding(vertical = 10.dp), verticalAlignment = Alignment.Top) {
+    val stateText = state.string()
+    val stateColor = state.color(theme)
+
+    Column(
+      modifier = Modifier.padding(vertical = 10.dp).weight(1f),
+      verticalArrangement = Arrangement.Center,
     ) {
-      val stateText = state.string()
-      val stateColor = state.color(theme)
+      Text(modifier = Modifier.fillMaxWidth(), text = step.string(), fontWeight = FontWeight.Bold)
 
-      Column(
-          modifier = Modifier.padding(vertical = 10.dp).weight(1f),
-          verticalArrangement = Arrangement.Center,
-      ) {
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = step.string(),
-            fontWeight = FontWeight.Bold,
-        )
-
-        Text(
-            modifier = Modifier.fillMaxWidth(),
-            text = stateText,
-            color = stateColor,
-        )
-      }
-
-      StateLeadingIcon(
-          state = state,
-          text = stateText,
-          color = stateColor,
-          theme = theme,
-      )
+      Text(modifier = Modifier.fillMaxWidth(), text = stateText, color = stateColor)
     }
+
+    StateLeadingIcon(state = state, text = stateText, color = stateColor, theme = theme)
+  }
 
 @Composable
 private fun StateLeadingIcon(
-    state: SyncStepState,
-    text: String,
-    color: Color,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  state: SyncStepState,
+  text: String,
+  color: Color,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
-  Box(
-      modifier = modifier,
-      contentAlignment = Alignment.Center,
-  ) {
+  Box(modifier = modifier, contentAlignment = Alignment.Center) {
     when (state) {
       is SyncStepState.InProgress.Definite -> DeterminateWheel(state.progress, theme)
       SyncStepState.InProgress.Indefinite -> IndeterminateWheel(theme)
@@ -251,157 +212,144 @@ private fun StateLeadingIcon(
 }
 
 @Composable
-private fun DeterminateWheel(
-    percent: Percent,
-    theme: Theme,
-    modifier: Modifier = Modifier,
-) {
-  Box(
-      modifier = modifier.padding(IconPadding),
-      contentAlignment = Alignment.Center,
-  ) {
+private fun DeterminateWheel(percent: Percent, theme: Theme, modifier: Modifier = Modifier) {
+  Box(modifier = modifier.padding(IconPadding), contentAlignment = Alignment.Center) {
     val animatedProgress by
-        animateFloatAsState(
-            targetValue = percent.floatValue / 100f,
-            animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
-        )
+      animateFloatAsState(
+        targetValue = percent.floatValue / 100f,
+        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+      )
 
     CircularProgressIndicator(
-        modifier = Modifier.size(IconSize),
-        color = theme.sliderActiveTrack,
-        trackColor = theme.sliderInactiveTrack,
-        strokeWidth = ProgressWheelStrokeWidth,
-        progress = { animatedProgress },
+      modifier = Modifier.size(IconSize),
+      color = theme.sliderActiveTrack,
+      trackColor = theme.sliderInactiveTrack,
+      strokeWidth = ProgressWheelStrokeWidth,
+      progress = { animatedProgress },
     )
   }
 }
 
 @Composable
-private fun IndeterminateWheel(
-    theme: Theme,
-    modifier: Modifier = Modifier,
-) {
-  Box(
-      modifier = modifier.padding(IconPadding),
-      contentAlignment = Alignment.Center,
-  ) {
+private fun IndeterminateWheel(theme: Theme, modifier: Modifier = Modifier) {
+  Box(modifier = modifier.padding(IconPadding), contentAlignment = Alignment.Center) {
     CircularProgressIndicator(
-        modifier = Modifier.size(IconSize),
-        color = theme.sliderActiveTrack,
-        trackColor = theme.sliderInactiveTrack,
-        strokeWidth = ProgressWheelStrokeWidth,
+      modifier = Modifier.size(IconSize),
+      color = theme.sliderActiveTrack,
+      trackColor = theme.sliderInactiveTrack,
+      strokeWidth = ProgressWheelStrokeWidth,
     )
   }
 }
 
 @Composable
 private fun StateIcon(
-    text: String,
-    color: Color,
-    imageVector: ImageVector,
-    modifier: Modifier = Modifier,
+  text: String,
+  color: Color,
+  imageVector: ImageVector,
+  modifier: Modifier = Modifier,
 ) =
-    Icon(
-        modifier = modifier.padding(IconPadding).size(IconSize),
-        imageVector = imageVector,
-        contentDescription = text,
-        tint = color,
-    )
+  Icon(
+    modifier = modifier.padding(IconPadding).size(IconSize),
+    imageVector = imageVector,
+    contentDescription = text,
+    tint = color,
+  )
 
 @Composable
 private fun SyncStep.string(): String =
-    when (this) {
-      SyncStep.FetchingFileInfo -> Strings.syncStepFetchingInfo
-      SyncStep.DownloadingDatabase -> Strings.syncStepDownloading
-      SyncStep.ValidatingDatabase -> Strings.syncStepValidating
-    }
+  when (this) {
+    SyncStep.FetchingFileInfo -> Strings.syncStepFetchingInfo
+    SyncStep.DownloadingDatabase -> Strings.syncStepDownloading
+    SyncStep.ValidatingDatabase -> Strings.syncStepValidating
+  }
 
 @Composable
 private fun SyncStepState.string(): String =
-    when (this) {
-      is SyncStepState.InProgress.Definite -> Strings.syncStateDefinite(progress.intValue)
-      SyncStepState.InProgress.Indefinite -> Strings.syncStateIndefinite
-      SyncStepState.NotStarted -> Strings.syncStateNotStarted
-      is SyncStepState.Failed -> Strings.syncStateFailed(moreInfo)
-      SyncStepState.Succeeded -> Strings.syncStateSucceeded
-    }
+  when (this) {
+    is SyncStepState.InProgress.Definite -> Strings.syncStateDefinite(progress.intValue)
+    SyncStepState.InProgress.Indefinite -> Strings.syncStateIndefinite
+    SyncStepState.NotStarted -> Strings.syncStateNotStarted
+    is SyncStepState.Failed -> Strings.syncStateFailed(moreInfo)
+    SyncStepState.Succeeded -> Strings.syncStateSucceeded
+  }
 
 @Stable
 private fun SyncStepState.color(theme: Theme): Color =
-    when (this) {
-      is SyncStepState.InProgress -> theme.pageText
-      SyncStepState.NotStarted -> theme.buttonNormalDisabledText
-      is SyncStepState.Failed -> theme.errorText
-      SyncStepState.Succeeded -> theme.successText
-    }
+  when (this) {
+    is SyncStepState.InProgress -> theme.pageText
+    SyncStepState.NotStarted -> theme.buttonNormalDisabledText
+    is SyncStepState.Failed -> theme.errorText
+    SyncStepState.Succeeded -> theme.successText
+  }
 
 @Preview
 @Composable
 private fun PreviewSyncBudgetScaffold(
-    @PreviewParameter(SyncBudgetScaffoldProvider::class)
-    params: ThemedParams<SyncBudgetScaffoldParams>,
+  @PreviewParameter(SyncBudgetScaffoldProvider::class)
+  params: ThemedParams<SyncBudgetScaffoldParams>
 ) =
-    PreviewWithColorScheme(params.type) {
-      SyncBudgetScaffold(
-          onAction = {},
-          passwordState = params.data.passwordState,
-          stepStates = params.data.stepStates,
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    SyncBudgetScaffold(
+      onAction = {},
+      passwordState = params.data.passwordState,
+      stepStates = params.data.stepStates,
+    )
+  }
 
 private data class SyncBudgetScaffoldParams(
-    val passwordState: KeyPasswordState,
-    val stepStates: ImmutableMap<SyncStep, SyncStepState>,
+  val passwordState: KeyPasswordState,
+  val stepStates: ImmutableMap<SyncStep, SyncStepState>,
 )
 
 private class SyncBudgetScaffoldProvider :
-    ThemedParameterProvider<SyncBudgetScaffoldParams>(
-        SyncBudgetScaffoldParams(
-            passwordState = KeyPasswordState.Inactive,
-            stepStates =
-                persistentMapOf(
-                    SyncStep.FetchingFileInfo to SyncStepState.NotStarted,
-                    SyncStep.DownloadingDatabase to SyncStepState.NotStarted,
-                    SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
-                ),
+  ThemedParameterProvider<SyncBudgetScaffoldParams>(
+    SyncBudgetScaffoldParams(
+      passwordState = KeyPasswordState.Inactive,
+      stepStates =
+        persistentMapOf(
+          SyncStep.FetchingFileInfo to SyncStepState.NotStarted,
+          SyncStep.DownloadingDatabase to SyncStepState.NotStarted,
+          SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
         ),
-        SyncBudgetScaffoldParams(
-            passwordState = KeyPasswordState.Inactive,
-            stepStates =
-                persistentMapOf(
-                    SyncStep.FetchingFileInfo to SyncStepState.InProgress.Indefinite,
-                    SyncStep.DownloadingDatabase to SyncStepState.InProgress.Definite(50.percent),
-                    SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
-                ),
+    ),
+    SyncBudgetScaffoldParams(
+      passwordState = KeyPasswordState.Inactive,
+      stepStates =
+        persistentMapOf(
+          SyncStep.FetchingFileInfo to SyncStepState.InProgress.Indefinite,
+          SyncStep.DownloadingDatabase to SyncStepState.InProgress.Definite(50.percent),
+          SyncStep.ValidatingDatabase to SyncStepState.NotStarted,
         ),
-        SyncBudgetScaffoldParams(
-            passwordState = KeyPasswordState.Inactive,
-            stepStates =
-                persistentMapOf(
-                    SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
-                    SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
-                    SyncStep.ValidatingDatabase to SyncStepState.Succeeded,
-                ),
+    ),
+    SyncBudgetScaffoldParams(
+      passwordState = KeyPasswordState.Inactive,
+      stepStates =
+        persistentMapOf(
+          SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
+          SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
+          SyncStep.ValidatingDatabase to SyncStepState.Succeeded,
         ),
-        SyncBudgetScaffoldParams(
-            passwordState = KeyPasswordState.Inactive,
-            stepStates =
-                persistentMapOf(
-                    SyncStep.FetchingFileInfo to SyncStepState.Failed("Some error"),
-                    SyncStep.DownloadingDatabase to SyncStepState.Failed("Whatever"),
-                    SyncStep.ValidatingDatabase to
-                        SyncStepState.Failed(
-                            "Another error but this one's a lot longer, to see how it handles wrapping text",
-                        ),
-                ),
+    ),
+    SyncBudgetScaffoldParams(
+      passwordState = KeyPasswordState.Inactive,
+      stepStates =
+        persistentMapOf(
+          SyncStep.FetchingFileInfo to SyncStepState.Failed("Some error"),
+          SyncStep.DownloadingDatabase to SyncStepState.Failed("Whatever"),
+          SyncStep.ValidatingDatabase to
+            SyncStepState.Failed(
+              "Another error but this one's a lot longer, to see how it handles wrapping text"
+            ),
         ),
-        SyncBudgetScaffoldParams(
-            passwordState = KeyPasswordState.Active(input = Password.Empty),
-            stepStates =
-                persistentMapOf(
-                    SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
-                    SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
-                    SyncStep.ValidatingDatabase to SyncStepState.Failed("Missing Key"),
-                ),
+    ),
+    SyncBudgetScaffoldParams(
+      passwordState = KeyPasswordState.Active(input = Password.Empty),
+      stepStates =
+        persistentMapOf(
+          SyncStep.FetchingFileInfo to SyncStepState.Succeeded,
+          SyncStep.DownloadingDatabase to SyncStepState.Succeeded,
+          SyncStep.ValidatingDatabase to SyncStepState.Failed("Missing Key"),
         ),
-    )
+    ),
+  )

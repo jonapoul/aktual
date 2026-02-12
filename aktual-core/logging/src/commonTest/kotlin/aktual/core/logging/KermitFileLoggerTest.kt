@@ -46,11 +46,7 @@ class KermitFileLoggerTest {
   fun `Log to file asynchronously`() {
     // given
     LogcatLogger.loggers +=
-        KermitFileLogger(
-            storage = logStorage,
-            minPriority = LogPriority.DEBUG,
-            clock = clock,
-        )
+      KermitFileLogger(storage = logStorage, minPriority = LogPriority.DEBUG, clock = clock)
 
     // when
     logcat.i { "Hello world" }
@@ -65,10 +61,10 @@ class KermitFileLoggerTest {
     val lines = fileSystem.source(logFile).buffer().use { it.readUtf8().trim() }.lines()
 
     assertThat(lines)
-        .hasSize(3)
-        .atIndex(0) { isEqualTo("2026-02-07 16:15:22.572 / I / Hello world") }
-        .atIndex(1) { isEqualTo("2026-02-07 16:15:22.572 / D / This is just on the edge") }
-        .atIndex(2) { isEqualTo("2026-02-07 16:15:22.572 / E / Here's an error") }
+      .hasSize(3)
+      .atIndex(0) { isEqualTo("2026-02-07 16:15:22.572 / I / Hello world") }
+      .atIndex(1) { isEqualTo("2026-02-07 16:15:22.572 / D / This is just on the edge") }
+      .atIndex(2) { isEqualTo("2026-02-07 16:15:22.572 / E / Here's an error") }
   }
 }
 

@@ -47,89 +47,86 @@ fun main() {
   composeApp(graph, viewModelStoreOwner)
 }
 
-private fun composeApp(
-    graph: JvmAppGraph,
-    viewModelStoreOwner: JvmViewModelStoreOwner,
-) =
-    application(exitProcessOnExit = true) {
-      val windowPrefs = remember(graph) { graph.windowPreferences }
-      val state =
-          rememberWindowState(
-              placement = windowPrefs.placement.get(),
-              isMinimized = windowPrefs.isMinimized.get(),
-              position = windowPrefs.position.get(),
-              size = windowPrefs.size.get(),
-          )
+private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStoreOwner) =
+  application(exitProcessOnExit = true) {
+    val windowPrefs = remember(graph) { graph.windowPreferences }
+    val state =
+      rememberWindowState(
+        placement = windowPrefs.placement.get(),
+        isMinimized = windowPrefs.isMinimized.get(),
+        position = windowPrefs.position.get(),
+        size = windowPrefs.size.get(),
+      )
 
-      val viewModel =
-          viewModel<AktualDesktopViewModel>(
-              viewModelStoreOwner = viewModelStoreOwner,
-              factory = graph.metroViewModelFactory,
-          )
+    val viewModel =
+      viewModel<AktualDesktopViewModel>(
+        viewModelStoreOwner = viewModelStoreOwner,
+        factory = graph.metroViewModelFactory,
+      )
 
-      val navController = rememberNavController()
-      val keyHandler = remember { KeyboardEventHandler(navController) }
+    val navController = rememberNavController()
+    val keyHandler = remember { KeyboardEventHandler(navController) }
 
-      Window(
-          title = Strings.appName,
-          icon = Drawables.appIcon192,
-          resizable = true,
-          enabled = true,
-          focusable = true,
-          state = state,
-          onKeyEvent = keyHandler::onKeyEvent,
-          onPreviewKeyEvent = keyHandler::onPreviewKeyEvent,
-          onCloseRequest = {
-            logcat.i { "onCloseRequest" }
-            windowPrefs.save(state)
-            viewModel.onDestroy()
-            exitApplication()
-          },
-      ) {
-        WindowContents(
-            navController = navController,
-            viewModel = viewModel,
-            viewModelStoreOwner = viewModelStoreOwner,
-            factory = graph.metroViewModelFactory,
-        )
-      }
+    Window(
+      title = Strings.appName,
+      icon = Drawables.appIcon192,
+      resizable = true,
+      enabled = true,
+      focusable = true,
+      state = state,
+      onKeyEvent = keyHandler::onKeyEvent,
+      onPreviewKeyEvent = keyHandler::onPreviewKeyEvent,
+      onCloseRequest = {
+        logcat.i { "onCloseRequest" }
+        windowPrefs.save(state)
+        viewModel.onDestroy()
+        exitApplication()
+      },
+    ) {
+      WindowContents(
+        navController = navController,
+        viewModel = viewModel,
+        viewModelStoreOwner = viewModelStoreOwner,
+        factory = graph.metroViewModelFactory,
+      )
     }
+  }
 
 @Composable
 private fun WindowContents(
-    navController: NavHostController,
-    viewModel: AktualDesktopViewModel,
-    viewModelStoreOwner: ViewModelStoreOwner,
-    factory: MetroViewModelFactory,
+  navController: NavHostController,
+  viewModel: AktualDesktopViewModel,
+  viewModelStoreOwner: ViewModelStoreOwner,
+  factory: MetroViewModelFactory,
 ) =
-    CompositionLocalProvider(
-        LocalViewModelStoreOwner provides viewModelStoreOwner,
-        LocalMetroViewModelFactory provides factory,
-    ) {
-      val regular by viewModel.regularSchemeType.collectAsStateWithLifecycle()
-      val darkScheme by viewModel.darkSchemeType.collectAsStateWithLifecycle()
-      val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
-      val numberFormat by viewModel.numberFormat.collectAsStateWithLifecycle()
-      val hideFraction by viewModel.hideFraction.collectAsStateWithLifecycle()
-      val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
-      val colorSchemeType = chooseSchemeType(regular, darkScheme)
+  CompositionLocalProvider(
+    LocalViewModelStoreOwner provides viewModelStoreOwner,
+    LocalMetroViewModelFactory provides factory,
+  ) {
+    val regular by viewModel.regularSchemeType.collectAsStateWithLifecycle()
+    val darkScheme by viewModel.darkSchemeType.collectAsStateWithLifecycle()
+    val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
+    val numberFormat by viewModel.numberFormat.collectAsStateWithLifecycle()
+    val hideFraction by viewModel.hideFraction.collectAsStateWithLifecycle()
+    val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
+    val colorSchemeType = chooseSchemeType(regular, darkScheme)
 
-      WithCompositionLocals(
+    WithCompositionLocals(
+      isPrivacyEnabled = isPrivacyEnabled,
+      format = numberFormat,
+      hideFraction = hideFraction,
+    ) {
+      AktualTheme(colorSchemeType) {
+        AktualAppContent(
+          navController = navController,
           isPrivacyEnabled = isPrivacyEnabled,
-          format = numberFormat,
+          numberFormat = numberFormat,
           hideFraction = hideFraction,
-      ) {
-        AktualTheme(colorSchemeType) {
-          AktualAppContent(
-              navController = navController,
-              isPrivacyEnabled = isPrivacyEnabled,
-              numberFormat = numberFormat,
-              hideFraction = hideFraction,
-              colorSchemeType = colorSchemeType,
-              isServerUrlSet = viewModel.isServerUrlSet,
-              token = viewModel.token,
-              bottomBarState = bottomBarState,
-          )
-        }
+          colorSchemeType = colorSchemeType,
+          isServerUrlSet = viewModel.isServerUrlSet,
+          token = viewModel.token,
+          bottomBarState = bottomBarState,
+        )
       }
     }
+  }

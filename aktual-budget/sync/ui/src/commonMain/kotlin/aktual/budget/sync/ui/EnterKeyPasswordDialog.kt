@@ -51,59 +51,46 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun EnterKeyPasswordDialog(
-    input: Password,
-    onAction: (SyncBudgetAction) -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  input: Password,
+  onAction: (SyncBudgetAction) -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   AlertDialog(
-      modifier = modifier,
-      title = Strings.syncPasswordDialogTitle,
-      onDismissRequest = { onAction(SyncBudgetAction.DismissPasswordDialog) },
-      buttons = {
-        TextButton(onClick = { onAction(SyncBudgetAction.DismissPasswordDialog) }) {
-          Text(
-              text = Strings.syncPasswordDialogDismiss,
-              color = theme.buttonPrimaryText,
-          )
-        }
+    modifier = modifier,
+    title = Strings.syncPasswordDialogTitle,
+    onDismissRequest = { onAction(SyncBudgetAction.DismissPasswordDialog) },
+    buttons = {
+      TextButton(onClick = { onAction(SyncBudgetAction.DismissPasswordDialog) }) {
+        Text(text = Strings.syncPasswordDialogDismiss, color = theme.buttonPrimaryText)
+      }
 
-        val confirmEnabled = remember(input) { input.isNotEmpty() }
-        TextButton(
-            enabled = confirmEnabled,
-            onClick = { onAction(SyncBudgetAction.ConfirmKeyPassword) },
-        ) {
-          Text(
-              text = Strings.syncPasswordDialogConfirm,
-              color =
-                  if (confirmEnabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText,
-          )
-        }
-      },
-      content = {
-        Content(
-            input = input,
-            theme = theme,
-            onAction = onAction,
+      val confirmEnabled = remember(input) { input.isNotEmpty() }
+      TextButton(
+        enabled = confirmEnabled,
+        onClick = { onAction(SyncBudgetAction.ConfirmKeyPassword) },
+      ) {
+        Text(
+          text = Strings.syncPasswordDialogConfirm,
+          color = if (confirmEnabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText,
         )
-      },
+      }
+    },
+    content = { Content(input = input, theme = theme, onAction = onAction) },
   )
 }
 
 @Composable
 internal fun Content(
-    input: Password,
-    onAction: (SyncBudgetAction) -> Unit,
-    theme: Theme = LocalTheme.current,
+  input: Password,
+  onAction: (SyncBudgetAction) -> Unit,
+  theme: Theme = LocalTheme.current,
 ) {
-  Column(
-      modifier = Modifier.fillMaxWidth(),
-      horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
+  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
     Text(
-        modifier = Modifier.padding(horizontal = 20.dp),
-        text = buildDialogText(theme, onAction),
-        fontSize = 14.sp,
+      modifier = Modifier.padding(horizontal = 20.dp),
+      text = buildDialogText(theme, onAction),
+      fontSize = 14.sp,
     )
 
     VerticalSpacer(4.dp)
@@ -112,40 +99,40 @@ internal fun Content(
     var passwordVisible by remember { mutableStateOf(false) }
 
     TextField(
-        modifier =
-            Modifier.padding(horizontal = 20.dp)
-                .fillMaxWidth()
-                .focusRequester(keyboardFocusRequester(keyboard)),
-        value = input.value,
-        onValueChange = { i -> onAction(SyncBudgetAction.EnterKeyPassword(Password(i))) },
-        placeholderText = Strings.syncPasswordDialogPlaceholder,
-        singleLine = true,
-        visualTransformation =
-            if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-        keyboardOptions =
-            KeyboardOptions(
-                autoCorrectEnabled = false,
-                capitalization = KeyboardCapitalization.None,
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Go,
-            ),
-        keyboardActions =
-            KeyboardActions(
-                onGo = {
-                  keyboard?.hide()
-                  onAction(SyncBudgetAction.ConfirmKeyPassword)
-                },
-            ),
+      modifier =
+        Modifier.padding(horizontal = 20.dp)
+          .fillMaxWidth()
+          .focusRequester(keyboardFocusRequester(keyboard)),
+      value = input.value,
+      onValueChange = { i -> onAction(SyncBudgetAction.EnterKeyPassword(Password(i))) },
+      placeholderText = Strings.syncPasswordDialogPlaceholder,
+      singleLine = true,
+      visualTransformation =
+        if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+      keyboardOptions =
+        KeyboardOptions(
+          autoCorrectEnabled = false,
+          capitalization = KeyboardCapitalization.None,
+          keyboardType = KeyboardType.Password,
+          imeAction = ImeAction.Go,
+        ),
+      keyboardActions =
+        KeyboardActions(
+          onGo = {
+            keyboard?.hide()
+            onAction(SyncBudgetAction.ConfirmKeyPassword)
+          }
+        ),
     )
 
     Row(
-        modifier = Modifier.clickable { passwordVisible = !passwordVisible },
-        verticalAlignment = Alignment.CenterVertically,
+      modifier = Modifier.clickable { passwordVisible = !passwordVisible },
+      verticalAlignment = Alignment.CenterVertically,
     ) {
       Checkbox(
-          modifier = Modifier.minimumInteractiveComponentSize(),
-          checked = passwordVisible,
-          onCheckedChange = null,
+        modifier = Modifier.minimumInteractiveComponentSize(),
+        checked = passwordVisible,
+        onCheckedChange = null,
       )
       Text(text = Strings.syncPasswordDialogShowPassword)
     }
@@ -154,37 +141,26 @@ internal fun Content(
 
 @Stable
 @Composable
-private fun buildDialogText(
-    theme: Theme,
-    onAction: (SyncBudgetAction) -> Unit,
-) = buildAnnotatedString {
-  append(Strings.syncPasswordDialogText)
-  append(" ")
+private fun buildDialogText(theme: Theme, onAction: (SyncBudgetAction) -> Unit) =
+  buildAnnotatedString {
+    append(Strings.syncPasswordDialogText)
+    append(" ")
 
-  val style = SpanStyle(color = theme.pageTextLink, textDecoration = TextDecoration.Underline)
-  val link =
+    val style = SpanStyle(color = theme.pageTextLink, textDecoration = TextDecoration.Underline)
+    val link =
       LinkAnnotation.Clickable(
-          tag = Tags.KeyPasswordDialogLearnMore,
-          linkInteractionListener =
-              LinkInteractionListener { onAction(SyncBudgetAction.LearnMore) },
+        tag = Tags.KeyPasswordDialogLearnMore,
+        linkInteractionListener = LinkInteractionListener { onAction(SyncBudgetAction.LearnMore) },
       )
-  withStyle(style) { withLink(link) { append(Strings.syncPasswordDialogLearnMore) } }
-}
+    withStyle(style) { withLink(link) { append(Strings.syncPasswordDialogLearnMore) } }
+  }
 
 @Preview
 @Composable
 private fun PreviewEnterKeyPasswordDialog(
-    @PreviewParameter(PasswordProvider::class) params: ThemedParams<Password>,
+  @PreviewParameter(PasswordProvider::class) params: ThemedParams<Password>
 ) =
-    PreviewWithColorScheme(params.type) {
-      EnterKeyPasswordDialog(
-          input = params.data,
-          onAction = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) { EnterKeyPasswordDialog(input = params.data, onAction = {}) }
 
 private class PasswordProvider :
-    ThemedParameterProvider<Password>(
-        Password.Empty,
-        Password("abc-123"),
-    )
+  ThemedParameterProvider<Password>(Password.Empty, Password("abc-123"))

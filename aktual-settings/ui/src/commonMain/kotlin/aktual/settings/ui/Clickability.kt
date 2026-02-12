@@ -8,9 +8,6 @@ import androidx.compose.runtime.Stable
 @Immutable internal data object NotClickable : Clickability
 
 @Immutable
-internal data class Clickable(
-    val enabled: Boolean = true,
-    val onClick: () -> Unit,
-) : Clickability
+internal data class Clickable(val enabled: Boolean = true, val onClick: () -> Unit) : Clickability
 
 @Stable internal fun Clickable(onClick: () -> Unit) = Clickable(enabled = true, onClick)

@@ -34,13 +34,13 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun ConfirmPasswordForm(
-    inputPassword1: Password,
-    inputPassword2: Password,
-    showPasswords: Boolean,
-    state: ChangePasswordState?,
-    passwordsMatch: Boolean,
-    onAction: (PasswordAction) -> Unit,
-    modifier: Modifier = Modifier,
+  inputPassword1: Password,
+  inputPassword2: Password,
+  showPasswords: Boolean,
+  state: ChangePasswordState?,
+  passwordsMatch: Boolean,
+  onAction: (PasswordAction) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   val keyboard = LocalSoftwareKeyboardController.current
   val focusManager = LocalFocusManager.current
@@ -50,64 +50,58 @@ internal fun ConfirmPasswordForm(
     keyboard?.hide()
   }
 
-  Column(
-      modifier = modifier,
-      verticalArrangement = Arrangement.spacedBy(10.dp),
-  ) {
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
     PasswordEntryText(
-        modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester(keyboard)),
-        password = inputPassword1,
-        placeholderText = Strings.passwordInput,
-        showPassword = showPasswords,
-        imeAction = ImeAction.Next,
-        onValueChange = { pw -> onAction(PasswordAction.SetPassword1(pw)) },
-        onGo = { focusManager.moveFocus(FocusDirection.Next) },
+      modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester(keyboard)),
+      password = inputPassword1,
+      placeholderText = Strings.passwordInput,
+      showPassword = showPasswords,
+      imeAction = ImeAction.Next,
+      onValueChange = { pw -> onAction(PasswordAction.SetPassword1(pw)) },
+      onGo = { focusManager.moveFocus(FocusDirection.Next) },
     )
 
     PasswordEntryText(
-        modifier = Modifier.fillMaxWidth(),
-        password = inputPassword2,
-        placeholderText = Strings.passwordInputConfirm,
-        showPassword = showPasswords,
-        imeAction = ImeAction.Go,
-        onValueChange = { pw -> onAction(PasswordAction.SetPassword2(pw)) },
-        onGo = {
-          if (passwordsMatch) onAction(PasswordAction.Submit)
-          keyboard?.hide()
-        },
+      modifier = Modifier.fillMaxWidth(),
+      password = inputPassword2,
+      placeholderText = Strings.passwordInputConfirm,
+      showPassword = showPasswords,
+      imeAction = ImeAction.Go,
+      onValueChange = { pw -> onAction(PasswordAction.SetPassword2(pw)) },
+      onGo = {
+        if (passwordsMatch) onAction(PasswordAction.Submit)
+        keyboard?.hide()
+      },
     )
 
     val interactionSource = remember { MutableInteractionSource() }
 
     Row(
-        modifier =
-            Modifier.fillMaxWidth()
-                .clickable(
-                    interactionSource = interactionSource,
-                    indication = ripple(),
-                    enabled = true,
-                    onClick = { onAction(PasswordAction.SetPasswordsVisible(!showPasswords)) },
-                ),
-        verticalAlignment = Alignment.CenterVertically,
+      modifier =
+        Modifier.fillMaxWidth()
+          .clickable(
+            interactionSource = interactionSource,
+            indication = ripple(),
+            enabled = true,
+            onClick = { onAction(PasswordAction.SetPasswordsVisible(!showPasswords)) },
+          ),
+      verticalAlignment = Alignment.CenterVertically,
     ) {
       Checkbox(
-          checked = showPasswords,
-          interactionSource = interactionSource,
-          onCheckedChange = { onAction(PasswordAction.SetPasswordsVisible(!showPasswords)) },
+        checked = showPasswords,
+        interactionSource = interactionSource,
+        onCheckedChange = { onAction(PasswordAction.SetPasswordsVisible(!showPasswords)) },
       )
 
-      Text(
-          text = Strings.passwordShow,
-          fontSize = 15.sp,
-      )
+      Text(text = Strings.passwordShow, fontSize = 15.sp)
     }
 
     PrimaryTextButtonWithLoading(
-        modifier = Modifier.fillMaxWidth(),
-        text = Strings.passwordConfirm,
-        isLoading = isLoading,
-        isEnabled = !isLoading && passwordsMatch,
-        onClick = { onAction(PasswordAction.Submit) },
+      modifier = Modifier.fillMaxWidth(),
+      text = Strings.passwordConfirm,
+      isLoading = isLoading,
+      isEnabled = !isLoading && passwordsMatch,
+      onClick = { onAction(PasswordAction.Submit) },
     )
   }
 }
@@ -115,30 +109,30 @@ internal fun ConfirmPasswordForm(
 @Preview
 @Composable
 private fun PreviewConfirmPassword(
-    @PreviewParameter(ConfirmPasswordProvider::class) params: ThemedParams<ConfirmPasswordParams>,
+  @PreviewParameter(ConfirmPasswordProvider::class) params: ThemedParams<ConfirmPasswordParams>
 ) =
-    PreviewWithColorScheme(params.type) {
-      ConfirmPasswordForm(
-          inputPassword1 = params.data.password1,
-          inputPassword2 = params.data.password2,
-          showPasswords = params.data.showPasswords,
-          state = params.data.state,
-          passwordsMatch = params.data.passwordsMatch,
-          onAction = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    ConfirmPasswordForm(
+      inputPassword1 = params.data.password1,
+      inputPassword2 = params.data.password2,
+      showPasswords = params.data.showPasswords,
+      state = params.data.state,
+      passwordsMatch = params.data.passwordsMatch,
+      onAction = {},
+    )
+  }
 
 private data class ConfirmPasswordParams(
-    val password1: Password = Password.Dummy,
-    val password2: Password = Password.Dummy,
-    val showPasswords: Boolean = true,
-    val state: ChangePasswordState? = null,
-    val passwordsMatch: Boolean = false,
+  val password1: Password = Password.Dummy,
+  val password2: Password = Password.Dummy,
+  val showPasswords: Boolean = true,
+  val state: ChangePasswordState? = null,
+  val passwordsMatch: Boolean = false,
 )
 
 private class ConfirmPasswordProvider :
-    ThemedParameterProvider<ConfirmPasswordParams>(
-        ConfirmPasswordParams(password1 = Empty, password2 = Empty, showPasswords = false),
-        ConfirmPasswordParams(showPasswords = true, passwordsMatch = true),
-        ConfirmPasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
-    )
+  ThemedParameterProvider<ConfirmPasswordParams>(
+    ConfirmPasswordParams(password1 = Empty, password2 = Empty, showPasswords = false),
+    ConfirmPasswordParams(showPasswords = true, passwordsMatch = true),
+    ConfirmPasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
+  )

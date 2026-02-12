@@ -63,21 +63,21 @@ internal class LoginRequesterTest {
     fileSystem = FileSystem.SYSTEM
 
     connectionMonitor =
-        ConnectionMonitor(
-            scope = backgroundScope,
-            contexts = TestCoroutineContexts(dispatcher),
-            clientFactory = TestClientFactory(mockEngine),
-            apiStateHolder = apisStateHolder,
-            preferences = preferences,
-            fileSystem = fileSystem,
-        )
+      ConnectionMonitor(
+        scope = backgroundScope,
+        contexts = TestCoroutineContexts(dispatcher),
+        clientFactory = TestClientFactory(mockEngine),
+        apiStateHolder = apisStateHolder,
+        preferences = preferences,
+        fileSystem = fileSystem,
+      )
 
     loginRequester =
-        LoginRequester(
-            contexts = TestCoroutineContexts(dispatcher),
-            apisStateHolder = apisStateHolder,
-            preferences = preferences,
-        )
+      LoginRequester(
+        contexts = TestCoroutineContexts(dispatcher),
+        apisStateHolder = apisStateHolder,
+        preferences = preferences,
+      )
   }
 
   @Test
@@ -138,13 +138,13 @@ internal class LoginRequesterTest {
 
     // When we log in with a successful response, but a null token
     val body =
-        """
-        {
-          "status": "ok",
-          "data": { "token": null }
-        }
-        """
-            .trimIndent()
+      """
+      {
+        "status": "ok",
+        "data": { "token": null }
+      }
+      """
+        .trimIndent()
     mockEngine += { respondJson(body) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
@@ -165,13 +165,13 @@ internal class LoginRequesterTest {
 
     // When we log in with a failed response
     val body =
-        """
-        {
-          "status": "error",
-          "reason": "Some error"
-        }
-        """
-            .trimIndent()
+      """
+      {
+        "status": "error",
+        "reason": "Some error"
+      }
+      """
+        .trimIndent()
     mockEngine += { respondJson(body, HttpStatusCode.InternalServerError) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 

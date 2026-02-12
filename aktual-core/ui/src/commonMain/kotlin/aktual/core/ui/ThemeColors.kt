@@ -15,170 +15,164 @@ import androidx.compose.ui.graphics.Color
 @Stable
 @Composable
 fun Theme.topAppBarColors(
-    containerColor: Color = mobileHeaderBackground,
-    titleContentColor: Color = mobileHeaderText,
-    navigationIconContentColor: Color = mobileHeaderText,
-    actionIconContentColor: Color = mobileHeaderText,
+  containerColor: Color = mobileHeaderBackground,
+  titleContentColor: Color = mobileHeaderText,
+  navigationIconContentColor: Color = mobileHeaderText,
+  actionIconContentColor: Color = mobileHeaderText,
 ) =
-    TopAppBarDefaults.topAppBarColors(
-        containerColor = containerColor,
-        titleContentColor = titleContentColor,
-        navigationIconContentColor = navigationIconContentColor,
-        actionIconContentColor = actionIconContentColor,
-    )
+  TopAppBarDefaults.topAppBarColors(
+    containerColor = containerColor,
+    titleContentColor = titleContentColor,
+    navigationIconContentColor = navigationIconContentColor,
+    actionIconContentColor = actionIconContentColor,
+  )
 
 @Stable
 @Composable
 fun Theme.transparentTopAppBarColors() =
-    topAppBarColors(
-        containerColor = Color.Transparent,
-        navigationIconContentColor = mobileHeaderTextTransparent,
-        actionIconContentColor = mobileHeaderTextTransparent,
-        titleContentColor = mobileHeaderTextTransparent,
-    )
+  topAppBarColors(
+    containerColor = Color.Transparent,
+    navigationIconContentColor = mobileHeaderTextTransparent,
+    actionIconContentColor = mobileHeaderTextTransparent,
+    titleContentColor = mobileHeaderTextTransparent,
+  )
 
 @Stable
 @Composable
-fun Theme.dropDownMenuItem() =
-    MenuDefaults.itemColors(
-        textColor = formInputText,
-    )
+fun Theme.dropDownMenuItem() = MenuDefaults.itemColors(textColor = formInputText)
 
 @Stable
 @Composable
 fun Theme.slider() =
-    SliderDefaults.colors(
-        thumbColor = sliderThumb,
-        activeTrackColor = sliderActiveTrack,
-        activeTickColor = sliderActiveTick,
-        inactiveTrackColor = sliderInactiveTrack,
-        inactiveTickColor = sliderInactiveTick,
-    )
+  SliderDefaults.colors(
+    thumbColor = sliderThumb,
+    activeTrackColor = sliderActiveTrack,
+    activeTickColor = sliderActiveTick,
+    inactiveTrackColor = sliderInactiveTrack,
+    inactiveTickColor = sliderInactiveTick,
+  )
 
 @Stable
 @Composable
 fun Theme.textField(
-    focusedContainer: Color = formInputBackground,
-    unfocusedContainer: Color = focusedContainer,
-    text: Color = formInputText,
-    textPlaceholder: Color = formInputTextPlaceholder,
-    icon: Color = formInputText,
+  focusedContainer: Color = formInputBackground,
+  unfocusedContainer: Color = focusedContainer,
+  text: Color = formInputText,
+  textPlaceholder: Color = formInputTextPlaceholder,
+  icon: Color = formInputText,
 ): TextFieldColors =
-    TextFieldDefaults.colors(
-        focusedTextColor = text,
-        unfocusedTextColor = text,
-        focusedPlaceholderColor = textPlaceholder,
-        unfocusedPlaceholderColor = textPlaceholder,
-        focusedLabelColor = textPlaceholder,
-        unfocusedLabelColor = textPlaceholder,
-        focusedIndicatorColor = Color.Transparent,
-        unfocusedIndicatorColor = Color.Transparent,
-        disabledIndicatorColor = Color.Transparent,
-        focusedContainerColor = focusedContainer,
-        unfocusedContainerColor = unfocusedContainer,
-        cursorColor = text,
-        focusedLeadingIconColor = icon,
-        unfocusedLeadingIconColor = icon,
-        focusedTrailingIconColor = icon,
-        unfocusedTrailingIconColor = icon,
-    )
+  TextFieldDefaults.colors(
+    focusedTextColor = text,
+    unfocusedTextColor = text,
+    focusedPlaceholderColor = textPlaceholder,
+    unfocusedPlaceholderColor = textPlaceholder,
+    focusedLabelColor = textPlaceholder,
+    unfocusedLabelColor = textPlaceholder,
+    focusedIndicatorColor = Color.Transparent,
+    unfocusedIndicatorColor = Color.Transparent,
+    disabledIndicatorColor = Color.Transparent,
+    focusedContainerColor = focusedContainer,
+    unfocusedContainerColor = unfocusedContainer,
+    cursorColor = text,
+    focusedLeadingIconColor = icon,
+    unfocusedLeadingIconColor = icon,
+    focusedTrailingIconColor = icon,
+    unfocusedTrailingIconColor = icon,
+  )
 
 @Stable
 @Composable
 fun Theme.exposedDropDownMenu(): TextFieldColors =
-    textField()
-        .copy(
-            focusedTrailingIconColor = formInputText,
-            unfocusedTrailingIconColor = formInputText,
-        )
+  textField()
+    .copy(focusedTrailingIconColor = formInputText, unfocusedTrailingIconColor = formInputText)
 
 @Stable
 @Composable
 fun Theme.primaryButton(isPressed: Boolean) =
-    ButtonDefaults.buttonColors(
-        containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
-        disabledContainerColor = buttonPrimaryDisabledBackground,
-        contentColor = if (isPressed) buttonPrimaryText else buttonPrimaryTextHover,
-        disabledContentColor = buttonPrimaryDisabledText,
-    )
+  ButtonDefaults.buttonColors(
+    containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
+    disabledContainerColor = buttonPrimaryDisabledBackground,
+    contentColor = if (isPressed) buttonPrimaryText else buttonPrimaryTextHover,
+    disabledContentColor = buttonPrimaryDisabledText,
+  )
 
 @Stable
 @Composable
 fun Theme.normalButton(
-    isPressed: Boolean,
-    container: Color = buttonNormalBackground,
-    containerPressed: Color = buttonNormalSelectedBackground,
-    containerDisabled: Color = buttonNormalDisabledBackground,
-    text: Color = buttonNormalText,
-    textPressed: Color = buttonNormalSelectedText,
-    textDisabled: Color = buttonNormalDisabledText,
+  isPressed: Boolean,
+  container: Color = buttonNormalBackground,
+  containerPressed: Color = buttonNormalSelectedBackground,
+  containerDisabled: Color = buttonNormalDisabledBackground,
+  text: Color = buttonNormalText,
+  textPressed: Color = buttonNormalSelectedText,
+  textDisabled: Color = buttonNormalDisabledText,
 ) =
-    ButtonDefaults.buttonColors(
-        containerColor = if (isPressed) containerPressed else container,
-        disabledContainerColor = containerDisabled,
-        contentColor = if (isPressed) textPressed else text,
-        disabledContentColor = textDisabled,
-    )
+  ButtonDefaults.buttonColors(
+    containerColor = if (isPressed) containerPressed else container,
+    disabledContainerColor = containerDisabled,
+    contentColor = if (isPressed) textPressed else text,
+    disabledContentColor = textDisabled,
+  )
 
 @Stable
 @Composable
 fun Theme.bareButton(isPressed: Boolean) =
-    ButtonDefaults.buttonColors(
-        containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
-        disabledContainerColor = buttonBareDisabledBackground,
-        contentColor = if (isPressed) buttonBareText else buttonBareTextHover,
-        disabledContentColor = buttonBareDisabledText,
-    )
+  ButtonDefaults.buttonColors(
+    containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
+    disabledContainerColor = buttonBareDisabledBackground,
+    contentColor = if (isPressed) buttonBareText else buttonBareTextHover,
+    disabledContentColor = buttonBareDisabledText,
+  )
 
 @Stable
 @Composable
 fun Theme.primaryIconButton(isPressed: Boolean) =
-    IconButtonDefaults.filledIconButtonColors(
-        containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
-        disabledContainerColor = buttonPrimaryDisabledBackground,
-        contentColor = if (isPressed) buttonPrimaryText else buttonPrimaryTextHover,
-        disabledContentColor = buttonPrimaryDisabledText,
-    )
+  IconButtonDefaults.filledIconButtonColors(
+    containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
+    disabledContainerColor = buttonPrimaryDisabledBackground,
+    contentColor = if (isPressed) buttonPrimaryText else buttonPrimaryTextHover,
+    disabledContentColor = buttonPrimaryDisabledText,
+  )
 
 @Stable
 @Composable
 fun Theme.normalIconButton(isPressed: Boolean) =
-    IconButtonDefaults.filledIconButtonColors(
-        containerColor = if (isPressed) buttonNormalBackground else buttonNormalBackgroundHover,
-        disabledContainerColor = buttonNormalDisabledBackground,
-        contentColor = if (isPressed) buttonNormalText else buttonNormalTextHover,
-        disabledContentColor = buttonNormalDisabledText,
-    )
+  IconButtonDefaults.filledIconButtonColors(
+    containerColor = if (isPressed) buttonNormalBackground else buttonNormalBackgroundHover,
+    disabledContainerColor = buttonNormalDisabledBackground,
+    contentColor = if (isPressed) buttonNormalText else buttonNormalTextHover,
+    disabledContentColor = buttonNormalDisabledText,
+  )
 
 @Stable
 @Composable
 fun Theme.bareIconButton(isPressed: Boolean) =
-    IconButtonDefaults.filledIconButtonColors(
-        containerColor = if (isPressed) buttonBareBackgroundHover else buttonBareBackground,
-        disabledContainerColor = buttonBareDisabledBackground,
-        contentColor = if (isPressed) buttonBareTextHover else buttonBareText,
-        disabledContentColor = buttonBareDisabledText,
-    )
+  IconButtonDefaults.filledIconButtonColors(
+    containerColor = if (isPressed) buttonBareBackgroundHover else buttonBareBackground,
+    disabledContainerColor = buttonBareDisabledBackground,
+    contentColor = if (isPressed) buttonBareTextHover else buttonBareText,
+    disabledContentColor = buttonBareDisabledText,
+  )
 
 @Stable
 @Composable
 fun Theme.topAppBarIconButton(isPressed: Boolean) =
-    primaryIconButton(isPressed)
-        .copy(
-            containerColor = mobileHeaderBackground,
-            contentColor = mobileHeaderText,
-            disabledContentColor = mobileHeaderTextSubdued,
-        )
+  primaryIconButton(isPressed)
+    .copy(
+      containerColor = mobileHeaderBackground,
+      contentColor = mobileHeaderText,
+      disabledContentColor = mobileHeaderTextSubdued,
+    )
 
 @Suppress("unused")
 @Stable
 @Composable
 fun Theme.switch(isPressed: Boolean) =
-    SwitchDefaults.colors(
-        checkedThumbColor = checkboxText,
-        uncheckedThumbColor = checkboxText,
-        checkedTrackColor = checkboxToggleBackgroundSelected,
-        uncheckedTrackColor = checkboxToggleBackground,
-        checkedBorderColor = checkboxToggleBackgroundSelected,
-        uncheckedBorderColor = checkboxToggleBackground,
-    )
+  SwitchDefaults.colors(
+    checkedThumbColor = checkboxText,
+    uncheckedThumbColor = checkboxText,
+    checkedTrackColor = checkboxToggleBackgroundSelected,
+    uncheckedTrackColor = checkboxToggleBackground,
+    checkedBorderColor = checkboxToggleBackgroundSelected,
+    uncheckedBorderColor = checkboxToggleBackground,
+  )

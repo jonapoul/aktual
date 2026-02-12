@@ -25,77 +25,74 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun FailureScreen(
-    title: String,
-    reason: String,
-    retryText: String,
-    onClickRetry: () -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  title: String,
+  reason: String,
+  retryText: String,
+  onClickRetry: () -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) =
-    Box(
-        modifier = modifier.padding(20.dp).fillMaxWidth(),
-        contentAlignment = Alignment.Center,
+  Box(modifier = modifier.padding(20.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
+    Column(
+      modifier =
+        Modifier.padding(Dimens.Small)
+          .background(Color.Transparent, CardShape)
+          .aktualHaze()
+          .padding(30.dp),
+      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-      Column(
-          modifier =
-              Modifier.padding(Dimens.Small)
-                  .background(Color.Transparent, CardShape)
-                  .aktualHaze()
-                  .padding(30.dp),
-          horizontalAlignment = Alignment.CenterHorizontally,
-      ) {
-        Icon(
-            modifier = Modifier.size(100.dp),
-            imageVector = AktualIcons.CloudWarning,
-            tint = theme.warningText,
-            contentDescription = title,
-        )
+      Icon(
+        modifier = Modifier.size(100.dp),
+        imageVector = AktualIcons.CloudWarning,
+        tint = theme.warningText,
+        contentDescription = title,
+      )
 
-        VerticalSpacer(30.dp)
+      VerticalSpacer(30.dp)
 
-        Text(
-            text = title,
-            color = theme.warningText,
-            textAlign = TextAlign.Center,
-            fontSize = 20.sp,
-            fontWeight = FontWeight.Bold,
-        )
+      Text(
+        text = title,
+        color = theme.warningText,
+        textAlign = TextAlign.Center,
+        fontSize = 20.sp,
+        fontWeight = FontWeight.Bold,
+      )
 
-        VerticalSpacer(15.dp)
+      VerticalSpacer(15.dp)
 
-        Text(
-            text = reason,
-            color = theme.warningTextDark,
-            fontSize = 16.sp,
-            textAlign = TextAlign.Center,
-        )
+      Text(
+        text = reason,
+        color = theme.warningTextDark,
+        fontSize = 16.sp,
+        textAlign = TextAlign.Center,
+      )
 
-        VerticalSpacer(30.dp)
+      VerticalSpacer(30.dp)
 
-        PrimaryTextButton(
-            prefix = { Icon(imageVector = MaterialIcons.Refresh, contentDescription = retryText) },
-            text = retryText,
-            onClick = onClickRetry,
-        )
-      }
+      PrimaryTextButton(
+        prefix = { Icon(imageVector = MaterialIcons.Refresh, contentDescription = retryText) },
+        text = retryText,
+        onClick = onClickRetry,
+      )
     }
+  }
 
 @PortraitPreview
 @Composable
 private fun PreviewFailureScreen(
-    @PreviewParameter(FailureScreenProvider::class) params: ThemedParams<String>,
+  @PreviewParameter(FailureScreenProvider::class) params: ThemedParams<String>
 ) =
-    PreviewWithColorScheme(params.type) {
-      FailureScreen(
-          title = "Failed syncing the doodads",
-          reason = params.data,
-          retryText = "Retry",
-          onClickRetry = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    FailureScreen(
+      title = "Failed syncing the doodads",
+      reason = params.data,
+      retryText = "Retry",
+      onClickRetry = {},
+    )
+  }
 
 private class FailureScreenProvider :
-    ThemedParameterProvider<String?>(
-        "Some error",
-        "Failed to do the thing, here's a bit more text to show how it behaves when wrapping",
-    )
+  ThemedParameterProvider<String?>(
+    "Some error",
+    "Failed to do the thing, here's a bit more text to show how it behaves when wrapping",
+  )

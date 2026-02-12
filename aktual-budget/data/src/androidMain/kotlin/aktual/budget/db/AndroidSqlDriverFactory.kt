@@ -12,24 +12,23 @@ import app.cash.sqldelight.driver.android.AndroidSqliteDriver
 import logcat.logcat
 
 class AndroidSqlDriverFactory(
-    private val id: BudgetId,
-    private val context: Context,
-    private val budgetFiles: BudgetFiles,
+  private val id: BudgetId,
+  private val context: Context,
+  private val budgetFiles: BudgetFiles,
 ) : SqlDriverFactory {
   override fun create(): AndroidSqliteDriver {
     val synchronousSchema = BudgetDatabase.Schema.synchronous()
     return AndroidSqliteDriver(
-        schema = synchronousSchema,
-        context = context,
-        name = budgetFiles.database(id, mkdirs = true).toString(),
-        callback = AndroidCallback(synchronousSchema),
+      schema = synchronousSchema,
+      context = context,
+      name = budgetFiles.database(id, mkdirs = true).toString(),
+      callback = AndroidCallback(synchronousSchema),
     )
   }
 }
 
-private class AndroidCallback(
-    schema: SqlSchema<QueryResult.Value<Unit>>,
-) : AndroidSqliteDriver.Callback(schema) {
+private class AndroidCallback(schema: SqlSchema<QueryResult.Value<Unit>>) :
+  AndroidSqliteDriver.Callback(schema) {
   override fun onOpen(db: SupportSQLiteDatabase) {
     logcat.d { "onOpen ${db.path}" }
     super.onOpen(db)

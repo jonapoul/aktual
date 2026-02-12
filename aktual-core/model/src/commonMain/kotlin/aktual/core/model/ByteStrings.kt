@@ -10,7 +10,7 @@ import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
 
 fun String.base64(): ByteString =
-    requireNotNull(decodeBase64()) { "Failed decoding as b64: '$this'" }
+  requireNotNull(decodeBase64()) { "Failed decoding as b64: '$this'" }
 
 typealias SerializableByteString = @Serializable(ByteStringSerializer::class) ByteString
 

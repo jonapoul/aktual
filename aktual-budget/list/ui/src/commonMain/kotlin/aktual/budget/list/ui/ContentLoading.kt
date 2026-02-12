@@ -16,17 +16,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal fun ContentLoading(
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
-) {
-  Box(
-      modifier = modifier,
-      contentAlignment = Alignment.Center,
-  ) {
+internal fun ContentLoading(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
+  Box(modifier = modifier, contentAlignment = Alignment.Center) {
     CircularProgressIndicator(
-        modifier = Modifier.size(50.dp),
-        color = theme.buttonPrimaryBackground,
+      modifier = Modifier.size(50.dp),
+      color = theme.buttonPrimaryBackground,
     )
   }
 }
@@ -34,5 +28,5 @@ internal fun ContentLoading(
 @PortraitPreview
 @Composable
 private fun PreviewContentLoading(
-    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
 ) = PreviewWithColorScheme(type) { ContentLoading() }

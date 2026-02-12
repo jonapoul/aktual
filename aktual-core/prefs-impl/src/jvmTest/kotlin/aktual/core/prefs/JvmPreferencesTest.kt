@@ -38,25 +38,25 @@ class JvmPreferencesTest {
 
   @Test
   fun `Get from empty prefs`() =
-      with(preferences) {
-        val string = getString("abc", "xyz")
-        val bool = getBoolean("abc", false)
-        val float = getFloat("abc", 7.89f)
-        val int = getInt("abc", 123)
-        val long = getLong("abc", 456L)
+    with(preferences) {
+      val string = getString("abc", "xyz")
+      val bool = getBoolean("abc", false)
+      val float = getFloat("abc", 7.89f)
+      val int = getInt("abc", 123)
+      val long = getLong("abc", 456L)
 
-        assertThat(string).isNotSet()
-        assertThat(bool).isNotSet()
-        assertThat(float).isNotSet()
-        assertThat(int).isNotSet()
-        assertThat(long).isNotSet()
+      assertThat(string).isNotSet()
+      assertThat(bool).isNotSet()
+      assertThat(float).isNotSet()
+      assertThat(int).isNotSet()
+      assertThat(long).isNotSet()
 
-        assertThat(string.get()).isEqualTo("xyz")
-        assertThat(bool.get()).isEqualTo(false)
-        assertThat(float.get()).isEqualTo(7.89f)
-        assertThat(int.get()).isEqualTo(123)
-        assertThat(long.get()).isEqualTo(456L)
-      }
+      assertThat(string.get()).isEqualTo("xyz")
+      assertThat(bool.get()).isEqualTo(false)
+      assertThat(float.get()).isEqualTo(7.89f)
+      assertThat(int.get()).isEqualTo(123)
+      assertThat(long.get()).isEqualTo(456L)
+    }
 
   private fun <T> Assert<Preference<T>>.isNotSet() = given { pref ->
     if (!pref.isSet()) return@given
@@ -126,7 +126,7 @@ class JvmPreferencesTest {
     override fun serialize(value: TestObject?): String? = value?.let(Json.Default::encodeToString)
 
     override fun deserialize(value: String?): TestObject? =
-        value?.let(Json.Default::decodeFromString)
+      value?.let(Json.Default::decodeFromString)
   }
 
   @Test

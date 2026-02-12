@@ -22,30 +22,26 @@ import okio.buffer
 
 @Inject
 @ContributesBinding(BudgetScope::class)
-class SyncResponseDecoderImpl(
-    private val decrypter: BufferDecrypter,
-) : SyncResponseDecoder {
+class SyncResponseDecoderImpl(private val decrypter: BufferDecrypter) : SyncResponseDecoder {
   override suspend fun invoke(source: Source, metadata: DbMetadata): SyncResponse {
     val byteString = source.buffer().use { requireNotNull(it.readUtf8().decodeBase64()) }
     val response = ProtoSyncResponse.ADAPTER.decode(byteString)
     val encryptKeyId = metadata[DbMetadata.EncryptKeyId]
     return SyncResponse(
-        merkle = Merkle(response.merkle),
-        messages = response.messages.map { msg -> msg.parseEnvelope(encryptKeyId) },
+      merkle = Merkle(response.merkle),
+      messages = response.messages.map { msg -> msg.parseEnvelope(encryptKeyId) },
     )
   }
 
-  private suspend fun ProtoMessageEnvelope.parseEnvelope(
-      encryptKeyId: String?,
-  ): MessageEnvelope {
+  private suspend fun ProtoMessageEnvelope.parseEnvelope(encryptKeyId: String?): MessageEnvelope {
     val content = if (isEncrypted) decryptContent(content, encryptKeyId) else content
     val protoMessage = ProtoMessage.ADAPTER.decode(content)
     val time = Timestamp.parse(timestamp)
     return MessageEnvelope(
-        timestamp = time,
-        isEncrypted = isEncrypted,
-        content =
-            with(protoMessage) { Message(dataset, row, column, time, MessageValue.decode(value_)) },
+      timestamp = time,
+      isEncrypted = isEncrypted,
+      content =
+        with(protoMessage) { Message(dataset, row, column, time, MessageValue.decode(value_)) },
     )
   }
 
@@ -60,10 +56,10 @@ class SyncResponseDecoderImpl(
   }
 
   private fun meta(data: ProtoEncryptedData, encryptKeyId: String?) =
-      DefaultMeta(
-          keyId = encryptKeyId?.let(::KeyId),
-          algorithm = "aes-256-gcm",
-          iv = data.iv,
-          authTag = data.authTag,
-      )
+    DefaultMeta(
+      keyId = encryptKeyId?.let(::KeyId),
+      algorithm = "aes-256-gcm",
+      iv = data.iv,
+      authTag = data.authTag,
+    )
 }

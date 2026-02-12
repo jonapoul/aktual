@@ -21,41 +21,41 @@ import org.gradle.kotlin.dsl.withType
 
 class ConventionDetekt : Plugin<Project> {
   override fun apply(target: Project) =
-      with(target) {
-        with(plugins) { apply(DetektPlugin::class) }
+    with(target) {
+      with(plugins) { apply(DetektPlugin::class) }
 
-        extensions.configure<DetektExtension> {
-          with(rootProject.isolated.projectDirectory) {
-            config.from(file("config/detekt.yml"), file("config/detekt-compose.yml"))
-          }
-          buildUponDefaultConfig.set(true)
+      extensions.configure<DetektExtension> {
+        with(rootProject.isolated.projectDirectory) {
+          config.from(file("config/detekt.yml"), file("config/detekt-compose.yml"))
         }
-
-        val detektTasks =
-            tasks.withType<Detekt>().matching { task ->
-              !task.name.contains("release", ignoreCase = true)
-            }
-
-        val detektCheck by tasks.registering { dependsOn(detektTasks) }
-
-        pluginManager.withPlugin("base") { tasks.named("check") { dependsOn(detektCheck) } }
-
-        detektTasks.configureEach {
-          reports {
-            html.required.set(true)
-            sarif.required.set(true)
-            checkstyle.required.set(false)
-            markdown.required.set(false)
-          }
-          exclude { node ->
-            !node.isDirectory && node.file.absolutePath.contains("generated", ignoreCase = true)
-          }
-        }
-
-        rootProject.tasks.named("detektReportMergeSarif", ReportMergeTask::class) {
-          input.from(detektTasks.map { it.reports.sarif.outputLocation })
-        }
-
-        dependencies { "detektPlugins"(libs["detektCompose"]) }
+        buildUponDefaultConfig.set(true)
       }
+
+      val detektTasks =
+        tasks.withType<Detekt>().matching { task ->
+          !task.name.contains("release", ignoreCase = true)
+        }
+
+      val detektCheck by tasks.registering { dependsOn(detektTasks) }
+
+      pluginManager.withPlugin("base") { tasks.named("check") { dependsOn(detektCheck) } }
+
+      detektTasks.configureEach {
+        reports {
+          html.required.set(true)
+          sarif.required.set(true)
+          checkstyle.required.set(false)
+          markdown.required.set(false)
+        }
+        exclude { node ->
+          !node.isDirectory && node.file.absolutePath.contains("generated", ignoreCase = true)
+        }
+      }
+
+      rootProject.tasks.named("detektReportMergeSarif", ReportMergeTask::class) {
+        input.from(detektTasks.map { it.reports.sarif.outputLocation })
+      }
+
+      dependencies { "detektPlugins"(libs["detektCompose"]) }
+    }
 }

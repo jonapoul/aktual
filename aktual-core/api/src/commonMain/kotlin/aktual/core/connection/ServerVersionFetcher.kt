@@ -16,10 +16,10 @@ import logcat.logcat
 
 @Inject
 class ServerVersionFetcher(
-    private val contexts: CoroutineContexts,
-    private val apisStateHolder: AktualApisStateHolder,
-    private val versionsStateHolder: AktualVersionsStateHolder,
-    private val loopController: LoopController,
+  private val contexts: CoroutineContexts,
+  private val apisStateHolder: AktualApisStateHolder,
+  private val versionsStateHolder: AktualVersionsStateHolder,
+  private val loopController: LoopController,
 ) {
   suspend fun startFetching() {
     logcat.v { "startFetching" }

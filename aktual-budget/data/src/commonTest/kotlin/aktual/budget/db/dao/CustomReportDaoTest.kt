@@ -53,12 +53,9 @@ internal class CustomReportDaoTest {
   }
 
   private fun runDaoTest(action: suspend CustomReportsDao.(TestScope) -> Unit) =
-      runDatabaseTest { scope ->
-        val dao =
-            CustomReportsDao(
-                this,
-                TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)),
-            )
-        action(dao, scope)
-      }
+    runDatabaseTest { scope ->
+      val dao =
+        CustomReportsDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
+      action(dao, scope)
+    }
 }

@@ -43,9 +43,9 @@ plugins {
 }
 
 val detektReportMergeSarif by
-    tasks.registering(ReportMergeTask::class) {
-      output = layout.buildDirectory.file("reports/detekt/merge.sarif.json")
-    }
+  tasks.registering(ReportMergeTask::class) {
+    output = layout.buildDirectory.file("reports/detekt/merge.sarif.json")
+  }
 
 tasks.check.configure { dependsOn(detektReportMergeSarif) }
 
@@ -69,9 +69,9 @@ atlas {
     hasPluginId(name = "UI", pluginId = "aktual.module.compose", color = "#6b6b01") // yellow
     hasPluginId(name = "Android", pluginId = "aktual.module.android", color = "#017001") // green
     hasPluginId(
-        name = "Multiplatform",
-        pluginId = "aktual.module.multiplatform",
-        color = "#160185",
+      name = "Multiplatform",
+      pluginId = "aktual.module.multiplatform",
+      color = "#160185",
     ) // indigo
     pathContains(name = "App", pathContains = ":aktual-app:", color = "#7a0101") // red
     hasPluginId(name = "JVM", pluginId = "aktual.module.jvm", color = "#2f015c") // violet

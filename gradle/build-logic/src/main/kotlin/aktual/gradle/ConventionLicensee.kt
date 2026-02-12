@@ -10,26 +10,26 @@ import org.gradle.kotlin.dsl.configure
 
 class ConventionLicensee : Plugin<Project> {
   override fun apply(target: Project) =
-      with(target) {
-        pluginManager.apply(LicenseePlugin::class)
+    with(target) {
+      pluginManager.apply(LicenseePlugin::class)
 
-        extensions.configure<LicenseeExtension> {
-          listOf(
-                  "Apache-2.0",
-                  "MIT",
-                  "BSD-2-Clause", // hamcrest
-                  "EPL-1.0", // junit
-              )
-              .forEach(::allow)
+      extensions.configure<LicenseeExtension> {
+        listOf(
+            "Apache-2.0",
+            "MIT",
+            "BSD-2-Clause", // hamcrest
+            "EPL-1.0", // junit
+          )
+          .forEach(::allow)
 
-          listOf(
-                  "https://opensource.org/license/mit", // slf4j
-              )
-              .forEach(::allowUrl)
+        listOf(
+            "https://opensource.org/license/mit" // slf4j
+          )
+          .forEach(::allowUrl)
 
-          unusedAction(IGNORE)
-        }
+        unusedAction(IGNORE)
       }
+    }
 
   companion object {
     const val LICENSEE_REPORT_ASSET_NAME = "licensee.json"

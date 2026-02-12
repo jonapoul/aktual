@@ -14,10 +14,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 
 @Inject
-class PreferencesDao(
-    database: BudgetDatabase,
-    private val contexts: CoroutineContexts,
-) {
+class PreferencesDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
   private val queries = database.preferencesQueries
 
   suspend fun getAll(): Map<SyncedPrefKey, String?> = withResult {
@@ -33,18 +30,16 @@ class PreferencesDao(
   }
 
   fun observe(key: SyncedPrefKey): Flow<String?> =
-      queries
-          .getValue(key)
-          .asFlow()
-          .mapToOneOrNull(contexts.default)
-          .map { it?.value_ }
-          .distinctUntilChanged()
+    queries
+      .getValue(key)
+      .asFlow()
+      .mapToOneOrNull(contexts.default)
+      .map { it?.value_ }
+      .distinctUntilChanged()
 
-  suspend fun <R> withResult(
-      query: suspend PreferencesQueries.() -> R,
-  ): R = queries.withResult(query)
+  suspend fun <R> withResult(query: suspend PreferencesQueries.() -> R): R =
+    queries.withResult(query)
 
-  suspend fun withoutResult(
-      query: suspend PreferencesQueries.() -> Unit,
-  ) = queries.withoutResult(query)
+  suspend fun withoutResult(query: suspend PreferencesQueries.() -> Unit) =
+    queries.withoutResult(query)
 }

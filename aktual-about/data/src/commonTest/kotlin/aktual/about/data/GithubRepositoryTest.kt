@@ -61,16 +61,16 @@ class GithubRepositoryTest {
     // Then
     assertThat(TestBuildConfig.versionName).isEqualTo("1.2.3")
     assertThat(state)
-        .isDataClassEqualTo(
-            LatestReleaseState.UpdateAvailable(
-                GithubRelease(
-                    versionName = "v2.3.4",
-                    publishedAt = Instant.parse("2024-03-30T09:57:02Z"),
-                    htmlUrl = "https://github.com/jonapoul/aktual/releases/tag/2.3.4",
-                    tagName = "2.3.4",
-                ),
-            ),
+      .isDataClassEqualTo(
+        LatestReleaseState.UpdateAvailable(
+          GithubRelease(
+            versionName = "v2.3.4",
+            publishedAt = Instant.parse("2024-03-30T09:57:02Z"),
+            htmlUrl = "https://github.com/jonapoul/aktual/releases/tag/2.3.4",
+            tagName = "2.3.4",
+          )
         )
+      )
   }
 
   @Test
@@ -141,9 +141,9 @@ class GithubRepositoryTest {
 
     // Then
     assertThat(state)
-        .isInstanceOf<LatestReleaseState.Failure>()
-        .prop(LatestReleaseState.Failure::errorMessage)
-        .contains("IO failure")
+      .isInstanceOf<LatestReleaseState.Failure>()
+      .prop(LatestReleaseState.Failure::errorMessage)
+      .contains("IO failure")
   }
 
   @Test
@@ -157,18 +157,18 @@ class GithubRepositoryTest {
 
     // Then
     assertThat(state)
-        .isInstanceOf<LatestReleaseState.Failure>()
-        .prop(LatestReleaseState.Failure::errorMessage)
-        .contains("HTTP error 405")
+      .isInstanceOf<LatestReleaseState.Failure>()
+      .prop(LatestReleaseState.Failure::errorMessage)
+      .contains("HTTP error 405")
   }
 
   private fun TestScope.buildRepo() {
     mockEngine = emptyMockEngine()
     githubRepository =
-        GithubRepository(
-            contexts = TestCoroutineContexts(standardDispatcher),
-            buildConfig = TestBuildConfig,
-            githubApi = GithubApiImpl(client = testHttpClient(mockEngine, GithubJson)),
-        )
+      GithubRepository(
+        contexts = TestCoroutineContexts(standardDispatcher),
+        buildConfig = TestBuildConfig,
+        githubApi = GithubApiImpl(client = testHttpClient(mockEngine, GithubJson)),
+      )
   }
 }

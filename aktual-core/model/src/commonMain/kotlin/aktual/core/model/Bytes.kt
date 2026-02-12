@@ -8,13 +8,13 @@ value class Bytes(val numBytes: Long) : Comparable<Bytes> {
   override fun toString(): String = toString(precision = 1)
 
   fun toString(precision: Int): String =
-      when {
-        this < kB -> "%d B".format(numBytes)
-        this < MB -> "%.${precision}f kB".format(this / kB)
-        this < GB -> "%.${precision}f MB".format(this / MB)
-        this < TB -> "%.${precision}f GB".format(this / GB)
-        else -> "%.${precision}f TB".format(this / TB)
-      }
+    when {
+      this < kB -> "%d B".format(numBytes)
+      this < MB -> "%.${precision}f kB".format(this / kB)
+      this < GB -> "%.${precision}f MB".format(this / MB)
+      this < TB -> "%.${precision}f GB".format(this / GB)
+      else -> "%.${precision}f TB".format(this / TB)
+    }
 
   override fun compareTo(other: Bytes): Int = numBytes.compareTo(other.numBytes)
 

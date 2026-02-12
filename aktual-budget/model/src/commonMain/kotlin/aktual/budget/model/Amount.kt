@@ -38,37 +38,37 @@ value class Amount(private val value: Long) : Comparable<Amount> {
 
   @Suppress("MagicNumber")
   fun toString(
-      config: NumberFormatConfig,
-      includeSign: Boolean,
-      isPrivacyEnabled: Boolean,
+    config: NumberFormatConfig,
+    includeSign: Boolean,
+    isPrivacyEnabled: Boolean,
   ): String =
-      buildString {
-            if (includeSign && value > 0) append("+")
-            if (value < 0) append("-")
+    buildString {
+        if (includeSign && value > 0) append("+")
+        if (value < 0) append("-")
 
-            val (format, hideFraction) = config
+        val (format, hideFraction) = config
 
-            val locale =
-                when (format) {
-                  NumberFormat.CommaDot -> Locale.US
-                  NumberFormat.DotComma -> Locale.GERMANY
-                  NumberFormat.SpaceComma -> enSe
-                  NumberFormat.ApostropheDot -> deCh
-                  NumberFormat.CommaDotIn -> enIn
-                }
-
-            val numberFormat =
-                JNumberFormat.getNumberInstance(locale).apply {
-                  minimumFractionDigits = if (hideFraction) 0 else 2
-                  maximumFractionDigits = if (hideFraction) 0 else 2
-                }
-
-            append(numberFormat.format(toDouble().absoluteValue))
+        val locale =
+          when (format) {
+            NumberFormat.CommaDot -> Locale.US
+            NumberFormat.DotComma -> Locale.GERMANY
+            NumberFormat.SpaceComma -> enSe
+            NumberFormat.ApostropheDot -> deCh
+            NumberFormat.CommaDotIn -> enIn
           }
-          .let { string ->
-            val numberCount = string.count { it.isDigit() }
-            if (isPrivacyEnabled) "~".repeat(numberCount) else string
+
+        val numberFormat =
+          JNumberFormat.getNumberInstance(locale).apply {
+            minimumFractionDigits = if (hideFraction) 0 else 2
+            maximumFractionDigits = if (hideFraction) 0 else 2
           }
+
+        append(numberFormat.format(toDouble().absoluteValue))
+      }
+      .let { string ->
+        val numberCount = string.count { it.isDigit() }
+        if (isPrivacyEnabled) "~".repeat(numberCount) else string
+      }
 
   companion object {
     private const val FACTOR = 100.0
@@ -79,6 +79,6 @@ value class Amount(private val value: Long) : Comparable<Amount> {
     private val deCh = locale("de", "CH")
 
     private fun locale(language: String, region: String) =
-        Locale.Builder().setLanguage(language).setRegion(region).build()
+      Locale.Builder().setLanguage(language).setRegion(region).build()
   }
 }

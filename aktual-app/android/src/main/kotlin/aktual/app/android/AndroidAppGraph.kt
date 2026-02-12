@@ -14,8 +14,6 @@ interface AndroidAppGraph : AppGraph, MetroAppComponentProviders {
 
   @DependencyGraph.Factory
   fun interface Factory {
-    fun create(
-        @Provides context: Context,
-    ): AndroidAppGraph
+    fun create(@Provides context: Context): AndroidAppGraph
   }
 }

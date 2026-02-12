@@ -21,9 +21,9 @@ import logcat.logcat
 @Inject
 class BudgetListFetcher
 internal constructor(
-    private val contexts: CoroutineContexts,
-    private val apisStateHolder: AktualApisStateHolder,
-    private val keyPreferences: KeyPreferences,
+  private val contexts: CoroutineContexts,
+  private val apisStateHolder: AktualApisStateHolder,
+  private val keyPreferences: KeyPreferences,
 ) {
   suspend fun fetchBudgets(token: Token): FetchBudgetsResult {
     val apis = apisStateHolder.value ?: return FetchBudgetsResult.NotLoggedIn
@@ -50,20 +50,20 @@ internal constructor(
   }
 
   private suspend fun parseResponseException(e: ResponseException): FetchBudgetsResult =
-      try {
-        val body = e.response.body<ListUserFilesResponse.Failure>()
-        FetchBudgetsResult.FailureResponse(body.reason.reason)
-      } catch (e: JsonConvertException) {
-        FetchBudgetsResult.OtherFailure(e.requireMessage())
-      }
+    try {
+      val body = e.response.body<ListUserFilesResponse.Failure>()
+      FetchBudgetsResult.FailureResponse(body.reason.reason)
+    } catch (e: JsonConvertException) {
+      FetchBudgetsResult.OtherFailure(e.requireMessage())
+    }
 
   private fun toBudget(item: UserFile) =
-      Budget(
-          name = item.name,
-          state = BudgetState.Unknown,
-          encryptKeyId = item.encryptKeyId?.value,
-          groupId = item.groupId,
-          cloudFileId = item.fileId,
-          hasKey = item.encryptKeyId in keyPreferences,
-      )
+    Budget(
+      name = item.name,
+      state = BudgetState.Unknown,
+      encryptKeyId = item.encryptKeyId?.value,
+      groupId = item.groupId,
+      cloudFileId = item.fileId,
+      hasKey = item.encryptKeyId in keyPreferences,
+    )
 }

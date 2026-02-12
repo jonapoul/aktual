@@ -56,12 +56,12 @@ class KeyFetcherTest {
     stateHolder.value = mockk(relaxed = true) { every { sync } returns syncApi }
 
     keyFetcher =
-        KeyFetcher(
-            stateHolder = stateHolder,
-            contexts = contexts,
-            keyPreferences = keyPreferences,
-            decrypter = decrypter,
-        )
+      KeyFetcher(
+        stateHolder = stateHolder,
+        contexts = contexts,
+        keyPreferences = keyPreferences,
+        decrypter = decrypter,
+      )
   }
 
   @AfterTest
@@ -79,7 +79,7 @@ class KeyFetcherTest {
 
     // then
     assertThat(result)
-        .isEqualTo(FetchKeyResult.Success("KQWSxKj5Gc27pPk127N7QkIFxNJtopx0doU4O5pSWd0=".base64()))
+      .isEqualTo(FetchKeyResult.Success("KQWSxKj5Gc27pPk127N7QkIFxNJtopx0doU4O5pSWd0=".base64()))
   }
 
   private companion object {
@@ -90,16 +90,16 @@ class KeyFetcherTest {
     val CORRECT_PASSWORD = Password("P@ssw0rd!")
 
     val VALID_RESPONSE =
-        """
-        {
-          "status": "ok",
-          "data": {
-            "id": "a57fc3bf-fa98-44f2-82b7-54b4755703a9",
-            "salt": "1EqpueIJKQLC8Sbyfr0mH3Am+wyB0J6TTteJg/Yux0I=",
-            "test": "{\"value\":\"CSoGSJ0+CX+sTq4xkaOBIVXoALreifDvbZ9Vwdx5R/yZPwwfoaMViDn/DH6J4mDuebTD5XF13z9PbzMw4hR4DJFD3OJKKtSDen0ozNfGxhQRELkGKLcsWMxzhjWDM1LQjRi9PUi2mEA=\",\"meta\":{\"keyId\":\"a57fc3bf-fa98-44f2-82b7-54b4755703a9\",\"algorithm\":\"aes-256-gcm\",\"iv\":\"dzrtFWZRScdJy6xq\",\"authTag\":\"hJodLzlWpyS4w9ZSn/iyfQ==\"}}"
-          }
+      """
+      {
+        "status": "ok",
+        "data": {
+          "id": "a57fc3bf-fa98-44f2-82b7-54b4755703a9",
+          "salt": "1EqpueIJKQLC8Sbyfr0mH3Am+wyB0J6TTteJg/Yux0I=",
+          "test": "{\"value\":\"CSoGSJ0+CX+sTq4xkaOBIVXoALreifDvbZ9Vwdx5R/yZPwwfoaMViDn/DH6J4mDuebTD5XF13z9PbzMw4hR4DJFD3OJKKtSDen0ozNfGxhQRELkGKLcsWMxzhjWDM1LQjRi9PUi2mEA=\",\"meta\":{\"keyId\":\"a57fc3bf-fa98-44f2-82b7-54b4755703a9\",\"algorithm\":\"aes-256-gcm\",\"iv\":\"dzrtFWZRScdJy6xq\",\"authTag\":\"hJodLzlWpyS4w9ZSn/iyfQ==\"}}"
         }
-        """
-            .trimIndent()
+      }
+      """
+        .trimIndent()
   }
 }

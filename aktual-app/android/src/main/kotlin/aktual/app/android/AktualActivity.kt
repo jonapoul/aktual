@@ -45,24 +45,16 @@ class AktualActivity(private val viewModelFactory: MetroViewModelFactory) : Comp
 
     val transparent = Color.Transparent.value.toInt()
     enableEdgeToEdge(
-        statusBarStyle = SystemBarStyle.auto(transparent, transparent),
-        navigationBarStyle = SystemBarStyle.auto(transparent, transparent),
+      statusBarStyle = SystemBarStyle.auto(transparent, transparent),
+      navigationBarStyle = SystemBarStyle.auto(transparent, transparent),
     )
 
-    setContent {
-      Content(
-          viewModel = viewModel,
-          viewModelFactory = viewModelFactory,
-      )
-    }
+    setContent { Content(viewModel = viewModel, viewModelFactory = viewModelFactory) }
   }
 }
 
 @Composable
-private fun Content(
-    viewModel: AktualActivityViewModel,
-    viewModelFactory: MetroViewModelFactory,
-) {
+private fun Content(viewModel: AktualActivityViewModel, viewModelFactory: MetroViewModelFactory) {
   val regular by viewModel.regularSchemeType.collectAsStateWithLifecycle()
   val darkScheme by viewModel.darkSchemeType.collectAsStateWithLifecycle()
   val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
@@ -71,24 +63,22 @@ private fun Content(
   val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
   val colorSchemeType = chooseSchemeType(regular, darkScheme)
 
-  CompositionLocalProvider(
-      LocalMetroViewModelFactory provides viewModelFactory,
-  ) {
+  CompositionLocalProvider(LocalMetroViewModelFactory provides viewModelFactory) {
     WithCompositionLocals(
-        isPrivacyEnabled = isPrivacyEnabled,
-        format = numberFormat,
-        hideFraction = hideFraction,
+      isPrivacyEnabled = isPrivacyEnabled,
+      format = numberFormat,
+      hideFraction = hideFraction,
     ) {
       AktualTheme(colorSchemeType) {
         AktualAppContent(
-            navController = rememberNavController(),
-            isPrivacyEnabled = isPrivacyEnabled,
-            numberFormat = numberFormat,
-            hideFraction = hideFraction,
-            colorSchemeType = colorSchemeType,
-            isServerUrlSet = viewModel.isServerUrlSet,
-            token = viewModel.token,
-            bottomBarState = bottomBarState,
+          navController = rememberNavController(),
+          isPrivacyEnabled = isPrivacyEnabled,
+          numberFormat = numberFormat,
+          hideFraction = hideFraction,
+          colorSchemeType = colorSchemeType,
+          isServerUrlSet = viewModel.isServerUrlSet,
+          token = viewModel.token,
+          bottomBarState = bottomBarState,
         )
       }
     }

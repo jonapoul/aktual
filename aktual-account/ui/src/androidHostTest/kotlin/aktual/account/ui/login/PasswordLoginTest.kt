@@ -22,43 +22,39 @@ class PasswordLoginTest {
 
   @Test
   fun `Can't click button if loading`() =
-      composeRule.runTest {
-        // given
-        var wasClicked = false
-        setAndroidThemedContent {
-          PasswordLogin(
-              isLoading = true,
-              enteredPassword = PASSWORD,
-              onAction = { wasClicked = it == LoginAction.SignIn },
-          )
-        }
-
-        // then the sign in button is disabled
-        onNodeWithTag(CoreUiTags.PrimaryTextButtonWithLoading).assertIsNotEnabled()
-
-        // and the text input is disabled
-        onNodeWithTag(Tags.PasswordLoginTextField).assertIsNotEnabled()
-
-        // and clicking the button does nothing
-        onNodeWithTag(Tags.PasswordLoginButton, useUnmergedTree = true).performClick()
-        assertThat(wasClicked).isFalse()
+    composeRule.runTest {
+      // given
+      var wasClicked = false
+      setAndroidThemedContent {
+        PasswordLogin(
+          isLoading = true,
+          enteredPassword = PASSWORD,
+          onAction = { wasClicked = it == LoginAction.SignIn },
+        )
       }
+
+      // then the sign in button is disabled
+      onNodeWithTag(CoreUiTags.PrimaryTextButtonWithLoading).assertIsNotEnabled()
+
+      // and the text input is disabled
+      onNodeWithTag(Tags.PasswordLoginTextField).assertIsNotEnabled()
+
+      // and clicking the button does nothing
+      onNodeWithTag(Tags.PasswordLoginButton, useUnmergedTree = true).performClick()
+      assertThat(wasClicked).isFalse()
+    }
 
   @Test
   fun `Entered password is censored`() =
-      composeRule.runTest {
-        // given
-        setAndroidThemedContent {
-          PasswordLogin(
-              isLoading = false,
-              enteredPassword = PASSWORD,
-              onAction = {},
-          )
-        }
-
-        // then the text entry input is blocked out
-        onNodeWithTag(Tags.PasswordLoginTextField).assertEditableTextEquals("•••••••••")
+    composeRule.runTest {
+      // given
+      setAndroidThemedContent {
+        PasswordLogin(isLoading = false, enteredPassword = PASSWORD, onAction = {})
       }
+
+      // then the text entry input is blocked out
+      onNodeWithTag(Tags.PasswordLoginTextField).assertEditableTextEquals("•••••••••")
+    }
 
   private companion object {
     val PASSWORD = Password("P@ssw0rd!")

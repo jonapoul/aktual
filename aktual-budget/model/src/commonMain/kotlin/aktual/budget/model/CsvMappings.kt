@@ -10,12 +10,12 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable
 data class CsvMappings(
-    @SerialName("date") @Serializable(with = StringIntSerializer::class) val date: Int,
-    @SerialName("amount") @Serializable(with = StringIntSerializer::class) val amount: Int,
-    @SerialName("payee") @Serializable(with = StringIntSerializer::class) val payee: Int,
-    @SerialName("notes") val notes: Int,
-    @SerialName("inOut") val inOut: Int,
-    @SerialName("category") @Serializable(with = StringIntSerializer::class) val category: Int,
+  @SerialName("date") @Serializable(with = StringIntSerializer::class) val date: Int,
+  @SerialName("amount") @Serializable(with = StringIntSerializer::class) val amount: Int,
+  @SerialName("payee") @Serializable(with = StringIntSerializer::class) val payee: Int,
+  @SerialName("notes") val notes: Int,
+  @SerialName("inOut") val inOut: Int,
+  @SerialName("category") @Serializable(with = StringIntSerializer::class) val category: Int,
 )
 
 private object StringIntSerializer : KSerializer<Int> {

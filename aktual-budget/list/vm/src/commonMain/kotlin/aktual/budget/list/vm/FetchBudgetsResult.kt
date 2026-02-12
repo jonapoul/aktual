@@ -5,9 +5,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 sealed interface FetchBudgetsResult {
-  data class Success(
-      val budgets: List<Budget>,
-  ) : FetchBudgetsResult
+  data class Success(val budgets: List<Budget>) : FetchBudgetsResult
 
   sealed interface Failure : FetchBudgetsResult {
     val reason: String?

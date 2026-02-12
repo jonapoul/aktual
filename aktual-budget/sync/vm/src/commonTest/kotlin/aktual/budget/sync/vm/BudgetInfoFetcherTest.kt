@@ -51,10 +51,10 @@ class BudgetInfoFetcherTest {
     apisStateHolder = AktualApisStateHolder()
     apisStateHolder.update { aktualApis() }
     budgetInfoFetcher =
-        BudgetInfoFetcher(
-            contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
-            apisStateHolder = apisStateHolder,
-        )
+      BudgetInfoFetcher(
+        contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
+        apisStateHolder = apisStateHolder,
+      )
   }
 
   @Test
@@ -62,45 +62,45 @@ class BudgetInfoFetcherTest {
     // given
     before()
     val response =
-        """
-        {
-            "status": "ok",
-            "data": {
-                "deleted": 0,
-                "fileId": "b328186c-c819-4333-959b-04f676c1ee46",
-                "groupId": "afb25fc0-b294-4f71-ae8f-ce1e4a8fec10",
-                "name": "Main Budget",
-                "encryptMeta": {
-                    "keyId": "2a66f5de-c530-4c06-8103-a48f26a0ce44",
-                    "algorithm": "aes-256-gcm",
-                    "iv": "7tzgaLCrSFxVfzZR",
-                    "authTag": "25nafe0UpzehRCks/xQjoB=="
-                },
-                "usersWithAccess": []
-            }
-        }
-        """
-            .trimIndent()
+      """
+      {
+          "status": "ok",
+          "data": {
+              "deleted": 0,
+              "fileId": "b328186c-c819-4333-959b-04f676c1ee46",
+              "groupId": "afb25fc0-b294-4f71-ae8f-ce1e4a8fec10",
+              "name": "Main Budget",
+              "encryptMeta": {
+                  "keyId": "2a66f5de-c530-4c06-8103-a48f26a0ce44",
+                  "algorithm": "aes-256-gcm",
+                  "iv": "7tzgaLCrSFxVfzZR",
+                  "authTag": "25nafe0UpzehRCks/xQjoB=="
+              },
+              "usersWithAccess": []
+          }
+      }
+      """
+        .trimIndent()
     mockEngine += { respondJson(response) }
 
     // then
     val userFile =
-        UserFile(
-            deleted = 0,
-            fileId = BudgetId("b328186c-c819-4333-959b-04f676c1ee46"),
-            groupId = "afb25fc0-b294-4f71-ae8f-ce1e4a8fec10",
-            name = "Main Budget",
-            encryptKeyId = null,
-            owner = null,
-            usersWithAccess = emptyList(),
-            encryptMeta =
-                EncryptMeta(
-                    keyId = KeyId("2a66f5de-c530-4c06-8103-a48f26a0ce44"),
-                    algorithm = "aes-256-gcm",
-                    iv = "7tzgaLCrSFxVfzZR".base64(),
-                    authTag = "25nafe0UpzehRCks/xQjoB==".base64(),
-                ),
-        )
+      UserFile(
+        deleted = 0,
+        fileId = BudgetId("b328186c-c819-4333-959b-04f676c1ee46"),
+        groupId = "afb25fc0-b294-4f71-ae8f-ce1e4a8fec10",
+        name = "Main Budget",
+        encryptKeyId = null,
+        owner = null,
+        usersWithAccess = emptyList(),
+        encryptMeta =
+          EncryptMeta(
+            keyId = KeyId("2a66f5de-c530-4c06-8103-a48f26a0ce44"),
+            algorithm = "aes-256-gcm",
+            iv = "7tzgaLCrSFxVfzZR".base64(),
+            authTag = "25nafe0UpzehRCks/xQjoB==".base64(),
+          ),
+      )
     assertThatFetchResult().isEqualTo(Result.Success(userFile))
   }
 
@@ -120,9 +120,9 @@ class BudgetInfoFetcherTest {
     before()
     mockEngine += {
       respondJson(
-          status = HttpStatusCode.Unauthorized,
-          content =
-              """{ "status": "error", "reason": "unauthorized", "details": "token-not-found" }""",
+        status = HttpStatusCode.Unauthorized,
+        content =
+          """{ "status": "error", "reason": "unauthorized", "details": "token-not-found" }""",
       )
     }
 
@@ -135,10 +135,7 @@ class BudgetInfoFetcherTest {
     // given
     before()
     mockEngine += {
-      respondJson(
-          status = HttpStatusCode.Unauthorized,
-          content = """{ "unexpected-key": 123 }""",
-      )
+      respondJson(status = HttpStatusCode.Unauthorized, content = """{ "unexpected-key": 123 }""")
     }
 
     // then
@@ -158,19 +155,19 @@ class BudgetInfoFetcherTest {
   }
 
   private suspend fun assertThatFetchResult() =
-      assertThat(budgetInfoFetcher.fetch(TOKEN, BUDGET_ID))
+    assertThat(budgetInfoFetcher.fetch(TOKEN, BUDGET_ID))
 
   private fun aktualApis() =
-      AktualApis(
-          serverUrl = SERVER_URL,
-          client = client,
-          account = mockk(),
-          base = mockk(),
-          health = mockk(),
-          metrics = mockk(),
-          sync = syncApi,
-          syncDownload = mockk(),
-      )
+    AktualApis(
+      serverUrl = SERVER_URL,
+      client = client,
+      account = mockk(),
+      base = mockk(),
+      health = mockk(),
+      metrics = mockk(),
+      sync = syncApi,
+      syncDownload = mockk(),
+    )
 
   private companion object {
     val TOKEN = Token("abc-123")

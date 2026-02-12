@@ -24,61 +24,57 @@ class LicensesRepositoryTest {
 
     // Then
     val alakazamAndroidCore =
-        ArtifactDetail(
-            groupId = "dev.jonpoulton.alakazam",
-            artifactId = "android-core",
-            version = "6.0.0",
-            name = "Alakazam Android Core",
-            spdxLicenses = setOf(Apache2),
-            scm = ArtifactScm(url = "https://github.com/jonapoul/alakazam"),
-        )
+      ArtifactDetail(
+        groupId = "dev.jonpoulton.alakazam",
+        artifactId = "android-core",
+        version = "6.0.0",
+        name = "Alakazam Android Core",
+        spdxLicenses = setOf(Apache2),
+        scm = ArtifactScm(url = "https://github.com/jonapoul/alakazam"),
+      )
 
     val composeMaterialRipple =
-        ArtifactDetail(
-            groupId = "androidx.compose.material",
-            artifactId = "material-ripple",
-            version = "1.7.8",
-            name = "Compose Material Ripple",
-            spdxLicenses = setOf(Apache2),
-            scm = ArtifactScm(url = "https://cs.android.com/androidx/platform/frameworks/support"),
-        )
+      ArtifactDetail(
+        groupId = "androidx.compose.material",
+        artifactId = "material-ripple",
+        version = "1.7.8",
+        name = "Compose Material Ripple",
+        spdxLicenses = setOf(Apache2),
+        scm = ArtifactScm(url = "https://cs.android.com/androidx/platform/frameworks/support"),
+      )
 
     val fragmentKtx =
-        ArtifactDetail(
-            groupId = "androidx.fragment",
-            artifactId = "fragment-ktx",
-            version = "1.8.6",
-            name = "Fragment Kotlin Extensions",
-            spdxLicenses = setOf(Apache2),
-            scm = ArtifactScm(url = "https://cs.android.com/androidx/platform/frameworks/support"),
-        )
+      ArtifactDetail(
+        groupId = "androidx.fragment",
+        artifactId = "fragment-ktx",
+        version = "1.8.6",
+        name = "Fragment Kotlin Extensions",
+        spdxLicenses = setOf(Apache2),
+        scm = ArtifactScm(url = "https://cs.android.com/androidx/platform/frameworks/support"),
+      )
 
     val slf4jApi =
-        ArtifactDetail(
-            groupId = "org.slf4j",
-            artifactId = "slf4j-api",
-            version = "2.0.17",
-            name = "SLF4J API Module",
-            unknownLicenses =
-                setOf(UnknownLicense(name = "MIT", url = "https://opensource.org/license/mit")),
-            scm = ArtifactScm(url = "https://github.com/qos-ch/slf4j/slf4j-parent"),
-        )
+      ArtifactDetail(
+        groupId = "org.slf4j",
+        artifactId = "slf4j-api",
+        version = "2.0.17",
+        name = "SLF4J API Module",
+        unknownLicenses =
+          setOf(UnknownLicense(name = "MIT", url = "https://opensource.org/license/mit")),
+        scm = ArtifactScm(url = "https://github.com/qos-ch/slf4j/slf4j-parent"),
+      )
 
     assertThat(state)
-        .isDataClassEqualTo(
-            LicensesLoadState.Success(
-                libraries =
-                    listOf(composeMaterialRipple, fragmentKtx, alakazamAndroidCore, slf4jApi),
-            ),
+      .isDataClassEqualTo(
+        LicensesLoadState.Success(
+          libraries = listOf(composeMaterialRipple, fragmentKtx, alakazamAndroidCore, slf4jApi)
         )
+      )
   }
 
   private fun TestScope.buildRepo(assetResource: String) {
     assets = Assets { getResourceAsStream(assetResource) }
     licensesRepository =
-        LicensesRepository(
-            assets = assets,
-            contexts = TestCoroutineContexts(standardDispatcher),
-        )
+      LicensesRepository(assets = assets, contexts = TestCoroutineContexts(standardDispatcher))
   }
 }

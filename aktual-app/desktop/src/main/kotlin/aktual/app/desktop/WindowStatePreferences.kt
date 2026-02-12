@@ -25,31 +25,28 @@ class WindowStatePreferences(private val preferences: JvmPreferences) {
   }
 
   val position: Preference<WindowPosition> =
-      preferences.getObject(
-          key = "window.position",
-          default = WindowPosition.PlatformDefault,
-          serializer = WindowPositionSerializer,
-      )
+    preferences.getObject(
+      key = "window.position",
+      default = WindowPosition.PlatformDefault,
+      serializer = WindowPositionSerializer,
+    )
 
   val size: Preference<DpSize> =
-      preferences.getObject(
-          key = "window.size",
-          default = DpSize(width = 800.dp, height = 600.dp),
-          serializer = DpSizeSerializer,
-      )
+    preferences.getObject(
+      key = "window.size",
+      default = DpSize(width = 800.dp, height = 600.dp),
+      serializer = DpSizeSerializer,
+    )
 
   val isMinimized: Preference<Boolean> =
-      preferences.getBoolean(
-          key = "window.isMinimized",
-          default = false,
-      )
+    preferences.getBoolean(key = "window.isMinimized", default = false)
 
   val placement: Preference<WindowPlacement> =
-      preferences.getObject(
-          key = "window.placement",
-          default = WindowPlacement.Floating,
-          serializer = WindowPlacementSerializer,
-      )
+    preferences.getObject(
+      key = "window.placement",
+      default = WindowPlacement.Floating,
+      serializer = WindowPlacementSerializer,
+    )
 }
 
 @Serializable private data class Position(val x: Float, val y: Float)
@@ -58,19 +55,18 @@ class WindowStatePreferences(private val preferences: JvmPreferences) {
 
 private object WindowPositionSerializer : StringSerializer<WindowPosition> {
   override fun deserialize(value: String): WindowPosition =
-      try {
-        val position = Json.decodeFromString(Position.serializer(), value)
-        WindowPosition.Absolute(position.x.dp, position.y.dp)
-      } catch (_: SerializationException) {
-        WindowPosition.PlatformDefault
-      }
+    try {
+      val position = Json.decodeFromString(Position.serializer(), value)
+      WindowPosition.Absolute(position.x.dp, position.y.dp)
+    } catch (_: SerializationException) {
+      WindowPosition.PlatformDefault
+    }
 
   override fun serialize(value: WindowPosition): String =
-      when (value) {
-        is WindowPosition.Absolute ->
-            with(value) { Json.encodeToString(Position(x.value, y.value)) }
-        else -> "PlatformDefault"
-      }
+    when (value) {
+      is WindowPosition.Absolute -> with(value) { Json.encodeToString(Position(x.value, y.value)) }
+      else -> "PlatformDefault"
+    }
 }
 
 private object DpSizeSerializer : StringSerializer<DpSize> {

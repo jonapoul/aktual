@@ -30,9 +30,9 @@ import logcat.logcat
 @ContributesIntoMap(AppScope::class)
 class MetricsViewModel
 internal constructor(
-    apisStateHolder: AktualApisStateHolder,
-    private val contexts: CoroutineContexts,
-    private val clock: Clock,
+  apisStateHolder: AktualApisStateHolder,
+  private val contexts: CoroutineContexts,
+  private val clock: Clock,
 ) : ViewModel() {
   private val fetchCount = MutableStateFlow(value = 0)
   private val mutableState = MutableStateFlow<MetricsState>(MetricsState.Loading)

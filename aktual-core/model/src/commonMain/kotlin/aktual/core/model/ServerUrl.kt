@@ -2,10 +2,7 @@ package aktual.core.model
 
 import alakazam.kotlin.parse
 
-data class ServerUrl(
-    val protocol: Protocol,
-    val baseUrl: String,
-) {
+data class ServerUrl(val protocol: Protocol, val baseUrl: String) {
   init {
     require(baseUrl.isNotBlank()) { "Base URL is blank" }
   }

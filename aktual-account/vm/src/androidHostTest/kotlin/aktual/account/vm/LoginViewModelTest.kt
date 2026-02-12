@@ -52,12 +52,12 @@ internal class LoginViewModelTest {
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
     viewModel =
-        LoginViewModel(
-            versionsStateHolder = versionsStateHolder,
-            loginRequester = loginRequester,
-            preferences = preferences,
-            buildConfig = TestBuildConfig.copy(defaultPassword = Password.Empty),
-        )
+      LoginViewModel(
+        versionsStateHolder = versionsStateHolder,
+        loginRequester = loginRequester,
+        preferences = preferences,
+        buildConfig = TestBuildConfig.copy(defaultPassword = Password.Empty),
+      )
   }
 
   @AfterTest

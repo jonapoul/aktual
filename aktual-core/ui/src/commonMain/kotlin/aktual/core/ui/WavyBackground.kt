@@ -11,31 +11,31 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
 val LocalColorSchemeType =
-    compositionLocalOf<ColorSchemeType> { error("No ColorSchemeType defined!") }
+  compositionLocalOf<ColorSchemeType> { error("No ColorSchemeType defined!") }
 
 @Composable
 fun WavyBackground(
-    modifier: Modifier = Modifier,
-    schemeType: ColorSchemeType = LocalColorSchemeType.current,
+  modifier: Modifier = Modifier,
+  schemeType: ColorSchemeType = LocalColorSchemeType.current,
 ) =
-    Image(
-        modifier = modifier.fillMaxSize(),
-        painter = backgroundImage(schemeType),
-        contentDescription = null,
-        contentScale = ContentScale.Crop,
-    )
+  Image(
+    modifier = modifier.fillMaxSize(),
+    painter = backgroundImage(schemeType),
+    contentDescription = null,
+    contentScale = ContentScale.Crop,
+  )
 
 @Composable
 private fun backgroundImage(type: ColorSchemeType) =
-    when (type) {
-      ColorSchemeType.Light -> Drawables.wavyBackgroundLight
-      ColorSchemeType.Dark -> Drawables.wavyBackgroundDark
-      ColorSchemeType.Midnight -> Drawables.wavyBackgroundMidnight
-    }
+  when (type) {
+    ColorSchemeType.Light -> Drawables.wavyBackgroundLight
+    ColorSchemeType.Dark -> Drawables.wavyBackgroundDark
+    ColorSchemeType.Midnight -> Drawables.wavyBackgroundMidnight
+  }
 
 @LandscapePreview
 @PortraitPreview
 @Composable
 private fun PreviewWavyBackground(
-    @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
 ) = WavyBackground(schemeType = type)

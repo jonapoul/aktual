@@ -11,23 +11,23 @@ interface BudgetFiles {
   val directoryPath: Path
 
   fun directory(id: BudgetId, mkdirs: Boolean = false): Path =
-      (directoryPath / id.value).also { if (mkdirs) fileSystem.createDirectories(it) }
+    (directoryPath / id.value).also { if (mkdirs) fileSystem.createDirectories(it) }
 
   fun tmp(mkdirs: Boolean = false): Path =
-      (directoryPath / "tmp").also { if (mkdirs) fileSystem.createDirectories(it) }
+    (directoryPath / "tmp").also { if (mkdirs) fileSystem.createDirectories(it) }
 }
 
 fun BudgetFiles.database(id: BudgetId, mkdirs: Boolean = false): Path =
-    directory(id, mkdirs) / "db.sqlite"
+  directory(id, mkdirs) / "db.sqlite"
 
 fun BudgetFiles.metadata(id: BudgetId, mkdirs: Boolean = false): Path =
-    directory(id, mkdirs) / "metadata.json"
+  directory(id, mkdirs) / "metadata.json"
 
 fun BudgetFiles.encryptedZip(id: BudgetId, mkdirs: Boolean = false): Path =
-    tmp(mkdirs) / "$id-encrypted.zip"
+  tmp(mkdirs) / "$id-encrypted.zip"
 
 fun BudgetFiles.decryptedZip(id: BudgetId, mkdirs: Boolean = false): Path =
-    tmp(mkdirs) / "$id-decrypted.zip"
+  tmp(mkdirs) / "$id-decrypted.zip"
 
 fun BudgetFiles.writeMetadata(metadata: DbMetadata) {
   val path = metadata(metadata.cloudFileId, mkdirs = true)

@@ -25,4 +25,4 @@ internal fun Lint.commonConfigure(project: Project) {
 // ":aktual-path:to:module" -> "aktual.path.to.module", or ":aktual-app:android" ->
 // "aktual.app.android"
 internal fun Project.buildNamespace() =
-    path.split(":", "-").filter { it.isNotBlank() }.joinToString(".")
+  path.split(":", "-").filter { it.isNotBlank() }.joinToString(".")

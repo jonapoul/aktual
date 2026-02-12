@@ -21,46 +21,47 @@ import logcat.logcat
 @SingleIn(AppScope::class)
 class ServerPinger
 internal constructor(
-    private val scope: CoroutineScope,
-    private val apiStateHolder: AktualApisStateHolder,
-    private val pingStateHolder: PingStateHolder,
-    private val loopController: LoopController,
+  private val scope: CoroutineScope,
+  private val apiStateHolder: AktualApisStateHolder,
+  private val pingStateHolder: PingStateHolder,
+  private val loopController: LoopController,
 ) {
   private var job: Job? = null
 
   fun start() {
     job?.cancel()
     job =
-        scope.launchInfiniteLoop(loopController) {
-          // Allows ConnectionMonitor a chance to create the APIs before this is called the first
-          // time
-          delay(BEFORE_DELAY)
+      scope.launchInfiniteLoop(loopController) {
+        // Allows ConnectionMonitor a chance to create the APIs before this is called the
+        // first
+        // time
+        delay(BEFORE_DELAY)
 
-          val healthApi = apiStateHolder.value?.health
-          val state =
-              if (healthApi == null) {
-                logcat.w { "No API - setting ping state to failure" }
-                PingState.Failure
-              } else {
-                attemptPing(healthApi)
-              }
+        val healthApi = apiStateHolder.value?.health
+        val state =
+          if (healthApi == null) {
+            logcat.w { "No API - setting ping state to failure" }
+            PingState.Failure
+          } else {
+            attemptPing(healthApi)
+          }
 
-          pingStateHolder.update { state }
-          delay(AFTER_DELAY)
-        }
+        pingStateHolder.update { state }
+        delay(AFTER_DELAY)
+      }
   }
 
   private suspend fun attemptPing(healthApi: HealthApi): PingState =
-      try {
-        val response = healthApi.getHealth()
-        logcat.v { "Succeeded pinging server: $response" }
-        if (response.status == "UP") PingState.Success else PingState.Unknown
-      } catch (e: CancellationException) {
-        throw e
-      } catch (e: Exception) {
-        logcat.w(e) { "Failed pinging server" }
-        PingState.Failure
-      }
+    try {
+      val response = healthApi.getHealth()
+      logcat.v { "Succeeded pinging server: $response" }
+      if (response.status == "UP") PingState.Success else PingState.Unknown
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      logcat.w(e) { "Failed pinging server" }
+      PingState.Failure
+    }
 
   fun stop() {
     job?.cancel()

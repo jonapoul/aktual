@@ -11,36 +11,34 @@ import okio.Path.Companion.toOkioPath
 import okio.Sink
 import okio.Source
 
-class TemporaryFolder(
-    override val fileSystem: FileSystem = FileSystem.SYSTEM,
-) : ITemporaryFolder, TestInterceptor {
+class TemporaryFolder(override val fileSystem: FileSystem = FileSystem.SYSTEM) :
+  ITemporaryFolder, TestInterceptor {
   private lateinit var mutableRoot: Path
   override val root: Path
     get() = mutableRoot
 
   override fun intercept(testFunction: TestFunction): Unit =
-      try {
-        mutableRoot = createTempDirectory().toOkioPath()
-        testFunction()
-      } finally {
-        fileSystem.deleteRecursively(root)
-      }
+    try {
+      mutableRoot = createTempDirectory().toOkioPath()
+      testFunction()
+    } finally {
+      fileSystem.deleteRecursively(root)
+    }
 }
 
-class CoTemporaryFolder(
-    override val fileSystem: FileSystem = FileSystem.SYSTEM,
-) : ITemporaryFolder, CoroutineTestInterceptor {
+class CoTemporaryFolder(override val fileSystem: FileSystem = FileSystem.SYSTEM) :
+  ITemporaryFolder, CoroutineTestInterceptor {
   private lateinit var mutableRoot: Path
   override val root: Path
     get() = mutableRoot
 
   override suspend fun intercept(testFunction: CoroutineTestFunction) =
-      try {
-        mutableRoot = createTempDirectory().toOkioPath()
-        testFunction()
-      } finally {
-        fileSystem.deleteRecursively(root)
-      }
+    try {
+      mutableRoot = createTempDirectory().toOkioPath()
+      testFunction()
+    } finally {
+      fileSystem.deleteRecursively(root)
+    }
 }
 
 interface ITemporaryFolder {

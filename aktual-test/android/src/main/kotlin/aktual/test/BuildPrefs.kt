@@ -10,16 +10,16 @@ import dev.jonpoulton.preferences.core.Preferences
 import kotlin.coroutines.CoroutineContext
 
 fun buildSharedPreferences(
-    context: Context = ApplicationProvider.getApplicationContext(),
-    name: String = "prefs",
+  context: Context = ApplicationProvider.getApplicationContext(),
+  name: String = "prefs",
 ): SharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE)
 
 fun buildPreferences(
-    coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences = buildSharedPreferences(),
+  coroutineContext: CoroutineContext,
+  sharedPreferences: SharedPreferences = buildSharedPreferences(),
 ): Preferences = AndroidSharedPreferences(sharedPreferences, coroutineContext)
 
 fun buildEncryptedPreferences(
-    coroutineContext: CoroutineContext,
-    sharedPreferences: SharedPreferences = buildSharedPreferences(),
+  coroutineContext: CoroutineContext,
+  sharedPreferences: SharedPreferences = buildSharedPreferences(),
 ): EncryptedPreferences = AndroidEncryptedPreferences(sharedPreferences, coroutineContext)

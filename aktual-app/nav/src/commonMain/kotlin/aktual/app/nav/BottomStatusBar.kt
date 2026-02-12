@@ -40,77 +40,69 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 internal fun BottomStatusBar(
-    state: BottomBarState.Visible,
-    onMeasureHeight: (Dp) -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
-    density: Density = LocalDensity.current,
+  state: BottomBarState.Visible,
+  onMeasureHeight: (Dp) -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+  density: Density = LocalDensity.current,
 ) =
-    Row(
-        modifier =
-            modifier
-                .background(theme.cardBackground)
-                .padding(vertical = 3.dp, horizontal = 8.dp)
-                .fillMaxWidth()
-                .onGloballyPositioned { layoutCoordinates ->
-                  with(density) { onMeasureHeight(layoutCoordinates.size.height.toDp()) }
-                },
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-      val (pingState, budgetName) = state
+  Row(
+    modifier =
+      modifier
+        .background(theme.cardBackground)
+        .padding(vertical = 3.dp, horizontal = 8.dp)
+        .fillMaxWidth()
+        .onGloballyPositioned { layoutCoordinates ->
+          with(density) { onMeasureHeight(layoutCoordinates.size.height.toDp()) }
+        },
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    val (pingState, budgetName) = state
 
-      if (budgetName != null) {
-        Text(
-            text = loadedString(budgetName),
-            fontSize = 10.sp,
-            color = theme.pageText,
-        )
-      }
-
-      val text = pingState.text()
-      val tint = pingState.tint(theme)
-
-      HorizontalSpacer(weight = 1f)
-
-      Image(
-          modifier = Modifier.size(12.dp),
-          imageVector = pingState.icon(),
-          contentDescription = text,
-          colorFilter = ColorFilter.tint(tint),
-      )
-
-      HorizontalSpacer(5.dp)
-
-      Text(
-          text = text,
-          fontSize = 10.sp,
-          color = tint,
-      )
+    if (budgetName != null) {
+      Text(text = loadedString(budgetName), fontSize = 10.sp, color = theme.pageText)
     }
+
+    val text = pingState.text()
+    val tint = pingState.tint(theme)
+
+    HorizontalSpacer(weight = 1f)
+
+    Image(
+      modifier = Modifier.size(12.dp),
+      imageVector = pingState.icon(),
+      contentDescription = text,
+      colorFilter = ColorFilter.tint(tint),
+    )
+
+    HorizontalSpacer(5.dp)
+
+    Text(text = text, fontSize = 10.sp, color = tint)
+  }
 
 @Stable
 private fun PingState.icon() =
-    when (this) {
-      PingState.Success -> AktualIcons.CloudCheck
-      PingState.Failure -> AktualIcons.CloudWarning
-      PingState.Unknown -> AktualIcons.CloudWarning
-    }
+  when (this) {
+    PingState.Success -> AktualIcons.CloudCheck
+    PingState.Failure -> AktualIcons.CloudWarning
+    PingState.Unknown -> AktualIcons.CloudWarning
+  }
 
 @Composable
 private fun PingState.text() =
-    when (this) {
-      PingState.Success -> Strings.connectionConnected
-      PingState.Failure -> Strings.connectionDisconnected
-      PingState.Unknown -> Strings.connectionUnknown
-    }
+  when (this) {
+    PingState.Success -> Strings.connectionConnected
+    PingState.Failure -> Strings.connectionDisconnected
+    PingState.Unknown -> Strings.connectionUnknown
+  }
 
 @Stable
 private fun PingState.tint(theme: Theme) =
-    when (this) {
-      PingState.Success -> theme.successText
-      PingState.Failure -> theme.warningText
-      PingState.Unknown -> theme.pageTextSubdued
-    }
+  when (this) {
+    PingState.Success -> theme.successText
+    PingState.Failure -> theme.warningText
+    PingState.Unknown -> theme.pageTextSubdued
+  }
 
 @Stable
 @Composable
@@ -123,27 +115,21 @@ private fun loadedString(budgetName: String): AnnotatedString = buildAnnotatedSt
 @Preview
 @Composable
 private fun PreviewBottomBar(
-    @PreviewParameter(BottomBarProvider::class) params: ThemedParams<BottomBarParams>,
+  @PreviewParameter(BottomBarProvider::class) params: ThemedParams<BottomBarParams>
 ) =
-    PreviewWithColorScheme(params.type) {
-      BottomStatusBar(
-          state =
-              BottomBarState.Visible(
-                  pingState = params.data.state,
-                  budgetName = params.data.budgetName,
-              ),
-          onMeasureHeight = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    BottomStatusBar(
+      state =
+        BottomBarState.Visible(pingState = params.data.state, budgetName = params.data.budgetName),
+      onMeasureHeight = {},
+    )
+  }
 
-private data class BottomBarParams(
-    val state: PingState,
-    val budgetName: String? = null,
-)
+private data class BottomBarParams(val state: PingState, val budgetName: String? = null)
 
 private class BottomBarProvider :
-    ThemedParameterProvider<BottomBarParams>(
-        BottomBarParams(state = PingState.Success, budgetName = "My Budget"),
-        BottomBarParams(state = PingState.Failure),
-        BottomBarParams(state = PingState.Unknown),
-    )
+  ThemedParameterProvider<BottomBarParams>(
+    BottomBarParams(state = PingState.Success, budgetName = "My Budget"),
+    BottomBarParams(state = PingState.Failure),
+    BottomBarParams(state = PingState.Unknown),
+  )

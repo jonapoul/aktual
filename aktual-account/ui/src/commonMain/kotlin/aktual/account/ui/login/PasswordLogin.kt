@@ -31,51 +31,49 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun PasswordLogin(
-    isLoading: Boolean,
-    enteredPassword: Password,
-    onAction: (LoginAction) -> Unit,
-    modifier: Modifier = Modifier,
-    theme: Theme = LocalTheme.current,
+  isLoading: Boolean,
+  enteredPassword: Password,
+  onAction: (LoginAction) -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
-  Column(
-      modifier = modifier,
-  ) {
+  Column(modifier = modifier) {
     val keyboard = LocalSoftwareKeyboardController.current
 
     TextField(
-        modifier =
-            Modifier.testTag(Tags.PasswordLoginTextField)
-                .fillMaxWidth(1f)
-                .focusRequester(keyboardFocusRequester(keyboard)),
-        value = enteredPassword.value,
-        enabled = !isLoading,
-        onValueChange = { password -> onAction(LoginAction.EnterPassword(password)) },
-        placeholderText = Strings.loginPasswordHint,
-        visualTransformation = PasswordVisualTransformation(),
-        theme = theme,
-        keyboardOptions =
-            KeyboardOptions(
-                autoCorrectEnabled = false,
-                capitalization = KeyboardCapitalization.None,
-                keyboardType = KeyboardType.Password,
-                imeAction = ImeAction.Go,
-            ),
-        keyboardActions =
-            KeyboardActions(
-                onGo = {
-                  keyboard?.hide()
-                  onAction(LoginAction.SignIn)
-                },
-            ),
+      modifier =
+        Modifier.testTag(Tags.PasswordLoginTextField)
+          .fillMaxWidth(1f)
+          .focusRequester(keyboardFocusRequester(keyboard)),
+      value = enteredPassword.value,
+      enabled = !isLoading,
+      onValueChange = { password -> onAction(LoginAction.EnterPassword(password)) },
+      placeholderText = Strings.loginPasswordHint,
+      visualTransformation = PasswordVisualTransformation(),
+      theme = theme,
+      keyboardOptions =
+        KeyboardOptions(
+          autoCorrectEnabled = false,
+          capitalization = KeyboardCapitalization.None,
+          keyboardType = KeyboardType.Password,
+          imeAction = ImeAction.Go,
+        ),
+      keyboardActions =
+        KeyboardActions(
+          onGo = {
+            keyboard?.hide()
+            onAction(LoginAction.SignIn)
+          }
+        ),
     )
 
     VerticalSpacer(20.dp)
 
     PrimaryTextButtonWithLoading(
-        modifier = Modifier.testTag(Tags.PasswordLoginButton).padding(5.dp).fillMaxWidth(),
-        text = Strings.loginSignIn,
-        isLoading = isLoading,
-        onClick = { onAction(LoginAction.SignIn) },
+      modifier = Modifier.testTag(Tags.PasswordLoginButton).padding(5.dp).fillMaxWidth(),
+      text = Strings.loginSignIn,
+      isLoading = isLoading,
+      onClick = { onAction(LoginAction.SignIn) },
     )
   }
 }
@@ -83,24 +81,17 @@ internal fun PasswordLogin(
 @Preview
 @Composable
 private fun PreviewPasswordLogin(
-    @PreviewParameter(PasswordLoginProvider::class) params: ThemedParams<PasswordLoginParams>,
+  @PreviewParameter(PasswordLoginProvider::class) params: ThemedParams<PasswordLoginParams>
 ) =
-    PreviewWithColorScheme(params.type) {
-      PasswordLogin(
-          isLoading = false,
-          enteredPassword = Password.Dummy,
-          onAction = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    PasswordLogin(isLoading = false, enteredPassword = Password.Dummy, onAction = {})
+  }
 
-private data class PasswordLoginParams(
-    val isLoading: Boolean,
-    val password: Password,
-)
+private data class PasswordLoginParams(val isLoading: Boolean, val password: Password)
 
 private class PasswordLoginProvider :
-    ThemedParameterProvider<PasswordLoginParams>(
-        PasswordLoginParams(password = Password.Dummy, isLoading = true),
-        PasswordLoginParams(password = Password.Dummy, isLoading = false),
-        PasswordLoginParams(password = Password.Empty, isLoading = false),
-    )
+  ThemedParameterProvider<PasswordLoginParams>(
+    PasswordLoginParams(password = Password.Dummy, isLoading = true),
+    PasswordLoginParams(password = Password.Dummy, isLoading = false),
+    PasswordLoginParams(password = Password.Empty, isLoading = false),
+  )

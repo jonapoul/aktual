@@ -49,71 +49,69 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun Modifier.scrollbar(
-    lazyListState: LazyListState,
-    autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
+  lazyListState: LazyListState,
+  autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
 ): Modifier =
-    scrollbar(
-        scrollbarState = remember(lazyListState) { ScrollbarState(lazyListState) },
-        autoHide = autoHide,
-    )
+  scrollbar(
+    scrollbarState = remember(lazyListState) { ScrollbarState(lazyListState) },
+    autoHide = autoHide,
+  )
 
 @Composable
 fun Modifier.verticalScrollWithBar(
-    scrollState: ScrollState = rememberScrollState(),
-    autoHide: Boolean = false,
-    enabled: Boolean = true,
-    flingBehavior: FlingBehavior? = null,
-    reverseScrolling: Boolean = false,
+  scrollState: ScrollState = rememberScrollState(),
+  autoHide: Boolean = false,
+  enabled: Boolean = true,
+  flingBehavior: FlingBehavior? = null,
+  reverseScrolling: Boolean = false,
 ): Modifier =
-    verticalScrollbar(scrollState, autoHide)
-        .verticalScroll(scrollState, enabled, flingBehavior, reverseScrolling)
+  verticalScrollbar(scrollState, autoHide)
+    .verticalScroll(scrollState, enabled, flingBehavior, reverseScrolling)
 
 @Composable
 fun Modifier.verticalScrollbar(
-    scrollState: ScrollState = rememberScrollState(),
-    autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
+  scrollState: ScrollState = rememberScrollState(),
+  autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
 ): Modifier =
-    scrollbar(
-        scrollbarState =
-            remember(scrollState) { ScrollbarState(scrollState, Orientation.Vertical) },
-        autoHide = autoHide,
-    )
+  scrollbar(
+    scrollbarState = remember(scrollState) { ScrollbarState(scrollState, Orientation.Vertical) },
+    autoHide = autoHide,
+  )
 
 @Composable
 fun Modifier.horizontalScrollWithBar(
-    scrollState: ScrollState = rememberScrollState(),
-    autoHide: Boolean = false,
-    enabled: Boolean = true,
-    flingBehavior: FlingBehavior? = null,
-    reverseScrolling: Boolean = false,
+  scrollState: ScrollState = rememberScrollState(),
+  autoHide: Boolean = false,
+  enabled: Boolean = true,
+  flingBehavior: FlingBehavior? = null,
+  reverseScrolling: Boolean = false,
 ): Modifier =
-    horizontalScrollbar(scrollState, autoHide)
-        .horizontalScroll(scrollState, enabled, flingBehavior, reverseScrolling)
+  horizontalScrollbar(scrollState, autoHide)
+    .horizontalScroll(scrollState, enabled, flingBehavior, reverseScrolling)
 
 @Composable
 fun Modifier.horizontalScrollbar(
-    scrollState: ScrollState = rememberScrollState(),
-    autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
+  scrollState: ScrollState = rememberScrollState(),
+  autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
 ): Modifier =
-    scrollbar(
-        scrollbarState =
-            remember(scrollState) { ScrollbarState(scrollState, Orientation.Horizontal) },
-        autoHide = autoHide,
-    )
+  scrollbar(
+    scrollbarState = remember(scrollState) { ScrollbarState(scrollState, Orientation.Horizontal) },
+    autoHide = autoHide,
+  )
 
 @Composable
 internal fun Modifier.scrollbar(
-    scrollbarState: ScrollbarState,
-    autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
+  scrollbarState: ScrollbarState,
+  autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
 ): Modifier {
   val interactionEnabled = isScrollbarInteractionEnabled()
   return this then ScrollbarElement(scrollbarState, autoHide, interactionEnabled)
 }
 
 private data class ScrollbarElement(
-    private val scrollbarState: ScrollbarState,
-    private val autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
-    private val interactionEnabled: Boolean = false,
+  private val scrollbarState: ScrollbarState,
+  private val autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
+  private val interactionEnabled: Boolean = false,
 ) : ModifierNodeElement<ScrollbarNode>() {
   override fun create() = ScrollbarNode(scrollbarState, autoHide, interactionEnabled)
 
@@ -127,15 +125,15 @@ private data class ScrollbarElement(
 }
 
 private class ScrollbarNode(
-    scrollbarState: ScrollbarState,
-    autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
-    interactionEnabled: Boolean = false,
+  scrollbarState: ScrollbarState,
+  autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
+  interactionEnabled: Boolean = false,
 ) :
-    Modifier.Node(),
-    DrawModifierNode,
-    CompositionLocalConsumerModifierNode,
-    ObserverModifierNode,
-    PointerInputModifierNode {
+  Modifier.Node(),
+  DrawModifierNode,
+  CompositionLocalConsumerModifierNode,
+  ObserverModifierNode,
+  PointerInputModifierNode {
   var scrollbarState by mutableStateOf(scrollbarState)
   var autoHide by mutableStateOf(autoHide)
   var interactionEnabled by mutableStateOf(interactionEnabled)
@@ -241,8 +239,8 @@ private class ScrollbarNode(
     val shouldBeExpanded = isHovered || gestureState == GestureState.DRAGGING
     coroutineScope.launch {
       widthMultiplier.animateTo(
-          targetValue = if (shouldBeExpanded) SCROLLBAR_HOVER_WIDTH_MULTIPLIER else 1f,
-          animationSpec = spring(stiffness = Spring.StiffnessMedium),
+        targetValue = if (shouldBeExpanded) SCROLLBAR_HOVER_WIDTH_MULTIPLIER else 1f,
+        animationSpec = spring(stiffness = Spring.StiffnessMedium),
       )
     }
   }
@@ -282,15 +280,15 @@ private class ScrollbarNode(
   private fun showAndStateAutoFadeIfEnabled() {
     fadeJob?.cancel()
     fadeJob =
-        coroutineScope.launch {
-          alpha.animateTo(1f)
-          if (autoHide && !isHovered) {
-            delay(SCROLLBAR_FADE_DELAY)
-            if (!isHovered) {
-              alpha.animateTo(0f, animationSpec = spring(stiffness = Spring.StiffnessVeryLow))
-            }
+      coroutineScope.launch {
+        alpha.animateTo(1f)
+        if (autoHide && !isHovered) {
+          delay(SCROLLBAR_FADE_DELAY)
+          if (!isHovered) {
+            alpha.animateTo(0f, animationSpec = spring(stiffness = Spring.StiffnessVeryLow))
           }
         }
+      }
     observeChanges()
   }
 
@@ -315,11 +313,11 @@ private class ScrollbarNode(
     if (!isPointerOnScrollbar(position, bounds)) return false
 
     val normalizedPosition =
-        if (scrollbarState.orientation == Orientation.Vertical) {
-          position.y / bounds.height
-        } else {
-          position.x / bounds.width
-        }
+      if (scrollbarState.orientation == Orientation.Vertical) {
+        position.y / bounds.height
+      } else {
+        position.x / bounds.width
+      }
 
     val thumbStart = scrollbarState.scrollPosition
     val thumbEnd = thumbStart + scrollbarState.scrollbarSize
@@ -329,11 +327,11 @@ private class ScrollbarNode(
 
   private fun calculateTargetScroll(position: Offset, bounds: IntSize): Int {
     val normalizedPosition =
-        if (scrollbarState.orientation == Orientation.Vertical) {
-          (position.y / bounds.height).coerceIn(0f, 1f)
-        } else {
-          (position.x / bounds.width).coerceIn(0f, 1f)
-        }
+      if (scrollbarState.orientation == Orientation.Vertical) {
+        (position.y / bounds.height).coerceIn(0f, 1f)
+      } else {
+        (position.x / bounds.width).coerceIn(0f, 1f)
+      }
 
     val totalSize = scrollbarState.totalSize
     val viewportSize = scrollbarState.viewportSize
@@ -360,25 +358,25 @@ private class ScrollbarNode(
     val baseStrokeWidthPx = SCROLLBAR_STROKE_WIDTH.toPx()
     val strokeWidthPx = baseStrokeWidthPx * widthMultiplier.value
     val scrollbarPosition =
-        if (scrollbarState.orientation == Orientation.Vertical) {
-          Offset(size.width - strokeWidthPx, size.height * scrollbarState.scrollPosition)
-        } else {
-          Offset(size.width * scrollbarState.scrollPosition, size.height - strokeWidthPx)
-        }
+      if (scrollbarState.orientation == Orientation.Vertical) {
+        Offset(size.width - strokeWidthPx, size.height * scrollbarState.scrollPosition)
+      } else {
+        Offset(size.width * scrollbarState.scrollPosition, size.height - strokeWidthPx)
+      }
     val scrollbarSize =
-        if (scrollbarState.orientation == Orientation.Vertical) {
-          Size(strokeWidthPx, size.height * scrollbarState.scrollbarSize)
-        } else {
-          Size(size.width * scrollbarState.scrollbarSize, strokeWidthPx)
-        }
+      if (scrollbarState.orientation == Orientation.Vertical) {
+        Size(strokeWidthPx, size.height * scrollbarState.scrollbarSize)
+      } else {
+        Size(size.width * scrollbarState.scrollbarSize, strokeWidthPx)
+      }
     val cornerRadius = CornerRadius(strokeWidthPx / 2f, strokeWidthPx / 2f)
     drawRoundRect(
-        color = scrollbarColor,
-        topLeft = scrollbarPosition,
-        size = scrollbarSize,
-        cornerRadius = cornerRadius,
-        alpha = alpha.value,
-        style = Fill,
+      color = scrollbarColor,
+      topLeft = scrollbarPosition,
+      size = scrollbarSize,
+      cornerRadius = cornerRadius,
+      alpha = alpha.value,
+      style = Fill,
     )
   }
 }
@@ -425,8 +423,8 @@ internal data class ScrollbarState(private val delegate: ScrollableDelegate) {
   constructor(state: LazyListState) : this(LazyListStateScrollableDelegate(state))
 
   constructor(
-      state: ScrollState,
-      orientation: Orientation,
+    state: ScrollState,
+    orientation: Orientation,
   ) : this(ScrollStateScrollableDelegate(state, orientation))
 }
 
@@ -439,9 +437,8 @@ internal sealed interface ScrollableDelegate : ScrollableState {
   suspend fun animateScrollTo(value: Int)
 }
 
-private data class LazyListStateScrollableDelegate(
-    private val lazyListState: LazyListState,
-) : ScrollableDelegate, ScrollableState by lazyListState {
+private data class LazyListStateScrollableDelegate(private val lazyListState: LazyListState) :
+  ScrollableDelegate, ScrollableState by lazyListState {
   override val orientation
     get() = lazyListState.layoutInfo.orientation
 
@@ -471,14 +468,14 @@ private data class LazyListStateScrollableDelegate(
 
   private val averageItemSize by derivedStateOf {
     lazyListState.layoutInfo.visibleItemsInfo
-        .takeIf { it.isNotEmpty() }
-        ?.run { fastSumBy { it.size } / size } ?: 0
+      .takeIf { it.isNotEmpty() }
+      ?.run { fastSumBy { it.size } / size } ?: 0
   }
 }
 
 private data class ScrollStateScrollableDelegate(
-    private val scrollState: ScrollState,
-    override val orientation: Orientation,
+  private val scrollState: ScrollState,
+  override val orientation: Orientation,
 ) : ScrollableDelegate, ScrollableState by scrollState {
   override val scrollPosition: Int
     get() = scrollState.value

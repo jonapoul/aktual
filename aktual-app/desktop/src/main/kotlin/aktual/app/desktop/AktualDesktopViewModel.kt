@@ -21,24 +21,24 @@ import kotlinx.coroutines.CoroutineScope
 @ViewModelKey(AktualDesktopViewModel::class)
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class AktualDesktopViewModel(
-    appScope: CoroutineScope,
-    contexts: CoroutineContexts,
-    connectionMonitor: ConnectionMonitor,
-    serverPinger: ServerPinger,
-    pingStateHolder: PingStateHolder,
-    serverVersionFetcher: ServerVersionFetcher,
-    files: BudgetFiles,
-    budgetComponents: BudgetGraphHolder,
-    preferences: AppGlobalPreferences,
+  appScope: CoroutineScope,
+  contexts: CoroutineContexts,
+  connectionMonitor: ConnectionMonitor,
+  serverPinger: ServerPinger,
+  pingStateHolder: PingStateHolder,
+  serverVersionFetcher: ServerVersionFetcher,
+  files: BudgetFiles,
+  budgetComponents: BudgetGraphHolder,
+  preferences: AppGlobalPreferences,
 ) :
-    RootViewModel(
-        appScope = appScope,
-        contexts = contexts,
-        connectionMonitor = connectionMonitor,
-        serverPinger = serverPinger,
-        pingStateHolder = pingStateHolder,
-        serverVersionFetcher = serverVersionFetcher,
-        files = files,
-        budgetComponents = budgetComponents,
-        preferences = preferences,
-    )
+  RootViewModel(
+    appScope = appScope,
+    contexts = contexts,
+    connectionMonitor = connectionMonitor,
+    serverPinger = serverPinger,
+    pingStateHolder = pingStateHolder,
+    serverVersionFetcher = serverVersionFetcher,
+    files = files,
+    budgetComponents = budgetComponents,
+    preferences = preferences,
+  )

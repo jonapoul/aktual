@@ -13,17 +13,17 @@ import kotlinx.serialization.encoding.Encoder
 
 @Serializable
 data class GetMetricsResponse(
-    @SerialName("mem") val memory: Memory,
-    @SerialName("uptime") @Serializable(DurationAsDoubleSerializer::class) val uptime: Duration,
+  @SerialName("mem") val memory: Memory,
+  @SerialName("uptime") @Serializable(DurationAsDoubleSerializer::class) val uptime: Duration,
 ) {
   // See https://www.geeksforgeeks.org/node-js/node-js-process-memoryusage-method/
   @Serializable
   data class Memory(
-      @SerialName("rss") val rss: Bytes,
-      @SerialName("heapTotal") val heapTotal: Bytes,
-      @SerialName("heapUsed") val heapUsed: Bytes,
-      @SerialName("external") val external: Bytes,
-      @SerialName("arrayBuffers") val arrayBuffers: Bytes,
+    @SerialName("rss") val rss: Bytes,
+    @SerialName("heapTotal") val heapTotal: Bytes,
+    @SerialName("heapUsed") val heapUsed: Bytes,
+    @SerialName("external") val external: Bytes,
+    @SerialName("arrayBuffers") val arrayBuffers: Bytes,
   )
 }
 
@@ -35,5 +35,5 @@ private object DurationAsDoubleSerializer : KSerializer<Duration> {
   override fun deserialize(decoder: Decoder) = decoder.decodeDouble().seconds
 
   override fun serialize(encoder: Encoder, value: Duration) =
-      encoder.encodeDouble(value.inWholeNanoseconds / NANOSECS_PER_SEC)
+    encoder.encodeDouble(value.inWholeNanoseconds / NANOSECS_PER_SEC)
 }

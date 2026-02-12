@@ -24,66 +24,54 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
 internal fun TransactionsTitleBar(
-    loadedAccount: LoadedAccount,
-    onAction: ActionListener,
-    theme: Theme = LocalTheme.current,
+  loadedAccount: LoadedAccount,
+  onAction: ActionListener,
+  theme: Theme = LocalTheme.current,
 ) {
   val title =
-      when (loadedAccount) {
-        LoadedAccount.AllAccounts -> Strings.transactionsTitleAll
-        LoadedAccount.Loading -> Strings.transactionsTitleLoading
-        is LoadedAccount.SpecificAccount ->
-            loadedAccount.account.name ?: Strings.transactionsTitleNone
-      }
+    when (loadedAccount) {
+      LoadedAccount.AllAccounts -> Strings.transactionsTitleAll
+      LoadedAccount.Loading -> Strings.transactionsTitleLoading
+      is LoadedAccount.SpecificAccount ->
+        loadedAccount.account.name ?: Strings.transactionsTitleNone
+    }
 
   TopAppBar(
-      colors = theme.transparentTopAppBarColors(),
-      navigationIcon = {
-        IconButton(onClick = { onAction(Action.NavBack) }) {
-          Icon(
-              imageVector = MaterialIcons.ArrowBack,
-              contentDescription = Strings.navBack,
-          )
-        }
-      },
-      title = {
-        Text(
-            text = title,
-            maxLines = 1,
-            overflow = Ellipsis,
+    colors = theme.transparentTopAppBarColors(),
+    navigationIcon = {
+      IconButton(onClick = { onAction(Action.NavBack) }) {
+        Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
+      }
+    },
+    title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
+    actions = {
+      if (LocalPrivacyEnabled.current) {
+        IconButton(
+          onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = false)) },
+          content = { Icon(MaterialIcons.VisibilityOff, Strings.transactionsHeaderPrivacyOff) },
         )
-      },
-      actions = {
-        if (LocalPrivacyEnabled.current) {
-          IconButton(
-              onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = false)) },
-              content = { Icon(MaterialIcons.VisibilityOff, Strings.transactionsHeaderPrivacyOff) },
-          )
-        } else {
-          IconButton(
-              onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = true)) },
-              content = { Icon(MaterialIcons.Visibility, Strings.transactionsHeaderPrivacyOn) },
-          )
-        }
-      },
+      } else {
+        IconButton(
+          onClick = { onAction(Action.SetPrivacyMode(isPrivacyEnabled = true)) },
+          content = { Icon(MaterialIcons.Visibility, Strings.transactionsHeaderPrivacyOn) },
+        )
+      }
+    },
   )
 }
 
 @Preview
 @Composable
 private fun PreviewTransactionsTitleBar(
-    @PreviewParameter(TransactionsTitleBarProvider::class) params: ThemedParams<LoadedAccount>,
+  @PreviewParameter(TransactionsTitleBarProvider::class) params: ThemedParams<LoadedAccount>
 ) =
-    PreviewWithColorScheme(params.type) {
-      TransactionsTitleBar(
-          loadedAccount = params.data,
-          onAction = {},
-      )
-    }
+  PreviewWithColorScheme(params.type) {
+    TransactionsTitleBar(loadedAccount = params.data, onAction = {})
+  }
 
 private class TransactionsTitleBarProvider :
-    ThemedParameterProvider<LoadedAccount>(
-        LoadedAccount.AllAccounts,
-        LoadedAccount.Loading,
-        LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
-    )
+  ThemedParameterProvider<LoadedAccount>(
+    LoadedAccount.AllAccounts,
+    LoadedAccount.Loading,
+    LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
+  )

@@ -2,10 +2,7 @@ package aktual.budget.model
 
 import androidx.compose.runtime.Immutable
 
-@Immutable
-data class TransactionsSpec(
-    val accountSpec: AccountSpec,
-)
+@Immutable data class TransactionsSpec(val accountSpec: AccountSpec)
 
 @Immutable
 sealed interface AccountSpec {

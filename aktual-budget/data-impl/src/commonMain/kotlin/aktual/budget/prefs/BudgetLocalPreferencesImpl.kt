@@ -19,17 +19,17 @@ import kotlinx.coroutines.sync.withLock
 @ContributesBinding(BudgetScope::class, binding<BudgetLocalPreferences>())
 class BudgetLocalPreferencesImpl
 private constructor(
-    private val files: BudgetFiles,
-    private val coroutineScope: CoroutineScope,
-    private val contexts: CoroutineContexts,
-    private val delegate: MutableStateFlow<DbMetadata>,
+  private val files: BudgetFiles,
+  private val coroutineScope: CoroutineScope,
+  private val contexts: CoroutineContexts,
+  private val delegate: MutableStateFlow<DbMetadata>,
 ) : BudgetLocalPreferences, MutableStateFlow<DbMetadata> by delegate {
   @Inject
   constructor(
-      initial: DbMetadata,
-      files: BudgetFiles,
-      coroutineScope: CoroutineScope,
-      contexts: CoroutineContexts,
+    initial: DbMetadata,
+    files: BudgetFiles,
+    coroutineScope: CoroutineScope,
+    contexts: CoroutineContexts,
   ) : this(files, coroutineScope, contexts, delegate = MutableStateFlow(initial))
 
   private val writeMutex = Mutex()

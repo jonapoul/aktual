@@ -24,10 +24,7 @@ class SettingsViewModelTest {
     val dispatcher = standardDispatcher
     val prefs = buildPreferences(dispatcher)
 
-    viewModel =
-        SettingsViewModel(
-            preferences = AppGlobalPreferencesImpl(prefs),
-        )
+    viewModel = SettingsViewModel(preferences = AppGlobalPreferencesImpl(prefs))
   }
 
   @Test
@@ -35,18 +32,18 @@ class SettingsViewModelTest {
     before()
     viewModel.prefValues.test {
       assertThat(awaitItem())
-          .contains(theme(RegularColorSchemeType.System, DarkColorSchemeType.Dark))
+        .contains(theme(RegularColorSchemeType.System, DarkColorSchemeType.Dark))
 
       viewModel.set(theme(RegularColorSchemeType.Dark, DarkColorSchemeType.Dark))
       assertThat(awaitItem()).contains(theme(RegularColorSchemeType.Dark, DarkColorSchemeType.Dark))
 
       viewModel.set(theme(RegularColorSchemeType.Light, DarkColorSchemeType.Dark))
       assertThat(awaitItem())
-          .contains(theme(RegularColorSchemeType.Light, DarkColorSchemeType.Dark))
+        .contains(theme(RegularColorSchemeType.Light, DarkColorSchemeType.Dark))
 
       viewModel.set(theme(RegularColorSchemeType.Light, DarkColorSchemeType.Midnight))
       assertThat(awaitItem())
-          .contains(theme(RegularColorSchemeType.Light, DarkColorSchemeType.Midnight))
+        .contains(theme(RegularColorSchemeType.Light, DarkColorSchemeType.Midnight))
 
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
@@ -68,5 +65,5 @@ class SettingsViewModelTest {
   }
 
   private fun theme(regular: RegularColorSchemeType, dark: DarkColorSchemeType) =
-      Theme(ThemeConfig(regular, dark))
+    Theme(ThemeConfig(regular, dark))
 }

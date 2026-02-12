@@ -17,8 +17,8 @@ import kotlinx.coroutines.delay
  */
 @Composable
 fun keyboardFocusRequester(
-    keyboard: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current,
-    keyboardDelay: Duration = KEYBOARD_SHOW_DELAY,
+  keyboard: SoftwareKeyboardController? = LocalSoftwareKeyboardController.current,
+  keyboardDelay: Duration = KEYBOARD_SHOW_DELAY,
 ): FocusRequester {
   val focusRequester = remember { FocusRequester() }
 

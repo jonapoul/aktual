@@ -55,29 +55,23 @@ class SyncResponseDecoderTest {
     val row = "b5d4b867-78ed-436b-afcf-29ed8f26b59a"
     val time = Timestamp.parse("2025-12-13T09:16:48.546Z-0000-8b2714dc84c02f41")
     assertThat(response.messages.map(MessageEnvelope::content))
-        .isEqualToList(
-            Message(dataset, row, "acct", time(0), MsgStr("e0f919d2-7e0c-4d32-801c-9f907de3b65c")),
-            Message(
-                dataset,
-                row,
-                "category",
-                time(1),
-                MsgStr("711b4c36-86f5-4206-a815-01bfa83cc5b0"),
-            ),
-            Message(dataset, row, "cleared", time(2), MsgNum(0)),
-            Message(dataset, row, "amount", time(3), MsgNum(-12345)),
-            Message(
-                dataset,
-                row,
-                "description",
-                time(4),
-                MsgStr("8843776a-7041-4e04-9908-110053214806"),
-            ),
-            Message(dataset, row, "notes", time(5), MsgStr("sagese")),
-            Message(dataset, row, "date", time(6), MsgNum(20251213)),
-            Message(dataset, row, "sort_order", time(7), MsgNum(1_765_617_408_523)),
-            Message(dataset, row, "reconciled", time(8), MsgNum(0)),
-        )
+      .isEqualToList(
+        Message(dataset, row, "acct", time(0), MsgStr("e0f919d2-7e0c-4d32-801c-9f907de3b65c")),
+        Message(dataset, row, "category", time(1), MsgStr("711b4c36-86f5-4206-a815-01bfa83cc5b0")),
+        Message(dataset, row, "cleared", time(2), MsgNum(0)),
+        Message(dataset, row, "amount", time(3), MsgNum(-12345)),
+        Message(
+          dataset,
+          row,
+          "description",
+          time(4),
+          MsgStr("8843776a-7041-4e04-9908-110053214806"),
+        ),
+        Message(dataset, row, "notes", time(5), MsgStr("sagese")),
+        Message(dataset, row, "date", time(6), MsgNum(20251213)),
+        Message(dataset, row, "sort_order", time(7), MsgNum(1_765_617_408_523)),
+        Message(dataset, row, "reconciled", time(8), MsgNum(0)),
+      )
   }
 
   @Test
@@ -88,29 +82,23 @@ class SyncResponseDecoderTest {
     assertThat(response.merkle).hasLength(403)
     val time = Timestamp.parse("2025-12-13T12:10:06.813Z-0000-b32f9550ad92ec07")
     assertThat(response.messages.map(MessageEnvelope::content))
-        .isEqualToList(
-            Message(dataset, row, "acct", time(0), MsgStr("e0f919d2-7e0c-4d32-801c-9f907de3b65c")),
-            Message(
-                dataset,
-                row,
-                "category",
-                time(1),
-                MsgStr("711b4c36-86f5-4206-a815-01bfa83cc5b0"),
-            ),
-            Message(dataset, row, "cleared", time(2), MsgNum(1)),
-            Message(dataset, row, "amount", time(3), MsgNum(-12345)),
-            Message(
-                dataset,
-                row,
-                "description",
-                time(4),
-                MsgStr("8843776a-7041-4e04-9908-110053214806"),
-            ),
-            Message(dataset, row, "notes", time(5), MsgStr("Notes go here")),
-            Message(dataset, row, "date", time(6), MsgNum(20251213)),
-            Message(dataset, row, "sort_order", time(7), MsgNum(1765627806804)),
-            Message(dataset, row, "reconciled", time(8), MsgNum(0)),
-        )
+      .isEqualToList(
+        Message(dataset, row, "acct", time(0), MsgStr("e0f919d2-7e0c-4d32-801c-9f907de3b65c")),
+        Message(dataset, row, "category", time(1), MsgStr("711b4c36-86f5-4206-a815-01bfa83cc5b0")),
+        Message(dataset, row, "cleared", time(2), MsgNum(1)),
+        Message(dataset, row, "amount", time(3), MsgNum(-12345)),
+        Message(
+          dataset,
+          row,
+          "description",
+          time(4),
+          MsgStr("8843776a-7041-4e04-9908-110053214806"),
+        ),
+        Message(dataset, row, "notes", time(5), MsgStr("Notes go here")),
+        Message(dataset, row, "date", time(6), MsgNum(20251213)),
+        Message(dataset, row, "sort_order", time(7), MsgNum(1765627806804)),
+        Message(dataset, row, "reconciled", time(8), MsgNum(0)),
+      )
   }
 
   @Test
@@ -119,20 +107,20 @@ class SyncResponseDecoderTest {
     assertThat(response.merkle).hasLength(38162)
     val timestamp = Timestamp.parse("2025-12-13T09:17:39.190Z-0000-8b2714dc84c02f41")
     assertThat(response.messages)
-        .isEqualToList(
-            MessageEnvelope(
-                timestamp = timestamp,
-                isEncrypted = true,
-                content =
-                    Message(
-                        dataset = "transactions",
-                        row = "b5d4b867-78ed-436b-afcf-29ed8f26b59a",
-                        column = "tombstone",
-                        timestamp = timestamp,
-                        value = MsgNum(1),
-                    ),
+      .isEqualToList(
+        MessageEnvelope(
+          timestamp = timestamp,
+          isEncrypted = true,
+          content =
+            Message(
+              dataset = "transactions",
+              row = "b5d4b867-78ed-436b-afcf-29ed8f26b59a",
+              column = "tombstone",
+              timestamp = timestamp,
+              value = MsgNum(1),
             ),
         )
+      )
   }
 
   @Test
@@ -141,20 +129,20 @@ class SyncResponseDecoderTest {
     assertThat(response.merkle).hasLength(403) // small-ish...
     val timestamp = Timestamp.parse("2025-12-13T12:10:51.482Z-0000-b32f9550ad92ec07")
     assertThat(response.messages)
-        .isEqualToList(
-            MessageEnvelope(
-                timestamp = timestamp,
-                isEncrypted = true,
-                content =
-                    Message(
-                        dataset = "transactions",
-                        row = "dbad3b3c-df72-4469-a083-4b3e606ad30d",
-                        column = "tombstone",
-                        timestamp = timestamp,
-                        value = MsgNum(1),
-                    ),
+      .isEqualToList(
+        MessageEnvelope(
+          timestamp = timestamp,
+          isEncrypted = true,
+          content =
+            Message(
+              dataset = "transactions",
+              row = "dbad3b3c-df72-4469-a083-4b3e606ad30d",
+              column = "tombstone",
+              timestamp = timestamp,
+              value = MsgNum(1),
             ),
         )
+      )
   }
 
   private suspend fun readResponse(name: String): SyncResponse {

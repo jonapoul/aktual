@@ -19,10 +19,7 @@ import kotlinx.coroutines.flow.StateFlow
 @Inject
 @ViewModelKey(SettingsViewModel::class)
 @ContributesIntoMap(AppScope::class)
-class SettingsViewModel
-internal constructor(
-    preferences: AppGlobalPreferences,
-) : ViewModel() {
+class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) : ViewModel() {
   private val colorSchemePref = preferences.regularColorScheme
   private val colorSchemeFlow = colorSchemePref.asStateFlow(viewModelScope)
 
@@ -33,15 +30,15 @@ internal constructor(
   private val showBottomBar = showBottomBarPref.asStateFlow(viewModelScope)
 
   val prefValues: StateFlow<ImmutableList<PreferenceValue>> =
-      viewModelScope.launchMolecule(Immediate) {
-        val colorScheme by colorSchemeFlow.collectAsState()
-        val darkScheme by darkSchemeFlow.collectAsState()
-        val showBottomBar by showBottomBar.collectAsState()
-        persistentListOf(
-            PreferenceValue.Theme(ThemeConfig(colorScheme, darkScheme)),
-            PreferenceValue.ShowBottomBar(showBottomBar),
-        )
-      }
+    viewModelScope.launchMolecule(Immediate) {
+      val colorScheme by colorSchemeFlow.collectAsState()
+      val darkScheme by darkSchemeFlow.collectAsState()
+      val showBottomBar by showBottomBar.collectAsState()
+      persistentListOf(
+        PreferenceValue.Theme(ThemeConfig(colorScheme, darkScheme)),
+        PreferenceValue.ShowBottomBar(showBottomBar),
+      )
+    }
 
   fun set(value: PreferenceValue) {
     when (value) {

@@ -48,18 +48,18 @@ class MetricsApiTest {
 
     // and the response was parsed properly
     assertThat(response)
-        .isEqualTo(
-            GetMetricsResponse(
-                uptime = 806662.711204594.seconds,
-                memory =
-                    GetMetricsResponse.Memory(
-                        rss = 112377856L.bytes,
-                        heapTotal = 32088064L.bytes,
-                        heapUsed = 29558608L.bytes,
-                        external = 3925760L.bytes,
-                        arrayBuffers = 387791L.bytes,
-                    ),
+      .isEqualTo(
+        GetMetricsResponse(
+          uptime = 806662.711204594.seconds,
+          memory =
+            GetMetricsResponse.Memory(
+              rss = 112377856L.bytes,
+              heapTotal = 32088064L.bytes,
+              heapUsed = 29558608L.bytes,
+              external = 3925760L.bytes,
+              arrayBuffers = 387791L.bytes,
             ),
         )
+      )
   }
 }

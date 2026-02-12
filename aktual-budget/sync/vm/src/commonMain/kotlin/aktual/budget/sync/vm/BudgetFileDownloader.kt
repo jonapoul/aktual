@@ -27,9 +27,9 @@ import logcat.logcat
 @Inject
 class BudgetFileDownloader
 internal constructor(
-    private val contexts: CoroutineContexts,
-    private val budgetFiles: BudgetFiles,
-    private val apisStateHolder: AktualApisStateHolder,
+  private val contexts: CoroutineContexts,
+  private val budgetFiles: BudgetFiles,
+  private val apisStateHolder: AktualApisStateHolder,
 ) {
   fun download(token: Token, budgetId: BudgetId): Flow<DownloadState> {
     val api = apisStateHolder.value?.syncDownload ?: return flowOf(Failure.NotLoggedIn)
@@ -37,9 +37,9 @@ internal constructor(
   }
 
   private suspend fun FlowCollector<DownloadState>.emitState(
-      api: SyncDownloadApi,
-      token: Token,
-      id: BudgetId,
+    api: SyncDownloadApi,
+    token: Token,
+    id: BudgetId,
   ) {
     val destinationPath = budgetFiles.encryptedZip(id, mkdirs = true)
     try {
@@ -64,16 +64,10 @@ internal constructor(
   }
 
   private fun InProgress(state: SyncDownloadState.InProgress) =
-      InProgress(
-          read = state.bytesSentTotal.bytes,
-          total = state.contentLength.bytes,
-      )
+    InProgress(read = state.bytesSentTotal.bytes, total = state.contentLength.bytes)
 
   private fun Done(state: SyncDownloadState.Done) =
-      Done(
-          path = state.path,
-          total = state.contentLength.bytes,
-      )
+    Done(path = state.path, total = state.contentLength.bytes)
 
   private fun deleteDir(id: BudgetId) {
     with(budgetFiles) {

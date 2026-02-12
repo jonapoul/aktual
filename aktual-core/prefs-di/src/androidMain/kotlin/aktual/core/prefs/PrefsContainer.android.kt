@@ -30,44 +30,39 @@ actual interface PrefsContainer {
 @ContributesTo(AppScope::class)
 private object ProvidesPrefsContainer {
   @Provides
-  fun prefs(
-      prefs: SharedPreferences,
-      contexts: CoroutineContexts,
-  ): Preferences = AndroidSharedPreferences(prefs, contexts.io)
+  fun prefs(prefs: SharedPreferences, contexts: CoroutineContexts): Preferences =
+    AndroidSharedPreferences(prefs, contexts.io)
 
   @Provides
-  fun sharedPrefs(
-      context: Context,
-  ): SharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
+  fun sharedPrefs(context: Context): SharedPreferences =
+    PreferenceManager.getDefaultSharedPreferences(context)
 
   // This takes time to initialize, so allow disk reads on the main thread (but only for this)
   // https://developer.android.com/reference/android/os/StrictMode.ThreadPolicy.Builder#permitDisk
   @Provides
   @SingleIn(AppScope::class)
-  fun encrypted(
-      context: Context,
-      contexts: CoroutineContexts,
-  ): EncryptedPreferences = allowDiskAndSlowCalls {
-    val masterKey = MasterKey.Builder(context).setKeyScheme(KeyScheme.AES256_GCM).build()
-    val prefs =
+  fun encrypted(context: Context, contexts: CoroutineContexts): EncryptedPreferences =
+    allowDiskAndSlowCalls {
+      val masterKey = MasterKey.Builder(context).setKeyScheme(KeyScheme.AES256_GCM).build()
+      val prefs =
         EncryptedSharedPreferences.create(
-            context,
-            "encrypted-prefs",
-            masterKey,
-            PrefKeyEncryptionScheme.AES256_SIV,
-            PrefValueEncryptionScheme.AES256_GCM,
+          context,
+          "encrypted-prefs",
+          masterKey,
+          PrefKeyEncryptionScheme.AES256_SIV,
+          PrefValueEncryptionScheme.AES256_GCM,
         )
-    AndroidEncryptedPreferences(prefs, contexts.io)
-  }
+      AndroidEncryptedPreferences(prefs, contexts.io)
+    }
 
   private fun <T> allowDiskAndSlowCalls(block: () -> T): T {
     val old = StrictMode.getThreadPolicy()
     StrictMode.setThreadPolicy(
-        StrictMode.ThreadPolicy.Builder(old)
-            .permitDiskReads()
-            .permitDiskWrites()
-            .permitCustomSlowCalls()
-            .build(),
+      StrictMode.ThreadPolicy.Builder(old)
+        .permitDiskReads()
+        .permitDiskWrites()
+        .permitCustomSlowCalls()
+        .build()
     )
     return try {
       block()

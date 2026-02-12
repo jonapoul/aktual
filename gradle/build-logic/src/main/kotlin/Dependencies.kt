@@ -5,6 +5,6 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 
 fun KMPExtension.androidHostTestDependencies(
-    handler: Action<KotlinDependencyHandler>,
+  handler: Action<KotlinDependencyHandler>
 ): NamedDomainObjectProvider<KotlinSourceSet> =
-    sourceSets.named("androidHostTest") { dependencies(handler) }
+  sourceSets.named("androidHostTest") { dependencies(handler) }

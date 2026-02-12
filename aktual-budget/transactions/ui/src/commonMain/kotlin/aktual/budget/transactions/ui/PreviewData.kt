@@ -19,7 +19,7 @@ import kotlinx.datetime.plus
 
 @Immutable
 internal class PreviewTransactionStateSource(
-    private val states: List<Pair<TransactionState, Boolean>>,
+  private val states: List<Pair<TransactionState, Boolean>>
 ) : TransactionStateSource {
   constructor(states: Collection<TransactionState>) : this(states.map { it to false })
 
@@ -30,83 +30,81 @@ internal class PreviewTransactionStateSource(
   override fun transactionState(id: TransactionId): Flow<TransactionState> = flowOf(find(id).first)
 
   private fun find(id: TransactionId): Pair<TransactionState, Boolean> =
-      requireNotNull(states.firstOrNull { it.first.id == id }) {
-        "No transaction matching $id in $states"
-      }
+    requireNotNull(states.firstOrNull { it.first.id == id }) {
+      "No transaction matching $id in $states"
+    }
 }
 
 internal fun previewTransactionStateSource(vararg transactions: Pair<Transaction, Boolean>) =
-    PreviewTransactionStateSource(
-        transactions.map { (t, bool) -> TransactionState.Loaded(t) to bool }
-    )
+  PreviewTransactionStateSource(
+    transactions.map { (t, bool) -> TransactionState.Loaded(t) to bool }
+  )
 
 internal fun previewTransactionStateSource(vararg transactions: Transaction) =
-    PreviewTransactionStateSource(transactions.map { t -> TransactionState.Loaded(t) to false })
+  PreviewTransactionStateSource(transactions.map { t -> TransactionState.Loaded(t) to false })
 
 internal fun previewTransactionStateSource(transactions: List<Transaction>) =
-    PreviewTransactionStateSource(transactions.map { t -> TransactionState.Loaded(t) to false })
+  PreviewTransactionStateSource(transactions.map { t -> TransactionState.Loaded(t) to false })
 
 @Immutable
-internal class PreviewTransactionIdSource(
-    transactions: List<Transaction>,
-) : TransactionIdSource {
+internal class PreviewTransactionIdSource(transactions: List<Transaction>) : TransactionIdSource {
   override val pagingData: Flow<PagingData<TransactionId>> =
-      flowOf(PagingData.from(transactions.map { it.id }))
+    flowOf(PagingData.from(transactions.map { it.id }))
 }
 
 internal val PREVIEW_DATE = LocalDate(2025, JUNE, 9)
 
 internal val TRANSACTION_1 =
-    Transaction(
-        id = TransactionId("abc"),
-        date = PREVIEW_DATE,
-        account = "NatWest",
-        payee = "Nando's",
-        notes = "Cheeky!",
-        category = "Food",
-        amount = Amount(-21.99),
-    )
+  Transaction(
+    id = TransactionId("abc"),
+    date = PREVIEW_DATE,
+    account = "NatWest",
+    payee = "Nando's",
+    notes = "Cheeky!",
+    category = "Food",
+    amount = Amount(-21.99),
+  )
 
 internal val TRANSACTION_2 =
-    Transaction(
-        id = TransactionId("def"),
-        date = PREVIEW_DATE,
-        account = "Amex",
-        payee = "Boots",
-        notes = "Ibuprofen",
-        category = "Medicine",
-        amount = Amount(-3.50),
-    )
+  Transaction(
+    id = TransactionId("def"),
+    date = PREVIEW_DATE,
+    account = "Amex",
+    payee = "Boots",
+    notes = "Ibuprofen",
+    category = "Medicine",
+    amount = Amount(-3.50),
+  )
 
 internal val TRANSACTION_3 =
-    Transaction(
-        id = TransactionId("ghi"),
-        date = PREVIEW_DATE.plus(1, DAY),
-        account = "NatWest",
-        payee = "Work, Inc",
-        notes = null,
-        category = "Salary",
-        amount = Amount(1234.56),
-    )
+  Transaction(
+    id = TransactionId("ghi"),
+    date = PREVIEW_DATE.plus(1, DAY),
+    account = "NatWest",
+    payee = "Work, Inc",
+    notes = null,
+    category = "Salary",
+    amount = Amount(1234.56),
+  )
 
 internal val PREVIEW_ACCOUNT =
-    Accounts(
-        id = AccountId("abc"),
-        account_id = null,
-        name = "My Account",
-        balance_current = null,
-        balance_available = null,
-        balance_limit = null,
-        mask = null,
-        official_name = null,
-        subtype = null,
-        bank = null,
-        offbudget = null,
-        closed = null,
-        tombstone = null,
-        sort_order = null,
-        type = null,
-        account_sync_source = null,
-        last_sync = null,
-        last_reconciled = null,
-    )
+  Accounts(
+    id = AccountId("abc"),
+    account_id = null,
+    name = "My Account",
+    balance_current = null,
+    balance_available = null,
+    balance_limit = null,
+    mask = null,
+    official_name = null,
+    subtype = null,
+    bank = null,
+    offbudget = null,
+    closed = null,
+    tombstone = null,
+    sort_order = null,
+    type = null,
+    account_sync_source = null,
+    last_sync = null,
+    last_reconciled = null,
+  )

@@ -14,8 +14,8 @@ fun inMemoryDriverFactory() = JvmSqlDriverFactory(JdbcSqliteDriver.IN_MEMORY)
 fun fileDriverFactory(file: File) = JvmSqlDriverFactory(file)
 
 fun runDatabaseTest(
-    driverFactory: SqlDriverFactory = inMemoryDriverFactory(),
-    action: suspend BudgetDatabase.(TestScope) -> Unit,
+  driverFactory: SqlDriverFactory = inMemoryDriverFactory(),
+  action: suspend BudgetDatabase.(TestScope) -> Unit,
 ) = runTest {
   val driver = driverFactory.create()
   val database = buildDatabase(driver)

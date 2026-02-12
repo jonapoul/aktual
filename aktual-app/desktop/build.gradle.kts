@@ -19,19 +19,16 @@ compose.desktop {
     mainClass = "aktual.app.desktop.MainKt"
 
     jvmArgs +=
-        listOf(
-            // Make sure java.sql.DriverManager is included
-            "--add-modules",
-            "java.sql",
-        )
+      listOf(
+        // Make sure java.sql.DriverManager is included
+        "--add-modules",
+        "java.sql",
+      )
 
     buildTypes.release.proguard {
       obfuscate = true
       optimize = true
-      configurationFiles.from(
-          file("proguard-rules.pro"),
-          file("../common-rules.pro"),
-      )
+      configurationFiles.from(file("proguard-rules.pro"), file("../common-rules.pro"))
     }
 
     nativeDistributions {
@@ -43,13 +40,14 @@ compose.desktop {
       modules("java.sql")
 
       val icon =
-          rootProject.isolated.projectDirectory.file(
-              "aktual-core:l10n/src/commonMain/composeResources/drawable/app_icon_192.png"
-          )
+        rootProject.isolated.projectDirectory.file(
+          "aktual-core:l10n/src/commonMain/composeResources/drawable/app_icon_192.png"
+        )
 
       windows {
         menu = true
-        // see https://wixtoolset.org/documentation/manual/v3/howtos/general/generate_guids.html
+        // see
+        // https://wixtoolset.org/documentation/manual/v3/howtos/general/generate_guids.html
         upgradeUuid = "a61b72be-1b0c-4de5-9607-791c17687428"
         iconFile = icon
       }
@@ -73,11 +71,11 @@ compose.desktop {
 }
 
 val copyLicenseeReportToResources by
-    tasks.registering(Copy::class) {
-      from(tasks.licensee.map { it.jsonOutput })
-      into("src/main/resources")
-      rename { LICENSEE_REPORT_ASSET_NAME }
-    }
+  tasks.registering(Copy::class) {
+    from(tasks.licensee.map { it.jsonOutput })
+    into("src/main/resources")
+    rename { LICENSEE_REPORT_ASSET_NAME }
+  }
 
 tasks.processResources.configure { dependsOn(copyLicenseeReportToResources) }
 

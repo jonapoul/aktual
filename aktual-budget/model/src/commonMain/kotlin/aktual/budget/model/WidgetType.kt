@@ -8,8 +8,7 @@ enum class WidgetType(private val value: String) {
   Custom("custom-report"),
   Markdown("markdown-card"),
   Summary("summary-card"),
-  Calendar("calendar-card"),
-  ;
+  Calendar("calendar-card");
 
   override fun toString(): String = value
 }

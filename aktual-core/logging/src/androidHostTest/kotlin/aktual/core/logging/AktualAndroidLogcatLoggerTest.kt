@@ -37,12 +37,7 @@ class AktualAndroidLogcatLoggerTest {
 
     // then
     val expected =
-        ShadowLog.LogItem(
-            Log.INFO,
-            "AktualAndroidLogcatLoggerTest",
-            "ACTUAL: Hello world",
-            null,
-        )
+      ShadowLog.LogItem(Log.INFO, "AktualAndroidLogcatLoggerTest", "ACTUAL: Hello world", null)
     assertThat(ShadowLog.getLogs().last()).isEqualTo(expected)
   }
 }

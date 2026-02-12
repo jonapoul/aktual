@@ -13,8 +13,8 @@ class AccountsDao(database: BudgetDatabase, private val contexts: CoroutineConte
   private val queries = database.accountsQueries
 
   fun observe(id: AccountId): Flow<Accounts?> =
-      queries.getById(id).asFlow().mapToOneOrNull(contexts.default)
+    queries.getById(id).asFlow().mapToOneOrNull(contexts.default)
 
   suspend operator fun get(id: AccountId): Accounts? =
-      queries.withResult { getById(id).executeAsOneOrNull() }
+    queries.withResult { getById(id).executeAsOneOrNull() }
 }

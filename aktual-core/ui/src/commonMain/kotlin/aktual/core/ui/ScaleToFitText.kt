@@ -33,18 +33,15 @@ import kotlinx.coroutines.runBlocking
 
 @Composable
 fun ScaleToFitText(
-    text: String,
-    modifier: Modifier = Modifier,
-    style: TextStyle = LocalTextStyle.current,
-    maxLines: Int = 1,
-    color: Color = Color.Unspecified,
-    minTextSize: TextUnit = 0.sp,
-    maxTextSize: TextUnit = 100.sp,
+  text: String,
+  modifier: Modifier = Modifier,
+  style: TextStyle = LocalTextStyle.current,
+  maxLines: Int = 1,
+  color: Color = Color.Unspecified,
+  minTextSize: TextUnit = 0.sp,
+  maxTextSize: TextUnit = 100.sp,
 ) {
-  BoxWithConstraints(
-      modifier = modifier,
-      contentAlignment = Alignment.Center,
-  ) {
+  BoxWithConstraints(modifier = modifier, contentAlignment = Alignment.Center) {
     val density = LocalDensity.current
     val maxWidthPx = with(density) { maxWidth.toPx().roundToInt() }
     val maxHeightPx = with(density) { maxHeight.toPx().roundToInt() }
@@ -61,17 +58,17 @@ fun ScaleToFitText(
           val midSize = (minSize + maxSize) / 2f
 
           val result =
-              textMeasurer.measure(
-                  text = text,
-                  style = style.copy(fontSize = midSize.sp),
-                  constraints = Constraints(maxWidth = maxWidthPx, maxHeight = maxHeightPx),
-                  maxLines = maxLines,
-              )
+            textMeasurer.measure(
+              text = text,
+              style = style.copy(fontSize = midSize.sp),
+              constraints = Constraints(maxWidth = maxWidthPx, maxHeight = maxHeightPx),
+              maxLines = maxLines,
+            )
 
           val shouldReduceFont =
-              with(result) {
-                hasVisualOverflow || size.width >= maxWidthPx || size.height >= maxHeightPx
-              }
+            with(result) {
+              hasVisualOverflow || size.width >= maxWidthPx || size.height >= maxHeightPx
+            }
           if (shouldReduceFont) {
             maxSize = midSize - SIZE_ITERATOR
           } else {
@@ -89,12 +86,12 @@ fun ScaleToFitText(
     }
 
     Text(
-        modifier = Modifier.wrapContentSize(),
-        text = text,
-        style = style,
-        maxLines = maxLines,
-        color = color,
-        fontSize = fontSize,
+      modifier = Modifier.wrapContentSize(),
+      text = text,
+      style = style,
+      maxLines = maxLines,
+      color = color,
+      fontSize = fontSize,
     )
   }
 }
@@ -106,46 +103,44 @@ private const val SIZE_ITERATOR = 0.5f
 private fun PreviewScaleToFitText() {
   Column {
     ScaleToFitText(
-        modifier =
-            Modifier.height(100.dp)
-                .width(500.dp)
-                .background(Color.Gray)
-                .border(width = 1.dp, color = Color.Blue),
-        text = "Hello world 100x500",
+      modifier =
+        Modifier.height(100.dp)
+          .width(500.dp)
+          .background(Color.Gray)
+          .border(width = 1.dp, color = Color.Blue),
+      text = "Hello world 100x500",
     )
 
     ScaleToFitText(
-        modifier =
-            Modifier.height(30.dp)
-                .width(500.dp)
-                .background(Color.Gray)
-                .border(width = 1.dp, color = Color.Red),
-        text = "Hello world 30x500",
+      modifier =
+        Modifier.height(30.dp)
+          .width(500.dp)
+          .background(Color.Gray)
+          .border(width = 1.dp, color = Color.Red),
+      text = "Hello world 30x500",
     )
 
     Row {
       ScaleToFitText(
-          modifier =
-              Modifier.height(100.dp)
-                  .width(100.dp)
-                  .background(Color.Gray)
-                  .border(width = 1.dp, color = Color.Green),
-          text = "Hello world 100x100",
+        modifier =
+          Modifier.height(100.dp)
+            .width(100.dp)
+            .background(Color.Gray)
+            .border(width = 1.dp, color = Color.Green),
+        text = "Hello world 100x100",
       )
       ScaleToFitText(
-          modifier =
-              Modifier.size(12.dp)
-                  .background(Color.Gray)
-                  .border(width = 1.dp, color = Color.Yellow),
-          text = "15.dp",
+        modifier =
+          Modifier.size(12.dp).background(Color.Gray).border(width = 1.dp, color = Color.Yellow),
+        text = "15.dp",
       )
       ScaleToFitText(
-          modifier =
-              Modifier.height(100.dp)
-                  .weight(1f)
-                  .background(Color.Gray)
-                  .border(width = 1.dp, color = Color.Cyan),
-          text = "Hello world weighted but loads more text here and here's some more",
+        modifier =
+          Modifier.height(100.dp)
+            .weight(1f)
+            .background(Color.Gray)
+            .border(width = 1.dp, color = Color.Cyan),
+        text = "Hello world weighted but loads more text here and here's some more",
       )
     }
   }

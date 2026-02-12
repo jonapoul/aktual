@@ -26,24 +26,24 @@ import okio.buffer
 /** Adapted from packages/loot-core/src/server/cloud-storage.ts importBuffer() */
 @Inject
 class DatabaseImporter(
-    private val contexts: CoroutineContexts,
-    private val fileSystem: FileSystem,
-    private val budgetFiles: BudgetFiles,
-    private val clock: Clock,
-    private val timeZones: TimeZoneProvider,
+  private val contexts: CoroutineContexts,
+  private val fileSystem: FileSystem,
+  private val budgetFiles: BudgetFiles,
+  private val clock: Clock,
+  private val timeZones: TimeZoneProvider,
 ) {
   suspend operator fun invoke(userFile: UserFile, zipPath: Path): ImportResult {
     val directory = budgetFiles.directory(userFile.fileId, mkdirs = true)
 
     val result =
-        try {
-          invokeImpl(userFile, zipPath)
-        } catch (e: CancellationException) {
-          throw e
-        } catch (e: Exception) {
-          logcat.e(e) { "Unexpected failure importing $userFile from $zipPath" }
-          ImportResult.OtherFailure(e.requireMessage())
-        }
+      try {
+        invokeImpl(userFile, zipPath)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Unexpected failure importing $userFile from $zipPath" }
+        ImportResult.OtherFailure(e.requireMessage())
+      }
 
     if (result is ImportResult.Failure) {
       fileSystem.deleteRecursively(directory)
@@ -80,20 +80,20 @@ class DatabaseImporter(
     }
 
     val meta =
-        try {
-          AktualJson.decodeFromString(DbMetadata.serializer(), metaJson)
-        } catch (e: SerializationException) {
-          logcat.e(e) { "Failed deserializing DbMetadata: '$metaJson'" }
-          return ImportResult.InvalidMetaFile
-        }
+      try {
+        AktualJson.decodeFromString(DbMetadata.serializer(), metaJson)
+      } catch (e: SerializationException) {
+        logcat.e(e) { "Failed deserializing DbMetadata: '$metaJson'" }
+        return ImportResult.InvalidMetaFile
+      }
 
     // Update the metadata. The stored file on the server might be out-of-date with a few keys
     val newMeta =
-        meta
-            .set(DbMetadata.CloudFileId, userFile.fileId)
-            .set(DbMetadata.GroupId, userFile.groupId)
-            .set(DbMetadata.LastUploaded, clock.todayIn(timeZones.get()))
-            .set(DbMetadata.EncryptKeyId, userFile.encryptMeta?.keyId?.value)
+      meta
+        .set(DbMetadata.CloudFileId, userFile.fileId)
+        .set(DbMetadata.GroupId, userFile.groupId)
+        .set(DbMetadata.LastUploaded, clock.todayIn(timeZones.get()))
+        .set(DbMetadata.EncryptKeyId, userFile.encryptMeta?.keyId?.value)
 
     budgetFiles.writeMetadata(newMeta)
     return ImportResult.Success(newMeta)
