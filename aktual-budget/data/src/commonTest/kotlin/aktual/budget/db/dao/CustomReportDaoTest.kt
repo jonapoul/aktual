@@ -9,9 +9,9 @@ import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
+import kotlin.test.Test
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlin.test.Test
 
 internal class CustomReportDaoTest {
   @Test
@@ -28,9 +28,7 @@ internal class CustomReportDaoTest {
     insert(c)
 
     // then
-    assertThat(getIds())
-      .transform { it.map(CustomReportId::toString) }
-      .isEqualToList("a", "b", "c")
+    assertThat(getIds()).transform { it.map(CustomReportId::toString) }.isEqualToList("a", "b", "c")
   }
 
   @Test
@@ -56,7 +54,8 @@ internal class CustomReportDaoTest {
 
   private fun runDaoTest(action: suspend CustomReportsDao.(TestScope) -> Unit) =
     runDatabaseTest { scope ->
-      val dao = CustomReportsDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
+      val dao =
+        CustomReportsDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
       action(dao, scope)
     }
 }

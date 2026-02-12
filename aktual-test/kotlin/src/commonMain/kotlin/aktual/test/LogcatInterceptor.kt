@@ -40,21 +40,22 @@ class CoLogcatInterceptor(
 ) : ILogcatInterceptor, CoroutineTestInterceptor {
   override val logMessages = arrayListOf<String>()
 
-  override suspend fun intercept(testFunction: CoroutineTestFunction) = try {
-    LogcatLogger.install()
-    LogcatLogger.loggers += this
-    testFunction()
-  } catch (t: Throwable) {
-    if (onlyPrintOnFailure) {
-      println("---- Captured logcat output ----")
-      logMessages.forEach(::println)
-      println("---- End captured logcat output ----")
+  override suspend fun intercept(testFunction: CoroutineTestFunction) =
+    try {
+      LogcatLogger.install()
+      LogcatLogger.loggers += this
+      testFunction()
+    } catch (t: Throwable) {
+      if (onlyPrintOnFailure) {
+        println("---- Captured logcat output ----")
+        logMessages.forEach(::println)
+        println("---- End captured logcat output ----")
+      }
+      throw t
+    } finally {
+      LogcatLogger.uninstall()
+      logMessages.clear()
     }
-    throw t
-  } finally {
-    LogcatLogger.uninstall()
-    logMessages.clear()
-  }
 }
 
 interface ILogcatInterceptor : LogcatLogger {

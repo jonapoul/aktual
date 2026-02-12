@@ -20,6 +20,8 @@ data class CsvMappings(
 
 private object StringIntSerializer : KSerializer<Int> {
   override val descriptor = PrimitiveSerialDescriptor(serialName = "Int", PrimitiveKind.STRING)
+
   override fun deserialize(decoder: Decoder): Int = decoder.decodeString().toInt()
+
   override fun serialize(encoder: Encoder, value: Int) = encoder.encodeString(value.toString())
 }

@@ -23,6 +23,8 @@ import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -32,8 +34,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.AfterTest
-import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 internal class LoginViewModelTest {
@@ -51,12 +51,13 @@ internal class LoginViewModelTest {
     preferences = AppGlobalPreferencesImpl(prefs)
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
-    viewModel = LoginViewModel(
-      versionsStateHolder = versionsStateHolder,
-      loginRequester = loginRequester,
-      preferences = preferences,
-      buildConfig = TestBuildConfig.copy(defaultPassword = Password.Empty),
-    )
+    viewModel =
+      LoginViewModel(
+        versionsStateHolder = versionsStateHolder,
+        loginRequester = loginRequester,
+        preferences = preferences,
+        buildConfig = TestBuildConfig.copy(defaultPassword = Password.Empty),
+      )
   }
 
   @AfterTest
@@ -99,36 +100,34 @@ internal class LoginViewModelTest {
   @Test
   fun `Signing in with invalid password`() = runTest {
     before()
-    combine(viewModel.loginFailure, viewModel.isLoading, ::Pair)
-      .distinctUntilChanged()
-      .test {
-        // Initially not loading or failed
-        val (failure1, loading1) = awaitItem()
-        assertThat(failure1).isNull()
-        assertThat(loading1).isFalse()
+    combine(viewModel.loginFailure, viewModel.isLoading, ::Pair).distinctUntilChanged().test {
+      // Initially not loading or failed
+      val (failure1, loading1) = awaitItem()
+      assertThat(failure1).isNull()
+      assertThat(loading1).isFalse()
 
-        // When we make the failing request
-        coEvery { loginRequester.logIn(any()) } returns LoginResult.InvalidPassword
-        viewModel.onClickSignIn()
+      // When we make the failing request
+      coEvery { loginRequester.logIn(any()) } returns LoginResult.InvalidPassword
+      viewModel.onClickSignIn()
 
-        // Then we're loading but not failed
-        val (failure2, loading2) = awaitItem()
-        assertThat(failure2).isNull()
-        assertThat(loading2).isTrue()
+      // Then we're loading but not failed
+      val (failure2, loading2) = awaitItem()
+      assertThat(failure2).isNull()
+      assertThat(loading2).isTrue()
 
-        // Then not loading
-        val (failure3, loading3) = awaitItem()
-        assertThat(failure3).isNull()
-        assertThat(loading3).isFalse()
+      // Then not loading
+      val (failure3, loading3) = awaitItem()
+      assertThat(failure3).isNull()
+      assertThat(loading3).isFalse()
 
-        // Then failed
-        val (failure4, loading4) = awaitItem()
-        assertThat(failure4).isEqualTo(LoginResult.InvalidPassword)
-        assertThat(loading4).isFalse()
+      // Then failed
+      val (failure4, loading4) = awaitItem()
+      assertThat(failure4).isEqualTo(LoginResult.InvalidPassword)
+      assertThat(loading4).isFalse()
 
-        expectNoEvents()
-        cancelAndIgnoreRemainingEvents()
-      }
+      expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
   }
 
   @Test

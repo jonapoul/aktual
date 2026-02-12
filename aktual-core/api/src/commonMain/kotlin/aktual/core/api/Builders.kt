@@ -15,21 +15,20 @@ fun buildKtorClient(
   tag: String?,
   engine: HttpClientEngine = CIO.create(),
   isDebug: Boolean = false,
-) = HttpClient(engine) {
-  // Throws ResponseExceptions for non-2xx responses
-  expectSuccess = true
+) =
+  HttpClient(engine) {
+    // Throws ResponseExceptions for non-2xx responses
+    expectSuccess = true
 
-  install(ContentNegotiation) {
-    json(json)
-  }
+    install(ContentNegotiation) { json(json) }
 
-  if (isDebug) {
-    install(Logging) {
-      logger = AktualKtorLogger(tag)
-      level = LogLevel.HEADERS
-      format = LoggingFormat.OkHttp
-      // filter { request -> true }
-      // sanitizeHeader { header -> header == HttpHeaders.Authorization }
+    if (isDebug) {
+      install(Logging) {
+        logger = AktualKtorLogger(tag)
+        level = LogLevel.HEADERS
+        format = LoggingFormat.OkHttp
+        // filter { request -> true }
+        // sanitizeHeader { header -> header == HttpHeaders.Authorization }
+      }
     }
   }
-}

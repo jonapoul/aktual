@@ -16,7 +16,8 @@ import kotlin.reflect.KClass
 @SingleIn(AppScope::class)
 class AktualViewModelFactory(
   override val viewModelProviders: Map<KClass<out ViewModel>, Provider<ViewModel>>,
-  override val assistedFactoryProviders: Map<KClass<out ViewModel>, Provider<ViewModelAssistedFactory>>,
+  override val assistedFactoryProviders:
+    Map<KClass<out ViewModel>, Provider<ViewModelAssistedFactory>>,
   override val manualAssistedFactoryProviders:
     Map<KClass<out ManualViewModelAssistedFactory>, Provider<ManualViewModelAssistedFactory>>,
 ) : MetroViewModelFactory()

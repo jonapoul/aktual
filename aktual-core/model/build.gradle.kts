@@ -18,7 +18,5 @@ kotlin {
     compileOnly(libs.redacted.annotations)
   }
 
-  androidMainDependencies {
-    implementation(libs.androidx.coreKtx)
-  }
+  androidMainDependencies { implementation(libs.androidx.coreKtx) }
 }

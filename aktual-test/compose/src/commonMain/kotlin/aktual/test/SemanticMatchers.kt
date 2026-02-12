@@ -6,7 +6,9 @@ import androidx.compose.ui.test.SemanticsNodeInteraction
 import androidx.compose.ui.test.assert
 import androidx.compose.ui.text.AnnotatedString
 
-fun SemanticsNodeInteraction.assertEditableTextEquals(expected: AnnotatedString): SemanticsNodeInteraction =
+fun SemanticsNodeInteraction.assertEditableTextEquals(
+  expected: AnnotatedString
+): SemanticsNodeInteraction =
   assert(SemanticsMatcher.expectValue(SemanticsProperties.EditableText, expected))
 
 fun SemanticsNodeInteraction.assertEditableTextEquals(expected: String): SemanticsNodeInteraction =

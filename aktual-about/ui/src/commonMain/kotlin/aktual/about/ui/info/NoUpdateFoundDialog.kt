@@ -24,12 +24,7 @@ internal fun NoUpdateFoundDialog(
   BasicAlertDialog(
     modifier = modifier,
     onDismissRequest = onDismiss,
-    content = {
-      NoUpdateFoundDialogContent(
-        onDismiss = onDismiss,
-        theme = theme,
-      )
-    },
+    content = { NoUpdateFoundDialogContent(onDismiss = onDismiss, theme = theme) },
   )
 }
 
@@ -43,15 +38,10 @@ internal fun NoUpdateFoundDialogContent(
     modifier = modifier,
     theme = theme,
     title = Strings.infoNoUpdateTitle,
-    content = {
-      Text(text = Strings.infoNoUpdateMessage)
-    },
+    content = { Text(text = Strings.infoNoUpdateMessage) },
     buttons = {
       TextButton(onClick = onDismiss) {
-        Text(
-          text = Strings.infoNoUpdateOk,
-          color = theme.pageTextPositive,
-        )
+        Text(text = Strings.infoNoUpdateOk, color = theme.pageTextPositive)
       }
     },
   )
@@ -60,9 +50,5 @@ internal fun NoUpdateFoundDialogContent(
 @Preview
 @Composable
 private fun PreviewNoUpdatesContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  NoUpdateFoundDialogContent(
-    onDismiss = {},
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) = PreviewWithColorScheme(type) { NoUpdateFoundDialogContent(onDismiss = {}) }

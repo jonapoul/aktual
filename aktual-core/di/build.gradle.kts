@@ -1,9 +1,7 @@
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
 
-plugins {
-  id("aktual.module.di")
-}
+plugins { id("aktual.module.di") }
 
 kotlin {
   commonMainDependencies {

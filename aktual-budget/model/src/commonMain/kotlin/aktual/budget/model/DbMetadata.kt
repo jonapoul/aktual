@@ -26,16 +26,14 @@ import kotlinx.serialization.json.jsonPrimitive
 
 @Immutable
 @Serializable(DbMetadata.Serializer::class)
-data class DbMetadata(
-  val data: PersistentMap<Key<*>, Any> = persistentMapOf(),
-) : Iterable<Pair<DbMetadata.Key<*>, Any?>> {
+data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) :
+  Iterable<Pair<DbMetadata.Key<*>, Any?>> {
   private val list by lazy { data.toList() }
 
-  constructor(vararg data: Pair<Key<*>, Any?>) : this(
-    data = data
-      .mapNotNull { (k, v) -> if (v == null) null else k to v }
-      .toMap()
-      .toPersistentMap(),
+  constructor(
+    vararg data: Pair<Key<*>, Any?>
+  ) : this(
+    data = data.mapNotNull { (k, v) -> if (v == null) null else k to v }.toMap().toPersistentMap()
   )
 
   constructor(
@@ -67,12 +65,13 @@ data class DbMetadata(
   operator fun <T : Any> get(key: Key<T>): T? {
     val datum = data[key] ?: return null
     @Suppress("UNCHECKED_CAST")
-    return requireNotNull(datum as? T) { "The value for metadata key $key is the wrong type: $datum" }
+    return requireNotNull(datum as? T) {
+      "The value for metadata key $key is the wrong type: $datum"
+    }
   }
 
-  operator fun <T : Any> set(key: Key<T>, value: T?): DbMetadata = DbMetadata(
-    if (value == null) data.remove(key) else data.put(key, value),
-  )
+  operator fun <T : Any> set(key: Key<T>, value: T?): DbMetadata =
+    DbMetadata(if (value == null) data.remove(key) else data.put(key, value))
 
   operator fun plus(other: Map<Key<*>, Any?>): DbMetadata = plus(other.toList())
 
@@ -111,7 +110,8 @@ data class DbMetadata(
     override fun decode(element: JsonPrimitive) = element.content
   }
 
-  data class TypedKey<T : Any>(override val name: String, private val fromString: (String) -> T) : PrimitiveKey<T> {
+  data class TypedKey<T : Any>(override val name: String, private val fromString: (String) -> T) :
+    PrimitiveKey<T> {
     override fun decode(element: JsonPrimitive) = fromString(element.content)
   }
 
@@ -133,59 +133,65 @@ data class DbMetadata(
     val UserId: Key<String> = StringKey("userId")
     val EncryptKeyId: Key<String> = StringKey("encryptKeyId")
 
-    fun Key(key: String): Key<*> = when (key) {
-      BudgetName.name -> BudgetName
-      BudgetCollapsed.name -> BudgetCollapsed
-      CloudFileId.name -> CloudFileId
-      GroupId.name -> GroupId
-      Id.name -> Id
-      LastScheduleRun.name -> LastScheduleRun
-      LastSyncedTimestamp.name -> LastSyncedTimestamp
-      LastUploaded.name -> LastUploaded
-      ResetClock.name -> ResetClock
-      UserId.name -> UserId
-      EncryptKeyId.name -> EncryptKeyId
-      else -> StringKey(key)
-    }
+    fun Key(key: String): Key<*> =
+      when (key) {
+        BudgetName.name -> BudgetName
+        BudgetCollapsed.name -> BudgetCollapsed
+        CloudFileId.name -> CloudFileId
+        GroupId.name -> GroupId
+        Id.name -> Id
+        LastScheduleRun.name -> LastScheduleRun
+        LastSyncedTimestamp.name -> LastSyncedTimestamp
+        LastUploaded.name -> LastUploaded
+        ResetClock.name -> ResetClock
+        UserId.name -> UserId
+        EncryptKeyId.name -> EncryptKeyId
+        else -> StringKey(key)
+      }
 
-    inline fun <reified E : Enum<E>> enumKey(name: String): Key<E> = TypedKey(
-      name = name,
-      fromString = { E::class.parse(it) },
-    )
+    inline fun <reified E : Enum<E>> enumKey(name: String): Key<E> =
+      TypedKey(name = name, fromString = { E::class.parse(it) })
   }
 
   object Serializer : KSerializer<DbMetadata> {
     private val delegate = MapSerializer(String.serializer(), JsonElement.serializer().nullable)
     override val descriptor = delegate.descriptor
 
-    override fun serialize(encoder: Encoder, value: DbMetadata) = delegate.serialize(
-      encoder = encoder,
-      value = value
-        .mapNotNull { (k, v) -> if (v == null) null else k to v }
-        .associate { (k, v) -> k.name to k.encode(v) },
-    )
+    override fun serialize(encoder: Encoder, value: DbMetadata) =
+      delegate.serialize(
+        encoder = encoder,
+        value =
+          value
+            .mapNotNull { (k, v) -> if (v == null) null else k to v }
+            .associate { (k, v) -> k.name to k.encode(v) },
+      )
 
     override fun deserialize(decoder: Decoder): DbMetadata {
-      val jsonMap = delegate.deserialize(decoder).mapNotNull { (k, v) ->
-        val key = Key(k)
-        key to when (v) {
-          null, is JsonNull -> return@mapNotNull null
-          is JsonPrimitive -> (key as PrimitiveKey<*>).decode(v)
-          is JsonArray -> (key as ListKey).decode(v)
-          is JsonObject -> throw SerializationException("Can't decode yet: $v")
+      val jsonMap =
+        delegate.deserialize(decoder).mapNotNull { (k, v) ->
+          val key = Key(k)
+          key to
+            when (v) {
+              null,
+              is JsonNull -> return@mapNotNull null
+              is JsonPrimitive -> (key as PrimitiveKey<*>).decode(v)
+              is JsonArray -> (key as ListKey).decode(v)
+              is JsonObject -> throw SerializationException("Can't decode yet: $v")
+            }
         }
-      }
       return DbMetadata(jsonMap.toMap().toPersistentMap())
     }
   }
 }
 
-val DbMetadata.cloudFileId: BudgetId get() = get(DbMetadata.CloudFileId) ?: error("No cloudFileId found in $this")
+val DbMetadata.cloudFileId: BudgetId
+  get() = get(DbMetadata.CloudFileId) ?: error("No cloudFileId found in $this")
 
 @Suppress("UNCHECKED_CAST")
-private fun DbMetadata.Key<*>.encode(value: Any?): JsonElement? = when (this) {
-  is DbMetadata.BoolKey -> (value as? Boolean)?.let(::JsonPrimitive)
-  is DbMetadata.StringKey -> (value as? String)?.let(::JsonPrimitive)
-  is DbMetadata.TypedKey<*> -> value?.toString()?.let(::JsonPrimitive)
-  is DbMetadata.ListKey -> (value as? List<String>)?.map(::JsonPrimitive)?.let(::JsonArray)
-}
+private fun DbMetadata.Key<*>.encode(value: Any?): JsonElement? =
+  when (this) {
+    is DbMetadata.BoolKey -> (value as? Boolean)?.let(::JsonPrimitive)
+    is DbMetadata.StringKey -> (value as? String)?.let(::JsonPrimitive)
+    is DbMetadata.TypedKey<*> -> value?.toString()?.let(::JsonPrimitive)
+    is DbMetadata.ListKey -> (value as? List<String>)?.map(::JsonPrimitive)?.let(::JsonArray)
+  }

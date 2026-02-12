@@ -16,16 +16,17 @@ import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
 import io.ktor.client.plugins.ResponseException
+import java.io.IOException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import logcat.logcat
-import java.io.IOException
 
 @Inject
-class BudgetFileDownloader internal constructor(
+class BudgetFileDownloader
+internal constructor(
   private val contexts: CoroutineContexts,
   private val budgetFiles: BudgetFiles,
   private val apisStateHolder: AktualApisStateHolder,
@@ -35,7 +36,11 @@ class BudgetFileDownloader internal constructor(
     return flow { emitState(api, token, budgetId) }.flowOn(contexts.io)
   }
 
-  private suspend fun FlowCollector<DownloadState>.emitState(api: SyncDownloadApi, token: Token, id: BudgetId) {
+  private suspend fun FlowCollector<DownloadState>.emitState(
+    api: SyncDownloadApi,
+    token: Token,
+    id: BudgetId,
+  ) {
     val destinationPath = budgetFiles.encryptedZip(id, mkdirs = true)
     try {
       emit(InProgress(Zero, Zero))
@@ -58,15 +63,11 @@ class BudgetFileDownloader internal constructor(
     }
   }
 
-  private fun InProgress(state: SyncDownloadState.InProgress) = InProgress(
-    read = state.bytesSentTotal.bytes,
-    total = state.contentLength.bytes,
-  )
+  private fun InProgress(state: SyncDownloadState.InProgress) =
+    InProgress(read = state.bytesSentTotal.bytes, total = state.contentLength.bytes)
 
-  private fun Done(state: SyncDownloadState.Done) = Done(
-    path = state.path,
-    total = state.contentLength.bytes,
-  )
+  private fun Done(state: SyncDownloadState.Done) =
+    Done(path = state.path, total = state.contentLength.bytes)
 
   private fun deleteDir(id: BudgetId) {
     with(budgetFiles) {

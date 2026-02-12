@@ -1,6 +1,4 @@
-plugins {
-  id("aktual.module.android")
-}
+plugins { id("aktual.module.android") }
 
 dependencies {
   api(project(":aktual-core:prefs-impl"))

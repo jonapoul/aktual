@@ -32,6 +32,10 @@ import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.runs
+import java.io.IOException
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -41,10 +45,6 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.IOException
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlViewModelTest {
@@ -85,13 +85,14 @@ class ServerUrlViewModelTest {
   }
 
   private fun TestScope.buildViewModel() {
-    viewModel = ServerUrlViewModel(
-      contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
-      apiStateHolder = apisStateHolder,
-      preferences = preferences,
-      versionsStateHolder = versionsStateHolder,
-      buildConfig = TestBuildConfig.copy(defaultServerUrl = null),
-    )
+    viewModel =
+      ServerUrlViewModel(
+        contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
+        apiStateHolder = apisStateHolder,
+        preferences = preferences,
+        versionsStateHolder = versionsStateHolder,
+        buildConfig = TestBuildConfig.copy(defaultServerUrl = null),
+      )
   }
 
   @Test
@@ -168,12 +169,14 @@ class ServerUrlViewModelTest {
 
       // and the API returns failure
       val reason = "SOMETHING BROKE"
-      val body = """
+      val body =
+        """
         {
           "status": "error",
           "reason": "$reason"
         }
-      """.trimIndent()
+      """
+          .trimIndent()
       mockEngine.clear()
       mockEngine += { respondJson(body, HttpStatusCode.BadRequest) }
 
@@ -183,9 +186,7 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertThat(awaitItem())
-        .isNotNull()
-        .contains(reason)
+      assertThat(awaitItem()).isNotNull().contains(reason)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -209,9 +210,7 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertThat(awaitItem())
-        .isNotNull()
-        .contains(reason)
+      assertThat(awaitItem()).isNotNull().contains(reason)
       cancelAndIgnoreRemainingEvents()
     }
   }
@@ -247,7 +246,8 @@ class ServerUrlViewModelTest {
   }
 
   private fun setBootstrapResponse(bootstrapped: Boolean) {
-    val json = """
+    val json =
+      """
       {
           "status": "ok",
           "data": {
@@ -263,7 +263,8 @@ class ServerUrlViewModelTest {
               "multiuser": false
           }
       }
-    """.trimIndent()
+    """
+        .trimIndent()
     mockEngine.clear()
     mockEngine += { respondJson(json) }
   }

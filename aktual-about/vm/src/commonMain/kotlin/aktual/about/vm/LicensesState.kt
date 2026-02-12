@@ -8,8 +8,11 @@ import kotlinx.collections.immutable.toImmutableList
 @Immutable
 sealed interface LicensesState {
   data object Loading : LicensesState
+
   data class Loaded(val artifacts: ImmutableList<ArtifactDetail>) : LicensesState
+
   data object NoneFound : LicensesState
+
   data class Error(val errorMessage: String) : LicensesState
 }
 
@@ -24,7 +27,10 @@ private fun ArtifactDetail.matches(text: String): Boolean =
     artifactId.contains(text) ||
     version.contains(text) ||
     scm?.url.contains(text) ||
-    spdxLicenses.any { it.identifier.contains(text) || it.name.contains(text) || it.url.contains(text) } ||
+    spdxLicenses.any {
+      it.identifier.contains(text) || it.name.contains(text) || it.url.contains(text)
+    } ||
     unknownLicenses.any { it.name.contains(text) || it.url.contains(text) }
 
-private fun String?.contains(other: String): Boolean = this?.contains(other, ignoreCase = true) == true
+private fun String?.contains(other: String): Boolean =
+  this?.contains(other, ignoreCase = true) == true

@@ -50,14 +50,9 @@ internal fun ConfirmPasswordForm(
     keyboard?.hide()
   }
 
-  Column(
-    modifier = modifier,
-    verticalArrangement = Arrangement.spacedBy(10.dp),
-  ) {
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(10.dp)) {
     PasswordEntryText(
-      modifier = Modifier
-        .fillMaxWidth()
-        .focusRequester(keyboardFocusRequester(keyboard)),
+      modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester(keyboard)),
       password = inputPassword1,
       placeholderText = Strings.passwordInput,
       showPassword = showPasswords,
@@ -82,14 +77,14 @@ internal fun ConfirmPasswordForm(
     val interactionSource = remember { MutableInteractionSource() }
 
     Row(
-      modifier = Modifier
-        .fillMaxWidth()
-        .clickable(
-          interactionSource = interactionSource,
-          indication = ripple(),
-          enabled = true,
-          onClick = { onAction(PasswordAction.SetPasswordsVisible(!showPasswords)) },
-        ),
+      modifier =
+        Modifier.fillMaxWidth()
+          .clickable(
+            interactionSource = interactionSource,
+            indication = ripple(),
+            enabled = true,
+            onClick = { onAction(PasswordAction.SetPasswordsVisible(!showPasswords)) },
+          ),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Checkbox(
@@ -98,10 +93,7 @@ internal fun ConfirmPasswordForm(
         onCheckedChange = { onAction(PasswordAction.SetPasswordsVisible(!showPasswords)) },
       )
 
-      Text(
-        text = Strings.passwordShow,
-        fontSize = 15.sp,
-      )
+      Text(text = Strings.passwordShow, fontSize = 15.sp)
     }
 
     PrimaryTextButtonWithLoading(
@@ -117,17 +109,18 @@ internal fun ConfirmPasswordForm(
 @Preview
 @Composable
 private fun PreviewConfirmPassword(
-  @PreviewParameter(ConfirmPasswordProvider::class) params: ThemedParams<ConfirmPasswordParams>,
-) = PreviewWithColorScheme(params.type) {
-  ConfirmPasswordForm(
-    inputPassword1 = params.data.password1,
-    inputPassword2 = params.data.password2,
-    showPasswords = params.data.showPasswords,
-    state = params.data.state,
-    passwordsMatch = params.data.passwordsMatch,
-    onAction = {},
-  )
-}
+  @PreviewParameter(ConfirmPasswordProvider::class) params: ThemedParams<ConfirmPasswordParams>
+) =
+  PreviewWithColorScheme(params.type) {
+    ConfirmPasswordForm(
+      inputPassword1 = params.data.password1,
+      inputPassword2 = params.data.password2,
+      showPasswords = params.data.showPasswords,
+      state = params.data.state,
+      passwordsMatch = params.data.passwordsMatch,
+      onAction = {},
+    )
+  }
 
 private data class ConfirmPasswordParams(
   val password1: Password = Password.Dummy,
@@ -137,8 +130,9 @@ private data class ConfirmPasswordParams(
   val passwordsMatch: Boolean = false,
 )
 
-private class ConfirmPasswordProvider : ThemedParameterProvider<ConfirmPasswordParams>(
-  ConfirmPasswordParams(password1 = Empty, password2 = Empty, showPasswords = false),
-  ConfirmPasswordParams(showPasswords = true, passwordsMatch = true),
-  ConfirmPasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
-)
+private class ConfirmPasswordProvider :
+  ThemedParameterProvider<ConfirmPasswordParams>(
+    ConfirmPasswordParams(password1 = Empty, password2 = Empty, showPasswords = false),
+    ConfirmPasswordParams(showPasswords = true, passwordsMatch = true),
+    ConfirmPasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
+  )

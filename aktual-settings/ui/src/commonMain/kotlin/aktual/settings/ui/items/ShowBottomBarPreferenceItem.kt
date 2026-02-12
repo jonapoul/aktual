@@ -53,18 +53,17 @@ internal fun ShowBottomBarPreferenceItem(
 }
 
 @Stable
-private fun icon(isVisible: Boolean) = when (isVisible) {
-  true -> MaterialIcons.Visibility
-  false -> MaterialIcons.VisibilityOff
-}
+private fun icon(isVisible: Boolean) =
+  when (isVisible) {
+    true -> MaterialIcons.Visibility
+    false -> MaterialIcons.VisibilityOff
+  }
 
 @Preview
 @Composable
 private fun PreviewShowBottomBarPreferenceItem(
-  @PreviewParameter(ThemedBooleanParameters::class) params: ThemedParams<Boolean>,
-) = PreviewWithColorScheme(params.type) {
-  ShowBottomBarPreferenceItem(
-    value = params.data,
-    onChange = {},
-  )
-}
+  @PreviewParameter(ThemedBooleanParameters::class) params: ThemedParams<Boolean>
+) =
+  PreviewWithColorScheme(params.type) {
+    ShowBottomBarPreferenceItem(value = params.data, onChange = {})
+  }

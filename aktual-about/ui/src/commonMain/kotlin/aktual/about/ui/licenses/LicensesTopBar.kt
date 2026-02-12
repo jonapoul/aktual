@@ -20,32 +20,30 @@ internal fun LicensesTopBar(
   state: SearchBarState,
   theme: Theme,
   onAction: (LicensesAction) -> Unit,
-) = TopAppBar(
-  colors = theme.transparentTopAppBarColors(),
-  navigationIcon = {
-    IconButton(onClick = { onAction(LicensesAction.NavBack) }) {
-      Icon(
-        imageVector = MaterialIcons.ArrowBack,
-        contentDescription = Strings.licensesToolbarBack,
-      )
-    }
-  },
-  title = {
-    Text(
-      text = Strings.licensesToolbarTitle,
-      maxLines = 1,
-      overflow = TextOverflow.Ellipsis,
-    )
-  },
-  actions = {
-    IconButton(onClick = { onAction(LicensesAction.ToggleSearchBar) }) {
-      Icon(
-        imageVector = when (state) {
-          SearchBarState.Gone -> MaterialIcons.Search
-          is SearchBarState.Visible -> MaterialIcons.SearchOff
-        },
-        contentDescription = Strings.licensesToolbarSearch,
-      )
-    }
-  },
-)
+) =
+  TopAppBar(
+    colors = theme.transparentTopAppBarColors(),
+    navigationIcon = {
+      IconButton(onClick = { onAction(LicensesAction.NavBack) }) {
+        Icon(
+          imageVector = MaterialIcons.ArrowBack,
+          contentDescription = Strings.licensesToolbarBack,
+        )
+      }
+    },
+    title = {
+      Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+    },
+    actions = {
+      IconButton(onClick = { onAction(LicensesAction.ToggleSearchBar) }) {
+        Icon(
+          imageVector =
+            when (state) {
+              SearchBarState.Gone -> MaterialIcons.Search
+              is SearchBarState.Visible -> MaterialIcons.SearchOff
+            },
+          contentDescription = Strings.licensesToolbarSearch,
+        )
+      }
+    },
+  )

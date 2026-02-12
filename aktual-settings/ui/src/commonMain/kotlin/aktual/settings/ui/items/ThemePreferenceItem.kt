@@ -57,9 +57,7 @@ internal fun ThemePreferenceItem(
   var openDarkDialog by remember { mutableStateOf(false) }
   val (theme, darkTheme) = config
 
-  Column(
-    modifier = modifier.fillMaxWidth(),
-  ) {
+  Column(modifier = modifier.fillMaxWidth()) {
     BasicPreferenceItem(
       title = Strings.settingsTheme,
       subtitle = null,
@@ -67,9 +65,7 @@ internal fun ThemePreferenceItem(
       clickability = NotClickable,
     ) {
       TypeButton(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(3.dp),
+        modifier = Modifier.fillMaxWidth().padding(3.dp),
         type = theme,
         isSelected = false,
         strings = RegularSchemeTypeStrings,
@@ -85,9 +81,7 @@ internal fun ThemePreferenceItem(
         clickability = NotClickable,
       ) {
         TypeButton(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(3.dp),
+          modifier = Modifier.fillMaxWidth().padding(3.dp),
           type = darkTheme,
           isSelected = false,
           strings = DarkSchemeTypeStrings,
@@ -132,31 +126,28 @@ private fun <T> ThemeChooserDialog(
   onSelect: (T) -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-) = AlertDialog(
-  modifier = modifier,
-  title = Strings.settingsTheme,
-  onDismissRequest = onDismissRequest,
-  buttons = {
-    TextButton(onClick = onDismissRequest) {
-      Text(text = Strings.settingsDialogDismiss)
-    }
-  },
-  content = {
-    ThemeChooserDialogContent(
-      selected = selected,
-      options = options,
-      strings = strings,
-      onSelect = onSelect,
-    )
-  },
-)
+) =
+  AlertDialog(
+    modifier = modifier,
+    title = Strings.settingsTheme,
+    onDismissRequest = onDismissRequest,
+    buttons = {
+      TextButton(onClick = onDismissRequest) { Text(text = Strings.settingsDialogDismiss) }
+    },
+    content = {
+      ThemeChooserDialogContent(
+        selected = selected,
+        options = options,
+        strings = strings,
+        onSelect = onSelect,
+      )
+    },
+  )
 
 private val REGULAR_OPTIONS = RegularColorSchemeType.entries.toImmutableList()
 private val DARK_OPTIONS = DarkColorSchemeType.entries.toImmutableList()
-private val OPTIONS_TO_SHOW_DARK_CONFIG = persistentSetOf(
-  RegularColorSchemeType.Dark,
-  RegularColorSchemeType.System,
-)
+private val OPTIONS_TO_SHOW_DARK_CONFIG =
+  persistentSetOf(RegularColorSchemeType.Dark, RegularColorSchemeType.System)
 
 @Composable
 private fun <T> ThemeChooserDialogContent(
@@ -167,9 +158,7 @@ private fun <T> ThemeChooserDialogContent(
 ) {
   options.fastForEach { type ->
     TypeButton(
-      modifier = Modifier
-        .fillMaxWidth()
-        .padding(1.dp),
+      modifier = Modifier.fillMaxWidth().padding(1.dp),
       type = type,
       isSelected = selected == type,
       strings = strings,
@@ -198,96 +187,94 @@ private fun <T> TypeButton(
     enabled = true,
     colors = buttonColors,
   ) {
-    Text(
-      text = strings(type),
-      textAlign = TextAlign.Center,
-      style = AktualTypography.bodySmall,
-    )
+    Text(text = strings(type), textAlign = TextAlign.Center, style = AktualTypography.bodySmall)
   }
 }
 
 @Stable
 @Composable
-private fun Theme.colors(
-  isPressed: Boolean,
-  isSelected: Boolean,
-) = ButtonDefaults.textButtonColors(
-  containerColor = when {
-    isPressed -> buttonPrimaryBackgroundHover
-    isSelected -> buttonPrimaryBackground
-    else -> buttonNormalBackground
-  },
-  contentColor = when {
-    isPressed -> buttonPrimaryTextHover
-    isSelected -> buttonPrimaryText
-    else -> buttonNormalText
-  },
-  disabledContainerColor = buttonPrimaryDisabledBackground,
-  disabledContentColor = buttonPrimaryDisabledText,
-)
+private fun Theme.colors(isPressed: Boolean, isSelected: Boolean) =
+  ButtonDefaults.textButtonColors(
+    containerColor =
+      when {
+        isPressed -> buttonPrimaryBackgroundHover
+        isSelected -> buttonPrimaryBackground
+        else -> buttonNormalBackground
+      },
+    contentColor =
+      when {
+        isPressed -> buttonPrimaryTextHover
+        isSelected -> buttonPrimaryText
+        else -> buttonNormalText
+      },
+    disabledContainerColor = buttonPrimaryDisabledBackground,
+    disabledContentColor = buttonPrimaryDisabledText,
+  )
 
 @Immutable
 private fun interface SchemeTypeStrings<T> {
-  @ReadOnlyComposable
-  @Composable
-  operator fun invoke(value: T): String
+  @ReadOnlyComposable @Composable operator fun invoke(value: T): String
 }
 
-private val DarkSchemeTypeStrings = SchemeTypeStrings<DarkColorSchemeType> { type ->
-  when (type) {
-    DarkColorSchemeType.Dark -> Strings.themeDark
-    DarkColorSchemeType.Midnight -> Strings.themeMidnight
+private val DarkSchemeTypeStrings =
+  SchemeTypeStrings<DarkColorSchemeType> { type ->
+    when (type) {
+      DarkColorSchemeType.Dark -> Strings.themeDark
+      DarkColorSchemeType.Midnight -> Strings.themeMidnight
+    }
   }
-}
 
-private val RegularSchemeTypeStrings = SchemeTypeStrings<RegularColorSchemeType> { type ->
-  when (type) {
-    RegularColorSchemeType.System -> Strings.themeSystem
-    RegularColorSchemeType.Light -> Strings.themeLight
-    RegularColorSchemeType.Dark -> Strings.themeDark
+private val RegularSchemeTypeStrings =
+  SchemeTypeStrings<RegularColorSchemeType> { type ->
+    when (type) {
+      RegularColorSchemeType.System -> Strings.themeSystem
+      RegularColorSchemeType.Light -> Strings.themeLight
+      RegularColorSchemeType.Dark -> Strings.themeDark
+    }
   }
-}
 
 @Stable
-private fun RegularColorSchemeType.icon(): ImageVector = when (this) {
-  RegularColorSchemeType.System -> MaterialIcons.Settings
-  RegularColorSchemeType.Light -> MaterialIcons.LightMode
-  RegularColorSchemeType.Dark -> MaterialIcons.Brightness2
-}
+private fun RegularColorSchemeType.icon(): ImageVector =
+  when (this) {
+    RegularColorSchemeType.System -> MaterialIcons.Settings
+    RegularColorSchemeType.Light -> MaterialIcons.LightMode
+    RegularColorSchemeType.Dark -> MaterialIcons.Brightness2
+  }
 
 @Stable
-private fun DarkColorSchemeType.icon(): ImageVector = when (this) {
-  DarkColorSchemeType.Dark -> MaterialIcons.Brightness2
-  DarkColorSchemeType.Midnight -> MaterialIcons.Brightness3
-}
+private fun DarkColorSchemeType.icon(): ImageVector =
+  when (this) {
+    DarkColorSchemeType.Dark -> MaterialIcons.Brightness2
+    DarkColorSchemeType.Midnight -> MaterialIcons.Brightness3
+  }
 
 @Preview
 @Composable
 private fun PreviewThemePreferenceItem(
-  @PreviewParameter(ThemePreferenceItemProvider::class) input: ThemeConfig,
+  @PreviewParameter(ThemePreferenceItemProvider::class) input: ThemeConfig
 ) {
   var config by remember { mutableStateOf(input) }
-  val schemeType = when (config.regular) {
-    RegularColorSchemeType.System -> ColorSchemeType.Light
+  val schemeType =
+    when (config.regular) {
+      RegularColorSchemeType.System -> ColorSchemeType.Light
 
-    RegularColorSchemeType.Light -> ColorSchemeType.Light
+      RegularColorSchemeType.Light -> ColorSchemeType.Light
 
-    RegularColorSchemeType.Dark -> when (config.dark) {
-      DarkColorSchemeType.Dark -> ColorSchemeType.Dark
-      DarkColorSchemeType.Midnight -> ColorSchemeType.Midnight
+      RegularColorSchemeType.Dark ->
+        when (config.dark) {
+          DarkColorSchemeType.Dark -> ColorSchemeType.Dark
+          DarkColorSchemeType.Midnight -> ColorSchemeType.Midnight
+        }
     }
-  }
   PreviewWithColorScheme(schemeType) {
-    ThemePreferenceItem(
-      config = config,
-      onChange = { newValue -> config = newValue },
-    )
+    ThemePreferenceItem(config = config, onChange = { newValue -> config = newValue })
   }
 }
 
-private class ThemePreferenceItemProvider : PreviewParameters<ThemeConfig>(
-  ThemeConfig(RegularColorSchemeType.System, DarkColorSchemeType.Dark),
-  ThemeConfig(RegularColorSchemeType.Light, DarkColorSchemeType.Dark),
-  ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Dark),
-  ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Midnight),
-)
+private class ThemePreferenceItemProvider :
+  PreviewParameters<ThemeConfig>(
+    ThemeConfig(RegularColorSchemeType.System, DarkColorSchemeType.Dark),
+    ThemeConfig(RegularColorSchemeType.Light, DarkColorSchemeType.Dark),
+    ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Dark),
+    ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Midnight),
+  )

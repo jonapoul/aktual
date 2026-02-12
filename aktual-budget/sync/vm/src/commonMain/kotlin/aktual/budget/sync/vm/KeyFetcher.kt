@@ -27,23 +27,28 @@ class KeyFetcher(
   private val keyPreferences: KeyPreferences,
   private val decrypter: BufferDecrypter,
 ) {
-  suspend operator fun invoke(budgetId: BudgetId, token: Token, keyPassword: Password): FetchKeyResult {
+  suspend operator fun invoke(
+    budgetId: BudgetId,
+    token: Token,
+    keyPassword: Password,
+  ): FetchKeyResult {
     logcat.d { "KeyFetcher $budgetId $token $keyPassword" }
     val syncApi = stateHolder.value?.sync ?: return FetchKeyResult.NotLoggedIn
 
-    val response = try {
-      val request = GetUserKeyRequest(budgetId, token)
-      withContext(contexts.io) { syncApi.fetchUserKey(request) }
-    } catch (e: ResponseException) {
-      val failure = e.response.body<GetUserKeyResponse.Failure>()
-      logcat.e(e) { "Failure = $failure" }
-      return FetchKeyResult.ResponseFailure(failure.reason)
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.e(e) { "Failed fetching key for $budgetId and $keyPassword" }
-      return FetchKeyResult.IOFailure(e.requireMessage())
-    }
+    val response =
+      try {
+        val request = GetUserKeyRequest(budgetId, token)
+        withContext(contexts.io) { syncApi.fetchUserKey(request) }
+      } catch (e: ResponseException) {
+        val failure = e.response.body<GetUserKeyResponse.Failure>()
+        logcat.e(e) { "Failure = $failure" }
+        return FetchKeyResult.ResponseFailure(failure.reason)
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed fetching key for $budgetId and $keyPassword" }
+        return FetchKeyResult.IOFailure(e.requireMessage())
+      }
 
     val (keyId, salt, test) = response.data
     val key = generateKeyFromPassword(keyPassword, salt)

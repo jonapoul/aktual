@@ -18,16 +18,13 @@ enum class NumberFormat(
   ApostropheDot(value = "apostrophe-dot", thousandsSeparator = "’", decimalSeparator = "."),
 
   // e.g. 1,00,000.33
-  CommaDotIn(value = "comma-dot-in", thousandsSeparator = ",", decimalSeparator = "."),
-  ;
+  CommaDotIn(value = "comma-dot-in", thousandsSeparator = ",", decimalSeparator = ".");
 
   companion object {
     val Default = CommaDot
+
     fun from(value: String?): NumberFormat = entries.firstOrNull { it.value == value } ?: Default
   }
 }
 
-data class NumberFormatConfig(
-  val format: NumberFormat,
-  val hideFraction: Boolean,
-)
+data class NumberFormatConfig(val format: NumberFormat, val hideFraction: Boolean)

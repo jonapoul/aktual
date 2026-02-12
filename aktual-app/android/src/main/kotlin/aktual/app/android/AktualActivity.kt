@@ -49,20 +49,12 @@ class AktualActivity(private val viewModelFactory: MetroViewModelFactory) : Comp
       navigationBarStyle = SystemBarStyle.auto(transparent, transparent),
     )
 
-    setContent {
-      Content(
-        viewModel = viewModel,
-        viewModelFactory = viewModelFactory,
-      )
-    }
+    setContent { Content(viewModel = viewModel, viewModelFactory = viewModelFactory) }
   }
 }
 
 @Composable
-private fun Content(
-  viewModel: AktualActivityViewModel,
-  viewModelFactory: MetroViewModelFactory,
-) {
+private fun Content(viewModel: AktualActivityViewModel, viewModelFactory: MetroViewModelFactory) {
   val regular by viewModel.regularSchemeType.collectAsStateWithLifecycle()
   val darkScheme by viewModel.darkSchemeType.collectAsStateWithLifecycle()
   val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
@@ -71,9 +63,7 @@ private fun Content(
   val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
   val colorSchemeType = chooseSchemeType(regular, darkScheme)
 
-  CompositionLocalProvider(
-    LocalMetroViewModelFactory provides viewModelFactory,
-  ) {
+  CompositionLocalProvider(LocalMetroViewModelFactory provides viewModelFactory) {
     WithCompositionLocals(
       isPrivacyEnabled = isPrivacyEnabled,
       format = numberFormat,

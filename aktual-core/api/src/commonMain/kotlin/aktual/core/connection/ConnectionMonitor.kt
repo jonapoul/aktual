@@ -38,11 +38,12 @@ class ConnectionMonitor(
 
   fun start() {
     job?.cancel()
-    job = scope.collectFlow(
-      flow = preferences.serverUrl.asFlow(),
-      context = contexts.unconfined,
-      collector = ::handleServerUrl,
-    )
+    job =
+      scope.collectFlow(
+        flow = preferences.serverUrl.asFlow(),
+        context = contexts.unconfined,
+        collector = ::handleServerUrl,
+      )
   }
 
   private fun handleServerUrl(url: ServerUrl?) {
@@ -56,25 +57,27 @@ class ConnectionMonitor(
     }
   }
 
-  private fun tryToBuildApis(url: ServerUrl) = try {
-    val client = clientFactory(AktualJson)
-    val apis = AktualApis(
-      serverUrl = url,
-      client = client,
-      account = AccountApi(url, client),
-      base = BaseApi(url, client),
-      health = HealthApi(url, client),
-      metrics = MetricsApi(url, client),
-      sync = SyncApi(url, client),
-      syncDownload = SyncDownloadApi(url, client, fileSystem),
-    )
-    apiStateHolder.update { apis }
-  } catch (e: CancellationException) {
-    throw e
-  } catch (e: Exception) {
-    logcat.w(e) { "Failed building APIs for $url" }
-    apiStateHolder.reset()
-  }
+  private fun tryToBuildApis(url: ServerUrl) =
+    try {
+      val client = clientFactory(AktualJson)
+      val apis =
+        AktualApis(
+          serverUrl = url,
+          client = client,
+          account = AccountApi(url, client),
+          base = BaseApi(url, client),
+          health = HealthApi(url, client),
+          metrics = MetricsApi(url, client),
+          sync = SyncApi(url, client),
+          syncDownload = SyncDownloadApi(url, client, fileSystem),
+        )
+      apiStateHolder.update { apis }
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      logcat.w(e) { "Failed building APIs for $url" }
+      apiStateHolder.reset()
+    }
 
   fun stop() {
     job?.cancel()

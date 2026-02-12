@@ -29,11 +29,12 @@ fun AktualNavHost(
   NavHost(
     modifier = modifier,
     navController = nav,
-    startDestination = when {
-      token != null && isServerUrlSet -> ListBudgetsNavRoute(token)
-      isServerUrlSet -> LoginNavRoute
-      else -> ServerUrlNavRoute
-    },
+    startDestination =
+      when {
+        token != null && isServerUrlSet -> ListBudgetsNavRoute(token)
+        isServerUrlSet -> LoginNavRoute
+        else -> ServerUrlNavRoute
+      },
   ) {
     composable<ChangePasswordNavRoute> { ChangePasswordScreen(ChangePasswordNavigator(nav)) }
 

@@ -57,10 +57,7 @@ import kotlinx.coroutines.channels.consumeEach
 import logcat.logcat
 
 @Composable
-fun ServerUrlScreen(
-  nav: ServerUrlNavigator,
-  viewModel: ServerUrlViewModel = metroViewModel(),
-) {
+fun ServerUrlScreen(nav: ServerUrlNavigator, viewModel: ServerUrlViewModel = metroViewModel()) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredUrl by viewModel.baseUrl.collectAsStateWithLifecycle()
   val protocol by viewModel.protocol.collectAsStateWithLifecycle()
@@ -68,11 +65,7 @@ fun ServerUrlScreen(
   val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
 
-  DisposableEffect(Unit) {
-    onDispose {
-      viewModel.clearState()
-    }
-  }
+  DisposableEffect(Unit) { onDispose { viewModel.clearState() } }
 
   val closeApp = appCloser()
 
@@ -127,13 +120,10 @@ private fun ServerUrlScaffold(
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = {
           IconButton(onClick = { onAction(ServerUrlAction.NavBack) }) {
-            Icon(
-              imageVector = MaterialIcons.ArrowBack,
-              contentDescription = Strings.navBack,
-            )
+            Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
           }
         },
-        title = { },
+        title = {},
         scrollBehavior = scrollBehavior,
         actions = {
           BasicIconButton(
@@ -179,17 +169,11 @@ private fun ServerUrlContent(
   theme: Theme = LocalTheme.current,
 ) {
   Column(
-    modifier = modifier
-      .padding(horizontal = 16.dp)
-      .wrapContentWidth()
-      .wrapContentHeight(),
+    modifier = modifier.padding(horizontal = 16.dp).wrapContentWidth().wrapContentHeight(),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.Start,
   ) {
-    Text(
-      text = Strings.serverUrlTitle,
-      style = AktualTypography.headlineLarge,
-    )
+    Text(text = Strings.serverUrlTitle, style = AktualTypography.headlineLarge)
 
     VerticalSpacer(height = 15.dp)
 
@@ -212,9 +196,7 @@ private fun ServerUrlContent(
     VerticalSpacer(height = 20.dp)
 
     PrimaryTextButtonWithLoading(
-      modifier = Modifier
-        .padding(5.dp)
-        .fillMaxWidth(),
+      modifier = Modifier.padding(5.dp).fillMaxWidth(),
       text = Strings.serverUrlConfirm,
       isLoading = isLoading,
       isEnabled = isEnabled,
@@ -232,17 +214,10 @@ private fun ServerUrlContent(
       )
     }
 
-    Spacer(
-      modifier = Modifier.weight(1f),
-    )
+    Spacer(modifier = Modifier.weight(1f))
 
-    Box(
-      modifier = Modifier.fillMaxWidth(),
-    ) {
-      VersionsText(
-        modifier = Modifier.align(Alignment.BottomEnd),
-        versions = versions,
-      )
+    Box(modifier = Modifier.fillMaxWidth()) {
+      VersionsText(modifier = Modifier.align(Alignment.BottomEnd), versions = versions)
     }
 
     BottomStatusBarSpacing()
@@ -253,18 +228,19 @@ private fun ServerUrlContent(
 @Composable
 @PortraitPreview
 private fun PreviewServerUrlScaffold(
-  @PreviewParameter(ServerUrlScaffoldProvider::class) params: ThemedParams<ServerUrlScaffoldParams>,
-) = PreviewWithColorScheme(params.type) {
-  ServerUrlScaffold(
-    url = params.data.url,
-    protocol = params.data.protocol,
-    versions = AktualVersions.Dummy,
-    isEnabled = true,
-    isLoading = params.data.isLoading,
-    onAction = {},
-    errorMessage = params.data.errorMessage,
-  )
-}
+  @PreviewParameter(ServerUrlScaffoldProvider::class) params: ThemedParams<ServerUrlScaffoldParams>
+) =
+  PreviewWithColorScheme(params.type) {
+    ServerUrlScaffold(
+      url = params.data.url,
+      protocol = params.data.protocol,
+      versions = AktualVersions.Dummy,
+      isEnabled = true,
+      isLoading = params.data.isLoading,
+      onAction = {},
+      errorMessage = params.data.errorMessage,
+    )
+  }
 
 private data class ServerUrlScaffoldParams(
   val url: String,
@@ -273,17 +249,19 @@ private data class ServerUrlScaffoldParams(
   val errorMessage: String?,
 )
 
-private class ServerUrlScaffoldProvider : ThemedParameterProvider<ServerUrlScaffoldParams>(
-  ServerUrlScaffoldParams(
-    url = "",
-    protocol = Protocol.Https,
-    isLoading = false,
-    errorMessage = null,
-  ),
-  ServerUrlScaffoldParams(
-    url = "my.server.com:1234/path",
-    protocol = Protocol.Http,
-    isLoading = true,
-    errorMessage = "Hello this is an error message, split over multiple lines so you can see how it behaves",
-  ),
-)
+private class ServerUrlScaffoldProvider :
+  ThemedParameterProvider<ServerUrlScaffoldParams>(
+    ServerUrlScaffoldParams(
+      url = "",
+      protocol = Protocol.Https,
+      isLoading = false,
+      errorMessage = null,
+    ),
+    ServerUrlScaffoldParams(
+      url = "my.server.com:1234/path",
+      protocol = Protocol.Http,
+      isLoading = true,
+      errorMessage =
+        "Hello this is an error message, split over multiple lines so you can see how it behaves",
+    ),
+  )

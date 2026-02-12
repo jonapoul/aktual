@@ -7,7 +7,8 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    // Don't change these UI modules away from API - they're needed for DI graph resolution from app layer
+    // Don't change these UI modules away from API - they're needed for DI graph resolution from app
+    // layer
     api(project(":aktual-about:ui"))
     api(project(":aktual-account:ui"))
     api(project(":aktual-budget:list:ui"))
@@ -24,7 +25,6 @@ kotlin {
     api(libs.jetbrains.resources)
     api(libs.jetbrains.runtime)
     api(libs.molecule)
-    implementation(project(":aktual-core:ui"))
     implementation(libs.jetbrains.material3)
     implementation(libs.jetbrains.savedstate)
     implementation(libs.logcat)

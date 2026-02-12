@@ -9,16 +9,12 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 /**
- * [android.view.Window.setNavigationBarColor] and [android.view.Window.setStatusBarColor] are deprecated, and have no
- * effect in Android 15
+ * [android.view.Window.setNavigationBarColor] and [android.view.Window.setStatusBarColor] are
+ * deprecated, and have no effect in Android 15
  */
 @Suppress("DEPRECATION")
 @Composable
-actual fun SetStatusBarColors(
-  theme: Theme,
-  statusBarColor: Color,
-  navigationBarColor: Color,
-) {
+actual fun SetStatusBarColors(theme: Theme, statusBarColor: Color, navigationBarColor: Color) {
   val view = LocalView.current
 
   if (!view.isInEditMode) {

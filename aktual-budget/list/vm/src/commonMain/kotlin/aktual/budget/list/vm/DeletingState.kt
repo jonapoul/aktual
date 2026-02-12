@@ -6,8 +6,6 @@ import androidx.compose.runtime.Immutable
 sealed interface DeletingState {
   data object Inactive : DeletingState
 
-  data class Active(
-    val deletingLocal: Boolean = false,
-    val deletingRemote: Boolean = false,
-  ) : DeletingState
+  data class Active(val deletingLocal: Boolean = false, val deletingRemote: Boolean = false) :
+    DeletingState
 }

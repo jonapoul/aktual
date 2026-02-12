@@ -31,21 +31,20 @@ internal class KtorImplementationVisitor(
   private val codeGenerator: CodeGenerator,
   private val logger: KSPLogger,
 ) : AnnotatedClassVisitor(KtorApi::class) {
-  override fun validate(annotated: KSAnnotated) = with(annotated) {
-    if (this !is KSClassDeclaration) {
-      error("$this is not a class!")
-    } else if (classKind != ClassKind.INTERFACE) {
-      error("$this should be an interface, was actually a $classKind")
+  override fun validate(annotated: KSAnnotated) =
+    with(annotated) {
+      if (this !is KSClassDeclaration) {
+        error("$this is not a class!")
+      } else if (classKind != ClassKind.INTERFACE) {
+        error("$this should be an interface, was actually a $classKind")
+      }
     }
-  }
 
   override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit) {
     logger.info("visitClassDeclaration $classDeclaration")
 
-    val functions = classDeclaration
-      .getDeclaredFunctions()
-      .map { f -> buildFunction(f, f.getMethod()) }
-      .toList()
+    val functions =
+      classDeclaration.getDeclaredFunctions().map { f -> buildFunction(f, f.getMethod()) }.toList()
 
     logger.info("Found annotated functions ${functions.joinToString { it.name }}")
 
@@ -55,8 +54,10 @@ internal class KtorImplementationVisitor(
 
     logger.info("Writing ${function.name} and ${type.name} for $apiClassName")
 
-    FileSpec
-      .builder(classDeclaration.packageName.requireString, classDeclaration.simpleName.requireString + "Impl")
+    FileSpec.builder(
+        classDeclaration.packageName.requireString,
+        classDeclaration.simpleName.requireString + "Impl",
+      )
       .addFunction(function)
       .addAnnotation(buildSuppressionAnnotation())
       .addType(type)
@@ -64,72 +65,73 @@ internal class KtorImplementationVisitor(
       .writeTo(codeGenerator, aggregating = true, classDeclaration.originatingFiles())
   }
 
-  private fun buildSuppressionAnnotation() = AnnotationSpec
-    .builder(ClassName("kotlin", "Suppress"))
-    .apply { FILE_SUPPRESSIONS.forEach { addMember("\"$it\"") } }
-    .build()
+  private fun buildSuppressionAnnotation() =
+    AnnotationSpec.builder(ClassName("kotlin", "Suppress"))
+      .apply { FILE_SUPPRESSIONS.forEach { addMember("\"$it\"") } }
+      .build()
 
-  private fun buildImplType(apiClassName: ClassName, functions: List<FunSpec>) = TypeSpec
-    .classBuilder(ClassName(apiClassName.packageName, apiClassName.simpleName + "Client"))
-    .addModifiers(PRIVATE)
-    .addSuperinterface(apiClassName)
-    .addSuperinterface(TYPE_AUTOCLOSEABLE, delegate = CodeBlock.of(PROPERTY_CLIENT))
-    .primaryConstructor(buildConstructor())
-    .addProperty(
-      PropertySpec
-        .builder(PROPERTY_SERVER_URL, TYPE_SERVER_URL, PRIVATE)
-        .initializer(PROPERTY_SERVER_URL)
-        .build(),
-    ).addProperty(
-      PropertySpec
-        .builder(PROPERTY_CLIENT, TYPE_HTTP_CLIENT, PRIVATE)
-        .initializer(PROPERTY_CLIENT)
-        .build(),
-    ).addFunctions(functions)
-    .addProperty(buildUrlProtocolProperty())
-    .build()
+  private fun buildImplType(apiClassName: ClassName, functions: List<FunSpec>) =
+    TypeSpec.classBuilder(ClassName(apiClassName.packageName, apiClassName.simpleName + "Client"))
+      .addModifiers(PRIVATE)
+      .addSuperinterface(apiClassName)
+      .addSuperinterface(TYPE_AUTOCLOSEABLE, delegate = CodeBlock.of(PROPERTY_CLIENT))
+      .primaryConstructor(buildConstructor())
+      .addProperty(
+        PropertySpec.builder(PROPERTY_SERVER_URL, TYPE_SERVER_URL, PRIVATE)
+          .initializer(PROPERTY_SERVER_URL)
+          .build()
+      )
+      .addProperty(
+        PropertySpec.builder(PROPERTY_CLIENT, TYPE_HTTP_CLIENT, PRIVATE)
+          .initializer(PROPERTY_CLIENT)
+          .build()
+      )
+      .addFunctions(functions)
+      .addProperty(buildUrlProtocolProperty())
+      .build()
 
-  private fun buildUrlProtocolProperty() = PropertySpec
-    .builder(PROPERTY_URL_PROTOCOL, TYPE_URL_PROTOCOL, PRIVATE)
-    .initializer(
-      CodeBlock
-        .builder()
-        .beginControlFlow("when ($PROPERTY_SERVER_URL.protocol) {")
-        .addStatement("%T.Http -> %T.HTTP", TYPE_PROTOCOL, TYPE_URL_PROTOCOL)
-        .addStatement("%T.Https -> %T.HTTPS", TYPE_PROTOCOL, TYPE_URL_PROTOCOL)
-        .endControlFlow()
-        .build(),
-    ).build()
+  private fun buildUrlProtocolProperty() =
+    PropertySpec.builder(PROPERTY_URL_PROTOCOL, TYPE_URL_PROTOCOL, PRIVATE)
+      .initializer(
+        CodeBlock.builder()
+          .beginControlFlow("when ($PROPERTY_SERVER_URL.protocol) {")
+          .addStatement("%T.Http -> %T.HTTP", TYPE_PROTOCOL, TYPE_URL_PROTOCOL)
+          .addStatement("%T.Https -> %T.HTTPS", TYPE_PROTOCOL, TYPE_URL_PROTOCOL)
+          .endControlFlow()
+          .build()
+      )
+      .build()
 
   /**
-   * TODO: Shouldn't need to add [KModifier.ACTUAL] here, but KSP doesn't support generating code into the commonMain
-   * source set. This means we need declarations in each separate source set, then using expect/actual to tie them
-   * together and make them callable from the common source set. See https://github.com/google/ksp/issues/567
+   * TODO: Shouldn't need to add [KModifier.ACTUAL] here, but KSP doesn't support generating code
+   *   into the commonMain source set. This means we need declarations in each separate source set,
+   *   then using expect/actual to tie them together and make them callable from the common source
+   *   set. See https://github.com/google/ksp/issues/567
    */
-  private fun buildFactoryFunction(receiverType: ClassName, implType: TypeSpec) = FunSpec
-    .builder(receiverType.simpleName)
-    .returns(receiverType)
-    .addModifiers(KModifier.ACTUAL)
-    .addParameter(PROPERTY_SERVER_URL, TYPE_SERVER_URL)
-    .addParameter(PROPERTY_CLIENT, TYPE_HTTP_CLIENT)
-    .addCode("return ${implType.name}($PROPERTY_SERVER_URL, $PROPERTY_CLIENT)")
-    .build()
+  private fun buildFactoryFunction(receiverType: ClassName, implType: TypeSpec) =
+    FunSpec.builder(receiverType.simpleName)
+      .returns(receiverType)
+      .addModifiers(KModifier.ACTUAL)
+      .addParameter(PROPERTY_SERVER_URL, TYPE_SERVER_URL)
+      .addParameter(PROPERTY_CLIENT, TYPE_HTTP_CLIENT)
+      .addCode("return ${implType.name}($PROPERTY_SERVER_URL, $PROPERTY_CLIENT)")
+      .build()
 
-  private fun buildConstructor() = FunSpec
-    .constructorBuilder()
-    .addParameter(PROPERTY_SERVER_URL, TYPE_SERVER_URL)
-    .addParameter(PROPERTY_CLIENT, TYPE_HTTP_CLIENT)
-    .build()
+  private fun buildConstructor() =
+    FunSpec.constructorBuilder()
+      .addParameter(PROPERTY_SERVER_URL, TYPE_SERVER_URL)
+      .addParameter(PROPERTY_CLIENT, TYPE_HTTP_CLIENT)
+      .build()
 
   private fun buildFunction(f: KSFunctionDeclaration, annotation: Pair<Method, String>): FunSpec {
     val returnType = f.returnType?.resolve()?.toTypeName() ?: error("No return type for $f?")
     val parameterAnnotations = f.parameterAnnotations()
     logger.info("parameterAnnotations for ${f.simpleName.requireString} = $parameterAnnotations")
 
-    val builder = FunSpec
-      .builder(f.simpleName.requireString)
-      .addModifiers(KModifier.OVERRIDE)
-      .returns(returnType)
+    val builder =
+      FunSpec.builder(f.simpleName.requireString)
+        .addModifiers(KModifier.OVERRIDE)
+        .returns(returnType)
 
     if (Modifier.SUSPEND in f.modifiers) {
       builder.addModifiers(KModifier.SUSPEND)
@@ -139,9 +141,12 @@ internal class KtorImplementationVisitor(
       val type = p.type.resolve()
       val declaration = type.declaration
       val className = ClassName.bestGuess(declaration.qualifiedName.requireString)
-      val parameter = ParameterSpec
-        .builder(p.name.requireString, className.copy(nullable = type.isMarkedNullable))
-        .build()
+      val parameter =
+        ParameterSpec.builder(
+            p.name.requireString,
+            className.copy(nullable = type.isMarkedNullable),
+          )
+          .build()
       builder.addParameter(parameter)
     }
 
@@ -157,13 +162,13 @@ internal class KtorImplementationVisitor(
     method: Method,
     path: String,
   ): CodeBlock {
-    val builder = CodeBlock
-      .builder()
-      .beginControlFlow("return $PROPERTY_CLIENT.%M {", method.memberName)
+    val builder =
+      CodeBlock.builder().beginControlFlow("return $PROPERTY_CLIENT.%M {", method.memberName)
 
     // URL
     var replacedPath = path
-    for (item in parameters.paths) replacedPath = replacedPath.replace("{${item.label}}", "$${item.variableName}")
+    for (item in parameters.paths) replacedPath =
+      replacedPath.replace("{${item.label}}", "$${item.variableName}")
     with(builder) {
       beginControlFlow("url {")
       add("protocol = $PROPERTY_URL_PROTOCOL")
@@ -212,20 +217,11 @@ internal class KtorImplementationVisitor(
     val queries: List<QueryItem>,
   )
 
-  private data class HeaderItem(
-    val headerName: String,
-    val parameterName: String,
-  )
+  private data class HeaderItem(val headerName: String, val parameterName: String)
 
-  private data class PathItem(
-    val label: String,
-    val variableName: String,
-  )
+  private data class PathItem(val label: String, val variableName: String)
 
-  private data class QueryItem(
-    val label: String,
-    val variableName: String,
-  )
+  private data class QueryItem(val label: String, val variableName: String)
 
   private fun KSFunctionDeclaration.parameterAnnotations(): ParameterAnnotations {
     val bodies = arrayListOf<String>()
@@ -235,36 +231,24 @@ internal class KtorImplementationVisitor(
 
     for (parameter in parameters) {
       val list = parameter.annotations.toList()
-      if (list.size > 1) error("Only support 1 parameter annotation on ${parameter.name.requireString}, got $list")
+      if (list.size > 1)
+        error("Only support 1 parameter annotation on ${parameter.name.requireString}, got $list")
       val annotation = list.firstOrNull() ?: continue
 
-      val qualifiedName = annotation
-        .annotationType
-        .resolve()
-        .declaration
-        .qualifiedName
-        .requireString
+      val qualifiedName =
+        annotation.annotationType.resolve().declaration.qualifiedName.requireString
       val name = parameter.name.requireString
       when (qualifiedName) {
         Header::class.qualifiedName -> {
-          headers += HeaderItem(
-            headerName = annotation.getValue(),
-            parameterName = name,
-          )
+          headers += HeaderItem(headerName = annotation.getValue(), parameterName = name)
         }
 
         Path::class.qualifiedName -> {
-          paths += PathItem(
-            label = annotation.getValue(),
-            variableName = name,
-          )
+          paths += PathItem(label = annotation.getValue(), variableName = name)
         }
 
         Query::class.qualifiedName -> {
-          queries += QueryItem(
-            label = annotation.getValue(),
-            variableName = name,
-          )
+          queries += QueryItem(label = annotation.getValue(), variableName = name)
         }
 
         Body::class.qualifiedName -> {
@@ -277,18 +261,12 @@ internal class KtorImplementationVisitor(
     return ParameterAnnotations(bodies.firstOrNull(), headers, paths, queries)
   }
 
-  private fun KSAnnotation.getValue() = arguments
-    .firstOrNull { it.name.requireString == "value" }
-    ?.value
-    ?.toString()
-    ?: error("No name found for ${shortName.requireString}'s arguments")
+  private fun KSAnnotation.getValue() =
+    arguments.firstOrNull { it.name.requireString == "value" }?.value?.toString()
+      ?: error("No name found for ${shortName.requireString}'s arguments")
 
   private val KSAnnotation.qualifiedName: String?
-    get() = annotationType
-      .resolve()
-      .declaration
-      .qualifiedName
-      .requireString
+    get() = annotationType.resolve().declaration.qualifiedName.requireString
 
   private val KSName?.requireString: String
     get() = this?.asString() ?: error("Required string, got null")
@@ -297,12 +275,9 @@ internal class KtorImplementationVisitor(
     for (annotation in annotations) {
       Method.entries.forEach { m ->
         if (m.annotation.qualifiedName == annotation.qualifiedName) {
-          val path = annotation
-            .arguments
-            .first { it.name.requireString == "path" }
-            .value
-            ?.toString()
-            ?: error("No value found for path parameter in ${annotation.shortName.requireString}")
+          val path =
+            annotation.arguments.first { it.name.requireString == "path" }.value?.toString()
+              ?: error("No value found for path parameter in ${annotation.shortName.requireString}")
           return m to path
         }
       }
@@ -343,10 +318,6 @@ internal class KtorImplementationVisitor(
     const val PROPERTY_CLIENT = "client"
     const val PROPERTY_SERVER_URL = "serverUrl"
 
-    val FILE_SUPPRESSIONS = listOf(
-      "ALL",
-      "warnings",
-      "RemoveRedundantBackticks",
-    )
+    val FILE_SUPPRESSIONS = listOf("ALL", "warnings", "RemoveRedundantBackticks")
   }
 }

@@ -16,13 +16,13 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
+import java.util.prefs.Preferences as JPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
-import java.util.prefs.Preferences as JPreferences
 
 @Inject
 @ContributesBinding(AppScope::class, binding<JvmPreferences>())
@@ -31,9 +31,7 @@ class JvmPreferencesImpl(private val prefs: JPreferences) : JvmPreferences {
   private val changeFlow = MutableSharedFlow<String>(extraBufferCapacity = 64)
 
   init {
-    prefs.addPreferenceChangeListener { evt ->
-      changeFlow.tryEmit(evt.key)
-    }
+    prefs.addPreferenceChangeListener { evt -> changeFlow.tryEmit(evt.key) }
   }
 
   override fun flush() = prefs.flush()
@@ -66,14 +64,19 @@ class JvmPreferencesImpl(private val prefs: JPreferences) : JvmPreferences {
   override fun getNullableStringSet(key: String, default: Set<String>?): Preference<Set<String>?> =
     NullableStringSetPreference(key, default, prefs, changeFlow)
 
-  override fun getNullableStringSetOfNullables(key: String, default: Set<String?>?): Preference<Set<String?>?> =
+  override fun getNullableStringSetOfNullables(
+    key: String,
+    default: Set<String?>?,
+  ): Preference<Set<String?>?> =
     NullableStringSetOfNullablesPreference(key, default, prefs, changeFlow)
 
   override fun getStringSet(key: String, default: Set<String>): Preference<Set<String>> =
     StringSetPreference(key, default, prefs, changeFlow)
 
-  override fun getStringSetOfNullables(key: String, default: Set<String?>): Preference<Set<String?>> =
-    StringSetOfNullablesPreference(key, default, prefs, changeFlow)
+  override fun getStringSetOfNullables(
+    key: String,
+    default: Set<String?>,
+  ): Preference<Set<String?>> = StringSetOfNullablesPreference(key, default, prefs, changeFlow)
 
   override fun <R : Any, T : Any> getObject(
     key: String,
@@ -97,11 +100,8 @@ private abstract class BasePreference<T>(
 
   override fun isSet(): Boolean = key in prefs.keys()
 
-  override fun asFlow(): Flow<T> = changeFlow
-    .asSharedFlow()
-    .onStart { emit(key) }
-    .filter { it == key }
-    .map { get() }
+  override fun asFlow(): Flow<T> =
+    changeFlow.asSharedFlow().onStart { emit(key) }.filter { it == key }.map { get() }
 
   override suspend fun setAndCommit(value: T): Boolean {
     set(value)
@@ -123,7 +123,9 @@ private class BooleanPreference(
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<Boolean>(key, default, changeFlow) {
   override fun get(): Boolean = prefs.getBoolean(key, default)
+
   override fun set(value: Boolean) = prefs.putBoolean(key, value)
+
   override fun delete() = prefs.remove(key)
 }
 
@@ -134,7 +136,9 @@ private class FloatPreference(
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<Float>(key, default, changeFlow) {
   override fun get(): Float = prefs.getFloat(key, default)
+
   override fun set(value: Float) = prefs.putFloat(key, value)
+
   override fun delete() = prefs.remove(key)
 }
 
@@ -145,7 +149,9 @@ private class IntPreference(
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<Int>(key, default, changeFlow) {
   override fun get(): Int = prefs.getInt(key, default)
+
   override fun set(value: Int) = prefs.putInt(key, value)
+
   override fun delete() = prefs.remove(key)
 }
 
@@ -156,7 +162,9 @@ private class LongPreference(
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<Long>(key, default, changeFlow) {
   override fun get(): Long = prefs.getLong(key, default)
+
   override fun set(value: Long) = prefs.putLong(key, value)
+
   override fun delete() = prefs.remove(key)
 }
 
@@ -167,7 +175,9 @@ private class StringPreference(
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<String>(key, default, changeFlow) {
   override fun get(): String = prefs.get(key, default)
+
   override fun set(value: String) = prefs.put(key, value)
+
   override fun delete() = prefs.remove(key)
 }
 
@@ -178,7 +188,9 @@ private class NullableStringPreference(
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<String?>(key, default, changeFlow) {
   override fun get(): String? = prefs.get(key, default)
+
   override fun set(value: String?) = if (value == null) prefs.remove(key) else prefs.put(key, value)
+
   override fun delete() = prefs.remove(key)
 }
 
@@ -188,14 +200,11 @@ private class StringSetPreference(
   override val prefs: JPreferences,
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<Set<String>>(key, default, changeFlow) {
-  override fun get() = prefs
-    .get(key, null)
-    ?.split(COMMA)
-    ?.filter { it.isNotEmpty() }
-    ?.toSet()
-    ?: default
+  override fun get() =
+    prefs.get(key, null)?.split(COMMA)?.filter { it.isNotEmpty() }?.toSet() ?: default
 
   override fun set(value: Set<String>) = prefs.put(key, value.joinToString(COMMA))
+
   override fun delete() = prefs.remove(key)
 }
 
@@ -205,12 +214,8 @@ private class NullableStringSetPreference(
   override val prefs: JPreferences,
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<Set<String>?>(key, default, changeFlow) {
-  override fun get() = prefs
-    .get(key, null)
-    ?.split(COMMA)
-    ?.filter { it.isNotEmpty() }
-    ?.toSet()
-    ?: default
+  override fun get() =
+    prefs.get(key, null)?.split(COMMA)?.filter { it.isNotEmpty() }?.toSet() ?: default
 
   override fun set(value: Set<String>?) =
     if (value == null) prefs.remove(key) else prefs.put(key, value.joinToString(COMMA))
@@ -224,14 +229,12 @@ private class StringSetOfNullablesPreference(
   override val prefs: JPreferences,
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<Set<String?>>(key, default, changeFlow) {
-  override fun get() = prefs
-    .get(key, null)
-    ?.split(COMMA)
-    ?.map { if (it == "\u0000") null else it }
-    ?.toSet()
-    ?: default
+  override fun get() =
+    prefs.get(key, null)?.split(COMMA)?.map { if (it == "\u0000") null else it }?.toSet() ?: default
 
-  override fun set(value: Set<String?>) = prefs.put(key, value.joinToString(COMMA) { it ?: "\u0000" })
+  override fun set(value: Set<String?>) =
+    prefs.put(key, value.joinToString(COMMA) { it ?: "\u0000" })
+
   override fun delete() = prefs.remove(key)
 }
 
@@ -241,15 +244,12 @@ private class NullableStringSetOfNullablesPreference(
   override val prefs: JPreferences,
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<Set<String?>?>(key, default, changeFlow) {
-  override fun get(): Set<String?>? = prefs
-    .get(key, null)
-    ?.split(COMMA)
-    ?.map { if (it == "\u0000") null else it }
-    ?.toSet()
-    ?: default
+  override fun get(): Set<String?>? =
+    prefs.get(key, null)?.split(COMMA)?.map { if (it == "\u0000") null else it }?.toSet() ?: default
 
   override fun set(value: Set<String?>?) =
-    if (value == null) prefs.remove(key) else prefs.put(key, value.joinToString(COMMA) { it ?: "\u0000" })
+    if (value == null) prefs.remove(key)
+    else prefs.put(key, value.joinToString(COMMA) { it ?: "\u0000" })
 
   override fun delete() = prefs.remove(key)
 }
@@ -264,14 +264,19 @@ private class ObjectPreference<R : Any, T : Any>(
   private val serializedDefault = serializer.serialize(default)
 
   @Suppress("UNCHECKED_CAST", "CyclomaticComplexMethod")
-  override fun get(): T = when (serializer) {
-    is BooleanSerializer<*> -> serializer.deserialize(prefs.getBoolean(key, serializedDefault as Boolean))
-    is FloatSerializer<*> -> serializer.deserialize(prefs.getFloat(key, serializedDefault as Float))
-    is IntSerializer<*> -> serializer.deserialize(prefs.getInt(key, serializedDefault as Int))
-    is LongSerializer<*> -> serializer.deserialize(prefs.getLong(key, serializedDefault as Long))
-    is StringSerializer<*> -> serializer.deserialize(prefs.get(key, null) ?: serializedDefault as String)
-    is StringSetSerializer<*> -> error("Not supported right now")
-  } as? T? ?: default
+  override fun get(): T =
+    when (serializer) {
+      is BooleanSerializer<*> ->
+        serializer.deserialize(prefs.getBoolean(key, serializedDefault as Boolean))
+      is FloatSerializer<*> ->
+        serializer.deserialize(prefs.getFloat(key, serializedDefault as Float))
+      is IntSerializer<*> -> serializer.deserialize(prefs.getInt(key, serializedDefault as Int))
+      is LongSerializer<*> -> serializer.deserialize(prefs.getLong(key, serializedDefault as Long))
+      is StringSerializer<*> ->
+        serializer.deserialize(prefs.get(key, null) ?: serializedDefault as String)
+      is StringSetSerializer<*> -> error("Not supported right now")
+    }
+      as? T? ?: default
 
   override fun set(value: T) {
     prefs.put(key, value, serializer)
@@ -290,10 +295,13 @@ private class NullableObjectPreference<R : Any, T : Any>(
   private val serializedDefault = serializer.serialize(default)
 
   @Suppress("UNCHECKED_CAST")
-  override fun get(): T? = when (serializer) {
-    is NullableStringSerializer<*> -> serializer.deserialize(prefs.get(key, null) ?: serializedDefault as? String)
-    is NullableStringSetSerializer<*> -> error("Not supported right now")
-  } as? T? ?: default
+  override fun get(): T? =
+    when (serializer) {
+      is NullableStringSerializer<*> ->
+        serializer.deserialize(prefs.get(key, null) ?: serializedDefault as? String)
+      is NullableStringSetSerializer<*> -> error("Not supported right now")
+    }
+      as? T? ?: default
 
   override fun set(value: T?) = if (value == null) delete() else prefs.put(key, value, serializer)
 
@@ -306,20 +314,22 @@ private fun <R : Any, T : Any> JPreferences.put(
   key: String,
   value: T?,
   serializer: NullableSerializer<R, T>,
-) = when (serializer) {
-  is NullableStringSerializer -> put(key, serializer.serialize(value))
-  is NullableStringSetSerializer -> error("Not supported right now: $key $value $serializer")
-}
+) =
+  when (serializer) {
+    is NullableStringSerializer -> put(key, serializer.serialize(value))
+    is NullableStringSetSerializer -> error("Not supported right now: $key $value $serializer")
+  }
 
 private fun <R : Any, T : Any> JPreferences.put(
   key: String,
   value: T,
   serializer: Serializer<R, T>,
-) = when (serializer) {
-  is BooleanSerializer -> putBoolean(key, serializer.serialize(value))
-  is FloatSerializer -> putFloat(key, serializer.serialize(value))
-  is IntSerializer -> putInt(key, serializer.serialize(value))
-  is LongSerializer -> putLong(key, serializer.serialize(value))
-  is StringSerializer -> put(key, serializer.serialize(value))
-  else -> error("Not supported right now: $key $value")
-}
+) =
+  when (serializer) {
+    is BooleanSerializer -> putBoolean(key, serializer.serialize(value))
+    is FloatSerializer -> putFloat(key, serializer.serialize(value))
+    is IntSerializer -> putInt(key, serializer.serialize(value))
+    is LongSerializer -> putLong(key, serializer.serialize(value))
+    is StringSerializer -> put(key, serializer.serialize(value))
+    else -> error("Not supported right now: $key $value")
+  }

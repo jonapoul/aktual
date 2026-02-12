@@ -32,7 +32,9 @@ fun PrimaryIconButton(
   enabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  content: @Composable () -> Unit = { DefaultIconButtonContent(imageVector, contentDescription, size) },
+  content: @Composable () -> Unit = {
+    DefaultIconButtonContent(imageVector, contentDescription, size)
+  },
 ) {
   BasicIconButton(
     imageVector = imageVector,
@@ -59,7 +61,9 @@ fun NormalIconButton(
   enabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  content: @Composable () -> Unit = { DefaultIconButtonContent(imageVector, contentDescription, size) },
+  content: @Composable () -> Unit = {
+    DefaultIconButtonContent(imageVector, contentDescription, size)
+  },
 ) {
   BasicIconButton(
     imageVector = imageVector,
@@ -86,7 +90,9 @@ fun BareIconButton(
   enabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  content: @Composable () -> Unit = { DefaultIconButtonContent(imageVector, contentDescription, size) },
+  content: @Composable () -> Unit = {
+    DefaultIconButtonContent(imageVector, contentDescription, size)
+  },
 ) {
   BasicIconButton(
     imageVector = imageVector,
@@ -114,7 +120,9 @@ fun BasicIconButton(
   enabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  content: @Composable () -> Unit = { DefaultIconButtonContent(imageVector, contentDescription, size) },
+  content: @Composable () -> Unit = {
+    DefaultIconButtonContent(imageVector, contentDescription, size)
+  },
 ) {
   val theme = LocalTheme.current
   val isPressed by interactionSource.collectIsPressedAsState()
@@ -146,36 +154,21 @@ private fun DefaultIconButtonContent(
 
 @Preview
 @Composable
-private fun Bare(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  BareIconButton(
-    imageVector = MaterialIcons.Check,
-    contentDescription = "Cancel",
-    onClick = {},
-  )
-}
+private fun Bare(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewWithColorScheme(type) {
+    BareIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
+  }
 
 @Preview
 @Composable
-private fun Normal(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  NormalIconButton(
-    imageVector = MaterialIcons.Check,
-    contentDescription = "Cancel",
-    onClick = {},
-  )
-}
+private fun Normal(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewWithColorScheme(type) {
+    NormalIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
+  }
 
 @Preview
 @Composable
-private fun Primary(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  PrimaryIconButton(
-    imageVector = MaterialIcons.Check,
-    contentDescription = "OK",
-    onClick = {},
-  )
-}
+private fun Primary(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewWithColorScheme(type) {
+    PrimaryIconButton(imageVector = MaterialIcons.Check, contentDescription = "OK", onClick = {})
+  }

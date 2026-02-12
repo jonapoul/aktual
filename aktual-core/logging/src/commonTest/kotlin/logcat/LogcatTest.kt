@@ -3,15 +3,15 @@ package logcat
 import assertk.assertThat
 import assertk.assertions.contains
 import assertk.assertions.isEqualTo
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
+import kotlin.test.Test
 import logcat.LogPriority.ASSERT
 import logcat.LogPriority.DEBUG
 import logcat.LogPriority.ERROR
 import logcat.LogPriority.INFO
 import logcat.LogPriority.VERBOSE
 import logcat.LogPriority.WARN
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
-import kotlin.test.Test
 
 class LogcatTest {
   private lateinit var logger: TestLogcatLogger
@@ -64,9 +64,7 @@ class LogcatTest {
   fun `Grab tag from the wrapper class inside apply block`() {
     val myString = "abc-123"
 
-    myString.apply {
-      logcat.i { "my log message" }
-    }
+    myString.apply { logcat.i { "my log message" } }
 
     logger.assertLatest(priority = INFO, tag = "String", message = "my log message")
   }

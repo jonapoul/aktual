@@ -5,10 +5,7 @@ value class ScheduleJsonPathIndex(private val value: String) : Comparable<Schedu
   constructor(int: Int) : this("$[$int]")
 
   val index: Int
-    get() = value
-      .removePrefix(prefix = "$[")
-      .removeSuffix(suffix = "]")
-      .toInt()
+    get() = value.removePrefix(prefix = "$[").removeSuffix(suffix = "]").toInt()
 
   override fun toString() = value
 

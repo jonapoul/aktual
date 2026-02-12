@@ -103,10 +103,7 @@ internal fun ChangePasswordScaffold(
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = {
           IconButton(onClick = { onAction(PasswordAction.NavBack) }) {
-            Icon(
-              imageVector = MaterialIcons.ArrowBack,
-              contentDescription = Strings.navBack,
-            )
+            Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
           }
         },
         title = { /* empty */ },
@@ -145,22 +142,13 @@ private fun ChangePasswordContent(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  Column(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(16.dp),
-  ) {
+  Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
     Column(
-      modifier = Modifier
-        .wrapContentWidth()
-        .weight(1f),
+      modifier = Modifier.wrapContentWidth().weight(1f),
       verticalArrangement = Arrangement.Top,
       horizontalAlignment = Alignment.Start,
     ) {
-      Text(
-        text = Strings.passwordTitle,
-        style = AktualTypography.headlineLarge,
-      )
+      Text(text = Strings.passwordTitle, style = AktualTypography.headlineLarge)
 
       VerticalSpacer(20.dp)
 
@@ -186,17 +174,15 @@ private fun ChangePasswordContent(
 
       when (state) {
         is ChangePasswordState.Failure -> Text(text = state.errorMessage(), color = theme.errorText)
-        ChangePasswordState.Success -> Text(text = Strings.passwordSuccess, color = theme.successText)
+        ChangePasswordState.Success ->
+          Text(text = Strings.passwordSuccess, color = theme.successText)
         else -> Unit
       }
     }
 
     VerticalSpacer(20.dp)
 
-    VersionsText(
-      modifier = Modifier.align(Alignment.End),
-      versions = versions,
-    )
+    VersionsText(modifier = Modifier.align(Alignment.End), versions = versions)
 
     BottomStatusBarSpacing()
     BottomNavBarSpacing()
@@ -204,30 +190,32 @@ private fun ChangePasswordContent(
 }
 
 @Composable
-private fun ChangePasswordState.Failure.errorMessage(): String = when (this) {
-  ChangePasswordState.InvalidPassword -> Strings.passwordFailureEmpty
-  ChangePasswordState.NetworkFailure -> Strings.passwordFailureNetwork
-  ChangePasswordState.OtherFailure -> Strings.passwordFailureOther
-  ChangePasswordState.PasswordsDontMatch -> Strings.passwordFailureMatch
-  ChangePasswordState.NotLoggedIn -> Strings.passwordFailureLoggedOut
-}
+private fun ChangePasswordState.Failure.errorMessage(): String =
+  when (this) {
+    ChangePasswordState.InvalidPassword -> Strings.passwordFailureEmpty
+    ChangePasswordState.NetworkFailure -> Strings.passwordFailureNetwork
+    ChangePasswordState.OtherFailure -> Strings.passwordFailureOther
+    ChangePasswordState.PasswordsDontMatch -> Strings.passwordFailureMatch
+    ChangePasswordState.NotLoggedIn -> Strings.passwordFailureLoggedOut
+  }
 
 @PortraitPreview
 @LandscapePreview
 @Composable
 private fun PreviewChangePassword(
-  @PreviewParameter(ChangePasswordProvider::class) params: ThemedParams<ChangePasswordParams>,
-) = PreviewWithColorScheme(params.type) {
-  ChangePasswordScaffold(
-    inputPassword1 = params.data.password1,
-    inputPassword2 = params.data.password2,
-    showPasswords = params.data.showPasswords,
-    passwordsMatch = params.data.passwordsMatch,
-    state = params.data.state,
-    versions = AktualVersions.Dummy,
-    onAction = {},
-  )
-}
+  @PreviewParameter(ChangePasswordProvider::class) params: ThemedParams<ChangePasswordParams>
+) =
+  PreviewWithColorScheme(params.type) {
+    ChangePasswordScaffold(
+      inputPassword1 = params.data.password1,
+      inputPassword2 = params.data.password2,
+      showPasswords = params.data.showPasswords,
+      passwordsMatch = params.data.passwordsMatch,
+      state = params.data.state,
+      versions = AktualVersions.Dummy,
+      onAction = {},
+    )
+  }
 
 private data class ChangePasswordParams(
   val password1: Password = Password.Dummy,
@@ -237,10 +225,11 @@ private data class ChangePasswordParams(
   val state: ChangePasswordState? = null,
 )
 
-private class ChangePasswordProvider : ThemedParameterProvider<ChangePasswordParams>(
-  ChangePasswordParams(password1 = Empty, password2 = Empty),
-  ChangePasswordParams(showPasswords = true, passwordsMatch = true),
-  ChangePasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
-  ChangePasswordParams(state = ChangePasswordState.Success, passwordsMatch = true),
-  ChangePasswordParams(state = ChangePasswordState.NetworkFailure, passwordsMatch = true),
-)
+private class ChangePasswordProvider :
+  ThemedParameterProvider<ChangePasswordParams>(
+    ChangePasswordParams(password1 = Empty, password2 = Empty),
+    ChangePasswordParams(showPasswords = true, passwordsMatch = true),
+    ChangePasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
+    ChangePasswordParams(state = ChangePasswordState.Success, passwordsMatch = true),
+    ChangePasswordParams(state = ChangePasswordState.NetworkFailure, passwordsMatch = true),
+  )

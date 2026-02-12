@@ -1,7 +1,4 @@
-@file:Suppress(
-  "MatchingDeclarationName",
-  "ktlint:standard:filename",
-)
+@file:Suppress("MatchingDeclarationName")
 
 package aktual.api.model.account
 

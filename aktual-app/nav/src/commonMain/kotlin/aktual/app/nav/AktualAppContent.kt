@@ -57,29 +57,27 @@ private fun AktualAppLayout(
   token: Token?,
   bottomBarState: BottomBarState,
   modifier: Modifier = Modifier,
-) = Box(
-  modifier = modifier,
-  contentAlignment = Alignment.BottomCenter,
-) {
-  var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
+) =
+  Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
+    var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
 
-  CompositionLocalProvider(LocalBottomStatusBarHeight provides bottomStatusBarHeight) {
-    AktualNavHost(
-      modifier = Modifier.fillMaxWidth(),
-      nav = navController,
-      isServerUrlSet = isServerUrlSet,
-      token = token,
-    )
-  }
-
-  if (bottomBarState is BottomBarState.Visible) {
-    Column {
-      BottomStatusBar(
-        modifier = Modifier.wrapContentHeight(),
-        state = bottomBarState,
-        onMeasureHeight = { bottomStatusBarHeight = it },
+    CompositionLocalProvider(LocalBottomStatusBarHeight provides bottomStatusBarHeight) {
+      AktualNavHost(
+        modifier = Modifier.fillMaxWidth(),
+        nav = navController,
+        isServerUrlSet = isServerUrlSet,
+        token = token,
       )
-      BottomNavBarSpacing()
+    }
+
+    if (bottomBarState is BottomBarState.Visible) {
+      Column {
+        BottomStatusBar(
+          modifier = Modifier.wrapContentHeight(),
+          state = bottomBarState,
+          onMeasureHeight = { bottomStatusBarHeight = it },
+        )
+        BottomNavBarSpacing()
+      }
     }
   }
-}

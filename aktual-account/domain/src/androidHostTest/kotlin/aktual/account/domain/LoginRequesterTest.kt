@@ -28,6 +28,9 @@ import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import java.io.IOException
+import kotlin.test.AfterTest
+import kotlin.test.Test
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -36,9 +39,6 @@ import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import java.io.IOException
-import kotlin.test.AfterTest
-import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 internal class LoginRequesterTest {
@@ -62,20 +62,22 @@ internal class LoginRequesterTest {
     mockEngine = emptyMockEngine()
     fileSystem = FileSystem.SYSTEM
 
-    connectionMonitor = ConnectionMonitor(
-      scope = backgroundScope,
-      contexts = TestCoroutineContexts(dispatcher),
-      clientFactory = TestClientFactory(mockEngine),
-      apiStateHolder = apisStateHolder,
-      preferences = preferences,
-      fileSystem = fileSystem,
-    )
+    connectionMonitor =
+      ConnectionMonitor(
+        scope = backgroundScope,
+        contexts = TestCoroutineContexts(dispatcher),
+        clientFactory = TestClientFactory(mockEngine),
+        apiStateHolder = apisStateHolder,
+        preferences = preferences,
+        fileSystem = fileSystem,
+      )
 
-    loginRequester = LoginRequester(
-      contexts = TestCoroutineContexts(dispatcher),
-      apisStateHolder = apisStateHolder,
-      preferences = preferences,
-    )
+    loginRequester =
+      LoginRequester(
+        contexts = TestCoroutineContexts(dispatcher),
+        apisStateHolder = apisStateHolder,
+        preferences = preferences,
+      )
   }
 
   @Test
@@ -135,12 +137,14 @@ internal class LoginRequesterTest {
     apisStateHolder.filterNotNull().first()
 
     // When we log in with a successful response, but a null token
-    val body = """
+    val body =
+      """
       {
         "status": "ok",
         "data": { "token": null }
       }
-    """.trimIndent()
+      """
+        .trimIndent()
     mockEngine += { respondJson(body) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
@@ -160,12 +164,14 @@ internal class LoginRequesterTest {
     apisStateHolder.filterNotNull().first()
 
     // When we log in with a failed response
-    val body = """
+    val body =
+      """
       {
         "status": "error",
         "reason": "Some error"
       }
-    """.trimIndent()
+      """
+        .trimIndent()
     mockEngine += { respondJson(body, HttpStatusCode.InternalServerError) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 

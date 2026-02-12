@@ -80,14 +80,18 @@ class TransactionsViewModel(
   // API
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
 
-  val format: StateFlow<TransactionsFormat> = prefs
-    .map { meta -> meta[TransactionFormatKey] ?: TransactionsFormat.Default }
-    .stateIn(viewModelScope, Eagerly, initialValue = TransactionsFormat.Default)
+  val format: StateFlow<TransactionsFormat> =
+    prefs
+      .map { meta -> meta[TransactionFormatKey] ?: TransactionsFormat.Default }
+      .stateIn(viewModelScope, Eagerly, initialValue = TransactionsFormat.Default)
 
-  override val pagingData: Flow<PagingData<TransactionId>> = Pager(
-    config = PagingConfig(pageSize = PAGING_SIZE, enablePlaceholders = false),
-    pagingSourceFactory = ::buildPagingSource,
-  ).flow.cachedIn(viewModelScope)
+  override val pagingData: Flow<PagingData<TransactionId>> =
+    Pager(
+        config = PagingConfig(pageSize = PAGING_SIZE, enablePlaceholders = false),
+        pagingSourceFactory = ::buildPagingSource,
+      )
+      .flow
+      .cachedIn(viewModelScope)
 
   init {
     budgetGraph.throwIfWrongBudget(budgetId)
@@ -95,19 +99,21 @@ class TransactionsViewModel(
     when (val s = spec.accountSpec) {
       is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }
 
-      is AccountSpec.SpecificAccount -> viewModelScope.launch {
-        val account = accountsDao[s.id] ?: error("No account matching $s")
-        mutableLoadedAccount.update { SpecificAccount(account) }
-      }
+      is AccountSpec.SpecificAccount ->
+        viewModelScope.launch {
+          val account = accountsDao[s.id] ?: error("No account matching $s")
+          mutableLoadedAccount.update { SpecificAccount(account) }
+        }
     }
 
     // Invalidate PagingSource when transaction data changes.
     // Ignore the first item from the flow, that'll be the initial table state.
     viewModelScope.launch {
-      val countFlow = when (val s = spec.accountSpec) {
-        AccountSpec.AllAccounts -> transactionsDao.observeCount()
-        is AccountSpec.SpecificAccount -> transactionsDao.observeCountByAccount(s.id)
-      }
+      val countFlow =
+        when (val s = spec.accountSpec) {
+          AccountSpec.AllAccounts -> transactionsDao.observeCount()
+          is AccountSpec.SpecificAccount -> transactionsDao.observeCountByAccount(s.id)
+        }
       countFlow.drop(count = 1).collect {
         logcat.d { "Transactions table updated, invalidating paging source..." }
         currentPagingSource?.invalidate()
@@ -122,7 +128,8 @@ class TransactionsViewModel(
   override fun isChecked(id: TransactionId): Flow<Boolean> =
     checkedTransactionIds.map { it.getOrDefault(id, false) }
 
-  fun setChecked(id: TransactionId, isChecked: Boolean) = checkedTransactionIds.update { it.put(id, isChecked) }
+  fun setChecked(id: TransactionId, isChecked: Boolean) =
+    checkedTransactionIds.update { it.put(id, isChecked) }
 
   fun setPrivacyMode(privacyMode: Boolean) {
     viewModelScope.launch {
@@ -130,30 +137,32 @@ class TransactionsViewModel(
     }
   }
 
-  override fun transactionState(id: TransactionId) = transactionsDao
-    .observeById(id)
-    .also { logcat.d { "Observing transaction with ID $id" } }
-    .distinctUntilChanged()
-    .map { toTransactionState(it, id) }
+  override fun transactionState(id: TransactionId) =
+    transactionsDao
+      .observeById(id)
+      .also { logcat.d { "Observing transaction with ID $id" } }
+      .distinctUntilChanged()
+      .map { toTransactionState(it, id) }
 
   private fun toTransactionState(data: GetById?, id: TransactionId): TransactionState {
     if (data == null) return TransactionState.DoesntExist(id)
-    val transaction = with(data) {
-      Transaction(
-        id = id,
-        date = date,
-        account = accountName,
-        payee = payeeName,
-        notes = notes,
-        category = categoryName,
-        amount = Amount(amount),
-      )
-    }
+    val transaction =
+      with(data) {
+        Transaction(
+          id = id,
+          date = date,
+          account = accountName,
+          payee = payeeName,
+          notes = notes,
+          category = categoryName,
+          amount = Amount(amount),
+        )
+      }
     return TransactionState.Loaded(transaction)
   }
 
-  private fun buildPagingSource() = TransactionsPagingSource(transactionsDao, spec.accountSpec)
-    .also { currentPagingSource = it }
+  private fun buildPagingSource() =
+    TransactionsPagingSource(transactionsDao, spec.accountSpec).also { currentPagingSource = it }
 
   private companion object {
     val TransactionFormatKey = DbMetadata.enumKey<TransactionsFormat>("transactionFormat")

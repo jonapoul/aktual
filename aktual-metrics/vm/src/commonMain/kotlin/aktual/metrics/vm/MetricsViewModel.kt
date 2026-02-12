@@ -10,6 +10,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlin.time.Clock
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,12 +24,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import logcat.logcat
-import kotlin.time.Clock
 
 @Inject
 @ViewModelKey(MetricsViewModel::class)
 @ContributesIntoMap(AppScope::class)
-class MetricsViewModel internal constructor(
+class MetricsViewModel
+internal constructor(
   apisStateHolder: AktualApisStateHolder,
   private val contexts: CoroutineContexts,
   private val clock: Clock,

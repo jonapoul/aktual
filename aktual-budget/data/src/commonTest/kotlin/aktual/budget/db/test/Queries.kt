@@ -13,23 +13,25 @@ import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.ScheduleJsonPathIndex
 import aktual.budget.model.ScheduleNextDateId
+import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
-import kotlin.time.Instant
 
 internal suspend fun BudgetDatabase.getAccountById(id: AccountId): Accounts? =
   accountsQueries.withResult { getById(id).executeAsOneOrNull() }
 
-internal suspend fun BudgetDatabase.insertAccounts(vararg accounts: Accounts) = accountsQueries.withoutResult {
-  accounts.forEach { account ->
-    with(account) { insert(id, account_id, name, official_name, bank, offbudget, account_sync_source) }
+internal suspend fun BudgetDatabase.insertAccounts(vararg accounts: Accounts) =
+  accountsQueries.withoutResult {
+    accounts.forEach { account ->
+      with(account) {
+        insert(id, account_id, name, official_name, bank, offbudget, account_sync_source)
+      }
+    }
   }
-}
 
-internal suspend fun BudgetDatabase.insertBanks(vararg banks: Banks) = banksQueries.withoutResult {
-  banks.forEach { bank -> with(bank) { insert(id, bank_id, name) } }
-}
+internal suspend fun BudgetDatabase.insertBanks(vararg banks: Banks) =
+  banksQueries.withoutResult { banks.forEach { bank -> with(bank) { insert(id, bank_id, name) } } }
 
 internal suspend fun BudgetDatabase.getMetaValue(key: String): String? =
   metaQueries.withResult { getValue(key).executeAsOneOrNull()?.value_ }
@@ -44,16 +46,17 @@ internal suspend fun BudgetDatabase.insertRule(
   actions: String?,
   tombstone: Boolean? = false,
   conditionsOp: Operator? = Operator.And,
-) = rulesQueries.withResult {
-  insert(
-    id = RuleId(id),
-    stage = stage,
-    conditions = conditions?.toJsonArray(),
-    actions = actions?.toJsonArray(),
-    tombstone = tombstone,
-    conditions_op = conditionsOp,
-  )
-}
+) =
+  rulesQueries.withResult {
+    insert(
+      id = RuleId(id),
+      stage = stage,
+      conditions = conditions?.toJsonArray(),
+      actions = actions?.toJsonArray(),
+      tombstone = tombstone,
+      conditions_op = conditionsOp,
+    )
+  }
 
 internal suspend fun BudgetDatabase.insertScheduleJsonPaths(
   scheduleId: String,
@@ -61,15 +64,16 @@ internal suspend fun BudgetDatabase.insertScheduleJsonPaths(
   account: Int,
   amount: Int,
   date: Int,
-) = schedulesJsonPathsQueries.withResult {
-  insert(
-    schedule_id = ScheduleId(scheduleId),
-    payee = ScheduleJsonPathIndex(payee),
-    account = ScheduleJsonPathIndex(account),
-    amount = ScheduleJsonPathIndex(amount),
-    date = ScheduleJsonPathIndex(date),
-  )
-}
+) =
+  schedulesJsonPathsQueries.withResult {
+    insert(
+      schedule_id = ScheduleId(scheduleId),
+      payee = ScheduleJsonPathIndex(payee),
+      account = ScheduleJsonPathIndex(account),
+      amount = ScheduleJsonPathIndex(amount),
+      date = ScheduleJsonPathIndex(date),
+    )
+  }
 
 internal suspend fun BudgetDatabase.insertScheduleNextDate(
   id: String,
@@ -78,16 +82,17 @@ internal suspend fun BudgetDatabase.insertScheduleNextDate(
   localInstant: Long,
   baseDate: String,
   baseInstant: Long,
-) = schedulesNextDateQueries.withResult {
-  insert(
-    id = ScheduleNextDateId(id),
-    schedule_id = ScheduleId(scheduleId),
-    local_next_date = LocalDate.parse(localDate),
-    local_next_date_ts = Instant.fromEpochMilliseconds(localInstant),
-    base_next_date = LocalDate.parse(baseDate),
-    base_next_date_ts = Instant.fromEpochMilliseconds(baseInstant),
-  )
-}
+) =
+  schedulesNextDateQueries.withResult {
+    insert(
+      id = ScheduleNextDateId(id),
+      schedule_id = ScheduleId(scheduleId),
+      local_next_date = LocalDate.parse(localDate),
+      local_next_date_ts = Instant.fromEpochMilliseconds(localInstant),
+      base_next_date = LocalDate.parse(baseDate),
+      base_next_date_ts = Instant.fromEpochMilliseconds(baseInstant),
+    )
+  }
 
 internal suspend fun BudgetDatabase.insertSchedule(
   id: String,
@@ -97,27 +102,21 @@ internal suspend fun BudgetDatabase.insertSchedule(
   tombstone: Boolean,
   name: String,
   active: Boolean = false,
-) = schedulesQueries.withResult {
-  insert(
-    id = ScheduleId(id),
-    rule = RuleId(ruleId),
-    active = active,
-    completed = completed,
-    posts_transaction = postsTransaction,
-    tombstone = tombstone,
-    name = name,
-  )
-}
+) =
+  schedulesQueries.withResult {
+    insert(
+      id = ScheduleId(id),
+      rule = RuleId(ruleId),
+      active = active,
+      completed = completed,
+      posts_transaction = postsTransaction,
+      tombstone = tombstone,
+      name = name,
+    )
+  }
 
-internal suspend fun BudgetDatabase.insertPayeeMapping(
-  id: String,
-  targetId: String,
-) = payeeMappingQueries.withResult {
-  insert(
-    id = PayeeId(id),
-    targetId = PayeeId(targetId),
-  )
-}
+internal suspend fun BudgetDatabase.insertPayeeMapping(id: String, targetId: String) =
+  payeeMappingQueries.withResult { insert(id = PayeeId(id), targetId = PayeeId(targetId)) }
 
 internal suspend fun BudgetDatabase.insertPayeeMapping(id: String) = insertPayeeMapping(id, id)
 

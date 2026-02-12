@@ -15,10 +15,10 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
 import io.ktor.client.plugins.ClientRequestException
 import io.ktor.http.HttpStatusCode
-import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.test.runTest
 
 class BaseApiTest {
   private lateinit var mockEngine: MockEngine.Queue
@@ -40,8 +40,7 @@ class BaseApiTest {
     mockEngine += { respondJson(BaseResponses.INFO_SUCCESS_200) }
     baseApi.fetchInfo()
 
-    assertThat(mockEngine.latestRequestUrl())
-      .isEqualTo("https://test.server.com/info")
+    assertThat(mockEngine.latestRequestUrl()).isEqualTo("https://test.server.com/info")
 
     assertThat(mockEngine.latestRequestHeaders())
       .isEqualTo(mapOf("Accept" to listOf("application/json"), "Accept-Charset" to listOf("UTF-8")))
@@ -56,15 +55,17 @@ class BaseApiTest {
     val response = baseApi.fetchInfo()
 
     // then
-    assertThat(response).isEqualTo(
-      InfoResponse(
-        build = Build(
-          name = "@actual-app/sync-server",
-          description = "actual syncing server",
-          version = "25.7.1",
-        ),
-      ),
-    )
+    assertThat(response)
+      .isEqualTo(
+        InfoResponse(
+          build =
+            Build(
+              name = "@actual-app/sync-server",
+              description = "actual syncing server",
+              version = "25.7.1",
+            )
+        )
+      )
   }
 
   @Test

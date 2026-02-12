@@ -59,14 +59,11 @@ fun TransactionsScreen(
 }
 
 @Composable
-private fun metroViewModel(
-  token: Token,
-  budgetId: BudgetId,
-  spec: TransactionsSpec,
-) = assistedMetroViewModel<TransactionsViewModel, TransactionsViewModel.Factory>(
-  key = "$token-$budgetId-$spec",
-  createViewModel = { create(token, budgetId, spec) },
-)
+private fun metroViewModel(token: Token, budgetId: BudgetId, spec: TransactionsSpec) =
+  assistedMetroViewModel<TransactionsViewModel, TransactionsViewModel.Factory>(
+    key = "$token-$budgetId-$spec",
+    createViewModel = { create(token, budgetId, spec) },
+  )
 
 @Composable
 internal fun TransactionsScaffold(
@@ -77,15 +74,11 @@ internal fun TransactionsScaffold(
   onAction: ActionListener,
 ) {
   val theme = LocalTheme.current
-  Scaffold(
-    topBar = { TransactionsTitleBar(loadedAccount, onAction, theme) },
-  ) { innerPadding ->
+  Scaffold(topBar = { TransactionsTitleBar(loadedAccount, onAction, theme) }) { innerPadding ->
     Box {
       val hazeState = remember { HazeState() }
 
-      WavyBackground(
-        modifier = Modifier.hazeSource(hazeState),
-      )
+      WavyBackground(modifier = Modifier.hazeSource(hazeState))
 
       WithHazeState(hazeState) {
         Transactions(
@@ -106,17 +99,20 @@ internal fun TransactionsScaffold(
 @LandscapePreview
 @TabletPreview
 private fun PreviewTransactionsScaffold(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  TransactionsScaffold(
-    transactionIdSource = PreviewTransactionIdSource(listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),
-    loadedAccount = LoadedAccount.AllAccounts,
-    format = TransactionsFormat.Table,
-    source = previewTransactionStateSource(
-      TRANSACTION_1 to false,
-      TRANSACTION_2 to true,
-      TRANSACTION_3 to false,
-    ),
-    onAction = {},
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    TransactionsScaffold(
+      transactionIdSource =
+        PreviewTransactionIdSource(listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),
+      loadedAccount = LoadedAccount.AllAccounts,
+      format = TransactionsFormat.Table,
+      source =
+        previewTransactionStateSource(
+          TRANSACTION_1 to false,
+          TRANSACTION_2 to true,
+          TRANSACTION_3 to false,
+        ),
+      onAction = {},
+    )
+  }

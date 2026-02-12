@@ -70,37 +70,22 @@ internal fun LicensesScaffold(
   onAction: (LicensesAction) -> Unit,
 ) {
   val theme = LocalTheme.current
-  Scaffold(
-    topBar = { LicensesTopBar(searchBarState, theme, onAction) },
-  ) { innerPadding ->
+  Scaffold(topBar = { LicensesTopBar(searchBarState, theme, onAction) }) { innerPadding ->
     Box {
       val hazeState = remember { HazeState() }
 
-      WavyBackground(
-        modifier = Modifier.hazeSource(hazeState),
-      )
+      WavyBackground(modifier = Modifier.hazeSource(hazeState))
 
-      Column(
-        modifier = Modifier.padding(innerPadding),
-      ) {
+      Column(modifier = Modifier.padding(innerPadding)) {
         LicensesSearchInput(
-          modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .wrapContentHeight(),
+          modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).wrapContentHeight(),
           searchState = searchBarState,
           licensesState = state,
           onAction = onAction,
           theme = theme,
         )
 
-        WithHazeState(hazeState) {
-          Content(
-            state = state,
-            theme = theme,
-            onAction = onAction,
-          )
-        }
+        WithHazeState(hazeState) { Content(state = state, theme = theme, onAction = onAction) }
       }
     }
   }
@@ -124,19 +109,12 @@ private fun LicensesSearchInput(
     exit = slideOutVertically() + fadeOut(),
   ) {
     val text = (searchState as? SearchBarState.Visible)?.text.orEmpty()
-    val colors = theme.textField(
-      text = theme.mobileHeaderTextSubdued,
-      icon = theme.mobileHeaderTextSubdued,
-    )
+    val colors =
+      theme.textField(text = theme.mobileHeaderTextSubdued, icon = theme.mobileHeaderTextSubdued)
 
-    Column(
-      modifier = modifier.fillMaxWidth(),
-      horizontalAlignment = Alignment.End,
-    ) {
+    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
       TextField(
-        modifier = Modifier
-          .fillMaxWidth()
-          .focusRequester(keyboardFocusRequester(keyboard)),
+        modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester(keyboard)),
         value = text,
         onValueChange = { query -> onAction(LicensesAction.EditSearchText(query)) },
         placeholderText = Strings.licensesSearchPlaceholder,
@@ -146,13 +124,10 @@ private fun LicensesSearchInput(
         colors = colors,
       )
 
-      val numResults = remember(licensesState) {
-        (licensesState as? LicensesState.Loaded)?.artifacts?.size ?: 0
-      }
+      val numResults =
+        remember(licensesState) { (licensesState as? LicensesState.Loaded)?.artifacts?.size ?: 0 }
       Text(
-        modifier = Modifier
-          .wrapContentWidth()
-          .padding(horizontal = Dimens.Large),
+        modifier = Modifier.wrapContentWidth().padding(horizontal = Dimens.Large),
         text = Plurals.licensesSearchNumResults(numResults, numResults),
         fontSize = 12.sp,
         color = theme.mobileHeaderTextSubdued,
@@ -167,22 +142,17 @@ private fun Content(
   onAction: (LicensesAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = when (state) {
-  LicensesState.Loading -> LoadingContent(theme, modifier)
-  LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
-  is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, onAction, modifier)
-  is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
-}
+) =
+  when (state) {
+    LicensesState.Loading -> LoadingContent(theme, modifier)
+    LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
+    is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, onAction, modifier)
+    is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
+  }
 
 @Composable
-private fun LoadingContent(
-  theme: Theme,
-  modifier: Modifier = Modifier,
-) {
-  Box(
-    modifier = modifier.fillMaxSize(),
-    contentAlignment = Alignment.Center,
-  ) {
+private fun LoadingContent(theme: Theme, modifier: Modifier = Modifier) {
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
     CircularProgressIndicator(
       color = theme.buttonPrimaryBackground,
       trackColor = theme.dialogProgressWheelTrack,
@@ -191,10 +161,7 @@ private fun LoadingContent(
 }
 
 @Composable
-private fun NoneFoundContent(
-  theme: Theme,
-  modifier: Modifier = Modifier,
-) {
+private fun NoneFoundContent(theme: Theme, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Center,
@@ -227,10 +194,7 @@ private fun LoadedContent(
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(horizontal = Dimens.Large)
-      .scrollbar(listState),
+    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Large).scrollbar(listState),
     state = listState,
   ) {
     items(artifacts) { artifact ->
@@ -258,9 +222,7 @@ private fun ErrorContent(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(32.dp),
+    modifier = modifier.fillMaxSize().padding(32.dp),
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
@@ -292,49 +254,52 @@ private fun ErrorContent(
 @PortraitPreview
 @Composable
 private fun PreviewNoneFound(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  LicensesScaffold(
-    state = LicensesState.NoneFound,
-    searchBarState = SearchBarState.Gone,
-    onAction = {},
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    LicensesScaffold(
+      state = LicensesState.NoneFound,
+      searchBarState = SearchBarState.Gone,
+      onAction = {},
+    )
+  }
 
 @PortraitPreview
 @Composable
-private fun PreviewLoading(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  LicensesScaffold(
-    state = LicensesState.Loading,
-    searchBarState = SearchBarState.Gone,
-    onAction = {},
-  )
-}
+private fun PreviewLoading(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewWithColorScheme(type) {
+    LicensesScaffold(
+      state = LicensesState.Loading,
+      searchBarState = SearchBarState.Gone,
+      onAction = {},
+    )
+  }
 
 @PortraitPreview
 @Composable
-private fun PreviewLoaded(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  LicensesScaffold(
-    state = LicensesState.Loaded(
-      artifacts = persistentListOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi),
-    ),
-    searchBarState = SearchBarState.Visible(text = "My wicked search query"),
-    onAction = {},
-  )
-}
+private fun PreviewLoaded(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewWithColorScheme(type) {
+    LicensesScaffold(
+      state =
+        LicensesState.Loaded(
+          artifacts =
+            persistentListOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi)
+        ),
+      searchBarState = SearchBarState.Visible(text = "My wicked search query"),
+      onAction = {},
+    )
+  }
 
 @PortraitPreview
 @Composable
-private fun PreviewError(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  LicensesScaffold(
-    state = LicensesState.Error(errorMessage = "Something broke lol! Here's some more shite to show how it looks"),
-    searchBarState = SearchBarState.Gone,
-    onAction = {},
-  )
-}
+private fun PreviewError(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewWithColorScheme(type) {
+    LicensesScaffold(
+      state =
+        LicensesState.Error(
+          errorMessage = "Something broke lol! Here's some more shite to show how it looks"
+        ),
+      searchBarState = SearchBarState.Gone,
+      onAction = {},
+    )
+  }

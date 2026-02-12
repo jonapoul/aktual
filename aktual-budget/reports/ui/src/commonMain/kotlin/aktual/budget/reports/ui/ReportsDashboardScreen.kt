@@ -73,12 +73,10 @@ fun ReportsDashboardScreen(
 }
 
 @Composable
-private fun metroViewModel(
-  token: Token,
-  budgetId: BudgetId,
-) = assistedMetroViewModel<ReportsDashboardViewModel, ReportsDashboardViewModel.Factory> {
-  create(token, budgetId)
-}
+private fun metroViewModel(token: Token, budgetId: BudgetId) =
+  assistedMetroViewModel<ReportsDashboardViewModel, ReportsDashboardViewModel.Factory> {
+    create(token, budgetId)
+  }
 
 @Composable
 internal fun ReportsDashboardScaffold(
@@ -100,7 +98,7 @@ internal fun ReportsDashboardScaffold(
           }
         },
       )
-    },
+    }
   ) { innerPadding ->
     Box {
       WavyBackground()
@@ -131,32 +129,19 @@ private fun Content(
 }
 
 @Composable
-private fun ContentLoading(
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = Box(
-  modifier = modifier.fillMaxSize(),
-  contentAlignment = Alignment.Center,
-) {
-  CircularProgressIndicator(
-    modifier = Modifier.size(50.dp),
-    color = theme.buttonPrimaryBackground,
-  )
-}
+private fun ContentLoading(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) =
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    CircularProgressIndicator(
+      modifier = Modifier.size(50.dp),
+      color = theme.buttonPrimaryBackground,
+    )
+  }
 
 @Composable
-private fun ContentEmpty(
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) = Box(
-  modifier = modifier.fillMaxSize(),
-  contentAlignment = Alignment.Center,
-) {
-  Text(
-    text = Strings.reportsDashboardEmpty,
-    color = theme.pageText,
-  )
-}
+private fun ContentEmpty(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) =
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Text(text = Strings.reportsDashboardEmpty, color = theme.pageText)
+  }
 
 @Composable
 private fun ContentList(
@@ -168,36 +153,31 @@ private fun ContentList(
   val listState = rememberLazyListState()
   LazyColumn(
     state = listState,
-    modifier = modifier
-      .fillMaxWidth()
-      .padding(5.dp)
-      .scrollbar(listState),
+    modifier = modifier.fillMaxWidth().padding(5.dp).scrollbar(listState),
   ) {
-    items(items) { item ->
-      ReportDashboardItem(
-        item = item,
-        onAction = onAction,
-        theme = theme,
-      )
-    }
+    items(items) { item -> ReportDashboardItem(item = item, onAction = onAction, theme = theme) }
   }
 }
 
 @Preview
 @Composable
 private fun PreviewReportDashboardItem(
-  @PreviewParameter(DashboardStateProvider::class) params: ThemedParams<DashboardState>,
-) = PreviewWithColorScheme(schemeType = params.type) {
-  ReportsDashboardScaffold(
-    state = params.data,
-    onAction = {},
-  )
-}
+  @PreviewParameter(DashboardStateProvider::class) params: ThemedParams<DashboardState>
+) =
+  PreviewWithColorScheme(schemeType = params.type) {
+    ReportsDashboardScaffold(state = params.data, onAction = {})
+  }
 
-private class DashboardStateProvider : ThemedParameterProvider<DashboardState>(
-  DashboardState.Loaded(
-    items = persistentListOf(PREVIEW_DASHBOARD_ITEM_1, PREVIEW_DASHBOARD_ITEM_2, PREVIEW_DASHBOARD_ITEM_3),
-  ),
-  DashboardState.Loading,
-  DashboardState.Empty,
-)
+private class DashboardStateProvider :
+  ThemedParameterProvider<DashboardState>(
+    DashboardState.Loaded(
+      items =
+        persistentListOf(
+          PREVIEW_DASHBOARD_ITEM_1,
+          PREVIEW_DASHBOARD_ITEM_2,
+          PREVIEW_DASHBOARD_ITEM_3,
+        )
+    ),
+    DashboardState.Loading,
+    DashboardState.Empty,
+  )

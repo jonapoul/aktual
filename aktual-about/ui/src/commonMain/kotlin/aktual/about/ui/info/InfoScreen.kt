@@ -10,16 +10,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
-fun InfoScreen(
-  nav: InfoNavigator,
-  viewModel: AboutViewModel = metroViewModel(),
-) {
+fun InfoScreen(nav: InfoNavigator, viewModel: AboutViewModel = metroViewModel()) {
   val theme = LocalTheme.current
   val buildState by viewModel.buildState.collectAsStateWithLifecycle()
 
-  val onCancel = {
-    viewModel.cancelUpdateCheck()
-  }
+  val onCancel = { viewModel.cancelUpdateCheck() }
 
   val checkUpdatesState by viewModel.checkUpdatesState.collectAsStateWithLifecycle()
   when (val state = checkUpdatesState) {
@@ -31,14 +26,15 @@ fun InfoScreen(
 
     is CheckUpdatesState.Failed -> UpdateCheckFailedDialog(state.cause, onCancel, theme = theme)
 
-    is CheckUpdatesState.UpdateFound -> UpdateFoundDialog(
-      currentVersion = buildState.versions.app,
-      latestVersion = state.version,
-      latestUrl = state.url,
-      onDismiss = onCancel,
-      onOpenUrl = { url -> viewModel.openUrl(url) },
-      theme = theme,
-    )
+    is CheckUpdatesState.UpdateFound ->
+      UpdateFoundDialog(
+        currentVersion = buildState.versions.app,
+        latestVersion = state.version,
+        latestUrl = state.url,
+        onDismiss = onCancel,
+        onOpenUrl = { url -> viewModel.openUrl(url) },
+        theme = theme,
+      )
   }
 
   InfoScaffold(

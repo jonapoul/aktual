@@ -13,13 +13,14 @@ import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
+import java.io.IOException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import logcat.logcat
-import java.io.IOException
 
 @Inject
-class BudgetListFetcher internal constructor(
+class BudgetListFetcher
+internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: AktualApisStateHolder,
   private val keyPreferences: KeyPreferences,
@@ -48,19 +49,21 @@ class BudgetListFetcher internal constructor(
     }
   }
 
-  private suspend fun parseResponseException(e: ResponseException): FetchBudgetsResult = try {
-    val body = e.response.body<ListUserFilesResponse.Failure>()
-    FetchBudgetsResult.FailureResponse(body.reason.reason)
-  } catch (e: JsonConvertException) {
-    FetchBudgetsResult.OtherFailure(e.requireMessage())
-  }
+  private suspend fun parseResponseException(e: ResponseException): FetchBudgetsResult =
+    try {
+      val body = e.response.body<ListUserFilesResponse.Failure>()
+      FetchBudgetsResult.FailureResponse(body.reason.reason)
+    } catch (e: JsonConvertException) {
+      FetchBudgetsResult.OtherFailure(e.requireMessage())
+    }
 
-  private fun toBudget(item: UserFile) = Budget(
-    name = item.name,
-    state = BudgetState.Unknown,
-    encryptKeyId = item.encryptKeyId?.value,
-    groupId = item.groupId,
-    cloudFileId = item.fileId,
-    hasKey = item.encryptKeyId in keyPreferences,
-  )
+  private fun toBudget(item: UserFile) =
+    Budget(
+      name = item.name,
+      state = BudgetState.Unknown,
+      encryptKeyId = item.encryptKeyId?.value,
+      groupId = item.groupId,
+      cloudFileId = item.fileId,
+      hasKey = item.encryptKeyId in keyPreferences,
+    )
 }

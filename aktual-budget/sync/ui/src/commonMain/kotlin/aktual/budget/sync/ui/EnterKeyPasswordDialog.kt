@@ -62,10 +62,7 @@ internal fun EnterKeyPasswordDialog(
     onDismissRequest = { onAction(SyncBudgetAction.DismissPasswordDialog) },
     buttons = {
       TextButton(onClick = { onAction(SyncBudgetAction.DismissPasswordDialog) }) {
-        Text(
-          text = Strings.syncPasswordDialogDismiss,
-          color = theme.buttonPrimaryText,
-        )
+        Text(text = Strings.syncPasswordDialogDismiss, color = theme.buttonPrimaryText)
       }
 
       val confirmEnabled = remember(input) { input.isNotEmpty() }
@@ -79,13 +76,7 @@ internal fun EnterKeyPasswordDialog(
         )
       }
     },
-    content = {
-      Content(
-        input = input,
-        theme = theme,
-        onAction = onAction,
-      )
-    },
+    content = { Content(input = input, theme = theme, onAction = onAction) },
   )
 }
 
@@ -95,10 +86,7 @@ internal fun Content(
   onAction: (SyncBudgetAction) -> Unit,
   theme: Theme = LocalTheme.current,
 ) {
-  Column(
-    modifier = Modifier.fillMaxWidth(),
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
+  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
     Text(
       modifier = Modifier.padding(horizontal = 20.dp),
       text = buildDialogText(theme, onAction),
@@ -111,27 +99,30 @@ internal fun Content(
     var passwordVisible by remember { mutableStateOf(false) }
 
     TextField(
-      modifier = Modifier
-        .padding(horizontal = 20.dp)
-        .fillMaxWidth()
-        .focusRequester(keyboardFocusRequester(keyboard)),
+      modifier =
+        Modifier.padding(horizontal = 20.dp)
+          .fillMaxWidth()
+          .focusRequester(keyboardFocusRequester(keyboard)),
       value = input.value,
       onValueChange = { i -> onAction(SyncBudgetAction.EnterKeyPassword(Password(i))) },
       placeholderText = Strings.syncPasswordDialogPlaceholder,
       singleLine = true,
-      visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-      keyboardOptions = KeyboardOptions(
-        autoCorrectEnabled = false,
-        capitalization = KeyboardCapitalization.None,
-        keyboardType = KeyboardType.Password,
-        imeAction = ImeAction.Go,
-      ),
-      keyboardActions = KeyboardActions(
-        onGo = {
-          keyboard?.hide()
-          onAction(SyncBudgetAction.ConfirmKeyPassword)
-        },
-      ),
+      visualTransformation =
+        if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+      keyboardOptions =
+        KeyboardOptions(
+          autoCorrectEnabled = false,
+          capitalization = KeyboardCapitalization.None,
+          keyboardType = KeyboardType.Password,
+          imeAction = ImeAction.Go,
+        ),
+      keyboardActions =
+        KeyboardActions(
+          onGo = {
+            keyboard?.hide()
+            onAction(SyncBudgetAction.ConfirmKeyPassword)
+          }
+        ),
     )
 
     Row(
@@ -150,37 +141,26 @@ internal fun Content(
 
 @Stable
 @Composable
-private fun buildDialogText(
-  theme: Theme,
-  onAction: (SyncBudgetAction) -> Unit,
-) = buildAnnotatedString {
-  append(Strings.syncPasswordDialogText)
-  append(" ")
+private fun buildDialogText(theme: Theme, onAction: (SyncBudgetAction) -> Unit) =
+  buildAnnotatedString {
+    append(Strings.syncPasswordDialogText)
+    append(" ")
 
-  val style = SpanStyle(color = theme.pageTextLink, textDecoration = TextDecoration.Underline)
-  val link = LinkAnnotation.Clickable(
-    tag = Tags.KeyPasswordDialogLearnMore,
-    linkInteractionListener = LinkInteractionListener { onAction(SyncBudgetAction.LearnMore) },
-  )
-  withStyle(style) {
-    withLink(link) {
-      append(Strings.syncPasswordDialogLearnMore)
-    }
+    val style = SpanStyle(color = theme.pageTextLink, textDecoration = TextDecoration.Underline)
+    val link =
+      LinkAnnotation.Clickable(
+        tag = Tags.KeyPasswordDialogLearnMore,
+        linkInteractionListener = LinkInteractionListener { onAction(SyncBudgetAction.LearnMore) },
+      )
+    withStyle(style) { withLink(link) { append(Strings.syncPasswordDialogLearnMore) } }
   }
-}
 
 @Preview
 @Composable
 private fun PreviewEnterKeyPasswordDialog(
-  @PreviewParameter(PasswordProvider::class) params: ThemedParams<Password>,
-) = PreviewWithColorScheme(params.type) {
-  EnterKeyPasswordDialog(
-    input = params.data,
-    onAction = {},
-  )
-}
+  @PreviewParameter(PasswordProvider::class) params: ThemedParams<Password>
+) =
+  PreviewWithColorScheme(params.type) { EnterKeyPasswordDialog(input = params.data, onAction = {}) }
 
-private class PasswordProvider : ThemedParameterProvider<Password>(
-  Password.Empty,
-  Password("abc-123"),
-)
+private class PasswordProvider :
+  ThemedParameterProvider<Password>(Password.Empty, Password("abc-123"))

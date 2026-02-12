@@ -42,43 +42,35 @@ internal fun BasicPreferenceItem(
   rightContent: (@Composable () -> Unit)? = null,
   bottomContent: (@Composable () -> Unit)? = null,
 ) {
-  val clickableModifier = when (clickability) {
-    NotClickable -> Modifier
+  val clickableModifier =
+    when (clickability) {
+      NotClickable -> Modifier
 
-    is Clickable -> Modifier.clickable(
-      interactionSource = interactionSource,
-      indication = ripple(),
-      enabled = clickability.enabled,
-      onClick = clickability.onClick,
-    )
-  }
+      is Clickable ->
+        Modifier.clickable(
+          interactionSource = interactionSource,
+          indication = ripple(),
+          enabled = clickability.enabled,
+          onClick = clickability.onClick,
+        )
+    }
 
   Row(
-    modifier = modifier
-      .clip(CardShape)
-      .aktualHaze()
-      .padding(5.dp)
-      then clickableModifier,
+    modifier = modifier.clip(CardShape).aktualHaze().padding(5.dp) then clickableModifier,
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {
     if (icon != null) {
       Icon(
-        modifier = Modifier
-          .size(50.dp)
-          .padding(10.dp),
+        modifier = Modifier.size(50.dp).padding(10.dp),
         imageVector = icon,
         contentDescription = title,
       )
     }
 
-    Column(
-      modifier = Modifier.weight(1f),
-    ) {
+    Column(modifier = Modifier.weight(1f)) {
       Column(
-        modifier = Modifier
-          .wrapContentHeight()
-          .padding(10.dp),
+        modifier = Modifier.wrapContentHeight().padding(10.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
       ) {
         Text(
@@ -112,15 +104,17 @@ internal fun BasicPreferenceItem(
 @Preview
 @Composable
 private fun PreviewBasicPreferenceItem(
-  @PreviewParameter(BasicPreferenceItemProvider::class) params: ThemedParams<BasicPreferenceItemParams>,
-) = PreviewWithColorScheme(params.type) {
-  BasicPreferenceItem(
-    title = params.data.title,
-    subtitle = params.data.subtitle,
-    icon = params.data.icon,
-    clickability = Clickable { },
-  )
-}
+  @PreviewParameter(BasicPreferenceItemProvider::class)
+  params: ThemedParams<BasicPreferenceItemParams>
+) =
+  PreviewWithColorScheme(params.type) {
+    BasicPreferenceItem(
+      title = params.data.title,
+      subtitle = params.data.subtitle,
+      icon = params.data.icon,
+      clickability = Clickable {},
+    )
+  }
 
 private data class BasicPreferenceItemParams(
   val title: String,
@@ -128,15 +122,17 @@ private data class BasicPreferenceItemParams(
   val icon: ImageVector?,
 )
 
-private class BasicPreferenceItemProvider : ThemedParameterProvider<BasicPreferenceItemParams>(
-  BasicPreferenceItemParams(
-    title = "Change the doodad",
-    subtitle = "When you change this setting, the doodad will update. This might also affect the thingybob.",
-    icon = MaterialIcons.Info,
-  ),
-  BasicPreferenceItemParams(
-    title = "This one has no subtitle and no icon",
-    subtitle = null,
-    icon = null,
-  ),
-)
+private class BasicPreferenceItemProvider :
+  ThemedParameterProvider<BasicPreferenceItemParams>(
+    BasicPreferenceItemParams(
+      title = "Change the doodad",
+      subtitle =
+        "When you change this setting, the doodad will update. This might also affect the thingybob.",
+      icon = MaterialIcons.Info,
+    ),
+    BasicPreferenceItemParams(
+      title = "This one has no subtitle and no icon",
+      subtitle = null,
+      icon = null,
+    ),
+  )

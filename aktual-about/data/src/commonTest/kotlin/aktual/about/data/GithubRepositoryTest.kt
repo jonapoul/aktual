@@ -17,12 +17,12 @@ import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.URLProtocol
-import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.runTest
 import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.time.Instant
+import kotlinx.coroutines.test.TestScope
+import kotlinx.coroutines.test.runTest
 
 class GithubRepositoryTest {
   private lateinit var githubRepository: GithubRepository
@@ -60,16 +60,17 @@ class GithubRepositoryTest {
 
     // Then
     assertThat(TestBuildConfig.versionName).isEqualTo("1.2.3")
-    assertThat(state).isDataClassEqualTo(
-      LatestReleaseState.UpdateAvailable(
-        release = GithubRelease(
-          versionName = "v2.3.4",
-          publishedAt = Instant.parse("2024-03-30T09:57:02Z"),
-          htmlUrl = "https://github.com/jonapoul/aktual/releases/tag/2.3.4",
-          tagName = "2.3.4",
-        ),
-      ),
-    )
+    assertThat(state)
+      .isDataClassEqualTo(
+        LatestReleaseState.UpdateAvailable(
+          GithubRelease(
+            versionName = "v2.3.4",
+            publishedAt = Instant.parse("2024-03-30T09:57:02Z"),
+            htmlUrl = "https://github.com/jonapoul/aktual/releases/tag/2.3.4",
+            tagName = "2.3.4",
+          )
+        )
+      )
   }
 
   @Test
@@ -124,11 +125,9 @@ class GithubRepositoryTest {
     val state = githubRepository.fetchLatestRelease()
 
     // Then
-    assertThat(state)
-      .isInstanceOf<LatestReleaseState.Failure>()
-      .matchesPredicate {
-        it.errorMessage.contains("Failed decoding JSON")
-      }
+    assertThat(state).isInstanceOf<LatestReleaseState.Failure>().matchesPredicate {
+      it.errorMessage.contains("Failed decoding JSON")
+    }
   }
 
   @Test
@@ -165,10 +164,11 @@ class GithubRepositoryTest {
 
   private fun TestScope.buildRepo() {
     mockEngine = emptyMockEngine()
-    githubRepository = GithubRepository(
-      contexts = TestCoroutineContexts(standardDispatcher),
-      buildConfig = TestBuildConfig,
-      githubApi = GithubApiImpl(client = testHttpClient(mockEngine, GithubJson)),
-    )
+    githubRepository =
+      GithubRepository(
+        contexts = TestCoroutineContexts(standardDispatcher),
+        buildConfig = TestBuildConfig,
+        githubApi = GithubApiImpl(client = testHttpClient(mockEngine, GithubJson)),
+      )
   }
 }

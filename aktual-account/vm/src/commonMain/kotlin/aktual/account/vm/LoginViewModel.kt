@@ -50,10 +50,7 @@ class LoginViewModel(
     combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
       .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = null)
 
-  val token: Flow<Token> = preferences
-    .token
-    .asFlow()
-    .filterNotNull()
+  val token: Flow<Token> = preferences.token.asFlow().filterNotNull()
 
   fun clearState() {
     mutableEnteredPassword.reset()

@@ -29,10 +29,7 @@ fun UsingServerText(
   theme: Theme = LocalTheme.current,
 ) {
   Column(
-    modifier = modifier
-      .aktualHaze()
-      .background(Color.Transparent, RounderCardShape)
-      .padding(20.dp),
+    modifier = modifier.aktualHaze().background(Color.Transparent, RounderCardShape).padding(20.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Text(
@@ -50,19 +47,14 @@ fun UsingServerText(
       textAlign = TextAlign.Center,
     )
 
-    BareTextButton(
-      text = Strings.loginServerChange,
-      onClick = onClickChange,
-    )
+    BareTextButton(text = Strings.loginServerChange, onClick = onClickChange)
   }
 }
 
 @Preview
 @Composable
 private fun PreviewUsingServerText(
-  @PreviewParameter(ServerUrlProvider::class) params: ThemedParams<ServerUrl?>,
-) = PreviewWithColorScheme(params.type) {
-  UsingServerText(url = params.data, onClickChange = {})
-}
+  @PreviewParameter(ServerUrlProvider::class) params: ThemedParams<ServerUrl?>
+) = PreviewWithColorScheme(params.type) { UsingServerText(url = params.data, onClickChange = {}) }
 
 private class ServerUrlProvider : ThemedParameterProvider<ServerUrl?>(ServerUrl.Demo, null)

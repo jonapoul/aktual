@@ -18,19 +18,17 @@ compose.desktop {
   application {
     mainClass = "aktual.app.desktop.MainKt"
 
-    jvmArgs += listOf(
-      // Make sure java.sql.DriverManager is included
-      "--add-modules",
-      "java.sql",
-    )
+    jvmArgs +=
+      listOf(
+        // Make sure java.sql.DriverManager is included
+        "--add-modules",
+        "java.sql",
+      )
 
     buildTypes.release.proguard {
       obfuscate = true
       optimize = true
-      configurationFiles.from(
-        file("proguard-rules.pro"),
-        file("../common-rules.pro"),
-      )
+      configurationFiles.from(file("proguard-rules.pro"), file("../common-rules.pro"))
     }
 
     nativeDistributions {
@@ -41,9 +39,10 @@ compose.desktop {
 
       modules("java.sql")
 
-      val icon = rootProject.isolated
-        .projectDirectory
-        .file("aktual-core:l10n/src/commonMain/composeResources/drawable/app_icon_192.png")
+      val icon =
+        rootProject.isolated.projectDirectory.file(
+          "aktual-core:l10n/src/commonMain/composeResources/drawable/app_icon_192.png"
+        )
 
       windows {
         menu = true
@@ -70,31 +69,26 @@ compose.desktop {
   }
 }
 
-val copyLicenseeReportToResources by tasks.registering(Copy::class) {
-  from(tasks.licensee.map { it.jsonOutput })
-  into("src/main/resources")
-  rename { LICENSEE_REPORT_ASSET_NAME }
-}
+val copyLicenseeReportToResources by
+  tasks.registering(Copy::class) {
+    from(tasks.licensee.map { it.jsonOutput })
+    into("src/main/resources")
+    rename { LICENSEE_REPORT_ASSET_NAME }
+  }
 
-tasks.processResources.configure {
-  dependsOn(copyLicenseeReportToResources)
-}
+tasks.processResources.configure { dependsOn(copyLicenseeReportToResources) }
 
 tasks.shadowJar {
   archiveClassifier.set("all")
   mergeServiceFiles()
-  manifest {
-    attributes["Main-Class"] = "aktual.app.desktop.MainKt"
-  }
+  manifest { attributes["Main-Class"] = "aktual.app.desktop.MainKt" }
 }
 
 afterEvaluate {
   tasks.named("proguardReleaseJars") {
     // Proguard won't create the path for us...
     val outputsDir = layout.buildDirectory.dir("outputs")
-    doFirst {
-      outputsDir.get().asFile.mkdirs()
-    }
+    doFirst { outputsDir.get().asFile.mkdirs() }
   }
 }
 

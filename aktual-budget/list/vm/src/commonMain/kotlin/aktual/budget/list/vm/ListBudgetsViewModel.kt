@@ -21,6 +21,7 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
@@ -37,7 +38,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
-import kotlin.time.Duration.Companion.milliseconds
 
 @AssistedInject
 class ListBudgetsViewModel(
@@ -148,27 +148,25 @@ class ListBudgetsViewModel(
     viewModelScope.launch {
       val result = budgetListFetcher.fetchBudgets(token)
       logcat.d { "Fetch budgets result = $result" }
-      val newState = when (result) {
-        is FetchBudgetsResult.Failure -> ListBudgetsState.Failure(result.reason)
-        is FetchBudgetsResult.Success -> ListBudgetsState.Success(result.budgets.toImmutableList())
-      }
+      val newState =
+        when (result) {
+          is FetchBudgetsResult.Failure -> ListBudgetsState.Failure(result.reason)
+          is FetchBudgetsResult.Success ->
+            ListBudgetsState.Success(result.budgets.toImmutableList())
+        }
       mutableState.update { newState }
     }
   }
 
-  private fun localFilesExist(id: BudgetId): Boolean = with(files) {
-    listOf(
-      database(id, mkdirs = false),
-      metadata(id, mkdirs = false),
-    ).all(fileSystem::exists)
-  }
+  private fun localFilesExist(id: BudgetId): Boolean =
+    with(files) {
+      listOf(database(id, mkdirs = false), metadata(id, mkdirs = false)).all(fileSystem::exists)
+    }
 
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey(Factory::class)
   @ContributesIntoMap(AppScope::class)
   interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted token: Token,
-    ): ListBudgetsViewModel
+    fun create(@Assisted token: Token): ListBudgetsViewModel
   }
 }

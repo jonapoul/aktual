@@ -13,11 +13,12 @@ import org.intellij.lang.annotations.Language
 fun MockRequestHandleScope.respondJson(
   @Language("JSON") content: String,
   status: HttpStatusCode = HttpStatusCode.OK,
-): HttpResponseData = respond(
-  content = content,
-  status = status,
-  headers = headersOf(HttpHeaders.ContentType, "application/json"),
-)
+): HttpResponseData =
+  respond(
+    content = content,
+    status = status,
+    headers = headersOf(HttpHeaders.ContentType, "application/json"),
+  )
 
 fun emptyMockEngine(): MockEngine.Queue = MockEngine.Queue()
 

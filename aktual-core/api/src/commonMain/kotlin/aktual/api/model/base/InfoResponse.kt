@@ -3,10 +3,7 @@ package aktual.api.model.base
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-@Serializable
-data class InfoResponse(
-  @SerialName("build") val build: Build,
-)
+@Serializable data class InfoResponse(@SerialName("build") val build: Build)
 
 @Serializable
 data class Build(

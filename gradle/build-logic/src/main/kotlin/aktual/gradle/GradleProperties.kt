@@ -20,11 +20,10 @@ private fun Project.javaVersionString(): Provider<String> =
     parameters.javaVersionFile.set(rootProject.layout.projectDirectory.file(".java-version"))
   }
 
-private abstract class JavaVersionValueSource : ValueSource<String, JavaVersionValueSource.Parameters> {
+private abstract class JavaVersionValueSource :
+  ValueSource<String, JavaVersionValueSource.Parameters> {
   interface Parameters : ValueSourceParameters {
-    @get:InputFile
-    @get:PathSensitive(NONE)
-    val javaVersionFile: RegularFileProperty
+    @get:InputFile @get:PathSensitive(NONE) val javaVersionFile: RegularFileProperty
   }
 
   override fun obtain(): String {
@@ -34,7 +33,9 @@ private abstract class JavaVersionValueSource : ValueSource<String, JavaVersionV
     val content = file.readText().trim()
     require(content.isNotEmpty()) { "Java version file is empty: ${file.absolutePath}" }
 
-    requireNotNull(content.toIntOrNull()) { "Java version must be a valid integer, but was: $content" }
+    requireNotNull(content.toIntOrNull()) {
+      "Java version must be a valid integer, but was: $content"
+    }
 
     return content
   }

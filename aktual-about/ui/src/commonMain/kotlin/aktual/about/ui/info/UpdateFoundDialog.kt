@@ -62,15 +62,16 @@ internal fun UpdateFoundDialogContent(
     title = Strings.infoUpdateFoundTitle,
     titleColor = theme.successText,
     content = {
-      TextContent(Strings.infoUpdateFoundInstalled, currentVersion, Tags.UpdateAvailableCurrentVersion)
+      TextContent(
+        Strings.infoUpdateFoundInstalled,
+        currentVersion,
+        Tags.UpdateAvailableCurrentVersion,
+      )
       TextContent(Strings.infoUpdateFoundLatest, latestVersion, Tags.UpdateAvailableNewVersion)
     },
     buttons = {
       TextButton(onClick = onDismiss) {
-        Text(
-          text = Strings.infoUpdateFoundDismiss,
-          color = theme.successText,
-        )
+        Text(text = Strings.infoUpdateFoundDismiss, color = theme.successText)
       }
       TextButton(
         modifier = Modifier.testTag(Tags.UpdateAvailableDownloadButton),
@@ -79,10 +80,7 @@ internal fun UpdateFoundDialogContent(
           onDismiss()
         },
       ) {
-        Text(
-          text = Strings.infoUpdateFoundView,
-          color = theme.successText,
-        )
+        Text(text = Strings.infoUpdateFoundView, color = theme.successText)
       }
     },
   )
@@ -95,9 +93,7 @@ private fun TextContent(
   valueNodeTag: String,
   modifier: Modifier = Modifier,
 ) {
-  Row(
-    modifier = modifier.fillMaxWidth(),
-  ) {
+  Row(modifier = modifier.fillMaxWidth()) {
     Text(
       modifier = Modifier.weight(1f),
       text = text,
@@ -105,9 +101,7 @@ private fun TextContent(
       fontWeight = FontWeight.Bold,
     )
     Text(
-      modifier = Modifier
-        .weight(1f)
-        .testTag(valueNodeTag),
+      modifier = Modifier.weight(1f).testTag(valueNodeTag),
       text = value,
       textAlign = TextAlign.End,
     )
@@ -117,13 +111,14 @@ private fun TextContent(
 @Preview
 @Composable
 private fun PreviewUpdateFoundContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  UpdateFoundDialogContent(
-    currentVersion = "v1.2.3",
-    latestVersion = "v2.3.4",
-    latestUrl = "https://github.com/jonapoul/aktual/releases/v2.3.4",
-    onOpenUrl = {},
-    onDismiss = {},
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    UpdateFoundDialogContent(
+      currentVersion = "v1.2.3",
+      latestVersion = "v2.3.4",
+      latestUrl = "https://github.com/jonapoul/aktual/releases/v2.3.4",
+      onOpenUrl = {},
+      onDismiss = {},
+    )
+  }

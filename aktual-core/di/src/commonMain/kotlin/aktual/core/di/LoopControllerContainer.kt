@@ -10,6 +10,5 @@ import dev.zacsweers.metro.ContributesTo
 @BindingContainer
 @ContributesTo(AppScope::class)
 interface LoopControllerContainer {
-  @Binds
-  val InfiniteLoopController.loopController: LoopController
+  @Binds val InfiniteLoopController.loopController: LoopController
 }

@@ -58,44 +58,46 @@ fun <T : Any> SlidingToggleButton(
   val buttonWidth = realSingleOptionWidth * optionCount
   val shape = RoundedCornerShape(radius)
 
-  val slideOffset by animateFloatAsState(
-    targetValue = selectedIndex.toFloat(),
-    animationSpec = tween(durationMillis = 300),
-    label = "slideOffset",
-  )
+  val slideOffset by
+    animateFloatAsState(
+      targetValue = selectedIndex.toFloat(),
+      animationSpec = tween(durationMillis = 300),
+      label = "slideOffset",
+    )
 
   Box(
-    modifier = modifier
-      .width(buttonWidth)
-      .height(50.dp)
-      .clip(shape)
-      .background(theme.buttonPrimaryDisabledBackground),
+    modifier =
+      modifier
+        .width(buttonWidth)
+        .height(50.dp)
+        .clip(shape)
+        .background(theme.buttonPrimaryDisabledBackground)
   ) {
     // Sliding indicator
     Box(
-      modifier = Modifier
-        .fillMaxHeight()
-        .width(realSingleOptionWidth)
-        .offset(x = slideOffset * realSingleOptionWidth)
-        .clip(RoundedCornerShape(radius))
-        .background(theme.buttonPrimaryBackground),
+      modifier =
+        Modifier.fillMaxHeight()
+          .width(realSingleOptionWidth)
+          .offset(x = slideOffset * realSingleOptionWidth)
+          .clip(RoundedCornerShape(radius))
+          .background(theme.buttonPrimaryBackground)
     )
 
     // Option labels
-    Row(
-      modifier = Modifier.fillMaxSize(),
-    ) {
+    Row(modifier = Modifier.fillMaxSize()) {
       options.fastForEachIndexed { index, option ->
         Box(
-          modifier = Modifier
-            .width(realSingleOptionWidth)
-            .fillMaxHeight()
-            .clickable { onSelectOption(index) },
+          modifier =
+            Modifier.width(realSingleOptionWidth).fillMaxHeight().clickable {
+              onSelectOption(index)
+            },
           contentAlignment = Alignment.Center,
         ) {
           Text(
             text = string(option),
-            color = if (selectedIndex == index) theme.buttonPrimaryText else theme.buttonPrimaryDisabledText,
+            color =
+              if (selectedIndex == index) theme.buttonPrimaryText
+              else theme.buttonPrimaryDisabledText,
             fontWeight = FontWeight.Medium,
             fontSize = fontSize,
             textAlign = TextAlign.Center,
@@ -110,37 +112,35 @@ fun <T : Any> SlidingToggleButton(
 
 @Preview
 @Composable
-private fun PreviewStrings(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  var selectedA by remember { mutableIntStateOf(0) }
-  SlidingToggleButton(
-    modifier = Modifier.padding(4.dp),
-    options = persistentListOf("Option A", "Option B"),
-    selectedIndex = selectedA,
-    onSelectOption = { newOption -> selectedA = newOption },
-  )
-}
+private fun PreviewStrings(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewWithColorScheme(type) {
+    var selectedA by remember { mutableIntStateOf(0) }
+    SlidingToggleButton(
+      modifier = Modifier.padding(4.dp),
+      options = persistentListOf("Option A", "Option B"),
+      selectedIndex = selectedA,
+      onSelectOption = { newOption -> selectedA = newOption },
+    )
+  }
 
 @Preview
 @Composable
-private fun PreviewEnum(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  var selectedB by remember { mutableIntStateOf(3) }
-  SlidingToggleButton(
-    modifier = Modifier.padding(4.dp),
-    options = Interval.entries.toImmutableList(),
-    selectedIndex = selectedB,
-    string = { interval ->
-      when (interval) {
-        Interval.Daily -> "Daily"
-        Interval.Weekly -> "Weekly"
-        Interval.Monthly -> "Monthly"
-        Interval.Yearly -> "Yearly with loads more text clipped off"
-      }
-    },
-    onSelectOption = { newOption -> selectedB = newOption },
-    singleOptionWidth = 75.dp,
-  )
-}
+private fun PreviewEnum(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewWithColorScheme(type) {
+    var selectedB by remember { mutableIntStateOf(3) }
+    SlidingToggleButton(
+      modifier = Modifier.padding(4.dp),
+      options = Interval.entries.toImmutableList(),
+      selectedIndex = selectedB,
+      string = { interval ->
+        when (interval) {
+          Interval.Daily -> "Daily"
+          Interval.Weekly -> "Weekly"
+          Interval.Monthly -> "Monthly"
+          Interval.Yearly -> "Yearly with loads more text clipped off"
+        }
+      },
+      onSelectOption = { newOption -> selectedB = newOption },
+      singleOptionWidth = 75.dp,
+    )
+  }

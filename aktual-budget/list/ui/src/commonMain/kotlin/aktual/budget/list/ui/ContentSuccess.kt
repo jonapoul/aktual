@@ -57,12 +57,13 @@ internal fun ContentSuccess(
 @PortraitPreview
 @Composable
 private fun PreviewContentSuccess(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  ContentSuccess(
-    modifier = Modifier.background(LocalTheme.current.pageBackground),
-    budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
-    onClickOpen = {},
-    onClickDelete = {},
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    ContentSuccess(
+      modifier = Modifier.background(LocalTheme.current.pageBackground),
+      budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
+      onClickOpen = {},
+      onClickDelete = {},
+    )
+  }

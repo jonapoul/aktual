@@ -1,6 +1,5 @@
 package aktual.budget.reports.ui.charts
 
-import aktual.budget.reports.ui.charts.WIDTH
 import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.DateRangeMode
 import aktual.budget.reports.vm.ReportTimeRange
@@ -40,80 +39,69 @@ internal fun CustomChart(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
   includeHeader: Boolean = true,
-) = Column(
-  modifier = modifier,
-) {
-  if (compact && includeHeader) {
-    Header(
-      modifier = Modifier
-        .padding(4.dp)
-        .fillMaxWidth(),
-      data = data,
-      theme = theme,
-    )
-  }
+) =
+  Column(modifier = modifier) {
+    if (compact && includeHeader) {
+      Header(modifier = Modifier.padding(4.dp).fillMaxWidth(), data = data, theme = theme)
+    }
 
-  Box(
-    modifier = Modifier
-      .fillMaxWidth()
-      .weight(1f),
-    contentAlignment = Alignment.Center,
-  ) {
-    Text(
-      text = Strings.reportsCustomNoop,
-      style = AktualTypography.titleLarge,
-      color = theme.warningText,
-      textAlign = TextAlign.Center,
-    )
+    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+      Text(
+        text = Strings.reportsCustomNoop,
+        style = AktualTypography.titleLarge,
+        color = theme.warningText,
+        textAlign = TextAlign.Center,
+      )
+    }
   }
-}
 
 @Composable
 private fun Header(
   data: CustomData,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = Row(
-  modifier = modifier.fillMaxWidth(),
-) {
-  Text(
-    modifier = Modifier.weight(1f),
-    text = data.title,
-    color = theme.pageText,
-    overflow = TextOverflow.Ellipsis,
-  )
+) =
+  Row(modifier = modifier.fillMaxWidth()) {
+    Text(
+      modifier = Modifier.weight(1f),
+      text = data.title,
+      color = theme.pageText,
+      overflow = TextOverflow.Ellipsis,
+    )
 
-  Text(
-    text = dateRange(data.range),
-    color = theme.pageTextSubdued,
-    overflow = TextOverflow.Ellipsis,
-  )
-}
+    Text(
+      text = dateRange(data.range),
+      color = theme.pageTextSubdued,
+      overflow = TextOverflow.Ellipsis,
+    )
+  }
 
 @Composable
-private fun dateRange(timeRange: ReportTimeRange): String = when (timeRange) {
-  is ReportTimeRange.Relative -> timeRange.type.string()
-  is ReportTimeRange.Specific -> dateRange(timeRange.range.start, timeRange.range.endInclusive)
-}
+private fun dateRange(timeRange: ReportTimeRange): String =
+  when (timeRange) {
+    is ReportTimeRange.Relative -> timeRange.type.string()
+    is ReportTimeRange.Specific -> dateRange(timeRange.range.start, timeRange.range.endInclusive)
+  }
 
 @Preview
 @Composable
 private fun PreviewCustomChart(
-  @PreviewParameter(CustomChartProvider::class) params: ThemedParams<CustomChartParams>,
-) = PreviewWithColorScheme(
-  schemeType = params.type,
-  isPrivacyEnabled = params.data.isPrivacyEnabled,
-) {
-  CustomChart(
-    modifier = Modifier
-      .background(LocalTheme.current.tableBackground, CardShape)
-      .width(WIDTH.dp)
-      .let { m -> if (params.data.compact) m.height(300.dp) else m }
-      .padding(5.dp),
-    data = params.data.data,
-    compact = params.data.compact,
-  )
-}
+  @PreviewParameter(CustomChartProvider::class) params: ThemedParams<CustomChartParams>
+) =
+  PreviewWithColorScheme(
+    schemeType = params.type,
+    isPrivacyEnabled = params.data.isPrivacyEnabled,
+  ) {
+    CustomChart(
+      modifier =
+        Modifier.background(LocalTheme.current.tableBackground, CardShape)
+          .width(WIDTH.dp)
+          .let { m -> if (params.data.compact) m.height(300.dp) else m }
+          .padding(5.dp),
+      data = params.data.data,
+      compact = params.data.compact,
+    )
+  }
 
 private data class CustomChartParams(
   val data: CustomData,
@@ -121,20 +109,24 @@ private data class CustomChartParams(
   val isPrivacyEnabled: Boolean = false,
 )
 
-private class CustomChartProvider : ThemedParameterProvider<CustomChartParams>(
-  CustomChartParams(PREVIEW_CUSTOM_DATA, compact = false, isPrivacyEnabled = true),
-  CustomChartParams(PREVIEW_CUSTOM_DATA, compact = false, isPrivacyEnabled = false),
-  CustomChartParams(PREVIEW_CUSTOM_DATA, compact = true, isPrivacyEnabled = true),
-  CustomChartParams(PREVIEW_CUSTOM_DATA, compact = true, isPrivacyEnabled = false),
-)
+private class CustomChartProvider :
+  ThemedParameterProvider<CustomChartParams>(
+    CustomChartParams(PREVIEW_CUSTOM_DATA, compact = false, isPrivacyEnabled = true),
+    CustomChartParams(PREVIEW_CUSTOM_DATA, compact = false, isPrivacyEnabled = false),
+    CustomChartParams(PREVIEW_CUSTOM_DATA, compact = true, isPrivacyEnabled = true),
+    CustomChartParams(PREVIEW_CUSTOM_DATA, compact = true, isPrivacyEnabled = false),
+  )
 
-internal val PREVIEW_CUSTOM_DATA = CustomData(
-  title = "My Custom Report",
-  mode = DateRangeMode.Live,
-  range = ReportTimeRange.Specific(
-    range = YearMonthRange(
-      start = YearMonth(2011, Month.SEPTEMBER),
-      endInclusive = YearMonth(2025, Month.JULY),
-    ),
-  ),
-)
+internal val PREVIEW_CUSTOM_DATA =
+  CustomData(
+    title = "My Custom Report",
+    mode = DateRangeMode.Live,
+    range =
+      ReportTimeRange.Specific(
+        range =
+          YearMonthRange(
+            start = YearMonth(2011, Month.SEPTEMBER),
+            endInclusive = YearMonth(2025, Month.JULY),
+          )
+      ),
+  )

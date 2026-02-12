@@ -8,10 +8,10 @@ import aktual.test.readBytes
 import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import okio.Buffer
-import okio.source
 import kotlin.random.Random
 import kotlin.test.Test
+import okio.Buffer
+import okio.source
 
 class EncryptTest {
   @InterceptTest val temporaryFolder = TemporaryFolder()
@@ -22,13 +22,14 @@ class EncryptTest {
     val encrypted = temporaryFolder / "encrypted.zip"
 
     // Encrypt the plaintext
-    val meta = encryptToSink(
-      key = KEY,
-      keyId = KeyId("test-key"),
-      source = encryptedZip.source(),
-      sink = temporaryFolder.sink(encrypted),
-      random = Random.Default,
-    )
+    val meta =
+      encryptToSink(
+        key = KEY,
+        keyId = KeyId("test-key"),
+        source = encryptedZip.source(),
+        sink = temporaryFolder.sink(encrypted),
+        random = Random.Default,
+      )
 
     // Decrypt the encrypted data
     val decrypted = temporaryFolder / "decrypted.zip"
@@ -53,13 +54,14 @@ class EncryptTest {
 
     // Encrypt the buffer
     val encryptedBuffer = Buffer()
-    val meta = encryptToSink(
-      key = KEY,
-      keyId = KeyId("test-key"),
-      source = plaintextBuffer,
-      sink = encryptedBuffer,
-      random = Random.Default,
-    )
+    val meta =
+      encryptToSink(
+        key = KEY,
+        keyId = KeyId("test-key"),
+        source = plaintextBuffer,
+        sink = encryptedBuffer,
+        random = Random.Default,
+      )
 
     // Decrypt the encrypted buffer
     val decryptedBuffer = Buffer()
@@ -73,8 +75,7 @@ class EncryptTest {
     )
 
     // Verify the decrypted data matches the original plaintext
-    assertThat(decryptedBuffer.readUtf8())
-      .isEqualTo(plaintext)
+    assertThat(decryptedBuffer.readUtf8()).isEqualTo(plaintext)
   }
 
   private companion object {

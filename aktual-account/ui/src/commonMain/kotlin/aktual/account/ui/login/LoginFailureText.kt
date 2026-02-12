@@ -23,12 +23,13 @@ internal fun LoginFailureText(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val errorMessage = when (result) {
-    is LoginResult.InvalidPassword -> Strings.loginFailurePassword
-    is LoginResult.HttpFailure -> Strings.loginFailureHttp(result.code, result.message)
-    is LoginResult.NetworkFailure -> Strings.loginFailureNetwork(result.reason)
-    is LoginResult.OtherFailure -> Strings.loginFailureOther(result.reason)
-  }
+  val errorMessage =
+    when (result) {
+      is LoginResult.InvalidPassword -> Strings.loginFailurePassword
+      is LoginResult.HttpFailure -> Strings.loginFailureHttp(result.code, result.message)
+      is LoginResult.NetworkFailure -> Strings.loginFailureNetwork(result.reason)
+      is LoginResult.OtherFailure -> Strings.loginFailureOther(result.reason)
+    }
 
   Text(
     modifier = modifier.testTag(Tags.LoginFailureText),
@@ -41,14 +42,13 @@ internal fun LoginFailureText(
 @Preview
 @Composable
 private fun PreviewLoginFailureText(
-  @PreviewParameter(LoginFailureProvider::class) params: ThemedParams<LoginResult.Failure>,
-) = PreviewWithColorScheme(params.type) {
-  LoginFailureText(params.data)
-}
+  @PreviewParameter(LoginFailureProvider::class) params: ThemedParams<LoginResult.Failure>
+) = PreviewWithColorScheme(params.type) { LoginFailureText(params.data) }
 
-private class LoginFailureProvider : ThemedParameterProvider<LoginResult.Failure>(
-  LoginResult.InvalidPassword,
-  LoginResult.HttpFailure(code = 404, message = "Resource not found"),
-  LoginResult.NetworkFailure(reason = "Network problem"),
-  LoginResult.OtherFailure("Something broke"),
-)
+private class LoginFailureProvider :
+  ThemedParameterProvider<LoginResult.Failure>(
+    LoginResult.InvalidPassword,
+    LoginResult.HttpFailure(code = 404, message = "Resource not found"),
+    LoginResult.NetworkFailure(reason = "Network problem"),
+    LoginResult.OtherFailure("Something broke"),
+  )

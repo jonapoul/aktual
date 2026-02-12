@@ -7,5 +7,6 @@ import kotlin.reflect.KClass
 
 internal abstract class AnnotatedClassVisitor(val annotation: KClass<*>) : KSVisitorVoid() {
   abstract fun validate(annotated: KSAnnotated)
+
   abstract override fun visitClassDeclaration(classDeclaration: KSClassDeclaration, data: Unit)
 }

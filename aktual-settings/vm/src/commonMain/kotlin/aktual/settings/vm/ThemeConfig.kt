@@ -5,7 +5,4 @@ import aktual.core.model.RegularColorSchemeType
 import androidx.compose.runtime.Immutable
 
 @Immutable
-data class ThemeConfig(
-  val regular: RegularColorSchemeType,
-  val dark: DarkColorSchemeType,
-)
+data class ThemeConfig(val regular: RegularColorSchemeType, val dark: DarkColorSchemeType)

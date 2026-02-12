@@ -17,7 +17,8 @@ import kotlinx.coroutines.sync.withLock
 
 @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 @ContributesBinding(BudgetScope::class, binding<BudgetLocalPreferences>())
-class BudgetLocalPreferencesImpl private constructor(
+class BudgetLocalPreferencesImpl
+private constructor(
   private val files: BudgetFiles,
   private val coroutineScope: CoroutineScope,
   private val contexts: CoroutineContexts,
@@ -36,11 +37,7 @@ class BudgetLocalPreferencesImpl private constructor(
   override fun compareAndSet(expect: DbMetadata, update: DbMetadata): Boolean {
     val updated = delegate.compareAndSet(expect, update)
     if (updated && expect != update) {
-      coroutineScope.launch(contexts.io) {
-        writeMutex.withLock {
-          files.writeMetadata(update)
-        }
-      }
+      coroutineScope.launch(contexts.io) { writeMutex.withLock { files.writeMetadata(update) } }
     }
     return updated
   }

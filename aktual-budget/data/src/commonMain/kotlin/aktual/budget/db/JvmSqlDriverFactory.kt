@@ -9,11 +9,11 @@ import java.util.Properties
 class JvmSqlDriverFactory(private val url: String) : SqlDriverFactory {
   constructor(file: File) : this(url = "jdbc:sqlite:${file.absolutePath}")
 
-  override fun create(): SqlDriver = JdbcSqliteDriver(
-    url = url,
-    schema = BudgetDatabase.Schema.synchronous(),
-    properties = Properties().apply {
-      put("foreign_keys", "${DatabaseBuildConfig.FOREIGN_KEY_CONSTRAINTS}")
-    },
-  )
+  override fun create(): SqlDriver =
+    JdbcSqliteDriver(
+      url = url,
+      schema = BudgetDatabase.Schema.synchronous(),
+      properties =
+        Properties().apply { put("foreign_keys", "${DatabaseBuildConfig.FOREIGN_KEY_CONSTRAINTS}") },
+    )
 }

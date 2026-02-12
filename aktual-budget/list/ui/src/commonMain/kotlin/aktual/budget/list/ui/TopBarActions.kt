@@ -22,34 +22,27 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
-@Composable
-internal expect fun TopBarActions(
-  onAction: (ListBudgetsAction) -> Unit,
-)
+@Composable internal expect fun TopBarActions(onAction: (ListBudgetsAction) -> Unit)
 
 @Composable
-internal fun SettingsButton(
-  onAction: (ListBudgetsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) = BasicIconButton(
-  modifier = modifier,
-  onClick = { onAction(OpenSettings) },
-  imageVector = MaterialIcons.Settings,
-  contentDescription = Strings.listBudgetsSettings,
-  colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
-)
+internal fun SettingsButton(onAction: (ListBudgetsAction) -> Unit, modifier: Modifier = Modifier) =
+  BasicIconButton(
+    modifier = modifier,
+    onClick = { onAction(OpenSettings) },
+    imageVector = MaterialIcons.Settings,
+    contentDescription = Strings.listBudgetsSettings,
+    colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+  )
 
 @Composable
-internal fun MoreButton(
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) = BasicIconButton(
-  modifier = modifier,
-  onClick = onClick,
-  imageVector = MaterialIcons.MoreVert,
-  contentDescription = Strings.listBudgetsMenu,
-  colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
-)
+internal fun MoreButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
+  BasicIconButton(
+    modifier = modifier,
+    onClick = onClick,
+    imageVector = MaterialIcons.MoreVert,
+    contentDescription = Strings.listBudgetsMenu,
+    colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+  )
 
 @Composable
 internal fun MoreMenu(
@@ -57,48 +50,45 @@ internal fun MoreMenu(
   onAction: (ListBudgetsAction) -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-) = DropdownMenu(
-  modifier = modifier,
-  expanded = showMenu,
-  onDismissRequest = onDismissRequest,
-) {
-  val serverText = Strings.listBudgetsChangeServer
-  DropdownMenuItem(
-    text = { Text(serverText) },
-    onClick = {
-      onDismissRequest()
-      onAction(ChangeServer)
-    },
-    leadingIcon = { Icon(MaterialIcons.Cloud, contentDescription = serverText) },
-  )
+) =
+  DropdownMenu(modifier = modifier, expanded = showMenu, onDismissRequest = onDismissRequest) {
+    val serverText = Strings.listBudgetsChangeServer
+    DropdownMenuItem(
+      text = { Text(serverText) },
+      onClick = {
+        onDismissRequest()
+        onAction(ChangeServer)
+      },
+      leadingIcon = { Icon(MaterialIcons.Cloud, contentDescription = serverText) },
+    )
 
-  val passwordText = Strings.listBudgetsChangePassword
-  DropdownMenuItem(
-    text = { Text(passwordText) },
-    onClick = {
-      onDismissRequest()
-      onAction(ChangePassword)
-    },
-    leadingIcon = { Icon(MaterialIcons.Key, contentDescription = passwordText) },
-  )
+    val passwordText = Strings.listBudgetsChangePassword
+    DropdownMenuItem(
+      text = { Text(passwordText) },
+      onClick = {
+        onDismissRequest()
+        onAction(ChangePassword)
+      },
+      leadingIcon = { Icon(MaterialIcons.Key, contentDescription = passwordText) },
+    )
 
-  val metricsText = Strings.metricsToolbar
-  DropdownMenuItem(
-    text = { Text(metricsText) },
-    onClick = {
-      onDismissRequest()
-      onAction(OpenServerMetrics)
-    },
-    leadingIcon = { Icon(MaterialIcons.BarChart, contentDescription = metricsText) },
-  )
+    val metricsText = Strings.metricsToolbar
+    DropdownMenuItem(
+      text = { Text(metricsText) },
+      onClick = {
+        onDismissRequest()
+        onAction(OpenServerMetrics)
+      },
+      leadingIcon = { Icon(MaterialIcons.BarChart, contentDescription = metricsText) },
+    )
 
-  val aboutText = Strings.listBudgetsAbout
-  DropdownMenuItem(
-    text = { Text(aboutText) },
-    onClick = {
-      onDismissRequest()
-      onAction(OpenAbout)
-    },
-    leadingIcon = { Icon(MaterialIcons.Info, contentDescription = aboutText) },
-  )
-}
+    val aboutText = Strings.listBudgetsAbout
+    DropdownMenuItem(
+      text = { Text(aboutText) },
+      onClick = {
+        onDismissRequest()
+        onAction(OpenAbout)
+      },
+      leadingIcon = { Icon(MaterialIcons.Info, contentDescription = aboutText) },
+    )
+  }

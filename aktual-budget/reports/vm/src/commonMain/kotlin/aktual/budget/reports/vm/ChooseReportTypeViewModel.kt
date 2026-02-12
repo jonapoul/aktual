@@ -58,12 +58,13 @@ class ChooseReportTypeViewModel(
     }
 
     job?.cancel()
-    job = viewModelScope.launch {
-      val widgetId = WidgetId(uuidGenerator())
-      val (x, y) = newWidgetPosition()
-      dao.insert(widgetId, type, x, y, buildEmptyMetadata(type))
-      shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
-    }
+    job =
+      viewModelScope.launch {
+        val widgetId = WidgetId(uuidGenerator())
+        val (x, y) = newWidgetPosition()
+        dao.insert(widgetId, type, x, y, buildEmptyMetadata(type))
+        shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
+      }
   }
 
   private data class Coords(val x: Long = 0, val y: Long = 0)
@@ -86,21 +87,18 @@ class ChooseReportTypeViewModel(
     }
   }
 
-  private fun buildEmptyMetadata(type: WidgetType): JsonObject = when (type) {
-    // TODO: implement properly
-    else -> JsonObject.Empty
-  }
+  private fun buildEmptyMetadata(type: WidgetType): JsonObject =
+    when (type) {
+      // TODO: implement properly
+      else -> JsonObject.Empty
+    }
 
-  data class ShouldNavigateEvent(
-    val id: WidgetId,
-  )
+  data class ShouldNavigateEvent(val id: WidgetId)
 
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey(Factory::class)
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted budgetId: BudgetId,
-    ): ChooseReportTypeViewModel
+    fun create(@Assisted budgetId: BudgetId): ChooseReportTypeViewModel
   }
 }

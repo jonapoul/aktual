@@ -15,9 +15,11 @@ expect fun SetStatusBarColors(
   navigationBarColor: Color = theme.pageBackground,
 )
 
-// space to block out the bottom navigation bar, so we don't need to adjust layouts to account for it
+// space to block out the bottom navigation bar, so we don't need to adjust layouts to account for
+// it
 @Composable
-fun BottomNavBarSpacing(modifier: Modifier = Modifier) = VerticalSpacer(
-  modifier = modifier,
-  height = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
-)
+fun BottomNavBarSpacing(modifier: Modifier = Modifier) =
+  VerticalSpacer(
+    modifier = modifier,
+    height = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+  )

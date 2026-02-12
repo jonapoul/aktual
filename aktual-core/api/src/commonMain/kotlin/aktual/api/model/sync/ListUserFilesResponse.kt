@@ -6,9 +6,7 @@ import kotlinx.serialization.Serializable
 
 sealed interface ListUserFilesResponse {
   @Serializable
-  data class Success(
-    @SerialName("data") val data: List<UserFile>,
-  ) : ListUserFilesResponse
+  data class Success(@SerialName("data") val data: List<UserFile>) : ListUserFilesResponse
 
   @Serializable
   data class Failure(

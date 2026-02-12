@@ -31,57 +31,48 @@ internal fun InfoBuildState(
   buildState: BuildState,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = Column(modifier) {
-  BuildStateItem(
-    modifier = Modifier
-      .padding(ItemMargin)
-      .clip(CardShape)
-      .aktualHaze(),
-    icon = MaterialIcons.Apps,
-    title = Strings.infoAppVersion,
-    subtitle = buildState.versions.app,
-    theme = theme,
-  )
+) =
+  Column(modifier) {
+    BuildStateItem(
+      modifier = Modifier.padding(ItemMargin).clip(CardShape).aktualHaze(),
+      icon = MaterialIcons.Apps,
+      title = Strings.infoAppVersion,
+      subtitle = buildState.versions.app,
+      theme = theme,
+    )
 
-  BuildStateItem(
-    modifier = Modifier
-      .testTag(Tags.ServerVersionText)
-      .padding(ItemMargin)
-      .clip(CardShape)
-      .aktualHaze(),
-    icon = MaterialIcons.Cloud,
-    title = Strings.infoServerVersion,
-    subtitle = buildState.versions.server ?: Strings.infoServerVersionUnknown,
-    theme = theme,
-  )
+    BuildStateItem(
+      modifier =
+        Modifier.testTag(Tags.ServerVersionText).padding(ItemMargin).clip(CardShape).aktualHaze(),
+      icon = MaterialIcons.Cloud,
+      title = Strings.infoServerVersion,
+      subtitle = buildState.versions.server ?: Strings.infoServerVersionUnknown,
+      theme = theme,
+    )
 
-  BuildStateItem(
-    modifier = Modifier
-      .padding(ItemMargin)
-      .clip(CardShape)
-      .aktualHaze(),
-    icon = MaterialIcons.CalendarToday,
-    title = Strings.infoDate,
-    subtitle = buildState.buildDate,
-    theme = theme,
-  )
-}
+    BuildStateItem(
+      modifier = Modifier.padding(ItemMargin).clip(CardShape).aktualHaze(),
+      icon = MaterialIcons.CalendarToday,
+      title = Strings.infoDate,
+      subtitle = buildState.buildDate,
+      theme = theme,
+    )
+  }
 
 private val ItemMargin = PaddingValues(horizontal = 6.dp, vertical = 3.dp)
 
-internal val PreviewBuildState = BuildState(
-  versions = AktualVersions(app = "1.2.3", server = "2.3.4"),
-  buildDate = "12:34 GMT, 1st Feb 2024",
-  year = 2024,
-)
+internal val PreviewBuildState =
+  BuildState(
+    versions = AktualVersions(app = "1.2.3", server = "2.3.4"),
+    buildDate = "12:34 GMT, 1st Feb 2024",
+    year = 2024,
+  )
 
 @Preview
 @Composable
 private fun PreviewBuildState(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  InfoBuildState(
-    modifier = Modifier.fillMaxWidth(),
-    buildState = PreviewBuildState,
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    InfoBuildState(modifier = Modifier.fillMaxWidth(), buildState = PreviewBuildState)
+  }

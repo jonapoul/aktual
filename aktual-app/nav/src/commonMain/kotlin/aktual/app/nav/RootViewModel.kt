@@ -50,64 +50,64 @@ abstract class RootViewModel(
 ) : ViewModel() {
   private val budgetGraph = budgetComponents.stateIn(viewModelScope, Eagerly, initialValue = null)
 
-  private val syncedPrefs: StateFlow<PreferencesDao?> = budgetGraph
-    .filterNotNull()
-    .map { bg -> PreferencesDao(bg.database, contexts) }
-    .stateIn(viewModelScope, Eagerly, initialValue = null)
+  private val syncedPrefs: StateFlow<PreferencesDao?> =
+    budgetGraph
+      .filterNotNull()
+      .map { bg -> PreferencesDao(bg.database, contexts) }
+      .stateIn(viewModelScope, Eagerly, initialValue = null)
 
-  val numberFormat: StateFlow<NumberFormat> = observeSyncedPref(
-    key = SyncedPrefKey.Global.NumberFormat,
-    default = NumberFormat.Default,
-    mapper = NumberFormat::from,
-  )
+  val numberFormat: StateFlow<NumberFormat> =
+    observeSyncedPref(
+      key = SyncedPrefKey.Global.NumberFormat,
+      default = NumberFormat.Default,
+      mapper = NumberFormat::from,
+    )
 
-  val hideFraction: StateFlow<Boolean> = observeSyncedPref(
-    key = SyncedPrefKey.Global.HideFraction,
-    default = false,
-    mapper = { it.toBoolean() },
-  )
+  val hideFraction: StateFlow<Boolean> =
+    observeSyncedPref(
+      key = SyncedPrefKey.Global.HideFraction,
+      default = false,
+      mapper = { it.toBoolean() },
+    )
 
-  val isPrivacyEnabled: StateFlow<Boolean> = observeSyncedPref(
-    key = SyncedPrefKey.Global.IsPrivacyEnabled,
-    default = false,
-    mapper = { it.toBoolean() },
-  )
+  val isPrivacyEnabled: StateFlow<Boolean> =
+    observeSyncedPref(
+      key = SyncedPrefKey.Global.IsPrivacyEnabled,
+      default = false,
+      mapper = { it.toBoolean() },
+    )
 
-  val regularSchemeType: StateFlow<RegularColorSchemeType> = preferences.regularColorScheme.asStateFlow(viewModelScope)
-  val darkSchemeType: StateFlow<DarkColorSchemeType> = preferences.darkColorScheme.asStateFlow(viewModelScope)
+  val regularSchemeType: StateFlow<RegularColorSchemeType> =
+    preferences.regularColorScheme.asStateFlow(viewModelScope)
+  val darkSchemeType: StateFlow<DarkColorSchemeType> =
+    preferences.darkColorScheme.asStateFlow(viewModelScope)
 
   val isServerUrlSet: Boolean = preferences.serverUrl.isSet()
   val token: Token? = preferences.token.get()
 
   private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 
-  private val budgetName: Flow<String?> = budgetGraph.flatMapLatest { bg ->
-    bg
-      ?.localPreferences
-      ?.map { meta -> meta[DbMetadata.BudgetName] }
-      ?: flowOf(null)
-  }
-
-  val bottomBarState: StateFlow<BottomBarState> = viewModelScope.launchMolecule(Immediate) {
-    val showStatusBar by showStatusBar.collectAsState()
-    val budgetName by budgetName.collectAsState(initial = null)
-    val pingState by pingStateHolder.collectAsState()
-    if (showStatusBar) {
-      BottomBarState.Visible(
-        pingState = pingState,
-        budgetName = budgetName,
-      )
-    } else {
-      BottomBarState.Hidden
+  private val budgetName: Flow<String?> =
+    budgetGraph.flatMapLatest { bg ->
+      bg?.localPreferences?.map { meta -> meta[DbMetadata.BudgetName] } ?: flowOf(null)
     }
-  }
+
+  val bottomBarState: StateFlow<BottomBarState> =
+    viewModelScope.launchMolecule(Immediate) {
+      val showStatusBar by showStatusBar.collectAsState()
+      val budgetName by budgetName.collectAsState(initial = null)
+      val pingState by pingStateHolder.collectAsState()
+      if (showStatusBar) {
+        BottomBarState.Visible(pingState = pingState, budgetName = budgetName)
+      } else {
+        BottomBarState.Hidden
+      }
+    }
 
   init {
     serverPinger.start()
     connectionMonitor.start()
-    viewModelScope.launch {
-      serverVersionFetcher.startFetching()
-    }
+    viewModelScope.launch { serverVersionFetcher.startFetching() }
   }
 
   fun onDestroy() {
@@ -122,8 +122,15 @@ abstract class RootViewModel(
     }
   }
 
-  private fun <T> observeSyncedPref(key: SyncedPrefKey, default: T, mapper: (String) -> T?): StateFlow<T> = syncedPrefs
-    .filterNotNull()
-    .flatMapLatest { dao -> dao.observe(key).map { value -> value?.let { mapper(it) } ?: default } }
-    .stateIn(viewModelScope, Eagerly, initialValue = default)
+  private fun <T> observeSyncedPref(
+    key: SyncedPrefKey,
+    default: T,
+    mapper: (String) -> T?,
+  ): StateFlow<T> =
+    syncedPrefs
+      .filterNotNull()
+      .flatMapLatest { dao ->
+        dao.observe(key).map { value -> value?.let { mapper(it) } ?: default }
+      }
+      .stateIn(viewModelScope, Eagerly, initialValue = default)
 }

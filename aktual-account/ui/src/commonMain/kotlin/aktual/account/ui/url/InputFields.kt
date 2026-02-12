@@ -36,10 +36,7 @@ internal fun InputFields(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  Row(
-    modifier = modifier.fillMaxWidth(),
-    horizontalArrangement = Arrangement.spacedBy(5.dp),
-  ) {
+  Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
     ExposedDropDownMenu(
       modifier = Modifier.width(110.dp),
       value = protocol.toString(),
@@ -51,53 +48,45 @@ internal fun InputFields(
     val keyboard = LocalSoftwareKeyboardController.current
 
     TextField(
-      modifier = Modifier
-        .weight(1f)
-        .focusRequester(keyboardFocusRequester(keyboard)),
+      modifier = Modifier.weight(1f).focusRequester(keyboardFocusRequester(keyboard)),
       value = url,
       onValueChange = { onAction(ServerUrlAction.EnterUrl(it.lowercase())) },
       placeholderText = EXAMPLE_URL,
-      keyboardOptions = KeyboardOptions(
-        autoCorrectEnabled = false,
-        capitalization = KeyboardCapitalization.None,
-        keyboardType = KeyboardType.Uri,
-        imeAction = ImeAction.Go,
-      ),
-      keyboardActions = KeyboardActions(
-        onGo = {
-          keyboard?.hide()
-          onAction(ServerUrlAction.ConfirmUrl)
-        },
-      ),
+      keyboardOptions =
+        KeyboardOptions(
+          autoCorrectEnabled = false,
+          capitalization = KeyboardCapitalization.None,
+          keyboardType = KeyboardType.Uri,
+          imeAction = ImeAction.Go,
+        ),
+      keyboardActions =
+        KeyboardActions(
+          onGo = {
+            keyboard?.hide()
+            onAction(ServerUrlAction.ConfirmUrl)
+          }
+        ),
     )
   }
 }
 
-private val PROTOCOLS = Protocol
-  .entries
-  .map { it.toString() }
-  .toImmutableList()
+private val PROTOCOLS = Protocol.entries.map { it.toString() }.toImmutableList()
 
 private const val EXAMPLE_URL = "example.com"
 
 @Preview
 @Composable
 private fun PreviewInputFields(
-  @PreviewParameter(InputFieldsProvider::class) params: ThemedParams<InputFieldsParams>,
-) = PreviewWithColorScheme(params.type) {
-  InputFields(
-    url = params.data.url,
-    protocol = params.data.protocol,
-    onAction = {},
+  @PreviewParameter(InputFieldsProvider::class) params: ThemedParams<InputFieldsParams>
+) =
+  PreviewWithColorScheme(params.type) {
+    InputFields(url = params.data.url, protocol = params.data.protocol, onAction = {})
+  }
+
+private data class InputFieldsParams(val url: String, val protocol: Protocol)
+
+private class InputFieldsProvider :
+  ThemedParameterProvider<InputFieldsParams>(
+    InputFieldsParams(url = "", protocol = Protocol.Http),
+    InputFieldsParams(url = "my.server.com:1234/path", protocol = Protocol.Https),
   )
-}
-
-private data class InputFieldsParams(
-  val url: String,
-  val protocol: Protocol,
-)
-
-private class InputFieldsProvider : ThemedParameterProvider<InputFieldsParams>(
-  InputFieldsParams(url = "", protocol = Protocol.Http),
-  InputFieldsParams(url = "my.server.com:1234/path", protocol = Protocol.Https),
-)

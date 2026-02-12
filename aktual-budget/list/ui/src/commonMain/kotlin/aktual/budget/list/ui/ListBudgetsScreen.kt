@@ -116,15 +116,10 @@ fun ListBudgetsScreen(
 
 @Composable
 private fun metroViewModel(token: Token) =
-  assistedMetroViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory> {
-    create(token)
-  }
+  assistedMetroViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory> { create(token) }
 
 @Composable
-internal fun ListBudgetsScaffold(
-  state: ListBudgetsState,
-  onAction: (ListBudgetsAction) -> Unit,
-) {
+internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: (ListBudgetsAction) -> Unit) {
   val theme = LocalTheme.current
 
   Scaffold(
@@ -140,9 +135,7 @@ internal fun ListBudgetsScaffold(
     Box {
       val hazeState = remember { HazeState() }
 
-      WavyBackground(
-        modifier = Modifier.hazeSource(hazeState),
-      )
+      WavyBackground(modifier = Modifier.hazeSource(hazeState))
 
       WithHazeState(hazeState) {
         Content(
@@ -157,12 +150,13 @@ internal fun ListBudgetsScaffold(
 }
 
 @Composable
-private fun ScaffoldTitle(theme: Theme) = Text(
-  text = Strings.listBudgetsToolbar,
-  maxLines = 1,
-  overflow = TextOverflow.Ellipsis,
-  color = theme.pageText,
-)
+private fun ScaffoldTitle(theme: Theme) =
+  Text(
+    text = Strings.listBudgetsToolbar,
+    maxLines = 1,
+    overflow = TextOverflow.Ellipsis,
+    color = theme.pageText,
+  )
 
 @Composable
 private fun Content(
@@ -170,74 +164,70 @@ private fun Content(
   onAction: (ListBudgetsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = PullToRefreshBox(
-  modifier = modifier
-    .fillMaxSize()
-    .padding(16.dp),
-  contentAlignment = Alignment.Center,
-  onRefresh = { onAction(Reload) },
-  isRefreshing = state is ListBudgetsState.Loading,
-  content = { StateContent(state, onAction, theme) },
-)
+) =
+  PullToRefreshBox(
+    modifier = modifier.fillMaxSize().padding(16.dp),
+    contentAlignment = Alignment.Center,
+    onRefresh = { onAction(Reload) },
+    isRefreshing = state is ListBudgetsState.Loading,
+    content = { StateContent(state, onAction, theme) },
+  )
 
 @Composable
 private fun StateContent(
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
   theme: Theme = LocalTheme.current,
-) = when (state) {
-  is ListBudgetsState.Loading -> {
-    // Empty content - we've already got the pull-to-refresh indicator
-    Box(
-      modifier = Modifier.fillMaxSize(),
-    )
-  }
+) =
+  when (state) {
+    is ListBudgetsState.Loading -> {
+      // Empty content - we've already got the pull-to-refresh indicator
+      Box(modifier = Modifier.fillMaxSize())
+    }
 
-  is ListBudgetsState.Failure -> {
-    FailureScreen(
-      modifier = Modifier.fillMaxSize(),
-      title = Strings.budgetFailureMessage,
-      reason = state.reason ?: Strings.budgetFailureDefaultMessage,
-      retryText = Strings.budgetFailureRetry,
-      onClickRetry = { onAction(Reload) },
-      theme = theme,
-    )
-  }
-
-  is ListBudgetsState.Success -> {
-    if (state.budgets.isEmpty()) {
-      ContentEmpty(
+    is ListBudgetsState.Failure -> {
+      FailureScreen(
         modifier = Modifier.fillMaxSize(),
+        title = Strings.budgetFailureMessage,
+        reason = state.reason ?: Strings.budgetFailureDefaultMessage,
+        retryText = Strings.budgetFailureRetry,
+        onClickRetry = { onAction(Reload) },
         theme = theme,
-        onCreateBudgetInBrowser = { onAction(OpenInBrowser) },
-      )
-    } else {
-      ContentSuccess(
-        modifier = Modifier.fillMaxSize(),
-        budgets = state.budgets,
-        theme = theme,
-        onClickOpen = { budget -> onAction(Open(budget)) },
-        onClickDelete = { budget -> onAction(Delete(budget)) },
       )
     }
+
+    is ListBudgetsState.Success -> {
+      if (state.budgets.isEmpty()) {
+        ContentEmpty(
+          modifier = Modifier.fillMaxSize(),
+          theme = theme,
+          onCreateBudgetInBrowser = { onAction(OpenInBrowser) },
+        )
+      } else {
+        ContentSuccess(
+          modifier = Modifier.fillMaxSize(),
+          budgets = state.budgets,
+          theme = theme,
+          onClickOpen = { budget -> onAction(Open(budget)) },
+          onClickDelete = { budget -> onAction(Delete(budget)) },
+        )
+      }
+    }
   }
-}
 
 @PortraitPreview
 @LandscapePreview
 @DesktopPreview
 @Composable
 private fun PreviewListBudgetsScaffold(
-  @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ThemedParams<ListBudgetsState>,
-) = PreviewWithColorScheme(params.type) {
-  ListBudgetsScaffold(
-    state = params.data,
-    onAction = {},
-  )
-}
+  @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ThemedParams<ListBudgetsState>
+) = PreviewWithColorScheme(params.type) { ListBudgetsScaffold(state = params.data, onAction = {}) }
 
-private class ListBudgetsScaffoldProvider : ThemedParameterProvider<ListBudgetsState>(
-  ListBudgetsState.Success(persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken)),
-  ListBudgetsState.Loading,
-  ListBudgetsState.Failure(reason = "Something broke lol"),
-)
+private class ListBudgetsScaffoldProvider :
+  ThemedParameterProvider<ListBudgetsState>(
+    ListBudgetsState.Success(
+      persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken)
+    ),
+    ListBudgetsState.Loading,
+    ListBudgetsState.Failure(reason = "Something broke lol"),
+  )

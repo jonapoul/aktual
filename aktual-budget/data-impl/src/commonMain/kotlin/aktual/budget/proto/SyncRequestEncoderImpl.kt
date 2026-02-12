@@ -28,21 +28,23 @@ class SyncRequestEncoderImpl(
   ): ByteString {
     val keyId = prefs[DbMetadata.EncryptKeyId]?.let(::KeyId)
 
-    val envelopes = messages.map { message ->
-      ProtoMessageEnvelope(
-        timestamp = message.timestamp.toString(),
-        isEncrypted = keyId != null,
-        content = encodeContent(message, keyId),
-      )
-    }
+    val envelopes =
+      messages.map { message ->
+        ProtoMessageEnvelope(
+          timestamp = message.timestamp.toString(),
+          isEncrypted = keyId != null,
+          content = encodeContent(message, keyId),
+        )
+      }
 
-    val request = ProtoSyncRequest(
-      messages = envelopes,
-      fileId = budgetId.value,
-      groupId = groupId,
-      keyId = keyId?.value.orEmpty(),
-      since = since.toString(),
-    )
+    val request =
+      ProtoSyncRequest(
+        messages = envelopes,
+        fileId = budgetId.value,
+        groupId = groupId,
+        keyId = keyId?.value.orEmpty(),
+        since = since.toString(),
+      )
 
     return request.encodeByteString()
   }
@@ -55,11 +57,12 @@ class SyncRequestEncoderImpl(
       val result = encrypter(keyId, messageBuffer)
       require(result is EncryptResult.EncryptedBuffer) { "Failed encrypting message: $message" }
 
-      val encryptedData = ProtoEncryptedData(
-        iv = result.meta.iv,
-        authTag = result.meta.authTag,
-        data_ = result.buffer.readByteString(),
-      )
+      val encryptedData =
+        ProtoEncryptedData(
+          iv = result.meta.iv,
+          authTag = result.meta.authTag,
+          data_ = result.buffer.readByteString(),
+        )
 
       encryptedData.encodeByteString()
     } else {

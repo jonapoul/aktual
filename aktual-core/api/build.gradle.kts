@@ -37,9 +37,7 @@ buildConfig {
   packageName("aktual.test")
 
   sourceSets.named("test") {
-    rootProject
-      .isolated
-      .projectDirectory
+    rootProject.isolated.projectDirectory
       .dir("api/actual")
       .asFile
       .listFiles()
@@ -56,12 +54,10 @@ fun BuildConfigSourceSet.addResponsesClass(directory: File) {
       .orEmpty()
       .filter { it.extension.lowercase() in setOf("json", "txt") }
       .forEach { file ->
-        val name = file.nameWithoutExtension
-          .replace("-", "_")
-          .replace(".", "_")
-          .uppercase()
+        val name = file.nameWithoutExtension.replace("-", "_").replace(".", "_").uppercase()
         val regularFile = layout.projectDirectory.file(file.absolutePath)
-        val value = providers.fileContents(regularFile).asText.map { content -> "\"\"\"\n$content\"\"\"" }
+        val value =
+          providers.fileContents(regularFile).asText.map { content -> "\"\"\"\n$content\"\"\"" }
         buildConfigField("String", name, value)
       }
   }

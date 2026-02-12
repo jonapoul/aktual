@@ -13,13 +13,15 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.printToLog
 
-fun ComposeContentTestRule.printTreeToLog(root: SemanticsNodeInteraction = onRoot()) = root.printToLog("ComposeTree")
+fun ComposeContentTestRule.printTreeToLog(root: SemanticsNodeInteraction = onRoot()) =
+  root.printToLog("ComposeTree")
 
 fun ComposeContentTestRule.runTest(block: ComposeContentTestRule.() -> Unit) {
   run(block)
 }
 
-fun ComposeContentTestRule.onDisplayedNodeWithTag(tag: String) = onNodeWithTag(tag).assertIsDisplayed()
+fun ComposeContentTestRule.onDisplayedNodeWithTag(tag: String) =
+  onNodeWithTag(tag).assertIsDisplayed()
 
 fun ComposeContentTestRule.setThemedContent(
   theme: Theme = Theme.dark(),

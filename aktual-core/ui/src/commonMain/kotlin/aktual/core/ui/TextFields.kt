@@ -59,7 +59,8 @@ fun TextField(
   theme: Theme = LocalTheme.current,
 ) {
   val isFocused by interactionSource.collectIsFocusedAsState()
-  val borderColor = if (isFocused) theme.formInputBorderSelected else theme.formInputBackgroundSelected
+  val borderColor =
+    if (isFocused) theme.formInputBorderSelected else theme.formInputBackgroundSelected
 
   var fieldModifier = modifier.border(1.dp, borderColor, shape)
 
@@ -67,25 +68,27 @@ fun TextField(
     fieldModifier = fieldModifier.shadow(4.dp, shape, ambientColor = theme.formInputShadowSelected)
   }
 
-  val clearButton: (@Composable () -> Unit)? = if (clearable && value.isNotEmpty()) {
-    {
-      ClearButton(
-        tint = colors?.focusedTrailingIconColor ?: theme.pageText,
-        onClick = { onValueChange("") },
-      )
+  val clearButton: (@Composable () -> Unit)? =
+    if (clearable && value.isNotEmpty()) {
+      {
+        ClearButton(
+          tint = colors?.focusedTrailingIconColor ?: theme.pageText,
+          onClick = { onValueChange("") },
+        )
+      }
+    } else {
+      null
     }
-  } else {
-    null
-  }
 
   TextField(
     modifier = fieldModifier,
     value = value,
-    placeholder = if (placeholderText == null) {
-      null
-    } else {
-      { Text(text = placeholderText) }
-    },
+    placeholder =
+      if (placeholderText == null) {
+        null
+      } else {
+        { Text(text = placeholderText) }
+      },
     shape = shape,
     colors = colors ?: theme.textField(),
     readOnly = readOnly,
@@ -102,20 +105,9 @@ fun TextField(
 }
 
 @Composable
-private fun ClearButton(
-  tint: Color,
-  onClick: () -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  IconButton(
-    modifier = modifier,
-    onClick = onClick,
-  ) {
-    Icon(
-      imageVector = MaterialIcons.Clear,
-      contentDescription = Strings.inputClear,
-      tint = tint,
-    )
+private fun ClearButton(tint: Color, onClick: () -> Unit, modifier: Modifier = Modifier) {
+  IconButton(modifier = modifier, onClick = onClick) {
+    Icon(imageVector = MaterialIcons.Clear, contentDescription = Strings.inputClear, tint = tint)
   }
 }
 
@@ -126,14 +118,15 @@ fun ExposedDropDownMenu(
   options: ImmutableList<String>,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = ExposedDropDownMenu(
-  value = value,
-  onValueChange = onValueChange,
-  options = options,
-  modifier = modifier,
-  theme = theme,
-  string = { it },
-)
+) =
+  ExposedDropDownMenu(
+    value = value,
+    onValueChange = onValueChange,
+    options = options,
+    modifier = modifier,
+    theme = theme,
+    string = { it },
+  )
 
 @Composable
 fun <T> ExposedDropDownMenu(
@@ -153,7 +146,8 @@ fun <T> ExposedDropDownMenu(
     onExpandedChange = { expanded = it },
   ) {
     TextField(
-      modifier = Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true),
+      modifier =
+        Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true),
       readOnly = true,
       placeholderText = null,
       value = string(selectedOption),
@@ -191,72 +185,77 @@ private class TextInputPreviewParams(
   val clearable: Boolean = false,
 )
 
-private class TextInputPreviewProvider : ThemedParameterProvider<TextInputPreviewParams>(
-  TextInputPreviewParams(value = ""),
-  TextInputPreviewParams(value = "I'm full"),
-  TextInputPreviewParams(value = "I'm full", clearable = true),
-)
+private class TextInputPreviewProvider :
+  ThemedParameterProvider<TextInputPreviewParams>(
+    TextInputPreviewParams(value = ""),
+    TextInputPreviewParams(value = "I'm full"),
+    TextInputPreviewParams(value = "I'm full", clearable = true),
+  )
 
 @Preview
 @Composable
 private fun PreviewTextField(
-  @PreviewParameter(TextInputPreviewProvider::class) params: ThemedParams<TextInputPreviewParams>,
-) = PreviewWithColorScheme(params.type) {
-  TextField(
-    value = params.data.value,
-    onValueChange = {},
-    placeholderText = params.data.placeholderText,
-    clearable = params.data.clearable,
-  )
-}
+  @PreviewParameter(TextInputPreviewProvider::class) params: ThemedParams<TextInputPreviewParams>
+) =
+  PreviewWithColorScheme(params.type) {
+    TextField(
+      value = params.data.value,
+      onValueChange = {},
+      placeholderText = params.data.placeholderText,
+      clearable = params.data.clearable,
+    )
+  }
 
 @Preview
 @Composable
 private fun PreviewDropDownMenu(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  var value by remember { mutableStateOf("B") }
-  val options = persistentListOf("A", "B", "C", "D")
-  ExposedDropDownMenu(
-    value = value,
-    onValueChange = { newValue -> value = newValue },
-    options = options,
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    var value by remember { mutableStateOf("B") }
+    val options = persistentListOf("A", "B", "C", "D")
+    ExposedDropDownMenu(
+      value = value,
+      onValueChange = { newValue -> value = newValue },
+      options = options,
+    )
+  }
 
 @Preview
 @Composable
 private fun PreviewDropDownMenuForcedWidth(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  var value by remember { mutableStateOf("B") }
-  val options = persistentListOf("A", "B", "C", "D")
-  ExposedDropDownMenu(
-    modifier = Modifier.width(100.dp),
-    value = value,
-    onValueChange = { newValue -> value = newValue },
-    options = options,
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    var value by remember { mutableStateOf("B") }
+    val options = persistentListOf("A", "B", "C", "D")
+    ExposedDropDownMenu(
+      modifier = Modifier.width(100.dp),
+      value = value,
+      onValueChange = { newValue -> value = newValue },
+      options = options,
+    )
+  }
 
 @Preview
 @Composable
 private fun PreviewDropDownMenuEnum(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  var value by remember { mutableStateOf(DateRangeType.YearToDate) }
-  val options = DateRangeType.entries.toImmutableList()
-  ExposedDropDownMenu(
-    value = value,
-    onValueChange = { newValue -> value = newValue },
-    options = options,
-    string = { t ->
-      when (t) {
-        DateRangeType.YearToDate -> "YTD"
-        DateRangeType.LastYear -> "Last Year"
-        DateRangeType.AllTime -> "All Time with some more text"
-        else -> t.name
-      }
-    },
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    var value by remember { mutableStateOf(DateRangeType.YearToDate) }
+    val options = DateRangeType.entries.toImmutableList()
+    ExposedDropDownMenu(
+      value = value,
+      onValueChange = { newValue -> value = newValue },
+      options = options,
+      string = { t ->
+        when (t) {
+          DateRangeType.YearToDate -> "YTD"
+          DateRangeType.LastYear -> "Last Year"
+          DateRangeType.AllTime -> "All Time with some more text"
+          else -> t.name
+        }
+      },
+    )
+  }
