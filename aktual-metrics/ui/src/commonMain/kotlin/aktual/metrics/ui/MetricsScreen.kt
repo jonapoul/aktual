@@ -89,10 +89,7 @@ fun MetricsScreen(
 }
 
 @Composable
-internal fun MetricsScaffold(
-  state: MetricsState,
-  onAction: (MetricsAction) -> Unit,
-) {
+internal fun MetricsScaffold(state: MetricsState, onAction: (MetricsAction) -> Unit) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
 
   Scaffold(
@@ -102,9 +99,7 @@ internal fun MetricsScaffold(
     Box {
       val hazeState = remember { HazeState() }
 
-      WavyBackground(
-        modifier = Modifier.hazeSource(hazeState),
-      )
+      WavyBackground(modifier = Modifier.hazeSource(hazeState))
 
       WithHazeState(hazeState) {
         MetricsContent(
@@ -124,30 +119,25 @@ private fun MetricsTopAppBar(
   onAction: (MetricsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = TopAppBar(
-  modifier = modifier,
-  colors = theme.transparentTopAppBarColors(),
-  navigationIcon = {
-    IconButton(onClick = { onAction(MetricsAction.NavBack) }) {
-      Icon(
-        imageVector = MaterialIcons.ArrowBack,
-        contentDescription = Strings.navBack,
-      )
-    }
-  },
-  title = { Text(Strings.metricsToolbar) },
-  scrollBehavior = scrollBehavior,
-  actions = {
-    if (state is MetricsState.Success) {
-      IconButton(onClick = { onAction(MetricsAction.Refresh) }) {
-        Icon(
-          imageVector = MaterialIcons.Refresh,
-          contentDescription = Strings.metricsRefresh,
-        )
+) =
+  TopAppBar(
+    modifier = modifier,
+    colors = theme.transparentTopAppBarColors(),
+    navigationIcon = {
+      IconButton(onClick = { onAction(MetricsAction.NavBack) }) {
+        Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
       }
-    }
-  },
-)
+    },
+    title = { Text(Strings.metricsToolbar) },
+    scrollBehavior = scrollBehavior,
+    actions = {
+      if (state is MetricsState.Success) {
+        IconButton(onClick = { onAction(MetricsAction.Refresh) }) {
+          Icon(imageVector = MaterialIcons.Refresh, contentDescription = Strings.metricsRefresh)
+        }
+      }
+    },
+  )
 
 @Composable
 private fun MetricsContent(
@@ -155,60 +145,46 @@ private fun MetricsContent(
   onAction: (MetricsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) = Box(
-  modifier = modifier
-    .fillMaxSize()
-    .padding(Dimens.Large),
-) {
-  when (state) {
-    MetricsState.Loading -> {
-      LoadingContent(
-        theme = theme,
-      )
-    }
+) =
+  Box(modifier = modifier.fillMaxSize().padding(Dimens.Large)) {
+    when (state) {
+      MetricsState.Loading -> {
+        LoadingContent(theme = theme)
+      }
 
-    MetricsState.Disconnected -> {
-      FailureContent(
-        message = Strings.metricsDisconnected,
-        onAction = onAction,
-        theme = theme,
-        modifier = modifier,
-      )
-    }
+      MetricsState.Disconnected -> {
+        FailureContent(
+          message = Strings.metricsDisconnected,
+          onAction = onAction,
+          theme = theme,
+          modifier = modifier,
+        )
+      }
 
-    is MetricsState.Failure -> {
-      FailureContent(
-        message = state.cause,
-        onAction = onAction,
-        theme = theme,
-        modifier = modifier,
-      )
-    }
+      is MetricsState.Failure -> {
+        FailureContent(
+          message = state.cause,
+          onAction = onAction,
+          theme = theme,
+          modifier = modifier,
+        )
+      }
 
-    is MetricsState.Success -> {
-      SuccessContent(
-        state = state,
-        modifier = modifier,
-      )
+      is MetricsState.Success -> {
+        SuccessContent(state = state, modifier = modifier)
+      }
     }
   }
-}
 
 @Composable
-private fun BoxScope.LoadingContent(
-  theme: Theme,
-) = HazedBox(
-  modifier = Modifier.align(Alignment.Center),
-  contentAlignment = Alignment.Center,
-) {
-  CircularProgressIndicator(
-    modifier = Modifier
-      .align(Alignment.Center)
-      .size(50.dp),
-    color = theme.buttonPrimaryBackground,
-    trackColor = theme.dialogProgressWheelTrack,
-  )
-}
+private fun BoxScope.LoadingContent(theme: Theme) =
+  HazedBox(modifier = Modifier.align(Alignment.Center), contentAlignment = Alignment.Center) {
+    CircularProgressIndicator(
+      modifier = Modifier.align(Alignment.Center).size(50.dp),
+      color = theme.buttonPrimaryBackground,
+      trackColor = theme.dialogProgressWheelTrack,
+    )
+  }
 
 @Composable
 private fun FailureContent(
@@ -216,66 +192,57 @@ private fun FailureContent(
   onAction: (MetricsAction) -> Unit,
   theme: Theme,
   modifier: Modifier = Modifier,
-) = FailureScreen(
-  modifier = modifier.fillMaxSize(),
-  title = Strings.metricsFailure,
-  reason = message,
-  retryText = Strings.metricsFailureRetry,
-  onClickRetry = { onAction(MetricsAction.Refresh) },
-  theme = theme,
-)
+) =
+  FailureScreen(
+    modifier = modifier.fillMaxSize(),
+    title = Strings.metricsFailure,
+    reason = message,
+    retryText = Strings.metricsFailureRetry,
+    onClickRetry = { onAction(MetricsAction.Refresh) },
+    theme = theme,
+  )
 
 @Composable
-private fun SuccessContent(
-  state: MetricsState.Success,
-  modifier: Modifier = Modifier,
-) = Column(
-  modifier = modifier
-    .padding(horizontal = 10.dp)
-    .verticalScrollWithBar(),
-  verticalArrangement = Arrangement.spacedBy(Dimens.Large, Alignment.Top),
-  horizontalAlignment = Alignment.Start,
-) {
-  HazedBox(
-    modifier = Modifier.fillMaxWidth(),
-    padding = PaddingValues(Dimens.Huge),
+private fun SuccessContent(state: MetricsState.Success, modifier: Modifier = Modifier) =
+  Column(
+    modifier = modifier.padding(horizontal = 10.dp).verticalScrollWithBar(),
+    verticalArrangement = Arrangement.spacedBy(Dimens.Large, Alignment.Top),
+    horizontalAlignment = Alignment.Start,
   ) {
-    SuccessContentRow(title = Strings.metricsLastUpdate, value = state.lastUpdate.toString())
-  }
+    HazedBox(modifier = Modifier.fillMaxWidth(), padding = PaddingValues(Dimens.Huge)) {
+      SuccessContentRow(title = Strings.metricsLastUpdate, value = state.lastUpdate.toString())
+    }
 
-  HazedBox(
-    modifier = Modifier.fillMaxWidth(),
-    padding = PaddingValues(Dimens.Huge),
-  ) {
-    SuccessContentRow(title = Strings.metricsUptime, value = state.uptime.formattedString())
-  }
+    HazedBox(modifier = Modifier.fillMaxWidth(), padding = PaddingValues(Dimens.Huge)) {
+      SuccessContentRow(title = Strings.metricsUptime, value = state.uptime.formattedString())
+    }
 
-  HazedBox(
-    modifier = Modifier.fillMaxWidth(),
-    padding = PaddingValues(Dimens.Huge),
-  ) {
-    Column {
-      Text(
-        text = Strings.metricsMemory,
-        fontWeight = FontWeight.Bold,
-        style = AktualTypography.titleLarge,
-      )
+    HazedBox(modifier = Modifier.fillMaxWidth(), padding = PaddingValues(Dimens.Huge)) {
+      Column {
+        Text(
+          text = Strings.metricsMemory,
+          fontWeight = FontWeight.Bold,
+          style = AktualTypography.titleLarge,
+        )
 
-      VerticalSpacer(10.dp)
+        VerticalSpacer(10.dp)
 
-      with(state.memory) {
-        SuccessContentRow(title = Strings.metricsMemoryRss, value = rss.toString())
-        SuccessContentRow(title = Strings.metricsMemoryHeapTotal, value = heapTotal.toString())
-        SuccessContentRow(title = Strings.metricsMemoryHeapUsed, value = heapUsed.toString())
-        SuccessContentRow(title = Strings.metricsMemoryExternal, value = external.toString())
-        SuccessContentRow(title = Strings.metricsMemoryArrayBuffers, value = arrayBuffers.toString())
+        with(state.memory) {
+          SuccessContentRow(title = Strings.metricsMemoryRss, value = rss.toString())
+          SuccessContentRow(title = Strings.metricsMemoryHeapTotal, value = heapTotal.toString())
+          SuccessContentRow(title = Strings.metricsMemoryHeapUsed, value = heapUsed.toString())
+          SuccessContentRow(title = Strings.metricsMemoryExternal, value = external.toString())
+          SuccessContentRow(
+            title = Strings.metricsMemoryArrayBuffers,
+            value = arrayBuffers.toString(),
+          )
+        }
       }
     }
-  }
 
-  BottomStatusBarSpacing()
-  BottomNavBarSpacing()
-}
+    BottomStatusBarSpacing()
+    BottomNavBarSpacing()
+  }
 
 @Stable
 @Suppress("MagicNumber")
@@ -294,54 +261,48 @@ private fun Duration.formattedString(): String {
 }
 
 @Composable
-private fun SuccessContentRow(
-  title: String,
-  value: String,
-  modifier: Modifier = Modifier,
-) = Row(
-  modifier = modifier.fillMaxWidth(),
-  verticalAlignment = Alignment.CenterVertically,
-) {
-  Text(
-    modifier = Modifier.weight(1f),
-    text = title,
-    style = AktualTypography.bodyLarge,
-    fontWeight = FontWeight.Bold,
-    textAlign = TextAlign.Start,
-  )
-  Text(
-    modifier = Modifier.weight(1f),
-    text = value,
-    style = AktualTypography.bodyMedium,
-    fontWeight = FontWeight.Normal,
-    textAlign = TextAlign.End,
-  )
-}
+private fun SuccessContentRow(title: String, value: String, modifier: Modifier = Modifier) =
+  Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Text(
+      modifier = Modifier.weight(1f),
+      text = title,
+      style = AktualTypography.bodyLarge,
+      fontWeight = FontWeight.Bold,
+      textAlign = TextAlign.Start,
+    )
+    Text(
+      modifier = Modifier.weight(1f),
+      text = value,
+      style = AktualTypography.bodyMedium,
+      fontWeight = FontWeight.Normal,
+      textAlign = TextAlign.End,
+    )
+  }
 
 @PortraitPreview
 @Composable
 private fun PreviewMetricsScaffold(
-  @PreviewParameter(MetricsStateProvider::class) params: ThemedParams<MetricsState>,
-) = PreviewWithColorScheme(params.type) {
-  MetricsScaffold(
-    state = params.data,
-    onAction = {},
-  )
-}
+  @PreviewParameter(MetricsStateProvider::class) params: ThemedParams<MetricsState>
+) = PreviewWithColorScheme(params.type) { MetricsScaffold(state = params.data, onAction = {}) }
 
-private class MetricsStateProvider : ThemedParameterProvider<MetricsState>(
-  MetricsState.Loading,
-  MetricsState.Disconnected,
-  MetricsState.Failure("Something broke"),
-  MetricsState.Success(
-    memory = GetMetricsResponse.Memory(
-      rss = 123.bytes,
-      heapTotal = 456.kB,
-      heapUsed = 789.MB,
-      external = 12.GB,
-      arrayBuffers = 34.TB,
+private class MetricsStateProvider :
+  ThemedParameterProvider<MetricsState>(
+    MetricsState.Loading,
+    MetricsState.Disconnected,
+    MetricsState.Failure("Something broke"),
+    MetricsState.Success(
+      memory =
+        GetMetricsResponse.Memory(
+          rss = 123.bytes,
+          heapTotal = 456.kB,
+          heapUsed = 789.MB,
+          external = 12.GB,
+          arrayBuffers = 34.TB,
+        ),
+      uptime = 123.days + 4.hours + 5.seconds + 678.milliseconds,
+      lastUpdate =
+        Instant.fromEpochMilliseconds(
+          epochMilliseconds = 1765211833825L
+        ), // Mon Dec 08 2025 16:37:13.825
     ),
-    uptime = 123.days + 4.hours + 5.seconds + 678.milliseconds,
-    lastUpdate = Instant.fromEpochMilliseconds(epochMilliseconds = 1765211833825L), // Mon Dec 08 2025 16:37:13.825
-  ),
-)
+  )

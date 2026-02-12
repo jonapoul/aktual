@@ -8,8 +8,7 @@ import io.ktor.client.HttpClient
 
 @KtorApi
 interface MetricsApi {
-  @GET("/metrics")
-  suspend fun getMetrics(): GetMetricsResponse
+  @GET("/metrics") suspend fun getMetrics(): GetMetricsResponse
 }
 
 expect fun MetricsApi(serverUrl: ServerUrl, client: HttpClient): MetricsApi

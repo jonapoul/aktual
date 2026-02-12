@@ -31,60 +31,43 @@ fun HazedBox(
   padding: PaddingValues = PaddingValues(30.dp),
   shape: Shape = RounderCardShape,
   content: @Composable BoxScope.() -> Unit,
-) = Box(
-  modifier
-    .clip(shape)
-    .aktualHaze(state)
-    .padding(padding),
-  contentAlignment = contentAlignment,
-  content = content,
-)
-
-@Preview
-@Composable
-private fun PreviewLoading(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewBasic(type) { theme ->
-  CircularProgressIndicator(
-    modifier = Modifier
-      .align(Alignment.Center)
-      .size(50.dp),
-    color = theme.buttonPrimaryBackground,
-    trackColor = theme.dialogProgressWheelTrack,
+) =
+  Box(
+    modifier.clip(shape).aktualHaze(state).padding(padding),
+    contentAlignment = contentAlignment,
+    content = content,
   )
-}
 
 @Preview
 @Composable
-private fun PreviewText(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewBasic(type) {
-  Text("Hello world")
-}
+private fun PreviewLoading(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewBasic(type) { theme ->
+    CircularProgressIndicator(
+      modifier = Modifier.align(Alignment.Center).size(50.dp),
+      color = theme.buttonPrimaryBackground,
+      trackColor = theme.dialogProgressWheelTrack,
+    )
+  }
+
+@Preview
+@Composable
+private fun PreviewText(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewBasic(type) { Text("Hello world") }
 
 @Composable
 private fun PreviewBasic(
   type: ColorSchemeType,
   size: DpSize = DpSize(200.dp, 200.dp),
   content: @Composable BoxScope.(Theme) -> Unit,
-) = PreviewWithColorScheme(type) {
-  val theme = LocalTheme.current
-  val hazeState = remember { HazeState() }
-  Box(
-    modifier = Modifier.size(size),
-  ) {
-    WavyBackground(
-      modifier = Modifier
-        .fillMaxSize()
-        .background(theme.dialogBackground)
-        .hazeSource(hazeState),
-    )
+) =
+  PreviewWithColorScheme(type) {
+    val theme = LocalTheme.current
+    val hazeState = remember { HazeState() }
+    Box(modifier = Modifier.size(size)) {
+      WavyBackground(
+        modifier = Modifier.fillMaxSize().background(theme.dialogBackground).hazeSource(hazeState)
+      )
 
-    HazedBox(
-      modifier = Modifier.align(Alignment.Center),
-      state = hazeState,
-    ) {
-      content(theme)
+      HazedBox(modifier = Modifier.align(Alignment.Center), state = hazeState) { content(theme) }
     }
   }
-}

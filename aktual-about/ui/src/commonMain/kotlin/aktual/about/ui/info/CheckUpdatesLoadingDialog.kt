@@ -33,12 +33,7 @@ internal fun CheckUpdatesLoadingDialog(
     modifier = modifier,
     properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
     onDismissRequest = onCancel,
-    content = {
-      CheckUpdatesLoadingDialogContent(
-        onCancel = onCancel,
-        theme = theme,
-      )
-    },
+    content = { CheckUpdatesLoadingDialogContent(onCancel = onCancel, theme = theme) },
   )
 }
 
@@ -65,18 +60,12 @@ internal fun CheckUpdatesLoadingDialogContent(
 
         HorizontalSpacer(15.dp)
 
-        Text(
-          text = Strings.infoCheckingUpdatesLoading,
-          color = theme.pageText,
-        )
+        Text(text = Strings.infoCheckingUpdatesLoading, color = theme.pageText)
       }
     },
     buttons = {
       TextButton(onClick = onCancel) {
-        Text(
-          text = Strings.infoCheckingUpdatesCancel,
-          color = theme.pageTextPositive,
-        )
+        Text(text = Strings.infoCheckingUpdatesCancel, color = theme.pageTextPositive)
       }
     },
   )
@@ -85,9 +74,5 @@ internal fun CheckUpdatesLoadingDialogContent(
 @Preview
 @Composable
 private fun PreviewCheckUpdatesContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  CheckUpdatesLoadingDialogContent(
-    onCancel = {},
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) = PreviewWithColorScheme(type) { CheckUpdatesLoadingDialogContent(onCancel = {}) }

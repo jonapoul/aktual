@@ -24,9 +24,7 @@ compose.resources {
 }
 
 kotlin {
-  android {
-    androidResources.enable = true
-  }
+  android { androidResources.enable = true }
 
   commonMainDependencies {
     api(libs.jetbrains.resources)

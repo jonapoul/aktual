@@ -10,9 +10,7 @@ import kotlin.time.Clock
 @BindingContainer
 @ContributesTo(AppScope::class)
 object ClockContainer {
-  @Provides
-  fun clock(): Clock = Clock.System
+  @Provides fun clock(): Clock = Clock.System
 
-  @Provides
-  fun timeZones(): TimeZoneProvider = TimeZoneProvider.Default
+  @Provides fun timeZones(): TimeZoneProvider = TimeZoneProvider.Default
 }

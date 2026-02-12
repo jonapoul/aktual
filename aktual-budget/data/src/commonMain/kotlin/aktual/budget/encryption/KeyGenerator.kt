@@ -2,21 +2,22 @@ package aktual.budget.encryption
 
 import aktual.core.model.Key
 import aktual.core.model.Password
-import okio.ByteString
-import okio.ByteString.Companion.toByteString
 import javax.crypto.SecretKeyFactory
 import javax.crypto.spec.PBEKeySpec
 import javax.crypto.spec.SecretKeySpec
 import kotlin.text.Charsets.UTF_8
+import okio.ByteString
+import okio.ByteString.Companion.toByteString
 
 // Ref packages/loot-core/src/server/encryption/index.ts => createFromPassword()
 fun generateKeyFromPassword(password: Password, salt: ByteString): Key {
-  val keySpec = PBEKeySpec(
-    password.value.toCharArray(),
-    salt.base64().toByteArray(UTF_8),
-    ITERATION_COUNT,
-    KEY_LENGTH,
-  )
+  val keySpec =
+    PBEKeySpec(
+      password.value.toCharArray(),
+      salt.base64().toByteArray(UTF_8),
+      ITERATION_COUNT,
+      KEY_LENGTH,
+    )
   val factory = SecretKeyFactory.getInstance(KEY_FACTORY_ALGORITHM)
   val secretKeyBytes = factory.generateSecret(keySpec).encoded
   val aesKey = SecretKeySpec(secretKeyBytes, KEY_ALGORITHM)

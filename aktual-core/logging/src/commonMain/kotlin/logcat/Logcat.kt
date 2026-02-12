@@ -28,10 +28,15 @@ object logcat {
     combined(LogPriority.ASSERT, tag, t, message)
 
   inline fun v(t: Throwable? = null, message: () -> String) = v(null, t, message)
+
   inline fun d(t: Throwable? = null, message: () -> String) = d(null, t, message)
+
   inline fun i(t: Throwable? = null, message: () -> String) = i(null, t, message)
+
   inline fun w(t: Throwable? = null, message: () -> String) = w(null, t, message)
+
   inline fun e(t: Throwable? = null, message: () -> String) = e(null, t, message)
+
   inline fun wtf(t: Throwable? = null, message: () -> String) = wtf(null, t, message)
 
   @Deprecated("Not intended to be used directly")

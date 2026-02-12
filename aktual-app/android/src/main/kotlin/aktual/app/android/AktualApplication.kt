@@ -13,10 +13,9 @@ import logcat.LogcatLogger
 import logcat.logcat
 
 class AktualApplication : Application(), MetroApplication {
-  private val graph by lazy {
-    createGraphFactory<AndroidAppGraph.Factory>().create(context = this)
-  }
-  override val appComponentProviders: MetroAppComponentProviders get() = graph
+  private val graph by lazy { createGraphFactory<AndroidAppGraph.Factory>().create(context = this) }
+  override val appComponentProviders: MetroAppComponentProviders
+    get() = graph
 
   override fun onCreate() {
     if (BuildConfig.DEBUG) {

@@ -10,7 +10,11 @@ import kotlinx.coroutines.flow.update
 @OptIn(ExperimentalForInheritanceCoroutinesApi::class)
 interface BudgetLocalPreferences : MutableStateFlow<DbMetadata> {
   operator fun <T : Any> get(key: DbMetadata.Key<T>): T? = value[key]
-  operator fun <T : Any> set(key: DbMetadata.Key<T>, value: T?): DbMetadata = this.value.set(key, value)
+
+  operator fun <T : Any> set(key: DbMetadata.Key<T>, value: T?): DbMetadata =
+    this.value.set(key, value)
+
   operator fun plusAssign(metadata: DbMetadata) = update { previous -> previous + metadata }
+
   fun <T : Any> observe(key: DbMetadata.Key<T>): Flow<T?> = map { metadata -> metadata[key] }
 }

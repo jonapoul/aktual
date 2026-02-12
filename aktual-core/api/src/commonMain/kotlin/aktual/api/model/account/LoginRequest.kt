@@ -1,16 +1,15 @@
 package aktual.api.model.account
 
 import aktual.core.model.LoginMethod
+import aktual.core.model.Password as PasswordModel
 import dev.zacsweers.redacted.annotations.Redacted
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import aktual.core.model.Password as PasswordModel
 
 sealed interface LoginRequest {
   @Serializable
-  data class Header(
-    @SerialName("loginMethod") val loginMethod: LoginMethod = LoginMethod.Header,
-  ) : LoginRequest
+  data class Header(@SerialName("loginMethod") val loginMethod: LoginMethod = LoginMethod.Header) :
+    LoginRequest
 
   @Serializable
   data class OpenId(

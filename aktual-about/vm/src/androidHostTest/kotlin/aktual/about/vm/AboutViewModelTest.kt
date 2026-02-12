@@ -13,11 +13,11 @@ import io.mockk.coEvery
 import io.mockk.confirmVerified
 import io.mockk.mockk
 import io.mockk.verify
+import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.Test
 
 @RunWith(RobolectricTestRunner::class)
 class AboutViewModelTest {
@@ -35,12 +35,13 @@ class AboutViewModelTest {
     urlOpener = mockk(relaxed = true)
     aktualVersionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
 
-    viewModel = AboutViewModel(
-      buildConfig = TestBuildConfig,
-      githubRepository = repository,
-      urlOpener = urlOpener,
-      aktualVersionsStateHolder = aktualVersionsStateHolder,
-    )
+    viewModel =
+      AboutViewModel(
+        buildConfig = TestBuildConfig,
+        githubRepository = repository,
+        urlOpener = urlOpener,
+        aktualVersionsStateHolder = aktualVersionsStateHolder,
+      )
   }
 
   @Test

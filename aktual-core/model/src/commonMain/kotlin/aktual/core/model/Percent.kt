@@ -5,9 +5,14 @@ import kotlin.math.roundToInt
 
 @JvmInline
 value class Percent(private val value: Double) : Comparable<Percent> {
-  val intValue: Int get() = value.roundToInt()
-  val floatValue: Float get() = value.toFloat()
-  val doubleValue: Double get() = value
+  val intValue: Int
+    get() = value.roundToInt()
+
+  val floatValue: Float
+    get() = value.toFloat()
+
+  val doubleValue: Double
+    get() = value
 
   constructor(value: Number) : this(value.toDouble())
 
@@ -34,4 +39,5 @@ value class Percent(private val value: Double) : Comparable<Percent> {
   }
 }
 
-val Number.percent: Percent get() = Percent(value = this)
+val Number.percent: Percent
+  get() = Percent(value = this)

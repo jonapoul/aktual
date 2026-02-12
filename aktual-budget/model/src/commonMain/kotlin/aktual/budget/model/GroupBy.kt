@@ -5,8 +5,7 @@ enum class GroupBy(private val value: String) {
   Category(value = "Category"),
   Group(value = "Group"),
   Interval(value = "Interval"),
-  Payee(value = "Payee"),
-  ;
+  Payee(value = "Payee");
 
   override fun toString(): String = value
 }

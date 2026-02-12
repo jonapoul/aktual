@@ -54,9 +54,6 @@ class ReportsDashboardViewModel(
   @ManualViewModelAssistedFactoryKey(Factory::class)
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted token: Token,
-      @Assisted budgetId: BudgetId,
-    ): ReportsDashboardViewModel
+    fun create(@Assisted token: Token, @Assisted budgetId: BudgetId): ReportsDashboardViewModel
   }
 }

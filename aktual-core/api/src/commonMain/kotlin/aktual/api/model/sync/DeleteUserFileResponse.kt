@@ -6,9 +6,7 @@ import kotlinx.serialization.Serializable
 
 sealed interface DeleteUserFileResponse {
   @Serializable
-  data class Success(
-    @SerialName("status") val status: String,
-  ) : DeleteUserFileResponse
+  data class Success(@SerialName("status") val status: String) : DeleteUserFileResponse
 
   @Serializable
   data class Failure(

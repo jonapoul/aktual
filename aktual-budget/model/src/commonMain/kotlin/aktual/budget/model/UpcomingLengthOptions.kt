@@ -6,8 +6,7 @@ enum class UpcomingLengthOptions(val value: String) {
   TwoWeeks("14"),
   OneMonth("oneMonth"),
   CurrentMonth("currentMonth"),
-  Custom("custom"),
-  ;
+  Custom("custom");
 
   companion object {
     fun from(value: String): UpcomingLengthOptions? = entries.firstOrNull { it.value == value }

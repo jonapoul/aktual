@@ -3,17 +3,17 @@ package aktual.budget.model
 import aktual.test.PrettyJson
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import kotlinx.serialization.Serializable
 import kotlin.test.Test
+import kotlinx.serialization.Serializable
 
 class OperatorTest {
-  @Serializable
-  data class TestData(val operators: List<Operator>)
+  @Serializable data class TestData(val operators: List<Operator>)
 
   @Test
   fun serialize() {
     val data = TestData(operators = Operator.entries)
-    val json = """
+    val json =
+      """
       {
         "operators": [
           "and",
@@ -35,7 +35,8 @@ class OperatorTest {
           "oneOf"
         ]
       }
-    """.trimIndent()
+      """
+        .trimIndent()
 
     val serialized = PrettyJson.encodeToString(data)
     val deserialized = PrettyJson.decodeFromString<TestData>(json)

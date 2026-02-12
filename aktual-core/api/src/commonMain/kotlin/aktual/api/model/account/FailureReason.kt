@@ -2,9 +2,7 @@ package aktual.api.model.account
 
 import kotlinx.serialization.Serializable
 
-/**
- * See validateSession() in actual-server/src/util/validate-user.js
- */
+/** See validateSession() in actual-server/src/util/validate-user.js */
 @JvmInline
 @Serializable
 value class FailureReason(val reason: String) {

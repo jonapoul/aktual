@@ -12,10 +12,10 @@ import aktual.budget.model.DbMetadata
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.core.model.Token
+import kotlin.time.Duration.Companion.days
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
-import kotlin.time.Duration.Companion.days
 
 internal val DATE_1 = LocalDate(2025, Month.JUNE, 1)
 internal val DATE_2 = LocalDate(2025, Month.JUNE, 2)
@@ -32,9 +32,12 @@ internal val ID_D = TransactionId("d")
 internal val ID_E = TransactionId("e")
 internal val ID_F = TransactionId("f")
 
-internal val TRANSACTION_A = Transaction(ID_A, DATE_1, "Amex", "Argos", null, "Additional", Amount(123.45))
-internal val TRANSACTION_B = Transaction(ID_B, DATE_2, "Barclays", "B&Q", null, "Building", Amount(123.45))
-internal val TRANSACTION_C = Transaction(ID_C, DATE_3, "Chase", "Co-op", null, "Car", Amount(123.45))
+internal val TRANSACTION_A =
+  Transaction(ID_A, DATE_1, "Amex", "Argos", null, "Additional", Amount(123.45))
+internal val TRANSACTION_B =
+  Transaction(ID_B, DATE_2, "Barclays", "B&Q", null, "Building", Amount(123.45))
+internal val TRANSACTION_C =
+  Transaction(ID_C, DATE_3, "Chase", "Co-op", null, "Car", Amount(123.45))
 
 internal suspend fun BudgetDatabase.insertAccount(id: AccountId, name: String) {
   accountsQueries.withoutResult {
@@ -76,7 +79,7 @@ internal suspend fun BudgetDatabase.insertCategory(id: CategoryId, name: String)
         tombstone = false,
         hidden = false,
         goal_def = null,
-      ),
+      )
     )
   }
 }
@@ -89,37 +92,34 @@ internal suspend fun BudgetDatabase.insertTransaction(
   notes: String? = null,
   date: LocalDate = DATE_1,
   amount: Double = 123.45,
-) = transactionsQueries.withoutResult {
-  insert(
-    Transactions(
-      id = TransactionId(id),
-      isParent = false,
-      isChild = false,
-      acct = AccountId(account),
-      category = CategoryId(category),
-      amount = Amount(amount),
-      description = PayeeId(payee),
-      notes = notes,
-      date = date,
-      financial_id = null,
-      type = null,
-      location = null,
-      error = null,
-      imported_description = null,
-      starting_balance_flag = null,
-      transferred_id = null,
-      sort_order = date
-        .toEpochDays()
-        .days
-        .inWholeMilliseconds
-        .toDouble(),
-      tombstone = null,
-      cleared = null,
-      pending = null,
-      parent_id = null,
-      schedule = null,
-      reconciled = null,
-      raw_synced_data = null,
-    ),
-  )
-}
+) =
+  transactionsQueries.withoutResult {
+    insert(
+      Transactions(
+        id = TransactionId(id),
+        isParent = false,
+        isChild = false,
+        acct = AccountId(account),
+        category = CategoryId(category),
+        amount = Amount(amount),
+        description = PayeeId(payee),
+        notes = notes,
+        date = date,
+        financial_id = null,
+        type = null,
+        location = null,
+        error = null,
+        imported_description = null,
+        starting_balance_flag = null,
+        transferred_id = null,
+        sort_order = date.toEpochDays().days.inWholeMilliseconds.toDouble(),
+        tombstone = null,
+        cleared = null,
+        pending = null,
+        parent_id = null,
+        schedule = null,
+        reconciled = null,
+        raw_synced_data = null,
+      )
+    )
+  }

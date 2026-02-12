@@ -27,9 +27,8 @@ class AndroidSqlDriverFactory(
   }
 }
 
-private class AndroidCallback(
-  schema: SqlSchema<QueryResult.Value<Unit>>,
-) : AndroidSqliteDriver.Callback(schema) {
+private class AndroidCallback(schema: SqlSchema<QueryResult.Value<Unit>>) :
+  AndroidSqliteDriver.Callback(schema) {
   override fun onOpen(db: SupportSQLiteDatabase) {
     logcat.d { "onOpen ${db.path}" }
     super.onOpen(db)

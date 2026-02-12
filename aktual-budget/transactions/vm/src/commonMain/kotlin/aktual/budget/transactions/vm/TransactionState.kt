@@ -8,7 +8,8 @@ sealed interface TransactionState {
   val id: TransactionId
 
   data class Loaded(val transaction: Transaction) : TransactionState {
-    override val id: TransactionId get() = transaction.id
+    override val id: TransactionId
+      get() = transaction.id
   }
 
   data class Loading(override val id: TransactionId) : TransactionState

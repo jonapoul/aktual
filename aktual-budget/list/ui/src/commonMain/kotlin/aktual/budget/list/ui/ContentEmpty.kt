@@ -32,9 +32,7 @@ internal fun ContentEmpty(
   theme: Theme = LocalTheme.current,
 ) {
   Column(
-    modifier = modifier
-      .fillMaxWidth()
-      .padding(40.dp),
+    modifier = modifier.fillMaxWidth().padding(40.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
@@ -55,19 +53,12 @@ internal fun ContentEmpty(
 
     VerticalSpacer(30.dp)
 
-    PrimaryTextButton(
-      text = Strings.budgetSuccessEmptyLaunch,
-      onClick = onCreateBudgetInBrowser,
-    )
+    PrimaryTextButton(text = Strings.budgetSuccessEmptyLaunch, onClick = onCreateBudgetInBrowser)
   }
 }
 
 @PortraitPreview
 @Composable
 private fun PreviewContentEmpty(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  ContentEmpty(
-    onCreateBudgetInBrowser = {},
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) = PreviewWithColorScheme(type) { ContentEmpty(onCreateBudgetInBrowser = {}) }

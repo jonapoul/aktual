@@ -43,12 +43,13 @@ internal fun ArtifactItem(
 ) {
   val interactionSource = remember { MutableInteractionSource() }
   Column(
-    modifier = modifier
-      .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
-      .background(Color.Transparent, CardShape)
-      .aktualHaze()
-      .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
-      .padding(Dimens.Large),
+    modifier =
+      modifier
+        .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
+        .background(Color.Transparent, CardShape)
+        .aktualHaze()
+        .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
+        .padding(Dimens.Large),
     verticalArrangement = Arrangement.Top,
   ) {
     Text(
@@ -65,7 +66,8 @@ internal fun ArtifactItem(
 }
 
 @get:Stable
-private val ArtifactDetail.fullArtifact get() = "$groupId:$artifactId"
+private val ArtifactDetail.fullArtifact
+  get() = "$groupId:$artifactId"
 
 private fun Modifier.clickableIfNeeded(
   artifact: ArtifactDetail,
@@ -103,16 +105,9 @@ private fun LibraryTableRow(
     return
   }
 
-  Row(
-    modifier = modifier
-      .fillMaxWidth()
-      .wrapContentHeight(),
-    verticalAlignment = Alignment.Top,
-  ) {
+  Row(modifier = modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.Top) {
     Text(
-      modifier = Modifier
-        .weight(TITLE_WEIGHT)
-        .wrapContentHeight(),
+      modifier = Modifier.weight(TITLE_WEIGHT).wrapContentHeight(),
       text = title,
       textAlign = TextAlign.Start,
       color = theme.pageTextSubdued,
@@ -124,9 +119,7 @@ private fun LibraryTableRow(
     HorizontalSpacer(Dimens.Medium)
 
     Text(
-      modifier = Modifier
-        .weight(VALUE_WEIGHT)
-        .wrapContentHeight(),
+      modifier = Modifier.weight(VALUE_WEIGHT).wrapContentHeight(),
       text = value,
       textAlign = TextAlign.Start,
       color = theme.pageText,
@@ -145,17 +138,13 @@ private val TextSize = 12.sp
 @Preview
 @Composable
 private fun PreviewArtifactItem(
-  @PreviewParameter(ArtifactItemProvider::class) params: ThemedParams<ArtifactDetail>,
-) = PreviewWithColorScheme(params.type) {
-  ArtifactItem(
-    artifact = params.data,
-    onLaunchUrl = {},
-  )
-}
+  @PreviewParameter(ArtifactItemProvider::class) params: ThemedParams<ArtifactDetail>
+) = PreviewWithColorScheme(params.type) { ArtifactItem(artifact = params.data, onLaunchUrl = {}) }
 
-private class ArtifactItemProvider : ThemedParameterProvider<ArtifactDetail>(
-  AlakazamAndroidCore,
-  ComposeMaterialRipple,
-  FragmentKtx,
-  Slf4jApi,
-)
+private class ArtifactItemProvider :
+  ThemedParameterProvider<ArtifactDetail>(
+    AlakazamAndroidCore,
+    ComposeMaterialRipple,
+    FragmentKtx,
+    Slf4jApi,
+  )

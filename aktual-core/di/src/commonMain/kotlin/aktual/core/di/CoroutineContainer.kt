@@ -17,7 +17,5 @@ object CoroutineContainer {
   @SingleIn(AppScope::class)
   fun contexts(): CoroutineContexts = DefaultCoroutineContexts()
 
-  @Provides
-  @SingleIn(AppScope::class)
-  fun scope(): CoroutineScope = CoroutineScope(SupervisorJob())
+  @Provides @SingleIn(AppScope::class) fun scope(): CoroutineScope = CoroutineScope(SupervisorJob())
 }

@@ -39,12 +39,13 @@ internal fun BuildStateItem(
   onClick: (() -> Unit)? = null,
 ) {
   Row(
-    modifier = modifier
-      .fillMaxWidth()
-      .height(ItemHeight)
-      .background(Color.Transparent, CardShape)
-      .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
-      .padding(horizontal = ItemPadding),
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .height(ItemHeight)
+        .background(Color.Transparent, CardShape)
+        .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
+        .padding(horizontal = ItemPadding),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Icon(
@@ -54,11 +55,7 @@ internal fun BuildStateItem(
       tint = theme.pageText,
     )
 
-    Column(
-      modifier = Modifier
-        .weight(1f)
-        .padding(ItemPadding),
-    ) {
+    Column(modifier = Modifier.weight(1f).padding(ItemPadding)) {
       Text(
         modifier = Modifier.testTag(Tags.BuildStateItemTitle),
         text = title,
@@ -81,25 +78,27 @@ private val ItemHeight = 50.dp
 @Preview
 @Composable
 private fun PreviewRegularItem(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  BuildStateItem(
-    icon = MaterialIcons.Info,
-    title = "Info",
-    subtitle = "More info",
-    onClick = null,
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    BuildStateItem(
+      icon = MaterialIcons.Info,
+      title = "Info",
+      subtitle = "More info",
+      onClick = null,
+    )
+  }
 
 @Preview
 @Composable
 private fun PreviewClickableItem(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  BuildStateItem(
-    icon = MaterialIcons.Numbers,
-    title = "Info",
-    subtitle = "More info",
-    onClick = {},
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    BuildStateItem(
+      icon = MaterialIcons.Numbers,
+      title = "Info",
+      subtitle = "More info",
+      onClick = {},
+    )
+  }

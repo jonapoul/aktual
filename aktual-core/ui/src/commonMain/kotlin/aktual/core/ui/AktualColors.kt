@@ -2,9 +2,7 @@ package aktual.core.ui
 
 import androidx.compose.ui.graphics.Color
 
-/**
- * actual/packages/desktop-client/src/style/palette.ts
- */
+/** actual/packages/desktop-client/src/style/palette.ts */
 internal object AktualColors {
   val gray50 = Color(color = 0xFFF6F8FA)
   val gray80 = Color(color = 0xFFF0F4F6)
@@ -89,9 +87,7 @@ internal object AktualColors {
   val hover = OldColors.hover
 }
 
-/**
- * actual/packages/desktop-client/src/style/colors.ts
- */
+/** actual/packages/desktop-client/src/style/colors.ts */
 private object OldColors {
   val y1 = Color(color = 0xFF733309)
   val y2 = Color(color = 0xFF87540D)

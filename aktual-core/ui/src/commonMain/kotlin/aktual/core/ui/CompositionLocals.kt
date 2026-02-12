@@ -19,7 +19,8 @@ val LocalPrivacyEnabled = compositionLocalOf { false }
 
 val LocalBottomStatusBarHeight = compositionLocalOf { 0.dp }
 
-val LocalNumberFormatConfig = compositionLocalOf<NumberFormatConfig> { error("No NumberFormatConfig value provided") }
+val LocalNumberFormatConfig =
+  compositionLocalOf<NumberFormatConfig> { error("No NumberFormatConfig value provided") }
 
 val LocalHazeState = compositionLocalOf<HazeState> { error("No HazeState supplied") }
 

@@ -1,8 +1,6 @@
 package aktual.budget.model
 
-/**
- * From packages/loot-core/src/types/prefs.d.ts, SyncedPrefs
- */
+/** From packages/loot-core/src/types/prefs.d.ts, SyncedPrefs */
 sealed interface SyncedPrefKey {
   val key: String
 
@@ -49,7 +47,8 @@ sealed interface SyncedPrefKey {
     data class HideCleared(override val id: AccountId) : PerAccount("hide-cleared")
 
     /** [Boolean] */
-    data class OfxFallbackMissingPayee(override val id: AccountId) : PerAccount("ofx-fallback-missing-payee")
+    data class OfxFallbackMissingPayee(override val id: AccountId) :
+      PerAccount("ofx-fallback-missing-payee")
 
     /** [Boolean] */
     data class ShowBalances(override val id: AccountId) : PerAccount("show-balances")
@@ -57,11 +56,13 @@ sealed interface SyncedPrefKey {
     /** [Boolean] */
     data class ShowExtraBalances(override val id: AccountId) : PerAccount("show-extra-balances")
 
-    data class ParseDate(override val id: AccountId, val fileType: String) : PerAccount("parse-date") {
+    data class ParseDate(override val id: AccountId, val fileType: String) :
+      PerAccount("parse-date") {
       override val key = "$keyPrefix-$id-$fileType"
     }
 
-    data class FlipAmount(override val id: AccountId, val fileType: String) : PerAccount("flip-amount") {
+    data class FlipAmount(override val id: AccountId, val fileType: String) :
+      PerAccount("flip-amount") {
       override val key = "$keyPrefix-$id-$fileType"
     }
   }
@@ -82,14 +83,22 @@ sealed interface SyncedPrefKey {
         ?: fromIdAndType(key, "flip-amount", PerAccount::FlipAmount)
         ?: Other(key)
 
-    private fun fromId(key: String, prefix: String, factory: (AccountId) -> PerAccount): PerAccount? =
+    private fun fromId(
+      key: String,
+      prefix: String,
+      factory: (AccountId) -> PerAccount,
+    ): PerAccount? =
       if (key.startsWith(prefix)) {
         factory(key.removePrefix("$prefix-").let(::AccountId))
       } else {
         null
       }
 
-    private fun fromIdAndType(key: String, prefix: String, factory: (AccountId, String) -> PerAccount): PerAccount? =
+    private fun fromIdAndType(
+      key: String,
+      prefix: String,
+      factory: (AccountId, String) -> PerAccount,
+    ): PerAccount? =
       if (key.startsWith(prefix)) {
         val withoutPrefix = key.removePrefix("$prefix-")
         val fileType = withoutPrefix.split("-").lastOrNull() ?: return null

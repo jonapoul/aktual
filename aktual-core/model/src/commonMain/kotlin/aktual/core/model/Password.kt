@@ -1,14 +1,15 @@
 package aktual.core.model
 
 import dev.zacsweers.redacted.annotations.Redacted
-import kotlinx.serialization.Serializable
 import java.util.stream.IntStream
+import kotlinx.serialization.Serializable
 
 @Redacted
 @JvmInline
 @Serializable
 value class Password(val value: String) : CharSequence by value {
   override fun chars(): IntStream = value.chars()
+
   override fun codePoints(): IntStream = value.codePoints()
 
   companion object {

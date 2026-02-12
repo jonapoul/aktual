@@ -6,5 +6,6 @@ import androidx.compose.runtime.Immutable
 @Immutable
 interface ChangePasswordNavigator {
   fun back(): Boolean
+
   fun toListBudgets(token: Token)
 }

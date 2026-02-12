@@ -9,6 +9,8 @@ import assertk.fail
 import dev.jonpoulton.preferences.core.NullableStringSerializer
 import dev.jonpoulton.preferences.core.Preference
 import dev.jonpoulton.preferences.core.StringSerializer
+import java.util.prefs.Preferences
+import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -16,12 +18,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
-import java.util.prefs.Preferences
-import kotlin.test.Test
 
 class JvmPreferencesTest {
-  @get:Rule
-  val temporaryFolder = TemporaryFolder()
+  @get:Rule val temporaryFolder = TemporaryFolder()
 
   private lateinit var jPreferences: Preferences
   private lateinit var preferences: JvmPreferences
@@ -38,25 +37,26 @@ class JvmPreferencesTest {
   }
 
   @Test
-  fun `Get from empty prefs`() = with(preferences) {
-    val string = getString("abc", "xyz")
-    val bool = getBoolean("abc", false)
-    val float = getFloat("abc", 7.89f)
-    val int = getInt("abc", 123)
-    val long = getLong("abc", 456L)
+  fun `Get from empty prefs`() =
+    with(preferences) {
+      val string = getString("abc", "xyz")
+      val bool = getBoolean("abc", false)
+      val float = getFloat("abc", 7.89f)
+      val int = getInt("abc", 123)
+      val long = getLong("abc", 456L)
 
-    assertThat(string).isNotSet()
-    assertThat(bool).isNotSet()
-    assertThat(float).isNotSet()
-    assertThat(int).isNotSet()
-    assertThat(long).isNotSet()
+      assertThat(string).isNotSet()
+      assertThat(bool).isNotSet()
+      assertThat(float).isNotSet()
+      assertThat(int).isNotSet()
+      assertThat(long).isNotSet()
 
-    assertThat(string.get()).isEqualTo("xyz")
-    assertThat(bool.get()).isEqualTo(false)
-    assertThat(float.get()).isEqualTo(7.89f)
-    assertThat(int.get()).isEqualTo(123)
-    assertThat(long.get()).isEqualTo(456L)
-  }
+      assertThat(string.get()).isEqualTo("xyz")
+      assertThat(bool.get()).isEqualTo(false)
+      assertThat(float.get()).isEqualTo(7.89f)
+      assertThat(int.get()).isEqualTo(123)
+      assertThat(long.get()).isEqualTo(456L)
+    }
 
   private fun <T> Assert<Preference<T>>.isNotSet() = given { pref ->
     if (!pref.isSet()) return@given
@@ -97,11 +97,11 @@ class JvmPreferencesTest {
     }
   }
 
-  @Serializable
-  private data class TestObject(val int: Int, val string: String)
+  @Serializable private data class TestObject(val int: Int, val string: String)
 
   private object TestObjectSerializer : StringSerializer<TestObject> {
     override fun serialize(value: TestObject): String = Json.Default.encodeToString(value)
+
     override fun deserialize(value: String): TestObject = Json.Default.decodeFromString(value)
   }
 
@@ -124,7 +124,9 @@ class JvmPreferencesTest {
 
   private object TestObjectNullableSerializer : NullableStringSerializer<TestObject> {
     override fun serialize(value: TestObject?): String? = value?.let(Json.Default::encodeToString)
-    override fun deserialize(value: String?): TestObject? = value?.let(Json.Default::decodeFromString)
+
+    override fun deserialize(value: String?): TestObject? =
+      value?.let(Json.Default::decodeFromString)
   }
 
   @Test

@@ -7,8 +7,7 @@ enum class FirstDayOfWeek(val value: Int) {
   Wednesday(value = 3),
   Thursday(value = 4),
   Friday(value = 5),
-  Saturday(value = 6),
-  ;
+  Saturday(value = 6);
 
   companion object {
     fun from(value: String?): FirstDayOfWeek? {

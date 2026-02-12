@@ -8,8 +8,8 @@ import aktual.test.readBytes
 import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import okio.source
 import kotlin.test.Test
+import okio.source
 
 class DecryptTest {
   @InterceptTest val temporaryFolder = TemporaryFolder()

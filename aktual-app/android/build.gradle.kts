@@ -36,16 +36,15 @@ android {
   }
 
   packaging {
-    resources.excludes += setOf(
-      "META-INF/DEPENDENCIES",
-      "META-INF/INDEX.LIST",
-      "**/native/Windows/**",
-      "**/native/Mac/**",
-    )
+    resources.excludes +=
+      setOf(
+        "META-INF/DEPENDENCIES",
+        "META-INF/INDEX.LIST",
+        "**/native/Windows/**",
+        "**/native/Mac/**",
+      )
 
-    jniLibs {
-      useLegacyPackaging = true
-    }
+    jniLibs { useLegacyPackaging = true }
   }
 
   buildFeatures {
@@ -56,11 +55,10 @@ android {
   signingConfigs {
     register("release") {
       with(localProperties()) {
-        storeFile = getOptional("aktual.keyFile")?.let {
-          rootProject.isolated.projectDirectory
-            .file(it)
-            .asFile
-        }
+        storeFile =
+          getOptional("aktual.keyFile")?.let {
+            rootProject.isolated.projectDirectory.file(it).asFile
+          }
         storePassword = getOptional("aktual.keyFilePassword")
         keyAlias = getOptional("aktual.keyAlias")
         keyPassword = getOptional("aktual.keyPassword")
@@ -128,21 +126,23 @@ dependencies {
   implementation(libs.metrox.viewmodel.compose)
 }
 
-val exportMinSdk by tasks.registering {
-  group = "documentation"
-  description = "Updates the API level badge in README.md"
-  val minSdk = android.defaultConfig.minSdk
-  val readmeFile = rootDir.resolve("README.md")
-  doLast {
-    val originalContent = readmeFile.readText()
-    val newContent = originalContent
-      .replace("API-\\d+%2B".toRegex(), "API-$minSdk%2B")
-      .replace("level=\\d+".toRegex(), "level=$minSdk")
-    readmeFile.writeText(newContent)
-    if (originalContent != newContent) {
-      throw GradleException("Updated $readmeFile with minSdk=$minSdk - you need to commit it!")
+val exportMinSdk by
+  tasks.registering {
+    group = "documentation"
+    description = "Updates the API level badge in README.md"
+    val minSdk = android.defaultConfig.minSdk
+    val readmeFile = rootDir.resolve("README.md")
+    doLast {
+      val originalContent = readmeFile.readText()
+      val newContent =
+        originalContent
+          .replace("API-\\d+%2B".toRegex(), "API-$minSdk%2B")
+          .replace("level=\\d+".toRegex(), "level=$minSdk")
+      readmeFile.writeText(newContent)
+      if (originalContent != newContent) {
+        throw GradleException("Updated $readmeFile with minSdk=$minSdk - you need to commit it!")
+      }
     }
   }
-}
 
 tasks.named("preBuild").configure { dependsOn(exportMinSdk) }

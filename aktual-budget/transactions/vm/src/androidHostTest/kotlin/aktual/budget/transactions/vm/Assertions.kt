@@ -20,7 +20,8 @@ internal fun <K : Any, V : Any> Assert<Page<K, V>>.withData(expected: List<V>) =
   page
 }
 
-internal fun <K : Any, V : Any> Assert<Page<K, V>>.withData(vararg expected: V) = withData(expected.toList())
+internal fun <K : Any, V : Any> Assert<Page<K, V>>.withData(vararg expected: V) =
+  withData(expected.toList())
 
 internal fun <K : Any, V : Any> Assert<Page<K, V>>.withPrevKey(expected: K?) = transform { page ->
   if (page.prevKey != expected) {

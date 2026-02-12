@@ -8,8 +8,7 @@ import io.ktor.client.HttpClient
 
 @KtorApi
 interface HealthApi {
-  @GET("/health")
-  suspend fun getHealth(): GetHealthResponse
+  @GET("/health") suspend fun getHealth(): GetHealthResponse
 }
 
 expect fun HealthApi(serverUrl: ServerUrl, client: HttpClient): HealthApi

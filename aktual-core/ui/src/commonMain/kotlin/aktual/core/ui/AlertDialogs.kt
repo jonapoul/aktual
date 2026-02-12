@@ -44,12 +44,7 @@ fun AlertDialog(
     modifier = modifier,
     properties = properties,
   ) {
-    DialogContent(
-      title = title,
-      theme = theme,
-      content = content,
-      buttons = buttons,
-    )
+    DialogContent(title = title, theme = theme, content = content, buttons = buttons)
   }
 }
 
@@ -68,12 +63,7 @@ fun AlertDialog(
     modifier = modifier,
     properties = properties,
   ) {
-    DialogContent(
-      title = title,
-      theme = theme,
-      buttons = buttons,
-      content = { Text(text) },
-    )
+    DialogContent(title = title, theme = theme, buttons = buttons, content = { Text(text) })
   }
 }
 
@@ -94,23 +84,16 @@ fun DialogContent(
     tonalElevation = AlertDialogDefaults.TonalElevation,
   ) {
     Column(
-      modifier = Modifier
-        .defaultMinSize(minWidth = 300.dp)
-        .background(theme.dialogBackground)
-        .padding(Dimens.VeryLarge),
+      modifier =
+        Modifier.defaultMinSize(minWidth = 300.dp)
+          .background(theme.dialogBackground)
+          .padding(Dimens.VeryLarge),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Top,
     ) {
-      Row(
-        modifier = Modifier,
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
+      Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
         icon?.let {
-          Icon(
-            imageVector = it,
-            contentDescription = null,
-            tint = titleColor,
-          )
+          Icon(imageVector = it, contentDescription = null, tint = titleColor)
 
           HorizontalSpacer(10.dp)
         }
@@ -126,18 +109,13 @@ fun DialogContent(
 
       VerticalSpacer(Dimens.Medium)
 
-      CompositionLocalProvider(LocalContentColor provides theme.pageText) {
-        content()
-      }
+      CompositionLocalProvider(LocalContentColor provides theme.pageText) { content() }
 
       VerticalSpacer(Dimens.Medium)
 
       buttons?.let {
         CompositionLocalProvider(LocalContentColor provides theme.pageTextPositive) {
-          Row(
-            modifier = Modifier.align(Alignment.End),
-            content = buttons,
-          )
+          Row(modifier = Modifier.align(Alignment.End), content = buttons)
         }
       }
     }
@@ -147,39 +125,43 @@ fun DialogContent(
 @Preview
 @Composable
 private fun ExampleContentWithButtons(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  val theme = LocalTheme.current
-  DialogContent(
-    title = "Hello world",
-    buttons = {
-      TextButton(onClick = { }) { Text("Delete", color = theme.errorText) }
-      TextButton(onClick = { }) { Text("Dismiss") }
-    },
-    content = {
-      Text("This is some text with even more text here to show how it behaves when splitting over lines")
-      PrimaryTextButton(text = "Click me", onClick = {})
-      Text("This is some text")
-      NormalTextButton(text = "Click me", onClick = {})
-    },
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    val theme = LocalTheme.current
+    DialogContent(
+      title = "Hello world",
+      buttons = {
+        TextButton(onClick = {}) { Text("Delete", color = theme.errorText) }
+        TextButton(onClick = {}) { Text("Dismiss") }
+      },
+      content = {
+        Text(
+          "This is some text with even more text here to show how it behaves when splitting over lines"
+        )
+        PrimaryTextButton(text = "Click me", onClick = {})
+        Text("This is some text")
+        NormalTextButton(text = "Click me", onClick = {})
+      },
+    )
+  }
 
 @Preview
 @Composable
 private fun ExampleContentWithoutButtons(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  DialogContent(
-    title = "Hello world",
-    buttons = null,
-    content = {
-      Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text("This is some text")
-        PrimaryTextButton(text = "Click me", onClick = {})
-        Text("This is some text")
-        NormalTextButton(text = "Click me", onClick = {})
-      }
-    },
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    DialogContent(
+      title = "Hello world",
+      buttons = null,
+      content = {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+          Text("This is some text")
+          PrimaryTextButton(text = "Click me", onClick = {})
+          Text("This is some text")
+          NormalTextButton(text = "Click me", onClick = {})
+        }
+      },
+    )
+  }

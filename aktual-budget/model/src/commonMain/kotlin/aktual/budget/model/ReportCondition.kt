@@ -11,8 +11,8 @@ import kotlinx.serialization.json.JsonElement
 /**
  * See packages/loot-core/src/types/models/rule.ts
  *
- * [value] is a stupidly complex typescript type, and no idea what [queryFilter] is meant to be. Both are [JsonElement]
- * for now.
+ * [value] is a stupidly complex typescript type, and no idea what [queryFilter] is meant to be.
+ * Both are [JsonElement] for now.
  */
 @Serializable
 data class ReportCondition(
@@ -47,8 +47,7 @@ data class ReportCondition(
     Transfer("transfer"),
     Parent("parent"),
     Cleared("cleared"),
-    Reconciled("reconciled"),
-    ;
+    Reconciled("reconciled");
 
     object Serializer : KSerializer<Field> by enumStringSerializer()
   }
@@ -59,8 +58,7 @@ data class ReportCondition(
     Boolean("boolean"),
     Date("date"),
     Number("number"),
-    String("string"),
-    ;
+    String("string");
 
     object Serializer : KSerializer<Type> by enumStringSerializer()
   }

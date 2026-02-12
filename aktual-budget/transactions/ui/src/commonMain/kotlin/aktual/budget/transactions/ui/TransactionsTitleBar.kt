@@ -28,29 +28,22 @@ internal fun TransactionsTitleBar(
   onAction: ActionListener,
   theme: Theme = LocalTheme.current,
 ) {
-  val title = when (loadedAccount) {
-    LoadedAccount.AllAccounts -> Strings.transactionsTitleAll
-    LoadedAccount.Loading -> Strings.transactionsTitleLoading
-    is LoadedAccount.SpecificAccount -> loadedAccount.account.name ?: Strings.transactionsTitleNone
-  }
+  val title =
+    when (loadedAccount) {
+      LoadedAccount.AllAccounts -> Strings.transactionsTitleAll
+      LoadedAccount.Loading -> Strings.transactionsTitleLoading
+      is LoadedAccount.SpecificAccount ->
+        loadedAccount.account.name ?: Strings.transactionsTitleNone
+    }
 
   TopAppBar(
     colors = theme.transparentTopAppBarColors(),
     navigationIcon = {
       IconButton(onClick = { onAction(Action.NavBack) }) {
-        Icon(
-          imageVector = MaterialIcons.ArrowBack,
-          contentDescription = Strings.navBack,
-        )
+        Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
       }
     },
-    title = {
-      Text(
-        text = title,
-        maxLines = 1,
-        overflow = Ellipsis,
-      )
-    },
+    title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
     actions = {
       if (LocalPrivacyEnabled.current) {
         IconButton(
@@ -70,16 +63,15 @@ internal fun TransactionsTitleBar(
 @Preview
 @Composable
 private fun PreviewTransactionsTitleBar(
-  @PreviewParameter(TransactionsTitleBarProvider::class) params: ThemedParams<LoadedAccount>,
-) = PreviewWithColorScheme(params.type) {
-  TransactionsTitleBar(
-    loadedAccount = params.data,
-    onAction = {},
-  )
-}
+  @PreviewParameter(TransactionsTitleBarProvider::class) params: ThemedParams<LoadedAccount>
+) =
+  PreviewWithColorScheme(params.type) {
+    TransactionsTitleBar(loadedAccount = params.data, onAction = {})
+  }
 
-private class TransactionsTitleBarProvider : ThemedParameterProvider<LoadedAccount>(
-  LoadedAccount.AllAccounts,
-  LoadedAccount.Loading,
-  LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
-)
+private class TransactionsTitleBarProvider :
+  ThemedParameterProvider<LoadedAccount>(
+    LoadedAccount.AllAccounts,
+    LoadedAccount.Loading,
+    LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
+  )

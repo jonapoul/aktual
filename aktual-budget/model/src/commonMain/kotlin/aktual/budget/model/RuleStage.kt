@@ -8,8 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable(RuleStage.Serializer::class)
 enum class RuleStage(override val value: String) : SerializableByString {
   Pre(value = "pre"),
-  Post(value = "post"),
-  ;
+  Post(value = "post");
 
   override fun toString(): String = value
 

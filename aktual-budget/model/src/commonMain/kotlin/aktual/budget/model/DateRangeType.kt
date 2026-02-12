@@ -10,8 +10,7 @@ enum class DateRangeType(val value: String) {
   Last12Months(value = "Last 12 months"),
   YearToDate(value = "Year to date"),
   LastYear(value = "Last year"),
-  AllTime(value = "All time"),
-  ;
+  AllTime(value = "All time");
 
   override fun toString(): String = value
 }

@@ -28,11 +28,7 @@ internal fun UpdateCheckFailedDialog(
     modifier = modifier,
     onDismissRequest = onDismiss,
     content = {
-      UpdateCheckFailedDialogContent(
-        cause = cause,
-        onDismiss = onDismiss,
-        theme = theme,
-      )
+      UpdateCheckFailedDialogContent(cause = cause, onDismiss = onDismiss, theme = theme)
     },
   )
 }
@@ -53,10 +49,7 @@ internal fun UpdateCheckFailedDialogContent(
     content = { Text(cause) },
     buttons = {
       TextButton(onClick = onDismiss) {
-        Text(
-          text = Strings.infoCheckFailedOk,
-          color = theme.errorText,
-        )
+        Text(text = Strings.infoCheckFailedOk, color = theme.errorText)
       }
     },
   )
@@ -65,10 +58,12 @@ internal fun UpdateCheckFailedDialogContent(
 @Preview
 @Composable
 private fun PreviewCheckFailedContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  UpdateCheckFailedDialogContent(
-    cause = "Something broke lol. And here's some other rubbish to show how the text looks when wrapping lines",
-    onDismiss = {},
-  )
-}
+  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+) =
+  PreviewWithColorScheme(type) {
+    UpdateCheckFailedDialogContent(
+      cause =
+        "Something broke lol. And here's some other rubbish to show how the text looks when wrapping lines",
+      onDismiss = {},
+    )
+  }

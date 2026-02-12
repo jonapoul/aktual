@@ -49,10 +49,7 @@ internal fun Transactions(
 ) {
   val pagingItems = transactionIdSource.pagingData.collectAsLazyPagingItems()
   if (pagingItems.itemCount == 0) {
-    TransactionsEmpty(
-      modifier = modifier,
-      theme = theme,
-    )
+    TransactionsEmpty(modifier = modifier, theme = theme)
   } else {
     TransactionsFilled(
       pagingItems = pagingItems,
@@ -66,24 +63,11 @@ internal fun Transactions(
 }
 
 @Composable
-private fun TransactionsEmpty(
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) {
-  Column(
-    modifier = modifier.fillMaxHeight(),
-  ) {
-    CategoryHeader(
-      modifier = Modifier.fillMaxWidth(),
-      theme = theme,
-    )
+private fun TransactionsEmpty(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
+  Column(modifier = modifier.fillMaxHeight()) {
+    CategoryHeader(modifier = Modifier.fillMaxWidth(), theme = theme)
 
-    Box(
-      modifier = Modifier
-        .fillMaxWidth()
-        .weight(1f),
-      contentAlignment = Alignment.Center,
-    ) {
+    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
       Text(
         text = Strings.transactionsEmpty,
         textAlign = TextAlign.Center,
@@ -105,26 +89,15 @@ private fun TransactionsFilled(
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(horizontal = Dimens.Large)
-      .scrollbar(listState),
+    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Large).scrollbar(listState),
     state = listState,
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     if (format == Table) {
-      stickyHeader {
-        CategoryHeader(
-          modifier = Modifier.fillMaxWidth(),
-          theme = theme,
-        )
-      }
+      stickyHeader { CategoryHeader(modifier = Modifier.fillMaxWidth(), theme = theme) }
     }
 
-    items(
-      count = pagingItems.itemCount,
-      key = pagingItems.itemKey { it.toString() },
-    ) { index ->
+    items(count = pagingItems.itemCount, key = pagingItems.itemKey { it.toString() }) { index ->
       val id = pagingItems[index]
       if (id != null) {
         TransactionItem(
@@ -149,27 +122,32 @@ private fun TransactionsFilled(
 @TabletPreview
 @Composable
 private fun PreviewTransactions(
-  @PreviewParameter(TransactionsProvider::class) params: ThemedParams<TransactionsParams>,
-) = PreviewWithColorScheme(params.type) {
-  Transactions(
-    transactionIdSource = PreviewTransactionIdSource(params.data.transactions),
-    format = params.data.format,
-    source = previewTransactionStateSource(params.data.transactions),
-    onAction = {},
-  )
-}
+  @PreviewParameter(TransactionsProvider::class) params: ThemedParams<TransactionsParams>
+) =
+  PreviewWithColorScheme(params.type) {
+    Transactions(
+      transactionIdSource = PreviewTransactionIdSource(params.data.transactions),
+      format = params.data.format,
+      source = previewTransactionStateSource(params.data.transactions),
+      onAction = {},
+    )
+  }
 
 private data class TransactionsParams(
   val format: TransactionsFormat,
   val transactions: List<Transaction> = emptyList(),
 )
 
-private class TransactionsProvider : ThemedParameterProvider<TransactionsParams>(
-  TransactionsParams(
-    format = TransactionsFormat.List,
-    transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
-  ),
-  TransactionsParams(format = Table, transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),
-  TransactionsParams(Table),
-  TransactionsParams(TransactionsFormat.List),
-)
+private class TransactionsProvider :
+  ThemedParameterProvider<TransactionsParams>(
+    TransactionsParams(
+      format = TransactionsFormat.List,
+      transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
+    ),
+    TransactionsParams(
+      format = Table,
+      transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),
+    ),
+    TransactionsParams(Table),
+    TransactionsParams(TransactionsFormat.List),
+  )

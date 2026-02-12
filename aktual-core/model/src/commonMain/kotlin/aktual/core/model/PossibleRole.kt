@@ -8,8 +8,7 @@ import kotlinx.serialization.Serializable
 @Serializable(PossibleRole.Serializer::class)
 enum class PossibleRole(override val value: String) : SerializableByString {
   Admin("ADMIN"),
-  Basic("BASIC"),
-  ;
+  Basic("BASIC");
 
   internal object Serializer : KSerializer<PossibleRole> by enumStringSerializer()
 }

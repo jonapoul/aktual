@@ -23,8 +23,7 @@ enum class Operator(override val value: String) : SerializableByString {
   NotOneOf("notOneOf"),
   OffBudget("offBudget"),
   OnBudget("onBudget"),
-  OneOf("oneOf"),
-  ;
+  OneOf("oneOf");
 
   object Serializer : KSerializer<Operator> by enumStringSerializer()
 }

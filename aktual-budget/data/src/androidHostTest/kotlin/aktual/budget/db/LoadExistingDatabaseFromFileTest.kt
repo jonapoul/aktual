@@ -11,14 +11,14 @@ import app.cash.sqldelight.db.SqlDriver
 import assertk.assertThat
 import assertk.assertions.exists
 import assertk.assertions.isEqualTo
-import kotlinx.coroutines.test.runTest
-import okio.FileSystem
-import org.junit.runner.RunWith
-import org.robolectric.RobolectricTestRunner
 import java.io.File
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.test.runTest
+import okio.FileSystem
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class LoadExistingDatabaseFromFileTest {
@@ -45,11 +45,8 @@ class LoadExistingDatabaseFromFileTest {
     driver = AndroidSqlDriverFactory(BUDGET_ID, context, budgetFiles).create()
     val db = buildDatabase(driver)
 
-    val viewHash = db.metaQueries.withResult {
-      getValue(key = "view-hash")
-        .executeAsOneOrNull()
-        ?.value_
-    }
+    val viewHash =
+      db.metaQueries.withResult { getValue(key = "view-hash").executeAsOneOrNull()?.value_ }
 
     assertThat(viewHash).isEqualTo("c379fa428efd55a684aba4947ad054e0")
     assertThat(file).exists()
@@ -58,9 +55,7 @@ class LoadExistingDatabaseFromFileTest {
   private fun loadDatabaseIntoFile(): File {
     val databaseFile = budgetFiles.database(BUDGET_ID, mkdirs = true).toFile()
     getResourceAsStream("test-db.sqlite").use { input ->
-      databaseFile.outputStream().use { output ->
-        input.copyTo(output)
-      }
+      databaseFile.outputStream().use { output -> input.copyTo(output) }
     }
     return databaseFile
   }

@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:standard:filename")
-
 package aktual.budget.encryption
 
 import aktual.budget.model.BudgetFiles
@@ -12,6 +10,10 @@ import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import javax.crypto.Cipher
+import javax.crypto.spec.GCMParameterSpec
+import javax.crypto.spec.SecretKeySpec
+import kotlin.random.Random
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import logcat.logcat
@@ -25,10 +27,6 @@ import okio.Sink
 import okio.Source
 import okio.buffer
 import okio.use
-import javax.crypto.Cipher
-import javax.crypto.spec.GCMParameterSpec
-import javax.crypto.spec.SecretKeySpec
-import kotlin.random.Random
 
 @Inject
 @ContributesBinding(AppScope::class)
@@ -83,28 +81,24 @@ private suspend fun encrypt(
   source: Source,
   sink: Sink,
   result: (Meta) -> EncryptResult.Success,
-): EncryptResult = try {
-  val key = keys[keyId] ?: return EncryptResult.MissingKey
-  val meta = withContext(contexts.io) {
-    encryptToSink(
-      key = key,
-      keyId = keyId,
-      random = random,
-      source = source,
-      sink = sink,
-    )
+): EncryptResult =
+  try {
+    val key = keys[keyId] ?: return EncryptResult.MissingKey
+    val meta =
+      withContext(contexts.io) {
+        encryptToSink(key = key, keyId = keyId, random = random, source = source, sink = sink)
+      }
+    result(meta)
+  } catch (e: UnknownAlgorithmException) {
+    EncryptResult.UnknownAlgorithm(e.algorithm)
+  } catch (e: CancellationException) {
+    throw e
+  } catch (e: Exception) {
+    EncryptResult.OtherFailure(e.requireMessage())
+  } finally {
+    if (sink !is Buffer) runCatching { sink.close() }
+    if (source !is Buffer) runCatching { source.close() }
   }
-  result(meta)
-} catch (e: UnknownAlgorithmException) {
-  EncryptResult.UnknownAlgorithm(e.algorithm)
-} catch (e: CancellationException) {
-  throw e
-} catch (e: Exception) {
-  EncryptResult.OtherFailure(e.requireMessage())
-} finally {
-  if (sink !is Buffer) runCatching { sink.close() }
-  if (source !is Buffer) runCatching { source.close() }
-}
 
 @Throws(UnknownAlgorithmException::class)
 internal fun encryptToSink(
@@ -124,21 +118,16 @@ internal fun encryptToSink(
   // In GCM mode, the cipher automatically appends the auth tag to the ciphertext
   val encryptedWithTag = Buffer()
   CipherSink(encryptedWithTag.buffer(), cipher).buffer().use { cipherSink ->
-    source.buffer().use { src ->
-      cipherSink.writeAll(src)
-    }
+    source.buffer().use { src -> cipherSink.writeAll(src) }
   }
 
   // In GCM mode, the last AUTH_TAG_LENGTH bits are the authentication tag
-  @Suppress("MagicNumber")
-  val authTagLengthBytes = AUTH_TAG_LENGTH / BITS_PER_BYTE
+  @Suppress("MagicNumber") val authTagLengthBytes = AUTH_TAG_LENGTH / BITS_PER_BYTE
   val totalSize = encryptedWithTag.size
   val ciphertextSize = totalSize - authTagLengthBytes
 
   // Write the ciphertext (without auth tag) directly to the sink
-  sink.buffer().use { s ->
-    s.write(encryptedWithTag, ciphertextSize)
-  }
+  sink.buffer().use { s -> s.write(encryptedWithTag, ciphertextSize) }
 
   // Extract the auth tag (last 16 bytes)
   val authTag = ByteArray(authTagLengthBytes)

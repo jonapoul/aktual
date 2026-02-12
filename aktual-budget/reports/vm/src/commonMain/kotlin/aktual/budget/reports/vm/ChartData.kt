@@ -10,14 +10,11 @@ import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.YearMonthRange
 
-@Immutable
-sealed interface ChartData
+@Immutable sealed interface ChartData
 
 @Immutable
-data class CashFlowData(
-  val title: String,
-  val items: ImmutableMap<YearMonth, CashFlowDatum>,
-) : ChartData
+data class CashFlowData(val title: String, val items: ImmutableMap<YearMonth, CashFlowDatum>) :
+  ChartData
 
 @Immutable
 data class CashFlowDatum(
@@ -29,10 +26,7 @@ data class CashFlowDatum(
 )
 
 @Immutable
-data class NetWorthData(
-  val title: String,
-  val items: ImmutableMap<YearMonth, Amount>,
-) : ChartData
+data class NetWorthData(val title: String, val items: ImmutableMap<YearMonth, Amount>) : ChartData
 
 @Immutable
 sealed interface SummaryData : ChartData, DateRange {
@@ -76,7 +70,8 @@ sealed interface SummaryData : ChartData, DateRange {
 
 @Immutable
 sealed interface PercentageDivisor : DateRange {
-  data class Specific(override val start: LocalDate, override val end: LocalDate) : PercentageDivisor
+  data class Specific(override val start: LocalDate, override val end: LocalDate) :
+    PercentageDivisor
 
   data object AllTime : PercentageDivisor {
     override val start = null
@@ -116,12 +111,7 @@ data class CalendarMonth(
   val days: ImmutableList<CalendarDay>,
 )
 
-@Immutable
-data class CalendarDay(
-  val day: Int,
-  val income: Amount,
-  val expenses: Amount,
-)
+@Immutable data class CalendarDay(val day: Int, val income: Amount, val expenses: Amount)
 
 @Immutable
 enum class DateRangeMode {
@@ -149,41 +139,32 @@ data class SpendingData(
 
 @Immutable
 sealed interface SpendingDayNumber {
-  @JvmInline
-  value class Specific(val number: Int) : SpendingDayNumber
+  @JvmInline value class Specific(val number: Int) : SpendingDayNumber
+
   data object End : SpendingDayNumber
 }
 
 @Immutable
-data class SpendingDay(
-  val number: SpendingDayNumber,
-  val target: Amount?,
-  val comparison: Amount,
-)
+data class SpendingDay(val number: SpendingDayNumber, val target: Amount?, val comparison: Amount)
 
 @Immutable
 sealed interface SpendingComparison {
   data class SingleMonth(val value: YearMonth) : SpendingComparison
+
   data object Budgeted : SpendingComparison
+
   data object Average : SpendingComparison
 }
 
-@Immutable
-data class TextData(
-  val content: String,
-) : ChartData
+@Immutable data class TextData(val content: String) : ChartData
 
 @Immutable
-data class CustomData(
-  val title: String,
-  val mode: DateRangeMode,
-  val range: ReportTimeRange,
-) : ChartData
+data class CustomData(val title: String, val mode: DateRangeMode, val range: ReportTimeRange) :
+  ChartData
 
 @Immutable
 sealed interface ReportTimeRange {
-  @JvmInline
-  value class Relative(val type: DateRangeType) : ReportTimeRange
+  @JvmInline value class Relative(val type: DateRangeType) : ReportTimeRange
 
   data class Specific(val range: YearMonthRange) : ReportTimeRange
 }

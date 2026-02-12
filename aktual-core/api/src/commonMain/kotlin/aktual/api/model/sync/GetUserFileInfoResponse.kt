@@ -5,10 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 sealed interface GetUserFileInfoResponse {
-  @Serializable
-  data class Success(
-    @SerialName("data") val data: UserFile,
-  ) : GetUserFileInfoResponse
+  @Serializable data class Success(@SerialName("data") val data: UserFile) : GetUserFileInfoResponse
 
   @Serializable
   data class Failure(

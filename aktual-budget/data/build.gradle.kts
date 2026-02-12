@@ -45,7 +45,5 @@ kotlin {
     implementation(project(":aktual-core:logging"))
   }
 
-  androidMainDependencies {
-    implementation(libs.sqldelight.driver.android)
-  }
+  androidMainDependencies { implementation(libs.sqldelight.driver.android) }
 }

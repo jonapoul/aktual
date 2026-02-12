@@ -6,10 +6,10 @@ import aktual.test.testHttpClient
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine
-import kotlinx.coroutines.test.runTest
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.test.runTest
 
 class GithubApiTest {
   private lateinit var githubApi: GithubApi
@@ -47,7 +47,9 @@ class GithubApiTest {
     githubApi.getReleases(user = "abc", repo = "123", perPage = 420, pageNumber = 69)
 
     // then
-    assertThatRequestUrlEquals("https://api.github.com/repos/abc/123/releases/latest?per_page=420&page=69")
+    assertThatRequestUrlEquals(
+      "https://api.github.com/repos/abc/123/releases/latest?per_page=420&page=69"
+    )
   }
 
   @Test
@@ -63,7 +65,5 @@ class GithubApiTest {
   }
 
   private fun assertThatRequestUrlEquals(expected: String) =
-    assertThat(mockEngine.requestHistory)
-      .transform { it.last().url.toString() }
-      .isEqualTo(expected)
+    assertThat(mockEngine.requestHistory).transform { it.last().url.toString() }.isEqualTo(expected)
 }

@@ -15,10 +15,7 @@ fun ComposeContentTestRule.setAndroidThemedContent(
   type: ColorSchemeType = ColorSchemeType.Dark,
   content: @Composable () -> Unit,
 ) = setContent {
-  CompositionLocalProvider(
-    LocalTheme provides theme,
-    LocalColorSchemeType provides type,
-  ) {
+  CompositionLocalProvider(LocalTheme provides theme, LocalColorSchemeType provides type) {
     // Needed to initialise context for resource-fetching during tests
     CompositionLocalProvider(LocalInspectionMode provides true) {
       PreviewContextConfigurationEffect()

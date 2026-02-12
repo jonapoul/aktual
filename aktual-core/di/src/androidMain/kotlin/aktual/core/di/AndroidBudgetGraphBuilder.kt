@@ -17,11 +17,8 @@ class AndroidBudgetGraphBuilder(
   private val factory: BudgetGraph.Factory,
 ) : BudgetGraph.Builder {
   override fun invoke(metadata: DbMetadata): BudgetGraph {
-    val driverFactory = AndroidSqlDriverFactory(
-      id = metadata.cloudFileId,
-      context = context,
-      budgetFiles = files,
-    )
+    val driverFactory =
+      AndroidSqlDriverFactory(id = metadata.cloudFileId, context = context, budgetFiles = files)
 
     return factory.create(metadata.cloudFileId, metadata, driverFactory)
   }

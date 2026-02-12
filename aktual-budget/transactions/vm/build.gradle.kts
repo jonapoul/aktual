@@ -1,8 +1,6 @@
 import blueprint.core.commonMainDependencies
 
-plugins {
-  id("aktual.module.viewmodel")
-}
+plugins { id("aktual.module.viewmodel") }
 
 buildConfig {
   packageName("aktual.budget.transactions.vm")

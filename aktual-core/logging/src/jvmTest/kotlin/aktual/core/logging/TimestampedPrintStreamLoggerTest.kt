@@ -3,15 +3,15 @@ package aktual.core.logging
 import alakazam.test.TestClock
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import logcat.LogPriority
-import logcat.LogcatLogger
-import logcat.logcat
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.time.Instant
+import logcat.LogPriority
+import logcat.LogcatLogger
+import logcat.logcat
 
 class TimestampedPrintStreamLoggerTest {
   @BeforeTest
@@ -31,11 +31,8 @@ class TimestampedPrintStreamLoggerTest {
     val byteArrayOutputStream = ByteArrayOutputStream()
     val stream = PrintStream(byteArrayOutputStream)
     val clock = TestClock { Instant.fromEpochMilliseconds(timeMs) }
-    LogcatLogger.loggers += TimestampedPrintStreamLogger(
-      stream,
-      clock,
-      minPriority = LogPriority.DEBUG,
-    )
+    LogcatLogger.loggers +=
+      TimestampedPrintStreamLogger(stream, clock, minPriority = LogPriority.DEBUG)
 
     // when
     logcat.i { "Hello world" }
@@ -44,11 +41,12 @@ class TimestampedPrintStreamLoggerTest {
     // then
     val contents = byteArrayOutputStream.toString().trim().lines()
     byteArrayOutputStream.flush()
-    assertThat(contents).isEqualTo(
-      listOf(
-        "2025-05-24T07:53:33.000Z I/TimestampedPrintStreamLoggerTest: Hello world",
-        "2025-05-24T07:53:33.000Z D/TAGGED: This one has a tag",
-      ),
-    )
+    assertThat(contents)
+      .isEqualTo(
+        listOf(
+          "2025-05-24T07:53:33.000Z I/TimestampedPrintStreamLoggerTest: Hello world",
+          "2025-05-24T07:53:33.000Z D/TAGGED: This one has a tag",
+        )
+      )
   }
 }

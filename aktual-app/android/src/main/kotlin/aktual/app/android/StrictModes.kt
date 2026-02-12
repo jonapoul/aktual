@@ -8,38 +8,39 @@ import android.os.Build.VERSION_CODES.UPSIDE_DOWN_CAKE
 import android.os.StrictMode
 import androidx.annotation.ChecksSdkIntAtLeast
 
-internal fun threadPolicy() = StrictMode.ThreadPolicy
-  .Builder()
-  .ifVersionAtLeast(UPSIDE_DOWN_CAKE) { detectExplicitGc() }
-  .detectCustomSlowCalls()
-  // .detectDiskReads() // probably should use these two, but too much faff
-  // .detectDiskWrites()
-  .detectNetwork()
-  .detectResourceMismatches()
-  .detectUnbufferedIo()
-  .penaltyLog()
-  .penaltyDeath()
-  .build()
+internal fun threadPolicy() =
+  StrictMode.ThreadPolicy.Builder()
+    .ifVersionAtLeast(UPSIDE_DOWN_CAKE) { detectExplicitGc() }
+    .detectCustomSlowCalls()
+    // .detectDiskReads() // probably should use these two, but too much faff
+    // .detectDiskWrites()
+    .detectNetwork()
+    .detectResourceMismatches()
+    .detectUnbufferedIo()
+    .penaltyLog()
+    .penaltyDeath()
+    .build()
 
-internal fun vmPolicy() = StrictMode.VmPolicy
-  .Builder()
-  .detectActivityLeaks()
-  .ifVersionAtLeast(BAKLAVA) { detectBlockedBackgroundActivityLaunch() }
-  .detectCleartextNetwork()
-  .detectContentUriWithoutPermission()
-  .ifVersionAtLeast(Q) { detectCredentialProtectedWhileLocked() }
-  .detectFileUriExposure()
-  .ifVersionAtLeast(Q) { detectImplicitDirectBoot() }
-  .ifVersionAtLeast(S) { detectIncorrectContextUse() }
-  .detectLeakedClosableObjects()
-  .detectLeakedRegistrationObjects()
-  .detectLeakedSqlLiteObjects()
-  // .detectNonSdkApiUsage() // blocks usage of layout inspector
-  // .ifVersionAtLeast(S) { detectUnsafeIntentLaunch() } // blocks bitwarden - too much faff
-  // .detectUntaggedSockets() // need to add manual tags to all network requests - too much faff
-  .penaltyLog()
-  .penaltyDeath()
-  .build()
+internal fun vmPolicy() =
+  StrictMode.VmPolicy.Builder()
+    .detectActivityLeaks()
+    .ifVersionAtLeast(BAKLAVA) { detectBlockedBackgroundActivityLaunch() }
+    .detectCleartextNetwork()
+    .detectContentUriWithoutPermission()
+    .ifVersionAtLeast(Q) { detectCredentialProtectedWhileLocked() }
+    .detectFileUriExposure()
+    .ifVersionAtLeast(Q) { detectImplicitDirectBoot() }
+    .ifVersionAtLeast(S) { detectIncorrectContextUse() }
+    .detectLeakedClosableObjects()
+    .detectLeakedRegistrationObjects()
+    .detectLeakedSqlLiteObjects()
+    // .detectNonSdkApiUsage() // blocks usage of layout inspector
+    // .ifVersionAtLeast(S) { detectUnsafeIntentLaunch() } // blocks bitwarden - too much faff
+    // .detectUntaggedSockets() // need to add manual tags to all network requests - too much
+    // faff
+    .penaltyLog()
+    .penaltyDeath()
+    .build()
 
 @ChecksSdkIntAtLeast(parameter = 0, lambda = 1)
 private inline fun <B> B.ifVersionAtLeast(version: Int, action: B.() -> B): B =

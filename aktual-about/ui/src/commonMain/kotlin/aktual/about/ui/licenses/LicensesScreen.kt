@@ -7,10 +7,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
-fun LicensesScreen(
-  nav: LicensesNavigator,
-  viewModel: LicensesViewModel = metroViewModel(),
-) {
+fun LicensesScreen(nav: LicensesNavigator, viewModel: LicensesViewModel = metroViewModel()) {
   val licensesState by viewModel.licensesState.collectAsStateWithLifecycle()
   val searchBarState by viewModel.searchBarState.collectAsStateWithLifecycle()
 

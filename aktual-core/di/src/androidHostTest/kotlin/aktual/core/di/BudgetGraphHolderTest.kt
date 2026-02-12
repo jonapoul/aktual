@@ -21,15 +21,15 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.createGraphFactory
+import kotlin.test.AfterTest
+import kotlin.test.Test
+import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import kotlin.test.AfterTest
-import kotlin.test.Test
-import kotlin.uuid.Uuid
 
 @RunWith(RobolectricTestRunner::class)
 class BudgetGraphHolderTest {
@@ -39,11 +39,9 @@ class BudgetGraphHolderTest {
   private fun TestScope.before() {
     val context = ApplicationProvider.getApplicationContext<Context>()
     val contexts = TestCoroutineContexts(standardDispatcher)
-    appGraph = createGraphFactory<TestAppGraph.Factory>().create(
-      scope = this,
-      contexts = contexts,
-      context = context,
-    )
+    appGraph =
+      createGraphFactory<TestAppGraph.Factory>()
+        .create(scope = this, contexts = contexts, context = context)
 
     holder = appGraph.budgetGraphHolder
   }
@@ -89,23 +87,17 @@ class BudgetGraphHolderTest {
     assertFailure { graph2.fetchData(bankId) }.isInstanceOf<IllegalStateException>()
   }
 
-  private fun metadata(id: String) = DbMetadata(
-    data = persistentMapOf(
-      DbMetadata.CloudFileId to BudgetId(id),
-    ),
-  )
+  private fun metadata(id: String) =
+    DbMetadata(data = persistentMapOf(DbMetadata.CloudFileId to BudgetId(id)))
 
-  private suspend fun BudgetGraph.fetchData(bankId: BankId) = database
-    .banksQueries
-    .withResult { getByBankId(bankId).executeAsList() }
+  private suspend fun BudgetGraph.fetchData(bankId: BankId) =
+    database.banksQueries.withResult { getByBankId(bankId).executeAsList() }
 
   private suspend fun BudgetGraph.insertData(
     bankId: BankId,
     id: Uuid = Uuid.random(),
     name: String = "my bank name",
-  ) = database
-    .banksQueries
-    .withoutResult { insert(id, bankId, name) }
+  ) = database.banksQueries.withoutResult { insert(id, bankId, name) }
 
   @DependencyGraph(
     scope = AppScope::class,

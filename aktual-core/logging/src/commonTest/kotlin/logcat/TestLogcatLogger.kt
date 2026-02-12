@@ -8,11 +8,7 @@ internal class TestLogcatLogger : LogcatLogger {
   var latestPriority: LogPriority? = null
   var shouldLog = true
 
-  data class Log(
-    val priority: LogPriority,
-    val tag: String,
-    val message: String,
-  )
+  data class Log(val priority: LogPriority, val tag: String, val message: String)
 
   override fun isLoggable(priority: LogPriority, tag: String): Boolean {
     latestPriority = priority

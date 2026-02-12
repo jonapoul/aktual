@@ -7,8 +7,5 @@ import androidx.compose.runtime.Immutable
 sealed interface BottomBarState {
   data object Hidden : BottomBarState
 
-  data class Visible(
-    val pingState: PingState,
-    val budgetName: String?,
-  ) : BottomBarState
+  data class Visible(val pingState: PingState, val budgetName: String?) : BottomBarState
 }

@@ -1,8 +1,6 @@
 package aktual.codegen
 
-@Target(AnnotationTarget.CLASS)
-@Retention(AnnotationRetention.SOURCE)
-annotation class KtorApi
+@Target(AnnotationTarget.CLASS) @Retention(AnnotationRetention.SOURCE) annotation class KtorApi
 
 @Target(AnnotationTarget.FUNCTION)
 @Retention(AnnotationRetention.SOURCE)

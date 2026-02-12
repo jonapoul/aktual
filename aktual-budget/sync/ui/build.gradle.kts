@@ -3,9 +3,7 @@ import aktual.gradle.optIn
 import blueprint.core.androidMainDependencies
 import blueprint.core.commonMainDependencies
 
-plugins {
-  id("aktual.module.compose")
-}
+plugins { id("aktual.module.compose") }
 
 optIn(EXPERIMENTAL_MATERIAL_3)
 
@@ -17,7 +15,5 @@ kotlin {
     implementation(project(":aktual-core:model"))
   }
 
-  androidMainDependencies {
-    implementation(libs.androidx.activity.compose)
-  }
+  androidMainDependencies { implementation(libs.androidx.activity.compose) }
 }

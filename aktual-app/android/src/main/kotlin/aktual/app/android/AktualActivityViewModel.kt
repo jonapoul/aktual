@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:standard:indent")
-
 package aktual.app.android
 
 import aktual.app.nav.RootViewModel
@@ -32,14 +30,15 @@ class AktualActivityViewModel(
   files: BudgetFiles,
   budgetComponents: BudgetGraphHolder,
   preferences: AppGlobalPreferences,
-) : RootViewModel(
-  appScope = appScope,
-  contexts = contexts,
-  connectionMonitor = connectionMonitor,
-  serverPinger = serverPinger,
-  pingStateHolder = pingStateHolder,
-  serverVersionFetcher = serverVersionFetcher,
-  files = files,
-  budgetComponents = budgetComponents,
-  preferences = preferences,
-)
+) :
+  RootViewModel(
+    appScope = appScope,
+    contexts = contexts,
+    connectionMonitor = connectionMonitor,
+    serverPinger = serverPinger,
+    pingStateHolder = pingStateHolder,
+    serverVersionFetcher = serverVersionFetcher,
+    files = files,
+    budgetComponents = budgetComponents,
+    preferences = preferences,
+  )

@@ -21,10 +21,8 @@ internal inline fun aktualIcon(
   width: Float,
   height: Float,
   block: ImageVector.Builder.() -> ImageVector.Builder,
-): ImageVector = ImageVector
-  .Builder("Aktual.$name", width.dp, height.dp, width, height)
-  .block()
-  .build()
+): ImageVector =
+  ImageVector.Builder("Aktual.$name", width.dp, height.dp, width, height).block().build()
 
 internal inline fun ImageVector.Builder.aktualPath(
   fillAlpha: Float = 1f,
@@ -32,15 +30,16 @@ internal inline fun ImageVector.Builder.aktualPath(
   strokeLineMiter: Float = 1f,
   pathFillType: PathFillType = PathFillType.NonZero,
   pathBuilder: PathBuilder.() -> Unit,
-) = path(
-  fill = SolidColor(Color.Black),
-  fillAlpha = fillAlpha,
-  stroke = null,
-  strokeAlpha = strokeAlpha,
-  strokeLineWidth = 0f,
-  strokeLineCap = StrokeCap.Butt,
-  strokeLineJoin = StrokeJoin.Miter,
-  strokeLineMiter = strokeLineMiter,
-  pathFillType = pathFillType,
-  pathBuilder = pathBuilder,
-)
+) =
+  path(
+    fill = SolidColor(Color.Black),
+    fillAlpha = fillAlpha,
+    stroke = null,
+    strokeAlpha = strokeAlpha,
+    strokeLineWidth = 0f,
+    strokeLineCap = StrokeCap.Butt,
+    strokeLineJoin = StrokeJoin.Miter,
+    strokeLineMiter = strokeLineMiter,
+    pathFillType = pathFillType,
+    pathBuilder = pathBuilder,
+  )

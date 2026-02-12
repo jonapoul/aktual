@@ -9,6 +9,5 @@ import java.util.prefs.Preferences
 @BindingContainer
 @ContributesTo(AppScope::class)
 object JvmPreferencesContainer {
-  @Provides
-  fun prefs(): Preferences = Preferences.userRoot().node("aktual")
+  @Provides fun prefs(): Preferences = Preferences.userRoot().node("aktual")
 }

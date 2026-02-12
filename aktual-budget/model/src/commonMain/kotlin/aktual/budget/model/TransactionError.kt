@@ -14,8 +14,7 @@ data class TransactionError(
 ) {
   @Serializable(Type.Serializer::class)
   enum class Type(override val value: String) : SerializableByString {
-    SplitTransactionError("SplitTransactionError"),
-    ;
+    SplitTransactionError("SplitTransactionError");
 
     internal object Serializer : KSerializer<Type> by enumStringSerializer()
   }

@@ -7,5 +7,6 @@ import kotlinx.coroutines.flow.Flow
 @Immutable
 interface TransactionStateSource {
   fun isChecked(id: TransactionId): Flow<Boolean>
+
   fun transactionState(id: TransactionId): Flow<TransactionState>
 }

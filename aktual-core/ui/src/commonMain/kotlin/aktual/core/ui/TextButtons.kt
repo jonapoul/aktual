@@ -44,8 +44,12 @@ fun PrimaryTextButton(
   style: TextStyle = AktualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
-  colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primaryButton(pressed) },
-  content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
+  colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed ->
+    scheme.primaryButton(pressed)
+  },
+  content: @Composable RowScope.() -> Unit = {
+    DefaultTextButtonContent(text, style, fontSize, prefix)
+  },
 ) {
   BasicTextButton(
     text = text,
@@ -77,11 +81,13 @@ fun PrimaryTextButtonWithLoading(
   style: TextStyle = AktualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
-  colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed -> scheme.primaryButton(pressed) },
+  colors: @Composable (Theme, Boolean) -> ButtonColors = { scheme, pressed ->
+    scheme.primaryButton(pressed)
+  },
 ) {
   PrimaryTextButton(
     text = text,
-//    modifier = modifier,
+    //    modifier = modifier,
     modifier = Modifier.testTag(Tags.PrimaryTextButtonWithLoading),
     isEnabled = isEnabled && !isLoading,
     contentPadding = contentPadding,
@@ -94,14 +100,9 @@ fun PrimaryTextButtonWithLoading(
     onClick = onClick,
     content = {
       // Using opacity here so we don't adjust the size bounds of the containing box
-      Box(
-        modifier = modifier,
-        contentAlignment = Alignment.Center,
-      ) {
+      Box(modifier = modifier, contentAlignment = Alignment.Center) {
         CircularProgressIndicator(
-          modifier = Modifier
-            .alpha(if (isLoading) 1f else 0f)
-            .size(20.dp),
+          modifier = Modifier.alpha(if (isLoading) 1f else 0f).size(20.dp),
           color = LocalTheme.current.buttonPrimaryText,
           strokeWidth = 2.dp,
         )
@@ -131,7 +132,9 @@ fun NormalTextButton(
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   colors: @Composable (Theme, Boolean) -> ButtonColors = { t, pressed -> t.normalButton(pressed) },
-  content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
+  content: @Composable RowScope.() -> Unit = {
+    DefaultTextButtonContent(text, style, fontSize, prefix)
+  },
 ) {
   BareTextButton(
     text = text,
@@ -162,8 +165,12 @@ fun BareTextButton(
   style: TextStyle = AktualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
-  colors: @Composable (Theme, Boolean) -> ButtonColors = { theme, pressed -> theme.bareButton(pressed) },
-  content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
+  colors: @Composable (Theme, Boolean) -> ButtonColors = { theme, pressed ->
+    theme.bareButton(pressed)
+  },
+  content: @Composable RowScope.() -> Unit = {
+    DefaultTextButtonContent(text, style, fontSize, prefix)
+  },
 ) {
   BasicTextButton(
     text = text,
@@ -195,7 +202,9 @@ fun BasicTextButton(
   style: TextStyle = LocalTextStyle.current,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
-  content: @Composable RowScope.() -> Unit = { DefaultTextButtonContent(text, style, fontSize, prefix) },
+  content: @Composable RowScope.() -> Unit = {
+    DefaultTextButtonContent(text, style, fontSize, prefix)
+  },
 ) {
   val theme = LocalTheme.current
   val isPressed by interactionSource.collectIsPressedAsState()
@@ -222,11 +231,7 @@ private fun RowScope.DefaultTextButtonContent(
 ) {
   prefix?.invoke()
 
-  Text(
-    text = text,
-    style = style,
-    fontSize = fontSize,
-  )
+  Text(text = text, style = style, fontSize = fontSize)
 }
 
 private val ButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
@@ -237,49 +242,37 @@ val Typography.buttonTextStyle: TextStyle
 @Preview
 @Composable
 private fun PreviewBare(
-  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>,
-) = PreviewWithColorScheme(params.type) {
-  BareTextButton(
-    text = "Bare",
-    isEnabled = params.data,
-    onClick = {},
-  )
-}
+  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>
+) =
+  PreviewWithColorScheme(params.type) {
+    BareTextButton(text = "Bare", isEnabled = params.data, onClick = {})
+  }
 
 @Preview
 @Composable
 private fun PreviewPrimary(
-  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>,
-) = PreviewWithColorScheme(params.type) {
-  PrimaryTextButton(
-    text = "Primary",
-    isEnabled = params.data,
-    onClick = {},
-  )
-}
+  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>
+) =
+  PreviewWithColorScheme(params.type) {
+    PrimaryTextButton(text = "Primary", isEnabled = params.data, onClick = {})
+  }
 
 @Preview
 @Composable
 private fun PreviewNormal(
-  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>,
-) = PreviewWithColorScheme(params.type) {
-  NormalTextButton(
-    text = "Normal",
-    isEnabled = params.data,
-    onClick = {},
-  )
-}
+  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>
+) =
+  PreviewWithColorScheme(params.type) {
+    NormalTextButton(text = "Normal", isEnabled = params.data, onClick = {})
+  }
 
 @Preview
 @Composable
 private fun PreviewPrimaryWithLoadingNotLoading(
-  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>,
-) = PreviewWithColorScheme(params.type) {
-  PrimaryTextButtonWithLoading(
-    text = "OK",
-    isLoading = params.data,
-    onClick = {},
-  )
-}
+  @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>
+) =
+  PreviewWithColorScheme(params.type) {
+    PrimaryTextButtonWithLoading(text = "OK", isLoading = params.data, onClick = {})
+  }
 
 private class BoolColorSchemeParameters : ThemedParameterProvider<Boolean>(true, false)

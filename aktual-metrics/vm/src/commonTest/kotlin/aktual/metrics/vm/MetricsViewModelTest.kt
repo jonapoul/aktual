@@ -13,10 +13,6 @@ import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.runTest
-import kotlinx.serialization.SerializationException
 import java.io.IOException
 import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
@@ -26,6 +22,10 @@ import kotlin.time.Duration.Companion.hours
 import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.test.runTest
+import kotlinx.serialization.SerializationException
 
 class MetricsViewModelTest {
   private lateinit var metricsApi: MetricsApi
@@ -39,28 +39,32 @@ class MetricsViewModelTest {
   }
 
   private fun buildViewModel() {
-    viewModel = MetricsViewModel(
-      apisStateHolder = apisStateHolder,
-      contexts = TestCoroutineContexts(EmptyCoroutineContext),
-      clock = TestClock(EXAMPLE_INSTANT),
-    )
+    viewModel =
+      MetricsViewModel(
+        apisStateHolder = apisStateHolder,
+        contexts = TestCoroutineContexts(EmptyCoroutineContext),
+        clock = TestClock(EXAMPLE_INSTANT),
+      )
   }
 
   @Test
   fun `Fetch data on load and refresh`() = runTest {
     // given
     apisStateHolder.update { buildApis() }
-    coEvery { metricsApi.getMetrics() } coAnswers {
-      delay(200.milliseconds)
-      GetMetricsResponse(EXAMPLE_MEMORY, EXAMPLE_UPTIME)
-    }
+    coEvery { metricsApi.getMetrics() } coAnswers
+      {
+        delay(200.milliseconds)
+        GetMetricsResponse(EXAMPLE_MEMORY, EXAMPLE_UPTIME)
+      }
 
     // when
     buildViewModel()
     viewModel.state.test {
       // then
       assertThatNextEmissionIsEqualTo(MetricsState.Loading)
-      assertThatNextEmissionIsEqualTo(MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT))
+      assertThatNextEmissionIsEqualTo(
+        MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT)
+      )
       coVerify(exactly = 1) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
 
@@ -69,7 +73,9 @@ class MetricsViewModelTest {
 
       // then
       assertThatNextEmissionIsEqualTo(MetricsState.Loading)
-      assertThatNextEmissionIsEqualTo(MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT))
+      assertThatNextEmissionIsEqualTo(
+        MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT)
+      )
       coVerify(exactly = 2) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
 
@@ -124,20 +130,19 @@ class MetricsViewModelTest {
     }
   }
 
-  private fun buildApis(
-    metricsApi: MetricsApi? = this.metricsApi,
-  ) = metricsApi?.let {
-    AktualApis(
-      serverUrl = SERVER_URL,
-      client = mockk(),
-      account = mockk(),
-      base = mockk(),
-      health = mockk(),
-      metrics = it,
-      sync = mockk(),
-      syncDownload = mockk(),
-    )
-  }
+  private fun buildApis(metricsApi: MetricsApi? = this.metricsApi) =
+    metricsApi?.let {
+      AktualApis(
+        serverUrl = SERVER_URL,
+        client = mockk(),
+        account = mockk(),
+        base = mockk(),
+        health = mockk(),
+        metrics = it,
+        sync = mockk(),
+        syncDownload = mockk(),
+      )
+    }
 
   private companion object {
     private val SERVER_URL = ServerUrl("https://server.com/actual-budget")
@@ -145,12 +150,13 @@ class MetricsViewModelTest {
     // Mon Dec 08 2025 16:37:13.825
     private val EXAMPLE_INSTANT = Instant.fromEpochMilliseconds(1765211833825L)
     private val EXAMPLE_UPTIME = 123.days + 4.hours + 5.seconds + 678.milliseconds
-    private val EXAMPLE_MEMORY = GetMetricsResponse.Memory(
-      rss = 112377856L.bytes,
-      heapTotal = 32088064L.bytes,
-      heapUsed = 29558608L.bytes,
-      external = 3925760L.bytes,
-      arrayBuffers = 387791L.bytes,
-    )
+    private val EXAMPLE_MEMORY =
+      GetMetricsResponse.Memory(
+        rss = 112377856L.bytes,
+        heapTotal = 32088064L.bytes,
+        heapUsed = 29558608L.bytes,
+        external = 3925760L.bytes,
+        arrayBuffers = 387791L.bytes,
+      )
   }
 }

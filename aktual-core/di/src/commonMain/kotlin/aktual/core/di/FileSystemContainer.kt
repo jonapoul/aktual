@@ -10,7 +10,5 @@ import okio.FileSystem
 @BindingContainer
 @ContributesTo(AppScope::class)
 object FileSystemContainer {
-  @Provides
-  @SingleIn(AppScope::class)
-  fun provides(): FileSystem = FileSystem.Companion.SYSTEM
+  @Provides @SingleIn(AppScope::class) fun provides(): FileSystem = FileSystem.Companion.SYSTEM
 }

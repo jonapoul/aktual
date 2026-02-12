@@ -85,10 +85,7 @@ internal fun SettingsScaffold(
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = {
           IconButton(onClick = { onAction(SettingsAction.NavBack) }) {
-            Icon(
-              imageVector = MaterialIcons.ArrowBack,
-              contentDescription = Strings.navBack,
-            )
+            Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
           }
         },
         title = { Text(Strings.settingsToolbar) },
@@ -99,9 +96,7 @@ internal fun SettingsScaffold(
     Box {
       val hazeState = remember { HazeState() }
 
-      WavyBackground(
-        modifier = Modifier.hazeSource(hazeState),
-      )
+      WavyBackground(modifier = Modifier.hazeSource(hazeState))
 
       WithHazeState(hazeState) {
         SettingsContent(
@@ -123,10 +118,7 @@ private fun SettingsContent(
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier
-      .fillMaxSize()
-      .padding(Dimens.Large)
-      .scrollbar(listState),
+    modifier = modifier.fillMaxSize().padding(Dimens.Large).scrollbar(listState),
     state = listState,
   ) {
     itemsIndexed(values) { i, value ->
@@ -154,19 +146,19 @@ private fun PreferenceItem(
   onChange: (PreferenceValue) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Box(
-    modifier = modifier,
-  ) {
+  Box(modifier = modifier) {
     when (value) {
-      is PreferenceValue.Theme -> ThemePreferenceItem(
-        config = value.config,
-        onChange = { onChange(PreferenceValue.Theme(it)) },
-      )
+      is PreferenceValue.Theme ->
+        ThemePreferenceItem(
+          config = value.config,
+          onChange = { onChange(PreferenceValue.Theme(it)) },
+        )
 
-      is PreferenceValue.ShowBottomBar -> ShowBottomBarPreferenceItem(
-        value = value.show,
-        onChange = { onChange(PreferenceValue.ShowBottomBar(it)) },
-      )
+      is PreferenceValue.ShowBottomBar ->
+        ShowBottomBarPreferenceItem(
+          value = value.show,
+          onChange = { onChange(PreferenceValue.ShowBottomBar(it)) },
+        )
     }
   }
 }
@@ -174,21 +166,20 @@ private fun PreferenceItem(
 @PortraitPreview
 @Composable
 private fun PreviewSettingsScaffold(
-  @PreviewParameter(SettingsScaffoldProvider::class) params: ThemedParams<List<PreferenceValue>>,
-) = PreviewWithColorScheme(params.type) {
-  SettingsScaffold(
-    onAction = {},
-    values = params.data.toImmutableList(),
-  )
-}
+  @PreviewParameter(SettingsScaffoldProvider::class) params: ThemedParams<List<PreferenceValue>>
+) =
+  PreviewWithColorScheme(params.type) {
+    SettingsScaffold(onAction = {}, values = params.data.toImmutableList())
+  }
 
-private class SettingsScaffoldProvider : ThemedParameterProvider<List<PreferenceValue>>(
-  listOf(
-    PreferenceValue.Theme(ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Dark)),
-    PreferenceValue.ShowBottomBar(show = false),
-  ),
-  listOf(
-    PreferenceValue.Theme(ThemeConfig(RegularColorSchemeType.Light, DarkColorSchemeType.Dark)),
-    PreferenceValue.ShowBottomBar(show = true),
-  ),
-)
+private class SettingsScaffoldProvider :
+  ThemedParameterProvider<List<PreferenceValue>>(
+    listOf(
+      PreferenceValue.Theme(ThemeConfig(RegularColorSchemeType.Dark, DarkColorSchemeType.Dark)),
+      PreferenceValue.ShowBottomBar(show = false),
+    ),
+    listOf(
+      PreferenceValue.Theme(ThemeConfig(RegularColorSchemeType.Light, DarkColorSchemeType.Dark)),
+      PreferenceValue.ShowBottomBar(show = true),
+    ),
+  )

@@ -32,38 +32,40 @@ internal fun PasswordEntryText(
     value = password.value,
     onValueChange = { value -> onValueChange(Password(value)) },
     placeholderText = placeholderText,
-    visualTransformation = if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
-    keyboardOptions = KeyboardOptions(
-      autoCorrectEnabled = false,
-      capitalization = KeyboardCapitalization.None,
-      keyboardType = KeyboardType.Password,
-      imeAction = imeAction,
-    ),
-    keyboardActions = if (onGo == null) KeyboardActions.Default else KeyboardActions(onGo = { onGo() }),
+    visualTransformation =
+      if (showPassword) VisualTransformation.None else PasswordVisualTransformation(),
+    keyboardOptions =
+      KeyboardOptions(
+        autoCorrectEnabled = false,
+        capitalization = KeyboardCapitalization.None,
+        keyboardType = KeyboardType.Password,
+        imeAction = imeAction,
+      ),
+    keyboardActions =
+      if (onGo == null) KeyboardActions.Default else KeyboardActions(onGo = { onGo() }),
   )
 }
 
 @Preview
 @Composable
 private fun PreviewPasswordEntryText(
-  @PreviewParameter(PasswordEntryProvider::class) params: ThemedParams<PasswordEntryParams>,
-) = PreviewWithColorScheme(params.type) {
-  PasswordEntryText(
-    password = params.data.password,
-    placeholderText = "Password",
-    showPassword = params.data.showPassword,
-    onValueChange = {},
-    onGo = {},
+  @PreviewParameter(PasswordEntryProvider::class) params: ThemedParams<PasswordEntryParams>
+) =
+  PreviewWithColorScheme(params.type) {
+    PasswordEntryText(
+      password = params.data.password,
+      placeholderText = "Password",
+      showPassword = params.data.showPassword,
+      onValueChange = {},
+      onGo = {},
+    )
+  }
+
+private data class PasswordEntryParams(val password: Password, val showPassword: Boolean)
+
+private class PasswordEntryProvider :
+  ThemedParameterProvider<PasswordEntryParams>(
+    PasswordEntryParams(password = Password.Empty, showPassword = false),
+    PasswordEntryParams(password = Password.Dummy, showPassword = false),
+    PasswordEntryParams(password = Password.Dummy, showPassword = true),
   )
-}
-
-private data class PasswordEntryParams(
-  val password: Password,
-  val showPassword: Boolean,
-)
-
-private class PasswordEntryProvider : ThemedParameterProvider<PasswordEntryParams>(
-  PasswordEntryParams(password = Password.Empty, showPassword = false),
-  PasswordEntryParams(password = Password.Dummy, showPassword = false),
-  PasswordEntryParams(password = Password.Dummy, showPassword = true),
-)

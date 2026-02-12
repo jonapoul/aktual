@@ -15,54 +15,53 @@ import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 
 class ModuleMultiplatform : Plugin<Project> {
-  override fun apply(target: Project): Unit = with(target) {
-    with(pluginManager) {
-      apply(KotlinMultiplatformPluginWrapper::class)
-      apply(KotlinMultiplatformAndroidPlugin::class)
-      apply(ConventionKotlinBase::class)
-      apply(ConventionIdea::class)
-      apply(ConventionKover::class)
-      apply(ConventionStyle::class)
-      apply(ConventionTest::class)
-    }
+  override fun apply(target: Project): Unit =
+    with(target) {
+      with(pluginManager) {
+        apply(KotlinMultiplatformPluginWrapper::class)
+        apply(KotlinMultiplatformAndroidPlugin::class)
+        apply(ConventionKotlinBase::class)
+        apply(ConventionIdea::class)
+        apply(ConventionKover::class)
+        apply(ConventionStyle::class)
+        apply(ConventionTest::class)
+      }
 
-    kotlin {
-      applyDefaultHierarchyTemplate()
+      kotlin {
+        applyDefaultHierarchyTemplate()
 
-      jvm()
+        jvm()
 
-      extensions.configure(KotlinMultiplatformAndroidLibraryTarget::class) {
-        namespace = buildNamespace()
-        minSdk = providers.intProperty("aktual.android.minSdk").get()
-        compileSdk = providers.intProperty("aktual.android.compileSdk").get()
-        packaging.commonConfigure()
-        lint.commonConfigure(target)
-        withHostTest {
-          // For Robolectric
-          isIncludeAndroidResources = true
+        extensions.configure(KotlinMultiplatformAndroidLibraryTarget::class) {
+          namespace = buildNamespace()
+          minSdk = providers.intProperty("aktual.android.minSdk").get()
+          compileSdk = providers.intProperty("aktual.android.compileSdk").get()
+          packaging.commonConfigure()
+          lint.commonConfigure(target)
+          withHostTest {
+            // For Robolectric
+            isIncludeAndroidResources = true
+          }
+        }
+
+        compilerOptions {
+          freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+        }
+
+        commonMainDependencies {
+          implementation(libs["alakazam.kotlin"])
+          implementation(libs["kotlinx.coroutines.core"])
+        }
+
+        commonTestDependencies {
+          testLibraries.forEach { lib -> implementation(lib) }
+          implementation(project(":aktual-test:kotlin"))
+        }
+
+        androidHostTestDependencies {
+          androidTestLibraries.forEach { lib -> implementation(lib) }
+          implementation(project(":aktual-test:android"))
         }
       }
-
-      compilerOptions {
-        freeCompilerArgs.addAll(
-          "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
-        )
-      }
-
-      commonMainDependencies {
-        implementation(libs["alakazam.kotlin"])
-        implementation(libs["kotlinx.coroutines.core"])
-      }
-
-      commonTestDependencies {
-        testLibraries.forEach { lib -> implementation(lib) }
-        implementation(project(":aktual-test:kotlin"))
-      }
-
-      androidHostTestDependencies {
-        androidTestLibraries.forEach { lib -> implementation(lib) }
-        implementation(project(":aktual-test:android"))
-      }
     }
-  }
 }

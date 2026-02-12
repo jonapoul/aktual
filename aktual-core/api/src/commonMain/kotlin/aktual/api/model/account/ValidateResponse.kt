@@ -6,15 +6,10 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 sealed interface ValidateResponse {
-  @Serializable
-  data class Success(
-    @SerialName("data") val data: Data,
-  ) : ValidateResponse
+  @Serializable data class Success(@SerialName("data") val data: Data) : ValidateResponse
 
   @Serializable
-  data class Failure(
-    @SerialName("reason") val reason: FailureReason,
-  ) : ValidateResponse
+  data class Failure(@SerialName("reason") val reason: FailureReason) : ValidateResponse
 
   @Serializable
   data class Data(

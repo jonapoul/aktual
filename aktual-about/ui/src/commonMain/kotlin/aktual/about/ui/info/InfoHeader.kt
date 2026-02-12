@@ -32,9 +32,7 @@ internal fun InfoHeader(
   theme: Theme = LocalTheme.current,
 ) {
   Row(
-    modifier = modifier
-      .wrapContentWidth()
-      .padding(10.dp),
+    modifier = modifier.wrapContentWidth().padding(10.dp),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -52,28 +50,14 @@ internal fun InfoHeader(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center,
     ) {
-      Text(
-        text = appName,
-        fontSize = 25.sp,
-        fontWeight = FontWeight.W700,
-        color = theme.pageText,
-      )
-      Text(
-        text = Strings.infoSubtitle1(year),
-        color = theme.pageTextSubdued,
-      )
-      Text(
-        text = Strings.infoSubtitle2,
-        color = theme.pageTextSubdued,
-      )
+      Text(text = appName, fontSize = 25.sp, fontWeight = FontWeight.W700, color = theme.pageText)
+      Text(text = Strings.infoSubtitle1(year), color = theme.pageTextSubdued)
+      Text(text = Strings.infoSubtitle2, color = theme.pageTextSubdued)
     }
   }
 }
 
 @Preview
 @Composable
-private fun PreviewHeader(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType,
-) = PreviewWithColorScheme(type) {
-  InfoHeader(year = 2025)
-}
+private fun PreviewHeader(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+  PreviewWithColorScheme(type) { InfoHeader(year = 2025) }
