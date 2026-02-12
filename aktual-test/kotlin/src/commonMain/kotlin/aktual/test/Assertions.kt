@@ -102,16 +102,13 @@ fun diff(expected: String, actual: String): String {
         }
 
         // Case 2: Prefer consuming a line from actual if it leads to a longer match later.
-        // This
-        // means a line was
-        // inserted in actual that doesn't exist in expected.
+        // This means a line was inserted in actual that doesn't exist in expected.
         j < actualLines.size && (i == expectedLines.size || dp[i][j + 1] >= dp[i + 1][j]) -> {
           appendLine("--- ${actualLines[j]}")
           j++
         }
 
-        // Case 3: consume a line from expected. This means a line was removed from actual
-        // compared
+        // Case 3: consume a line from expected. This means a line was removed from actual compared
         // to expected
         i < expectedLines.size -> {
           appendLine("+++ ${expectedLines[i]}")

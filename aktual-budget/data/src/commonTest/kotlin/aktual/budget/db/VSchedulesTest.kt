@@ -1,3 +1,5 @@
+@file:Suppress("LongMethod")
+
 package aktual.budget.db
 
 import aktual.budget.db.test.insertPayeeMapping
@@ -32,28 +34,28 @@ internal class VSchedulesTest {
     val nextDateId2 = "1e1fb1fd-6784-4e83-ab91-a16629f3a6c5"
     val nextDateId3 = "6a88ae43-0a87-4ad5-a172-f86a5cee3ba5"
     insertScheduleNextDate(
-      nextDateId1,
-      scheduleId1,
-      "2025-03-04",
-      1728210343464,
-      "2024-10-08",
-      1728210343464,
+      id = nextDateId1,
+      scheduleId = scheduleId1,
+      localDate = "2025-03-04",
+      localInstant = 1728210343464,
+      baseDate = "2024-10-08",
+      baseInstant = 1728210343464,
     )
     insertScheduleNextDate(
-      nextDateId2,
-      scheduleId2,
-      "2026-02-20",
-      1705230381831,
-      "2024-02-20",
-      1705230381831,
+      id = nextDateId2,
+      scheduleId = scheduleId2,
+      localDate = "2026-02-20",
+      localInstant = 1705230381831,
+      baseDate = "2024-02-20",
+      baseInstant = 1705230381831,
     )
     insertScheduleNextDate(
-      nextDateId3,
-      scheduleId3,
-      "2025-03-03",
-      1705229050908,
-      "2024-02-01",
-      1705229050908,
+      id = nextDateId3,
+      scheduleId = scheduleId3,
+      localDate = "2025-03-03",
+      localInstant = 1705229050908,
+      baseDate = "2024-02-01",
+      baseInstant = 1705229050908,
     )
 
     val ruleId1 = "6e02242a-ebe0-4c7b-83e2-50a0501ded39"
