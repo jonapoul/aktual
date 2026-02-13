@@ -47,7 +47,7 @@ haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.7.1" }
 jetbrains-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeJetbrains" }
 jetbrains-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeJetbrains" }
 jetbrains-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.10.0-alpha05" }
-jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.1" }
+jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.2" }
 jetbrains-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeJetbrains" }
 jetbrains-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeJetbrains" }
 jetbrains-savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version = "1.4.0" }
