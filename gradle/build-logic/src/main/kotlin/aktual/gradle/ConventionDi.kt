@@ -18,7 +18,6 @@ class ConventionDi : Plugin<Project> {
         generateAssistedFactories.set(false)
         generateContributionHints.set(true)
         shrinkUnusedBindings.set(true)
-        transformProvidersToPrivate.set(true)
         warnOnInjectAnnotationPlacement.set(true)
 
         // Causes occasional compile errors when AGP-KMP is applied, see
