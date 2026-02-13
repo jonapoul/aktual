@@ -3,19 +3,18 @@ agp = "9.0.0"
 alakazam = "7.0.0"
 androidx-activity = "1.12.4"
 androidx-lifecycle = "2.10.0"
-androidx-paging = "3.4.0"
-androidx-paging-compose = "3.4.0"
+androidx-paging = "3.4.1"
 burst = "2.11.0"
-composeAndroidx = "1.10.2"
+composeAndroidx = "1.10.3"
 composeJetbrains = "1.11.0-alpha02"
 kotlin = "2.3.10"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
-kotlinx-serialization = "1.9.0"
+kotlinx-serialization = "1.10.0"
 ksp = "2.3.5"
 ktor = "3.4.0"
 markdown = "0.39.2"
-metro = "0.9.4"
+metro = "0.10.3"
 preferences = "2.2.0"
 redacted = "1.15.1"
 sqldelight = "2.2.1"
@@ -38,16 +37,16 @@ androidx-lifecycle-viewmodel-core = { module = "androidx.lifecycle:lifecycle-vie
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "androidx-paging" }
-androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging-compose" }
+androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.6" }
-haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.7.1" }
+haze-core = { module = "dev.chrisbanes.haze:haze", version = "1.7.2" }
 jetbrains-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeJetbrains" }
 jetbrains-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeJetbrains" }
 jetbrains-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.10.0-alpha05" }
-jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.1" }
+jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.2" }
 jetbrains-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeJetbrains" }
 jetbrains-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeJetbrains" }
 jetbrains-savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version = "1.4.0" }
@@ -135,7 +134,7 @@ kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "ko
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.6" }
+kover = { id = "org.jetbrains.kotlinx.kover", version = "0.9.7" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 licensee = { id = "app.cash.licensee", version = "1.14.1" }
 manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.0" }
