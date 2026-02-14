@@ -10,7 +10,6 @@ class ModuleAndroid : Plugin<Project> {
     with(target) {
       with(pluginManager) {
         apply(ConventionAndroidLibrary::class)
-        apply(ConventionKover::class)
         apply(ConventionKotlinJvm::class)
         apply(ConventionIdea::class)
         apply(ConventionStyle::class)

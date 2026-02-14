@@ -36,13 +36,17 @@ jobs:
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
       - name: Run tests
-        run: ./gradlew koverLog
+        run: ./gradlew testAll koverXmlReport koverVerify -Pkover
 
       - name: Parse coverage
         shell: bash
         run: |
-          COVERAGE=$(cat build/kover/coverage.txt)
-          echo "COVERAGE=$(echo $COVERAGE)" >> $GITHUB_ENV
+          REPORT=build/reports/kover/report.xml
+          COVERAGE=$(tail -6 "$REPORT" \
+            | grep 'type="LINE"' \
+            | sed -E 's/.*missed="([0-9]+)".*covered="([0-9]+)".*/\1 \2/' \
+            | awk '{printf "%.1f", $2 * 100 / ($1 + $2)}')
+          echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
 
       - name: Update dynamic badge gist
         uses: schneegans/dynamic-badges-action@e9a478b16159b4d31420099ba146cdc50f134483 # v1.7.0

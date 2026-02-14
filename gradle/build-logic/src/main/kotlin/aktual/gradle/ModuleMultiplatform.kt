@@ -22,7 +22,6 @@ class ModuleMultiplatform : Plugin<Project> {
         apply(KotlinMultiplatformAndroidPlugin::class)
         apply(ConventionKotlinBase::class)
         apply(ConventionIdea::class)
-        apply(ConventionKover::class)
         apply(ConventionStyle::class)
         apply(ConventionTest::class)
       }
