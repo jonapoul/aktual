@@ -26,4 +26,4 @@ jobs:
           distribution: "zulu"
 
       - name: Run ktfmt check
-        run: scripts/ktfmt.sh check
+        run: scripts/ktfmt.sh check --force

@@ -41,11 +41,14 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 # Run detekt static analysis
 ./gradlew detektCheck
 
-# Format code with ktfmt
+# Format changed files with ktfmt (since last commit)
 ./scripts/ktfmt.sh
 
-# Check formatting without modifying files
+# Check formatting of changed files without modifying
 ./scripts/ktfmt.sh check
+
+# Format all files (ignore git check)
+./scripts/ktfmt.sh --force
 
 # Generate code coverage report
 ./gradlew koverHtmlReport
