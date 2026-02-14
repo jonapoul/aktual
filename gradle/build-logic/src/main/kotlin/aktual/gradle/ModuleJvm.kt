@@ -12,7 +12,6 @@ class ModuleJvm : Plugin<Project> {
       with(pluginManager) {
         apply(KotlinPluginWrapper::class)
         apply(ConventionKotlinJvm::class)
-        apply(ConventionKover::class)
         apply(ConventionIdea::class)
         apply(ConventionStyle::class)
         apply(ConventionTest::class)
