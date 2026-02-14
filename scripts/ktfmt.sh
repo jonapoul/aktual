@@ -30,15 +30,22 @@ if [ -f "$KTFMT_VERSION_FILE" ]; then
     fi
 fi
 
-# Parse mode (format or check), default to format
-MODE="${1:-format}"
-
-if [ "$MODE" != "format" ] && [ "$MODE" != "check" ]; then
-    echo "Usage: $0 [format|check]"
-    echo "  format - Format Kotlin files (default)"
-    echo "  check  - Check formatting without modifying files"
-    exit 1
-fi
+# Parse arguments
+MODE="format"
+FORCE=false
+for arg in "$@"; do
+    case "$arg" in
+        format|check) MODE="$arg" ;;
+        --force) FORCE=true ;;
+        *)
+            echo "Usage: $0 [format|check] [--force]"
+            echo "  format  - Format Kotlin files (default)"
+            echo "  check   - Check formatting without modifying files"
+            echo "  --force - Format all Kotlin files, not just changed ones"
+            exit 1
+            ;;
+    esac
+done
 
 # Determine ktfmt arguments based on mode
 if [ "$MODE" = "check" ]; then
@@ -47,10 +54,35 @@ else
     KTFMT_ARGS="--google-style"
 fi
 
-# Function to run ktfmt on all Kotlin files, excluding build directories
-run_ktfmt() {
-    find . -type d -name build -prune -o -type f \( -name "*.kt" -o -name "*.kts" \) -print0 | xargs -0 "$@"
-}
+# Collect files to format
+if [ "$FORCE" = true ]; then
+    echo "Formatting all Kotlin files (mode: $MODE)"
+    run_ktfmt() {
+        find . -type d -name build -prune -o -type f \( -name "*.kt" -o -name "*.kts" \) -print0 | xargs -0 "$@"
+    }
+else
+    COMMIT_SHORT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    CHANGED_FILES=$(
+        {
+            git diff --name-only HEAD -- '*.kt' '*.kts' 2>/dev/null
+            git diff --name-only --cached HEAD -- '*.kt' '*.kts' 2>/dev/null
+            git ls-files --others --exclude-standard -- '*.kt' '*.kts' 2>/dev/null
+        } | sort -u | while IFS= read -r file; do
+            [ -f "$file" ] && printf '%s\n' "$file"
+        done
+    )
+    FILE_COUNT=$(echo "$CHANGED_FILES" | grep -c . || true)
+
+    if [ "$FILE_COUNT" -eq 0 ]; then
+        echo "No Kotlin files changed since commit $COMMIT_SHORT, nothing to do."
+        exit 0
+    fi
+
+    echo "$FILE_COUNT file(s) changed since commit $COMMIT_SHORT (mode: $MODE)"
+    run_ktfmt() {
+        echo "$CHANGED_FILES" | tr '\n' '\0' | xargs -0 "$@"
+    }
+fi
 
 # Check if ktfmt is available in PATH
 if command -v ktfmt >/dev/null 2>&1; then
