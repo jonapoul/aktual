@@ -15,6 +15,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.buildConfigField
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.withType
+import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -43,7 +44,14 @@ class ConventionTest : Plugin<Project> {
         }
       }
 
-      tasks.withType<Test>().configureEach {
+      val testTasks = tasks.withType<Test>()
+
+      tasks.register("testAll") {
+        group = VERIFICATION_GROUP
+        dependsOn(testTasks)
+      }
+
+      testTasks.configureEach {
         // Suppresses mockk warning - see https://github.com/mockk/mockk/issues/1171
         jvmArgs("-XX:+EnableDynamicAgentLoading")
 

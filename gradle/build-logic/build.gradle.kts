@@ -39,7 +39,6 @@ dependencies {
   compileOnlyPlugin(libs.plugins.kotlin.jvm)
   compileOnlyPlugin(libs.plugins.kotlin.multiplatform)
   compileOnlyPlugin(libs.plugins.kotlin.serialization)
-  compileOnlyPlugin(libs.plugins.kover)
   compileOnlyPlugin(libs.plugins.ksp)
   compileOnlyPlugin(libs.plugins.licensee)
   compileOnlyPlugin(libs.plugins.metro)
@@ -62,7 +61,6 @@ gradlePlugin {
     "aktual.convention.compose"(impl = "aktual.gradle.ConventionCompose")
     "aktual.convention.idea"(impl = "aktual.gradle.ConventionIdea")
     "aktual.convention.kotlin"(impl = "aktual.gradle.ConventionKotlinJvm")
-    "aktual.convention.kover"(impl = "aktual.gradle.ConventionKover")
     "aktual.convention.style"(impl = "aktual.gradle.ConventionStyle")
     "aktual.convention.test"(impl = "aktual.gradle.ConventionTest")
 

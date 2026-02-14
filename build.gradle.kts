@@ -36,10 +36,8 @@ plugins {
 
   alias(libs.plugins.atlas)
   alias(libs.plugins.doctor)
-  alias(libs.plugins.kover)
 
   id("aktual.convention.idea")
-  id("aktual.convention.kover")
 }
 
 val detektReportMergeSarif by

@@ -11,7 +11,9 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
+import org.jetbrains.compose.resources.ResourcesExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradlePluginExtension
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeCompilerGradleSubplugin
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlatformType
@@ -43,6 +45,10 @@ class ConventionCompose : Plugin<Project> {
           KotlinPlatformType.jvm,
           KotlinPlatformType.androidJvm,
         )
+      }
+
+      extensions.configure(ComposeExtension::class) {
+        extensions.configure(ResourcesExtension::class) { generateResClass = never }
       }
 
       plugins.withAnyId("com.android.lint", "com.android.base") {
