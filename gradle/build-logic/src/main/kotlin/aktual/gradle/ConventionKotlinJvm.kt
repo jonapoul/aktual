@@ -1,5 +1,7 @@
 package aktual.gradle
 
+import blueprint.core.javaVersion
+import blueprint.core.jvmTarget
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
