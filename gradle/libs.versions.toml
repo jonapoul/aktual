@@ -123,7 +123,7 @@ agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp"
 agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
 atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.4.0" }
-blueprint = { id = "dev.jonpoulton.blueprint", version = "2.0.0" }
+blueprint = { id = "dev.jonpoulton.blueprint", version = "2.1.0" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.7" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.5.0" }
