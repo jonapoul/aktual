@@ -59,7 +59,7 @@ class JvmPreferencesTest {
     }
 
   private fun <T, P : Preference<T>> Assert<P>.isNotSet(): Assert<P> = transform { pref ->
-    if (pref.isSet()) {
+    if (!pref.isSet()) {
       pref
     } else {
       expected(message = "Preference should be empty", actual = pref.get(), expected = null)
