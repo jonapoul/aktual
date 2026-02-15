@@ -99,8 +99,8 @@ internal fun Modifier.scrollbar(
   state: ScrollbarState,
   autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
 ): Modifier {
-  val isInteractionEnabled = isScrollbarInteractionEnabled()
-  return this then ScrollbarElement(state, autoHide, isInteractionEnabled)
+  val interactionEnabled = isScrollbarInteractionEnabled()
+  return this then ScrollbarElement(state, autoHide, interactionEnabled)
 }
 
 private data class ScrollbarElement(
@@ -112,8 +112,8 @@ private data class ScrollbarElement(
 
   override fun update(node: ScrollbarNode) {
     node.scrollbarState = scrollbarState
-    node.shouldAutoHide = autoHide
-    node.isInteractionEnabled = interactionEnabled
+    node.autoHide = autoHide
+    node.interactionEnabled = interactionEnabled
   }
 
   override fun InspectorInfo.inspectableProperties() = Unit
@@ -130,8 +130,8 @@ private class ScrollbarNode(
   ObserverModifierNode,
   PointerInputModifierNode {
   var scrollbarState by mutableStateOf(scrollbarState)
-  var shouldAutoHide by mutableStateOf(autoHide)
-  var isInteractionEnabled by mutableStateOf(interactionEnabled)
+  var autoHide by mutableStateOf(autoHide)
+  var interactionEnabled by mutableStateOf(interactionEnabled)
 
   val scrollbarColor: Color
     get() = currentValueOf(LocalTheme).scrollbar.copy(SCROLLBAR_ALPHA)
@@ -154,7 +154,7 @@ private class ScrollbarNode(
   override fun onAttach() = showAndStateAutoFadeIfEnabled()
 
   override fun onPointerEvent(pointerEvent: PointerEvent, pass: PointerEventPass, bounds: IntSize) {
-    if (!isInteractionEnabled) {
+    if (!interactionEnabled) {
       if (pointerEvent.type == PointerEventType.Press && pass == PointerEventPass.Initial) {
         showAndStateAutoFadeIfEnabled()
       }
@@ -277,7 +277,7 @@ private class ScrollbarNode(
     fadeJob =
       coroutineScope.launch {
         alpha.animateTo(1f)
-        if (shouldAutoHide && !isHovered) {
+        if (autoHide && !isHovered) {
           delay(SCROLLBAR_FADE_DELAY)
           if (!isHovered) {
             alpha.animateTo(0f, animationSpec = spring(stiffness = Spring.StiffnessVeryLow))
@@ -288,7 +288,7 @@ private class ScrollbarNode(
   }
 
   private fun observeChanges() = observeReads {
-    shouldAutoHide
+    autoHide
     scrollbarState.orientation
     scrollbarState.scrollPosition
   }
