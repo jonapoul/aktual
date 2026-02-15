@@ -37,8 +37,8 @@ internal fun CustomChart(
   data: CustomData,
   compact: Boolean,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   includeHeader: Boolean = true,
+  theme: Theme = LocalTheme.current,
 ) =
   Column(modifier = modifier) {
     if (compact && includeHeader) {
