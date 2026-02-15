@@ -55,9 +55,10 @@ internal constructor(
     val errorMessage =
       when (this) {
         is ResponseException ->
-          when (response.status) {
-            HttpStatusCode.NotFound -> return LatestReleaseState.PrivateRepo
-            else -> with(response.status) { "HTTP error $value: $description" }
+          if (response.status == HttpStatusCode.NotFound) {
+            return LatestReleaseState.PrivateRepo
+          } else {
+            with(response.status) { "HTTP error $value: $description" }
           }
 
         is SerializationException,

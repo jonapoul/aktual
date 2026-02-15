@@ -11,5 +11,5 @@ import kotlinx.serialization.Serializable
 data class AvailableLoginMethod(
   @SerialName("method") val method: LoginMethod,
   @SerialName("displayName") val displayName: String,
-  @SerialName("active") val active: BoolAsInt,
+  @SerialName("active") val isActive: BoolAsInt,
 )

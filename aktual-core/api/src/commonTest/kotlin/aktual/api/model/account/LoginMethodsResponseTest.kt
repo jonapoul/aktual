@@ -13,7 +13,9 @@ class LoginMethodsResponseTest {
       expected =
         LoginMethodsResponse.Success(
           methods =
-            listOf(AvailableLoginMethod(method = Password, active = true, displayName = "Password"))
+            listOf(
+              AvailableLoginMethod(method = Password, isActive = true, displayName = "Password")
+            )
         ),
     )
 }

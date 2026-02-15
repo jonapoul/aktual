@@ -50,7 +50,7 @@ internal fun TextChart(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) =
+) {
   Column(modifier = modifier) {
     var isEditing by remember { mutableStateOf(false) }
     var editingContent by remember(data) { mutableStateOf(data.content) }
@@ -88,7 +88,7 @@ internal fun TextChart(
     }
 
     // No editing in compact mode
-    if (compact) return@Column
+    if (compact) return
 
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
       if (isEditing) {
@@ -118,6 +118,7 @@ internal fun TextChart(
       }
     }
   }
+}
 
 @Preview
 @Composable

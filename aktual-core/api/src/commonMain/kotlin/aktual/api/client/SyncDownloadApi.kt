@@ -74,9 +74,9 @@ class SyncDownloadApi(
     val buffer = ByteArray(SINK_BUFFER_SIZE)
     val bufferedSink = sink.buffer()
     while (true) {
-      val bytesRead = readAtMostTo(buffer, 0, buffer.size)
+      val bytesRead = readAtMostTo(buffer, startIndex = 0, endIndex = buffer.size)
       if (bytesRead <= 0) break
-      bufferedSink.write(buffer, 0, bytesRead)
+      bufferedSink.write(buffer, offset = 0, byteCount = bytesRead)
     }
     bufferedSink.flush()
   }

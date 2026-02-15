@@ -61,8 +61,8 @@ class SyncRequestEncoderTest {
           time2(0),
           MsgStr("c1205fa3-b69f-460e-94e0-5550e2098cc3"),
         ),
-        Message(dataset, row, "date", time2(1), MsgNum(20251214)),
-        Message(dataset, row, "sort_order", time2(2), MsgNum(1765713190167)),
+        Message(dataset, row, "date", time2(1), MsgNum(20_251_214)),
+        Message(dataset, row, "sort_order", time2(2), MsgNum(1_765_713_190_167)),
       )
 
     val encoder = buildEncoder(key = null)
@@ -91,7 +91,7 @@ class SyncRequestEncoderTest {
         Message("accounts", rowAcc, "name", time1(0), MsgStr("Dummy")),
         Message("accounts", rowAcc, "offbudget", time1(1), MsgNum(0)),
         Message("accounts", rowAcc, "closed", time1(2), MsgNum(0)),
-        Message("accounts", rowAcc, "sort_order", time1(3), MsgNum(229376)),
+        Message("accounts", rowAcc, "sort_order", time1(3), MsgNum(229_376)),
 
         // new payee
         Message("payees", rowPay, "name", time2(0), MsgStr("")),
@@ -157,7 +157,7 @@ class SyncRequestEncoderTest {
 
   private fun buildEncoder(
     key: ByteString?,
-    iv: Sequence<String> = sequenceOf(),
+    iv: Sequence<String> = emptySequence(),
     metadata: DbMetadata = DbMetadata(),
   ): SyncRequestEncoder {
     val contexts = TestCoroutineContexts(EmptyCoroutineContext)

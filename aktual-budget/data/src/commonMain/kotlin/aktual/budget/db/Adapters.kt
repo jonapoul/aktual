@@ -128,7 +128,7 @@ private val yearMonth =
       val year = long.toInt() / YEAR_MONTH_FACTOR
       YearMonth(year, month)
     },
-    encode = { (it.year * YEAR_MONTH_FACTOR.toLong()) + it.month.number },
+    encode = { ym -> ym.year * YEAR_MONTH_FACTOR.toLong() + ym.month.number },
   )
 
 private val accountId = stringAdapter(::AccountId)

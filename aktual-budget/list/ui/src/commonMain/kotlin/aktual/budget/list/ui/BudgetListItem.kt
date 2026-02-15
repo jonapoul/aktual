@@ -158,7 +158,7 @@ private fun PreviewBudgetListItem(
     )
   }
 
-private class BudgetListItemParams(val budget: Budget, val width: Dp? = null)
+private data class BudgetListItemParams(val budget: Budget, val width: Dp? = null)
 
 private class BudgetListItemProvider :
   ThemedParameterProvider<BudgetListItemParams>(

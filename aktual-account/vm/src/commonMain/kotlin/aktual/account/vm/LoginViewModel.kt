@@ -28,6 +28,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
+@Suppress("NonBooleanPropertyPrefixedWithIs")
 @Inject
 @ViewModelKey(LoginViewModel::class)
 @ContributesIntoMap(AppScope::class)

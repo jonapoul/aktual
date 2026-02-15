@@ -1,3 +1,5 @@
+@file:Suppress("StringLiteralDuplication")
+
 package aktual.core.ui
 
 import aktual.core.model.ColorSchemeType
@@ -92,13 +94,13 @@ fun DialogContent(
       verticalArrangement = Arrangement.Top,
     ) {
       Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
-        icon?.let {
-          Icon(imageVector = it, contentDescription = null, tint = titleColor)
+        if (icon != null) {
+          Icon(imageVector = icon, contentDescription = null, tint = titleColor)
 
           HorizontalSpacer(10.dp)
         }
 
-        title?.let {
+        if (title != null) {
           Text(
             modifier = Modifier.padding(vertical = Dimens.Large),
             text = title,
@@ -113,7 +115,7 @@ fun DialogContent(
 
       VerticalSpacer(Dimens.Medium)
 
-      buttons?.let {
+      if (buttons != null) {
         CompositionLocalProvider(LocalContentColor provides theme.pageTextPositive) {
           Row(modifier = Modifier.align(Alignment.End), content = buttons)
         }
@@ -124,7 +126,7 @@ fun DialogContent(
 
 @Preview
 @Composable
-private fun ExampleContentWithButtons(
+private fun PreviewExampleContentWithButtons(
   @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
 ) =
   PreviewWithColorScheme(type) {
@@ -148,7 +150,7 @@ private fun ExampleContentWithButtons(
 
 @Preview
 @Composable
-private fun ExampleContentWithoutButtons(
+private fun PreviewExampleContentWithoutButtons(
   @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
 ) =
   PreviewWithColorScheme(type) {

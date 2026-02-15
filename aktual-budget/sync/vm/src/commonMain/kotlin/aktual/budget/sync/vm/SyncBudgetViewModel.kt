@@ -254,6 +254,7 @@ class SyncBudgetViewModel(
 
   private fun DownloadState.InProgress.toPercent() = Percent(read.numBytes, total.numBytes)
 
+  @Suppress("ExplicitCollectionElementAccessMethod")
   private fun setStepState(step: SyncStep, state: SyncStepState) {
     mutableSteps.update { stepStates -> stepStates.put(step, state) }
   }

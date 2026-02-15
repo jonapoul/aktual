@@ -89,7 +89,7 @@ sealed interface SyncedPrefKey {
       factory: (AccountId) -> PerAccount,
     ): PerAccount? =
       if (key.startsWith(prefix)) {
-        factory(key.removePrefix("$prefix-").let(::AccountId))
+        factory(AccountId(key.removePrefix("$prefix-")))
       } else {
         null
       }

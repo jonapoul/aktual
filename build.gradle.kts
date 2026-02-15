@@ -66,7 +66,11 @@ atlas {
     hasPluginId(name = "DI", pluginId = "aktual.module.di", color = "#a17103") // orange
     hasPluginId(name = "UI", pluginId = "aktual.module.compose", color = "#6b6b01") // yellow
     hasPluginId(name = "Android", pluginId = "aktual.module.android", color = "#017001") // green
-    hasPluginId(name = "Multiplatform", pluginId = "aktual.module.multiplatform", color = "#160185") // indigo
+    hasPluginId(
+      name = "Multiplatform",
+      pluginId = "aktual.module.multiplatform",
+      color = "#160185",
+    ) // indigo
     pathContains(name = "App", pathContains = ":aktual-app:", color = "#7a0101") // red
     hasPluginId(name = "JVM", pluginId = "aktual.module.jvm", color = "#2f015c") // violet
     other(color = "#808080") // grey

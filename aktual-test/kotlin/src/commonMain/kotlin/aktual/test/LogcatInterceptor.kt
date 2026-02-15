@@ -1,4 +1,4 @@
-@file:Suppress("RethrowCaughtException")
+@file:Suppress("RethrowCaughtException", "ForbiddenMethodCall", "BooleanPropertyNaming")
 
 package aktual.test
 

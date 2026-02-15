@@ -25,9 +25,11 @@ class ConventionDetekt : Plugin<Project> {
         with(rootProject.isolated.projectDirectory) {
           config.from(file("config/detekt.yml"), file("config/detekt-compose.yml"))
         }
+        baseline.set(file("detekt-baseline.xml"))
         buildUponDefaultConfig.set(true)
         allRules.set(true)
         parallel.set(true)
+        debug.set(false)
       }
 
       val detektTasks = tasks.withType<Detekt>()

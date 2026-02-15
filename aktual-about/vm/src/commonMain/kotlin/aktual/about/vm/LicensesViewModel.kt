@@ -47,6 +47,7 @@ internal constructor(
         SearchBarState.Gone -> licensesState
 
         is SearchBarState.Visible ->
+          @Suppress("UseIfInsteadOfWhen")
           when (val licenses = licensesState) {
             is LicensesState.Loaded -> licenses.filteredBy(searchState.text)
             else -> licenses

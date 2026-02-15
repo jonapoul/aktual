@@ -4,7 +4,7 @@ import aktual.core.model.BuildConfig
 import aktual.core.model.Password
 import kotlin.time.Instant
 
-val TestInstant = Instant.fromEpochMilliseconds(1710786854286L) // Mon Mar 18 2024 18:34:14
+val TestInstant = Instant.fromEpochMilliseconds(1_710_786_854_286L) // Mon Mar 18 2024 18:34:14
 
 val TestBuildConfig =
   BuildConfig(

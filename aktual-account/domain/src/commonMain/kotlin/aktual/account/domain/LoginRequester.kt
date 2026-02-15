@@ -31,11 +31,10 @@ class LoginRequester(
         throw e
       } catch (e: ResponseException) {
         return with(e.response.status) { LoginResult.HttpFailure(value, description) }
+      } catch (e: IOException) {
+        return LoginResult.NetworkFailure(e.requireMessage())
       } catch (e: Exception) {
-        return when (e) {
-          is IOException -> LoginResult.NetworkFailure(e.requireMessage())
-          else -> LoginResult.OtherFailure(e.requireMessage())
-        }
+        return LoginResult.OtherFailure(e.requireMessage())
       }
 
     val result =

@@ -7,13 +7,13 @@ import okio.Timeout
 operator fun Source.plus(other: Source): Source = ConcatSource(this, other)
 
 private class ConcatSource(sources: Iterable<Source>) : Source {
+  private val iterator = sources.iterator()
+  private var current: Source? = iterator.nextOrNull()
+
   @Deprecated("Not supported", level = DeprecationLevel.ERROR)
   constructor() : this(listOf(error("")))
 
   constructor(vararg sources: Source) : this(sources.toList())
-
-  private val iterator = sources.iterator()
-  private var current: Source? = iterator.nextOrNull()
 
   override fun timeout(): Timeout = Timeout.NONE
 
