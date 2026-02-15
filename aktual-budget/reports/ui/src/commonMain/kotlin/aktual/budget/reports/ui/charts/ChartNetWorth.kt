@@ -52,7 +52,6 @@ internal fun NetWorthChart(
   data: NetWorthData,
   compact: Boolean,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   includeHeader: Boolean = true,
 ) =
   Column(modifier = modifier) {
@@ -64,7 +63,6 @@ internal fun NetWorthChart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       data = data,
       compact = compact,
-      theme = theme,
     )
 
     if (!compact) {
@@ -153,10 +151,10 @@ private fun Chart(
           lineProvider =
             LineCartesianLayer.LineProvider.series(
               LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(theme.reportsBlue)),
+                fill = LineCartesianLayer.LineFill.single(Fill(theme.reportsChartFill)),
                 areaFill =
                   LineCartesianLayer.AreaFill.double(
-                    topFill = Fill(theme.reportsBlue.copy(alpha = 0.2f)),
+                    topFill = Fill(theme.reportsNumberPositive.copy(alpha = 0.2f)),
                     bottomFill = Fill(theme.reportsRed.copy(alpha = 0.2f)),
                   ),
               )

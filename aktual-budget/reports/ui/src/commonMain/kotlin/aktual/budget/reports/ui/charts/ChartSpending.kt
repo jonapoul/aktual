@@ -69,7 +69,6 @@ internal fun SpendingChart(
   data: SpendingData,
   compact: Boolean,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   includeHeader: Boolean = true,
 ) =
   Column(modifier = modifier) {
@@ -79,10 +78,9 @@ internal fun SpendingChart(
           modifier =
             Modifier.padding(start = HEADER_PADDING, end = HEADER_PADDING, top = HEADER_PADDING),
           data = data,
-          theme = theme,
         )
       } else {
-        RegularLegend(data = data, theme = theme)
+        RegularLegend(data = data)
       }
     }
 
@@ -90,7 +88,6 @@ internal fun SpendingChart(
       modifier = if (compact) Modifier.fillMaxSize() else Modifier.weight(1f),
       data = data,
       compact = compact,
-      theme = theme,
     )
 
     if (!compact) {

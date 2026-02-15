@@ -42,11 +42,15 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -64,7 +68,6 @@ internal fun SummaryChart(
   compact: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   includeHeader: Boolean = true,
 ) =
   Column(
@@ -73,7 +76,7 @@ internal fun SummaryChart(
     verticalArrangement = Arrangement.Center,
   ) {
     if (compact && includeHeader) {
-      Header(modifier = Modifier.fillMaxWidth(), data = data, theme = theme)
+      Header(modifier = Modifier.fillMaxWidth(), data = data)
     }
 
     when (data) {
@@ -132,24 +135,35 @@ private fun CompactAmount(
   amount: Amount,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) =
+) {
   ScaleToFitText(
     modifier = modifier.padding(16.dp),
-    color = if (amount.isPositive()) theme.reportsBlue else theme.reportsRed,
+    style = summaryTextStyle(),
+    color = if (amount.isPositive()) theme.reportsNumberPositive else theme.reportsNumberNegative,
     text = amount.formattedString(includeSign = false),
   )
+}
 
 @Composable
 private fun CompactPercent(
   percent: Percent,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) =
+) {
   ScaleToFitText(
     modifier = modifier.padding(16.dp),
-    color = theme.reportsBlue,
+    style = summaryTextStyle(),
+    color =
+      if (percent == Percent.Zero) theme.reportsNumberNeutral else theme.reportsNumberPositive,
     text = percent.toString(decimalPlaces = 2),
   )
+}
+
+@Stable
+@Composable
+@ReadOnlyComposable
+private fun summaryTextStyle(style: TextStyle = LocalTextStyle.current) =
+  style.copy(fontFeatureSettings = """"tnum", "ss01", "ss04"""")
 
 @Composable
 private fun RegularPerMonth(

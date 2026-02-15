@@ -50,6 +50,9 @@ sealed interface Theme {
   val pageTextPositive: Color
   val pageTextLink: Color
   val pageTextLinkLight: Color
+  val numberPositive: Color
+  val numberNegative: Color
+  val numberNeutral: Color
 
   val cardBackground: Color
   val cardBorder: Color
@@ -234,6 +237,10 @@ sealed interface Theme {
   val reportsGray: Color
   val reportsLabel: Color
   val reportsInnerLabel: Color
+  val reportsChartFill: Color
+  val reportsNumberPositive: Color
+  val reportsNumberNegative: Color
+  val reportsNumberNeutral: Color
 
   val scrollbar: Color
   val scrollbarSelected: Color

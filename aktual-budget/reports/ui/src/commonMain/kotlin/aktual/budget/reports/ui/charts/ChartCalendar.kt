@@ -75,13 +75,12 @@ internal fun CalendarChart(
   compact: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   includeHeader: Boolean = true,
 ) =
   if (compact) {
-    CompactCalendarChart(data, onAction, modifier, theme, includeHeader)
+    CompactCalendarChart(data, onAction, modifier, includeHeader)
   } else {
-    RegularCalendarChart(data, onAction, modifier, theme, includeHeader)
+    RegularCalendarChart(data, onAction, modifier, includeHeader)
   }
 
 @Composable
@@ -89,17 +88,11 @@ private fun CompactCalendarChart(
   data: CalendarData,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   includeHeader: Boolean = true,
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
-      CalendarSummary(
-        modifier = Modifier.padding(10.dp),
-        data = data,
-        compact = true,
-        theme = theme,
-      )
+      CalendarSummary(modifier = Modifier.padding(10.dp), data = data, compact = true)
     }
 
     val listState = rememberLazyListState()
@@ -114,7 +107,6 @@ private fun CompactCalendarChart(
           month = month,
           compact = true,
           onAction = onAction,
-          theme = theme,
         )
       }
     }
@@ -125,7 +117,6 @@ private fun RegularCalendarChart(
   data: CalendarData,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   includeHeader: Boolean = true,
 ) =
   Column(modifier = modifier) {
@@ -134,13 +125,12 @@ private fun RegularCalendarChart(
         modifier = Modifier.padding(10.dp).fillMaxWidth().wrapContentHeight(),
         data = data,
         compact = false,
-        theme = theme,
       )
     }
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
       items(items = data.months, key = { it.month }) { month ->
-        CalendarMonth(month = month, compact = false, onAction = onAction, theme = theme)
+        CalendarMonth(month = month, compact = false, onAction = onAction)
       }
     }
   }
@@ -165,19 +155,19 @@ internal fun MonthHeader(
     )
 
     if (compact) {
-      Income(modifier = Modifier.wrapContentWidth(), compact = true, month = month, theme = theme)
+      Income(modifier = Modifier.wrapContentWidth(), compact = true, month = month)
 
       HorizontalSpacer(4.dp)
 
-      Expenses(modifier = Modifier.wrapContentWidth(), compact = true, month = month, theme = theme)
+      Expenses(modifier = Modifier.wrapContentWidth(), compact = true, month = month)
     } else {
       Column(
         modifier = Modifier.width(IntrinsicSize.Max),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center,
       ) {
-        Income(modifier = Modifier.fillMaxWidth(), compact = false, month = month, theme = theme)
-        Expenses(modifier = Modifier.fillMaxWidth(), compact = false, month = month, theme = theme)
+        Income(modifier = Modifier.fillMaxWidth(), compact = false, month = month)
+        Expenses(modifier = Modifier.fillMaxWidth(), compact = false, month = month)
       }
     }
   }
@@ -383,7 +373,6 @@ internal fun CalendarMonth(
       modifier = Modifier.fillMaxWidth().wrapContentHeight(),
       month = month,
       compact = compact,
-      theme = theme,
     )
 
     VerticalSpacer(5.dp)
@@ -415,7 +404,6 @@ internal fun CalendarMonth(
                 day = day,
                 month = month,
                 onAction = onAction,
-                theme = theme,
               )
             }
           }
