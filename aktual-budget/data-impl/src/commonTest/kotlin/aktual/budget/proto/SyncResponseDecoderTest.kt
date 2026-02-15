@@ -36,7 +36,7 @@ class SyncResponseDecoderTest {
   fun `Read big response with no changes`() = runTest {
     val response = readResponse("proto-response-no-changes-big.txt")
     assertThat(response.messages).isEmpty()
-    assertThat(response.merkle).hasLength(38162)
+    assertThat(response.merkle).hasLength(38_162)
   }
 
   @Test
@@ -49,7 +49,7 @@ class SyncResponseDecoderTest {
   @Test
   fun `Read big response with one addition`() = runTest {
     val response = readResponse("proto-response-added-big.txt")
-    assertThat(response.merkle).hasLength(38130)
+    assertThat(response.merkle).hasLength(38_130)
     assertThat(response.messages).hasSize(9)
     val dataset = "transactions"
     val row = "b5d4b867-78ed-436b-afcf-29ed8f26b59a"
@@ -59,7 +59,7 @@ class SyncResponseDecoderTest {
         Message(dataset, row, "acct", time(0), MsgStr("e0f919d2-7e0c-4d32-801c-9f907de3b65c")),
         Message(dataset, row, "category", time(1), MsgStr("711b4c36-86f5-4206-a815-01bfa83cc5b0")),
         Message(dataset, row, "cleared", time(2), MsgNum(0)),
-        Message(dataset, row, "amount", time(3), MsgNum(-12345)),
+        Message(dataset, row, "amount", time(3), MsgNum(-12_345)),
         Message(
           dataset,
           row,
@@ -68,7 +68,7 @@ class SyncResponseDecoderTest {
           MsgStr("8843776a-7041-4e04-9908-110053214806"),
         ),
         Message(dataset, row, "notes", time(5), MsgStr("sagese")),
-        Message(dataset, row, "date", time(6), MsgNum(20251213)),
+        Message(dataset, row, "date", time(6), MsgNum(20_251_213)),
         Message(dataset, row, "sort_order", time(7), MsgNum(1_765_617_408_523)),
         Message(dataset, row, "reconciled", time(8), MsgNum(0)),
       )
@@ -86,7 +86,7 @@ class SyncResponseDecoderTest {
         Message(dataset, row, "acct", time(0), MsgStr("e0f919d2-7e0c-4d32-801c-9f907de3b65c")),
         Message(dataset, row, "category", time(1), MsgStr("711b4c36-86f5-4206-a815-01bfa83cc5b0")),
         Message(dataset, row, "cleared", time(2), MsgNum(1)),
-        Message(dataset, row, "amount", time(3), MsgNum(-12345)),
+        Message(dataset, row, "amount", time(3), MsgNum(-12_345)),
         Message(
           dataset,
           row,
@@ -95,8 +95,8 @@ class SyncResponseDecoderTest {
           MsgStr("8843776a-7041-4e04-9908-110053214806"),
         ),
         Message(dataset, row, "notes", time(5), MsgStr("Notes go here")),
-        Message(dataset, row, "date", time(6), MsgNum(20251213)),
-        Message(dataset, row, "sort_order", time(7), MsgNum(1765627806804)),
+        Message(dataset, row, "date", time(6), MsgNum(20_251_213)),
+        Message(dataset, row, "sort_order", time(7), MsgNum(1_765_627_806_804)),
         Message(dataset, row, "reconciled", time(8), MsgNum(0)),
       )
   }
@@ -104,7 +104,7 @@ class SyncResponseDecoderTest {
   @Test
   fun `Read big response with one deletion`() = runTest {
     val response = readResponse("proto-response-deleted-big.txt")
-    assertThat(response.merkle).hasLength(38162)
+    assertThat(response.merkle).hasLength(38_162)
     val timestamp = Timestamp.parse("2025-12-13T09:17:39.190Z-0000-8b2714dc84c02f41")
     assertThat(response.messages)
       .isEqualToList(

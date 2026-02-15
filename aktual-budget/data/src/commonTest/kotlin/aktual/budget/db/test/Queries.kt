@@ -25,7 +25,15 @@ internal suspend fun BudgetDatabase.insertAccounts(vararg accounts: Accounts) =
   accountsQueries.withoutResult {
     accounts.forEach { account ->
       with(account) {
-        insert(id, account_id, name, official_name, bank, offbudget, account_sync_source)
+        insert(
+          id = id,
+          account_id = account_id,
+          name = name,
+          official_name = official_name,
+          bank = bank,
+          offbudget = offbudget,
+          account_sync_source = account_sync_source,
+        )
       }
     }
   }

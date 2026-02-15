@@ -83,12 +83,7 @@ fun TextField(
   TextField(
     modifier = fieldModifier,
     value = value,
-    placeholder =
-      if (placeholderText == null) {
-        null
-      } else {
-        { Text(text = placeholderText) }
-      },
+    placeholder = placeholderText?.let { { Text(text = it) } },
     shape = shape,
     colors = colors ?: theme.textField(),
     readOnly = readOnly,
@@ -137,13 +132,13 @@ fun <T> ExposedDropDownMenu(
   theme: Theme = LocalTheme.current,
   string: @Composable (T) -> String,
 ) {
-  var expanded by remember { mutableStateOf(false) }
+  var isExpanded by remember { mutableStateOf(false) }
   var selectedOption by remember { mutableStateOf(value) }
 
   ExposedDropdownMenuBox(
     modifier = modifier,
-    expanded = expanded,
-    onExpandedChange = { expanded = it },
+    expanded = isExpanded,
+    onExpandedChange = { isExpanded = it },
   ) {
     TextField(
       modifier =
@@ -152,15 +147,15 @@ fun <T> ExposedDropDownMenu(
       placeholderText = null,
       value = string(selectedOption),
       onValueChange = {},
-      trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+      trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
       colors = theme.exposedDropDownMenu(),
       theme = theme,
     )
 
     ExposedDropdownMenu(
       modifier = Modifier.background(theme.menuItemBackground),
-      expanded = expanded,
-      onDismissRequest = { expanded = false },
+      expanded = isExpanded,
+      onDismissRequest = { isExpanded = false },
     ) {
       val itemColors = theme.dropDownMenuItem()
       options.forEach { o ->
@@ -171,7 +166,7 @@ fun <T> ExposedDropDownMenu(
           onClick = {
             selectedOption = o
             onValueChange(o)
-            expanded = false
+            isExpanded = false
           },
         )
       }
@@ -179,17 +174,17 @@ fun <T> ExposedDropDownMenu(
   }
 }
 
-private class TextInputPreviewParams(
+private data class TextInputPreviewParams(
   val value: String,
   val placeholderText: String = "Placeholder",
-  val clearable: Boolean = false,
+  val isClearable: Boolean = false,
 )
 
 private class TextInputPreviewProvider :
   ThemedParameterProvider<TextInputPreviewParams>(
     TextInputPreviewParams(value = ""),
     TextInputPreviewParams(value = "I'm full"),
-    TextInputPreviewParams(value = "I'm full", clearable = true),
+    TextInputPreviewParams(value = "I'm full", isClearable = true),
   )
 
 @Preview
@@ -202,7 +197,7 @@ private fun PreviewTextField(
       value = params.data.value,
       onValueChange = {},
       placeholderText = params.data.placeholderText,
-      clearable = params.data.clearable,
+      clearable = params.data.isClearable,
     )
   }
 
@@ -239,6 +234,7 @@ private fun PreviewDropDownMenuForcedWidth(
 
 @Preview
 @Composable
+@Suppress("ElseCaseInsteadOfExhaustiveWhen")
 private fun PreviewDropDownMenuEnum(
   @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
 ) =

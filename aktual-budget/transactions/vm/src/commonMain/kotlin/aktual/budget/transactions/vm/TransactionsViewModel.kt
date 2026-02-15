@@ -128,6 +128,7 @@ class TransactionsViewModel(
   override fun isChecked(id: TransactionId): Flow<Boolean> =
     checkedTransactionIds.map { it.getOrDefault(id, false) }
 
+  @Suppress("ExplicitCollectionElementAccessMethod")
   fun setChecked(id: TransactionId, isChecked: Boolean) =
     checkedTransactionIds.update { it.put(id, isChecked) }
 

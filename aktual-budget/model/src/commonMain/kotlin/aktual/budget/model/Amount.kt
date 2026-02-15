@@ -22,7 +22,7 @@ value class Amount(private val value: Long) : Comparable<Amount> {
 
   operator fun plus(other: Amount) = Amount(value + other.value)
 
-  operator fun minus(other: Amount) = this + (-other)
+  operator fun minus(other: Amount) = this + -other
 
   operator fun unaryMinus() = Amount(-value)
 

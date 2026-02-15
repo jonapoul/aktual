@@ -27,7 +27,7 @@ class TimestampedPrintStreamLoggerTest {
   @Test
   fun `Log to print stream`() {
     // given
-    val timeMs = 1748073213000 // Sat May 24 2025 07:53:33 GMT+0000
+    val timeMs = 1_748_073_213_000 // Sat May 24 2025 07:53:33 GMT+0000
     val byteArrayOutputStream = ByteArrayOutputStream()
     val stream = PrintStream(byteArrayOutputStream)
     val clock = TestClock { Instant.fromEpochMilliseconds(timeMs) }

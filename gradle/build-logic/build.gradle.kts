@@ -1,5 +1,3 @@
-import dev.detekt.gradle.Detekt
-
 plugins {
   `kotlin-dsl`
   alias(libs.plugins.detekt)
@@ -16,10 +14,6 @@ detekt {
   source.from("**.kts", "**.kt")
   buildUponDefaultConfig = true
 }
-
-val detektCheck by tasks.registering { dependsOn(tasks.withType(Detekt::class)) }
-
-tasks.check { dependsOn(detektCheck) }
 
 dependencies {
   fun compileOnlyPlugin(plugin: Provider<PluginDependency>) =

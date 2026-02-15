@@ -26,9 +26,9 @@ internal class VSchedulesTest {
     val scheduleId1 = "a2aea0d7-00fb-4cf1-ab38-8aa7fb19ab54"
     val scheduleId2 = "5c333823-2640-4d27-85a3-e97fabfe21d7"
     val scheduleId3 = "a9896b6c-a6f1-45b6-8384-61fc1f68fe62"
-    insertScheduleJsonPaths(scheduleId1, payee = 0, account = 1, amount = 3, date = 2)
-    insertScheduleJsonPaths(scheduleId2, payee = 0, account = 1, amount = 3, date = 2)
-    insertScheduleJsonPaths(scheduleId3, payee = 0, account = 1, amount = 3, date = 2)
+    insertScheduleJsonPaths(scheduleId = scheduleId1, payee = 0, account = 1, amount = 3, date = 2)
+    insertScheduleJsonPaths(scheduleId = scheduleId2, payee = 0, account = 1, amount = 3, date = 2)
+    insertScheduleJsonPaths(scheduleId = scheduleId3, payee = 0, account = 1, amount = 3, date = 2)
 
     val nextDateId1 = "d942b04a-8dba-4258-a83a-4e3c0c0193ef"
     val nextDateId2 = "1e1fb1fd-6784-4e83-ab91-a16629f3a6c5"
@@ -37,25 +37,25 @@ internal class VSchedulesTest {
       id = nextDateId1,
       scheduleId = scheduleId1,
       localDate = "2025-03-04",
-      localInstant = 1728210343464,
+      localInstant = 1_728_210_343_464,
       baseDate = "2024-10-08",
-      baseInstant = 1728210343464,
+      baseInstant = 1_728_210_343_464,
     )
     insertScheduleNextDate(
       id = nextDateId2,
       scheduleId = scheduleId2,
       localDate = "2026-02-20",
-      localInstant = 1705230381831,
+      localInstant = 1_705_230_381_831,
       baseDate = "2024-02-20",
-      baseInstant = 1705230381831,
+      baseInstant = 1_705_230_381_831,
     )
     insertScheduleNextDate(
       id = nextDateId3,
       scheduleId = scheduleId3,
       localDate = "2025-03-03",
-      localInstant = 1705229050908,
+      localInstant = 1_705_229_050_908,
       baseDate = "2024-02-01",
-      baseInstant = 1705229050908,
+      baseInstant = 1_705_229_050_908,
     )
 
     val ruleId1 = "6e02242a-ebe0-4c7b-83e2-50a0501ded39"
@@ -73,24 +73,24 @@ internal class VSchedulesTest {
     insertPayeeMapping(payeeId3)
 
     insertSchedule(
-      scheduleId1,
-      ruleId1,
+      id = scheduleId1,
+      ruleId = ruleId1,
       completed = false,
       postsTransaction = true,
       tombstone = false,
       name = "A",
     )
     insertSchedule(
-      scheduleId2,
-      ruleId2,
+      id = scheduleId2,
+      ruleId = ruleId2,
       completed = false,
       postsTransaction = false,
       tombstone = false,
       name = "B",
     )
     insertSchedule(
-      scheduleId3,
-      ruleId3,
+      id = scheduleId3,
+      ruleId = ruleId3,
       completed = false,
       postsTransaction = false,
       tombstone = false,
@@ -112,9 +112,9 @@ internal class VSchedulesTest {
         _amount = "0",
         _amountOp = "isapprox",
         _date =
-          "{\"start\":\"2024-01-09\",\"interval\":1,\"frequency\":\"weekly\",\"patterns\":[]," +
-            "\"skipWeekend\":false,\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1," +
-            "\"endDate\":\"2024-01-14\"}",
+          """{"start":"2024-01-09","interval":1,"frequency":"weekly","patterns":[],""" +
+            """"skipWeekend":false,"weekendSolveMode":"after","endMode":"never",""" +
+            """"endOccurrences":1,"endDate":"2024-01-14"}""",
         _conditions = Json.parseToJsonElement(RULE_1_CONDITIONS).jsonArray,
         _actions = Json.parseToJsonElement(RULE_1_ACTIONS).jsonArray,
       )
@@ -132,9 +132,9 @@ internal class VSchedulesTest {
         _amount = "-864",
         _amountOp = "isapprox",
         _date =
-          "{\"start\":\"2023-02-20\",\"frequency\":\"yearly\",\"patterns\":[],\"skipWeekend\":false," +
-            "\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1,\"endDate\":\"2024-01-14\"," +
-            "\"interval\":1}",
+          """{"start":"2023-02-20","frequency":"yearly","patterns":[],""" +
+            """"skipWeekend":false,"weekendSolveMode":"after","endMode":"never",""" +
+            """"endOccurrences":1,"endDate":"2024-01-14","interval":1}""",
         _conditions = Json.parseToJsonElement(RULE_2_CONDITIONS).jsonArray,
         _actions = Json.parseToJsonElement(RULE_2_ACTIONS).jsonArray,
       )
@@ -152,9 +152,9 @@ internal class VSchedulesTest {
         _amount = "-20000",
         _amountOp = "is",
         _date =
-          "{\"start\":\"2024-02-01\",\"frequency\":\"monthly\",\"patterns\":[],\"skipWeekend\":true," +
-            "\"weekendSolveMode\":\"after\",\"endMode\":\"never\",\"endOccurrences\":1,\"endDate\":\"2024-01-14\"," +
-            "\"interval\":1}",
+          """{"start":"2024-02-01","frequency":"monthly","patterns":[],""" +
+            """"skipWeekend":true,"weekendSolveMode":"after","endMode":"never",""" +
+            """"endOccurrences":1,"endDate":"2024-01-14","interval":1}""",
         _conditions = Json.parseToJsonElement(RULE_3_CONDITIONS).jsonArray,
         _actions = Json.parseToJsonElement(RULE_3_ACTIONS).jsonArray,
       )

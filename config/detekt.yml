@@ -1,41 +1,78 @@
 ---
+comments:
+  active: false
+
 complexity:
+  CognitiveComplexMethod:
+    active: false
+  CyclomaticComplexMethod:
+    ignoreSingleWhenExpression: true
+    allowedComplexity: 20
+  LabeledExpression:
+    active: false
+  LongMethod:
+    allowedLines: 100
   LongParameterList:
     ignoreDefaultParameters: true
     allowedFunctionParameters: 10
     allowedConstructorParameters: 10
+  NamedArguments:
+    allowedArguments: 7
+    ignoreArgumentsMatchingNames: true
+  NestedScopeFunctions:
+    functions: [ "kotlin.apply", "kotlin.run", "kotlin.with" ]
+  ReplaceSafeCallChainWithRun:
+    active: false
+  StringLiteralDuplication:
+    excludes: [ "**/test/**", "**/*Test/**" ]
   TooManyFunctions:
     allowedFunctionsPerObject: 20
     allowedFunctionsPerClass: 20
     allowedFunctionsPerInterface: 20
     allowedFunctionsPerFile: 20
     ignorePrivate: true
-  LongMethod:
-    allowedLines: 100
-  CyclomaticComplexMethod:
-    ignoreSingleWhenExpression: true
-    allowedComplexity: 20
 
 coroutines:
   SuspendFunSwallowedCancellation:
     active: true
+  SuspendFunWithCoroutineScopeReceiver:
+    excludes: [ "**/test/**", "**/*Test/**" ]
 
 exceptions:
   TooGenericExceptionCaught:
     active: false
 
 naming:
+  BooleanPropertyNaming:
+    active: false
   FunctionNaming:
     functionPattern: "[a-zA-Z][a-zA-Z0-9]*"
     excludeClassPattern: ".*Test$"
+  FunctionNameMaxLength:
+    maximumFunctionNameLength: 40
+    excludes: [ "**/test/**", "**/*Test/**" ]
 
 potential-bugs:
   ImplicitDefaultLocale:
     active: false
+  ImplicitUnitReturnType:
+    active: false
+  LateinitUsage:
+    excludes: [ "**/test/**", "**/*Test/**" ]
+  MissingUseCall:
+    active: false
+  NullableToStringCall:
+    active: false
+  UnnamedParameterUse:
+    active: false
 
 style:
-  MaxLineLength:
-    maxLineLength: 120
+  CascadingCallWrapping:
+    active: false
+  DataClassContainsFunctions:
+    active: false
+  ForbiddenComment:
+    active: false
   MagicNumber:
     ignorePropertyDeclaration: true
     ignoreCompanionObjectPropertyDeclaration: true
@@ -44,11 +81,19 @@ style:
       - "DesktopPreview"
       - "LandscapePreview"
       - "PortraitPreview"
-    excludes:
-      - "**/test/**"
-      - "**/androidHostTest/**"
-      - "**/jvmTest/**"
-      - "**/commonTest/**"
+    excludes: [ "**/test/**", "**/*Test/**" ]
+  MaxChainedCallsOnSameLine:
+    maxChainedCalls: 8
+  MaxLineLength:
+    maxLineLength: 120
+  MultilineRawStringIndentation:
+    active: false
+  OptionalUnit:
+    active: false
+  ReturnCount:
+    max: 5
+  UnderscoresInNumericLiterals:
+    active: false
   UnusedPrivateFunction:
     ignoreAnnotated:
       - "Preview"
@@ -56,7 +101,3 @@ style:
       - "LandscapePreview"
       - "PortraitPreview"
       - "TabletPreview"
-  ForbiddenComment:
-    active: false
-  ReturnCount:
-    max: 5

@@ -5,7 +5,7 @@ import app.cash.turbine.test
 import assertk.Assert
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import assertk.fail
+import assertk.assertions.support.expected
 import dev.jonpoulton.preferences.core.NullableStringSerializer
 import dev.jonpoulton.preferences.core.Preference
 import dev.jonpoulton.preferences.core.StringSerializer
@@ -58,9 +58,12 @@ class JvmPreferencesTest {
       assertThat(long.get()).isEqualTo(456L)
     }
 
-  private fun <T> Assert<Preference<T>>.isNotSet() = given { pref ->
-    if (!pref.isSet()) return@given
-    fail(message = "Preference should be empty", actual = pref.get())
+  private fun <T, P : Preference<T>> Assert<P>.isNotSet(): Assert<P> = transform { pref ->
+    if (!pref.isSet()) {
+      pref
+    } else {
+      expected(message = "Preference should be empty", actual = pref.get(), expected = null)
+    }
   }
 
   @Test

@@ -28,29 +28,41 @@ fun <K, V> Assert<Map<K, V>>.isEqualToMap(vararg expected: Pair<K, V>) = isEqual
 inline fun <reified T : Throwable> assertFailsWith(f: () -> Unit) =
   assertFailure(f).isInstanceOf<T>()
 
-fun Assert<Path>.existsOn(fileSystem: FileSystem) = given { path ->
-  if (fileSystem.exists(path)) return@given
-  expected("Expected $path to exist on $fileSystem")
+fun Assert<Path>.existsOn(fileSystem: FileSystem) = transform { path ->
+  if (fileSystem.exists(path)) {
+    path
+  } else {
+    expected("Expected $path to exist on $fileSystem")
+  }
 }
 
-fun Assert<Path>.doesNotExistOn(fileSystem: FileSystem) = given { path ->
-  if (!fileSystem.exists(path)) return@given
-  expected("Expected $path to not exist on $fileSystem")
+fun Assert<Path>.doesNotExistOn(fileSystem: FileSystem) = transform { path ->
+  if (!fileSystem.exists(path)) {
+    path
+  } else {
+    expected("Expected $path to not exist on $fileSystem")
+  }
 }
 
 fun <T : Throwable> Assert<T>.messageContains(expected: String) = transform { t ->
   val msg = t.message ?: fail("No message found in $t")
-  if (msg.contains(expected)) t
-  else expected("Expected message to contain '$expected', actually: '$msg'")
+  if (msg.contains(expected)) {
+    t
+  } else {
+    expected("Expected message to contain '$expected', actually: '$msg'")
+  }
 }
 
-fun Assert<File>.contentEquals(expected: String) = given { file ->
+fun Assert<File>.contentEquals(expected: String) = transform { file ->
   val contents = file.readText().removeSuffix("\n")
-  if (contents == expected) return@given
-  expected(
-    "Unequal strings between expected{${expected.length}} and actual{${contents.length}}:\n" +
-      diff(expected, contents)
-  )
+  if (contents == expected) {
+    file
+  } else {
+    val diff = diff(expected, contents)
+    expected(
+      "Unequal strings between expected{${expected.length}} and actual{${contents.length}}:\n$diff"
+    )
+  }
 }
 
 // Copied from assertk repo but they haven't published in ages

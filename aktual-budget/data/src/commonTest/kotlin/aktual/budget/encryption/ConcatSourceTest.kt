@@ -9,7 +9,7 @@ import okio.buffer
 
 class ConcatSourceTest {
   @Test
-  fun a() {
+  fun `Add two sources`() {
     val a = buffer("abc123")
     val b = buffer("xyz789")
     val c = a + b
@@ -17,5 +17,5 @@ class ConcatSourceTest {
     assertThat(c.buffer().use { it.readUtf8() }).isEqualTo("abc123xyz789")
   }
 
-  private fun buffer(data: String): Buffer = Buffer().also { it.write(data.encodeUtf8()) }
+  private fun buffer(data: String): Buffer = Buffer().apply { write(data.encodeUtf8()) }
 }

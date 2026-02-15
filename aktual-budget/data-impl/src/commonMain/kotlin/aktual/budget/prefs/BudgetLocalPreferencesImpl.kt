@@ -24,6 +24,8 @@ private constructor(
   private val contexts: CoroutineContexts,
   private val delegate: MutableStateFlow<DbMetadata>,
 ) : BudgetLocalPreferences, MutableStateFlow<DbMetadata> by delegate {
+  private val writeMutex = Mutex()
+
   @Inject
   constructor(
     initial: DbMetadata,
@@ -31,8 +33,6 @@ private constructor(
     coroutineScope: CoroutineScope,
     contexts: CoroutineContexts,
   ) : this(files, coroutineScope, contexts, delegate = MutableStateFlow(initial))
-
-  private val writeMutex = Mutex()
 
   override fun compareAndSet(expect: DbMetadata, update: DbMetadata): Boolean {
     val updated = delegate.compareAndSet(expect, update)

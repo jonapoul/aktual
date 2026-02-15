@@ -144,7 +144,7 @@ internal fun CashFlowChart(
 private fun calculateNetFlow(data: CashFlowData): Amount {
   var total = Amount.Zero
   for ((_, value) in data.items) {
-    total += (value.income + value.expenses)
+    total += value.income + value.expenses
   }
   return total
 }

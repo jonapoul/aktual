@@ -17,13 +17,11 @@ class KermitFileLogger(
   timeZone: TimeZoneProvider = TimeZoneProvider.Default,
   fileSystem: FileSystem = FileSystem.SYSTEM,
 ) : MinPriorityLogger {
-  private val fileWriter = FileLogWriter(storage, clock, timeZone, fileSystem)
+  private val fileWriter =
+    FileLogWriter(storage = storage, clock = clock, timeZone = timeZone, fileSystem = fileSystem)
 
   private val kermitLogger =
     Logger(config = loggerConfigInit(platformLogWriter(), fileWriter), tag = "Aktual")
-
-  override fun log(priority: LogPriority, tag: String, message: String) =
-    kermitLogger.log(priority.severity, tag, throwable = null, message)
 
   private val LogPriority.severity: Severity
     get() =
@@ -35,4 +33,7 @@ class KermitFileLogger(
         LogPriority.ERROR -> Severity.Error
         LogPriority.ASSERT -> Severity.Assert
       }
+
+  override fun log(priority: LogPriority, tag: String, message: String) =
+    kermitLogger.log(severity = priority.severity, tag = tag, throwable = null, message = message)
 }

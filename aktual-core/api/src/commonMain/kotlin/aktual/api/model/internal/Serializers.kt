@@ -6,9 +6,11 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 
@@ -18,7 +20,9 @@ internal class LoginResponseDataSerializer :
     when (element.jsonObject["token"]) {
       is JsonNull -> LoginResponse.Data.Invalid.serializer()
       is JsonPrimitive -> LoginResponse.Data.Valid.serializer()
-      else -> error("Unknown response format: $element")
+      is JsonArray,
+      is JsonObject,
+      null -> error("Unknown response format: $element")
     }
 }
 

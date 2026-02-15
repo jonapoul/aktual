@@ -8,6 +8,16 @@ import assertk.assertions.isEqualTo
 import kotlin.test.Test
 
 class AmountTest {
+  private val Double.amount
+    get() = Amount(this)
+
+  private fun Amount.toString(
+    format: NumberFormat = NumberFormat.CommaDot,
+    hideFraction: Boolean = false,
+    includeSign: Boolean = false,
+    isPrivacyEnabled: Boolean = false,
+  ) = toString(NumberFormatConfig(format, hideFraction), includeSign, isPrivacyEnabled)
+
   @Test
   fun `Hide fraction`() {
     assertThat(123.45.amount.toString(hideFraction = true)).isEqualTo("123")
@@ -27,7 +37,7 @@ class AmountTest {
     assertThat(123.0.amount.toString(format = DotComma)).isEqualTo("123,00")
     assertThat(123.45.amount.toString(format = DotComma)).isEqualTo("123,45")
     assertThat(1234.56.amount.toString(format = DotComma)).isEqualTo("1.234,56")
-    assertThat(123456789.0.amount.toString(format = DotComma)).isEqualTo("123.456.789,00")
+    assertThat(123_456_789.0.amount.toString(format = DotComma)).isEqualTo("123.456.789,00")
   }
 
   // One dash per digit - not including commas/spaces/dots
@@ -36,18 +46,8 @@ class AmountTest {
     assertThat(123.0.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~")
     assertThat(123.45.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~")
     assertThat(1234.56.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~~")
-    assertThat(123456789.0.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~~~~~~~")
+    assertThat(123_456_789.0.amount.toString(isPrivacyEnabled = true)).isEqualTo("~~~~~~~~~~~")
   }
-
-  private val Double.amount
-    get() = Amount(this)
-
-  private fun Amount.toString(
-    format: NumberFormat = NumberFormat.CommaDot,
-    hideFraction: Boolean = false,
-    includeSign: Boolean = false,
-    isPrivacyEnabled: Boolean = false,
-  ) = toString(NumberFormatConfig(format, hideFraction), includeSign, isPrivacyEnabled)
 
   private companion object {
     const val WEIRD_SPACE = '\u00A0'

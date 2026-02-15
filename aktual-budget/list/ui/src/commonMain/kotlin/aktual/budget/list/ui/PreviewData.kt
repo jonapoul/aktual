@@ -1,3 +1,5 @@
+@file:Suppress("StringLiteralDuplication")
+
 package aktual.budget.list.ui
 
 import aktual.budget.model.Budget

@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
+@Suppress("NonBooleanPropertyPrefixedWithIs")
 @Inject
 @ViewModelKey(ServerUrlViewModel::class)
 @ContributesIntoMap(AppScope::class)

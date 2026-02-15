@@ -230,10 +230,11 @@ private class StringSetOfNullablesPreference(
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<Set<String?>>(key, default, changeFlow) {
   override fun get() =
-    prefs.get(key, null)?.split(COMMA)?.map { if (it == "\u0000") null else it }?.toSet() ?: default
+    prefs.get(key, null)?.split(COMMA)?.map { if (it == NULL_CHAR) null else it }?.toSet()
+      ?: default
 
   override fun set(value: Set<String?>) =
-    prefs.put(key, value.joinToString(COMMA) { it ?: "\u0000" })
+    prefs.put(key, value.joinToString(COMMA) { it ?: NULL_CHAR })
 
   override fun delete() = prefs.remove(key)
 }
@@ -245,11 +246,15 @@ private class NullableStringSetOfNullablesPreference(
   changeFlow: MutableSharedFlow<String>,
 ) : BasePreference<Set<String?>?>(key, default, changeFlow) {
   override fun get(): Set<String?>? =
-    prefs.get(key, null)?.split(COMMA)?.map { if (it == "\u0000") null else it }?.toSet() ?: default
+    prefs.get(key, null)?.split(COMMA)?.map { if (it == NULL_CHAR) null else it }?.toSet()
+      ?: default
 
   override fun set(value: Set<String?>?) =
-    if (value == null) prefs.remove(key)
-    else prefs.put(key, value.joinToString(COMMA) { it ?: "\u0000" })
+    if (value == null) {
+      prefs.remove(key)
+    } else {
+      prefs.put(key, value.joinToString(COMMA) { it ?: NULL_CHAR })
+    }
 
   override fun delete() = prefs.remove(key)
 }
@@ -309,6 +314,7 @@ private class NullableObjectPreference<R : Any, T : Any>(
 }
 
 private const val COMMA = "\u001F"
+private const val NULL_CHAR = "\u0000"
 
 private fun <R : Any, T : Any> JPreferences.put(
   key: String,
@@ -331,5 +337,5 @@ private fun <R : Any, T : Any> JPreferences.put(
     is IntSerializer -> putInt(key, serializer.serialize(value))
     is LongSerializer -> putLong(key, serializer.serialize(value))
     is StringSerializer -> put(key, serializer.serialize(value))
-    else -> error("Not supported right now: $key $value")
+    is StringSetSerializer<*> -> error("Not supported right now: $key $value")
   }

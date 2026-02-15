@@ -12,7 +12,7 @@ fun Source.readBytes() = buffer().use { it.readByteArray() }
 
 fun Source.copyTo(file: File) = copyTo(file.sink())
 
-fun Source.copyTo(sink: Sink): Unit =
+fun Source.copyTo(sink: Sink) =
   buffer().use { source -> sink.buffer().use { buffer -> buffer.writeAll(source) } }
 
-fun Source.copyTo(path: Path, fileSystem: FileSystem): Unit = copyTo(fileSystem.sink(path))
+fun Source.copyTo(path: Path, fileSystem: FileSystem) = copyTo(fileSystem.sink(path))

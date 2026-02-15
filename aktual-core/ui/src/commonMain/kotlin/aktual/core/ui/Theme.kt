@@ -1,4 +1,4 @@
-@file:Suppress("LongParameterList")
+@file:Suppress("LongParameterList", "ComplexInterface")
 
 package aktual.core.ui
 
@@ -36,10 +36,6 @@ fun DarkColorSchemeType.toColorSchemeType(): ColorSchemeType =
 
 @Immutable
 sealed interface Theme {
-  companion object {
-    fun dark(): Theme = DarkTheme()
-  }
-
   val pageBackground: Color
   val pageBackgroundModalActive: Color
   val pageBackgroundTopLeft: Color
@@ -254,4 +250,8 @@ sealed interface Theme {
   val budgetItemBackground: Color
   val budgetItemTextPrimary: Color
   val budgetItemTextSecondary: Color
+
+  companion object {
+    fun dark(): Theme = DarkTheme()
+  }
 }

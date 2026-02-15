@@ -16,6 +16,6 @@ sealed interface NeedsBootstrapResponse {
     @SerialName("bootstrapped") val bootstrapped: Boolean,
     @SerialName("loginMethod") val loginMethod: LoginMethod,
     @SerialName("availableLoginMethods") val availableLoginMethods: List<AvailableLoginMethod>,
-    @SerialName("multiuser") val multiuser: Boolean = false,
+    @SerialName("multiuser") val isMultiUser: Boolean = false,
   )
 }

@@ -87,6 +87,7 @@ class ChooseReportTypeViewModel(
     }
   }
 
+  @Suppress("ElseCaseInsteadOfExhaustiveWhen")
   private fun buildEmptyMetadata(type: WidgetType): JsonObject =
     when (type) {
       // TODO: implement properly

@@ -202,7 +202,7 @@ private fun PreviewDeleteBudgetDialog(
     )
   }
 
-private class DeleteBudgetDialogParams(val state: DeletingState, val localFileExists: Boolean)
+private data class DeleteBudgetDialogParams(val state: DeletingState, val localFileExists: Boolean)
 
 private class DeleteBudgetDialogProvider :
   ThemedParameterProvider<DeleteBudgetDialogParams>(

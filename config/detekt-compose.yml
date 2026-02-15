@@ -6,5 +6,7 @@ Compose:
     active: false
   Material2:
     active: true
+  PreviewNaming:
+    previewNamingStrategy: prefix
   UnstableCollections:
     active: true

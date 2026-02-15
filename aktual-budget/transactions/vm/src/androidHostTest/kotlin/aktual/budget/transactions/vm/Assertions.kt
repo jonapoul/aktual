@@ -1,6 +1,10 @@
+@file:Suppress("NullableToStringCall")
+
 package aktual.budget.transactions.vm
 
 import androidx.paging.PagingSource.LoadResult
+import androidx.paging.PagingSource.LoadResult.Error
+import androidx.paging.PagingSource.LoadResult.Invalid
 import androidx.paging.PagingSource.LoadResult.Page
 import assertk.Assert
 import assertk.assertions.support.expected
@@ -9,7 +13,8 @@ internal inline fun <reified K : Any, reified V : Any> Assert<LoadResult<K, V>>.
   transform("is a LoadResult.Page") { result ->
     when (result) {
       is Page<K, V> -> result
-      else -> expected("Page, got $result")
+      is Invalid<K, V>,
+      is Error<K, V> -> expected("Page, got $result")
     }
   }
 

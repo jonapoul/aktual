@@ -50,7 +50,7 @@ const val MY_MONITOR_HEIGHT_DP = 1920 // 1440px * 160 / 111dpi
 const val MY_MONITOR_WIDTH_DP = 3413 // 2560px × 160 / 111dpi
 
 open class PreviewParameters<T>(protected val data: List<T>) : PreviewParameterProvider<T> {
-  private var labels = listOf<String>()
+  private var labels = emptyList<String>()
   override val values: Sequence<T>
     get() = data.asSequence()
 

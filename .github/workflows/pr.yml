@@ -37,7 +37,10 @@ jobs:
           add-job-summary: 'on-failure'
           cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
-      - name: Check
+      - name: Check build-logic
+        run: ./gradlew -p gradle/build-logic check
+
+      - name: Check aktual
         run: ./gradlew check
 
       - name: Report build results

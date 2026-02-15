@@ -9,15 +9,15 @@ import kotlinx.coroutines.flow.update
 data class AktualVersions(val app: String, val server: String?) {
   override fun toString() = "App: ${app.optionalPrefixed()} | Server: ${server.optionalPrefixed()}"
 
-  private fun String?.optionalPrefixed(): String =
-    when {
-      this == null -> "Unknown"
-      this.startsWith(prefix = "v") -> this
-      else -> "v$this"
-    }
-
   companion object {
     val Dummy = AktualVersions(app = "1.2.3", server = "24.3.0")
+
+    private fun String?.optionalPrefixed(): String =
+      when {
+        this == null -> "Unknown"
+        this.startsWith(prefix = "v") -> this
+        else -> "v$this"
+      }
   }
 }
 

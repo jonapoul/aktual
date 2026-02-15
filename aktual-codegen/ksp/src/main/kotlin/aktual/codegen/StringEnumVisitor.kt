@@ -39,11 +39,11 @@ internal class StringEnumVisitor(
     val codeBlock =
       CodeBlock.of(
         """
-        return %T
-          .entries
-          .firstOrNull { it.$stringPropertyName == $paramName }
-          ?: error("No %L matching '$$paramName'")
-      """
+          return %T
+            .entries
+            .firstOrNull { it.$stringPropertyName == $paramName }
+            ?: error("No %L matching '$$paramName'")
+        """
           .trimIndent(),
         className,
         className.simpleName,
@@ -58,8 +58,8 @@ internal class StringEnumVisitor(
         .build()
 
     FileSpec.builder(
-        classDeclaration.packageName.asString(),
-        classDeclaration.simpleName.asString(),
+        packageName = classDeclaration.packageName.asString(),
+        fileName = classDeclaration.simpleName.asString(),
       )
       .addFunction(function)
       .build()
