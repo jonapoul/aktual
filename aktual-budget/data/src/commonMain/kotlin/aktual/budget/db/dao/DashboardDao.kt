@@ -19,7 +19,10 @@ class DashboardDao(database: BudgetDatabase) {
     meta: JsonObject,
     width: Long = DEFAULT_WIDTH,
     height: Long = DEFAULT_HEIGHT,
-  ) = queries.withoutResult { insert(id, type, width, height, x, y, meta) }
+  ) =
+    queries.withoutResult {
+      insert(id = id, type = type, width = width, height = height, x = x, y = y, meta = meta)
+    }
 
   suspend fun getIds(): List<WidgetId> = queries.withResult { getIds().executeAsList() }
 

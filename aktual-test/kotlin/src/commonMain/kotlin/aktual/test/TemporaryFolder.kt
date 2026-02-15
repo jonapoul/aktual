@@ -17,7 +17,7 @@ class TemporaryFolder(override val fileSystem: FileSystem = FileSystem.SYSTEM) :
   override val root: Path
     get() = mutableRoot
 
-  override fun intercept(testFunction: TestFunction): Unit =
+  override fun intercept(testFunction: TestFunction) =
     try {
       mutableRoot = createTempDirectory().toOkioPath()
       testFunction()

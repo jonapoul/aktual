@@ -1,3 +1,5 @@
+@file:Suppress("ClassOrdering", "StringLiteralDuplication")
+
 package aktual.codegen
 
 import com.google.devtools.ksp.getDeclaredFunctions
@@ -5,10 +7,8 @@ import com.google.devtools.ksp.processing.CodeGenerator
 import com.google.devtools.ksp.processing.KSPLogger
 import com.google.devtools.ksp.symbol.ClassKind
 import com.google.devtools.ksp.symbol.KSAnnotated
-import com.google.devtools.ksp.symbol.KSAnnotation
 import com.google.devtools.ksp.symbol.KSClassDeclaration
 import com.google.devtools.ksp.symbol.KSFunctionDeclaration
-import com.google.devtools.ksp.symbol.KSName
 import com.google.devtools.ksp.symbol.Modifier
 import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
@@ -231,8 +231,9 @@ internal class KtorImplementationVisitor(
 
     for (parameter in parameters) {
       val list = parameter.annotations.toList()
-      if (list.size > 1)
+      if (list.size > 1) {
         error("Only support 1 parameter annotation on ${parameter.name.requireString}, got $list")
+      }
       val annotation = list.firstOrNull() ?: continue
 
       val qualifiedName =
@@ -260,16 +261,6 @@ internal class KtorImplementationVisitor(
     if (bodies.size > 1) error("Only support one @Body parameter on ${simpleName.requireString}")
     return ParameterAnnotations(bodies.firstOrNull(), headers, paths, queries)
   }
-
-  private fun KSAnnotation.getValue() =
-    arguments.firstOrNull { it.name.requireString == "value" }?.value?.toString()
-      ?: error("No name found for ${shortName.requireString}'s arguments")
-
-  private val KSAnnotation.qualifiedName: String?
-    get() = annotationType.resolve().declaration.qualifiedName.requireString
-
-  private val KSName?.requireString: String
-    get() = this?.asString() ?: error("Required string, got null")
 
   private fun KSFunctionDeclaration.getMethod(): Pair<Method, String> {
     for (annotation in annotations) {

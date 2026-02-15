@@ -32,5 +32,5 @@ fun generateKeyFromBytes(data: ByteString): Key {
 
 private const val KEY_FACTORY_ALGORITHM = "PBKDF2WithHmacSHA512"
 private const val KEY_ALGORITHM = "AES"
-private const val ITERATION_COUNT = 10000
+private const val ITERATION_COUNT = 10_000
 private const val KEY_LENGTH = 256

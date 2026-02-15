@@ -131,14 +131,14 @@ class MetricsViewModelTest {
   }
 
   private fun buildApis(metricsApi: MetricsApi? = this.metricsApi) =
-    metricsApi?.let {
+    metricsApi?.let { m ->
       AktualApis(
         serverUrl = SERVER_URL,
         client = mockk(),
         account = mockk(),
         base = mockk(),
         health = mockk(),
-        metrics = it,
+        metrics = m,
         sync = mockk(),
         syncDownload = mockk(),
       )

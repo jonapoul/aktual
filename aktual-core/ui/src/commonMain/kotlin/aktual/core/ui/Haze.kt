@@ -22,8 +22,6 @@ fun defaultHazeStyle(
     backgroundColor = containerColor,
     tint =
       HazeTint(
-        containerColor.copy(
-          alpha = if (containerColor.luminance() >= 0.5) (1f - degree) else degree
-        )
+        containerColor.copy(alpha = if (containerColor.luminance() >= 0.5) 1f - degree else degree)
       ),
   )

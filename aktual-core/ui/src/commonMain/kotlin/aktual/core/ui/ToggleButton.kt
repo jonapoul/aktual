@@ -24,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -95,9 +96,7 @@ fun <T : Any> SlidingToggleButton(
         ) {
           Text(
             text = string(option),
-            color =
-              if (selectedIndex == index) theme.buttonPrimaryText
-              else theme.buttonPrimaryDisabledText,
+            color = theme.buttonTextColor(selectedIndex, index),
             fontWeight = FontWeight.Medium,
             fontSize = fontSize,
             textAlign = TextAlign.Center,
@@ -109,6 +108,10 @@ fun <T : Any> SlidingToggleButton(
     }
   }
 }
+
+@Composable
+private fun Theme.buttonTextColor(selectedIndex: Int, index: Int): Color =
+  if (selectedIndex == index) buttonPrimaryText else buttonPrimaryDisabledText
 
 @Preview
 @Composable

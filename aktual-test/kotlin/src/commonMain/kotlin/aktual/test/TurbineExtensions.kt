@@ -1,3 +1,5 @@
+@file:Suppress("SuspendFunWithCoroutineScopeReceiver")
+
 package aktual.test
 
 import app.cash.turbine.TurbineTestContext

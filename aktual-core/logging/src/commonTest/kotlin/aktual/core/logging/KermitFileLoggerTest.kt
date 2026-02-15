@@ -34,7 +34,7 @@ class KermitFileLoggerTest {
     logStorage = TestLogStorage(temporaryFolder.newFolder("log"))
 
     // Sat Feb 07 2026 16:15:22.572
-    clock = TestClock(Instant.fromEpochMilliseconds(1770480922572L))
+    clock = TestClock(Instant.fromEpochMilliseconds(1_770_480_922_572L))
   }
 
   @AfterTest

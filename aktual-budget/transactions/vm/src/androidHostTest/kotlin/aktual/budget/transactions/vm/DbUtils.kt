@@ -33,11 +33,35 @@ internal val ID_E = TransactionId("e")
 internal val ID_F = TransactionId("f")
 
 internal val TRANSACTION_A =
-  Transaction(ID_A, DATE_1, "Amex", "Argos", null, "Additional", Amount(123.45))
+  Transaction(
+    id = ID_A,
+    date = DATE_1,
+    account = "Amex",
+    payee = "Argos",
+    notes = null,
+    category = "Additional",
+    amount = Amount(123.45),
+  )
 internal val TRANSACTION_B =
-  Transaction(ID_B, DATE_2, "Barclays", "B&Q", null, "Building", Amount(123.45))
+  Transaction(
+    id = ID_B,
+    date = DATE_2,
+    account = "Barclays",
+    payee = "B&Q",
+    notes = null,
+    category = "Building",
+    amount = Amount(123.45),
+  )
 internal val TRANSACTION_C =
-  Transaction(ID_C, DATE_3, "Chase", "Co-op", null, "Car", Amount(123.45))
+  Transaction(
+    id = ID_C,
+    date = DATE_3,
+    account = "Chase",
+    payee = "Co-op",
+    notes = null,
+    category = "Car",
+    amount = Amount(123.45),
+  )
 
 internal suspend fun BudgetDatabase.insertAccount(id: AccountId, name: String) {
   accountsQueries.withoutResult {
@@ -92,7 +116,7 @@ internal suspend fun BudgetDatabase.insertTransaction(
   notes: String? = null,
   date: LocalDate = DATE_1,
   amount: Double = 123.45,
-) =
+) {
   transactionsQueries.withoutResult {
     insert(
       Transactions(
@@ -123,3 +147,4 @@ internal suspend fun BudgetDatabase.insertTransaction(
       )
     )
   }
+}

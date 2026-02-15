@@ -15,15 +15,8 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 @Inject
+@Suppress("NonBooleanPropertyPrefixedWithIs")
 class WindowStatePreferences(private val preferences: JvmPreferences) {
-  fun save(state: WindowState) {
-    position.set(state.position)
-    size.set(state.size)
-    isMinimized.set(state.isMinimized)
-    placement.set(state.placement)
-    preferences.flush()
-  }
-
   val position: Preference<WindowPosition> =
     preferences.getObject(
       key = "window.position",
@@ -47,6 +40,14 @@ class WindowStatePreferences(private val preferences: JvmPreferences) {
       default = WindowPlacement.Floating,
       serializer = WindowPlacementSerializer,
     )
+
+  fun save(state: WindowState) {
+    position.set(state.position)
+    size.set(state.size)
+    isMinimized.set(state.isMinimized)
+    placement.set(state.placement)
+    preferences.flush()
+  }
 }
 
 @Serializable private data class Position(val x: Float, val y: Float)
@@ -63,9 +64,10 @@ private object WindowPositionSerializer : StringSerializer<WindowPosition> {
     }
 
   override fun serialize(value: WindowPosition): String =
-    when (value) {
-      is WindowPosition.Absolute -> with(value) { Json.encodeToString(Position(x.value, y.value)) }
-      else -> "PlatformDefault"
+    if (value is WindowPosition.Absolute) {
+      with(value) { Json.encodeToString(Position(x.value, y.value)) }
+    } else {
+      "PlatformDefault"
     }
 }
 

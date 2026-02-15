@@ -74,7 +74,7 @@ internal class AdaptedApiVisitor(
       return null
     }
     val successType = typeParameters.first()
-    val sealedInterface = resolveSealedInterfaceSuperType(successType) ?: return null
+    val sealedInterface = sealedInterfaceSuperType(successType) ?: return null
     val failureType = resolveFailureType(sealedInterface, successType).toClassName()
 
     val params = parseParameters()
@@ -96,9 +96,8 @@ internal class AdaptedApiVisitor(
 
   private fun KSFunctionDeclaration.parseParameters(): List<ParameterSpec> =
     parameters
-      .onEach {
-        if (it.hasDefault)
-          error("Don't support generating default values for ${qualifiedName?.asString()}")
+      .onEach { p ->
+        if (p.hasDefault) error("Can't generate default values for ${qualifiedName?.asString()}")
       }
       .map { it.toParameterSpec() }
 
@@ -117,7 +116,7 @@ internal class AdaptedApiVisitor(
     return ParameterSpec.builder(paramName, className).build()
   }
 
-  private fun resolveSealedInterfaceSuperType(successType: KSType): KSClassDeclaration? {
+  private fun sealedInterfaceSuperType(successType: KSType): KSClassDeclaration? {
     val successTypeDeclaration =
       successType.declaration as? KSClassDeclaration
         ?: error("${successType.declaration} is not a class")

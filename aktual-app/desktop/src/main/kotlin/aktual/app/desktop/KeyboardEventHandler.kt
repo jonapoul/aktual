@@ -28,15 +28,11 @@ internal class KeyboardEventHandler(private val navController: NavHostController
   fun onPreviewKeyEvent(event: KeyEvent): Boolean =
     with(event) {
       logcat.v { "onPreviewKeyEvent = ${event.string()}" }
-      when {
-        isAltPressed && key == Key.DirectionLeft -> {
-          logcat.d { "Navigating back" }
-          navController.navigateUp()
-        }
-
-        else -> {
-          false
-        }
+      if (isAltPressed && key == Key.DirectionLeft) {
+        logcat.d { "Navigating back" }
+        navController.navigateUp()
+      } else {
+        false
       }
     }
 
@@ -49,6 +45,6 @@ internal class KeyboardEventHandler(private val navController: NavHostController
         "isMetaPressed" to if (isMetaPressed) true else null,
         "isShiftPressed" to if (isShiftPressed) true else null,
       )
-      .mapNotNull { (k, v) -> if (v == null) null else "$k=$v" }
+      .mapNotNull { (k, v) -> v?.let { "$k=$it" } }
       .joinToString(separator = ",")
 }

@@ -97,7 +97,7 @@ internal fun PickDateDialogContent(
   theme: Theme = LocalTheme.current,
 ) {
   var currentValue by remember { mutableStateOf(value) }
-  val withinRange = currentValue in range
+  val isWithinRange = currentValue in range
 
   DialogContent(
     modifier = modifier,
@@ -108,10 +108,10 @@ internal fun PickDateDialogContent(
         Text(text = Strings.yearMonthPickerCancel, color = theme.pageText)
       }
 
-      TextButton(enabled = withinRange, onClick = { onValueChange(currentValue) }) {
+      TextButton(enabled = isWithinRange, onClick = { onValueChange(currentValue) }) {
         Text(
           text = Strings.yearMonthPickerSave,
-          color = if (withinRange) theme.pageTextPositive else theme.pageTextSubdued,
+          color = if (isWithinRange) theme.pageTextPositive else theme.pageTextSubdued,
         )
       }
     },
@@ -134,7 +134,7 @@ internal fun PickDateDialogContent(
       string = { it.toString() },
     )
 
-    if (!withinRange) {
+    if (!isWithinRange) {
       val start = range.start.stringShort()
       val end = range.endInclusive.stringShort()
       Text(
@@ -149,7 +149,7 @@ internal fun PickDateDialogContent(
 
 private fun <T : Comparable<T>> YearMonthRange.rangeValues(
   picker: (YearMonth) -> T
-): ImmutableList<T> = map { picker(it) }.distinct().sorted().toImmutableList()
+): ImmutableList<T> = asSequence().map(picker).distinct().sorted().toImmutableList()
 
 @Preview
 @Composable

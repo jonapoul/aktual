@@ -106,9 +106,10 @@ internal fun decryptToSink(
   sink: Sink,
 ) {
   val cipherTransformation =
-    when (algorithm.lowercase()) {
-      EXPECTED_ALGORITHM -> AES_GCM_CIPHER_TRANSFORMATION
-      else -> throw UnknownAlgorithmException(algorithm)
+    if (algorithm.lowercase() == EXPECTED_ALGORITHM) {
+      AES_GCM_CIPHER_TRANSFORMATION
+    } else {
+      throw UnknownAlgorithmException(algorithm)
     }
 
   val cipher = Cipher.getInstance(cipherTransformation)

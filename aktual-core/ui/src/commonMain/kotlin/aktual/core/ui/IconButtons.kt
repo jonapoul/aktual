@@ -154,21 +154,21 @@ private fun DefaultIconButtonContent(
 
 @Preview
 @Composable
-private fun Bare(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+private fun PreviewBare(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
   PreviewWithColorScheme(type) {
     BareIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
-private fun Normal(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+private fun PreviewNormal(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
   PreviewWithColorScheme(type) {
     NormalIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
-private fun Primary(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
+private fun PreviewPrimary(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
   PreviewWithColorScheme(type) {
     PrimaryIconButton(imageVector = MaterialIcons.Check, contentDescription = "OK", onClick = {})
   }

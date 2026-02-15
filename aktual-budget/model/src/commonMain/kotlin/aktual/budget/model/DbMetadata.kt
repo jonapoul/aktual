@@ -32,9 +32,7 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
 
   constructor(
     vararg data: Pair<Key<*>, Any?>
-  ) : this(
-    data = data.mapNotNull { (k, v) -> if (v == null) null else k to v }.toMap().toPersistentMap()
-  )
+  ) : this(data = data.mapNotNull { (k, v) -> v?.let { k to it } }.toMap().toPersistentMap())
 
   constructor(
     budgetName: String? = null,
@@ -162,7 +160,7 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
         encoder = encoder,
         value =
           value
-            .mapNotNull { (k, v) -> if (v == null) null else k to v }
+            .mapNotNull { (k, v) -> v?.let { k to it } }
             .associate { (k, v) -> k.name to k.encode(v) },
       )
 
@@ -170,14 +168,15 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
       val jsonMap =
         delegate.deserialize(decoder).mapNotNull { (k, v) ->
           val key = Key(k)
-          key to
+          val value =
             when (v) {
               null,
-              is JsonNull -> return@mapNotNull null
+              is JsonNull -> null
               is JsonPrimitive -> (key as PrimitiveKey<*>).decode(v)
               is JsonArray -> (key as ListKey).decode(v)
               is JsonObject -> throw SerializationException("Can't decode yet: $v")
             }
+          value?.let { key to it }
         }
       return DbMetadata(jsonMap.toMap().toPersistentMap())
     }

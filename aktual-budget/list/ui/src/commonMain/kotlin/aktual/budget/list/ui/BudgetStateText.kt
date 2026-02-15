@@ -83,6 +83,7 @@ private fun BudgetState.icon(): ImageVector =
 @Stable
 @Composable
 @ReadOnlyComposable
+@Suppress("ElseCaseInsteadOfExhaustiveWhen")
 private fun BudgetState.iconColor(theme: Theme): Color =
   when (this) {
     BudgetState.Broken,

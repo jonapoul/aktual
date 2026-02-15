@@ -15,5 +15,5 @@ interface Files {
 @ContributesBinding(AppScope::class)
 class SystemFiles : Files {
   override fun userHome(): Path =
-    System.getProperty("user.home").let(::File).toOkioPath().resolve(".aktual")
+    File(System.getProperty("user.home")).toOkioPath().resolve(".aktual")
 }

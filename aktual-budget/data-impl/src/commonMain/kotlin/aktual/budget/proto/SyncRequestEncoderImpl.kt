@@ -53,7 +53,7 @@ class SyncRequestEncoderImpl(
     val protoMessage = with(message) { ProtoMessage(dataset, row, column, value.encode()) }
     val encodedMessage = ProtoMessage.ADAPTER.encodeByteString(protoMessage)
     return if (keyId != null) {
-      val messageBuffer = Buffer().also { it.write(encodedMessage) }
+      val messageBuffer = Buffer().apply { write(encodedMessage) }
       val result = encrypter(keyId, messageBuffer)
       require(result is EncryptResult.EncryptedBuffer) { "Failed encrypting message: $message" }
 

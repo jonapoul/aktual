@@ -292,7 +292,9 @@ internal fun DayButton(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) =
+) {
+  if (!day.isValid) return
+
   BoxWithConstraints(
     modifier =
       modifier
@@ -303,10 +305,6 @@ internal fun DayButton(
         .clickable(enabled = day.isValid) { onAction(Action.ClickCalendarDay(day)) },
     contentAlignment = Alignment.Center,
   ) {
-    if (!day.isValid) {
-      return@BoxWithConstraints
-    }
-
     Row(modifier = Modifier.fillMaxSize()) {
       DayBarChart(
         modifier = Modifier.weight(1f).fillMaxHeight(),
@@ -329,6 +327,7 @@ internal fun DayButton(
       color = theme.tableText,
     )
   }
+}
 
 @get:Stable
 private val CalendarDay.isValid
@@ -404,8 +403,8 @@ internal fun CalendarMonth(
 
     BoxWithConstraints(modifier = Modifier.fillMaxWidth().weight(1f)) {
       val weeks = remember(month) { month.toWeeks() }
-      val itemHeight = (maxHeight / weeks.size) - TABLE_SPACING
-      val itemWidth = (maxWidth / DAYS_PER_WEEK) - TABLE_SPACING
+      val itemHeight = maxHeight / weeks.size - TABLE_SPACING
+      val itemWidth = maxWidth / DAYS_PER_WEEK - TABLE_SPACING
 
       Column(verticalArrangement = Arrangement.spacedBy(TABLE_SPACING)) {
         weeks.fastForEach { week ->
