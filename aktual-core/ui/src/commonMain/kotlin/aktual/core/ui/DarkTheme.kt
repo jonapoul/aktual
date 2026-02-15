@@ -19,6 +19,9 @@ internal class DarkTheme : Theme {
   override val pageTextPositive = AktualColors.purple200
   override val pageTextLink = AktualColors.purple400
   override val pageTextLinkLight = AktualColors.purple200
+  override val numberPositive = AktualColors.green300
+  override val numberNegative = AktualColors.red200
+  override val numberNeutral = AktualColors.navy500
 
   override val cardBackground = AktualColors.gray800
   override val cardBorder = AktualColors.purple400
@@ -203,6 +206,10 @@ internal class DarkTheme : Theme {
   override val reportsGray = AktualColors.gray400
   override val reportsLabel = pageText
   override val reportsInnerLabel = AktualColors.navy800
+  override val reportsNumberPositive = numberPositive
+  override val reportsNumberNegative = numberNegative
+  override val reportsNumberNeutral = numberNeutral
+  override val reportsChartFill = reportsNumberPositive
 
   override val scrollbar = AktualColors.blue400
   override val scrollbarSelected = AktualColors.blue100

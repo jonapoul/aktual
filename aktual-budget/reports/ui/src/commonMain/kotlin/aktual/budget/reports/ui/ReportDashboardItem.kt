@@ -71,7 +71,6 @@ internal fun ReportDashboardItem(
       data = item.data,
       compact = true,
       onAction = onAction,
-      theme = theme,
     )
   }
 }
