@@ -13,10 +13,7 @@ import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.getValue
 import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.provideDelegate
-import org.gradle.kotlin.dsl.registering
 import org.gradle.kotlin.dsl.withType
 
 class ConventionDetekt : Plugin<Project> {
@@ -29,31 +26,34 @@ class ConventionDetekt : Plugin<Project> {
           config.from(file("config/detekt.yml"), file("config/detekt-compose.yml"))
         }
         buildUponDefaultConfig.set(true)
+        allRules.set(true)
+        parallel.set(true)
       }
 
-      val detektTasks =
-        tasks.withType<Detekt>().matching { task ->
-          !task.name.contains("release", ignoreCase = true)
-        }
+      val detektTasks = tasks.withType<Detekt>()
 
-      val detektCheck by tasks.registering { dependsOn(detektTasks) }
+      val detektReportMergeSarif =
+        rootProject.tasks.named("detektReportMergeSarif", ReportMergeTask::class)
 
-      pluginManager.withPlugin("base") { tasks.named("check") { dependsOn(detektCheck) } }
+      detektReportMergeSarif.configure {
+        input.from(detektTasks.map { it.reports.sarif.outputLocation })
+      }
 
       detektTasks.configureEach {
+        enabled = !name.contains("release", ignoreCase = true)
+
         reports {
           html.required.set(true)
           sarif.required.set(true)
           checkstyle.required.set(false)
           markdown.required.set(false)
         }
+
         exclude { node ->
           !node.isDirectory && node.file.absolutePath.contains("generated", ignoreCase = true)
         }
-      }
 
-      rootProject.tasks.named("detektReportMergeSarif", ReportMergeTask::class) {
-        input.from(detektTasks.map { it.reports.sarif.outputLocation })
+        finalizedBy(detektReportMergeSarif)
       }
 
       dependencies { "detektPlugins"(libs["detektCompose"]) }

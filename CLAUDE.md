@@ -39,7 +39,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ### Code Quality
 ```bash
 # Run detekt static analysis
-./gradlew detektCheck
+./gradlew detekt
 
 # Format changed files with ktfmt (since last commit)
 ./scripts/ktfmt.sh
