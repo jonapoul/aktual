@@ -51,6 +51,7 @@ jetbrains-resources = { module = "org.jetbrains.compose.components:components-re
 jetbrains-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeJetbrains" }
 jetbrains-savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version = "1.4.0" }
 jetbrains-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeJetbrains" }
+jetbrains-uiGraphics = { module = "org.jetbrains.compose.ui:ui-graphics", version.ref = "composeJetbrains" }
 jetbrains-uiTest = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "composeJetbrains" }
 jetbrains-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeJetbrains" }
 jetbrains-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeJetbrains" }

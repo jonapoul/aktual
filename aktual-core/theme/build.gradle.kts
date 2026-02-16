@@ -1,0 +1,13 @@
+import blueprint.core.commonMainDependencies
+
+plugins {
+  id("aktual.module.multiplatform")
+  alias(libs.plugins.kotlin.serialization)
+}
+
+kotlin {
+  commonMainDependencies {
+    api(libs.jetbrains.uiGraphics)
+    compileOnly(libs.jetbrains.runtime)
+  }
+}

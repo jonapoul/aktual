@@ -1,4 +1,4 @@
-package aktual.core.ui
+package aktual.core.theme
 
 import androidx.compose.ui.graphics.Color
 

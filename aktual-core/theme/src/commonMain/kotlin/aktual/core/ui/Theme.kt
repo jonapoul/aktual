@@ -1,41 +1,10 @@
-@file:Suppress("LongParameterList", "ComplexInterface")
-
 package aktual.core.ui
 
-import aktual.core.model.ColorSchemeType
-import aktual.core.model.DarkColorSchemeType
-import aktual.core.model.RegularColorSchemeType
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.ReadOnlyComposable
-import androidx.compose.runtime.Stable
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 
-val LocalTheme = compositionLocalOf<Theme> { error("CompositionLocal Theme not present") }
-
-@Stable fun Theme.isLight(): Boolean = this is LightTheme
-
-@Composable
-@ReadOnlyComposable
-fun chooseSchemeType(regular: RegularColorSchemeType, dark: DarkColorSchemeType) =
-  when (regular) {
-    RegularColorSchemeType.Light -> ColorSchemeType.Light
-    RegularColorSchemeType.Dark -> dark.toColorSchemeType()
-    RegularColorSchemeType.System ->
-      if (isSystemInDarkTheme()) dark.toColorSchemeType() else ColorSchemeType.Light
-  }
-
-@Stable
-fun DarkColorSchemeType.toColorSchemeType(): ColorSchemeType =
-  when (this) {
-    DarkColorSchemeType.Dark -> ColorSchemeType.Dark
-    DarkColorSchemeType.Midnight -> ColorSchemeType.Midnight
-  }
-
 @Immutable
-sealed interface Theme {
+interface Theme {
   val pageBackground: Color
   val pageBackgroundModalActive: Color
   val pageBackgroundTopLeft: Color
@@ -257,8 +226,4 @@ sealed interface Theme {
   val budgetItemBackground: Color
   val budgetItemTextPrimary: Color
   val budgetItemTextSecondary: Color
-
-  companion object {
-    fun dark(): Theme = DarkTheme()
-  }
 }

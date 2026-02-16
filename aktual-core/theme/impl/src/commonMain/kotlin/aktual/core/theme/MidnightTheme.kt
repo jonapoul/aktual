@@ -1,5 +1,6 @@
-package aktual.core.ui
+package aktual.core.theme
 
+import aktual.core.ui.Theme
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
