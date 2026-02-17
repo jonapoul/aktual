@@ -1,0 +1,11 @@
+###
+# @name customThemeCatalog
+GET https://raw.githubusercontent.com/actualbudget/actual/master/packages/desktop-client/src/data/customThemeCatalog.json
+
+<> customThemeCatalog.200.json
+
+###
+# @name Juulz/shades-of-coffee
+GET https://raw.githubusercontent.com/Juulz/shades-of-coffee/refs/heads/main/actual.css
+
+<> actual.200.css
