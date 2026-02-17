@@ -8,10 +8,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 
 val LocalTheme = compositionLocalOf<Theme> { error("CompositionLocal Theme not present") }
 
-@Stable fun Theme.isLight(): Boolean = this is LightTheme
+@Stable fun Theme.isLight(): Boolean = pageBackground.isLight()
+
+@Stable fun Color.isLight(): Boolean = luminance() > 0.5f
 
 @Composable
 @ReadOnlyComposable

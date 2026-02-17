@@ -23,7 +23,6 @@ actual fun SetStatusBarColors(theme: Theme, statusBarColor: Color, navigationBar
       window.navigationBarColor = navigationBarColor.toArgb()
       window.statusBarColor = statusBarColor.toArgb()
 
-      // TODO: Decide this based on the title bar colour
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = theme.isLight()
     }
   }

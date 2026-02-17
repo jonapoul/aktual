@@ -35,6 +35,6 @@ class ThemeApiImpl(private val client: HttpClient) : ThemeApi {
   }
 
   private companion object {
-    const val BASE_URL = "https://raw.githubusercontent.com/"
+    const val BASE_URL = "raw.githubusercontent.com"
   }
 }

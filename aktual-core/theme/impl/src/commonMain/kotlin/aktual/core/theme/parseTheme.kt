@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 import logcat.logcat
 
 internal fun parseTheme(css: String): CustomTheme {
-  val attributes =
+  val attributes: MutableMap<String, Color> =
     css
       .lineSequence()
       .map { it.trim() }
@@ -12,11 +12,10 @@ internal fun parseTheme(css: String): CustomTheme {
       .associate(::parseAttributePair)
       .toMutableMap()
 
-  fun String.attr(): Color {
-    val value = attributes[this] ?: error("No attribute named '$this'. Attributes = $attributes")
-    attributes.remove(this)
-    return value
-  }
+  fun String.attr(): Color =
+    requireNotNull(attributes.remove(this)) {
+      "Key '$this' not found in CSS attributes: $attributes"
+    }
 
   val theme =
     CustomTheme(
@@ -67,12 +66,14 @@ internal fun parseTheme(css: String): CustomTheme {
       navigation =
         NavigationColors(
           sidebarBackground = "sidebarBackground".attr(),
+          sidebarItemBackgroundPending = "sidebarItemBackgroundPending".attr(),
           sidebarItemBackgroundPositive = "sidebarItemBackgroundPositive".attr(),
           sidebarItemBackgroundFailed = "sidebarItemBackgroundFailed".attr(),
           sidebarItemAccentSelected = "sidebarItemAccentSelected".attr(),
           sidebarItemBackgroundHover = "sidebarItemBackgroundHover".attr(),
           sidebarItemText = "sidebarItemText".attr(),
           sidebarItemTextSelected = "sidebarItemTextSelected".attr(),
+          sidebarBudgetName = "sidebarBudgetName".attr(),
           menuBackground = "menuBackground".attr(),
           menuItemBackground = "menuItemBackground".attr(),
           menuItemBackgroundHover = "menuItemBackgroundHover".attr(),
@@ -86,16 +87,17 @@ internal fun parseTheme(css: String): CustomTheme {
           menuAutoCompleteBackground = "menuAutoCompleteBackground".attr(),
           menuAutoCompleteBackgroundHover = "menuAutoCompleteBackgroundHover".attr(),
           menuAutoCompleteText = "menuAutoCompleteText".attr(),
+          menuAutoCompleteTextHover = "menuAutoCompleteTextHover".attr(),
           menuAutoCompleteTextHeader = "menuAutoCompleteTextHeader".attr(),
+          menuAutoCompleteItemTextHover = "menuAutoCompleteItemTextHover".attr(),
+          menuAutoCompleteItemText = "menuAutoCompleteItemText".attr(),
         ),
       modalMobile =
         ModalMobileColors(
           modalBackground = "modalBackground".attr(),
           modalBorder = "modalBorder".attr(),
           mobileHeaderBackground = "mobileHeaderBackground".attr(),
-          mobileHeaderBackgroundSubdued = "mobileHeaderBackgroundSubdued".attr(),
           mobileHeaderText = "mobileHeaderText".attr(),
-          mobileHeaderTextTransparent = "mobileHeaderTextTransparent".attr(),
           mobileHeaderTextSubdued = "mobileHeaderTextSubdued".attr(),
           mobileHeaderTextHover = "mobileHeaderTextHover".attr(),
           mobilePageBackground = "mobilePageBackground".attr(),
@@ -104,8 +106,7 @@ internal fun parseTheme(css: String): CustomTheme {
           mobileNavItemSelected = "mobileNavItemSelected".attr(),
           mobileAccountShadow = "mobileAccountShadow".attr(),
           mobileAccountText = "mobileAccountText".attr(),
-          mobileModalBackground = "mobileModalBackground".attr(),
-          mobileModalText = "mobileModalText".attr(),
+          mobileTransactionSelected = "mobileTransactionSelected".attr(),
           mobileViewTheme = "mobileViewTheme".attr(),
           mobileConfigServerViewTheme = "mobileConfigServerViewTheme".attr(),
           markdownNormal = "markdownNormal".attr(),
@@ -182,7 +183,6 @@ internal fun parseTheme(css: String): CustomTheme {
           upcomingBackground = "upcomingBackground".attr(),
           upcomingText = "upcomingText".attr(),
           upcomingBorder = "upcomingBorder".attr(),
-          successText = "successText".attr(),
         ),
       form =
         FormColors(
@@ -220,6 +220,7 @@ internal fun parseTheme(css: String): CustomTheme {
           pillBackgroundSelected = "pillBackgroundSelected".attr(),
           pillTextSelected = "pillTextSelected".attr(),
           pillBorderSelected = "pillBorderSelected".attr(),
+          pillTextSubdued = "pillTextSubdued".attr(),
           reportsRed = "reportsRed".attr(),
           reportsBlue = "reportsBlue".attr(),
           reportsGreen = "reportsGreen".attr(),
@@ -230,22 +231,38 @@ internal fun parseTheme(css: String): CustomTheme {
           reportsNumberNegative = "reportsNumberNegative".attr(),
           reportsNumberNeutral = "reportsNumberNeutral".attr(),
           reportsChartFill = "reportsChartFill".attr(),
-          scrollbar = "scrollbar".attr(),
-          scrollbarSelected = "scrollbarSelected".attr(),
-          sliderThumb = "sliderThumb".attr(),
-          sliderActiveTrack = "sliderActiveTrack".attr(),
-          sliderActiveTick = "sliderActiveTick".attr(),
-          sliderInactiveTrack = "sliderInactiveTrack".attr(),
-          sliderInactiveTick = "sliderInactiveTick".attr(),
-          dialogBackground = "dialogBackground".attr(),
-          dialogProgressWheelTrack = "dialogProgressWheelTrack".attr(),
-          budgetItemBackground = "budgetItemBackground".attr(),
-          budgetItemTextPrimary = "budgetItemTextPrimary".attr(),
-          budgetItemTextSecondary = "budgetItemTextSecondary".attr(),
+          noteTagBackground = "noteTagBackground".attr(),
+          noteTagBackgroundHover = "noteTagBackgroundHover".attr(),
+          noteTagDefault = "noteTagDefault".attr(),
+          noteTagText = "noteTagText".attr(),
+          budgetCurrentMonth = "budgetCurrentMonth".attr(),
+          budgetOtherMonth = "budgetOtherMonth".attr(),
+          budgetHeaderCurrentMonth = "budgetHeaderCurrentMonth".attr(),
+          budgetHeaderOtherMonth = "budgetHeaderOtherMonth".attr(),
+          budgetNumberZero = "budgetNumberZero".attr(),
+          budgetNumberNegative = "budgetNumberNegative".attr(),
+          budgetNumberNeutral = "budgetNumberNeutral".attr(),
+          budgetNumberPositive = "budgetNumberPositive".attr(),
+          templateNumberFunded = "templateNumberFunded".attr(),
+          templateNumberUnderFunded = "templateNumberUnderFunded".attr(),
+          toBudgetPositive = "toBudgetPositive".attr(),
+          toBudgetZero = "toBudgetZero".attr(),
+          toBudgetNegative = "toBudgetNegative".attr(),
+          floatingActionBarBackground = "floatingActionBarBackground".attr(),
+          floatingActionBarBorder = "floatingActionBarBorder".attr(),
+          floatingActionBarText = "floatingActionBarText".attr(),
+          tooltipText = "tooltipText".attr(),
+          tooltipBackground = "tooltipBackground".attr(),
+          tooltipBorder = "tooltipBorder".attr(),
+          overlayBackground = "overlayBackground".attr(),
         ),
     )
 
-  logcat.w { "Parsed custom theme, leftover attributes = $attributes" }
+  if (attributes.isNotEmpty()) {
+    logcat.w { "Parsed custom theme, leftover attributes = $attributes" }
+  } else {
+    logcat.d { "Parsed custom theme, no leftover attributes" }
+  }
 
   return theme
 }

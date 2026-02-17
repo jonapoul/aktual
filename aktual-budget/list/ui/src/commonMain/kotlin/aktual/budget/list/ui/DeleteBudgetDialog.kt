@@ -5,6 +5,7 @@ import aktual.budget.model.Budget
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.AlertDialog
+import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
@@ -21,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -128,7 +128,6 @@ internal fun Content(
 
 private val IconPadding = 10.dp
 private val IconSize = 32.dp
-private val ProgressWheelStrokeWidth = 5.dp
 
 @Composable
 private fun LoadableBareTextButton(
@@ -150,12 +149,7 @@ private fun LoadableBareTextButton(
     )
 
     Box(modifier = modifier.padding(IconPadding), contentAlignment = Alignment.Center) {
-      CircularProgressIndicator(
-        modifier = Modifier.size(IconSize).alpha(if (isLoading) 1f else 0f),
-        color = theme.sliderActiveTrack,
-        trackColor = theme.sliderInactiveTrack,
-        strokeWidth = ProgressWheelStrokeWidth,
-      )
+      AnimatedLoading(modifier = Modifier.size(IconSize).alpha(if (isLoading) 1f else 0f))
     }
   }
 

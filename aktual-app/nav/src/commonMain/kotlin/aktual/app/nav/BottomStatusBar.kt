@@ -99,7 +99,7 @@ private fun PingState.text() =
 @Stable
 private fun PingState.tint(theme: Theme) =
   when (this) {
-    PingState.Success -> theme.successText
+    PingState.Success -> theme.noticeText
     PingState.Failure -> theme.warningText
     PingState.Unknown -> theme.pageTextSubdued
   }

@@ -10,14 +10,13 @@ import org.gradle.internal.extensions.stdlib.capitalized
 
 fun BuildConfigExtension.generateApiResponses(project: Project, directory: String) {
   sourceSets.named("test") {
-    project.rootProject.isolated
-        .projectDirectory
-        .dir(directory)
-        .asFile
-        .listFiles()
-        .orEmpty()
-        .filter { it.isDirectory }
-        .forEach { dir -> addResponsesClass(project, dir) }
+    project.rootProject.isolated.projectDirectory
+      .dir(directory)
+      .asFile
+      .listFiles()
+      .orEmpty()
+      .filter { it.isDirectory }
+      .forEach { dir -> addResponsesClass(project, dir) }
   }
 }
 

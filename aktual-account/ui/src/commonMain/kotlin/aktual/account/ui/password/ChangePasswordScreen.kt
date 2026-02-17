@@ -177,7 +177,7 @@ private fun ChangePasswordContent(
         null -> Unit
         is ChangePasswordState.Failure -> Text(text = state.errorMessage(), color = theme.errorText)
         ChangePasswordState.Success ->
-          Text(text = Strings.passwordSuccess, color = theme.successText)
+          Text(text = Strings.passwordSuccess, color = theme.noticeText)
       }
     }
 

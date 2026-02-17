@@ -60,7 +60,7 @@ internal fun UpdateFoundDialogContent(
     modifier = modifier,
     theme = theme,
     title = Strings.infoUpdateFoundTitle,
-    titleColor = theme.successText,
+    titleColor = theme.noticeText,
     content = {
       TextContent(
         Strings.infoUpdateFoundInstalled,
@@ -71,7 +71,7 @@ internal fun UpdateFoundDialogContent(
     },
     buttons = {
       TextButton(onClick = onDismiss) {
-        Text(text = Strings.infoUpdateFoundDismiss, color = theme.successText)
+        Text(text = Strings.infoUpdateFoundDismiss, color = theme.noticeText)
       }
       TextButton(
         modifier = Modifier.testTag(Tags.UpdateAvailableDownloadButton),
@@ -80,7 +80,7 @@ internal fun UpdateFoundDialogContent(
           onDismiss()
         },
       ) {
-        Text(text = Strings.infoUpdateFoundView, color = theme.successText)
+        Text(text = Strings.infoUpdateFoundView, color = theme.noticeText)
       }
     },
   )

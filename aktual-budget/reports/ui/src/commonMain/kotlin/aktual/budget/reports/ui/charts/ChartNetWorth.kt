@@ -116,7 +116,7 @@ private fun Header(
         text = netWorthChange.formattedString(includeSign = true),
         textAlign = TextAlign.End,
         style = AktualTypography.bodySmall,
-        color = if (netWorthChange.isPositive()) theme.successText else theme.errorText,
+        color = if (netWorthChange.isPositive()) theme.noticeText else theme.errorText,
       )
     }
   }

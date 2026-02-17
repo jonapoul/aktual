@@ -47,12 +47,14 @@ interface Theme {
   val tableRowHeaderText: Color
 
   val sidebarBackground: Color
+  val sidebarItemBackgroundPending: Color
   val sidebarItemBackgroundPositive: Color
   val sidebarItemBackgroundFailed: Color
   val sidebarItemBackgroundHover: Color
   val sidebarItemAccentSelected: Color
   val sidebarItemText: Color
   val sidebarItemTextSelected: Color
+  val sidebarBudgetName: Color
 
   val menuBackground: Color
   val menuItemBackground: Color
@@ -67,14 +69,15 @@ interface Theme {
   val menuAutoCompleteBackground: Color
   val menuAutoCompleteBackgroundHover: Color
   val menuAutoCompleteText: Color
+  val menuAutoCompleteTextHover: Color
   val menuAutoCompleteTextHeader: Color
+  val menuAutoCompleteItemTextHover: Color
+  val menuAutoCompleteItemText: Color
 
   val modalBackground: Color
   val modalBorder: Color
   val mobileHeaderBackground: Color
-  val mobileHeaderBackgroundSubdued: Color
   val mobileHeaderText: Color
-  val mobileHeaderTextTransparent: Color
   val mobileHeaderTextSubdued: Color
   val mobileHeaderTextHover: Color
   val mobilePageBackground: Color
@@ -83,8 +86,7 @@ interface Theme {
   val mobileNavItemSelected: Color
   val mobileAccountShadow: Color
   val mobileAccountText: Color
-  val mobileModalBackground: Color
-  val mobileModalText: Color
+  val mobileTransactionSelected: Color
 
   // Mobile view themes (for the top bar)
   val mobileViewTheme: Color
@@ -165,7 +167,6 @@ interface Theme {
   val upcomingBackground: Color
   val upcomingText: Color
   val upcomingBorder: Color
-  val successText: Color
 
   val formLabelText: Color
   val formLabelBackground: Color
@@ -199,6 +200,7 @@ interface Theme {
   val pillBackgroundSelected: Color
   val pillTextSelected: Color
   val pillBorderSelected: Color
+  val pillTextSubdued: Color
 
   val reportsRed: Color
   val reportsBlue: Color
@@ -211,19 +213,40 @@ interface Theme {
   val reportsNumberNegative: Color
   val reportsNumberNeutral: Color
 
-  val scrollbar: Color
-  val scrollbarSelected: Color
+  val noteTagBackground: Color
+  val noteTagBackgroundHover: Color
+  val noteTagDefault: Color
+  val noteTagText: Color
 
-  val sliderThumb: Color
-  val sliderActiveTrack: Color
-  val sliderActiveTick: Color
-  val sliderInactiveTrack: Color
-  val sliderInactiveTick: Color
+  val budgetCurrentMonth: Color
+  val budgetOtherMonth: Color
+  val budgetHeaderCurrentMonth: Color
+  val budgetHeaderOtherMonth: Color
+  val budgetNumberZero: Color
+  val budgetNumberNegative: Color
+  val budgetNumberNeutral: Color
+  val budgetNumberPositive: Color
+  val templateNumberFunded: Color
+  val templateNumberUnderFunded: Color
+  val toBudgetPositive: Color
+  val toBudgetZero: Color
+  val toBudgetNegative: Color
 
-  val dialogBackground: Color
-  val dialogProgressWheelTrack: Color
+  val floatingActionBarBackground: Color
+  val floatingActionBarBorder: Color
+  val floatingActionBarText: Color
 
-  val budgetItemBackground: Color
-  val budgetItemTextPrimary: Color
-  val budgetItemTextSecondary: Color
+  val tooltipText: Color
+  val tooltipBackground: Color
+  val tooltipBorder: Color
+
+  val overlayBackground: Color
+
+  companion object {
+    fun light(): Theme = LightTheme()
+
+    fun dark(): Theme = DarkTheme()
+
+    fun midnight(): Theme = MidnightTheme()
+  }
 }

@@ -1,6 +1,5 @@
-package aktual.core.theme
+package aktual.core.ui
 
-import aktual.core.ui.Theme
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
@@ -48,34 +47,37 @@ internal class DarkTheme : Theme {
   override val tableRowHeaderText = AktualColors.navy150
 
   override val sidebarBackground = AktualColors.navy900
+  override val sidebarItemBackgroundPending = AktualColors.orange200
   override val sidebarItemBackgroundPositive = AktualColors.green500
   override val sidebarItemBackgroundFailed = AktualColors.red300
   override val sidebarItemAccentSelected = AktualColors.purple200
   override val sidebarItemBackgroundHover = AktualColors.navy700
   override val sidebarItemText = AktualColors.navy150
   override val sidebarItemTextSelected = AktualColors.purple200
+  override val sidebarBudgetName = AktualColors.navy300
 
-  override val menuBackground = AktualColors.navy600
-  override val menuItemBackground = AktualColors.navy600
+  override val menuBackground = AktualColors.navy800
+  override val menuItemBackground = AktualColors.navy800
   override val menuItemBackgroundHover = AktualColors.navy500
   override val menuItemText = AktualColors.navy100
   override val menuItemTextHover = AktualColors.navy50
   override val menuItemTextSelected = AktualColors.purple400
-  override val menuItemTextHeader = AktualColors.purple500
-  override val menuBorder = AktualColors.navy800
+  override val menuItemTextHeader = AktualColors.purple200
+  override val menuBorder = AktualColors.navy900
   override val menuBorderHover = AktualColors.purple400
-  override val menuKeybindingText = AktualColors.navy500
+  override val menuKeybindingText = AktualColors.purple200
   override val menuAutoCompleteBackground = AktualColors.navy900
   override val menuAutoCompleteBackgroundHover = AktualColors.navy600
   override val menuAutoCompleteText = AktualColors.navy200
+  override val menuAutoCompleteTextHover = AktualColors.green150
   override val menuAutoCompleteTextHeader = AktualColors.purple200
+  override val menuAutoCompleteItemTextHover = AktualColors.navy50
+  override val menuAutoCompleteItemText = menuItemText
 
   override val modalBackground = AktualColors.gray800
   override val modalBorder = AktualColors.navy600
   override val mobileHeaderBackground = AktualColors.purple800
-  override val mobileHeaderBackgroundSubdued = AktualColors.purple900
   override val mobileHeaderText = AktualColors.navy150
-  override val mobileHeaderTextTransparent = AktualColors.navy150
   override val mobileHeaderTextSubdued = AktualColors.gray200
   override val mobileHeaderTextHover = Color(color = 0x26C8C8C8)
   override val mobilePageBackground = AktualColors.navy700
@@ -84,8 +86,7 @@ internal class DarkTheme : Theme {
   override val mobileNavItemSelected = AktualColors.purple400
   override val mobileAccountShadow = cardShadow
   override val mobileAccountText = AktualColors.blue800
-  override val mobileModalBackground = AktualColors.navy900
-  override val mobileModalText = AktualColors.white
+  override val mobileTransactionSelected = AktualColors.purple400
 
   // Mobile view themes (for the top bar)
   override val mobileViewTheme = mobileHeaderBackground
@@ -113,7 +114,7 @@ internal class DarkTheme : Theme {
   override val buttonPrimaryBackgroundHover = AktualColors.purple600
   override val buttonPrimaryBorder = buttonPrimaryBackground
   override val buttonPrimaryShadow = Color(color = 0x99000000)
-  override val buttonPrimaryDisabledText = AktualColors.navy200
+  override val buttonPrimaryDisabledText = AktualColors.navy700
   override val buttonPrimaryDisabledBackground = AktualColors.navy400
   override val buttonPrimaryDisabledBorder = buttonPrimaryDisabledBackground
 
@@ -139,8 +140,8 @@ internal class DarkTheme : Theme {
   override val buttonBareText = buttonNormalText
   override val buttonBareTextHover = buttonNormalText
   override val buttonBareBackground = Color.Transparent
-  override val buttonBareBackgroundHover = Color(color = 0xFF4A494D)
-  override val buttonBareBackgroundActive = Color(color = 0xFF6E6D70)
+  override val buttonBareBackgroundHover = Color(color = 0x4DC8C8C8)
+  override val buttonBareBackgroundActive = Color(color = 0x80C8C8C8)
   override val buttonBareDisabledText = buttonNormalDisabledText
   override val buttonBareDisabledBackground = buttonBareBackground
 
@@ -161,25 +162,24 @@ internal class DarkTheme : Theme {
   override val errorText = AktualColors.red200
   override val errorTextDark = AktualColors.red150
   override val errorTextDarker = errorTextDark
-  override val errorTextMenu = AktualColors.red500
+  override val errorTextMenu = AktualColors.red200
   override val errorBorder = AktualColors.red500
   override val upcomingBackground = AktualColors.purple700
   override val upcomingText = AktualColors.purple100
   override val upcomingBorder = tableBorder
-  override val successText = AktualColors.green500
 
   override val formLabelText = AktualColors.purple150
   override val formLabelBackground = AktualColors.blue900
   override val formInputBackground = AktualColors.navy800
   override val formInputBackgroundSelected = AktualColors.navy700
   override val formInputBackgroundSelection = AktualColors.purple400
-  override val formInputBorder = AktualColors.navy500
+  override val formInputBorder = AktualColors.navy600
   override val formInputTextReadOnlySelection = AktualColors.navy800
   override val formInputBorderSelected = AktualColors.purple400
   override val formInputText = AktualColors.navy150
   override val formInputTextSelected = AktualColors.black
-  override val formInputTextPlaceholder = AktualColors.navy500
-  override val formInputTextPlaceholderSelected = AktualColors.navy600
+  override val formInputTextPlaceholder = AktualColors.navy150
+  override val formInputTextPlaceholderSelected = AktualColors.navy100
   override val formInputTextSelection = AktualColors.navy800
   override val formInputShadowSelected = AktualColors.purple200
   override val formInputTextHighlight = AktualColors.purple400
@@ -187,7 +187,7 @@ internal class DarkTheme : Theme {
   override val checkboxBackgroundSelected = AktualColors.purple300
   override val checkboxBorderSelected = AktualColors.purple300
   override val checkboxShadowSelected = AktualColors.purple500
-  override val checkboxToggleBackground = AktualColors.gray600
+  override val checkboxToggleBackground = AktualColors.gray700
   override val checkboxToggleBackgroundSelected = AktualColors.purple300
   override val checkboxToggleDisabled = AktualColors.gray400
 
@@ -200,6 +200,7 @@ internal class DarkTheme : Theme {
   override val pillBackgroundSelected = AktualColors.purple600
   override val pillTextSelected = AktualColors.navy150
   override val pillBorderSelected = AktualColors.purple400
+  override val pillTextSubdued = AktualColors.navy500
 
   override val reportsRed = AktualColors.red300
   override val reportsBlue = AktualColors.blue400
@@ -212,19 +213,32 @@ internal class DarkTheme : Theme {
   override val reportsNumberNeutral = numberNeutral
   override val reportsChartFill = reportsNumberPositive
 
-  override val scrollbar = AktualColors.blue400
-  override val scrollbarSelected = AktualColors.blue100
+  override val noteTagBackground = AktualColors.purple700
+  override val noteTagBackgroundHover = AktualColors.purple500
+  override val noteTagDefault = AktualColors.purple700
+  override val noteTagText = AktualColors.purple100
 
-  override val sliderThumb = AktualColors.blue400
-  override val sliderActiveTrack = AktualColors.blue800
-  override val sliderActiveTick = AktualColors.blue600
-  override val sliderInactiveTrack = AktualColors.gray800
-  override val sliderInactiveTick = AktualColors.gray900
+  override val budgetCurrentMonth = tableBackground
+  override val budgetOtherMonth = AktualColors.navy900
+  override val budgetHeaderCurrentMonth = tableHeaderBackground
+  override val budgetHeaderOtherMonth = AktualColors.navy800
+  override val budgetNumberZero = tableTextSubdued
+  override val budgetNumberNegative = numberNegative
+  override val budgetNumberNeutral = tableText
+  override val budgetNumberPositive = budgetNumberNeutral
+  override val templateNumberFunded = numberPositive
+  override val templateNumberUnderFunded = AktualColors.orange300
+  override val toBudgetPositive = numberPositive
+  override val toBudgetZero = numberPositive
+  override val toBudgetNegative = budgetNumberNegative
 
-  override val dialogBackground = AktualColors.navy900
-  override val dialogProgressWheelTrack = AktualColors.gray600
+  override val floatingActionBarBackground = AktualColors.purple800
+  override val floatingActionBarBorder = floatingActionBarBackground
+  override val floatingActionBarText = AktualColors.navy150
 
-  override val budgetItemBackground = buttonNormalBackground
-  override val budgetItemTextPrimary = buttonNormalText
-  override val budgetItemTextSecondary = pageTextLight
+  override val tooltipText = AktualColors.navy100
+  override val tooltipBackground = AktualColors.navy800
+  override val tooltipBorder = AktualColors.navy700
+
+  override val overlayBackground = Color(color = 0x4D000000)
 }
