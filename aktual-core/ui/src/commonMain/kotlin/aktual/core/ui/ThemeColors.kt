@@ -3,7 +3,6 @@ package aktual.core.ui
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MenuDefaults
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
@@ -32,25 +31,14 @@ fun Theme.topAppBarColors(
 fun Theme.transparentTopAppBarColors() =
   topAppBarColors(
     containerColor = Color.Transparent,
-    navigationIconContentColor = mobileHeaderTextTransparent,
-    actionIconContentColor = mobileHeaderTextTransparent,
-    titleContentColor = mobileHeaderTextTransparent,
+    navigationIconContentColor = mobileHeaderText,
+    actionIconContentColor = mobileHeaderText,
+    titleContentColor = mobileHeaderText,
   )
 
 @Stable
 @Composable
 fun Theme.dropDownMenuItem() = MenuDefaults.itemColors(textColor = formInputText)
-
-@Stable
-@Composable
-fun Theme.slider() =
-  SliderDefaults.colors(
-    thumbColor = sliderThumb,
-    activeTrackColor = sliderActiveTrack,
-    activeTickColor = sliderActiveTick,
-    inactiveTrackColor = sliderInactiveTrack,
-    inactiveTickColor = sliderInactiveTick,
-  )
 
 @Stable
 @Composable

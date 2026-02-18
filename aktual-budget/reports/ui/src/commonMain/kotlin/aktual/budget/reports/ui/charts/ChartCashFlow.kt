@@ -216,7 +216,7 @@ private fun RegularHeader(
         text = summaryData.net.formattedString(includeSign = true),
         textAlign = TextAlign.End,
         style = boldStyle,
-        color = if (summaryData.net.isPositive()) theme.successText else theme.errorText,
+        color = if (summaryData.net.isPositive()) theme.noticeText else theme.errorText,
       )
     }
   }
@@ -241,7 +241,7 @@ private fun CompactHeader(
     val netFlow = calculateNetFlow(data)
     Text(
       text = netFlow.formattedString(includeSign = true),
-      color = if (netFlow.isPositive()) theme.successText else theme.errorText,
+      color = if (netFlow.isPositive()) theme.noticeText else theme.errorText,
       overflow = TextOverflow.Ellipsis,
     )
   }

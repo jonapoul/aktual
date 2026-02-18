@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -40,17 +39,6 @@ fun HazedBox(
 
 @Preview
 @Composable
-private fun PreviewLoading(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewBasic(type) { theme ->
-    CircularProgressIndicator(
-      modifier = Modifier.align(Alignment.Center).size(50.dp),
-      color = theme.buttonPrimaryBackground,
-      trackColor = theme.dialogProgressWheelTrack,
-    )
-  }
-
-@Preview
-@Composable
 private fun PreviewText(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
   PreviewBasic(type) { Text("Hello world") }
 
@@ -65,7 +53,7 @@ private fun PreviewBasic(
     val hazeState = remember { HazeState() }
     Box(modifier = Modifier.size(size)) {
       WavyBackground(
-        modifier = Modifier.fillMaxSize().background(theme.dialogBackground).hazeSource(hazeState)
+        modifier = Modifier.fillMaxSize().background(theme.modalBackground).hazeSource(hazeState)
       )
 
       HazedBox(modifier = Modifier.align(Alignment.Center), state = hazeState) { content(theme) }

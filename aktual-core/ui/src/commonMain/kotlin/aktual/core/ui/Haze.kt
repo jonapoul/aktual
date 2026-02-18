@@ -4,7 +4,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeStyle
 import dev.chrisbanes.haze.HazeTint
@@ -21,7 +20,5 @@ fun defaultHazeStyle(
     blurRadius = 30.dp,
     backgroundColor = containerColor,
     tint =
-      HazeTint(
-        containerColor.copy(alpha = if (containerColor.luminance() >= 0.5) 1f - degree else degree)
-      ),
+      HazeTint(containerColor.copy(alpha = if (containerColor.isLight()) 1f - degree else degree)),
   )

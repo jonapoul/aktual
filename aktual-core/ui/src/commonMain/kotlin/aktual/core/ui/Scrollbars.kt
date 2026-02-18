@@ -133,8 +133,9 @@ private class ScrollbarNode(
   var autoHide by mutableStateOf(autoHide)
   var interactionEnabled by mutableStateOf(interactionEnabled)
 
+  // From styles.lightScrollbar, packages/desktop-client/src/style/styles.ts
   val scrollbarColor: Color
-    get() = currentValueOf(LocalTheme).scrollbar.copy(SCROLLBAR_ALPHA)
+    get() = Color(0x33c8c8c8)
 
   private var fadeJob: Job? = null
 
@@ -379,7 +380,6 @@ private class ScrollbarNode(
 private val SCROLLBAR_FADE_DELAY = 2.seconds
 private val SCROLLBAR_STROKE_WIDTH = 3.dp
 private val SCROLLBAR_HOVER_PROXIMITY = 32.dp
-private const val SCROLLBAR_ALPHA = 0.52f
 private const val SCROLLBAR_AUTO_HIDE_DEFAULT = true
 private const val SCROLLBAR_HOVER_WIDTH_MULTIPLIER = 4f
 

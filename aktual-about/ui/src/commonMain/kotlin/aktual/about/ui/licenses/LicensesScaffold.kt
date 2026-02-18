@@ -10,6 +10,7 @@ import aktual.core.icons.Warning
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.model.ColorSchemeType
+import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.ColorSchemeParameters
@@ -43,7 +44,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -144,20 +144,15 @@ private fun Content(
   theme: Theme = LocalTheme.current,
 ) =
   when (state) {
-    LicensesState.Loading -> LoadingContent(theme, modifier)
+    LicensesState.Loading -> LoadingContent(modifier)
     LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
     is LicensesState.Loaded -> LoadedContent(theme, state.artifacts, onAction, modifier)
     is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
   }
 
 @Composable
-private fun LoadingContent(theme: Theme, modifier: Modifier = Modifier) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    CircularProgressIndicator(
-      color = theme.buttonPrimaryBackground,
-      trackColor = theme.dialogProgressWheelTrack,
-    )
-  }
+private fun LoadingContent(modifier: Modifier = Modifier) {
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) { AnimatedLoading() }
 }
 
 @Composable

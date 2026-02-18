@@ -18,6 +18,7 @@ kotlin {
     api(project(":aktual-core:di"))
     api(project(":aktual-core:model"))
     api(project(":aktual-core:prefs-di"))
+    api(project(":aktual-core:theme:di"))
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.core)
     implementation(project(":aktual-core:api"))

@@ -71,6 +71,8 @@ style:
     active: false
   DataClassContainsFunctions:
     active: false
+  DestructuringDeclarationWithTooManyEntries:
+    maxDestructuringEntries: 5
   ForbiddenComment:
     active: false
   MagicNumber:

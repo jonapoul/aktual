@@ -71,7 +71,7 @@ internal fun BudgetListItem(
         text = budget.name,
         fontSize = 16.sp,
         fontWeight = FontWeight.W700,
-        color = theme.budgetItemTextPrimary,
+        color = theme.pageText,
       )
 
       BudgetStateText(state = budget.state, theme = theme)
@@ -80,7 +80,7 @@ internal fun BudgetListItem(
         modifier = Modifier.padding(top = 4.dp),
         text = description,
         style = AktualTypography.bodySmall,
-        color = theme.budgetItemTextSecondary,
+        color = theme.pageTextSubdued,
         fontSize = 10.sp,
         lineHeight = 12.sp,
       )
