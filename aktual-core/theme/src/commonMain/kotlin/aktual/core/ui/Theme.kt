@@ -4,6 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
+@Suppress("ComplexInterface")
 interface Theme {
   val pageBackground: Color
   val pageBackgroundModalActive: Color

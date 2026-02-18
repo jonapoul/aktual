@@ -7,7 +7,6 @@ import aktual.core.ui.AktualTypography
 import aktual.core.ui.AlertDialog
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
@@ -137,7 +136,6 @@ private fun LoadableBareTextButton(
   isLoading: Boolean,
   colors: @Composable (Theme, Boolean) -> ButtonColors,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Box(modifier = modifier, contentAlignment = Alignment.Center) {
     BareTextButton(

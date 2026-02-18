@@ -1,6 +1,9 @@
+@file:Suppress("MagicNumber", "MatchingDeclarationName")
+
 package aktual.core.theme
 
 import androidx.compose.ui.graphics.Color
+import kotlin.math.abs
 
 class ColorParseException(message: String) : Exception(message)
 
@@ -48,8 +51,8 @@ private fun String.parseHsla(): Color {
 
 // https://www.w3.org/TR/css-color-3/#hsl-color
 private fun hslToColor(h: Float, s: Float, l: Float, alpha: Float): Color {
-  val c = (1f - kotlin.math.abs(2f * l - 1f)) * s
-  val x = c * (1f - kotlin.math.abs((h / 60f) % 2f - 1f))
+  val c = (1f - abs(2f * l - 1f)) * s
+  val x = c * (1f - abs(h / 60f % 2f - 1f))
   val m = l - c / 2f
   val (r, g, b) =
     when {

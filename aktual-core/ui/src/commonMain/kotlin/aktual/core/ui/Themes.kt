@@ -15,7 +15,7 @@ val LocalTheme = compositionLocalOf<Theme> { error("CompositionLocal Theme not p
 
 @Stable fun Theme.isLight(): Boolean = pageBackground.isLight()
 
-@Stable fun Color.isLight(): Boolean = luminance() > 0.5f
+@Suppress("MagicNumber") @Stable fun Color.isLight(): Boolean = luminance() > 0.5f
 
 @Composable
 @ReadOnlyComposable

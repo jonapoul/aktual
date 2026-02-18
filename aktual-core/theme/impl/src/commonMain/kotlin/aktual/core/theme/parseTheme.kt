@@ -1,3 +1,5 @@
+@file:Suppress("LongMethod")
+
 package aktual.core.theme
 
 import androidx.compose.ui.graphics.Color

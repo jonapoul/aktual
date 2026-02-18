@@ -57,6 +57,7 @@ fun AnimatedLoading(modifier: Modifier = Modifier, theme: Theme = LocalTheme.cur
 private const val DURATION_MS = 1600
 
 @Stable
+@Suppress("MagicNumber")
 private fun loadingIcon(color: Color): ImageVector =
   ImageVector.Builder(
       name = "LoadingIcon",
