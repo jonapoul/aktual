@@ -6,6 +6,8 @@ import aktual.budget.db.withoutResult
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.core.model.BuildConfig
+import aktual.test.TestBuildConfig
 import aktual.test.messageContains
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
@@ -40,8 +42,7 @@ class BudgetGraphHolderTest {
     val context = ApplicationProvider.getApplicationContext<Context>()
     val contexts = TestCoroutineContexts(standardDispatcher)
     appGraph =
-      createGraphFactory<TestAppGraph.Factory>()
-        .create(scope = this, contexts = contexts, context = context)
+      createGraphFactory<TestAppGraph.Factory>().create(this, contexts, context, TestBuildConfig)
 
     holder = appGraph.budgetGraphHolder
   }
@@ -112,6 +113,7 @@ class BudgetGraphHolderTest {
         @Provides scope: CoroutineScope,
         @Provides contexts: CoroutineContexts,
         @Provides context: Context,
+        @Provides buildConfig: BuildConfig,
       ): TestAppGraph
     }
   }

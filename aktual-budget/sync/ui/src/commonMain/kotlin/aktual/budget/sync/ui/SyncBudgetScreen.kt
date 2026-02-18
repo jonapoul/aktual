@@ -14,6 +14,7 @@ import aktual.core.model.Password
 import aktual.core.model.Percent
 import aktual.core.model.Token
 import aktual.core.model.percent
+import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BackHandler
 import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
@@ -203,7 +204,7 @@ private fun StateLeadingIcon(
   Box(modifier = modifier, contentAlignment = Alignment.Center) {
     when (state) {
       is SyncStepState.InProgress.Definite -> DeterminateWheel(state.progress, theme)
-      SyncStepState.InProgress.Indefinite -> IndeterminateWheel(theme)
+      SyncStepState.InProgress.Indefinite -> IndeterminateWheel()
       SyncStepState.NotStarted -> StateIcon(text, color, MaterialIcons.Timer)
       is SyncStepState.Failed -> StateIcon(text, color, MaterialIcons.Block)
       SyncStepState.Succeeded -> StateIcon(text, color, MaterialIcons.Check)
@@ -222,8 +223,8 @@ private fun DeterminateWheel(percent: Percent, theme: Theme, modifier: Modifier 
 
     CircularProgressIndicator(
       modifier = Modifier.size(IconSize),
-      color = theme.sliderActiveTrack,
-      trackColor = theme.sliderInactiveTrack,
+      color = theme.pageText,
+      trackColor = theme.pageTextSubdued,
       strokeWidth = ProgressWheelStrokeWidth,
       progress = { animatedProgress },
     )
@@ -231,14 +232,9 @@ private fun DeterminateWheel(percent: Percent, theme: Theme, modifier: Modifier 
 }
 
 @Composable
-private fun IndeterminateWheel(theme: Theme, modifier: Modifier = Modifier) {
+private fun IndeterminateWheel(modifier: Modifier = Modifier) {
   Box(modifier = modifier.padding(IconPadding), contentAlignment = Alignment.Center) {
-    CircularProgressIndicator(
-      modifier = Modifier.size(IconSize),
-      color = theme.sliderActiveTrack,
-      trackColor = theme.sliderInactiveTrack,
-      strokeWidth = ProgressWheelStrokeWidth,
-    )
+    AnimatedLoading(modifier = Modifier.size(IconSize))
   }
 }
 
@@ -280,7 +276,7 @@ private fun SyncStepState.color(theme: Theme): Color =
     is SyncStepState.InProgress -> theme.pageText
     SyncStepState.NotStarted -> theme.buttonNormalDisabledText
     is SyncStepState.Failed -> theme.errorText
-    SyncStepState.Succeeded -> theme.successText
+    SyncStepState.Succeeded -> theme.noticeText
   }
 
 @Preview

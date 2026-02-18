@@ -11,6 +11,7 @@ import aktual.core.model.TB
 import aktual.core.model.bytes
 import aktual.core.model.kB
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
@@ -39,7 +40,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -149,7 +149,7 @@ private fun MetricsContent(
   Box(modifier = modifier.fillMaxSize().padding(Dimens.Large)) {
     when (state) {
       MetricsState.Loading -> {
-        LoadingContent(theme = theme)
+        LoadingContent()
       }
 
       MetricsState.Disconnected -> {
@@ -177,13 +177,9 @@ private fun MetricsContent(
   }
 
 @Composable
-private fun BoxScope.LoadingContent(theme: Theme) =
+private fun BoxScope.LoadingContent() =
   HazedBox(modifier = Modifier.align(Alignment.Center), contentAlignment = Alignment.Center) {
-    CircularProgressIndicator(
-      modifier = Modifier.align(Alignment.Center).size(50.dp),
-      color = theme.buttonPrimaryBackground,
-      trackColor = theme.dialogProgressWheelTrack,
-    )
+    AnimatedLoading(modifier = Modifier.align(Alignment.Center).size(50.dp))
   }
 
 @Composable

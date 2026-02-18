@@ -51,7 +51,7 @@ internal fun BudgetStateText(
 
     HorizontalSpacer(5.dp)
 
-    Text(text = text, color = theme.budgetItemTextSecondary, fontSize = 13.sp)
+    Text(text = text, color = theme.pageText, fontSize = 13.sp)
   }
 }
 

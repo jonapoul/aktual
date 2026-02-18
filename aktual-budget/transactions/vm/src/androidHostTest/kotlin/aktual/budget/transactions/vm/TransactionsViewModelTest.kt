@@ -13,6 +13,8 @@ import aktual.core.di.AppGraph
 import aktual.core.di.BudgetGraph
 import aktual.core.di.BudgetGraphHolder
 import aktual.core.di.CoroutineContainer
+import aktual.core.model.BuildConfig
+import aktual.test.TestBuildConfig
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
 import android.content.Context
@@ -53,8 +55,7 @@ class TransactionsViewModelTest {
 
     contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
     appGraph =
-      createGraphFactory<TestAppGraph.Factory>()
-        .create(scope = this, contexts = contexts, context = context)
+      createGraphFactory<TestAppGraph.Factory>().create(this, contexts, context, TestBuildConfig)
 
     budgetGraph = appGraph.budgetGraphHolder.update(METADATA)
 
@@ -232,6 +233,7 @@ class TransactionsViewModelTest {
         @Provides scope: CoroutineScope,
         @Provides contexts: CoroutineContexts,
         @Provides context: Context,
+        @Provides buildConfig: BuildConfig,
       ): TestAppGraph
     }
   }

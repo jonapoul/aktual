@@ -88,7 +88,7 @@ fun DialogContent(
     Column(
       modifier =
         Modifier.defaultMinSize(minWidth = 300.dp)
-          .background(theme.dialogBackground)
+          .background(theme.modalBackground)
           .padding(Dimens.VeryLarge),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Top,

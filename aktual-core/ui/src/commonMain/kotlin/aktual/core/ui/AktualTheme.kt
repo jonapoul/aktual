@@ -14,7 +14,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.LocalShimmerTheme
 import com.valentinilk.shimmer.ShimmerTheme
@@ -26,9 +25,9 @@ fun AktualTheme(type: ColorSchemeType, content: @Composable () -> Unit) {
   val theme =
     remember(type) {
       when (type) {
-        ColorSchemeType.Light -> LightTheme()
-        ColorSchemeType.Dark -> DarkTheme()
-        ColorSchemeType.Midnight -> MidnightTheme()
+        ColorSchemeType.Light -> Theme.light()
+        ColorSchemeType.Dark -> Theme.dark()
+        ColorSchemeType.Midnight -> Theme.midnight()
       }
     }
 
@@ -41,15 +40,8 @@ fun AktualTheme(type: ColorSchemeType, content: @Composable () -> Unit) {
   ) {
     SetStatusBarColors(theme = theme)
 
-    val materialColorScheme =
-      when (theme) {
-        is LightTheme -> lightColorScheme()
-        is DarkTheme -> darkColorScheme()
-        is MidnightTheme -> darkColorScheme(surface = Color.Black)
-      }
-
     MaterialTheme(
-      colorScheme = materialColorScheme,
+      colorScheme = if (theme.pageBackground.isLight()) lightColorScheme() else darkColorScheme(),
       typography = aktualTypography(theme),
       content = content,
     )

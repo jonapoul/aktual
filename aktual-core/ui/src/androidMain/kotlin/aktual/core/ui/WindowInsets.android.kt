@@ -22,6 +22,7 @@ actual fun SetStatusBarColors(theme: Theme, statusBarColor: Color, navigationBar
       val window = (view.context as Activity).window
       window.navigationBarColor = navigationBarColor.toArgb()
       window.statusBarColor = statusBarColor.toArgb()
+
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = theme.isLight()
     }
   }
