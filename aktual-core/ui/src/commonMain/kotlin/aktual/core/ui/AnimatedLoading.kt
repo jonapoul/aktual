@@ -122,10 +122,11 @@ private fun PreviewCheckUpdatesContent(
 
 @Preview
 @Composable
-private fun PreviewScaled() = PreviewWithColorScheme(ColorSchemeType.Light) {
-  Column(horizontalAlignment = Alignment.CenterHorizontally) {
-    AnimatedLoading(modifier = Modifier.size(20.dp))
-    AnimatedLoading(modifier = Modifier.size(50.dp))
-    AnimatedLoading(modifier = Modifier.size(150.dp))
+private fun PreviewScaled() =
+  PreviewWithColorScheme(ColorSchemeType.Light) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+      AnimatedLoading(modifier = Modifier.size(20.dp))
+      AnimatedLoading(modifier = Modifier.size(50.dp))
+      AnimatedLoading(modifier = Modifier.size(150.dp))
+    }
   }
-}
