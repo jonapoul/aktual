@@ -20,15 +20,9 @@ import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 
-@BindingContainer(includes = [ProvidesPrefsContainer::class])
-@ContributesTo(AppScope::class)
-actual interface PrefsContainer {
-  // TBC
-}
-
 @BindingContainer
 @ContributesTo(AppScope::class)
-private object ProvidesPrefsContainer {
+object AndroidPrefsContainer {
   @Provides
   fun prefs(prefs: SharedPreferences, contexts: CoroutineContexts): Preferences =
     AndroidSharedPreferences(prefs, contexts.io)

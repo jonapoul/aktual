@@ -6,7 +6,7 @@ plugins { id("aktual.module.di") }
 kotlin {
   commonMainDependencies {
     api(project(":aktual-core:prefs"))
-    api(project(":aktual-core:prefs-impl"))
+    api(project(":aktual-core:prefs:impl"))
   }
 
   androidMainDependencies {
