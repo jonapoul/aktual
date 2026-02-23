@@ -1,7 +1,7 @@
 package aktual.core.theme
 
-import aktual.api.client.AktualJson
 import aktual.core.api.buildKtorClient
+import aktual.core.model.AktualJson
 import aktual.core.model.BuildConfig
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer

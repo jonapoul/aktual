@@ -1,5 +1,6 @@
 package aktual.api.client
 
+import aktual.core.model.AktualJson
 import aktual.test.CoTemporaryFolder
 import aktual.test.emptyMockEngine
 import aktual.test.enqueueResponse

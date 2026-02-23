@@ -1,12 +1,12 @@
 package aktual.budget.sync.vm
 
-import aktual.api.client.AktualJson
 import aktual.api.model.sync.UserFile
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.database
 import aktual.budget.model.writeMetadata
+import aktual.core.model.AktualJson
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.TimeZoneProvider
 import alakazam.kotlin.requireMessage
