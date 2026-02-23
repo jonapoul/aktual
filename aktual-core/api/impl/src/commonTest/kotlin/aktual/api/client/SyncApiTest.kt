@@ -9,6 +9,7 @@ import aktual.api.model.sync.ListUserFilesResponse
 import aktual.api.model.sync.UserFile
 import aktual.api.model.sync.UserWithAccess
 import aktual.budget.model.BudgetId
+import aktual.core.model.AktualJson
 import aktual.core.model.KeyId
 import aktual.core.model.base64
 import aktual.test.CoTemporaryFolder
@@ -58,7 +59,7 @@ class SyncApiTest {
     destinationPath = temporaryFolder / "my-file.txt"
     syncApi =
       SyncApiImpl(
-        client = testHttpClient(mockEngine),
+        client = testHttpClient(mockEngine, AktualJson),
         fileSystem = FileSystem.SYSTEM, // unused
         serverUrl = SERVER_URL,
       )
