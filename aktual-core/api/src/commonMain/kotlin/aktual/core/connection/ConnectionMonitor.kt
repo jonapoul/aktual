@@ -3,13 +3,13 @@ package aktual.core.connection
 import aktual.api.client.AccountApi
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.AktualJson
 import aktual.api.client.BaseApi
 import aktual.api.client.HealthApi
 import aktual.api.client.MetricsApi
 import aktual.api.client.SyncApi
 import aktual.api.client.SyncDownloadApi
 import aktual.core.api.ClientFactory
+import aktual.core.model.AktualJson
 import aktual.core.model.ServerUrl
 import aktual.core.prefs.AppGlobalPreferences
 import alakazam.kotlin.CoroutineContexts

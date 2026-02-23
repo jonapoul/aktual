@@ -1,11 +1,11 @@
 package aktual.budget.sync.vm
 
 import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.AktualJson
 import aktual.api.client.SyncApi
 import aktual.budget.encryption.BufferDecrypter
 import aktual.budget.encryption.BufferDecrypterImpl
 import aktual.budget.model.BudgetId
+import aktual.core.model.AktualJson
 import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl

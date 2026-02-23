@@ -1,6 +1,6 @@
 package aktual.test
 
-import aktual.api.client.AktualJson
+import aktual.core.model.AktualJson
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 

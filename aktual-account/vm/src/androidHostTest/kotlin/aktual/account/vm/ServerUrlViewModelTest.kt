@@ -3,7 +3,7 @@ package aktual.account.vm
 import aktual.api.client.AccountApi
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.AktualJson
+import aktual.core.model.AktualJson
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl

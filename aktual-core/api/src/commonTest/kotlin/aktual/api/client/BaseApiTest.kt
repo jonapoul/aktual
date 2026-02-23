@@ -2,6 +2,7 @@ package aktual.api.client
 
 import aktual.api.model.base.Build
 import aktual.api.model.base.InfoResponse
+import aktual.core.model.AktualJson
 import aktual.test.BaseResponses
 import aktual.test.emptyMockEngine
 import aktual.test.latestRequestHeaders

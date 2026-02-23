@@ -1,6 +1,6 @@
 package aktual.core.theme
 
-import aktual.api.client.AktualJson
+import aktual.core.model.AktualJson
 import aktual.test.ThemeResponses
 import aktual.test.emptyMockEngine
 import aktual.test.latestRequest
