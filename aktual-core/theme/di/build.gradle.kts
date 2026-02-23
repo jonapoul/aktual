@@ -6,5 +6,6 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-core:theme"))
     api(project(":aktual-core:theme:impl"))
+    implementation(project(":aktual-core:api:impl"))
   }
 }

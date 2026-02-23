@@ -1,13 +1,18 @@
 package aktual.core.theme
 
 import aktual.core.ui.Theme
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.http.URLProtocol
 import io.ktor.http.path
 
-class ThemeApiImpl(private val client: HttpClient) : ThemeApi {
+@Inject
+@ContributesBinding(AppScope::class)
+class ThemeApiImpl(@param:ThemeClient private val client: HttpClient) : ThemeApi {
   override suspend fun fetchThemeList(): List<ThemeSummary> {
     val httpResponse =
       client.get {

@@ -5,11 +5,11 @@ import aktual.core.model.ServerUrl
 import aktual.core.prefs.AppGlobalPreferences
 import aktual.core.prefs.AppGlobalPreferencesImpl
 import aktual.test.CoLogcatInterceptor
-import aktual.test.TestClientFactory
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
+import aktual.test.testHttpClient
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.unconfinedDispatcher
 import app.cash.burst.InterceptTest
@@ -45,10 +45,10 @@ class ConnectionMonitorTest {
     fileSystem = FileSystem.SYSTEM
 
     connectionMonitor =
-      ConnectionMonitor(
+      ConnectionMonitorImpl(
         scope = backgroundScope,
         contexts = TestCoroutineContexts(unconfinedDispatcher),
-        clientFactory = TestClientFactory(mockEngine),
+        client = testHttpClient(mockEngine),
         apiStateHolder = apiStateHolder,
         preferences = preferences,
         fileSystem = fileSystem,

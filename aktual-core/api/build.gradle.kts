@@ -1,5 +1,3 @@
-@file:Suppress("UnstableApiUsage")
-
 import aktual.gradle.generateApiResponses
 import aktual.gradle.kspAllConfigs
 import blueprint.core.commonMainDependencies
@@ -13,20 +11,12 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(libs.alakazam.kotlin)
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
     api(project(":aktual-budget:data"))
     api(project(":aktual-core:model"))
-    implementation(libs.ktor.auth)
-    implementation(libs.ktor.cio)
-    implementation(libs.ktor.contentNegotiation)
-    implementation(libs.ktor.logging)
-    implementation(libs.ktor.serialization.json)
     implementation(libs.preferences.core)
     implementation(project(":aktual-codegen:annotation"))
-    implementation(project(":aktual-core:logging"))
-    implementation(project(":aktual-core:prefs"))
   }
 }
 

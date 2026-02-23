@@ -81,6 +81,8 @@ include(
   ":aktual-codegen:annotation",
   ":aktual-codegen:ksp",
   ":aktual-core:api",
+  ":aktual-core:api:di",
+  ":aktual-core:api:impl",
   ":aktual-core:di",
   ":aktual-core:icons",
   ":aktual-core:l10n",

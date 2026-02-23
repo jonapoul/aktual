@@ -107,7 +107,7 @@ abstract class RootViewModel(
   init {
     serverPinger.start()
     connectionMonitor.start()
-    viewModelScope.launch { serverVersionFetcher.startFetching() }
+    viewModelScope.launch { serverVersionFetcher.start() }
   }
 
   fun onDestroy() {

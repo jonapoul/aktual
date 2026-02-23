@@ -5,17 +5,18 @@ import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.model.account.LoginRequest
 import aktual.core.connection.ConnectionMonitor
+import aktual.core.connection.ConnectionMonitorImpl
 import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.prefs.AppGlobalPreferences
 import aktual.core.prefs.AppGlobalPreferencesImpl
-import aktual.test.TestClientFactory
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
+import aktual.test.testHttpClient
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
@@ -63,10 +64,10 @@ internal class LoginRequesterTest {
     fileSystem = FileSystem.SYSTEM
 
     connectionMonitor =
-      ConnectionMonitor(
+      ConnectionMonitorImpl(
         scope = backgroundScope,
         contexts = TestCoroutineContexts(dispatcher),
-        clientFactory = TestClientFactory(mockEngine),
+        client = testHttpClient(mockEngine),
         apiStateHolder = apisStateHolder,
         preferences = preferences,
         fileSystem = fileSystem,
