@@ -7,7 +7,6 @@ import co.touchlab.kermit.loggerConfigInit
 import co.touchlab.kermit.platformLogWriter
 import kotlin.time.Clock
 import logcat.LogPriority
-import logcat.MinPriorityLogger
 import okio.FileSystem
 
 class KermitFileLogger(

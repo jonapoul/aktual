@@ -108,6 +108,7 @@ licensee {
 dependencies {
   implementation(project(":aktual-app:di"))
   implementation(project(":aktual-app:nav"))
+  implementation(project(":aktual-core:logging:impl"))
   implementation(project(":aktual-core:prefs"))
   implementation(libs.alakazam.compose)
   implementation(libs.alakazam.kotlin)
