@@ -1,6 +1,5 @@
 package aktual.budget.transactions.vm
 
-import aktual.about.di.GithubApiContainer
 import aktual.budget.db.dao.TransactionsDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec
@@ -220,10 +219,7 @@ class TransactionsViewModelTest {
       .withNextKey(3) // More pages possible since we loaded exactly the page size
   }
 
-  @DependencyGraph(
-    scope = AppScope::class,
-    excludes = [CoroutineContainer::class, GithubApiContainer::class],
-  )
+  @DependencyGraph(scope = AppScope::class, excludes = [CoroutineContainer::class])
   internal interface TestAppGraph : AppGraph {
     val budgetGraphHolder: BudgetGraphHolder
 

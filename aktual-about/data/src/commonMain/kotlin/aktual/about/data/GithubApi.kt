@@ -1,5 +1,8 @@
 package aktual.about.data
 
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -20,7 +23,9 @@ interface GithubApi {
   ): List<GithubRelease>
 }
 
-class GithubApiImpl(private val client: HttpClient) : GithubApi {
+@Inject
+@ContributesBinding(AppScope::class)
+class GithubApiImpl(@param:GithubClient private val client: HttpClient) : GithubApi {
   override suspend fun getReleases(
     user: String,
     repo: String,

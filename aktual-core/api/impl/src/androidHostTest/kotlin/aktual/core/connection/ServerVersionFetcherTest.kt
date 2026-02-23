@@ -58,7 +58,7 @@ class ServerVersionFetcherTest {
 
   private fun TestScope.build(loopController: LoopController = SingleLoopController()) {
     fetcher =
-      ServerVersionFetcher(
+      ServerVersionFetcherImpl(
         contexts = TestCoroutineContexts(unconfinedDispatcher),
         apisStateHolder = apisStateHolder,
         versionsStateHolder = versionsStateHolder,
@@ -75,7 +75,7 @@ class ServerVersionFetcherTest {
       advanceUntilIdle()
 
       // When
-      val fetchJob = launch { fetcher.startFetching() }
+      val fetchJob = launch { fetcher.start() }
 
       advanceUntilIdle()
       versionsStateHolder.test {
@@ -101,7 +101,7 @@ class ServerVersionFetcherTest {
       versionsStateHolder.test {
         assertThatNextEmissionIsEqualTo(emptyState())
 
-        val fetchJob = launch { fetcher.startFetching() }
+        val fetchJob = launch { fetcher.start() }
 
         // Then
         assertThat(awaitItem().server).isEqualTo("1.2.3")
@@ -131,7 +131,7 @@ class ServerVersionFetcherTest {
       versionsStateHolder.test {
         assertThatNextEmissionIsEqualTo(emptyState())
 
-        val fetchJob = launch { fetcher.startFetching() }
+        val fetchJob = launch { fetcher.start() }
 
         // Then
         assertThat(awaitItem().server).isEqualTo("1.2.3")

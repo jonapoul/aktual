@@ -1,6 +1,5 @@
 package aktual.core.di
 
-import aktual.about.di.GithubApiContainer
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.BankId
@@ -100,10 +99,7 @@ class BudgetGraphHolderTest {
     name: String = "my bank name",
   ) = database.banksQueries.withoutResult { insert(id, bankId, name) }
 
-  @DependencyGraph(
-    scope = AppScope::class,
-    excludes = [CoroutineContainer::class, GithubApiContainer::class],
-  )
+  @DependencyGraph(scope = AppScope::class, excludes = [CoroutineContainer::class])
   internal interface TestAppGraph : AppGraph {
     val budgetGraphHolder: BudgetGraphHolder
 
