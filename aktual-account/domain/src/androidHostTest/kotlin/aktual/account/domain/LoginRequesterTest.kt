@@ -3,6 +3,7 @@ package aktual.account.domain
 import aktual.api.client.AccountApi
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
+import aktual.api.client.ApiBuilderImpl
 import aktual.api.model.account.LoginRequest
 import aktual.core.connection.ConnectionMonitor
 import aktual.core.connection.ConnectionMonitorImpl
@@ -16,6 +17,7 @@ import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
+import aktual.test.testHttpClient
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
@@ -62,13 +64,20 @@ internal class LoginRequesterTest {
     mockEngine = emptyMockEngine()
     fileSystem = FileSystem.SYSTEM
 
+    val apiBuilder =
+      ApiBuilderImpl(
+        client = testHttpClient(mockEngine),
+        fileSystem = fileSystem,
+        serverUrl = EXAMPLE_URL,
+      )
+
     connectionMonitor =
       ConnectionMonitorImpl(
         scope = backgroundScope,
         contexts = TestCoroutineContexts(dispatcher),
         apiStateHolder = apisStateHolder,
         preferences = preferences,
-        apiBuilder = mockk(),
+        apiBuilder = { apiBuilder },
       )
 
     loginRequester =
