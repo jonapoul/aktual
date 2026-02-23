@@ -1,3 +1,5 @@
+@file:Suppress("StringLiteralDuplication")
+
 package aktual.api.client
 
 import aktual.api.model.account.BootstrapRequest
