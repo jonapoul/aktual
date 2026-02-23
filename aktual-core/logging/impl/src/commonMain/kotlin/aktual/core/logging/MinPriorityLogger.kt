@@ -1,4 +1,7 @@
-package logcat
+package aktual.core.logging
+
+import logcat.LogPriority
+import logcat.LogcatLogger
 
 interface MinPriorityLogger : LogcatLogger {
   val minPriority: LogPriority

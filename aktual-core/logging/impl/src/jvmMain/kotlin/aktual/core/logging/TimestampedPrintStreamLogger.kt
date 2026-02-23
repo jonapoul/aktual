@@ -8,7 +8,6 @@ import kotlinx.datetime.format
 import kotlinx.datetime.format.DateTimeComponents
 import kotlinx.datetime.format.char
 import logcat.LogPriority
-import logcat.MinPriorityLogger
 
 class TimestampedPrintStreamLogger(
   private val stream: PrintStream,
