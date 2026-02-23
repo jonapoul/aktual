@@ -1,6 +1,6 @@
 package aktual.test
 
-import aktual.api.client.AktualJson
+import aktual.core.model.AktualJson
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import org.intellij.lang.annotations.Language

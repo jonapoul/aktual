@@ -2,12 +2,12 @@ package aktual.budget.sync.vm
 
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.AktualJson
 import aktual.api.client.SyncApi
 import aktual.api.model.sync.EncryptMeta
 import aktual.api.model.sync.UserFile
 import aktual.budget.model.BudgetId
 import aktual.budget.sync.vm.BudgetInfoFetcher.Result
+import aktual.core.model.AktualJson
 import aktual.core.model.KeyId
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token

@@ -13,7 +13,6 @@ kotlin {
     compileOnly(libs.androidx.compose.annotation)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.serialization.json)
-    implementation(project(":aktual-core:api"))
     implementation(project(":aktual-core:model"))
   }
 }

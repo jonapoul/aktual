@@ -2,11 +2,11 @@ package aktual.budget.list.vm
 
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.AktualJson
 import aktual.api.client.SyncApi
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.BudgetState
+import aktual.core.model.AktualJson
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
