@@ -9,7 +9,6 @@ import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import assertk.assertThat
 import assertk.assertions.contains
-import assertk.assertions.isDataClassEqualTo
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.matchesPredicate
@@ -62,7 +61,7 @@ class GithubRepositoryTest {
     // Then
     assertThat(TestBuildConfig.versionName).isEqualTo("1.2.3")
     assertThat(state)
-      .isDataClassEqualTo(
+      .isEqualTo(
         LatestReleaseState.UpdateAvailable(
           GithubRelease(
             versionName = "v2.3.4",
@@ -171,7 +170,7 @@ class GithubRepositoryTest {
       GithubRepository(
         contexts = TestCoroutineContexts(standardDispatcher),
         buildConfig = TestBuildConfig,
-        githubApi = GithubApiImpl(client = testHttpClient(mockEngine, GithubJson)),
+        githubApi = GithubApi(client = testHttpClient(mockEngine, GithubJson)),
       )
   }
 }

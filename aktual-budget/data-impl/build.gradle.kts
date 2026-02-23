@@ -17,8 +17,5 @@ kotlin {
     implementation(project(":aktual-core:model"))
   }
 
-  commonTestDependencies {
-
-    implementation(project(":aktual-test"))
-  }
+  commonTestDependencies { implementation(project(":aktual-test")) }
 }

@@ -6,8 +6,5 @@ plugins { id("aktual.module.viewmodel") }
 kotlin {
   commonMainDependencies { api(project(":aktual-core:api")) }
 
-  commonTestDependencies {
-
-    implementation(project(":aktual-test"))
-  }
+  commonTestDependencies { implementation(project(":aktual-test")) }
 }

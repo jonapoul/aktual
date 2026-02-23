@@ -1,7 +1,5 @@
 package aktual.about.data
 
-import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -14,23 +12,13 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
-interface GithubApi {
+@Inject
+class GithubApi(@param:GithubClient private val client: HttpClient) {
   suspend fun getReleases(
     user: String,
     repo: String,
     perPage: Int? = null,
     pageNumber: Int? = null,
-  ): List<GithubRelease>
-}
-
-@Inject
-@ContributesBinding(AppScope::class)
-class GithubApiImpl(@param:GithubClient private val client: HttpClient) : GithubApi {
-  override suspend fun getReleases(
-    user: String,
-    repo: String,
-    perPage: Int?,
-    pageNumber: Int?,
   ): List<GithubRelease> =
     client
       .get {
