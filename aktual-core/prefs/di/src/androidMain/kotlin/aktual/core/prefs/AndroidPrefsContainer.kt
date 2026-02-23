@@ -22,7 +22,7 @@ import dev.zacsweers.metro.SingleIn
 
 @BindingContainer
 @ContributesTo(AppScope::class)
-object ProvidesPrefsContainer {
+object AndroidPrefsContainer {
   @Provides
   fun prefs(prefs: SharedPreferences, contexts: CoroutineContexts): Preferences =
     AndroidSharedPreferences(prefs, contexts.io)
