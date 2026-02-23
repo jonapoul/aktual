@@ -15,6 +15,7 @@ kotlin {
     api(libs.preferences.core)
     api(project(":aktual-about:di"))
     api(project(":aktual-budget:data-di"))
+    api(project(":aktual-core:api:di"))
     api(project(":aktual-core:di"))
     api(project(":aktual-core:model"))
     api(project(":aktual-core:prefs:di"))

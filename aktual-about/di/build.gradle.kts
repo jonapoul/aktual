@@ -6,6 +6,6 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-about:data"))
     api(project(":aktual-core:model"))
-    implementation(project(":aktual-core:api"))
+    implementation(project(":aktual-core:api:impl"))
   }
 }

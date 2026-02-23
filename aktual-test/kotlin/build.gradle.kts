@@ -22,7 +22,7 @@ kotlin {
     api(libs.test.turbine)
     api(project(":aktual-budget:data"))
     implementation(libs.sqldelight.driver.sqlite)
-    implementation(project(":aktual-core:api"))
+    implementation(project(":aktual-core:api:impl"))
   }
 
   androidMainDependencies {
