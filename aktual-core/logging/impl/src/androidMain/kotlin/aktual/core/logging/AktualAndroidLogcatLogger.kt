@@ -2,7 +2,6 @@ package aktual.core.logging
 
 import logcat.AndroidLogcatLogger
 import logcat.LogPriority
-import logcat.MinPriorityLogger
 
 class AktualAndroidLogcatLogger(override val minPriority: LogPriority) : MinPriorityLogger {
   private val delegate = AndroidLogcatLogger(minPriority)

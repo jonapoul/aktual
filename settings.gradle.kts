@@ -85,6 +85,7 @@ include(
   ":aktual-core:icons",
   ":aktual-core:l10n",
   ":aktual-core:logging",
+  ":aktual-core:logging:impl",
   ":aktual-core:model",
   ":aktual-core:prefs",
   ":aktual-core:prefs:di",
