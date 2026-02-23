@@ -27,7 +27,7 @@ kover {
 
   reports {
     excludedClasses.addAll("*Application*", "*Preview*Kt*")
-    excludedProjects.addAll(":aktual-codegen:ksp", ":aktual-core:l10n", ":aktual-core:ui")
+    excludedProjects.addAll(":aktual-core:l10n", ":aktual-core:ui")
     excludesAnnotatedBy.addAll(
       "aktual.core.ui.DesktopPreview",
       "aktual.core.ui.LandscapePreview",
@@ -78,8 +78,6 @@ include(
   ":aktual-budget:sync:vm",
   ":aktual-budget:transactions:ui",
   ":aktual-budget:transactions:vm",
-  ":aktual-codegen:annotation",
-  ":aktual-codegen:ksp",
   ":aktual-core:api",
   ":aktual-core:api:di",
   ":aktual-core:api:impl",
@@ -100,7 +98,7 @@ include(
   ":aktual-metrics:vm",
   ":aktual-settings:ui",
   ":aktual-settings:vm",
-  ":aktual-test:android",
+  ":aktual-test",
+  ":aktual-test:api",
   ":aktual-test:compose",
-  ":aktual-test:kotlin",
 )

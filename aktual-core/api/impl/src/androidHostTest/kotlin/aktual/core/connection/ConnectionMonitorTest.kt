@@ -9,7 +9,6 @@ import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
-import aktual.test.testHttpClient
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.unconfinedDispatcher
 import app.cash.burst.InterceptTest
@@ -18,12 +17,12 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
 import io.ktor.client.engine.mock.MockEngine
+import io.mockk.mockk
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import okio.FileSystem
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -35,23 +34,20 @@ class ConnectionMonitorTest {
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var apiStateHolder: AktualApisStateHolder
   private lateinit var mockEngine: MockEngine.Queue
-  private lateinit var fileSystem: FileSystem
 
   private fun TestScope.before() {
     val prefs = buildPreferences(unconfinedDispatcher)
     preferences = AppGlobalPreferencesImpl(prefs)
     apiStateHolder = AktualApisStateHolder()
     mockEngine = emptyMockEngine()
-    fileSystem = FileSystem.SYSTEM
 
     connectionMonitor =
       ConnectionMonitorImpl(
         scope = backgroundScope,
         contexts = TestCoroutineContexts(unconfinedDispatcher),
-        client = testHttpClient(mockEngine),
         apiStateHolder = apiStateHolder,
         preferences = preferences,
-        fileSystem = fileSystem,
+        apiBuilder = mockk(),
       )
   }
 

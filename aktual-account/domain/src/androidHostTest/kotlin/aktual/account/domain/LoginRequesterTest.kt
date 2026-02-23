@@ -16,7 +16,6 @@ import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
-import aktual.test.testHttpClient
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
@@ -67,10 +66,9 @@ internal class LoginRequesterTest {
       ConnectionMonitorImpl(
         scope = backgroundScope,
         contexts = TestCoroutineContexts(dispatcher),
-        client = testHttpClient(mockEngine),
         apiStateHolder = apisStateHolder,
         preferences = preferences,
-        fileSystem = fileSystem,
+        apiBuilder = mockk(),
       )
 
     loginRequester =

@@ -1,6 +1,5 @@
 package aktual.api.client
 
-import aktual.api.model.internal.AktualHeaders
 import aktual.api.model.sync.DeleteUserFileRequest
 import aktual.api.model.sync.DeleteUserFileResponse
 import aktual.api.model.sync.GetUserFileInfoResponse
@@ -8,33 +7,24 @@ import aktual.api.model.sync.GetUserKeyRequest
 import aktual.api.model.sync.GetUserKeyResponse
 import aktual.api.model.sync.ListUserFilesResponse
 import aktual.budget.model.BudgetId
-import aktual.codegen.Body
-import aktual.codegen.GET
-import aktual.codegen.Header
-import aktual.codegen.KtorApi
-import aktual.codegen.POST
-import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import io.ktor.client.HttpClient
+import kotlinx.coroutines.flow.Flow
+import okio.Path
 
-@KtorApi
 interface SyncApi {
-  @GET("/sync/list-user-files")
-  suspend fun fetchUserFiles(
-    @Header(AktualHeaders.TOKEN) token: Token
-  ): ListUserFilesResponse.Success
+  fun downloadUserFile(token: Token, budgetId: BudgetId, path: Path): Flow<SyncDownloadState>
 
-  @GET("/sync/get-user-file-info")
-  suspend fun fetchUserFileInfo(
-    @Header(AktualHeaders.TOKEN) token: Token,
-    @Header(AktualHeaders.FILE_ID) budgetId: BudgetId,
-  ): GetUserFileInfoResponse.Success
+  suspend fun fetchUserFiles(token: Token): ListUserFilesResponse.Success
 
-  @POST("/sync/user-get-key")
-  suspend fun fetchUserKey(@Body body: GetUserKeyRequest): GetUserKeyResponse.Success
+  suspend fun fetchUserFileInfo(token: Token, budgetId: BudgetId): GetUserFileInfoResponse.Success
 
-  @POST("/sync/delete-user-file")
-  suspend fun delete(@Body body: DeleteUserFileRequest): DeleteUserFileResponse.Success
+  suspend fun fetchUserKey(body: GetUserKeyRequest): GetUserKeyResponse.Success
+
+  suspend fun delete(body: DeleteUserFileRequest): DeleteUserFileResponse.Success
 }
 
-expect fun SyncApi(serverUrl: ServerUrl, client: HttpClient): SyncApi
+sealed interface SyncDownloadState {
+  data class InProgress(val bytesSentTotal: Long, val contentLength: Long) : SyncDownloadState
+
+  data class Done(val path: Path, val contentLength: Long) : SyncDownloadState
+}

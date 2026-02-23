@@ -1,7 +1,6 @@
 package aktual.api.client
 
 import aktual.api.model.health.GetHealthResponse
-import aktual.core.model.AktualJson
 import aktual.test.HealthResponses
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
@@ -21,7 +20,7 @@ class HealthApiTest {
   @BeforeTest
   fun before() {
     mockEngine = emptyMockEngine()
-    healthApi = HealthApi(SERVER_URL, testHttpClient(mockEngine, AktualJson))
+    healthApi = HealthApiImpl(testHttpClient(mockEngine), SERVER_URL)
   }
 
   @AfterTest

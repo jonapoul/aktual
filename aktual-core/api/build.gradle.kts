@@ -1,12 +1,10 @@
-import aktual.gradle.generateApiResponses
-import aktual.gradle.kspAllConfigs
 import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins {
   id("aktual.module.multiplatform")
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.redacted)
-  alias(libs.plugins.ksp)
 }
 
 kotlin {
@@ -16,13 +14,7 @@ kotlin {
     api(project(":aktual-budget:data"))
     api(project(":aktual-core:model"))
     implementation(libs.preferences.core)
-    implementation(project(":aktual-codegen:annotation"))
   }
-}
 
-kspAllConfigs(project(":aktual-codegen:ksp"))
-
-buildConfig {
-  packageName("aktual.test")
-  generateApiResponses(project, directory = "api/actual")
+  commonTestDependencies { implementation(project(":aktual-test:api")) }
 }

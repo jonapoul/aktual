@@ -1,5 +1,6 @@
 package aktual.about.data
 
+import aktual.test.GithubResponses
 import aktual.test.TestBuildConfig
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
@@ -37,7 +38,7 @@ class GithubRepositoryTest {
   fun `Request is structured as expected`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NEW_RELEASE) }
+    mockEngine += { respondJson(GithubResponses.LIST_RELEASES_ACTUAL_200) }
 
     // When
     githubRepository.fetchLatestRelease()
@@ -53,7 +54,7 @@ class GithubRepositoryTest {
   fun `Update available from three returned`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NEW_RELEASE) }
+    mockEngine += { respondJson(GithubResponses.LIST_RELEASES_ACTUAL_200) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -77,7 +78,7 @@ class GithubRepositoryTest {
   fun `No new updates`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NO_NEW_UPDATE) }
+    mockEngine += { respondJson(GithubResponses.LIST_RELEASES_NO_NEW_RELEASE_200) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -105,7 +106,9 @@ class GithubRepositoryTest {
   fun `Private repo`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NOT_FOUND, HttpStatusCode.NotFound) }
+    mockEngine += {
+      respondJson(GithubResponses.LIST_RELEASES_NOT_FOUND_404, HttpStatusCode.NotFound)
+    }
 
     // When
     val state = githubRepository.fetchLatestRelease()

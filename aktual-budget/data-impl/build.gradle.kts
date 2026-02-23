@@ -1,4 +1,5 @@
 import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins {
   id("aktual.module.multiplatform")
@@ -14,5 +15,10 @@ kotlin {
     api(project(":aktual-budget:model"))
     implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:model"))
+  }
+
+  commonTestDependencies {
+
+    implementation(project(":aktual-test"))
   }
 }

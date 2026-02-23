@@ -19,9 +19,7 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.mockk.coEvery
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.runs
 import java.io.IOException
 import kotlin.test.Ignore
 import kotlin.test.Test
@@ -46,10 +44,7 @@ class ServerVersionFetcherTest {
   @Before
   fun before() {
     baseApi = mockk()
-    apis = mockk {
-      every { base } returns baseApi
-      every { close() } just runs
-    }
+    apis = mockk { every { base } returns baseApi }
 
     apisStateHolder = AktualApisStateHolder()
     apisStateHolder.update { apis }

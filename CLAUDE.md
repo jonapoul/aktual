@@ -161,7 +161,7 @@ The project follows a strict **feature-based modular architecture** with clear l
 
 ### Dependency Injection (Metro)
 
-The project uses **Metro** (by Zac Sweers), a modern KSP-based DI framework:
+The project uses **Metro** (by Zac Sweers), a modern Kotlin-compiler-based DI framework:
 
 **Scopes:**
 - `AppScope` - Application-level singletons
@@ -250,7 +250,6 @@ The project uses Gradle convention plugins to centralize build configuration:
 - `aktual.module.compose` - Multiplatform + Compose + Material3
 - `aktual.module.viewmodel` - Compose + Molecule + lifecycle-viewmodel
 - `aktual.module.di` - Multiplatform + Metro DI
-- `aktual.module.android` - Android-only module
 - `aktual.module.jvm` - JVM-only module
 
 **Key Build Properties:**
