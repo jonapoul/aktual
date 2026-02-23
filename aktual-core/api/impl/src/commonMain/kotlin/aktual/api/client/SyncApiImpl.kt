@@ -75,7 +75,7 @@ class SyncApiImpl(
 
   override suspend fun fetchUserFiles(token: Token): ListUserFilesResponse.Success =
     client
-      .`get` {
+      .get {
         url {
           protocol = urlProtocol
           host = serverUrl.baseUrl
@@ -90,7 +90,7 @@ class SyncApiImpl(
     budgetId: BudgetId,
   ): GetUserFileInfoResponse.Success =
     client
-      .`get` {
+      .get {
         url {
           protocol = urlProtocol
           host = serverUrl.baseUrl

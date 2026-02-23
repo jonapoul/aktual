@@ -12,7 +12,7 @@ class HealthApiImpl(private val client: HttpClient, private val serverUrl: Serve
 
   override suspend fun getHealth(): GetHealthResponse =
     client
-      .`get` {
+      .get {
         url {
           protocol = urlProtocol
           host = serverUrl.baseUrl

@@ -28,7 +28,7 @@ class AccountApiImpl(private val client: HttpClient, private val serverUrl: Serv
 
   override suspend fun needsBootstrap(): NeedsBootstrapResponse.Success =
     client
-      .`get` {
+      .get {
         url {
           protocol = urlProtocol
           host = serverUrl.baseUrl
@@ -39,7 +39,7 @@ class AccountApiImpl(private val client: HttpClient, private val serverUrl: Serv
 
   override suspend fun loginMethods(): LoginMethodsResponse.Success =
     client
-      .`get` {
+      .get {
         url {
           protocol = urlProtocol
           host = serverUrl.baseUrl

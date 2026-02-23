@@ -12,7 +12,7 @@ class BaseApiImpl(private val client: HttpClient, private val serverUrl: ServerU
 
   override suspend fun fetchInfo(): InfoResponse =
     client
-      .`get` {
+      .get {
         url {
           protocol = urlProtocol
           host = serverUrl.baseUrl

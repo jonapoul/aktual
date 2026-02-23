@@ -13,7 +13,7 @@ class MetricsApiImpl(private val client: HttpClient, private val serverUrl: Serv
 
   override suspend fun getMetrics(): GetMetricsResponse =
     client
-      .`get` {
+      .get {
         url {
           protocol = urlProtocol
           host = serverUrl.baseUrl
