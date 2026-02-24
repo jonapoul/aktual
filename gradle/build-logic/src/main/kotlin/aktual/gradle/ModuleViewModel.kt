@@ -11,7 +11,7 @@ class ModuleViewModel : Plugin<Project> {
   override fun apply(target: Project) =
     with(target) {
       with(pluginManager) {
-        apply(ModuleMultiplatform::class)
+        apply(ModuleKotlin::class)
         apply(ConventionCompose::class)
       }
 

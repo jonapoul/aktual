@@ -58,7 +58,7 @@ gradlePlugin {
     "aktual.module.compose"(impl = "aktual.gradle.ModuleCompose")
     "aktual.module.di"(impl = "aktual.gradle.ModuleDi")
     "aktual.module.jvm"(impl = "aktual.gradle.ModuleJvm")
-    "aktual.module.multiplatform"(impl = "aktual.gradle.ModuleMultiplatform")
+    "aktual.module.kotlin"(impl = "aktual.gradle.ModuleKotlin")
     "aktual.module.viewmodel"(impl = "aktual.gradle.ModuleViewModel")
   }
 }

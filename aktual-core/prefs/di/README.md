@@ -1,4 +1,4 @@
-# aktual-core:prefs-di
+# aktual-core:prefs:di
 
 <!--region chart-->
 ![chart](atlas/chart.png)

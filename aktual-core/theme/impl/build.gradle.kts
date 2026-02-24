@@ -4,7 +4,7 @@ import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
 
 plugins {
-  id("aktual.module.multiplatform")
+  id("aktual.module.kotlin")
   alias(libs.plugins.kotlin.serialization)
 }
 
