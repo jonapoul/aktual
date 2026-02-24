@@ -4,7 +4,7 @@ import blueprint.core.commonMainDependencies
 import com.github.gmazzo.buildconfig.BuildConfigSourceSet
 import org.gradle.internal.extensions.stdlib.capitalized
 
-plugins { id("aktual.module.multiplatform") }
+plugins { id("aktual.module.kotlin") }
 
 kotlin {
   commonMainDependencies {

@@ -14,7 +14,7 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 
-class ModuleMultiplatform : Plugin<Project> {
+class ModuleKotlin : Plugin<Project> {
   override fun apply(target: Project): Unit =
     with(target) {
       with(pluginManager) {

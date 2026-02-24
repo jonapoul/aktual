@@ -246,7 +246,7 @@ kotlin {
 The project uses Gradle convention plugins to centralize build configuration:
 
 **Module Plugins** (use these when creating new modules):
-- `aktual.module.multiplatform` - Base KMP module (desktop + android targets)
+- `aktual.module.kotlin` - Base KMP module (desktop + android targets)
 - `aktual.module.compose` - Multiplatform + Compose + Material3
 - `aktual.module.viewmodel` - Compose + Molecule + lifecycle-viewmodel
 - `aktual.module.di` - Multiplatform + Metro DI
@@ -314,7 +314,7 @@ To change the Java version, simply update the `.java-version` file. Both the Gra
    ```kotlin
    // domain/build.gradle.kts
    plugins {
-     id("aktual.module.multiplatform")
+     id("aktual.module.kotlin")
    }
 
    // vm/build.gradle.kts
