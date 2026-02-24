@@ -21,7 +21,7 @@ class ModuleCompose : Plugin<Project> {
   override fun apply(target: Project): Unit =
     with(target) {
       with(pluginManager) {
-        apply(ModuleMultiplatform::class)
+        apply(ModuleKotlin::class)
         apply(ConventionCompose::class)
       }
 
