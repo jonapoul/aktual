@@ -19,5 +19,9 @@ kotlin {
     implementation(libs.okio)
   }
 
-  commonTestDependencies { implementation(project(":aktual-budget:data-di")) }
+  commonTestDependencies {
+    implementation(project(":aktual-budget:data-di"))
+    implementation(project(":aktual-core:api:di"))
+    implementation(project(":aktual-test:api"))
+  }
 }

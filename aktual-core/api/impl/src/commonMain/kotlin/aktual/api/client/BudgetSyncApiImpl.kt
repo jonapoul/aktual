@@ -1,6 +1,5 @@
 package aktual.api.client
 
-import aktual.api.model.internal.AktualHeaders
 import aktual.budget.model.BudgetId
 import aktual.budget.model.SyncResponse
 import aktual.budget.prefs.BudgetLocalPreferences
@@ -19,8 +18,8 @@ import okio.buffer
 import okio.source
 
 class BudgetSyncApiImpl(
-  private val serverUrl: ServerUrl,
   private val client: HttpClient,
+  private val serverUrl: ServerUrl,
   private val prefs: BudgetLocalPreferences,
   private val decoder: SyncResponseDecoder,
 ) : BudgetSyncApi {

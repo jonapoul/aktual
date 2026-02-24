@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
-import aktual.gradle.addResponsesClass
 import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins {
   id("aktual.module.multiplatform")
@@ -16,11 +16,6 @@ kotlin {
     compileOnly(libs.jetbrains.runtime)
     implementation(project(":aktual-core:logging"))
   }
-}
 
-buildConfig {
-  sourceSets.named("test") {
-    packageName("aktual.test")
-    addResponsesClass(project, rootProject.isolated.projectDirectory.file("api/theme").asFile)
-  }
+  commonTestDependencies { implementation(project(":aktual-test:api")) }
 }

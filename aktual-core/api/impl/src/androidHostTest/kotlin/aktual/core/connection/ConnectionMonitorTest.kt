@@ -1,6 +1,7 @@
 package aktual.core.connection
 
 import aktual.api.client.AktualApisStateHolder
+import aktual.api.client.ApiBuilder
 import aktual.core.model.ServerUrl
 import aktual.core.prefs.AppGlobalPreferences
 import aktual.core.prefs.AppGlobalPreferencesImpl
@@ -8,8 +9,6 @@ import aktual.test.CoLogcatInterceptor
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
-import aktual.test.emptyMockEngine
-import aktual.test.testHttpClient
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.unconfinedDispatcher
 import app.cash.burst.InterceptTest
@@ -17,13 +16,12 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
-import io.ktor.client.engine.mock.MockEngine
-import kotlin.test.AfterTest
+import io.mockk.every
+import io.mockk.mockk
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import okio.FileSystem
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -34,30 +32,29 @@ class ConnectionMonitorTest {
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var apiStateHolder: AktualApisStateHolder
-  private lateinit var mockEngine: MockEngine.Queue
-  private lateinit var fileSystem: FileSystem
 
   private fun TestScope.before() {
     val prefs = buildPreferences(unconfinedDispatcher)
     preferences = AppGlobalPreferencesImpl(prefs)
     apiStateHolder = AktualApisStateHolder()
-    mockEngine = emptyMockEngine()
-    fileSystem = FileSystem.SYSTEM
+
+    val apiBuilder =
+      mockk<ApiBuilder> {
+        every { account() } returns mockk()
+        every { base() } returns mockk()
+        every { health() } returns mockk()
+        every { metrics() } returns mockk()
+        every { sync() } returns mockk()
+      }
 
     connectionMonitor =
       ConnectionMonitorImpl(
         scope = backgroundScope,
         contexts = TestCoroutineContexts(unconfinedDispatcher),
-        client = testHttpClient(mockEngine),
         apiStateHolder = apiStateHolder,
         preferences = preferences,
-        fileSystem = fileSystem,
+        apiBuilder = { apiBuilder },
       )
-  }
-
-  @AfterTest
-  fun after() {
-    mockEngine.close()
   }
 
   @Test

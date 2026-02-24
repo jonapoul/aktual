@@ -134,13 +134,11 @@ class MetricsViewModelTest {
     metricsApi?.let { m ->
       AktualApis(
         serverUrl = SERVER_URL,
-        client = mockk(),
         account = mockk(),
         base = mockk(),
         health = mockk(),
         metrics = m,
         sync = mockk(),
-        syncDownload = mockk(),
       )
     }
 

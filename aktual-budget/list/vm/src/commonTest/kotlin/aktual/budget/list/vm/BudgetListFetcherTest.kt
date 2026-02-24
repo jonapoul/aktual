@@ -3,10 +3,10 @@ package aktual.budget.list.vm
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApi
+import aktual.api.client.SyncApiImpl
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.BudgetState
-import aktual.core.model.AktualJson
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -30,6 +30,7 @@ import kotlin.test.Test
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import okio.FileSystem
 
 class BudgetListFetcherTest {
   private lateinit var budgetListFetcher: BudgetListFetcher
@@ -156,7 +157,7 @@ class BudgetListFetcherTest {
   }
 
   private fun buildApis(
-    syncApi: SyncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, AktualJson))
+    syncApi: SyncApi = SyncApiImpl(testHttpClient(mockEngine), FileSystem.SYSTEM, SERVER_URL)
   ) = mockk<AktualApis> { every { sync } returns syncApi }
 
   private companion object {

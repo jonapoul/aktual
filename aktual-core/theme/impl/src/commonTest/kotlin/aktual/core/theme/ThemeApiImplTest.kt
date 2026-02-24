@@ -35,7 +35,7 @@ class ThemeApiImplTest {
   @Test
   fun `Fetch CSS and parse as theme`() = runTest {
     // given
-    mockEngine += { respond(ThemeResponses.ACTUAL_200) }
+    mockEngine += { respond(ThemeResponses.CUSTOM_THEME_200) }
 
     // when
     val repo = ThemeRepo(userName = "Juulz", repoName = "shades-of-coffee")

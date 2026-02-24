@@ -1,4 +1,5 @@
 import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins {
   id("aktual.module.multiplatform")
@@ -15,4 +16,6 @@ kotlin {
     implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:model"))
   }
+
+  commonTestDependencies { implementation(project(":aktual-test")) }
 }

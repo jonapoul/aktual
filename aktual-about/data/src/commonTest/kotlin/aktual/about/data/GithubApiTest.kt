@@ -18,7 +18,7 @@ class GithubApiTest {
   @BeforeTest
   fun before() {
     mockEngine = emptyMockEngine()
-    githubApi = GithubApiImpl(testHttpClient(mockEngine, GithubJson))
+    githubApi = GithubApi(testHttpClient(mockEngine, GithubJson))
   }
 
   @AfterTest

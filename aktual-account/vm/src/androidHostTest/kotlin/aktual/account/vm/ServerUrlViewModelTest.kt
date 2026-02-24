@@ -1,9 +1,9 @@
 package aktual.account.vm
 
 import aktual.api.client.AccountApi
+import aktual.api.client.AccountApiImpl
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
-import aktual.core.model.AktualJson
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
@@ -29,9 +29,7 @@ import assertk.assertions.isNull
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpStatusCode
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
-import io.mockk.runs
 import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -63,9 +61,8 @@ class ServerUrlViewModelTest {
   fun before() {
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
     mockEngine = emptyMockEngine()
-    accountApi = AccountApi(EXAMPLE_URL, testHttpClient(mockEngine, AktualJson))
+    accountApi = AccountApiImpl(testHttpClient(mockEngine), EXAMPLE_URL)
     apis = mockk {
-      every { close() } just runs
       every { serverUrl } returns EXAMPLE_URL
       every { account } returns accountApi
     }

@@ -42,7 +42,7 @@ class ModuleCompose : Plugin<Project> {
         }
 
         commonTestDependencies {
-          implementation(project(":aktual-test:kotlin"))
+          implementation(project(":aktual-test"))
 
           if (name != ":aktual-test:compose") {
             implementation(project(":aktual-test:compose"))
@@ -51,10 +51,7 @@ class ModuleCompose : Plugin<Project> {
 
         androidMainDependencies { implementation(libs["androidx.poolingcontainer"]) }
 
-        androidHostTestDependencies {
-          implementation(project(":aktual-test:android"))
-          implementation(libs["test.androidx.compose.ui.junit4"])
-        }
+        androidHostTestDependencies { implementation(libs["test.androidx.compose.ui.junit4"]) }
 
         jvmMainDependencies {
           implementation(extensions.getByType<ComposePlugin.Dependencies>().desktop.currentOs)

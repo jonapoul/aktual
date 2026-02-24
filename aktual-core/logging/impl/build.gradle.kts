@@ -1,4 +1,5 @@
 import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins { id("aktual.module.multiplatform") }
 
@@ -10,4 +11,6 @@ kotlin {
     implementation(libs.kermit)
     implementation(libs.kotlinx.datetime)
   }
+
+  commonTestDependencies { implementation(project(":aktual-test")) }
 }

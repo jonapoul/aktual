@@ -1,4 +1,5 @@
 import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins {
   id("aktual.module.multiplatform")
@@ -14,5 +15,10 @@ kotlin {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.serialization.json)
     implementation(project(":aktual-core:model"))
+  }
+
+  commonTestDependencies {
+    implementation(project(":aktual-test"))
+    implementation(project(":aktual-test:api"))
   }
 }

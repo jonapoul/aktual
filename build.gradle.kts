@@ -2,7 +2,6 @@ import atlas.graphviz.ArrowType.None
 import atlas.graphviz.ArrowType.Normal
 import atlas.graphviz.FileFormat.Png
 import atlas.graphviz.LayoutEngine.Dot
-import atlas.graphviz.LinkStyle.Bold
 import atlas.graphviz.LinkStyle.Dashed
 import atlas.graphviz.LinkStyle.Solid
 import atlas.graphviz.NodeStyle.Filled
@@ -25,7 +24,6 @@ plugins {
   alias(libs.plugins.kotlin.jvm) apply false
   alias(libs.plugins.kotlin.multiplatform) apply false
   alias(libs.plugins.kotlin.serialization) apply false
-  alias(libs.plugins.ksp) apply false
   alias(libs.plugins.licensee) apply false
   alias(libs.plugins.manifestLock) apply false
   alias(libs.plugins.metro) apply false
@@ -65,7 +63,6 @@ atlas {
     hasPluginId(name = "ViewModel", pluginId = "aktual.module.viewmodel", color = "#914141") // pink
     hasPluginId(name = "DI", pluginId = "aktual.module.di", color = "#a17103") // orange
     hasPluginId(name = "UI", pluginId = "aktual.module.compose", color = "#6b6b01") // yellow
-    hasPluginId(name = "Android", pluginId = "aktual.module.android", color = "#017001") // green
     hasPluginId(
       name = "Multiplatform",
       pluginId = "aktual.module.multiplatform",
@@ -79,7 +76,6 @@ atlas {
   linkTypes {
     "commonMainApi"(style = Solid, displayName = "api")
     "commonMainImplementation"(style = Dashed, color = "aqua", displayName = "implementation")
-    "kspCommonMainMetadata"(style = Bold, color = "Red", displayName = "ksp")
   }
 
   graphviz {

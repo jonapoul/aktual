@@ -1,4 +1,5 @@
 import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins { id("aktual.module.multiplatform") }
 
@@ -11,6 +12,8 @@ kotlin {
     implementation(project(":aktual-core:prefs"))
     compileOnly(libs.androidx.compose.annotation)
   }
+
+  commonTestDependencies { implementation(project(":aktual-test:api")) }
 
   androidHostTestDependencies { implementation(project(":aktual-core:api:impl")) }
 }

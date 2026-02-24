@@ -3,6 +3,7 @@ package aktual.budget.sync.vm
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApi
+import aktual.api.client.SyncApiImpl
 import aktual.api.model.sync.EncryptMeta
 import aktual.api.model.sync.UserFile
 import aktual.budget.model.BudgetId
@@ -31,6 +32,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
+import okio.FileSystem
 
 class BudgetInfoFetcherTest {
   private lateinit var budgetInfoFetcher: BudgetInfoFetcher
@@ -47,7 +49,7 @@ class BudgetInfoFetcherTest {
   private fun TestScope.before() {
     mockEngine = emptyMockEngine()
     client = testHttpClient(mockEngine, AktualJson)
-    syncApi = SyncApi(SERVER_URL, client)
+    syncApi = SyncApiImpl(client, FileSystem.SYSTEM, SERVER_URL)
     apisStateHolder = AktualApisStateHolder()
     apisStateHolder.update { aktualApis() }
     budgetInfoFetcher =
@@ -160,13 +162,11 @@ class BudgetInfoFetcherTest {
   private fun aktualApis() =
     AktualApis(
       serverUrl = SERVER_URL,
-      client = client,
       account = mockk(),
       base = mockk(),
       health = mockk(),
       metrics = mockk(),
       sync = syncApi,
-      syncDownload = mockk(),
     )
 
   private companion object {
