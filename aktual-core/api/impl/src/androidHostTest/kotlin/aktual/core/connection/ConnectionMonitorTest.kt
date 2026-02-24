@@ -1,6 +1,7 @@
 package aktual.core.connection
 
 import aktual.api.client.AktualApisStateHolder
+import aktual.api.client.ApiBuilder
 import aktual.core.model.ServerUrl
 import aktual.core.prefs.AppGlobalPreferences
 import aktual.core.prefs.AppGlobalPreferencesImpl
@@ -8,7 +9,6 @@ import aktual.test.CoLogcatInterceptor
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
-import aktual.test.emptyMockEngine
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.unconfinedDispatcher
 import app.cash.burst.InterceptTest
@@ -16,9 +16,8 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNotNull
-import io.ktor.client.engine.mock.MockEngine
+import io.mockk.every
 import io.mockk.mockk
-import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -33,13 +32,20 @@ class ConnectionMonitorTest {
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var preferences: AppGlobalPreferences
   private lateinit var apiStateHolder: AktualApisStateHolder
-  private lateinit var mockEngine: MockEngine.Queue
 
   private fun TestScope.before() {
     val prefs = buildPreferences(unconfinedDispatcher)
     preferences = AppGlobalPreferencesImpl(prefs)
     apiStateHolder = AktualApisStateHolder()
-    mockEngine = emptyMockEngine()
+
+    val apiBuilder =
+      mockk<ApiBuilder> {
+        every { account() } returns mockk()
+        every { base() } returns mockk()
+        every { health() } returns mockk()
+        every { metrics() } returns mockk()
+        every { sync() } returns mockk()
+      }
 
     connectionMonitor =
       ConnectionMonitorImpl(
@@ -47,13 +53,8 @@ class ConnectionMonitorTest {
         contexts = TestCoroutineContexts(unconfinedDispatcher),
         apiStateHolder = apiStateHolder,
         preferences = preferences,
-        apiBuilder = mockk(),
+        apiBuilder = { apiBuilder },
       )
-  }
-
-  @AfterTest
-  fun after() {
-    mockEngine.close()
   }
 
   @Test
