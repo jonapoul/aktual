@@ -2,10 +2,10 @@ package aktual.budget.sync.vm
 
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApi
+import aktual.api.client.SyncApiImpl
 import aktual.budget.encryption.BufferDecrypter
 import aktual.budget.encryption.BufferDecrypterImpl
 import aktual.budget.model.BudgetId
-import aktual.core.model.AktualJson
 import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
@@ -30,6 +30,7 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
+import okio.FileSystem
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -51,7 +52,7 @@ class KeyFetcherTest {
     decrypter = BufferDecrypterImpl(contexts, keyPreferences)
 
     mockEngine = emptyMockEngine()
-    syncApi = SyncApi(SERVER_URL, testHttpClient(mockEngine, AktualJson))
+    syncApi = SyncApiImpl(testHttpClient(mockEngine), FileSystem.SYSTEM, SERVER_URL)
     val stateHolder = AktualApisStateHolder()
     stateHolder.value = mockk(relaxed = true) { every { sync } returns syncApi }
 

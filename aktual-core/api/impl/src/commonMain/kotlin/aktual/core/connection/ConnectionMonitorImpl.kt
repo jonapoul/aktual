@@ -1,14 +1,8 @@
 package aktual.core.connection
 
-import aktual.api.client.AccountApi
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.AktualClient
-import aktual.api.client.BaseApi
-import aktual.api.client.HealthApi
-import aktual.api.client.MetricsApi
-import aktual.api.client.SyncApi
-import aktual.api.client.SyncDownloadApi
+import aktual.api.client.ApiBuilder
 import aktual.core.model.ServerUrl
 import aktual.core.prefs.AppGlobalPreferences
 import alakazam.kotlin.CoroutineContexts
@@ -17,13 +11,11 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
-import io.ktor.client.HttpClient
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.update
 import logcat.logcat
-import okio.FileSystem
 
 @Inject
 @SingleIn(AppScope::class)
@@ -31,10 +23,9 @@ import okio.FileSystem
 class ConnectionMonitorImpl(
   private val scope: CoroutineScope,
   private val contexts: CoroutineContexts,
-  @param:AktualClient private val client: HttpClient,
   private val apiStateHolder: AktualApisStateHolder,
   private val preferences: AppGlobalPreferences,
-  private val fileSystem: FileSystem,
+  private val apiBuilder: ApiBuilder.Factory,
 ) : ConnectionMonitor {
   private var job: Job? = null
 
@@ -58,8 +49,6 @@ class ConnectionMonitorImpl(
     if (url == null) {
       apiStateHolder.reset()
     } else {
-      // Close previous client's resources before rebuilding
-      apiStateHolder.value?.close()
       tryToBuildApis(url)
     }
   }
@@ -67,16 +56,16 @@ class ConnectionMonitorImpl(
   private fun tryToBuildApis(url: ServerUrl) {
     try {
       val apis =
-        AktualApis(
-          serverUrl = url,
-          client = client,
-          account = AccountApi(url, client),
-          base = BaseApi(url, client),
-          health = HealthApi(url, client),
-          metrics = MetricsApi(url, client),
-          sync = SyncApi(url, client),
-          syncDownload = SyncDownloadApi(url, client, fileSystem),
-        )
+        with(apiBuilder.create(url)) {
+          AktualApis(
+            serverUrl = url,
+            account = account(),
+            base = base(),
+            health = health(),
+            metrics = metrics(),
+            sync = sync(),
+          )
+        }
       apiStateHolder.update { apis }
     } catch (e: CancellationException) {
       throw e

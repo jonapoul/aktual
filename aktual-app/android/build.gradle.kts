@@ -1,17 +1,19 @@
 @file:Suppress("UnstableApiUsage")
 
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
+import aktual.gradle.commonConfigure
 import blueprint.core.getOptional
 import blueprint.core.gitVersionCode
 import blueprint.core.gitVersionDate
 import blueprint.core.intProperty
+import blueprint.core.javaVersion
 import blueprint.core.localProperties
 
 plugins {
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.agp.app)
   alias(libs.plugins.manifestLock)
-  id("aktual.convention.android")
+  alias(libs.plugins.androidCacheFix)
   id("aktual.convention.compose")
   id("aktual.convention.kotlin")
   id("aktual.convention.style")
@@ -33,7 +35,19 @@ android {
     versionName = gitVersionName.get()
     multiDexEnabled = true
     base.archivesName = "$applicationId-$versionName"
+    testInstrumentationRunnerArguments["disableAnalytics"] = "true"
   }
+
+  val version = javaVersion()
+  compileOptions.apply {
+    sourceCompatibility = version.get()
+    targetCompatibility = version.get()
+    isCoreLibraryDesugaringEnabled = true
+  }
+
+  lint.commonConfigure(project)
+
+  packaging.commonConfigure()
 
   packaging {
     resources.excludes +=
@@ -49,7 +63,21 @@ android {
 
   buildFeatures {
     buildConfig = true
+    compose = true
     resValues = true
+
+    // Disable useless build steps
+    aidl = false
+    prefab = false
+    shaders = false
+    viewBinding = false
+  }
+
+  testOptions {
+    unitTests {
+      isIncludeAndroidResources = true
+      isReturnDefaultValues = true
+    }
   }
 
   signingConfigs {
@@ -100,12 +128,21 @@ android {
   }
 }
 
+androidComponents {
+  // disable instrumented tests if the relevant folder doesn't exist
+  beforeVariants { variant ->
+    variant.enableAndroidTest =
+      variant.enableAndroidTest && projectDir.resolve("src/androidTest").exists()
+  }
+}
+
 licensee {
   bundleAndroidAsset = true
   androidAssetReportPath = LICENSEE_REPORT_ASSET_NAME
 }
 
 dependencies {
+  coreLibraryDesugaring(libs.android.desugaring)
   implementation(project(":aktual-app:di"))
   implementation(project(":aktual-app:nav"))
   implementation(project(":aktual-core:logging:impl"))

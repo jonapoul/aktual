@@ -1,7 +1,7 @@
 package aktual.budget.sync.vm
 
 import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.SyncDownloadApi
+import aktual.api.client.SyncApi
 import aktual.api.client.SyncDownloadState
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
@@ -32,12 +32,12 @@ internal constructor(
   private val apisStateHolder: AktualApisStateHolder,
 ) {
   fun download(token: Token, budgetId: BudgetId): Flow<DownloadState> {
-    val api = apisStateHolder.value?.syncDownload ?: return flowOf(Failure.NotLoggedIn)
+    val api = apisStateHolder.value?.sync ?: return flowOf(Failure.NotLoggedIn)
     return flow { emitState(api, token, budgetId) }.flowOn(contexts.io)
   }
 
   private suspend fun FlowCollector<DownloadState>.emitState(
-    api: SyncDownloadApi,
+    api: SyncApi,
     token: Token,
     id: BudgetId,
   ) {

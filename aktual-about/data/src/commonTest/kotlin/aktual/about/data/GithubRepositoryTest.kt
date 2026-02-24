@@ -1,5 +1,6 @@
 package aktual.about.data
 
+import aktual.test.GithubResponses
 import aktual.test.TestBuildConfig
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
@@ -8,7 +9,6 @@ import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import assertk.assertThat
 import assertk.assertions.contains
-import assertk.assertions.isDataClassEqualTo
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.matchesPredicate
@@ -37,7 +37,7 @@ class GithubRepositoryTest {
   fun `Request is structured as expected`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NEW_RELEASE) }
+    mockEngine += { respondJson(GithubResponses.LIST_RELEASES_ACTUAL_200) }
 
     // When
     githubRepository.fetchLatestRelease()
@@ -53,7 +53,7 @@ class GithubRepositoryTest {
   fun `Update available from three returned`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NEW_RELEASE) }
+    mockEngine += { respondJson(GithubResponses.LIST_RELEASES_ACTUAL_200) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -61,7 +61,7 @@ class GithubRepositoryTest {
     // Then
     assertThat(TestBuildConfig.versionName).isEqualTo("1.2.3")
     assertThat(state)
-      .isDataClassEqualTo(
+      .isEqualTo(
         LatestReleaseState.UpdateAvailable(
           GithubRelease(
             versionName = "v2.3.4",
@@ -77,7 +77,7 @@ class GithubRepositoryTest {
   fun `No new updates`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NO_NEW_UPDATE) }
+    mockEngine += { respondJson(GithubResponses.LIST_RELEASES_NO_NEW_RELEASE_200) }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -105,7 +105,9 @@ class GithubRepositoryTest {
   fun `Private repo`() = runTest {
     // Given
     buildRepo()
-    mockEngine += { respondJson(NOT_FOUND, HttpStatusCode.NotFound) }
+    mockEngine += {
+      respondJson(GithubResponses.LIST_RELEASES_NOT_FOUND_404, HttpStatusCode.NotFound)
+    }
 
     // When
     val state = githubRepository.fetchLatestRelease()
@@ -168,7 +170,7 @@ class GithubRepositoryTest {
       GithubRepository(
         contexts = TestCoroutineContexts(standardDispatcher),
         buildConfig = TestBuildConfig,
-        githubApi = GithubApiImpl(client = testHttpClient(mockEngine, GithubJson)),
+        githubApi = GithubApi(client = testHttpClient(mockEngine, GithubJson)),
       )
   }
 }

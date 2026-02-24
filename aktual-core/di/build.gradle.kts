@@ -14,5 +14,6 @@ kotlin {
     implementation(project(":aktual-about:di"))
     implementation(project(":aktual-app:di"))
     implementation(project(":aktual-budget:data-di"))
+    implementation(project(":aktual-test"))
   }
 }

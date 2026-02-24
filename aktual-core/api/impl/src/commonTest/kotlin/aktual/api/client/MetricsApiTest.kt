@@ -24,7 +24,7 @@ class MetricsApiTest {
   @BeforeTest
   fun before() {
     mockEngine = emptyMockEngine()
-    metricsApi = MetricsApi(SERVER_URL, testHttpClient(mockEngine))
+    metricsApi = MetricsApiImpl(testHttpClient(mockEngine), SERVER_URL)
   }
 
   @AfterTest

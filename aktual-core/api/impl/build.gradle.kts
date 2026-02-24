@@ -1,5 +1,5 @@
-import aktual.gradle.generateApiResponses
 import blueprint.core.commonMainDependencies
+import blueprint.core.commonTestDependencies
 
 plugins { id("aktual.module.multiplatform") }
 
@@ -18,9 +18,9 @@ kotlin {
     implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:model"))
   }
-}
 
-buildConfig {
-  packageName("aktual.test")
-  generateApiResponses(project, directory = "api/actual")
+  commonTestDependencies {
+    implementation(libs.test.ktor)
+    implementation(project(":aktual-test:api"))
+  }
 }

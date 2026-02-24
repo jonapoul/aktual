@@ -2,13 +2,12 @@ package aktual.budget.sync.vm
 
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.SyncDownloadApi
+import aktual.api.client.SyncApiImpl
 import aktual.budget.model.BudgetId
 import aktual.budget.model.encryptedZip
 import aktual.budget.sync.vm.DownloadState.Done
 import aktual.budget.sync.vm.DownloadState.Failure
 import aktual.budget.sync.vm.DownloadState.InProgress
-import aktual.core.model.AktualJson
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -55,17 +54,15 @@ class BudgetFileDownloaderTest {
     budgetFiles = TestBudgetFiles(temporaryFolder)
     mockEngine = emptyMockEngine()
 
-    val syncDownloadApi =
-      SyncDownloadApi(
+    val syncApi =
+      SyncApiImpl(
         serverUrl = SERVER_URL,
-        client = testHttpClient(mockEngine, AktualJson),
+        client = testHttpClient(mockEngine),
         fileSystem = fileSystem,
       )
 
     apisStateHolder = AktualApisStateHolder()
-    apisStateHolder.update {
-      mockk<AktualApis>(relaxed = true) { every { syncDownload } returns syncDownloadApi }
-    }
+    apisStateHolder.update { mockk<AktualApis>(relaxed = true) { every { sync } returns syncApi } }
 
     budgetFileDownloader =
       BudgetFileDownloader(

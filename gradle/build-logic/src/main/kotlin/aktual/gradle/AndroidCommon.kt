@@ -6,11 +6,11 @@ import com.android.build.api.dsl.Lint
 import com.android.build.api.dsl.Packaging
 import org.gradle.api.Project
 
-internal fun Packaging.commonConfigure() {
+fun Packaging.commonConfigure() {
   resources.excludes.add("META-INF/*")
 }
 
-internal fun Lint.commonConfigure(project: Project) {
+fun Lint.commonConfigure(project: Project) {
   abortOnError = true
   checkGeneratedSources = false
   checkReleaseBuilds = false

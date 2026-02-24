@@ -23,7 +23,6 @@ dependencies {
 
   compileOnlyPlugin(libs.plugins.agp.app)
   compileOnlyPlugin(libs.plugins.agp.lib)
-  compileOnlyPlugin(libs.plugins.androidCacheFix)
   compileOnlyPlugin(libs.plugins.blueprint)
   compileOnlyPlugin(libs.plugins.buildconfig)
   compileOnlyPlugin(libs.plugins.burst)
@@ -33,7 +32,6 @@ dependencies {
   compileOnlyPlugin(libs.plugins.kotlin.jvm)
   compileOnlyPlugin(libs.plugins.kotlin.multiplatform)
   compileOnlyPlugin(libs.plugins.kotlin.serialization)
-  compileOnlyPlugin(libs.plugins.ksp)
   compileOnlyPlugin(libs.plugins.licensee)
   compileOnlyPlugin(libs.plugins.metro)
 }
@@ -51,14 +49,12 @@ gradlePlugin {
         implementationClass = impl
       }
 
-    "aktual.convention.android"(impl = "aktual.gradle.ConventionAndroidBase")
     "aktual.convention.compose"(impl = "aktual.gradle.ConventionCompose")
     "aktual.convention.idea"(impl = "aktual.gradle.ConventionIdea")
     "aktual.convention.kotlin"(impl = "aktual.gradle.ConventionKotlinJvm")
     "aktual.convention.style"(impl = "aktual.gradle.ConventionStyle")
     "aktual.convention.test"(impl = "aktual.gradle.ConventionTest")
 
-    "aktual.module.android"(impl = "aktual.gradle.ModuleAndroid")
     "aktual.module.compose"(impl = "aktual.gradle.ModuleCompose")
     "aktual.module.di"(impl = "aktual.gradle.ModuleDi")
     "aktual.module.jvm"(impl = "aktual.gradle.ModuleJvm")
