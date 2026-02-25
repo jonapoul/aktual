@@ -29,6 +29,6 @@ class ApiBuilderImpl(
   @AssistedFactory
   @ContributesBinding(AppScope::class, binding<ApiBuilder.Factory>())
   interface Factory : ApiBuilder.Factory {
-    override fun create(@Assisted url: ServerUrl): ApiBuilderImpl
+    override fun create(@Assisted serverUrl: ServerUrl): ApiBuilderImpl
   }
 }
