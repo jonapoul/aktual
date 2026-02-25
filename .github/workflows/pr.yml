@@ -44,7 +44,7 @@ jobs:
         run: ./gradlew check
 
       - name: Report build results
-        uses: gmazzo/publish-report-annotations@8bec9f79d4fb200c6d42faeeb2e04879646ba04f # v1
+        uses: gmazzo/publish-report-annotations@ebc1ae65e8339696e03c3fadd5f808f90011d33e # v1
         if: ${{ !cancelled() }}
 
       - name: Upload SARIF
