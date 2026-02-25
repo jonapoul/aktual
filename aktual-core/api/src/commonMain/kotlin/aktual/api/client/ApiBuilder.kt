@@ -14,6 +14,6 @@ interface ApiBuilder {
   fun sync(): SyncApi
 
   fun interface Factory {
-    fun create(url: ServerUrl): ApiBuilder
+    fun create(serverUrl: ServerUrl): ApiBuilder
   }
 }
