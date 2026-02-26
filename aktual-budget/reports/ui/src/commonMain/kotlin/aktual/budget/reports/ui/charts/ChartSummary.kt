@@ -15,13 +15,13 @@ import aktual.core.icons.Sum
 import aktual.core.l10n.Strings
 import aktual.core.model.Percent
 import aktual.core.model.percent
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ExposedDropDownMenu
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ScaleToFitText
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
@@ -530,7 +530,7 @@ private fun string(type: SummaryChartType): String =
 private fun PreviewSummaryChart(
   @PreviewParameter(SummaryChartProvider::class) params: ThemedParams<SummaryChartParams>
 ) =
-  PreviewWithColorScheme(schemeType = params.type, isPrivacyEnabled = params.data.private) {
+  PreviewWithColorScheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
     SummaryChart(
       modifier =
         Modifier.background(LocalTheme.current.tableBackground, CardShape)

@@ -4,12 +4,12 @@ import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.TextData
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.CardShape
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.verticalScrollWithBar
@@ -125,7 +125,7 @@ internal fun TextChart(
 private fun PreviewTextChart(
   @PreviewParameter(TextChartProvider::class) params: ThemedParams<TextChartParams>
 ) =
-  PreviewWithColorScheme(schemeType = params.type, isPrivacyEnabled = params.data.private) {
+  PreviewWithColorScheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
     TextChart(
       modifier =
         Modifier.background(LocalTheme.current.tableBackground, CardShape)

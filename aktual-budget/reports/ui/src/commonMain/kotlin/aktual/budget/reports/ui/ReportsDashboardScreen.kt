@@ -8,10 +8,10 @@ import aktual.core.icons.Add
 import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.BackHandler
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
@@ -164,7 +164,7 @@ private fun ContentList(
 private fun PreviewReportDashboardItem(
   @PreviewParameter(DashboardStateProvider::class) params: ThemedParams<DashboardState>
 ) =
-  PreviewWithColorScheme(schemeType = params.type) {
+  PreviewWithColorScheme(theme = params.theme) {
     ReportsDashboardScaffold(state = params.data, onAction = {})
   }
 

@@ -1,7 +1,7 @@
 package aktual.core.ui
 
-import aktual.core.model.ColorSchemeType
 import aktual.core.model.immutableList
+import aktual.core.theme.Theme
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -163,19 +163,17 @@ fun WrapWidthTable(
 
 @Preview(widthDp = 500)
 @Composable
-private fun PreviewWeightedTable(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewWeightedTable(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     WeightedTable(modifier = Modifier.wrapContentSize(), data = PREVIEW_CELLS)
   }
 
 @Preview(widthDp = 700)
 @Composable
 private fun PreviewWeightedTableWithStylesAndPadding(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+  @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(type) {
+  PreviewWithColorScheme(theme) {
     WeightedTable(
       modifier = Modifier.wrapContentSize(),
       data = PREVIEW_CELLS,
@@ -198,19 +196,17 @@ private fun PreviewWeightedTableWithStylesAndPadding(
 
 @Preview
 @Composable
-private fun PreviewWrapWidth(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewWrapWidth(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     WrapWidthTable(modifier = Modifier.wrapContentSize(), data = PREVIEW_CELLS)
   }
 
 @Preview(widthDp = 900)
 @Composable
 private fun PreviewWrapWidthWithStylesAndPadding(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+  @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(type) {
+  PreviewWithColorScheme(theme) {
     WrapWidthTable(
       modifier = Modifier.wrapContentSize(),
       data = PREVIEW_CELLS,

@@ -1,12 +1,11 @@
 package aktual.about.ui.info
 
 import aktual.core.l10n.Strings
-import aktual.core.model.ColorSchemeType
-import aktual.core.ui.ColorSchemeParameters
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.DialogContent
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -49,6 +48,5 @@ internal fun NoUpdateFoundDialogContent(
 
 @Preview
 @Composable
-private fun PreviewNoUpdatesContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) = PreviewWithColorScheme(type) { NoUpdateFoundDialogContent(onDismiss = {}) }
+private fun PreviewNoUpdatesContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) { NoUpdateFoundDialogContent(onDismiss = {}) }

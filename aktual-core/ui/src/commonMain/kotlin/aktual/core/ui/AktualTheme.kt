@@ -1,6 +1,8 @@
 package aktual.core.ui
 
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
+import aktual.core.theme.isLight
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
@@ -12,7 +14,6 @@ import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.LocalShimmerTheme
@@ -21,19 +22,9 @@ import com.valentinilk.shimmer.shimmerSpec
 import dev.chrisbanes.haze.LocalHazeStyle
 
 @Composable
-fun AktualTheme(type: ColorSchemeType, content: @Composable () -> Unit) {
-  val theme =
-    remember(type) {
-      when (type) {
-        ColorSchemeType.Light -> Theme.light()
-        ColorSchemeType.Dark -> Theme.dark()
-        ColorSchemeType.Midnight -> Theme.midnight()
-      }
-    }
-
+fun AktualTheme(theme: Theme, content: @Composable () -> Unit) {
   CompositionLocalProvider(
     LocalTheme provides theme,
-    LocalColorSchemeType provides type,
     LocalIndication provides ripple(),
     LocalShimmerTheme provides aktualLocalShimmerTheme(theme),
     LocalHazeStyle provides defaultHazeStyle(theme),
@@ -41,7 +32,7 @@ fun AktualTheme(type: ColorSchemeType, content: @Composable () -> Unit) {
     SetStatusBarColors(theme = theme)
 
     MaterialTheme(
-      colorScheme = if (theme.pageBackground.isLight()) lightColorScheme() else darkColorScheme(),
+      colorScheme = if (theme.isLight()) lightColorScheme() else darkColorScheme(),
       typography = aktualTypography(theme),
       content = content,
     )

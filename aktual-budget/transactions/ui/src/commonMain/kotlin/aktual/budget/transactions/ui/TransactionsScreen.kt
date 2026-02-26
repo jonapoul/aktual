@@ -8,14 +8,14 @@ import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.budget.transactions.vm.TransactionsViewModel
-import aktual.core.model.ColorSchemeType
 import aktual.core.model.Token
-import aktual.core.ui.ColorSchemeParameters
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.LandscapePreview
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
+import aktual.core.ui.ThemeParameters
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithHazeState
 import androidx.compose.foundation.layout.Box
@@ -98,10 +98,8 @@ internal fun TransactionsScaffold(
 @PortraitPreview
 @LandscapePreview
 @TabletPreview
-private fun PreviewTransactionsScaffold(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewTransactionsScaffold(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     TransactionsScaffold(
       transactionIdSource =
         PreviewTransactionIdSource(listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),

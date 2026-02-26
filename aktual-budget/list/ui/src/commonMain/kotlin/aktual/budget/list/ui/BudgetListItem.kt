@@ -8,12 +8,12 @@ import aktual.core.icons.Key
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.MoreVert
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.RowShape
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.aktualHaze
@@ -149,7 +149,7 @@ private fun budgetDescription(budget: Budget) =
 private fun PreviewBudgetListItem(
   @PreviewParameter(BudgetListItemProvider::class) params: ThemedParams<BudgetListItemParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     BudgetListItem(
       modifier = params.data.width?.let { w -> Modifier.width(w) } ?: Modifier.fillMaxWidth(),
       budget = params.data.budget,

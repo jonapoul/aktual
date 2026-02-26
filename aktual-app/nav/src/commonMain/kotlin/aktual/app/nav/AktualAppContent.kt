@@ -1,9 +1,7 @@
 package aktual.app.nav
 
 import aktual.budget.model.NumberFormat
-import aktual.core.model.ColorSchemeType
 import aktual.core.model.Token
-import aktual.core.ui.AktualTheme
 import aktual.core.ui.BottomBarState
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.LocalBottomStatusBarHeight
@@ -29,7 +27,6 @@ fun AktualAppContent(
   isPrivacyEnabled: Boolean,
   numberFormat: NumberFormat,
   hideFraction: Boolean,
-  colorSchemeType: ColorSchemeType,
   isServerUrlSet: Boolean,
   token: Token?,
   bottomBarState: BottomBarState,
@@ -39,14 +36,12 @@ fun AktualAppContent(
     format = numberFormat,
     hideFraction = hideFraction,
   ) {
-    AktualTheme(colorSchemeType) {
-      AktualAppLayout(
-        navController = navController,
-        isServerUrlSet = isServerUrlSet,
-        token = token,
-        bottomBarState = bottomBarState,
-      )
-    }
+    AktualAppLayout(
+      navController = navController,
+      isServerUrlSet = isServerUrlSet,
+      token = token,
+      bottomBarState = bottomBarState,
+    )
   }
 }
 

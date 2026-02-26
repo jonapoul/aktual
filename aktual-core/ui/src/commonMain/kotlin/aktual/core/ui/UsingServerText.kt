@@ -2,6 +2,8 @@ package aktual.core.ui
 
 import aktual.core.l10n.Strings
 import aktual.core.model.ServerUrl
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -55,6 +57,6 @@ fun UsingServerText(
 @Composable
 private fun PreviewUsingServerText(
   @PreviewParameter(ServerUrlProvider::class) params: ThemedParams<ServerUrl?>
-) = PreviewWithColorScheme(params.type) { UsingServerText(url = params.data, onClickChange = {}) }
+) = PreviewWithColorScheme(params.theme) { UsingServerText(url = params.data, onClickChange = {}) }
 
 private class ServerUrlProvider : ThemedParameterProvider<ServerUrl?>(ServerUrl.Demo, null)

@@ -7,14 +7,14 @@ import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.scrollbar
@@ -124,7 +124,7 @@ private fun TransactionsFilled(
 private fun PreviewTransactions(
   @PreviewParameter(TransactionsProvider::class) params: ThemedParams<TransactionsParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     Transactions(
       transactionIdSource = PreviewTransactionIdSource(params.data.transactions),
       format = params.data.format,

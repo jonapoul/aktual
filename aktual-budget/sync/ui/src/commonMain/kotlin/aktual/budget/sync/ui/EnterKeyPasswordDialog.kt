@@ -2,11 +2,11 @@ package aktual.budget.sync.ui
 
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AlertDialog
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TextField
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
@@ -160,7 +160,9 @@ private fun buildDialogText(theme: Theme, onAction: (SyncBudgetAction) -> Unit) 
 private fun PreviewEnterKeyPasswordDialog(
   @PreviewParameter(PasswordProvider::class) params: ThemedParams<Password>
 ) =
-  PreviewWithColorScheme(params.type) { EnterKeyPasswordDialog(input = params.data, onAction = {}) }
+  PreviewWithColorScheme(params.theme) {
+    EnterKeyPasswordDialog(input = params.data, onAction = {})
+  }
 
 private class PasswordProvider :
   ThemedParameterProvider<Password>(Password.Empty, Password("abc-123"))

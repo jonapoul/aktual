@@ -1,15 +1,15 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.transactions.vm.LoadedAccount
-import aktual.core.icons.ArrowBack
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.Visibility
 import aktual.core.icons.VisibilityOff
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.LocalPrivacyEnabled
-import aktual.core.ui.LocalTheme
+import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.transparentTopAppBarColors
@@ -38,11 +38,7 @@ internal fun TransactionsTitleBar(
 
   TopAppBar(
     colors = theme.transparentTopAppBarColors(),
-    navigationIcon = {
-      IconButton(onClick = { onAction(Action.NavBack) }) {
-        Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
-      }
-    },
+    navigationIcon = { NavBackIconButton { onAction(Action.NavBack) } },
     title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
     actions = {
       if (LocalPrivacyEnabled.current) {
@@ -65,7 +61,7 @@ internal fun TransactionsTitleBar(
 private fun PreviewTransactionsTitleBar(
   @PreviewParameter(TransactionsTitleBarProvider::class) params: ThemedParams<LoadedAccount>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     TransactionsTitleBar(loadedAccount = params.data, onAction = {})
   }
 

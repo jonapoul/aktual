@@ -1,7 +1,8 @@
 package aktual.core.ui
 
 import aktual.budget.model.Interval
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -115,8 +116,8 @@ private fun Theme.buttonTextColor(selectedIndex: Int, index: Int): Color =
 
 @Preview
 @Composable
-private fun PreviewStrings(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewWithColorScheme(type) {
+private fun PreviewStrings(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     var selectedA by remember { mutableIntStateOf(0) }
     SlidingToggleButton(
       modifier = Modifier.padding(4.dp),
@@ -128,8 +129,8 @@ private fun PreviewStrings(@PreviewParameter(ColorSchemeParameters::class) type:
 
 @Preview
 @Composable
-private fun PreviewEnum(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewWithColorScheme(type) {
+private fun PreviewEnum(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     var selectedB by remember { mutableIntStateOf(3) }
     SlidingToggleButton(
       modifier = Modifier.padding(4.dp),

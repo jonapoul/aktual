@@ -3,8 +3,26 @@ package aktual.core.theme
 import androidx.compose.ui.graphics.Color
 
 // from Juulz/shades-of-coffee
+internal val ShadesOfCoffeeThemeSummary =
+  CustomThemeSummary(
+    name = "Shades of Coffee",
+    repo = CustomThemeRepo(userName = "Juulz", repoName = "shades-of-coffee"),
+    colors =
+      listOf(
+        Color(0xFFe2d8cf),
+        Color(0xFF1a0c00),
+        Color(0xFFcfb3ff),
+        Color(0xFFf5f2ef),
+        Color(0xFF604b39),
+        Color(0xFFc29670),
+      ),
+  )
+
+// from Juulz/shades-of-coffee
 internal val ShadesOfCoffeeTheme =
-  CustomTheme(
+  JsonCustomTheme(
+    name = ShadesOfCoffeeThemeSummary.name,
+    repo = ShadesOfCoffeeThemeSummary.repo,
     page =
       PageColors(
         pageBackground = Color(0xFFe2d8cf),

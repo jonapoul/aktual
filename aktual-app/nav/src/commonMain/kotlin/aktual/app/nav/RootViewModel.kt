@@ -9,11 +9,11 @@ import aktual.core.connection.ConnectionMonitor
 import aktual.core.connection.ServerPinger
 import aktual.core.connection.ServerVersionFetcher
 import aktual.core.di.BudgetGraphHolder
-import aktual.core.model.DarkColorSchemeType
 import aktual.core.model.PingStateHolder
-import aktual.core.model.RegularColorSchemeType
 import aktual.core.model.Token
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.theme.Theme
+import aktual.core.theme.ThemeResolver
 import aktual.core.ui.BottomBarState
 import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.collectAsState
@@ -47,6 +47,7 @@ abstract class RootViewModel(
   protected val files: BudgetFiles,
   budgetComponents: BudgetGraphHolder,
   preferences: AppGlobalPreferences,
+  private val themeResolver: ThemeResolver,
 ) : ViewModel() {
   private val budgetGraph = budgetComponents.stateIn(viewModelScope, Eagerly, initialValue = null)
 
@@ -77,10 +78,8 @@ abstract class RootViewModel(
       mapper = { it.toBoolean() },
     )
 
-  val regularSchemeType: StateFlow<RegularColorSchemeType> =
-    preferences.regularColorScheme.asStateFlow(viewModelScope)
-  val darkSchemeType: StateFlow<DarkColorSchemeType> =
-    preferences.darkColorScheme.asStateFlow(viewModelScope)
+  fun theme(isSystemInDarkTheme: Boolean): Flow<Theme> =
+    themeResolver.activeTheme(isSystemInDarkTheme)
 
   val isServerUrlSet: Boolean = preferences.serverUrl.isSet()
   val token: Token? = preferences.token.get()

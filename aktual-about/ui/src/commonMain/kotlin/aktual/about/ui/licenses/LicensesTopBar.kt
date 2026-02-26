@@ -1,12 +1,12 @@
 package aktual.about.ui.licenses
 
 import aktual.about.vm.SearchBarState
-import aktual.core.icons.ArrowBack
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.Search
 import aktual.core.icons.SearchOff
 import aktual.core.l10n.Strings
-import aktual.core.ui.Theme
+import aktual.core.theme.Theme
+import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,14 +23,7 @@ internal fun LicensesTopBar(
 ) =
   TopAppBar(
     colors = theme.transparentTopAppBarColors(),
-    navigationIcon = {
-      IconButton(onClick = { onAction(LicensesAction.NavBack) }) {
-        Icon(
-          imageVector = MaterialIcons.ArrowBack,
-          contentDescription = Strings.licensesToolbarBack,
-        )
-      }
-    },
+    navigationIcon = { NavBackIconButton { onAction(LicensesAction.NavBack) } },
     title = {
       Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
     },

@@ -11,7 +11,6 @@ kotlin {
     api(project(":aktual-core:api"))
     api(project(":aktual-core:prefs"))
     implementation(libs.ktor.auth)
-    implementation(libs.ktor.cio)
     implementation(libs.ktor.contentNegotiation)
     implementation(libs.ktor.logging)
     implementation(libs.ktor.serialization.json)

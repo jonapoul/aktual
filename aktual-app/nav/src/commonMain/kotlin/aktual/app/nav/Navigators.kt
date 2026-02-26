@@ -13,8 +13,11 @@ import aktual.budget.reports.ui.ReportsDashboardNavigator
 import aktual.budget.sync.ui.SyncBudgetNavigator
 import aktual.budget.transactions.ui.TransactionsNavigator
 import aktual.core.model.Token
+import aktual.core.theme.Theme
 import aktual.metrics.ui.MetricsNavigator
-import aktual.settings.ui.SettingsNavigator
+import aktual.settings.ui.inspect.InspectThemeNavigator
+import aktual.settings.ui.root.SettingsNavigator
+import aktual.settings.ui.theme.ThemeSettingsNavigator
 import androidx.navigation.NavHostController
 
 fun ChangePasswordNavigator(nav: NavHostController): ChangePasswordNavigator =
@@ -40,6 +43,12 @@ fun ReportsDashboardNavigator(nav: NavHostController): ReportsDashboardNavigator
 fun ServerUrlNavigator(nav: NavHostController): ServerUrlNavigator = ServerUrlNavigatorImpl(nav)
 
 fun SettingsNavigator(nav: NavHostController): SettingsNavigator = SettingsNavigatorImpl(nav)
+
+fun InspectThemeNavigator(nav: NavHostController): InspectThemeNavigator =
+  InspectThemeNavigatorImpl(nav)
+
+fun ThemeSettingsNavigator(nav: NavHostController): ThemeSettingsNavigator =
+  ThemeSettingsNavigatorImpl(nav)
 
 fun SyncBudgetNavigator(nav: NavHostController): SyncBudgetNavigator = SyncBudgetNavigatorImpl(nav)
 
@@ -120,6 +129,20 @@ private class ChooseReportTypeNavigatorImpl(private val nav: NavHostController) 
 
 private class SettingsNavigatorImpl(private val nav: NavHostController) : SettingsNavigator {
   override fun back() = nav.popBackStack()
+
+  override fun toThemeSettings() = nav.debugNav(ThemeSettingsNavRoute)
+}
+
+private class InspectThemeNavigatorImpl(private val nav: NavHostController) :
+  InspectThemeNavigator {
+  override fun navBack() = nav.popBackStack()
+}
+
+private class ThemeSettingsNavigatorImpl(private val nav: NavHostController) :
+  ThemeSettingsNavigator {
+  override fun back() = nav.popBackStack()
+
+  override fun inspectTheme(id: Theme.Id) = nav.debugNav(InspectThemeNavRoute(id))
 }
 
 private class SyncBudgetNavigatorImpl(private val nav: NavHostController) : SyncBudgetNavigator {

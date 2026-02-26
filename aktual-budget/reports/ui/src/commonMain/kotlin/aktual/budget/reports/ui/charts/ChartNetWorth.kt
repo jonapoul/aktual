@@ -3,11 +3,11 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.model.Amount
 import aktual.budget.reports.vm.NetWorthData
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
@@ -195,7 +195,7 @@ private suspend fun CartesianChartModelProducer.populate(data: NetWorthData) =
 private fun PreviewNetWorthChart(
   @PreviewParameter(NetWorthChartProvider::class) params: ThemedParams<NetWorthChartParams>
 ) =
-  PreviewWithColorScheme(schemeType = params.type, isPrivacyEnabled = params.data.private) {
+  PreviewWithColorScheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
     NetWorthChart(
       modifier =
         Modifier.background(LocalTheme.current.tableBackground, CardShape)

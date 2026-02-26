@@ -1,11 +1,19 @@
 package aktual.core.ui
 
+import aktual.core.theme.Theme
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MenuDefaults
+import androidx.compose.material3.MenuItemColors
+import androidx.compose.material3.SegmentedButtonColors
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -18,7 +26,7 @@ fun Theme.topAppBarColors(
   titleContentColor: Color = mobileHeaderText,
   navigationIconContentColor: Color = mobileHeaderText,
   actionIconContentColor: Color = mobileHeaderText,
-) =
+): TopAppBarColors =
   TopAppBarDefaults.topAppBarColors(
     containerColor = containerColor,
     titleContentColor = titleContentColor,
@@ -28,17 +36,17 @@ fun Theme.topAppBarColors(
 
 @Stable
 @Composable
-fun Theme.transparentTopAppBarColors() =
+fun Theme.transparentTopAppBarColors(): TopAppBarColors =
   topAppBarColors(
     containerColor = Color.Transparent,
-    navigationIconContentColor = mobileHeaderText,
-    actionIconContentColor = mobileHeaderText,
-    titleContentColor = mobileHeaderText,
+    navigationIconContentColor = pageText,
+    actionIconContentColor = pageText,
+    titleContentColor = pageText,
   )
 
 @Stable
 @Composable
-fun Theme.dropDownMenuItem() = MenuDefaults.itemColors(textColor = formInputText)
+fun Theme.dropDownMenuItem(): MenuItemColors = MenuDefaults.itemColors(textColor = formInputText)
 
 @Stable
 @Composable
@@ -76,7 +84,7 @@ fun Theme.exposedDropDownMenu(): TextFieldColors =
 
 @Stable
 @Composable
-fun Theme.primaryButton(isPressed: Boolean) =
+fun Theme.primaryButton(isPressed: Boolean): ButtonColors =
   ButtonDefaults.buttonColors(
     containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
     disabledContainerColor = buttonPrimaryDisabledBackground,
@@ -94,7 +102,7 @@ fun Theme.normalButton(
   text: Color = buttonNormalText,
   textPressed: Color = buttonNormalSelectedText,
   textDisabled: Color = buttonNormalDisabledText,
-) =
+): ButtonColors =
   ButtonDefaults.buttonColors(
     containerColor = if (isPressed) containerPressed else container,
     disabledContainerColor = containerDisabled,
@@ -104,7 +112,7 @@ fun Theme.normalButton(
 
 @Stable
 @Composable
-fun Theme.bareButton(isPressed: Boolean) =
+fun Theme.bareButton(isPressed: Boolean): ButtonColors =
   ButtonDefaults.buttonColors(
     containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
     disabledContainerColor = buttonBareDisabledBackground,
@@ -114,7 +122,7 @@ fun Theme.bareButton(isPressed: Boolean) =
 
 @Stable
 @Composable
-fun Theme.primaryIconButton(isPressed: Boolean) =
+fun Theme.primaryIconButton(isPressed: Boolean): IconButtonColors =
   IconButtonDefaults.filledIconButtonColors(
     containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
     disabledContainerColor = buttonPrimaryDisabledBackground,
@@ -124,7 +132,7 @@ fun Theme.primaryIconButton(isPressed: Boolean) =
 
 @Stable
 @Composable
-fun Theme.normalIconButton(isPressed: Boolean) =
+fun Theme.normalIconButton(isPressed: Boolean): IconButtonColors =
   IconButtonDefaults.filledIconButtonColors(
     containerColor = if (isPressed) buttonNormalBackground else buttonNormalBackgroundHover,
     disabledContainerColor = buttonNormalDisabledBackground,
@@ -134,7 +142,7 @@ fun Theme.normalIconButton(isPressed: Boolean) =
 
 @Stable
 @Composable
-fun Theme.bareIconButton(isPressed: Boolean) =
+fun Theme.bareIconButton(isPressed: Boolean): IconButtonColors =
   IconButtonDefaults.filledIconButtonColors(
     containerColor = if (isPressed) buttonBareBackgroundHover else buttonBareBackground,
     disabledContainerColor = buttonBareDisabledBackground,
@@ -144,18 +152,25 @@ fun Theme.bareIconButton(isPressed: Boolean) =
 
 @Stable
 @Composable
-fun Theme.topAppBarIconButton(isPressed: Boolean) =
-  primaryIconButton(isPressed)
-    .copy(
-      containerColor = mobileHeaderBackground,
-      contentColor = mobileHeaderText,
-      disabledContentColor = mobileHeaderTextSubdued,
-    )
+fun Theme.segmentedButton(): SegmentedButtonColors =
+  SegmentedButtonDefaults.colors(
+    activeContainerColor = checkboxToggleBackgroundSelected,
+    activeContentColor = checkboxText,
+    activeBorderColor = checkboxText,
+    inactiveContainerColor = checkboxToggleBackground,
+    inactiveContentColor = checkboxText.disabled,
+    inactiveBorderColor = checkboxText.disabled,
+    disabledActiveContainerColor = checkboxToggleBackgroundSelected.disabled,
+    disabledActiveContentColor = checkboxText.disabled,
+    disabledActiveBorderColor = Color.Transparent,
+    disabledInactiveContainerColor = checkboxToggleBackground.disabled,
+    disabledInactiveContentColor = checkboxText.disabled,
+    disabledInactiveBorderColor = Color.Transparent,
+  )
 
-@Suppress("unused")
 @Stable
 @Composable
-fun Theme.switch(isPressed: Boolean) =
+fun Theme.switch(): SwitchColors =
   SwitchDefaults.colors(
     checkedThumbColor = checkboxText,
     uncheckedThumbColor = checkboxText,
@@ -163,4 +178,18 @@ fun Theme.switch(isPressed: Boolean) =
     uncheckedTrackColor = checkboxToggleBackground,
     checkedBorderColor = checkboxToggleBackgroundSelected,
     uncheckedBorderColor = checkboxToggleBackground,
+    disabledCheckedThumbColor = checkboxText.disabled,
+    disabledUncheckedThumbColor = checkboxText.disabled,
+    disabledCheckedTrackColor = checkboxToggleDisabled,
+    disabledUncheckedTrackColor = checkboxToggleDisabled,
+    disabledCheckedBorderColor = checkboxToggleDisabled,
+    disabledUncheckedBorderColor = checkboxToggleDisabled,
   )
+
+@get:Stable
+val Color.disabled: Color
+  get() = copy(alpha = ALPHA_DISABLED)
+
+@Stable fun Color.disabledIf(condition: Boolean): Color = if (condition) disabled else this
+
+private const val ALPHA_DISABLED = 0.38f

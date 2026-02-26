@@ -2,21 +2,21 @@ package aktual.account.ui.url
 
 import aktual.account.vm.NavDestination
 import aktual.account.vm.ServerUrlViewModel
-import aktual.core.icons.ArrowBack
 import aktual.core.icons.Info
 import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Protocol
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
-import aktual.core.ui.LocalTheme
+import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
@@ -33,13 +33,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -47,7 +43,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -110,21 +105,14 @@ private fun ServerUrlScaffold(
   errorMessage: String?,
   onAction: (ServerUrlAction) -> Unit,
 ) {
-  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
 
   Scaffold(
-    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = {
-          IconButton(onClick = { onAction(ServerUrlAction.NavBack) }) {
-            Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
-          }
-        },
+        navigationIcon = { NavBackIconButton { onAction(ServerUrlAction.NavBack) } },
         title = {},
-        scrollBehavior = scrollBehavior,
         actions = {
           BasicIconButton(
             modifier = Modifier.padding(horizontal = 5.dp),
@@ -135,7 +123,7 @@ private fun ServerUrlScaffold(
           )
         },
       )
-    },
+    }
   ) { innerPadding ->
     Box {
       WavyBackground()
@@ -230,7 +218,7 @@ private fun ServerUrlContent(
 private fun PreviewServerUrlScaffold(
   @PreviewParameter(ServerUrlScaffoldProvider::class) params: ThemedParams<ServerUrlScaffoldParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     ServerUrlScaffold(
       url = params.data.url,
       protocol = params.data.protocol,

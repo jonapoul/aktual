@@ -111,7 +111,7 @@ internal fun ConfirmPasswordForm(
 private fun PreviewConfirmPassword(
   @PreviewParameter(ConfirmPasswordProvider::class) params: ThemedParams<ConfirmPasswordParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     ConfirmPasswordForm(
       inputPassword1 = params.data.password1,
       inputPassword2 = params.data.password2,

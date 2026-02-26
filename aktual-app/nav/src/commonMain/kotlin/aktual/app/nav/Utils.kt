@@ -3,6 +3,7 @@ package aktual.app.nav
 import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetId
 import aktual.core.model.Token
+import aktual.core.theme.Theme
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavBackStackEntry
@@ -14,6 +15,8 @@ import androidx.savedstate.SavedState
 import androidx.savedstate.read
 import androidx.savedstate.write
 import java.io.Serializable
+import java.net.URLDecoder
+import java.net.URLEncoder
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
 import kotlinx.serialization.KSerializer
@@ -43,11 +46,16 @@ internal class SerializableType<T : Any>(private val serializer: KSerializer<T>)
 
   override fun get(bundle: SavedState, key: String): T = bundle.read { parseValue(getString(key)) }
 
-  override fun parseValue(value: String): T = Json.decodeFromString(serializer, value)
+  override fun parseValue(value: String): T =
+    Json.decodeFromString(serializer, URLDecoder.decode(value, UTF8))
 
-  override fun serializeAsValue(value: T): String = Json.encodeToString(serializer, value)
+  override fun serializeAsValue(value: T): String =
+    URLEncoder.encode(Json.encodeToString(serializer, value), UTF8)
 }
 
+private const val UTF8 = "UTF-8"
+
 internal val BudgetIdType = typeMapEntry<BudgetId>()
+internal val ThemeIdType = typeMapEntry<Theme.Id>()
 internal val TokenType = typeMapEntry<Token>()
 internal val WidgetIdType = typeMapEntry<WidgetId>()

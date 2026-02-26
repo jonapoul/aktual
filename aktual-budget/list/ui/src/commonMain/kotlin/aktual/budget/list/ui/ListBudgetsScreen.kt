@@ -14,13 +14,13 @@ import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LandscapePreview
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
@@ -221,7 +221,7 @@ private fun StateContent(
 @Composable
 private fun PreviewListBudgetsScaffold(
   @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ThemedParams<ListBudgetsState>
-) = PreviewWithColorScheme(params.type) { ListBudgetsScaffold(state = params.data, onAction = {}) }
+) = PreviewWithColorScheme(params.theme) { ListBudgetsScaffold(state = params.data, onAction = {}) }
 
 private class ListBudgetsScaffoldProvider :
   ThemedParameterProvider<ListBudgetsState>(

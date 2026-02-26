@@ -2,11 +2,11 @@ package aktual.about.ui.licenses
 
 import aktual.about.data.ArtifactDetail
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.aktualHaze
@@ -139,7 +139,7 @@ private val TextSize = 12.sp
 @Composable
 private fun PreviewArtifactItem(
   @PreviewParameter(ArtifactItemProvider::class) params: ThemedParams<ArtifactDetail>
-) = PreviewWithColorScheme(params.type) { ArtifactItem(artifact = params.data, onLaunchUrl = {}) }
+) = PreviewWithColorScheme(params.theme) { ArtifactItem(artifact = params.data, onLaunchUrl = {}) }
 
 private class ArtifactItemProvider :
   ThemedParameterProvider<ArtifactDetail>(

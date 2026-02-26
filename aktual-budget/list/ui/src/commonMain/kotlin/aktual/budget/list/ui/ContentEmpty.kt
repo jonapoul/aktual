@@ -1,14 +1,13 @@
 package aktual.budget.list.ui
 
 import aktual.core.l10n.Strings
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.ColorSchemeParameters
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -59,6 +58,5 @@ internal fun ContentEmpty(
 
 @PortraitPreview
 @Composable
-private fun PreviewContentEmpty(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) = PreviewWithColorScheme(type) { ContentEmpty(onCreateBudgetInBrowser = {}) }
+private fun PreviewContentEmpty(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) { ContentEmpty(onCreateBudgetInBrowser = {}) }

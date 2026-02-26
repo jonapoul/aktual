@@ -6,10 +6,7 @@ import okio.FileSystem
 import okio.Path
 import okio.buffer
 
-interface BudgetFiles {
-  val fileSystem: FileSystem
-  val directoryPath: Path
-
+open class BudgetFiles(val fileSystem: FileSystem, val directoryPath: Path) {
   fun directory(id: BudgetId, mkdirs: Boolean = false): Path =
     (directoryPath / id.value).also { if (mkdirs) fileSystem.createDirectories(it) }
 

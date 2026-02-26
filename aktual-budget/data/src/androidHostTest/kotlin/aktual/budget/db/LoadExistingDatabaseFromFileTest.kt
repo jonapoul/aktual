@@ -1,9 +1,9 @@
 package aktual.budget.db
 
-import aktual.budget.model.AndroidBudgetFiles
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.database
+import aktual.core.model.AndroidAppDirectory
 import alakazam.test.getResourceAsStream
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
@@ -31,7 +31,8 @@ class LoadExistingDatabaseFromFileTest {
   fun before() {
     context = ApplicationProvider.getApplicationContext()
     fileSystem = FileSystem.SYSTEM
-    budgetFiles = AndroidBudgetFiles(context, fileSystem)
+    budgetFiles =
+      BudgetFiles(fileSystem, directoryPath = AndroidAppDirectory(context, fileSystem).get())
   }
 
   @AfterTest

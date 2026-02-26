@@ -11,22 +11,16 @@ import aktual.budget.model.TransactionsSpec
 import aktual.core.di.AppGraph
 import aktual.core.di.BudgetGraph
 import aktual.core.di.BudgetGraphHolder
-import aktual.core.di.CoroutineContainer
-import aktual.core.model.BuildConfig
-import aktual.test.TestBuildConfig
+import aktual.test.coroutineContainer
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
-import android.content.Context
 import androidx.paging.PagingSource.LoadParams
-import androidx.test.core.app.ApplicationProvider
 import assertk.assertThat
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
-import dev.zacsweers.metro.Provides
-import dev.zacsweers.metro.createGraphFactory
+import dev.zacsweers.metro.createDynamicGraph
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -42,7 +36,7 @@ class TransactionsViewModelTest {
   private lateinit var contexts: CoroutineContexts
 
   // fake
-  private lateinit var appGraph: TestAppGraph
+  private lateinit var appGraph: TestGraph
 
   @AfterTest
   fun after() {
@@ -50,11 +44,8 @@ class TransactionsViewModelTest {
   }
 
   private suspend fun TestScope.buildViewModel(spec: AccountSpec) {
-    val context = ApplicationProvider.getApplicationContext<Context>()
-
     contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
-    appGraph =
-      createGraphFactory<TestAppGraph.Factory>().create(this, contexts, context, TestBuildConfig)
+    appGraph = createDynamicGraph<TestGraph>(coroutineContainer(contexts))
 
     budgetGraph = appGraph.budgetGraphHolder.update(METADATA)
 
@@ -219,18 +210,8 @@ class TransactionsViewModelTest {
       .withNextKey(3) // More pages possible since we loaded exactly the page size
   }
 
-  @DependencyGraph(scope = AppScope::class, excludes = [CoroutineContainer::class])
-  internal interface TestAppGraph : AppGraph {
+  @DependencyGraph(AppScope::class)
+  internal interface TestGraph : AppGraph {
     val budgetGraphHolder: BudgetGraphHolder
-
-    @DependencyGraph.Factory
-    fun interface Factory {
-      fun create(
-        @Provides scope: CoroutineScope,
-        @Provides contexts: CoroutineContexts,
-        @Provides context: Context,
-        @Provides buildConfig: BuildConfig,
-      ): TestAppGraph
-    }
   }
 }

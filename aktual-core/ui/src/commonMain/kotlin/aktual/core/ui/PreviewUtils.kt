@@ -2,7 +2,11 @@
 
 package aktual.core.ui
 
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.DarkTheme
+import aktual.core.theme.LightTheme
+import aktual.core.theme.MidnightTheme
+import aktual.core.theme.Theme
+import androidx.compose.foundation.background
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -64,12 +68,12 @@ open class PreviewParameters<T>(protected val data: List<T>) : PreviewParameterP
     labels.getOrNull(index) ?: data[index]?.toString()
 }
 
-data class ThemedParams<T>(val type: ColorSchemeType, val data: T)
+data class ThemedParams<T>(val theme: Theme, val data: T)
 
 open class ThemedParameterProvider<T>(collection: List<T>) :
   PreviewParameterProvider<ThemedParams<T>> {
   private val all: List<ThemedParams<T>> =
-    collection.flatMap { data -> ColorSchemeType.entries.map { type -> ThemedParams(type, data) } }
+    collection.flatMap { data -> Theme.Defaults.map { type -> ThemedParams(type, data) } }
 
   override val values: Sequence<ThemedParams<T>>
     get() = all.asSequence()
@@ -77,25 +81,25 @@ open class ThemedParameterProvider<T>(collection: List<T>) :
   constructor(vararg values: T) : this(values.toList())
 
   override fun getDisplayName(index: Int): String? =
-    all.getOrNull(index)?.let { params -> "${params.type} - ${params.data}" }
+    all.getOrNull(index)?.let { params -> "${params.theme::class.simpleName} - ${params.data}" }
 }
 
-class ColorSchemeParameters : PreviewParameters<ColorSchemeType>(ColorSchemeType.entries)
+class ThemeParameters : PreviewParameters<Theme>(LightTheme, DarkTheme, MidnightTheme)
 
 class ThemedBooleanParameters : ThemedParameterProvider<Boolean>(true, false)
 
 @Composable
 fun PreviewWithColorScheme(
-  schemeType: ColorSchemeType,
+  theme: Theme,
   modifier: Modifier = Modifier,
   isPrivacyEnabled: Boolean = false,
-  content: @Composable (ColorSchemeType) -> Unit,
+  content: @Composable () -> Unit,
 ) =
   WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
-    AktualTheme(schemeType) {
-      Surface(modifier = modifier) {
+    AktualTheme(theme) {
+      Surface(modifier = modifier.background(theme.pageBackground)) {
         val hazeState = remember { HazeState() }
-        CompositionLocalProvider(LocalHazeState provides hazeState) { content(schemeType) }
+        CompositionLocalProvider(LocalHazeState provides hazeState, content)
       }
     }
   }

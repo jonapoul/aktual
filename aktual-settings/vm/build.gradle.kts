@@ -6,6 +6,7 @@ plugins { id("aktual.module.viewmodel") }
 kotlin {
   commonMainDependencies {
     api(project(":aktual-core:prefs"))
+    api(project(":aktual-core:theme"))
     implementation(libs.preferences.core)
   }
 
