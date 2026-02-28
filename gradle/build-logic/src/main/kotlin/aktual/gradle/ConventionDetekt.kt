@@ -15,6 +15,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.withType
+import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
 class ConventionDetekt : Plugin<Project> {
   override fun apply(target: Project) =
@@ -33,6 +34,11 @@ class ConventionDetekt : Plugin<Project> {
       }
 
       val detektTasks = tasks.withType<Detekt>()
+
+      tasks.register("detektCheck") {
+        group = VERIFICATION_GROUP
+        dependsOn(detektTasks)
+      }
 
       val detektReportMergeSarif =
         rootProject.tasks.named("detektReportMergeSarif", ReportMergeTask::class)
