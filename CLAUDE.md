@@ -253,7 +253,7 @@ The project uses Gradle convention plugins to centralize build configuration:
 - `aktual.module.jvm` - JVM-only module
 
 **Key Build Properties:**
-- Java version: Sourced from `.java-version` file (currently 21)
+- Java version: Sourced from `.java-version` file (currently 25)
 - Min SDK: 28
 - Target/Compile SDK: 36
 - KSP2 enabled
