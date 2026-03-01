@@ -384,6 +384,7 @@ private const val SCROLLBAR_AUTO_HIDE_DEFAULT = true
 private const val SCROLLBAR_HOVER_WIDTH_MULTIPLIER = 4f
 
 @Stable
+@Suppress("DataClassContainsFunctions")
 internal data class ScrollbarState(private val delegate: ScrollableDelegate) {
   val orientation: Orientation
     get() = delegate.orientation
