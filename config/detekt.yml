@@ -70,7 +70,7 @@ style:
   CascadingCallWrapping:
     active: false
   DataClassContainsFunctions:
-    active: false
+    allowOperators: true
   DestructuringDeclarationWithTooManyEntries:
     maxDestructuringEntries: 5
   ForbiddenComment:
@@ -103,3 +103,5 @@ style:
       - "LandscapePreview"
       - "PortraitPreview"
       - "TabletPreview"
+  UseIfInsteadOfWhen:
+    ignoreWhenContainingVariableDeclaration: true
