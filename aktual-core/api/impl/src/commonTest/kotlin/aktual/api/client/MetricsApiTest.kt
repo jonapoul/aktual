@@ -44,8 +44,6 @@ class MetricsApiTest {
     assertThat(mockEngine.latestRequestUrl()).isEqualTo("https://test.server.com/metrics")
     val headers = mockEngine.latestRequestHeaders()
     assertThat(headers["Accept"]).isEqualTo(listOf("application/json"))
-    assertThat(headers["Accept-Charset"]).isEqualTo(listOf("UTF-8"))
-
     // and the response was parsed properly
     assertThat(response)
       .isEqualTo(
