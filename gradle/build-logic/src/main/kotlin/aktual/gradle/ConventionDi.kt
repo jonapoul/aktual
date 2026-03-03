@@ -1,7 +1,9 @@
 package aktual.gradle
 
+import dev.zacsweers.metro.gradle.DelicateMetroGradleApi
 import dev.zacsweers.metro.gradle.MetroGradleSubplugin
 import dev.zacsweers.metro.gradle.MetroPluginExtension
+import dev.zacsweers.metro.gradle.RequiresIdeSupport
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -14,10 +16,10 @@ class ConventionDi : Plugin<Project> {
 
       extensions.configure<MetroPluginExtension> {
         enableKotlinVersionCompatibilityChecks.set(true)
-        enableFullBindingGraphValidation.set(true)
-        generateAssistedFactories.set(false)
+        @OptIn(DelicateMetroGradleApi::class) enableFullBindingGraphValidation.set(true)
+        @OptIn(RequiresIdeSupport::class) generateAssistedFactories.set(false)
         generateContributionHints.set(true)
-        shrinkUnusedBindings.set(true)
+        @OptIn(DelicateMetroGradleApi::class) shrinkUnusedBindings.set(true)
         warnOnInjectAnnotationPlacement.set(true)
 
         // Causes occasional compile errors when AGP-KMP is applied, see
