@@ -75,10 +75,7 @@ class SyncApiTest {
     mockEngine += { respondJson(SyncResponses.LIST_USER_FILES_SUCCESS_200) }
     syncApi.fetchUserFiles(TOKEN)
     assertThat(mockEngine.latestRequestHeaders())
-      .isEqualToMap(
-        "X-ACTUAL-TOKEN" to listOf("abc-123"),
-        "Accept" to listOf("application/json"),
-      )
+      .isEqualToMap("X-ACTUAL-TOKEN" to listOf("abc-123"), "Accept" to listOf("application/json"))
   }
 
   @Test
@@ -99,8 +96,7 @@ class SyncApiTest {
     val body = GetUserKeyRequest(BUDGET_ID, TOKEN)
     syncApi.fetchUserKey(body)
     val request = mockEngine.requestHistory.last()
-    assertThat(request.headers.toMap())
-      .isEqualToMap("Accept" to listOf("application/json"))
+    assertThat(request.headers.toMap()).isEqualToMap("Accept" to listOf("application/json"))
     assertThat(request.body).isInstanceOf<TextContent>().all {
       prop(TextContent::text).isEqualTo("""{"fileId":"xyz-789","token":"abc-123"}""")
       prop(TextContent::contentType).isEqualTo(ContentType.Application.Json)
