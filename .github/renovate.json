@@ -6,6 +6,16 @@
   "extends": [
     "config:best-practices"
   ],
-  "automerge": true,
-  "automergeType": "pr"
+  "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest",
+        "pin"
+      ],
+      "automerge": true,
+      "automergeType": "pr"
+    }
+  ]
 }
