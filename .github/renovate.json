@@ -5,5 +5,17 @@
   ],
   "extends": [
     "config:best-practices"
+  ],
+  "packageRules": [
+    {
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest",
+        "pin"
+      ],
+      "automerge": true,
+      "automergeType": "pr"
+    }
   ]
 }
