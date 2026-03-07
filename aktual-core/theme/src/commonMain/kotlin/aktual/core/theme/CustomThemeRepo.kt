@@ -10,16 +10,18 @@ import kotlinx.serialization.encoding.Encoder
 
 @Immutable
 @Serializable(CustomThemeRepoSerializer::class)
-data class CustomThemeRepo(val userName: String, val repoName: String)
+data class CustomThemeRepo(val userName: String, val repoName: String) {
+  override fun toString(): String = "$userName/$repoName"
+}
 
-fun CustomThemeRepo.toId(): Theme.Id = Theme.Id("$userName/$repoName")
+fun CustomThemeRepo.toId(): Theme.Id = Theme.Id(toString())
 
 // E.g. "Juulz/simple-dark"
 internal object CustomThemeRepoSerializer : KSerializer<CustomThemeRepo> {
   override val descriptor = PrimitiveSerialDescriptor("ThemeRepo", PrimitiveKind.STRING)
 
   override fun serialize(encoder: Encoder, value: CustomThemeRepo) =
-    with(value) { encoder.encodeString("$userName/$repoName") }
+    encoder.encodeString(value.toString())
 
   override fun deserialize(decoder: Decoder): CustomThemeRepo {
     val string = decoder.decodeString()
