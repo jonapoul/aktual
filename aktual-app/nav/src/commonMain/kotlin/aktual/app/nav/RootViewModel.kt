@@ -78,12 +78,9 @@ abstract class RootViewModel(
       mapper = { it.toBoolean() },
     )
 
-  fun theme(isSystemInDarkTheme: Boolean): Flow<Theme> =
-    themeResolver.activeTheme(isSystemInDarkTheme)
-
   val isServerUrlSet: Boolean = preferences.serverUrl.isSet()
-  val token: Token? = preferences.token.get()
 
+  val token: Token? = preferences.token.get()
   private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 
   private val budgetName: Flow<String?> =
@@ -108,6 +105,9 @@ abstract class RootViewModel(
     connectionMonitor.start()
     viewModelScope.launch { serverVersionFetcher.start() }
   }
+
+  fun theme(isSystemInDarkTheme: Boolean): Flow<Theme> =
+    themeResolver.activeTheme(isSystemInDarkTheme)
 
   fun onDestroy() {
     logcat.v { "onDestroy" }

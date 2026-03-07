@@ -32,6 +32,12 @@ class CustomThemeCacheImpl(
     fileSystem.createDirectory(themesDir)
   }
 
+  private val Path.isDirectory
+    get() = fileSystem.metadataOrNull(this)?.isDirectory == true
+
+  private val Path.isRegularFile
+    get() = fileSystem.metadataOrNull(this)?.isRegularFile == true
+
   override suspend fun repos(): List<CustomThemeRepo> =
     fileSystem
       .list(themesDir)
@@ -125,12 +131,6 @@ class CustomThemeCacheImpl(
     withContext(contexts.io) { fileSystem.source(path).buffer().use { it.readUtf8() } }
 
   private fun CustomThemeRepo.themeFile() = themesDir / userName / "$repoName.json"
-
-  private val Path.isDirectory
-    get() = fileSystem.metadataOrNull(this)?.isDirectory == true
-
-  private val Path.isRegularFile
-    get() = fileSystem.metadataOrNull(this)?.isRegularFile == true
 
   private companion object {
     val SUMMARIES_SERIALIZER = ListSerializer(CustomThemeSummary.serializer())

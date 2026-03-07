@@ -3,6 +3,7 @@ package aktual.core.theme
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
+import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -58,6 +59,8 @@ class ThemeResolverImpl(
       val theme = api.fetchTheme(summary)
       cache.save(theme)
       return theme
+    } catch (e: CancellationException) {
+      throw e
     } catch (e: Exception) {
       val default = fallback(isSystemInDarkTheme)
       logcat.w(e) { "Failed fetching theme from $repo, returning $default" }

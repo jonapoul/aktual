@@ -17,7 +17,7 @@ internal object ColorSerializer : KSerializer<Color> {
     val argb = value.toArgb()
     val aa = argb ushr 24 and 0xFF
     val rrggbb = argb and 0xFFFFFF
-    val rrggbbaa = (rrggbb shl 8) or aa
+    val rrggbbaa = rrggbb shl 8 or aa
     encoder.encodeString("#%08X".format(rrggbbaa))
   }
 

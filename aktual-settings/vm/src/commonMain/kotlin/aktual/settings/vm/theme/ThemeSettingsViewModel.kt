@@ -77,8 +77,14 @@ class ThemeSettingsViewModel(
     viewModelScope.launchMolecule(Immediate) {
       val loadState by mutableLoadState.collectAsState()
       when (val s = loadState) {
-        is LoadState.Loading -> CatalogState.Loading
-        is LoadState.Failed -> CatalogState.Failed(s.reason)
+        is LoadState.Loading -> {
+          CatalogState.Loading
+        }
+
+        is LoadState.Failed -> {
+          CatalogState.Failed(s.reason)
+        }
+
         is LoadState.Loaded -> {
           val selected by constantTheme.collectAsState()
           CatalogState.Success(

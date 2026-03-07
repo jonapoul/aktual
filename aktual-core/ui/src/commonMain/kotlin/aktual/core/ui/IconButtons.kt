@@ -142,10 +142,16 @@ fun BasicIconButton(
 }
 
 @Composable
-fun NavBackIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
+fun NavBackIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
   IconButton(modifier = modifier, onClick = onClick) {
     Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
   }
+}
+
+@Composable
+@Suppress("ModifierMissing")
+fun NavBackIconButton(onClick: () -> Unit) {
+  NavBackIconButton(modifier = Modifier, onClick = onClick)
 }
 
 @Stable
