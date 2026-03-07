@@ -22,9 +22,9 @@
     {
       "description": "Group Compose updates",
       "groupName": "Compose",
-      "matchPackagePrefixes": [
-        "org.jetbrains.compose",
-        "androidx.compose"
+      "matchPackageNames": [
+        "org.jetbrains.compose{/,}**",
+        "androidx.compose{/,}**"
       ]
     },
     {
