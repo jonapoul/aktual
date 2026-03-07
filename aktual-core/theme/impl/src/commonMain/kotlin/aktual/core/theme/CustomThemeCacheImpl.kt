@@ -48,7 +48,10 @@ class CustomThemeCacheImpl(
             .list(userDir)
             .filter { it.isRegularFile }
             .map { repoFile ->
-              CustomThemeRepo(userName = userDir.name, repoName = repoFile.name.removeSuffix(".json"))
+              CustomThemeRepo(
+                userName = userDir.name,
+                repoName = repoFile.name.removeSuffix(".json"),
+              )
             }
         }
     }
