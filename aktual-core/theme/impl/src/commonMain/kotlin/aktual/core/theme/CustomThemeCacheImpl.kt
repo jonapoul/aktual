@@ -39,20 +39,23 @@ class CustomThemeCacheImpl(
     get() = fileSystem.metadataOrNull(this)?.isRegularFile == true
 
   override suspend fun repos(): List<CustomThemeRepo> =
-    fileSystem
-      .list(themesDir)
-      .filter { it.isDirectory }
-      .flatMap { userDir ->
-        fileSystem
-          .list(userDir)
-          .filter { it.isRegularFile }
-          .map { repoFile ->
-            CustomThemeRepo(userName = userDir.name, repoName = repoFile.name.removeSuffix(".json"))
-          }
-      }
+    withContext(contexts.io) {
+      fileSystem
+        .list(themesDir)
+        .filter { it.isDirectory }
+        .flatMap { userDir ->
+          fileSystem
+            .list(userDir)
+            .filter { it.isRegularFile }
+            .map { repoFile ->
+              CustomThemeRepo(userName = userDir.name, repoName = repoFile.name.removeSuffix(".json"))
+            }
+        }
+    }
 
   override suspend fun summaries(): List<CustomThemeSummary> {
-    if (!fileSystem.exists(summariesFile)) {
+    val exists = withContext(contexts.io) { fileSystem.exists(summariesFile) }
+    if (!exists) {
       return emptyList()
     }
 
@@ -70,7 +73,8 @@ class CustomThemeCacheImpl(
 
   override suspend fun theme(repo: CustomThemeRepo): CustomTheme? {
     val themeFile = repo.themeFile()
-    if (!fileSystem.exists(themeFile)) {
+    val exists = withContext(contexts.io) { fileSystem.exists(themeFile) }
+    if (!exists) {
       return null
     }
 
@@ -103,7 +107,7 @@ class CustomThemeCacheImpl(
 
     try {
       val encoded = encode(theme, THEME_SERIALIZER)
-      themeFile.parent?.let(fileSystem::createDirectory)
+      withContext(contexts.io) { themeFile.parent?.let(fileSystem::createDirectory) }
       write(encoded, themeFile)
     } catch (e: IOException) {
       logcat.e(e) { "Failed writing theme to $themeFile" }
@@ -113,8 +117,10 @@ class CustomThemeCacheImpl(
   }
 
   override suspend fun clear() {
-    fileSystem.delete(summariesFile)
-    fileSystem.delete(themesDir)
+    withContext(contexts.io) {
+      fileSystem.delete(summariesFile)
+      fileSystem.deleteRecursively(themesDir)
+    }
   }
 
   private suspend fun <T> encode(value: T, serializer: SerializationStrategy<T>): String =
