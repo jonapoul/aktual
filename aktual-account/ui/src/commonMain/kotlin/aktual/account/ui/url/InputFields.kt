@@ -1,11 +1,11 @@
 package aktual.account.ui.url
 
 import aktual.core.model.Protocol
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.ExposedDropDownMenu
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TextField
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
@@ -79,7 +79,7 @@ private const val EXAMPLE_URL = "example.com"
 private fun PreviewInputFields(
   @PreviewParameter(InputFieldsProvider::class) params: ThemedParams<InputFieldsParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     InputFields(url = params.data.url, protocol = params.data.protocol, onAction = {})
   }
 

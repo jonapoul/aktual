@@ -5,14 +5,8 @@ import aktual.budget.db.withoutResult
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
-import aktual.core.model.BuildConfig
-import aktual.test.TestBuildConfig
+import aktual.test.coroutineContainer
 import aktual.test.messageContains
-import alakazam.kotlin.CoroutineContexts
-import alakazam.test.TestCoroutineContexts
-import alakazam.test.standardDispatcher
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasSize
@@ -20,13 +14,11 @@ import assertk.assertions.isEmpty
 import assertk.assertions.isInstanceOf
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
-import dev.zacsweers.metro.Provides
-import dev.zacsweers.metro.createGraphFactory
+import dev.zacsweers.metro.createDynamicGraph
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
@@ -34,16 +26,10 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class BudgetGraphHolderTest {
-  private lateinit var appGraph: TestAppGraph
   private lateinit var holder: BudgetGraphHolder
 
   private fun TestScope.before() {
-    val context = ApplicationProvider.getApplicationContext<Context>()
-    val contexts = TestCoroutineContexts(standardDispatcher)
-    appGraph =
-      createGraphFactory<TestAppGraph.Factory>().create(this, contexts, context, TestBuildConfig)
-
-    holder = appGraph.budgetGraphHolder
+    holder = createDynamicGraph<TestGraph>(coroutineContainer()).budgetGraphHolder
   }
 
   @AfterTest
@@ -99,18 +85,8 @@ class BudgetGraphHolderTest {
     name: String = "my bank name",
   ) = database.banksQueries.withoutResult { insert(id, bankId, name) }
 
-  @DependencyGraph(scope = AppScope::class, excludes = [CoroutineContainer::class])
-  internal interface TestAppGraph : AppGraph {
+  @DependencyGraph(AppScope::class)
+  internal interface TestGraph : AppGraph {
     val budgetGraphHolder: BudgetGraphHolder
-
-    @DependencyGraph.Factory
-    fun interface Factory {
-      fun create(
-        @Provides scope: CoroutineScope,
-        @Provides contexts: CoroutineContexts,
-        @Provides context: Context,
-        @Provides buildConfig: BuildConfig,
-      ): TestAppGraph
-    }
   }
 }

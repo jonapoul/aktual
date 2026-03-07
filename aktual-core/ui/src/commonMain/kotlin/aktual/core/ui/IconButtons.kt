@@ -1,8 +1,11 @@
 package aktual.core.ui
 
+import aktual.core.icons.ArrowBack
 import aktual.core.icons.Check
 import aktual.core.icons.MaterialIcons
-import aktual.core.model.ColorSchemeType
+import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -138,6 +141,19 @@ fun BasicIconButton(
   )
 }
 
+@Composable
+fun NavBackIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+  IconButton(modifier = modifier, onClick = onClick) {
+    Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
+  }
+}
+
+@Composable
+@Suppress("ModifierMissing")
+fun NavBackIconButton(onClick: () -> Unit) {
+  NavBackIconButton(modifier = Modifier, onClick = onClick)
+}
+
 @Stable
 @Composable
 private fun DefaultIconButtonContent(
@@ -154,21 +170,21 @@ private fun DefaultIconButtonContent(
 
 @Preview
 @Composable
-private fun PreviewBare(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewWithColorScheme(type) {
+private fun PreviewBare(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     BareIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
-private fun PreviewNormal(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewWithColorScheme(type) {
+private fun PreviewNormal(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     NormalIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
-private fun PreviewPrimary(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewWithColorScheme(type) {
+private fun PreviewPrimary(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     PrimaryIconButton(imageVector = MaterialIcons.Check, contentDescription = "OK", onClick = {})
   }

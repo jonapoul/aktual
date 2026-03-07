@@ -1,6 +1,8 @@
 package aktual.core.ui
 
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LightTheme
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -114,17 +116,15 @@ private fun loadingIcon(color: Color): ImageVector =
 
 @Preview
 @Composable
-private fun PreviewCheckUpdatesContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewCheckUpdatesContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     Box(modifier = Modifier.size(50.dp), contentAlignment = Alignment.Center) { AnimatedLoading() }
   }
 
 @Preview
 @Composable
 private fun PreviewScaled() =
-  PreviewWithColorScheme(ColorSchemeType.Light) {
+  PreviewWithColorScheme(LightTheme) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
       AnimatedLoading(modifier = Modifier.size(20.dp))
       AnimatedLoading(modifier = Modifier.size(50.dp))

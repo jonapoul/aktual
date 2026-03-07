@@ -21,10 +21,6 @@ class ConventionDi : Plugin<Project> {
         generateContributionHints.set(true)
         @OptIn(DelicateMetroGradleApi::class) shrinkUnusedBindings.set(true)
         warnOnInjectAnnotationPlacement.set(true)
-
-        // Causes occasional compile errors when AGP-KMP is applied, see
-        // https://github.com/ZacSweers/metro/issues/1379
-        // reportsDestination.set(layout.buildDirectory.dir("reports/metro"))
       }
     }
 }

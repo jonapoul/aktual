@@ -1,11 +1,13 @@
 package aktual.core.model
 
 import alakazam.kotlin.StateHolder
+import androidx.compose.runtime.Immutable
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.update
 
+@Immutable
 data class AktualVersions(val app: String, val server: String?) {
   override fun toString() = "App: ${app.optionalPrefixed()} | Server: ${server.optionalPrefixed()}"
 

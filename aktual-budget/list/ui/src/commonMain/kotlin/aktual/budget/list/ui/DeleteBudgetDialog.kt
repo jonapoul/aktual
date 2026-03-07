@@ -3,12 +3,13 @@ package aktual.budget.list.ui
 import aktual.budget.list.vm.DeletingState
 import aktual.budget.model.Budget
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.AlertDialog
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.buttonTextStyle
@@ -79,6 +80,7 @@ internal fun Content(
   localFileExists: Boolean,
   onDeleteLocal: () -> Unit,
   onDeleteRemote: () -> Unit,
+  theme: Theme = LocalTheme.current,
 ) {
   Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
     Text(text = annotatedString(), fontSize = 14.sp)
@@ -99,7 +101,7 @@ internal fun Content(
 
     LoadableBareTextButton(
       text = Strings.budgetDeleteDialogHostedButton,
-      colors = { theme, pressed -> theme.errorPrimary(pressed) },
+      colors = { pressed -> theme.errorPrimary(pressed) },
       isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
       isLoading = deletingState is DeletingState.Active && deletingState.deletingRemote,
       onClick = {
@@ -113,7 +115,7 @@ internal fun Content(
 
       LoadableBareTextButton(
         text = Strings.budgetDeleteDialogLocalButton,
-        colors = { theme, pressed -> theme.errorBare(pressed) },
+        colors = { pressed -> theme.errorBare(pressed) },
         isEnabled = isNotDeleting,
         isLoading = deletingState is DeletingState.Active && deletingState.deletingLocal,
         onClick = {
@@ -134,7 +136,7 @@ private fun LoadableBareTextButton(
   onClick: () -> Unit,
   isEnabled: Boolean,
   isLoading: Boolean,
-  colors: @Composable (Theme, Boolean) -> ButtonColors,
+  colors: @Composable (Boolean) -> ButtonColors,
   modifier: Modifier = Modifier,
 ) =
   Box(modifier = modifier, contentAlignment = Alignment.Center) {
@@ -185,7 +187,7 @@ private fun PreviewDeleteBudgetDialog(
   @PreviewParameter(DeleteBudgetDialogProvider::class)
   params: ThemedParams<DeleteBudgetDialogParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     Content(
       deletingState = params.data.state,
       localFileExists = params.data.localFileExists,

@@ -2,19 +2,18 @@ package aktual.account.ui.password
 
 import aktual.account.vm.ChangePasswordState
 import aktual.account.vm.ChangePasswordViewModel
-import aktual.core.icons.ArrowBack
-import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.LandscapePreview
-import aktual.core.ui.LocalTheme
+import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
@@ -28,8 +27,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -101,11 +98,7 @@ internal fun ChangePasswordScaffold(
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = {
-          IconButton(onClick = { onAction(PasswordAction.NavBack) }) {
-            Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
-          }
-        },
+        navigationIcon = { NavBackIconButton { onAction(PasswordAction.NavBack) } },
         title = { /* empty */ },
         scrollBehavior = scrollBehavior,
       )
@@ -206,7 +199,7 @@ private fun ChangePasswordState.Failure.errorMessage(): String =
 private fun PreviewChangePassword(
   @PreviewParameter(ChangePasswordProvider::class) params: ThemedParams<ChangePasswordParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     ChangePasswordScaffold(
       inputPassword1 = params.data.password1,
       inputPassword2 = params.data.password2,

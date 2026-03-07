@@ -4,7 +4,8 @@ import aktual.budget.model.DateRangeType
 import aktual.core.icons.Clear
 import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -192,7 +193,7 @@ private class TextInputPreviewProvider :
 private fun PreviewTextField(
   @PreviewParameter(TextInputPreviewProvider::class) params: ThemedParams<TextInputPreviewParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     TextField(
       value = params.data.value,
       onValueChange = {},
@@ -203,10 +204,8 @@ private fun PreviewTextField(
 
 @Preview
 @Composable
-private fun PreviewDropDownMenu(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewDropDownMenu(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     var value by remember { mutableStateOf("B") }
     val options = persistentListOf("A", "B", "C", "D")
     ExposedDropDownMenu(
@@ -218,10 +217,8 @@ private fun PreviewDropDownMenu(
 
 @Preview
 @Composable
-private fun PreviewDropDownMenuForcedWidth(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewDropDownMenuForcedWidth(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     var value by remember { mutableStateOf("B") }
     val options = persistentListOf("A", "B", "C", "D")
     ExposedDropDownMenu(
@@ -235,10 +232,8 @@ private fun PreviewDropDownMenuForcedWidth(
 @Preview
 @Composable
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
-private fun PreviewDropDownMenuEnum(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewDropDownMenuEnum(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     var value by remember { mutableStateOf(DateRangeType.YearToDate) }
     val options = DateRangeType.entries.toImmutableList()
     ExposedDropDownMenu(

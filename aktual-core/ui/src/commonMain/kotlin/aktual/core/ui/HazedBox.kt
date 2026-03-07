@@ -1,6 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.Theme
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -39,17 +39,16 @@ fun HazedBox(
 
 @Preview
 @Composable
-private fun PreviewText(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewBasic(type) { Text("Hello world") }
+private fun PreviewText(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewBasic(theme) { Text("Hello world") }
 
 @Composable
 private fun PreviewBasic(
-  type: ColorSchemeType,
+  theme: Theme,
   size: DpSize = DpSize(200.dp, 200.dp),
   content: @Composable BoxScope.(Theme) -> Unit,
 ) =
-  PreviewWithColorScheme(type) {
-    val theme = LocalTheme.current
+  PreviewWithColorScheme(theme) {
     val hazeState = remember { HazeState() }
     Box(modifier = Modifier.size(size)) {
       WavyBackground(

@@ -2,7 +2,6 @@ package aktual.api
 
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.HttpClientEngine
-import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
@@ -12,12 +11,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import logcat.logcat
 
-fun buildKtorClient(
-  json: Json,
-  tag: String?,
-  engine: HttpClientEngine = CIO.create(),
-  isDebug: Boolean = false,
-) =
+fun buildKtorClient(json: Json, tag: String?, engine: HttpClientEngine, isDebug: Boolean = false) =
   HttpClient(engine) {
     // Throws ResponseExceptions for non-2xx responses
     expectSuccess = true

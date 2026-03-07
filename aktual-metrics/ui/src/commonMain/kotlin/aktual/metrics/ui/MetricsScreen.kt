@@ -1,7 +1,6 @@
 package aktual.metrics.ui
 
 import aktual.api.model.metrics.GetMetricsResponse
-import aktual.core.icons.ArrowBack
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
@@ -10,6 +9,8 @@ import aktual.core.model.MB
 import aktual.core.model.TB
 import aktual.core.model.bytes
 import aktual.core.model.kB
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BottomNavBarSpacing
@@ -17,10 +18,9 @@ import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.HazedBox
-import aktual.core.ui.LocalTheme
+import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
@@ -123,11 +123,7 @@ private fun MetricsTopAppBar(
   TopAppBar(
     modifier = modifier,
     colors = theme.transparentTopAppBarColors(),
-    navigationIcon = {
-      IconButton(onClick = { onAction(MetricsAction.NavBack) }) {
-        Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
-      }
-    },
+    navigationIcon = { NavBackIconButton { onAction(MetricsAction.NavBack) } },
     title = { Text(Strings.metricsToolbar) },
     scrollBehavior = scrollBehavior,
     actions = {
@@ -279,7 +275,7 @@ private fun SuccessContentRow(title: String, value: String, modifier: Modifier =
 @Composable
 private fun PreviewMetricsScaffold(
   @PreviewParameter(MetricsStateProvider::class) params: ThemedParams<MetricsState>
-) = PreviewWithColorScheme(params.type) { MetricsScaffold(state = params.data, onAction = {}) }
+) = PreviewWithColorScheme(params.theme) { MetricsScaffold(state = params.data, onAction = {}) }
 
 private class MetricsStateProvider :
   ThemedParameterProvider<MetricsState>(

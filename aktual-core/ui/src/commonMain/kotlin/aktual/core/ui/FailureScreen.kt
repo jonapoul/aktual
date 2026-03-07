@@ -4,6 +4,8 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.Refresh
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,13 +33,15 @@ fun FailureScreen(
   onClickRetry: () -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) =
+  includeHaze: Boolean = true,
+) {
+  val hazeModifier = if (includeHaze) Modifier.aktualHaze() else Modifier
   Box(modifier = modifier.padding(20.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
     Column(
       modifier =
         Modifier.padding(Dimens.Small)
           .background(Color.Transparent, CardShape)
-          .aktualHaze()
+          .then(hazeModifier)
           .padding(30.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -76,13 +80,14 @@ fun FailureScreen(
       )
     }
   }
+}
 
 @PortraitPreview
 @Composable
 private fun PreviewFailureScreen(
   @PreviewParameter(FailureScreenProvider::class) params: ThemedParams<String>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     FailureScreen(
       title = "Failed syncing the doodads",
       reason = params.data,

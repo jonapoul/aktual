@@ -1,15 +1,14 @@
 package aktual.budget.list.ui
 
 import aktual.budget.model.Budget
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
-import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.Dimens
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -56,10 +55,8 @@ internal fun ContentSuccess(
 
 @PortraitPreview
 @Composable
-private fun PreviewContentSuccess(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewContentSuccess(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     ContentSuccess(
       modifier = Modifier.background(LocalTheme.current.pageBackground),
       budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),

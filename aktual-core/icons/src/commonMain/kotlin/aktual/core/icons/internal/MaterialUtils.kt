@@ -13,23 +13,16 @@ import androidx.compose.ui.unit.dp
 
 internal inline fun materialIcon(
   name: String,
-  block: ImageVector.Builder.() -> ImageVector.Builder,
-): ImageVector =
-  ImageVector.Builder("Material.$name", ICON_SIZE.dp, ICON_SIZE.dp, ICON_SIZE, ICON_SIZE)
-    .block()
-    .build()
-
-internal inline fun materialIcon(
-  name: String,
+  viewportSize: Float = ICON_SIZE,
   autoMirror: Boolean = false,
   block: ImageVector.Builder.() -> ImageVector.Builder,
 ): ImageVector =
   ImageVector.Builder(
-      "Material.$name",
-      ICON_SIZE.dp,
-      ICON_SIZE.dp,
-      ICON_SIZE,
-      ICON_SIZE,
+      name = "Material.$name",
+      defaultWidth = ICON_SIZE.dp,
+      defaultHeight = ICON_SIZE.dp,
+      viewportWidth = viewportSize,
+      viewportHeight = viewportSize,
       autoMirror = autoMirror,
     )
     .block()

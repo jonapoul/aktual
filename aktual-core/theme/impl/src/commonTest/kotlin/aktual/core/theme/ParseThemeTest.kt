@@ -8,6 +8,7 @@ import kotlin.test.Test
 class ParseThemeTest {
   @Test
   fun `Parse CSS as theme`() {
-    assertThat(parseTheme(ThemeResponses.CUSTOM_THEME_200)).isDataClassEqualTo(ShadesOfCoffeeTheme)
+    assertThat(parseTheme(ShadesOfCoffeeThemeSummary, ThemeResponses.CUSTOM_THEME_200))
+      .isDataClassEqualTo(ShadesOfCoffeeTheme)
   }
 }

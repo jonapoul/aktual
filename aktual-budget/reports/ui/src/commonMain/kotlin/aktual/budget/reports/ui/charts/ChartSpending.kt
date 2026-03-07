@@ -7,11 +7,11 @@ import aktual.budget.reports.vm.SpendingData
 import aktual.budget.reports.vm.SpendingDay
 import aktual.budget.reports.vm.SpendingDayNumber
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WrapWidthTable
@@ -297,7 +297,7 @@ private fun xAxisFormatter() = remember {
 private fun PreviewSpendingChart(
   @PreviewParameter(SpendingChartProvider::class) params: ThemedParams<SpendingChartParams>
 ) =
-  PreviewWithColorScheme(schemeType = params.type, isPrivacyEnabled = params.data.private) {
+  PreviewWithColorScheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
     SpendingChart(
       modifier =
         Modifier.background(LocalTheme.current.tableBackground, CardShape)

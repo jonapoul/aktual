@@ -4,11 +4,11 @@ import aktual.budget.model.Amount
 import aktual.budget.reports.vm.CashFlowData
 import aktual.budget.reports.vm.CashFlowDatum
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WrapWidthTable
@@ -268,10 +268,7 @@ private suspend fun CartesianChartModelProducer.populate(data: CashFlowData) =
 private fun PreviewCashFlowChart(
   @PreviewParameter(CashFlowChartProvider::class) params: ThemedParams<CashFlowChartParams>
 ) =
-  PreviewWithColorScheme(
-    schemeType = params.type,
-    isPrivacyEnabled = params.data.isPrivacyEnabled,
-  ) {
+  PreviewWithColorScheme(theme = params.theme, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CashFlowChart(
       modifier =
         Modifier.background(LocalTheme.current.tableBackground, CardShape)

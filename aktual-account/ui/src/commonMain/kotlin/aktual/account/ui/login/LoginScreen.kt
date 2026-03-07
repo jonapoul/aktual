@@ -2,22 +2,21 @@ package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
 import aktual.account.vm.LoginViewModel
-import aktual.core.icons.ArrowBack
-import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
 import aktual.core.model.Password.Companion.Dummy
 import aktual.core.model.Password.Companion.Empty
 import aktual.core.model.ServerUrl
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.LandscapePreview
-import aktual.core.ui.LocalTheme
+import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.UsingServerText
@@ -33,8 +32,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -101,11 +98,7 @@ internal fun LoginScaffold(
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = {
-          IconButton(onClick = { onAction(LoginAction.NavBack) }) {
-            Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
-          }
-        },
+        navigationIcon = { NavBackIconButton { onAction(LoginAction.NavBack) } },
         title = {},
         scrollBehavior = scrollBehavior,
       )
@@ -203,7 +196,7 @@ private fun Content(
 private fun PreviewLoginScaffold(
   @PreviewParameter(LoginScaffoldProvider::class) params: ThemedParams<LoginScaffoldParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     LoginScaffold(
       versions = AktualVersions.Dummy,
       enteredPassword = Empty,

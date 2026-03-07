@@ -3,12 +3,11 @@ package aktual.about.ui.info
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.Warning
 import aktual.core.l10n.Strings
-import aktual.core.model.ColorSchemeType
-import aktual.core.ui.ColorSchemeParameters
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.DialogContent
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -57,10 +56,8 @@ internal fun UpdateCheckFailedDialogContent(
 
 @Preview
 @Composable
-private fun PreviewCheckFailedContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewCheckFailedContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     UpdateCheckFailedDialogContent(
       cause =
         "Something broke lol. And here's some other rubbish to show how the text looks when wrapping lines",

@@ -1,11 +1,10 @@
 package aktual.budget.list.ui
 
-import aktual.core.model.ColorSchemeType
-import aktual.core.ui.ColorSchemeParameters
-import aktual.core.ui.LocalTheme
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
@@ -27,6 +26,5 @@ internal fun ContentLoading(modifier: Modifier = Modifier, theme: Theme = LocalT
 
 @PortraitPreview
 @Composable
-private fun PreviewContentLoading(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) = PreviewWithColorScheme(type) { ContentLoading() }
+private fun PreviewContentLoading(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) { ContentLoading() }

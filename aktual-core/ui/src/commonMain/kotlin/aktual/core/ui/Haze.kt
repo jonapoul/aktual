@@ -1,5 +1,7 @@
 package aktual.core.ui
 
+import aktual.core.theme.Theme
+import aktual.core.theme.isLight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
@@ -19,6 +21,5 @@ fun defaultHazeStyle(
   HazeStyle(
     blurRadius = 30.dp,
     backgroundColor = containerColor,
-    tint =
-      HazeTint(containerColor.copy(alpha = if (containerColor.isLight()) 1f - degree else degree)),
+    tint = HazeTint(containerColor.copy(alpha = if (theme.isLight()) 1f - degree else degree)),
   )

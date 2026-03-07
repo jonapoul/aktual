@@ -1,5 +1,7 @@
 package aktual.core.ui
 
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -9,11 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 
 @Composable
-expect fun SetStatusBarColors(
-  theme: Theme = LocalTheme.current,
-  statusBarColor: Color = theme.mobileHeaderBackground,
-  navigationBarColor: Color = theme.pageBackground,
-)
+fun SetStatusBarColors(theme: Theme = LocalTheme.current) =
+  SetStatusBarColors(
+    statusBarColor = theme.pageBackground,
+    navigationBarColor = theme.pageBackground,
+  )
+
+@Composable internal expect fun SetStatusBarColors(statusBarColor: Color, navigationBarColor: Color)
 
 // space to block out the bottom navigation bar, so we don't need to adjust layouts to account for
 // it

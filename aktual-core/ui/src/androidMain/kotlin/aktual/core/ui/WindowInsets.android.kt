@@ -1,5 +1,6 @@
 package aktual.core.ui
 
+import aktual.core.theme.isLight
 import android.app.Activity
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,16 +15,17 @@ import androidx.core.view.WindowCompat
  */
 @Suppress("DEPRECATION")
 @Composable
-actual fun SetStatusBarColors(theme: Theme, statusBarColor: Color, navigationBarColor: Color) {
+actual fun SetStatusBarColors(statusBarColor: Color, navigationBarColor: Color) {
   val view = LocalView.current
 
   if (!view.isInEditMode) {
-    LaunchedEffect(theme) {
+    LaunchedEffect(statusBarColor, navigationBarColor) {
       val window = (view.context as Activity).window
       window.navigationBarColor = navigationBarColor.toArgb()
       window.statusBarColor = statusBarColor.toArgb()
 
-      WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = theme.isLight()
+      WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
+        statusBarColor.isLight()
     }
   }
 }

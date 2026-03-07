@@ -1,9 +1,7 @@
 package aktual.core.theme
 
-import aktual.core.ui.Theme
-
 interface ThemeApi {
-  suspend fun fetchThemeList(): List<ThemeSummary>
+  suspend fun fetchCatalog(): List<CustomThemeSummary>
 
-  suspend fun fetchTheme(repo: ThemeRepo): Theme
+  suspend fun fetchTheme(summary: CustomThemeSummary): CustomTheme
 }

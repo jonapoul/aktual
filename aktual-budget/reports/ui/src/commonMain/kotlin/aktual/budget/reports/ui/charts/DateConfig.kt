@@ -4,13 +4,12 @@ import aktual.budget.model.DateRangeType
 import aktual.budget.reports.vm.ChartDateConfig
 import aktual.budget.reports.vm.DateRangeMode
 import aktual.core.l10n.Strings
-import aktual.core.model.ColorSchemeType
-import aktual.core.ui.ColorSchemeParameters
-import aktual.core.ui.LocalTheme
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.SlidingToggleButton
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import aktual.core.ui.YearMonthPicker
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
@@ -126,10 +125,8 @@ private fun DateRangeMode.string() =
 
 @Preview
 @Composable
-private fun PreviewChartDateConfig(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewChartDateConfig(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     ChartDateConfig(
       modifier = Modifier.padding(8.dp),
       onNewConfig = {},

@@ -8,12 +8,13 @@ import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.HttpClientEngine
 
 @BindingContainer
 @ContributesTo(AppScope::class)
 object ThemeApiContainer {
   @Provides
   @ThemeClient
-  fun client(buildConfig: BuildConfig): HttpClient =
-    buildKtorClient(AktualJson, tag = "THEME", isDebug = buildConfig.isDebug)
+  fun client(buildConfig: BuildConfig, engine: HttpClientEngine): HttpClient =
+    buildKtorClient(AktualJson, tag = "THEME", engine, buildConfig.isDebug)
 }

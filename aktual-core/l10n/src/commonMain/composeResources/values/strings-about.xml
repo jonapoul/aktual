@@ -1,5 +1,4 @@
 <resources>
-  <string name="info_toolbar_back">Back</string>
   <string name="info_toolbar_title">About</string>
 
   <string name="info_app_version">App Version</string>
@@ -31,7 +30,6 @@
   <string name="info_update_found_dismiss">Dismiss</string>
   <string name="info_update_found_view">Download</string>
 
-  <string name="licenses_toolbar_back">Back</string>
   <string name="licenses_toolbar_title">Third-Party Licenses</string>
   <string name="licenses_toolbar_search">Search</string>
 

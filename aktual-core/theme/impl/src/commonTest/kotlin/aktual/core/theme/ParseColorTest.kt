@@ -13,23 +13,23 @@ class ParseColorTest {
   @Test
   fun `hex 6-char`() {
     // --color-pageBackground: #e2d8cf
-    assertThat("#e2d8cf".parseColor()).isEqualTo(Color(0xFFe2d8cfL))
+    assertThat("#e2d8cf".parseColor()).isEqualTo(Color(0xFFe2d8cf))
   }
 
   @Test
   fun `hex 6-char mixed case`() {
     // --color-pageTextDark: #243B53
-    assertThat("#243B53".parseColor()).isEqualTo(Color(0xFF243B53L))
+    assertThat("#243B53".parseColor()).isEqualTo(Color(0xFF243B53))
   }
 
   @Test
   fun `hex 3-char expands correctly`() {
-    assertThat("#fff".parseColor()).isEqualTo(Color(0xFFFFFFFFL))
+    assertThat("#fff".parseColor()).isEqualTo(Color(0xFFFFFFFF))
   }
 
   @Test
   fun `hex 3-char non-white`() {
-    assertThat("#abc".parseColor()).isEqualTo(Color(0xFFaabbccL))
+    assertThat("#abc".parseColor()).isEqualTo(Color(0xFFaabbcc))
   }
 
   // --- rgba ---

@@ -10,12 +10,12 @@ import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.MoreVert
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.aktualHaze
@@ -23,6 +23,7 @@ import aktual.core.ui.formattedString
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -32,7 +33,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
@@ -40,6 +40,7 @@ import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,7 +66,8 @@ internal fun TransactionItem(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val state by source.transactionState(id).collectAsStateWithLifecycle(TransactionState.Loading(id))
+  val transactionState = remember(source, id) { source.transactionState(id) }
+  val state by transactionState.collectAsStateWithLifecycle(TransactionState.Loading(id))
 
   TransactionItem(
     state = state,
@@ -93,7 +95,6 @@ private fun TransactionItem(
     is TransactionState.DoesntExist -> FailedItem(state.id, modifier, theme)
   }
 
-private val ShimmerShape = RoundedCornerShape(4.dp)
 private val ShimmerRowHeight = 16.dp
 
 @Composable
@@ -139,18 +140,14 @@ private fun RowScope.LoadingTransactionListItem(dimens: TransactionSpacings, the
   Column(modifier = Modifier.weight(1f)) {
     Box(
       modifier =
-        Modifier.fillMaxWidth(0.6f)
-          .height(ShimmerRowHeight)
-          .background(theme.tableText, ShimmerShape)
+        Modifier.fillMaxWidth(0.6f).height(ShimmerRowHeight).background(theme.tableText, CardShape)
     )
 
     VerticalSpacer(4.dp)
 
     Box(
       modifier =
-        Modifier.fillMaxWidth(0.8f)
-          .height(ShimmerRowHeight)
-          .background(theme.tableText, ShimmerShape)
+        Modifier.fillMaxWidth(0.8f).height(ShimmerRowHeight).background(theme.tableText, CardShape)
     )
   }
 
@@ -158,8 +155,7 @@ private fun RowScope.LoadingTransactionListItem(dimens: TransactionSpacings, the
 
   // Amount placeholder
   Box(
-    modifier =
-      Modifier.width(80.dp).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
+    modifier = Modifier.width(80.dp).height(ShimmerRowHeight).background(theme.tableText, CardShape)
   )
 
   HorizontalSpacer(dimens.interColumn)
@@ -174,56 +170,20 @@ private val TransactionSpacings.loadingInterColumn: Dp
   get() = interColumn * 10
 
 @Composable
-private fun RowScope.LoadingTransactionTableItem(dimens: TransactionSpacings, theme: Theme) {
-  // Checkbox placeholder
-  Box(modifier = Modifier.minimumInteractiveComponentSize())
+private fun LoadingTransactionTableItem(dimens: TransactionSpacings, theme: Theme) {
+  Row(horizontalArrangement = Arrangement.spacedBy(dimens.loadingInterColumn)) {
+    val shimmerModifier =
+      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, CardShape)
 
-  HorizontalSpacer(dimens.loadingInterColumn)
-
-  Box(
-    modifier =
-      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
-  )
-
-  HorizontalSpacer(dimens.loadingInterColumn)
-
-  Box(
-    modifier =
-      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
-  )
-
-  HorizontalSpacer(dimens.loadingInterColumn)
-
-  Box(
-    modifier =
-      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
-  )
-
-  HorizontalSpacer(dimens.loadingInterColumn)
-
-  Box(
-    modifier =
-      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
-  )
-
-  HorizontalSpacer(dimens.loadingInterColumn)
-
-  Box(
-    modifier =
-      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
-  )
-
-  HorizontalSpacer(dimens.loadingInterColumn)
-
-  Box(
-    modifier =
-      Modifier.weight(1f).height(ShimmerRowHeight).background(theme.tableText, ShimmerShape)
-  )
-
-  HorizontalSpacer(dimens.loadingInterColumn)
-
-  // Menu button placeholder
-  Box(modifier = Modifier.minimumInteractiveComponentSize())
+    Box(modifier = Modifier.minimumInteractiveComponentSize()) // Checkbox placeholder
+    Box(modifier = shimmerModifier)
+    Box(modifier = shimmerModifier)
+    Box(modifier = shimmerModifier)
+    Box(modifier = shimmerModifier)
+    Box(modifier = shimmerModifier)
+    Box(modifier = shimmerModifier)
+    Box(modifier = Modifier.minimumInteractiveComponentSize()) // Menu button placeholder
+  }
 }
 
 @Composable
@@ -478,7 +438,7 @@ private fun RowScope.TransactionTableItem(
 private fun PreviewListFormat(
   @PreviewParameter(TransactionItemProvider::class) params: ThemedParams<TransactionItemParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     TransactionItem(
       state = params.data.state,
       format = List,
@@ -492,7 +452,7 @@ private fun PreviewListFormat(
 private fun PreviewTableFormat(
   @PreviewParameter(TransactionItemProvider::class) params: ThemedParams<TransactionItemParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     TransactionItem(
       state = params.data.state,
       format = Table,

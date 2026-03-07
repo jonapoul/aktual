@@ -13,18 +13,17 @@ import aktual.budget.reports.ui.charts.THREE_MONTHS
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.ChooseReportTypeViewModel
 import aktual.core.l10n.Strings
-import aktual.core.model.ColorSchemeType
 import aktual.core.model.Token
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorSchemeParameters
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithHazeState
 import aktual.core.ui.aktualHaze
@@ -215,5 +214,5 @@ private val REPORT_HEIGHT = 250.dp
 
 @PortraitPreview
 @Composable
-private fun PreviewLoaded(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewWithColorScheme(type) { ChooseReportTypeScaffold(onAction = {}) }
+private fun PreviewLoaded(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) { ChooseReportTypeScaffold(onAction = {}) }

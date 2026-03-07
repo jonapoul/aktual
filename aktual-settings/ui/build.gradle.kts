@@ -9,6 +9,7 @@ optIn(EXPERIMENTAL_MATERIAL_3)
 kotlin {
   commonMainDependencies {
     api(project(":aktual-core:model"))
+    api(project(":aktual-core:theme"))
     api(project(":aktual-core:ui"))
     api(project(":aktual-settings:vm"))
     implementation(project(":aktual-core:l10n"))

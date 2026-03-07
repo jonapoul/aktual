@@ -10,12 +10,12 @@ import aktual.core.icons.Delete
 import aktual.core.icons.Edit
 import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
 import aktual.core.ui.LandscapePreview
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import androidx.compose.foundation.background
@@ -108,7 +108,7 @@ private fun ReportDropDownMenu(
 private fun PreviewReportDashboardItem(
   @PreviewParameter(ReportDashboardItemProvider::class) params: ThemedParams<ReportDashboardItem>
 ) =
-  PreviewWithColorScheme(schemeType = params.type) {
+  PreviewWithColorScheme(theme = params.theme) {
     ReportDashboardItem(item = params.data, onAction = {})
   }
 

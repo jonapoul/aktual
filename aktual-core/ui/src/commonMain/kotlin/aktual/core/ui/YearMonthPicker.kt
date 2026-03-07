@@ -3,7 +3,8 @@
 package aktual.core.ui
 
 import aktual.core.l10n.Strings
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.padding
@@ -153,10 +154,8 @@ private fun <T : Comparable<T>> YearMonthRange.rangeValues(
 
 @Preview
 @Composable
-private fun PreviewYearMonthPicker(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewYearMonthPicker(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     YearMonthPicker(
       modifier = Modifier.padding(4.dp),
       value = YearMonth(2025, Month.FEBRUARY),
@@ -171,10 +170,8 @@ private fun PreviewYearMonthPicker(
 
 @Preview
 @Composable
-private fun PreviewDialogContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewDialogContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     PickDateDialogContent(
       value = YearMonth(2025, Month.FEBRUARY),
       range =
@@ -189,10 +186,8 @@ private fun PreviewDialogContent(
 
 @Preview
 @Composable
-private fun PreviewDialogContentOutOfRange(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewDialogContentOutOfRange(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     PickDateDialogContent(
       value = YearMonth(2025, Month.AUGUST),
       range =

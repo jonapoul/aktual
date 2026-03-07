@@ -16,11 +16,11 @@ private fun PreviewAktualIcons(@PreviewParameter(AktualIconsProvider::class) ico
     Icon(imageVector = icon, contentDescription = null, tint = Color.White)
   }
 
-private class AktualIconsProvider : CollectionPreviewParameterProvider<ImageVector>(materialIcons) {
-  override fun getDisplayName(index: Int) = materialIcons[index].name
+private class AktualIconsProvider : CollectionPreviewParameterProvider<ImageVector>(aktualIcons) {
+  override fun getDisplayName(index: Int) = aktualIcons[index].name.removePrefix("Aktual.")
 }
 
-private val materialIcons =
+private val aktualIcons =
   with(AktualIcons) {
     listOf(
       ArrowThickDown,
@@ -47,24 +47,28 @@ private fun PreviewMaterial(@PreviewParameter(MaterialIconsProvider::class) icon
     Icon(imageVector = icon, contentDescription = null, tint = Color.White)
   }
 
-private class MaterialIconsProvider : CollectionPreviewParameterProvider<ImageVector>(aktualIcons) {
-  override fun getDisplayName(index: Int) = aktualIcons[index].name
+private class MaterialIconsProvider :
+  CollectionPreviewParameterProvider<ImageVector>(materialIcons) {
+  override fun getDisplayName(index: Int) = materialIcons[index].name.removePrefix("Material.")
 }
 
-private val aktualIcons =
+private val materialIcons =
   with(MaterialIcons) {
     listOf(
       Add,
       Apps,
       ArrowBack,
+      ArrowRight,
       BarChart,
       Block,
+      Brush,
       Brightness2,
       Brightness3,
       CalendarToday,
       Check,
       Clear,
       Cloud,
+      DarkMode,
       Delete,
       DeleteForever,
       Edit,
@@ -79,6 +83,7 @@ private val aktualIcons =
       SearchOff,
       Settings,
       Sync,
+      ThemeRoutine,
       Timer,
       Visibility,
       VisibilityOff,
