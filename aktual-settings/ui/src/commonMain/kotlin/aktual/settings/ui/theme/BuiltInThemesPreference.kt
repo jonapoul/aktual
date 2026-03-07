@@ -15,6 +15,7 @@ import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.disabledIf
+import aktual.core.ui.radioButton
 import aktual.settings.ui.BasicPreferenceItem
 import aktual.settings.ui.NotClickable
 import androidx.compose.foundation.background
@@ -115,6 +116,7 @@ private fun BuiltInThemeItem(
         enabled = enabled,
         selected = isSelected,
         onClick = null,
+        colors = theme.radioButton(),
       )
 
       Text(

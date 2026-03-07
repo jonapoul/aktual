@@ -20,6 +20,7 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.disabledIf
 import aktual.core.ui.isTablet
+import aktual.core.ui.radioButton
 import aktual.settings.ui.BasicPreferenceItem
 import aktual.settings.ui.NotClickable
 import aktual.settings.vm.theme.CatalogItem
@@ -235,6 +236,7 @@ private fun RowScope.CatalogLoadedItemTablet(
       enabled = enabled,
       selected = isSelected,
       onClick = null,
+      colors = theme.radioButton(),
     )
 
     Column(modifier = Modifier.weight(1f)) {
