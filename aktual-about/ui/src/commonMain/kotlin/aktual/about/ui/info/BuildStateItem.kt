@@ -3,13 +3,12 @@ package aktual.about.ui.info
 import aktual.core.icons.Info
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.Numbers
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ColorSchemeParameters
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -77,10 +76,8 @@ private val ItemHeight = 50.dp
 
 @Preview
 @Composable
-private fun PreviewRegularItem(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewRegularItem(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     BuildStateItem(
       icon = MaterialIcons.Info,
       title = "Info",
@@ -91,10 +88,8 @@ private fun PreviewRegularItem(
 
 @Preview
 @Composable
-private fun PreviewClickableItem(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewClickableItem(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     BuildStateItem(
       icon = MaterialIcons.Numbers,
       title = "Info",

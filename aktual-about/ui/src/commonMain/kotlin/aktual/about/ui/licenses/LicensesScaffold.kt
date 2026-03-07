@@ -9,18 +9,17 @@ import aktual.core.icons.Search
 import aktual.core.icons.Warning
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
-import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.Dimens
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TextField
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithHazeState
 import aktual.core.ui.keyboardFocusRequester
@@ -248,10 +247,8 @@ private fun ErrorContent(
 
 @PortraitPreview
 @Composable
-private fun PreviewNoneFound(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewNoneFound(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     LicensesScaffold(
       state = LicensesState.NoneFound,
       searchBarState = SearchBarState.Gone,
@@ -261,8 +258,8 @@ private fun PreviewNoneFound(
 
 @PortraitPreview
 @Composable
-private fun PreviewLoading(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewWithColorScheme(type) {
+private fun PreviewLoading(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     LicensesScaffold(
       state = LicensesState.Loading,
       searchBarState = SearchBarState.Gone,
@@ -272,8 +269,8 @@ private fun PreviewLoading(@PreviewParameter(ColorSchemeParameters::class) type:
 
 @PortraitPreview
 @Composable
-private fun PreviewLoaded(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewWithColorScheme(type) {
+private fun PreviewLoaded(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     LicensesScaffold(
       state =
         LicensesState.Loaded(
@@ -287,8 +284,8 @@ private fun PreviewLoaded(@PreviewParameter(ColorSchemeParameters::class) type: 
 
 @PortraitPreview
 @Composable
-private fun PreviewError(@PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType) =
-  PreviewWithColorScheme(type) {
+private fun PreviewError(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     LicensesScaffold(
       state =
         LicensesState.Error(

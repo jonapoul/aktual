@@ -8,7 +8,7 @@ import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.MainScope
 
 @BindingContainer
 @ContributesTo(AppScope::class)
@@ -17,5 +17,5 @@ object CoroutineContainer {
   @SingleIn(AppScope::class)
   fun contexts(): CoroutineContexts = DefaultCoroutineContexts()
 
-  @Provides @SingleIn(AppScope::class) fun scope(): CoroutineScope = CoroutineScope(SupervisorJob())
+  @Provides @SingleIn(AppScope::class) fun scope(): CoroutineScope = MainScope()
 }

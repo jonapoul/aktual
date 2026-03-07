@@ -10,7 +10,8 @@ import aktual.core.l10n.inter_medium
 import aktual.core.l10n.inter_regular
 import aktual.core.l10n.inter_semibold
 import aktual.core.l10n.inter_thin
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -97,10 +98,8 @@ private fun FontFamily.textStyle(
 
 @Preview(widthDp = 1200)
 @Composable
-private fun PreviewTypography(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewTypography(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     Column {
       for ((name, style) in styles()) {
         Row(

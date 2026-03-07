@@ -2,7 +2,8 @@
 
 package aktual.core.ui
 
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
@@ -127,10 +128,9 @@ fun DialogContent(
 @Preview
 @Composable
 private fun PreviewExampleContentWithButtons(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+  @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(type) {
-    val theme = LocalTheme.current
+  PreviewWithColorScheme(theme) {
     DialogContent(
       title = "Hello world",
       buttons = {
@@ -151,9 +151,9 @@ private fun PreviewExampleContentWithButtons(
 @Preview
 @Composable
 private fun PreviewExampleContentWithoutButtons(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
+  @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(type) {
+  PreviewWithColorScheme(theme) {
     DialogContent(
       title = "Hello world",
       buttons = null,

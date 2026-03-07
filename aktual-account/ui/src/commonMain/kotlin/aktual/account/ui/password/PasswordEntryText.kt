@@ -51,7 +51,7 @@ internal fun PasswordEntryText(
 private fun PreviewPasswordEntryText(
   @PreviewParameter(PasswordEntryProvider::class) params: ThemedParams<PasswordEntryParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     PasswordEntryText(
       password = params.data.password,
       placeholderText = "Password",

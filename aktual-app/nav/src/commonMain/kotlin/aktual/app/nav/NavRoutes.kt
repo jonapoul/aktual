@@ -3,6 +3,7 @@ package aktual.app.nav
 import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetId
 import aktual.core.model.Token
+import aktual.core.theme.Theme
 import androidx.compose.runtime.Immutable
 import java.io.Serializable as JSerializable
 import kotlinx.serialization.Serializable
@@ -22,6 +23,10 @@ import kotlinx.serialization.Serializable
 @Immutable @Serializable data object ServerUrlNavRoute
 
 @Immutable @Serializable data object SettingsNavRoute
+
+@Immutable @Serializable data object ThemeSettingsNavRoute
+
+@Immutable @Serializable data class InspectThemeNavRoute(val id: Theme.Id) : JSerializable
 
 @Immutable
 @Serializable

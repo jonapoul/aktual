@@ -9,9 +9,6 @@ plugins { id("aktual.module.di") }
 
 kotlin {
   commonMainDependencies {
-    api(libs.alakazam.kotlin)
-    api(libs.androidx.lifecycle.viewmodel.core)
-    api(libs.metrox.viewmodel)
     api(libs.preferences.core)
     api(project(":aktual-about:di"))
     api(project(":aktual-budget:data-di"))
@@ -20,8 +17,6 @@ kotlin {
     api(project(":aktual-core:model"))
     api(project(":aktual-core:prefs:di"))
     api(project(":aktual-core:theme:di"))
-    implementation(libs.kotlinx.serialization.json)
-    implementation(libs.ktor.core)
   }
 }
 

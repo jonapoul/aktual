@@ -2,17 +2,21 @@ package aktual.settings.ui
 
 import aktual.core.icons.Info
 import aktual.core.icons.MaterialIcons
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.aktualHaze
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -38,9 +42,11 @@ internal fun BasicPreferenceItem(
   icon: ImageVector?,
   clickability: Clickability,
   modifier: Modifier = Modifier,
+  enabled: Boolean = true,
+  theme: Theme = LocalTheme.current,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  rightContent: (@Composable () -> Unit)? = null,
-  bottomContent: (@Composable () -> Unit)? = null,
+  rightContent: (@Composable RowScope.() -> Unit)? = null,
+  bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
   val clickableModifier =
     when (clickability) {
@@ -50,13 +56,20 @@ internal fun BasicPreferenceItem(
         Modifier.clickable(
           interactionSource = interactionSource,
           indication = ripple(),
-          enabled = clickability.enabled,
+          enabled = enabled && clickability.enabled,
           onClick = clickability.onClick,
         )
     }
 
+  val contentColor = if (enabled) theme.pageText else theme.pageTextSubdued
+
   Row(
-    modifier = modifier.clip(CardShape).aktualHaze().padding(5.dp) then clickableModifier,
+    modifier =
+      modifier
+        .clip(CardShape)
+        .background(theme.cardBackground)
+        .then(clickableModifier)
+        .padding(5.dp),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -65,6 +78,7 @@ internal fun BasicPreferenceItem(
         modifier = Modifier.size(50.dp).padding(10.dp),
         imageVector = icon,
         contentDescription = title,
+        tint = contentColor,
       )
     }
 
@@ -78,6 +92,7 @@ internal fun BasicPreferenceItem(
           fontWeight = FontWeight.Bold,
           textAlign = TextAlign.Start,
           style = AktualTypography.bodyLarge,
+          color = contentColor,
         )
 
         if (subtitle != null) {
@@ -86,6 +101,7 @@ internal fun BasicPreferenceItem(
             fontWeight = FontWeight.Light,
             textAlign = TextAlign.Start,
             style = AktualTypography.bodyMedium,
+            color = if (enabled) theme.pageTextLight else theme.pageTextSubdued,
           )
         }
       }
@@ -107,12 +123,13 @@ private fun PreviewBasicPreferenceItem(
   @PreviewParameter(BasicPreferenceItemProvider::class)
   params: ThemedParams<BasicPreferenceItemParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     BasicPreferenceItem(
       title = params.data.title,
       subtitle = params.data.subtitle,
       icon = params.data.icon,
       clickability = Clickable {},
+      enabled = params.data.enabled,
     )
   }
 
@@ -120,6 +137,7 @@ private data class BasicPreferenceItemParams(
   val title: String,
   val subtitle: String?,
   val icon: ImageVector?,
+  val enabled: Boolean = true,
 )
 
 private class BasicPreferenceItemProvider :
@@ -134,5 +152,11 @@ private class BasicPreferenceItemProvider :
       title = "This one has no subtitle and no icon",
       subtitle = null,
       icon = null,
+    ),
+    BasicPreferenceItemParams(
+      title = "Disabled preference",
+      subtitle = "This item is disabled and should appear subdued",
+      icon = MaterialIcons.Info,
+      enabled = false,
     ),
   )

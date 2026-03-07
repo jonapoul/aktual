@@ -1,7 +1,6 @@
 package aktual.core.prefs
 
 import aktual.core.model.Protocol
-import aktual.core.model.RegularColorSchemeType
 import aktual.core.model.ServerUrl
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
@@ -49,32 +48,6 @@ class AppGlobalPreferencesTest {
 
         // Then
         assertThatNextEmissionIsEqualTo(null)
-        cancelAndIgnoreRemainingEvents()
-      }
-    }
-  }
-
-  @Test
-  fun `Colour scheme types`() = runTest {
-    before()
-    with(preferences.regularColorScheme) {
-      asFlow().test {
-        // Given
-        assertThatNextEmissionIsEqualTo(RegularColorSchemeType.System)
-
-        set(Light)
-        assertThatNextEmissionIsEqualTo(Light)
-
-        set(RegularColorSchemeType.System)
-        assertThatNextEmissionIsEqualTo(RegularColorSchemeType.System)
-
-        set(Dark)
-        assertThatNextEmissionIsEqualTo(Dark)
-
-        deleteAndCommit()
-        assertThatNextEmissionIsEqualTo(RegularColorSchemeType.System)
-
-        expectNoEvents()
         cancelAndIgnoreRemainingEvents()
       }
     }

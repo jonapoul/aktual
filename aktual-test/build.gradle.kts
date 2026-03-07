@@ -10,6 +10,7 @@ kotlin {
     api(libs.kotlinx.coroutines.core)
     api(libs.logcat)
     api(libs.okio)
+    api(libs.preferences.core)
     api(libs.test.alakazam)
     api(libs.test.assertk)
     api(libs.test.burst)

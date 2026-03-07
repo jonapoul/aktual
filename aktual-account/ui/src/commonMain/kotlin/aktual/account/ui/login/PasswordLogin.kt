@@ -2,11 +2,11 @@ package aktual.account.ui.login
 
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
-import aktual.core.ui.LocalTheme
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.TextField
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
@@ -83,7 +83,7 @@ internal fun PasswordLogin(
 private fun PreviewPasswordLogin(
   @PreviewParameter(PasswordLoginProvider::class) params: ThemedParams<PasswordLoginParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     PasswordLogin(isLoading = false, enteredPassword = Password.Dummy, onAction = {})
   }
 

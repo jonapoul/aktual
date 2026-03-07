@@ -8,7 +8,7 @@ import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.WithCompositionLocals
-import aktual.core.ui.chooseSchemeType
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
@@ -29,6 +29,8 @@ import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
 
+private const val TAG = "Main"
+
 fun main() {
   val graph = createGraph<JvmAppGraph>()
 
@@ -40,8 +42,8 @@ fun main() {
     loggers += KermitFileLogger(logStorage, minPriority)
   }
 
-  logcat.i { "App started" }
-  logcat.d { "buildConfig = ${graph.buildConfig}" }
+  logcat.i(TAG) { "App started" }
+  logcat.d(TAG) { "buildConfig = ${graph.buildConfig}" }
 
   val viewModelStoreOwner = JvmViewModelStoreOwner()
   composeApp(graph, viewModelStoreOwner)
@@ -103,30 +105,29 @@ private fun WindowContents(
     LocalViewModelStoreOwner provides viewModelStoreOwner,
     LocalMetroViewModelFactory provides factory,
   ) {
-    val regular by viewModel.regularSchemeType.collectAsStateWithLifecycle()
-    val darkScheme by viewModel.darkSchemeType.collectAsStateWithLifecycle()
+    val theme by viewModel.theme(isSystemInDarkTheme()).collectAsStateWithLifecycle(null)
     val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
     val numberFormat by viewModel.numberFormat.collectAsStateWithLifecycle()
     val hideFraction by viewModel.hideFraction.collectAsStateWithLifecycle()
     val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
-    val colorSchemeType = chooseSchemeType(regular, darkScheme)
 
-    WithCompositionLocals(
-      isPrivacyEnabled = isPrivacyEnabled,
-      format = numberFormat,
-      hideFraction = hideFraction,
-    ) {
-      AktualTheme(colorSchemeType) {
-        AktualAppContent(
-          navController = navController,
-          isPrivacyEnabled = isPrivacyEnabled,
-          numberFormat = numberFormat,
-          hideFraction = hideFraction,
-          colorSchemeType = colorSchemeType,
-          isServerUrlSet = viewModel.isServerUrlSet,
-          token = viewModel.token,
-          bottomBarState = bottomBarState,
-        )
+    theme?.let { t ->
+      WithCompositionLocals(
+        isPrivacyEnabled = isPrivacyEnabled,
+        format = numberFormat,
+        hideFraction = hideFraction,
+      ) {
+        AktualTheme(t) {
+          AktualAppContent(
+            navController = navController,
+            isPrivacyEnabled = isPrivacyEnabled,
+            numberFormat = numberFormat,
+            hideFraction = hideFraction,
+            isServerUrlSet = viewModel.isServerUrlSet,
+            token = viewModel.token,
+            bottomBarState = bottomBarState,
+          )
+        }
       }
     }
   }

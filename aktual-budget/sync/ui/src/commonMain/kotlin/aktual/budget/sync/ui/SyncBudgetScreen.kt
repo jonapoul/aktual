@@ -14,12 +14,12 @@ import aktual.core.model.Password
 import aktual.core.model.Percent
 import aktual.core.model.Token
 import aktual.core.model.percent
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BackHandler
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
@@ -285,7 +285,7 @@ private fun PreviewSyncBudgetScaffold(
   @PreviewParameter(SyncBudgetScaffoldProvider::class)
   params: ThemedParams<SyncBudgetScaffoldParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     SyncBudgetScaffold(
       onAction = {},
       passwordState = params.data.passwordState,

@@ -1,18 +1,17 @@
 package aktual.about.ui.info
 
 import aktual.about.vm.BuildState
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
-import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.LandscapePreview
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.WithHazeState
 import aktual.core.ui.aktualHaze
@@ -94,9 +93,7 @@ private fun InfoScreenContent(
 @LandscapePreview
 @TabletPreview
 @Composable
-private fun PreviewInfoScaffold(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) =
-  PreviewWithColorScheme(type) {
+private fun PreviewInfoScaffold(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
     InfoScaffold(modifier = Modifier.fillMaxSize(), buildState = PreviewBuildState, onAction = {})
   }

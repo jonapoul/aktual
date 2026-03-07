@@ -4,11 +4,11 @@ import aktual.budget.model.Amount
 import aktual.budget.model.DateRangeType
 import aktual.budget.model.NumberFormatConfig
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
-import aktual.core.ui.LocalTheme
-import aktual.core.ui.Theme
 import aktual.core.ui.stringShort
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Column

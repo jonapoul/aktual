@@ -5,15 +5,16 @@ plugins { id("aktual.module.di") }
 
 kotlin {
   commonMainDependencies {
+    api(libs.ktor.core)
+    api(libs.metrox.viewmodel)
     api(project(":aktual-budget:data"))
     api(project(":aktual-budget:model"))
-    api(libs.metrox.viewmodel)
+    implementation(libs.ktor.cio)
   }
 
   commonTestDependencies {
-    implementation(project(":aktual-about:di"))
-    implementation(project(":aktual-app:di"))
     implementation(project(":aktual-budget:data-di"))
+    implementation(project(":aktual-core:prefs:di"))
     implementation(project(":aktual-test"))
   }
 }

@@ -1,13 +1,12 @@
 package aktual.about.ui.info
 
 import aktual.core.l10n.Strings
-import aktual.core.model.ColorSchemeType
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.AnimatedLoading
-import aktual.core.ui.ColorSchemeParameters
 import aktual.core.ui.DialogContent
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
+import aktual.core.ui.ThemeParameters
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -70,6 +69,5 @@ internal fun CheckUpdatesLoadingDialogContent(
 
 @Preview
 @Composable
-private fun PreviewCheckUpdatesContent(
-  @PreviewParameter(ColorSchemeParameters::class) type: ColorSchemeType
-) = PreviewWithColorScheme(type) { CheckUpdatesLoadingDialogContent(onCancel = {}) }
+private fun PreviewCheckUpdatesContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) { CheckUpdatesLoadingDialogContent(onCancel = {}) }

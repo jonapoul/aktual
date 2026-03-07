@@ -352,6 +352,10 @@ fun `test state changes`() = runTest {
 
 **KSP** is used for generating API requests, implemented in the `:aktual-codegen:ksp` module as a KSP processor. This generates implementations for creating KSP requests.
 
+### Localization (L10n)
+
+See the [aktual-core:l10n](aktual-core/l10n/CLAUDE.md) module for details.
+
 ### Icons
 
 Icons are stored in the `:aktual-core:icons` module at `aktual-core/icons/src/commonMain/kotlin/aktual/core/icons/`. There are two types of icons:

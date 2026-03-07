@@ -19,6 +19,8 @@
       <name>java.time.format.TextStyle</name>
       <name>java.util.concurrent.Flow</name>
       <name>javax.annotation.concurrent.Immutable</name>
+      <name>org.gradle.internal.impldep.org.apache.maven.artifact.repository.metadata.Plugin</name>
+      <name>org.gradle.internal.impldep.org.apache.maven.model.Plugin</name>
       <name>org.intellij.lang.annotations.Flow</name>
       <name>org.threeten.bp.format.TextStyle</name>
       <name>org.w3c.dom.Text</name>

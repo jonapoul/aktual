@@ -12,7 +12,9 @@ import aktual.budget.sync.ui.SyncBudgetScreen
 import aktual.budget.transactions.ui.TransactionsScreen
 import aktual.core.model.Token
 import aktual.metrics.ui.MetricsScreen
-import aktual.settings.ui.SettingsScreen
+import aktual.settings.ui.inspect.InspectThemeScreen
+import aktual.settings.ui.root.SettingsScreen
+import aktual.settings.ui.theme.ThemeSettingsScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -65,6 +67,12 @@ fun AktualNavHost(
     composable<ServerUrlNavRoute> { ServerUrlScreen(ServerUrlNavigator(nav)) }
 
     composable<SettingsNavRoute> { SettingsScreen(SettingsNavigator(nav)) }
+
+    composable<ThemeSettingsNavRoute> { ThemeSettingsScreen(ThemeSettingsNavigator(nav)) }
+
+    composableWithArg<InspectThemeNavRoute>(mapOf(ThemeIdType)) { route, _ ->
+      InspectThemeScreen(InspectThemeNavigator(nav), route.id)
+    }
 
     composableWithArg<SyncBudgetsNavRoute>(mapOf(BudgetIdType, TokenType)) { route, _ ->
       SyncBudgetScreen(SyncBudgetNavigator(nav), route.budgetId, route.token)

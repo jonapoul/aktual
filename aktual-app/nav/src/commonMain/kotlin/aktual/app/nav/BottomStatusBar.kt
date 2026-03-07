@@ -5,10 +5,10 @@ import aktual.core.icons.CloudCheck
 import aktual.core.icons.CloudWarning
 import aktual.core.l10n.Strings
 import aktual.core.model.PingState
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.BottomBarState
-import aktual.core.ui.LocalTheme
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.Theme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import alakazam.compose.HorizontalSpacer
@@ -117,7 +117,7 @@ private fun loadedString(budgetName: String): AnnotatedString = buildAnnotatedSt
 private fun PreviewBottomBar(
   @PreviewParameter(BottomBarProvider::class) params: ThemedParams<BottomBarParams>
 ) =
-  PreviewWithColorScheme(params.type) {
+  PreviewWithColorScheme(params.theme) {
     BottomStatusBar(
       state =
         BottomBarState.Visible(pingState = params.data.state, budgetName = params.data.budgetName),

@@ -8,6 +8,7 @@ import aktual.core.connection.ServerVersionFetcher
 import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.PingStateHolder
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.theme.ThemeResolver
 import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.AppScope
@@ -30,6 +31,7 @@ class AktualDesktopViewModel(
   files: BudgetFiles,
   budgetComponents: BudgetGraphHolder,
   preferences: AppGlobalPreferences,
+  themeResolver: ThemeResolver,
 ) :
   RootViewModel(
     appScope = appScope,
@@ -41,4 +43,5 @@ class AktualDesktopViewModel(
     files = files,
     budgetComponents = budgetComponents,
     preferences = preferences,
+    themeResolver = themeResolver,
   )
