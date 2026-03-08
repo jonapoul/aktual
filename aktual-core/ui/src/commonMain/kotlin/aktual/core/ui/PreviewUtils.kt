@@ -9,8 +9,6 @@ import aktual.core.theme.Theme
 import androidx.compose.foundation.background
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.AndroidUiModes
 import androidx.compose.ui.tooling.preview.Devices
@@ -99,8 +97,6 @@ fun PreviewWithColorScheme(
 ) =
   WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
     AktualTheme(theme) {
-      Surface(modifier = modifier.background(theme.pageBackground)) {
-        content()
-      }
+      Surface(modifier = modifier.background(theme.pageBackground)) { content() }
     }
   }
