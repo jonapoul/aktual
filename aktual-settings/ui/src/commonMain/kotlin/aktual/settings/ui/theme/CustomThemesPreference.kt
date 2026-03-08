@@ -18,7 +18,7 @@ import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.disabledIf
-import aktual.core.ui.isTablet
+import aktual.core.ui.isMobile
 import aktual.core.ui.radioButton
 import aktual.settings.ui.BasicPreferenceItem
 import aktual.settings.vm.theme.CatalogItem
@@ -184,7 +184,7 @@ private fun CatalogLoadedItem(
         theme.buttonNormalBackground.disabledIf(enabled || !isSelected)
       }
 
-    if (isTablet()) {
+    if (!isMobile()) {
       CatalogLoadedItemTablet(
         item = item,
         enabled = enabled,

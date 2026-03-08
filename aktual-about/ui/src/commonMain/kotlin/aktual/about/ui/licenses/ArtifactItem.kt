@@ -44,7 +44,7 @@ internal fun ArtifactItem(
     modifier =
       modifier
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
-        .background(theme.pillBackground, CardShape)
+        .background(theme.pillBackgroundLight, CardShape)
         .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
         .padding(Dimens.Large),
     verticalArrangement = Arrangement.Top,

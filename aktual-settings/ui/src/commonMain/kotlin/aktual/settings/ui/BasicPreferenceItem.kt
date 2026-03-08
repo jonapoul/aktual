@@ -52,7 +52,7 @@ internal fun BasicPreferenceItem(
     modifier =
       modifier
         .clip(CardShape)
-        .background(theme.pillBackground, CardShape)
+        .background(theme.pillBackgroundLight, CardShape)
         .border(Dp.Hairline, theme.pillBorderDark, CardShape)
         .clickable(enabled && onClick != null) { onClick?.invoke() }
         .padding(5.dp),
