@@ -1,6 +1,7 @@
 package aktual.gradle
 
 import org.gradle.api.Project
+import org.gradle.api.configuration.BuildFeatures
 
 const val EXPERIMENTAL_MATERIAL_3 = "androidx.compose.material3.ExperimentalMaterial3Api"
 
@@ -11,3 +12,5 @@ fun Project.optIn(vararg classes: String) = optIn(classes.toList())
 fun Project.optIn(classes: Collection<String>) {
   kotlin { compilerOptions.freeCompilerArgs.addAll(classes.map { name -> "-opt-in=$name" }) }
 }
+
+fun BuildFeatures.isIsolatedProjectsEnabled(): Boolean = isolatedProjects.active.orElse(false).get()
