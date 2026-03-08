@@ -26,6 +26,7 @@ import aktual.settings.ui.NotClickable
 import aktual.settings.vm.theme.CatalogItem
 import aktual.settings.vm.theme.CatalogState
 import aktual.settings.vm.theme.CustomThemeState
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -176,7 +177,7 @@ private fun CatalogLoadedItem(
   theme: Theme = LocalTheme.current,
 ) {
   Row(
-    modifier = Modifier.height(IntrinsicSize.Min),
+    modifier = Modifier.height(IntrinsicSize.Min).padding(4.dp),
     horizontalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     val isSelected = selectedId == item.id
@@ -308,6 +309,8 @@ private fun RowScope.CatalogLoadedItemMobile(
         style = AktualTypography.labelMedium,
         color = theme.pageTextSubdued.disabledIf(!enabled),
       )
+
+      VerticalSpacer(4.dp)
 
       Row(horizontalArrangement = Arrangement.spacedBy(PREVIEW_SPACING)) {
         FlatPreviewColor(summary = item.summary, index = 0)
