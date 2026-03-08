@@ -8,12 +8,10 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.switch
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Switch
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,7 +28,6 @@ internal fun BooleanPreferenceItem(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   theme: Theme = LocalTheme.current,
-  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
   BasicPreferenceItem(
@@ -40,7 +37,6 @@ internal fun BooleanPreferenceItem(
     icon = icon,
     enabled = enabled,
     onClick = { onValueChange(!value) },
-    interactionSource = interactionSource,
     bottomContent = bottomContent,
     rightContent = {
       Switch(
