@@ -131,7 +131,6 @@ private fun MetricsContent(
           message = Strings.metricsDisconnected,
           onAction = onAction,
           theme = theme,
-          modifier = modifier,
         )
       }
 
@@ -140,7 +139,6 @@ private fun MetricsContent(
           message = state.cause,
           onAction = onAction,
           theme = theme,
-          modifier = modifier,
         )
       }
 
