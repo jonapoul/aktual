@@ -175,7 +175,7 @@ private fun CatalogLoadedItem(
   theme: Theme = LocalTheme.current,
 ) {
   Row(
-    modifier = Modifier.height(IntrinsicSize.Min).padding(4.dp),
+    modifier = Modifier.height(IntrinsicSize.Min),
     horizontalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     val isSelected = selectedId == item.id
