@@ -37,4 +37,3 @@ kotlin {
     api(libs.jetbrains.ui)
   }
 }
-

@@ -1,5 +1,7 @@
 package aktual.settings.ui.inspect
 
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.OpenInNew
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
@@ -12,8 +14,6 @@ import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.OpenInNew
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
@@ -223,7 +223,7 @@ private class InspectThemePreviewProvider :
   ThemedParameterProvider<InspectThemeState>(
     InspectThemeState.NotFound(id = Theme.Id("username/repo")),
     InspectThemeState.Loading,
-    InspectThemeState.Loaded(id = LightTheme.id, isCustom = false, properties = LightTheme.properties()),
-    InspectThemeState.Loaded(id = DarkTheme.id, isCustom = false, properties = DarkTheme.properties()),
-    InspectThemeState.Loaded(id = MidnightTheme.id, isCustom = true, properties = MidnightTheme.properties()),
+    InspectThemeState.Loaded(LightTheme.id, false, LightTheme.properties()),
+    InspectThemeState.Loaded(DarkTheme.id, false, DarkTheme.properties()),
+    InspectThemeState.Loaded(MidnightTheme.id, true, MidnightTheme.properties()),
   )
