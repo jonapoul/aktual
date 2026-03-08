@@ -17,6 +17,10 @@ catalog {
   generateAtSync = true
 }
 
+val catalog = tasks.named("catalog")
+
+tasks.withType(KotlinCompile::class).configureEach { dependsOn(catalog) }
+
 compose.resources {
   generateResClass = always
   nameOfResClass = "Res"
@@ -34,5 +38,3 @@ kotlin {
   }
 }
 
-val catalog = tasks.named("catalog")
-tasks.withType(KotlinCompile::class).configureEach { dependsOn(catalog) }
