@@ -6,5 +6,7 @@ import androidx.compose.runtime.Immutable
 internal sealed interface InspectThemeAction {
   data object NavBack : InspectThemeAction
 
+  data object OpenRepo : InspectThemeAction
+
   data object Retry : InspectThemeAction
 }

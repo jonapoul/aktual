@@ -1,5 +1,7 @@
 package aktual.settings.vm.inspect
 
+import aktual.core.model.UrlOpener
+import aktual.core.theme.CustomTheme
 import aktual.core.theme.Theme
 import aktual.core.theme.ThemeResolver
 import aktual.settings.vm.theme.properties
@@ -23,12 +25,17 @@ import logcat.logcat
 class InspectThemeViewModel(
   @Assisted private val themeId: Theme.Id,
   private val themeResolver: ThemeResolver,
+  private val urlOpener: UrlOpener,
 ) : ViewModel() {
   private val mutableState = MutableStateFlow<InspectThemeState>(InspectThemeState.Loading)
   val state: StateFlow<InspectThemeState> = mutableState.asStateFlow()
 
   init {
     retry()
+  }
+
+  fun openRepo() {
+    urlOpener("https://github.com/${themeId.value}")
   }
 
   fun retry() {
@@ -44,7 +51,8 @@ class InspectThemeViewModel(
       return
     }
 
-    mutableState.update { InspectThemeState.Loaded(themeId, theme.properties()) }
+    val isCustom = theme is CustomTheme
+    mutableState.update { InspectThemeState.Loaded(themeId, isCustom, theme.properties()) }
   }
 
   @AssistedFactory
