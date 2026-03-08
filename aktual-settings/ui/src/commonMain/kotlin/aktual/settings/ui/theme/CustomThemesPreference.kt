@@ -295,6 +295,7 @@ private fun RowScope.CatalogLoadedItemMobile(
       enabled = enabled,
       selected = isSelected,
       onClick = null,
+      colors = theme.radioButton(),
     )
 
     Column(modifier = Modifier.weight(1f)) {
