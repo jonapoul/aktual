@@ -50,11 +50,7 @@ android {
   packaging.commonConfigure()
 
   packaging {
-    resources.excludes +=
-      setOf(
-        "**/native/Windows/**",
-        "**/native/Mac/**",
-      )
+    resources.excludes += setOf("**/native/Windows/**", "**/native/Mac/**")
 
     jniLibs { useLegacyPackaging = true }
   }
