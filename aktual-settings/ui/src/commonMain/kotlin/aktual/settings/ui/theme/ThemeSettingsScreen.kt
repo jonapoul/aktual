@@ -17,7 +17,7 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.scrollbar
-import aktual.core.ui.topAppBarColors
+import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.BooleanPreference
 import aktual.settings.vm.ListPreference
 import aktual.settings.vm.theme.CatalogState
@@ -76,7 +76,7 @@ private fun ThemeSettingsScaffold(
   Scaffold(
     topBar = {
       TopAppBar(
-        colors = theme.topAppBarColors(),
+        colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(ThemeSettingsAction.NavBack) } },
         title = { Text(Strings.settingsThemeToolbar) },
       )

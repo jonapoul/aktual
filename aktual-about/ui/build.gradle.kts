@@ -11,6 +11,5 @@ kotlin {
     api(project(":aktual-about:vm"))
     api(project(":aktual-core:ui"))
     implementation(project(":aktual-core:l10n"))
-    implementation(libs.haze.core)
   }
 }

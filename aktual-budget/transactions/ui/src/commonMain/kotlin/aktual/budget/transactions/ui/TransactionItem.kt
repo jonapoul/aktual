@@ -18,7 +18,6 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.aktualHaze
 import aktual.core.ui.formattedString
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
@@ -114,7 +113,6 @@ private fun LoadingItem(
         .clip(CardShape)
         .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal)
         .shimmer(shimmer)
-        .aktualHaze()
         .onGloballyPositioned { layoutCoordinates ->
           val position = layoutCoordinates.unclippedBoundsInWindow()
           shimmer.updateBounds(position)
@@ -199,7 +197,6 @@ private fun FailedItem(
         .fillMaxWidth()
         .height(LocalMinimumInteractiveComponentSize.current)
         .clip(CardShape)
-        .aktualHaze()
         .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -234,7 +231,6 @@ private fun LoadedItem(
         .fillMaxWidth()
         .height(IntrinsicSize.Min)
         .clip(CardShape)
-        .aktualHaze()
         .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
     verticalAlignment = Alignment.CenterVertically,
   ) {

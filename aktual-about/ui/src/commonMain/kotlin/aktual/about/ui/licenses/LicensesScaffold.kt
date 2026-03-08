@@ -20,8 +20,6 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TextField
 import aktual.core.ui.ThemeParameters
-import aktual.core.ui.WavyBackground
-import aktual.core.ui.WithHazeState
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
@@ -57,8 +55,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -70,22 +66,16 @@ internal fun LicensesScaffold(
 ) {
   val theme = LocalTheme.current
   Scaffold(topBar = { LicensesTopBar(searchBarState, theme, onAction) }) { innerPadding ->
-    Box {
-      val hazeState = remember { HazeState() }
+    Column(modifier = Modifier.padding(innerPadding)) {
+      LicensesSearchInput(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).wrapContentHeight(),
+        searchState = searchBarState,
+        licensesState = state,
+        onAction = onAction,
+        theme = theme,
+      )
 
-      WavyBackground(modifier = Modifier.hazeSource(hazeState))
-
-      Column(modifier = Modifier.padding(innerPadding)) {
-        LicensesSearchInput(
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).wrapContentHeight(),
-          searchState = searchBarState,
-          licensesState = state,
-          onAction = onAction,
-          theme = theme,
-        )
-
-        WithHazeState(hazeState) { Content(state = state, theme = theme, onAction = onAction) }
-      }
+      Content(state = state, theme = theme, onAction = onAction)
     }
   }
 }

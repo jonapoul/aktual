@@ -193,7 +193,7 @@ fun Theme.switch(): SwitchColors =
 fun Theme.radioButton(): RadioButtonColors =
   RadioButtonDefaults.colors(
     selectedColor = checkboxToggleBackgroundSelected,
-    unselectedColor = checkboxToggleBackground,
+    unselectedColor = pageText.disabled,
     disabledSelectedColor = pageText.disabled,
     disabledUnselectedColor = pageText.disabled,
   )

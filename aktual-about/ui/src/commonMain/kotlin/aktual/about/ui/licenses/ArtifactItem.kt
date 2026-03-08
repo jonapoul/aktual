@@ -9,7 +9,6 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.aktualHaze
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -27,7 +26,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,8 +44,7 @@ internal fun ArtifactItem(
     modifier =
       modifier
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
-        .background(Color.Transparent, CardShape)
-        .aktualHaze()
+        .background(theme.pillBackgroundLight, CardShape)
         .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
         .padding(Dimens.Large),
     verticalArrangement = Arrangement.Top,

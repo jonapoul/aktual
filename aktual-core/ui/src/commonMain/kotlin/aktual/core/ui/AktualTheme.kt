@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.LocalShimmerTheme
 import com.valentinilk.shimmer.ShimmerTheme
 import com.valentinilk.shimmer.shimmerSpec
-import dev.chrisbanes.haze.LocalHazeStyle
 
 @Composable
 fun AktualTheme(theme: Theme, content: @Composable () -> Unit) {
@@ -29,7 +28,6 @@ fun AktualTheme(theme: Theme, content: @Composable () -> Unit) {
     LocalTheme provides theme,
     LocalIndication provides ripple(),
     LocalShimmerTheme provides aktualShimmerTheme(theme),
-    LocalHazeStyle provides defaultHazeStyle(theme),
     LocalOverscrollFactory provides null,
   ) {
     SetStatusBarColors(theme = theme)

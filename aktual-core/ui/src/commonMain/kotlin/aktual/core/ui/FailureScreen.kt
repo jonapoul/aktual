@@ -33,16 +33,11 @@ fun FailureScreen(
   onClickRetry: () -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-  includeHaze: Boolean = true,
 ) {
-  val hazeModifier = if (includeHaze) Modifier.aktualHaze() else Modifier
   Box(modifier = modifier.padding(20.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
     Column(
       modifier =
-        Modifier.padding(Dimens.Small)
-          .background(Color.Transparent, CardShape)
-          .then(hazeModifier)
-          .padding(30.dp),
+        Modifier.padding(Dimens.Small).background(Color.Transparent, CardShape).padding(30.dp),
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       Icon(

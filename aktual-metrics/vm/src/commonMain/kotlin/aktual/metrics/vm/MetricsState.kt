@@ -13,6 +13,7 @@ sealed interface MetricsState {
 
   data class Failure(val cause: String) : MetricsState
 
+  @Immutable
   data class Success(val memory: Memory, val uptime: Duration, val lastUpdate: Instant) :
     MetricsState
 }

@@ -13,7 +13,6 @@ kotlin {
     api(project(":aktual-core:icons"))
     api(project(":aktual-core:model"))
     api(project(":aktual-core:theme"))
-    api(libs.haze.core)
     api(libs.kotlinx.datetime)
     api(libs.shimmer)
     implementation(project(":aktual-core:l10n"))
