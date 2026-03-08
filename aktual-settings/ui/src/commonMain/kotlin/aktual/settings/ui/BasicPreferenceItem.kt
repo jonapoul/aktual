@@ -11,7 +11,6 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
@@ -22,9 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
-import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,27 +37,13 @@ internal fun BasicPreferenceItem(
   title: String,
   subtitle: String?,
   icon: ImageVector?,
-  clickability: Clickability,
+  onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   theme: Theme = LocalTheme.current,
-  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   rightContent: (@Composable RowScope.() -> Unit)? = null,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
-  val clickableModifier =
-    when (clickability) {
-      NotClickable -> Modifier
-
-      is Clickable ->
-        Modifier.clickable(
-          interactionSource = interactionSource,
-          indication = ripple(),
-          enabled = enabled && clickability.enabled,
-          onClick = clickability.onClick,
-        )
-    }
-
   val contentColor = if (enabled) theme.pageText else theme.pageTextSubdued
 
   Row(
@@ -68,7 +51,7 @@ internal fun BasicPreferenceItem(
       modifier
         .clip(CardShape)
         .background(theme.cardBackground)
-        .then(clickableModifier)
+        .clickable(enabled && onClick != null) { onClick?.invoke() }
         .padding(5.dp),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
@@ -128,7 +111,7 @@ private fun PreviewBasicPreferenceItem(
       title = params.data.title,
       subtitle = params.data.subtitle,
       icon = params.data.icon,
-      clickability = Clickable {},
+      onClick = {},
       enabled = params.data.enabled,
     )
   }

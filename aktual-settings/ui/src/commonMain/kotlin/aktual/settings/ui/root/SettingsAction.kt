@@ -7,4 +7,6 @@ internal sealed interface SettingsAction {
   data object NavBack : SettingsAction
 
   data object NavToThemeSettings : SettingsAction
+
+  @JvmInline value class SetShowBottomBar(val value: Boolean) : SettingsAction
 }

@@ -1,7 +1,6 @@
 package aktual.settings.ui.theme
 
 import aktual.core.icons.ArrowRight
-import aktual.core.icons.Brush
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
@@ -22,7 +21,6 @@ import aktual.core.ui.disabledIf
 import aktual.core.ui.isTablet
 import aktual.core.ui.radioButton
 import aktual.settings.ui.BasicPreferenceItem
-import aktual.settings.ui.NotClickable
 import aktual.settings.vm.theme.CatalogItem
 import aktual.settings.vm.theme.CatalogState
 import aktual.settings.vm.theme.CustomThemeState
@@ -77,9 +75,9 @@ internal fun CustomThemesPreference(
     modifier = modifier,
     title = Strings.settingsThemeCustomThemes,
     subtitle = null,
-    icon = MaterialIcons.Brush,
+    icon = null,
     enabled = enabled,
-    clickability = NotClickable,
+    onClick = null,
     bottomContent = {
       when (state) {
         CatalogState.Loading -> CatalogLoading()
@@ -177,7 +175,7 @@ private fun CatalogLoadedItem(
   theme: Theme = LocalTheme.current,
 ) {
   Row(
-    modifier = Modifier.height(IntrinsicSize.Min).padding(4.dp),
+    modifier = Modifier.height(IntrinsicSize.Min),
     horizontalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     val isSelected = selectedId == item.id
@@ -208,7 +206,7 @@ private fun CatalogLoadedItem(
       modifier = Modifier.clip(CardShape).fillMaxHeight(),
       imageVector = MaterialIcons.ArrowRight,
       enabled = enabled,
-      onClick = { onAction(ThemeSettingsAction.Inspect(item.id)) },
+      onClick = { onAction(ThemeSettingsAction.InspectTheme(item.id)) },
       contentDescription = Strings.settingsThemePreview(item.summary.name),
     )
   }
@@ -228,7 +226,7 @@ private fun RowScope.CatalogLoadedItemTablet(
       Modifier.fillMaxHeight()
         .weight(1f)
         .background(backgroundColor, CardShape)
-        .clickable(enabled, onClick = { onAction(ThemeSettingsAction.Select(item.id)) }),
+        .clickable(enabled, onClick = { onAction(ThemeSettingsAction.SelectTheme(item.id)) }),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -286,7 +284,7 @@ private fun RowScope.CatalogLoadedItemMobile(
       Modifier.fillMaxHeight()
         .weight(1f)
         .background(backgroundColor, CardShape)
-        .clickable(enabled, onClick = { onAction(ThemeSettingsAction.Select(item.id)) }),
+        .clickable(enabled, onClick = { onAction(ThemeSettingsAction.SelectTheme(item.id)) }),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {

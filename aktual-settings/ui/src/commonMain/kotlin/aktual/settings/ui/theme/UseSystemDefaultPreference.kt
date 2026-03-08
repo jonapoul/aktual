@@ -17,12 +17,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 @Composable
 internal fun UseSystemDefaultPreference(
   preference: BooleanPreference,
+  onAction: (ThemeSettingsAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   BooleanPreferenceItem(
     modifier = modifier.fillMaxWidth(),
     value = preference.value,
-    onValueChange = preference.onValueChange,
+    onValueChange = { value -> onAction(ThemeSettingsAction.SetUseSystemDefault(value)) },
     title = Strings.settingsThemeUseSystem,
     subtitle = null,
     icon = MaterialIcons.ThemeRoutine,
@@ -37,6 +38,7 @@ private fun PreviewUseSystemDefaultPreference(
 ) =
   PreviewWithColorScheme(params.theme) {
     UseSystemDefaultPreference(
-      preference = BooleanPreference(value = params.data, enabled = true, onValueChange = {})
+      preference = BooleanPreference(value = params.data, enabled = true),
+      onAction = {},
     )
   }

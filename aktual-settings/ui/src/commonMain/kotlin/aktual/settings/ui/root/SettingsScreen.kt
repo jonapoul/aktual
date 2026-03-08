@@ -53,6 +53,7 @@ fun SettingsScreen(
       when (action) {
         SettingsAction.NavBack -> nav.back()
         SettingsAction.NavToThemeSettings -> nav.toThemeSettings()
+        is SettingsAction.SetShowBottomBar -> viewModel.showBottomBar(action.value)
       }
     },
   )
@@ -102,7 +103,7 @@ private fun SettingsContent(
     state = listState,
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
-    item { ShowBottomBarPreferenceItem(state.showBottomBar) }
+    item { ShowBottomBarPreferenceItem(state.showBottomBar, onAction) }
 
     item { ThemeSettingsItem(onClick = { onAction(SettingsAction.NavToThemeSettings) }) }
 
@@ -121,6 +122,6 @@ private fun PreviewSettingsScaffold(
 
 private class SettingsScaffoldProvider :
   ThemedParameterProvider<SettingsScreenState>(
-    SettingsScreenState(showBottomBar = BooleanPreference(value = true, onValueChange = {})),
-    SettingsScreenState(showBottomBar = BooleanPreference(value = false, onValueChange = {})),
+    SettingsScreenState(showBottomBar = BooleanPreference(value = true)),
+    SettingsScreenState(showBottomBar = BooleanPreference(value = false)),
   )

@@ -1,7 +1,6 @@
 package aktual.settings.ui.theme
 
 import aktual.core.icons.ArrowRight
-import aktual.core.icons.LightMode
 import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkTheme
@@ -17,7 +16,6 @@ import aktual.core.ui.ThemeParameters
 import aktual.core.ui.disabledIf
 import aktual.core.ui.radioButton
 import aktual.settings.ui.BasicPreferenceItem
-import aktual.settings.ui.NotClickable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -49,9 +47,9 @@ internal fun BuiltInThemesPreference(
     modifier = modifier,
     title = Strings.settingsThemeBuiltIn,
     subtitle = null,
-    icon = MaterialIcons.LightMode,
+    icon = null,
     enabled = enabled,
-    clickability = NotClickable,
+    onClick = null,
     bottomContent = {
       Column(
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -106,7 +104,7 @@ private fun BuiltInThemeItem(
         Modifier.fillMaxHeight().weight(1f).background(backgroundColor, CardShape).clickable(
           enabled
         ) {
-          onAction(ThemeSettingsAction.Select(id))
+          onAction(ThemeSettingsAction.SelectTheme(id))
         },
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       verticalAlignment = Alignment.CenterVertically,
@@ -131,7 +129,7 @@ private fun BuiltInThemeItem(
       modifier = Modifier.clip(CardShape),
       imageVector = MaterialIcons.ArrowRight,
       enabled = enabled,
-      onClick = { onAction(ThemeSettingsAction.Inspect(id)) },
+      onClick = { onAction(ThemeSettingsAction.InspectTheme(id)) },
       contentDescription = Strings.settingsThemePreview(name),
     )
   }
