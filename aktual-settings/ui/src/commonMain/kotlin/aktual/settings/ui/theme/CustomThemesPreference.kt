@@ -1,7 +1,6 @@
 package aktual.settings.ui.theme
 
 import aktual.core.icons.ArrowRight
-import aktual.core.icons.Brush
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
@@ -76,7 +75,7 @@ internal fun CustomThemesPreference(
     modifier = modifier,
     title = Strings.settingsThemeCustomThemes,
     subtitle = null,
-    icon = MaterialIcons.Brush,
+    icon = null,
     enabled = enabled,
     onClick = null,
     bottomContent = {

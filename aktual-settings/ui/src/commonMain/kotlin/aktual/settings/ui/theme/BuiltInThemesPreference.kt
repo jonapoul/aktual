@@ -1,7 +1,6 @@
 package aktual.settings.ui.theme
 
 import aktual.core.icons.ArrowRight
-import aktual.core.icons.LightMode
 import aktual.core.icons.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkTheme
@@ -48,7 +47,7 @@ internal fun BuiltInThemesPreference(
     modifier = modifier,
     title = Strings.settingsThemeBuiltIn,
     subtitle = null,
-    icon = MaterialIcons.LightMode,
+    icon = null,
     enabled = enabled,
     onClick = null,
     bottomContent = {
