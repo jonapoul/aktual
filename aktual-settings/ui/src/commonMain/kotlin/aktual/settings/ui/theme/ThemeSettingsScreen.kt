@@ -100,7 +100,7 @@ private fun ThemeSettingsContent(
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier.fillMaxSize().padding(Dimens.Large).scrollbar(listState),
+    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Large).scrollbar(listState),
     state = listState,
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
