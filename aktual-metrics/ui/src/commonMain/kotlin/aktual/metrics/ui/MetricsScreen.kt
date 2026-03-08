@@ -120,30 +120,22 @@ private fun MetricsContent(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  Box(modifier = modifier.fillMaxSize().padding(Dimens.Large)) {
+  Box(modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Huge)) {
     when (state) {
       MetricsState.Loading -> {
         LoadingContent()
       }
 
       MetricsState.Disconnected -> {
-        FailureContent(
-          message = Strings.metricsDisconnected,
-          onAction = onAction,
-          theme = theme,
-        )
+        FailureContent(Strings.metricsDisconnected, onAction, theme)
       }
 
       is MetricsState.Failure -> {
-        FailureContent(
-          message = state.cause,
-          onAction = onAction,
-          theme = theme,
-        )
+        FailureContent(state.cause, onAction, theme)
       }
 
       is MetricsState.Success -> {
-        SuccessContent(state = state, theme = theme, modifier = modifier)
+        SuccessContent(state, theme)
       }
     }
   }
@@ -183,12 +175,11 @@ private fun SuccessContent(
   modifier: Modifier = Modifier,
 ) {
   Column(
-    modifier = modifier.padding(horizontal = 10.dp).verticalScrollWithBar(),
-    verticalArrangement = Arrangement.spacedBy(Dimens.Large, Alignment.Top),
-    horizontalAlignment = Alignment.Start,
+    modifier = modifier.verticalScrollWithBar(),
+    verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
   ) {
     val dataModifier =
-      Modifier.fillMaxWidth().background(theme.pillBackgroundLight).padding(Dimens.Huge)
+      Modifier.fillMaxWidth().background(theme.pillBackgroundLight).padding(Dimens.VeryLarge)
 
     SuccessContentRow(
       modifier = dataModifier,
@@ -202,26 +193,24 @@ private fun SuccessContent(
       value = formatted(state.uptime),
     )
 
-    Box(modifier = dataModifier) {
-      Column {
-        Text(
-          text = Strings.metricsMemory,
-          fontWeight = FontWeight.Bold,
-          style = AktualTypography.titleLarge,
+    Column(modifier = dataModifier) {
+      Text(
+        text = Strings.metricsMemory,
+        fontWeight = FontWeight.Bold,
+        style = AktualTypography.titleLarge,
+      )
+
+      VerticalSpacer(10.dp)
+
+      with(state.memory) {
+        SuccessContentRow(title = Strings.metricsMemoryRss, value = rss.toString())
+        SuccessContentRow(title = Strings.metricsMemoryHeapTotal, value = heapTotal.toString())
+        SuccessContentRow(title = Strings.metricsMemoryHeapUsed, value = heapUsed.toString())
+        SuccessContentRow(title = Strings.metricsMemoryExternal, value = external.toString())
+        SuccessContentRow(
+          title = Strings.metricsMemoryArrayBuffers,
+          value = arrayBuffers.toString(),
         )
-
-        VerticalSpacer(10.dp)
-
-        with(state.memory) {
-          SuccessContentRow(title = Strings.metricsMemoryRss, value = rss.toString())
-          SuccessContentRow(title = Strings.metricsMemoryHeapTotal, value = heapTotal.toString())
-          SuccessContentRow(title = Strings.metricsMemoryHeapUsed, value = heapUsed.toString())
-          SuccessContentRow(title = Strings.metricsMemoryExternal, value = external.toString())
-          SuccessContentRow(
-            title = Strings.metricsMemoryArrayBuffers,
-            value = arrayBuffers.toString(),
-          )
-        }
       }
     }
 
@@ -271,7 +260,7 @@ private fun formatted(instant: Instant): String {
     }
 
   val dt = formatted(elapsed)
-  return "$timestamp ($dt ago)"
+  return "$timestamp\n($dt ago)"
 }
 
 @Composable
