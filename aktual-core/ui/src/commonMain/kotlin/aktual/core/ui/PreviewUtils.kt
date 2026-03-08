@@ -16,7 +16,6 @@ import androidx.compose.ui.tooling.preview.AndroidUiModes
 import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
-import dev.chrisbanes.haze.HazeState
 
 @Preview(
   name = "Portrait",
@@ -101,8 +100,7 @@ fun PreviewWithColorScheme(
   WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
     AktualTheme(theme) {
       Surface(modifier = modifier.background(theme.pageBackground)) {
-        val hazeState = remember { HazeState() }
-        CompositionLocalProvider(LocalHazeState provides hazeState, content)
+        content()
       }
     }
   }

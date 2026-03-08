@@ -16,19 +16,13 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
-import aktual.core.ui.WavyBackground
-import aktual.core.ui.WithHazeState
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
@@ -75,22 +69,14 @@ internal fun TransactionsScaffold(
 ) {
   val theme = LocalTheme.current
   Scaffold(topBar = { TransactionsTitleBar(loadedAccount, onAction, theme) }) { innerPadding ->
-    Box {
-      val hazeState = remember { HazeState() }
-
-      WavyBackground(modifier = Modifier.hazeSource(hazeState))
-
-      WithHazeState(hazeState) {
-        Transactions(
-          modifier = Modifier.padding(innerPadding),
-          transactionIdSource = transactionIdSource,
-          format = format,
-          source = source,
-          onAction = onAction,
-          theme = theme,
-        )
-      }
-    }
+    Transactions(
+      modifier = Modifier.padding(innerPadding),
+      transactionIdSource = transactionIdSource,
+      format = format,
+      source = source,
+      onAction = onAction,
+      theme = theme,
+    )
   }
 }
 
