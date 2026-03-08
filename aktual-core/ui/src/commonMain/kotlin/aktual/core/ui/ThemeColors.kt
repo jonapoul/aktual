@@ -7,6 +7,8 @@ import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.MenuItemColors
+import androidx.compose.material3.RadioButtonColors
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SwitchColors
@@ -184,6 +186,16 @@ fun Theme.switch(): SwitchColors =
     disabledUncheckedTrackColor = checkboxToggleDisabled,
     disabledCheckedBorderColor = checkboxToggleDisabled,
     disabledUncheckedBorderColor = checkboxToggleDisabled,
+  )
+
+@Stable
+@Composable
+fun Theme.radioButton(): RadioButtonColors =
+  RadioButtonDefaults.colors(
+    selectedColor = checkboxToggleBackgroundSelected,
+    unselectedColor = checkboxToggleBackground,
+    disabledSelectedColor = pageText.disabled,
+    disabledUnselectedColor = pageText.disabled,
   )
 
 @get:Stable

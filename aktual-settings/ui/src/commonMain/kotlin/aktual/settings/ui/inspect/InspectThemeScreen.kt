@@ -1,5 +1,7 @@
 package aktual.settings.ui.inspect
 
+import aktual.core.icons.MaterialIcons
+import aktual.core.icons.OpenInNew
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
@@ -36,6 +38,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -68,6 +72,7 @@ fun InspectThemeScreen(
     onAction = { action ->
       when (action) {
         InspectThemeAction.NavBack -> nav.navBack()
+        InspectThemeAction.OpenRepo -> viewModel.openRepo()
         InspectThemeAction.Retry -> viewModel.retry()
       }
     },
@@ -95,6 +100,16 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThe
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(InspectThemeAction.NavBack) } },
         title = { Text(title) },
+        actions = {
+          if (state is InspectThemeState.Loaded && state.isCustom) {
+            IconButton(onClick = { onAction(InspectThemeAction.OpenRepo) }) {
+              Icon(
+                imageVector = MaterialIcons.OpenInNew,
+                contentDescription = Strings.settingsThemeInspectOpenRepo,
+              )
+            }
+          }
+        },
       )
     }
   ) { innerPadding ->
@@ -208,7 +223,7 @@ private class InspectThemePreviewProvider :
   ThemedParameterProvider<InspectThemeState>(
     InspectThemeState.NotFound(id = Theme.Id("username/repo")),
     InspectThemeState.Loading,
-    InspectThemeState.Loaded(id = LightTheme.id, properties = LightTheme.properties()),
-    InspectThemeState.Loaded(id = DarkTheme.id, properties = DarkTheme.properties()),
-    InspectThemeState.Loaded(id = MidnightTheme.id, properties = MidnightTheme.properties()),
+    InspectThemeState.Loaded(LightTheme.id, false, LightTheme.properties()),
+    InspectThemeState.Loaded(DarkTheme.id, false, DarkTheme.properties()),
+    InspectThemeState.Loaded(MidnightTheme.id, true, MidnightTheme.properties()),
   )

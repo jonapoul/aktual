@@ -54,7 +54,7 @@ class ThemeSettingsViewModel(
 
     data class Loaded(
       val summaries: List<CustomThemeSummary>,
-      val fetchStates: Map<Theme.Id, CustomThemeState>,
+      val states: Map<Theme.Id, CustomThemeState>,
     ) : LoadState
   }
 
@@ -88,14 +88,17 @@ class ThemeSettingsViewModel(
         is LoadState.Loaded -> {
           val selected by constantTheme.collectAsState()
           CatalogState.Success(
-            s.summaries.map { summary -> toCustomThemeItem(summary, selected, s) }.toImmutableList()
+            s.summaries
+              .sortedBy { it.name }
+              .map { summary -> toCustomThemeItem(summary, selected, s) }
+              .toImmutableList()
           )
         }
       }
     }
 
   init {
-    viewModelScope.launch { fetchCatalogThenThemes() }
+    retry()
   }
 
   fun retry() {
@@ -103,7 +106,10 @@ class ThemeSettingsViewModel(
   }
 
   fun clearCache() {
-    viewModelScope.launch { cache.clear() }
+    viewModelScope.launch {
+      cache.clear()
+      fetchCatalogThenThemes()
+    }
   }
 
   fun select(id: Theme.Id) {
@@ -141,7 +147,7 @@ class ThemeSettingsViewModel(
       id = themeId,
       summary = summary,
       isSelected = selected == themeId,
-      state = state.fetchStates[themeId] ?: CustomThemeState.Fetching,
+      state = state.states[themeId] ?: CustomThemeState.Fetching,
     )
   }
 
@@ -189,7 +195,7 @@ class ThemeSettingsViewModel(
   private fun updateFetchState(themeId: Theme.Id, fetchState: CustomThemeState) {
     mutableLoadState.update { current ->
       if (current is LoadState.Loaded) {
-        current.copy(fetchStates = current.fetchStates + (themeId to fetchState))
+        current.copy(states = current.states + (themeId to fetchState))
       } else {
         current
       }

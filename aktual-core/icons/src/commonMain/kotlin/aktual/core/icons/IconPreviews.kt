@@ -78,6 +78,7 @@ private val materialIcons =
       LightMode,
       MoreVert,
       Numbers,
+      OpenInNew,
       Refresh,
       Search,
       SearchOff,

@@ -24,6 +24,7 @@
   <string name="settings_theme_retry">Retry</string>
 
   <string name="settings_theme_inspect_loading">Loading…</string>
+  <string name="settings_theme_inspect_open_repo">Open on GitHub</string>
   <string name="settings_theme_inspect_not_found">Theme not found</string>
   <string name="settings_theme_inspect_not_found_reason">Could not find theme '%1$s'</string>
   <string name="settings_theme_inspect_retry">Retry</string>

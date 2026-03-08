@@ -7,6 +7,7 @@ import aktual.core.icons.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.CustomThemeSummary
+import aktual.core.theme.DarkTheme
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -14,14 +15,18 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
+import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.disabledIf
+import aktual.core.ui.isTablet
+import aktual.core.ui.radioButton
 import aktual.settings.ui.BasicPreferenceItem
 import aktual.settings.ui.NotClickable
 import aktual.settings.vm.theme.CatalogItem
 import aktual.settings.vm.theme.CatalogState
 import aktual.settings.vm.theme.CustomThemeState
+import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -29,10 +34,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.RadioButton
@@ -169,7 +177,7 @@ private fun CatalogLoadedItem(
   theme: Theme = LocalTheme.current,
 ) {
   Row(
-    modifier = Modifier.height(IntrinsicSize.Min),
+    modifier = Modifier.height(IntrinsicSize.Min).padding(4.dp),
     horizontalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     val isSelected = selectedId == item.id
@@ -177,33 +185,27 @@ private fun CatalogLoadedItem(
       remember(theme, isSelected) {
         theme.buttonNormalBackground.disabledIf(enabled || !isSelected)
       }
-    Row(
-      modifier =
-        Modifier.fillMaxHeight().weight(1f).background(backgroundColor, CardShape).clickable(
-          enabled
-        ) {
-          onAction(ThemeSettingsAction.Select(item.id))
-        },
-      horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalAlignment = Alignment.CenterVertically,
-    ) {
-      RadioButton(
-        modifier = Modifier.padding(8.dp),
-        enabled = enabled,
-        selected = isSelected,
-        onClick = null,
-      )
 
-      Text(
-        modifier = Modifier.weight(1f),
-        text = item.summary.name,
-        style = AktualTypography.bodyLarge,
-        color = theme.buttonNormalText.disabledIf(!enabled),
+    if (isTablet()) {
+      CatalogLoadedItemTablet(
+        item = item,
+        enabled = enabled,
+        isSelected = isSelected,
+        backgroundColor = backgroundColor,
+        onAction = onAction,
+      )
+    } else {
+      CatalogLoadedItemMobile(
+        item = item,
+        enabled = enabled,
+        isSelected = isSelected,
+        backgroundColor = backgroundColor,
+        onAction = onAction,
       )
     }
 
     NormalIconButton(
-      modifier = Modifier.clip(CardShape),
+      modifier = Modifier.clip(CardShape).fillMaxHeight(),
       imageVector = MaterialIcons.ArrowRight,
       enabled = enabled,
       onClick = { onAction(ThemeSettingsAction.Inspect(item.id)) },
@@ -211,6 +213,133 @@ private fun CatalogLoadedItem(
     )
   }
 }
+
+@Composable
+private fun RowScope.CatalogLoadedItemTablet(
+  item: CatalogItem,
+  enabled: Boolean,
+  isSelected: Boolean,
+  backgroundColor: Color,
+  onAction: (ThemeSettingsAction) -> Unit,
+  theme: Theme = LocalTheme.current,
+) {
+  Row(
+    modifier =
+      Modifier.fillMaxHeight()
+        .weight(1f)
+        .background(backgroundColor, CardShape)
+        .clickable(enabled, onClick = { onAction(ThemeSettingsAction.Select(item.id)) }),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    RadioButton(
+      modifier = Modifier.padding(8.dp),
+      enabled = enabled,
+      selected = isSelected,
+      onClick = null,
+      colors = theme.radioButton(),
+    )
+
+    Column(modifier = Modifier.weight(1f)) {
+      Text(
+        text = item.summary.name,
+        style = AktualTypography.bodyLarge,
+        color = theme.buttonNormalText.disabledIf(!enabled),
+      )
+
+      Text(
+        text = item.summary.repo.toString(),
+        style = AktualTypography.labelMedium,
+        color = theme.pageTextSubdued.disabledIf(!enabled),
+      )
+    }
+
+    Column(
+      modifier = Modifier.wrapContentWidth().padding(4.dp),
+      verticalArrangement = Arrangement.spacedBy(PREVIEW_SPACING),
+    ) {
+      Row(horizontalArrangement = Arrangement.spacedBy(PREVIEW_SPACING)) {
+        BoxPreviewColor(summary = item.summary, index = 0)
+        BoxPreviewColor(summary = item.summary, index = 1)
+        BoxPreviewColor(summary = item.summary, index = 2)
+      }
+      Row(horizontalArrangement = Arrangement.spacedBy(PREVIEW_SPACING)) {
+        BoxPreviewColor(summary = item.summary, index = 3)
+        BoxPreviewColor(summary = item.summary, index = 4)
+        BoxPreviewColor(summary = item.summary, index = 5)
+      }
+    }
+  }
+}
+
+@Composable
+private fun RowScope.CatalogLoadedItemMobile(
+  item: CatalogItem,
+  enabled: Boolean,
+  isSelected: Boolean,
+  backgroundColor: Color,
+  onAction: (ThemeSettingsAction) -> Unit,
+  theme: Theme = LocalTheme.current,
+) {
+  Row(
+    modifier =
+      Modifier.fillMaxHeight()
+        .weight(1f)
+        .background(backgroundColor, CardShape)
+        .clickable(enabled, onClick = { onAction(ThemeSettingsAction.Select(item.id)) }),
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    RadioButton(
+      modifier = Modifier.padding(8.dp),
+      enabled = enabled,
+      selected = isSelected,
+      onClick = null,
+      colors = theme.radioButton(),
+    )
+
+    Column(modifier = Modifier.weight(1f)) {
+      Text(
+        text = item.summary.name,
+        style = AktualTypography.bodyLarge,
+        color = theme.buttonNormalText.disabledIf(!enabled),
+      )
+
+      Text(
+        text = item.summary.repo.toString(),
+        style = AktualTypography.labelMedium,
+        color = theme.pageTextSubdued.disabledIf(!enabled),
+      )
+
+      VerticalSpacer(4.dp)
+
+      Row(horizontalArrangement = Arrangement.spacedBy(PREVIEW_SPACING)) {
+        FlatPreviewColor(summary = item.summary, index = 0)
+        FlatPreviewColor(summary = item.summary, index = 1)
+        FlatPreviewColor(summary = item.summary, index = 2)
+        FlatPreviewColor(summary = item.summary, index = 3)
+        FlatPreviewColor(summary = item.summary, index = 4)
+        FlatPreviewColor(summary = item.summary, index = 5)
+      }
+    }
+  }
+}
+
+private val PREVIEW_SPACING = 2.dp
+
+@Composable
+private fun RowScope.FlatPreviewColor(
+  summary: CustomThemeSummary,
+  index: Int,
+  modifier: Modifier = Modifier,
+) = Box(modifier = modifier.height(5.dp).background(summary.colors[index]).weight(1f))
+
+@Composable
+private fun BoxPreviewColor(
+  summary: CustomThemeSummary,
+  index: Int,
+  modifier: Modifier = Modifier,
+) = Box(modifier = modifier.size(15.dp).background(summary.colors[index]))
 
 @Preview
 @Composable
@@ -276,3 +405,10 @@ internal val PREVIEW_CATALOG_ITEM =
     isSelected = false,
     state = CustomThemeState.Cached,
   )
+
+@TabletPreview
+@Composable
+private fun PreviewCustomThemeListItemTablet() =
+  PreviewWithColorScheme(DarkTheme) {
+    CatalogLoadedItem(item = PREVIEW_CATALOG_ITEM, selectedId = null, enabled = true, onAction = {})
+  }
