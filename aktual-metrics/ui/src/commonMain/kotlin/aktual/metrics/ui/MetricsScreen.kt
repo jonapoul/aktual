@@ -15,12 +15,12 @@ import aktual.core.ui.AktualTypography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.RounderCardShape
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.transparentTopAppBarColors
@@ -31,7 +31,6 @@ import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -123,7 +122,7 @@ private fun MetricsContent(
   Box(modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Huge)) {
     when (state) {
       MetricsState.Loading -> {
-        LoadingContent()
+        AnimatedLoading(modifier = Modifier.align(Alignment.Center).size(50.dp))
       }
 
       MetricsState.Disconnected -> {
@@ -138,16 +137,6 @@ private fun MetricsContent(
         SuccessContent(state, theme)
       }
     }
-  }
-}
-
-@Composable
-private fun BoxScope.LoadingContent() {
-  Box(
-    modifier = Modifier.clip(RounderCardShape).padding(30.dp).align(Alignment.Center),
-    contentAlignment = Alignment.Center,
-  ) {
-    AnimatedLoading(modifier = Modifier.align(Alignment.Center).size(50.dp))
   }
 }
 
@@ -179,7 +168,10 @@ private fun SuccessContent(
     verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
   ) {
     val dataModifier =
-      Modifier.fillMaxWidth().background(theme.pillBackgroundLight).padding(Dimens.VeryLarge)
+      Modifier.fillMaxWidth()
+        .clip(CardShape)
+        .background(theme.pillBackgroundLight, CardShape)
+        .padding(Dimens.VeryLarge)
 
     SuccessContentRow(
       modifier = dataModifier,
@@ -220,6 +212,7 @@ private fun SuccessContent(
 }
 
 @Composable
+@Suppress("MagicNumber")
 private fun formatted(duration: Duration): String =
   remember(duration) {
     val d = duration.inWholeDays
@@ -289,6 +282,7 @@ private fun PreviewMetricsScaffold(
   @PreviewParameter(MetricsStateProvider::class) params: ThemedParams<MetricsState>
 ) = PreviewWithColorScheme(params.theme) { MetricsScaffold(state = params.data, onAction = {}) }
 
+@Suppress("MagicNumber")
 private class MetricsStateProvider :
   ThemedParameterProvider<MetricsState>(
     MetricsState.Loading,
