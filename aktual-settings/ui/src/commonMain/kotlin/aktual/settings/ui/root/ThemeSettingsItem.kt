@@ -1,13 +1,14 @@
 package aktual.settings.ui.root
 
+import aktual.core.icons.ArrowRight
 import aktual.core.icons.MaterialIcons
 import aktual.core.icons.ThemeRoutine
 import aktual.core.l10n.Strings
+import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedBooleanParameters
 import aktual.core.ui.ThemedParams
 import aktual.settings.ui.BasicPreferenceItem
-import aktual.settings.ui.Clickable
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,7 +21,14 @@ internal fun ThemeSettingsItem(onClick: () -> Unit, modifier: Modifier = Modifie
     title = Strings.settingsTheme,
     subtitle = null,
     icon = MaterialIcons.ThemeRoutine,
-    clickability = Clickable(onClick),
+    onClick = onClick,
+    rightContent = {
+      NormalIconButton(
+        contentDescription = Strings.settingsTheme,
+        imageVector = MaterialIcons.ArrowRight,
+        onClick = onClick,
+      )
+    },
   )
 }
 

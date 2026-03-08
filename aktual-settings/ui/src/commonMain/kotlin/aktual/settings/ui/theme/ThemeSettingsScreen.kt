@@ -54,10 +54,12 @@ fun ThemeSettingsScreen(
     onAction = { action ->
       when (action) {
         ThemeSettingsAction.NavBack -> nav.back()
-        is ThemeSettingsAction.Inspect -> nav.inspectTheme(action.id)
-        is ThemeSettingsAction.Select -> viewModel.select(action.id)
+        is ThemeSettingsAction.InspectTheme -> nav.inspectTheme(action.id)
+        is ThemeSettingsAction.SelectTheme -> viewModel.select(action.id)
         ThemeSettingsAction.ClearCache -> viewModel.clearCache()
         ThemeSettingsAction.RetryFetchCatalog -> viewModel.retry()
+        is ThemeSettingsAction.SetUseSystemDefault -> viewModel.setUseSystemDefault(action.value)
+        is ThemeSettingsAction.SetDarkTheme -> viewModel.setDarkTheme(action.value)
       }
     },
   )
@@ -98,13 +100,13 @@ private fun ThemeSettingsContent(
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier.fillMaxSize().padding(Dimens.Large).scrollbar(listState),
+    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Large).scrollbar(listState),
     state = listState,
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
-    item { UseSystemDefaultPreference(state.useSystemDefault) }
+    item { UseSystemDefaultPreference(preference = state.useSystemDefault, onAction = onAction) }
 
-    item { DarkThemePreference(state.darkTheme) }
+    item { DarkThemePreference(preference = state.darkTheme, onAction = onAction) }
 
     item {
       BuiltInThemesPreference(
@@ -140,12 +142,11 @@ private fun PreviewThemeSettings(@PreviewParameter(ThemeParameters::class) theme
     ThemeSettingsScaffold(
       state =
         ThemeSettingsState(
-          useSystemDefault = BooleanPreference(value = false, onValueChange = {}, enabled = true),
+          useSystemDefault = BooleanPreference(value = false, enabled = true),
           darkTheme =
             ListPreference(
               selected = DarkTheme.id,
               values = persistentListOf(DarkTheme.id, MidnightTheme.id),
-              onValueChange = {},
               enabled = false,
             ),
           constantTheme = LightTheme.id,

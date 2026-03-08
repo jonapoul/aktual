@@ -36,7 +36,7 @@ internal fun BooleanPreferenceItem(
     subtitle = subtitle,
     icon = icon,
     enabled = enabled,
-    clickability = Clickable { onValueChange(!value) },
+    onClick = { onValueChange(!value) },
     bottomContent = bottomContent,
     rightContent = {
       Switch(

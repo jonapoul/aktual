@@ -152,12 +152,12 @@ private class ScrollbarNode(
   private var gestureState by mutableStateOf(GestureState.IDLE)
   private var dragStartOffset: Offset? = null
 
-  override fun onAttach() = showAndStateAutoFadeIfEnabled()
+  override fun onAttach() = showAndStartAutoFadeIfEnabled()
 
   override fun onPointerEvent(pointerEvent: PointerEvent, pass: PointerEventPass, bounds: IntSize) {
     if (!interactionEnabled) {
       if (pointerEvent.type == PointerEventType.Press && pass == PointerEventPass.Initial) {
-        showAndStateAutoFadeIfEnabled()
+        showAndStartAutoFadeIfEnabled()
       }
       return
     }
@@ -180,11 +180,11 @@ private class ScrollbarNode(
       event.changes.forEach { it.consume() }
       gestureState = GestureState.CLICKING
       dragStartOffset = position
-      showAndStateAutoFadeIfEnabled()
+      showAndStartAutoFadeIfEnabled()
     } else if (isPointerOnScrollbar(position, bounds)) {
       event.changes.forEach { it.consume() }
       scrollToPosition(position, bounds, animated = true)
-      showAndStateAutoFadeIfEnabled()
+      showAndStartAutoFadeIfEnabled()
     }
   }
 
@@ -211,7 +211,7 @@ private class ScrollbarNode(
     dragStartOffset = null
     updateWidthMultiplier() // Shrink scrollbar if not hovering
     if (!isHovered) {
-      showAndStateAutoFadeIfEnabled() // Restart fade if not hovering
+      showAndStartAutoFadeIfEnabled() // Restart fade if not hovering
     }
   }
 
@@ -226,7 +226,7 @@ private class ScrollbarNode(
         fadeJob?.cancel()
       } else if (gestureState == GestureState.IDLE) {
         // Only restart fade when un-hovering if we're not dragging
-        showAndStateAutoFadeIfEnabled()
+        showAndStartAutoFadeIfEnabled()
       }
     }
   }
@@ -247,7 +247,7 @@ private class ScrollbarNode(
       updateWidthMultiplier() // Will stay expanded if dragging
       if (gestureState == GestureState.IDLE) {
         // Only restart fade when pointer exits if we're not dragging
-        showAndStateAutoFadeIfEnabled()
+        showAndStartAutoFadeIfEnabled()
       }
     }
   }
@@ -267,13 +267,13 @@ private class ScrollbarNode(
     dragStartOffset = null
     updateWidthMultiplier() // Shrink scrollbar if not hovering
     if (!isHovered) {
-      showAndStateAutoFadeIfEnabled() // Restart fade if not hovering
+      showAndStartAutoFadeIfEnabled() // Restart fade if not hovering
     }
   }
 
-  override fun onObservedReadsChanged() = showAndStateAutoFadeIfEnabled()
+  override fun onObservedReadsChanged() = showAndStartAutoFadeIfEnabled()
 
-  private fun showAndStateAutoFadeIfEnabled() {
+  private fun showAndStartAutoFadeIfEnabled() {
     fadeJob?.cancel()
     fadeJob =
       coroutineScope.launch {

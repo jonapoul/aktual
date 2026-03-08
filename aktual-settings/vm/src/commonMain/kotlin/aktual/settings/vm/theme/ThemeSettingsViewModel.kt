@@ -116,15 +116,13 @@ class ThemeSettingsViewModel(
     preferences.constantTheme.set(id)
   }
 
+  fun setUseSystemDefault(value: Boolean) = preferences.useSystemDefault.set(value)
+
+  fun setDarkTheme(value: Theme.Id) = preferences.nightTheme.set(value)
+
   @Composable
   private fun useSystemDefault(value: Boolean): BooleanPreference =
-    remember(value) {
-      BooleanPreference(
-        value = value,
-        onValueChange = preferences.useSystemDefault::set,
-        enabled = true,
-      )
-    }
+    remember(value) { BooleanPreference(value = value, enabled = true) }
 
   @Composable
   private fun darkTheme(value: Theme.Id, enabled: Boolean) =
@@ -132,7 +130,6 @@ class ThemeSettingsViewModel(
       ListPreference(
         selected = value,
         values = persistentListOf(DarkTheme.id, MidnightTheme.id),
-        onValueChange = preferences.nightTheme::set,
         enabled = enabled,
       )
     }

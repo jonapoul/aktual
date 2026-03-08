@@ -14,7 +14,6 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.isTablet
 import aktual.core.ui.segmentedButton
 import aktual.settings.ui.BasicPreferenceItem
-import aktual.settings.ui.NotClickable
 import aktual.settings.vm.ListPreference
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -35,6 +34,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun DarkThemePreference(
   preference: ListPreference<Theme.Id>,
+  onAction: (ThemeSettingsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
   buttonColors: SegmentedButtonColors = theme.segmentedButton(),
@@ -46,14 +46,15 @@ internal fun DarkThemePreference(
     subtitle = null,
     icon = MaterialIcons.DarkMode,
     enabled = preference.enabled,
-    clickability = NotClickable,
-    rightContent = { if (isTablet) DarkThemeContent(preference, buttonColors) },
+    onClick = null,
+    rightContent = { if (isTablet) DarkThemeContent(preference, buttonColors, onAction) },
     bottomContent = {
       if (!isTablet) {
         DarkThemeContent(
           modifier = Modifier.fillMaxWidth(),
           preference = preference,
           buttonColors = buttonColors,
+          onAction = onAction,
         )
       }
     },
@@ -64,12 +65,13 @@ internal fun DarkThemePreference(
 private fun DarkThemeContent(
   preference: ListPreference<Theme.Id>,
   buttonColors: SegmentedButtonColors,
+  onAction: (ThemeSettingsAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   SingleChoiceSegmentedButtonRow(modifier = modifier.clip(CardShape).padding(10.dp)) {
     SegmentedButton(
       selected = preference.selected == DarkTheme.id,
-      onClick = { preference.onValueChange(DarkTheme.id) },
+      onClick = { onAction(ThemeSettingsAction.SetDarkTheme(DarkTheme.id)) },
       shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2, baseShape = CardShape),
       enabled = preference.enabled,
       colors = buttonColors,
@@ -78,7 +80,7 @@ private fun DarkThemeContent(
 
     SegmentedButton(
       selected = preference.selected == MidnightTheme.id,
-      onClick = { preference.onValueChange(MidnightTheme.id) },
+      onClick = { onAction(ThemeSettingsAction.SetDarkTheme(MidnightTheme.id)) },
       shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2, baseShape = CardShape),
       enabled = preference.enabled,
       colors = buttonColors,
@@ -95,13 +97,13 @@ private fun PreviewDarkThemePreference(
 ) =
   PreviewWithColorScheme(params.theme) {
     DarkThemePreference(
+      onAction = {},
       preference =
         ListPreference(
           selected = params.data.selected,
           values = persistentListOf(DarkTheme.id, MidnightTheme.id),
-          onValueChange = {},
           enabled = params.data.enabled,
-        )
+        ),
     )
   }
 

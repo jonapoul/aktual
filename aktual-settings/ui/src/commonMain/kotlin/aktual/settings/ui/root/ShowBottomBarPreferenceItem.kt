@@ -7,6 +7,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedBooleanParameters
 import aktual.core.ui.ThemedParams
+import aktual.settings.ui.BooleanPreferenceItem
 import aktual.settings.vm.BooleanPreference
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -18,12 +19,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 @Composable
 internal fun ShowBottomBarPreferenceItem(
   preference: BooleanPreference,
+  onAction: (SettingsAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  _root_ide_package_.aktual.settings.ui.BooleanPreferenceItem(
+  BooleanPreferenceItem(
     modifier = modifier,
     value = preference.value,
-    onValueChange = preference.onValueChange,
+    onValueChange = { value -> onAction(SettingsAction.SetShowBottomBar(value)) },
     title = Strings.settingsShowBottomBar,
     subtitle = null,
     icon = remember(preference.value) { icon(preference.value) },
@@ -41,7 +43,5 @@ private fun PreviewShowBottomBarPreferenceItem(
   @PreviewParameter(ThemedBooleanParameters::class) params: ThemedParams<Boolean>
 ) =
   PreviewWithColorScheme(params.theme) {
-    ShowBottomBarPreferenceItem(
-      preference = BooleanPreference(value = params.data, onValueChange = {})
-    )
+    ShowBottomBarPreferenceItem(preference = BooleanPreference(value = params.data), onAction = {})
   }
