@@ -1,6 +1,7 @@
 import blueprint.core.commonMainDependencies
 import dev.jonpoulton.catalog.gradle.CatalogParameterNaming
 import dev.jonpoulton.catalog.gradle.NameTransform
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
   id("aktual.module.kotlin")
@@ -32,3 +33,6 @@ kotlin {
     api(libs.jetbrains.ui)
   }
 }
+
+val catalog = tasks.named("catalog")
+tasks.withType(KotlinCompile::class).configureEach { dependsOn(catalog) }
