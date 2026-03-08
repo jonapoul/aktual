@@ -97,6 +97,6 @@ fun PreviewWithColorScheme(
 ) =
   WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
     AktualTheme(theme) {
-      Surface(modifier = modifier.background(theme.pageBackground)) { content() }
+      Surface(modifier = modifier.background(theme.pageBackground), content = content)
     }
   }
