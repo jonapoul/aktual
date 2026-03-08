@@ -12,9 +12,6 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
-import aktual.core.ui.WavyBackground
-import aktual.core.ui.WithHazeState
-import aktual.core.ui.aktualHaze
 import aktual.core.ui.verticalScrollWithBar
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Box
@@ -25,12 +22,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 
 @Composable
 internal fun InfoScaffold(
@@ -40,20 +35,12 @@ internal fun InfoScaffold(
 ) {
   val theme = LocalTheme.current
   Scaffold(modifier = modifier, topBar = { InfoTopBar(theme, onAction) }) { innerPadding ->
-    Box {
-      val hazeState = remember { HazeState() }
-
-      WavyBackground(modifier = Modifier.hazeSource(hazeState))
-
-      WithHazeState(hazeState) {
-        InfoScreenContent(
-          modifier = Modifier.padding(innerPadding),
-          buildState = buildState,
-          onAction = onAction,
-          theme = theme,
-        )
-      }
-    }
+    InfoScreenContent(
+      modifier = Modifier.padding(innerPadding),
+      buildState = buildState,
+      onAction = onAction,
+      theme = theme,
+    )
   }
 }
 
@@ -64,16 +51,16 @@ private fun InfoScreenContent(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) =
-  Column(modifier = modifier.verticalScrollWithBar()) {
+  Column(modifier = modifier.verticalScrollWithBar(), horizontalAlignment = Alignment.CenterHorizontally) {
     Box(
-      modifier =
-        Modifier.fillMaxWidth().padding(Dimens.VeryLarge).clip(RounderCardShape).aktualHaze()
+      modifier = Modifier.padding(Dimens.VeryLarge).clip(RounderCardShape),
+      contentAlignment = Alignment.Center,
     ) {
-      InfoHeader(modifier = Modifier.fillMaxWidth(), year = buildState.year, theme = theme)
+      InfoHeader(year = buildState.year, theme = theme)
     }
 
     InfoBuildState(
-      modifier = Modifier.fillMaxWidth().padding(Dimens.VeryLarge),
+      modifier = Modifier.padding(Dimens.VeryLarge),
       buildState = buildState,
       theme = theme,
     )

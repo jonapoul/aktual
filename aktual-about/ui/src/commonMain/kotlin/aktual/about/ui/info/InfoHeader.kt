@@ -4,10 +4,12 @@ import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.CardShape
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemeParameters
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,7 +33,11 @@ internal fun InfoHeader(
   theme: Theme = LocalTheme.current,
 ) {
   Row(
-    modifier = modifier.wrapContentWidth().padding(10.dp),
+    modifier =
+      modifier
+        .wrapContentWidth()
+        .background(theme.pillBackgroundLight, CardShape)
+        .padding(horizontal = 20.dp, vertical = 10.dp),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -49,9 +55,14 @@ internal fun InfoHeader(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.Center,
     ) {
-      Text(text = appName, fontSize = 25.sp, fontWeight = FontWeight.W700, color = theme.pageText)
-      Text(text = Strings.infoSubtitle1(year), color = theme.pageTextSubdued)
-      Text(text = Strings.infoSubtitle2, color = theme.pageTextSubdued)
+      Text(
+        text = appName,
+        fontSize = 25.sp,
+        fontWeight = FontWeight.W700,
+        color = theme.pillTextHighlighted,
+      )
+      Text(text = Strings.infoSubtitle1(year), color = theme.pillText)
+      Text(text = Strings.infoSubtitle2, color = theme.pillText)
     }
   }
 }
@@ -59,4 +70,4 @@ internal fun InfoHeader(
 @Preview
 @Composable
 private fun PreviewHeader(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) { InfoHeader(year = 2025) }
+  PreviewWithColorScheme(theme) { InfoHeader(year = 2026) }

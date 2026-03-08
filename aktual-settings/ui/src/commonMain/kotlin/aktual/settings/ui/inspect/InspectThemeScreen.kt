@@ -18,7 +18,6 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.WithHazeState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.inspect.InspectThemeState
@@ -54,8 +53,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlin.math.roundToInt
 
@@ -113,19 +110,11 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThe
       )
     }
   ) { innerPadding ->
-    Box {
-      val hazeState = remember { HazeState() }
-
-      Box(modifier = Modifier.hazeSource(hazeState).background(theme.pageBackground))
-
-      WithHazeState(hazeState) {
-        InspectThemeContent(
-          modifier = Modifier.padding(innerPadding),
-          state = state,
-          onAction = onAction,
-        )
-      }
-    }
+    InspectThemeContent(
+      modifier = Modifier.padding(innerPadding),
+      state = state,
+      onAction = onAction,
+    )
   }
 }
 

@@ -10,15 +10,12 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.WavyBackground
-import aktual.core.ui.WithHazeState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.BooleanPreference
 import aktual.settings.vm.root.SettingsScreenState
 import aktual.settings.vm.root.SettingsViewModel
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,18 +23,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
@@ -61,33 +52,18 @@ fun SettingsScreen(
 
 @Composable
 private fun SettingsScaffold(state: SettingsScreenState, onAction: (SettingsAction) -> Unit) {
-  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
 
   Scaffold(
-    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(SettingsAction.NavBack) } },
         title = { Text(Strings.settingsToolbar) },
-        scrollBehavior = scrollBehavior,
       )
-    },
-  ) { innerPadding ->
-    Box {
-      val hazeState = remember { HazeState() }
-
-      WavyBackground(modifier = Modifier.hazeSource(hazeState))
-
-      WithHazeState(hazeState) {
-        SettingsContent(
-          modifier = Modifier.padding(innerPadding),
-          state = state,
-          onAction = onAction,
-        )
-      }
     }
+  ) { innerPadding ->
+    SettingsContent(modifier = Modifier.padding(innerPadding), state = state, onAction = onAction)
   }
 }
 

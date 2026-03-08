@@ -24,6 +24,7 @@ import dev.chrisbanes.haze.HazeState
   uiMode = AndroidUiModes.UI_MODE_NIGHT_UNDEFINED,
   widthDp = MY_PHONE_WIDTH_DP,
   heightDp = MY_PHONE_HEIGHT_DP,
+  locale = "en",
 )
 annotation class PortraitPreview
 
@@ -33,6 +34,7 @@ annotation class PortraitPreview
   uiMode = AndroidUiModes.UI_MODE_NIGHT_UNDEFINED,
   widthDp = MY_PHONE_HEIGHT_DP,
   heightDp = MY_PHONE_WIDTH_DP,
+  locale = "en",
 )
 annotation class LandscapePreview
 
@@ -41,10 +43,11 @@ annotation class LandscapePreview
   showBackground = true,
   widthDp = MY_MONITOR_WIDTH_DP,
   heightDp = MY_MONITOR_HEIGHT_DP,
+  locale = "en",
 )
 annotation class DesktopPreview
 
-@Preview(name = "Tablet", showBackground = true, device = Devices.PIXEL_TABLET)
+@Preview(name = "Tablet", showBackground = true, device = Devices.PIXEL_TABLET, locale = "en")
 annotation class TabletPreview
 
 const val MY_PHONE_WIDTH_DP = 540 // 1080px * 160 / 400dpi
