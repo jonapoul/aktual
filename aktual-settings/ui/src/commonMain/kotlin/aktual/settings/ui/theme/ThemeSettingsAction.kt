@@ -11,7 +11,11 @@ internal sealed interface ThemeSettingsAction {
 
   data object ClearCache : ThemeSettingsAction
 
-  @JvmInline value class Inspect(val id: Theme.Id) : ThemeSettingsAction
+  @JvmInline value class InspectTheme(val id: Theme.Id) : ThemeSettingsAction
 
-  @JvmInline value class Select(val id: Theme.Id) : ThemeSettingsAction
+  @JvmInline value class SelectTheme(val id: Theme.Id) : ThemeSettingsAction
+
+  @JvmInline value class SetDarkTheme(val value: Theme.Id) : ThemeSettingsAction
+
+  @JvmInline value class SetUseSystemDefault(val value: Boolean) : ThemeSettingsAction
 }

@@ -52,8 +52,6 @@ android {
   packaging {
     resources.excludes +=
       setOf(
-        "META-INF/DEPENDENCIES",
-        "META-INF/INDEX.LIST",
         "**/native/Windows/**",
         "**/native/Mac/**",
       )

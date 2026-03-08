@@ -25,13 +25,8 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
   val state: StateFlow<SettingsScreenState> =
     viewModelScope.launchMolecule(Immediate) {
       val showBottomBar by showBottomBar.collectAsState()
-      SettingsScreenState(
-        showBottomBar =
-          BooleanPreference(
-            value = showBottomBar,
-            onValueChange = showBottomBarPref::set,
-            enabled = true,
-          )
-      )
+      SettingsScreenState(showBottomBar = BooleanPreference(value = showBottomBar, enabled = true))
     }
+
+  fun showBottomBar(value: Boolean) = showBottomBarPref.set(value)
 }

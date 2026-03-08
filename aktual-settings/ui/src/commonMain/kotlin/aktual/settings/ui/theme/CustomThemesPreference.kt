@@ -22,7 +22,6 @@ import aktual.core.ui.disabledIf
 import aktual.core.ui.isTablet
 import aktual.core.ui.radioButton
 import aktual.settings.ui.BasicPreferenceItem
-import aktual.settings.ui.NotClickable
 import aktual.settings.vm.theme.CatalogItem
 import aktual.settings.vm.theme.CatalogState
 import aktual.settings.vm.theme.CustomThemeState
@@ -79,7 +78,7 @@ internal fun CustomThemesPreference(
     subtitle = null,
     icon = MaterialIcons.Brush,
     enabled = enabled,
-    clickability = NotClickable,
+    onClick = null,
     bottomContent = {
       when (state) {
         CatalogState.Loading -> CatalogLoading()
@@ -208,7 +207,7 @@ private fun CatalogLoadedItem(
       modifier = Modifier.clip(CardShape).fillMaxHeight(),
       imageVector = MaterialIcons.ArrowRight,
       enabled = enabled,
-      onClick = { onAction(ThemeSettingsAction.Inspect(item.id)) },
+      onClick = { onAction(ThemeSettingsAction.InspectTheme(item.id)) },
       contentDescription = Strings.settingsThemePreview(item.summary.name),
     )
   }
@@ -228,7 +227,7 @@ private fun RowScope.CatalogLoadedItemTablet(
       Modifier.fillMaxHeight()
         .weight(1f)
         .background(backgroundColor, CardShape)
-        .clickable(enabled, onClick = { onAction(ThemeSettingsAction.Select(item.id)) }),
+        .clickable(enabled, onClick = { onAction(ThemeSettingsAction.SelectTheme(item.id)) }),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -286,7 +285,7 @@ private fun RowScope.CatalogLoadedItemMobile(
       Modifier.fillMaxHeight()
         .weight(1f)
         .background(backgroundColor, CardShape)
-        .clickable(enabled, onClick = { onAction(ThemeSettingsAction.Select(item.id)) }),
+        .clickable(enabled, onClick = { onAction(ThemeSettingsAction.SelectTheme(item.id)) }),
     horizontalArrangement = Arrangement.spacedBy(8.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {

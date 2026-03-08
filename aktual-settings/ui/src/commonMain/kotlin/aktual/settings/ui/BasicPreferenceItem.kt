@@ -40,7 +40,7 @@ internal fun BasicPreferenceItem(
   title: String,
   subtitle: String?,
   icon: ImageVector?,
-  clickability: Clickability,
+  onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   theme: Theme = LocalTheme.current,
@@ -48,19 +48,6 @@ internal fun BasicPreferenceItem(
   rightContent: (@Composable RowScope.() -> Unit)? = null,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
-  val clickableModifier =
-    when (clickability) {
-      NotClickable -> Modifier
-
-      is Clickable ->
-        Modifier.clickable(
-          interactionSource = interactionSource,
-          indication = ripple(),
-          enabled = enabled && clickability.enabled,
-          onClick = clickability.onClick,
-        )
-    }
-
   val contentColor = if (enabled) theme.pageText else theme.pageTextSubdued
 
   Row(
@@ -68,7 +55,7 @@ internal fun BasicPreferenceItem(
       modifier
         .clip(CardShape)
         .background(theme.cardBackground)
-        .then(clickableModifier)
+        .clickable(interactionSource, ripple(), enabled) { onClick?.invoke() }
         .padding(5.dp),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
@@ -128,7 +115,7 @@ private fun PreviewBasicPreferenceItem(
       title = params.data.title,
       subtitle = params.data.subtitle,
       icon = params.data.icon,
-      clickability = Clickable {},
+      onClick = {},
       enabled = params.data.enabled,
     )
   }
