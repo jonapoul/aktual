@@ -27,7 +27,7 @@ fun AktualTheme(theme: Theme, content: @Composable () -> Unit) {
   CompositionLocalProvider(
     LocalTheme provides theme,
     LocalIndication provides ripple(),
-    LocalShimmerTheme provides aktualLocalShimmerTheme(theme),
+    LocalShimmerTheme provides aktualShimmerTheme(theme),
     LocalHazeStyle provides defaultHazeStyle(theme),
   ) {
     SetStatusBarColors(theme = theme)
@@ -43,7 +43,7 @@ fun AktualTheme(theme: Theme, content: @Composable () -> Unit) {
 @Stable
 @Composable
 @Suppress("MagicNumber")
-private fun aktualLocalShimmerTheme(theme: Theme) =
+private fun aktualShimmerTheme(theme: Theme) =
   remember(theme) {
     ShimmerTheme(
       animationSpec =
