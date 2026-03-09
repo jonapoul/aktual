@@ -1,5 +1,7 @@
 package aktual.settings.vm.root
 
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.NumberFormat
 import aktual.core.prefs.AppGlobalPreferences
 import aktual.settings.vm.BooleanPreference
@@ -29,15 +31,36 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
   private val hideFractionPref = preferences.hideFraction
   private val hideFraction = hideFractionPref.asStateFlow(viewModelScope)
 
+  private val currencyPref = preferences.currency
+  private val currency = currencyPref.asStateFlow(viewModelScope)
+
+  private val currencySymbolPositionPref = preferences.currencySymbolPosition
+  private val currencySymbolPosition = currencySymbolPositionPref.asStateFlow(viewModelScope)
+
+  private val currencySpaceBetweenAmountAndSymbolPref =
+    preferences.currencySpaceBetweenAmountAndSymbol
+  private val currencySpaceBetweenAmountAndSymbol =
+    currencySpaceBetweenAmountAndSymbolPref.asStateFlow(viewModelScope)
+
   val state: StateFlow<SettingsScreenState> =
     viewModelScope.launchMolecule(Immediate) {
       val showBottomBar by showBottomBar.collectAsState()
       val numberFormat by numberFormat.collectAsState()
       val hideFraction by hideFraction.collectAsState()
+      val currency by currency.collectAsState()
+      val currencySymbolPosition by currencySymbolPosition.collectAsState()
+      val currencySpaceBetweenAmountAndSymbol by
+        currencySpaceBetweenAmountAndSymbol.collectAsState()
+
       SettingsScreenState(
-        showBottomBar = BooleanPreference(value = showBottomBar, enabled = true),
-        numberFormat = NumberFormatPreference(selected = numberFormat, enabled = true),
-        hideFraction = BooleanPreference(value = hideFraction, enabled = true),
+        showBottomBar = BooleanPreference(value = showBottomBar),
+        numberFormat = NumberFormatPreference(selected = numberFormat),
+        hideFraction = BooleanPreference(value = hideFraction),
+        currency = CurrencyPreference(currency),
+        currencySymbolPosition =
+          CurrencySymbolPositionPreference(currencySymbolPosition, enabled = currency != None),
+        currencySpaceBetweenAmountAndSymbol =
+          BooleanPreference(currencySpaceBetweenAmountAndSymbol, enabled = currency != None),
       )
     }
 
@@ -46,4 +69,11 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
   fun numberFormat(value: NumberFormat) = numberFormatPref.set(value)
 
   fun hideFraction(value: Boolean) = hideFractionPref.set(value)
+
+  fun currency(value: Currency) = currencyPref.set(value)
+
+  fun currencySymbolPosition(value: CurrencySymbolPosition) = currencySymbolPositionPref.set(value)
+
+  fun currencySpaceBetweenAmountAndSymbol(value: Boolean) =
+    currencySpaceBetweenAmountAndSymbolPref.set(value)
 }

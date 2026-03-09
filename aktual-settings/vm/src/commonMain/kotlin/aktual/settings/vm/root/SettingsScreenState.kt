@@ -1,5 +1,7 @@
 package aktual.settings.vm.root
 
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.NumberFormat
 import aktual.settings.vm.BooleanPreference
 import androidx.compose.runtime.Immutable
@@ -10,9 +12,32 @@ data class SettingsScreenState(
   val showBottomBar: BooleanPreference,
   val numberFormat: NumberFormatPreference,
   val hideFraction: BooleanPreference,
+  val currency: CurrencyPreference,
+  val currencySymbolPosition: CurrencySymbolPositionPreference,
+  val currencySpaceBetweenAmountAndSymbol: BooleanPreference,
 )
 
 @Immutable
-data class NumberFormatPreference(val selected: NumberFormat, val enabled: Boolean = true) {
-  val values = NumberFormat.entries.toImmutableList()
+@JvmInline
+value class NumberFormatPreference(val selected: NumberFormat) {
+  companion object {
+    val Values = NumberFormat.entries.toImmutableList()
+  }
+}
+
+@Immutable
+data class CurrencyPreference(val selected: Currency) {
+  companion object {
+    val Values = Currency.entries.toImmutableList()
+  }
+}
+
+@Immutable
+data class CurrencySymbolPositionPreference(
+  val selected: CurrencySymbolPosition,
+  val enabled: Boolean,
+) {
+  companion object {
+    val Values = CurrencySymbolPosition.entries.toImmutableList()
+  }
 }

@@ -26,8 +26,6 @@ enum class NumberFormat(
 
   companion object {
     val Default = CommaDot
-
-    fun from(value: String?): NumberFormat = entries.firstOrNull { it.value == value } ?: Default
   }
 }
 

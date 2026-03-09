@@ -16,7 +16,13 @@ class AmountTest {
     hideFraction: Boolean = false,
     includeSign: Boolean = false,
     isPrivacyEnabled: Boolean = false,
-  ) = toString(NumberFormatConfig(format, hideFraction), includeSign, isPrivacyEnabled)
+  ) =
+    toString(
+      numberFormatConfig = NumberFormatConfig(format, hideFraction),
+      currencyConfig = CurrencyConfig(Currency.None, CurrencySymbolPosition.BeforeAmount, false),
+      includeSign = includeSign,
+      isPrivacyEnabled = isPrivacyEnabled,
+    )
 
   @Test
   fun `Hide fraction`() {

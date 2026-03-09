@@ -38,15 +38,22 @@ value class Amount(private val value: Long) : Comparable<Amount> {
 
   @Suppress("MagicNumber")
   fun toString(
-    config: NumberFormatConfig,
+    numberFormatConfig: NumberFormatConfig,
+    currencyConfig: CurrencyConfig,
     includeSign: Boolean,
     isPrivacyEnabled: Boolean,
   ): String =
     buildString {
+        val (currency, position, addSpace) = currencyConfig
+        if (position == CurrencySymbolPosition.BeforeAmount && currency != Currency.None) {
+          append(currency.symbol)
+          if (addSpace) append(" ")
+        }
+
         if (includeSign && value > 0) append("+")
         if (value < 0) append("-")
 
-        val (format, hideFraction) = config
+        val (format, hideFraction) = numberFormatConfig
 
         val locale =
           when (format) {
@@ -64,6 +71,11 @@ value class Amount(private val value: Long) : Comparable<Amount> {
           }
 
         append(numberFormat.format(toDouble().absoluteValue))
+
+        if (position == CurrencySymbolPosition.AfterAmount && currency != Currency.None) {
+          if (addSpace) append(" ")
+          append(currency.symbol)
+        }
       }
       .let { string ->
         val numberCount = string.count { it.isDigit() }

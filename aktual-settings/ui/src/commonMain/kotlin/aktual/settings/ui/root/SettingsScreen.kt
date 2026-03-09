@@ -1,5 +1,7 @@
 package aktual.settings.ui.root
 
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.NumberFormat
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
@@ -14,6 +16,8 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.BooleanPreference
+import aktual.settings.vm.root.CurrencyPreference
+import aktual.settings.vm.root.CurrencySymbolPositionPreference
 import aktual.settings.vm.root.NumberFormatPreference
 import aktual.settings.vm.root.SettingsScreenState
 import aktual.settings.vm.root.SettingsViewModel
@@ -49,6 +53,11 @@ fun SettingsScreen(
         is SettingsAction.SetShowBottomBar -> viewModel.showBottomBar(action.value)
         is SettingsAction.SetNumberFormat -> viewModel.numberFormat(action.value)
         is SettingsAction.SetHideFraction -> viewModel.hideFraction(action.value)
+        is SettingsAction.SetCurrency -> viewModel.currency(action.value)
+        is SettingsAction.SetCurrencySymbolPosition ->
+          viewModel.currencySymbolPosition(action.value)
+        is SettingsAction.SetCurrencySpace ->
+          viewModel.currencySpaceBetweenAmountAndSymbol(action.value)
       }
     },
   )
@@ -94,6 +103,14 @@ private fun SettingsContent(
         onAction = onAction,
       )
     }
+    item {
+      CurrencyGroup(
+        currency = state.currency,
+        currencySymbolPosition = state.currencySymbolPosition,
+        currencySpaceBetweenAmountAndSymbol = state.currencySpaceBetweenAmountAndSymbol,
+        onAction = onAction,
+      )
+    }
 
     item {
       BottomStatusBarSpacing()
@@ -114,10 +131,18 @@ private class SettingsScaffoldProvider :
       showBottomBar = BooleanPreference(value = true),
       hideFraction = BooleanPreference(value = true),
       numberFormat = NumberFormatPreference(NumberFormat.CommaDot),
+      currency = CurrencyPreference(Currency.None),
+      currencySymbolPosition =
+        CurrencySymbolPositionPreference(CurrencySymbolPosition.BeforeAmount, false),
+      currencySpaceBetweenAmountAndSymbol = BooleanPreference(value = false, enabled = false),
     ),
     SettingsScreenState(
       showBottomBar = BooleanPreference(value = false),
       hideFraction = BooleanPreference(value = false),
       numberFormat = NumberFormatPreference(NumberFormat.SpaceComma),
+      currency = CurrencyPreference(Currency.PoundSterling),
+      currencySymbolPosition =
+        CurrencySymbolPositionPreference(CurrencySymbolPosition.AfterAmount, true),
+      currencySpaceBetweenAmountAndSymbol = BooleanPreference(value = true),
     ),
   )

@@ -1,11 +1,11 @@
 package aktual.app.nav
 
-import aktual.budget.model.NumberFormat
-import aktual.core.model.Token
+import aktual.core.ui.AktualTheme
 import aktual.core.ui.BottomBarState
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.WithCompositionLocals
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,60 +19,60 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 
 @Composable
 fun AktualAppContent(
   navController: NavHostController,
-  isPrivacyEnabled: Boolean,
-  numberFormat: NumberFormat,
-  hideFraction: Boolean,
-  isServerUrlSet: Boolean,
-  token: Token?,
-  bottomBarState: BottomBarState,
+  viewModel: RootViewModel,
+  modifier: Modifier = Modifier,
 ) {
+  val theme by viewModel.theme(isSystemInDarkTheme()).collectAsStateWithLifecycle(null)
+  val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
+  val numberFormat by viewModel.numberFormat.collectAsStateWithLifecycle()
+  val hideFraction by viewModel.hideFraction.collectAsStateWithLifecycle()
+  val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
+  val currency by viewModel.currency.collectAsStateWithLifecycle()
+  val currencySymbolPosition by viewModel.currencySymbolPosition.collectAsStateWithLifecycle()
+  val currencySpaceBetweenAmountAndSymbol by
+    viewModel.currencySpaceBetweenAmountAndSymbol.collectAsStateWithLifecycle()
+
   WithCompositionLocals(
     isPrivacyEnabled = isPrivacyEnabled,
     format = numberFormat,
     hideFraction = hideFraction,
+    currency = currency,
+    currencyPosition = currencySymbolPosition,
+    addCurrencySpace = currencySpaceBetweenAmountAndSymbol,
   ) {
-    AktualAppLayout(
-      navController = navController,
-      isServerUrlSet = isServerUrlSet,
-      token = token,
-      bottomBarState = bottomBarState,
-    )
-  }
-}
+    theme?.let { t ->
+      AktualTheme(t) {
+        Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
+          var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
 
-@Composable
-private fun AktualAppLayout(
-  navController: NavHostController,
-  isServerUrlSet: Boolean,
-  token: Token?,
-  bottomBarState: BottomBarState,
-  modifier: Modifier = Modifier,
-) =
-  Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
-    var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
+          CompositionLocalProvider(LocalBottomStatusBarHeight provides bottomStatusBarHeight) {
+            AktualNavHost(
+              modifier = Modifier.fillMaxWidth(),
+              nav = navController,
+              isServerUrlSet = viewModel.isServerUrlSet,
+              token = viewModel.token,
+            )
+          }
 
-    CompositionLocalProvider(LocalBottomStatusBarHeight provides bottomStatusBarHeight) {
-      AktualNavHost(
-        modifier = Modifier.fillMaxWidth(),
-        nav = navController,
-        isServerUrlSet = isServerUrlSet,
-        token = token,
-      )
-    }
-
-    if (bottomBarState is BottomBarState.Visible) {
-      Column {
-        BottomStatusBar(
-          modifier = Modifier.wrapContentHeight(),
-          state = bottomBarState,
-          onMeasureHeight = { bottomStatusBarHeight = it },
-        )
-        BottomNavBarSpacing()
+          val bbs = bottomBarState
+          if (bbs is BottomBarState.Visible) {
+            Column {
+              BottomStatusBar(
+                modifier = Modifier.wrapContentHeight(),
+                state = bbs,
+                onMeasureHeight = { bottomStatusBarHeight = it },
+              )
+              BottomNavBarSpacing()
+            }
+          }
+        }
       }
     }
   }
+}
