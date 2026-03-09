@@ -57,19 +57,9 @@ abstract class RootViewModel(
       .map { bg -> PreferencesDao(bg.database, contexts) }
       .stateIn(viewModelScope, Eagerly, initialValue = null)
 
-  val numberFormat: StateFlow<NumberFormat> =
-    observeSyncedPref(
-      key = SyncedPrefKey.Global.NumberFormat,
-      default = NumberFormat.Default,
-      mapper = NumberFormat::from,
-    )
+  val numberFormat: StateFlow<NumberFormat> = preferences.numberFormat.asStateFlow(viewModelScope)
 
-  val hideFraction: StateFlow<Boolean> =
-    observeSyncedPref(
-      key = SyncedPrefKey.Global.HideFraction,
-      default = false,
-      mapper = { it.toBoolean() },
-    )
+  val hideFraction: StateFlow<Boolean> = preferences.hideFraction.asStateFlow(viewModelScope)
 
   val isPrivacyEnabled: StateFlow<Boolean> =
     observeSyncedPref(

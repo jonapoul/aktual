@@ -1,5 +1,6 @@
 package aktual.core.prefs
 
+import aktual.budget.model.NumberFormat
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import dev.jonpoulton.preferences.core.Preference
@@ -9,4 +10,6 @@ interface AppGlobalPreferences {
   val token: Preference<Token?>
   val serverUrl: Preference<ServerUrl?>
   val showBottomBar: Preference<Boolean>
+  val hideFraction: Preference<Boolean>
+  val numberFormat: Preference<NumberFormat>
 }

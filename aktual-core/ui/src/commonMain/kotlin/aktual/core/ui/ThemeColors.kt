@@ -62,20 +62,26 @@ fun Theme.textField(
   TextFieldDefaults.colors(
     focusedTextColor = text,
     unfocusedTextColor = text,
+    disabledTextColor = text.disabled,
     focusedPlaceholderColor = textPlaceholder,
     unfocusedPlaceholderColor = textPlaceholder,
+    disabledPlaceholderColor = textPlaceholder.disabled,
     focusedLabelColor = textPlaceholder,
     unfocusedLabelColor = textPlaceholder,
+    disabledLabelColor = textPlaceholder.disabled,
     focusedIndicatorColor = Color.Transparent,
     unfocusedIndicatorColor = Color.Transparent,
     disabledIndicatorColor = Color.Transparent,
     focusedContainerColor = focusedContainer,
     unfocusedContainerColor = unfocusedContainer,
+    disabledContainerColor = unfocusedContainer.disabled,
     cursorColor = text,
     focusedLeadingIconColor = icon,
     unfocusedLeadingIconColor = icon,
+    disabledLeadingIconColor = icon.disabled,
     focusedTrailingIconColor = icon,
     unfocusedTrailingIconColor = icon,
+    disabledTrailingIconColor = icon.disabled,
   )
 
 @Stable

@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -159,7 +160,7 @@ fun <T> ExposedDropDownMenu(
       onDismissRequest = { isExpanded = false },
     ) {
       val itemColors = theme.dropDownMenuItem()
-      options.forEach { o ->
+      options.fastForEach { o ->
         DropdownMenuItem(
           text = { Text(string(o)) },
           contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding,

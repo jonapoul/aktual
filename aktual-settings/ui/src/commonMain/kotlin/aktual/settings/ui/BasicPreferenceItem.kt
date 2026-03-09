@@ -9,6 +9,8 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import alakazam.kotlin.ifNotNull
+import alakazam.kotlin.ifTrue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,6 +29,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -42,6 +45,8 @@ internal fun BasicPreferenceItem(
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  includeBackground: Boolean = true,
+  headerStyle: TextStyle = AktualTypography.bodyLarge,
   theme: Theme = LocalTheme.current,
   rightContent: (@Composable RowScope.() -> Unit)? = null,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
@@ -52,10 +57,10 @@ internal fun BasicPreferenceItem(
     modifier =
       modifier
         .clip(CardShape)
-        .background(theme.pillBackgroundLight, CardShape)
-        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
-        .clickable(enabled && onClick != null) { onClick?.invoke() }
-        .padding(5.dp),
+        .ifTrue(includeBackground) { background(theme.pillBackgroundLight, CardShape) }
+        .ifTrue(includeBackground) { border(Dp.Hairline, theme.pillBorderDark, CardShape) }
+        .ifNotNull(onClick) { clickable(enabled, onClick = it) }
+        .ifTrue(includeBackground) { padding(5.dp) },
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -77,7 +82,7 @@ internal fun BasicPreferenceItem(
           text = title,
           fontWeight = FontWeight.Bold,
           textAlign = TextAlign.Start,
-          style = AktualTypography.bodyLarge,
+          style = headerStyle,
           color = contentColor,
         )
 
@@ -93,7 +98,7 @@ internal fun BasicPreferenceItem(
       }
 
       if (bottomContent != null) {
-        bottomContent()
+        Column(modifier = Modifier.padding(10.dp)) { bottomContent() }
       }
     }
 

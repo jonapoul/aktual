@@ -1,5 +1,7 @@
 package aktual.budget.model
 
+import androidx.compose.runtime.Immutable
+
 enum class NumberFormat(
   val value: String,
   val thousandsSeparator: String,
@@ -20,6 +22,8 @@ enum class NumberFormat(
   // e.g. 1,00,000.33
   CommaDotIn(value = "comma-dot-in", thousandsSeparator = ",", decimalSeparator = ".");
 
+  override fun toString(): String = value
+
   companion object {
     val Default = CommaDot
 
@@ -27,4 +31,4 @@ enum class NumberFormat(
   }
 }
 
-data class NumberFormatConfig(val format: NumberFormat, val hideFraction: Boolean)
+@Immutable data class NumberFormatConfig(val format: NumberFormat, val hideFraction: Boolean)

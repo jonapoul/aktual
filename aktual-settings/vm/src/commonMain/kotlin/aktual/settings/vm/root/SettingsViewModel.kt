@@ -1,5 +1,6 @@
 package aktual.settings.vm.root
 
+import aktual.budget.model.NumberFormat
 import aktual.core.prefs.AppGlobalPreferences
 import aktual.settings.vm.BooleanPreference
 import androidx.compose.runtime.collectAsState
@@ -22,11 +23,27 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
   private val showBottomBarPref = preferences.showBottomBar
   private val showBottomBar = showBottomBarPref.asStateFlow(viewModelScope)
 
+  private val numberFormatPref = preferences.numberFormat
+  private val numberFormat = numberFormatPref.asStateFlow(viewModelScope)
+
+  private val hideFractionPref = preferences.hideFraction
+  private val hideFraction = hideFractionPref.asStateFlow(viewModelScope)
+
   val state: StateFlow<SettingsScreenState> =
     viewModelScope.launchMolecule(Immediate) {
       val showBottomBar by showBottomBar.collectAsState()
-      SettingsScreenState(showBottomBar = BooleanPreference(value = showBottomBar, enabled = true))
+      val numberFormat by numberFormat.collectAsState()
+      val hideFraction by hideFraction.collectAsState()
+      SettingsScreenState(
+        showBottomBar = BooleanPreference(value = showBottomBar, enabled = true),
+        numberFormat = NumberFormatPreference(selected = numberFormat, enabled = true),
+        hideFraction = BooleanPreference(value = hideFraction, enabled = true),
+      )
     }
 
   fun showBottomBar(value: Boolean) = showBottomBarPref.set(value)
+
+  fun numberFormat(value: NumberFormat) = numberFormatPref.set(value)
+
+  fun hideFraction(value: Boolean) = hideFractionPref.set(value)
 }

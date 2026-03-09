@@ -4,8 +4,6 @@
   <string name="settings_show_bottom_bar">Show bottom status bar</string>
   <string name="settings_theme">App theme</string>
   <string name="settings_dark_theme">Dark theme</string>
-  <string name="settings_number_format">Number format</string>
-  <string name="settings_hide_fractions">Hide fractions</string>
 
   <string name="settings_dialog_dismiss">Dismiss</string>
 
@@ -28,4 +26,10 @@
   <string name="settings_theme_inspect_not_found">Theme not found</string>
   <string name="settings_theme_inspect_not_found_reason">Could not find theme '%1$s'</string>
   <string name="settings_theme_inspect_retry">Retry</string>
+
+  <string name="settings_format_group">Formatting</string>
+  <string name="settings_format_numbers">Number format</string>
+  <string name="settings_format_decimal">Hide decimal places</string>
+  <string name="settings_format_dates">Date format</string>
+  <string name="settings_format_first_day">First day of the week</string>
 </resources>
