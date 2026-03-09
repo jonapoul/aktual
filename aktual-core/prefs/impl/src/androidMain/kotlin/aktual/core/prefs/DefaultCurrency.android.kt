@@ -1,8 +1,8 @@
 package aktual.core.prefs
 
 import aktual.budget.model.Currency
-import java.util.Locale
 import java.util.Currency as JavaCurrency
+import java.util.Locale
 
 internal actual fun defaultCurrency(): Currency {
   val code =
