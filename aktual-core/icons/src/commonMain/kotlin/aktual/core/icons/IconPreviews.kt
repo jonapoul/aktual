@@ -68,6 +68,8 @@ private val materialIcons =
       Clear,
       Cloud,
       DarkMode,
+      DecimalDecrease,
+      DecimalIncrease,
       Delete,
       DeleteForever,
       Edit,

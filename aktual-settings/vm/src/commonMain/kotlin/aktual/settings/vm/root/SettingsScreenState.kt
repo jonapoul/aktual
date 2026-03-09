@@ -9,6 +9,7 @@ import kotlinx.collections.immutable.toImmutableList
 data class SettingsScreenState(
   val showBottomBar: BooleanPreference,
   val numberFormat: NumberFormatPreference,
+  val hideFraction: BooleanPreference,
 )
 
 @Immutable

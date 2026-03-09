@@ -48,6 +48,7 @@ fun SettingsScreen(
         SettingsAction.NavToThemeSettings -> nav.toThemeSettings()
         is SettingsAction.SetShowBottomBar -> viewModel.showBottomBar(action.value)
         is SettingsAction.SetNumberFormat -> viewModel.numberFormat(action.value)
+        is SettingsAction.SetHideFraction -> viewModel.hideFraction(action.value)
       }
     },
   )
@@ -86,7 +87,13 @@ private fun SettingsContent(
 
     item { ThemeSettingsItem(onClick = { onAction(SettingsAction.NavToThemeSettings) }) }
 
-    item { FormattingGroup(format = state.numberFormat, onAction = onAction) }
+    item {
+      FormattingGroup(
+        numberFormat = state.numberFormat,
+        hideFraction = state.hideFraction,
+        onAction = onAction,
+      )
+    }
 
     item {
       BottomStatusBarSpacing()
@@ -105,10 +112,12 @@ private class SettingsScaffoldProvider :
   ThemedParameterProvider<SettingsScreenState>(
     SettingsScreenState(
       showBottomBar = BooleanPreference(value = true),
+      hideFraction = BooleanPreference(value = true),
       numberFormat = NumberFormatPreference(NumberFormat.CommaDot),
     ),
     SettingsScreenState(
       showBottomBar = BooleanPreference(value = false),
+      hideFraction = BooleanPreference(value = false),
       numberFormat = NumberFormatPreference(NumberFormat.SpaceComma),
     ),
   )

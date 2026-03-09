@@ -26,17 +26,24 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
   private val numberFormatPref = preferences.numberFormat
   private val numberFormat = numberFormatPref.asStateFlow(viewModelScope)
 
+  private val hideFractionPref = preferences.hideFraction
+  private val hideFraction = hideFractionPref.asStateFlow(viewModelScope)
+
   val state: StateFlow<SettingsScreenState> =
     viewModelScope.launchMolecule(Immediate) {
       val showBottomBar by showBottomBar.collectAsState()
       val numberFormat by numberFormat.collectAsState()
+      val hideFraction by hideFraction.collectAsState()
       SettingsScreenState(
         showBottomBar = BooleanPreference(value = showBottomBar, enabled = true),
         numberFormat = NumberFormatPreference(selected = numberFormat, enabled = true),
+        hideFraction = BooleanPreference(value = hideFraction, enabled = true),
       )
     }
 
   fun showBottomBar(value: Boolean) = showBottomBarPref.set(value)
 
   fun numberFormat(value: NumberFormat) = numberFormatPref.set(value)
+
+  fun hideFraction(value: Boolean) = hideFractionPref.set(value)
 }

@@ -12,4 +12,6 @@ internal sealed interface SettingsAction {
   @JvmInline value class SetShowBottomBar(val value: Boolean) : SettingsAction
 
   @JvmInline value class SetNumberFormat(val value: NumberFormat) : SettingsAction
+
+  @JvmInline value class SetHideFraction(val value: Boolean) : SettingsAction
 }

@@ -27,6 +27,7 @@ internal fun BooleanPreferenceItem(
   icon: ImageVector?,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  includeBackground: Boolean = true,
   theme: Theme = LocalTheme.current,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
@@ -36,6 +37,7 @@ internal fun BooleanPreferenceItem(
     subtitle = subtitle,
     icon = icon,
     enabled = enabled,
+    includeBackground = includeBackground,
     onClick = { onValueChange(!value) },
     bottomContent = bottomContent,
     rightContent = {
