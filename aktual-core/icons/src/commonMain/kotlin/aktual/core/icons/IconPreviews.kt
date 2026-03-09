@@ -81,6 +81,7 @@ private val materialIcons =
       Search,
       SearchOff,
       Settings,
+      Speed125,
       Sync,
       ThemeRoutine,
       Timer,

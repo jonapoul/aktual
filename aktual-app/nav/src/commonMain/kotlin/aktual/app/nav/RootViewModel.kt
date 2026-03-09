@@ -64,12 +64,7 @@ abstract class RootViewModel(
       mapper = NumberFormat::from,
     )
 
-  val hideFraction: StateFlow<Boolean> =
-    observeSyncedPref(
-      key = SyncedPrefKey.Global.HideFraction,
-      default = false,
-      mapper = { it.toBoolean() },
-    )
+  val hideFraction: StateFlow<Boolean> = preferences.hideFraction.asStateFlow(viewModelScope)
 
   val isPrivacyEnabled: StateFlow<Boolean> =
     observeSyncedPref(

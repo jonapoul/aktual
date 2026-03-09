@@ -1,5 +1,6 @@
 package aktual.settings.ui.root
 
+import aktual.budget.model.NumberFormat
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.ui.BottomNavBarSpacing
@@ -13,6 +14,7 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.BooleanPreference
+import aktual.settings.vm.root.NumberFormatPreference
 import aktual.settings.vm.root.SettingsScreenState
 import aktual.settings.vm.root.SettingsViewModel
 import androidx.compose.foundation.layout.Arrangement
@@ -45,6 +47,7 @@ fun SettingsScreen(
         SettingsAction.NavBack -> nav.back()
         SettingsAction.NavToThemeSettings -> nav.toThemeSettings()
         is SettingsAction.SetShowBottomBar -> viewModel.showBottomBar(action.value)
+        is SettingsAction.SetNumberFormat -> viewModel.numberFormat(action.value)
       }
     },
   )
@@ -83,6 +86,8 @@ private fun SettingsContent(
 
     item { ThemeSettingsItem(onClick = { onAction(SettingsAction.NavToThemeSettings) }) }
 
+    item { FormattingGroup(format = state.numberFormat, onAction = onAction) }
+
     item {
       BottomStatusBarSpacing()
       BottomNavBarSpacing()
@@ -98,6 +103,12 @@ private fun PreviewSettingsScaffold(
 
 private class SettingsScaffoldProvider :
   ThemedParameterProvider<SettingsScreenState>(
-    SettingsScreenState(showBottomBar = BooleanPreference(value = true)),
-    SettingsScreenState(showBottomBar = BooleanPreference(value = false)),
+    SettingsScreenState(
+      showBottomBar = BooleanPreference(value = true),
+      numberFormat = NumberFormatPreference(NumberFormat.CommaDot),
+    ),
+    SettingsScreenState(
+      showBottomBar = BooleanPreference(value = false),
+      numberFormat = NumberFormatPreference(NumberFormat.SpaceComma),
+    ),
   )
