@@ -76,9 +76,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
           leadingIcon = optionIcon?.let { icon -> { icon(value) } },
           colors = theme.textField(),
         )
-        Box(
-          modifier = Modifier.matchParentSize().clickable(enabled) { showSheet = true },
-        )
+        Box(modifier = Modifier.matchParentSize().clickable(enabled) { showSheet = true })
       }
     },
   )
