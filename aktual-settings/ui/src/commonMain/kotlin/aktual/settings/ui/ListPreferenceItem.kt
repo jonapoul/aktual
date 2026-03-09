@@ -9,10 +9,14 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TextField
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
@@ -31,7 +35,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.util.fastForEach
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -40,7 +43,7 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun <E : Enum<E>> ListPreferenceItem(
   value: E,
   options: ImmutableList<E>,
-  optionString: (E) -> String,
+  optionString: @Composable (E) -> String,
   optionIcon: ((E) -> ImageVector)?,
   onValueChange: (E) -> Unit,
   title: String,
@@ -88,31 +91,34 @@ internal fun <E : Enum<E>> ListPreferenceItem(
       containerColor = theme.pageBackground,
       contentColor = theme.pageText,
     ) {
-      options.fastForEach { option ->
-        val label = remember(option) { optionString(option) }
-        val isSelected = option == value
-        ListItem(
-          modifier =
-            Modifier.clickable {
-              onValueChange(option)
-              showSheet = false
-            },
-          headlineContent = { Text(label) },
-          leadingContent = optionIcon?.let { iconFn -> { Icon(iconFn(option), label) } },
-          trailingContent =
-            if (isSelected) {
-              { Icon(MaterialIcons.Check, contentDescription = null) }
-            } else {
-              null
-            },
-          colors =
-            ListItemDefaults.colors(
-              containerColor = Color.Transparent,
-              headlineColor = theme.pageText,
-              leadingIconColor = theme.pageText,
-              trailingIconColor = theme.pageText,
-            ),
-        )
+      val listState = rememberLazyListState()
+      LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
+        items(options) { option ->
+          val label = optionString(option)
+          val isSelected = option == value
+          ListItem(
+            modifier =
+              Modifier.clickable {
+                onValueChange(option)
+                showSheet = false
+              },
+            headlineContent = { Text(label) },
+            leadingContent = optionIcon?.let { iconFn -> { Icon(iconFn(option), label) } },
+            trailingContent =
+              if (isSelected) {
+                { Icon(MaterialIcons.Check, contentDescription = null) }
+              } else {
+                null
+              },
+            colors =
+              ListItemDefaults.colors(
+                containerColor = Color.Transparent,
+                headlineColor = theme.pageText,
+                leadingIconColor = theme.pageText,
+                trailingIconColor = theme.pageText,
+              ),
+          )
+        }
       }
     }
   }

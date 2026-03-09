@@ -32,4 +32,12 @@
   <string name="settings_format_decimal">Hide decimal places</string>
   <string name="settings_format_dates">Date format</string>
   <string name="settings_format_first_day">First day of the week</string>
+
+  <string name="settings_currency">Currency</string>
+  <string name="settings_currency_desc">These affect how amounts are displayed throughout the application. Changing the currency will affect the number format, symbol position, and whether fractions are shown. These can be adjusted after the currency is set.</string>
+  <string name="settings_currency_default">Default currency</string>
+  <string name="settings_currency_symbol_position">Symbol Position</string>
+  <string name="settings_currency_symbol_position_before">Before amount (e.g. %1$s)</string>
+  <string name="settings_currency_symbol_position_after">After amount (e.g. %1$s)</string>
+  <string name="settings_currency_add_space">Add space between amount and symbol</string>
 </resources>

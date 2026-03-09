@@ -1,12 +1,14 @@
 package aktual.core.prefs
 
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.NumberFormat
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import dev.jonpoulton.preferences.core.Preference
 import dev.jonpoulton.preferences.core.Preferences
 import dev.jonpoulton.preferences.core.SimpleNullableStringSerializer
-import dev.jonpoulton.preferences.core.SimpleStringSerializer
+import dev.jonpoulton.preferences.core.enumOrdinalSerializer
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -29,9 +31,26 @@ class AppGlobalPreferencesImpl(preferences: Preferences) : AppGlobalPreferences 
   override val numberFormat: Preference<NumberFormat> =
     preferences.getObject("numberFormat", NumberFormatSerializer, NumberFormat.DotComma)
 
+  override val currency: Preference<Currency> =
+    preferences.getObject("currency", CurrencySerializer, DefaultCurrency)
+
+  override val currencySymbolPosition: Preference<CurrencySymbolPosition> =
+    preferences.getObject(
+      "currencySymbolPosition",
+      CurrencySymbolPositionSerializer,
+      DefaultCurrency.symbolPosition,
+    )
+
+  override val currencySpaceBetweenAmountAndSymbol: Preference<Boolean> =
+    preferences.getBoolean(key = "currencySpaceBetweenAmountAndSymbol", default = true)
+
   private companion object {
+    private val DefaultCurrency = defaultCurrency()
+
     val TokenSerializer = SimpleNullableStringSerializer { token -> token?.let(::Token) }
     val ServerUrlSerializer = SimpleNullableStringSerializer { url -> url?.let(::ServerUrl) }
-    val NumberFormatSerializer = SimpleStringSerializer { value -> NumberFormat.from(value) }
+    val NumberFormatSerializer = enumOrdinalSerializer<NumberFormat>()
+    val CurrencySerializer = enumOrdinalSerializer<Currency>()
+    val CurrencySymbolPositionSerializer = enumOrdinalSerializer<CurrencySymbolPosition>()
   }
 }

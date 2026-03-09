@@ -2,6 +2,8 @@ package aktual.app.nav
 
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.BudgetFiles
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.SyncedPrefKey
@@ -60,6 +62,14 @@ abstract class RootViewModel(
   val numberFormat: StateFlow<NumberFormat> = preferences.numberFormat.asStateFlow(viewModelScope)
 
   val hideFraction: StateFlow<Boolean> = preferences.hideFraction.asStateFlow(viewModelScope)
+
+  val currency: StateFlow<Currency> = preferences.currency.asStateFlow(viewModelScope)
+
+  val currencySymbolPosition: StateFlow<CurrencySymbolPosition> =
+    preferences.currencySymbolPosition.asStateFlow(viewModelScope)
+
+  val currencySpaceBetweenAmountAndSymbol: StateFlow<Boolean> =
+    preferences.currencySpaceBetweenAmountAndSymbol.asStateFlow(viewModelScope)
 
   val isPrivacyEnabled: StateFlow<Boolean> =
     observeSyncedPref(

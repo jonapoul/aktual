@@ -42,15 +42,15 @@ private fun NumberFormat(
   ListPreferenceItem(
     modifier = modifier,
     value = preference.selected,
-    options = preference.values,
-    optionString = NumberFormat::string,
+    options = NumberFormatPreference.Values,
+    optionString = { f -> f.string() },
     optionIcon = null,
     onValueChange = { f -> onAction(SettingsAction.SetNumberFormat(f)) },
     title = Strings.settingsFormatNumbers,
     subtitle = null,
     includeBackground = false,
     icon = MaterialIcons.Speed125,
-    enabled = preference.enabled,
+    enabled = true,
   )
 }
 

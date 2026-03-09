@@ -1,12 +1,14 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
+import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.DateRangeType
 import aktual.budget.model.NumberFormatConfig
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.stringShort
@@ -110,14 +112,16 @@ internal fun yearMonthXAxisFormatter(): CartesianValueFormatter {
 
 @Composable
 internal fun amountYAxisFormatter(
-  config: NumberFormatConfig = LocalNumberFormatConfig.current,
+  numberFormatConfig: NumberFormatConfig = LocalNumberFormatConfig.current,
+  currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
 ) =
-  remember(config, isPrivacyEnabled) {
+  remember(numberFormatConfig, isPrivacyEnabled) {
     CartesianValueFormatter { _, value, _ ->
       Amount(value)
         .toString(
-          config = config.copy(hideFraction = true),
+          numberFormatConfig = numberFormatConfig.copy(hideFraction = true),
+          currencyConfig = currencyConfig,
           includeSign = false,
           isPrivacyEnabled = isPrivacyEnabled,
         )

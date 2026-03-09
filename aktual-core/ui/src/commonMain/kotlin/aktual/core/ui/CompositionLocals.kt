@@ -1,6 +1,9 @@
 package aktual.core.ui
 
 import aktual.budget.model.Amount
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencyConfig
+import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
 import alakazam.compose.VerticalSpacer
@@ -17,26 +20,33 @@ val LocalBottomStatusBarHeight = compositionLocalOf { 0.dp }
 val LocalNumberFormatConfig =
   compositionLocalOf<NumberFormatConfig> { error("No NumberFormatConfig value provided") }
 
+val LocalCurrencyConfig =
+  compositionLocalOf<CurrencyConfig> { error("No CurrencyConfig value provided") }
+
 @Composable
 fun Amount.formattedString(
-  config: NumberFormatConfig = LocalNumberFormatConfig.current,
+  numberFormatConfig: NumberFormatConfig = LocalNumberFormatConfig.current,
+  currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,
   includeSign: Boolean = false,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
-): String = toString(config, includeSign, isPrivacyEnabled)
+): String = toString(numberFormatConfig, currencyConfig, includeSign, isPrivacyEnabled)
 
 @Composable
 fun WithCompositionLocals(
   isPrivacyEnabled: Boolean = false,
   format: NumberFormat = NumberFormat.Default,
   hideFraction: Boolean = false,
+  currency: Currency = Currency.PoundSterling,
+  currencyPosition: CurrencySymbolPosition = CurrencySymbolPosition.BeforeAmount,
+  addCurrencySpace: Boolean = true,
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
     LocalNumberFormatConfig provides NumberFormatConfig(format, hideFraction),
+    LocalCurrencyConfig provides CurrencyConfig(currency, currencyPosition, addCurrencySpace),
     LocalPrivacyEnabled provides isPrivacyEnabled,
-  ) {
-    content()
-  }
+    content = content,
+  )
 }
 
 @Composable

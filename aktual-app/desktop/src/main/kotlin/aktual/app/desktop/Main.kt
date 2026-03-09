@@ -6,18 +6,13 @@ import aktual.core.l10n.Strings
 import aktual.core.logging.JvmLogStorage
 import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
-import aktual.core.ui.AktualTheme
-import aktual.core.ui.WithCompositionLocals
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import androidx.lifecycle.ViewModelStoreOwner
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -95,39 +90,17 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
   }
 
 @Composable
+@Suppress("ViewModelForwarding")
 private fun WindowContents(
   navController: NavHostController,
   viewModel: AktualDesktopViewModel,
   viewModelStoreOwner: ViewModelStoreOwner,
   factory: MetroViewModelFactory,
-) =
+) {
   CompositionLocalProvider(
     LocalViewModelStoreOwner provides viewModelStoreOwner,
     LocalMetroViewModelFactory provides factory,
   ) {
-    val theme by viewModel.theme(isSystemInDarkTheme()).collectAsStateWithLifecycle(null)
-    val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
-    val numberFormat by viewModel.numberFormat.collectAsStateWithLifecycle()
-    val hideFraction by viewModel.hideFraction.collectAsStateWithLifecycle()
-    val isPrivacyEnabled by viewModel.isPrivacyEnabled.collectAsStateWithLifecycle()
-
-    theme?.let { t ->
-      WithCompositionLocals(
-        isPrivacyEnabled = isPrivacyEnabled,
-        format = numberFormat,
-        hideFraction = hideFraction,
-      ) {
-        AktualTheme(t) {
-          AktualAppContent(
-            navController = navController,
-            isPrivacyEnabled = isPrivacyEnabled,
-            numberFormat = numberFormat,
-            hideFraction = hideFraction,
-            isServerUrlSet = viewModel.isServerUrlSet,
-            token = viewModel.token,
-            bottomBarState = bottomBarState,
-          )
-        }
-      }
-    }
+    AktualAppContent(viewModel = viewModel, navController = navController)
   }
+}
