@@ -73,7 +73,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
           readOnly = true,
           enabled = enabled,
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
-          leadingIcon = optionIcon?.let { icon -> { icon(value) } },
+          leadingIcon = optionIcon?.let { iconComposable -> { iconComposable(value) } },
           colors = theme.textField(),
         )
         Box(modifier = Modifier.matchParentSize().clickable(enabled) { showSheet = true })
