@@ -64,7 +64,7 @@ value class Amount(private val value: Long) : Comparable<Amount> {
             NumberFormat.CommaDotIn -> enIn
           }
 
-      val numDp = if (hideFraction) 0 else currency.decimalPlaces
+        val numDp = if (hideFraction) 0 else currency.decimalPlaces
         val numberFormat =
           JNumberFormat.getNumberInstance(locale).apply {
             minimumFractionDigits = numDp
