@@ -1,8 +1,8 @@
 package aktual.core.ui
 
-import aktual.core.icons.ArrowBack
-import aktual.core.icons.Check
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.ArrowBack
+import aktual.core.icons.material.Check
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme

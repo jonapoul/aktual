@@ -406,10 +406,10 @@ Material Design icons from the official Android/Compose Material library.
 ```kotlin
 @file:Suppress("UnusedReceiverParameter")
 
-package aktual.core.icons
+package aktual.core.icons.material
 
-import aktual.core.icons.internal.materialIcon
-import aktual.core.icons.internal.materialPath
+import aktual.core.icons.material.internal.materialIcon
+import aktual.core.icons.material.internal.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val MaterialIcons.YourIcon: ImageVector by lazy {
@@ -437,7 +437,7 @@ val MaterialIcons.YourIcon: ImageVector by lazy {
 - Use `by lazy` delegate for initialization
 - Use `materialIcon()` helper (24dp fixed size, automatically prepends "Material." to name)
 - Use `materialPath {}` for path definitions
-- Add to `MaterialIconsProvider` list in `IconPreviews.kt`
+- Add to `materialIcons` list in `material/MaterialIconPreviews.kt`
 
 #### SVG Path Conversion Reference
 
@@ -456,9 +456,9 @@ val MaterialIcons.YourIcon: ImageVector by lazy {
 
 ```kotlin
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.Cloud
-import aktual.core.icons.Check
+import aktual.core.icons.material.Check
 
 Icon(
   imageVector = AktualIcons.Cloud,

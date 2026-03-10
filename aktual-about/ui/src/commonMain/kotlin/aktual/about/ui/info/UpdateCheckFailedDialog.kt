@@ -1,7 +1,7 @@
 package aktual.about.ui.info
 
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Warning
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Warning
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme

@@ -1,7 +1,7 @@
 package aktual.settings.ui.theme
 
-import aktual.core.icons.ArrowRight
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.ArrowRight
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
