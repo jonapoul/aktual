@@ -28,6 +28,7 @@
   <string name="settings_theme_inspect_retry">Retry</string>
 
   <string name="settings_format_group">Formatting</string>
+  <string name="settings_format_desc">Formatting does not affect how budget data is stored, and can be changed at any time.</string>
   <string name="settings_format_numbers">Number format</string>
   <string name="settings_format_decimal">Hide decimal places</string>
   <string name="settings_format_dates">Date format</string>

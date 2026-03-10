@@ -2,6 +2,7 @@ package aktual.settings.ui.root
 
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
+import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import androidx.compose.runtime.Immutable
 
@@ -16,6 +17,8 @@ internal sealed interface SettingsAction {
   @JvmInline value class SetNumberFormat(val value: NumberFormat) : SettingsAction
 
   @JvmInline value class SetHideFraction(val value: Boolean) : SettingsAction
+
+  @JvmInline value class SetFirstDayOfWeek(val value: FirstDayOfWeek) : SettingsAction
 
   @JvmInline value class SetCurrency(val value: Currency) : SettingsAction
 

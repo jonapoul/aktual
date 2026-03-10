@@ -2,6 +2,7 @@ package aktual.core.prefs
 
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
+import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -28,6 +29,9 @@ class AppGlobalPreferencesImpl(preferences: Preferences) : AppGlobalPreferences 
   override val hideFraction: Preference<Boolean> =
     preferences.getBoolean(key = "hideFraction", default = false)
 
+  override val firstDayOfWeek: Preference<FirstDayOfWeek> =
+    preferences.getObject("firstDayOfWeekIdx", FirstDayOfWeekSerializer, FirstDayOfWeek.Monday)
+
   override val numberFormat: Preference<NumberFormat> =
     preferences.getObject("numberFormat", NumberFormatSerializer, NumberFormat.DotComma)
 
@@ -49,6 +53,7 @@ class AppGlobalPreferencesImpl(preferences: Preferences) : AppGlobalPreferences 
 
     val TokenSerializer = SimpleNullableStringSerializer { token -> token?.let(::Token) }
     val ServerUrlSerializer = SimpleNullableStringSerializer { url -> url?.let(::ServerUrl) }
+    val FirstDayOfWeekSerializer = enumOrdinalSerializer<FirstDayOfWeek>()
     val NumberFormatSerializer = enumOrdinalSerializer<NumberFormat>()
     val CurrencySerializer = enumOrdinalSerializer<Currency>()
     val CurrencySymbolPositionSerializer = enumOrdinalSerializer<CurrencySymbolPosition>()

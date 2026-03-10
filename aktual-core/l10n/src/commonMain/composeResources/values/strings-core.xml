@@ -51,6 +51,14 @@
   <string name="week_sat">S</string>
   <string name="week_sun">S</string>
 
+  <string name="week_monday">Monday</string>
+  <string name="week_tuesday">Tuesday</string>
+  <string name="week_wednesday">Wednesday</string>
+  <string name="week_thursday">Thursday</string>
+  <string name="week_friday">Friday</string>
+  <string name="week_saturday">Saturday</string>
+  <string name="week_sunday">Sunday</string>
+
   <string name="year_month_picker_title">Select month</string>
   <string name="year_month_picker_to">to</string>
   <string name="year_month_picker_save">Save</string>

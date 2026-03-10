@@ -88,7 +88,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
     ModalBottomSheet(
       onDismissRequest = { showSheet = false },
       sheetState = sheetState,
-      containerColor = theme.pageBackground,
+      containerColor = theme.modalBackground,
       contentColor = theme.pageText,
     ) {
       val listState = rememberLazyListState()
