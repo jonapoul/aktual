@@ -36,7 +36,7 @@ fun WithCompositionLocals(
   isPrivacyEnabled: Boolean = false,
   format: NumberFormat = NumberFormat.Default,
   hideFraction: Boolean = false,
-  currency: Currency = Currency.PoundSterling,
+  currency: Currency = Currency.None,
   currencyPosition: CurrencySymbolPosition = CurrencySymbolPosition.BeforeAmount,
   addCurrencySpace: Boolean = true,
   content: @Composable () -> Unit,
