@@ -1,20 +1,29 @@
 @file:Suppress("UnstableApiUsage")
 
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
-import blueprint.core.gitVersionDate
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import blueprint.core.gitVersionCode
+import io.github.kdroidfilter.nucleus.desktop.application.dsl.CompressionLevel
+import io.github.kdroidfilter.nucleus.desktop.application.dsl.TargetFormat
+import java.time.Instant
+import java.time.ZoneOffset
+import java.util.Locale
 
 plugins {
   id("aktual.module.jvm")
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.kotlin.compose)
-  alias(libs.plugins.shadow)
   id("aktual.convention.compose")
+  alias(libs.plugins.nucleus)
 }
 
-val gitVersionDate = providers.gitVersionDate()
+// Same as gitVersionDate in blueprint, but with the year stripped from 2026 -> 26
+val gitVersionDate =
+  providers.gitVersionCode().map { seconds ->
+    val date = Instant.ofEpochSecond(seconds.toLong()).atZone(ZoneOffset.UTC).toLocalDate()
+    "%02d.%02d.%02d".format(Locale.ROOT, date.year % 100, date.monthValue, date.dayOfMonth)
+  }
 
-compose.desktop {
+nucleus {
   application {
     mainClass = "aktual.app.desktop.MainKt"
 
@@ -32,16 +41,45 @@ compose.desktop {
     }
 
     nativeDistributions {
-      targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+      targetFormats(
+        // windows
+        TargetFormat.AppX,
+        TargetFormat.Msi,
+        TargetFormat.Nsis,
+        TargetFormat.Portable,
+
+        // mac
+        TargetFormat.Dmg,
+        TargetFormat.Pkg,
+
+        // linux
+        TargetFormat.AppImage,
+        TargetFormat.Deb,
+        TargetFormat.Flatpak,
+        TargetFormat.Rpm,
+        TargetFormat.Snap,
+      )
+
+      // Package metadata
       packageName = "Aktual Desktop"
       packageVersion = gitVersionDate.get()
-      packageVersion = "1.0.0"
+      description = "Desktop app for the Actual budgeting software"
+      homepage = "https://github.com/jonapoul/aktual"
+      licenseFile = rootProject.layout.projectDirectory.file("LICENSE")
 
+      // JDK modules
       modules("java.sql")
+
+      // Nucleus features
+      cleanupNativeLibs = true
+      // enableAotCache = true // requires JDK25
+      // splashImage = "splash.png"
+      compressionLevel = CompressionLevel.Maximum
+      artifactName = $$"${name}-${version}-${os}-${arch}.${ext}"
 
       val icon =
         rootProject.isolated.projectDirectory.file(
-          "aktual-core:l10n/src/commonMain/composeResources/drawable/app_icon_192.png"
+          "aktual-core/l10n/src/commonMain/composeResources/drawable/app_icon_192.png"
         )
 
       windows {
@@ -49,6 +87,12 @@ compose.desktop {
         // see https://wixtoolset.org/documentation/manual/v3/howtos/general/generate_guids.html
         upgradeUuid = "a61b72be-1b0c-4de5-9607-791c17687428"
         iconFile = icon
+        nsis {
+          oneClick = false
+          allowToChangeInstallationDirectory = true
+          createDesktopShortcut = true
+          createStartMenuShortcut = true
+        }
       }
 
       macOS {
@@ -57,9 +101,11 @@ compose.desktop {
       }
 
       linux {
-        shortcut = true
         packageName = "aktual.app.desktop"
         iconFile = icon
+        shortcut = true
+        debMaintainer = "Jon Poulton <jpoulton@pm.me>"
+        appCategory = "Utility"
       }
     }
   }
@@ -78,14 +124,10 @@ val copyLicenseeReportToResources by
 
 tasks.processResources.configure { dependsOn(copyLicenseeReportToResources) }
 
-tasks.shadowJar {
-  archiveClassifier.set("all")
-  mergeServiceFiles()
-  manifest { attributes["Main-Class"] = "aktual.app.desktop.MainKt" }
-}
-
+// Can't remove this afterEvaluate because apparently the compose plugin doesn't create the task in
+// a normal way
 afterEvaluate {
-  tasks.named("proguardReleaseJars") {
+  tasks.named("proguardReleaseJars").configure {
     // Proguard won't create the path for us...
     val outputsDir = layout.buildDirectory.dir("outputs")
     doFirst { outputsDir.get().asFile.mkdirs() }
@@ -103,4 +145,6 @@ dependencies {
   implementation(libs.jetbrains.viewmodel)
   implementation(libs.kotlinx.coroutines.swing)
   implementation(libs.metrox.viewmodel.compose)
+
+  nucleus {}
 }
