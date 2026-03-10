@@ -31,7 +31,11 @@ internal fun FormattingGroup(
   onAction: (SettingsAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  PreferenceGroup(title = Strings.settingsFormatGroup, subtitle = null, modifier = modifier) {
+  PreferenceGroup(
+    title = Strings.settingsFormatGroup,
+    subtitle = Strings.settingsFormatDesc,
+    modifier = modifier,
+  ) {
     NumberFormat(numberFormat, onAction)
     HideFraction(hideFraction, onAction)
     FirstDayOfWeek(firstDayOfWeek, onAction)
@@ -68,7 +72,6 @@ private fun NumberFormat.string(): String =
     NumberFormat.ApostropheDot -> "1'000.33"
     NumberFormat.CommaDotIn -> "1,00,000.33"
   }
-
 
 @Composable
 private fun FirstDayOfWeek(
