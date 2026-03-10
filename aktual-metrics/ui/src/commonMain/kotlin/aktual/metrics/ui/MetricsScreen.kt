@@ -1,8 +1,8 @@
 package aktual.metrics.ui
 
 import aktual.api.model.metrics.GetMetricsResponse
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Refresh
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.model.GB
 import aktual.core.model.MB

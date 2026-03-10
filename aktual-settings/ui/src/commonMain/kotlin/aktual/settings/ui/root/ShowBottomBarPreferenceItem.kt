@@ -1,8 +1,8 @@
 package aktual.settings.ui.root
 
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Visibility
-import aktual.core.icons.VisibilityOff
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Visibility
+import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedBooleanParameters

@@ -2,8 +2,8 @@ package aktual.account.ui.url
 
 import aktual.account.vm.NavDestination
 import aktual.account.vm.ServerUrlViewModel
-import aktual.core.icons.Info
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.Info
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Protocol

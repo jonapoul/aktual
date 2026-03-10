@@ -1,8 +1,8 @@
 package aktual.settings.ui.root
 
-import aktual.core.icons.ArrowRight
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.ThemeRoutine
+import aktual.core.icons.material.ArrowRight
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorScheme

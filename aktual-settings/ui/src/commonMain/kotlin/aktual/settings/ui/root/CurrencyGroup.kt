@@ -6,11 +6,11 @@ import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
-import aktual.core.icons.CurrencyPound
-import aktual.core.icons.LineEndArrowNotch
-import aktual.core.icons.LineStartArrowNotch
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.SpaceBar
+import aktual.core.icons.material.CurrencyPound
+import aktual.core.icons.material.LineEndArrowNotch
+import aktual.core.icons.material.LineStartArrowNotch
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.SpaceBar
 import aktual.core.l10n.Strings
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.settings.ui.BooleanPreferenceItem
