@@ -178,7 +178,7 @@ private fun LoadedContent(
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Large).scrollbar(listState),
+    modifier = modifier.fillMaxSize().scrollbar(listState).padding(horizontal = Dimens.Large),
     state = listState,
   ) {
     items(artifacts) { artifact ->
