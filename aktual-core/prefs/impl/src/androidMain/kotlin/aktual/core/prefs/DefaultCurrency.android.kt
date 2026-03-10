@@ -11,5 +11,5 @@ internal actual fun defaultCurrency(): Currency {
     } catch (_: IllegalArgumentException) {
       null
     }
-  return Currency.entries.firstOrNull { it.code == code } ?: Currency.UsDollar
+  return Currency.entries.firstOrNull { it.code == code } ?: Currency.None
 }
