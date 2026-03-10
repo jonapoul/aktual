@@ -116,7 +116,7 @@ internal fun amountYAxisFormatter(
   currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
 ) =
-  remember(numberFormatConfig, isPrivacyEnabled) {
+  remember(numberFormatConfig, currencyConfig, isPrivacyEnabled) {
     CartesianValueFormatter { _, value, _ ->
       Amount(value)
         .toString(
