@@ -2,6 +2,7 @@ package aktual.settings.vm.root
 
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
+import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.settings.vm.BooleanPreference
@@ -13,6 +14,7 @@ data class SettingsScreenState(
   val showBottomBar: BooleanPreference,
   val numberFormat: NumberFormatPreference,
   val hideFraction: BooleanPreference,
+  val dateFormat: DateFormat,
   val firstDayOfWeek: FirstDayOfWeek,
   val currency: CurrencyPreference,
   val currencySymbolPosition: CurrencySymbolPositionPreference,

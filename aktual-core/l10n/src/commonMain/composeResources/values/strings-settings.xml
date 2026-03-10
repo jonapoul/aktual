@@ -32,6 +32,11 @@
   <string name="settings_format_numbers">Number format</string>
   <string name="settings_format_decimal">Hide decimal places</string>
   <string name="settings_format_dates">Date format</string>
+  <string name="settings_date_format_mm_dd_yyyy">MM/DD/YYYY</string>
+  <string name="settings_date_format_dd_mm_yyyy">DD/MM/YYYY</string>
+  <string name="settings_date_format_yyyy_mm_dd">YYYY-MM-DD</string>
+  <string name="settings_date_format_mm_dd_yyyy_dot">MM.DD.YYYY</string>
+  <string name="settings_date_format_dd_mm_yyyy_dot">DD.MM.YYYY</string>
   <string name="settings_format_first_day">First day of the week</string>
 
   <string name="settings_currency">Currency</string>
