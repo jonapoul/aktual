@@ -1,7 +1,7 @@
 package aktual.settings.ui.inspect
 
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.OpenInNew
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.OpenInNew
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme

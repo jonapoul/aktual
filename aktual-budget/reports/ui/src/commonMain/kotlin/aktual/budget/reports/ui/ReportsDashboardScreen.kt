@@ -4,8 +4,8 @@ import aktual.budget.model.BudgetId
 import aktual.budget.reports.vm.DashboardState
 import aktual.budget.reports.vm.ReportDashboardItem
 import aktual.budget.reports.vm.ReportsDashboardViewModel
-import aktual.core.icons.Add
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.Add
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme

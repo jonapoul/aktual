@@ -1,8 +1,8 @@
 package aktual.core.ui
 
 import aktual.budget.model.DateRangeType
-import aktual.core.icons.Clear
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.Clear
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme

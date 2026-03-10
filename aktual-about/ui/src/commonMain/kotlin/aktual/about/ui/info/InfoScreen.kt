@@ -3,10 +3,10 @@ package aktual.about.ui.info
 import aktual.about.vm.AboutViewModel
 import aktual.about.vm.BuildState
 import aktual.about.vm.CheckUpdatesState
-import aktual.core.icons.Apps
-import aktual.core.icons.CalendarToday
-import aktual.core.icons.Cloud
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.Apps
+import aktual.core.icons.material.CalendarToday
+import aktual.core.icons.material.Cloud
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions

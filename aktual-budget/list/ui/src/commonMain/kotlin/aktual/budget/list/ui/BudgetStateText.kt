@@ -7,8 +7,8 @@ import aktual.core.icons.CloudDownload
 import aktual.core.icons.CloudUnknown
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.FileDouble
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Sync
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Sync
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme

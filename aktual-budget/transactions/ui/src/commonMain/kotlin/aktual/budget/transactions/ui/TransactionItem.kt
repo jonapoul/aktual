@@ -7,8 +7,8 @@ import aktual.budget.model.TransactionsFormat.Table
 import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionState
 import aktual.budget.transactions.vm.TransactionStateSource
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.MoreVert
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme

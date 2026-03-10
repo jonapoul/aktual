@@ -2,8 +2,8 @@ package aktual.core.ui
 
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudWarning
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Refresh
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Refresh
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import alakazam.compose.VerticalSpacer

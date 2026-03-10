@@ -3,10 +3,10 @@ package aktual.budget.list.ui
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetState
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.DeleteForever
 import aktual.core.icons.Key
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.MoreVert
+import aktual.core.icons.material.DeleteForever
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme

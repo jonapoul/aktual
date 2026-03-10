@@ -3,10 +3,10 @@ package aktual.about.ui.licenses
 import aktual.about.data.ArtifactDetail
 import aktual.about.vm.LicensesState
 import aktual.about.vm.SearchBarState
-import aktual.core.icons.Error
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Search
-import aktual.core.icons.Warning
+import aktual.core.icons.material.Error
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Search
+import aktual.core.icons.material.Warning
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme

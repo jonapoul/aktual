@@ -1,9 +1,9 @@
 package aktual.budget.transactions.ui
 
 import aktual.budget.transactions.vm.LoadedAccount
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Visibility
-import aktual.core.icons.VisibilityOff
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Visibility
+import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme

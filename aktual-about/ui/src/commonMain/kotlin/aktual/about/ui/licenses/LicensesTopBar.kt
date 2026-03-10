@@ -1,9 +1,9 @@
 package aktual.about.ui.licenses
 
 import aktual.about.vm.SearchBarState
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Search
-import aktual.core.icons.SearchOff
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Search
+import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.theme.Theme
 import aktual.core.ui.NavBackIconButton
