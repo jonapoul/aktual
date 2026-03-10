@@ -1,8 +1,10 @@
 package aktual.settings.ui.root
 
+import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.icons.CalendarToday
+import aktual.core.icons.CalendarViewWeek
 import aktual.core.icons.DecimalDecrease
 import aktual.core.icons.DecimalIncrease
 import aktual.core.icons.MaterialIcons
@@ -27,6 +29,7 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun FormattingGroup(
   numberFormat: NumberFormatPreference,
   hideFraction: BooleanPreference,
+  dateFormat: DateFormat,
   firstDayOfWeek: FirstDayOfWeek,
   onAction: (SettingsAction) -> Unit,
   modifier: Modifier = Modifier,
@@ -37,6 +40,7 @@ internal fun FormattingGroup(
     modifier = modifier,
   ) {
     NumberFormat(numberFormat, onAction)
+    DateFormatItem(dateFormat, onAction)
     FirstDayOfWeek(firstDayOfWeek, onAction)
     HideFraction(hideFraction, onAction)
   }
@@ -97,6 +101,39 @@ private fun FirstDayOfWeek(
 private val FirstDayOfWeekValues = FirstDayOfWeek.entries.toImmutableList()
 
 @Composable
+private fun DateFormatItem(
+  value: DateFormat,
+  onAction: (SettingsAction) -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  ListPreferenceItem(
+    modifier = modifier,
+    value = value,
+    options = DateFormatValues,
+    optionString = { f -> f.label() },
+    optionIcon = null,
+    onValueChange = { f -> onAction(SettingsAction.SetDateFormat(f)) },
+    title = Strings.settingsFormatDates,
+    subtitle = null,
+    includeBackground = false,
+    icon = MaterialIcons.CalendarViewWeek,
+    enabled = true,
+  )
+}
+
+private val DateFormatValues = DateFormat.entries.toImmutableList()
+
+@Composable
+private fun DateFormat.label(): String =
+  when (this) {
+    DateFormat.MmDdYyyy -> Strings.settingsDateFormatMmDdYyyy
+    DateFormat.DdMmYyyy -> Strings.settingsDateFormatDdMmYyyy
+    DateFormat.YyyyMmDd -> Strings.settingsDateFormatYyyyMmDd
+    DateFormat.MmDdYyyyDot -> Strings.settingsDateFormatMmDdYyyyDot
+    DateFormat.DdMmYyyyDot -> Strings.settingsDateFormatDdMmYyyyDot
+  }
+
+@Composable
 private fun FirstDayOfWeek.string(): String =
   when (this) {
     FirstDayOfWeek.Sunday -> Strings.weekSunday
@@ -135,6 +172,7 @@ private fun PreviewFormattingGroup(
     FormattingGroup(
       numberFormat = NumberFormatPreference(params.data.numberFormat),
       hideFraction = BooleanPreference(params.data.hideFraction),
+      dateFormat = params.data.dateFormat,
       firstDayOfWeek = params.data.firstDayOfWeek,
       onAction = {},
     )
@@ -143,6 +181,7 @@ private fun PreviewFormattingGroup(
 private data class FormattingGroupState(
   val numberFormat: NumberFormat,
   val hideFraction: Boolean,
+  val dateFormat: DateFormat,
   val firstDayOfWeek: FirstDayOfWeek,
 )
 
@@ -151,6 +190,7 @@ private class FormattingGroupProvider :
     FormattingGroupState(
       numberFormat = NumberFormat.CommaDot,
       hideFraction = true,
+      dateFormat = DateFormat.MmDdYyyy,
       firstDayOfWeek = FirstDayOfWeek.Monday,
     )
   )

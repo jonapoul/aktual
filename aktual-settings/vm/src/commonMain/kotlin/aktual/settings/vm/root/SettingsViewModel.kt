@@ -2,6 +2,7 @@ package aktual.settings.vm.root
 
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
+import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.prefs.AppGlobalPreferences
@@ -32,6 +33,9 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
   private val hideFractionPref = preferences.hideFraction
   private val hideFraction = hideFractionPref.asStateFlow(viewModelScope)
 
+  private val dateFormatPref = preferences.dateFormat
+  private val dateFormat = dateFormatPref.asStateFlow(viewModelScope)
+
   private val firstDayOfWeekPref = preferences.firstDayOfWeek
   private val firstDayOfWeek = firstDayOfWeekPref.asStateFlow(viewModelScope)
 
@@ -51,6 +55,7 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
       val showBottomBar by showBottomBar.collectAsState()
       val numberFormat by numberFormat.collectAsState()
       val hideFraction by hideFraction.collectAsState()
+      val dateFormat by dateFormat.collectAsState()
       val firstDayOfWeek by firstDayOfWeek.collectAsState()
       val currency by currency.collectAsState()
       val currencySymbolPosition by currencySymbolPosition.collectAsState()
@@ -61,6 +66,7 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
         showBottomBar = BooleanPreference(value = showBottomBar),
         numberFormat = NumberFormatPreference(selected = numberFormat),
         hideFraction = BooleanPreference(value = hideFraction),
+        dateFormat = dateFormat,
         firstDayOfWeek = firstDayOfWeek,
         currency = CurrencyPreference(currency),
         currencySymbolPosition =
@@ -75,6 +81,8 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
   fun numberFormat(value: NumberFormat) = numberFormatPref.set(value)
 
   fun hideFraction(value: Boolean) = hideFractionPref.set(value)
+
+  fun dateFormat(value: DateFormat) = dateFormatPref.set(value)
 
   fun firstDayOfWeek(value: FirstDayOfWeek) = firstDayOfWeekPref.set(value)
 
