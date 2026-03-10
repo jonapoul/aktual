@@ -75,7 +75,7 @@ internal fun BasicPreferenceItem(
 
     Column(modifier = Modifier.weight(1f)) {
       Column(
-        modifier = Modifier.wrapContentHeight().padding(10.dp),
+        modifier = Modifier.wrapContentHeight().padding(6.dp),
         verticalArrangement = Arrangement.spacedBy(4.dp),
       ) {
         Text(

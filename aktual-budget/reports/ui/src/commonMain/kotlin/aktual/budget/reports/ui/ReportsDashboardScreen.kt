@@ -153,7 +153,7 @@ private fun ContentList(
   val listState = rememberLazyListState()
   LazyColumn(
     state = listState,
-    modifier = modifier.fillMaxWidth().padding(5.dp).scrollbar(listState),
+    modifier = modifier.fillMaxWidth().scrollbar(listState).padding(5.dp),
   ) {
     items(items) { item -> ReportDashboardItem(item = item, onAction = onAction, theme = theme) }
   }

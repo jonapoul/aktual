@@ -144,7 +144,7 @@ private fun InspectThemeContent(
     is InspectThemeState.Loaded -> {
       val listState = rememberLazyListState()
       LazyColumn(
-        modifier = modifier.fillMaxSize().padding(Dimens.Large).scrollbar(listState),
+        modifier = modifier.fillMaxSize().scrollbar(listState).padding(Dimens.Large),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(2.dp),
       ) {
