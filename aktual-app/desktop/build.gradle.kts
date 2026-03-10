@@ -125,7 +125,8 @@ val copyLicenseeReportToResources by
 
 tasks.processResources.configure { dependsOn(copyLicenseeReportToResources) }
 
-// Can't remove this afterEvaluate because apparently the compose plugin doesn't create the task in a normal way
+// Can't remove this afterEvaluate because apparently the compose plugin doesn't create the task in
+// a normal way
 afterEvaluate {
   tasks.named("proguardReleaseJars").configure {
     // Proguard won't create the path for us...
