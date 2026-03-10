@@ -73,7 +73,7 @@ nucleus {
       // Nucleus features
       cleanupNativeLibs = true
       // enableAotCache = true // requires JDK25
-      splashImage = "splash.png"
+      // splashImage = "splash.png"
       compressionLevel = CompressionLevel.Maximum
       artifactName = $$"${name}-${version}-${os}-${arch}.${ext}"
 
