@@ -7,9 +7,11 @@ enum class DateFormat(val value: String) {
   MmDdYyyyDot(value = "MM.dd.yyyy"),
   DdMmYyyyDot(value = "dd.MM.yyyy");
 
-  companion object {
-    val Default = MmDdYyyy
+  override fun toString(): String = value
 
-    fun from(value: String?): DateFormat? = entries.firstOrNull { it.value == value }
+  companion object {
+    val Default = YyyyMmDd
+
+    fun from(value: String?): DateFormat = entries.firstOrNull { it.value == value } ?: Default
   }
 }

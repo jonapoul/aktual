@@ -10,6 +10,7 @@ import aktual.core.model.Token
 import dev.jonpoulton.preferences.core.Preference
 import dev.jonpoulton.preferences.core.Preferences
 import dev.jonpoulton.preferences.core.SimpleNullableStringSerializer
+import dev.jonpoulton.preferences.core.SimpleStringSerializer
 import dev.jonpoulton.preferences.core.enumOrdinalSerializer
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -57,7 +58,7 @@ class AppGlobalPreferencesImpl(preferences: Preferences) : AppGlobalPreferences 
 
     val TokenSerializer = SimpleNullableStringSerializer { token -> token?.let(::Token) }
     val ServerUrlSerializer = SimpleNullableStringSerializer { url -> url?.let(::ServerUrl) }
-    val DateFormatSerializer = enumOrdinalSerializer<DateFormat>()
+    val DateFormatSerializer = SimpleStringSerializer(DateFormat::from)
     val FirstDayOfWeekSerializer = enumOrdinalSerializer<FirstDayOfWeek>()
     val NumberFormatSerializer = enumOrdinalSerializer<NumberFormat>()
     val CurrencySerializer = enumOrdinalSerializer<Currency>()
