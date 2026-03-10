@@ -20,7 +20,7 @@ plugins {
 val gitVersionDate =
   providers.gitVersionCode().map { seconds ->
     val date = Instant.ofEpochSecond(seconds.toLong()).atZone(ZoneOffset.UTC).toLocalDate()
-    "%02d.%02d.%02d".format(Locale.getDefault(), date.year % 100, date.monthValue, date.dayOfMonth)
+    "%02d.%02d.%02d".format(Locale.ROOT, date.year % 100, date.monthValue, date.dayOfMonth)
   }
 
 nucleus {
