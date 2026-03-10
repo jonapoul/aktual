@@ -2,6 +2,7 @@ package aktual.settings.ui.root
 
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
+import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
@@ -53,6 +54,7 @@ fun SettingsScreen(
         is SettingsAction.SetShowBottomBar -> viewModel.showBottomBar(action.value)
         is SettingsAction.SetNumberFormat -> viewModel.numberFormat(action.value)
         is SettingsAction.SetHideFraction -> viewModel.hideFraction(action.value)
+        is SettingsAction.SetFirstDayOfWeek -> viewModel.firstDayOfWeek(action.value)
         is SettingsAction.SetCurrency -> viewModel.currency(action.value)
         is SettingsAction.SetCurrencySymbolPosition ->
           viewModel.currencySymbolPosition(action.value)
@@ -100,6 +102,7 @@ private fun SettingsContent(
       FormattingGroup(
         numberFormat = state.numberFormat,
         hideFraction = state.hideFraction,
+        firstDayOfWeek = state.firstDayOfWeek,
         onAction = onAction,
       )
     }
@@ -131,6 +134,7 @@ private class SettingsScaffoldProvider :
       showBottomBar = BooleanPreference(value = true),
       hideFraction = BooleanPreference(value = true),
       numberFormat = NumberFormatPreference(NumberFormat.CommaDot),
+      firstDayOfWeek = FirstDayOfWeek.Monday,
       currency = CurrencyPreference(Currency.None),
       currencySymbolPosition =
         CurrencySymbolPositionPreference(CurrencySymbolPosition.BeforeAmount, false),
@@ -140,6 +144,7 @@ private class SettingsScaffoldProvider :
       showBottomBar = BooleanPreference(value = false),
       hideFraction = BooleanPreference(value = false),
       numberFormat = NumberFormatPreference(NumberFormat.SpaceComma),
+      firstDayOfWeek = FirstDayOfWeek.Sunday,
       currency = CurrencyPreference(Currency.PoundSterling),
       currencySymbolPosition =
         CurrencySymbolPositionPreference(CurrencySymbolPosition.AfterAmount, true),
