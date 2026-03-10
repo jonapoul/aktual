@@ -37,8 +37,8 @@ internal fun FormattingGroup(
     modifier = modifier,
   ) {
     NumberFormat(numberFormat, onAction)
-    HideFraction(hideFraction, onAction)
     FirstDayOfWeek(firstDayOfWeek, onAction)
+    HideFraction(hideFraction, onAction)
   }
 }
 
