@@ -105,7 +105,7 @@ private fun FirstDayOfWeek.string(): String =
     FirstDayOfWeek.Wednesday -> Strings.weekWednesday
     FirstDayOfWeek.Thursday -> Strings.weekThursday
     FirstDayOfWeek.Friday -> Strings.weekFriday
-    FirstDayOfWeek.Saturday -> Strings.weekSunday
+    FirstDayOfWeek.Saturday -> Strings.weekSaturday
   }
 
 @Composable
