@@ -64,6 +64,7 @@ private val materialIcons =
       Brightness2,
       Brightness3,
       CalendarToday,
+      CalendarViewWeek,
       Check,
       Clear,
       Cloud,
