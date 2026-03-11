@@ -11,7 +11,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.isMobile
+import aktual.core.ui.isCompactWidth
 import aktual.core.ui.segmentedButton
 import aktual.settings.ui.BasicPreferenceItem
 import aktual.settings.vm.ListPreference
@@ -38,7 +38,7 @@ internal fun DarkThemePreference(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
   buttonColors: SegmentedButtonColors = theme.segmentedButton(),
-  isMobile: Boolean = isMobile(),
+  isCompact: Boolean = isCompactWidth(),
 ) {
   BasicPreferenceItem(
     modifier = modifier,
@@ -47,9 +47,9 @@ internal fun DarkThemePreference(
     icon = MaterialIcons.DarkMode,
     enabled = preference.enabled,
     onClick = null,
-    rightContent = { if (!isMobile) DarkThemeContent(preference, buttonColors, onAction) },
+    rightContent = { if (!isCompact) DarkThemeContent(preference, buttonColors, onAction) },
     bottomContent = {
-      if (isMobile) {
+      if (isCompact) {
         DarkThemeContent(
           modifier = Modifier.fillMaxWidth(),
           preference = preference,

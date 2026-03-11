@@ -9,6 +9,7 @@ optIn(EXPERIMENTAL_MATERIAL_3)
 
 kotlin {
   commonMainDependencies {
+    api(libs.compose.material3WindowSize)
     api(libs.haze)
     api(libs.kotlinx.datetime)
     api(libs.shimmer)
