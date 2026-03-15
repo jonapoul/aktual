@@ -80,7 +80,7 @@ metrox-android = { module = "dev.zacsweers.metro:metrox-android", version.ref = 
 metrox-viewmodel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.ref = "metro" }
 metrox-viewmodel-compose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
-okio = { module = "com.squareup.okio:okio", version = "3.16.4" }
+okio = { module = "com.squareup.okio:okio", version = "3.17.0" }
 preferences-android = { module = "dev.jonpoulton.preferences:android", version.ref = "preferences" }
 preferences-core = { module = "dev.jonpoulton.preferences:core", version.ref = "preferences" }
 redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
