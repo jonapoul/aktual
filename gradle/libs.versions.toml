@@ -1,7 +1,7 @@
 [versions]
 agp = "9.1.0"
 alakazam = "7.0.0"
-androidx-activity = "1.12.4"
+androidx-activity = "1.13.0"
 androidx-lifecycle = "2.10.0"
 androidx-paging = "3.4.2"
 burst = "2.11.0"
