@@ -20,6 +20,8 @@
   <string name="settings_theme_loading">Loading themes…</string>
   <string name="settings_theme_failed">Failed to load themes: %1$s</string>
   <string name="settings_theme_retry">Retry</string>
+  <string name="settings_theme_refresh">Refresh</string>
+  <string name="settings_theme_refresh_success">Theme catalog refreshed</string>
 
   <string name="settings_theme_inspect_loading">Loading…</string>
   <string name="settings_theme_inspect_open_repo">Open on GitHub</string>

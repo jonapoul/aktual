@@ -11,6 +11,7 @@ import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.Dimens
 import aktual.core.ui.LandscapePreview
+import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
@@ -21,6 +22,7 @@ import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.BooleanPreference
 import aktual.settings.vm.ListPreference
 import aktual.settings.vm.theme.CatalogState
+import aktual.settings.vm.theme.ThemeSettingsEvent
 import aktual.settings.vm.theme.ThemeSettingsState
 import aktual.settings.vm.theme.ThemeSettingsViewModel
 import androidx.compose.foundation.layout.Arrangement
@@ -29,10 +31,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -47,10 +53,21 @@ fun ThemeSettingsScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val catalogState by viewModel.catalogState.collectAsStateWithLifecycle()
+  val snackbarHostState = remember { SnackbarHostState() }
+
+  val refreshSuccessMessage = Strings.settingsThemeRefreshSuccess
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { event ->
+      when (event) {
+        ThemeSettingsEvent.CacheRefreshed -> snackbarHostState.showSnackbar(refreshSuccessMessage)
+      }
+    }
+  }
 
   ThemeSettingsScaffold(
     state = state,
     catalogState = catalogState,
+    snackbarHostState = snackbarHostState,
     onAction = { action ->
       when (action) {
         ThemeSettingsAction.NavBack -> nav.back()
@@ -70,6 +87,7 @@ private fun ThemeSettingsScaffold(
   state: ThemeSettingsState,
   catalogState: CatalogState,
   onAction: (ThemeSettingsAction) -> Unit,
+  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val theme = LocalTheme.current
 
@@ -80,7 +98,13 @@ private fun ThemeSettingsScaffold(
         navigationIcon = { NavBackIconButton { onAction(ThemeSettingsAction.NavBack) } },
         title = { Text(Strings.settingsThemeToolbar) },
       )
-    }
+    },
+    snackbarHost = {
+      SnackbarHost(
+        hostState = snackbarHostState,
+        modifier = Modifier.padding(bottom = LocalBottomStatusBarHeight.current),
+      )
+    },
   ) { innerPadding ->
     ThemeSettingsContent(
       modifier = Modifier.padding(innerPadding),

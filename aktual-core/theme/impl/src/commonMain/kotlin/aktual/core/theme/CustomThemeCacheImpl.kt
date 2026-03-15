@@ -123,6 +123,7 @@ class CustomThemeCacheImpl(
     withContext(contexts.io) {
       fileSystem.delete(summariesFile)
       fileSystem.deleteRecursively(themesDir)
+      fileSystem.createDirectory(themesDir)
     }
   }
 

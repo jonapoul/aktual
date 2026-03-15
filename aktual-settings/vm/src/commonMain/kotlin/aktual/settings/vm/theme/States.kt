@@ -31,6 +31,10 @@ data class CatalogItem(
   val state: CustomThemeState,
 )
 
+sealed interface ThemeSettingsEvent {
+  data object CacheRefreshed : ThemeSettingsEvent
+}
+
 @Immutable
 sealed interface CustomThemeState {
   data object Fetching : CustomThemeState

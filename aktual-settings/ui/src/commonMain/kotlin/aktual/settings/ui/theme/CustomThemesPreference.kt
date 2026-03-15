@@ -10,6 +10,7 @@ import aktual.core.theme.DarkTheme
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorScheme
@@ -25,6 +26,12 @@ import aktual.settings.vm.theme.CatalogItem
 import aktual.settings.vm.theme.CatalogState
 import aktual.settings.vm.theme.CustomThemeState
 import alakazam.compose.VerticalSpacer
+import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,10 +51,13 @@ import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
@@ -78,6 +88,7 @@ internal fun CustomThemesPreference(
     icon = null,
     enabled = enabled,
     onClick = null,
+    topRightContent = { RefreshButton(state, onAction) },
     bottomContent = {
       when (state) {
         CatalogState.Loading -> CatalogLoading()
@@ -87,6 +98,34 @@ internal fun CustomThemesPreference(
     },
   )
 }
+
+@Composable
+private fun RefreshButton(state: CatalogState, onAction: (ThemeSettingsAction) -> Unit) {
+  val isLoading = state is CatalogState.Loading
+  if (isLoading || state is CatalogState.Success) {
+    val transition = rememberInfiniteTransition(label = "refresh")
+    val animatedAngle by
+      transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = rotationSpec(),
+        label = "refreshRotation",
+      )
+    val rotation = if (isLoading) animatedAngle else 0f
+
+    BareIconButton(
+      modifier = Modifier.rotate(rotation),
+      imageVector = MaterialIcons.Refresh,
+      contentDescription = Strings.settingsThemeRefresh,
+      enabled = !isLoading,
+      onClick = { onAction(ThemeSettingsAction.ClearCache) },
+    )
+  }
+}
+
+@Stable
+private fun rotationSpec(): InfiniteRepeatableSpec<Float> =
+  infiniteRepeatable(tween(durationMillis = 1000, easing = LinearEasing))
 
 @Composable
 private fun CatalogFailure(
