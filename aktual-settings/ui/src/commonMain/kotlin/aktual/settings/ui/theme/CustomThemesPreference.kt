@@ -51,6 +51,7 @@ import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -87,33 +88,7 @@ internal fun CustomThemesPreference(
     icon = null,
     enabled = enabled,
     onClick = null,
-    topRightContent = {
-      val isLoading = state is CatalogState.Loading
-      if (isLoading || state is CatalogState.Success) {
-        val rotation =
-          if (isLoading) {
-            val transition = rememberInfiniteTransition(label = "refresh")
-            val angle by
-              transition.animateFloat(
-                initialValue = 0f,
-                targetValue = 360f,
-                animationSpec = rotationSpec(),
-                label = "refreshRotation",
-              )
-            angle
-          } else {
-            0f
-          }
-
-        BareIconButton(
-          modifier = Modifier.rotate(rotation),
-          imageVector = MaterialIcons.Refresh,
-          contentDescription = Strings.settingsThemeRefresh,
-          enabled = !isLoading,
-          onClick = { onAction(ThemeSettingsAction.ClearCache) },
-        )
-      }
-    },
+    topRightContent = { RefreshButton(state, onAction) },
     bottomContent = {
       when (state) {
         CatalogState.Loading -> CatalogLoading()
@@ -124,6 +99,31 @@ internal fun CustomThemesPreference(
   )
 }
 
+@Composable
+private fun RefreshButton(state: CatalogState, onAction: (ThemeSettingsAction) -> Unit) {
+  val isLoading = state is CatalogState.Loading
+  if (isLoading || state is CatalogState.Success) {
+    val transition = rememberInfiniteTransition(label = "refresh")
+    val animatedAngle by
+      transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = rotationSpec(),
+        label = "refreshRotation",
+      )
+    val rotation = if (isLoading) animatedAngle else 0f
+
+    BareIconButton(
+      modifier = Modifier.rotate(rotation),
+      imageVector = MaterialIcons.Refresh,
+      contentDescription = Strings.settingsThemeRefresh,
+      enabled = !isLoading,
+      onClick = { onAction(ThemeSettingsAction.ClearCache) },
+    )
+  }
+}
+
+@Stable
 private fun rotationSpec(): InfiniteRepeatableSpec<Float> =
   infiniteRepeatable(tween(durationMillis = 1000, easing = LinearEasing))
 
