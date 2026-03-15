@@ -29,7 +29,10 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -57,6 +60,14 @@ class ThemeSettingsViewModel(
       val states: Map<Theme.Id, CustomThemeState>,
     ) : LoadState
   }
+
+  private val mutableEvents =
+    MutableSharedFlow<ThemeSettingsEvent>(
+      replay = 0,
+      extraBufferCapacity = 1,
+      onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+  val events: SharedFlow<ThemeSettingsEvent> = mutableEvents
 
   private val mutableLoadState = MutableStateFlow<LoadState>(LoadState.Loading)
 
@@ -109,6 +120,9 @@ class ThemeSettingsViewModel(
     viewModelScope.launch {
       cache.clear()
       fetchCatalogThenThemes()
+      if (mutableLoadState.value is LoadState.Loaded) {
+        mutableEvents.tryEmit(ThemeSettingsEvent.CacheRefreshed)
+      }
     }
   }
 

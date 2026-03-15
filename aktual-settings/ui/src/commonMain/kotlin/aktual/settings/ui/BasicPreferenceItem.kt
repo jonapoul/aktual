@@ -15,10 +15,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -48,6 +51,7 @@ internal fun BasicPreferenceItem(
   includeBackground: Boolean = true,
   headerStyle: TextStyle = AktualTypography.bodyLarge,
   theme: Theme = LocalTheme.current,
+  topRightContent: (@Composable BoxScope.() -> Unit)? = null,
   rightContent: (@Composable RowScope.() -> Unit)? = null,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
@@ -74,31 +78,37 @@ internal fun BasicPreferenceItem(
     }
 
     Column(modifier = Modifier.weight(1f)) {
-      Column(
-        modifier = Modifier.wrapContentHeight().padding(6.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-      ) {
-        Text(
-          text = title,
-          fontWeight = FontWeight.Bold,
-          textAlign = TextAlign.Start,
-          style = headerStyle,
-          color = contentColor,
-        )
-
-        if (subtitle != null) {
+      Box(modifier = Modifier.fillMaxWidth().padding(6.dp)) {
+        Column(
+          modifier = Modifier.wrapContentHeight(),
+          verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
           Text(
-            text = subtitle,
-            fontWeight = FontWeight.Light,
+            text = title,
+            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Start,
-            style = AktualTypography.bodyMedium,
-            color = if (enabled) theme.pageTextLight else theme.pageTextSubdued,
+            style = headerStyle,
+            color = contentColor,
           )
+
+          if (subtitle != null) {
+            Text(
+              text = subtitle,
+              fontWeight = FontWeight.Light,
+              textAlign = TextAlign.Start,
+              style = AktualTypography.bodyMedium,
+              color = if (enabled) theme.pageTextLight else theme.pageTextSubdued,
+            )
+          }
+        }
+
+        if (topRightContent != null) {
+          Box(modifier = Modifier.align(Alignment.TopEnd), content = topRightContent)
         }
       }
 
       if (bottomContent != null) {
-        Column(modifier = Modifier.padding(10.dp)) { bottomContent() }
+        Column(content = bottomContent)
       }
     }
 
