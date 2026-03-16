@@ -1,8 +1,8 @@
 package aktual.budget.model
 
-enum class CustomReportMode(private val value: String) {
-  Total(value = "total"),
-  Time(value = "time");
+import alakazam.kotlin.SerializableByString
 
-  override fun toString(): String = value
+enum class CustomReportMode(override val value: String) : SerializableByString {
+  Total(value = "total"),
+  Time(value = "time"),
 }

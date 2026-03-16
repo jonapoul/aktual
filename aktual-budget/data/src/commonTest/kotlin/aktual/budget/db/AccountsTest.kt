@@ -18,15 +18,17 @@ internal class AccountsTest {
     val account1 = buildAccount(id = id1)
     val account2 = buildAccount(id = id2)
 
-    assertThat(getAccountById(id1)).isNull()
-    assertThat(getAccountById(id2)).isNull()
+    val db = buildDatabase()
 
-    insertAccounts(account1)
-    assertThat(getAccountById(id1)).isEqualTo(account1)
-    assertThat(getAccountById(id2)).isNull()
+    assertThat(db.getAccountById(id1)).isNull()
+    assertThat(db.getAccountById(id2)).isNull()
 
-    insertAccounts(account2)
-    assertThat(getAccountById(id1)).isEqualTo(account1)
-    assertThat(getAccountById(id2)).isEqualTo(account2)
+    db.insertAccounts(account1)
+    assertThat(db.getAccountById(id1)).isEqualTo(account1)
+    assertThat(db.getAccountById(id2)).isNull()
+
+    db.insertAccounts(account2)
+    assertThat(db.getAccountById(id1)).isEqualTo(account1)
+    assertThat(db.getAccountById(id2)).isEqualTo(account2)
   }
 }

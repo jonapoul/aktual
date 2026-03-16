@@ -1,39 +1,21 @@
 package aktual.budget.db.dao
 
-import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.GetPositionAndSize
-import aktual.budget.db.withResult
-import aktual.budget.db.withoutResult
+import aktual.budget.db.model.Dashboard
+import aktual.budget.db.model.DashboardPositionAndSize
 import aktual.budget.model.WidgetId
-import aktual.budget.model.WidgetType
-import kotlinx.serialization.json.JsonObject
+import androidx.room3.Dao
+import androidx.room3.Insert
+import androidx.room3.Query
 
-class DashboardDao(database: BudgetDatabase) {
-  private val queries = database.dashboardQueries
+@Dao
+interface DashboardDao {
+  @Insert suspend fun insert(dashboard: Dashboard)
 
-  suspend fun insert(
-    id: WidgetId,
-    type: WidgetType,
-    x: Long,
-    y: Long,
-    meta: JsonObject,
-    width: Long = DEFAULT_WIDTH,
-    height: Long = DEFAULT_HEIGHT,
-  ) = queries.withoutResult {
-    insert(id = id, type = type, width = width, height = height, x = x, y = y, meta = meta)
-  }
+  @Query("SELECT id FROM dashboard WHERE tombstone = 0 ORDER BY y DESC, x DESC")
+  suspend fun getIds(): List<WidgetId>
 
-  suspend fun getIds(): List<WidgetId> = queries.withResult { getIds().executeAsList() }
+  @Query("DELETE FROM dashboard WHERE id = :id") suspend fun delete(id: WidgetId)
 
-  suspend fun deleteById(id: WidgetId): Long = queries.withResult { delete(id) }
-
-  suspend fun getPositionAndSize(): List<GetPositionAndSize> = queries.withResult {
-    getPositionAndSize().executeAsList()
-  }
-
-  companion object {
-    const val DEFAULT_WIDTH = 4L
-    const val DEFAULT_HEIGHT = 2L
-    const val MAX_WIDTH = 12L
-  }
+  @Query("SELECT x, y, width, height FROM dashboard WHERE tombstone = 0 ORDER BY y DESC, x DESC")
+  suspend fun getPositionAndSize(): List<DashboardPositionAndSize>
 }

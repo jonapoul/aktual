@@ -1,39 +1,27 @@
 package aktual.budget.db.dao
 
-import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.CustomReports
-import aktual.budget.db.withResult
+import aktual.budget.db.model.CustomReport
 import aktual.budget.model.CustomReportId
-import alakazam.kotlin.CoroutineContexts
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToOneOrNull
+import androidx.room3.Dao
+import androidx.room3.Insert
+import androidx.room3.Query
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 import kotlinx.serialization.json.JsonObject
 
-class CustomReportsDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
-  private val queries = database.customReportsQueries
+@Dao
+interface CustomReportsDao {
+  @Insert suspend fun insert(report: CustomReport)
 
-  suspend fun insert(reports: CustomReports): Long = queries.withResult { insert(reports) }
+  @Query("SELECT * FROM custom_reports WHERE id = :id")
+  suspend fun getById(id: CustomReportId): CustomReport?
 
-  suspend operator fun get(id: CustomReportId): CustomReports? = queries.withResult {
-    getById(id).executeAsOneOrNull()
-  }
+  @Query("SELECT id FROM custom_reports WHERE tombstone = 0 AND name = :name LIMIT 1")
+  suspend fun getIdByName(name: String): CustomReportId?
 
-  fun observeMetadataById(id: CustomReportId): Flow<JsonObject?> =
-    queries
-      .getMetadataById(id)
-      .asFlow()
-      .mapToOneOrNull(contexts.default)
-      .map { it?.metadata }
-      .distinctUntilChanged()
+  @Query("SELECT id FROM custom_reports") suspend fun getIds(): List<CustomReportId>
 
-  suspend fun getIds(): List<CustomReportId> = queries.withResult { getIds().executeAsList() }
+  @Query("SELECT metadata FROM custom_reports WHERE id = :id")
+  fun observeMetadataById(id: CustomReportId): Flow<JsonObject?>
 
-  suspend fun getIdByName(name: String): CustomReportId? = queries.withResult {
-    getIdByName(name).executeAsOneOrNull()
-  }
-
-  suspend fun deleteById(id: CustomReportId): Long = queries.withResult { delete(id) }
+  @Query("DELETE FROM custom_reports WHERE id = :id") suspend fun delete(id: CustomReportId)
 }

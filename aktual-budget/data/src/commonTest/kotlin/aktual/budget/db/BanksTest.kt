@@ -1,5 +1,8 @@
 package aktual.budget.db
 
+import aktual.budget.db.model.Account
+import aktual.budget.db.model.AccountWithBank
+import aktual.budget.db.model.Bank
 import aktual.budget.db.test.buildAccount
 import aktual.budget.db.test.insertAccounts
 import aktual.budget.db.test.insertBanks
@@ -13,23 +16,23 @@ import kotlin.uuid.Uuid
 
 internal class BanksTest {
   private val bankA =
-    Banks(
+    Bank(
       id = Uuid.parse("9707afb0-dd6a-4623-aab2-922f8e4ab38d"),
-      bank_id = BankId("a"),
+      bankId = BankId("a"),
       name = "Acme, Inc",
       tombstone = false,
     )
   private val bankB =
-    Banks(
+    Bank(
       id = Uuid.parse("55d8cffd-2bf4-4b30-aa8d-604b6fc5d032"),
-      bank_id = BankId("b"),
+      bankId = BankId("b"),
       name = "Bankity Bank",
       tombstone = false,
     )
   private val bankC =
-    Banks(
+    Bank(
       id = Uuid.parse("6143ea9e-db7d-4313-9680-d57a816b0eec"),
-      bank_id = BankId("c"),
+      bankId = BankId("c"),
       name = "Charity Bank",
       tombstone = false,
     )
@@ -42,11 +45,12 @@ internal class BanksTest {
   @Test
   fun `Get accounts with bank`() = runDatabaseTest {
     // Given
-    insertBanks(bankA, bankB, bankC)
-    insertAccounts(accountA, accountB, accountC)
+    val db = buildDatabase()
+    db.insertBanks(bankA, bankB, bankC)
+    db.insertAccounts(accountA, accountB, accountC)
 
     // When
-    val result = banksQueries.withResult { getAccountsWithBank().executeAsList() }
+    val result = db.banks().getAccountsWithBank()
 
     // Then
     assertThat(result)
@@ -57,27 +61,27 @@ internal class BanksTest {
       )
   }
 
-  private fun toExpected(account: Accounts, bank: Banks?) =
+  private fun toExpected(account: Account, bank: Bank?) =
     with(account) {
-      GetAccountsWithBank(
+      AccountWithBank(
         id = id,
-        account_id = account_id,
+        accountId = accountId,
         name = name,
-        balance_current = balance_current,
-        balance_available = balance_available,
-        balance_limit = balance_limit,
+        balanceCurrent = balanceCurrent,
+        balanceAvailable = balanceAvailable,
+        balanceLimit = balanceLimit,
         mask = mask,
-        official_name = official_name,
+        officialName = officialName,
         subtype = subtype,
         bank = this.bank,
-        offbudget = offbudget,
+        offBudget = offBudget,
         closed = closed,
         tombstone = tombstone,
-        sort_order = sort_order,
+        sortOrder = sortOrder,
         type = type,
-        account_sync_source = account_sync_source,
-        last_sync = last_sync,
-        last_reconciled = last_reconciled,
+        accountSyncSource = accountSyncSource,
+        lastSync = lastSync,
+        lastReconciled = lastReconciled,
         bankName = bank?.name,
         bankId = bank?.id,
       )

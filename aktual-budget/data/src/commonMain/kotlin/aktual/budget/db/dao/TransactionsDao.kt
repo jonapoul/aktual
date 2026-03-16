@@ -1,31 +1,50 @@
 package aktual.budget.db.dao
 
-import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.transactions.GetById
+import aktual.budget.db.model.Transaction
+import aktual.budget.db.model.TransactionView
 import aktual.budget.model.AccountId
 import aktual.budget.model.TransactionId
-import alakazam.kotlin.CoroutineContexts
-import app.cash.sqldelight.coroutines.asFlow
-import app.cash.sqldelight.coroutines.mapToOne
-import app.cash.sqldelight.coroutines.mapToOneOrNull
+import androidx.room3.Dao
+import androidx.room3.Insert
+import androidx.room3.Query
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.distinctUntilChanged
 
-class TransactionsDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
-  private val queries = database.transactionsQueries
+@Dao
+interface TransactionsDao {
+  @Insert suspend fun insert(transaction: Transaction)
 
-  fun observeById(id: TransactionId): Flow<GetById?> =
-    queries.getById(id).asFlow().mapToOneOrNull(contexts.default).distinctUntilChanged()
+  @Query(
+    """
+    SELECT vt.id, vt.date, a.name AS accountName, p.name AS payeeName, vt.notes, c.name AS categoryName, vt.amount
+    FROM v_transactions_internal_alive AS vt
+    LEFT JOIN categories AS c ON (c.id = vt.category AND c.tombstone = 0)
+    LEFT JOIN accounts AS a ON (a.id = vt.account AND a.tombstone = 0)
+    LEFT JOIN payees AS p ON (p.id = vt.payee AND p.tombstone = 0)
+    WHERE vt.id = :id
+    """
+  )
+  fun observeById(id: TransactionId): Flow<TransactionView?>
 
-  fun getIdsPaged(limit: Long, offset: Long): List<TransactionId> =
-    queries.getIdsPaged(limit, offset).executeAsList()
+  @Query("SELECT id FROM v_transactions ORDER BY date DESC LIMIT :limit OFFSET :offset")
+  suspend fun getIdsPaged(limit: Long, offset: Long): List<TransactionId>
 
-  fun getIdsByAccountPaged(account: AccountId, limit: Long, offset: Long): List<TransactionId> =
-    queries.getIdsByAccountPaged(account, limit, offset).executeAsList()
+  @Query(
+    "SELECT id FROM v_transactions WHERE account = :account ORDER BY date DESC LIMIT :limit OFFSET :offset"
+  )
+  suspend fun getIdsByAccountPaged(
+    account: AccountId,
+    limit: Long,
+    offset: Long,
+  ): List<TransactionId>
 
-  fun observeCount(): Flow<Long> =
-    queries.getIdsCount().asFlow().mapToOne(contexts.default).distinctUntilChanged()
+  @Query("SELECT COUNT(*) FROM v_transactions") fun observeCount(): Flow<Long>
 
-  fun observeCountByAccount(account: AccountId): Flow<Long> =
-    queries.getIdsByAccountCount(account).asFlow().mapToOne(contexts.default).distinctUntilChanged()
+  @Query("SELECT COUNT(*) FROM v_transactions WHERE account = :account")
+  fun observeCountByAccount(account: AccountId): Flow<Long>
+
+  @Query("SELECT id FROM v_transactions WHERE account = :account ORDER BY date DESC")
+  suspend fun getIdsByAccount(account: AccountId): List<TransactionId>
+
+  @Query("SELECT id FROM v_transactions ORDER BY date DESC")
+  suspend fun getIds(): List<TransactionId>
 }

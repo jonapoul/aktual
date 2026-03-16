@@ -11,6 +11,7 @@ kotlin {
     api(libs.logcat)
     api(libs.okio)
     api(libs.preferences.core)
+    api(libs.room.runtime)
     api(libs.test.alakazam)
     api(libs.test.assertk)
     api(libs.test.burst)
@@ -19,7 +20,7 @@ kotlin {
     api(libs.test.kotlinx.coroutines)
     api(libs.test.turbine)
     api(project(":aktual-budget:data"))
-    implementation(libs.sqldelight.driver.sqlite)
+    implementation(libs.androidx.sqlite)
   }
 
   androidMainDependencies {
@@ -27,6 +28,5 @@ kotlin {
     api(libs.test.androidx.coreKtx)
     api(project(":aktual-core:prefs:impl"))
     implementation(libs.preferences.android)
-    implementation(libs.sqldelight.driver.android)
   }
 }

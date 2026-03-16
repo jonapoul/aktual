@@ -1,10 +1,10 @@
 package aktual.budget.model
 
-enum class Interval(private val value: String) {
+import alakazam.kotlin.SerializableByString
+
+enum class Interval(override val value: String) : SerializableByString {
   Daily("Daily"),
   Weekly("Weekly"),
   Monthly("Monthly"),
-  Yearly("Yearly");
-
-  override fun toString(): String = value
+  Yearly("Yearly"),
 }

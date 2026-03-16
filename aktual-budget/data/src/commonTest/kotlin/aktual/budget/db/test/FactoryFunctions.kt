@@ -1,7 +1,7 @@
 package aktual.budget.db.test
 
-import aktual.budget.db.Accounts
-import aktual.budget.db.CustomReports
+import aktual.budget.db.model.Account
+import aktual.budget.db.model.CustomReport
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.BalanceType
@@ -30,25 +30,25 @@ internal fun buildAccount(
   offBudget: Boolean = false,
   syncSource: AccountSyncSource = AccountSyncSource.GoCardless,
 ) =
-  Accounts(
+  Account(
     id = id,
-    account_id = accountId,
+    accountId = accountId,
     name = name,
-    balance_current = null,
-    balance_available = null,
-    balance_limit = null,
+    balanceCurrent = null,
+    balanceAvailable = null,
+    balanceLimit = null,
     mask = null,
-    official_name = officialName,
+    officialName = officialName,
     subtype = null,
     bank = bank,
-    offbudget = offBudget,
+    offBudget = offBudget,
     closed = false,
     tombstone = false,
-    sort_order = null,
+    sortOrder = null,
     type = null,
-    account_sync_source = syncSource,
-    last_sync = null,
-    last_reconciled = null,
+    accountSyncSource = syncSource,
+    lastSync = null,
+    lastReconciled = null,
   )
 
 internal fun buildCustomReport(
@@ -61,28 +61,28 @@ internal fun buildCustomReport(
   conditions: List<ReportCondition> = emptyList(),
   metadata: JsonObject? = null,
 ) =
-  CustomReports(
+  CustomReport(
     id = id,
     name = name,
-    start_date = startDate,
-    end_date = endDate,
-    date_static = false,
-    date_range = range,
+    startDate = startDate,
+    endDate = endDate,
+    dateStatic = false,
+    dateRange = range,
     mode = CustomReportMode.Total,
-    group_by = GroupBy.Category,
-    balance_type = BalanceType.Expense,
-    show_empty = false,
-    show_offbudget = false,
-    show_hidden = false,
-    show_uncategorized = false,
-    selected_categories = selectedCategories,
-    graph_type = GraphType.BarGraph,
+    groupBy = GroupBy.Category,
+    balanceType = BalanceType.Expense,
+    showEmpty = false,
+    showOffbudget = false,
+    showHidden = false,
+    showUncategorized = false,
+    selectedCategories = selectedCategories,
+    graphType = GraphType.BarGraph,
     conditions = conditions,
-    conditions_op = Operator.And,
+    conditionsOp = Operator.And,
     metadata = metadata,
     interval = Interval.Monthly,
-    color_scheme = null,
+    colorScheme = null,
     tombstone = false,
-    include_current = false,
-    sort_by = SortBy.Desc,
+    includeCurrent = false,
+    sortBy = SortBy.Desc,
   )

@@ -1,5 +1,4 @@
 import blueprint.core.commonMainDependencies
-import blueprint.core.commonTestDependencies
 
 plugins { id("aktual.module.viewmodel") }
 
@@ -11,10 +10,5 @@ kotlin {
     implementation(project(":aktual-core:model"))
   }
 
-  commonTestDependencies { implementation(libs.sqldelight.coroutines) }
-
-  androidHostTestDependencies {
-    implementation(libs.sqldelight.driver.android)
-    implementation(project(":aktual-app:di"))
-  }
+  androidHostTestDependencies { implementation(project(":aktual-app:di")) }
 }

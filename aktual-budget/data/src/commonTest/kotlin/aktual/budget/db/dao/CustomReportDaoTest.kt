@@ -4,18 +4,16 @@ import aktual.budget.db.test.buildCustomReport
 import aktual.budget.model.CustomReportId
 import aktual.test.isEqualToList
 import aktual.test.runDatabaseTest
-import alakazam.test.TestCoroutineContexts
 import assertk.assertThat
 import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isNull
 import kotlin.test.Test
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 
 internal class CustomReportDaoTest {
   @Test
-  fun `Fetching all IDs`() = runDaoTest { scope ->
+  fun `Fetching all IDs`() = runDaoTest {
     // given
     assertThat(getIds()).isEmpty()
 
@@ -32,7 +30,7 @@ internal class CustomReportDaoTest {
   }
 
   @Test
-  fun `Getting ID by name`() = runDaoTest { scope ->
+  fun `Getting ID by name`() = runDaoTest {
     // given
     val name = "hello world"
     val id = CustomReportId("abc-123")
@@ -52,10 +50,9 @@ internal class CustomReportDaoTest {
     assertThat(getIdByName(name)).isEqualTo(id)
   }
 
-  private fun runDaoTest(action: suspend CustomReportsDao.(TestScope) -> Unit) =
-    runDatabaseTest { scope ->
-      val dao =
-        CustomReportsDao(this, TestCoroutineContexts(StandardTestDispatcher(scope.testScheduler)))
-      action(dao, scope)
-    }
+  private fun runDaoTest(action: suspend CustomReportsDao.(TestScope) -> Unit) = runDatabaseTest {
+    val db = buildDatabase()
+    val dao = db.customReports()
+    action(dao, scope)
+  }
 }

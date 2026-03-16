@@ -13,6 +13,8 @@ kotlin {
     api(libs.okio)
     api(project(":aktual-budget:data"))
     api(project(":aktual-budget:model"))
+    implementation(libs.androidx.sqlite)
+    implementation(libs.room.runtime)
     implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:model"))
   }
