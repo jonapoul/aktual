@@ -266,13 +266,12 @@ private val HEADER_PADDING = 8.dp
 
 private suspend fun CartesianChartModelProducer.populate(data: SpendingData) =
   with(data) {
-    val xValues =
-      days.map { day ->
-        when (val number = day.number) {
-          is SpendingDayNumber.Specific -> number.number
-          SpendingDayNumber.End -> END_DAY
-        }
+    val xValues = days.map { day ->
+      when (val number = day.number) {
+        is SpendingDayNumber.Specific -> number.number
+        SpendingDayNumber.End -> END_DAY
       }
+    }
 
     val targetAmounts = days.mapNotNull { it.target?.toDouble() }
     val comparisonAmounts = days.map { it.comparison.toDouble() }

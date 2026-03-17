@@ -41,8 +41,9 @@ internal class SerializableType<T : Any>(private val serializer: KSerializer<T>)
   NavType<T>(isNullableAllowed = false) {
   override val name = serializer.descriptor.serialName
 
-  override fun put(bundle: SavedState, key: String, value: T) =
-    bundle.write { putString(key, serializeAsValue(value)) }
+  override fun put(bundle: SavedState, key: String, value: T) = bundle.write {
+    putString(key, serializeAsValue(value))
+  }
 
   override fun get(bundle: SavedState, key: String): T = bundle.read { parseValue(getString(key)) }
 

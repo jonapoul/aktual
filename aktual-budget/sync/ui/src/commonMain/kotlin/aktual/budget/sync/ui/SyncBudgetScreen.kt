@@ -164,8 +164,9 @@ private fun ListBudgetsContent(
 }
 
 @Stable
-private fun ImmutableMap<*, SyncStepState>.allSuccess() =
-  values.all { it is SyncStepState.Succeeded }
+private fun ImmutableMap<*, SyncStepState>.allSuccess() = values.all {
+  it is SyncStepState.Succeeded
+}
 
 @Stable
 private fun ImmutableMap<*, SyncStepState>.anyFailure() = values.any { it is SyncStepState.Failed }

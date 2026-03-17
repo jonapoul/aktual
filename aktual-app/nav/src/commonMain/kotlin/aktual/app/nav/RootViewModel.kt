@@ -83,10 +83,9 @@ abstract class RootViewModel(
   val token: Token? = preferences.token.get()
   private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 
-  private val budgetName: Flow<String?> =
-    budgetGraph.flatMapLatest { bg ->
-      bg?.localPreferences?.map { meta -> meta[DbMetadata.BudgetName] } ?: flowOf(null)
-    }
+  private val budgetName: Flow<String?> = budgetGraph.flatMapLatest { bg ->
+    bg?.localPreferences?.map { meta -> meta[DbMetadata.BudgetName] } ?: flowOf(null)
+  }
 
   val bottomBarState: StateFlow<BottomBarState> =
     viewModelScope.launchMolecule(Immediate) {

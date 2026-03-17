@@ -66,27 +66,26 @@ class AboutViewModel(
     checkUpdatesJob?.cancel()
     mutableCheckUpdatesState.update { CheckUpdatesState.Checking }
 
-    checkUpdatesJob =
-      viewModelScope.launch {
-        val state = githubRepository.fetchLatestRelease()
-        mutableCheckUpdatesState.update {
-          when (state) {
-            LatestReleaseState.NoNewUpdate -> CheckUpdatesState.NoUpdateFound
+    checkUpdatesJob = viewModelScope.launch {
+      val state = githubRepository.fetchLatestRelease()
+      mutableCheckUpdatesState.update {
+        when (state) {
+          LatestReleaseState.NoNewUpdate -> CheckUpdatesState.NoUpdateFound
 
-            LatestReleaseState.NoReleases -> CheckUpdatesState.NoUpdateFound
+          LatestReleaseState.NoReleases -> CheckUpdatesState.NoUpdateFound
 
-            LatestReleaseState.PrivateRepo -> CheckUpdatesState.Failed(cause = "Repo inaccessible")
+          LatestReleaseState.PrivateRepo -> CheckUpdatesState.Failed(cause = "Repo inaccessible")
 
-            is LatestReleaseState.Failure -> CheckUpdatesState.Failed(state.errorMessage)
+          is LatestReleaseState.Failure -> CheckUpdatesState.Failed(state.errorMessage)
 
-            is LatestReleaseState.UpdateAvailable ->
-              CheckUpdatesState.UpdateFound(
-                version = state.release.versionName,
-                url = state.release.htmlUrl,
-              )
-          }
+          is LatestReleaseState.UpdateAvailable ->
+            CheckUpdatesState.UpdateFound(
+              version = state.release.versionName,
+              url = state.release.htmlUrl,
+            )
         }
       }
+    }
   }
 
   fun cancelUpdateCheck() {
