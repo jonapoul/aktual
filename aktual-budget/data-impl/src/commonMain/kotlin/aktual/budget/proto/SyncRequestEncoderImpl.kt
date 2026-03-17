@@ -28,14 +28,13 @@ class SyncRequestEncoderImpl(
   ): ByteString {
     val keyId = prefs[DbMetadata.EncryptKeyId]?.let(::KeyId)
 
-    val envelopes =
-      messages.map { message ->
-        ProtoMessageEnvelope(
-          timestamp = message.timestamp.toString(),
-          isEncrypted = keyId != null,
-          content = encodeContent(message, keyId),
-        )
-      }
+    val envelopes = messages.map { message ->
+      ProtoMessageEnvelope(
+        timestamp = message.timestamp.toString(),
+        isEncrypted = keyId != null,
+        content = encodeContent(message, keyId),
+      )
+    }
 
     val request =
       ProtoSyncRequest(

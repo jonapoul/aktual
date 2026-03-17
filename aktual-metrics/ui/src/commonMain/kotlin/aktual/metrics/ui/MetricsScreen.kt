@@ -228,16 +228,15 @@ private fun formatted(duration: Duration): String =
     }
   }
 
-private val TIMESTAMP_FORMAT =
-  DateTimeComponents.Format {
-    date(LocalDate.Formats.ISO)
-    char(' ')
-    hour()
-    char(':')
-    minute()
-    char(':')
-    second()
-  }
+private val TIMESTAMP_FORMAT = DateTimeComponents.Format {
+  date(LocalDate.Formats.ISO)
+  char(' ')
+  hour()
+  char(':')
+  minute()
+  char(':')
+  second()
+}
 
 @Composable
 private fun formatted(instant: Instant): String {

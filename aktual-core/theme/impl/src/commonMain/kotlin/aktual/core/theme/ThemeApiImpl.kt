@@ -14,14 +14,13 @@ import kotlinx.serialization.builtins.ListSerializer
 @ContributesBinding(AppScope::class)
 class ThemeApiImpl(@param:ThemeClient private val client: HttpClient) : ThemeApi {
   override suspend fun fetchCatalog(): List<CustomThemeSummary> {
-    val httpResponse =
-      client.get {
-        url {
-          protocol = HTTPS
-          host = BASE_URL
-          path(CATALOG_PATH)
-        }
+    val httpResponse = client.get {
+      url {
+        protocol = HTTPS
+        host = BASE_URL
+        path(CATALOG_PATH)
       }
+    }
 
     // Responses come with "Content-Type: text/plain", so we need to manually parse as JSON - can't
     // use automatic content negotiation as set up in buildKtorClient
@@ -30,14 +29,13 @@ class ThemeApiImpl(@param:ThemeClient private val client: HttpClient) : ThemeApi
   }
 
   override suspend fun fetchTheme(summary: CustomThemeSummary): CustomTheme {
-    val httpResponse =
-      client.get {
-        url {
-          protocol = HTTPS
-          host = BASE_URL
-          path("/${summary.repo.userName}/${summary.repo.repoName}/refs/heads/main/actual.css")
-        }
+    val httpResponse = client.get {
+      url {
+        protocol = HTTPS
+        host = BASE_URL
+        path("/${summary.repo.userName}/${summary.repo.repoName}/refs/heads/main/actual.css")
       }
+    }
     val css = httpResponse.bodyAsText()
     val theme = parseTheme(summary, css)
     return theme

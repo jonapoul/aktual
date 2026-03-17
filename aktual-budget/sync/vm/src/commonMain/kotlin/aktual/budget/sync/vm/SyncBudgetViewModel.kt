@@ -116,8 +116,9 @@ class SyncBudgetViewModel(
     budgetGraphs.clear()
   }
 
-  fun enterKeyPassword(input: Password) =
-    mutablePasswordState.update { KeyPasswordState.Active(input) }
+  fun enterKeyPassword(input: Password) = mutablePasswordState.update {
+    KeyPasswordState.Active(input)
+  }
 
   fun dismissKeyPasswordDialog() = mutablePasswordState.update { KeyPasswordState.Inactive }
 
@@ -168,43 +169,41 @@ class SyncBudgetViewModel(
     mutableSteps.update { defaultStates() }
     dismissKeyPasswordDialog()
 
-    logStatesJob =
-      viewModelScope.launchInfiniteLoop {
-        logStates()
-        delay(duration = 0.1.seconds)
+    logStatesJob = viewModelScope.launchInfiniteLoop {
+      logStates()
+      delay(duration = 0.1.seconds)
+    }
+
+    syncJob = viewModelScope.launch {
+      val userFileDeferred = async { fetchUserFileInfo() }
+      val fileDownloadDeferred = async { downloadBudgetFileAsync() }
+      val userFile = userFileDeferred.await()
+      val downloadedPath = fileDownloadDeferred.await()
+
+      logStatesJob?.cancel()
+      logStates() // make sure we log the final state
+
+      if (userFile == null || downloadedPath == null) {
+        logcat.w { "Failed syncing?" }
+        return@launch
       }
 
-    syncJob =
-      viewModelScope.launch {
-        val userFileDeferred = async { fetchUserFileInfo() }
-        val fileDownloadDeferred = async { downloadBudgetFileAsync() }
-        val userFile = userFileDeferred.await()
-        val downloadedPath = fileDownloadDeferred.await()
+      setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
 
-        logStatesJob?.cancel()
-        logStates() // make sure we log the final state
-
-        if (userFile == null || downloadedPath == null) {
-          logcat.w { "Failed syncing?" }
-          return@launch
+      logcat.i { "Succeeded syncing: $userFile and $downloadedPath" }
+      val meta = userFile.encryptMeta
+      val decryptResult =
+        if (meta != null) {
+          // Encrypted payload, so decrypt it and return the decrypted zip's path
+          decrypter(userFile.fileId, meta, downloadedPath)
+        } else {
+          // Unencrypted, so just copy the payload to the expected place
+          val targetPath = files.decryptedZip(budgetId)
+          files.fileSystem.copy(source = downloadedPath, target = targetPath)
+          DecryptResult.NotNeeded(targetPath)
         }
-
-        setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
-
-        logcat.i { "Succeeded syncing: $userFile and $downloadedPath" }
-        val meta = userFile.encryptMeta
-        val decryptResult =
-          if (meta != null) {
-            // Encrypted payload, so decrypt it and return the decrypted zip's path
-            decrypter(userFile.fileId, meta, downloadedPath)
-          } else {
-            // Unencrypted, so just copy the payload to the expected place
-            val targetPath = files.decryptedZip(budgetId)
-            files.fileSystem.copy(source = downloadedPath, target = targetPath)
-            DecryptResult.NotNeeded(targetPath)
-          }
-        handleDecryptResult(decryptResult, downloadedPath, meta, userFile)
-      }
+      handleDecryptResult(decryptResult, downloadedPath, meta, userFile)
+    }
   }
 
   private fun logStates() {

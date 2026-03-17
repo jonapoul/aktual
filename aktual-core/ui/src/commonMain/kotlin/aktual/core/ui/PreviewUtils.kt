@@ -72,8 +72,9 @@ data class ThemedParams<T>(val theme: Theme, val data: T)
 
 open class ThemedParameterProvider<T>(collection: List<T>) :
   PreviewParameterProvider<ThemedParams<T>> {
-  private val all: List<ThemedParams<T>> =
-    collection.flatMap { data -> Theme.Defaults.map { type -> ThemedParams(type, data) } }
+  private val all: List<ThemedParams<T>> = collection.flatMap { data ->
+    Theme.Defaults.map { type -> ThemedParams(type, data) }
+  }
 
   override val values: Sequence<ThemedParams<T>>
     get() = all.asSequence()

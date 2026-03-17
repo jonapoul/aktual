@@ -54,6 +54,39 @@ else
     KTFMT_ARGS="--google-style"
 fi
 
+# Resolve ktfmt binary: system PATH or cached JAR
+USE_SYSTEM_KTFMT=false
+if command -v ktfmt >/dev/null 2>&1; then
+    SYSTEM_VERSION=$(ktfmt --version 2>/dev/null | sed 's/ktfmt version //')
+
+    if [ "$SYSTEM_VERSION" != "$KTFMT_VERSION" ]; then
+        echo "⚠️  Warning: System ktfmt version ($SYSTEM_VERSION) does not match expected version ($KTFMT_VERSION)"
+        echo "   Consider updating ktfmt or using the cached JAR version."
+    fi
+
+    USE_SYSTEM_KTFMT=true
+elif [ ! -f "$KTFMT_JAR" ]; then
+    echo "ktfmt not found in PATH, downloading version $KTFMT_VERSION..."
+    mkdir -p "$JAR_DIR"
+
+    DOWNLOAD_URL="https://github.com/facebook/ktfmt/releases/download/v${KTFMT_VERSION}/ktfmt-${KTFMT_VERSION}-with-dependencies.jar"
+
+    if command -v curl >/dev/null 2>&1; then
+        curl -L "$DOWNLOAD_URL" -o "$KTFMT_JAR" || { echo "Failed to download ktfmt"; exit 1; }
+    elif command -v wget >/dev/null 2>&1; then
+        wget "$DOWNLOAD_URL" -O "$KTFMT_JAR" || { echo "Failed to download ktfmt"; exit 1; }
+    else
+        echo "Neither curl nor wget found. Please install one to download ktfmt."
+        exit 1
+    fi
+
+    echo "$KTFMT_VERSION" > "$KTFMT_VERSION_FILE"
+    echo "ktfmt $KTFMT_VERSION downloaded to $KTFMT_JAR"
+
+    # Force formatting all files when a new binary is downloaded
+    FORCE=true
+fi
+
 # Collect files to format
 if [ "$FORCE" = true ]; then
     echo "Formatting all Kotlin files (mode: $MODE)"
@@ -84,40 +117,11 @@ else
     }
 fi
 
-# Check if ktfmt is available in PATH
-if command -v ktfmt >/dev/null 2>&1; then
-    SYSTEM_VERSION=$(ktfmt --version 2>/dev/null | sed 's/ktfmt version //')
-
-    if [ "$SYSTEM_VERSION" != "$KTFMT_VERSION" ]; then
-        echo "⚠️  Warning: System ktfmt version ($SYSTEM_VERSION) does not match expected version ($KTFMT_VERSION)"
-        echo "   Consider updating ktfmt or using the cached JAR version."
-    fi
-
+# Run ktfmt
+if [ "$USE_SYSTEM_KTFMT" = true ]; then
     echo "Using system ktfmt v$SYSTEM_VERSION (mode: $MODE)"
     run_ktfmt ktfmt $KTFMT_ARGS
-    exit $?
+else
+    echo "Using cached ktfmt v$KTFMT_VERSION JAR (mode: $MODE)"
+    run_ktfmt java -jar "$KTFMT_JAR" $KTFMT_ARGS
 fi
-
-# If not in PATH, check for cached JAR
-if [ ! -f "$KTFMT_JAR" ]; then
-    echo "ktfmt not found in PATH, downloading version $KTFMT_VERSION..."
-    mkdir -p "$JAR_DIR"
-
-    DOWNLOAD_URL="https://github.com/facebook/ktfmt/releases/download/v${KTFMT_VERSION}/ktfmt-${KTFMT_VERSION}-with-dependencies.jar"
-
-    if command -v curl >/dev/null 2>&1; then
-        curl -L "$DOWNLOAD_URL" -o "$KTFMT_JAR" || { echo "Failed to download ktfmt"; exit 1; }
-    elif command -v wget >/dev/null 2>&1; then
-        wget "$DOWNLOAD_URL" -O "$KTFMT_JAR" || { echo "Failed to download ktfmt"; exit 1; }
-    else
-        echo "Neither curl nor wget found. Please install one to download ktfmt."
-        exit 1
-    fi
-
-    echo "$KTFMT_VERSION" > "$KTFMT_VERSION_FILE"
-    echo "ktfmt $KTFMT_VERSION downloaded to $KTFMT_JAR"
-fi
-
-# Run cached JAR
-echo "Using cached ktfmt v$KTFMT_VERSION JAR (mode: $MODE)"
-run_ktfmt java -jar "$KTFMT_JAR" $KTFMT_ARGS

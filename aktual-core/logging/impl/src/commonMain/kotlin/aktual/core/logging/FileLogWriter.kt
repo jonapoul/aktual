@@ -62,34 +62,32 @@ internal class FileLogWriter(
     val MAX_HISTORY = 30.days
 
     // "2025-10-24 16:19:12.175"
-    val LOG_FORMAT =
-      LocalDateTime.Format {
-        year()
-        char('-')
-        monthNumber()
-        char('-')
-        day()
-        char(' ')
-        hour()
-        char(':')
-        minute()
-        char(':')
-        second()
-        char('.')
-        secondFraction(minLength = 3, maxLength = 3)
-      }
+    val LOG_FORMAT = LocalDateTime.Format {
+      year()
+      char('-')
+      monthNumber()
+      char('-')
+      day()
+      char(' ')
+      hour()
+      char(':')
+      minute()
+      char(':')
+      second()
+      char('.')
+      secondFraction(minLength = 3, maxLength = 3)
+    }
 
     // "log-2025-02-07.log"
-    val FILENAME_FORMAT =
-      LocalDateTime.Format {
-        chars("log-")
-        year()
-        char('-')
-        monthNumber()
-        char('-')
-        day()
-        chars(".log")
-      }
+    val FILENAME_FORMAT = LocalDateTime.Format {
+      chars("log-")
+      year()
+      char('-')
+      monthNumber()
+      char('-')
+      day()
+      chars(".log")
+    }
 
     private fun Severity.char(): Char =
       when (this) {

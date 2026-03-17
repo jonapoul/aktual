@@ -30,15 +30,14 @@ class BudgetSyncApiImpl(
     }
 
   override suspend fun syncBudget(token: Token, budgetId: BudgetId): SyncResponse {
-    val response =
-      client.post {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/sync")
-        }
-        header(AktualHeaders.TOKEN, token)
+    val response = client.post {
+      url {
+        protocol = urlProtocol
+        host = serverUrl.baseUrl
+        path("/sync")
       }
+      header(AktualHeaders.TOKEN, token)
+    }
 
     return decoder(
       source = response.bodyAsChannel().toInputStream().source().buffer(),

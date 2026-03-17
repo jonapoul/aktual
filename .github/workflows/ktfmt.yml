@@ -2,11 +2,6 @@ name: ktfmt
 
 on:
   push:
-    paths:
-      - "**.kt"
-      - "**.kts"
-      - "scripts/ktfmt.sh"
-      - "gradle/libs.versions.toml"
 
 permissions:
   contents: read

@@ -30,18 +30,17 @@ class TimestampedPrintStreamLogger(
     }
 
   private companion object {
-    val TIMESTAMP_FORMAT =
-      DateTimeComponents.Format {
-        date(LocalDate.Formats.ISO)
-        char('T')
-        hour()
-        char(':')
-        minute()
-        char(':')
-        second()
-        char('.')
-        secondFraction(3)
-        offset(UtcOffset.Formats.ISO)
-      }
+    val TIMESTAMP_FORMAT = DateTimeComponents.Format {
+      date(LocalDate.Formats.ISO)
+      char('T')
+      hour()
+      char(':')
+      minute()
+      char(':')
+      second()
+      char('.')
+      secondFraction(3)
+      offset(UtcOffset.Formats.ISO)
+    }
   }
 }

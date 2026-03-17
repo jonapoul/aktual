@@ -125,12 +125,14 @@ class TransactionsViewModel(
     prefs.update { meta -> meta.set(TransactionFormatKey, format) }
   }
 
-  override fun isChecked(id: TransactionId): Flow<Boolean> =
-    checkedTransactionIds.map { it.getOrDefault(id, false) }
+  override fun isChecked(id: TransactionId): Flow<Boolean> = checkedTransactionIds.map {
+    it.getOrDefault(id, false)
+  }
 
   @Suppress("ExplicitCollectionElementAccessMethod")
-  fun setChecked(id: TransactionId, isChecked: Boolean) =
-    checkedTransactionIds.update { it.put(id, isChecked) }
+  fun setChecked(id: TransactionId, isChecked: Boolean) = checkedTransactionIds.update {
+    it.put(id, isChecked)
+  }
 
   fun setPrivacyMode(privacyMode: Boolean) {
     viewModelScope.launch {
