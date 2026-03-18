@@ -5,50 +5,197 @@ on:
 
 env:
   CI: true
+  GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  GITLEAKS_CONFIG: ./config/gitleaks.toml
 
 permissions:
   contents: read
   pull-requests: write
+  security-events: write
 
 concurrency:
   group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
   cancel-in-progress: true
 
 jobs:
-  pr:
+  changed-files:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      renovate: ${{ steps.filter.outputs.renovate }}
+      wrapper: ${{ steps.filter.outputs.wrapper }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3
+        id: filter
+        with:
+          filters: |
+            renovate:
+              - '.github/renovate.json'
+              - '.github/renovate.json5'
+              - 'renovate.json'
+              - 'renovate.json5'
+            wrapper:
+              - 'gradle/wrapper/**'
+              - 'gradlew'
+              - 'gradlew.bat'
+
+  validate-renovate:
+    needs: changed-files
+    if: needs.changed-files.outputs.renovate == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+        with:
+          node-version: 'lts/*'
+      - run: npm install -g renovate
+      - run: renovate-config-validator
+
+  validate-wrapper:
+    needs: changed-files
+    if: needs.changed-files.outputs.wrapper == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: gradle/actions/wrapper-validation@0723195856401067f7a2779048b490ace7a47d7c # v5
+
+  gitleaks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
-          fetch-tags: true
-          ref: ${{ github.head_ref }}
+      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
 
-      - name: Setup JDK
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
-        with:
-          java-version-file: .java-version
-          distribution: zulu
+  ktfmt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-java
+      - run: scripts/ktfmt.sh check --force
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
-        with:
-          add-job-summary: 'on-failure'
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+  validation:
+    needs: [ changed-files, validate-renovate, validate-wrapper, gitleaks, ktfmt ]
+    if: ${{ !cancelled() }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "One or more validation jobs failed or were cancelled"
+            exit 1
+          fi
 
-      - name: Check build-logic
-        run: ./gradlew -p gradle/build-logic check
-
-      - name: Check aktual
-        run: ./gradlew check
-
-      - name: Report build results
-        uses: gmazzo/publish-report-annotations@ebc1ae65e8339696e03c3fadd5f808f90011d33e # v1
+  check-build-logic:
+    needs: validation
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - run: ./gradlew -p gradle/build-logic check
+      - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
 
-      - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@0d579ffd059c29b07949a3cce3983f0780820c98 # v4
+  assemble-android:
+    needs: validation
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - run: ./gradlew :aktual-app:android:assembleDebug
+      - uses: ./.github/actions/report-build-results
+        if: ${{ !cancelled() }}
+
+  assemble-desktop:
+    needs: validation
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - run: ./gradlew :aktual-app:desktop:assemble
+      - uses: ./.github/actions/report-build-results
+        if: ${{ !cancelled() }}
+
+  detekt:
+    needs: validation
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - run: ./gradlew detektReportMergeSarif
+      - uses: github/codeql-action/upload-sarif@0d579ffd059c29b07949a3cce3983f0780820c98 # v4
         if: ${{ !cancelled() }}
         with:
           sarif_file: build/reports/detekt/merge.sarif.json
+      - uses: ./.github/actions/report-build-results
+        if: ${{ !cancelled() }}
+
+  tests:
+    needs: validation
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - run: ./gradlew testAll koverHtmlReport koverVerify -Pkover
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: kover-report
+          path: build/reports/kover/html
+      - uses: ./.github/actions/report-build-results
+        if: ${{ !cancelled() }}
+
+  licensee:
+    needs: validation
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - run: ./gradlew licensee
+
+  finish:
+    if: ${{ !cancelled() }}
+    needs:
+      - validation
+      - check-build-logic
+      - assemble-android
+      - assemble-desktop
+      - detekt
+      - tests
+      - licensee
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "One or more jobs failed or were cancelled"
+            exit 1
+          fi
