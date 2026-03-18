@@ -21,7 +21,7 @@ jobs:
       id-token: write
 
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
       - uses: anthropics/claude-code-action@cd77b50d2b0808657f8e6774085c8bf54484351c # v1
         with:

@@ -19,9 +19,11 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/actions/checkout
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
-          mode: deep
+          fetch-depth: 0
+          fetch-tags: true
+          ref: ${{ github.head_ref }}
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
