@@ -32,8 +32,8 @@ kotlin {
   android { androidResources.enable = true }
 
   commonMainDependencies {
-    api(libs.jetbrains.resources)
-    api(libs.jetbrains.runtime)
-    api(libs.jetbrains.ui)
+    api(libs.compose.resources)
+    api(libs.compose.runtime)
+    api(libs.compose.ui)
   }
 }

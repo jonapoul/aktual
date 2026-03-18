@@ -10,10 +10,10 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(libs.jetbrains.uiGraphics)
+    api(libs.compose.uiGraphics)
     api(project(":aktual-core:api"))
     api(project(":aktual-core:theme"))
-    compileOnly(libs.jetbrains.runtime)
+    compileOnly(libs.compose.runtime)
     implementation(project(":aktual-core:logging"))
   }
 

@@ -20,12 +20,12 @@ kotlin {
     api(project(":aktual-core:ui"))
     api(project(":aktual-metrics:ui"))
     api(project(":aktual-settings:ui"))
-    api(libs.jetbrains.navigation)
-    api(libs.jetbrains.resources)
-    api(libs.jetbrains.runtime)
+    api(libs.compose.navigation)
+    api(libs.compose.resources)
+    api(libs.compose.runtime)
     api(libs.molecule)
-    implementation(libs.jetbrains.material3)
-    implementation(libs.jetbrains.savedstate)
+    implementation(libs.compose.material3)
+    implementation(libs.compose.savedstate)
     implementation(libs.logcat)
   }
 }

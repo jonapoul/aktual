@@ -6,7 +6,7 @@ androidx-lifecycle = "2.10.0"
 androidx-paging = "3.4.2"
 burst = "2.11.0"
 composeAndroidx = "1.10.5"
-composeJetbrains = "1.11.0-alpha03"
+compose = "1.11.0-alpha03"
 kotlin = "2.3.10"
 kotlinpoet = "2.2.0"
 kotlinx-coroutines = "1.10.2"
@@ -40,21 +40,21 @@ androidx-paging-compose = { module = "androidx.paging:paging-compose", version.r
 androidx-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
 androidx-preference-ktx = { module = "androidx.preference:preference-ktx", version = "1.2.1" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
+compose-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "compose" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.10.0-alpha05" }
+compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.2" }
+compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose" }
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
+compose-savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version = "1.4.0" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
+compose-uiGraphics = { module = "org.jetbrains.compose.ui:ui-graphics", version.ref = "compose" }
+compose-uiTest = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "compose" }
+compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose" }
+compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
+compose-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose" }
+compose-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.9.6" }
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.6" }
-jetbrains-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "composeJetbrains" }
-jetbrains-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeJetbrains" }
-jetbrains-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.10.0-alpha05" }
-jetbrains-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.2" }
-jetbrains-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeJetbrains" }
-jetbrains-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeJetbrains" }
-jetbrains-savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version = "1.4.0" }
-jetbrains-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "composeJetbrains" }
-jetbrains-uiGraphics = { module = "org.jetbrains.compose.ui:ui-graphics", version.ref = "composeJetbrains" }
-jetbrains-uiTest = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "composeJetbrains" }
-jetbrains-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "composeJetbrains" }
-jetbrains-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "composeJetbrains" }
-jetbrains-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "composeJetbrains" }
-jetbrains-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.9.6" }
 kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib", version.ref = "kotlin" }
 kotlinpoet-core = { module = "com.squareup:kotlinpoet", version.ref = "kotlinpoet" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -92,7 +92,7 @@ sqldelight-driver-sqlite = { module = "app.cash.sqldelight:sqlite-driver", versi
 sqldelight-json = { module = "app.cash.sqldelight:sqlite-json-module", version.ref = "sqldelight" }
 sqldelight-primitive = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
-vico-multiplatform = { module = "com.patrykandpatrick.vico:multiplatform", version = "2.4.3" }
+vico = { module = "com.patrykandpatrick.vico:multiplatform", version = "2.4.3" }
 
 # Testing
 test-alakazam = { module = "dev.jonpoulton.alakazam:testing", version.ref = "alakazam" }
@@ -123,7 +123,7 @@ blueprint = { id = "dev.jonpoulton.blueprint", version = "2.1.0" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.9" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.5.0" }
-compose = { id = "org.jetbrains.compose", version.ref = "composeJetbrains" }
+compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 detekt = { id = "dev.detekt", version = "2.0.0-alpha.2" }
 doctor = { id = "com.osacky.doctor", version = "0.12.1" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
