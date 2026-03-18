@@ -81,7 +81,7 @@ jobs:
       - run: scripts/ktfmt.sh check --force
 
   validation:
-    needs: [changed-files, validate-renovate, validate-wrapper, gitleaks, ktfmt]
+    needs: [ changed-files, validate-renovate, validate-wrapper, gitleaks, ktfmt ]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
