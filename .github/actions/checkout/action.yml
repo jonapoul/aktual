@@ -1,0 +1,23 @@
+name: Checkout
+description: Checkout the repository with deep or shallow history
+
+inputs:
+  mode:
+    description: "'deep' for full history + tags, 'shallow' for single commit"
+    required: false
+    default: shallow
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout (deep)
+      if: inputs.mode == 'deep'
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      with:
+        fetch-depth: 0
+        fetch-tags: true
+        ref: ${{ github.head_ref }}
+
+    - name: Checkout (shallow)
+      if: inputs.mode == 'shallow'
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
