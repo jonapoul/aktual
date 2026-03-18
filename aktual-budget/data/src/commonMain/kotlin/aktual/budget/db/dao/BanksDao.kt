@@ -12,7 +12,7 @@ import kotlin.uuid.Uuid
 interface BanksDao {
   @Query("SELECT bank_id FROM banks WHERE id = :id") suspend fun getBankId(id: Uuid): BankId?
 
-  @Query("SELECT id, bank_id, name FROM banks WHERE bank_id = :bankId")
+  @Query("SELECT * FROM banks WHERE bank_id = :bankId")
   suspend fun getByBankId(bankId: BankId): Bank?
 
   @Insert suspend fun insert(bank: Bank)

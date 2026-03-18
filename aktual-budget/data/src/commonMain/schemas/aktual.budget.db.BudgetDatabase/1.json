@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "54e2289d5e5b936bc1bdcfc772dfc7ec",
+    "identityHash": "fd4681f6d329bc10cb0141368ae3389c",
     "entities": [
       {
         "tableName": "accounts",
@@ -763,6 +763,17 @@
             "id"
           ]
         },
+        "indices": [
+          {
+            "name": "index_pending_transactions_acct",
+            "unique": false,
+            "columnNames": [
+              "acct"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_pending_transactions_acct` ON `${TABLE_NAME}` (`acct`)"
+          }
+        ],
         "foreignKeys": [
           {
             "table": "accounts",
@@ -1347,7 +1358,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '54e2289d5e5b936bc1bdcfc772dfc7ec')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'fd4681f6d329bc10cb0141368ae3389c')"
     ]
   }
 }
