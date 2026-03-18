@@ -93,6 +93,7 @@ jobs:
 
   check-build-logic:
     needs: validation
+    if: always() && needs.validation.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -106,6 +107,7 @@ jobs:
 
   assemble-android:
     needs: validation
+    if: always() && needs.validation.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -119,6 +121,7 @@ jobs:
 
   assemble-desktop:
     needs: validation
+    if: always() && needs.validation.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -132,6 +135,7 @@ jobs:
 
   detekt:
     needs: validation
+    if: always() && needs.validation.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -149,6 +153,7 @@ jobs:
 
   tests:
     needs: validation
+    if: always() && needs.validation.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -162,6 +167,7 @@ jobs:
 
   licensee:
     needs: validation
+    if: always() && needs.validation.result == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
