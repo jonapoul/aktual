@@ -162,7 +162,7 @@ jobs:
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew testAll koverHtmlReport koverVerify -Pkover
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         if: ${{ !cancelled() }}
         with:
           name: kover-report
