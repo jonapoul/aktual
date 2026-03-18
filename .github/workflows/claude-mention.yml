@@ -1,4 +1,4 @@
-name: Claude Code
+name: Claude Mention
 
 on:
   issue_comment:
