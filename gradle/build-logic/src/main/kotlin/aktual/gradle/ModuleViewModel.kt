@@ -23,7 +23,7 @@ class ModuleViewModel : Plugin<Project> {
           api(libs["kotlinx.immutable"])
           api(libs["metrox.viewmodel"])
           implementation(project(":aktual-core:logging"))
-          implementation(libs["jetbrains.runtime"])
+          implementation(libs["compose.runtime"])
           implementation(libs["molecule"])
         }
       }

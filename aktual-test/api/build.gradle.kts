@@ -10,7 +10,7 @@ kotlin {
   commonMainDependencies {
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
-    api(libs.test.ktor)
+    api(libs.ktor.test)
     api(project(":aktual-test"))
     implementation(project(":aktual-core:api:impl"))
     implementation(project(":aktual-core:model"))

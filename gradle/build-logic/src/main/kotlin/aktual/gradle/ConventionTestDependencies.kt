@@ -19,7 +19,7 @@ class ConventionTestDependencies : Plugin<Project> {
 
           if (isAndroid) {
             androidTestLibraries.forEach { lib -> testImplementation(lib) }
-            "debugImplementation"(libs["test.androidx.monitor"])
+            "debugImplementation"(libs["androidx.test.monitor"])
           }
         }
       }

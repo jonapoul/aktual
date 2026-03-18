@@ -27,16 +27,16 @@ class ModuleCompose : Plugin<Project> {
 
       kotlin {
         commonMainDependencies {
-          api(libs["jetbrains.runtime"])
+          api(libs["compose.runtime"])
           implementation(libs["alakazam.compose"])
           implementation(libs["androidx.lifecycle.runtime.compose"])
           implementation(libs["androidx.lifecycle.viewmodel.compose"])
-          implementation(libs["jetbrains.animation"])
-          implementation(libs["jetbrains.foundation"])
-          implementation(libs["jetbrains.material3"])
-          implementation(libs["jetbrains.ui"])
-          implementation(libs["jetbrains.uiToolingPreview"])
-          implementation(libs["jetbrains.uiUtil"])
+          implementation(libs["compose.animation"])
+          implementation(libs["compose.foundation"])
+          implementation(libs["compose.material3"])
+          implementation(libs["compose.ui"])
+          implementation(libs["compose.uiToolingPreview"])
+          implementation(libs["compose.uiUtil"])
           implementation(libs["kotlinx.immutable"])
           implementation(libs["metrox.viewmodel.compose"])
         }
@@ -51,13 +51,13 @@ class ModuleCompose : Plugin<Project> {
 
         androidMainDependencies { implementation(libs["androidx.poolingcontainer"]) }
 
-        androidHostTestDependencies { implementation(libs["test.androidx.compose.ui.junit4"]) }
+        androidHostTestDependencies { implementation(libs["androidx.test.composeJunit4"]) }
 
         jvmMainDependencies {
           implementation(extensions.getByType<ComposePlugin.Dependencies>().desktop.currentOs)
         }
       }
 
-      dependencies { "androidRuntimeClasspath"(libs["jetbrains.uiTooling"]) }
+      dependencies { "androidRuntimeClasspath"(libs["compose.uiTooling"]) }
     }
 }

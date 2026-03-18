@@ -7,8 +7,8 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(libs.jetbrains.uiGraphics)
+    api(libs.compose.uiGraphics)
     api(libs.preferences.core)
-    compileOnly(libs.jetbrains.runtime)
+    compileOnly(libs.compose.runtime)
   }
 }
