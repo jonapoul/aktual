@@ -51,7 +51,7 @@ class ModuleCompose : Plugin<Project> {
 
         androidMainDependencies { implementation(libs["androidx.poolingcontainer"]) }
 
-        androidHostTestDependencies { implementation(libs["test.androidx.compose.ui.junit4"]) }
+        androidHostTestDependencies { implementation(libs["androidx.test.composeJunit4"]) }
 
         jvmMainDependencies {
           implementation(extensions.getByType<ComposePlugin.Dependencies>().desktop.currentOs)
