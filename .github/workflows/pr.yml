@@ -82,7 +82,7 @@ jobs:
 
   validation:
     needs: [changed-files, validate-renovate, validate-wrapper, gitleaks, ktfmt]
-    if: always()
+    if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
       - run: |
@@ -93,7 +93,7 @@ jobs:
 
   check-build-logic:
     needs: validation
-    if: always() && needs.validation.result == 'success'
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -107,7 +107,7 @@ jobs:
 
   assemble-android:
     needs: validation
-    if: always() && needs.validation.result == 'success'
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -121,7 +121,7 @@ jobs:
 
   assemble-desktop:
     needs: validation
-    if: always() && needs.validation.result == 'success'
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -135,7 +135,7 @@ jobs:
 
   detekt:
     needs: validation
-    if: always() && needs.validation.result == 'success'
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -153,7 +153,7 @@ jobs:
 
   tests:
     needs: validation
-    if: always() && needs.validation.result == 'success'
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -172,7 +172,7 @@ jobs:
 
   licensee:
     needs: validation
-    if: always() && needs.validation.result == 'success'
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -183,7 +183,7 @@ jobs:
       - run: ./gradlew licensee
 
   finish:
-    if: always()
+    if: ${{ !cancelled() }}
     needs:
       - validation
       - check-build-logic
