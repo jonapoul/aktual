@@ -24,6 +24,10 @@ value class BudgetId(val value: String) : Comparable<BudgetId>, JavaIoSerializab
   override fun toString(): String = value
 
   override fun compareTo(other: BudgetId) = value.compareTo(other.value)
+
+  companion object {
+    val Demo = BudgetId("DEMO_BUDGET")
+  }
 }
 
 @JvmInline

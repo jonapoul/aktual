@@ -16,7 +16,7 @@ import kotlinx.serialization.Serializable
 
 @Immutable @Serializable data object MetricsNavRoute
 
-@Immutable @Serializable data class ListBudgetsNavRoute(val token: Token) : JSerializable
+@Immutable @Serializable data class ListBudgetsNavRoute(val token: Token?) : JSerializable
 
 @Immutable @Serializable data object LoginNavRoute
 
@@ -30,21 +30,21 @@ import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
-data class SyncBudgetsNavRoute(val token: Token, val budgetId: BudgetId) : JSerializable
+data class SyncBudgetsNavRoute(val token: Token?, val budgetId: BudgetId) : JSerializable
 
 @Immutable
 @Serializable
-data class TransactionsNavRoute(val token: Token, val budgetId: BudgetId) : JSerializable
+data class TransactionsNavRoute(val token: Token?, val budgetId: BudgetId) : JSerializable
 
 @Immutable
 @Serializable
-data class ReportsListNavRoute(val token: Token, val budgetId: BudgetId) : JSerializable
+data class ReportsListNavRoute(val token: Token?, val budgetId: BudgetId) : JSerializable
 
 @Immutable
 @Serializable
-data class ReportNavRoute(val token: Token, val budgetId: BudgetId, val widgetId: WidgetId) :
+data class ReportNavRoute(val token: Token?, val budgetId: BudgetId, val widgetId: WidgetId) :
   JSerializable
 
 @Immutable
 @Serializable
-data class CreateReportNavRoute(val token: Token, val budgetId: BudgetId) : JSerializable
+data class CreateReportNavRoute(val token: Token?, val budgetId: BudgetId) : JSerializable

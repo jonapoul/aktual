@@ -14,6 +14,7 @@ import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
@@ -24,7 +25,6 @@ import aktual.core.ui.WavyBackground
 import aktual.core.ui.appCloser
 import aktual.core.ui.normalIconButton
 import aktual.core.ui.transparentTopAppBarColors
-import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -71,6 +71,7 @@ fun ServerUrlScreen(nav: ServerUrlNavigator, viewModel: ServerUrlViewModel = met
         NavDestination.ToBootstrap -> logcat.w { "Not implemented bootstrap yet!" }
         NavDestination.ToLogin -> nav.toLogin()
         NavDestination.ToAbout -> nav.toAbout()
+        NavDestination.ToDemo -> nav.toDemo()
       }
     }
   }
@@ -85,6 +86,7 @@ fun ServerUrlScreen(nav: ServerUrlNavigator, viewModel: ServerUrlViewModel = met
     onAction = { action ->
       when (action) {
         ServerUrlAction.ConfirmUrl -> viewModel.onClickConfirm()
+        ServerUrlAction.OpenDemo -> viewModel.onClickDemo()
         ServerUrlAction.NavBack -> viewModel.onClickBack()
         ServerUrlAction.OpenAbout -> viewModel.onClickAbout()
         is ServerUrlAction.EnterUrl -> viewModel.onEnterUrl(action.url)
@@ -158,20 +160,16 @@ private fun ServerUrlContent(
 ) {
   Column(
     modifier = modifier.padding(horizontal = 16.dp).wrapContentWidth().wrapContentHeight(),
-    verticalArrangement = Arrangement.Center,
+    verticalArrangement = Arrangement.spacedBy(20.dp, Alignment.Top),
     horizontalAlignment = Alignment.Start,
   ) {
     Text(text = Strings.serverUrlTitle, style = AktualTypography.headlineLarge)
-
-    VerticalSpacer(height = 15.dp)
 
     Text(
       text = Strings.serverUrlMessage,
       color = theme.tableRowHeaderText,
       style = AktualTypography.bodyLarge,
     )
-
-    VerticalSpacer(height = 20.dp)
 
     InputFields(
       modifier = Modifier.fillMaxWidth(),
@@ -181,8 +179,6 @@ private fun ServerUrlContent(
       theme = theme,
     )
 
-    VerticalSpacer(height = 20.dp)
-
     PrimaryTextButtonWithLoading(
       modifier = Modifier.padding(5.dp).fillMaxWidth(),
       text = Strings.serverUrlConfirm,
@@ -191,9 +187,13 @@ private fun ServerUrlContent(
       onClick = { onAction(ServerUrlAction.ConfirmUrl) },
     )
 
-    if (errorMessage != null) {
-      VerticalSpacer(20.dp)
+    NormalTextButton(
+      modifier = Modifier.padding(5.dp).fillMaxWidth(),
+      text = Strings.serverUrlDemo,
+      onClick = { onAction(ServerUrlAction.OpenDemo) },
+    )
 
+    if (errorMessage != null) {
       Text(
         modifier = Modifier.fillMaxWidth(),
         text = errorMessage,

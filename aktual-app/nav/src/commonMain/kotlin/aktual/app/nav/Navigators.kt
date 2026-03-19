@@ -102,6 +102,8 @@ private class ServerUrlNavigatorImpl(private val nav: NavHostController) : Serve
   override fun toLogin() = nav.debugNav(LoginNavRoute)
 
   override fun toAbout() = nav.debugNav(InfoNavRoute)
+
+  override fun toDemo() = nav.debugNav(SyncBudgetsNavRoute(token = null, budgetId = BudgetId.Demo))
 }
 
 private class LicensesNavigatorImpl(private val nav: NavHostController) : LicensesNavigator {

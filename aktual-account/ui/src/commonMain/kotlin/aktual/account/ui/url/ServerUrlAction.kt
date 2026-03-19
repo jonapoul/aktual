@@ -9,6 +9,8 @@ sealed interface ServerUrlAction {
 
   data object ConfirmUrl : ServerUrlAction
 
+  data object OpenDemo : ServerUrlAction
+
   data object UseDemoServer : ServerUrlAction
 
   data object OpenAbout : ServerUrlAction

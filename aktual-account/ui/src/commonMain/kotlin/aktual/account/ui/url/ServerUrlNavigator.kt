@@ -7,4 +7,6 @@ interface ServerUrlNavigator {
   fun toLogin()
 
   fun toAbout()
+
+  fun toDemo()
 }

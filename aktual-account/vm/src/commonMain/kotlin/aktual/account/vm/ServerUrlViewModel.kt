@@ -156,6 +156,10 @@ internal constructor(
     mutableNavDestination.trySend(NavDestination.ToAbout)
   }
 
+  fun onClickDemo() {
+    mutableNavDestination.trySend(NavDestination.ToDemo)
+  }
+
   private suspend fun checkIfNeedsBootstrap(url: ServerUrl) =
     try {
       logcat.v { "checkIfNeedsBootstrap $url" }
@@ -225,4 +229,6 @@ sealed interface NavDestination {
   data object ToLogin : NavDestination
 
   data object ToAbout : NavDestination
+
+  data object ToDemo : NavDestination
 }

@@ -56,7 +56,7 @@ fun AktualNavHost(
       ReportsDashboardScreen(ReportsDashboardNavigator(nav), route.budgetId, route.token)
     }
 
-    composableWithArg<ReportNavRoute>(mapOf(BudgetIdType, TokenType, WidgetIdType)) { route, _ ->
+    composableWithArg<ReportNavRoute>(mapOf(BudgetIdType, TokenType, WidgetIdType)) { _, _ ->
       // TBC
     }
 
