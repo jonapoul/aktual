@@ -10,6 +10,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
+import aktual.core.model.ServerVersion
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -209,7 +210,7 @@ private fun InfoBuildState(buildState: BuildState, theme: Theme, modifier: Modif
       modifier = Modifier.testTag(Tags.ServerVersionText).padding(ItemMargin).clip(CardShape),
       icon = MaterialIcons.Cloud,
       title = Strings.infoServerVersion,
-      subtitle = buildState.versions.server ?: Strings.infoServerVersionUnknown,
+      subtitle = buildState.versions.server?.toString() ?: Strings.infoServerVersionUnknown,
       theme = theme,
     )
 
@@ -280,7 +281,7 @@ private fun PreviewInfoScaffold(@PreviewParameter(ThemeParameters::class) theme:
 
 private val PreviewBuildState =
   BuildState(
-    versions = AktualVersions(app = "1.2.3", server = "2.3.4"),
+    versions = AktualVersions(app = "1.2.3", server = ServerVersion("2.3.4")),
     buildDate = "12:34 GMT, 1st Feb 2026",
     year = 2026,
   )

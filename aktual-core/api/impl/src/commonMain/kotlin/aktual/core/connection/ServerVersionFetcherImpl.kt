@@ -3,6 +3,8 @@ package aktual.core.connection
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.core.model.AktualVersionsStateHolder
+import aktual.core.model.ServerUrl
+import aktual.core.model.ServerVersion
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.LoopController
 import dev.zacsweers.metro.AppScope
@@ -37,12 +39,18 @@ class ServerVersionFetcherImpl(
   }
 
   private suspend fun fetchVersion(apis: AktualApis) {
+    if (apis.serverUrl == ServerUrl.Demo) {
+      // on the demo server this endpoint returns HTML instead of JSON for whatever reason
+      versionsStateHolder.set(ServerVersion.NotApplicable)
+      return
+    }
+
     while (loopController.shouldLoop()) {
       logcat.v { "fetchVersion %s".format(apis) }
       try {
         val response = withContext(contexts.io) { apis.base.fetchInfo() }
         logcat.v { "Fetched %s".format(response) }
-        versionsStateHolder.set(response.build.version)
+        versionsStateHolder.set(ServerVersion(response.build.version))
         break
       } catch (e: CancellationException) {
         throw e

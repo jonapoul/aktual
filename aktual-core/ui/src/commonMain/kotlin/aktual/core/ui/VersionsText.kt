@@ -1,6 +1,7 @@
 package aktual.core.ui
 
 import aktual.core.model.AktualVersions
+import aktual.core.model.ServerVersion
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,5 +28,5 @@ private fun PreviewVersionsText(
 private class VersionsTextProvider :
   ThemedParameterProvider<AktualVersions>(
     AktualVersions(app = "1.2.3", server = null),
-    AktualVersions(app = "1.2.3", server = "2.3.4"),
+    AktualVersions(app = "1.2.3", server = ServerVersion("2.3.4")),
   )
