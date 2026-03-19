@@ -193,9 +193,61 @@ jobs:
       - tests
       - licensee
     runs-on: ubuntu-latest
+    outputs:
+      result: ${{ steps.check.outputs.result }}
     steps:
-      - run: |
+      - id: check
+        run: |
           if [[ "${{ contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') }}" == "true" ]]; then
+            echo "result=failure" >> "$GITHUB_OUTPUT"
             echo "One or more jobs failed or were cancelled"
             exit 1
+          else
+            echo "result=success" >> "$GITHUB_OUTPUT"
           fi
+
+  claude-review:
+    if: ${{ !cancelled() && !contains(github.head_ref, 'anthropics-claude-code-action') }}
+    needs: finish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+      actions: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+
+      - uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          allowed_bots: 'renovate'
+          prompt: |
+            REPO: ${{ github.repository }}
+            PR NUMBER: ${{ github.event.pull_request.number }}
+            CI RESULT: ${{ needs.finish.outputs.result || 'failure' }}
+
+            You have two tasks:
+
+            1. **CI Failure Analysis** (only if CI RESULT is "failure"):
+               Use `gh run view ${{ github.run_id }} --json jobs` to inspect which jobs failed.
+               For each failed job, use `gh run view ${{ github.run_id }} --log-failed` to get the failure logs.
+               Identify the root cause and summarize it CONCISELY.
+
+            2. **Code Review**:
+               Use `gh pr diff $PR_NUMBER` to get the diff, then submit a review with inline comments on specific lines where you find:
+               - Potential bugs or issues
+               - Performance concerns
+               - Security concerns
+               - Missing test coverage
+
+            Submit a review using:
+               gh api repos/$REPO/pulls/$PR_NUMBER/reviews -f event=COMMENT -f body="Review summary" -f 'comments[][path]=file.kt' -f 'comments[][line]=42' -f 'comments[][body]=Your comment'
+
+            Keep comments brief and actionable. Only comment where something should be addressed — don't leave praise or nitpicks. To clarify: if you have nothing to say besides "LGTM", **DO NOT LEAVE A COMMENT**
+
+            If CI failed, include the failure analysis in the review summary. If everything looks fine and CI passed, leave a single approving comment via `gh pr comment`.
+
+            Use the repository's CLAUDE.md for guidance on style and conventions.
+          claude_args: '--allowed-tools "Bash(gh api:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh run view:*)"'
