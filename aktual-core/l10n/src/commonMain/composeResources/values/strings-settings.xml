@@ -9,6 +9,7 @@
 
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Use System Default</string>
+  <string name="settings_theme_all">All</string>
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
   <string name="settings_theme_midnight">Midnight</string>

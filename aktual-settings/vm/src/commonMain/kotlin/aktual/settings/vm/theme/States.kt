@@ -14,13 +14,20 @@ data class ThemeSettingsState(
   val constantTheme: Theme.Id?,
 )
 
+enum class ThemeModeFilter {
+  All,
+  Light,
+  Dark,
+}
+
 @Immutable
 sealed interface CatalogState {
   data object Loading : CatalogState
 
   @JvmInline value class Failed(val reason: String) : CatalogState
 
-  data class Success(val themes: ImmutableList<CatalogItem>) : CatalogState
+  data class Success(val themes: ImmutableList<CatalogItem>, val modeFilter: ThemeModeFilter) :
+    CatalogState
 }
 
 @Immutable

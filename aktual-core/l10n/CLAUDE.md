@@ -31,6 +31,8 @@ Files are organized by feature:
    Strings.featureMyParameterizedString(string1 = "World", int2 = 5)
    ```
 
+For reference, the generated classes (`Strings`, etc.) are output in `build/generated/kotlin/catalogCommonMain`, relative to this file.
+
 **Naming conventions:**
 - XML: `snake_case` prefixed by feature (e.g., `settings_theme_dark`)
 - Generated Kotlin: `camelCase` (e.g., `Strings.settingsThemeDark`)

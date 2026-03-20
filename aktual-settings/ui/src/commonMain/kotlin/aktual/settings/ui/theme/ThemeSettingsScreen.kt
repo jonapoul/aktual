@@ -22,6 +22,7 @@ import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.BooleanPreference
 import aktual.settings.vm.ListPreference
 import aktual.settings.vm.theme.CatalogState
+import aktual.settings.vm.theme.ThemeModeFilter
 import aktual.settings.vm.theme.ThemeSettingsEvent
 import aktual.settings.vm.theme.ThemeSettingsState
 import aktual.settings.vm.theme.ThemeSettingsViewModel
@@ -77,6 +78,7 @@ fun ThemeSettingsScreen(
         ThemeSettingsAction.RetryFetchCatalog -> viewModel.retry()
         is ThemeSettingsAction.SetUseSystemDefault -> viewModel.setUseSystemDefault(action.value)
         is ThemeSettingsAction.SetDarkTheme -> viewModel.setDarkTheme(action.value)
+        is ThemeSettingsAction.SetModeFilter -> viewModel.setModeFilter(action.filter)
       }
     },
   )
@@ -175,7 +177,11 @@ private fun PreviewThemeSettings(@PreviewParameter(ThemeParameters::class) theme
             ),
           constantTheme = LightTheme.id,
         ),
-      catalogState = CatalogState.Success(themes = persistentListOf(PREVIEW_CATALOG_ITEM)),
+      catalogState =
+        CatalogState.Success(
+          themes = persistentListOf(PREVIEW_CATALOG_ITEM),
+          modeFilter = ThemeModeFilter.All,
+        ),
       onAction = {},
     )
   }

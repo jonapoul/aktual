@@ -6,6 +6,7 @@ import aktual.core.theme.DarkTheme
 import aktual.core.theme.MidnightTheme
 import aktual.core.theme.Theme
 import aktual.core.theme.ThemeApi
+import aktual.core.theme.ThemeMode
 import aktual.core.theme.ThemePreferences
 import aktual.core.theme.toId
 import aktual.settings.vm.BooleanPreference
@@ -70,6 +71,7 @@ class ThemeSettingsViewModel(
   val events: SharedFlow<ThemeSettingsEvent> = mutableEvents
 
   private val mutableLoadState = MutableStateFlow<LoadState>(LoadState.Loading)
+  private val mutableModeFilter = MutableStateFlow(ThemeModeFilter.All)
 
   val state: StateFlow<ThemeSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -98,11 +100,16 @@ class ThemeSettingsViewModel(
 
         is LoadState.Loaded -> {
           val selected by constantTheme.collectAsState()
+          val modeFilter by mutableModeFilter.collectAsState()
           CatalogState.Success(
-            s.summaries
-              .sortedBy { it.name }
-              .map { summary -> toCustomThemeItem(summary, selected, s) }
-              .toImmutableList()
+            themes =
+              s.summaries
+                .asSequence()
+                .sortedBy { it.name }
+                .filter { summary -> byThemeMode(modeFilter, summary) }
+                .map { summary -> toCustomThemeItem(summary, selected, s) }
+                .toImmutableList(),
+            modeFilter = modeFilter,
           )
         }
       }
@@ -133,6 +140,10 @@ class ThemeSettingsViewModel(
   fun setUseSystemDefault(value: Boolean) = preferences.useSystemDefault.set(value)
 
   fun setDarkTheme(value: Theme.Id) = preferences.nightTheme.set(value)
+
+  fun setModeFilter(filter: ThemeModeFilter) {
+    mutableModeFilter.update { filter }
+  }
 
   @Composable
   private fun useSystemDefault(value: Boolean): BooleanPreference =
@@ -212,4 +223,11 @@ class ThemeSettingsViewModel(
       }
     }
   }
+
+  private fun byThemeMode(modeFilter: ThemeModeFilter, summary: CustomThemeSummary): Boolean =
+    when (modeFilter) {
+      ThemeModeFilter.All -> true
+      ThemeModeFilter.Light -> summary.mode == ThemeMode.Light
+      ThemeModeFilter.Dark -> summary.mode == ThemeMode.Dark
+    }
 }
