@@ -94,11 +94,12 @@ if [ "$FORCE" = true ]; then
         find . -type d -name build -prune -o -type f \( -name "*.kt" -o -name "*.kts" \) -print0 | xargs -0 "$@"
     }
 else
-    COMMIT_SHORT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
+    BASE_BRANCH="main"
+    MERGE_BASE=$(git merge-base "$BASE_BRANCH" HEAD 2>/dev/null || git rev-parse HEAD)
+    MERGE_BASE_SHORT=$(git rev-parse --short "$MERGE_BASE" 2>/dev/null || echo "unknown")
     CHANGED_FILES=$(
         {
-            git diff --name-only HEAD -- '*.kt' '*.kts' 2>/dev/null
-            git diff --name-only --cached HEAD -- '*.kt' '*.kts' 2>/dev/null
+            git diff --name-only "$MERGE_BASE" -- '*.kt' '*.kts' 2>/dev/null
             git ls-files --others --exclude-standard -- '*.kt' '*.kts' 2>/dev/null
         } | sort -u | while IFS= read -r file; do
             [ -f "$file" ] && printf '%s\n' "$file"
@@ -107,11 +108,11 @@ else
     FILE_COUNT=$(echo "$CHANGED_FILES" | grep -c . || true)
 
     if [ "$FILE_COUNT" -eq 0 ]; then
-        echo "No Kotlin files changed since commit $COMMIT_SHORT, nothing to do."
+        echo "No Kotlin files changed since $BASE_BRANCH ($MERGE_BASE_SHORT), nothing to do."
         exit 0
     fi
 
-    echo "$FILE_COUNT file(s) changed since commit $COMMIT_SHORT (mode: $MODE)"
+    echo "$FILE_COUNT file(s) changed since $BASE_BRANCH ($MERGE_BASE_SHORT) (mode: $MODE)"
     run_ktfmt() {
         echo "$CHANGED_FILES" | tr '\n' '\0' | xargs -0 "$@"
     }
