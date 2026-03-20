@@ -5,5 +5,3 @@ plugins { id("aktual.module.compose") }
 kotlin {
   commonMainDependencies { api(libs.compose.ui) }
 }
-
-// hello
