@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal budgeting software](https://github.com/actualbudget/actual). The project supports Android and Desktop (JVM) platforms with shared Kotlin code. This is a pet project and not affiliated with the main Actual project.
 
+## General
+
+If you change anything that is likely to conflict with any context or instructions you've been given as part of this (or any other) CLAUDE.md file in this repo, make sure to update to keep them up to date.
+
 ## Build Commands
 
 ### Building
@@ -41,7 +45,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 # Run detekt static analysis
 ./gradlew detekt
 
-# Format changed files with ktfmt (since last commit)
+# Format changed files with ktfmt (since diverging from main)
 ./scripts/ktfmt.sh
 
 # Check formatting of changed files without modifying
