@@ -7,8 +7,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    // Don't change these UI modules away from API - they're needed for DI graph resolution from app
-    // layer
+    // Don't change these UI modules away from API - they're needed for DI graph resolution from app layer
     api(project(":aktual-about:ui"))
     api(project(":aktual-account:ui"))
     api(project(":aktual-budget:list:ui"))
@@ -20,12 +19,13 @@ kotlin {
     api(project(":aktual-core:ui"))
     api(project(":aktual-metrics:ui"))
     api(project(":aktual-settings:ui"))
-    api(libs.compose.navigation)
+    api(libs.compose.navigation3)
     api(libs.compose.resources)
     api(libs.compose.runtime)
     api(libs.molecule)
     implementation(libs.compose.material3)
     implementation(libs.compose.savedstate)
+    implementation(libs.compose.viewmodelNavigation3)
     implementation(libs.logcat)
   }
 }

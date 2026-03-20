@@ -54,7 +54,7 @@ burstCoroutines = { module = "app.cash.burst:burst-coroutines", version.ref = "b
 compose-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "compose" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.10.0-alpha05" }
-compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version = "2.9.2" }
+compose-navigation3 = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version = "1.1.0-alpha01" }
 compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose" }
 compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
 compose-savedstate = { module = "org.jetbrains.androidx.savedstate:savedstate", version = "1.4.0" }
@@ -65,6 +65,7 @@ compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.re
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose" }
 compose-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.9.6" }
+compose-viewmodelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0-alpha05" }
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.6" }
 junit = { module = "junit:junit", version = "4.13.2" }
 kermit = { module = "co.touchlab:kermit", version = "2.1.0" }
