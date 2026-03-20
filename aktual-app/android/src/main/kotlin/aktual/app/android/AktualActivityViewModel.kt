@@ -1,5 +1,6 @@
 package aktual.app.android
 
+import aktual.api.client.TokenExpiredEvent
 import aktual.app.nav.RootViewModel
 import aktual.budget.model.BudgetFiles
 import aktual.core.connection.ConnectionMonitor
@@ -32,6 +33,7 @@ class AktualActivityViewModel(
   budgetComponents: BudgetGraphHolder,
   preferences: AppGlobalPreferences,
   themeResolver: ThemeResolver,
+  tokenExpiredEvent: TokenExpiredEvent,
 ) :
   RootViewModel(
     appScope = appScope,
@@ -44,4 +46,5 @@ class AktualActivityViewModel(
     budgetComponents = budgetComponents,
     preferences = preferences,
     themeResolver = themeResolver,
+    tokenExpiredEvent = tokenExpiredEvent,
   )

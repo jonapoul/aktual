@@ -17,5 +17,11 @@ sealed interface LoginResponse {
     @Serializable data class Valid(@SerialName("token") override val token: Token) : Data
 
     @Serializable data class Invalid(@SerialName("token") override val token: Token? = null) : Data
+
+    @Serializable
+    data class Redirect(
+      @SerialName("returnUrl") val returnUrl: String,
+      @SerialName("token") override val token: Token? = null,
+    ) : Data
   }
 }

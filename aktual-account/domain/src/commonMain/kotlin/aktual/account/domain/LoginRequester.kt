@@ -1,14 +1,15 @@
 package aktual.account.domain
 
 import aktual.api.client.AktualApisStateHolder
+import aktual.api.model.account.FailureReason
 import aktual.api.model.account.LoginRequest
 import aktual.api.model.account.LoginResponse
+import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.prefs.AppGlobalPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
-import io.ktor.client.plugins.ResponseException
 import java.io.IOException
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
@@ -19,33 +20,56 @@ class LoginRequester(
   private val apisStateHolder: AktualApisStateHolder,
   private val preferences: AppGlobalPreferences,
 ) {
-  suspend fun logIn(password: Password): LoginResult {
-    val apis = apisStateHolder.value ?: return LoginResult.OtherFailure("URL not configured")
+  suspend fun logIn(
+    password: Password,
+    loginMethod: LoginMethod = LoginMethod.Password,
+  ): LoginResult {
+    val accountApi =
+      apisStateHolder.value?.account ?: return LoginResult.OtherFailure("URL not configured")
 
-    // TODO: handle other login methods
-    val request = LoginRequest.Password(password)
     val response =
       try {
-        withContext(contexts.io) { apis.account.login(request) }
+        withContext(contexts.io) {
+          when (loginMethod) {
+            LoginMethod.Password -> accountApi.login(LoginRequest.Password(password))
+            LoginMethod.Header -> accountApi.login(LoginRequest.Header(), password)
+            LoginMethod.OpenId -> accountApi.login(LoginRequest.OpenId(password, returnUrl = ""))
+          }
+        }
       } catch (e: CancellationException) {
         throw e
-      } catch (e: ResponseException) {
-        return with(e.response.status) { LoginResult.HttpFailure(value, description) }
       } catch (e: IOException) {
         return LoginResult.NetworkFailure(e.requireMessage())
       } catch (e: Exception) {
         return LoginResult.OtherFailure(e.requireMessage())
       }
 
-    val result =
-      when (val data = response.data) {
-        is LoginResponse.Data.Invalid -> LoginResult.InvalidPassword
-        is LoginResponse.Data.Valid -> LoginResult.Success(data.token)
+    return when (response) {
+      is LoginResponse.Failure -> response.reason.toLoginResult()
+      is LoginResponse.Success -> response.data.toLoginResult()
+    }
+  }
+
+  private fun FailureReason.toLoginResult(): LoginResult.Failure =
+    when (this) {
+      FailureReason.TokenExpired -> LoginResult.TokenExpired
+      FailureReason.InvalidPassword -> LoginResult.InvalidPassword
+      else -> LoginResult.OtherFailure(reason)
+    }
+
+  private fun LoginResponse.Data.toLoginResult(): LoginResult =
+    when (this) {
+      is LoginResponse.Data.Invalid -> {
+        LoginResult.InvalidPassword
       }
 
-    // Also save the token
-    preferences.token.set(response.data.token)
+      is LoginResponse.Data.Redirect -> {
+        LoginResult.Redirect(returnUrl)
+      }
 
-    return result
-  }
+      is LoginResponse.Data.Valid -> {
+        preferences.token.set(token)
+        LoginResult.Success(token)
+      }
+    }
 }

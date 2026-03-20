@@ -107,7 +107,7 @@ internal class LoginViewModelTest {
       assertThat(loading1).isFalse()
 
       // When we make the failing request
-      coEvery { loginRequester.logIn(any()) } returns LoginResult.InvalidPassword
+      coEvery { loginRequester.logIn(any(), any()) } returns LoginResult.InvalidPassword
       viewModel.onClickSignIn()
 
       // Then we're loading but not failed
@@ -123,6 +123,39 @@ internal class LoginViewModelTest {
       // Then failed
       val (failure4, loading4) = awaitItem()
       assertThat(failure4).isEqualTo(LoginResult.InvalidPassword)
+      assertThat(loading4).isFalse()
+
+      expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Signing in with token expired`() = runTest {
+    before()
+    combine(viewModel.loginFailure, viewModel.isLoading, ::Pair).distinctUntilChanged().test {
+      // Initially not loading or failed
+      val (failure1, loading1) = awaitItem()
+      assertThat(failure1).isNull()
+      assertThat(loading1).isFalse()
+
+      // When we make the failing request
+      coEvery { loginRequester.logIn(any(), any()) } returns LoginResult.TokenExpired
+      viewModel.onClickSignIn()
+
+      // Then we're loading but not failed
+      val (failure2, loading2) = awaitItem()
+      assertThat(failure2).isNull()
+      assertThat(loading2).isTrue()
+
+      // Then not loading
+      val (failure3, loading3) = awaitItem()
+      assertThat(failure3).isNull()
+      assertThat(loading3).isFalse()
+
+      // Then failed with token expired
+      val (failure4, loading4) = awaitItem()
+      assertThat(failure4).isEqualTo(LoginResult.TokenExpired)
       assertThat(loading4).isFalse()
 
       expectNoEvents()

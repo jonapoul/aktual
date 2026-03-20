@@ -9,6 +9,7 @@ kotlin {
   commonMainDependencies {
     // Don't change these UI modules away from API - they're needed for DI graph resolution from app
     // layer
+    api(project(":aktual-core:api"))
     api(project(":aktual-about:ui"))
     api(project(":aktual-account:ui"))
     api(project(":aktual-budget:list:ui"))

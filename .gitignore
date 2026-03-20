@@ -6,6 +6,9 @@
 build/
 local.properties
 
+# Local symlink
+actualbudget
+
 # API secrets
 *.private.env.json
 

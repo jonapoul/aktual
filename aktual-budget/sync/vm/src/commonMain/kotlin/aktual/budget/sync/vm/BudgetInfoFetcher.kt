@@ -1,6 +1,7 @@
 package aktual.budget.sync.vm
 
 import aktual.api.client.AktualApisStateHolder
+import aktual.api.model.account.FailureReason
 import aktual.api.model.sync.GetUserFileInfoResponse
 import aktual.api.model.sync.UserFile
 import aktual.budget.model.BudgetId
@@ -34,7 +35,10 @@ internal constructor(
 
     data class IOFailure(override val reason: String) : Failure
 
-    data class HttpFailure(override val reason: String) : Failure
+    data class HttpFailure(val failureReason: FailureReason) : Failure {
+      override val reason: String
+        get() = failureReason.reason
+    }
   }
 
   suspend fun fetch(token: Token, budgetId: BudgetId): Result {
@@ -66,10 +70,8 @@ internal constructor(
       try {
         response.body<GetUserFileInfoResponse.Failure>()
       } catch (_: JsonConvertException) {
-        return Result.HttpFailure(
-          "Received failed HTTP response, but failed parsing body. Status = ${response.status}"
-        )
+        return Result.HttpFailure(FailureReason("http-${response.status.value}"))
       }
-    return Result.HttpFailure(body.reason.reason)
+    return Result.HttpFailure(body.reason)
   }
 }

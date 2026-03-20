@@ -19,11 +19,11 @@ interface AccountApi {
 
   suspend fun bootstrap(body: BootstrapRequest): BootstrapResponse.Success
 
-  suspend fun login(body: LoginRequest.Password): LoginResponse.Success
+  suspend fun login(body: LoginRequest.Password): LoginResponse
 
-  suspend fun login(body: LoginRequest.OpenId): LoginResponse.Success
+  suspend fun login(body: LoginRequest.OpenId): LoginResponse
 
-  suspend fun login(body: LoginRequest.Header, password: Password): LoginResponse.Success
+  suspend fun login(body: LoginRequest.Header, password: Password): LoginResponse
 
   suspend fun changePassword(
     body: ChangePasswordRequest,

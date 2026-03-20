@@ -1,5 +1,12 @@
+@file:Suppress(
+  "AbstractClassCanBeConcreteClass",
+  "NonBooleanPropertyPrefixedWithIs",
+  "LongParameterList",
+)
+
 package aktual.app.nav
 
+import aktual.api.client.TokenExpiredEvent
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.Currency
@@ -38,7 +45,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import logcat.logcat
 
-@Suppress("AbstractClassCanBeConcreteClass", "NonBooleanPropertyPrefixedWithIs")
 abstract class RootViewModel(
   protected val appScope: CoroutineScope,
   protected val contexts: CoroutineContexts,
@@ -48,8 +54,9 @@ abstract class RootViewModel(
   protected val serverVersionFetcher: ServerVersionFetcher,
   protected val files: BudgetFiles,
   budgetComponents: BudgetGraphHolder,
-  preferences: AppGlobalPreferences,
+  private val preferences: AppGlobalPreferences,
   private val themeResolver: ThemeResolver,
+  private val tokenExpiredEvent: TokenExpiredEvent,
 ) : ViewModel() {
   private val budgetGraph = budgetComponents.stateIn(viewModelScope, Eagerly, initialValue = null)
 
@@ -99,10 +106,18 @@ abstract class RootViewModel(
       }
     }
 
+  val tokenExpired: Flow<Unit> = tokenExpiredEvent.event
+
   init {
     serverPinger.start()
     connectionMonitor.start()
     viewModelScope.launch { serverVersionFetcher.start() }
+    viewModelScope.launch {
+      tokenExpiredEvent.event.collect {
+        logcat.w { "Token expired, clearing stored token" }
+        preferences.token.deleteAndCommit()
+      }
+    }
   }
 
   fun theme(isSystemInDarkTheme: Boolean): Flow<Theme> =

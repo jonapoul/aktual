@@ -161,7 +161,7 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `HTTP failure`() = runTest {
+  fun `HTTP failure with token expired`() = runTest {
     before()
 
     // Given a URL is set
@@ -171,20 +171,47 @@ internal class LoginRequesterTest {
     connectionMonitor.start()
     apisStateHolder.filterNotNull().first()
 
-    // When we log in with a failed response
+    // When we log in with a token-expired error response
     val body =
       """
       {
         "status": "error",
-        "reason": "Some error"
+        "reason": "token-expired"
+      }
+      """
+        .trimIndent()
+    mockEngine += { respondJson(body, HttpStatusCode.Unauthorized) }
+    val result = loginRequester.logIn(EXAMPLE_PASSWORD)
+
+    // Then we get a token expired result
+    assertThat(result).isEqualTo(LoginResult.TokenExpired)
+  }
+
+  @Test
+  fun `HTTP failure with other reason`() = runTest {
+    before()
+
+    // Given a URL is set
+    preferences.serverUrl.set(EXAMPLE_URL)
+
+    // and we have a non-null api
+    connectionMonitor.start()
+    apisStateHolder.filterNotNull().first()
+
+    // When we log in with an error response
+    val body =
+      """
+      {
+        "status": "error",
+        "reason": "some-error"
       }
       """
         .trimIndent()
     mockEngine += { respondJson(body, HttpStatusCode.InternalServerError) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
-    // Then a HTTP result
-    assertThat(result).isInstanceOf<LoginResult.HttpFailure>()
+    // Then we get an other failure result with the reason
+    assertThat(result).isEqualTo(LoginResult.OtherFailure("some-error"))
   }
 
   private companion object {

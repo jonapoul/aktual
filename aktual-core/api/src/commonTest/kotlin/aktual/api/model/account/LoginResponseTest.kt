@@ -7,12 +7,19 @@ import kotlin.test.Test
 
 class LoginResponseTest {
   @Test
-  fun `Decode from JSON`() =
+  fun `Decode success from JSON`() =
     testDecoding(
       json = AccountResponses.LOGIN_SUCCESS_200,
       expected =
         LoginResponse.Success(
           data = LoginResponse.Data.Valid(token = Token("0f171d2d-c82c-496c-bd20-30eae2abdcf1"))
         ),
+    )
+
+  @Test
+  fun `Decode token-expired failure from JSON`() =
+    testDecoding(
+      json = AccountResponses.LOGIN_TOKEN_EXPIRED_401,
+      expected = LoginResponse.Failure(reason = FailureReason.TokenExpired),
     )
 }

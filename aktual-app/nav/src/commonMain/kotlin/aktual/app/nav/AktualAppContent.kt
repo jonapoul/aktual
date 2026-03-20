@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -41,6 +42,13 @@ fun AktualAppContent(
   backStack: SnapshotStateList<NavKey>,
   modifier: Modifier = Modifier,
 ) {
+
+  LaunchedEffect(viewModel) {
+    viewModel.tokenExpired.collect {
+      backStack.clear()
+      backStack.add(LoginNavRoute)
+    }
+  }
 
   val theme by viewModel.theme(isSystemInDarkTheme()).collectAsStateWithLifecycle(null)
   val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
