@@ -36,11 +36,10 @@ class AboutViewModel(
   private val urlOpener: UrlOpener,
   private val aktualVersionsStateHolder: AktualVersionsStateHolder,
 ) : ViewModel() {
-  val buildState: StateFlow<BuildState> =
-    viewModelScope.launchMolecule(Immediate) {
-      val versions by aktualVersionsStateHolder.collectAsState()
-      buildState(versions)
-    }
+  val buildState: StateFlow<BuildState> = viewModelScope.launchMolecule(Immediate) {
+    val versions by aktualVersionsStateHolder.collectAsState()
+    buildState(versions)
+  }
 
   private val mutableCheckUpdatesState =
     MutableStateFlow<CheckUpdatesState>(CheckUpdatesState.Inactive)
