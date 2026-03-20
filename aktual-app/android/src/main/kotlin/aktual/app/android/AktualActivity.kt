@@ -1,6 +1,7 @@
 package aktual.app.android
 
 import aktual.app.nav.AktualAppContent
+import aktual.app.nav.rememberBackStack
 import aktual.core.di.ActivityKey
 import android.app.Activity
 import android.os.Bundle
@@ -13,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.navigation.compose.rememberNavController
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -52,6 +52,7 @@ class AktualActivity(private val viewModelFactory: MetroViewModelFactory) : Comp
 @Suppress("ViewModelForwarding")
 private fun Content(viewModel: AktualActivityViewModel, viewModelFactory: MetroViewModelFactory) {
   CompositionLocalProvider(LocalMetroViewModelFactory provides viewModelFactory) {
-    AktualAppContent(viewModel = viewModel, navController = rememberNavController())
+    val backStack = rememberBackStack(viewModel)
+    AktualAppContent(viewModel, backStack)
   }
 }

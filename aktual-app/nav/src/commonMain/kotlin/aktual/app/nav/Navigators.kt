@@ -18,143 +18,157 @@ import aktual.metrics.ui.MetricsNavigator
 import aktual.settings.ui.inspect.InspectThemeNavigator
 import aktual.settings.ui.root.SettingsNavigator
 import aktual.settings.ui.theme.ThemeSettingsNavigator
-import androidx.navigation.NavHostController
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.navigation3.runtime.NavKey
 
-fun ChangePasswordNavigator(nav: NavHostController): ChangePasswordNavigator =
-  ChangePasswordNavigatorImpl(nav)
+fun ChangePasswordNavigator(stack: SnapshotStateList<NavKey>): ChangePasswordNavigator =
+  ChangePasswordNavigatorImpl(stack)
 
-fun ChooseReportTypeNavigator(nav: NavHostController): ChooseReportTypeNavigator =
-  ChooseReportTypeNavigatorImpl(nav)
+fun ChooseReportTypeNavigator(stack: SnapshotStateList<NavKey>): ChooseReportTypeNavigator =
+  ChooseReportTypeNavigatorImpl(stack)
 
-fun InfoNavigator(nav: NavHostController): InfoNavigator = InfoNavigatorImpl(nav)
+fun InfoNavigator(stack: SnapshotStateList<NavKey>): InfoNavigator = InfoNavigatorImpl(stack)
 
-fun LicensesNavigator(nav: NavHostController): LicensesNavigator = LicensesNavigatorImpl(nav)
+fun LicensesNavigator(stack: SnapshotStateList<NavKey>): LicensesNavigator =
+  LicensesNavigatorImpl(stack)
 
-fun ListBudgetsNavigator(nav: NavHostController): ListBudgetsNavigator =
-  ListBudgetsNavigatorImpl(nav)
+fun ListBudgetsNavigator(stack: SnapshotStateList<NavKey>): ListBudgetsNavigator =
+  ListBudgetsNavigatorImpl(stack)
 
-fun LoginNavigator(nav: NavHostController): LoginNavigator = LoginNavigatorImpl(nav)
+fun LoginNavigator(stack: SnapshotStateList<NavKey>): LoginNavigator = LoginNavigatorImpl(stack)
 
-fun MetricsNavigator(nav: NavHostController): MetricsNavigator = MetricsNavigatorImpl(nav)
+fun MetricsNavigator(stack: SnapshotStateList<NavKey>): MetricsNavigator =
+  MetricsNavigatorImpl(stack)
 
-fun ReportsDashboardNavigator(nav: NavHostController): ReportsDashboardNavigator =
-  ReportsDashboardNavigatorImpl(nav)
+fun ReportsDashboardNavigator(stack: SnapshotStateList<NavKey>): ReportsDashboardNavigator =
+  ReportsDashboardNavigatorImpl(stack)
 
-fun ServerUrlNavigator(nav: NavHostController): ServerUrlNavigator = ServerUrlNavigatorImpl(nav)
+fun ServerUrlNavigator(stack: SnapshotStateList<NavKey>): ServerUrlNavigator =
+  ServerUrlNavigatorImpl(stack)
 
-fun SettingsNavigator(nav: NavHostController): SettingsNavigator = SettingsNavigatorImpl(nav)
+fun SettingsNavigator(stack: SnapshotStateList<NavKey>): SettingsNavigator =
+  SettingsNavigatorImpl(stack)
 
-fun InspectThemeNavigator(nav: NavHostController): InspectThemeNavigator =
-  InspectThemeNavigatorImpl(nav)
+fun InspectThemeNavigator(stack: SnapshotStateList<NavKey>): InspectThemeNavigator =
+  InspectThemeNavigatorImpl(stack)
 
-fun ThemeSettingsNavigator(nav: NavHostController): ThemeSettingsNavigator =
-  ThemeSettingsNavigatorImpl(nav)
+fun ThemeSettingsNavigator(stack: SnapshotStateList<NavKey>): ThemeSettingsNavigator =
+  ThemeSettingsNavigatorImpl(stack)
 
-fun SyncBudgetNavigator(nav: NavHostController): SyncBudgetNavigator = SyncBudgetNavigatorImpl(nav)
+fun SyncBudgetNavigator(stack: SnapshotStateList<NavKey>): SyncBudgetNavigator =
+  SyncBudgetNavigatorImpl(stack)
 
-fun TransactionsNavigator(nav: NavHostController): TransactionsNavigator =
-  TransactionsNavigatorImpl(nav)
+fun TransactionsNavigator(stack: SnapshotStateList<NavKey>): TransactionsNavigator =
+  TransactionsNavigatorImpl(stack)
 
-private class ChangePasswordNavigatorImpl(private val nav: NavHostController) :
+private class ChangePasswordNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   ChangePasswordNavigator {
-  override fun back() = nav.popBackStack()
+  override fun back() = stack.debugPop()
 
-  override fun toListBudgets(token: Token) = nav.debugNav(ListBudgetsNavRoute(token))
+  override fun toListBudgets(token: Token) = stack.debugPush(ListBudgetsNavRoute(token))
 }
 
-private class InfoNavigatorImpl(private val nav: NavHostController) : InfoNavigator {
-  override fun back() = nav.popBackStack()
+private class InfoNavigatorImpl(private val stack: SnapshotStateList<NavKey>) : InfoNavigator {
+  override fun back() = stack.debugPop()
 
-  override fun toLicenses() = nav.debugNav(LicensesNavRoute)
+  override fun toLicenses() = stack.debugPush(LicensesNavRoute)
 }
 
-private class ListBudgetsNavigatorImpl(private val nav: NavHostController) : ListBudgetsNavigator {
-  override fun toAbout() = nav.debugNav(InfoNavRoute)
+private class ListBudgetsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+  ListBudgetsNavigator {
+  override fun toAbout() = stack.debugPush(InfoNavRoute)
 
-  override fun toChangePassword() = nav.debugNav(ChangePasswordNavRoute)
+  override fun toChangePassword() = stack.debugPush(ChangePasswordNavRoute)
 
-  override fun toMetrics() = nav.debugNav(MetricsNavRoute)
+  override fun toMetrics() = stack.debugPush(MetricsNavRoute)
 
-  override fun toSettings() = nav.debugNav(SettingsNavRoute)
+  override fun toSettings() = stack.debugPush(SettingsNavRoute)
 
   override fun toSyncBudget(token: Token, id: BudgetId) =
-    nav.debugNav(SyncBudgetsNavRoute(token, id))
+    stack.debugPush(SyncBudgetsNavRoute(token, id))
 
   override fun toUrl() =
-    nav.debugNav(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
+    stack.debugPopUpToAndPush(ServerUrlNavRoute, { it is LoginNavRoute }, inclusive = true)
 }
 
-private class LoginNavigatorImpl(private val nav: NavHostController) : LoginNavigator {
-  override fun back() = nav.popBackStack()
+private class LoginNavigatorImpl(private val stack: SnapshotStateList<NavKey>) : LoginNavigator {
+  override fun back() = stack.debugPop()
 
   override fun toUrl() =
-    nav.debugNav(ServerUrlNavRoute) { popUpTo(LoginNavRoute) { inclusive = true } }
+    stack.debugPopUpToAndPush(ServerUrlNavRoute, { it is LoginNavRoute }, inclusive = true)
 
   override fun toListBudgets(token: Token) =
-    nav.debugNav(ListBudgetsNavRoute(token)) { popUpTo(LoginNavRoute) { inclusive = true } }
+    stack.debugPopUpToAndPush(ListBudgetsNavRoute(token), { it is LoginNavRoute }, inclusive = true)
 }
 
-private class MetricsNavigatorImpl(private val nav: NavHostController) : MetricsNavigator {
-  override fun back() = nav.popBackStack()
+private class MetricsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+  MetricsNavigator {
+  override fun back() = stack.debugPop()
 }
 
-private class ServerUrlNavigatorImpl(private val nav: NavHostController) : ServerUrlNavigator {
-  override fun toLogin() = nav.debugNav(LoginNavRoute)
+private class ServerUrlNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+  ServerUrlNavigator {
+  override fun toLogin() = stack.debugPush(LoginNavRoute)
 
-  override fun toAbout() = nav.debugNav(InfoNavRoute)
+  override fun toAbout() = stack.debugPush(InfoNavRoute)
 }
 
-private class LicensesNavigatorImpl(private val nav: NavHostController) : LicensesNavigator {
-  override fun back() = nav.popBackStack()
+private class LicensesNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+  LicensesNavigator {
+  override fun back() = stack.debugPop()
 }
 
-private class ReportsDashboardNavigatorImpl(private val nav: NavHostController) :
+private class ReportsDashboardNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   ReportsDashboardNavigator {
-  override fun back() = nav.popBackStack()
+  override fun back() = stack.debugPop()
 
   override fun toReport(token: Token, budgetId: BudgetId, widgetId: WidgetId) =
-    nav.debugNav(ReportNavRoute(token, budgetId, widgetId))
+    stack.debugPush(ReportNavRoute(token, budgetId, widgetId))
 
   override fun createReport(token: Token, budgetId: BudgetId) =
-    nav.debugNav(CreateReportNavRoute(token, budgetId))
+    stack.debugPush(CreateReportNavRoute(token, budgetId))
 }
 
-private class ChooseReportTypeNavigatorImpl(private val nav: NavHostController) :
+private class ChooseReportTypeNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   ChooseReportTypeNavigator {
-  override fun back() = nav.popBackStack()
+  override fun back() = stack.debugPop()
 
   override fun toReport(token: Token, budgetId: BudgetId, widgetId: WidgetId) =
-    nav.debugNav(ReportNavRoute(token, budgetId, widgetId))
+    stack.debugPush(ReportNavRoute(token, budgetId, widgetId))
 }
 
-private class SettingsNavigatorImpl(private val nav: NavHostController) : SettingsNavigator {
-  override fun back() = nav.popBackStack()
+private class SettingsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+  SettingsNavigator {
+  override fun back() = stack.debugPop()
 
-  override fun toThemeSettings() = nav.debugNav(ThemeSettingsNavRoute)
+  override fun toThemeSettings() = stack.debugPush(ThemeSettingsNavRoute)
 }
 
-private class InspectThemeNavigatorImpl(private val nav: NavHostController) :
+private class InspectThemeNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   InspectThemeNavigator {
-  override fun navBack() = nav.popBackStack()
+  override fun navBack() = stack.debugPop()
 }
 
-private class ThemeSettingsNavigatorImpl(private val nav: NavHostController) :
+private class ThemeSettingsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   ThemeSettingsNavigator {
-  override fun back() = nav.popBackStack()
+  override fun back() = stack.debugPop()
 
-  override fun inspectTheme(id: Theme.Id) = nav.debugNav(InspectThemeNavRoute(id))
+  override fun inspectTheme(id: Theme.Id) = stack.debugPush(InspectThemeNavRoute(id))
 }
 
-private class SyncBudgetNavigatorImpl(private val nav: NavHostController) : SyncBudgetNavigator {
-  override fun back() = nav.popBackStack()
+private class SyncBudgetNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+  SyncBudgetNavigator {
+  override fun back() = stack.debugPop()
 
   override fun toBudget(token: Token, budgetId: BudgetId) =
-    nav.debugNav(TransactionsNavRoute(token, budgetId)) {
-      popUpTo<ListBudgetsNavRoute> { inclusive = false }
-    }
+    stack.debugPopUpToAndPush(
+      TransactionsNavRoute(token, budgetId),
+      { it is ListBudgetsNavRoute },
+      inclusive = false,
+    )
 }
 
-private class TransactionsNavigatorImpl(private val nav: NavHostController) :
+private class TransactionsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   TransactionsNavigator {
-  override fun back() = nav.popBackStack()
+  override fun back() = stack.debugPop()
 }

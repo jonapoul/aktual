@@ -1,5 +1,6 @@
 package aktual.app.desktop
 
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.isAltPressed
@@ -8,11 +9,11 @@ import androidx.compose.ui.input.key.isMetaPressed
 import androidx.compose.ui.input.key.isShiftPressed
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.type
-import androidx.navigation.NavHostController
+import androidx.navigation3.runtime.NavKey
 import logcat.logcat
 
 /** Return false => pass event up to the parent. In this case that means it gets ignored entirely */
-internal class KeyboardEventHandler(private val navController: NavHostController) {
+internal class KeyboardEventHandler(private val backStack: SnapshotStateList<NavKey>) {
   // Intercept keys before any composable handles them
   // Use for: app-level shortcuts that should always work
   fun onKeyEvent(event: KeyEvent): Boolean =
@@ -30,7 +31,12 @@ internal class KeyboardEventHandler(private val navController: NavHostController
       logcat.v { "onPreviewKeyEvent = ${event.string()}" }
       if (isAltPressed && key == Key.DirectionLeft) {
         logcat.d { "Navigating back" }
-        navController.navigateUp()
+        if (backStack.size > 1) {
+          backStack.removeLast()
+          true
+        } else {
+          false
+        }
       } else {
         false
       }

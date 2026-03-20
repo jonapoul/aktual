@@ -5,46 +5,45 @@ import aktual.budget.model.WidgetId
 import aktual.core.model.Token
 import aktual.core.theme.Theme
 import androidx.compose.runtime.Immutable
-import java.io.Serializable as JSerializable
+import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
-@Immutable @Serializable data object ChangePasswordNavRoute
+@Immutable @Serializable data object ChangePasswordNavRoute : NavKey
 
-@Immutable @Serializable data object InfoNavRoute
+@Immutable @Serializable data object InfoNavRoute : NavKey
 
-@Immutable @Serializable data object LicensesNavRoute
+@Immutable @Serializable data object LicensesNavRoute : NavKey
 
-@Immutable @Serializable data object MetricsNavRoute
+@Immutable @Serializable data object MetricsNavRoute : NavKey
 
-@Immutable @Serializable data class ListBudgetsNavRoute(val token: Token) : JSerializable
+@Immutable @Serializable data class ListBudgetsNavRoute(val token: Token) : NavKey
 
-@Immutable @Serializable data object LoginNavRoute
+@Immutable @Serializable data object LoginNavRoute : NavKey
 
-@Immutable @Serializable data object ServerUrlNavRoute
+@Immutable @Serializable data object ServerUrlNavRoute : NavKey
 
-@Immutable @Serializable data object SettingsNavRoute
+@Immutable @Serializable data object SettingsNavRoute : NavKey
 
-@Immutable @Serializable data object ThemeSettingsNavRoute
+@Immutable @Serializable data object ThemeSettingsNavRoute : NavKey
 
-@Immutable @Serializable data class InspectThemeNavRoute(val id: Theme.Id) : JSerializable
-
-@Immutable
-@Serializable
-data class SyncBudgetsNavRoute(val token: Token, val budgetId: BudgetId) : JSerializable
+@Immutable @Serializable data class InspectThemeNavRoute(val id: Theme.Id) : NavKey
 
 @Immutable
 @Serializable
-data class TransactionsNavRoute(val token: Token, val budgetId: BudgetId) : JSerializable
+data class SyncBudgetsNavRoute(val token: Token, val budgetId: BudgetId) : NavKey
 
 @Immutable
 @Serializable
-data class ReportsListNavRoute(val token: Token, val budgetId: BudgetId) : JSerializable
+data class TransactionsNavRoute(val token: Token, val budgetId: BudgetId) : NavKey
 
 @Immutable
 @Serializable
-data class ReportNavRoute(val token: Token, val budgetId: BudgetId, val widgetId: WidgetId) :
-  JSerializable
+data class ReportsListNavRoute(val token: Token, val budgetId: BudgetId) : NavKey
 
 @Immutable
 @Serializable
-data class CreateReportNavRoute(val token: Token, val budgetId: BudgetId) : JSerializable
+data class ReportNavRoute(val token: Token, val budgetId: BudgetId, val widgetId: WidgetId) : NavKey
+
+@Immutable
+@Serializable
+data class CreateReportNavRoute(val token: Token, val budgetId: BudgetId) : NavKey

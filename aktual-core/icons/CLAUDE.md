@@ -65,6 +65,19 @@ There are two coordinate systems in use:
 - Example: SVG `M480-120` → `moveTo(480f, 840f)` (840 = -120 + 960)
 - Source: https://fonts.google.com/icons (download SVG, read viewBox to confirm)
 
+## SVG Path Conversion Reference
+
+- `M x y` → `moveTo(x.0f, y.0f)`
+- `L x y` → `lineTo(x.0f, y.0f)`
+- `l x y` → `lineToRelative(x.0f, y.0f)`
+- `C x1 y1 x2 y2 x y` → `curveTo(x1.0f, y1.0f, x2.0f, y2.0f, x.0f, y.0f)`
+- `c x1 y1 x2 y2 x y` → `curveToRelative(x1.0f, y1.0f, x2.0f, y2.0f, x.0f, y.0f)`
+- `H x` → `horizontalLineTo(x.0f)`
+- `h x` → `horizontalLineToRelative(x.0f)`
+- `V y` → `verticalLineTo(y.0f)`
+- `v y` → `verticalLineToRelative(y.0f)`
+- `Z` → `close()`
+
 ## Adding a new icon
 
 **AktualIcons:** Create `IconName.kt` in `aktual/core/icons/`, add to `aktualIcons` list in `IconPreviews.kt`.

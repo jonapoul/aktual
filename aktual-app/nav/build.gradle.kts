@@ -20,12 +20,13 @@ kotlin {
     api(project(":aktual-core:ui"))
     api(project(":aktual-metrics:ui"))
     api(project(":aktual-settings:ui"))
-    api(libs.compose.navigation)
+    api(libs.compose.navigation3)
     api(libs.compose.resources)
     api(libs.compose.runtime)
     api(libs.molecule)
     implementation(libs.compose.material3)
     implementation(libs.compose.savedstate)
+    implementation(libs.compose.viewmodelNavigation3)
     implementation(libs.logcat)
   }
 }

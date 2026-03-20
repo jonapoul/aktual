@@ -13,21 +13,35 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavHostController
+import androidx.navigation3.runtime.NavKey
+
+@Composable
+fun rememberBackStack(viewModel: RootViewModel): SnapshotStateList<NavKey> = remember {
+  mutableStateListOf(
+    when {
+      viewModel.token != null && viewModel.isServerUrlSet -> ListBudgetsNavRoute(viewModel.token)
+      viewModel.isServerUrlSet -> LoginNavRoute
+      else -> ServerUrlNavRoute
+    }
+  )
+}
 
 @Composable
 fun AktualAppContent(
-  navController: NavHostController,
   viewModel: RootViewModel,
+  backStack: SnapshotStateList<NavKey>,
   modifier: Modifier = Modifier,
 ) {
+
   val theme by viewModel.theme(isSystemInDarkTheme()).collectAsStateWithLifecycle(null)
   val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
   val numberFormat by viewModel.numberFormat.collectAsStateWithLifecycle()
@@ -46,30 +60,23 @@ fun AktualAppContent(
     currencyPosition = currencySymbolPosition,
     addCurrencySpace = currencySpaceBetweenAmountAndSymbol,
   ) {
-    theme?.let { t ->
-      AktualTheme(t) {
-        Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
-          var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
+    AktualTheme(theme ?: return@WithCompositionLocals) {
+      Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
+        var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
 
-          CompositionLocalProvider(LocalBottomStatusBarHeight provides bottomStatusBarHeight) {
-            AktualNavHost(
-              modifier = Modifier.fillMaxWidth(),
-              nav = navController,
-              isServerUrlSet = viewModel.isServerUrlSet,
-              token = viewModel.token,
+        CompositionLocalProvider(LocalBottomStatusBarHeight provides bottomStatusBarHeight) {
+          AktualNavHost(modifier = Modifier.fillMaxWidth(), backStack = backStack)
+        }
+
+        val bbs = bottomBarState
+        if (bbs is BottomBarState.Visible) {
+          Column {
+            BottomStatusBar(
+              modifier = Modifier.wrapContentHeight(),
+              state = bbs,
+              onMeasureHeight = { bottomStatusBarHeight = it },
             )
-          }
-
-          val bbs = bottomBarState
-          if (bbs is BottomBarState.Visible) {
-            Column {
-              BottomStatusBar(
-                modifier = Modifier.wrapContentHeight(),
-                state = bbs,
-                onMeasureHeight = { bottomStatusBarHeight = it },
-              )
-              BottomNavBarSpacing()
-            }
+            BottomNavBarSpacing()
           }
         }
       }

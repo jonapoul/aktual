@@ -1,25 +1,21 @@
 package aktual.app.desktop
 
 import aktual.app.nav.AktualAppContent
+import aktual.app.nav.rememberBackStack
 import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
 import aktual.core.logging.JvmLogStorage
 import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import dev.zacsweers.metro.createGraph
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
-import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
@@ -44,7 +40,7 @@ fun main() {
   composeApp(graph, viewModelStoreOwner)
 }
 
-private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStoreOwner) =
+private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStoreOwner) {
   application(exitProcessOnExit = true) {
     val windowPrefs = remember(graph) { graph.windowPreferences }
     val state =
@@ -61,8 +57,8 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
         factory = graph.metroViewModelFactory,
       )
 
-    val navController = rememberNavController()
-    val keyHandler = remember { KeyboardEventHandler(navController) }
+    val backStack = rememberBackStack(viewModel)
+    val keyHandler = remember { KeyboardEventHandler(backStack) }
 
     Window(
       title = Strings.appName,
@@ -80,27 +76,12 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
         exitApplication()
       },
     ) {
-      WindowContents(
-        navController = navController,
-        viewModel = viewModel,
-        viewModelStoreOwner = viewModelStoreOwner,
-        factory = graph.metroViewModelFactory,
-      )
+      CompositionLocalProvider(
+        LocalViewModelStoreOwner provides viewModelStoreOwner,
+        LocalMetroViewModelFactory provides graph.metroViewModelFactory,
+      ) {
+        AktualAppContent(viewModel = viewModel, backStack = backStack)
+      }
     }
-  }
-
-@Composable
-@Suppress("ViewModelForwarding")
-private fun WindowContents(
-  navController: NavHostController,
-  viewModel: AktualDesktopViewModel,
-  viewModelStoreOwner: ViewModelStoreOwner,
-  factory: MetroViewModelFactory,
-) {
-  CompositionLocalProvider(
-    LocalViewModelStoreOwner provides viewModelStoreOwner,
-    LocalMetroViewModelFactory provides factory,
-  ) {
-    AktualAppContent(viewModel = viewModel, navController = navController)
   }
 }
