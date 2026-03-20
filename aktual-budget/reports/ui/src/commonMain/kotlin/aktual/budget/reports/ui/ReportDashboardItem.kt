@@ -6,9 +6,9 @@ import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.vm.ReportDashboardItem
-import aktual.core.icons.Delete
-import aktual.core.icons.Edit
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.Delete
+import aktual.core.icons.material.Edit
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme

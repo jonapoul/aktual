@@ -1,7 +1,7 @@
 package aktual.settings.ui
 
-import aktual.core.icons.Info
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.Info
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.PreviewWithColorScheme
@@ -27,6 +27,7 @@ internal fun BooleanPreferenceItem(
   icon: ImageVector?,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  includeBackground: Boolean = true,
   theme: Theme = LocalTheme.current,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
@@ -36,6 +37,7 @@ internal fun BooleanPreferenceItem(
     subtitle = subtitle,
     icon = icon,
     enabled = enabled,
+    includeBackground = includeBackground,
     onClick = { onValueChange(!value) },
     bottomContent = bottomContent,
     rightContent = {

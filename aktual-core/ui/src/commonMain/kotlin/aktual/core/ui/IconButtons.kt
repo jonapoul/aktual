@@ -1,8 +1,8 @@
 package aktual.core.ui
 
-import aktual.core.icons.ArrowBack
-import aktual.core.icons.Check
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.ArrowBack
+import aktual.core.icons.material.Check
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
@@ -14,7 +14,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -24,7 +23,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 
-@Stable
 @Composable
 fun PrimaryIconButton(
   imageVector: ImageVector,
@@ -53,7 +51,6 @@ fun PrimaryIconButton(
   )
 }
 
-@Stable
 @Composable
 fun NormalIconButton(
   imageVector: ImageVector,
@@ -82,7 +79,6 @@ fun NormalIconButton(
   )
 }
 
-@Stable
 @Composable
 fun BareIconButton(
   imageVector: ImageVector,
@@ -111,7 +107,6 @@ fun BareIconButton(
   )
 }
 
-@Stable
 @Composable
 fun BasicIconButton(
   imageVector: ImageVector,
@@ -154,7 +149,6 @@ fun NavBackIconButton(onClick: () -> Unit) {
   NavBackIconButton(modifier = Modifier, onClick = onClick)
 }
 
-@Stable
 @Composable
 private fun DefaultIconButtonContent(
   imageVector: ImageVector,

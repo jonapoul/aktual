@@ -15,6 +15,6 @@ kotlin {
     implementation(libs.kotlinx.datetime)
     implementation(libs.markdown.core)
     implementation(libs.markdown.m3)
-    implementation(libs.vico.multiplatform)
+    implementation(libs.vico)
   }
 }

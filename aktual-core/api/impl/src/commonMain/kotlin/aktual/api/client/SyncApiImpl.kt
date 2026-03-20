@@ -44,16 +44,15 @@ class SyncApiImpl(
     budgetId: BudgetId,
     path: Path,
   ): Flow<SyncDownloadState> = channelFlow {
-    val statement =
-      client.prepareGet {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/sync/download-user-file")
-        }
-        header(AktualHeaders.TOKEN, token)
-        header(AktualHeaders.FILE_ID, budgetId)
+    val statement = client.prepareGet {
+      url {
+        protocol = urlProtocol
+        host = serverUrl.baseUrl
+        path("/sync/download-user-file")
       }
+      header(AktualHeaders.TOKEN, token)
+      header(AktualHeaders.FILE_ID, budgetId)
+    }
 
     statement.execute { response ->
       val channel = response.body<ByteReadChannel>()

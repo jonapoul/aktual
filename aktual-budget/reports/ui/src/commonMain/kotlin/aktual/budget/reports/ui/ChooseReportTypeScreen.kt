@@ -24,14 +24,12 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemeParameters
-import aktual.core.ui.WavyBackground
-import aktual.core.ui.WithHazeState
-import aktual.core.ui.aktualHaze
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,13 +45,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
@@ -97,15 +93,7 @@ internal fun ChooseReportTypeScaffold(
       )
     },
   ) { innerPadding ->
-    Box {
-      val hazeState = remember { HazeState() }
-
-      WavyBackground(modifier = Modifier.hazeSource(hazeState))
-
-      WithHazeState(hazeState) {
-        Content(modifier = Modifier.padding(innerPadding), onAction = onAction, theme = theme)
-      }
-    }
+    Content(modifier = Modifier.padding(innerPadding), onAction = onAction, theme = theme)
   }
 
 @Composable
@@ -148,7 +136,8 @@ private fun WidgetType(
     modifier =
       modifier
         .clip(CardShape)
-        .aktualHaze()
+        .background(theme.pillBackgroundLight, CardShape)
+        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
         .clickable { onAction(ChooseReportTypeAction.Create(type)) }
         .padding(8.dp)
   ) {

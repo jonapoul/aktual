@@ -1,0 +1,12 @@
+name: Report Build Results
+description: Publish build report annotations
+
+runs:
+  using: composite
+  steps:
+    - name: Report build results
+      uses: gmazzo/publish-report-annotations@ebc1ae65e8339696e03c3fadd5f808f90011d33e # v1
+      if: ${{ !cancelled() }}
+      with:
+        filterPassedTests: true
+        invalidFileAction: report

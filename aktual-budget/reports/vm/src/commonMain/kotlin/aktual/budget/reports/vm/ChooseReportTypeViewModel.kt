@@ -58,13 +58,12 @@ class ChooseReportTypeViewModel(
     }
 
     job?.cancel()
-    job =
-      viewModelScope.launch {
-        val widgetId = WidgetId(uuidGenerator())
-        val (x, y) = newWidgetPosition()
-        dao.insert(widgetId, type, x, y, buildEmptyMetadata(type))
-        shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
-      }
+    job = viewModelScope.launch {
+      val widgetId = WidgetId(uuidGenerator())
+      val (x, y) = newWidgetPosition()
+      dao.insert(widgetId, type, x, y, buildEmptyMetadata(type))
+      shouldNavigateChannel.send(ShouldNavigateEvent(widgetId))
+    }
   }
 
   private data class Coords(val x: Long = 0, val y: Long = 0)

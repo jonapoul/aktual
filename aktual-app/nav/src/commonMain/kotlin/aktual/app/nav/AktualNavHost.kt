@@ -10,76 +10,93 @@ import aktual.budget.reports.ui.ChooseReportTypeScreen
 import aktual.budget.reports.ui.ReportsDashboardScreen
 import aktual.budget.sync.ui.SyncBudgetScreen
 import aktual.budget.transactions.ui.TransactionsScreen
-import aktual.core.model.Token
 import aktual.metrics.ui.MetricsScreen
 import aktual.settings.ui.inspect.InspectThemeScreen
 import aktual.settings.ui.root.SettingsScreen
 import aktual.settings.ui.theme.ThemeSettingsScreen
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 
 @Composable
-fun AktualNavHost(
-  nav: NavHostController,
-  isServerUrlSet: Boolean,
-  token: Token?,
-  modifier: Modifier = Modifier,
-) {
-  NavHost(
+fun AktualNavHost(backStack: SnapshotStateList<NavKey>, modifier: Modifier = Modifier) {
+  NavDisplay(
+    backStack = backStack,
     modifier = modifier,
-    navController = nav,
-    startDestination =
-      when {
-        token != null && isServerUrlSet -> ListBudgetsNavRoute(token)
-        isServerUrlSet -> LoginNavRoute
-        else -> ServerUrlNavRoute
+    onBack = { backStack.debugPop() },
+    // Forward: new screen slides in from right, old screen slides out to left
+    transitionSpec = {
+      slideInHorizontally(initialOffsetX = { width -> width }) togetherWith
+        slideOutHorizontally(targetOffsetX = { width -> -width })
+    },
+    // Back: previous screen slides in from left, current screen slides out to right
+    popTransitionSpec = {
+      slideInHorizontally(initialOffsetX = { width -> -width }) togetherWith
+        slideOutHorizontally(targetOffsetX = { width -> width })
+    },
+    // Predictive back gesture: same as pop
+    predictivePopTransitionSpec = {
+      slideInHorizontally(initialOffsetX = { width -> -width }) togetherWith
+        slideOutHorizontally(targetOffsetX = { width -> width })
+    },
+    entryDecorators =
+      listOf(
+        rememberSaveableStateHolderNavEntryDecorator(),
+        rememberViewModelStoreNavEntryDecorator(),
+      ),
+    entryProvider =
+      entryProvider {
+        entry<ChangePasswordNavRoute> { ChangePasswordScreen(ChangePasswordNavigator(backStack)) }
+
+        entry<InfoNavRoute> { InfoScreen(InfoNavigator(backStack)) }
+
+        entry<LicensesNavRoute> { LicensesScreen(LicensesNavigator(backStack)) }
+
+        entry<MetricsNavRoute> { MetricsScreen(MetricsNavigator(backStack)) }
+
+        entry<ListBudgetsNavRoute> { route ->
+          ListBudgetsScreen(ListBudgetsNavigator(backStack), route.token)
+        }
+
+        entry<LoginNavRoute> { LoginScreen(LoginNavigator(backStack)) }
+
+        entry<ReportsListNavRoute> { route ->
+          ReportsDashboardScreen(ReportsDashboardNavigator(backStack), route.budgetId, route.token)
+        }
+
+        entry<ReportNavRoute> {
+          // TBC
+        }
+
+        entry<CreateReportNavRoute> { route ->
+          ChooseReportTypeScreen(ChooseReportTypeNavigator(backStack), route.budgetId, route.token)
+        }
+
+        entry<ServerUrlNavRoute> { ServerUrlScreen(ServerUrlNavigator(backStack)) }
+
+        entry<SettingsNavRoute> { SettingsScreen(SettingsNavigator(backStack)) }
+
+        entry<ThemeSettingsNavRoute> { ThemeSettingsScreen(ThemeSettingsNavigator(backStack)) }
+
+        entry<InspectThemeNavRoute> { route ->
+          InspectThemeScreen(InspectThemeNavigator(backStack), route.id)
+        }
+
+        entry<SyncBudgetsNavRoute> { route ->
+          SyncBudgetScreen(SyncBudgetNavigator(backStack), route.budgetId, route.token)
+        }
+
+        entry<TransactionsNavRoute> { route ->
+          TransactionsScreen(TransactionsNavigator(backStack), route.budgetId, route.token)
+        }
       },
-  ) {
-    composable<ChangePasswordNavRoute> { ChangePasswordScreen(ChangePasswordNavigator(nav)) }
-
-    composable<InfoNavRoute> { InfoScreen(InfoNavigator(nav)) }
-
-    composable<LicensesNavRoute> { LicensesScreen(LicensesNavigator(nav)) }
-
-    composable<MetricsNavRoute> { MetricsScreen(MetricsNavigator(nav)) }
-
-    composableWithArg<ListBudgetsNavRoute>(mapOf(TokenType)) { route, _ ->
-      ListBudgetsScreen(ListBudgetsNavigator(nav), route.token)
-    }
-
-    composable<LoginNavRoute> { LoginScreen(LoginNavigator(nav)) }
-
-    composableWithArg<ReportsListNavRoute>(mapOf(BudgetIdType, TokenType)) { route, _ ->
-      ReportsDashboardScreen(ReportsDashboardNavigator(nav), route.budgetId, route.token)
-    }
-
-    composableWithArg<ReportNavRoute>(mapOf(BudgetIdType, TokenType, WidgetIdType)) { route, _ ->
-      // TBC
-    }
-
-    composableWithArg<CreateReportNavRoute>(mapOf(BudgetIdType, TokenType)) { route, _ ->
-      ChooseReportTypeScreen(ChooseReportTypeNavigator(nav), route.budgetId, route.token)
-    }
-
-    composable<ServerUrlNavRoute> { ServerUrlScreen(ServerUrlNavigator(nav)) }
-
-    composable<SettingsNavRoute> { SettingsScreen(SettingsNavigator(nav)) }
-
-    composable<ThemeSettingsNavRoute> { ThemeSettingsScreen(ThemeSettingsNavigator(nav)) }
-
-    composableWithArg<InspectThemeNavRoute>(mapOf(ThemeIdType)) { route, _ ->
-      InspectThemeScreen(InspectThemeNavigator(nav), route.id)
-    }
-
-    composableWithArg<SyncBudgetsNavRoute>(mapOf(BudgetIdType, TokenType)) { route, _ ->
-      SyncBudgetScreen(SyncBudgetNavigator(nav), route.budgetId, route.token)
-    }
-
-    composableWithArg<TransactionsNavRoute>(mapOf(BudgetIdType, TokenType)) { route, _ ->
-      TransactionsScreen(TransactionsNavigator(nav), route.budgetId, route.token)
-    }
-  }
+  )
 }

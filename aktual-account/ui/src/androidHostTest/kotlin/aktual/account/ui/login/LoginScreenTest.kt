@@ -73,69 +73,67 @@ class LoginScreenTest {
   }
 
   @Test
-  fun `Login success`() =
-    composeRule.runTest {
-      // given initial state with empty password
-      buildViewModel(password = Password.Empty)
-      setAndroidThemedContent { LoginScreen(navigator, viewModel) }
+  fun `Login success`() = composeRule.runTest {
+    // given initial state with empty password
+    buildViewModel(password = Password.Empty)
+    setAndroidThemedContent { LoginScreen(navigator, viewModel) }
 
-      // and the login takes half a second before succeeding
-      setLoginResult {
-        preferences.token.setAndCommit(TOKEN) // to trigger nav behaviour
-        LoginResult.Success(TOKEN)
-      }
-
-      // then then text is empty
-      onNodeWithTag(Tags.PasswordLoginTextField).assertIsEnabled().assertEditableTextEquals("")
-
-      // and the login button is disabled
-      onNodeWithTag(Tags.PasswordLoginButton, useUnmergedTree = true).performClick()
-      runOnIdle { coVerify(exactly = 0) { loginRequester.logIn(any()) } }
-
-      // when we enter a password
-      onNodeWithTag(Tags.PasswordLoginTextField).performTextInput(PASSWORD.value)
-
-      // and hit enter on the keyboard, with hidden password text visible
-      onNodeWithTag(Tags.PasswordLoginTextField)
-        .assertEditableTextEquals("•••••••••")
-        .performImeAction()
-
-      runOnIdle {
-        // and the login was triggered
-        coVerify(exactly = 1) { loginRequester.logIn(PASSWORD) }
-
-        // and the navigation was triggered when it succeeded
-        verify(exactly = 1) { navigator.toListBudgets(TOKEN) }
-      }
+    // and the login takes half a second before succeeding
+    setLoginResult {
+      preferences.token.setAndCommit(TOKEN) // to trigger nav behaviour
+      LoginResult.Success(TOKEN)
     }
+
+    // then then text is empty
+    onNodeWithTag(Tags.PasswordLoginTextField).assertIsEnabled().assertEditableTextEquals("")
+
+    // and the login button is disabled
+    onNodeWithTag(Tags.PasswordLoginButton, useUnmergedTree = true).performClick()
+    runOnIdle { coVerify(exactly = 0) { loginRequester.logIn(any()) } }
+
+    // when we enter a password
+    onNodeWithTag(Tags.PasswordLoginTextField).performTextInput(PASSWORD.value)
+
+    // and hit enter on the keyboard, with hidden password text visible
+    onNodeWithTag(Tags.PasswordLoginTextField)
+      .assertEditableTextEquals("•••••••••")
+      .performImeAction()
+
+    runOnIdle {
+      // and the login was triggered
+      coVerify(exactly = 1) { loginRequester.logIn(PASSWORD) }
+
+      // and the navigation was triggered when it succeeded
+      verify(exactly = 1) { navigator.toListBudgets(TOKEN) }
+    }
+  }
 
   @Test
-  fun `Login failure`() =
-    composeRule.runTest {
-      // given initial state with dummy password
-      buildViewModel(password = PASSWORD)
-      setAndroidThemedContent { LoginScreen(navigator, viewModel) }
+  fun `Login failure`() = composeRule.runTest {
+    // given initial state with dummy password
+    buildViewModel(password = PASSWORD)
+    setAndroidThemedContent { LoginScreen(navigator, viewModel) }
 
-      // and the login takes half a second before failing
-      setLoginResult { LoginResult.HttpFailure(code = 404, message = "It failed") }
+    // and the login takes half a second before failing
+    setLoginResult { LoginResult.HttpFailure(code = 404, message = "It failed") }
 
-      // When we hit enter on the keyboard, with hidden password text visible
-      onNodeWithTag(Tags.PasswordLoginTextField)
-        .assertEditableTextEquals("•••••••••")
-        .performImeAction()
+    // When we hit enter on the keyboard, with hidden password text visible
+    onNodeWithTag(Tags.PasswordLoginTextField)
+      .assertEditableTextEquals("•••••••••")
+      .performImeAction()
 
-      runOnIdle {
-        // then the login was triggered
-        coVerify(exactly = 1) { loginRequester.logIn(PASSWORD) }
+    runOnIdle {
+      // then the login was triggered
+      coVerify(exactly = 1) { loginRequester.logIn(PASSWORD) }
 
-        // and the navigation was not triggered
-        verify(exactly = 0) { navigator.toListBudgets(TOKEN) }
-      }
-
-      // and the login failure text is visible
-      waitUntilExactlyOneExists(hasTestTag(Tags.LoginFailureText))
-      onNodeWithTag(Tags.LoginFailureText).assertTextEquals("Server error 404: It failed")
+      // and the navigation was not triggered
+      verify(exactly = 0) { navigator.toListBudgets(TOKEN) }
     }
+
+    // and the login failure text is visible
+    waitUntilExactlyOneExists(hasTestTag(Tags.LoginFailureText))
+    onNodeWithTag(Tags.LoginFailureText).assertTextEquals("Server error 404: It failed")
+  }
 
   private fun setLoginResult(block: suspend () -> LoginResult) {
     coEvery { loginRequester.logIn(any()) } coAnswers { block() }

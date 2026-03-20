@@ -1,5 +1,10 @@
 package aktual.settings.ui.root
 
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencySymbolPosition
+import aktual.budget.model.DateFormat
+import aktual.budget.model.FirstDayOfWeek
+import aktual.budget.model.NumberFormat
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.ui.BottomNavBarSpacing
@@ -10,15 +15,15 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.WavyBackground
-import aktual.core.ui.WithHazeState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.BooleanPreference
+import aktual.settings.vm.root.CurrencyPreference
+import aktual.settings.vm.root.CurrencySymbolPositionPreference
+import aktual.settings.vm.root.NumberFormatPreference
 import aktual.settings.vm.root.SettingsScreenState
 import aktual.settings.vm.root.SettingsViewModel
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,18 +31,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
@@ -54,6 +53,15 @@ fun SettingsScreen(
         SettingsAction.NavBack -> nav.back()
         SettingsAction.NavToThemeSettings -> nav.toThemeSettings()
         is SettingsAction.SetShowBottomBar -> viewModel.showBottomBar(action.value)
+        is SettingsAction.SetNumberFormat -> viewModel.numberFormat(action.value)
+        is SettingsAction.SetHideFraction -> viewModel.hideFraction(action.value)
+        is SettingsAction.SetDateFormat -> viewModel.dateFormat(action.value)
+        is SettingsAction.SetFirstDayOfWeek -> viewModel.firstDayOfWeek(action.value)
+        is SettingsAction.SetCurrency -> viewModel.currency(action.value)
+        is SettingsAction.SetCurrencySymbolPosition ->
+          viewModel.currencySymbolPosition(action.value)
+        is SettingsAction.SetCurrencySpace ->
+          viewModel.currencySpaceBetweenAmountAndSymbol(action.value)
       }
     },
   )
@@ -61,33 +69,18 @@ fun SettingsScreen(
 
 @Composable
 private fun SettingsScaffold(state: SettingsScreenState, onAction: (SettingsAction) -> Unit) {
-  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
 
   Scaffold(
-    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(SettingsAction.NavBack) } },
         title = { Text(Strings.settingsToolbar) },
-        scrollBehavior = scrollBehavior,
       )
-    },
-  ) { innerPadding ->
-    Box {
-      val hazeState = remember { HazeState() }
-
-      WavyBackground(modifier = Modifier.hazeSource(hazeState))
-
-      WithHazeState(hazeState) {
-        SettingsContent(
-          modifier = Modifier.padding(innerPadding),
-          state = state,
-          onAction = onAction,
-        )
-      }
     }
+  ) { innerPadding ->
+    SettingsContent(modifier = Modifier.padding(innerPadding), state = state, onAction = onAction)
   }
 }
 
@@ -99,13 +92,31 @@ private fun SettingsContent(
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier.fillMaxSize().padding(Dimens.Large).scrollbar(listState),
+    modifier = modifier.fillMaxSize().scrollbar(listState).padding(Dimens.Large),
     state = listState,
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
     item { ShowBottomBarPreferenceItem(state.showBottomBar, onAction) }
 
     item { ThemeSettingsItem(onClick = { onAction(SettingsAction.NavToThemeSettings) }) }
+
+    item {
+      FormattingGroup(
+        numberFormat = state.numberFormat,
+        hideFraction = state.hideFraction,
+        dateFormat = state.dateFormat,
+        firstDayOfWeek = state.firstDayOfWeek,
+        onAction = onAction,
+      )
+    }
+    item {
+      CurrencyGroup(
+        currency = state.currency,
+        currencySymbolPosition = state.currencySymbolPosition,
+        currencySpaceBetweenAmountAndSymbol = state.currencySpaceBetweenAmountAndSymbol,
+        onAction = onAction,
+      )
+    }
 
     item {
       BottomStatusBarSpacing()
@@ -122,6 +133,26 @@ private fun PreviewSettingsScaffold(
 
 private class SettingsScaffoldProvider :
   ThemedParameterProvider<SettingsScreenState>(
-    SettingsScreenState(showBottomBar = BooleanPreference(value = true)),
-    SettingsScreenState(showBottomBar = BooleanPreference(value = false)),
+    SettingsScreenState(
+      showBottomBar = BooleanPreference(value = true),
+      hideFraction = BooleanPreference(value = true),
+      numberFormat = NumberFormatPreference(NumberFormat.CommaDot),
+      dateFormat = DateFormat.MmDdYyyy,
+      firstDayOfWeek = FirstDayOfWeek.Monday,
+      currency = CurrencyPreference(Currency.None),
+      currencySymbolPosition =
+        CurrencySymbolPositionPreference(CurrencySymbolPosition.BeforeAmount, false),
+      currencySpaceBetweenAmountAndSymbol = BooleanPreference(value = false, enabled = false),
+    ),
+    SettingsScreenState(
+      showBottomBar = BooleanPreference(value = false),
+      hideFraction = BooleanPreference(value = false),
+      numberFormat = NumberFormatPreference(NumberFormat.SpaceComma),
+      dateFormat = DateFormat.YyyyMmDd,
+      firstDayOfWeek = FirstDayOfWeek.Sunday,
+      currency = CurrencyPreference(Currency.PoundSterling),
+      currencySymbolPosition =
+        CurrencySymbolPositionPreference(CurrencySymbolPosition.AfterAmount, true),
+      currencySpaceBetweenAmountAndSymbol = BooleanPreference(value = true),
+    ),
   )

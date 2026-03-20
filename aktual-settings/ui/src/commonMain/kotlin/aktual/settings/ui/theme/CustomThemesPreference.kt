@@ -1,15 +1,17 @@
 package aktual.settings.ui.theme
 
-import aktual.core.icons.ArrowRight
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Refresh
+import aktual.core.icons.material.ArrowRight
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.theme.ThemeMode
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColorScheme
@@ -18,13 +20,21 @@ import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.disabledIf
-import aktual.core.ui.isTablet
+import aktual.core.ui.isMobile
 import aktual.core.ui.radioButton
+import aktual.core.ui.segmentedButton
 import aktual.settings.ui.BasicPreferenceItem
 import aktual.settings.vm.theme.CatalogItem
 import aktual.settings.vm.theme.CatalogState
 import aktual.settings.vm.theme.CustomThemeState
+import aktual.settings.vm.theme.ThemeModeFilter
 import alakazam.compose.VerticalSpacer
+import androidx.compose.animation.core.InfiniteRepeatableSpec
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,14 +50,21 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
@@ -78,15 +95,51 @@ internal fun CustomThemesPreference(
     icon = null,
     enabled = enabled,
     onClick = null,
+    topRightContent = { RefreshButton(state, onAction) },
     bottomContent = {
       when (state) {
         CatalogState.Loading -> CatalogLoading()
         is CatalogState.Failed -> CatalogFailure(state.reason, onAction)
-        is CatalogState.Success -> CatalogLoaded(state.themes, selectedTheme, enabled, onAction)
+        is CatalogState.Success ->
+          CatalogLoaded(
+            themes = state.themes,
+            modeFilter = state.modeFilter,
+            selectedTheme = selectedTheme,
+            enabled = enabled,
+            onAction = onAction,
+          )
       }
     },
   )
 }
+
+@Composable
+private fun RefreshButton(state: CatalogState, onAction: (ThemeSettingsAction) -> Unit) {
+  val isLoading = state is CatalogState.Loading
+  if (isLoading || state is CatalogState.Success) {
+    val transition = rememberInfiniteTransition(label = "refresh")
+    val animatedAngle by
+      transition.animateFloat(
+        initialValue = 0f,
+        targetValue = 360f,
+        animationSpec = rotationSpec(),
+        label = "refreshRotation",
+      )
+    val rotation = if (isLoading) animatedAngle else 0f
+
+    BareIconButton(
+      modifier = Modifier.rotate(rotation),
+      imageVector = MaterialIcons.Refresh,
+      contentDescription = Strings.settingsThemeRefresh,
+      enabled = !isLoading,
+      onClick = { onAction(ThemeSettingsAction.ClearCache) },
+    )
+  }
+}
+
+@Stable
+private fun rotationSpec(): InfiniteRepeatableSpec<Float> =
+  infiniteRepeatable(tween(durationMillis = 1000, easing = LinearEasing))
 
 @Composable
 private fun CatalogFailure(
@@ -138,23 +191,25 @@ private fun CatalogLoading(modifier: Modifier = Modifier, theme: Theme = LocalTh
         .height(LocalMinimumInteractiveComponentSize.current)
         .background(theme.tableText, CardShape)
 
-    Box(modifier = shimmerModifier)
-    Box(modifier = shimmerModifier)
-    Box(modifier = shimmerModifier)
+    repeat(times = 10) { Box(modifier = shimmerModifier) }
   }
 }
 
 @Composable
 private fun CatalogLoaded(
   themes: ImmutableList<CatalogItem>,
+  modeFilter: ThemeModeFilter,
   selectedTheme: Theme.Id?,
   enabled: Boolean,
   onAction: (ThemeSettingsAction) -> Unit,
+  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
+    ModeFilterRow(modeFilter = modeFilter, onAction = onAction, theme = theme)
+
     themes.fastForEach { item ->
       CatalogLoadedItem(
         item = item,
@@ -163,6 +218,42 @@ private fun CatalogLoaded(
         onAction = onAction,
       )
     }
+  }
+}
+
+@Composable
+private fun ModeFilterRow(
+  modeFilter: ThemeModeFilter,
+  onAction: (ThemeSettingsAction) -> Unit,
+  theme: Theme = LocalTheme.current,
+) {
+  val buttonColors = theme.segmentedButton()
+  SingleChoiceSegmentedButtonRow(
+    modifier = Modifier.fillMaxWidth().clip(CardShape).padding(bottom = 4.dp)
+  ) {
+    SegmentedButton(
+      selected = modeFilter == ThemeModeFilter.All,
+      onClick = { onAction(ThemeSettingsAction.SetModeFilter(ThemeModeFilter.All)) },
+      shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3, baseShape = CardShape),
+      colors = buttonColors,
+      label = { Text(Strings.settingsThemeAll, color = LocalContentColor.current) },
+    )
+
+    SegmentedButton(
+      selected = modeFilter == ThemeModeFilter.Light,
+      onClick = { onAction(ThemeSettingsAction.SetModeFilter(ThemeModeFilter.Light)) },
+      shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3, baseShape = CardShape),
+      colors = buttonColors,
+      label = { Text(Strings.settingsThemeLight, color = LocalContentColor.current) },
+    )
+
+    SegmentedButton(
+      selected = modeFilter == ThemeModeFilter.Dark,
+      onClick = { onAction(ThemeSettingsAction.SetModeFilter(ThemeModeFilter.Dark)) },
+      shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3, baseShape = CardShape),
+      colors = buttonColors,
+      label = { Text(Strings.settingsThemeDark, color = LocalContentColor.current) },
+    )
   }
 }
 
@@ -184,7 +275,7 @@ private fun CatalogLoadedItem(
         theme.buttonNormalBackground.disabledIf(enabled || !isSelected)
       }
 
-    if (isTablet()) {
+    if (!isMobile()) {
       CatalogLoadedItemTablet(
         item = item,
         enabled = enabled,
@@ -358,7 +449,8 @@ private class CustomThemesScaffoldProvider :
           PREVIEW_CATALOG_ITEM.copy(id = Theme.Id("a")),
           PREVIEW_CATALOG_ITEM.copy(id = Theme.Id("b")),
           PREVIEW_CATALOG_ITEM.copy(id = Theme.Id("c")),
-        )
+        ),
+      modeFilter = ThemeModeFilter.All,
     ),
   )
 
@@ -399,6 +491,7 @@ internal val PREVIEW_CATALOG_ITEM =
             Color(0xFFf214f6),
             Color(0xFF2156ff),
           ),
+        mode = ThemeMode.Light,
       ),
     isSelected = false,
     state = CustomThemeState.Cached,

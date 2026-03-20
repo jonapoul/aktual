@@ -43,7 +43,6 @@ class ConventionKotlinBase : Plugin<Project> {
         "-Xcontext-parameters", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-parameters
         "-Xcontext-sensitive-resolution", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-sensitive-resolution
         "-Xexpect-actual-classes",
-        "-Xnested-type-aliases", // https://kotlinlang.org/docs/whatsnew22.html#support-for-nested-type-aliases
         "-opt-in=kotlin.RequiresOptIn",
         "-opt-in=kotlin.uuid.ExperimentalUuidApi",
       )

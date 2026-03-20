@@ -2,6 +2,8 @@ package aktual.app.nav
 
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.BudgetFiles
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.SyncedPrefKey
@@ -57,19 +59,17 @@ abstract class RootViewModel(
       .map { bg -> PreferencesDao(bg.database, contexts) }
       .stateIn(viewModelScope, Eagerly, initialValue = null)
 
-  val numberFormat: StateFlow<NumberFormat> =
-    observeSyncedPref(
-      key = SyncedPrefKey.Global.NumberFormat,
-      default = NumberFormat.Default,
-      mapper = NumberFormat::from,
-    )
+  val numberFormat: StateFlow<NumberFormat> = preferences.numberFormat.asStateFlow(viewModelScope)
 
-  val hideFraction: StateFlow<Boolean> =
-    observeSyncedPref(
-      key = SyncedPrefKey.Global.HideFraction,
-      default = false,
-      mapper = { it.toBoolean() },
-    )
+  val hideFraction: StateFlow<Boolean> = preferences.hideFraction.asStateFlow(viewModelScope)
+
+  val currency: StateFlow<Currency> = preferences.currency.asStateFlow(viewModelScope)
+
+  val currencySymbolPosition: StateFlow<CurrencySymbolPosition> =
+    preferences.currencySymbolPosition.asStateFlow(viewModelScope)
+
+  val currencySpaceBetweenAmountAndSymbol: StateFlow<Boolean> =
+    preferences.currencySpaceBetweenAmountAndSymbol.asStateFlow(viewModelScope)
 
   val isPrivacyEnabled: StateFlow<Boolean> =
     observeSyncedPref(
@@ -83,10 +83,9 @@ abstract class RootViewModel(
   val token: Token? = preferences.token.get()
   private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 
-  private val budgetName: Flow<String?> =
-    budgetGraph.flatMapLatest { bg ->
-      bg?.localPreferences?.map { meta -> meta[DbMetadata.BudgetName] } ?: flowOf(null)
-    }
+  private val budgetName: Flow<String?> = budgetGraph.flatMapLatest { bg ->
+    bg?.localPreferences?.map { meta -> meta[DbMetadata.BudgetName] } ?: flowOf(null)
+  }
 
   val bottomBarState: StateFlow<BottomBarState> =
     viewModelScope.launchMolecule(Immediate) {

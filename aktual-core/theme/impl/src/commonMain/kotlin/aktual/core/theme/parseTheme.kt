@@ -305,9 +305,9 @@ internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomTheme {
     }
 
   if (attributes.isNotEmpty()) {
-    logcat.w(TAG) { "Parsed custom theme, leftover attributes = $attributes" }
+    logcat.w(TAG) { "Parsed ${summary.repo}, leftover attributes = $attributes" }
   } else {
-    logcat.d(TAG) { "Parsed custom theme, no leftover attributes" }
+    logcat.d(TAG) { "Parsed ${summary.repo}, no leftover attributes" }
   }
 
   return theme

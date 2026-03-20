@@ -275,16 +275,15 @@ private class ScrollbarNode(
 
   private fun showAndStartAutoFadeIfEnabled() {
     fadeJob?.cancel()
-    fadeJob =
-      coroutineScope.launch {
-        alpha.animateTo(1f)
-        if (autoHide && !isHovered) {
-          delay(SCROLLBAR_FADE_DELAY)
-          if (!isHovered) {
-            alpha.animateTo(0f, animationSpec = spring(stiffness = Spring.StiffnessVeryLow))
-          }
+    fadeJob = coroutineScope.launch {
+      alpha.animateTo(1f)
+      if (autoHide && !isHovered) {
+        delay(SCROLLBAR_FADE_DELAY)
+        if (!isHovered) {
+          alpha.animateTo(0f, animationSpec = spring(stiffness = Spring.StiffnessVeryLow))
         }
       }
+    }
     observeChanges()
   }
 

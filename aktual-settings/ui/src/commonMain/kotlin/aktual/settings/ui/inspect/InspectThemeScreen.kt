@@ -1,7 +1,7 @@
 package aktual.settings.ui.inspect
 
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.OpenInNew
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.OpenInNew
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
@@ -18,7 +18,6 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.WithHazeState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.inspect.InspectThemeState
@@ -54,8 +53,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlin.math.roundToInt
 
@@ -113,19 +110,11 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThe
       )
     }
   ) { innerPadding ->
-    Box {
-      val hazeState = remember { HazeState() }
-
-      Box(modifier = Modifier.hazeSource(hazeState).background(theme.pageBackground))
-
-      WithHazeState(hazeState) {
-        InspectThemeContent(
-          modifier = Modifier.padding(innerPadding),
-          state = state,
-          onAction = onAction,
-        )
-      }
-    }
+    InspectThemeContent(
+      modifier = Modifier.padding(innerPadding),
+      state = state,
+      onAction = onAction,
+    )
   }
 }
 
@@ -155,7 +144,7 @@ private fun InspectThemeContent(
     is InspectThemeState.Loaded -> {
       val listState = rememberLazyListState()
       LazyColumn(
-        modifier = modifier.fillMaxSize().padding(Dimens.Large).scrollbar(listState),
+        modifier = modifier.fillMaxSize().scrollbar(listState).padding(Dimens.Large),
         state = listState,
         verticalArrangement = Arrangement.spacedBy(2.dp),
       ) {

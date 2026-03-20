@@ -1,5 +1,10 @@
 package aktual.settings.vm.root
 
+import aktual.budget.model.Currency
+import aktual.budget.model.CurrencySymbolPosition
+import aktual.budget.model.DateFormat
+import aktual.budget.model.FirstDayOfWeek
+import aktual.budget.model.NumberFormat
 import aktual.core.prefs.AppGlobalPreferences
 import aktual.settings.vm.BooleanPreference
 import androidx.compose.runtime.collectAsState
@@ -22,11 +27,69 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
   private val showBottomBarPref = preferences.showBottomBar
   private val showBottomBar = showBottomBarPref.asStateFlow(viewModelScope)
 
+  private val numberFormatPref = preferences.numberFormat
+  private val numberFormat = numberFormatPref.asStateFlow(viewModelScope)
+
+  private val hideFractionPref = preferences.hideFraction
+  private val hideFraction = hideFractionPref.asStateFlow(viewModelScope)
+
+  private val dateFormatPref = preferences.dateFormat
+  private val dateFormat = dateFormatPref.asStateFlow(viewModelScope)
+
+  private val firstDayOfWeekPref = preferences.firstDayOfWeek
+  private val firstDayOfWeek = firstDayOfWeekPref.asStateFlow(viewModelScope)
+
+  private val currencyPref = preferences.currency
+  private val currency = currencyPref.asStateFlow(viewModelScope)
+
+  private val currencySymbolPositionPref = preferences.currencySymbolPosition
+  private val currencySymbolPosition = currencySymbolPositionPref.asStateFlow(viewModelScope)
+
+  private val currencySpaceBetweenAmountAndSymbolPref =
+    preferences.currencySpaceBetweenAmountAndSymbol
+  private val currencySpaceBetweenAmountAndSymbol =
+    currencySpaceBetweenAmountAndSymbolPref.asStateFlow(viewModelScope)
+
   val state: StateFlow<SettingsScreenState> =
     viewModelScope.launchMolecule(Immediate) {
       val showBottomBar by showBottomBar.collectAsState()
-      SettingsScreenState(showBottomBar = BooleanPreference(value = showBottomBar, enabled = true))
+      val numberFormat by numberFormat.collectAsState()
+      val hideFraction by hideFraction.collectAsState()
+      val dateFormat by dateFormat.collectAsState()
+      val firstDayOfWeek by firstDayOfWeek.collectAsState()
+      val currency by currency.collectAsState()
+      val currencySymbolPosition by currencySymbolPosition.collectAsState()
+      val currencySpaceBetweenAmountAndSymbol by
+        currencySpaceBetweenAmountAndSymbol.collectAsState()
+
+      SettingsScreenState(
+        showBottomBar = BooleanPreference(value = showBottomBar),
+        numberFormat = NumberFormatPreference(selected = numberFormat),
+        hideFraction = BooleanPreference(value = hideFraction),
+        dateFormat = dateFormat,
+        firstDayOfWeek = firstDayOfWeek,
+        currency = CurrencyPreference(currency),
+        currencySymbolPosition =
+          CurrencySymbolPositionPreference(currencySymbolPosition, enabled = currency != None),
+        currencySpaceBetweenAmountAndSymbol =
+          BooleanPreference(currencySpaceBetweenAmountAndSymbol, enabled = currency != None),
+      )
     }
 
   fun showBottomBar(value: Boolean) = showBottomBarPref.set(value)
+
+  fun numberFormat(value: NumberFormat) = numberFormatPref.set(value)
+
+  fun hideFraction(value: Boolean) = hideFractionPref.set(value)
+
+  fun dateFormat(value: DateFormat) = dateFormatPref.set(value)
+
+  fun firstDayOfWeek(value: FirstDayOfWeek) = firstDayOfWeekPref.set(value)
+
+  fun currency(value: Currency) = currencyPref.set(value)
+
+  fun currencySymbolPosition(value: CurrencySymbolPosition) = currencySymbolPositionPref.set(value)
+
+  fun currencySpaceBetweenAmountAndSymbol(value: Boolean) =
+    currencySpaceBetweenAmountAndSymbolPref.set(value)
 }

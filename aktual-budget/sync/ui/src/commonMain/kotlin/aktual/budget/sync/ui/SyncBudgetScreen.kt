@@ -5,10 +5,10 @@ import aktual.budget.sync.vm.KeyPasswordState
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.sync.vm.SyncStep
 import aktual.budget.sync.vm.SyncStepState
-import aktual.core.icons.Block
-import aktual.core.icons.Check
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Timer
+import aktual.core.icons.material.Block
+import aktual.core.icons.material.Check
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Timer
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.model.Percent
@@ -164,8 +164,9 @@ private fun ListBudgetsContent(
 }
 
 @Stable
-private fun ImmutableMap<*, SyncStepState>.allSuccess() =
-  values.all { it is SyncStepState.Succeeded }
+private fun ImmutableMap<*, SyncStepState>.allSuccess() = values.all {
+  it is SyncStepState.Succeeded
+}
 
 @Stable
 private fun ImmutableMap<*, SyncStepState>.anyFailure() = values.any { it is SyncStepState.Failed }

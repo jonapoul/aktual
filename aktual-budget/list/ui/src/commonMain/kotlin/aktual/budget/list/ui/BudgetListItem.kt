@@ -3,10 +3,10 @@ package aktual.budget.list.ui
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetState
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.DeleteForever
 import aktual.core.icons.Key
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.MoreVert
+import aktual.core.icons.material.DeleteForever
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
@@ -16,8 +16,9 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.RowShape
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.aktualHaze
 import alakazam.compose.HorizontalSpacer
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -58,7 +59,8 @@ internal fun BudgetListItem(
     modifier =
       modifier
         .clip(RowShape)
-        .aktualHaze()
+        .background(theme.pillBackgroundLight, RowShape)
+        .border(Dp.Hairline, theme.pillBorderDark, RowShape)
         .clickable(onClick = onClickOpen)
         .padding(horizontal = 15.dp, vertical = 12.dp),
     horizontalArrangement = Arrangement.Start,

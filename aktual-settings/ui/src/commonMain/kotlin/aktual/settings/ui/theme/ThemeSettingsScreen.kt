@@ -11,16 +11,19 @@ import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.DesktopPreview
 import aktual.core.ui.Dimens
 import aktual.core.ui.LandscapePreview
+import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.scrollbar
-import aktual.core.ui.topAppBarColors
+import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.BooleanPreference
 import aktual.settings.vm.ListPreference
 import aktual.settings.vm.theme.CatalogState
+import aktual.settings.vm.theme.ThemeModeFilter
+import aktual.settings.vm.theme.ThemeSettingsEvent
 import aktual.settings.vm.theme.ThemeSettingsState
 import aktual.settings.vm.theme.ThemeSettingsViewModel
 import androidx.compose.foundation.layout.Arrangement
@@ -29,10 +32,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -47,10 +54,21 @@ fun ThemeSettingsScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val catalogState by viewModel.catalogState.collectAsStateWithLifecycle()
+  val snackbarHostState = remember { SnackbarHostState() }
+
+  val refreshSuccessMessage = Strings.settingsThemeRefreshSuccess
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { event ->
+      when (event) {
+        ThemeSettingsEvent.CacheRefreshed -> snackbarHostState.showSnackbar(refreshSuccessMessage)
+      }
+    }
+  }
 
   ThemeSettingsScaffold(
     state = state,
     catalogState = catalogState,
+    snackbarHostState = snackbarHostState,
     onAction = { action ->
       when (action) {
         ThemeSettingsAction.NavBack -> nav.back()
@@ -60,6 +78,7 @@ fun ThemeSettingsScreen(
         ThemeSettingsAction.RetryFetchCatalog -> viewModel.retry()
         is ThemeSettingsAction.SetUseSystemDefault -> viewModel.setUseSystemDefault(action.value)
         is ThemeSettingsAction.SetDarkTheme -> viewModel.setDarkTheme(action.value)
+        is ThemeSettingsAction.SetModeFilter -> viewModel.setModeFilter(action.filter)
       }
     },
   )
@@ -70,17 +89,24 @@ private fun ThemeSettingsScaffold(
   state: ThemeSettingsState,
   catalogState: CatalogState,
   onAction: (ThemeSettingsAction) -> Unit,
+  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val theme = LocalTheme.current
 
   Scaffold(
     topBar = {
       TopAppBar(
-        colors = theme.topAppBarColors(),
+        colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(ThemeSettingsAction.NavBack) } },
         title = { Text(Strings.settingsThemeToolbar) },
       )
-    }
+    },
+    snackbarHost = {
+      SnackbarHost(
+        hostState = snackbarHostState,
+        modifier = Modifier.padding(bottom = LocalBottomStatusBarHeight.current),
+      )
+    },
   ) { innerPadding ->
     ThemeSettingsContent(
       modifier = Modifier.padding(innerPadding),
@@ -100,7 +126,7 @@ private fun ThemeSettingsContent(
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Large).scrollbar(listState),
+    modifier = modifier.fillMaxSize().scrollbar(listState).padding(horizontal = Dimens.Large),
     state = listState,
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
@@ -151,7 +177,11 @@ private fun PreviewThemeSettings(@PreviewParameter(ThemeParameters::class) theme
             ),
           constantTheme = LightTheme.id,
         ),
-      catalogState = CatalogState.Success(themes = persistentListOf(PREVIEW_CATALOG_ITEM)),
+      catalogState =
+        CatalogState.Success(
+          themes = persistentListOf(PREVIEW_CATALOG_ITEM),
+          modeFilter = ThemeModeFilter.All,
+        ),
       onAction = {},
     )
   }

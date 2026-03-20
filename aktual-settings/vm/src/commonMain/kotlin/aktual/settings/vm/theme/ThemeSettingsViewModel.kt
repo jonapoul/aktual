@@ -6,6 +6,7 @@ import aktual.core.theme.DarkTheme
 import aktual.core.theme.MidnightTheme
 import aktual.core.theme.Theme
 import aktual.core.theme.ThemeApi
+import aktual.core.theme.ThemeMode
 import aktual.core.theme.ThemePreferences
 import aktual.core.theme.toId
 import aktual.settings.vm.BooleanPreference
@@ -29,7 +30,10 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -58,7 +62,16 @@ class ThemeSettingsViewModel(
     ) : LoadState
   }
 
+  private val mutableEvents =
+    MutableSharedFlow<ThemeSettingsEvent>(
+      replay = 0,
+      extraBufferCapacity = 1,
+      onBufferOverflow = BufferOverflow.DROP_OLDEST,
+    )
+  val events: SharedFlow<ThemeSettingsEvent> = mutableEvents
+
   private val mutableLoadState = MutableStateFlow<LoadState>(LoadState.Loading)
+  private val mutableModeFilter = MutableStateFlow(ThemeModeFilter.All)
 
   val state: StateFlow<ThemeSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -87,11 +100,16 @@ class ThemeSettingsViewModel(
 
         is LoadState.Loaded -> {
           val selected by constantTheme.collectAsState()
+          val modeFilter by mutableModeFilter.collectAsState()
           CatalogState.Success(
-            s.summaries
-              .sortedBy { it.name }
-              .map { summary -> toCustomThemeItem(summary, selected, s) }
-              .toImmutableList()
+            themes =
+              s.summaries
+                .asSequence()
+                .sortedBy { it.name }
+                .filter { summary -> byThemeMode(modeFilter, summary) }
+                .map { summary -> toCustomThemeItem(summary, selected, s) }
+                .toImmutableList(),
+            modeFilter = modeFilter,
           )
         }
       }
@@ -109,6 +127,9 @@ class ThemeSettingsViewModel(
     viewModelScope.launch {
       cache.clear()
       fetchCatalogThenThemes()
+      if (mutableLoadState.value is LoadState.Loaded) {
+        mutableEvents.tryEmit(ThemeSettingsEvent.CacheRefreshed)
+      }
     }
   }
 
@@ -119,6 +140,10 @@ class ThemeSettingsViewModel(
   fun setUseSystemDefault(value: Boolean) = preferences.useSystemDefault.set(value)
 
   fun setDarkTheme(value: Theme.Id) = preferences.nightTheme.set(value)
+
+  fun setModeFilter(filter: ThemeModeFilter) {
+    mutableModeFilter.update { filter }
+  }
 
   @Composable
   private fun useSystemDefault(value: Boolean): BooleanPreference =
@@ -198,4 +223,11 @@ class ThemeSettingsViewModel(
       }
     }
   }
+
+  private fun byThemeMode(modeFilter: ThemeModeFilter, summary: CustomThemeSummary): Boolean =
+    when (modeFilter) {
+      ThemeModeFilter.All -> true
+      ThemeModeFilter.Light -> summary.mode == ThemeMode.Light
+      ThemeModeFilter.Dark -> summary.mode == ThemeMode.Dark
+    }
 }

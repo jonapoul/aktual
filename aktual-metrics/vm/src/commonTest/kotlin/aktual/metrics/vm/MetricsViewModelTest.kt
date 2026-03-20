@@ -130,17 +130,16 @@ class MetricsViewModelTest {
     }
   }
 
-  private fun buildApis(metricsApi: MetricsApi? = this.metricsApi) =
-    metricsApi?.let { m ->
-      AktualApis(
-        serverUrl = SERVER_URL,
-        account = mockk(),
-        base = mockk(),
-        health = mockk(),
-        metrics = m,
-        sync = mockk(),
-      )
-    }
+  private fun buildApis(metricsApi: MetricsApi? = this.metricsApi) = metricsApi?.let { m ->
+    AktualApis(
+      serverUrl = SERVER_URL,
+      account = mockk(),
+      base = mockk(),
+      health = mockk(),
+      metrics = m,
+      sync = mockk(),
+    )
+  }
 
   private companion object {
     private val SERVER_URL = ServerUrl("https://server.com/actual-budget")

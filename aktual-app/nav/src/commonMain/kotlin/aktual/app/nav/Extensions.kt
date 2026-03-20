@@ -1,32 +1,36 @@
 package aktual.app.nav
 
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
-import androidx.navigation.NavHostController
-import androidx.navigation.NavOptionsBuilder
-import androidx.navigation.navOptions
-import dev.jonpoulton.preferences.core.Preference
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.navigation3.runtime.NavKey
 import logcat.logcat
 
-internal fun <T : Any> NavHostController.debugNav(route: T, builder: NavOptionsBuilder.() -> Unit) {
-  logcat.v(TAG) { "Nav to $route with builder - backStack=[$backStack]" }
-  navigate(route, navOptions(builder))
+internal fun SnapshotStateList<NavKey>.debugPush(route: NavKey) {
+  logcat.v(TAG) { "Push $route - backStack=[$backStackString]" }
+  add(route)
 }
 
-internal fun <T : Any> NavHostController.debugNav(route: T) {
-  logcat.v(TAG) { "Nav to $route - backStack=[$backStack]" }
-  navigate(route)
+internal fun SnapshotStateList<NavKey>.debugPop(): Boolean {
+  logcat.v(TAG) { "Pop - backStack=[$backStackString]" }
+  if (size <= 1) return false
+  removeAt(lastIndex)
+  return true
 }
 
-private val NavHostController.backStack
-  get() =
-    currentBackStack.value.joinToString { entry ->
-      "route=${entry.destination.route},args=${entry.arguments}"
-    }
+internal fun SnapshotStateList<NavKey>.debugPopUpToAndPush(
+  route: NavKey,
+  predicate: (NavKey) -> Boolean,
+  inclusive: Boolean,
+) {
+  logcat.v(TAG) { "PopUpTo(inclusive=$inclusive) push $route - backStack=[$backStackString]" }
+  val idx = indexOfLast(predicate)
+  if (idx >= 0) {
+    val removeFrom = if (inclusive) idx else idx + 1
+    if (removeFrom < size) subList(removeFrom, size).clear()
+  }
+  add(route)
+}
 
-private const val TAG = "debugNavigate"
+private val SnapshotStateList<NavKey>.backStackString
+  get() = joinToString { it.toString() }
 
-@Composable
-internal fun <T> Preference<T>.collectAsStateWithDefault(): State<T> =
-  asFlow().collectAsState(default)
+private const val TAG = "Navigation"

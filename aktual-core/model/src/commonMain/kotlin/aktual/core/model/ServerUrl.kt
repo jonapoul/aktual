@@ -1,7 +1,9 @@
 package aktual.core.model
 
 import alakazam.kotlin.parse
+import androidx.compose.runtime.Immutable
 
+@Immutable
 data class ServerUrl(val protocol: Protocol, val baseUrl: String) {
   init {
     require(baseUrl.isNotBlank()) { "Base URL is blank" }

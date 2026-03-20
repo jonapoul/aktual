@@ -22,7 +22,6 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.UsingServerText
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.WithHazeState
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
@@ -42,15 +41,12 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
@@ -105,22 +101,18 @@ internal fun LoginScaffold(
     },
   ) { innerPadding ->
     Box {
-      val hazeState = remember { HazeState() }
+      WavyBackground()
 
-      WavyBackground(modifier = Modifier.hazeSource(hazeState))
-
-      WithHazeState(hazeState) {
-        Content(
-          modifier = Modifier.padding(innerPadding),
-          versions = versions,
-          enteredPassword = enteredPassword,
-          url = url,
-          isLoading = isLoading,
-          loginFailure = loginFailure,
-          onAction = onAction,
-          theme = theme,
-        )
-      }
+      Content(
+        modifier = Modifier.padding(innerPadding),
+        versions = versions,
+        enteredPassword = enteredPassword,
+        url = url,
+        isLoading = isLoading,
+        loginFailure = loginFailure,
+        onAction = onAction,
+        theme = theme,
+      )
     }
   }
 }

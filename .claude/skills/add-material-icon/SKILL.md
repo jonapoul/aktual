@@ -30,12 +30,12 @@ The response is base64 encoded. Decode it to get the Android Vector Drawable XML
 
 **Material Symbols (with `--symbols`, 960x960):**
 
-Go to the Google Fonts Icons page to find the SVG. Use WebFetch to get:
+Fetch the filled variant SVG directly from the Google Fonts CDN:
 ```
-https://fonts.google.com/metadata/icons?key=material_symbols&icon={snake_case_name}
+https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/{snake_case_name}/fill1/24px.svg
 ```
 
-Or ask the user to provide the SVG path data directly if automated fetching fails.
+The `fill1` path segment selects the filled variant. The response is a plain SVG file (not base64).
 
 ### 2. Parse the SVG/Vector Drawable
 

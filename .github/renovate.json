@@ -6,33 +6,5 @@
   "extends": [
     "config:best-practices"
   ],
-  "minimumReleaseAge": "3 days",
-  "packageRules": [
-    {
-      "description": "Automerge non-major updates after CI passes",
-      "matchUpdateTypes": [
-        "minor",
-        "patch",
-        "digest",
-        "pin"
-      ],
-      "automerge": true,
-      "automergeType": "pr"
-    },
-    {
-      "description": "Group Compose updates",
-      "groupName": "Compose",
-      "matchPackageNames": [
-        "org.jetbrains.compose{/,}**",
-        "androidx.compose{/,}**"
-      ]
-    },
-    {
-      "description": "Group GitHub Actions updates",
-      "groupName": "GitHub Actions",
-      "matchManagers": [
-        "github-actions"
-      ]
-    }
-  ]
+  "minimumReleaseAge": "3 days"
 }

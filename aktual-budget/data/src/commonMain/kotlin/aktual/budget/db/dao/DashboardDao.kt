@@ -19,17 +19,17 @@ class DashboardDao(database: BudgetDatabase) {
     meta: JsonObject,
     width: Long = DEFAULT_WIDTH,
     height: Long = DEFAULT_HEIGHT,
-  ) =
-    queries.withoutResult {
-      insert(id = id, type = type, width = width, height = height, x = x, y = y, meta = meta)
-    }
+  ) = queries.withoutResult {
+    insert(id = id, type = type, width = width, height = height, x = x, y = y, meta = meta)
+  }
 
   suspend fun getIds(): List<WidgetId> = queries.withResult { getIds().executeAsList() }
 
   suspend fun deleteById(id: WidgetId): Long = queries.withResult { delete(id) }
 
-  suspend fun getPositionAndSize(): List<GetPositionAndSize> =
-    queries.withResult { getPositionAndSize().executeAsList() }
+  suspend fun getPositionAndSize(): List<GetPositionAndSize> = queries.withResult {
+    getPositionAndSize().executeAsList()
+  }
 
   companion object {
     const val DEFAULT_WIDTH = 4L

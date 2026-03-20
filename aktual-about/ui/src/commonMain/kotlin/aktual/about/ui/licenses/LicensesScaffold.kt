@@ -3,10 +3,10 @@ package aktual.about.ui.licenses
 import aktual.about.data.ArtifactDetail
 import aktual.about.vm.LicensesState
 import aktual.about.vm.SearchBarState
-import aktual.core.icons.Error
-import aktual.core.icons.MaterialIcons
-import aktual.core.icons.Search
-import aktual.core.icons.Warning
+import aktual.core.icons.material.Error
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Search
+import aktual.core.icons.material.Warning
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
@@ -20,8 +20,6 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TextField
 import aktual.core.ui.ThemeParameters
-import aktual.core.ui.WavyBackground
-import aktual.core.ui.WithHazeState
 import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
@@ -57,8 +55,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -70,22 +66,16 @@ internal fun LicensesScaffold(
 ) {
   val theme = LocalTheme.current
   Scaffold(topBar = { LicensesTopBar(searchBarState, theme, onAction) }) { innerPadding ->
-    Box {
-      val hazeState = remember { HazeState() }
+    Column(modifier = Modifier.padding(innerPadding)) {
+      LicensesSearchInput(
+        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).wrapContentHeight(),
+        searchState = searchBarState,
+        licensesState = state,
+        onAction = onAction,
+        theme = theme,
+      )
 
-      WavyBackground(modifier = Modifier.hazeSource(hazeState))
-
-      Column(modifier = Modifier.padding(innerPadding)) {
-        LicensesSearchInput(
-          modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).wrapContentHeight(),
-          searchState = searchBarState,
-          licensesState = state,
-          onAction = onAction,
-          theme = theme,
-        )
-
-        WithHazeState(hazeState) { Content(state = state, theme = theme, onAction = onAction) }
-      }
+      Content(state = state, theme = theme, onAction = onAction)
     }
   }
 }
@@ -188,7 +178,7 @@ private fun LoadedContent(
 ) {
   val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Large).scrollbar(listState),
+    modifier = modifier.fillMaxSize().scrollbar(listState).padding(horizontal = Dimens.Large),
     state = listState,
   ) {
     items(artifacts) { artifact ->

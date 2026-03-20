@@ -4,8 +4,8 @@ import aktual.budget.model.BudgetId
 import aktual.budget.reports.vm.DashboardState
 import aktual.budget.reports.vm.ReportDashboardItem
 import aktual.budget.reports.vm.ReportsDashboardViewModel
-import aktual.core.icons.Add
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.Add
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
@@ -153,7 +153,7 @@ private fun ContentList(
   val listState = rememberLazyListState()
   LazyColumn(
     state = listState,
-    modifier = modifier.fillMaxWidth().padding(5.dp).scrollbar(listState),
+    modifier = modifier.fillMaxWidth().scrollbar(listState).padding(5.dp),
   ) {
     items(items) { item -> ReportDashboardItem(item = item, onAction = onAction, theme = theme) }
   }

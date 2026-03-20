@@ -23,8 +23,6 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.WavyBackground
-import aktual.core.ui.WithHazeState
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -45,8 +43,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.hazeSource
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.persistentListOf
 
@@ -132,20 +128,13 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: (ListBudgets
       )
     },
   ) { innerPadding ->
-    Box {
-      val hazeState = remember { HazeState() }
-
-      WavyBackground(modifier = Modifier.hazeSource(hazeState))
-
-      WithHazeState(hazeState) {
-        Content(
-          modifier = Modifier.padding(innerPadding),
-          state = state,
-          onAction = onAction,
-          theme = theme,
-        )
-      }
-    }
+    PullToRefreshBox(
+      modifier = Modifier.padding(innerPadding).fillMaxSize().padding(16.dp),
+      contentAlignment = Alignment.Center,
+      onRefresh = { onAction(Reload) },
+      isRefreshing = state is ListBudgetsState.Loading,
+      content = { StateContent(state, onAction, theme) },
+    )
   }
 }
 
@@ -159,26 +148,11 @@ private fun ScaffoldTitle(theme: Theme) =
   )
 
 @Composable
-private fun Content(
-  state: ListBudgetsState,
-  onAction: (ListBudgetsAction) -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) =
-  PullToRefreshBox(
-    modifier = modifier.fillMaxSize().padding(16.dp),
-    contentAlignment = Alignment.Center,
-    onRefresh = { onAction(Reload) },
-    isRefreshing = state is ListBudgetsState.Loading,
-    content = { StateContent(state, onAction, theme) },
-  )
-
-@Composable
 private fun StateContent(
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
   theme: Theme = LocalTheme.current,
-) =
+) {
   when (state) {
     is ListBudgetsState.Loading -> {
       // Empty content - we've already got the pull-to-refresh indicator
@@ -214,6 +188,7 @@ private fun StateContent(
       }
     }
   }
+}
 
 @PortraitPreview
 @LandscapePreview

@@ -4,13 +4,12 @@
   <string name="settings_show_bottom_bar">Show bottom status bar</string>
   <string name="settings_theme">App theme</string>
   <string name="settings_dark_theme">Dark theme</string>
-  <string name="settings_number_format">Number format</string>
-  <string name="settings_hide_fractions">Hide fractions</string>
 
   <string name="settings_dialog_dismiss">Dismiss</string>
 
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Use System Default</string>
+  <string name="settings_theme_all">All</string>
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
   <string name="settings_theme_midnight">Midnight</string>
@@ -22,10 +21,32 @@
   <string name="settings_theme_loading">Loading themes…</string>
   <string name="settings_theme_failed">Failed to load themes: %1$s</string>
   <string name="settings_theme_retry">Retry</string>
+  <string name="settings_theme_refresh">Refresh</string>
+  <string name="settings_theme_refresh_success">Theme catalog refreshed</string>
 
   <string name="settings_theme_inspect_loading">Loading…</string>
   <string name="settings_theme_inspect_open_repo">Open on GitHub</string>
   <string name="settings_theme_inspect_not_found">Theme not found</string>
   <string name="settings_theme_inspect_not_found_reason">Could not find theme '%1$s'</string>
   <string name="settings_theme_inspect_retry">Retry</string>
+
+  <string name="settings_format_group">Formatting</string>
+  <string name="settings_format_desc">Formatting does not affect how budget data is stored, and can be changed at any time.</string>
+  <string name="settings_format_numbers">Number format</string>
+  <string name="settings_format_decimal">Hide decimal places</string>
+  <string name="settings_format_dates">Date format</string>
+  <string name="settings_date_format_mm_dd_yyyy">MM/DD/YYYY</string>
+  <string name="settings_date_format_dd_mm_yyyy">DD/MM/YYYY</string>
+  <string name="settings_date_format_yyyy_mm_dd">YYYY-MM-DD</string>
+  <string name="settings_date_format_mm_dd_yyyy_dot">MM.DD.YYYY</string>
+  <string name="settings_date_format_dd_mm_yyyy_dot">DD.MM.YYYY</string>
+  <string name="settings_format_first_day">First day of the week</string>
+
+  <string name="settings_currency">Currency</string>
+  <string name="settings_currency_desc">These affect how amounts are displayed throughout the application. Changing the currency will affect the number format, symbol position, and whether fractions are shown. These can be adjusted after the currency is set.</string>
+  <string name="settings_currency_default">Default currency</string>
+  <string name="settings_currency_symbol_position">Symbol Position</string>
+  <string name="settings_currency_symbol_position_before">Before amount (e.g. %1$s)</string>
+  <string name="settings_currency_symbol_position_after">After amount (e.g. %1$s)</string>
+  <string name="settings_currency_add_space">Add space between amount and symbol</string>
 </resources>

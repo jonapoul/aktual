@@ -1,7 +1,7 @@
 package aktual.settings.ui
 
-import aktual.core.icons.Info
-import aktual.core.icons.MaterialIcons
+import aktual.core.icons.material.Info
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -9,13 +9,19 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import alakazam.kotlin.ifNotNull
+import alakazam.kotlin.ifTrue
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -26,10 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -40,7 +48,10 @@ internal fun BasicPreferenceItem(
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
+  includeBackground: Boolean = true,
+  headerStyle: TextStyle = AktualTypography.bodyLarge,
   theme: Theme = LocalTheme.current,
+  topRightContent: (@Composable BoxScope.() -> Unit)? = null,
   rightContent: (@Composable RowScope.() -> Unit)? = null,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
@@ -50,9 +61,10 @@ internal fun BasicPreferenceItem(
     modifier =
       modifier
         .clip(CardShape)
-        .background(theme.cardBackground)
-        .clickable(enabled && onClick != null) { onClick?.invoke() }
-        .padding(5.dp),
+        .ifTrue(includeBackground) { background(theme.pillBackgroundLight, CardShape) }
+        .ifTrue(includeBackground) { border(Dp.Hairline, theme.pillBorderDark, CardShape) }
+        .ifNotNull(onClick) { clickable(enabled, onClick = it) }
+        .ifTrue(includeBackground) { padding(5.dp) },
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -66,31 +78,37 @@ internal fun BasicPreferenceItem(
     }
 
     Column(modifier = Modifier.weight(1f)) {
-      Column(
-        modifier = Modifier.wrapContentHeight().padding(10.dp),
-        verticalArrangement = Arrangement.spacedBy(4.dp),
-      ) {
-        Text(
-          text = title,
-          fontWeight = FontWeight.Bold,
-          textAlign = TextAlign.Start,
-          style = AktualTypography.bodyLarge,
-          color = contentColor,
-        )
-
-        if (subtitle != null) {
+      Box(modifier = Modifier.fillMaxWidth().padding(6.dp)) {
+        Column(
+          modifier = Modifier.wrapContentHeight(),
+          verticalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
           Text(
-            text = subtitle,
-            fontWeight = FontWeight.Light,
+            text = title,
+            fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Start,
-            style = AktualTypography.bodyMedium,
-            color = if (enabled) theme.pageTextLight else theme.pageTextSubdued,
+            style = headerStyle,
+            color = contentColor,
           )
+
+          if (subtitle != null) {
+            Text(
+              text = subtitle,
+              fontWeight = FontWeight.Light,
+              textAlign = TextAlign.Start,
+              style = AktualTypography.bodyMedium,
+              color = if (enabled) theme.pageTextLight else theme.pageTextSubdued,
+            )
+          }
+        }
+
+        if (topRightContent != null) {
+          Box(modifier = Modifier.align(Alignment.TopEnd), content = topRightContent)
         }
       }
 
       if (bottomContent != null) {
-        bottomContent()
+        Column(content = bottomContent)
       }
     }
 

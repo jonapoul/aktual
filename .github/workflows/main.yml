@@ -12,34 +12,24 @@ concurrency:
   group: 'ci-${{ github.event.merge_group.head_ref || github.head_ref }}-${{ github.workflow }}'
   cancel-in-progress: true
 
+env:
+  GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
 jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
           fetch-tags: true
           ref: ${{ github.head_ref }}
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - run: ./gradlew testAll koverXmlReport koverVerify -Pkover
 
-      - name: Setup JDK
-        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5
-        with:
-          java-version-file: .java-version
-          distribution: "zulu"
-
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5
-        with:
-          add-job-summary: on-failure
-          cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
-
-      - name: Run tests
-        run: ./gradlew testAll koverXmlReport koverVerify -Pkover
-
-      - name: Parse coverage
-        shell: bash
+      - shell: bash
         run: |
           REPORT=build/reports/kover/report.xml
           COVERAGE=$(tail -6 "$REPORT" \
@@ -48,8 +38,7 @@ jobs:
             | awk '{printf "%.1f", $2 * 100 / ($1 + $2)}')
           echo "COVERAGE=$COVERAGE" >> $GITHUB_ENV
 
-      - name: Update dynamic badge gist
-        uses: schneegans/dynamic-badges-action@e9a478b16159b4d31420099ba146cdc50f134483 # v1.7.0
+      - uses: schneegans/dynamic-badges-action@e9a478b16159b4d31420099ba146cdc50f134483 # v1.7.0
         with:
           auth: ${{ secrets.GIST_SECRET }}
           gistID: 6bf1b7a292bc61bcca966bee22e8b456
@@ -60,6 +49,5 @@ jobs:
           minColorRange: 0
           maxColorRange: 100
 
-      - name: Report build results
-        uses: gmazzo/publish-report-annotations@ebc1ae65e8339696e03c3fadd5f808f90011d33e # v1
+      - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
