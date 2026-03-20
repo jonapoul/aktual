@@ -42,8 +42,7 @@ data class ReportsListNavRoute(val token: Token, val budgetId: BudgetId) : NavKe
 
 @Immutable
 @Serializable
-data class ReportNavRoute(val token: Token, val budgetId: BudgetId, val widgetId: WidgetId) :
-  NavKey
+data class ReportNavRoute(val token: Token, val budgetId: BudgetId, val widgetId: WidgetId) : NavKey
 
 @Immutable
 @Serializable

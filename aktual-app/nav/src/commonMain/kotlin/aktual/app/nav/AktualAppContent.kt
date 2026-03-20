@@ -31,7 +31,7 @@ fun rememberBackStack(viewModel: RootViewModel): SnapshotStateList<NavKey> = rem
       viewModel.token != null && viewModel.isServerUrlSet -> ListBudgetsNavRoute(viewModel.token)
       viewModel.isServerUrlSet -> LoginNavRoute
       else -> ServerUrlNavRoute
-    },
+    }
   )
 }
 
