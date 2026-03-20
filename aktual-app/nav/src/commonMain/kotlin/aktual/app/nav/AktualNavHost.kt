@@ -34,18 +34,18 @@ fun AktualNavHost(backStack: SnapshotStateList<NavKey>, modifier: Modifier = Mod
     onBack = { backStack.debugPop() },
     // Forward: new screen slides in from right, old screen slides out to left
     transitionSpec = {
-      slideInHorizontally(initialOffsetX = { it }) togetherWith
-        slideOutHorizontally(targetOffsetX = { -it })
+      slideInHorizontally(initialOffsetX = { width -> width }) togetherWith
+        slideOutHorizontally(targetOffsetX = { width -> -width })
     },
     // Back: previous screen slides in from left, current screen slides out to right
     popTransitionSpec = {
-      slideInHorizontally(initialOffsetX = { -it }) togetherWith
-        slideOutHorizontally(targetOffsetX = { it })
+      slideInHorizontally(initialOffsetX = { width -> -width }) togetherWith
+        slideOutHorizontally(targetOffsetX = { width -> width })
     },
     // Predictive back gesture: same as pop
     predictivePopTransitionSpec = {
-      slideInHorizontally(initialOffsetX = { -it }) togetherWith
-        slideOutHorizontally(targetOffsetX = { it })
+      slideInHorizontally(initialOffsetX = { width -> -width }) togetherWith
+        slideOutHorizontally(targetOffsetX = { width -> width })
     },
     entryDecorators =
       listOf(

@@ -1,6 +1,7 @@
 package aktual.app.android
 
 import aktual.app.nav.AktualAppContent
+import aktual.app.nav.rememberBackStack
 import aktual.core.di.ActivityKey
 import android.app.Activity
 import android.os.Bundle
@@ -51,6 +52,7 @@ class AktualActivity(private val viewModelFactory: MetroViewModelFactory) : Comp
 @Suppress("ViewModelForwarding")
 private fun Content(viewModel: AktualActivityViewModel, viewModelFactory: MetroViewModelFactory) {
   CompositionLocalProvider(LocalMetroViewModelFactory provides viewModelFactory) {
-    AktualAppContent(viewModel = viewModel)
+    val backStack = rememberBackStack(viewModel)
+    AktualAppContent(viewModel, backStack)
   }
 }

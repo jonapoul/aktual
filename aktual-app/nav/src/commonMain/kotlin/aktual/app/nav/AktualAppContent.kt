@@ -38,7 +38,7 @@ fun rememberBackStack(viewModel: RootViewModel): SnapshotStateList<NavKey> = rem
 @Composable
 fun AktualAppContent(
   viewModel: RootViewModel,
-  backStack: SnapshotStateList<NavKey> = rememberBackStack(viewModel),
+  backStack: SnapshotStateList<NavKey>,
   modifier: Modifier = Modifier,
 ) {
 
