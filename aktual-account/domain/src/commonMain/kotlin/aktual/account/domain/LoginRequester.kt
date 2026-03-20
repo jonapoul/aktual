@@ -46,16 +46,7 @@ class LoginRequester(
 
     return when (response) {
       is LoginResponse.Failure -> response.reason.toLoginResult()
-      is LoginResponse.Success -> {
-        when (val data = response.data) {
-          is LoginResponse.Data.Invalid -> LoginResult.InvalidPassword
-          is LoginResponse.Data.Redirect -> LoginResult.Redirect(data.returnUrl)
-          is LoginResponse.Data.Valid -> {
-            preferences.token.set(data.token)
-            LoginResult.Success(data.token)
-          }
-        }
-      }
+      is LoginResponse.Success -> response.data.toLoginResult()
     }
   }
 
@@ -64,5 +55,21 @@ class LoginRequester(
       FailureReason.TokenExpired -> LoginResult.TokenExpired
       FailureReason.InvalidPassword -> LoginResult.InvalidPassword
       else -> LoginResult.OtherFailure(reason)
+    }
+
+  private fun LoginResponse.Data.toLoginResult(): LoginResult =
+    when (this) {
+      is LoginResponse.Data.Invalid -> {
+        LoginResult.InvalidPassword
+      }
+
+      is LoginResponse.Data.Redirect -> {
+        LoginResult.Redirect(returnUrl)
+      }
+
+      is LoginResponse.Data.Valid -> {
+        preferences.token.set(token)
+        LoginResult.Success(token)
+      }
     }
 }

@@ -11,11 +11,11 @@ import kotlinx.coroutines.flow.asSharedFlow
 
 @Inject
 @SingleIn(AppScope::class)
-@ContributesBinding(AppScope::class, binding<TokenExpiredState>())
+@ContributesBinding(AppScope::class, binding<TokenExpiredEvent>())
 @ContributesBinding(AppScope::class, binding<TokenExpiredNotifier>())
-class TokenExpiredManager : TokenExpiredState, TokenExpiredNotifier {
+class TokenExpiredManager : TokenExpiredEvent, TokenExpiredNotifier {
   private val mutableTokenExpired = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
-  override val isExpired: Flow<Unit> = mutableTokenExpired.asSharedFlow()
+  override val event: Flow<Unit> = mutableTokenExpired.asSharedFlow()
 
   override fun notifyExpired() {
     mutableTokenExpired.tryEmit(Unit)

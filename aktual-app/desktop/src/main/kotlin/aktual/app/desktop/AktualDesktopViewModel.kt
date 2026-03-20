@@ -1,6 +1,8 @@
+@file:Suppress("LongParameterList")
+
 package aktual.app.desktop
 
-import aktual.api.client.TokenExpiredState
+import aktual.api.client.TokenExpiredEvent
 import aktual.app.nav.RootViewModel
 import aktual.budget.model.BudgetFiles
 import aktual.core.connection.ConnectionMonitor
@@ -33,7 +35,7 @@ class AktualDesktopViewModel(
   budgetComponents: BudgetGraphHolder,
   preferences: AppGlobalPreferences,
   themeResolver: ThemeResolver,
-  tokenExpiredState: TokenExpiredState,
+  tokenExpiredEvent: TokenExpiredEvent,
 ) :
   RootViewModel(
     appScope = appScope,
@@ -46,5 +48,5 @@ class AktualDesktopViewModel(
     budgetComponents = budgetComponents,
     preferences = preferences,
     themeResolver = themeResolver,
-    tokenExpiredState = tokenExpiredState,
+    tokenExpiredEvent = tokenExpiredEvent,
   )
