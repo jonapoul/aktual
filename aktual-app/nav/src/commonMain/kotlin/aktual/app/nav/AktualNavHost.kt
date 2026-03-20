@@ -14,6 +14,9 @@ import aktual.metrics.ui.MetricsScreen
 import aktual.settings.ui.inspect.InspectThemeScreen
 import aktual.settings.ui.root.SettingsScreen
 import aktual.settings.ui.theme.ThemeSettingsScreen
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
@@ -29,6 +32,21 @@ fun AktualNavHost(backStack: SnapshotStateList<NavKey>, modifier: Modifier = Mod
     backStack = backStack,
     modifier = modifier,
     onBack = { backStack.debugPop() },
+    // Forward: new screen slides in from right, old screen slides out to left
+    transitionSpec = {
+      slideInHorizontally(initialOffsetX = { it }) togetherWith
+        slideOutHorizontally(targetOffsetX = { -it })
+    },
+    // Back: previous screen slides in from left, current screen slides out to right
+    popTransitionSpec = {
+      slideInHorizontally(initialOffsetX = { -it }) togetherWith
+        slideOutHorizontally(targetOffsetX = { it })
+    },
+    // Predictive back gesture: same as pop
+    predictivePopTransitionSpec = {
+      slideInHorizontally(initialOffsetX = { -it }) togetherWith
+        slideOutHorizontally(targetOffsetX = { it })
+    },
     entryDecorators =
       listOf(
         rememberSaveableStateHolderNavEntryDecorator(),
