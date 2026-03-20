@@ -4,9 +4,11 @@ package aktual.api.model.account
 
 import aktual.api.model.internal.BoolAsInt
 import aktual.core.model.LoginMethod
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+@Immutable
 @Serializable
 data class AvailableLoginMethod(
   @SerialName("method") val method: LoginMethod,

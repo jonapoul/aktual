@@ -9,6 +9,7 @@ plugins {
 
 kotlin {
   commonMainDependencies {
+    api(libs.compose.runtime)
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
     api(project(":aktual-budget:data"))

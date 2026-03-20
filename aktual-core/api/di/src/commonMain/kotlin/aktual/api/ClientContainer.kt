@@ -5,6 +5,7 @@ import aktual.api.client.TokenExpiredNotifier
 import aktual.api.model.account.FailureReason
 import aktual.core.model.AktualJson
 import aktual.core.model.BuildConfig
+import aktual.core.prefs.AppGlobalPreferences
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
@@ -28,6 +29,7 @@ object ClientContainer {
     buildConfig: BuildConfig,
     engine: HttpClientEngine,
     notifier: TokenExpiredNotifier,
+    preferences: AppGlobalPreferences,
   ): HttpClient {
     return buildKtorClient(AktualJson, tag = "ACTUAL", engine, buildConfig.isDebug) {
       HttpResponseValidator {
@@ -36,7 +38,12 @@ object ClientContainer {
             try {
               val failure = exception.response.body<ErrorBody>()
               if (failure.reason == FailureReason.TokenExpired.reason) {
-                notifier.notifyExpired()
+                // Only notify for authenticated-session failures, not login-time failures.
+                // During login, there's no stored token, so firing the global handler would
+                // clear the backstack and push LoginNavRoute while already on the login screen.
+                if (preferences.token.isSet()) {
+                  notifier.notifyExpired()
+                }
               }
             } catch (e: CancellationException) {
               throw e
