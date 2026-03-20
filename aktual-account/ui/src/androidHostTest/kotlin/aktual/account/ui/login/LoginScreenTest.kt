@@ -101,7 +101,7 @@ class LoginScreenTest {
 
     runOnIdle {
       // and the login was triggered
-      coVerify(exactly = 1) { loginRequester.logIn(PASSWORD) }
+      coVerify(exactly = 1) { loginRequester.logIn(PASSWORD, any()) }
 
       // and the navigation was triggered when it succeeded
       verify(exactly = 1) { navigator.toListBudgets(TOKEN) }
@@ -124,7 +124,7 @@ class LoginScreenTest {
 
     runOnIdle {
       // then the login was triggered
-      coVerify(exactly = 1) { loginRequester.logIn(PASSWORD) }
+      coVerify(exactly = 1) { loginRequester.logIn(PASSWORD, any()) }
 
       // and the navigation was not triggered
       verify(exactly = 0) { navigator.toListBudgets(TOKEN) }
@@ -136,7 +136,7 @@ class LoginScreenTest {
   }
 
   private fun setLoginResult(block: suspend () -> LoginResult) {
-    coEvery { loginRequester.logIn(any()) } coAnswers { block() }
+    coEvery { loginRequester.logIn(any(), any()) } coAnswers { block() }
   }
 
   private companion object {

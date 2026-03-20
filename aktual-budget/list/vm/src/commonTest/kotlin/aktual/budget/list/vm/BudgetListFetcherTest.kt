@@ -4,6 +4,7 @@ import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApi
 import aktual.api.client.SyncApiImpl
+import aktual.api.model.account.FailureReason
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.BudgetState
@@ -153,7 +154,8 @@ class BudgetListFetcherTest {
     val result = budgetListFetcher.fetchBudgets(TOKEN)
 
     // then
-    assertThat(result).isEqualTo(FetchBudgetsResult.FailureResponse(reason = "something broke"))
+    assertThat(result)
+      .isEqualTo(FetchBudgetsResult.FailureResponse(FailureReason("something broke")))
   }
 
   private fun buildApis(

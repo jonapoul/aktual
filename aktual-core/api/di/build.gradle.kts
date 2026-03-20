@@ -1,6 +1,9 @@
 import blueprint.core.commonMainDependencies
 
-plugins { id("aktual.module.di") }
+plugins {
+  id("aktual.module.di")
+  alias(libs.plugins.kotlin.serialization)
+}
 
 kotlin {
   commonMainDependencies {

@@ -16,14 +16,17 @@ import kotlinx.serialization.json.jsonObject
 
 internal class LoginResponseDataSerializer :
   JsonContentPolymorphicSerializer<LoginResponse.Data>(LoginResponse.Data::class) {
-  override fun selectDeserializer(element: JsonElement) =
-    when (element.jsonObject["token"]) {
+  override fun selectDeserializer(element: JsonElement): KSerializer<out LoginResponse.Data> {
+    val obj = element.jsonObject
+    if ("returnUrl" in obj) return LoginResponse.Data.Redirect.serializer()
+    return when (obj["token"]) {
       is JsonNull -> LoginResponse.Data.Invalid.serializer()
       is JsonPrimitive -> LoginResponse.Data.Valid.serializer()
       is JsonArray,
       is JsonObject,
       null -> error("Unknown response format: $element")
     }
+  }
 }
 
 internal typealias BoolAsInt = @Serializable(IntToBoolSerializer::class) Boolean

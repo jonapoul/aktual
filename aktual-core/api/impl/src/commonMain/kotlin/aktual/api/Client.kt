@@ -1,6 +1,7 @@
 package aktual.api
 
 import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.HttpClientEngine
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.logging.LogLevel
@@ -11,7 +12,13 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import logcat.logcat
 
-fun buildKtorClient(json: Json, tag: String?, engine: HttpClientEngine, isDebug: Boolean = false) =
+fun buildKtorClient(
+  json: Json,
+  tag: String?,
+  engine: HttpClientEngine,
+  isDebug: Boolean = false,
+  extraConfig: HttpClientConfig<*>.() -> Unit = {},
+): HttpClient =
   HttpClient(engine) {
     // Throws ResponseExceptions for non-2xx responses
     expectSuccess = true
@@ -27,6 +34,8 @@ fun buildKtorClient(json: Json, tag: String?, engine: HttpClientEngine, isDebug:
         // sanitizeHeader { header -> header == HttpHeaders.Authorization }
       }
     }
+
+    extraConfig()
   }
 
 private class AktualKtorLogger(private val tag: String?) : Logger {

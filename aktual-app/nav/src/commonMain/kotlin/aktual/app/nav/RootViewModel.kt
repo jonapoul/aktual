@@ -1,5 +1,6 @@
 package aktual.app.nav
 
+import aktual.api.client.TokenExpiredState
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.Currency
@@ -48,8 +49,9 @@ abstract class RootViewModel(
   protected val serverVersionFetcher: ServerVersionFetcher,
   protected val files: BudgetFiles,
   budgetComponents: BudgetGraphHolder,
-  preferences: AppGlobalPreferences,
+  private val preferences: AppGlobalPreferences,
   private val themeResolver: ThemeResolver,
+  private val tokenExpiredState: TokenExpiredState,
 ) : ViewModel() {
   private val budgetGraph = budgetComponents.stateIn(viewModelScope, Eagerly, initialValue = null)
 
@@ -99,10 +101,18 @@ abstract class RootViewModel(
       }
     }
 
+  val tokenExpired: Flow<Unit> = tokenExpiredState.isExpired
+
   init {
     serverPinger.start()
     connectionMonitor.start()
     viewModelScope.launch { serverVersionFetcher.start() }
+    viewModelScope.launch {
+      tokenExpiredState.isExpired.collect {
+        logcat.w { "Token expired, clearing stored token" }
+        preferences.token.deleteAndCommit()
+      }
+    }
   }
 
   fun theme(isSystemInDarkTheme: Boolean): Flow<Theme> =

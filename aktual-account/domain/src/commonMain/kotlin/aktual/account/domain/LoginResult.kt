@@ -7,9 +7,13 @@ import androidx.compose.runtime.Immutable
 sealed interface LoginResult {
   data class Success(val token: Token) : LoginResult
 
+  data class Redirect(val url: String) : LoginResult
+
   @Immutable sealed interface Failure : LoginResult
 
   data object InvalidPassword : Failure
+
+  data object TokenExpired : Failure
 
   data class HttpFailure(val code: Int, val message: String) : Failure
 

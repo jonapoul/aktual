@@ -1,5 +1,6 @@
 package aktual.budget.list.vm
 
+import aktual.api.model.account.FailureReason
 import aktual.budget.model.Budget
 import androidx.compose.runtime.Immutable
 
@@ -15,7 +16,10 @@ sealed interface FetchBudgetsResult {
     override val reason = null
   }
 
-  data class FailureResponse(override val reason: String?) : Failure
+  data class FailureResponse(val failureReason: FailureReason) : Failure {
+    override val reason: String
+      get() = failureReason.reason
+  }
 
   data class InvalidResponse(override val reason: String) : Failure
 

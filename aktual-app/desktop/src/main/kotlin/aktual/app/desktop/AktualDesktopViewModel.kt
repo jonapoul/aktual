@@ -1,5 +1,6 @@
 package aktual.app.desktop
 
+import aktual.api.client.TokenExpiredState
 import aktual.app.nav.RootViewModel
 import aktual.budget.model.BudgetFiles
 import aktual.core.connection.ConnectionMonitor
@@ -32,6 +33,7 @@ class AktualDesktopViewModel(
   budgetComponents: BudgetGraphHolder,
   preferences: AppGlobalPreferences,
   themeResolver: ThemeResolver,
+  tokenExpiredState: TokenExpiredState,
 ) :
   RootViewModel(
     appScope = appScope,
@@ -44,4 +46,5 @@ class AktualDesktopViewModel(
     budgetComponents = budgetComponents,
     preferences = preferences,
     themeResolver = themeResolver,
+    tokenExpiredState = tokenExpiredState,
   )

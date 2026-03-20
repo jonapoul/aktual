@@ -52,7 +52,7 @@ internal constructor(
   private suspend fun parseResponseException(e: ResponseException): FetchBudgetsResult =
     try {
       val body = e.response.body<ListUserFilesResponse.Failure>()
-      FetchBudgetsResult.FailureResponse(body.reason.reason)
+      FetchBudgetsResult.FailureResponse(body.reason)
     } catch (e: JsonConvertException) {
       FetchBudgetsResult.OtherFailure(e.requireMessage())
     }

@@ -5,6 +5,7 @@ import aktual.account.domain.LoginResult
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
+import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
@@ -63,13 +64,13 @@ class LoginViewModel(
     mutableEnteredPassword.update { Password(password) }
   }
 
-  fun onClickSignIn() {
-    logcat.v { "onClickSignIn" }
+  fun onClickSignIn(loginMethod: LoginMethod = LoginMethod.Password) {
+    logcat.v { "onClickSignIn with method=$loginMethod" }
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
     viewModelScope.launch {
       val password = mutableEnteredPassword.value
-      val result = loginRequester.logIn(password)
+      val result = loginRequester.logIn(password, loginMethod)
 
       logcat.d { "Login result = $result" }
       mutableIsLoading.update { false }
