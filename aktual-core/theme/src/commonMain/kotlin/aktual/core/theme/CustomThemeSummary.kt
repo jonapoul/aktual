@@ -12,4 +12,5 @@ data class CustomThemeSummary(
   @SerialName("name") val name: String,
   @SerialName("repo") val repo: CustomThemeRepo,
   @SerialName("colors") val colors: List<@Contextual Color>,
+  @SerialName("mode") val mode: ThemeMode,
 )
