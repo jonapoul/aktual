@@ -5,7 +5,6 @@ import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
@@ -47,8 +46,15 @@ fun Theme.transparentTopAppBarColors(): TopAppBarColors =
   )
 
 @Stable
-@Composable
-fun Theme.dropDownMenuItem(): MenuItemColors = MenuDefaults.itemColors(textColor = formInputText)
+fun Theme.dropDownMenuItem(): MenuItemColors =
+  MenuItemColors(
+    textColor = menuItemText,
+    leadingIconColor = menuItemText,
+    trailingIconColor = menuItemText,
+    disabledTextColor = menuItemText.disabled,
+    disabledLeadingIconColor = menuItemText.disabled,
+    disabledTrailingIconColor = menuItemText.disabled,
+  )
 
 @Stable
 @Composable

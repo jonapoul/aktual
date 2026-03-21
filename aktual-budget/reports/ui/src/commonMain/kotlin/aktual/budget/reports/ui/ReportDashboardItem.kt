@@ -16,6 +16,8 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.ThemedDropdownMenu
+import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import androidx.compose.foundation.background
@@ -24,8 +26,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -82,9 +82,9 @@ private fun ReportDropDownMenu(
   onDismiss: () -> Unit,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-) =
-  DropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = onDismiss) {
-    DropdownMenuItem(
+) {
+  ThemedDropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = onDismiss) {
+    ThemedDropdownMenuItem(
       text = { Text(Strings.reportsDashboardRename) },
       leadingIcon = { Icon(MaterialIcons.Edit, Strings.reportsDashboardRename) },
       onClick = {
@@ -92,7 +92,7 @@ private fun ReportDropDownMenu(
         onAction(Action.Rename(item.id))
       },
     )
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(Strings.reportsDashboardDelete) },
       leadingIcon = { Icon(MaterialIcons.Delete, Strings.reportsDashboardDelete) },
       onClick = {
@@ -101,6 +101,7 @@ private fun ReportDropDownMenu(
       },
     )
   }
+}
 
 @PortraitPreview
 @LandscapePreview
