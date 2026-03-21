@@ -1,6 +1,6 @@
 *.jks
 *.keystore
-.claude/
+.claude/*
 .gradle/
 .kotlin/
 build/

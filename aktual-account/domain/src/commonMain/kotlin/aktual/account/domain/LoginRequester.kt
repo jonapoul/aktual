@@ -1,10 +1,10 @@
 package aktual.account.domain
 
 import aktual.api.client.AktualApisStateHolder
-import aktual.api.model.account.AvailableLoginMethod
 import aktual.api.model.account.FailureReason
 import aktual.api.model.account.LoginRequest
 import aktual.api.model.account.LoginResponse
+import aktual.core.model.AvailableLoginMethod
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.prefs.AppGlobalPreferences

@@ -20,6 +20,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -35,7 +37,8 @@ internal fun HeaderLogin(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  LaunchedEffect(Unit) { onAction(LoginAction.SignIn) }
+  val latestOnAction by rememberUpdatedState(onAction)
+  LaunchedEffect(Unit) { latestOnAction(LoginAction.SignIn) }
 
   Column(
     modifier =
