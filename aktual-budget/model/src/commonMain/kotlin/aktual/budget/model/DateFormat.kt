@@ -1,6 +1,8 @@
 package aktual.budget.model
 
-enum class DateFormat(val value: String) {
+import alakazam.kotlin.SerializableByString
+
+enum class DateFormat(override val value: String) : SerializableByString {
   MmDdYyyy(value = "MM/dd/yyyy"),
   DdMmYyyy(value = "dd/MM/yyyy"),
   YyyyMmDd(value = "yyyy-MM-dd"),
@@ -11,7 +13,5 @@ enum class DateFormat(val value: String) {
 
   companion object {
     val Default = YyyyMmDd
-
-    fun from(value: String?): DateFormat = entries.firstOrNull { it.value == value } ?: Default
   }
 }

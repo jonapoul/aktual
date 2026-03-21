@@ -8,7 +8,9 @@ import aktual.core.logging.JvmLogStorage
 import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
@@ -16,6 +18,7 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.zacsweers.metro.createGraph
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
+import kotlinx.coroutines.runBlocking
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
@@ -45,11 +48,16 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
     val windowPrefs = remember(graph) { graph.windowPreferences }
     val state =
       rememberWindowState(
-        placement = windowPrefs.placement.get(),
-        isMinimized = windowPrefs.isMinimized.get(),
-        position = windowPrefs.position.get(),
-        size = windowPrefs.size.get(),
+        placement = remember { runBlocking { windowPrefs.placement.get() } },
+        isMinimized = remember { runBlocking { windowPrefs.isMinimized.get() } },
+        position = remember { runBlocking { windowPrefs.position.get() } },
+        size = remember { runBlocking { windowPrefs.size.get() } },
       )
+
+    LaunchedEffect(state) {
+      snapshotFlow { listOf(state.size, state.position, state.placement, state.isMinimized) }
+        .collect { windowPrefs.save(state) }
+    }
 
     val viewModel =
       viewModel<AktualDesktopViewModel>(
@@ -71,7 +79,6 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
       onPreviewKeyEvent = keyHandler::onPreviewKeyEvent,
       onCloseRequest = {
         logcat.i { "onCloseRequest" }
-        windowPrefs.save(state)
         viewModel.onDestroy()
         exitApplication()
       },

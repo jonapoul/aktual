@@ -1,5 +1,6 @@
 package aktual.core.theme
 
+import aktual.core.prefs.ThemePreferencesImpl
 import aktual.test.buildPreferences
 import app.cash.turbine.test
 import assertk.assertThat

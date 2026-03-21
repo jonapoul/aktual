@@ -1,6 +1,6 @@
-import blueprint.core.androidMainDependencies
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
+import blueprint.core.jvmMainDependencies
 
 plugins {
   id("aktual.module.kotlin")
@@ -9,13 +9,15 @@ plugins {
 
 kotlin {
   commonMainDependencies {
-    api(libs.preferences.core)
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:model"))
     api(project(":aktual-core:prefs"))
+    api(project(":aktual-core:theme"))
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.prefs)
   }
 
   commonTestDependencies { implementation(project(":aktual-test")) }
 
-  androidMainDependencies { implementation(libs.preferences.android) }
+  jvmMainDependencies { api(libs.compose.ui) }
 }

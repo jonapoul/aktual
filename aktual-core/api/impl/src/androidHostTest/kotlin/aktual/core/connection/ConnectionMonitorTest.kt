@@ -5,6 +5,7 @@ import aktual.api.client.ApiBuilder
 import aktual.core.model.ServerUrl
 import aktual.core.prefs.AppGlobalPreferences
 import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.core.prefs.delete
 import aktual.test.CoLogcatInterceptor
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo

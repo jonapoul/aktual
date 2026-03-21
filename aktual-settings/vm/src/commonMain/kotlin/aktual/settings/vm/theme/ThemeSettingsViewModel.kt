@@ -1,5 +1,6 @@
 package aktual.settings.vm.theme
 
+import aktual.core.prefs.asStateFlow
 import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.theme.DarkTheme
@@ -20,7 +21,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dev.jonpoulton.preferences.core.asStateFlow
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -134,12 +134,16 @@ class ThemeSettingsViewModel(
   }
 
   fun select(id: Theme.Id) {
-    preferences.constantTheme.set(id)
+    viewModelScope.launch { preferences.constantTheme.set(id) }
   }
 
-  fun setUseSystemDefault(value: Boolean) = preferences.useSystemDefault.set(value)
+  fun setUseSystemDefault(value: Boolean) {
+    viewModelScope.launch { preferences.useSystemDefault.set(value) }
+  }
 
-  fun setDarkTheme(value: Theme.Id) = preferences.nightTheme.set(value)
+  fun setDarkTheme(value: Theme.Id) {
+    viewModelScope.launch { preferences.nightTheme.set(value) }
+  }
 
   fun setModeFilter(filter: ThemeModeFilter) {
     mutableModeFilter.update { filter }

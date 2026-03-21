@@ -1,6 +1,7 @@
 package aktual.core.theme
 
-import dev.jonpoulton.preferences.core.Preference
+import aktual.core.prefs.NullablePreference
+import aktual.core.prefs.Preference
 
 interface ThemePreferences {
   // Switch between light and dark/midnight, depending on system time (and nightTheme)
@@ -10,5 +11,5 @@ interface ThemePreferences {
   val nightTheme: Preference<Theme.Id>
 
   // Only relevant if useSystemDefault is false
-  val constantTheme: Preference<Theme.Id?>
+  val constantTheme: NullablePreference<Theme.Id>
 }

@@ -45,6 +45,9 @@ exceptions:
 naming:
   BooleanPropertyNaming:
     active: false
+  # https://github.com/detekt/detekt/issues/5362
+  NonBooleanPropertyPrefixedWithIs:
+    active: false
   FunctionNaming:
     functionPattern: "[a-zA-Z][a-zA-Z0-9]*"
     excludeClassPattern: ".*Test$"

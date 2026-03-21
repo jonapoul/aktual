@@ -2,6 +2,7 @@ package aktual.app.desktop
 
 import aktual.core.di.AppGraph
 import aktual.core.model.BuildConfig
+import aktual.core.prefs.WindowStatePreferences
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import kotlin.time.Clock

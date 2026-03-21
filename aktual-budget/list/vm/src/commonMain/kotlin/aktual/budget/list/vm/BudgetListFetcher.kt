@@ -29,7 +29,7 @@ internal constructor(
     val apis = apisStateHolder.value ?: return FetchBudgetsResult.NotLoggedIn
     return try {
       val response = withContext(contexts.io) { apis.sync.fetchUserFiles(token) }
-      val result = FetchBudgetsResult.Success(response.data.map(::toBudget))
+      val result = FetchBudgetsResult.Success(response.data.map { toBudget(it) })
       logcat.d { "Fetched budgets: $result" }
       result
     } catch (e: CancellationException) {
@@ -57,7 +57,7 @@ internal constructor(
       FetchBudgetsResult.OtherFailure(e.requireMessage())
     }
 
-  private fun toBudget(item: UserFile) =
+  private suspend fun toBudget(item: UserFile) =
     Budget(
       name = item.name,
       state = BudgetState.Unknown,

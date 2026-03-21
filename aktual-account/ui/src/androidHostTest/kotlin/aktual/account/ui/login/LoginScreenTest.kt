@@ -30,6 +30,7 @@ import io.mockk.mockk
 import io.mockk.verify
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -58,7 +59,8 @@ class LoginScreenTest {
     setLoginResult { LoginResult.Success(TOKEN) }
 
     versionsStateHolder = AktualVersionsStateHolder(BUILD_CONFIG)
-    val prefs = buildPreferences(UnconfinedTestDispatcher())
+    val scope = TestScope(UnconfinedTestDispatcher())
+    val prefs = scope.buildPreferences()
     preferences = AppGlobalPreferencesImpl(prefs)
   }
 
@@ -80,7 +82,7 @@ class LoginScreenTest {
 
     // and the login takes half a second before succeeding
     setLoginResult {
-      preferences.token.setAndCommit(TOKEN) // to trigger nav behaviour
+      preferences.token.set(TOKEN) // to trigger nav behaviour
       LoginResult.Success(TOKEN)
     }
 

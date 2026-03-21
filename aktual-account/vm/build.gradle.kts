@@ -11,7 +11,6 @@ kotlin {
     api(libs.alakazam.kotlin)
     implementation(project(":aktual-core:api"))
     implementation(libs.ktor.core)
-    implementation(libs.preferences.core)
   }
 
   commonTestDependencies {

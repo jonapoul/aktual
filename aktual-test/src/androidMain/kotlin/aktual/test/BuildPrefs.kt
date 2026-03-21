@@ -1,25 +1,21 @@
 package aktual.test
 
-import aktual.core.prefs.AndroidEncryptedPreferences
-import aktual.core.prefs.EncryptedPreferences
 import android.content.Context
-import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStoreFile
 import androidx.test.core.app.ApplicationProvider
-import dev.jonpoulton.preferences.android.AndroidSharedPreferences
-import dev.jonpoulton.preferences.core.Preferences
 import kotlin.coroutines.CoroutineContext
+import kotlin.coroutines.EmptyCoroutineContext
+import kotlinx.coroutines.plus
+import kotlinx.coroutines.test.TestScope
 
-fun buildSharedPreferences(
+fun TestScope.buildPreferences(
+  coroutineContext: CoroutineContext = EmptyCoroutineContext,
   context: Context = ApplicationProvider.getApplicationContext(),
-  name: String = "prefs",
-): SharedPreferences = context.getSharedPreferences(name, Context.MODE_PRIVATE)
-
-fun buildPreferences(
-  coroutineContext: CoroutineContext,
-  sharedPreferences: SharedPreferences = buildSharedPreferences(),
-): Preferences = AndroidSharedPreferences(sharedPreferences, coroutineContext)
-
-fun buildEncryptedPreferences(
-  coroutineContext: CoroutineContext,
-  sharedPreferences: SharedPreferences = buildSharedPreferences(),
-): EncryptedPreferences = AndroidEncryptedPreferences(sharedPreferences, coroutineContext)
+): DataStore<Preferences> =
+  PreferenceDataStoreFactory.create(
+    produceFile = { context.preferencesDataStoreFile("test_${System.nanoTime()}") },
+    scope = this + coroutineContext,
+  )

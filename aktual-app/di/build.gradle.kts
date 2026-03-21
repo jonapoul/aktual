@@ -9,7 +9,6 @@ plugins { id("aktual.module.di") }
 
 kotlin {
   commonMainDependencies {
-    api(libs.preferences.core)
     api(project(":aktual-about:di"))
     api(project(":aktual-budget:data-di"))
     api(project(":aktual-core:api:di"))

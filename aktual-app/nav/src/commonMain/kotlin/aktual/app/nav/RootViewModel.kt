@@ -1,8 +1,4 @@
-@file:Suppress(
-  "AbstractClassCanBeConcreteClass",
-  "NonBooleanPropertyPrefixedWithIs",
-  "LongParameterList",
-)
+@file:Suppress("AbstractClassCanBeConcreteClass", "LongParameterList")
 
 package aktual.app.nav
 
@@ -21,6 +17,8 @@ import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.PingStateHolder
 import aktual.core.model.Token
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.asStateFlow
+import aktual.core.prefs.delete
 import aktual.core.theme.Theme
 import aktual.core.theme.ThemeResolver
 import aktual.core.ui.BottomBarState
@@ -31,7 +29,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dev.jonpoulton.preferences.core.asStateFlow
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
@@ -43,6 +40,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import logcat.logcat
 
 abstract class RootViewModel(
@@ -85,9 +83,9 @@ abstract class RootViewModel(
       mapper = { it.toBoolean() },
     )
 
-  val isServerUrlSet: Boolean = preferences.serverUrl.isSet()
+  val isServerUrlSet: Boolean = runBlocking { preferences.serverUrl.get() } != null
 
-  val token: Token? = preferences.token.get()
+  val token: Token? = runBlocking { preferences.token.get() }
   private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 
   private val budgetName: Flow<String?> = budgetGraph.flatMapLatest { bg ->
@@ -115,7 +113,7 @@ abstract class RootViewModel(
     viewModelScope.launch {
       tokenExpiredEvent.event.collect {
         logcat.w { "Token expired, clearing stored token" }
-        preferences.token.deleteAndCommit()
+        preferences.token.delete()
       }
     }
   }

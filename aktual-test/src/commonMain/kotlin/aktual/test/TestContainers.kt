@@ -3,7 +3,8 @@ package aktual.test
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
-import dev.jonpoulton.preferences.core.Preferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
 import kotlinx.coroutines.CoroutineScope
@@ -24,6 +25,6 @@ fun TestScope.coroutineContainer(
 ): TestCoroutineContainer = TestCoroutineContainer(scope = this, contexts)
 
 @BindingContainer
-class TestPreferencesContainer(private val preferences: Preferences) {
-  @Provides fun preferences(): Preferences = preferences
+class TestPreferencesContainer(private val preferences: DataStore<Preferences>) {
+  @Provides fun preferences(): DataStore<Preferences> = preferences
 }

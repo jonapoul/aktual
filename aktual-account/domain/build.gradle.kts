@@ -6,7 +6,6 @@ plugins { id("aktual.module.kotlin") }
 kotlin {
   commonMainDependencies {
     api(project(":aktual-core:model"))
-    implementation(libs.preferences.core)
     implementation(project(":aktual-core:api"))
     implementation(project(":aktual-core:logging"))
     implementation(project(":aktual-core:prefs"))

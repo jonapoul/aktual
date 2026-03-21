@@ -1,11 +1,10 @@
 package aktual.core.prefs
 
+import aktual.core.model.AppDirectory
 import alakazam.kotlin.CoroutineContexts
-import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStoreFile
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
@@ -16,18 +15,19 @@ import kotlinx.coroutines.plus
 
 @BindingContainer
 @ContributesTo(AppScope::class)
-object AndroidPrefsContainer {
+object JvmPrefsContainer {
   @Provides
   @SingleIn(AppScope::class)
   fun dataStore(
-    context: Context,
+    appDirectory: AppDirectory,
     scope: CoroutineScope,
     contexts: CoroutineContexts,
   ): DataStore<Preferences> {
+    val dir = appDirectory.get().toFile()
+    dir.mkdirs()
     return PreferenceDataStoreFactory.create(
-      produceFile = { context.preferencesDataStoreFile("settings") },
+      produceFile = { dir.resolve("prefs.datastore") },
       scope = scope + contexts.io,
-      migrations = emptyList(),
     )
   }
 }

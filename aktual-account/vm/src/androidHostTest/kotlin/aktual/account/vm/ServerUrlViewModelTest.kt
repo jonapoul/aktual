@@ -75,7 +75,7 @@ class ServerUrlViewModelTest {
     mockEngine.close()
   }
 
-  private fun TestScope.buildPreferences() {
+  private suspend fun TestScope.buildPreferences() {
     val prefs = buildPreferences(UnconfinedTestDispatcher(testScheduler))
     preferences = AppGlobalPreferencesImpl(prefs)
     preferences.serverUrl.set(EXAMPLE_URL)
@@ -222,9 +222,9 @@ class ServerUrlViewModelTest {
 
       // when we save a token and a URL
       val initialUrl = ServerUrl(Protocol.Https, "website.com")
-      preferences.serverUrl.setAndCommit(initialUrl)
+      preferences.serverUrl.set(initialUrl)
       val token = Token("abc-123")
-      preferences.token.setAndCommit(token)
+      preferences.token.set(token)
 
       // then the token has been saved
       assertThatNextEmissionIsEqualTo(token)

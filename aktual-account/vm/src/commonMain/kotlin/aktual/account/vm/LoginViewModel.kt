@@ -10,10 +10,10 @@ import aktual.core.model.Password
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.asStateFlow
 import alakazam.kotlin.ResettableStateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.jonpoulton.preferences.core.asStateFlow
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -33,7 +33,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
-@Suppress("NonBooleanPropertyPrefixedWithIs")
 @Inject
 @ViewModelKey(LoginViewModel::class)
 @ContributesIntoMap(AppScope::class)

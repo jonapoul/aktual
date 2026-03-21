@@ -6,61 +6,50 @@ import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.Preference
+import aktual.core.prefs.asStateFlow
 import aktual.settings.vm.BooleanPreference
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dev.jonpoulton.preferences.core.asStateFlow
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 @Inject
 @ViewModelKey(SettingsViewModel::class)
 @ContributesIntoMap(AppScope::class)
 class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) : ViewModel() {
   private val showBottomBarPref = preferences.showBottomBar
-  private val showBottomBar = showBottomBarPref.asStateFlow(viewModelScope)
-
   private val numberFormatPref = preferences.numberFormat
-  private val numberFormat = numberFormatPref.asStateFlow(viewModelScope)
-
   private val hideFractionPref = preferences.hideFraction
-  private val hideFraction = hideFractionPref.asStateFlow(viewModelScope)
-
   private val dateFormatPref = preferences.dateFormat
-  private val dateFormat = dateFormatPref.asStateFlow(viewModelScope)
-
   private val firstDayOfWeekPref = preferences.firstDayOfWeek
-  private val firstDayOfWeek = firstDayOfWeekPref.asStateFlow(viewModelScope)
-
   private val currencyPref = preferences.currency
-  private val currency = currencyPref.asStateFlow(viewModelScope)
-
   private val currencySymbolPositionPref = preferences.currencySymbolPosition
-  private val currencySymbolPosition = currencySymbolPositionPref.asStateFlow(viewModelScope)
-
   private val currencySpaceBetweenAmountAndSymbolPref =
     preferences.currencySpaceBetweenAmountAndSymbol
-  private val currencySpaceBetweenAmountAndSymbol =
-    currencySpaceBetweenAmountAndSymbolPref.asStateFlow(viewModelScope)
 
   val state: StateFlow<SettingsScreenState> =
     viewModelScope.launchMolecule(Immediate) {
-      val showBottomBar by showBottomBar.collectAsState()
-      val numberFormat by numberFormat.collectAsState()
-      val hideFraction by hideFraction.collectAsState()
-      val dateFormat by dateFormat.collectAsState()
-      val firstDayOfWeek by firstDayOfWeek.collectAsState()
-      val currency by currency.collectAsState()
-      val currencySymbolPosition by currencySymbolPosition.collectAsState()
+      val showBottomBar by showBottomBarPref.collectAsStateFlow()
+      val numberFormat by numberFormatPref.collectAsStateFlow()
+      val hideFraction by hideFractionPref.collectAsStateFlow()
+      val dateFormat by dateFormatPref.collectAsStateFlow()
+      val firstDayOfWeek by firstDayOfWeekPref.collectAsStateFlow()
+      val currency by currencyPref.collectAsStateFlow()
+      val currencySymbolPosition by currencySymbolPositionPref.collectAsStateFlow()
       val currencySpaceBetweenAmountAndSymbol by
-        currencySpaceBetweenAmountAndSymbol.collectAsState()
+        currencySpaceBetweenAmountAndSymbolPref.collectAsStateFlow()
 
       SettingsScreenState(
         showBottomBar = BooleanPreference(value = showBottomBar),
@@ -76,20 +65,41 @@ class SettingsViewModel internal constructor(preferences: AppGlobalPreferences) 
       )
     }
 
-  fun showBottomBar(value: Boolean) = showBottomBarPref.set(value)
+  fun showBottomBar(value: Boolean) {
+    viewModelScope.launch { showBottomBarPref.set(value) }
+  }
 
-  fun numberFormat(value: NumberFormat) = numberFormatPref.set(value)
+  fun numberFormat(value: NumberFormat) {
+    viewModelScope.launch { numberFormatPref.set(value) }
+  }
 
-  fun hideFraction(value: Boolean) = hideFractionPref.set(value)
+  fun hideFraction(value: Boolean) {
+    viewModelScope.launch { hideFractionPref.set(value) }
+  }
 
-  fun dateFormat(value: DateFormat) = dateFormatPref.set(value)
+  fun dateFormat(value: DateFormat) {
+    viewModelScope.launch { dateFormatPref.set(value) }
+  }
 
-  fun firstDayOfWeek(value: FirstDayOfWeek) = firstDayOfWeekPref.set(value)
+  fun firstDayOfWeek(value: FirstDayOfWeek) {
+    viewModelScope.launch { firstDayOfWeekPref.set(value) }
+  }
 
-  fun currency(value: Currency) = currencyPref.set(value)
+  fun currency(value: Currency) {
+    viewModelScope.launch { currencyPref.set(value) }
+  }
 
-  fun currencySymbolPosition(value: CurrencySymbolPosition) = currencySymbolPositionPref.set(value)
+  fun currencySymbolPosition(value: CurrencySymbolPosition) {
+    viewModelScope.launch { currencySymbolPositionPref.set(value) }
+  }
 
-  fun currencySpaceBetweenAmountAndSymbol(value: Boolean) =
-    currencySpaceBetweenAmountAndSymbolPref.set(value)
+  fun currencySpaceBetweenAmountAndSymbol(value: Boolean) {
+    viewModelScope.launch { currencySpaceBetweenAmountAndSymbolPref.set(value) }
+  }
+
+  @Composable
+  private fun <T : Any> Preference<T>.collectAsStateFlow(): State<T> {
+    val stateFlow = remember(this) { asStateFlow(viewModelScope) }
+    return stateFlow.collectAsState()
+  }
 }

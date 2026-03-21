@@ -8,6 +8,7 @@ import aktual.core.model.BuildConfig
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.delete
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.ResettableStateFlow
 import alakazam.kotlin.collectFlow
@@ -42,7 +43,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
-@Suppress("NonBooleanPropertyPrefixedWithIs")
 @Inject
 @ViewModelKey(ServerUrlViewModel::class)
 @ContributesIntoMap(AppScope::class)
@@ -94,7 +94,7 @@ internal constructor(
       }
 
       // Also clear any previous login state
-      preferences.token.deleteAndCommit()
+      preferences.token.delete()
     }
 
     viewModelScope.collectFlow(mutableConfirmResult) { result ->
@@ -139,7 +139,7 @@ internal constructor(
       if (url != previousUrl) {
         // saving a new URL, so the existing token and API objects are invalidated
         apiStateHolder.update { null }
-        preferences.token.deleteAndCommit()
+        preferences.token.delete()
       }
 
       preferences.serverUrl.set(url)
@@ -184,7 +184,7 @@ internal constructor(
       logcat.w(e) { "Failed checking bootstrap for $url" }
 
       // hit an error, we can't use this URL?
-      preferences.serverUrl.deleteAndCommit()
+      preferences.serverUrl.delete()
 
       mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
     }
