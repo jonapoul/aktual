@@ -13,8 +13,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Settings
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.ThemedDropdownMenu
 import aktual.core.ui.ThemedDropdownMenuItem
@@ -52,7 +50,6 @@ internal fun MoreMenu(
   onAction: (ListBudgetsAction) -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   ThemedDropdownMenu(
     modifier = modifier,
