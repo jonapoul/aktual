@@ -55,11 +55,12 @@ fun ThemedDropdownMenuItem(
   theme: Theme = LocalTheme.current,
 ) {
   val colors = theme.dropDownMenuItem()
+  val textColor = if (enabled) colors.textColor else colors.disabledTextColor
   DropdownMenuItem(
     text = {
       // DropdownMenu sets LocalTextStyle to labelLarge, which has an explicit color
       // (pageTextSubdued). Override it so MenuItemColors.textColor takes effect.
-      ProvideTextStyle(LocalTextStyle.current.copy(color = colors.textColor)) { text() }
+      ProvideTextStyle(LocalTextStyle.current.copy(color = textColor)) { text() }
     },
     onClick = onClick,
     modifier = modifier,

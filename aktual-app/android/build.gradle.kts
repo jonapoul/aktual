@@ -47,8 +47,6 @@ android {
 
   lint.commonConfigure(project)
 
-  packaging.commonConfigure()
-
   packaging {
     resources.excludes += setOf("**/native/Windows/**", "**/native/Mac/**")
 
@@ -127,6 +125,10 @@ androidComponents {
   beforeVariants { variant ->
     variant.enableAndroidTest =
       variant.enableAndroidTest && projectDir.resolve("src/androidTest").exists()
+  }
+
+  onVariants(selector().withBuildType("release")) { variant ->
+    variant.packaging.resources.excludes.add("META-INF/*")
   }
 }
 

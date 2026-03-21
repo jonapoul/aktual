@@ -3,12 +3,7 @@
 package aktual.gradle
 
 import com.android.build.api.dsl.Lint
-import com.android.build.api.dsl.Packaging
 import org.gradle.api.Project
-
-fun Packaging.commonConfigure() {
-  resources.excludes.add("META-INF/*")
-}
 
 fun Lint.commonConfigure(project: Project) {
   abortOnError = true

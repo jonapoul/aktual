@@ -12,10 +12,7 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun SetStatusBarColors(theme: Theme = LocalTheme.current) =
-  SetStatusBarColors(
-    statusBarColor = theme.pageBackground,
-    navigationBarColor = theme.pageBackground,
-  )
+  SetStatusBarColors(statusBarColor = theme.pageBackground, navigationBarColor = Color.Transparent)
 
 @Composable internal expect fun SetStatusBarColors(statusBarColor: Color, navigationBarColor: Color)
 

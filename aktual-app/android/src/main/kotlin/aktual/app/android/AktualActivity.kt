@@ -24,10 +24,9 @@ import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 @Inject
 @ActivityKey(AktualActivity::class)
 @ContributesIntoMap(AppScope::class, binding<Activity>())
-class AktualActivity(private val viewModelFactory: MetroViewModelFactory) : ComponentActivity() {
-  override val defaultViewModelProviderFactory = viewModelFactory
-
-  private val viewModel by viewModels<AktualActivityViewModel> { viewModelFactory }
+class AktualActivity(override val defaultViewModelProviderFactory: MetroViewModelFactory) :
+  ComponentActivity() {
+  private val viewModel by viewModels<AktualActivityViewModel> { defaultViewModelProviderFactory }
 
   override fun onDestroy() {
     super.onDestroy()
@@ -44,7 +43,7 @@ class AktualActivity(private val viewModelFactory: MetroViewModelFactory) : Comp
       navigationBarStyle = SystemBarStyle.auto(transparent, transparent),
     )
 
-    setContent { Content(viewModel = viewModel, viewModelFactory = viewModelFactory) }
+    setContent { Content(viewModel, defaultViewModelProviderFactory) }
   }
 }
 

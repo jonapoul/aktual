@@ -10,6 +10,10 @@ Navigation infrastructure using **Navigation 3** (`androidx.navigation3`) with a
 - Navigator interfaces passed to screens, backed by stack manipulation (`debugPush`, `debugPop`, `debugPopUpToAndPush`)
 - Back stack created via `rememberBackStack(viewModel)` in `AktualAppContent`
 
+## Window insets
+
+Navigation bar insets are consumed at the `AktualNavHost` level via `Modifier.consumeWindowInsets(WindowInsets.navigationBars)`. This means individual screens' Scaffolds will **not** include bottom navigation bar padding in their `innerPadding`. The nav bar space is instead handled by `BottomNavBarSpacing()` in the haze-effect Column in `AktualAppContent`, which overlays both the bottom status bar and the system nav bar area with a blur effect.
+
 ## Key files
 
 | File | Purpose |

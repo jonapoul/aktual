@@ -23,6 +23,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -128,13 +129,17 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: (ListBudgets
       )
     },
   ) { innerPadding ->
-    PullToRefreshBox(
-      modifier = Modifier.padding(innerPadding).fillMaxSize().padding(16.dp),
-      contentAlignment = Alignment.Center,
-      onRefresh = { onAction(Reload) },
-      isRefreshing = state is ListBudgetsState.Loading,
-      content = { StateContent(state, onAction, theme) },
-    )
+    Box {
+      WavyBackground()
+
+      PullToRefreshBox(
+        modifier = Modifier.padding(innerPadding).padding(horizontal = 8.dp),
+        contentAlignment = Alignment.Center,
+        onRefresh = { onAction(Reload) },
+        isRefreshing = state is ListBudgetsState.Loading,
+        content = { StateContent(state, onAction, theme) },
+      )
+    }
   }
 }
 
@@ -153,38 +158,33 @@ private fun StateContent(
   onAction: (ListBudgetsAction) -> Unit,
   theme: Theme = LocalTheme.current,
 ) {
-  when (state) {
-    is ListBudgetsState.Loading -> {
-      // Empty content - we've already got the pull-to-refresh indicator
-      Box(modifier = Modifier.fillMaxSize())
-    }
+  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    when (state) {
+      is ListBudgetsState.Loading -> {
+        // Empty content - we've already got the pull-to-refresh indicator
+      }
 
-    is ListBudgetsState.Failure -> {
-      FailureScreen(
-        modifier = Modifier.fillMaxSize(),
-        title = Strings.budgetFailureMessage,
-        reason = state.reason ?: Strings.budgetFailureDefaultMessage,
-        retryText = Strings.budgetFailureRetry,
-        onClickRetry = { onAction(Reload) },
-        theme = theme,
-      )
-    }
+      is ListBudgetsState.Failure -> {
+        FailureScreen(
+          title = Strings.budgetFailureMessage,
+          reason = state.reason ?: Strings.budgetFailureDefaultMessage,
+          retryText = Strings.budgetFailureRetry,
+          onClickRetry = { onAction(Reload) },
+          theme = theme,
+        )
+      }
 
-    is ListBudgetsState.Success -> {
-      if (state.budgets.isEmpty()) {
-        ContentEmpty(
-          modifier = Modifier.fillMaxSize(),
-          theme = theme,
-          onCreateBudgetInBrowser = { onAction(OpenInBrowser) },
-        )
-      } else {
-        ContentSuccess(
-          modifier = Modifier.fillMaxSize(),
-          budgets = state.budgets,
-          theme = theme,
-          onClickOpen = { budget -> onAction(Open(budget)) },
-          onClickDelete = { budget -> onAction(Delete(budget)) },
-        )
+      is ListBudgetsState.Success -> {
+        if (state.budgets.isEmpty()) {
+          ContentEmpty(theme = theme, onCreateBudgetInBrowser = { onAction(OpenInBrowser) })
+        } else {
+          ContentSuccess(
+            budgets = state.budgets,
+            theme = theme,
+            onClickOpen = { budget -> onAction(Open(budget)) },
+            onClickDelete = { budget -> onAction(Delete(budget)) },
+          )
+        }
       }
     }
   }

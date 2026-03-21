@@ -13,7 +13,6 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -48,13 +47,10 @@ internal fun BottomStatusBar(
 ) =
   Row(
     modifier =
-      modifier
-        .background(theme.cardBackground)
-        .padding(vertical = 3.dp, horizontal = 8.dp)
-        .fillMaxWidth()
-        .onGloballyPositioned { layoutCoordinates ->
-          with(density) { onMeasureHeight(layoutCoordinates.size.height.toDp()) }
-        },
+      modifier.padding(vertical = 3.dp, horizontal = 8.dp).fillMaxWidth().onGloballyPositioned {
+        layoutCoordinates ->
+        with(density) { onMeasureHeight(layoutCoordinates.size.height.toDp()) }
+      },
     verticalAlignment = Alignment.CenterVertically,
   ) {
     val (pingState, budgetName) = state
