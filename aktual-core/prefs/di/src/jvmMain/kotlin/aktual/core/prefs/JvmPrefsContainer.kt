@@ -26,7 +26,7 @@ object JvmPrefsContainer {
     val dir = appDirectory.get().toFile()
     dir.mkdirs()
     return PreferenceDataStoreFactory.create(
-      produceFile = { dir.resolve("settings.preferences_pb") },
+      produceFile = { dir.resolve("prefs.datastore") },
       scope = scope + contexts.io,
     )
   }
