@@ -82,7 +82,6 @@ private fun ReportDropDownMenu(
   onDismiss: () -> Unit,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   ThemedDropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = onDismiss) {
     ThemedDropdownMenuItem(
