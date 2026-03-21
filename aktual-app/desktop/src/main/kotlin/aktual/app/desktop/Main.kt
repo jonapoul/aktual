@@ -66,28 +66,31 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
       )
 
     val backStack = rememberBackStack(viewModel)
-    val keyHandler = remember { KeyboardEventHandler(backStack) }
 
-    Window(
-      title = Strings.appName,
-      icon = Drawables.appIcon192,
-      resizable = true,
-      enabled = true,
-      focusable = true,
-      state = state,
-      onKeyEvent = keyHandler::onKeyEvent,
-      onPreviewKeyEvent = keyHandler::onPreviewKeyEvent,
-      onCloseRequest = {
-        logcat.i { "onCloseRequest" }
-        viewModel.onDestroy()
-        exitApplication()
-      },
-    ) {
-      CompositionLocalProvider(
-        LocalViewModelStoreOwner provides viewModelStoreOwner,
-        LocalMetroViewModelFactory provides graph.metroViewModelFactory,
+    if (backStack != null) {
+      val keyHandler = remember { KeyboardEventHandler(backStack) }
+
+      Window(
+        title = Strings.appName,
+        icon = Drawables.appIcon192,
+        resizable = true,
+        enabled = true,
+        focusable = true,
+        state = state,
+        onKeyEvent = keyHandler::onKeyEvent,
+        onPreviewKeyEvent = keyHandler::onPreviewKeyEvent,
+        onCloseRequest = {
+          logcat.i { "onCloseRequest" }
+          viewModel.onDestroy()
+          exitApplication()
+        },
       ) {
-        AktualAppContent(viewModel = viewModel, backStack = backStack)
+        CompositionLocalProvider(
+          LocalViewModelStoreOwner provides viewModelStoreOwner,
+          LocalMetroViewModelFactory provides graph.metroViewModelFactory,
+        ) {
+          AktualAppContent(viewModel = viewModel, backStack = backStack)
+        }
       }
     }
   }

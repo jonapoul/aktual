@@ -38,7 +38,7 @@ object ClientContainer {
             try {
               val isExpired =
                 exception.response.body<ErrorBody>().reason == FailureReason.TokenExpired.reason
-              if (isExpired && kotlinx.coroutines.runBlocking { preferences.token.get() } != null) {
+              if (isExpired && preferences.token.get() != null) {
                 // Only notify for authenticated-session failures, not login-time failures.
                 // During login, there's no stored token, so firing the global handler would
                 // clear the backstack and push LoginNavRoute while already on the login screen.

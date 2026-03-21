@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,14 +38,11 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 
 @Composable
-fun rememberBackStack(viewModel: RootViewModel): SnapshotStateList<NavKey> = remember {
-  mutableStateListOf(
-    when {
-      viewModel.token != null && viewModel.isServerUrlSet -> ListBudgetsNavRoute(viewModel.token)
-      viewModel.isServerUrlSet -> LoginNavRoute
-      else -> ServerUrlNavRoute
-    }
-  )
+fun rememberBackStack(viewModel: RootViewModel): SnapshotStateList<NavKey>? {
+  // don't collectAsStateWithLifecycle, we don't have a lifecycle yet on desktop
+  val initialRoute by viewModel.initialRoute.collectAsState()
+  val route = initialRoute ?: return null
+  return remember { mutableStateListOf(route) }
 }
 
 @Composable
