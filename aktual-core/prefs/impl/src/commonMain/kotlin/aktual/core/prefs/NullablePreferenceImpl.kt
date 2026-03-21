@@ -4,6 +4,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
@@ -29,7 +30,9 @@ internal open class NullablePreferenceImpl<Encoded : Any, Decoded : Any>(
   }
 
   override fun asFlow(): Flow<Decoded?> =
-    dataStore.data.map { prefs -> prefs[key]?.let(translator::decode) ?: default }
+    dataStore.data
+      .map { prefs -> prefs[key]?.let(translator::decode) ?: default }
+      .distinctUntilChanged()
 }
 
 internal class SimpleNullablePreferenceImpl<T : Any>(
