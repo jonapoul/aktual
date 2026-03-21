@@ -7,61 +7,89 @@ import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import dev.jonpoulton.preferences.core.Preference
-import dev.jonpoulton.preferences.core.Preferences
-import dev.jonpoulton.preferences.core.SimpleNullableStringSerializer
-import dev.jonpoulton.preferences.core.SimpleStringSerializer
-import dev.jonpoulton.preferences.core.enumOrdinalSerializer
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
 
 @Inject
 @ContributesBinding(AppScope::class)
-class AppGlobalPreferencesImpl(preferences: Preferences) : AppGlobalPreferences {
-  override val token: Preference<Token?> =
-    preferences.getNullableObject(key = "token", TokenSerializer, default = null)
-
-  override val serverUrl: Preference<ServerUrl?> =
-    preferences.getNullableObject(key = "serverUrl", ServerUrlSerializer, default = null)
-
-  override val showBottomBar: Preference<Boolean> =
-    preferences.getBoolean(key = "bottomBar.show", default = true)
-
-  override val hideFraction: Preference<Boolean> =
-    preferences.getBoolean(key = "hideFraction", default = false)
-
-  override val dateFormat: Preference<DateFormat> =
-    preferences.getObject("dateFormat", DateFormatSerializer, DateFormat.Default)
-
-  override val firstDayOfWeek: Preference<FirstDayOfWeek> =
-    preferences.getObject("firstDayOfWeekIdx", FirstDayOfWeekSerializer, FirstDayOfWeek.Monday)
-
-  override val numberFormat: Preference<NumberFormat> =
-    preferences.getObject("numberFormat", NumberFormatSerializer, NumberFormat.DotComma)
-
-  override val currency: Preference<Currency> =
-    preferences.getObject("currency", CurrencySerializer, DefaultCurrency)
-
-  override val currencySymbolPosition: Preference<CurrencySymbolPosition> =
-    preferences.getObject(
-      "currencySymbolPosition",
-      CurrencySymbolPositionSerializer,
-      DefaultCurrency.symbolPosition,
+class AppGlobalPreferencesImpl(dataStore: DataStore<Preferences>) : AppGlobalPreferences {
+  override val token: NullablePreference<Token> =
+    dataStore.translated(
+      key = stringPreferencesKey("token"),
+      default = null,
+      translator = toStringTranslator(::Token),
     )
 
+  override val serverUrl: NullablePreference<ServerUrl> =
+    dataStore.translated(
+      key = stringPreferencesKey("serverUrl"),
+      default = null,
+      translator = toStringTranslator(::ServerUrl),
+    )
+
+  override val showBottomBar: Preference<Boolean> =
+    dataStore.boolean(key = booleanPreferencesKey("showBottomBar"), default = true).required()
+
+  override val hideFraction: Preference<Boolean> =
+    dataStore.boolean(key = booleanPreferencesKey("hideFraction"), default = false).required()
+
+  override val dateFormat: Preference<DateFormat> =
+    dataStore
+      .translated(
+        key = stringPreferencesKey("dateFormat"),
+        default = DateFormat.Default,
+        translator = enumStringTranslator(),
+      )
+      .required()
+
+  override val firstDayOfWeek: Preference<FirstDayOfWeek> =
+    dataStore
+      .translated(
+        key = intPreferencesKey("firstDayOfWeekIdx"),
+        default = FirstDayOfWeek.Default,
+        translator = enumOrdinalTranslator(),
+      )
+      .required()
+
+  override val numberFormat: Preference<NumberFormat> =
+    dataStore
+      .translated(
+        key = intPreferencesKey("numberFormat"),
+        default = NumberFormat.Default,
+        translator = enumOrdinalTranslator(),
+      )
+      .required()
+
+  override val currency: Preference<Currency> =
+    dataStore
+      .translated(
+        key = intPreferencesKey("currency"),
+        default = DefaultCurrency,
+        translator = enumOrdinalTranslator(),
+      )
+      .required()
+
+  override val currencySymbolPosition: Preference<CurrencySymbolPosition> =
+    dataStore
+      .translated(
+        key = intPreferencesKey("currencySymbolPosition"),
+        default = DefaultCurrency.symbolPosition,
+        translator = enumOrdinalTranslator(),
+      )
+      .required()
+
   override val currencySpaceBetweenAmountAndSymbol: Preference<Boolean> =
-    preferences.getBoolean(key = "currencySpaceBetweenAmountAndSymbol", default = true)
+    dataStore
+      .boolean(key = booleanPreferencesKey("currencySpaceBetweenAmountAndSymbol"), default = true)
+      .required()
 
   private companion object {
-    private val DefaultCurrency = defaultCurrency()
-
-    val TokenSerializer = SimpleNullableStringSerializer { token -> token?.let(::Token) }
-    val ServerUrlSerializer = SimpleNullableStringSerializer { url -> url?.let(::ServerUrl) }
-    val DateFormatSerializer = SimpleStringSerializer(DateFormat::from)
-    val FirstDayOfWeekSerializer = enumOrdinalSerializer<FirstDayOfWeek>()
-    val NumberFormatSerializer = enumOrdinalSerializer<NumberFormat>()
-    val CurrencySerializer = enumOrdinalSerializer<Currency>()
-    val CurrencySymbolPositionSerializer = enumOrdinalSerializer<CurrencySymbolPosition>()
+    val DefaultCurrency = defaultCurrency()
   }
 }

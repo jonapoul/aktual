@@ -10,10 +10,10 @@ import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.UrlOpener
 import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.asStateFlow
 import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.jonpoulton.preferences.core.asStateFlow
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory

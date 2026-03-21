@@ -71,7 +71,7 @@ class LoginRequester(
       else -> LoginResult.OtherFailure(reason)
     }
 
-  private fun LoginResponse.Data.toLoginResult(): LoginResult =
+  private suspend fun LoginResponse.Data.toLoginResult(): LoginResult =
     when (this) {
       is LoginResponse.Data.Invalid -> {
         LoginResult.InvalidPassword

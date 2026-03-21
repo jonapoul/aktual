@@ -11,7 +11,6 @@ import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.base64
-import aktual.core.prefs.EncryptedPreferences
 import aktual.core.prefs.KeyPreferences
 import aktual.core.prefs.KeyPreferencesImpl
 import aktual.test.buildPreferences
@@ -19,16 +18,16 @@ import aktual.test.emptyMockEngine
 import aktual.test.respondJson
 import aktual.test.testHttpClient
 import alakazam.test.TestCoroutineContexts
+import alakazam.test.standardDispatcher
 import assertk.assertThat
 import assertk.assertions.isEqualTo
-import dev.jonpoulton.preferences.core.Preferences
 import io.ktor.client.engine.mock.MockEngine
 import io.mockk.every
 import io.mockk.mockk
-import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 import org.junit.runner.RunWith
@@ -45,13 +44,15 @@ class KeyFetcherTest {
 
   @BeforeTest
   fun before() {
-    val contexts = TestCoroutineContexts(EmptyCoroutineContext)
-    val prefs = buildPreferences(EmptyCoroutineContext)
-    val encryptedPrefs = object : EncryptedPreferences, Preferences by prefs {}
-    keyPreferences = KeyPreferencesImpl(encryptedPrefs)
+    mockEngine = emptyMockEngine()
+  }
+
+  private fun TestScope.buildKeyFetcher() {
+    val contexts = TestCoroutineContexts(standardDispatcher)
+    val prefs = buildPreferences()
+    keyPreferences = KeyPreferencesImpl(prefs)
     decrypter = BufferDecrypterImpl(contexts, keyPreferences)
 
-    mockEngine = emptyMockEngine()
     syncApi = SyncApiImpl(testHttpClient(mockEngine), FileSystem.SYSTEM, SERVER_URL)
     val stateHolder = AktualApisStateHolder()
     stateHolder.value = mockk(relaxed = true) { every { sync } returns syncApi }
@@ -72,6 +73,8 @@ class KeyFetcherTest {
 
   @Test
   fun `Fetch and test successfully`() = runTest {
+    buildKeyFetcher()
+
     // given
     mockEngine += { respondJson(VALID_RESPONSE) }
 

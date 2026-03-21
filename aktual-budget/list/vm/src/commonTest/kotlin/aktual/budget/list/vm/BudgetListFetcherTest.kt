@@ -42,7 +42,7 @@ class BudgetListFetcherTest {
   private fun TestScope.before() {
     mockEngine = emptyMockEngine()
     apisStateHolder = AktualApisStateHolder()
-    keyPreferences = mockk { every { contains(any()) } returns false }
+    keyPreferences = mockk { coEvery { contains(any()) } returns false }
     budgetListFetcher =
       BudgetListFetcher(
         contexts = TestCoroutineContexts(standardDispatcher),

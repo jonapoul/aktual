@@ -14,18 +14,13 @@ class ConventionLicensee : Plugin<Project> {
       pluginManager.apply(LicenseePlugin::class)
 
       extensions.configure<LicenseeExtension> {
-        listOf(
-            "Apache-2.0",
-            "MIT",
-            "BSD-2-Clause", // hamcrest
-            "EPL-1.0", // junit
-          )
-          .forEach(::allow)
+        allow("Apache-2.0")
+        allow("MIT")
+        allow("BSD-2-Clause") // hamcrest
+        allow("BSD-3-Clause") // androidx.datastore:datastore-preferences-external-protobuf
+        allow("EPL-1.0") // junit
 
-        listOf(
-            "https://opensource.org/license/mit" // slf4j
-          )
-          .forEach(::allowUrl)
+        allowUrl("https://opensource.org/license/mit") // slf4j
 
         unusedAction(IGNORE)
       }

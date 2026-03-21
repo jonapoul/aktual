@@ -7,12 +7,11 @@ import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import dev.jonpoulton.preferences.core.Preference
 
 /** Prefs which are kept on this device, but apply across all budgets */
 interface AppGlobalPreferences {
-  val token: Preference<Token?>
-  val serverUrl: Preference<ServerUrl?>
+  val token: NullablePreference<Token>
+  val serverUrl: NullablePreference<ServerUrl>
   val showBottomBar: Preference<Boolean>
   val hideFraction: Preference<Boolean>
   val dateFormat: Preference<DateFormat>

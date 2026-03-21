@@ -144,10 +144,10 @@ class SyncBudgetViewModel(
         is FetchKeyResult.Failure -> {
           logcat.w { "Failed fetching keys: $fetched" }
           handleDecryptFailure(
-            DecryptResult.FailedFetchingKey,
-            cachedData.encryptedPath,
-            cachedData.userFile,
-            meta,
+            result = DecryptResult.FailedFetchingKey,
+            encryptedPath = cachedData.encryptedPath,
+            userFile = cachedData.userFile,
+            meta = meta,
           )
         }
 

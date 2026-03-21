@@ -13,7 +13,6 @@ kotlin {
     api(libs.ktor.core)
     api(project(":aktual-budget:data"))
     api(project(":aktual-core:model"))
-    implementation(libs.preferences.core)
   }
 
   commonTestDependencies { implementation(project(":aktual-test:api")) }
