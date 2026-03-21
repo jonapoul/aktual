@@ -84,11 +84,7 @@ private fun ReportDropDownMenu(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  ThemedDropdownMenu(
-    modifier = modifier,
-    expanded = expanded,
-    onDismissRequest = onDismiss,
-  ) {
+  ThemedDropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = onDismiss) {
     ThemedDropdownMenuItem(
       text = { Text(Strings.reportsDashboardRename) },
       leadingIcon = { Icon(MaterialIcons.Edit, Strings.reportsDashboardRename) },
