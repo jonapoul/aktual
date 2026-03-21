@@ -12,7 +12,6 @@ import aktual.core.model.kB
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
@@ -35,8 +34,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -49,11 +48,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.ShimmerBounds
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
+import com.valentinilk.shimmer.unclippedBoundsInWindow
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlin.time.Clock
 import kotlin.time.Duration
@@ -121,22 +125,33 @@ private fun MetricsContent(
 ) {
   Box(modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Huge)) {
     when (state) {
-      MetricsState.Loading -> {
-        AnimatedLoading(modifier = Modifier.align(Alignment.Center).size(50.dp))
-      }
-
-      MetricsState.Disconnected -> {
-        FailureContent(Strings.metricsDisconnected, onAction, theme)
-      }
-
-      is MetricsState.Failure -> {
-        FailureContent(state.cause, onAction, theme)
-      }
-
-      is MetricsState.Success -> {
-        SuccessContent(state, theme)
-      }
+      MetricsState.Loading -> LoadingContent()
+      MetricsState.Disconnected -> FailureContent(Strings.metricsDisconnected, onAction, theme)
+      is MetricsState.Failure -> FailureContent(state.cause, onAction, theme)
+      is MetricsState.Success -> SuccessContent(state, theme)
     }
+  }
+}
+
+@Composable
+private fun LoadingContent(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
+  val shimmer = rememberShimmer(ShimmerBounds.Custom)
+
+  Column(
+    modifier =
+      modifier.shimmer(shimmer).onGloballyPositioned { coordinates ->
+        shimmer.updateBounds(coordinates.unclippedBoundsInWindow())
+      },
+    verticalArrangement = Arrangement.spacedBy(VERTICAL_SPACING),
+  ) {
+    val shimmerModifier =
+      Modifier.height(32.dp)
+        .fillMaxWidth()
+        .clip(CardShape)
+        .background(theme.pillBackgroundLight, CardShape)
+        .padding(Dimens.VeryLarge)
+
+    repeat(times = 8) { Box(shimmerModifier) }
   }
 }
 
@@ -165,7 +180,7 @@ private fun SuccessContent(
 ) {
   Column(
     modifier = modifier.verticalScrollWithBar(),
-    verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
+    verticalArrangement = Arrangement.spacedBy(VERTICAL_SPACING),
   ) {
     val dataModifier =
       Modifier.fillMaxWidth()
@@ -227,6 +242,8 @@ private fun formatted(duration: Duration): String =
       else -> "0s"
     }
   }
+
+private val VERTICAL_SPACING = 8.dp
 
 private val TIMESTAMP_FORMAT = DateTimeComponents.Format {
   date(LocalDate.Formats.ISO)

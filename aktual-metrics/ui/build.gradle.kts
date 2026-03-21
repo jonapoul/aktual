@@ -13,5 +13,6 @@ kotlin {
     api(project(":aktual-metrics:vm"))
     implementation(project(":aktual-core:l10n"))
     implementation(libs.kotlinx.datetime)
+    implementation(libs.shimmer)
   }
 }
