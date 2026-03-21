@@ -35,7 +35,7 @@ class ModuleKotlin : Plugin<Project> {
           namespace = buildNamespace()
           minSdk = providers.intProperty("aktual.android.minSdk").get()
           compileSdk = providers.intProperty("aktual.android.compileSdk").get()
-          packaging.commonConfigure()
+          packaging.resources.excludes.add("META-INF/*")
           lint.commonConfigure(target)
           withHostTest {
             // For Robolectric

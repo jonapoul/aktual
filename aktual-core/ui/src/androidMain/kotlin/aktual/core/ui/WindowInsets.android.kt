@@ -2,6 +2,7 @@ package aktual.core.ui
 
 import aktual.core.theme.isLight
 import android.app.Activity
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.graphics.Color
@@ -21,8 +22,14 @@ actual fun SetStatusBarColors(statusBarColor: Color, navigationBarColor: Color) 
   if (!view.isInEditMode) {
     LaunchedEffect(statusBarColor, navigationBarColor) {
       val window = (view.context as Activity).window
-      window.navigationBarColor = navigationBarColor.toArgb()
       window.statusBarColor = statusBarColor.toArgb()
+
+      // enableEdgeToEdge with auto style sets isNavigationBarContrastEnforced = true in light mode,
+      // which causes the system to draw a scrim over transparent nav bars. Disable it so our haze
+      // effect is visible.
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        window.isNavigationBarContrastEnforced = false
+      }
 
       WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars =
         statusBarColor.isLight()

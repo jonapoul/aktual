@@ -26,6 +26,7 @@ kotlin {
     api(libs.compose.runtime)
     api(libs.molecule)
     implementation(libs.compose.material3)
+    implementation(libs.haze)
     implementation(libs.compose.savedstate)
     implementation(libs.compose.viewmodelNavigation3)
     implementation(libs.logcat)
