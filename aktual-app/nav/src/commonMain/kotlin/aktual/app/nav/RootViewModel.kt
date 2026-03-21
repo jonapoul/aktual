@@ -99,7 +99,7 @@ abstract class RootViewModel(
       when (isServerUrlSet) {
         null -> null // still loading
         false -> ServerUrlNavRoute
-        true -> if (token != null) ListBudgetsNavRoute(token!!) else LoginNavRoute
+        true -> token?.let(::ListBudgetsNavRoute) ?: LoginNavRoute
       }
     }
 
