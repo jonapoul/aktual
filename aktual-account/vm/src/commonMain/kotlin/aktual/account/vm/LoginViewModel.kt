@@ -88,7 +88,7 @@ class LoginViewModel(
   }
 
   fun onSelectLoginMethod(method: LoginMethod) {
-    mutableSelectedLoginMethod.value = method
+    mutableSelectedLoginMethod.update { method }
     mutableLoginFailure.reset()
   }
 
