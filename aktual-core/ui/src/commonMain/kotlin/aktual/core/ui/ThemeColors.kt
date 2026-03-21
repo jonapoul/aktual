@@ -57,10 +57,6 @@ fun Theme.dropDownMenuItem(): MenuItemColors =
   )
 
 @Stable
-val Theme.dropdownMenuContainerColor: Color
-  get() = menuBackground
-
-@Stable
 @Composable
 fun Theme.textField(
   focusedContainer: Color = formInputBackground,

@@ -16,11 +16,9 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BasicIconButton
-import aktual.core.ui.dropDownMenuItem
-import aktual.core.ui.dropdownMenuContainerColor
+import aktual.core.ui.ThemedDropdownMenu
+import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.normalIconButton
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,55 +54,49 @@ internal fun MoreMenu(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val itemColors = theme.dropDownMenuItem()
-  DropdownMenu(
+  ThemedDropdownMenu(
     modifier = modifier,
     expanded = showMenu,
     onDismissRequest = onDismissRequest,
-    containerColor = theme.dropdownMenuContainerColor,
   ) {
     val serverText = Strings.listBudgetsChangeServer
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(serverText) },
       onClick = {
         onDismissRequest()
         onAction(ChangeServer)
       },
       leadingIcon = { Icon(MaterialIcons.Cloud, contentDescription = serverText) },
-      colors = itemColors,
     )
 
     val passwordText = Strings.listBudgetsChangePassword
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(passwordText) },
       onClick = {
         onDismissRequest()
         onAction(ChangePassword)
       },
       leadingIcon = { Icon(MaterialIcons.Key, contentDescription = passwordText) },
-      colors = itemColors,
     )
 
     val metricsText = Strings.metricsToolbar
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(metricsText) },
       onClick = {
         onDismissRequest()
         onAction(OpenServerMetrics)
       },
       leadingIcon = { Icon(MaterialIcons.BarChart, contentDescription = metricsText) },
-      colors = itemColors,
     )
 
     val aboutText = Strings.listBudgetsAbout
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(aboutText) },
       onClick = {
         onDismissRequest()
         onAction(OpenAbout)
       },
       leadingIcon = { Icon(MaterialIcons.Info, contentDescription = aboutText) },
-      colors = itemColors,
     )
   }
 }

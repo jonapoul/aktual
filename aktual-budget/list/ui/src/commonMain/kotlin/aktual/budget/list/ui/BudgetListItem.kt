@@ -14,10 +14,10 @@ import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.RowShape
+import aktual.core.ui.ThemedDropdownMenu
+import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.dropDownMenuItem
-import aktual.core.ui.dropdownMenuContainerColor
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,8 +29,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -124,19 +122,13 @@ internal fun BudgetListItem(
 
 @Composable
 private fun DeleteMenu(expanded: Boolean, onDismiss: () -> Unit, onClickDelete: () -> Unit) {
-  val theme = LocalTheme.current
-  DropdownMenu(
-    expanded = expanded,
-    onDismissRequest = onDismiss,
-    containerColor = theme.dropdownMenuContainerColor,
-  ) {
+  ThemedDropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
     val deleteText = Strings.budgetDelete
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(deleteText) },
       leadingIcon = {
         Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = deleteText)
       },
-      colors = theme.dropDownMenuItem(),
       onClick = {
         onDismiss()
         onClickDelete()

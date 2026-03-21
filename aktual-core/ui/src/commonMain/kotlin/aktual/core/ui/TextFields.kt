@@ -155,7 +155,7 @@ fun <T> ExposedDropDownMenu(
     )
 
     ExposedDropdownMenu(
-      modifier = Modifier.background(theme.dropdownMenuContainerColor),
+      modifier = Modifier.background(theme.menuBackground),
       expanded = isExpanded,
       onDismissRequest = { isExpanded = false },
     ) {
