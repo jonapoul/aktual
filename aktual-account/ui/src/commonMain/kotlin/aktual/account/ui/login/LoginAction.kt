@@ -1,5 +1,6 @@
 package aktual.account.ui.login
 
+import aktual.core.model.LoginMethod
 import androidx.compose.runtime.Immutable
 
 @Immutable
@@ -11,4 +12,6 @@ internal sealed interface LoginAction {
   data object SignIn : LoginAction
 
   data class EnterPassword(val password: String) : LoginAction
+
+  data class SelectLoginMethod(val method: LoginMethod) : LoginAction
 }

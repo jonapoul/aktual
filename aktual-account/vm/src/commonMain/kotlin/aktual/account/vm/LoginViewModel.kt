@@ -18,7 +18,11 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -42,11 +46,17 @@ class LoginViewModel(
   private val mutableEnteredPassword = ResettableStateFlow(buildConfig.defaultPassword)
   private val mutableIsLoading = ResettableStateFlow(false)
   private val mutableLoginFailure = ResettableStateFlow<LoginResult.Failure?>(null)
+  private val mutableRedirectUrl = ResettableStateFlow<String?>(null)
+  private val mutableLoginMethods = MutableStateFlow<ImmutableList<LoginMethod>>(persistentListOf())
+  private val mutableSelectedLoginMethod = MutableStateFlow(LoginMethod.Password)
 
   val enteredPassword: StateFlow<Password> = mutableEnteredPassword.asStateFlow()
   val versions: StateFlow<AktualVersions> = versionsStateHolder.asStateFlow()
   val serverUrl: StateFlow<ServerUrl?> = preferences.serverUrl.asStateFlow(viewModelScope)
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
+  val redirectUrl: StateFlow<String?> = mutableRedirectUrl.asStateFlow()
+  val loginMethods: StateFlow<ImmutableList<LoginMethod>> = mutableLoginMethods.asStateFlow()
+  val selectedLoginMethod: StateFlow<LoginMethod> = mutableSelectedLoginMethod.asStateFlow()
 
   val loginFailure: StateFlow<LoginResult.Failure?> =
     combine(mutableLoginFailure, isLoading) { failure, loading -> if (loading) null else failure }
@@ -54,17 +64,35 @@ class LoginViewModel(
 
   val token: Flow<Token> = preferences.token.asFlow().filterNotNull()
 
+  init {
+    viewModelScope.launch {
+      val availableLoginMethods = loginRequester.fetchLoginMethods()
+      val loginMethods = availableLoginMethods.map { it.method }.toImmutableList()
+      mutableLoginMethods.update { loginMethods }
+      val firstActive = availableLoginMethods.firstOrNull { it.isActive }
+      if (firstActive != null) {
+        mutableSelectedLoginMethod.update { firstActive.method }
+      }
+    }
+  }
+
   fun clearState() {
     mutableEnteredPassword.reset()
     mutableIsLoading.reset()
     mutableLoginFailure.reset()
+    mutableRedirectUrl.reset()
   }
 
   fun onEnterPassword(password: String) {
     mutableEnteredPassword.update { Password(password) }
   }
 
-  fun onClickSignIn(loginMethod: LoginMethod = LoginMethod.Password) {
+  fun onSelectLoginMethod(method: LoginMethod) {
+    mutableSelectedLoginMethod.update { method }
+    mutableLoginFailure.reset()
+  }
+
+  fun onClickSignIn(loginMethod: LoginMethod = mutableSelectedLoginMethod.value) {
     logcat.v { "onClickSignIn with method=$loginMethod" }
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
@@ -75,8 +103,10 @@ class LoginViewModel(
       logcat.d { "Login result = $result" }
       mutableIsLoading.update { false }
 
-      if (result is LoginResult.Failure) {
-        mutableLoginFailure.update { result }
+      when (result) {
+        is LoginResult.Failure -> mutableLoginFailure.update { result }
+        is LoginResult.Redirect -> mutableRedirectUrl.update { result.url }
+        is LoginResult.Success -> Unit // handled via token flow
       }
     }
   }

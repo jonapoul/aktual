@@ -1,5 +1,6 @@
 package aktual.api.model.account
 
+import aktual.core.model.AvailableLoginMethod
 import aktual.core.model.LoginMethod
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

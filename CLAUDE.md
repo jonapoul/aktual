@@ -8,7 +8,9 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 
 ## General
 
-If you change anything that is likely to conflict with any context or instructions you've been given as part of this (or any other) CLAUDE.md file in this repo, make sure to update to keep them up to date.
+- If you change anything that is likely to conflict with any context or instructions you've been given as part of this (or any other) CLAUDE.md file in this repo, make sure to update to keep them up to date.
+- Prefer `kotlinx.immutable` collections on the UI layer, not regular List/Set/etc.
+- When setting a `MutableStateFlow`, prefer `.update { x }` over `.value = x`
 
 ## Build Commands
 

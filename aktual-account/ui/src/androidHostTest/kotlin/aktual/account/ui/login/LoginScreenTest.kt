@@ -54,7 +54,7 @@ class LoginScreenTest {
     ShadowLog.stream = System.out
 
     navigator = mockk(relaxed = true)
-    loginRequester = mockk()
+    loginRequester = mockk { coEvery { fetchLoginMethods() } returns emptyList() }
     setLoginResult { LoginResult.Success(TOKEN) }
 
     versionsStateHolder = AktualVersionsStateHolder(BUILD_CONFIG)

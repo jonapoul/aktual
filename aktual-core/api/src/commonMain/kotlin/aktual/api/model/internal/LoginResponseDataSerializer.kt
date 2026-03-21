@@ -2,10 +2,6 @@ package aktual.api.model.internal
 
 import aktual.api.model.account.LoginResponse
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.encoding.Decoder
-import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
 import kotlinx.serialization.json.JsonElement
@@ -27,14 +23,4 @@ internal class LoginResponseDataSerializer :
       null -> error("Unknown response format: $element")
     }
   }
-}
-
-internal typealias BoolAsInt = @Serializable(IntToBoolSerializer::class) Boolean
-
-internal object IntToBoolSerializer : KSerializer<Boolean> {
-  override val descriptor = Boolean.serializer().descriptor
-
-  override fun deserialize(decoder: Decoder): Boolean = decoder.decodeInt() != 0
-
-  override fun serialize(encoder: Encoder, value: Boolean) = encoder.encodeInt(if (value) 1 else 0)
 }
