@@ -27,6 +27,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation3.runtime.NavKey
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import kotlinx.coroutines.CoroutineScope
@@ -40,7 +41,6 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import logcat.logcat
 
 abstract class RootViewModel(
@@ -83,9 +83,26 @@ abstract class RootViewModel(
       mapper = { it.toBoolean() },
     )
 
-  val isServerUrlSet: Boolean = runBlocking { preferences.serverUrl.get() } != null
+  private val isServerUrlSet: StateFlow<Boolean?> =
+    preferences.serverUrl
+      .asFlow()
+      .map { it != null }
+      .stateIn(viewModelScope, Eagerly, initialValue = null)
 
-  val token: Token? = runBlocking { preferences.token.get() }
+  private val token: StateFlow<Token?> =
+    preferences.token.asFlow().stateIn(viewModelScope, Eagerly, initialValue = null)
+
+  val initialRoute: StateFlow<NavKey?> =
+    viewModelScope.launchMolecule(Immediate) {
+      val isServerUrlSet by isServerUrlSet.collectAsState()
+      val token by token.collectAsState()
+      when (isServerUrlSet) {
+        null -> null // still loading
+        false -> ServerUrlNavRoute
+        true -> token?.let(::ListBudgetsNavRoute) ?: LoginNavRoute
+      }
+    }
+
   private val showStatusBar = preferences.showBottomBar.asStateFlow(viewModelScope)
 
   private val budgetName: Flow<String?> = budgetGraph.flatMapLatest { bg ->

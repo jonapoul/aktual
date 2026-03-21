@@ -51,7 +51,7 @@ class AktualActivity(override val defaultViewModelProviderFactory: MetroViewMode
 @Suppress("ViewModelForwarding")
 private fun Content(viewModel: AktualActivityViewModel, viewModelFactory: MetroViewModelFactory) {
   CompositionLocalProvider(LocalMetroViewModelFactory provides viewModelFactory) {
-    val backStack = rememberBackStack(viewModel)
+    val backStack = rememberBackStack(viewModel) ?: return@CompositionLocalProvider
     AktualAppContent(viewModel, backStack)
   }
 }
