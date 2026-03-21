@@ -13,7 +13,11 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Settings
 import aktual.core.l10n.Strings
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.BasicIconButton
+import aktual.core.ui.dropDownMenuItem
+import aktual.core.ui.dropdownMenuContainerColor
 import aktual.core.ui.normalIconButton
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -50,8 +54,15 @@ internal fun MoreMenu(
   onAction: (ListBudgetsAction) -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-) =
-  DropdownMenu(modifier = modifier, expanded = showMenu, onDismissRequest = onDismissRequest) {
+  theme: Theme = LocalTheme.current,
+) {
+  val itemColors = theme.dropDownMenuItem()
+  DropdownMenu(
+    modifier = modifier,
+    expanded = showMenu,
+    onDismissRequest = onDismissRequest,
+    containerColor = theme.dropdownMenuContainerColor,
+  ) {
     val serverText = Strings.listBudgetsChangeServer
     DropdownMenuItem(
       text = { Text(serverText) },
@@ -60,6 +71,7 @@ internal fun MoreMenu(
         onAction(ChangeServer)
       },
       leadingIcon = { Icon(MaterialIcons.Cloud, contentDescription = serverText) },
+      colors = itemColors,
     )
 
     val passwordText = Strings.listBudgetsChangePassword
@@ -70,6 +82,7 @@ internal fun MoreMenu(
         onAction(ChangePassword)
       },
       leadingIcon = { Icon(MaterialIcons.Key, contentDescription = passwordText) },
+      colors = itemColors,
     )
 
     val metricsText = Strings.metricsToolbar
@@ -80,6 +93,7 @@ internal fun MoreMenu(
         onAction(OpenServerMetrics)
       },
       leadingIcon = { Icon(MaterialIcons.BarChart, contentDescription = metricsText) },
+      colors = itemColors,
     )
 
     val aboutText = Strings.listBudgetsAbout
@@ -90,5 +104,7 @@ internal fun MoreMenu(
         onAction(OpenAbout)
       },
       leadingIcon = { Icon(MaterialIcons.Info, contentDescription = aboutText) },
+      colors = itemColors,
     )
   }
+}

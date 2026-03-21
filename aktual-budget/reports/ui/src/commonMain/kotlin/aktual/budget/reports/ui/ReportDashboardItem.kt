@@ -18,6 +18,8 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.dropDownMenuItem
+import aktual.core.ui.dropdownMenuContainerColor
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -82,11 +84,19 @@ private fun ReportDropDownMenu(
   onDismiss: () -> Unit,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-) =
-  DropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = onDismiss) {
+  theme: Theme = LocalTheme.current,
+) {
+  val itemColors = theme.dropDownMenuItem()
+  DropdownMenu(
+    modifier = modifier,
+    expanded = expanded,
+    onDismissRequest = onDismiss,
+    containerColor = theme.dropdownMenuContainerColor,
+  ) {
     DropdownMenuItem(
       text = { Text(Strings.reportsDashboardRename) },
       leadingIcon = { Icon(MaterialIcons.Edit, Strings.reportsDashboardRename) },
+      colors = itemColors,
       onClick = {
         onDismiss()
         onAction(Action.Rename(item.id))
@@ -95,12 +105,14 @@ private fun ReportDropDownMenu(
     DropdownMenuItem(
       text = { Text(Strings.reportsDashboardDelete) },
       leadingIcon = { Icon(MaterialIcons.Delete, Strings.reportsDashboardDelete) },
+      colors = itemColors,
       onClick = {
         onDismiss()
         onAction(Action.Delete(item.id))
       },
     )
   }
+}
 
 @PortraitPreview
 @LandscapePreview

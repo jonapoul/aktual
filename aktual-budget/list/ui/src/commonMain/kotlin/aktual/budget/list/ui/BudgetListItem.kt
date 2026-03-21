@@ -16,6 +16,8 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.RowShape
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.dropDownMenuItem
+import aktual.core.ui.dropdownMenuContainerColor
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -122,13 +124,19 @@ internal fun BudgetListItem(
 
 @Composable
 private fun DeleteMenu(expanded: Boolean, onDismiss: () -> Unit, onClickDelete: () -> Unit) {
-  DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
+  val theme = LocalTheme.current
+  DropdownMenu(
+    expanded = expanded,
+    onDismissRequest = onDismiss,
+    containerColor = theme.dropdownMenuContainerColor,
+  ) {
     val deleteText = Strings.budgetDelete
     DropdownMenuItem(
       text = { Text(deleteText) },
       leadingIcon = {
         Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = deleteText)
       },
+      colors = theme.dropDownMenuItem(),
       onClick = {
         onDismiss()
         onClickDelete()
