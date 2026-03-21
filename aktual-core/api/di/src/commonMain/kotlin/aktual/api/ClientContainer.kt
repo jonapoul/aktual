@@ -37,13 +37,11 @@ object ClientContainer {
           if (exception is ResponseException) {
             try {
               val failure = exception.response.body<ErrorBody>()
-              if (failure.reason == FailureReason.TokenExpired.reason) {
+              if (failure.reason == FailureReason.TokenExpired.reason && preferences.token.isSet()) {
                 // Only notify for authenticated-session failures, not login-time failures.
                 // During login, there's no stored token, so firing the global handler would
                 // clear the backstack and push LoginNavRoute while already on the login screen.
-                if (preferences.token.isSet()) {
-                  notifier.notifyExpired()
-                }
+                notifier.notifyExpired()
               }
             } catch (e: CancellationException) {
               throw e
