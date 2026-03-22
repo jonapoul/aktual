@@ -81,7 +81,7 @@ internal fun SliderPreferenceItem(
       val style = LocalTextStyle.current
       val result =
         remember(style, range) {
-          textMeasurer.measure(text = range.endInclusive.toString() + ".0", style = style)
+          textMeasurer.measure(text = "%.1f".format(range.endInclusive), style = style)
         }
       val width = with(LocalDensity.current) { result.size.width.toDp() }
       Text(

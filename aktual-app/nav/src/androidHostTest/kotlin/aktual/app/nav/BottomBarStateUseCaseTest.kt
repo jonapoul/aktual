@@ -14,9 +14,7 @@ import aktual.test.buildPreferences
 import app.cash.turbine.test
 import io.mockk.every
 import io.mockk.mockk
-import kotlin.test.Ignore
 import kotlin.test.Test
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestResult
 import kotlinx.coroutines.test.TestScope
@@ -30,15 +28,14 @@ class BottomBarStateUseCaseTest {
   private lateinit var pingStateHolder: PingStateHolder
   private lateinit var useCase: BottomBarStateUseCase
 
-  private fun runUseCaseTest(testBody: suspend TestScope.() -> Unit): TestResult =
-    runTest(timeout = 5.seconds) {
-      preferences = AppGlobalPreferencesImpl(buildPreferences())
-      pingStateHolder = PingStateHolder()
-      val budgetGraphHolder =
-        mockk<BudgetGraphHolder>(relaxed = true) { every { value } returns null }
-      useCase = BottomBarStateUseCase(preferences, budgetGraphHolder, pingStateHolder)
-      testBody()
-    }
+  private fun runUseCaseTest(testBody: suspend TestScope.() -> Unit): TestResult = runTest {
+    preferences = AppGlobalPreferencesImpl(buildPreferences())
+    pingStateHolder = PingStateHolder()
+    val budgetGraphHolder =
+      mockk<BudgetGraphHolder>(relaxed = true) { every { value } returns null }
+    useCase = BottomBarStateUseCase(preferences, budgetGraphHolder, pingStateHolder)
+    testBody()
+  }
 
   @Test
   fun `Default state is visible with unknown ping`() = runUseCaseTest {
@@ -59,7 +56,6 @@ class BottomBarStateUseCaseTest {
   }
 
   @Test
-  @Ignore("Sometimes fails on CI, not sure why")
   fun `Reflects ping state changes`() = runUseCaseTest {
     useCase(backgroundScope).test {
       assertThatNextEmissionIsEqualTo(Visible(pingState = Unknown, budgetName = null))
