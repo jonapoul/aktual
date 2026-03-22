@@ -130,6 +130,7 @@ private fun PreviewSettingsScaffold(@PreviewParameter(ThemeParameters::class) th
               showStatusBar = BooleanPreference(true),
               blurStatusBar = BooleanPreference(true),
               blurTopBar = BooleanPreference(false),
+              blurDialogs = BooleanPreference(true),
               blurRadiusDp = BlurRadiusPreference(5f),
               blurAlpha = BlurAlphaPreference(0.5f),
             ),

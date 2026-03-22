@@ -23,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +32,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+
+/**
+ * A wrapper around [BasicAlertDialog] that signals [DialogBlurState] so the background blur overlay
+ * animates in while this dialog is showing.
+ */
+@Composable
+fun AlertDialog(
+  onDismissRequest: () -> Unit,
+  modifier: Modifier = Modifier,
+  properties: DialogProperties = DialogProperties(),
+  content: @Composable () -> Unit,
+) {
+  val dialogBlurState = LocalDialogBlurState.current
+  DisposableEffect(Unit) {
+    dialogBlurState.activeDialogCount++
+    onDispose { dialogBlurState.activeDialogCount-- }
+  }
+
+  BasicAlertDialog(
+    onDismissRequest = onDismissRequest,
+    modifier = modifier,
+    properties = properties,
+    content = content,
+  )
+}
 
 @Composable
 fun AlertDialog(
@@ -42,31 +68,8 @@ fun AlertDialog(
   properties: DialogProperties = DialogProperties(),
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  BasicAlertDialog(
-    onDismissRequest = onDismissRequest,
-    modifier = modifier,
-    properties = properties,
-  ) {
+  AlertDialog(onDismissRequest = onDismissRequest, modifier = modifier, properties = properties) {
     DialogContent(title = title, theme = theme, content = content, buttons = buttons)
-  }
-}
-
-@Composable
-fun AlertDialog(
-  title: String,
-  text: String,
-  onDismissRequest: () -> Unit,
-  modifier: Modifier = Modifier,
-  buttons: (@Composable RowScope.() -> Unit)? = null,
-  theme: Theme = LocalTheme.current,
-  properties: DialogProperties = DialogProperties(),
-) {
-  BasicAlertDialog(
-    onDismissRequest = onDismissRequest,
-    modifier = modifier,
-    properties = properties,
-  ) {
-    DialogContent(title = title, theme = theme, buttons = buttons, content = { Text(text) })
   }
 }
 

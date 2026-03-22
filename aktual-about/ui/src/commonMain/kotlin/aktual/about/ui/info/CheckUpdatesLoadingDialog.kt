@@ -3,6 +3,7 @@ package aktual.about.ui.info
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AlertDialog
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.DialogContent
 import aktual.core.ui.PreviewWithColorScheme
@@ -11,7 +12,6 @@ import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -28,7 +28,7 @@ internal fun CheckUpdatesLoadingDialog(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  BasicAlertDialog(
+  AlertDialog(
     modifier = modifier,
     properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
     onDismissRequest = onCancel,

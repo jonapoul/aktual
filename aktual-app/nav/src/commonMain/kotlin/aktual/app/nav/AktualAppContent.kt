@@ -3,6 +3,8 @@ package aktual.app.nav
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.BottomBarState
 import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.DialogBlurOverlay
+import aktual.core.ui.DialogBlurState
 import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.WithCompositionLocals
 import aktual.core.ui.blurred
@@ -69,6 +71,7 @@ fun AktualAppContent(
     addCurrencySpace = formatConfig.spaceBetweenAmountAndSymbol,
     hazeState = hazeState,
     blurConfig = blurConfig,
+    dialogBlurState = remember { DialogBlurState() },
   ) {
     AktualTheme(theme ?: return@WithCompositionLocals) {
       Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
@@ -83,6 +86,8 @@ fun AktualAppContent(
             backStack = backStack,
           )
         }
+
+        DialogBlurOverlay()
 
         Column(
           modifier = Modifier.blurred(enabled = { blurStatusBar }, orElse = { pageBackground })

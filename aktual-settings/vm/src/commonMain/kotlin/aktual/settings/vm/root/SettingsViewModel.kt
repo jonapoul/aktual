@@ -41,8 +41,10 @@ class SettingsViewModel internal constructor(private val preferences: AppGlobalP
     val showBottomBar by preferences.showBottomBar.collectAsStateFlow()
     val blurTopBar by preferences.blurTopBar.collectAsStateFlow()
     val blurStatusBar by preferences.blurStatusBar.collectAsStateFlow()
+    val blurDialogs by preferences.blurDialogs.collectAsStateFlow()
     val blurRadius by preferences.blurRadius.collectAsStateFlow()
     val blurAlpha by preferences.blurAlpha.collectAsStateFlow()
+    val anyBlurEnabled = blurStatusBar || blurTopBar || blurDialogs
     return SystemUiConfigState(
       showStatusBar =
         BooleanPreference(
@@ -59,16 +61,21 @@ class SettingsViewModel internal constructor(private val preferences: AppGlobalP
           value = blurStatusBar,
           onChange = { preferences.blurStatusBar.launchAndSet(it) },
         ),
+      blurDialogs =
+        BooleanPreference(
+          value = blurDialogs,
+          onChange = { preferences.blurDialogs.launchAndSet(it) },
+        ),
       blurRadiusDp =
         BlurRadiusPreference(
           value = blurRadius,
-          enabled = blurStatusBar || blurTopBar,
+          enabled = anyBlurEnabled,
           onChange = { preferences.blurRadius.launchAndSet(it) },
         ),
       blurAlpha =
         BlurAlphaPreference(
           value = blurAlpha,
-          enabled = blurStatusBar || blurTopBar,
+          enabled = anyBlurEnabled,
           onChange = { preferences.blurAlpha.launchAndSet(it) },
         ),
     )

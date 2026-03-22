@@ -5,10 +5,10 @@ import aktual.core.icons.material.Warning
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AlertDialog
 import aktual.core.ui.DialogContent
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemeParameters
-import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -23,7 +23,7 @@ internal fun UpdateCheckFailedDialog(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  BasicAlertDialog(
+  AlertDialog(
     modifier = modifier,
     onDismissRequest = onDismiss,
     content = {

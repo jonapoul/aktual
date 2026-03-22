@@ -9,7 +9,12 @@ import aktual.budget.model.NumberFormatConfig
 import alakazam.compose.VerticalSpacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
@@ -29,6 +34,20 @@ val LocalHazeState = compositionLocalOf<HazeState> { error("No HazeState value p
 
 val LocalBlurConfig = compositionLocalOf<BlurConfig> { error("No BlurConfig value provided") }
 
+val LocalDialogBlurState = compositionLocalOf { DialogBlurState() }
+
+/**
+ * Tracks how many dialogs are currently showing, so the background blur can animate accordingly.
+ */
+@Stable
+class DialogBlurState {
+  var activeDialogCount by mutableIntStateOf(0)
+    internal set
+
+  val isActive: Boolean
+    get() = activeDialogCount > 0
+}
+
 @Composable
 fun Amount.formattedString(
   numberFormatConfig: NumberFormatConfig = LocalNumberFormatConfig.current,
@@ -46,7 +65,8 @@ fun WithCompositionLocals(
   currencyPosition: CurrencySymbolPosition = CurrencySymbolPosition.BeforeAmount,
   addCurrencySpace: Boolean = true,
   hazeState: HazeState = rememberHazeState(),
-  blurConfig: BlurConfig = BlurConfig(),
+  blurConfig: BlurConfig = remember { BlurConfig() },
+  dialogBlurState: DialogBlurState = remember { DialogBlurState() },
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
@@ -55,6 +75,7 @@ fun WithCompositionLocals(
     LocalPrivacyEnabled provides isPrivacyEnabled,
     LocalHazeState provides hazeState,
     LocalBlurConfig provides blurConfig,
+    LocalDialogBlurState provides dialogBlurState,
     content = content,
   )
 }
