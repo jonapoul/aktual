@@ -14,7 +14,6 @@ import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -27,7 +26,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
-@Inject
 @ViewModelKey(AboutViewModel::class)
 @ContributesIntoMap(AppScope::class)
 class AboutViewModel(

@@ -2,11 +2,9 @@ package aktual.core.model
 
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import java.awt.Desktop
 import java.net.URI
 
-@Inject
 @ContributesBinding(AppScope::class)
 class JvmUrlOpener : UrlOpener {
   override fun invoke(url: String) {

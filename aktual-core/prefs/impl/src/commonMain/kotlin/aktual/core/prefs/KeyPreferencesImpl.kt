@@ -9,14 +9,12 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import okio.ByteString
 
-@Inject
 @ContributesBinding(AppScope::class, binding<KeyPreferences>())
 @ContributesBinding(AppScope::class, binding<EncryptionKeys>())
 class KeyPreferencesImpl(private val dataStore: DataStore<Preferences>) : KeyPreferences {

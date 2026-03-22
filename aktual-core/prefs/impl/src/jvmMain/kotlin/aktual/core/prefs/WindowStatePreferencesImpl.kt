@@ -12,12 +12,10 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
-@Inject
 @ContributesBinding(AppScope::class)
 class WindowStatePreferencesImpl(dataStore: DataStore<Preferences>) : WindowStatePreferences {
   override val position: Preference<WindowPosition> =

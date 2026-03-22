@@ -22,7 +22,6 @@ import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
@@ -43,7 +42,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
-@Inject
 @ViewModelKey(ServerUrlViewModel::class)
 @ContributesIntoMap(AppScope::class)
 class ServerUrlViewModel

@@ -15,9 +15,7 @@ import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 
-@Inject
 @ContributesBinding(AppScope::class)
 class AppGlobalPreferencesImpl(dataStore: DataStore<Preferences>) : AppGlobalPreferences {
   override val token: NullablePreference<Token> =

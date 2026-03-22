@@ -9,7 +9,6 @@ import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec
 import javax.crypto.spec.SecretKeySpec
@@ -28,7 +27,6 @@ import okio.Source
 import okio.buffer
 import okio.use
 
-@Inject
 @ContributesBinding(AppScope::class)
 class BufferEncrypterImpl(
   private val contexts: CoroutineContexts,
@@ -50,7 +48,6 @@ class BufferEncrypterImpl(
   }
 }
 
-@Inject
 @ContributesBinding(AppScope::class)
 class FileEncrypterImpl(
   private val contexts: CoroutineContexts,

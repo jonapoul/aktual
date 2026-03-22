@@ -17,12 +17,10 @@ import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-@Inject
 @ViewModelKey(SettingsViewModel::class)
 @ContributesIntoMap(AppScope::class)
 class SettingsViewModel internal constructor(private val preferences: AppGlobalPreferences) :
