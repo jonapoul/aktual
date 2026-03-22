@@ -1,7 +1,6 @@
 <resources>
   <string name="settings_toolbar">App Settings</string>
 
-  <string name="settings_show_bottom_bar">Show bottom status bar</string>
   <string name="settings_theme">App theme</string>
   <string name="settings_dark_theme">Dark theme</string>
 
@@ -49,4 +48,13 @@
   <string name="settings_currency_symbol_position_before">Before amount (e.g. %1$s)</string>
   <string name="settings_currency_symbol_position_after">After amount (e.g. %1$s)</string>
   <string name="settings_currency_add_space">Add space between amount and symbol</string>
+
+  <string name="settings_ui_group">System UI</string>
+  <string name="settings_ui_desc">Configure various aspects of the app's global UI.</string>
+  <string name="settings_ui_show_status">Show bottom status bar</string>
+  <string name="settings_ui_blur_status">Blur bottom status bar</string>
+  <string name="settings_ui_blur_top">Blur toolbar</string>
+  <string name="settings_ui_enable_blur_subtitle">Caution: may degrade performance</string>
+  <string name="settings_ui_blur_radius">Blur radius</string>
+  <string name="settings_ui_blur_alpha">Blur alpha</string>
 </resources>

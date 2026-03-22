@@ -18,6 +18,8 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.ThemedParameterProvider
@@ -115,7 +117,7 @@ internal fun SyncBudgetScaffold(
     Box {
       WavyBackground()
 
-      ListBudgetsContent(
+      SyncBudgetsContent(
         modifier = Modifier.padding(innerPadding),
         stepStates = stepStates,
         onAction = onAction,
@@ -125,9 +127,8 @@ internal fun SyncBudgetScaffold(
   }
 }
 
-@Stable
 @Composable
-private fun ListBudgetsContent(
+private fun SyncBudgetsContent(
   stepStates: ImmutableMap<SyncStep, SyncStepState>,
   onAction: (SyncBudgetAction) -> Unit,
   modifier: Modifier = Modifier,
@@ -160,6 +161,9 @@ private fun ListBudgetsContent(
       contentPadding = ButtonContentPadding,
       isEnabled = stepStates.anyFailure(),
     )
+
+    BottomStatusBarSpacing()
+    BottomNavBarSpacing()
   }
 }
 

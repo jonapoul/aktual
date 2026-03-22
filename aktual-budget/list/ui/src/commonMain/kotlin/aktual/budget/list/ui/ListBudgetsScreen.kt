@@ -16,18 +16,26 @@ import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.DesktopPreview
+import aktual.core.ui.BlurredTopBarSpacing
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.LandscapePreview
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.blurredTopBar
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -118,11 +126,14 @@ private fun metroViewModel(token: Token) =
 @Composable
 internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: (ListBudgetsAction) -> Unit) {
   val theme = LocalTheme.current
+  val blurState = rememberBlurredTopBarState()
+  val listState = rememberLazyListState()
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
+        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
         title = { ScaffoldTitle(theme) },
         actions = { TopBarActions(onAction) },
@@ -132,13 +143,16 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: (ListBudgets
     Box {
       WavyBackground()
 
-      PullToRefreshBox(
-        modifier = Modifier.padding(innerPadding).padding(horizontal = 8.dp),
-        contentAlignment = Alignment.Center,
-        onRefresh = { onAction(Reload) },
-        isRefreshing = state is ListBudgetsState.Loading,
-        content = { StateContent(state, onAction, theme) },
-      )
+      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
+        BlurredTopBarSpacing(blurState, innerPadding)
+        PullToRefreshBox(
+          modifier = Modifier.padding(8.dp),
+          contentAlignment = Alignment.Center,
+          onRefresh = { onAction(Reload) },
+          isRefreshing = state is ListBudgetsState.Loading,
+          content = { StateContent(state, onAction, listState, theme) },
+        )
+      }
     }
   }
 }
@@ -156,9 +170,14 @@ private fun ScaffoldTitle(theme: Theme) =
 private fun StateContent(
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
+  listState: LazyListState,
   theme: Theme = LocalTheme.current,
 ) {
-  Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+  Column(
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Top,
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
     when (state) {
       is ListBudgetsState.Loading -> {
         // Empty content - we've already got the pull-to-refresh indicator
@@ -180,6 +199,7 @@ private fun StateContent(
         } else {
           ContentSuccess(
             budgets = state.budgets,
+            listState = listState,
             theme = theme,
             onClickOpen = { budget -> onAction(Open(budget)) },
             onClickDelete = { budget -> onAction(Delete(budget)) },
@@ -187,12 +207,13 @@ private fun StateContent(
         }
       }
     }
+
+    BottomStatusBarSpacing()
+    BottomNavBarSpacing()
   }
 }
 
 @PortraitPreview
-@LandscapePreview
-@DesktopPreview
 @Composable
 private fun PreviewListBudgetsScaffold(
   @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ThemedParams<ListBudgetsState>

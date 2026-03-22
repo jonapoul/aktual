@@ -7,26 +7,35 @@ import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ThemeParameters
+import aktual.core.ui.blurredTopBar
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.blurredTopBarContentPadding
+import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.BooleanPreference
-import aktual.settings.vm.root.CurrencyPreference
-import aktual.settings.vm.root.CurrencySymbolPositionPreference
-import aktual.settings.vm.root.NumberFormatPreference
+import aktual.settings.vm.ListPreference
+import aktual.settings.vm.root.BlurAlphaPreference
+import aktual.settings.vm.root.BlurRadiusPreference
+import aktual.settings.vm.root.CurrencyConfigState
+import aktual.settings.vm.root.FormatConfigState
 import aktual.settings.vm.root.SettingsScreenState
 import aktual.settings.vm.root.SettingsViewModel
+import aktual.settings.vm.root.SystemUiConfigState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -52,16 +61,6 @@ fun SettingsScreen(
       when (action) {
         SettingsAction.NavBack -> nav.back()
         SettingsAction.NavToThemeSettings -> nav.toThemeSettings()
-        is SettingsAction.SetShowBottomBar -> viewModel.showBottomBar(action.value)
-        is SettingsAction.SetNumberFormat -> viewModel.numberFormat(action.value)
-        is SettingsAction.SetHideFraction -> viewModel.hideFraction(action.value)
-        is SettingsAction.SetDateFormat -> viewModel.dateFormat(action.value)
-        is SettingsAction.SetFirstDayOfWeek -> viewModel.firstDayOfWeek(action.value)
-        is SettingsAction.SetCurrency -> viewModel.currency(action.value)
-        is SettingsAction.SetCurrencySymbolPosition ->
-          viewModel.currencySymbolPosition(action.value)
-        is SettingsAction.SetCurrencySpace ->
-          viewModel.currencySpaceBetweenAmountAndSymbol(action.value)
       }
     },
   )
@@ -70,54 +69,47 @@ fun SettingsScreen(
 @Composable
 private fun SettingsScaffold(state: SettingsScreenState, onAction: (SettingsAction) -> Unit) {
   val theme = LocalTheme.current
+  val listState = rememberLazyListState()
+  val blurState = rememberBlurredTopBarState()
 
   Scaffold(
     topBar = {
       TopAppBar(
+        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(SettingsAction.NavBack) } },
         title = { Text(Strings.settingsToolbar) },
       )
     }
   ) { innerPadding ->
-    SettingsContent(modifier = Modifier.padding(innerPadding), state = state, onAction = onAction)
+    SettingsContent(
+      modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+      contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+      listState = listState,
+      state = state,
+      onAction = onAction,
+    )
   }
 }
 
 @Composable
 private fun SettingsContent(
   state: SettingsScreenState,
+  contentPadding: PaddingValues,
+  listState: LazyListState,
   onAction: (SettingsAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val listState = rememberLazyListState()
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState).padding(Dimens.Large),
     state = listState,
+    contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
-    item { ShowBottomBarPreferenceItem(state.showBottomBar, onAction) }
-
     item { ThemeSettingsItem(onClick = { onAction(SettingsAction.NavToThemeSettings) }) }
-
-    item {
-      FormattingGroup(
-        numberFormat = state.numberFormat,
-        hideFraction = state.hideFraction,
-        dateFormat = state.dateFormat,
-        firstDayOfWeek = state.firstDayOfWeek,
-        onAction = onAction,
-      )
-    }
-    item {
-      CurrencyGroup(
-        currency = state.currency,
-        currencySymbolPosition = state.currencySymbolPosition,
-        currencySpaceBetweenAmountAndSymbol = state.currencySpaceBetweenAmountAndSymbol,
-        onAction = onAction,
-      )
-    }
-
+    item { SystemUiGroup(state.systemUi) }
+    item { FormattingGroup(state.format) }
+    item { CurrencyGroup(state.currency) }
     item {
       BottomStatusBarSpacing()
       BottomNavBarSpacing()
@@ -127,32 +119,33 @@ private fun SettingsContent(
 
 @PortraitPreview
 @Composable
-private fun PreviewSettingsScaffold(
-  @PreviewParameter(SettingsScaffoldProvider::class) params: ThemedParams<SettingsScreenState>
-) = PreviewWithColorScheme(params.theme) { SettingsScaffold(onAction = {}, state = params.data) }
-
-private class SettingsScaffoldProvider :
-  ThemedParameterProvider<SettingsScreenState>(
-    SettingsScreenState(
-      showBottomBar = BooleanPreference(value = true),
-      hideFraction = BooleanPreference(value = true),
-      numberFormat = NumberFormatPreference(NumberFormat.CommaDot),
-      dateFormat = DateFormat.MmDdYyyy,
-      firstDayOfWeek = FirstDayOfWeek.Monday,
-      currency = CurrencyPreference(Currency.None),
-      currencySymbolPosition =
-        CurrencySymbolPositionPreference(CurrencySymbolPosition.BeforeAmount, false),
-      currencySpaceBetweenAmountAndSymbol = BooleanPreference(value = false, enabled = false),
-    ),
-    SettingsScreenState(
-      showBottomBar = BooleanPreference(value = false),
-      hideFraction = BooleanPreference(value = false),
-      numberFormat = NumberFormatPreference(NumberFormat.SpaceComma),
-      dateFormat = DateFormat.YyyyMmDd,
-      firstDayOfWeek = FirstDayOfWeek.Sunday,
-      currency = CurrencyPreference(Currency.PoundSterling),
-      currencySymbolPosition =
-        CurrencySymbolPositionPreference(CurrencySymbolPosition.AfterAmount, true),
-      currencySpaceBetweenAmountAndSymbol = BooleanPreference(value = true),
-    ),
-  )
+private fun PreviewSettingsScaffold(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithColorScheme(theme) {
+    SettingsScaffold(
+      onAction = {},
+      state =
+        SettingsScreenState(
+          systemUi =
+            SystemUiConfigState(
+              showStatusBar = BooleanPreference(true),
+              blurStatusBar = BooleanPreference(true),
+              blurTopBar = BooleanPreference(false),
+              blurRadiusDp = BlurRadiusPreference(5f),
+              blurAlpha = BlurAlphaPreference(0.5f),
+            ),
+          format =
+            FormatConfigState(
+              numberFormat = ListPreference(NumberFormat.CommaDot),
+              dateFormat = ListPreference(DateFormat.MmDdYyyy),
+              firstDayOfWeek = ListPreference(FirstDayOfWeek.Monday),
+              hideFraction = BooleanPreference(true),
+            ),
+          currency =
+            CurrencyConfigState(
+              currency = ListPreference(Currency.PoundSterling),
+              symbolPosition = ListPreference(CurrencySymbolPosition.BeforeAmount),
+              spaceBetweenAmountAndSymbol = BooleanPreference(true),
+            ),
+        ),
+    )
+  }

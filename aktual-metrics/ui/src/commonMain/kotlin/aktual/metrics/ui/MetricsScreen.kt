@@ -22,8 +22,13 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.WavyBackground
+import aktual.core.ui.blurredTopBar
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.blurredTopBarContentPadding
+import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.core.ui.verticalScrollWithBar
 import aktual.metrics.vm.MetricsState
 import aktual.metrics.vm.MetricsViewModel
 import alakazam.compose.VerticalSpacer
@@ -31,13 +36,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -96,9 +105,12 @@ internal fun MetricsScaffold(
   onAction: (MetricsAction) -> Unit,
   theme: Theme = LocalTheme.current,
 ) {
+  val blurState = rememberBlurredTopBarState()
+
   Scaffold(
     topBar = {
       TopAppBar(
+        modifier = Modifier.blurredTopBar(blurState),
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(MetricsAction.NavBack) } },
         title = { Text(Strings.metricsToolbar) },
@@ -112,13 +124,23 @@ internal fun MetricsScaffold(
       )
     }
   ) { innerPadding ->
-    MetricsContent(modifier = Modifier.padding(innerPadding), state = state, onAction = onAction)
+    Box {
+      WavyBackground()
+
+      MetricsContent(
+        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        state = state,
+        onAction = onAction,
+      )
+    }
   }
 }
 
 @Composable
 private fun MetricsContent(
   state: MetricsState,
+  contentPadding: PaddingValues,
   onAction: (MetricsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -128,7 +150,7 @@ private fun MetricsContent(
       MetricsState.Loading -> LoadingContent()
       MetricsState.Disconnected -> FailureContent(Strings.metricsDisconnected, onAction, theme)
       is MetricsState.Failure -> FailureContent(state.cause, onAction, theme)
-      is MetricsState.Success -> SuccessContent(state, theme)
+      is MetricsState.Success -> SuccessContent(state, contentPadding, theme)
     }
   }
 }
@@ -145,7 +167,7 @@ private fun LoadingContent(modifier: Modifier = Modifier, theme: Theme = LocalTh
     verticalArrangement = Arrangement.spacedBy(VERTICAL_SPACING),
   ) {
     val shimmerModifier =
-      Modifier.height(32.dp)
+      Modifier.height(LocalMinimumInteractiveComponentSize.current)
         .fillMaxWidth()
         .clip(CardShape)
         .background(theme.pillBackgroundLight, CardShape)
@@ -175,54 +197,67 @@ private fun FailureContent(
 @Composable
 private fun SuccessContent(
   state: MetricsState.Success,
+  contentPadding: PaddingValues,
   theme: Theme,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier = modifier.verticalScrollWithBar(),
+  val lazyListState = rememberLazyListState()
+
+  val dataModifier =
+    Modifier.fillMaxWidth()
+      .clip(CardShape)
+      .background(theme.pillBackgroundLight, CardShape)
+      .padding(Dimens.VeryLarge)
+
+  LazyColumn(
+    modifier = modifier.scrollbar(lazyListState),
+    state = lazyListState,
+    contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(VERTICAL_SPACING),
   ) {
-    val dataModifier =
-      Modifier.fillMaxWidth()
-        .clip(CardShape)
-        .background(theme.pillBackgroundLight, CardShape)
-        .padding(Dimens.VeryLarge)
-
-    SuccessContentRow(
-      modifier = dataModifier,
-      title = Strings.metricsLastUpdate,
-      value = formatted(state.lastUpdate),
-    )
-
-    SuccessContentRow(
-      modifier = dataModifier,
-      title = Strings.metricsUptime,
-      value = formatted(state.uptime),
-    )
-
-    Column(modifier = dataModifier) {
-      Text(
-        text = Strings.metricsMemory,
-        fontWeight = FontWeight.Bold,
-        style = AktualTypography.titleLarge,
+    item {
+      SuccessContentRow(
+        modifier = dataModifier,
+        title = Strings.metricsLastUpdate,
+        value = formatted(state.lastUpdate),
       )
+    }
 
-      VerticalSpacer(10.dp)
+    item {
+      SuccessContentRow(
+        modifier = dataModifier,
+        title = Strings.metricsUptime,
+        value = formatted(state.uptime),
+      )
+    }
 
-      with(state.memory) {
-        SuccessContentRow(title = Strings.metricsMemoryRss, value = rss.toString())
-        SuccessContentRow(title = Strings.metricsMemoryHeapTotal, value = heapTotal.toString())
-        SuccessContentRow(title = Strings.metricsMemoryHeapUsed, value = heapUsed.toString())
-        SuccessContentRow(title = Strings.metricsMemoryExternal, value = external.toString())
-        SuccessContentRow(
-          title = Strings.metricsMemoryArrayBuffers,
-          value = arrayBuffers.toString(),
+    item {
+      Column(modifier = dataModifier) {
+        Text(
+          text = Strings.metricsMemory,
+          fontWeight = FontWeight.Bold,
+          style = AktualTypography.titleLarge,
         )
+
+        VerticalSpacer(10.dp)
+
+        with(state.memory) {
+          SuccessContentRow(title = Strings.metricsMemoryRss, value = rss.toString())
+          SuccessContentRow(title = Strings.metricsMemoryHeapTotal, value = heapTotal.toString())
+          SuccessContentRow(title = Strings.metricsMemoryHeapUsed, value = heapUsed.toString())
+          SuccessContentRow(title = Strings.metricsMemoryExternal, value = external.toString())
+          SuccessContentRow(
+            title = Strings.metricsMemoryArrayBuffers,
+            value = arrayBuffers.toString(),
+          )
+        }
       }
     }
 
-    BottomStatusBarSpacing()
-    BottomNavBarSpacing()
+    item {
+      BottomStatusBarSpacing()
+      BottomNavBarSpacing()
+    }
   }
 }
 

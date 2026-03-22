@@ -24,6 +24,10 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemeParameters
+import aktual.core.ui.blurredTopBar
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.blurredTopBarContentPadding
+import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.background
@@ -83,23 +87,32 @@ internal fun ChooseReportTypeScaffold(
   onAction: ChooseReportTypeActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-) =
+) {
+  val blurState = rememberBlurredTopBarState()
   Scaffold(
     modifier = modifier,
     topBar = {
       TopAppBar(
+        modifier = Modifier.blurredTopBar(blurState),
         colors = theme.transparentTopAppBarColors(),
         title = { Text(Strings.reportsChooseTypeTitle) },
       )
     },
   ) { innerPadding ->
-    Content(modifier = Modifier.padding(innerPadding), onAction = onAction, theme = theme)
+    Content(
+      modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+      contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+      onAction = onAction,
+      theme = theme,
+    )
   }
+}
 
 @Composable
 private fun Content(
   onAction: ChooseReportTypeActionListener,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
   theme: Theme = LocalTheme.current,
 ) {
   val lazyListState = rememberLazyListState()
@@ -107,7 +120,13 @@ private fun Content(
     modifier = modifier.fillMaxWidth().scrollbar(lazyListState),
     state = lazyListState,
     verticalArrangement = Arrangement.spacedBy(8.dp),
-    contentPadding = PaddingValues(8.dp),
+    contentPadding =
+      PaddingValues(
+        start = 8.dp,
+        end = 8.dp,
+        bottom = 8.dp,
+        top = contentPadding.calculateTopPadding() + 8.dp,
+      ),
   ) {
     items(WIDGET_TYPES) { type ->
       WidgetType(

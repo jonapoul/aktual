@@ -8,6 +8,7 @@ import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.switch
+import aktual.settings.vm.BooleanPreference
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Switch
@@ -17,6 +18,31 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+
+@Composable
+internal fun BooleanPreferenceItem(
+  preference: BooleanPreference,
+  title: String,
+  subtitle: String?,
+  icon: ImageVector?,
+  modifier: Modifier = Modifier,
+  includeBackground: Boolean = true,
+  theme: Theme = LocalTheme.current,
+  bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
+) {
+  BooleanPreferenceItem(
+    value = preference.value,
+    onValueChange = preference.onChange,
+    enabled = preference.enabled,
+    title = title,
+    subtitle = subtitle,
+    icon = icon,
+    modifier = modifier,
+    includeBackground = includeBackground,
+    theme = theme,
+    bottomContent = bottomContent,
+  )
+}
 
 @Composable
 internal fun BooleanPreferenceItem(

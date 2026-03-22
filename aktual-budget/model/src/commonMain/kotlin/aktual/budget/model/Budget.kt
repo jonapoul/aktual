@@ -1,5 +1,8 @@
 package aktual.budget.model
 
+import androidx.compose.runtime.Immutable
+
+@Immutable
 data class Budget(
   val name: String,
   val state: BudgetState,

@@ -9,6 +9,7 @@ import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 
 /** Prefs which are kept on this device, but apply across all budgets */
+@Suppress("ComplexInterface") // TODO #983
 interface AppGlobalPreferences {
   val token: NullablePreference<Token>
   val serverUrl: NullablePreference<ServerUrl>
@@ -20,4 +21,9 @@ interface AppGlobalPreferences {
   val currency: Preference<Currency>
   val currencySymbolPosition: Preference<CurrencySymbolPosition>
   val currencySpaceBetweenAmountAndSymbol: Preference<Boolean>
+  val isPrivacyEnabled: Preference<Boolean>
+  val blurTopBar: Preference<Boolean>
+  val blurStatusBar: Preference<Boolean>
+  val blurRadius: Preference<Float>
+  val blurAlpha: Preference<Float>
 }

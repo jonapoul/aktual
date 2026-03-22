@@ -189,7 +189,8 @@ private fun CatalogLoading(modifier: Modifier = Modifier, theme: Theme = LocalTh
     val shimmerModifier =
       Modifier.fillMaxWidth()
         .height(LocalMinimumInteractiveComponentSize.current)
-        .background(theme.tableText, CardShape)
+        .clip(CardShape)
+        .background(theme.pillBackgroundLight, CardShape)
 
     repeat(times = 10) { Box(modifier = shimmerModifier) }
   }

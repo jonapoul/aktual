@@ -11,12 +11,15 @@ import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
-import androidx.compose.foundation.layout.padding
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.rememberBlurredTopBarState
+import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -68,15 +71,19 @@ internal fun TransactionsScaffold(
   onAction: ActionListener,
 ) {
   val theme = LocalTheme.current
-  Scaffold(topBar = { TransactionsTitleBar(loadedAccount, onAction, theme) }) { innerPadding ->
-    Transactions(
-      modifier = Modifier.padding(innerPadding),
-      transactionIdSource = transactionIdSource,
-      format = format,
-      source = source,
-      onAction = onAction,
-      theme = theme,
-    )
+  val blurState = rememberBlurredTopBarState()
+  Scaffold(topBar = { TransactionsTitleBar(blurState, loadedAccount, onAction, theme) }) {
+    innerPadding ->
+    Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
+      BlurredTopBarSpacing(blurState, innerPadding)
+      Transactions(
+        transactionIdSource = transactionIdSource,
+        format = format,
+        source = source,
+        onAction = onAction,
+        theme = theme,
+      )
+    }
   }
 }
 
