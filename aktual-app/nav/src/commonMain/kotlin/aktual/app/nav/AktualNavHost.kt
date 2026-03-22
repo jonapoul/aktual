@@ -54,22 +54,28 @@ fun AktualNavHost(backStack: SnapshotStateList<NavKey>, modifier: Modifier = Mod
       ),
     entryProvider =
       entryProvider {
-        entry<ChangePasswordNavRoute> { ChangePasswordScreen(ChangePasswordNavigator(backStack)) }
-
-        entry<InfoNavRoute> { InfoScreen(InfoNavigator(backStack)) }
-
-        entry<LicensesNavRoute> { LicensesScreen(LicensesNavigator(backStack)) }
-
-        entry<MetricsNavRoute> { MetricsScreen(MetricsNavigator(backStack)) }
-
-        entry<ListBudgetsNavRoute> { route ->
-          ListBudgetsScreen(ListBudgetsNavigator(backStack), route.token)
+        entry<ChangePasswordNavRoute> {
+          ChangePasswordScreen(ChangePasswordNavigatorImpl(backStack))
         }
 
-        entry<LoginNavRoute> { LoginScreen(LoginNavigator(backStack)) }
+        entry<InfoNavRoute> { InfoScreen(InfoNavigatorImpl(backStack)) }
+
+        entry<LicensesNavRoute> { LicensesScreen(LicensesNavigatorImpl(backStack)) }
+
+        entry<MetricsNavRoute> { MetricsScreen(MetricsNavigatorImpl(backStack)) }
+
+        entry<ListBudgetsNavRoute> { route ->
+          ListBudgetsScreen(ListBudgetsNavigatorImpl(backStack), route.token)
+        }
+
+        entry<LoginNavRoute> { LoginScreen(LoginNavigatorImpl(backStack)) }
 
         entry<ReportsListNavRoute> { route ->
-          ReportsDashboardScreen(ReportsDashboardNavigator(backStack), route.budgetId, route.token)
+          ReportsDashboardScreen(
+            ReportsDashboardNavigatorImpl(backStack),
+            route.budgetId,
+            route.token,
+          )
         }
 
         entry<ReportNavRoute> {
@@ -77,25 +83,29 @@ fun AktualNavHost(backStack: SnapshotStateList<NavKey>, modifier: Modifier = Mod
         }
 
         entry<CreateReportNavRoute> { route ->
-          ChooseReportTypeScreen(ChooseReportTypeNavigator(backStack), route.budgetId, route.token)
+          ChooseReportTypeScreen(
+            ChooseReportTypeNavigatorImpl(backStack),
+            route.budgetId,
+            route.token,
+          )
         }
 
-        entry<ServerUrlNavRoute> { ServerUrlScreen(ServerUrlNavigator(backStack)) }
+        entry<ServerUrlNavRoute> { ServerUrlScreen(ServerUrlNavigatorImpl(backStack)) }
 
-        entry<SettingsNavRoute> { SettingsScreen(SettingsNavigator(backStack)) }
+        entry<SettingsNavRoute> { SettingsScreen(SettingsNavigatorImpl(backStack)) }
 
-        entry<ThemeSettingsNavRoute> { ThemeSettingsScreen(ThemeSettingsNavigator(backStack)) }
+        entry<ThemeSettingsNavRoute> { ThemeSettingsScreen(ThemeSettingsNavigatorImpl(backStack)) }
 
         entry<InspectThemeNavRoute> { route ->
-          InspectThemeScreen(InspectThemeNavigator(backStack), route.id)
+          InspectThemeScreen(InspectThemeNavigatorImpl(backStack), route.id)
         }
 
         entry<SyncBudgetsNavRoute> { route ->
-          SyncBudgetScreen(SyncBudgetNavigator(backStack), route.budgetId, route.token)
+          SyncBudgetScreen(SyncBudgetNavigatorImpl(backStack), route.budgetId, route.token)
         }
 
         entry<TransactionsNavRoute> { route ->
-          TransactionsScreen(TransactionsNavigator(backStack), route.budgetId, route.token)
+          TransactionsScreen(TransactionsNavigatorImpl(backStack), route.budgetId, route.token)
         }
       },
   )
