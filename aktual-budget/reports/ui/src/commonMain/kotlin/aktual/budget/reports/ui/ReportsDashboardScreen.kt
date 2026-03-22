@@ -11,13 +11,18 @@ import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BackHandler
+import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
+import aktual.core.ui.blurredTopBar
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -84,9 +89,11 @@ internal fun ReportsDashboardScaffold(
   onAction: ActionListener,
   theme: Theme = LocalTheme.current,
 ) {
+  val blurState = rememberBlurredTopBarState()
   Scaffold(
     topBar = {
       TopAppBar(
+        modifier = Modifier.blurredTopBar(blurState),
         colors = theme.transparentTopAppBarColors(),
         title = { Text(Strings.reportsDashboardTitle) },
         actions = {
@@ -103,12 +110,10 @@ internal fun ReportsDashboardScaffold(
     Box {
       WavyBackground()
 
-      Content(
-        modifier = Modifier.padding(innerPadding),
-        state = state,
-        onAction = onAction,
-        theme = theme,
-      )
+      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
+        BlurredTopBarSpacing(blurState, innerPadding)
+        Content(state = state, onAction = onAction, theme = theme)
+      }
     }
   }
 }

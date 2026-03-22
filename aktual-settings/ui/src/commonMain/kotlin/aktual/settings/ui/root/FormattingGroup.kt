@@ -17,111 +17,75 @@ import aktual.settings.ui.BooleanPreferenceItem
 import aktual.settings.ui.ListPreferenceItem
 import aktual.settings.ui.PreferenceGroup
 import aktual.settings.vm.BooleanPreference
-import aktual.settings.vm.root.NumberFormatPreference
+import aktual.settings.vm.ListPreference
+import aktual.settings.vm.root.FormatConfigState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-internal fun FormattingGroup(
-  numberFormat: NumberFormatPreference,
-  hideFraction: BooleanPreference,
-  dateFormat: DateFormat,
-  firstDayOfWeek: FirstDayOfWeek,
-  onAction: (SettingsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+internal fun FormattingGroup(state: FormatConfigState, modifier: Modifier = Modifier) {
   PreferenceGroup(
     title = Strings.settingsFormatGroup,
     subtitle = Strings.settingsFormatDesc,
     modifier = modifier,
   ) {
-    NumberFormat(numberFormat, onAction)
-    DateFormatItem(dateFormat, onAction)
-    FirstDayOfWeek(firstDayOfWeek, onAction)
-    HideFraction(hideFraction, onAction)
-  }
-}
+    ListPreferenceItem(
+      preference = state.numberFormat,
+      optionString = { f -> f.string() },
+      optionIcon = null,
+      title = Strings.settingsFormatNumbers,
+      subtitle = null,
+      includeBackground = false,
+      icon = MaterialIcons.Speed125,
+    )
 
-@Composable
-private fun NumberFormat(
-  preference: NumberFormatPreference,
-  onAction: (SettingsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  ListPreferenceItem(
-    modifier = modifier,
-    value = preference.selected,
-    options = NumberFormatPreference.Values,
-    optionString = { f -> f.string() },
-    optionIcon = null,
-    onValueChange = { f -> onAction(SettingsAction.SetNumberFormat(f)) },
-    title = Strings.settingsFormatNumbers,
-    subtitle = null,
-    includeBackground = false,
-    icon = MaterialIcons.Speed125,
-    enabled = true,
-  )
+    ListPreferenceItem(
+      preference = state.dateFormat,
+      optionString = { f -> f.label() },
+      optionIcon = null,
+      title = Strings.settingsFormatDates,
+      subtitle = null,
+      includeBackground = false,
+      icon = MaterialIcons.CalendarViewWeek,
+    )
+
+    ListPreferenceItem(
+      preference = state.firstDayOfWeek,
+      optionString = { d -> d.string() },
+      optionIcon = null,
+      title = Strings.settingsFormatFirstDay,
+      subtitle = null,
+      includeBackground = false,
+      icon = MaterialIcons.CalendarToday,
+    )
+
+    BooleanPreferenceItem(
+      preference = state.hideFraction,
+      title = Strings.settingsFormatDecimal,
+      subtitle = null,
+      includeBackground = false,
+      icon =
+        if (state.hideFraction.value) {
+          MaterialIcons.DecimalDecrease
+        } else {
+          MaterialIcons.DecimalIncrease
+        },
+    )
+  }
 }
 
 @Stable
 private fun NumberFormat.string(): String =
   when (this) {
-    NumberFormat.CommaDot -> "1,000.33"
-    NumberFormat.DotComma -> "1.000,33"
-    NumberFormat.SpaceComma -> "1 000,33"
-    NumberFormat.ApostropheDot -> "1'000.33"
-    NumberFormat.CommaDotIn -> "1,00,000.33"
+    NumberFormat.CommaDot -> "123,456.78"
+    NumberFormat.DotComma -> "123.456,78"
+    NumberFormat.SpaceComma -> "123 456,78"
+    NumberFormat.ApostropheDot -> "123'456.78"
+    NumberFormat.CommaDotIn -> "1,23,456.78"
   }
-
-@Composable
-private fun FirstDayOfWeek(
-  value: FirstDayOfWeek,
-  onAction: (SettingsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  ListPreferenceItem(
-    modifier = modifier,
-    value = value,
-    options = FirstDayOfWeekValues,
-    optionString = { d -> d.string() },
-    optionIcon = null,
-    onValueChange = { d -> onAction(SettingsAction.SetFirstDayOfWeek(d)) },
-    title = Strings.settingsFormatFirstDay,
-    subtitle = null,
-    includeBackground = false,
-    icon = MaterialIcons.CalendarToday,
-    enabled = true,
-  )
-}
-
-private val FirstDayOfWeekValues = FirstDayOfWeek.entries.toImmutableList()
-
-@Composable
-private fun DateFormatItem(
-  value: DateFormat,
-  onAction: (SettingsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  ListPreferenceItem(
-    modifier = modifier,
-    value = value,
-    options = DateFormatValues,
-    optionString = { f -> f.label() },
-    optionIcon = null,
-    onValueChange = { f -> onAction(SettingsAction.SetDateFormat(f)) },
-    title = Strings.settingsFormatDates,
-    subtitle = null,
-    includeBackground = false,
-    icon = MaterialIcons.CalendarViewWeek,
-    enabled = true,
-  )
-}
-
-private val DateFormatValues = DateFormat.entries.toImmutableList()
 
 @Composable
 private fun DateFormat.label(): String =
@@ -145,24 +109,6 @@ private fun FirstDayOfWeek.string(): String =
     FirstDayOfWeek.Saturday -> Strings.weekSaturday
   }
 
-@Composable
-private fun HideFraction(
-  preference: BooleanPreference,
-  onAction: (SettingsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  BooleanPreferenceItem(
-    modifier = modifier,
-    value = preference.value,
-    onValueChange = { f -> onAction(SettingsAction.SetHideFraction(f)) },
-    title = Strings.settingsFormatDecimal,
-    subtitle = null,
-    includeBackground = false,
-    icon = if (preference.value) MaterialIcons.DecimalDecrease else MaterialIcons.DecimalIncrease,
-    enabled = preference.enabled,
-  )
-}
-
 @Preview
 @Composable
 private fun PreviewFormattingGroup(
@@ -170,11 +116,12 @@ private fun PreviewFormattingGroup(
 ) =
   PreviewWithColorScheme(params.theme) {
     FormattingGroup(
-      numberFormat = NumberFormatPreference(params.data.numberFormat),
-      hideFraction = BooleanPreference(params.data.hideFraction),
-      dateFormat = params.data.dateFormat,
-      firstDayOfWeek = params.data.firstDayOfWeek,
-      onAction = {},
+      FormatConfigState(
+        numberFormat = ListPreference(params.data.numberFormat),
+        dateFormat = ListPreference(params.data.dateFormat),
+        firstDayOfWeek = ListPreference(params.data.firstDayOfWeek),
+        hideFraction = BooleanPreference(params.data.hideFraction),
+      )
     )
   }
 

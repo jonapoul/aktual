@@ -8,15 +8,17 @@ import aktual.core.theme.MidnightTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
-import aktual.core.ui.DesktopPreview
 import aktual.core.ui.Dimens
-import aktual.core.ui.LandscapePreview
 import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
-import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
+import aktual.core.ui.blurredTopBar
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.blurredTopBarContentPadding
+import aktual.core.ui.bottomNavBarPadding
+import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.BooleanPreference
@@ -27,9 +29,11 @@ import aktual.settings.vm.theme.ThemeSettingsEvent
 import aktual.settings.vm.theme.ThemeSettingsState
 import aktual.settings.vm.theme.ThemeSettingsViewModel
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -92,10 +96,13 @@ private fun ThemeSettingsScaffold(
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val theme = LocalTheme.current
+  val listState = rememberLazyListState()
+  val blurState = rememberBlurredTopBarState()
 
   Scaffold(
     topBar = {
       TopAppBar(
+        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(ThemeSettingsAction.NavBack) } },
         title = { Text(Strings.settingsThemeToolbar) },
@@ -104,14 +111,20 @@ private fun ThemeSettingsScaffold(
     snackbarHost = {
       SnackbarHost(
         hostState = snackbarHostState,
-        modifier = Modifier.padding(bottom = LocalBottomStatusBarHeight.current),
+        modifier =
+          Modifier.padding(
+            bottom =
+              LocalBottomStatusBarHeight.current + bottomNavBarPadding().calculateBottomPadding()
+          ),
       )
     },
   ) { innerPadding ->
     ThemeSettingsContent(
-      modifier = Modifier.padding(innerPadding),
+      modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+      contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
       state = state,
       catalogState = catalogState,
+      listState = listState,
       onAction = onAction,
     )
   }
@@ -121,13 +134,15 @@ private fun ThemeSettingsScaffold(
 private fun ThemeSettingsContent(
   state: ThemeSettingsState,
   catalogState: CatalogState,
+  listState: LazyListState,
+  contentPadding: PaddingValues,
   onAction: (ThemeSettingsAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  val listState = rememberLazyListState()
   LazyColumn(
-    modifier = modifier.fillMaxSize().scrollbar(listState).padding(horizontal = Dimens.Large),
+    modifier = modifier.fillMaxSize().scrollbar(listState).padding(Dimens.Large),
     state = listState,
+    contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
     item { UseSystemDefaultPreference(preference = state.useSystemDefault, onAction = onAction) }
@@ -159,9 +174,6 @@ private fun ThemeSettingsContent(
 }
 
 @PortraitPreview
-@LandscapePreview
-@TabletPreview
-@DesktopPreview
 @Composable
 private fun PreviewThemeSettings(@PreviewParameter(ThemeParameters::class) theme: Theme) =
   PreviewWithColorScheme(theme) {
@@ -171,8 +183,8 @@ private fun PreviewThemeSettings(@PreviewParameter(ThemeParameters::class) theme
           useSystemDefault = BooleanPreference(value = false, enabled = true),
           darkTheme =
             ListPreference(
-              selected = DarkTheme.id,
-              values = persistentListOf(DarkTheme.id, MidnightTheme.id),
+              value = DarkTheme.id,
+              options = persistentListOf(DarkTheme.id, MidnightTheme.id),
               enabled = false,
             ),
           constantTheme = LightTheme.id,

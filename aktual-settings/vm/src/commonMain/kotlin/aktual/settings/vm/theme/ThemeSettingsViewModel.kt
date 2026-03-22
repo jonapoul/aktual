@@ -157,8 +157,8 @@ class ThemeSettingsViewModel(
   private fun darkTheme(value: Theme.Id, enabled: Boolean) =
     remember(value, enabled) {
       ListPreference(
-        selected = value,
-        values = persistentListOf(DarkTheme.id, MidnightTheme.id),
+        value = value,
+        options = persistentListOf(DarkTheme.id, MidnightTheme.id),
         enabled = enabled,
       )
     }

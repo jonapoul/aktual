@@ -12,6 +12,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.rememberHazeState
 
 val LocalPrivacyEnabled = compositionLocalOf { false }
 
@@ -22,6 +24,10 @@ val LocalNumberFormatConfig =
 
 val LocalCurrencyConfig =
   compositionLocalOf<CurrencyConfig> { error("No CurrencyConfig value provided") }
+
+val LocalHazeState = compositionLocalOf<HazeState> { error("No HazeState value provided") }
+
+val LocalBlurConfig = compositionLocalOf<BlurConfig> { error("No BlurConfig value provided") }
 
 @Composable
 fun Amount.formattedString(
@@ -39,12 +45,16 @@ fun WithCompositionLocals(
   currency: Currency = Currency.None,
   currencyPosition: CurrencySymbolPosition = CurrencySymbolPosition.BeforeAmount,
   addCurrencySpace: Boolean = true,
+  hazeState: HazeState = rememberHazeState(),
+  blurConfig: BlurConfig = BlurConfig(),
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
     LocalNumberFormatConfig provides NumberFormatConfig(format, hideFraction),
     LocalCurrencyConfig provides CurrencyConfig(currency, currencyPosition, addCurrencySpace),
     LocalPrivacyEnabled provides isPrivacyEnabled,
+    LocalHazeState provides hazeState,
+    LocalBlurConfig provides blurConfig,
     content = content,
   )
 }

@@ -11,6 +11,7 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
+import aktual.settings.vm.ListPreference
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,6 +38,34 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
+
+@Composable
+internal fun <E : Enum<E>> ListPreferenceItem(
+  preference: ListPreference<E>,
+  optionString: @Composable (E) -> String,
+  optionIcon: ((E) -> ImageVector)?,
+  title: String,
+  subtitle: String?,
+  icon: ImageVector?,
+  modifier: Modifier = Modifier,
+  includeBackground: Boolean = true,
+  theme: Theme = LocalTheme.current,
+) {
+  ListPreferenceItem(
+    value = preference.value,
+    options = preference.options,
+    enabled = preference.enabled,
+    onValueChange = preference.onChange,
+    optionString = optionString,
+    optionIcon = optionIcon,
+    title = title,
+    subtitle = subtitle,
+    icon = icon,
+    modifier = modifier,
+    includeBackground = includeBackground,
+    theme = theme,
+  )
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

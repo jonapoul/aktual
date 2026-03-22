@@ -10,6 +10,8 @@ import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TextFieldColors
@@ -208,6 +210,22 @@ fun Theme.radioButton(): RadioButtonColors =
     unselectedColor = pageText.disabled,
     disabledSelectedColor = pageText.disabled,
     disabledUnselectedColor = pageText.disabled,
+  )
+
+@Stable
+@Composable
+fun Theme.slider(): SliderColors =
+  SliderDefaults.colors(
+    thumbColor = checkboxToggleBackgroundSelected,
+    activeTrackColor = checkboxToggleBackgroundSelected,
+    activeTickColor = checkboxText,
+    inactiveTrackColor = checkboxToggleBackground,
+    inactiveTickColor = pageText.disabled,
+    disabledThumbColor = checkboxToggleBackgroundSelected.disabled,
+    disabledActiveTrackColor = checkboxToggleBackgroundSelected.disabled,
+    disabledActiveTickColor = checkboxText.disabled,
+    disabledInactiveTrackColor = checkboxToggleBackground.disabled,
+    disabledInactiveTickColor = pageText.disabled,
   )
 
 @get:Stable

@@ -40,5 +40,7 @@ class SettingsViewModelTest {
     }
   }
 
-  private fun Assert<SettingsScreenState>.showBottomBar() = transform { it.showBottomBar.value }
+  private fun Assert<SettingsScreenState>.showBottomBar(): Assert<Boolean> = transform { state ->
+    state.systemUi.showStatusBar.value
+  }
 }

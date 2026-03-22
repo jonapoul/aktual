@@ -16,95 +16,49 @@ import aktual.core.ui.LocalCurrencyConfig
 import aktual.settings.ui.BooleanPreferenceItem
 import aktual.settings.ui.ListPreferenceItem
 import aktual.settings.ui.PreferenceGroup
-import aktual.settings.vm.BooleanPreference
-import aktual.settings.vm.root.CurrencyPreference
-import aktual.settings.vm.root.CurrencySymbolPositionPreference
+import aktual.settings.vm.root.CurrencyConfigState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
 @Composable
-internal fun CurrencyGroup(
-  currency: CurrencyPreference,
-  currencySymbolPosition: CurrencySymbolPositionPreference,
-  currencySpaceBetweenAmountAndSymbol: BooleanPreference,
-  onAction: (SettingsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) {
+internal fun CurrencyGroup(state: CurrencyConfigState, modifier: Modifier = Modifier) {
   PreferenceGroup(
     title = Strings.settingsCurrency,
     subtitle = Strings.settingsCurrencyDesc,
     modifier = modifier,
   ) {
-    Currency(currency, onAction)
-    SymbolPosition(currencySymbolPosition, currency, onAction)
-    AddSpace(currencySpaceBetweenAmountAndSymbol, currency, onAction)
+    ListPreferenceItem(
+      preference = state.currency,
+      optionString = { c -> c.string() },
+      optionIcon = null,
+      icon = MaterialIcons.CurrencyPound,
+      title = Strings.settingsCurrencyDefault,
+      subtitle = null,
+      includeBackground = false,
+    )
+
+    ListPreferenceItem(
+      preference = state.symbolPosition,
+      optionString = { c -> c.string() },
+      optionIcon = null,
+      icon =
+        when (state.symbolPosition.value) {
+          CurrencySymbolPosition.BeforeAmount -> MaterialIcons.LineStartArrowNotch
+          CurrencySymbolPosition.AfterAmount -> MaterialIcons.LineEndArrowNotch
+        },
+      title = Strings.settingsCurrencySymbolPosition,
+      subtitle = null,
+      includeBackground = false,
+    )
+
+    BooleanPreferenceItem(
+      preference = state.spaceBetweenAmountAndSymbol,
+      icon = MaterialIcons.SpaceBar,
+      title = Strings.settingsCurrencyAddSpace,
+      subtitle = null,
+      includeBackground = false,
+    )
   }
-}
-
-@Composable
-private fun Currency(
-  preference: CurrencyPreference,
-  onAction: (SettingsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  ListPreferenceItem(
-    modifier = modifier,
-    value = preference.selected,
-    options = CurrencyPreference.Values,
-    optionString = { c -> c.string() },
-    optionIcon = null,
-    icon = MaterialIcons.CurrencyPound,
-    onValueChange = { c -> onAction(SettingsAction.SetCurrency(c)) },
-    title = Strings.settingsCurrencyDefault,
-    subtitle = null,
-    includeBackground = false,
-    enabled = true,
-  )
-}
-
-@Composable
-private fun SymbolPosition(
-  preference: CurrencySymbolPositionPreference,
-  currency: CurrencyPreference,
-  onAction: (SettingsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  ListPreferenceItem(
-    modifier = modifier,
-    value = preference.selected,
-    options = CurrencySymbolPositionPreference.Values,
-    optionString = { c -> c.string() },
-    optionIcon = null,
-    icon =
-      when (preference.selected) {
-        CurrencySymbolPosition.BeforeAmount -> MaterialIcons.LineStartArrowNotch
-        CurrencySymbolPosition.AfterAmount -> MaterialIcons.LineEndArrowNotch
-      },
-    onValueChange = { c -> onAction(SettingsAction.SetCurrencySymbolPosition(c)) },
-    title = Strings.settingsCurrencySymbolPosition,
-    subtitle = null,
-    includeBackground = false,
-    enabled = currency.selected != Currency.None,
-  )
-}
-
-@Composable
-private fun AddSpace(
-  preference: BooleanPreference,
-  currency: CurrencyPreference,
-  onAction: (SettingsAction) -> Unit,
-  modifier: Modifier = Modifier,
-) {
-  BooleanPreferenceItem(
-    modifier = modifier,
-    value = preference.value,
-    icon = MaterialIcons.SpaceBar,
-    onValueChange = { enabled -> onAction(SettingsAction.SetCurrencySpace(enabled)) },
-    title = Strings.settingsCurrencyAddSpace,
-    subtitle = null,
-    includeBackground = false,
-    enabled = currency.selected != Currency.None,
-  )
 }
 
 @Composable

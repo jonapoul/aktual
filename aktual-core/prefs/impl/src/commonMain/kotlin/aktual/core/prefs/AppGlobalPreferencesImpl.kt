@@ -10,6 +10,7 @@ import aktual.core.model.Token
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.floatPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.zacsweers.metro.AppScope
@@ -88,6 +89,21 @@ class AppGlobalPreferencesImpl(dataStore: DataStore<Preferences>) : AppGlobalPre
     dataStore
       .boolean(key = booleanPreferencesKey("currencySpaceBetweenAmountAndSymbol"), default = true)
       .required()
+
+  override val isPrivacyEnabled: Preference<Boolean> =
+    dataStore.boolean(key = booleanPreferencesKey("isPrivacyEnabled"), default = false).required()
+
+  override val blurTopBar: Preference<Boolean> =
+    dataStore.boolean(key = booleanPreferencesKey("blurTopBar"), default = true).required()
+
+  override val blurStatusBar: Preference<Boolean> =
+    dataStore.boolean(key = booleanPreferencesKey("blurStatusBar"), default = true).required()
+
+  override val blurRadius: Preference<Float> =
+    dataStore.float(key = floatPreferencesKey("blurRadius"), default = 5f).required()
+
+  override val blurAlpha: Preference<Float> =
+    dataStore.float(key = floatPreferencesKey("blurAlpha"), default = 0.35f).required()
 
   private companion object {
     val DefaultCurrency = defaultCurrency()

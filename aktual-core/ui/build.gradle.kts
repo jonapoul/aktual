@@ -9,12 +9,13 @@ optIn(EXPERIMENTAL_MATERIAL_3)
 
 kotlin {
   commonMainDependencies {
+    api(libs.haze)
+    api(libs.kotlinx.datetime)
+    api(libs.shimmer)
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:icons"))
     api(project(":aktual-core:model"))
     api(project(":aktual-core:theme"))
-    api(libs.kotlinx.datetime)
-    api(libs.shimmer)
     implementation(project(":aktual-core:l10n"))
   }
 

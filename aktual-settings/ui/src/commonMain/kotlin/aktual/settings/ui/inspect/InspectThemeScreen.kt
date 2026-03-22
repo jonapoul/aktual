@@ -18,6 +18,10 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.blurredTopBar
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.blurredTopBarContentPadding
+import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.settings.vm.inspect.InspectThemeState
@@ -28,6 +32,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -83,6 +88,7 @@ private fun metroViewModel(themeId: Theme.Id) =
 @Composable
 private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThemeAction) -> Unit) {
   val theme = LocalTheme.current
+  val blurState = rememberBlurredTopBarState()
 
   val title =
     when (state) {
@@ -94,6 +100,7 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThe
   Scaffold(
     topBar = {
       TopAppBar(
+        modifier = Modifier.blurredTopBar(blurState),
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(InspectThemeAction.NavBack) } },
         title = { Text(title) },
@@ -111,7 +118,8 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThe
     }
   ) { innerPadding ->
     InspectThemeContent(
-      modifier = Modifier.padding(innerPadding),
+      modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+      contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
       state = state,
       onAction = onAction,
     )
@@ -121,6 +129,7 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThe
 @Composable
 private fun InspectThemeContent(
   state: InspectThemeState,
+  contentPadding: PaddingValues,
   onAction: (InspectThemeAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -146,6 +155,7 @@ private fun InspectThemeContent(
       LazyColumn(
         modifier = modifier.fillMaxSize().scrollbar(listState).padding(Dimens.Large),
         state = listState,
+        contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(2.dp),
       ) {
         items(state.properties) { property -> ThemePropertyRow(property) }

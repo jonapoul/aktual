@@ -13,6 +13,7 @@ import aktual.core.ui.scrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.Composable
@@ -29,9 +30,9 @@ internal fun ContentSuccess(
   onClickOpen: (Budget) -> Unit,
   onClickDelete: (Budget) -> Unit,
   modifier: Modifier = Modifier,
+  listState: LazyListState = rememberLazyListState(),
   theme: Theme = LocalTheme.current,
 ) {
-  val listState = rememberLazyListState()
   LazyColumn(
     modifier = modifier.scrollbar(listState),
     state = listState,

@@ -10,14 +10,16 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 
 - If you change anything that is likely to conflict with any context or instructions you've been given as part of this (or any other) CLAUDE.md file in this repo, make sure to update to keep them up to date.
 - Prefer `kotlinx.immutable` collections on the UI layer, not regular List/Set/etc.
-- When setting a `MutableStateFlow`, prefer `.update { x }` over `.value = x`
+- When setting a `MutableStateFlow`, prefer `stateFlow.update { x }` over `stateFlow.value = x`
 
 ## Build Commands
 
 ### Building
 ```bash
-# Check that the project kotlin files compile. This should be the first choice before going to the following.
-# This will compile all source sets, including tests.
+# Runs all kotlin compilation tasks on this module, including test source sets. This should be the first choice when making a change to a module
+./gradlew :[path-to-module]:compileAll
+
+# Check that the project kotlin files compile. You should prefer module-specific invocations of this, where possible.
 ./gradlew compileAll
 
 # Build everything. This will take a long time, don't do it without asking
@@ -254,7 +256,7 @@ The project uses Gradle convention plugins to centralize build configuration:
 - `aktual.module.jvm` - JVM-only module
 
 **Key Build Properties:**
-- Java version: Sourced from `.java-version` file (currently 25)
+- Java version: Sourced from `.java-version` file
 - Min SDK: 28
 - Target/Compile SDK: 36
 - KSP2 enabled

@@ -14,6 +14,7 @@ import alakazam.kotlin.ifTrue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
@@ -28,6 +29,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -47,6 +49,7 @@ internal fun BasicPreferenceItem(
   icon: ImageVector?,
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
+  interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   enabled: Boolean = true,
   includeBackground: Boolean = true,
   headerStyle: TextStyle = AktualTypography.bodyLarge,
@@ -63,7 +66,9 @@ internal fun BasicPreferenceItem(
         .clip(CardShape)
         .ifTrue(includeBackground) { background(theme.pillBackgroundLight, CardShape) }
         .ifTrue(includeBackground) { border(Dp.Hairline, theme.pillBorderDark, CardShape) }
-        .ifNotNull(onClick) { clickable(enabled, onClick = it) }
+        .ifNotNull(onClick) {
+          clickable(enabled, onClick = it, interactionSource = interactionSource)
+        }
         .ifTrue(includeBackground) { padding(5.dp) },
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,

@@ -70,7 +70,7 @@ private fun DarkThemeContent(
 ) {
   SingleChoiceSegmentedButtonRow(modifier = modifier.clip(CardShape).padding(10.dp)) {
     SegmentedButton(
-      selected = preference.selected == DarkTheme.id,
+      selected = preference.value == DarkTheme.id,
       onClick = { onAction(ThemeSettingsAction.SetDarkTheme(DarkTheme.id)) },
       shape = SegmentedButtonDefaults.itemShape(index = 0, count = 2, baseShape = CardShape),
       enabled = preference.enabled,
@@ -79,7 +79,7 @@ private fun DarkThemeContent(
     )
 
     SegmentedButton(
-      selected = preference.selected == MidnightTheme.id,
+      selected = preference.value == MidnightTheme.id,
       onClick = { onAction(ThemeSettingsAction.SetDarkTheme(MidnightTheme.id)) },
       shape = SegmentedButtonDefaults.itemShape(index = 1, count = 2, baseShape = CardShape),
       enabled = preference.enabled,
@@ -100,8 +100,8 @@ private fun PreviewDarkThemePreference(
       onAction = {},
       preference =
         ListPreference(
-          selected = params.data.selected,
-          values = persistentListOf(DarkTheme.id, MidnightTheme.id),
+          value = params.data.selected,
+          options = persistentListOf(DarkTheme.id, MidnightTheme.id),
           enabled = params.data.enabled,
         ),
     )
