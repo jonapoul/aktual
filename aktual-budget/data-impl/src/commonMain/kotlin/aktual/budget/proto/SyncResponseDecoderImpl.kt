@@ -13,14 +13,12 @@ import aktual.budget.model.SyncResponse
 import aktual.budget.model.Timestamp
 import aktual.core.model.KeyId
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import okio.Buffer
 import okio.ByteString
 import okio.ByteString.Companion.decodeBase64
 import okio.Source
 import okio.buffer
 
-@Inject
 @ContributesBinding(BudgetScope::class)
 class SyncResponseDecoderImpl(private val decrypter: BufferDecrypter) : SyncResponseDecoder {
   override suspend fun invoke(source: Source, metadata: DbMetadata): SyncResponse {

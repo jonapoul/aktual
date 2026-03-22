@@ -10,11 +10,9 @@ import aktual.core.theme.ThemeResolver
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
-@Inject
 @ViewModelKey(AktualDesktopViewModel::class)
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class AktualDesktopViewModel(

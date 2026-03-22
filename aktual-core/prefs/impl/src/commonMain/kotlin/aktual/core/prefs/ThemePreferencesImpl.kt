@@ -9,9 +9,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 
-@Inject
 @ContributesBinding(AppScope::class)
 class ThemePreferencesImpl(dataStore: DataStore<Preferences>) : ThemePreferences {
   override val useSystemDefault: Preference<Boolean> =

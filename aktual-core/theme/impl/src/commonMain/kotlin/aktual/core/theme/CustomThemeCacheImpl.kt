@@ -4,7 +4,6 @@ import aktual.core.model.AppDirectory
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.DeserializationStrategy
@@ -17,7 +16,6 @@ import okio.IOException
 import okio.Path
 import okio.buffer
 
-@Inject
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
 class CustomThemeCacheImpl(

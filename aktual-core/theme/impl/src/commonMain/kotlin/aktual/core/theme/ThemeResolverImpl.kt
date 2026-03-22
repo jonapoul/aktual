@@ -2,14 +2,12 @@ package aktual.core.theme
 
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import logcat.logcat
 
-@Inject
 @ContributesBinding(AppScope::class)
 class ThemeResolverImpl(
   private val preferences: ThemePreferences,

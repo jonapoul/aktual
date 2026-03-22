@@ -16,12 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 
-@Inject
 @ActivityKey(AktualActivity::class)
 @ContributesIntoMap(AppScope::class, binding<Activity>())
 class AktualActivity(override val defaultViewModelProviderFactory: MetroViewModelFactory) :

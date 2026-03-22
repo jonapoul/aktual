@@ -7,9 +7,7 @@ import aktual.budget.model.cloudFileId
 import android.content.Context
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 
-@Inject
 @ContributesBinding(AppScope::class)
 class AndroidBudgetGraphBuilder(
   private val context: Context,

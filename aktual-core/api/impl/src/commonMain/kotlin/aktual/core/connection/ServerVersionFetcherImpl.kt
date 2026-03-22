@@ -7,7 +7,6 @@ import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.LoopController
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import io.ktor.client.plugins.ResponseException
 import kotlin.time.Duration.Companion.seconds
@@ -17,7 +16,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
-@Inject
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
 class ServerVersionFetcherImpl(

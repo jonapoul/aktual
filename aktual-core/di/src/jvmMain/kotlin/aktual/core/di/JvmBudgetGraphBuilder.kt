@@ -7,9 +7,7 @@ import aktual.budget.model.cloudFileId
 import aktual.budget.model.database
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 
-@Inject
 @ContributesBinding(AppScope::class)
 class JvmBudgetGraphBuilder(
   private val files: BudgetFiles,
