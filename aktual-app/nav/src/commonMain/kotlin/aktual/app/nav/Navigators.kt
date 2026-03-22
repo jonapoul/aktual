@@ -21,60 +21,20 @@ import aktual.settings.ui.theme.ThemeSettingsNavigator
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavKey
 
-fun ChangePasswordNavigator(stack: SnapshotStateList<NavKey>): ChangePasswordNavigator =
-  ChangePasswordNavigatorImpl(stack)
-
-fun ChooseReportTypeNavigator(stack: SnapshotStateList<NavKey>): ChooseReportTypeNavigator =
-  ChooseReportTypeNavigatorImpl(stack)
-
-fun InfoNavigator(stack: SnapshotStateList<NavKey>): InfoNavigator = InfoNavigatorImpl(stack)
-
-fun LicensesNavigator(stack: SnapshotStateList<NavKey>): LicensesNavigator =
-  LicensesNavigatorImpl(stack)
-
-fun ListBudgetsNavigator(stack: SnapshotStateList<NavKey>): ListBudgetsNavigator =
-  ListBudgetsNavigatorImpl(stack)
-
-fun LoginNavigator(stack: SnapshotStateList<NavKey>): LoginNavigator = LoginNavigatorImpl(stack)
-
-fun MetricsNavigator(stack: SnapshotStateList<NavKey>): MetricsNavigator =
-  MetricsNavigatorImpl(stack)
-
-fun ReportsDashboardNavigator(stack: SnapshotStateList<NavKey>): ReportsDashboardNavigator =
-  ReportsDashboardNavigatorImpl(stack)
-
-fun ServerUrlNavigator(stack: SnapshotStateList<NavKey>): ServerUrlNavigator =
-  ServerUrlNavigatorImpl(stack)
-
-fun SettingsNavigator(stack: SnapshotStateList<NavKey>): SettingsNavigator =
-  SettingsNavigatorImpl(stack)
-
-fun InspectThemeNavigator(stack: SnapshotStateList<NavKey>): InspectThemeNavigator =
-  InspectThemeNavigatorImpl(stack)
-
-fun ThemeSettingsNavigator(stack: SnapshotStateList<NavKey>): ThemeSettingsNavigator =
-  ThemeSettingsNavigatorImpl(stack)
-
-fun SyncBudgetNavigator(stack: SnapshotStateList<NavKey>): SyncBudgetNavigator =
-  SyncBudgetNavigatorImpl(stack)
-
-fun TransactionsNavigator(stack: SnapshotStateList<NavKey>): TransactionsNavigator =
-  TransactionsNavigatorImpl(stack)
-
-private class ChangePasswordNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class ChangePasswordNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   ChangePasswordNavigator {
   override fun back() = stack.debugPop()
 
   override fun toListBudgets(token: Token) = stack.debugPush(ListBudgetsNavRoute(token))
 }
 
-private class InfoNavigatorImpl(private val stack: SnapshotStateList<NavKey>) : InfoNavigator {
+internal class InfoNavigatorImpl(private val stack: SnapshotStateList<NavKey>) : InfoNavigator {
   override fun back() = stack.debugPop()
 
   override fun toLicenses() = stack.debugPush(LicensesNavRoute)
 }
 
-private class ListBudgetsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class ListBudgetsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   ListBudgetsNavigator {
   override fun toAbout() = stack.debugPush(InfoNavRoute)
 
@@ -91,7 +51,7 @@ private class ListBudgetsNavigatorImpl(private val stack: SnapshotStateList<NavK
     stack.debugPopUpToAndPush(ServerUrlNavRoute, { it is LoginNavRoute }, inclusive = true)
 }
 
-private class LoginNavigatorImpl(private val stack: SnapshotStateList<NavKey>) : LoginNavigator {
+internal class LoginNavigatorImpl(private val stack: SnapshotStateList<NavKey>) : LoginNavigator {
   override fun back() = stack.debugPop()
 
   override fun toUrl() =
@@ -101,24 +61,24 @@ private class LoginNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
     stack.debugPopUpToAndPush(ListBudgetsNavRoute(token), { it is LoginNavRoute }, inclusive = true)
 }
 
-private class MetricsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class MetricsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   MetricsNavigator {
   override fun back() = stack.debugPop()
 }
 
-private class ServerUrlNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class ServerUrlNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   ServerUrlNavigator {
   override fun toLogin() = stack.debugPush(LoginNavRoute)
 
   override fun toAbout() = stack.debugPush(InfoNavRoute)
 }
 
-private class LicensesNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class LicensesNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   LicensesNavigator {
   override fun back() = stack.debugPop()
 }
 
-private class ReportsDashboardNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class ReportsDashboardNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   ReportsDashboardNavigator {
   override fun back() = stack.debugPop()
 
@@ -129,7 +89,7 @@ private class ReportsDashboardNavigatorImpl(private val stack: SnapshotStateList
     stack.debugPush(CreateReportNavRoute(token, budgetId))
 }
 
-private class ChooseReportTypeNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class ChooseReportTypeNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   ChooseReportTypeNavigator {
   override fun back() = stack.debugPop()
 
@@ -137,26 +97,26 @@ private class ChooseReportTypeNavigatorImpl(private val stack: SnapshotStateList
     stack.debugPush(ReportNavRoute(token, budgetId, widgetId))
 }
 
-private class SettingsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class SettingsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   SettingsNavigator {
   override fun back() = stack.debugPop()
 
   override fun toThemeSettings() = stack.debugPush(ThemeSettingsNavRoute)
 }
 
-private class InspectThemeNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class InspectThemeNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   InspectThemeNavigator {
   override fun navBack() = stack.debugPop()
 }
 
-private class ThemeSettingsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class ThemeSettingsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   ThemeSettingsNavigator {
   override fun back() = stack.debugPop()
 
   override fun inspectTheme(id: Theme.Id) = stack.debugPush(InspectThemeNavRoute(id))
 }
 
-private class SyncBudgetNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class SyncBudgetNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   SyncBudgetNavigator {
   override fun back() = stack.debugPop()
 
@@ -168,7 +128,7 @@ private class SyncBudgetNavigatorImpl(private val stack: SnapshotStateList<NavKe
     )
 }
 
-private class TransactionsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
+internal class TransactionsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
   TransactionsNavigator {
   override fun back() = stack.debugPop()
 }
