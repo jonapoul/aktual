@@ -6,9 +6,11 @@ import aktual.core.theme.isLight
 import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -137,10 +139,39 @@ fun BlurredTopBarSpacing(state: BlurredTopBarState, innerPadding: PaddingValues)
   }
 }
 
+/**
+ * Full-screen blur overlay that activates when any [AlertDialog] is showing. Place this in the root
+ * layout on top of the main content but below the dialog window.
+ */
+@Composable
+fun DialogBlurOverlay(modifier: Modifier = Modifier) {
+  val blurConfig = LocalBlurConfig.current
+  val dialogBlurState = LocalDialogBlurState.current
+  val hazeState = LocalHazeState.current
+  val theme = LocalTheme.current
+
+  val target = if (dialogBlurState.isActive && blurConfig.blurDialogs) 1f else 0f
+  val progress by animateFloatAsState(target)
+
+  if (progress > 0f) {
+    val style =
+      remember(blurConfig, theme, progress) {
+        val tintAlpha = if (theme.isLight()) 1f - blurConfig.blurAlpha else blurConfig.blurAlpha
+        HazeStyle(
+          blurRadius = blurConfig.blurRadius * progress,
+          backgroundColor = theme.cardBackground.copy(alpha = progress * 0.1f),
+          tint = HazeTint(theme.cardBackground.copy(alpha = tintAlpha * progress)),
+        )
+      }
+    Box(modifier = modifier.fillMaxSize().hazeEffect(hazeState, style))
+  }
+}
+
 @Immutable
 data class BlurConfig(
   val blurStatusBar: Boolean = true,
   val blurTopBar: Boolean = true,
+  val blurDialogs: Boolean = true,
   val blurRadius: Dp = 5.dp,
   val blurAlpha: Float = 0.5f,
 )

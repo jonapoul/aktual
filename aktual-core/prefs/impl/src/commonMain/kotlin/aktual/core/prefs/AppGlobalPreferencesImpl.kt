@@ -99,6 +99,9 @@ class AppGlobalPreferencesImpl(dataStore: DataStore<Preferences>) : AppGlobalPre
   override val blurStatusBar: Preference<Boolean> =
     dataStore.boolean(key = booleanPreferencesKey("blurStatusBar"), default = true).required()
 
+  override val blurDialogs: Preference<Boolean> =
+    dataStore.boolean(key = booleanPreferencesKey("blurDialogs"), default = true).required()
+
   override val blurRadius: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("blurRadius"), default = 5f).required()
 

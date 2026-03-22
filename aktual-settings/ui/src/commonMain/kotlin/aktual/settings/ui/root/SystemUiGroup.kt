@@ -1,6 +1,7 @@
 package aktual.settings.ui.root
 
 import aktual.core.icons.material.BlurOn
+import aktual.core.icons.material.Dialogs
 import aktual.core.icons.material.LinearScale
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.TransitionDissolve
@@ -33,7 +34,7 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     BooleanPreferenceItem(
       preference = state.blurStatusBar,
       title = Strings.settingsUiBlurStatus,
-      subtitle = Strings.settingsUiEnableBlurSubtitle,
+      subtitle = null,
       icon = MaterialIcons.BlurOn,
       includeBackground = false,
     )
@@ -41,8 +42,16 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     BooleanPreferenceItem(
       preference = state.blurTopBar,
       title = Strings.settingsUiBlurTop,
-      subtitle = Strings.settingsUiEnableBlurSubtitle,
+      subtitle = null,
       icon = MaterialIcons.BlurOn,
+      includeBackground = false,
+    )
+
+    BooleanPreferenceItem(
+      preference = state.blurDialogs,
+      title = Strings.settingsUiBlurDialogs,
+      subtitle = null,
+      icon = MaterialIcons.Dialogs,
       includeBackground = false,
     )
 

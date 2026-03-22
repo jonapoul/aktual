@@ -44,6 +44,7 @@ private val materialIcons =
       DecimalIncrease,
       Delete,
       DeleteForever,
+      Dialogs,
       Edit,
       Error,
       Info,

@@ -24,6 +24,7 @@ interface AppGlobalPreferences {
   val isPrivacyEnabled: Preference<Boolean>
   val blurTopBar: Preference<Boolean>
   val blurStatusBar: Preference<Boolean>
+  val blurDialogs: Preference<Boolean>
   val blurRadius: Preference<Float>
   val blurAlpha: Preference<Float>
 }
