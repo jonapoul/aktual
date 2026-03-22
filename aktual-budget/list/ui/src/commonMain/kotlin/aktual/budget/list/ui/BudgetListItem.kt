@@ -12,7 +12,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.ThemedDropdownMenu
 import aktual.core.ui.ThemedDropdownMenuItem
@@ -151,10 +151,10 @@ private fun budgetDescription(budget: Budget) =
 private fun PreviewBudgetListItem(
   @PreviewParameter(BudgetListItemProvider::class) params: ThemedParams<BudgetListItemParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithThemedParams(params) {
     BudgetListItem(
-      modifier = params.data.width?.let { w -> Modifier.width(w) } ?: Modifier.fillMaxWidth(),
-      budget = params.data.budget,
+      modifier = width?.let { w -> Modifier.width(w) } ?: Modifier.fillMaxWidth(),
+      budget = budget,
       onClickOpen = {},
       onClickDelete = {},
     )
