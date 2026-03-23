@@ -192,7 +192,7 @@ private fun StateContent(
   ) {
     when (state) {
       is ListBudgetsState.Loading -> {
-        // Empty content - we've already got the pull-to-refresh indicator
+        ShimmerBudgetList(theme = theme)
       }
 
       is ListBudgetsState.Failure -> {
