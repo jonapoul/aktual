@@ -152,20 +152,29 @@ private fun SyncBudgetDialog(
           onClick = { onAction(SyncBudgetAction.Cancel) },
           content = { Text(text = Strings.syncCancel) },
         )
-        if (passwordState is KeyPasswordState.Active) {
-          val enabled = passwordState.input.isNotEmpty()
-          val color = if (enabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText
-          TextButton(
-            enabled = enabled,
-            onClick = { onAction(SyncBudgetAction.ConfirmKeyPassword) },
-            content = { Text(text = Strings.syncPasswordConfirm, color = color) },
-          )
-        } else {
-          TextButton(
-            enabled = overallState == SyncOverallState.Succeeded,
-            onClick = { onAction(SyncBudgetAction.Continue) },
-            content = { Text(text = Strings.syncOpen) },
-          )
+        when {
+          passwordState is KeyPasswordState.Active -> {
+            val enabled = passwordState.input.isNotEmpty()
+            val color = if (enabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText
+            TextButton(
+              enabled = enabled,
+              onClick = { onAction(SyncBudgetAction.ConfirmKeyPassword) },
+              content = { Text(text = Strings.syncPasswordConfirm, color = color) },
+            )
+          }
+          overallState == SyncOverallState.Failed -> {
+            TextButton(
+              onClick = { onAction(SyncBudgetAction.Retry) },
+              content = { Text(text = Strings.syncRetry) },
+            )
+          }
+          else -> {
+            TextButton(
+              enabled = overallState == SyncOverallState.Succeeded,
+              onClick = { onAction(SyncBudgetAction.Continue) },
+              content = { Text(text = Strings.syncOpen) },
+            )
+          }
         }
       },
     )
@@ -179,6 +188,7 @@ private fun syncBudgetViewModel(token: Token, budgetId: BudgetId): SyncBudgetVie
   }
 
 @Composable
+@Suppress("UnusedReceiverParameter")
 private fun ColumnScope.SyncBudgetDialogContent(
   stepStates: ImmutableMap<SyncStep, SyncStepState>,
   passwordState: KeyPasswordState,

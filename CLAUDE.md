@@ -11,6 +11,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 - If you change anything that is likely to conflict with any context or instructions you've been given as part of this (or any other) CLAUDE.md file in this repo, make sure to update to keep them up to date.
 - Prefer `kotlinx.immutable` collections on the UI layer, not regular List/Set/etc.
 - When setting a `MutableStateFlow`, prefer `stateFlow.update { x }` over `stateFlow.value = x`
+- When writing comments, stretch them out horizontally to match the `max_line_length` value in .editorconfig, currently 120.
 
 ## Build Commands
 
@@ -46,8 +47,11 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 
 ### Code Quality
 ```bash
-# Run detekt static analysis
-./gradlew detekt
+# Run detekt static analysis on modules changed on this branch
+./scripts/detekt.sh
+
+# Run detekt on all modules. Avoid this unless explicitly asked to do it
+./gradlew detektCheck
 
 # Format changed files with ktfmt (since diverging from main)
 ./scripts/ktfmt.sh
