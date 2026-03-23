@@ -214,11 +214,7 @@ private fun ColumnScope.SyncBudgetDialogContent(
   }
 
   if (passwordState is KeyPasswordState.Active) {
-    PasswordEntryLayout(
-      password = passwordState.input,
-      onAction = onAction,
-      theme = theme,
-    )
+    PasswordEntryLayout(password = passwordState.input, onAction = onAction, theme = theme)
   }
 }
 
