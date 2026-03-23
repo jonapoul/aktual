@@ -20,8 +20,7 @@ data class SettingsScreenState(
 @Immutable
 data class SystemUiConfigState(
   val showStatusBar: BooleanPreference,
-  val blurTopBar: BooleanPreference,
-  val blurStatusBar: BooleanPreference,
+  val blurAppBars: BooleanPreference,
   val blurDialogs: BooleanPreference,
   val blurRadiusDp: SliderPreference,
   val blurAlpha: SliderPreference,

@@ -77,7 +77,7 @@ internal fun LicensesScaffold(
   onAction: (LicensesAction) -> Unit,
 ) {
   val theme = LocalTheme.current
-  val blurState = rememberBlurredTopBarState(enabled = searchBarState is SearchBarState.Gone)
+  val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
 
   Scaffold(

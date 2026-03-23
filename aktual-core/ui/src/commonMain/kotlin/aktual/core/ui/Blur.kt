@@ -30,21 +30,15 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 
 @Composable
-fun Modifier.blurred(
-  enabled: BlurConfig.() -> Boolean,
-  orElse: Theme.() -> Color = { pageBackground },
-): Modifier = blurred(LocalHazeState.current, enabled, orElse)
+fun Modifier.blurred(orElse: Theme.() -> Color = { pageBackground }): Modifier =
+  blurred(LocalHazeState.current, orElse)
 
 @Composable
-fun Modifier.blurred(
-  state: HazeState,
-  enabled: BlurConfig.() -> Boolean,
-  orElse: Theme.() -> Color = { pageBackground },
-): Modifier {
+fun Modifier.blurred(state: HazeState, orElse: Theme.() -> Color = { pageBackground }): Modifier {
   val config = LocalBlurConfig.current
   val theme = LocalTheme.current
 
-  return if (config.enabled()) {
+  return if (config.blurAppBars) {
     val style =
       remember(config, theme) {
         val tintAlpha: Float = if (theme.isLight()) 1f - config.blurAlpha else config.blurAlpha
@@ -66,17 +60,16 @@ fun Modifier.blurred(
  * Scaffold padding behavior is used.
  */
 @Composable
-fun rememberBlurredTopBarState(enabled: Boolean = true): BlurredTopBarState {
+fun rememberBlurredTopBarState(): BlurredTopBarState {
   val hazeState = rememberHazeState()
-  val blurEnabled = LocalBlurConfig.current.blurTopBar && enabled
+  val blurEnabled = LocalBlurConfig.current.blurAppBars
   return remember(hazeState, blurEnabled) { BlurredTopBarState(hazeState, blurEnabled) }
 }
 
 @Stable data class BlurredTopBarState(val hazeState: HazeState, val blurEnabled: Boolean)
 
 @Composable
-fun Modifier.blurredTopBar(state: BlurredTopBarState): Modifier =
-  blurred(state.hazeState, enabled = { blurTopBar })
+fun Modifier.blurredTopBar(state: BlurredTopBarState): Modifier = blurred(state.hazeState)
 
 /** Variant that animates between transparent and blurred based on [isScrolled]. */
 @Composable
@@ -169,8 +162,7 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
 
 @Immutable
 data class BlurConfig(
-  val blurStatusBar: Boolean = true,
-  val blurTopBar: Boolean = true,
+  val blurAppBars: Boolean = true,
   val blurDialogs: Boolean = true,
   val blurRadius: Dp = 5.dp,
   val blurAlpha: Float = 0.5f,

@@ -32,16 +32,8 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     )
 
     BooleanPreferenceItem(
-      preference = state.blurStatusBar,
-      title = Strings.settingsUiBlurStatus,
-      subtitle = null,
-      icon = MaterialIcons.BlurOn,
-      includeBackground = false,
-    )
-
-    BooleanPreferenceItem(
-      preference = state.blurTopBar,
-      title = Strings.settingsUiBlurTop,
+      preference = state.blurAppBars,
+      title = Strings.settingsUiBlurBars,
       subtitle = null,
       icon = MaterialIcons.BlurOn,
       includeBackground = false,

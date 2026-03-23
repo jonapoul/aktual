@@ -48,14 +48,12 @@ import logcat.logcat
 class BlurConfigUseCase(private val preferences: AppGlobalPreferences) {
   operator fun invoke(scope: CoroutineScope): StateFlow<BlurConfig> =
     scope.launchMolecule(Immediate) {
-      val blurStatusBar by preferences.blurStatusBar.collectAsStateFlow(scope)
-      val blurTopBar by preferences.blurTopBar.collectAsStateFlow(scope)
+      val blurAppBars by preferences.blurAppBars.collectAsStateFlow(scope)
       val blurDialogs by preferences.blurDialogs.collectAsStateFlow(scope)
       val blurRadius by preferences.blurRadius.collectAsStateFlow(scope)
       val blurAlpha by preferences.blurAlpha.collectAsStateFlow(scope)
       BlurConfig(
-        blurStatusBar = blurStatusBar,
-        blurTopBar = blurTopBar,
+        blurAppBars = blurAppBars,
         blurDialogs = blurDialogs,
         blurRadius = blurRadius.dp,
         blurAlpha = blurAlpha,
