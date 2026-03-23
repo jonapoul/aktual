@@ -46,7 +46,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** actual/packages/desktop-client/src/components/manager/BudgetList.tsx */
+/**
+ * actual/packages/desktop-client/src/components/manager/BudgetList.tsx
+ *
+ * When updating this, make sure to also change [ShimmerBudgetListItem]
+ */
 @Composable
 internal fun BudgetListItem(
   budget: Budget,
