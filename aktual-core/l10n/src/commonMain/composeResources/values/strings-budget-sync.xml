@@ -1,6 +1,7 @@
 <resources>
   <string name="sync_cancel">Cancel</string>
   <string name="sync_open">Open</string>
+  <string name="sync_retry">Retry</string>
 
   <string name="sync_step_fetching_info">Fetching File Info</string>
   <string name="sync_step_downloading">Downloading Database</string>
@@ -11,9 +12,6 @@
   <string name="sync_state_not_started">Not started</string>
   <string name="sync_state_failed">Failed: %1$s</string>
   <string name="sync_state_succeeded">Succeeded</string>
-
-  <string name="sync_button_continue">Continue</string>
-  <string name="sync_button_retry">Retry</string>
 
   <string name="sync_password_title">Password Required</string>
   <string name="sync_password_confirm">Confirm</string>
