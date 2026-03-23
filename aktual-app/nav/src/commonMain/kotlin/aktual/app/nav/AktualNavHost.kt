@@ -8,7 +8,6 @@ import aktual.account.ui.url.ServerUrlScreen
 import aktual.budget.list.ui.ListBudgetsScreen
 import aktual.budget.reports.ui.ChooseReportTypeScreen
 import aktual.budget.reports.ui.ReportsDashboardScreen
-import aktual.budget.sync.ui.SyncBudgetScreen
 import aktual.budget.transactions.ui.TransactionsScreen
 import aktual.metrics.ui.MetricsScreen
 import aktual.settings.ui.inspect.InspectThemeScreen
@@ -98,10 +97,6 @@ fun AktualNavHost(backStack: SnapshotStateList<NavKey>, modifier: Modifier = Mod
 
         entry<InspectThemeNavRoute> { route ->
           InspectThemeScreen(InspectThemeNavigatorImpl(backStack), route.id)
-        }
-
-        entry<SyncBudgetsNavRoute> { route ->
-          SyncBudgetScreen(SyncBudgetNavigatorImpl(backStack), route.budgetId, route.token)
         }
 
         entry<TransactionsNavRoute> { route ->

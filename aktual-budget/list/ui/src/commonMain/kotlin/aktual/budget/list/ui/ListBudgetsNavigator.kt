@@ -16,5 +16,5 @@ interface ListBudgetsNavigator {
 
   fun toMetrics()
 
-  fun toSyncBudget(token: Token, id: BudgetId)
+  fun toBudget(token: Token, budgetId: BudgetId)
 }

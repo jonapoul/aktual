@@ -40,11 +40,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -73,11 +70,6 @@ class SyncBudgetViewModel(
   private val mutableSteps =
     MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
   val stepStates: StateFlow<ImmutableMap<SyncStep, SyncStepState>> = mutableSteps.asStateFlow()
-
-  val budgetIsLoaded: StateFlow<Boolean> =
-    budgetGraphs
-      .map { it?.budgetId == budgetId }
-      .stateIn(viewModelScope, Eagerly, initialValue = false)
 
   val overallState: StateFlow<SyncOverallState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -140,7 +132,7 @@ class SyncBudgetViewModel(
 
     setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
     viewModelScope.launch {
-      when (val fetched = keyFetcher(budgetId, token, state.input)) {
+      when (val fetched = keyFetcher(budgetId, token, keyPassword = state.input)) {
         is FetchKeyResult.Failure -> {
           logcat.w { "Failed fetching keys: $fetched" }
           handleDecryptFailure(
