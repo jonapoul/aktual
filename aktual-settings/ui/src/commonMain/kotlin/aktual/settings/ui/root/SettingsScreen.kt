@@ -128,8 +128,7 @@ private fun PreviewSettingsScaffold(@PreviewParameter(ThemeParameters::class) th
           systemUi =
             SystemUiConfigState(
               showStatusBar = BooleanPreference(true),
-              blurStatusBar = BooleanPreference(true),
-              blurTopBar = BooleanPreference(false),
+              blurAppBars = BooleanPreference(true),
               blurDialogs = BooleanPreference(true),
               blurRadiusDp = BlurRadiusPreference(5f),
               blurAlpha = BlurAlphaPreference(0.5f),

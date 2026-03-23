@@ -89,9 +89,7 @@ fun AktualAppContent(
 
         DialogBlurOverlay()
 
-        Column(
-          modifier = Modifier.blurred(enabled = { blurStatusBar }, orElse = { pageBackground })
-        ) {
+        Column(modifier = Modifier.blurred(orElse = { pageBackground })) {
           val bbs = bottomBarState
           if (bbs is BottomBarState.Visible) {
             BottomStatusBar(

@@ -22,8 +22,7 @@ interface AppGlobalPreferences {
   val currencySymbolPosition: Preference<CurrencySymbolPosition>
   val currencySpaceBetweenAmountAndSymbol: Preference<Boolean>
   val isPrivacyEnabled: Preference<Boolean>
-  val blurTopBar: Preference<Boolean>
-  val blurStatusBar: Preference<Boolean>
+  val blurAppBars: Preference<Boolean>
   val blurDialogs: Preference<Boolean>
   val blurRadius: Preference<Float>
   val blurAlpha: Preference<Float>

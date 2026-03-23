@@ -16,6 +16,8 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -29,6 +31,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 @Composable
 internal fun TransactionsTitleBar(
   blurState: BlurredTopBarState,
+  listState: LazyListState,
   loadedAccount: LoadedAccount,
   onAction: ActionListener,
   theme: Theme = LocalTheme.current,
@@ -42,7 +45,7 @@ internal fun TransactionsTitleBar(
     }
 
   TopAppBar(
-    modifier = Modifier.blurredTopBar(blurState),
+    modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
     colors = theme.transparentTopAppBarColors(),
     navigationIcon = { NavBackIconButton { onAction(Action.NavBack) } },
     title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
@@ -70,6 +73,7 @@ private fun PreviewTransactionsTitleBar(
   PreviewWithColorScheme(params.theme) {
     TransactionsTitleBar(
       blurState = rememberBlurredTopBarState(),
+      listState = rememberLazyListState(),
       loadedAccount = params.data,
       onAction = {},
     )

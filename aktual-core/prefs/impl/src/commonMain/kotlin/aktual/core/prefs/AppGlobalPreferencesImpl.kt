@@ -91,11 +91,8 @@ class AppGlobalPreferencesImpl(dataStore: DataStore<Preferences>) : AppGlobalPre
   override val isPrivacyEnabled: Preference<Boolean> =
     dataStore.boolean(key = booleanPreferencesKey("isPrivacyEnabled"), default = false).required()
 
-  override val blurTopBar: Preference<Boolean> =
-    dataStore.boolean(key = booleanPreferencesKey("blurTopBar"), default = true).required()
-
-  override val blurStatusBar: Preference<Boolean> =
-    dataStore.boolean(key = booleanPreferencesKey("blurStatusBar"), default = true).required()
+  override val blurAppBars: Preference<Boolean> =
+    dataStore.boolean(key = booleanPreferencesKey("blurAppBars"), default = true).required()
 
   override val blurDialogs: Preference<Boolean> =
     dataStore.boolean(key = booleanPreferencesKey("blurDialogs"), default = true).required()
