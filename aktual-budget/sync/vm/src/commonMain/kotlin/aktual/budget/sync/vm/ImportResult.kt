@@ -3,7 +3,7 @@ package aktual.budget.sync.vm
 import aktual.budget.model.DbMetadata
 
 sealed interface ImportResult {
-  data class Success(val meta: DbMetadata) : ImportResult
+  @JvmInline value class Success(val meta: DbMetadata) : ImportResult
 
   sealed interface Failure : ImportResult
 
@@ -13,5 +13,5 @@ sealed interface ImportResult {
 
   data object InvalidMetaFile : Failure
 
-  data class OtherFailure(val message: String) : Failure
+  @JvmInline value class OtherFailure(val message: String) : Failure
 }

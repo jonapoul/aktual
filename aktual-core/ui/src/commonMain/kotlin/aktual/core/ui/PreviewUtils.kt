@@ -9,6 +9,7 @@ import aktual.core.theme.Theme
 import androidx.compose.foundation.background
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.AndroidUiModes
 import androidx.compose.ui.tooling.preview.Devices
@@ -68,7 +69,7 @@ open class PreviewParameters<T>(protected val data: List<T>) : PreviewParameterP
     labels.getOrNull(index) ?: data[index]?.toString()
 }
 
-data class ThemedParams<T>(val theme: Theme, val data: T)
+@Immutable data class ThemedParams<T>(val theme: Theme, val data: T)
 
 open class ThemedParameterProvider<T>(collection: List<T>) :
   PreviewParameterProvider<ThemedParams<T>> {
@@ -101,3 +102,19 @@ fun PreviewWithColorScheme(
       Surface(modifier = modifier.background(theme.pageBackground), content = content)
     }
   }
+
+@Composable
+fun <T> PreviewWithThemedParams(
+  params: ThemedParams<T>,
+  modifier: Modifier = Modifier,
+  isPrivacyEnabled: Boolean = false,
+  content: @Composable T.() -> Unit,
+) {
+  WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
+    AktualTheme(params.theme) {
+      Surface(modifier = modifier.background(params.theme.pageBackground)) {
+        with(params.data) { content() }
+      }
+    }
+  }
+}

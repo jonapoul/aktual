@@ -10,7 +10,6 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.ui.ChooseReportTypeNavigator
 import aktual.budget.reports.ui.ReportsDashboardNavigator
-import aktual.budget.sync.ui.SyncBudgetNavigator
 import aktual.budget.transactions.ui.TransactionsNavigator
 import aktual.core.model.Token
 import aktual.core.theme.Theme
@@ -44,8 +43,12 @@ internal class ListBudgetsNavigatorImpl(private val stack: SnapshotStateList<Nav
 
   override fun toSettings() = stack.debugPush(SettingsNavRoute)
 
-  override fun toSyncBudget(token: Token, id: BudgetId) =
-    stack.debugPush(SyncBudgetsNavRoute(token, id))
+  override fun toBudget(token: Token, budgetId: BudgetId) =
+    stack.debugPopUpToAndPush(
+      TransactionsNavRoute(token, budgetId),
+      { it is ListBudgetsNavRoute },
+      inclusive = false,
+    )
 
   override fun toUrl() =
     stack.debugPopUpToAndPush(ServerUrlNavRoute, { it is LoginNavRoute }, inclusive = true)
@@ -114,18 +117,6 @@ internal class ThemeSettingsNavigatorImpl(private val stack: SnapshotStateList<N
   override fun back() = stack.debugPop()
 
   override fun inspectTheme(id: Theme.Id) = stack.debugPush(InspectThemeNavRoute(id))
-}
-
-internal class SyncBudgetNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :
-  SyncBudgetNavigator {
-  override fun back() = stack.debugPop()
-
-  override fun toBudget(token: Token, budgetId: BudgetId) =
-    stack.debugPopUpToAndPush(
-      TransactionsNavRoute(token, budgetId),
-      { it is ListBudgetsNavRoute },
-      inclusive = false,
-    )
 }
 
 internal class TransactionsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :

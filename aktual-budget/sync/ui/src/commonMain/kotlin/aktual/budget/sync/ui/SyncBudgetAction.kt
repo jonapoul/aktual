@@ -13,7 +13,7 @@ internal sealed interface SyncBudgetAction {
 
   data object ConfirmKeyPassword : SyncBudgetAction
 
-  data object DismissPasswordDialog : SyncBudgetAction
-
   data object LearnMore : SyncBudgetAction
+
+  data object Cancel : SyncBudgetAction
 }

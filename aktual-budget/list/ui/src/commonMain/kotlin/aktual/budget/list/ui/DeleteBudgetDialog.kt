@@ -9,7 +9,7 @@ import aktual.core.ui.AktualTypography
 import aktual.core.ui.AlertDialog
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.buttonTextStyle
@@ -186,15 +186,16 @@ private fun Theme.errorBare(isPressed: Boolean) =
 private fun PreviewDeleteBudgetDialog(
   @PreviewParameter(DeleteBudgetDialogProvider::class)
   params: ThemedParams<DeleteBudgetDialogParams>
-) =
-  PreviewWithColorScheme(params.theme) {
+) {
+  PreviewWithThemedParams(params) {
     Content(
-      deletingState = params.data.state,
-      localFileExists = params.data.localFileExists,
+      deletingState = state,
+      localFileExists = localFileExists,
       onDeleteLocal = {},
       onDeleteRemote = {},
     )
   }
+}
 
 private data class DeleteBudgetDialogParams(val state: DeletingState, val localFileExists: Boolean)
 

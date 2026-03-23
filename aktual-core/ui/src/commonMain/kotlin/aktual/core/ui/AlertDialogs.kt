@@ -4,8 +4,6 @@ package aktual.core.ui
 
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import alakazam.compose.HorizontalSpacer
-import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -95,13 +93,14 @@ fun DialogContent(
           .background(theme.modalBackground)
           .padding(Dimens.VeryLarge),
       horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Top,
+      verticalArrangement = Arrangement.spacedBy(Dimens.Medium, alignment = Alignment.Top),
     ) {
-      Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
         if (icon != null) {
           Icon(imageVector = icon, contentDescription = null, tint = titleColor)
-
-          HorizontalSpacer(10.dp)
         }
 
         if (title != null) {
@@ -113,11 +112,7 @@ fun DialogContent(
         }
       }
 
-      VerticalSpacer(Dimens.Medium)
-
       CompositionLocalProvider(LocalContentColor provides theme.pageText) { content() }
-
-      VerticalSpacer(Dimens.Medium)
 
       if (buttons != null) {
         CompositionLocalProvider(LocalContentColor provides theme.pageTextPositive) {

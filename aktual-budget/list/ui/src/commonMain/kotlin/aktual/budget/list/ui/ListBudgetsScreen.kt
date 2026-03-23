@@ -12,6 +12,8 @@ import aktual.budget.list.ui.ListBudgetsAction.Reload
 import aktual.budget.list.vm.ListBudgetsState
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
+import aktual.budget.model.BudgetId
+import aktual.budget.sync.ui.SyncBudgetDialog
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
@@ -101,6 +103,16 @@ fun ListBudgetsScreen(
     }
   }
 
+  var budgetToSync by remember { mutableStateOf<BudgetId?>(null) }
+  budgetToSync?.let { id ->
+    SyncBudgetDialog(
+      budgetId = id,
+      token = token,
+      onSyncComplete = { nav.toBudget(token, id) },
+      onDismissRequest = { budgetToSync = null },
+    )
+  }
+
   ListBudgetsScaffold(
     state = state,
     onAction = { action ->
@@ -113,7 +125,7 @@ fun ListBudgetsScreen(
         OpenInBrowser -> viewModel.open(serverUrl)
         Reload -> viewModel.retry()
         is Delete -> budgetToDelete = action.budget
-        is Open -> nav.toSyncBudget(token, action.budget.cloudFileId)
+        is Open -> budgetToSync = action.budget.cloudFileId
       }
     },
   )

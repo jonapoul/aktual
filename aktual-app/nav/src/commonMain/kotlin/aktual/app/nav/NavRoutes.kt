@@ -30,10 +30,6 @@ import kotlinx.serialization.Serializable
 
 @Immutable
 @Serializable
-data class SyncBudgetsNavRoute(val token: Token, val budgetId: BudgetId) : NavKey
-
-@Immutable
-@Serializable
 data class TransactionsNavRoute(val token: Token, val budgetId: BudgetId) : NavKey
 
 @Immutable
