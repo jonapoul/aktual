@@ -101,4 +101,5 @@ include(
   ":aktual-test",
   ":aktual-test:api",
   ":aktual-test:compose",
+  ":aktual-test:smoke",
 )
