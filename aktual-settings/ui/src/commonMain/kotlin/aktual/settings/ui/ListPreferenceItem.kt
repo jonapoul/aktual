@@ -136,7 +136,11 @@ internal fun <E : Enum<E>> ListPreferenceItem(
                 showSheet = false
               },
             headlineContent = { Text(label) },
-            trailingContent = { TrailingContent(option, isSelected, optionSuffix) },
+            trailingContent = if (isSelected || optionSuffix != null) {
+              { TrailingContent(option, isSelected, optionSuffix) }
+            } else {
+              null
+            },
             colors =
               ListItemDefaults.colors(
                 containerColor = Color.Transparent,
