@@ -13,7 +13,9 @@ import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
 import aktual.settings.vm.ListPreference
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -31,11 +33,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -43,7 +47,7 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun <E : Enum<E>> ListPreferenceItem(
   preference: ListPreference<E>,
   optionString: @Composable (E) -> String,
-  optionIcon: ((E) -> ImageVector)?,
+  optionSuffix: @Composable ((E) -> Unit)?,
   title: String,
   subtitle: String?,
   icon: ImageVector?,
@@ -57,7 +61,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
     enabled = preference.enabled,
     onValueChange = preference.onChange,
     optionString = optionString,
-    optionIcon = optionIcon,
+    optionSuffix = optionSuffix,
     title = title,
     subtitle = subtitle,
     icon = icon,
@@ -73,7 +77,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   value: E,
   options: ImmutableList<E>,
   optionString: @Composable (E) -> String,
-  optionIcon: ((E) -> ImageVector)?,
+  optionSuffix: @Composable ((E) -> Unit)?,
   onValueChange: (E) -> Unit,
   title: String,
   subtitle: String?,
@@ -105,7 +109,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
           readOnly = true,
           enabled = enabled,
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
-          leadingIcon = optionIcon?.let { iconComposable -> { iconComposable(value) } },
+          leadingIcon = optionSuffix?.let { suffix -> { suffix(value) } },
           colors = theme.textField(),
         )
         Box(modifier = Modifier.matchParentSize().clickable(enabled) { showSheet = true })
@@ -132,10 +136,9 @@ internal fun <E : Enum<E>> ListPreferenceItem(
                 showSheet = false
               },
             headlineContent = { Text(label) },
-            leadingContent = optionIcon?.let { iconFn -> { Icon(iconFn(option), label) } },
             trailingContent =
-              if (isSelected) {
-                { Icon(MaterialIcons.Check, contentDescription = null) }
+              if (isSelected || optionSuffix != null) {
+                { TrailingContent(option, isSelected, optionSuffix) }
               } else {
                 null
               },
@@ -150,6 +153,26 @@ internal fun <E : Enum<E>> ListPreferenceItem(
         }
       }
     }
+  }
+}
+
+@Composable
+private fun <E : Enum<E>> TrailingContent(
+  value: E,
+  isSelected: Boolean,
+  content: (@Composable (E) -> Unit)?,
+  modifier: Modifier = Modifier,
+) {
+  Row(
+    modifier = modifier,
+    horizontalArrangement = Arrangement.spacedBy(8.dp),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    if (isSelected) {
+      Icon(MaterialIcons.Check, contentDescription = null)
+    }
+
+    content?.invoke(value)
   }
 }
 
@@ -170,7 +193,7 @@ private fun PreviewListPreferenceItem(
       value = params.data.value,
       options = params.data.options,
       optionString = { it.name },
-      optionIcon = null,
+      optionSuffix = null,
       onValueChange = {},
       title = params.data.title,
       subtitle = params.data.subtitle,
