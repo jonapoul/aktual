@@ -5,8 +5,8 @@ import aktual.core.model.PingState.Failure
 import aktual.core.model.PingState.Success
 import aktual.core.model.PingState.Unknown
 import aktual.core.model.PingStateHolder
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.core.prefs.SystemUiPreferences
+import aktual.core.prefs.SystemUiPreferencesImpl
 import aktual.core.ui.BottomBarState.Hidden
 import aktual.core.ui.BottomBarState.Visible
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -24,12 +24,12 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class BottomBarStateUseCaseTest {
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: SystemUiPreferences
   private lateinit var pingStateHolder: PingStateHolder
   private lateinit var useCase: BottomBarStateUseCase
 
   private fun runUseCaseTest(testBody: suspend TestScope.() -> Unit): TestResult = runTest {
-    preferences = AppGlobalPreferencesImpl(buildPreferences())
+    preferences = SystemUiPreferencesImpl(buildPreferences())
     pingStateHolder = PingStateHolder()
     val budgetGraphHolder =
       mockk<BudgetGraphHolder>(relaxed = true) { every { value } returns null }

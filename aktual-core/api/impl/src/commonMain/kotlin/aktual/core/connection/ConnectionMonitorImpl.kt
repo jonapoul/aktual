@@ -4,7 +4,7 @@ import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.ApiBuilder
 import aktual.core.model.ServerUrl
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.collectFlow
 import dev.zacsweers.metro.AppScope
@@ -22,7 +22,7 @@ class ConnectionMonitorImpl(
   private val scope: CoroutineScope,
   private val contexts: CoroutineContexts,
   private val apiStateHolder: AktualApisStateHolder,
-  private val preferences: AppGlobalPreferences,
+  private val preferences: AppPreferences,
   private val apiBuilder: ApiBuilder.Factory,
 ) : ConnectionMonitor {
   private var job: Job? = null

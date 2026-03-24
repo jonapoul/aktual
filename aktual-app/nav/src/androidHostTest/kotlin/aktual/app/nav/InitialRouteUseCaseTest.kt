@@ -3,8 +3,8 @@ package aktual.app.nav
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.core.prefs.AppPreferences
+import aktual.core.prefs.AppPreferencesImpl
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
@@ -21,12 +21,12 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class InitialRouteUseCaseTest {
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: AppPreferences
   private lateinit var useCase: InitialRouteUseCase
 
   private fun runUseCaseTest(testBody: suspend TestScope.() -> Unit): TestResult =
     runTest(timeout = 5.seconds) {
-      preferences = AppGlobalPreferencesImpl(buildPreferences())
+      preferences = AppPreferencesImpl(buildPreferences())
       useCase = InitialRouteUseCase(preferences)
       testBody()
     }

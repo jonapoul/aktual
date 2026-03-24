@@ -4,7 +4,7 @@ import aktual.api.client.AktualApisStateHolder
 import aktual.api.model.account.ChangePasswordRequest
 import aktual.api.model.account.ChangePasswordResponse
 import aktual.core.model.Password
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
@@ -20,7 +20,7 @@ class PasswordChanger
 internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: AktualApisStateHolder,
-  private val preferences: AppGlobalPreferences,
+  private val preferences: AppPreferences,
 ) {
   suspend fun submit(password: Password): ChangePasswordResult {
     val apis = apisStateHolder.value

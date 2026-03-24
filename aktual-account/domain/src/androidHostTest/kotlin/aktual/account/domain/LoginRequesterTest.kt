@@ -11,8 +11,8 @@ import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.core.prefs.AppPreferences
+import aktual.core.prefs.AppPreferencesImpl
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
@@ -46,7 +46,7 @@ import org.robolectric.RobolectricTestRunner
 internal class LoginRequesterTest {
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: AktualApisStateHolder
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: AppPreferences
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var mockEngine: MockEngine.Queue
   private lateinit var fileSystem: FileSystem
@@ -59,7 +59,7 @@ internal class LoginRequesterTest {
   private fun TestScope.before() {
     val dispatcher = unconfinedDispatcher
     val flowPrefs = buildPreferences(dispatcher)
-    preferences = AppGlobalPreferencesImpl(flowPrefs)
+    preferences = AppPreferencesImpl(flowPrefs)
     apisStateHolder = AktualApisStateHolder()
     mockEngine = emptyMockEngine()
     fileSystem = FileSystem.SYSTEM

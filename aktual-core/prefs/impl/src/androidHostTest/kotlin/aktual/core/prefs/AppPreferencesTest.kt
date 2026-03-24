@@ -13,12 +13,12 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
-class AppGlobalPreferencesTest {
-  private lateinit var preferences: AppGlobalPreferences
+class AppPreferencesTest {
+  private lateinit var preferences: AppPreferences
 
   private fun TestScope.before() {
     val prefs = buildPreferences(unconfinedDispatcher)
-    preferences = AppGlobalPreferencesImpl(prefs)
+    preferences = AppPreferencesImpl(prefs)
   }
 
   @Test

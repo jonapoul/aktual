@@ -5,7 +5,7 @@ import aktual.api.client.TokenExpiredNotifier
 import aktual.api.model.account.FailureReason
 import aktual.core.model.AktualJson
 import aktual.core.model.BuildConfig
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppPreferences
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
@@ -29,7 +29,7 @@ object ClientContainer {
     buildConfig: BuildConfig,
     engine: HttpClientEngine,
     notifier: TokenExpiredNotifier,
-    preferences: AppGlobalPreferences,
+    preferences: AppPreferences,
   ): HttpClient {
     return buildKtorClient(AktualJson, tag = "ACTUAL", engine, buildConfig.isDebug) {
       HttpResponseValidator {

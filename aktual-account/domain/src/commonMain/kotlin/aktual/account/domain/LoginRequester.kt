@@ -7,7 +7,7 @@ import aktual.api.model.account.LoginResponse
 import aktual.core.model.AvailableLoginMethod
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
@@ -20,7 +20,7 @@ import logcat.logcat
 class LoginRequester(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: AktualApisStateHolder,
-  private val preferences: AppGlobalPreferences,
+  private val preferences: AppPreferences,
 ) {
   suspend fun fetchLoginMethods(): List<AvailableLoginMethod> {
     val accountApi = apisStateHolder.value?.account ?: return emptyList()

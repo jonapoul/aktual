@@ -64,7 +64,7 @@ internal fun BasicPreferenceItem(
     modifier =
       modifier
         .clip(CardShape)
-        .ifTrue(includeBackground) { background(theme.pillBackgroundLight, CardShape) }
+        .ifTrue(includeBackground) { background(theme.pillBackground, CardShape) }
         .ifTrue(includeBackground) { border(Dp.Hairline, theme.pillBorderDark, CardShape) }
         .ifNotNull(onClick) {
           clickable(enabled, onClick = it, interactionSource = interactionSource)

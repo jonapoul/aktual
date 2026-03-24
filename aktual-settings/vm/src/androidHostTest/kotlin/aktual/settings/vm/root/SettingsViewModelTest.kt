@@ -1,7 +1,11 @@
 package aktual.settings.vm.root
 
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.core.prefs.CurrencyPreferences
+import aktual.core.prefs.CurrencyPreferencesImpl
+import aktual.core.prefs.FormatPreferences
+import aktual.core.prefs.FormatPreferencesImpl
+import aktual.core.prefs.SystemUiPreferences
+import aktual.core.prefs.SystemUiPreferencesImpl
 import aktual.test.buildPreferences
 import alakazam.test.standardDispatcher
 import app.cash.turbine.test
@@ -18,12 +22,16 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class SettingsViewModelTest {
   private lateinit var viewModel: SettingsViewModel
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var uiPreferences: SystemUiPreferences
+  private lateinit var formatPreferences: FormatPreferences
+  private lateinit var currencyPreferences: CurrencyPreferences
 
   private fun TestScope.before() {
-    val prefs = buildPreferences(standardDispatcher)
-    preferences = AppGlobalPreferencesImpl(prefs)
-    viewModel = SettingsViewModel(preferences)
+    val dataStore = buildPreferences(standardDispatcher)
+    uiPreferences = SystemUiPreferencesImpl(dataStore)
+    formatPreferences = FormatPreferencesImpl(dataStore)
+    currencyPreferences = CurrencyPreferencesImpl(dataStore)
+    viewModel = SettingsViewModel(uiPreferences, formatPreferences, currencyPreferences)
   }
 
   @Test
@@ -32,7 +40,7 @@ class SettingsViewModelTest {
     viewModel.state.test {
       assertThat(awaitItem()).showBottomBar().isTrue()
 
-      preferences.showBottomBar.set(false)
+      uiPreferences.showBottomBar.set(false)
       assertThat(awaitItem()).showBottomBar().isFalse()
 
       expectNoEvents()

@@ -9,7 +9,7 @@ import aktual.budget.model.metadata
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.UrlOpener
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppPreferences
 import aktual.core.prefs.asStateFlow
 import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
@@ -42,7 +42,7 @@ import logcat.logcat
 @AssistedInject
 class ListBudgetsViewModel(
   @Assisted private val token: Token,
-  preferences: AppGlobalPreferences,
+  preferences: AppPreferences,
   private val budgetListFetcher: BudgetListFetcher,
   private val files: BudgetFiles,
   private val contexts: CoroutineContexts,

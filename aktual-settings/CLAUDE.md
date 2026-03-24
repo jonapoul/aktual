@@ -6,12 +6,18 @@ Settings screen, split into `vm` (ViewModel/state) and `ui` (Compose UI).
 
 ### 1. Add the preference
 
-**Interface:** `aktual-core/prefs/.../AppGlobalPreferences.kt`
+Choose the appropriate interface in `aktual-core/prefs/` based on the preference's domain:
+- `AppPreferences` — core app prefs (token, serverUrl, privacy)
+- `CurrencyPreferences` — currency display (currency, symbol position, spacing)
+- `FormatPreferences` — data formatting (number format, date format, first day of week, hide fraction)
+- `SystemUiPreferences` — UI chrome (bottom bar visibility, blur settings)
+
+**Interface:** `aktual-core/prefs/.../[Chosen]Preferences.kt`
 ```kotlin
 val myNewPref: Preference<Boolean>
 ```
 
-**Implementation:** `aktual-core/prefs/impl/.../AppGlobalPreferencesImpl.kt`
+**Implementation:** `aktual-core/prefs/impl/.../[Chosen]PreferencesImpl.kt`
 ```kotlin
 override val myNewPref: Preference<Boolean> =
   dataStore.boolean(key = booleanPreferencesKey("myNewPref"), default = true).required()

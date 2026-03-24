@@ -7,7 +7,7 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppPreferences
 import aktual.core.prefs.delete
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.ResettableStateFlow
@@ -48,7 +48,7 @@ class ServerUrlViewModel
 internal constructor(
   private val contexts: CoroutineContexts,
   private val apiStateHolder: AktualApisStateHolder,
-  private val preferences: AppGlobalPreferences,
+  private val preferences: AppPreferences,
   versionsStateHolder: AktualVersionsStateHolder,
   buildConfig: BuildConfig,
 ) : ViewModel() {

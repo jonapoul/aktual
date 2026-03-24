@@ -7,8 +7,8 @@ import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.core.prefs.AppPreferences
+import aktual.core.prefs.AppPreferencesImpl
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
@@ -38,7 +38,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 internal class LoginViewModelTest {
   // real
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: AppPreferences
   private lateinit var viewModel: LoginViewModel
   private lateinit var versionsStateHolder: AktualVersionsStateHolder
 
@@ -48,7 +48,7 @@ internal class LoginViewModelTest {
   private fun TestScope.before() {
     Dispatchers.setMain(standardDispatcher)
     val prefs = buildPreferences(unconfinedDispatcher)
-    preferences = AppGlobalPreferencesImpl(prefs)
+    preferences = AppPreferencesImpl(prefs)
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
     viewModel =
