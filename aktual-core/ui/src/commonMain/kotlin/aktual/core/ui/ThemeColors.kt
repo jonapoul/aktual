@@ -23,6 +23,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
+import java.awt.SystemColor.text
 
 @Composable
 fun Theme.topAppBarColors(
@@ -61,6 +62,8 @@ fun Theme.dropDownMenuItem(): MenuItemColors =
 fun Theme.textField(
   focusedContainer: Color = formInputBackground,
   unfocusedContainer: Color = focusedContainer,
+  border: Color = formInputBorder,
+  unfocusedBorder: Color = border,
   text: Color = formInputText,
   textPlaceholder: Color = formInputTextPlaceholder,
   icon: Color = formInputText,
@@ -75,9 +78,9 @@ fun Theme.textField(
     focusedLabelColor = textPlaceholder,
     unfocusedLabelColor = textPlaceholder,
     disabledLabelColor = textPlaceholder.disabled,
-    focusedIndicatorColor = Color.Transparent,
-    unfocusedIndicatorColor = Color.Transparent,
-    disabledIndicatorColor = Color.Transparent,
+    focusedIndicatorColor = border,
+    unfocusedIndicatorColor = unfocusedBorder,
+    disabledIndicatorColor = border.disabled,
     focusedContainerColor = focusedContainer,
     unfocusedContainerColor = unfocusedContainer,
     disabledContainerColor = unfocusedContainer.disabled,

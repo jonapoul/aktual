@@ -149,11 +149,10 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
   if (progress > 0f) {
     val style =
       remember(blurConfig, theme, progress) {
-        val tintAlpha = if (theme.isLight()) 1f - blurConfig.blurAlpha else blurConfig.blurAlpha
         HazeStyle(
           blurRadius = blurConfig.blurRadius * progress,
           backgroundColor = theme.cardBackground.copy(alpha = progress * 0.1f),
-          tint = HazeTint(theme.cardBackground.copy(alpha = tintAlpha * progress)),
+          tint = HazeTint(theme.cardBackground.copy(alpha = blurConfig.blurAlpha * progress)),
         )
       }
     Box(modifier = modifier.fillMaxSize().hazeEffect(hazeState, style))

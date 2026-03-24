@@ -95,7 +95,7 @@ internal fun CustomThemesPreference(
     icon = null,
     enabled = enabled,
     onClick = null,
-    topRightContent = { RefreshButton(state, onAction) },
+    topRightContent = { RefreshButton(state, enabled, onAction) },
     bottomContent = {
       when (state) {
         CatalogState.Loading -> CatalogLoading()
@@ -114,7 +114,11 @@ internal fun CustomThemesPreference(
 }
 
 @Composable
-private fun RefreshButton(state: CatalogState, onAction: (ThemeSettingsAction) -> Unit) {
+private fun RefreshButton(
+  state: CatalogState,
+  enabled: Boolean,
+  onAction: (ThemeSettingsAction) -> Unit,
+) {
   val isLoading = state is CatalogState.Loading
   if (isLoading || state is CatalogState.Success) {
     val transition = rememberInfiniteTransition(label = "refresh")
@@ -131,7 +135,7 @@ private fun RefreshButton(state: CatalogState, onAction: (ThemeSettingsAction) -
       modifier = Modifier.rotate(rotation),
       imageVector = MaterialIcons.Refresh,
       contentDescription = Strings.settingsThemeRefresh,
-      enabled = !isLoading,
+      enabled = enabled && !isLoading,
       onClick = { onAction(ThemeSettingsAction.ClearCache) },
     )
   }
@@ -209,7 +213,7 @@ private fun CatalogLoaded(
     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
-    ModeFilterRow(modeFilter = modeFilter, onAction = onAction, theme = theme)
+    ModeFilterRow(enabled = enabled, modeFilter = modeFilter, onAction = onAction, theme = theme)
 
     themes.fastForEach { item ->
       CatalogLoadedItem(
@@ -224,6 +228,7 @@ private fun CatalogLoaded(
 
 @Composable
 private fun ModeFilterRow(
+  enabled: Boolean,
   modeFilter: ThemeModeFilter,
   onAction: (ThemeSettingsAction) -> Unit,
   theme: Theme = LocalTheme.current,
@@ -238,6 +243,7 @@ private fun ModeFilterRow(
       shape = SegmentedButtonDefaults.itemShape(index = 0, count = 3, baseShape = CardShape),
       colors = buttonColors,
       label = { Text(Strings.settingsThemeAll, color = LocalContentColor.current) },
+      enabled = enabled,
     )
 
     SegmentedButton(
@@ -246,6 +252,7 @@ private fun ModeFilterRow(
       shape = SegmentedButtonDefaults.itemShape(index = 1, count = 3, baseShape = CardShape),
       colors = buttonColors,
       label = { Text(Strings.settingsThemeLight, color = LocalContentColor.current) },
+      enabled = enabled,
     )
 
     SegmentedButton(
@@ -254,6 +261,7 @@ private fun ModeFilterRow(
       shape = SegmentedButtonDefaults.itemShape(index = 2, count = 3, baseShape = CardShape),
       colors = buttonColors,
       label = { Text(Strings.settingsThemeDark, color = LocalContentColor.current) },
+      enabled = enabled,
     )
   }
 }

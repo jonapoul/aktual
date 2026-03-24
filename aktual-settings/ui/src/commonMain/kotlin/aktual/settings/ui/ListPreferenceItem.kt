@@ -110,7 +110,11 @@ internal fun <E : Enum<E>> ListPreferenceItem(
           enabled = enabled,
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
           leadingIcon = optionSuffix?.let { suffix -> { suffix(value) } },
-          colors = theme.textField(),
+          colors =
+            theme.textField(
+              focusedContainer = theme.buttonNormalBackground,
+              border = theme.buttonNormalBorder,
+            ),
         )
         Box(modifier = Modifier.matchParentSize().clickable(enabled) { showSheet = true })
       }
