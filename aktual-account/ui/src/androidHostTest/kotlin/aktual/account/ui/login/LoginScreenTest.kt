@@ -8,8 +8,8 @@ import aktual.account.vm.LoginViewModel
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.core.prefs.AppPreferences
+import aktual.core.prefs.AppPreferencesImpl
 import aktual.test.TestBuildConfig
 import aktual.test.assertEditableTextEquals
 import aktual.test.buildPreferences
@@ -44,7 +44,7 @@ class LoginScreenTest {
   // real
   private lateinit var viewModel: LoginViewModel
   private lateinit var versionsStateHolder: AktualVersionsStateHolder
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: AppPreferences
 
   // mock
   private lateinit var navigator: LoginNavigator
@@ -61,7 +61,7 @@ class LoginScreenTest {
     versionsStateHolder = AktualVersionsStateHolder(BUILD_CONFIG)
     val scope = TestScope(UnconfinedTestDispatcher())
     val prefs = scope.buildPreferences()
-    preferences = AppGlobalPreferencesImpl(prefs)
+    preferences = AppPreferencesImpl(prefs)
   }
 
   private fun buildViewModel(password: Password = Password.Empty) {

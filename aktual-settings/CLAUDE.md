@@ -6,7 +6,7 @@ Settings screen, split into `vm` (ViewModel/state) and `ui` (Compose UI).
 
 ### 1. Add the preference
 
-**Interface:** `aktual-core/prefs/.../AppGlobalPreferences.kt`
+**Interface:** `aktual-core/prefs/.../AppPreferences.kt`
 ```kotlin
 val myNewPref: Preference<Boolean>
 ```

@@ -15,8 +15,11 @@ import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.PingStateHolder
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppPreferences
+import aktual.core.prefs.CurrencyPreferences
+import aktual.core.prefs.FormatPreferences
 import aktual.core.prefs.Preference
+import aktual.core.prefs.SystemUiPreferences
 import aktual.core.prefs.asStateFlow
 import aktual.core.prefs.delete
 import aktual.core.ui.BlurConfig
@@ -45,7 +48,7 @@ import kotlinx.coroutines.launch
 import logcat.logcat
 
 @Inject
-class BlurConfigUseCase(private val preferences: AppGlobalPreferences) {
+class BlurConfigUseCase(private val preferences: SystemUiPreferences) {
   operator fun invoke(scope: CoroutineScope): StateFlow<BlurConfig> =
     scope.launchMolecule(Immediate) {
       val blurAppBars by preferences.blurAppBars.collectAsStateFlow(scope)
@@ -72,16 +75,20 @@ data class FormatConfig(
 )
 
 @Inject
-class FormatConfigUseCase(private val preferences: AppGlobalPreferences) {
+class FormatConfigUseCase(
+  private val prefs: AppPreferences,
+  private val formats: FormatPreferences,
+  private val currencies: CurrencyPreferences,
+) {
   operator fun invoke(scope: CoroutineScope): StateFlow<FormatConfig> =
     scope.launchMolecule(Immediate) {
-      val numberFormat by preferences.numberFormat.collectAsStateFlow(scope)
-      val hideFraction by preferences.hideFraction.collectAsStateFlow(scope)
-      val currency by preferences.currency.collectAsStateFlow(scope)
-      val currencySymbolPosition by preferences.currencySymbolPosition.collectAsStateFlow(scope)
+      val numberFormat by formats.numberFormat.collectAsStateFlow(scope)
+      val hideFraction by formats.hideFraction.collectAsStateFlow(scope)
+      val currency by currencies.currency.collectAsStateFlow(scope)
+      val currencySymbolPosition by currencies.symbolPosition.collectAsStateFlow(scope)
       val currencySpaceBetweenAmountAndSymbol by
-        preferences.currencySpaceBetweenAmountAndSymbol.collectAsStateFlow(scope)
-      val isPrivacyEnabled by preferences.isPrivacyEnabled.collectAsStateFlow(scope)
+        currencies.spaceBetweenAmountAndSymbol.collectAsStateFlow(scope)
+      val isPrivacyEnabled by prefs.isPrivacyEnabled.collectAsStateFlow(scope)
       FormatConfig(
         numberFormat = numberFormat,
         hideFraction = hideFraction,
@@ -94,7 +101,7 @@ class FormatConfigUseCase(private val preferences: AppGlobalPreferences) {
 }
 
 @Inject
-class InitialRouteUseCase(private val preferences: AppGlobalPreferences) {
+class InitialRouteUseCase(private val preferences: AppPreferences) {
   private data class AuthPrefs(val serverUrl: ServerUrl?, val token: Token?)
 
   operator fun invoke(scope: CoroutineScope): StateFlow<NavKey?> {
@@ -113,7 +120,7 @@ class InitialRouteUseCase(private val preferences: AppGlobalPreferences) {
 
 @Inject
 class BottomBarStateUseCase(
-  private val preferences: AppGlobalPreferences,
+  private val preferences: SystemUiPreferences,
   private val budgetGraphHolder: BudgetGraphHolder,
   private val pingStateHolder: PingStateHolder,
 ) {
@@ -143,7 +150,7 @@ class AppLifecycleManager(
   private val connectionMonitor: ConnectionMonitor,
   private val serverPinger: ServerPinger,
   private val serverVersionFetcher: ServerVersionFetcher,
-  private val preferences: AppGlobalPreferences,
+  private val preferences: AppPreferences,
   private val files: BudgetFiles,
   tokenExpiredEvent: TokenExpiredEvent,
 ) {

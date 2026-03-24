@@ -1,8 +1,10 @@
 package aktual.settings.vm.root
 
 import aktual.budget.model.Currency
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.CurrencyPreferences
+import aktual.core.prefs.FormatPreferences
 import aktual.core.prefs.Preference
+import aktual.core.prefs.SystemUiPreferences
 import aktual.core.prefs.asStateFlow
 import aktual.settings.vm.BooleanPreference
 import aktual.settings.vm.ListPreference
@@ -23,8 +25,12 @@ import kotlinx.coroutines.launch
 
 @ViewModelKey(SettingsViewModel::class)
 @ContributesIntoMap(AppScope::class)
-class SettingsViewModel internal constructor(private val preferences: AppGlobalPreferences) :
-  ViewModel() {
+class SettingsViewModel
+internal constructor(
+  private val systemUiPreferences: SystemUiPreferences,
+  private val formatPreferences: FormatPreferences,
+  private val currencyPreferences: CurrencyPreferences,
+) : ViewModel() {
   val state: StateFlow<SettingsScreenState> =
     viewModelScope.launchMolecule(Immediate) {
       SettingsScreenState(
@@ -36,90 +42,96 @@ class SettingsViewModel internal constructor(private val preferences: AppGlobalP
 
   @Composable
   private fun systemUiState(): SystemUiConfigState {
-    val showBottomBar by preferences.showBottomBar.collectAsStateFlow()
-    val blurAppBars by preferences.blurAppBars.collectAsStateFlow()
-    val blurDialogs by preferences.blurDialogs.collectAsStateFlow()
-    val blurRadius by preferences.blurRadius.collectAsStateFlow()
-    val blurAlpha by preferences.blurAlpha.collectAsStateFlow()
+    val showBottomBar by systemUiPreferences.showBottomBar.collectAsStateFlow()
+    val blurAppBars by systemUiPreferences.blurAppBars.collectAsStateFlow()
+    val blurDialogs by systemUiPreferences.blurDialogs.collectAsStateFlow()
+    val blurRadius by systemUiPreferences.blurRadius.collectAsStateFlow()
+    val blurAlpha by systemUiPreferences.blurAlpha.collectAsStateFlow()
     val anyBlurEnabled = blurAppBars || blurDialogs
     return SystemUiConfigState(
       showStatusBar =
         BooleanPreference(
           value = showBottomBar,
-          onChange = { preferences.showBottomBar.launchAndSet(it) },
+          onChange = { systemUiPreferences.showBottomBar.launchAndSet(it) },
         ),
       blurAppBars =
         BooleanPreference(
           value = blurAppBars,
-          onChange = { preferences.blurAppBars.launchAndSet(it) },
+          onChange = { systemUiPreferences.blurAppBars.launchAndSet(it) },
         ),
       blurDialogs =
         BooleanPreference(
           value = blurDialogs,
-          onChange = { preferences.blurDialogs.launchAndSet(it) },
+          onChange = { systemUiPreferences.blurDialogs.launchAndSet(it) },
         ),
       blurRadiusDp =
         BlurRadiusPreference(
           value = blurRadius,
           enabled = anyBlurEnabled,
-          onChange = { preferences.blurRadius.launchAndSet(it) },
+          onChange = { systemUiPreferences.blurRadius.launchAndSet(it) },
         ),
       blurAlpha =
         BlurAlphaPreference(
           value = blurAlpha,
           enabled = anyBlurEnabled,
-          onChange = { preferences.blurAlpha.launchAndSet(it) },
+          onChange = { systemUiPreferences.blurAlpha.launchAndSet(it) },
         ),
     )
   }
 
   @Composable
   private fun currencyState(): CurrencyConfigState {
-    val currency by preferences.currency.collectAsStateFlow()
-    val symbolPosition by preferences.currencySymbolPosition.collectAsStateFlow()
+    val currency by currencyPreferences.currency.collectAsStateFlow()
+    val symbolPosition by currencyPreferences.symbolPosition.collectAsStateFlow()
     val spaceBetweenAmountAndSymbol by
-      preferences.currencySpaceBetweenAmountAndSymbol.collectAsStateFlow()
+      currencyPreferences.spaceBetweenAmountAndSymbol.collectAsStateFlow()
     return CurrencyConfigState(
       currency =
-        ListPreference(value = currency, onChange = { preferences.currency.launchAndSet(it) }),
+        ListPreference(
+          value = currency,
+          onChange = { currencyPreferences.currency.launchAndSet(it) },
+        ),
       symbolPosition =
         ListPreference(
           value = symbolPosition,
           enabled = currency != Currency.None,
-          onChange = { preferences.currencySymbolPosition.launchAndSet(it) },
+          onChange = { currencyPreferences.symbolPosition.launchAndSet(it) },
         ),
       spaceBetweenAmountAndSymbol =
         BooleanPreference(
           value = spaceBetweenAmountAndSymbol,
           enabled = currency != Currency.None,
-          onChange = { preferences.currencySpaceBetweenAmountAndSymbol.launchAndSet(it) },
+          onChange = { currencyPreferences.spaceBetweenAmountAndSymbol.launchAndSet(it) },
         ),
     )
   }
 
   @Composable
   private fun formatState(): FormatConfigState {
-    val numberFormat by preferences.numberFormat.collectAsStateFlow()
-    val dateFormat by preferences.dateFormat.collectAsStateFlow()
-    val firstDayOfWeek by preferences.firstDayOfWeek.collectAsStateFlow()
-    val hideFraction by preferences.hideFraction.collectAsStateFlow()
+    val numberFormat by formatPreferences.numberFormat.collectAsStateFlow()
+    val dateFormat by formatPreferences.dateFormat.collectAsStateFlow()
+    val firstDayOfWeek by formatPreferences.firstDayOfWeek.collectAsStateFlow()
+    val hideFraction by formatPreferences.hideFraction.collectAsStateFlow()
     return FormatConfigState(
       numberFormat =
         ListPreference(
           value = numberFormat,
-          onChange = { preferences.numberFormat.launchAndSet(it) },
+          onChange = { formatPreferences.numberFormat.launchAndSet(it) },
         ),
       dateFormat =
-        ListPreference(value = dateFormat, onChange = { preferences.dateFormat.launchAndSet(it) }),
+        ListPreference(
+          value = dateFormat,
+          onChange = { formatPreferences.dateFormat.launchAndSet(it) },
+        ),
       firstDayOfWeek =
         ListPreference(
           value = firstDayOfWeek,
-          onChange = { preferences.firstDayOfWeek.launchAndSet(it) },
+          onChange = { formatPreferences.firstDayOfWeek.launchAndSet(it) },
         ),
       hideFraction =
         BooleanPreference(
           value = hideFraction,
-          onChange = { preferences.hideFraction.launchAndSet(it) },
+          onChange = { formatPreferences.hideFraction.launchAndSet(it) },
         ),
     )
   }

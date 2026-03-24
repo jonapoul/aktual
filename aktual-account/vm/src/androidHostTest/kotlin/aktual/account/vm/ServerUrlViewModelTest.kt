@@ -8,8 +8,8 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.core.prefs.AppPreferences
+import aktual.core.prefs.AppPreferencesImpl
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -47,7 +47,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlViewModelTest {
   // Real
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: AppPreferences
   private lateinit var viewModel: ServerUrlViewModel
   private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var versionsStateHolder: AktualVersionsStateHolder
@@ -77,7 +77,7 @@ class ServerUrlViewModelTest {
 
   private suspend fun TestScope.buildPreferences() {
     val prefs = buildPreferences(UnconfinedTestDispatcher(testScheduler))
-    preferences = AppGlobalPreferencesImpl(prefs)
+    preferences = AppPreferencesImpl(prefs)
     preferences.serverUrl.set(EXAMPLE_URL)
   }
 

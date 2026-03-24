@@ -9,7 +9,7 @@ import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.core.prefs.AppPreferences
 import aktual.core.prefs.asStateFlow
 import alakazam.kotlin.ResettableStateFlow
 import androidx.lifecycle.ViewModel
@@ -37,7 +37,7 @@ import logcat.logcat
 class LoginViewModel(
   private val loginRequester: LoginRequester,
   versionsStateHolder: AktualVersionsStateHolder,
-  preferences: AppGlobalPreferences,
+  preferences: AppPreferences,
   buildConfig: BuildConfig,
 ) : ViewModel() {
   private val mutableEnteredPassword = ResettableStateFlow(buildConfig.defaultPassword)
