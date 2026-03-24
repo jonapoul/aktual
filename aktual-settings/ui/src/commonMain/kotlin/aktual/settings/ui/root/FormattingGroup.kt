@@ -35,7 +35,7 @@ internal fun FormattingGroup(state: FormatConfigState, modifier: Modifier = Modi
     ListPreferenceItem(
       preference = state.numberFormat,
       optionString = { f -> f.string() },
-      optionIcon = null,
+      optionSuffix = null,
       title = Strings.settingsFormatNumbers,
       subtitle = null,
       includeBackground = false,
@@ -45,7 +45,7 @@ internal fun FormattingGroup(state: FormatConfigState, modifier: Modifier = Modi
     ListPreferenceItem(
       preference = state.dateFormat,
       optionString = { f -> f.label() },
-      optionIcon = null,
+      optionSuffix = null,
       title = Strings.settingsFormatDates,
       subtitle = null,
       includeBackground = false,
@@ -55,7 +55,7 @@ internal fun FormattingGroup(state: FormatConfigState, modifier: Modifier = Modi
     ListPreferenceItem(
       preference = state.firstDayOfWeek,
       optionString = { d -> d.string() },
-      optionIcon = null,
+      optionSuffix = null,
       title = Strings.settingsFormatFirstDay,
       subtitle = null,
       includeBackground = false,

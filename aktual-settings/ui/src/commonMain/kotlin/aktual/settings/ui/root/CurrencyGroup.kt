@@ -17,8 +17,10 @@ import aktual.settings.ui.BooleanPreferenceItem
 import aktual.settings.ui.ListPreferenceItem
 import aktual.settings.ui.PreferenceGroup
 import aktual.settings.vm.root.CurrencyConfigState
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 
 @Composable
 internal fun CurrencyGroup(state: CurrencyConfigState, modifier: Modifier = Modifier) {
@@ -30,7 +32,7 @@ internal fun CurrencyGroup(state: CurrencyConfigState, modifier: Modifier = Modi
     ListPreferenceItem(
       preference = state.currency,
       optionString = { c -> c.string() },
-      optionIcon = null,
+      optionSuffix = { c -> Text(c.symbol, textAlign = TextAlign.Center) },
       icon = MaterialIcons.CurrencyPound,
       title = Strings.settingsCurrencyDefault,
       subtitle = null,
@@ -40,7 +42,7 @@ internal fun CurrencyGroup(state: CurrencyConfigState, modifier: Modifier = Modi
     ListPreferenceItem(
       preference = state.symbolPosition,
       optionString = { c -> c.string() },
-      optionIcon = null,
+      optionSuffix = null,
       icon =
         when (state.symbolPosition.value) {
           CurrencySymbolPosition.BeforeAmount -> MaterialIcons.LineStartArrowNotch
