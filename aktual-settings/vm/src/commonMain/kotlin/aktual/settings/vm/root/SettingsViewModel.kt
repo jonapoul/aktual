@@ -25,8 +25,7 @@ import kotlinx.coroutines.launch
 
 @ViewModelKey(SettingsViewModel::class)
 @ContributesIntoMap(AppScope::class)
-class SettingsViewModel
-internal constructor(
+class SettingsViewModel(
   private val systemUiPreferences: SystemUiPreferences,
   private val formatPreferences: FormatPreferences,
   private val currencyPreferences: CurrencyPreferences,

@@ -11,8 +11,11 @@ import aktual.budget.reports.vm.ReportsDashboardViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.di.BudgetGraph
+import aktual.core.theme.DarkTheme
 import aktual.metrics.vm.MetricsViewModel
+import aktual.settings.vm.inspect.InspectThemeViewModel
 import aktual.settings.vm.root.SettingsViewModel
+import aktual.settings.vm.theme.ThemeSettingsViewModel
 import androidx.lifecycle.ViewModel
 import app.cash.burst.InterceptTest
 import assertk.assertThat
@@ -52,6 +55,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun settings() = testVm<SettingsViewModel>()
 
+  @Test fun themeSettings() = testVm<ThemeSettingsViewModel>()
+
   @Test fun url() = testVm<ServerUrlViewModel>()
 
   @Test
@@ -81,6 +86,10 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     testAssistedVM<TransactionsViewModel, TransactionsViewModel.Factory> {
       create(LOGIN_TOKEN, BUDGET_ID, TRANSACTIONS_SPEC)
     }
+
+  @Test
+  fun inspectTheme() =
+    testAssistedVM<InspectThemeViewModel, InspectThemeViewModel.Factory> { create(DarkTheme.id) }
 
   protected inline fun <reified VM : ViewModel> testVm() {
     assertThat(appGraph.viewModelProviders[VM::class])
