@@ -22,9 +22,11 @@ import assertk.assertThat
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.coroutines.flow.update
+import logcat.LogcatLogger
 
 /** To be implemented for each target - makes sure VMs are bound as expected to DI graph */
 abstract class ViewModelSmokeTest<G : TestAppGraph> {
@@ -37,11 +39,20 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @BeforeTest
   fun before() {
+    optionallySkip()
     val container = TestContainer(temporaryFolder)
     appGraph = buildGraph(container)
     budgetGraph = appGraph.budgetGraphBuilder.invoke(DB_METADATA)
     appGraph.budgetGraphHolder.update { budgetGraph }
   }
+
+  @AfterTest
+  fun after() {
+    LogcatLogger.uninstall()
+    budgetGraph.driver.close()
+  }
+
+  protected abstract fun optionallySkip()
 
   @Test fun about() = testVm<AboutViewModel>()
 
