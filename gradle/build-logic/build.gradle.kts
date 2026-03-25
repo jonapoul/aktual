@@ -22,7 +22,6 @@ dependencies {
     )
 
   compileOnlyPlugin(libs.plugins.agp.app)
-  compileOnlyPlugin(libs.plugins.agp.lib)
   compileOnlyPlugin(libs.plugins.blueprint)
   compileOnlyPlugin(libs.plugins.buildconfig)
   compileOnlyPlugin(libs.plugins.burst)
