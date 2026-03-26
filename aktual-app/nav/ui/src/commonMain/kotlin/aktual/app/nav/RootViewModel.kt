@@ -16,14 +16,14 @@ import kotlinx.coroutines.flow.StateFlow
 abstract class RootViewModel(
   private val themeResolver: ThemeResolver,
   private val appLifecycleManager: AppLifecycleManager,
-  navEntryContributors: Set<NavEntryContributor>,
+  navGraphFactory: NavGraph.Factory,
   formatConfigUseCase: FormatConfigUseCase,
   blurConfigUseCase: BlurConfigUseCase,
   initialRouteUseCase: InitialRouteUseCase,
   bottomBarStateUseCase: BottomBarStateUseCase,
 ) : ViewModel() {
   val navEntryContributors: ImmutableSet<NavEntryContributor> =
-    navEntryContributors.toImmutableSet()
+    navGraphFactory.create().navEntryContributors.toImmutableSet()
   val formatConfig: StateFlow<FormatConfig> = formatConfigUseCase(viewModelScope)
   val blurConfig: StateFlow<BlurConfig> = blurConfigUseCase(viewModelScope)
   val initialRoute: StateFlow<NavKey?> = initialRouteUseCase(viewModelScope)

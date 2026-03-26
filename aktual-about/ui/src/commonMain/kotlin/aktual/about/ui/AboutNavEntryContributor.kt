@@ -7,15 +7,15 @@ import aktual.about.ui.licenses.LicensesScreen
 import aktual.app.nav.InfoNavRoute
 import aktual.app.nav.LicensesNavRoute
 import aktual.app.nav.NavEntryContributor
+import aktual.app.nav.NavScope
 import aktual.app.nav.debugPop
 import aktual.app.nav.debugPush
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoSet
 
-@ContributesIntoSet(AppScope::class)
+@ContributesIntoSet(NavScope::class)
 class AboutNavEntryContributor : NavEntryContributor {
   override fun contribute(scope: EntryProviderScope<NavKey>, stack: SnapshotStateList<NavKey>) {
     scope.entry<InfoNavRoute> { InfoScreen(InfoNavigatorImpl(stack)) }

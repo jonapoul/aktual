@@ -6,6 +6,7 @@ import aktual.app.nav.ListBudgetsNavRoute
 import aktual.app.nav.LoginNavRoute
 import aktual.app.nav.MetricsNavRoute
 import aktual.app.nav.NavEntryContributor
+import aktual.app.nav.NavScope
 import aktual.app.nav.ServerUrlNavRoute
 import aktual.app.nav.SettingsNavRoute
 import aktual.app.nav.TransactionsNavRoute
@@ -16,10 +17,9 @@ import aktual.core.model.Token
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoSet
 
-@ContributesIntoSet(AppScope::class)
+@ContributesIntoSet(NavScope::class)
 class BudgetListNavEntryContributor : NavEntryContributor {
   override fun contribute(scope: EntryProviderScope<NavKey>, stack: SnapshotStateList<NavKey>) {
     scope.entry<ListBudgetsNavRoute> { route ->

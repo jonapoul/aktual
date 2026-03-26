@@ -2,6 +2,7 @@ package aktual.budget.reports.ui
 
 import aktual.app.nav.CreateReportNavRoute
 import aktual.app.nav.NavEntryContributor
+import aktual.app.nav.NavScope
 import aktual.app.nav.ReportNavRoute
 import aktual.app.nav.ReportsListNavRoute
 import aktual.app.nav.debugPop
@@ -12,10 +13,9 @@ import aktual.core.model.Token
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoSet
 
-@ContributesIntoSet(AppScope::class)
+@ContributesIntoSet(NavScope::class)
 class ReportsNavEntryContributor : NavEntryContributor {
   override fun contribute(scope: EntryProviderScope<NavKey>, stack: SnapshotStateList<NavKey>) {
     scope.entry<ReportsListNavRoute> { route ->
