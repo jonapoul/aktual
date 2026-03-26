@@ -10,9 +10,9 @@ import aktual.budget.reports.ui.ChooseReportTypeScreen
 import aktual.budget.reports.ui.ReportsDashboardScreen
 import aktual.budget.transactions.ui.TransactionsScreen
 import aktual.metrics.ui.MetricsScreen
-import aktual.settings.ui.inspect.InspectThemeScreen
-import aktual.settings.ui.root.SettingsScreen
-import aktual.settings.ui.theme.ThemeSettingsScreen
+import aktual.prefs.ui.inspect.InspectThemeScreen
+import aktual.prefs.ui.root.SettingsScreen
+import aktual.prefs.ui.theme.ThemeSettingsScreen
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith

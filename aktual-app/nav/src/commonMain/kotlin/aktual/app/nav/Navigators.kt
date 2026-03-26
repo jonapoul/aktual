@@ -14,9 +14,9 @@ import aktual.budget.transactions.ui.TransactionsNavigator
 import aktual.core.model.ThemeId
 import aktual.core.model.Token
 import aktual.metrics.ui.MetricsNavigator
-import aktual.settings.ui.inspect.InspectThemeNavigator
-import aktual.settings.ui.root.SettingsNavigator
-import aktual.settings.ui.theme.ThemeSettingsNavigator
+import aktual.prefs.ui.inspect.InspectThemeNavigator
+import aktual.prefs.ui.root.SettingsNavigator
+import aktual.prefs.ui.theme.ThemeSettingsNavigator
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavKey
 
