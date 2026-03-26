@@ -1,14 +1,14 @@
 package aktual.settings.vm.theme
 
+import aktual.core.model.ThemeId
+import aktual.core.prefs.ThemePreferences
 import aktual.core.prefs.asStateFlow
 import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.MidnightTheme
-import aktual.core.theme.Theme
 import aktual.core.theme.ThemeApi
 import aktual.core.theme.ThemeMode
-import aktual.core.theme.ThemePreferences
 import aktual.core.theme.toId
 import aktual.settings.vm.BooleanPreference
 import aktual.settings.vm.ListPreference
@@ -56,7 +56,7 @@ class ThemeSettingsViewModel(
 
     data class Loaded(
       val summaries: List<CustomThemeSummary>,
-      val states: Map<Theme.Id, CustomThemeState>,
+      val states: Map<ThemeId, CustomThemeState>,
     ) : LoadState
   }
 
@@ -131,7 +131,7 @@ class ThemeSettingsViewModel(
     }
   }
 
-  fun select(id: Theme.Id) {
+  fun select(id: ThemeId) {
     viewModelScope.launch { preferences.constantTheme.set(id) }
   }
 
@@ -139,7 +139,7 @@ class ThemeSettingsViewModel(
     viewModelScope.launch { preferences.useSystemDefault.set(value) }
   }
 
-  fun setDarkTheme(value: Theme.Id) {
+  fun setDarkTheme(value: ThemeId) {
     viewModelScope.launch { preferences.nightTheme.set(value) }
   }
 
@@ -152,7 +152,7 @@ class ThemeSettingsViewModel(
     remember(value) { BooleanPreference(value = value, enabled = true) }
 
   @Composable
-  private fun darkTheme(value: Theme.Id, enabled: Boolean) =
+  private fun darkTheme(value: ThemeId, enabled: Boolean) =
     remember(value, enabled) {
       ListPreference(
         value = value,
@@ -163,7 +163,7 @@ class ThemeSettingsViewModel(
 
   private fun toCustomThemeItem(
     summary: CustomThemeSummary,
-    selected: Theme.Id?,
+    selected: ThemeId?,
     state: LoadState.Loaded,
   ): CatalogItem {
     val themeId = summary.repo.toId()
@@ -216,7 +216,7 @@ class ThemeSettingsViewModel(
     }
   }
 
-  private fun updateFetchState(themeId: Theme.Id, fetchState: CustomThemeState) {
+  private fun updateFetchState(themeId: ThemeId, fetchState: CustomThemeState) {
     mutableLoadState.update { current ->
       if (current is LoadState.Loaded) {
         current.copy(states = current.states + (themeId to fetchState))

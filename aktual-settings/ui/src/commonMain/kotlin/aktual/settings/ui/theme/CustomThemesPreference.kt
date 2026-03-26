@@ -4,6 +4,7 @@ import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
+import aktual.core.model.ThemeId
 import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.theme.DarkTheme
@@ -82,7 +83,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun CustomThemesPreference(
-  selectedTheme: Theme.Id?,
+  selectedTheme: ThemeId?,
   enabled: Boolean,
   state: CatalogState,
   onAction: (ThemeSettingsAction) -> Unit,
@@ -204,7 +205,7 @@ private fun CatalogLoading(modifier: Modifier = Modifier, theme: Theme = LocalTh
 private fun CatalogLoaded(
   themes: ImmutableList<CatalogItem>,
   modeFilter: ThemeModeFilter,
-  selectedTheme: Theme.Id?,
+  selectedTheme: ThemeId?,
   enabled: Boolean,
   onAction: (ThemeSettingsAction) -> Unit,
   theme: Theme = LocalTheme.current,
@@ -269,7 +270,7 @@ private fun ModeFilterRow(
 @Composable
 private fun CatalogLoadedItem(
   item: CatalogItem,
-  selectedId: Theme.Id?,
+  selectedId: ThemeId?,
   enabled: Boolean,
   onAction: (ThemeSettingsAction) -> Unit,
   theme: Theme = LocalTheme.current,
@@ -455,9 +456,9 @@ private class CustomThemesScaffoldProvider :
     CatalogState.Success(
       themes =
         persistentListOf(
-          PREVIEW_CATALOG_ITEM.copy(id = Theme.Id("a")),
-          PREVIEW_CATALOG_ITEM.copy(id = Theme.Id("b")),
-          PREVIEW_CATALOG_ITEM.copy(id = Theme.Id("c")),
+          PREVIEW_CATALOG_ITEM.copy(id = ThemeId("a")),
+          PREVIEW_CATALOG_ITEM.copy(id = ThemeId("b")),
+          PREVIEW_CATALOG_ITEM.copy(id = ThemeId("c")),
         ),
       modeFilter = ThemeModeFilter.All,
     ),
@@ -486,7 +487,7 @@ private class CustomThemeListItemProvider :
 
 internal val PREVIEW_CATALOG_ITEM =
   CatalogItem(
-    id = Theme.Id("username/repo_name"),
+    id = ThemeId("username/repo_name"),
     summary =
       CustomThemeSummary(
         name = "My theme",

@@ -1,12 +1,13 @@
 package aktual.core.theme
 
+import aktual.core.model.ThemeId
 import aktual.core.theme.internal.AktualColors
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
 data object MidnightTheme : DefaultTheme {
-  override val id = Theme.Id("Midnight")
+  override val id = ThemeId("Midnight")
 
   override val pageBackground = AktualColors.gray600
   override val pageBackgroundModalActive = AktualColors.gray700

@@ -1,8 +1,8 @@
 package aktual.settings.vm.inspect
 
+import aktual.core.model.ThemeId
 import aktual.core.model.UrlOpener
 import aktual.core.theme.CustomTheme
-import aktual.core.theme.Theme
 import aktual.core.theme.ThemeResolver
 import aktual.settings.vm.theme.properties
 import androidx.lifecycle.ViewModel
@@ -23,7 +23,7 @@ import logcat.logcat
 
 @AssistedInject
 class InspectThemeViewModel(
-  @Assisted private val themeId: Theme.Id,
+  @Assisted private val themeId: ThemeId,
   private val themeResolver: ThemeResolver,
   private val urlOpener: UrlOpener,
 ) : ViewModel() {
@@ -59,6 +59,6 @@ class InspectThemeViewModel(
   @ManualViewModelAssistedFactoryKey(Factory::class)
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(@Assisted themeId: Theme.Id): InspectThemeViewModel
+    fun create(@Assisted themeId: ThemeId): InspectThemeViewModel
   }
 }

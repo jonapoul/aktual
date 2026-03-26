@@ -1,16 +1,13 @@
 package aktual.core.theme
 
+import aktual.core.model.ThemeId
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
-import java.io.Serializable as JavaIoSerializable
-import kotlinx.serialization.Serializable
 
 @Immutable
 @Suppress("ComplexInterface")
 sealed interface Theme {
-  val id: Id
-
-  @Serializable @JvmInline value class Id(val value: String) : JavaIoSerializable
+  val id: ThemeId
 
   val pageBackground: Color
   val pageBackgroundModalActive: Color

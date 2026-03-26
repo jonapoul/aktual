@@ -3,6 +3,7 @@ package aktual.settings.ui.theme
 import aktual.core.icons.material.DarkMode
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.model.ThemeId
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.MidnightTheme
@@ -33,7 +34,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun DarkThemePreference(
-  preference: ListPreference<Theme.Id>,
+  preference: ListPreference<ThemeId>,
   onAction: (ThemeSettingsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -63,7 +64,7 @@ internal fun DarkThemePreference(
 
 @Composable
 private fun DarkThemeContent(
-  preference: ListPreference<Theme.Id>,
+  preference: ListPreference<ThemeId>,
   buttonColors: SegmentedButtonColors,
   onAction: (ThemeSettingsAction) -> Unit,
   modifier: Modifier = Modifier,
@@ -107,7 +108,7 @@ private fun PreviewDarkThemePreference(
     )
   }
 
-private data class DarkThemePreferenceParams(val selected: Theme.Id, val enabled: Boolean)
+private data class DarkThemePreferenceParams(val selected: ThemeId, val enabled: Boolean)
 
 private class DarkThemePreferenceProvider :
   ThemedParameterProvider<DarkThemePreferenceParams>(

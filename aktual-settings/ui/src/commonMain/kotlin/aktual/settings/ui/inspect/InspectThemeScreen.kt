@@ -3,11 +3,11 @@ package aktual.settings.ui.inspect
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OpenInNew
 import aktual.core.l10n.Strings
+import aktual.core.model.ThemeId
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.MidnightTheme
-import aktual.core.theme.Theme
 import aktual.core.theme.isLight
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomNavBarSpacing
@@ -64,7 +64,7 @@ import kotlin.math.roundToInt
 @Composable
 fun InspectThemeScreen(
   nav: InspectThemeNavigator,
-  themeId: Theme.Id,
+  themeId: ThemeId,
   viewModel: InspectThemeViewModel = metroViewModel(themeId),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -82,7 +82,7 @@ fun InspectThemeScreen(
 }
 
 @Composable
-private fun metroViewModel(themeId: Theme.Id) =
+private fun metroViewModel(themeId: ThemeId) =
   assistedMetroViewModel<InspectThemeViewModel, InspectThemeViewModel.Factory> { create(themeId) }
 
 @Composable
@@ -220,7 +220,7 @@ private fun PreviewInspectTheme(
 
 private class InspectThemePreviewProvider :
   ThemedParameterProvider<InspectThemeState>(
-    InspectThemeState.NotFound(id = Theme.Id("username/repo")),
+    InspectThemeState.NotFound(id = ThemeId("username/repo")),
     InspectThemeState.Loading,
     InspectThemeState.Loaded(LightTheme.id, false, LightTheme.properties()),
     InspectThemeState.Loaded(DarkTheme.id, false, DarkTheme.properties()),

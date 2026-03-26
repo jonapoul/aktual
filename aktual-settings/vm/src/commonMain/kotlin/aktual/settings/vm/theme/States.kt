@@ -1,7 +1,7 @@
 package aktual.settings.vm.theme
 
+import aktual.core.model.ThemeId
 import aktual.core.theme.CustomThemeSummary
-import aktual.core.theme.Theme
 import aktual.settings.vm.BooleanPreference
 import aktual.settings.vm.ListPreference
 import androidx.compose.runtime.Immutable
@@ -10,8 +10,8 @@ import kotlinx.collections.immutable.ImmutableList
 @Immutable
 data class ThemeSettingsState(
   val useSystemDefault: BooleanPreference,
-  val darkTheme: ListPreference<Theme.Id>,
-  val constantTheme: Theme.Id?,
+  val darkTheme: ListPreference<ThemeId>,
+  val constantTheme: ThemeId?,
 )
 
 enum class ThemeModeFilter {
@@ -32,7 +32,7 @@ sealed interface CatalogState {
 
 @Immutable
 data class CatalogItem(
-  val id: Theme.Id,
+  val id: ThemeId,
   val summary: CustomThemeSummary,
   val isSelected: Boolean,
   val state: CustomThemeState,

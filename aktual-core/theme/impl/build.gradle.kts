@@ -12,6 +12,7 @@ kotlin {
   commonMainDependencies {
     api(libs.compose.uiGraphics)
     api(project(":aktual-core:api"))
+    api(project(":aktual-core:prefs"))
     api(project(":aktual-core:theme"))
     compileOnly(libs.compose.runtime)
     implementation(project(":aktual-core:logging"))
