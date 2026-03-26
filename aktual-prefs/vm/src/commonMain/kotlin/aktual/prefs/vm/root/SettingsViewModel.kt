@@ -1,11 +1,11 @@
 package aktual.prefs.vm.root
 
 import aktual.budget.model.Currency
-import aktual.core.prefs.CurrencyPreferences
-import aktual.core.prefs.FormatPreferences
-import aktual.core.prefs.Preference
-import aktual.core.prefs.SystemUiPreferences
-import aktual.core.prefs.asStateFlow
+import aktual.prefs.CurrencyPreferences
+import aktual.prefs.FormatPreferences
+import aktual.prefs.Preference
+import aktual.prefs.SystemUiPreferences
+import aktual.prefs.asStateFlow
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
 import androidx.compose.runtime.Composable

@@ -7,8 +7,8 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
-import aktual.core.prefs.AppPreferences
-import aktual.core.prefs.delete
+import aktual.prefs.AppPreferences
+import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.ResettableStateFlow
 import alakazam.kotlin.collectFlow

@@ -1,8 +1,8 @@
 package aktual.core.theme
 
 import aktual.core.model.ThemeId
-import aktual.core.prefs.ThemePreferences
-import aktual.core.prefs.ThemePreferencesImpl
+import aktual.prefs.ThemePreferences
+import aktual.prefs.ThemePreferencesImpl
 import aktual.test.buildPreferences
 import app.cash.turbine.test
 import assertk.assertThat

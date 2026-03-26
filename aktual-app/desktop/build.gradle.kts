@@ -136,7 +136,7 @@ afterEvaluate {
 
 dependencies {
   implementation(project(":aktual-app:di"))
-  implementation(project(":aktual-app:nav"))
+  implementation(project(":aktual-app:nav:ui"))
   implementation(project(":aktual-core:logging:impl"))
   implementation(project(":aktual-prefs"))
   implementation(compose.desktop.currentOs)

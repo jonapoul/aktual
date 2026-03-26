@@ -7,7 +7,7 @@ kotlin {
   commonTestDependencies {
     // utils
     implementation(project(":aktual-app:di"))
-    implementation(project(":aktual-app:nav"))
+    implementation(project(":aktual-app:nav:ui"))
     implementation(project(":aktual-budget:model"))
     implementation(project(":aktual-core:model"))
     implementation(project(":aktual-test"))

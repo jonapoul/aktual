@@ -6,7 +6,7 @@ import aktual.api.model.sync.UserFile
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetState
 import aktual.core.model.Token
-import aktual.core.prefs.KeyPreferences
+import aktual.prefs.KeyPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject

@@ -1,7 +1,7 @@
 package aktual.core.theme
 
 import aktual.core.model.ThemeId
-import aktual.core.prefs.ThemePreferences
+import aktual.prefs.ThemePreferences
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import kotlin.coroutines.cancellation.CancellationException

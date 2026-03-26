@@ -11,8 +11,8 @@ import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.AppPreferences
-import aktual.core.prefs.AppPreferencesImpl
+import aktual.prefs.AppPreferences
+import aktual.prefs.AppPreferencesImpl
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine

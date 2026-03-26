@@ -4,7 +4,7 @@ import aktual.api.client.AktualApisStateHolder
 import aktual.api.model.account.ChangePasswordRequest
 import aktual.api.model.account.ChangePasswordResponse
 import aktual.core.model.Password
-import aktual.core.prefs.AppPreferences
+import aktual.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject

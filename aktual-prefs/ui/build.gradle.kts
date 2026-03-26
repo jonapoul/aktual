@@ -12,6 +12,7 @@ kotlin {
     api(project(":aktual-core:theme"))
     api(project(":aktual-core:ui"))
     api(project(":aktual-prefs:vm"))
+    implementation(project(":aktual-app:nav"))
     implementation(project(":aktual-core:l10n"))
   }
 }

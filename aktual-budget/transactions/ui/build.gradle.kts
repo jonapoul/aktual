@@ -11,6 +11,7 @@ kotlin {
     api(project(":aktual-budget:model"))
     api(project(":aktual-budget:transactions:vm"))
     api(project(":aktual-core:ui"))
+    implementation(project(":aktual-app:nav"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:model"))
     implementation(libs.androidx.paging.compose)

@@ -9,8 +9,8 @@ import aktual.budget.model.metadata
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.UrlOpener
-import aktual.core.prefs.AppPreferences
-import aktual.core.prefs.asStateFlow
+import aktual.prefs.AppPreferences
+import aktual.prefs.asStateFlow
 import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

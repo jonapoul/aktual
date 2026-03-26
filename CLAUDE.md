@@ -112,13 +112,14 @@ The project follows a strict **feature-based modular architecture** with clear l
 /app                    # Application entry points
   /android              # Android app
   /desktop              # Desktop app (JVM)
-  /di                   # Application-level DI setup
-  /nav                  # Navigation infrastructure
+  /di                   # Application-level DI setup + UI module aggregation for Metro
+  /nav                  # Navigation API (routes, extensions, NavEntryContributor)
+    /ui                 # Navigation UI (AktualNavHost, AktualAppContent, RootViewModel)
 
 /modules
   /feature              # Feature modules follow: domain/ui/vm pattern
     /domain             # Business logic, use cases, repositories
-    /ui                 # Compose UI screens and components
+    /ui                 # Compose UI screens, components, and NavEntryContributor
     /vm                 # ViewModels with presentation logic
 
   /core                 # Shared infrastructure
@@ -140,6 +141,12 @@ The project follows a strict **feature-based modular architecture** with clear l
     /reports            # Reports feature (ui + vm)
     /sync               # Sync feature (ui + vm)
     /transactions       # Transactions feature (ui + vm)
+
+  /prefs                # Preferences/settings feature
+    /di                 # Preferences DI bindings
+    /impl               # Preferences implementation (DataStore)
+    /ui                 # Settings screens (ui + vm)
+    /vm                 # Settings ViewModels
 
   /test                 # Test utilities
     /kotlin             # Common test utilities (AssertK, Turbine, MockK)
@@ -169,7 +176,8 @@ The project follows a strict **feature-based modular architecture** with clear l
 - Stateless composables that collect state from ViewModels
 - Retrieves ViewModels via `metroViewModel()` composable
 - Navigator interfaces for navigation actions
-- Dependencies: VM layer (API), Core UI, L10n
+- Each UI module contributes a `NavEntryContributor` via `@ContributesIntoSet(AppScope::class)` to register its nav entries
+- Dependencies: VM layer (API), Core UI, L10n, Nav API (for routes/extensions)
 
 ### Dependency Injection (Metro)
 
@@ -338,7 +346,19 @@ To change the Java version, simply update the `.java-version` file. Both the Gra
 4. **Set up dependencies:**
    - Domain: Depend on core models, API clients
    - VM: Depend on domain (API), core DI (API)
-   - UI: Depend on VM (API), core UI (API), L10n
+   - UI: Depend on VM (API), core UI (API), L10n, `:aktual-app:nav` (for routes/extensions)
+
+5. **Create a `NavEntryContributor`** in the UI module to register screens:
+   ```kotlin
+   @ContributesIntoSet(AppScope::class)
+   class YourFeatureNavEntryContributor : NavEntryContributor {
+     override fun contribute(scope: EntryProviderScope<NavKey>, stack: SnapshotStateList<NavKey>) {
+       scope.entry<YourNavRoute> { route -> YourScreen(YourNavigatorImpl(stack), route.param) }
+     }
+   }
+   ```
+
+6. **Add the UI module** to `aktual-app:di/build.gradle.kts` so Metro discovers the contribution hints.
 
 ### Testing Patterns
 
