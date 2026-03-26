@@ -1,6 +1,6 @@
 package aktual.settings.vm.inspect
 
-import aktual.core.theme.Theme
+import aktual.core.model.ThemeId
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import kotlinx.collections.immutable.ImmutableList
@@ -9,10 +9,10 @@ import kotlinx.collections.immutable.ImmutableList
 sealed interface InspectThemeState {
   data object Loading : InspectThemeState
 
-  @JvmInline value class NotFound(val id: Theme.Id) : InspectThemeState
+  @JvmInline value class NotFound(val id: ThemeId) : InspectThemeState
 
   data class Loaded(
-    val id: Theme.Id,
+    val id: ThemeId,
     val isCustom: Boolean,
     val properties: ImmutableList<ThemeProperty>,
   ) : InspectThemeState

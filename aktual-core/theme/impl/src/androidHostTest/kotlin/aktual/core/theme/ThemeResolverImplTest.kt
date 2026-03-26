@@ -1,5 +1,7 @@
 package aktual.core.theme
 
+import aktual.core.model.ThemeId
+import aktual.core.prefs.ThemePreferences
 import aktual.core.prefs.ThemePreferencesImpl
 import aktual.test.buildPreferences
 import app.cash.turbine.test
@@ -155,7 +157,7 @@ class ThemeResolverImplTest {
   @Test
   fun `Unknown custom theme falls back based on system dark mode`() = runThemeTest {
     preferences.useSystemDefault.set(false)
-    preferences.constantTheme.set(Theme.Id("unknown/repo"))
+    preferences.constantTheme.set(ThemeId("unknown/repo"))
     resolver.activeTheme(isSystemInDarkTheme = true).test {
       assertThat(awaitItem()).isSameInstanceAs(DarkTheme)
     }
@@ -180,7 +182,7 @@ class ThemeResolverImplTest {
   @Test
   fun `Invalid theme ID without slash falls back to LightTheme`() = runThemeTest {
     preferences.useSystemDefault.set(false)
-    preferences.constantTheme.set(Theme.Id("invalid-no-slash"))
+    preferences.constantTheme.set(ThemeId("invalid-no-slash"))
     resolver.activeTheme(isSystemInDarkTheme = true).test {
       assertThat(awaitItem()).isSameInstanceAs(LightTheme)
     }
@@ -189,7 +191,7 @@ class ThemeResolverImplTest {
   @Test
   fun `Invalid theme ID with too many slashes falls back to LightTheme`() = runThemeTest {
     preferences.useSystemDefault.set(false)
-    preferences.constantTheme.set(Theme.Id("a/b/c"))
+    preferences.constantTheme.set(ThemeId("a/b/c"))
     resolver.activeTheme(isSystemInDarkTheme = true).test {
       assertThat(awaitItem()).isSameInstanceAs(LightTheme)
     }

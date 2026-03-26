@@ -3,6 +3,7 @@ package aktual.settings.ui.theme
 import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
+import aktual.core.model.ThemeId
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
 import aktual.core.theme.LocalTheme
@@ -38,7 +39,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun BuiltInThemesPreference(
-  selectedTheme: Theme.Id?,
+  selectedTheme: ThemeId?,
   enabled: Boolean,
   onAction: (ThemeSettingsAction) -> Unit,
   modifier: Modifier = Modifier,
@@ -83,9 +84,9 @@ internal fun BuiltInThemesPreference(
 
 @Composable
 private fun BuiltInThemeItem(
-  id: Theme.Id,
+  id: ThemeId,
   name: String,
-  selectedId: Theme.Id?,
+  selectedId: ThemeId?,
   enabled: Boolean,
   onAction: (ThemeSettingsAction) -> Unit,
   theme: Theme = LocalTheme.current,

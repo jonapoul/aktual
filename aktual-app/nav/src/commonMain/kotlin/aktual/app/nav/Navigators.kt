@@ -11,8 +11,8 @@ import aktual.budget.model.WidgetId
 import aktual.budget.reports.ui.ChooseReportTypeNavigator
 import aktual.budget.reports.ui.ReportsDashboardNavigator
 import aktual.budget.transactions.ui.TransactionsNavigator
+import aktual.core.model.ThemeId
 import aktual.core.model.Token
-import aktual.core.theme.Theme
 import aktual.metrics.ui.MetricsNavigator
 import aktual.settings.ui.inspect.InspectThemeNavigator
 import aktual.settings.ui.root.SettingsNavigator
@@ -116,7 +116,7 @@ internal class ThemeSettingsNavigatorImpl(private val stack: SnapshotStateList<N
   ThemeSettingsNavigator {
   override fun back() = stack.debugPop()
 
-  override fun inspectTheme(id: Theme.Id) = stack.debugPush(InspectThemeNavRoute(id))
+  override fun inspectTheme(id: ThemeId) = stack.debugPush(InspectThemeNavRoute(id))
 }
 
 internal class TransactionsNavigatorImpl(private val stack: SnapshotStateList<NavKey>) :

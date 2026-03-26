@@ -1,5 +1,6 @@
 package aktual.core.theme
 
+import aktual.core.model.ThemeId
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
@@ -17,7 +18,7 @@ data class CustomThemeRepo(val userName: String, val repoName: String) :
   override fun compareTo(other: CustomThemeRepo): Int = toString().compareTo(other.toString())
 }
 
-fun CustomThemeRepo.toId(): Theme.Id = Theme.Id(toString())
+fun CustomThemeRepo.toId(): ThemeId = ThemeId(toString())
 
 // E.g. "Juulz/simple-dark"
 internal object CustomThemeRepoSerializer : KSerializer<CustomThemeRepo> {

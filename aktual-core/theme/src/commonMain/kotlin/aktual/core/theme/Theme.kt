@@ -7,9 +7,7 @@ import androidx.compose.ui.graphics.Color
 @Immutable
 @Suppress("ComplexInterface")
 sealed interface Theme {
-  val id: Id
-
-  typealias Id = ThemeId
+  val id: ThemeId
 
   val pageBackground: Color
   val pageBackgroundModalActive: Color

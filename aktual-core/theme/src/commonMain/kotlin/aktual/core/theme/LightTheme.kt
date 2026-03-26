@@ -1,12 +1,13 @@
 package aktual.core.theme
 
+import aktual.core.model.ThemeId
 import aktual.core.theme.internal.AktualColors
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
 data object LightTheme : DefaultTheme {
-  override val id = Theme.Id("Light")
+  override val id = ThemeId("Light")
 
   override val pageBackground = AktualColors.navy100
   override val pageBackgroundModalActive = AktualColors.navy200
