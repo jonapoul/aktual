@@ -116,7 +116,6 @@ vico = { module = "com.patrykandpatrick.vico:multiplatform", version = "2.4.3" }
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
-agp-lib = { id = "com.android.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
 atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.4.0" }
 blueprint = { id = "dev.jonpoulton.blueprint", version = "2.1.0" }
