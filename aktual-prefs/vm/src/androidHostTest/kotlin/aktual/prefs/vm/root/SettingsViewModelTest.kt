@@ -1,11 +1,11 @@
 package aktual.prefs.vm.root
 
-import aktual.core.prefs.CurrencyPreferences
-import aktual.core.prefs.CurrencyPreferencesImpl
-import aktual.core.prefs.FormatPreferences
-import aktual.core.prefs.FormatPreferencesImpl
-import aktual.core.prefs.SystemUiPreferences
-import aktual.core.prefs.SystemUiPreferencesImpl
+import aktual.prefs.CurrencyPreferences
+import aktual.prefs.CurrencyPreferencesImpl
+import aktual.prefs.FormatPreferences
+import aktual.prefs.FormatPreferencesImpl
+import aktual.prefs.SystemUiPreferences
+import aktual.prefs.SystemUiPreferencesImpl
 import aktual.test.buildPreferences
 import alakazam.test.standardDispatcher
 import app.cash.turbine.test

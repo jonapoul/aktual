@@ -4,19 +4,19 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavKey
 import logcat.logcat
 
-internal fun SnapshotStateList<NavKey>.debugPush(route: NavKey) {
+fun SnapshotStateList<NavKey>.debugPush(route: NavKey) {
   logcat.v(TAG) { "Push $route - backStack=[$backStackString]" }
   add(route)
 }
 
-internal fun SnapshotStateList<NavKey>.debugPop(): Boolean {
+fun SnapshotStateList<NavKey>.debugPop(): Boolean {
   logcat.v(TAG) { "Pop - backStack=[$backStackString]" }
   if (size <= 1) return false
   removeAt(lastIndex)
   return true
 }
 
-internal fun SnapshotStateList<NavKey>.debugPopUpToAndPush(
+fun SnapshotStateList<NavKey>.debugPopUpToAndPush(
   route: NavKey,
   predicate: (NavKey) -> Boolean,
   inclusive: Boolean,

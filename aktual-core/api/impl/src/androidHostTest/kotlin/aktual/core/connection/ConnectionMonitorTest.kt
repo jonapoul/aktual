@@ -3,9 +3,9 @@ package aktual.core.connection
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.ApiBuilder
 import aktual.core.model.ServerUrl
-import aktual.core.prefs.AppPreferences
-import aktual.core.prefs.AppPreferencesImpl
-import aktual.core.prefs.delete
+import aktual.prefs.AppPreferences
+import aktual.prefs.AppPreferencesImpl
+import aktual.prefs.delete
 import aktual.test.CoLogcatInterceptor
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo

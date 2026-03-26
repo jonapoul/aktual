@@ -1,8 +1,6 @@
 package aktual.prefs.vm.theme
 
 import aktual.core.model.ThemeId
-import aktual.core.prefs.ThemePreferences
-import aktual.core.prefs.asStateFlow
 import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.theme.DarkTheme
@@ -10,6 +8,8 @@ import aktual.core.theme.MidnightTheme
 import aktual.core.theme.ThemeApi
 import aktual.core.theme.ThemeMode
 import aktual.core.theme.toId
+import aktual.prefs.ThemePreferences
+import aktual.prefs.asStateFlow
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
 import alakazam.kotlin.requireMessage

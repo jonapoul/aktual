@@ -8,7 +8,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 
 ## General
 
-- If you change anything that is likely to conflict with any context or instructions you've been given as part of this (or any other) CLAUDE.md file in this repo, make sure to update to keep them up to date.
+- **IMPORTANT**: After completing any architectural or structural change, proactively check ALL CLAUDE.md files in the repo for references that need updating. Don't wait to be asked — scan for mentions of changed scopes, annotations, module structures, DI patterns, file locations, etc. Use `grep` across `**/CLAUDE.md` to find stale references.
 - Prefer `kotlinx.immutable` collections on the UI layer, not regular List/Set/etc.
 - When setting a `MutableStateFlow`, prefer `stateFlow.update { x }` over `stateFlow.value = x`
 - When writing comments, stretch them out horizontally to match the `max_line_length` value in .editorconfig, currently 120.
@@ -112,13 +112,14 @@ The project follows a strict **feature-based modular architecture** with clear l
 /app                    # Application entry points
   /android              # Android app
   /desktop              # Desktop app (JVM)
-  /di                   # Application-level DI setup
-  /nav                  # Navigation infrastructure
+  /di                   # Application-level DI setup + UI module aggregation for Metro
+  /nav                  # Navigation API (routes, extensions, NavEntryContributor)
+    /ui                 # Navigation UI (AktualNavHost, AktualAppContent, RootViewModel)
 
 /modules
   /feature              # Feature modules follow: domain/ui/vm pattern
     /domain             # Business logic, use cases, repositories
-    /ui                 # Compose UI screens and components
+    /ui                 # Compose UI screens, components, and NavEntryContributor
     /vm                 # ViewModels with presentation logic
 
   /core                 # Shared infrastructure
@@ -140,6 +141,12 @@ The project follows a strict **feature-based modular architecture** with clear l
     /reports            # Reports feature (ui + vm)
     /sync               # Sync feature (ui + vm)
     /transactions       # Transactions feature (ui + vm)
+
+  /prefs                # Preferences/settings feature
+    /di                 # Preferences DI bindings
+    /impl               # Preferences implementation (DataStore)
+    /ui                 # Settings screens (ui + vm)
+    /vm                 # Settings ViewModels
 
   /test                 # Test utilities
     /kotlin             # Common test utilities (AssertK, Turbine, MockK)
@@ -169,7 +176,8 @@ The project follows a strict **feature-based modular architecture** with clear l
 - Stateless composables that collect state from ViewModels
 - Retrieves ViewModels via `metroViewModel()` composable
 - Navigator interfaces for navigation actions
-- Dependencies: VM layer (API), Core UI, L10n
+- Each UI module contributes a `NavEntryContributor` via `@ContributesIntoSet(NavScope::class)` to register its nav entries
+- Dependencies: VM layer (API), Core UI, L10n, Nav API (for routes/extensions)
 
 ### Dependency Injection (Metro)
 
@@ -177,12 +185,14 @@ The project uses **Metro** (by Zac Sweers), a modern Kotlin-compiler-based DI fr
 
 **Scopes:**
 - `AppScope` - Application-level singletons
+- `NavScope` - Navigation entry contributors (child of `AppScope`)
 - `ViewModelScope` - ViewModel instances
 - `BudgetScope` - Budget-specific instances (per-budget data)
 
 **Core DI Structure:**
-- `AppGraph` - Root DI graph, creates ViewModelGraph and BudgetGraph
+- `AppGraph` - Root DI graph, creates ViewModelGraph, BudgetGraph, and NavGraph
 - `ViewModelGraph` - Provides ViewModels via multibinding map
+- `NavGraph` - `@GraphExtension(NavScope::class)`, provides `Set<NavEntryContributor>`
 - `BudgetGraph` - Budget-scoped dependencies
 
 **ViewModel Registration:**
@@ -338,7 +348,19 @@ To change the Java version, simply update the `.java-version` file. Both the Gra
 4. **Set up dependencies:**
    - Domain: Depend on core models, API clients
    - VM: Depend on domain (API), core DI (API)
-   - UI: Depend on VM (API), core UI (API), L10n
+   - UI: Depend on VM (API), core UI (API), L10n, `:aktual-app:nav` (for routes/extensions)
+
+5. **Create a `NavEntryContributor`** in the UI module to register screens:
+   ```kotlin
+   @ContributesIntoSet(NavScope::class)
+   class YourFeatureNavEntryContributor : NavEntryContributor {
+     override fun contribute(scope: EntryProviderScope<NavKey>, stack: SnapshotStateList<NavKey>) {
+       scope.entry<YourNavRoute> { route -> YourScreen(YourNavigatorImpl(stack), route.param) }
+     }
+   }
+   ```
+
+6. **Add the UI module** to `aktual-app:di/build.gradle.kts` so Metro discovers the contribution hints.
 
 ### Testing Patterns
 

@@ -4,7 +4,7 @@ import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.ApiBuilder
 import aktual.core.model.ServerUrl
-import aktual.core.prefs.AppPreferences
+import aktual.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.collectFlow
 import dev.zacsweers.metro.AppScope
