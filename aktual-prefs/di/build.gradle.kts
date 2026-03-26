@@ -7,8 +7,8 @@ kotlin {
   commonMainDependencies {
     api(libs.androidx.datastore.core)
     api(libs.androidx.datastore.prefs)
-    api(project(":aktual-core:prefs"))
-    api(project(":aktual-core:prefs:impl"))
+    api(project(":aktual-prefs"))
+    api(project(":aktual-prefs:impl"))
   }
 
   androidMainDependencies { implementation(libs.androidx.crypto) }

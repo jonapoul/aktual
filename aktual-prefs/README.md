@@ -1,7 +1,7 @@
-# aktual-core:prefs:di
+# aktual-prefs
 
 <!--region chart-->
 ![chart](atlas/chart.png)
 
-![legend](../../../atlas/legend.png)
+![legend](../../atlas/legend.png)
 <!--endregion-->

@@ -1,4 +1,4 @@
-# aktual-core:prefs:impl
+# aktual-prefs:impl
 
 <!--region chart-->
 ![chart](atlas/chart.png)

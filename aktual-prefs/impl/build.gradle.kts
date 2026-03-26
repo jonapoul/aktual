@@ -11,7 +11,7 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:model"))
-    api(project(":aktual-core:prefs"))
+    api(project(":aktual-prefs"))
     api(project(":aktual-core:theme"))
     implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.prefs)

@@ -8,7 +8,7 @@ kotlin {
     api(project(":aktual-core:model"))
     implementation(project(":aktual-core:api"))
     implementation(project(":aktual-core:logging"))
-    implementation(project(":aktual-core:prefs"))
+    implementation(project(":aktual-prefs"))
     compileOnly(libs.androidx.compose.annotation)
   }
 
