@@ -23,7 +23,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
-import aktual.core.ui.isMobile
+import aktual.core.ui.isCompactWidth
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
 import alakazam.compose.HorizontalSpacer
@@ -140,7 +140,7 @@ private fun InfoScreenContent(
   theme: Theme = LocalTheme.current,
 ) =
   BoxWithConstraints(modifier = modifier.padding(Dimens.Huge)) {
-    val contentMaxWidth = if (isMobile()) maxWidth else maxWidth / 2
+    val contentMaxWidth = if (isCompactWidth()) maxWidth else maxWidth / 2
     val contentModifier = Modifier.widthIn(max = contentMaxWidth)
 
     Column(
