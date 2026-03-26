@@ -14,8 +14,8 @@ kotlin {
     api(project(":aktual-core:api:di"))
     api(project(":aktual-core:di"))
     api(project(":aktual-core:model"))
-    api(project(":aktual-core:prefs:di"))
     api(project(":aktual-core:theme:di"))
+    api(project(":aktual-prefs:di"))
   }
 }
 

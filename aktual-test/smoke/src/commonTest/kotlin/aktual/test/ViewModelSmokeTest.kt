@@ -13,9 +13,9 @@ import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.di.BudgetGraph
 import aktual.core.theme.DarkTheme
 import aktual.metrics.vm.MetricsViewModel
-import aktual.settings.vm.inspect.InspectThemeViewModel
-import aktual.settings.vm.root.SettingsViewModel
-import aktual.settings.vm.theme.ThemeSettingsViewModel
+import aktual.prefs.vm.inspect.InspectThemeViewModel
+import aktual.prefs.vm.root.SettingsViewModel
+import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import androidx.lifecycle.ViewModel
 import app.cash.burst.InterceptTest
 import assertk.assertThat

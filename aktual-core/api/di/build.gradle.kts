@@ -10,6 +10,6 @@ kotlin {
     api(libs.ktor.core)
     api(project(":aktual-core:api"))
     api(project(":aktual-core:api:impl"))
-    implementation(project(":aktual-core:prefs"))
+    implementation(project(":aktual-prefs"))
   }
 }

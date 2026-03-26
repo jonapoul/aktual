@@ -9,7 +9,7 @@ kotlin {
     api(libs.ktor.core)
     api(libs.okio)
     api(project(":aktual-core:api"))
-    api(project(":aktual-core:prefs"))
+    api(project(":aktual-prefs"))
     implementation(libs.ktor.auth)
     implementation(libs.ktor.contentNegotiation)
     implementation(libs.ktor.logging)

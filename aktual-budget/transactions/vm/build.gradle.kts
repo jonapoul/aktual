@@ -22,7 +22,7 @@ kotlin {
     api(libs.kotlinx.datetime)
     implementation(project(":aktual-core:di"))
     implementation(project(":aktual-core:model"))
-    implementation(project(":aktual-core:prefs"))
+    implementation(project(":aktual-prefs"))
   }
 
   androidHostTestDependencies {

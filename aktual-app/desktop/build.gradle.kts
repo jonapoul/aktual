@@ -138,7 +138,7 @@ dependencies {
   implementation(project(":aktual-app:di"))
   implementation(project(":aktual-app:nav"))
   implementation(project(":aktual-core:logging:impl"))
-  implementation(project(":aktual-core:prefs"))
+  implementation(project(":aktual-prefs"))
   implementation(compose.desktop.currentOs)
   implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.compose.material3)

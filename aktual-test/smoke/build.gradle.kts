@@ -21,7 +21,7 @@ kotlin {
     implementation(project(":aktual-budget:transactions:vm"))
     implementation(project(":aktual-core:di"))
     implementation(project(":aktual-metrics:vm"))
-    implementation(project(":aktual-settings:vm"))
+    implementation(project(":aktual-prefs:vm"))
   }
 
   jvmTestDependencies { implementation(project(":aktual-app:desktop")) }
