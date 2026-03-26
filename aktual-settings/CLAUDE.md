@@ -11,6 +11,7 @@ Choose the appropriate interface in `aktual-core/prefs/` based on the preference
 - `CurrencyPreferences` — currency display (currency, symbol position, spacing)
 - `FormatPreferences` — data formatting (number format, date format, first day of week, hide fraction)
 - `SystemUiPreferences` — UI chrome (bottom bar visibility, blur settings)
+- `ThemePreferences` — theme selection (system default toggle, night theme, constant theme)
 
 **Interface:** `aktual-core/prefs/.../[Chosen]Preferences.kt`
 ```kotlin
