@@ -8,7 +8,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 
 ## General
 
-- If you change anything that is likely to conflict with any context or instructions you've been given as part of this (or any other) CLAUDE.md file in this repo, make sure to update to keep them up to date.
+- **IMPORTANT**: After completing any architectural or structural change, proactively check ALL CLAUDE.md files in the repo for references that need updating. Don't wait to be asked — scan for mentions of changed scopes, annotations, module structures, DI patterns, file locations, etc. Use `grep` across `**/CLAUDE.md` to find stale references.
 - Prefer `kotlinx.immutable` collections on the UI layer, not regular List/Set/etc.
 - When setting a `MutableStateFlow`, prefer `stateFlow.update { x }` over `stateFlow.value = x`
 - When writing comments, stretch them out horizontally to match the `max_line_length` value in .editorconfig, currently 120.
@@ -176,7 +176,7 @@ The project follows a strict **feature-based modular architecture** with clear l
 - Stateless composables that collect state from ViewModels
 - Retrieves ViewModels via `metroViewModel()` composable
 - Navigator interfaces for navigation actions
-- Each UI module contributes a `NavEntryContributor` via `@ContributesIntoSet(AppScope::class)` to register its nav entries
+- Each UI module contributes a `NavEntryContributor` via `@ContributesIntoSet(NavScope::class)` to register its nav entries
 - Dependencies: VM layer (API), Core UI, L10n, Nav API (for routes/extensions)
 
 ### Dependency Injection (Metro)
@@ -185,12 +185,14 @@ The project uses **Metro** (by Zac Sweers), a modern Kotlin-compiler-based DI fr
 
 **Scopes:**
 - `AppScope` - Application-level singletons
+- `NavScope` - Navigation entry contributors (child of `AppScope`)
 - `ViewModelScope` - ViewModel instances
 - `BudgetScope` - Budget-specific instances (per-budget data)
 
 **Core DI Structure:**
-- `AppGraph` - Root DI graph, creates ViewModelGraph and BudgetGraph
+- `AppGraph` - Root DI graph, creates ViewModelGraph, BudgetGraph, and NavGraph
 - `ViewModelGraph` - Provides ViewModels via multibinding map
+- `NavGraph` - `@GraphExtension(NavScope::class)`, provides `Set<NavEntryContributor>`
 - `BudgetGraph` - Budget-scoped dependencies
 
 **ViewModel Registration:**
@@ -350,7 +352,7 @@ To change the Java version, simply update the `.java-version` file. Both the Gra
 
 5. **Create a `NavEntryContributor`** in the UI module to register screens:
    ```kotlin
-   @ContributesIntoSet(AppScope::class)
+   @ContributesIntoSet(NavScope::class)
    class YourFeatureNavEntryContributor : NavEntryContributor {
      override fun contribute(scope: EntryProviderScope<NavKey>, stack: SnapshotStateList<NavKey>) {
        scope.entry<YourNavRoute> { route -> YourScreen(YourNavigatorImpl(stack), route.param) }
