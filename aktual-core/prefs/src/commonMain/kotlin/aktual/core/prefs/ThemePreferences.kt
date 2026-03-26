@@ -1,15 +1,14 @@
-package aktual.core.theme
+package aktual.core.prefs
 
-import aktual.core.prefs.NullablePreference
-import aktual.core.prefs.Preference
+import aktual.core.model.ThemeId
 
 interface ThemePreferences {
   // Switch between light and dark/midnight, depending on system time (and nightTheme)
   val useSystemDefault: Preference<Boolean>
 
   // Only relevant if useSystemDefault is true
-  val nightTheme: Preference<Theme.Id>
+  val nightTheme: Preference<ThemeId>
 
   // Only relevant if useSystemDefault is false
-  val constantTheme: NullablePreference<Theme.Id>
+  val constantTheme: NullablePreference<ThemeId>
 }

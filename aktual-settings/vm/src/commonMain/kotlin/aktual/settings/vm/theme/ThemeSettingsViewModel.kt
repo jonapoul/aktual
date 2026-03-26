@@ -1,5 +1,6 @@
 package aktual.settings.vm.theme
 
+import aktual.core.prefs.ThemePreferences
 import aktual.core.prefs.asStateFlow
 import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.CustomThemeSummary
@@ -8,7 +9,6 @@ import aktual.core.theme.MidnightTheme
 import aktual.core.theme.Theme
 import aktual.core.theme.ThemeApi
 import aktual.core.theme.ThemeMode
-import aktual.core.theme.ThemePreferences
 import aktual.core.theme.toId
 import aktual.settings.vm.BooleanPreference
 import aktual.settings.vm.ListPreference
