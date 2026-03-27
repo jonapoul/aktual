@@ -5,6 +5,7 @@ import aktual.core.model.Token
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
@@ -27,4 +28,7 @@ class AppPreferencesImpl(dataStore: DataStore<Preferences>) : AppPreferences {
 
   override val isPrivacyEnabled: Preference<Boolean> =
     dataStore.boolean(key = booleanPreferencesKey("isPrivacyEnabled"), default = false).required()
+
+  override val mostRecentNumBudgets: Preference<Int> =
+    dataStore.int(key = intPreferencesKey("mostRecentNumBudgets"), default = 3).required()
 }

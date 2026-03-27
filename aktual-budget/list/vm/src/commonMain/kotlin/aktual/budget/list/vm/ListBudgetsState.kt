@@ -6,9 +6,9 @@ import kotlinx.collections.immutable.ImmutableList
 
 @Immutable
 sealed interface ListBudgetsState {
-  data class Success(val budgets: ImmutableList<Budget>) : ListBudgetsState
+  @JvmInline value class Success(val budgets: ImmutableList<Budget>) : ListBudgetsState
 
-  data class Failure(val reason: String?) : ListBudgetsState
+  @JvmInline value class Failure(val reason: String?) : ListBudgetsState
 
-  data object Loading : ListBudgetsState
+  @JvmInline value class Loading(val numLoadingItems: Int) : ListBudgetsState
 }

@@ -33,9 +33,13 @@ import com.valentinilk.shimmer.unclippedBoundsInWindow
 
 /** Shimmer placeholder that mimics the layout of [BudgetListItem]. */
 @Composable
-internal fun ShimmerBudgetList(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
+internal fun ShimmerBudgetList(
+  numLoadingItems: Int,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
-    repeat(times = 3) { ShimmerBudgetListItem(theme = theme) }
+    repeat(numLoadingItems) { ShimmerBudgetListItem(theme = theme) }
   }
 }
 
@@ -51,7 +55,7 @@ internal fun ShimmerBudgetListItem(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.pillBackgroundLight, RowShape)
+        .background(theme.buttonNormalBackground, RowShape)
         .border(Dp.Hairline, theme.pillBorderDark, RowShape)
         .padding(horizontal = 15.dp, vertical = 12.dp)
         .shimmer(shimmer)
@@ -110,4 +114,4 @@ private fun PreviewShimmerVsReal() =
 @Preview
 @Composable
 private fun PreviewShimmerBudgetList(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) { ShimmerBudgetList() }
+  PreviewWithColorScheme(theme) { ShimmerBudgetList(numLoadingItems = 4) }

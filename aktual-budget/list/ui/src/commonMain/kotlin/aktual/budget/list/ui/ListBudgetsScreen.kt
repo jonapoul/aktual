@@ -162,7 +162,7 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: (ListBudgets
           contentAlignment = Alignment.Center,
           onRefresh = { onAction(Reload) },
           isRefreshing = state is ListBudgetsState.Loading,
-          content = { StateContent(state, onAction, listState, theme) },
+          content = { StateContent(state, onAction, listState) },
         )
       }
     }
@@ -183,7 +183,6 @@ private fun StateContent(
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
   listState: LazyListState,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier = Modifier.fillMaxSize(),
@@ -192,7 +191,7 @@ private fun StateContent(
   ) {
     when (state) {
       is ListBudgetsState.Loading -> {
-        ShimmerBudgetList(theme = theme)
+        ShimmerBudgetList(state.numLoadingItems)
       }
 
       is ListBudgetsState.Failure -> {
@@ -201,18 +200,16 @@ private fun StateContent(
           reason = state.reason ?: Strings.budgetFailureDefaultMessage,
           retryText = Strings.budgetFailureRetry,
           onClickRetry = { onAction(Reload) },
-          theme = theme,
         )
       }
 
       is ListBudgetsState.Success -> {
         if (state.budgets.isEmpty()) {
-          ContentEmpty(theme = theme, onCreateBudgetInBrowser = { onAction(OpenInBrowser) })
+          ContentEmpty(onCreateBudgetInBrowser = { onAction(OpenInBrowser) })
         } else {
           ContentSuccess(
             budgets = state.budgets,
             listState = listState,
-            theme = theme,
             onClickOpen = { budget -> onAction(Open(budget)) },
             onClickDelete = { budget -> onAction(Delete(budget)) },
           )
@@ -236,6 +233,6 @@ private class ListBudgetsScaffoldProvider :
     ListBudgetsState.Success(
       persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken)
     ),
-    ListBudgetsState.Loading,
+    ListBudgetsState.Loading(numLoadingItems = 3),
     ListBudgetsState.Failure(reason = "Something broke lol"),
   )

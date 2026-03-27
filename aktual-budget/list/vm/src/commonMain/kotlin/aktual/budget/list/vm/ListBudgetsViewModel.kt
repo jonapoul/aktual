@@ -2,6 +2,9 @@ package aktual.budget.list.vm
 
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.model.sync.DeleteUserFileRequest
+import aktual.budget.list.vm.ListBudgetsState.Failure
+import aktual.budget.list.vm.ListBudgetsState.Loading
+import aktual.budget.list.vm.ListBudgetsState.Success
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.database
@@ -42,7 +45,7 @@ import logcat.logcat
 @AssistedInject
 class ListBudgetsViewModel(
   @Assisted private val token: Token,
-  preferences: AppPreferences,
+  private val preferences: AppPreferences,
   private val budgetListFetcher: BudgetListFetcher,
   private val files: BudgetFiles,
   private val contexts: CoroutineContexts,
@@ -51,7 +54,9 @@ class ListBudgetsViewModel(
 ) : ViewModel() {
   val serverUrl: StateFlow<ServerUrl?> = preferences.serverUrl.asStateFlow(viewModelScope)
 
-  private val mutableState = MutableStateFlow<ListBudgetsState>(ListBudgetsState.Loading)
+  private val mutableState =
+    MutableStateFlow<ListBudgetsState>(Loading(preferences.mostRecentNumBudgets.default))
+
   val state: StateFlow<ListBudgetsState> = mutableState.asStateFlow()
 
   private val mutableDeletingState = MutableStateFlow<DeletingState>(DeletingState.Inactive)
@@ -70,7 +75,7 @@ class ListBudgetsViewModel(
     // Periodically check whether our files still exist
     viewModelScope.launch {
       state
-        .filterIsInstance<ListBudgetsState.Success>()
+        .filterIsInstance<Success>()
         .map { state -> state.budgets.map { it.cloudFileId } }
         .collectLatest { budgetIds ->
           while (true) {
@@ -144,15 +149,23 @@ class ListBudgetsViewModel(
   }
 
   private fun fetchState() {
-    mutableState.update { ListBudgetsState.Loading }
     viewModelScope.launch {
+      val mostRecentNumBudgets = preferences.mostRecentNumBudgets.get()
+      mutableState.update { Loading(mostRecentNumBudgets) }
+
       val result = budgetListFetcher.fetchBudgets(token)
       logcat.d { "Fetch budgets result = $result" }
       val newState =
         when (result) {
-          is FetchBudgetsResult.Failure -> ListBudgetsState.Failure(result.reason)
-          is FetchBudgetsResult.Success ->
-            ListBudgetsState.Success(result.budgets.toImmutableList())
+          is FetchBudgetsResult.Failure -> {
+            Failure(result.reason)
+          }
+
+          is FetchBudgetsResult.Success -> {
+            val budgets = result.budgets.toImmutableList()
+            preferences.mostRecentNumBudgets.set(budgets.size)
+            Success(budgets)
+          }
         }
       mutableState.update { newState }
     }
