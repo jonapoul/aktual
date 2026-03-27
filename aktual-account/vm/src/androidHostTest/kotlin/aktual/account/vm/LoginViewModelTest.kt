@@ -91,6 +91,7 @@ internal class LoginViewModelTest {
 
       // When we make the failing request
       coEvery { loginRequester.logIn(any(), any()) } returns LoginResult.InvalidPassword
+      viewModel.onEnterPassword("password")
       viewModel.onClickSignIn()
 
       // Then we're loading but not failed
@@ -124,6 +125,7 @@ internal class LoginViewModelTest {
 
       // When we make the failing request
       coEvery { loginRequester.logIn(any(), any()) } returns LoginResult.TokenExpired
+      viewModel.onEnterPassword("password")
       viewModel.onClickSignIn()
 
       // Then we're loading but not failed
