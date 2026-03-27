@@ -11,6 +11,7 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -44,7 +46,8 @@ internal fun ArtifactItem(
     modifier =
       modifier
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
-        .background(theme.pillBackgroundLight, CardShape)
+        .background(theme.buttonNormalBackground, CardShape)
+        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
         .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
         .padding(Dimens.Large),
     verticalArrangement = Arrangement.Top,
@@ -107,7 +110,7 @@ private fun LibraryTableRow(
       modifier = Modifier.weight(TITLE_WEIGHT).wrapContentHeight(),
       text = title,
       textAlign = TextAlign.Start,
-      color = theme.pageTextSubdued,
+      color = theme.pageTextLight,
       lineHeight = LineHeight,
       fontSize = TextSize,
       fontWeight = FontWeight.Bold,
