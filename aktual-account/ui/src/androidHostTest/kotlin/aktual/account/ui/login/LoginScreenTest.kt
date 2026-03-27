@@ -134,7 +134,7 @@ class LoginScreenTest {
       .performImeAction()
 
     runOnIdle {
-      // and the login was triggered
+      // then the login was triggered
       coVerify(exactly = 1) { loginRequester.logIn(PASSWORD, any()) }
 
       // and the navigation was triggered when it succeeded
