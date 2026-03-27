@@ -7,6 +7,8 @@ import aktual.budget.model.BudgetScope
 import aktual.budget.model.DbMetadata
 import aktual.budget.prefs.BudgetLocalPreferences
 import app.cash.sqldelight.db.SqlDriver
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.GraphExtension
 import dev.zacsweers.metro.Provides
 
@@ -18,6 +20,7 @@ interface BudgetGraph {
   val budgetId: BudgetId
 
   @GraphExtension.Factory
+  @ContributesTo(AppScope::class)
   fun interface Factory {
     fun create(
       @Provides budgetId: BudgetId,

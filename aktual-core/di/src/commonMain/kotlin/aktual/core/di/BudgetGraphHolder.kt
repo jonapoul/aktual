@@ -11,6 +11,14 @@ import kotlinx.coroutines.flow.update
 @SingleIn(AppScope::class)
 class BudgetGraphHolder(private val budgetGraphBuilder: BudgetGraph.Builder) :
   StateHolder<BudgetGraph?>(initialState = null), AutoCloseable {
+  override var value: BudgetGraph?
+    get() = super.value
+    set(value) {
+      val previous = super.value
+      previous?.driver?.close()
+      super.value = value
+    }
+
   fun require(): BudgetGraph = requireNotNull(value) { "No budget graph loaded!" }
 
   fun clear() = update { null }
