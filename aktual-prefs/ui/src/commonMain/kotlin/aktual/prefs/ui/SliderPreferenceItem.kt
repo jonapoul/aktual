@@ -10,6 +10,7 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.disabled
 import aktual.core.ui.slider
 import aktual.prefs.vm.SliderPreference
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.LocalTextStyle
@@ -20,6 +21,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
@@ -76,36 +78,38 @@ internal fun SliderPreferenceItem(
     enabled = enabled,
     includeBackground = includeBackground,
     onClick = null,
-    rightContent = {
-      val textMeasurer = rememberTextMeasurer()
-      val style = LocalTextStyle.current
-      val result =
-        remember(style, range) {
-          textMeasurer.measure(text = "%.1f".format(range.endInclusive), style = style)
-        }
-      val width = with(LocalDensity.current) { result.size.width.toDp() }
-      Text(
-        modifier = Modifier.padding(horizontal = 8.dp).width(width),
-        text = remember(currentValue) { "%.1f".format(currentValue) },
-        textAlign = TextAlign.End,
-        maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
-        style = style,
-        color = if (enabled) theme.pageText else theme.pageText.disabled,
-      )
-    },
     bottomContent = {
-      Slider(
-        value = currentValue,
-        onValueChange = { currentValue = it },
-        valueRange = range,
-        onValueChangeFinished = { onValueChange(currentValue) },
-        enabled = enabled,
-        colors = theme.slider(),
-      )
+      Row(verticalAlignment = Alignment.CenterVertically) {
+        Slider(
+          modifier = Modifier.weight(1f),
+          value = currentValue,
+          onValueChange = { currentValue = it },
+          valueRange = range,
+          onValueChangeFinished = { onValueChange(currentValue) },
+          enabled = enabled,
+          colors = theme.slider(),
+        )
+
+        val measurer = rememberTextMeasurer()
+        val style = LocalTextStyle.current
+        val result =
+          remember(measurer, style) { measurer.measure("%.1f".format(MEASURE_VALUE), style) }
+        val width = with(LocalDensity.current) { result.size.width.toDp() }
+        Text(
+          modifier = Modifier.padding(horizontal = 8.dp).width(width),
+          text = remember(currentValue) { "%.1f".format(currentValue) },
+          textAlign = TextAlign.End,
+          maxLines = 1,
+          overflow = TextOverflow.Ellipsis,
+          style = style,
+          color = if (enabled) theme.pageText else theme.pageText.disabled,
+        )
+      }
     },
   )
 }
+
+private const val MEASURE_VALUE = 100f
 
 @Preview
 @Composable
