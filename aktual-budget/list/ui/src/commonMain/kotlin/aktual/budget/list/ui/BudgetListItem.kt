@@ -63,7 +63,7 @@ internal fun BudgetListItem(
     modifier =
       modifier
         .clip(RowShape)
-        .background(theme.pillBackgroundLight, RowShape)
+        .background(theme.buttonNormalBackground, RowShape)
         .border(Dp.Hairline, theme.pillBorderDark, RowShape)
         .clickable(onClick = onClickOpen)
         .padding(horizontal = 15.dp, vertical = 12.dp),

@@ -20,6 +20,7 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.RowShape
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
@@ -33,6 +34,7 @@ import aktual.metrics.vm.MetricsState
 import aktual.metrics.vm.MetricsViewModel
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -61,6 +63,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.ShimmerBounds
@@ -170,7 +173,8 @@ private fun LoadingContent(modifier: Modifier = Modifier, theme: Theme = LocalTh
       Modifier.height(LocalMinimumInteractiveComponentSize.current)
         .fillMaxWidth()
         .clip(CardShape)
-        .background(theme.pillBackgroundLight, CardShape)
+        .background(theme.buttonNormalBackground, RowShape)
+        .border(Dp.Hairline, theme.pillBorderDark, RowShape)
         .padding(Dimens.VeryLarge)
 
     repeat(times = 8) { Box(shimmerModifier) }
@@ -206,7 +210,8 @@ private fun SuccessContent(
   val dataModifier =
     Modifier.fillMaxWidth()
       .clip(CardShape)
-      .background(theme.pillBackgroundLight, CardShape)
+      .background(theme.buttonNormalBackground, CardShape)
+      .border(Dp.Hairline, theme.pillBorderDark, CardShape)
       .padding(Dimens.VeryLarge)
 
   LazyColumn(
