@@ -27,7 +27,6 @@ data class Message(
   val value: MessageValue,
 )
 
-@Suppress("UnnecessaryFullyQualifiedName")
 sealed interface MessageValue {
   @JvmInline value class Number(val value: Long) : MessageValue
 

@@ -6,16 +6,16 @@ complexity:
   CognitiveComplexMethod:
     active: false
   CyclomaticComplexMethod:
-    ignoreSingleWhenExpression: true
     allowedComplexity: 20
+    ignoreSingleWhenExpression: true
   LabeledExpression:
     active: false
   LongMethod:
     allowedLines: 100
   LongParameterList:
-    ignoreDefaultParameters: true
-    allowedFunctionParameters: 10
     allowedConstructorParameters: 10
+    allowedFunctionParameters: 10
+    ignoreDefaultParameters: true
   NamedArguments:
     allowedArguments: 7
     ignoreArgumentsMatchingNames: true
@@ -26,10 +26,10 @@ complexity:
   StringLiteralDuplication:
     excludes: [ "**/test/**", "**/*Test/**" ]
   TooManyFunctions:
-    allowedFunctionsPerObject: 20
     allowedFunctionsPerClass: 20
-    allowedFunctionsPerInterface: 20
     allowedFunctionsPerFile: 20
+    allowedFunctionsPerInterface: 20
+    allowedFunctionsPerObject: 20
     ignorePrivate: true
 
 coroutines:
@@ -45,15 +45,15 @@ exceptions:
 naming:
   BooleanPropertyNaming:
     active: false
+  FunctionNameMaxLength:
+    excludes: [ "**/test/**", "**/*Test/**" ]
+    maximumFunctionNameLength: 40
+  FunctionNaming:
+    excludeClassPattern: ".*Test$"
+    functionPattern: "[a-zA-Z][a-zA-Z0-9]*"
   # https://github.com/detekt/detekt/issues/5362
   NonBooleanPropertyPrefixedWithIs:
     active: false
-  FunctionNaming:
-    functionPattern: "[a-zA-Z][a-zA-Z0-9]*"
-    excludeClassPattern: ".*Test$"
-  FunctionNameMaxLength:
-    maximumFunctionNameLength: 40
-    excludes: [ "**/test/**", "**/*Test/**" ]
 
 potential-bugs:
   ImplicitDefaultLocale:
@@ -79,14 +79,14 @@ style:
   ForbiddenComment:
     active: false
   MagicNumber:
-    ignorePropertyDeclaration: true
-    ignoreCompanionObjectPropertyDeclaration: true
+    excludes: [ "**/test/**", "**/*Test/**" ]
     ignoreAnnotated:
-      - "Preview"
       - "DesktopPreview"
       - "LandscapePreview"
       - "PortraitPreview"
-    excludes: [ "**/test/**", "**/*Test/**" ]
+      - "Preview"
+    ignoreCompanionObjectPropertyDeclaration: true
+    ignorePropertyDeclaration: true
   MaxChainedCallsOnSameLine:
     maxChainedCalls: 8
   MaxLineLength:
@@ -99,12 +99,15 @@ style:
     max: 5
   UnderscoresInNumericLiterals:
     active: false
+  UnnecessaryFullyQualifiedName:
+    # caused issues with logcat.logcat
+    active: false
   UnusedPrivateFunction:
     ignoreAnnotated:
-      - "Preview"
       - "DesktopPreview"
       - "LandscapePreview"
       - "PortraitPreview"
+      - "Preview"
       - "TabletPreview"
   UseIfInsteadOfWhen:
     ignoreWhenContainingVariableDeclaration: true
