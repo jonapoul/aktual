@@ -92,7 +92,8 @@ internal fun SliderPreferenceItem(
 
         val measurer = rememberTextMeasurer()
         val style = LocalTextStyle.current
-        val result = remember(measurer, style) { measurer.measure("%.1f".format(100f), style) }
+        val result =
+          remember(measurer, style) { measurer.measure("%.1f".format(MEASURE_VALUE), style) }
         val width = with(LocalDensity.current) { result.size.width.toDp() }
         Text(
           modifier = Modifier.padding(horizontal = 8.dp).width(width),
@@ -107,6 +108,8 @@ internal fun SliderPreferenceItem(
     },
   )
 }
+
+private const val MEASURE_VALUE = 100f
 
 @Preview
 @Composable
