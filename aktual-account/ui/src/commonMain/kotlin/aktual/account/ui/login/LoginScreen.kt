@@ -11,7 +11,6 @@ import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.model.Password.Companion.Dummy
 import aktual.core.model.Password.Companion.Empty
-import aktual.core.model.ServerUrl
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -42,7 +41,6 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -65,7 +63,6 @@ fun LoginScreen(
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
-  val url by viewModel.serverUrl.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
   val redirectUrl by viewModel.redirectUrl.collectAsStateWithLifecycle()
@@ -85,7 +82,6 @@ fun LoginScreen(
   LoginScaffold(
     versions = versions,
     enteredPassword = enteredPassword,
-    url = url,
     isLoading = isLoading,
     loginFailure = loginFailure,
     loginMethods = loginMethods,
@@ -106,7 +102,6 @@ fun LoginScreen(
 internal fun LoginScaffold(
   versions: AktualVersions,
   enteredPassword: Password,
-  url: ServerUrl?,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
   loginMethods: ImmutableList<LoginMethod>,
@@ -133,7 +128,6 @@ internal fun LoginScaffold(
         modifier = Modifier.padding(innerPadding),
         versions = versions,
         enteredPassword = enteredPassword,
-        url = url,
         isLoading = isLoading,
         loginFailure = loginFailure,
         loginMethods = loginMethods,
@@ -145,12 +139,10 @@ internal fun LoginScaffold(
   }
 }
 
-@Stable
 @Composable
 private fun Content(
   versions: AktualVersions,
   enteredPassword: Password,
-  url: ServerUrl?,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
   loginMethods: ImmutableList<LoginMethod>,
@@ -234,7 +226,6 @@ private fun PreviewLoginScaffold(
     LoginScaffold(
       versions = data.versions,
       enteredPassword = data.password,
-      url = data.url,
       isLoading = data.isLoading,
       loginFailure = data.loginFailure,
       loginMethods = data.loginMethods,
@@ -246,7 +237,6 @@ private fun PreviewLoginScaffold(
 private data class LoginScaffoldParams(
   val versions: AktualVersions = AktualVersions.Dummy,
   val password: Password = Dummy,
-  val url: ServerUrl = ServerUrl.Demo,
   val isLoading: Boolean = false,
   val loginFailure: LoginResult.Failure? = null,
   val loginMethods: ImmutableList<LoginMethod> = persistentListOf(),
