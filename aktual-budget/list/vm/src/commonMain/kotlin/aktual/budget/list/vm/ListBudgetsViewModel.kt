@@ -157,7 +157,10 @@ class ListBudgetsViewModel(
       logcat.d { "Fetch budgets result = $result" }
       val newState =
         when (result) {
-          is FetchBudgetsResult.Failure -> Failure(result.reason)
+          is FetchBudgetsResult.Failure -> {
+            Failure(result.reason)
+          }
+
           is FetchBudgetsResult.Success -> {
             val budgets = result.budgets.toImmutableList()
             preferences.mostRecentNumBudgets.set(budgets.size)
