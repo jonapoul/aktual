@@ -99,6 +99,8 @@ style:
     max: 5
   UnderscoresInNumericLiterals:
     active: false
+  UnnecessaryFullyQualifiedName:
+    active: false
   UnusedPrivateFunction:
     ignoreAnnotated:
       - "Preview"
