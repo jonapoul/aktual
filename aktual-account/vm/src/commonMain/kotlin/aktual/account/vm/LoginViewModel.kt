@@ -88,10 +88,11 @@ class LoginViewModel(
 
   fun onClickSignIn(loginMethod: LoginMethod = mutableSelectedLoginMethod.value) {
     logcat.v { "onClickSignIn with method=$loginMethod" }
+    val password = mutableEnteredPassword.value
+    if (loginMethod == LoginMethod.Password && password == Password.Empty) return
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
     viewModelScope.launch {
-      val password = mutableEnteredPassword.value
       val result = loginRequester.logIn(password, loginMethod)
 
       logcat.d { "Login result = $result" }
