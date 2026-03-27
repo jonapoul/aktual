@@ -23,7 +23,6 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.UsingServerText
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
@@ -214,10 +213,6 @@ private fun Content(
         LoginFailureText(modifier = Modifier.fillMaxWidth(), result = loginFailure)
       }
     }
-
-    VerticalSpacer(20.dp)
-
-    UsingServerText(url = url, onClickChange = { onAction(LoginAction.ChangeServer) })
 
     VerticalSpacer(4.dp)
 

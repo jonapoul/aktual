@@ -24,6 +24,7 @@ import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.BackHandler
 import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
@@ -35,6 +36,7 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.rememberAppCloser
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Arrangement
@@ -123,6 +125,9 @@ fun ListBudgetsScreen(
       onDismissRequest = { budgetToSync = null },
     )
   }
+
+  val closeApp = rememberAppCloser()
+  BackHandler { closeApp() }
 
   ListBudgetsScaffold(
     state = state,
