@@ -8,4 +8,5 @@ interface AppPreferences {
   val token: NullablePreference<Token>
   val serverUrl: NullablePreference<ServerUrl>
   val isPrivacyEnabled: Preference<Boolean>
+  val mostRecentNumBudgets: Preference<Int>
 }
