@@ -106,7 +106,14 @@ internal fun LicensesScaffold(
   ) { innerPadding ->
     Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
       LicensesSearchInput(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp).wrapContentHeight(),
+        modifier =
+          Modifier.fillMaxWidth()
+            .padding(
+              start = 20.dp,
+              end = 20.dp,
+              top = if (blurState.blurEnabled) innerPadding.calculateTopPadding() else 0.dp,
+            )
+            .wrapContentHeight(),
         searchState = searchBarState,
         licensesState = state,
         onAction = onAction,
@@ -115,7 +122,12 @@ internal fun LicensesScaffold(
 
       Content(
         state = state,
-        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        contentPadding =
+          if (searchBarState is SearchBarState.Visible) {
+            PaddingValues.Zero
+          } else {
+            blurredTopBarContentPadding(blurState, innerPadding)
+          },
         listState = listState,
         theme = theme,
         onAction = onAction,

@@ -23,6 +23,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
+import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -30,6 +31,7 @@ import alakazam.compose.HorizontalSpacer
 import alakazam.kotlin.noOp
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -57,6 +59,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -163,7 +166,8 @@ private fun InfoHeader(year: Int, theme: Theme, modifier: Modifier = Modifier) {
     modifier =
       modifier
         .fillMaxWidth()
-        .background(theme.pillBackgroundLight, CardShape)
+        .background(theme.pillBackground.disabled, CardShape)
+        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
         .padding(horizontal = 20.dp, vertical = 10.dp),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
@@ -195,8 +199,13 @@ private fun InfoHeader(year: Int, theme: Theme, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun InfoBuildState(buildState: BuildState, theme: Theme, modifier: Modifier = Modifier) =
-  Column(modifier = modifier.background(theme.pillBackgroundLight, CardShape)) {
+private fun InfoBuildState(buildState: BuildState, theme: Theme, modifier: Modifier = Modifier) {
+  Column(
+    modifier =
+      modifier
+        .background(theme.pillBackground.disabled, CardShape)
+        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
+  ) {
     BuildStateItem(
       modifier = Modifier.padding(ItemMargin).clip(CardShape),
       icon = MaterialIcons.Apps,
@@ -221,6 +230,7 @@ private fun InfoBuildState(buildState: BuildState, theme: Theme, modifier: Modif
       theme = theme,
     )
   }
+}
 
 @Composable
 private fun BuildStateItem(

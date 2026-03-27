@@ -172,7 +172,6 @@ private fun LoadingContent(modifier: Modifier = Modifier, theme: Theme = LocalTh
     val shimmerModifier =
       Modifier.height(LocalMinimumInteractiveComponentSize.current)
         .fillMaxWidth()
-        .clip(CardShape)
         .background(theme.buttonNormalBackground, RowShape)
         .border(Dp.Hairline, theme.pillBorderDark, RowShape)
         .padding(Dimens.VeryLarge)
