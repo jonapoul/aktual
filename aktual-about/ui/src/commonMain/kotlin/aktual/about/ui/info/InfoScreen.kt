@@ -204,7 +204,7 @@ private fun InfoBuildState(buildState: BuildState, theme: Theme, modifier: Modif
     modifier =
       modifier
         .background(theme.pillBackground.disabled, CardShape)
-        .border(Dp.Hairline, theme.pillBorderDark, CardShape),
+        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
   ) {
     BuildStateItem(
       modifier = Modifier.padding(ItemMargin).clip(CardShape),
