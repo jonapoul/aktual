@@ -6,6 +6,7 @@ import app.cash.burst.TestFunction
 import app.cash.burst.TestInterceptor
 import app.cash.burst.coroutines.CoroutineTestFunction
 import app.cash.burst.coroutines.CoroutineTestInterceptor
+import kotlinx.coroutines.CancellationException
 import logcat.LogPriority
 import logcat.LogcatLogger
 
@@ -20,6 +21,8 @@ class LogcatInterceptor(
       LogcatLogger.install()
       LogcatLogger.loggers += this
       testFunction()
+    } catch (e: CancellationException) {
+      throw e
     } catch (t: Throwable) {
       if (onlyPrintOnFailure) {
         println("---- Captured logcat output ----")
@@ -45,6 +48,8 @@ class CoLogcatInterceptor(
       LogcatLogger.install()
       LogcatLogger.loggers += this
       testFunction()
+    } catch (e: CancellationException) {
+      throw e
     } catch (t: Throwable) {
       if (onlyPrintOnFailure) {
         println("---- Captured logcat output ----")

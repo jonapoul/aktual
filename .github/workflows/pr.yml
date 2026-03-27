@@ -207,7 +207,7 @@ jobs:
           fi
 
   claude-review:
-    if: ${{ !cancelled() && !contains(github.head_ref, 'anthropics-claude-code-action') }}
+    if: ${{ !cancelled() && !startsWith(github.head_ref, 'renovate/') }}
     needs: finish
     runs-on: ubuntu-latest
     permissions:
@@ -245,9 +245,11 @@ jobs:
             Submit a review using:
                gh api repos/$REPO/pulls/$PR_NUMBER/reviews -f event=COMMENT -f body="Review summary" -f 'comments[][path]=file.kt' -f 'comments[][line]=42' -f 'comments[][body]=Your comment'
 
-            Keep comments brief and actionable. Only comment where something should be addressed — don't leave praise or nitpicks. To clarify: if you have nothing to say besides "LGTM", **DO NOT LEAVE A COMMENT**
+            Keep comments brief and actionable.
 
-            If CI failed, include the failure analysis in the review summary. If everything looks fine and CI passed, leave a single approving comment via `gh pr comment`.
+            *IMPORTANT* Only leave a comment if something should be addressed — don't leave praise or nitpicks. To clarify: if you have nothing to say besides "LGTM", **DO NOT LEAVE A COMMENT AT ALL**
+
+            If CI failed, include the failure analysis in the review summary.
 
             Use the repository's CLAUDE.md for guidance on style and conventions.
           claude_args: '--allowed-tools "Bash(gh api:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh run view:*)"'

@@ -7,10 +7,8 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
-import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.prefs.AppPreferences
-import aktual.prefs.asStateFlow
 import alakazam.kotlin.ResettableStateFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -49,7 +47,6 @@ class LoginViewModel(
 
   val enteredPassword: StateFlow<Password> = mutableEnteredPassword.asStateFlow()
   val versions: StateFlow<AktualVersions> = versionsStateHolder.asStateFlow()
-  val serverUrl: StateFlow<ServerUrl?> = preferences.serverUrl.asStateFlow(viewModelScope)
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
   val redirectUrl: StateFlow<String?> = mutableRedirectUrl.asStateFlow()
   val loginMethods: StateFlow<ImmutableList<LoginMethod>> = mutableLoginMethods.asStateFlow()
@@ -91,10 +88,11 @@ class LoginViewModel(
 
   fun onClickSignIn(loginMethod: LoginMethod = mutableSelectedLoginMethod.value) {
     logcat.v { "onClickSignIn with method=$loginMethod" }
+    val password = mutableEnteredPassword.value
+    if (loginMethod == LoginMethod.Password && password == Password.Empty) return
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
     viewModelScope.launch {
-      val password = mutableEnteredPassword.value
       val result = loginRequester.logIn(password, loginMethod)
 
       logcat.d { "Login result = $result" }

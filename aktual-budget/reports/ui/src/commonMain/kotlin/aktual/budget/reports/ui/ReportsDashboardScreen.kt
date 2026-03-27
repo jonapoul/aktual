@@ -1,5 +1,8 @@
 package aktual.budget.reports.ui
 
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.CreateReportNavigator
+import aktual.app.nav.ReportNavigator
 import aktual.budget.model.BudgetId
 import aktual.budget.reports.vm.DashboardState
 import aktual.budget.reports.vm.ReportDashboardItem
@@ -51,27 +54,29 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ReportsDashboardScreen(
-  nav: ReportsDashboardNavigator,
+  back: BackNavigator,
+  toReport: ReportNavigator,
+  toCreateReport: CreateReportNavigator,
   budgetId: BudgetId,
   token: Token,
   viewModel: ReportsDashboardViewModel = metroViewModel(token, budgetId),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
-  BackHandler { nav.back() }
+  BackHandler { back() }
 
   ReportsDashboardScaffold(
     state = state,
     onAction = { action ->
       when (action) {
-        is Action.OpenItem -> nav.toReport(token, budgetId, action.id)
+        is Action.OpenItem -> toReport(token, budgetId, action.id)
         is Action.Rename -> viewModel.renameReport(action.id)
         is Action.Delete -> viewModel.deleteReport(action.id)
         is Action.SetSummaryType -> TODO()
         is Action.SetAllTimeDivisor -> TODO()
         is Action.ClickCalendarDay -> TODO()
         is Action.SaveTextContent -> TODO()
-        Action.CreateNewReport -> nav.createReport(token, budgetId)
+        Action.CreateNewReport -> toCreateReport(token, budgetId)
       }
     },
   )

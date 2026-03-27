@@ -1,13 +1,14 @@
 package aktual.about.ui.licenses
 
 import aktual.about.vm.LicensesViewModel
+import aktual.app.nav.BackNavigator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
-fun LicensesScreen(nav: LicensesNavigator, viewModel: LicensesViewModel = metroViewModel()) {
+fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroViewModel()) {
   val licensesState by viewModel.licensesState.collectAsStateWithLifecycle()
   val searchBarState by viewModel.searchBarState.collectAsStateWithLifecycle()
 
@@ -16,7 +17,7 @@ fun LicensesScreen(nav: LicensesNavigator, viewModel: LicensesViewModel = metroV
     searchBarState = searchBarState,
     onAction = { action ->
       when (action) {
-        LicensesAction.NavBack -> nav.back()
+        LicensesAction.NavBack -> back()
         LicensesAction.Reload -> viewModel.load()
         LicensesAction.ToggleSearchBar -> viewModel.toggleSearchBar()
         is LicensesAction.EditSearchText -> viewModel.setSearchText(action.text)

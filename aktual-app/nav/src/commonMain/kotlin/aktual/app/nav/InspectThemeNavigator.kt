@@ -1,0 +1,14 @@
+package aktual.app.nav
+
+import aktual.core.model.ThemeId
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
+
+@Immutable
+class InspectThemeNavigator(private val stack: SnapshotStateList<NavKey>) {
+  operator fun invoke(id: ThemeId) = stack.debugPush(InspectThemeNavRoute(id))
+}
+
+@Immutable @Serializable data class InspectThemeNavRoute(val id: ThemeId) : NavKey

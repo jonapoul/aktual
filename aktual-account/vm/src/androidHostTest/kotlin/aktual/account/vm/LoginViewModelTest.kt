@@ -4,8 +4,6 @@ import aktual.account.domain.LoginRequester
 import aktual.account.domain.LoginResult
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password
-import aktual.core.model.Protocol
-import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.prefs.AppPreferences
 import aktual.prefs.AppPreferencesImpl
@@ -83,21 +81,6 @@ internal class LoginViewModelTest {
   }
 
   @Test
-  fun `Server URL`() = runTest {
-    before()
-    viewModel.serverUrl.test {
-      assertThatNextEmission().isNull()
-
-      val url = ServerUrl(Protocol.Https, baseUrl = "url.for.my.server.com")
-      preferences.serverUrl.set(url)
-
-      assertThat(awaitItem()).isEqualTo(url)
-      expectNoEvents()
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
   fun `Signing in with invalid password`() = runTest {
     before()
     combine(viewModel.loginFailure, viewModel.isLoading, ::Pair).distinctUntilChanged().test {
@@ -108,6 +91,7 @@ internal class LoginViewModelTest {
 
       // When we make the failing request
       coEvery { loginRequester.logIn(any(), any()) } returns LoginResult.InvalidPassword
+      viewModel.onEnterPassword("password")
       viewModel.onClickSignIn()
 
       // Then we're loading but not failed
@@ -141,6 +125,7 @@ internal class LoginViewModelTest {
 
       // When we make the failing request
       coEvery { loginRequester.logIn(any(), any()) } returns LoginResult.TokenExpired
+      viewModel.onEnterPassword("password")
       viewModel.onClickSignIn()
 
       // Then we're loading but not failed

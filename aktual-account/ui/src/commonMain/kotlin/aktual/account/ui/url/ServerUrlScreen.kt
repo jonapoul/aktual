@@ -2,6 +2,8 @@ package aktual.account.ui.url
 
 import aktual.account.vm.NavDestination
 import aktual.account.vm.ServerUrlViewModel
+import aktual.app.nav.InfoNavigator
+import aktual.app.nav.LoginNavigator
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -10,10 +12,10 @@ import aktual.core.model.Protocol
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.BackHandler
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
-import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColorScheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
@@ -21,10 +23,9 @@ import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.appCloser
 import aktual.core.ui.normalIconButton
+import aktual.core.ui.rememberAppCloser
 import aktual.core.ui.transparentTopAppBarColors
-import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,11 +49,14 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
-import kotlinx.coroutines.channels.consumeEach
 import logcat.logcat
 
 @Composable
-fun ServerUrlScreen(nav: ServerUrlNavigator, viewModel: ServerUrlViewModel = metroViewModel()) {
+fun ServerUrlScreen(
+  toLogin: LoginNavigator,
+  toInfo: InfoNavigator,
+  viewModel: ServerUrlViewModel = metroViewModel(),
+) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredUrl by viewModel.baseUrl.collectAsStateWithLifecycle()
   val protocol by viewModel.protocol.collectAsStateWithLifecycle()
@@ -60,17 +64,18 @@ fun ServerUrlScreen(nav: ServerUrlNavigator, viewModel: ServerUrlViewModel = met
   val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
 
+  val closeApp = rememberAppCloser()
+  BackHandler { closeApp() }
+
   DisposableEffect(Unit) { onDispose { viewModel.clearState() } }
 
-  val closeApp = appCloser()
-
   LaunchedEffect(Unit) {
-    viewModel.navDestination.consumeEach { destination ->
+    // Don't consumeEach here, it'll cancel the channel when we nav forward
+    for (destination in viewModel.navDestination) {
       when (destination) {
-        NavDestination.Back -> closeApp()
         NavDestination.ToBootstrap -> logcat.w { "Not implemented bootstrap yet!" }
-        NavDestination.ToLogin -> nav.toLogin()
-        NavDestination.ToAbout -> nav.toAbout()
+        NavDestination.ToLogin -> toLogin()
+        NavDestination.ToAbout -> toInfo()
       }
     }
   }
@@ -85,7 +90,6 @@ fun ServerUrlScreen(nav: ServerUrlNavigator, viewModel: ServerUrlViewModel = met
     onAction = { action ->
       when (action) {
         ServerUrlAction.ConfirmUrl -> viewModel.onClickConfirm()
-        ServerUrlAction.NavBack -> viewModel.onClickBack()
         ServerUrlAction.OpenAbout -> viewModel.onClickAbout()
         is ServerUrlAction.EnterUrl -> viewModel.onEnterUrl(action.url)
         is ServerUrlAction.SelectProtocol -> viewModel.onSelectProtocol(action.protocol)
@@ -111,7 +115,6 @@ private fun ServerUrlScaffold(
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(ServerUrlAction.NavBack) } },
         title = {},
         actions = {
           BasicIconButton(
@@ -161,45 +164,39 @@ private fun ServerUrlContent(
     verticalArrangement = Arrangement.Center,
     horizontalAlignment = Alignment.Start,
   ) {
-    Text(text = Strings.serverUrlTitle, style = AktualTypography.headlineLarge)
-
-    VerticalSpacer(height = 15.dp)
-
-    Text(
-      text = Strings.serverUrlMessage,
-      color = theme.tableRowHeaderText,
-      style = AktualTypography.bodyLarge,
-    )
-
-    VerticalSpacer(height = 20.dp)
-
-    InputFields(
-      modifier = Modifier.fillMaxWidth(),
-      url = url,
-      protocol = protocol,
-      onAction = onAction,
-      theme = theme,
-    )
-
-    VerticalSpacer(height = 20.dp)
-
-    PrimaryTextButtonWithLoading(
-      modifier = Modifier.padding(5.dp).fillMaxWidth(),
-      text = Strings.serverUrlConfirm,
-      isLoading = isLoading,
-      isEnabled = isEnabled,
-      onClick = { onAction(ServerUrlAction.ConfirmUrl) },
-    )
-
-    if (errorMessage != null) {
-      VerticalSpacer(20.dp)
+    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
+      Text(text = Strings.serverUrlTitle, style = AktualTypography.headlineLarge)
 
       Text(
-        modifier = Modifier.fillMaxWidth(),
-        text = errorMessage,
-        color = theme.errorText,
-        textAlign = TextAlign.Center,
+        text = Strings.serverUrlMessage,
+        color = theme.tableRowHeaderText,
+        style = AktualTypography.bodyLarge,
       )
+
+      InputFields(
+        modifier = Modifier.fillMaxWidth(),
+        url = url,
+        protocol = protocol,
+        onAction = onAction,
+        theme = theme,
+      )
+
+      PrimaryTextButtonWithLoading(
+        modifier = Modifier.padding(5.dp).fillMaxWidth(),
+        text = Strings.serverUrlConfirm,
+        isLoading = isLoading,
+        isEnabled = isEnabled,
+        onClick = { onAction(ServerUrlAction.ConfirmUrl) },
+      )
+
+      if (errorMessage != null) {
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = errorMessage,
+          color = theme.errorText,
+          textAlign = TextAlign.Center,
+        )
+      }
     }
 
     Spacer(modifier = Modifier.weight(1f))

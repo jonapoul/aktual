@@ -1,5 +1,6 @@
 package aktual.prefs.ui.inspect
 
+import aktual.app.nav.BackNavigator
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OpenInNew
 import aktual.core.l10n.Strings
@@ -63,7 +64,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun InspectThemeScreen(
-  nav: InspectThemeNavigator,
+  back: BackNavigator,
   themeId: ThemeId,
   viewModel: InspectThemeViewModel = metroViewModel(themeId),
 ) {
@@ -73,7 +74,7 @@ fun InspectThemeScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        InspectThemeAction.NavBack -> nav.navBack()
+        InspectThemeAction.NavBack -> back()
         InspectThemeAction.OpenRepo -> viewModel.openRepo()
         InspectThemeAction.Retry -> viewModel.retry()
       }

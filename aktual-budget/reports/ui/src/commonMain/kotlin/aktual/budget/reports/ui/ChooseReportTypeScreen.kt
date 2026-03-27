@@ -1,5 +1,7 @@
 package aktual.budget.reports.ui
 
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.ReportNavigator
 import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.ui.charts.JUL_2025
@@ -60,16 +62,17 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ChooseReportTypeScreen(
-  nav: ChooseReportTypeNavigator,
+  back: BackNavigator,
+  toReport: ReportNavigator,
   budgetId: BudgetId,
   token: Token,
   viewModel: ChooseReportTypeViewModel = metroViewModel(budgetId),
 ) {
-  BackHandler { nav.back() }
+  BackHandler { back() }
 
   LaunchedEffect(Unit) {
     viewModel.shouldNavigateEvent.collectLatest { event ->
-      nav.toReport(token, budgetId, widgetId = event.id)
+      toReport(token, budgetId, widgetId = event.id)
     }
   }
 

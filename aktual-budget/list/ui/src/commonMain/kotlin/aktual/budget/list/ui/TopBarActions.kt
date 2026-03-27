@@ -1,7 +1,7 @@
 package aktual.budget.list.ui
 
 import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
-import aktual.budget.list.ui.ListBudgetsAction.ChangeServer
+import aktual.budget.list.ui.ListBudgetsAction.LogOut
 import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
 import aktual.budget.list.ui.ListBudgetsAction.OpenServerMetrics
 import aktual.budget.list.ui.ListBudgetsAction.OpenSettings
@@ -61,7 +61,7 @@ internal fun MoreMenu(
       text = { Text(serverText) },
       onClick = {
         onDismissRequest()
-        onAction(ChangeServer)
+        onAction(LogOut)
       },
       leadingIcon = { Icon(MaterialIcons.Cloud, contentDescription = serverText) },
     )

@@ -1,0 +1,14 @@
+package aktual.app.nav
+
+import aktual.core.model.Token
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.navigation3.runtime.NavKey
+import kotlinx.serialization.Serializable
+
+@Immutable
+class ListBudgetsNavigator(private val stack: SnapshotStateList<NavKey>) {
+  operator fun invoke(token: Token) = stack.debugPush(ListBudgetsNavRoute(token))
+}
+
+@Immutable @Serializable data class ListBudgetsNavRoute(val token: Token) : NavKey

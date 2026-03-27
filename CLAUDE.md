@@ -175,9 +175,9 @@ The project follows a strict **feature-based modular architecture** with clear l
 - Jetpack Compose screens and components (Material3)
 - Stateless composables that collect state from ViewModels
 - Retrieves ViewModels via `metroViewModel()` composable
-- Navigator interfaces for navigation actions
+- Receives navigator classes from `aktual-app:nav` (e.g., `BackNavigator`, `SettingsNavigator`) as composable parameters
 - Each UI module contributes a `NavEntryContributor` via `@ContributesIntoSet(NavScope::class)` to register its nav entries
-- Dependencies: VM layer (API), Core UI, L10n, Nav API (for routes/extensions)
+- Dependencies: VM layer (API), Core UI, L10n, Nav API (for navigators/routes/extensions)
 
 ### Dependency Injection (Metro)
 
@@ -350,17 +350,28 @@ To change the Java version, simply update the `.java-version` file. Both the Gra
    - VM: Depend on domain (API), core DI (API)
    - UI: Depend on VM (API), core UI (API), L10n, `:aktual-app:nav` (for routes/extensions)
 
-5. **Create a `NavEntryContributor`** in the UI module to register screens:
+5. **Create a navigator class + route** in `aktual-app:nav`:
+   ```kotlin
+   // YourNavigator.kt
+   @Immutable
+   class YourNavigator(private val stack: SnapshotStateList<NavKey>) {
+     operator fun invoke(param: Param) = stack.debugPush(YourNavRoute(param))
+   }
+
+   @Immutable @Serializable data class YourNavRoute(val param: Param) : NavKey
+   ```
+
+6. **Create a `NavEntryContributor`** in the UI module to register screens:
    ```kotlin
    @ContributesIntoSet(NavScope::class)
    class YourFeatureNavEntryContributor : NavEntryContributor {
      override fun contribute(scope: EntryProviderScope<NavKey>, stack: SnapshotStateList<NavKey>) {
-       scope.entry<YourNavRoute> { route -> YourScreen(YourNavigatorImpl(stack), route.param) }
+       scope.entry<YourNavRoute> { route -> YourScreen(BackNavigator(stack), route.param) }
      }
    }
    ```
 
-6. **Add the UI module** to `aktual-app:di/build.gradle.kts` so Metro discovers the contribution hints.
+7. **Add the UI module** to `aktual-app:di/build.gradle.kts` so Metro discovers the contribution hints.
 
 ### Testing Patterns
 

@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 actual fun BackHandler(enabled: Boolean, onBack: () -> Unit) = AndroidBackHandler(enabled, onBack)
 
 @Composable
-actual fun appCloser(): AppCloser {
+actual fun rememberAppCloser(): AppCloser {
   val context = LocalContext.current
   return remember(context) {
     AndroidAppCloser(activity = { context as? Activity ?: error("$context isn't an activity?") })

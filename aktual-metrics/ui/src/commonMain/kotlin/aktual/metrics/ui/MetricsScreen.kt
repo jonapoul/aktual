@@ -1,8 +1,7 @@
 package aktual.metrics.ui
 
 import aktual.api.model.metrics.GetMetricsResponse
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
+import aktual.app.nav.BackNavigator
 import aktual.core.l10n.Strings
 import aktual.core.model.GB
 import aktual.core.model.MB
@@ -12,6 +11,7 @@ import aktual.core.model.kB
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
@@ -26,7 +26,6 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
-import aktual.core.ui.blurredTopBarContentPadding
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -38,7 +37,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,12 +44,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -86,7 +82,7 @@ import kotlinx.datetime.format.char
 
 @Composable
 fun MetricsScreen(
-  nav: MetricsNavigator,
+  back: BackNavigator,
   viewModel: MetricsViewModel = metroViewModel<MetricsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -95,7 +91,7 @@ fun MetricsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        MetricsAction.NavBack -> nav.back()
+        MetricsAction.NavBack -> back()
         MetricsAction.Refresh -> viewModel.refresh()
       }
     },
@@ -113,29 +109,26 @@ internal fun MetricsScaffold(
   Scaffold(
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState),
+        modifier = Modifier.blurredTopBar(blurState, isScrolled = false),
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(MetricsAction.NavBack) } },
         title = { Text(Strings.metricsToolbar) },
-        actions = {
-          if (state is MetricsState.Success) {
-            IconButton(onClick = { onAction(MetricsAction.Refresh) }) {
-              Icon(imageVector = MaterialIcons.Refresh, contentDescription = Strings.metricsRefresh)
-            }
-          }
-        },
       )
     }
   ) { innerPadding ->
     Box {
       WavyBackground()
 
-      MetricsContent(
-        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
-        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
-        state = state,
-        onAction = onAction,
-      )
+      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
+        BlurredTopBarSpacing(blurState, innerPadding)
+        PullToRefreshBox(
+          modifier = Modifier.padding(8.dp),
+          contentAlignment = Alignment.Center,
+          onRefresh = { onAction(MetricsAction.Refresh) },
+          isRefreshing = state is MetricsState.Loading,
+          content = { MetricsContent(state, onAction) },
+        )
+      }
     }
   }
 }
@@ -143,40 +136,75 @@ internal fun MetricsScaffold(
 @Composable
 private fun MetricsContent(
   state: MetricsState,
-  contentPadding: PaddingValues,
   onAction: (MetricsAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  Box(modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Huge)) {
+  Column(
+    modifier = modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Top,
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
     when (state) {
       MetricsState.Loading -> LoadingContent()
       MetricsState.Disconnected -> FailureContent(Strings.metricsDisconnected, onAction, theme)
       is MetricsState.Failure -> FailureContent(state.cause, onAction, theme)
-      is MetricsState.Success -> SuccessContent(state, contentPadding, theme)
+      is MetricsState.Success -> SuccessContent(state, theme)
     }
+
+    BottomStatusBarSpacing()
+    BottomNavBarSpacing()
   }
 }
 
 @Composable
-private fun LoadingContent(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
+private fun LoadingContent(modifier: Modifier = Modifier) {
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
+    repeat(times = 3) { LoadingItem() }
+  }
+}
+
+@Composable
+internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
   val shimmer = rememberShimmer(ShimmerBounds.Custom)
 
-  Column(
+  Row(
     modifier =
-      modifier.shimmer(shimmer).onGloballyPositioned { coordinates ->
-        shimmer.updateBounds(coordinates.unclippedBoundsInWindow())
-      },
-    verticalArrangement = Arrangement.spacedBy(VERTICAL_SPACING),
-  ) {
-    val shimmerModifier =
-      Modifier.height(LocalMinimumInteractiveComponentSize.current)
+      modifier
         .fillMaxWidth()
+        .clip(RowShape)
         .background(theme.buttonNormalBackground, RowShape)
         .border(Dp.Hairline, theme.pillBorderDark, RowShape)
-        .padding(Dimens.VeryLarge)
+        .padding(horizontal = 15.dp, vertical = 12.dp)
+        .shimmer(shimmer)
+        .onGloballyPositioned { shimmer.updateBounds(it.unclippedBoundsInWindow()) },
+    horizontalArrangement = Arrangement.Start,
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Column(modifier = Modifier.weight(1f)) {
+      Box(
+        modifier =
+          Modifier.fillMaxWidth(fraction = 0.55f)
+            .height(20.dp)
+            .background(theme.pageText, CardShape)
+      )
 
-    repeat(times = 8) { Box(shimmerModifier) }
+      Box(
+        modifier =
+          Modifier.padding(top = 4.dp)
+            .fillMaxWidth(fraction = 0.35f)
+            .height(18.dp)
+            .background(theme.pageText, CardShape)
+      )
+
+      Box(
+        modifier =
+          Modifier.padding(top = 4.dp)
+            .fillMaxWidth(fraction = 0.45f)
+            .height(20.dp)
+            .background(theme.pageText, CardShape)
+      )
+    }
   }
 }
 
@@ -188,7 +216,7 @@ private fun FailureContent(
   modifier: Modifier = Modifier,
 ) {
   FailureScreen(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier,
     title = Strings.metricsFailure,
     reason = message,
     retryText = Strings.metricsFailureRetry,
@@ -200,7 +228,6 @@ private fun FailureContent(
 @Composable
 private fun SuccessContent(
   state: MetricsState.Success,
-  contentPadding: PaddingValues,
   theme: Theme,
   modifier: Modifier = Modifier,
 ) {
@@ -216,7 +243,6 @@ private fun SuccessContent(
   LazyColumn(
     modifier = modifier.scrollbar(lazyListState),
     state = lazyListState,
-    contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(VERTICAL_SPACING),
   ) {
     item {

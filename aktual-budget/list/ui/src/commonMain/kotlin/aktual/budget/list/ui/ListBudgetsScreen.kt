@@ -1,8 +1,14 @@
 package aktual.budget.list.ui
 
+import aktual.app.nav.ChangePasswordNavigator
+import aktual.app.nav.InfoNavigator
+import aktual.app.nav.MetricsNavigator
+import aktual.app.nav.ServerUrlNavigator
+import aktual.app.nav.SettingsNavigator
+import aktual.app.nav.TransactionsNavigator
 import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
-import aktual.budget.list.ui.ListBudgetsAction.ChangeServer
 import aktual.budget.list.ui.ListBudgetsAction.Delete
+import aktual.budget.list.ui.ListBudgetsAction.LogOut
 import aktual.budget.list.ui.ListBudgetsAction.Open
 import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
 import aktual.budget.list.ui.ListBudgetsAction.OpenInBrowser
@@ -18,6 +24,7 @@ import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.BackHandler
 import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
@@ -29,6 +36,7 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.rememberAppCloser
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Arrangement
@@ -59,8 +67,13 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ListBudgetsScreen(
-  nav: ListBudgetsNavigator,
   token: Token,
+  toInfo: InfoNavigator,
+  toChangePassword: ChangePasswordNavigator,
+  toSettings: SettingsNavigator,
+  toMetrics: MetricsNavigator,
+  logOut: ServerUrlNavigator,
+  toBudget: TransactionsNavigator,
   viewModel: ListBudgetsViewModel = metroViewModel(token),
 ) {
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
@@ -108,20 +121,23 @@ fun ListBudgetsScreen(
     SyncBudgetDialog(
       budgetId = id,
       token = token,
-      onSyncComplete = { nav.toBudget(token, id) },
+      onSyncComplete = { toBudget(token, id) },
       onDismissRequest = { budgetToSync = null },
     )
   }
+
+  val closeApp = rememberAppCloser()
+  BackHandler { closeApp() }
 
   ListBudgetsScaffold(
     state = state,
     onAction = { action ->
       when (action) {
-        ChangeServer -> nav.toUrl()
-        ChangePassword -> nav.toChangePassword()
-        OpenAbout -> nav.toAbout()
-        OpenSettings -> nav.toSettings()
-        OpenServerMetrics -> nav.toMetrics()
+        LogOut -> logOut()
+        ChangePassword -> toChangePassword()
+        OpenAbout -> toInfo()
+        OpenSettings -> toSettings()
+        OpenServerMetrics -> toMetrics()
         OpenInBrowser -> viewModel.open(serverUrl)
         Reload -> viewModel.retry()
         is Delete -> budgetToDelete = action.budget

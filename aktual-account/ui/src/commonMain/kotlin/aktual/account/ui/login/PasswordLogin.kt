@@ -73,6 +73,7 @@ internal fun PasswordLogin(
       modifier = Modifier.testTag(Tags.PasswordLoginButton).padding(5.dp).fillMaxWidth(),
       text = Strings.loginSignIn,
       isLoading = isLoading,
+      isEnabled = enteredPassword != Password.Empty,
       onClick = { onAction(LoginAction.SignIn) },
     )
   }

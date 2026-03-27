@@ -101,6 +101,11 @@ internal constructor(
     }
   }
 
+  override fun onCleared() {
+    super.onCleared()
+    clearState()
+  }
+
   fun clearState() {
     mutableIsLoading.reset()
     mutableConfirmResult.reset()
@@ -127,6 +132,7 @@ internal constructor(
 
   fun onClickConfirm() {
     logcat.v { "onClickConfirm" }
+    mutableConfirmResult.reset()
     mutableIsLoading.update { true }
     viewModelScope.launch {
       val protocol = mutableProtocol.value
@@ -146,10 +152,6 @@ internal constructor(
     }
   }
 
-  fun onClickBack() {
-    mutableNavDestination.trySend(NavDestination.Back)
-  }
-
   fun onClickAbout() {
     mutableNavDestination.trySend(NavDestination.ToAbout)
   }
@@ -159,7 +161,6 @@ internal constructor(
       logcat.v { "checkIfNeedsBootstrap $url" }
       val apis = apiStateHolder.filterNotNull().filter { it.serverUrl == url }.first()
 
-      logcat.v { "apis = $apis" }
       val response =
         try {
           withContext(contexts.io) { apis.account.needsBootstrap() }
@@ -216,8 +217,6 @@ internal sealed interface ConfirmResult {
 
 @Immutable
 sealed interface NavDestination {
-  data object Back : NavDestination
-
   data object ToBootstrap : NavDestination
 
   data object ToLogin : NavDestination
