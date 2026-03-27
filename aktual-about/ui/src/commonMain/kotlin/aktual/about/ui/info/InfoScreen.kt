@@ -3,6 +3,8 @@ package aktual.about.ui.info
 import aktual.about.vm.AboutViewModel
 import aktual.about.vm.BuildState
 import aktual.about.vm.CheckUpdatesState
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.LicensesNavigator
 import aktual.core.icons.material.Apps
 import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.Cloud
@@ -66,7 +68,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
-fun InfoScreen(nav: InfoNavigator, viewModel: AboutViewModel = metroViewModel()) {
+fun InfoScreen(
+  back: BackNavigator,
+  toLicenses: LicensesNavigator,
+  viewModel: AboutViewModel = metroViewModel(),
+) {
   val theme = LocalTheme.current
   val buildState by viewModel.buildState.collectAsStateWithLifecycle()
 
@@ -100,8 +106,8 @@ fun InfoScreen(nav: InfoNavigator, viewModel: AboutViewModel = metroViewModel())
         InfoAction.OpenSourceCode -> viewModel.openRepo()
         InfoAction.ReportIssue -> viewModel.reportIssues()
         InfoAction.CheckUpdates -> viewModel.fetchLatestRelease()
-        InfoAction.NavBack -> nav.back()
-        InfoAction.ViewLicenses -> nav.toLicenses()
+        InfoAction.NavBack -> back()
+        InfoAction.ViewLicenses -> toLicenses()
       }
     },
   )

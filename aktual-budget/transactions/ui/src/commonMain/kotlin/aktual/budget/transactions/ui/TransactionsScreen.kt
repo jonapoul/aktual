@@ -1,5 +1,6 @@
 package aktual.budget.transactions.ui
 
+import aktual.app.nav.BackNavigator
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.BudgetId
 import aktual.budget.model.TransactionsFormat
@@ -31,7 +32,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 @Composable
 @Suppress("ViewModelForwarding")
 fun TransactionsScreen(
-  nav: TransactionsNavigator,
+  back: BackNavigator,
   budgetId: BudgetId,
   token: Token,
   spec: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
@@ -47,7 +48,7 @@ fun TransactionsScreen(
     source = viewModel,
     onAction = { action ->
       when (action) {
-        Action.NavBack -> nav.back()
+        Action.NavBack -> back()
         is Action.CheckItem -> viewModel.setChecked(action.id, action.isChecked)
         is Action.SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
       }

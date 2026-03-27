@@ -16,6 +16,12 @@ fun SnapshotStateList<NavKey>.debugPop(): Boolean {
   return true
 }
 
+fun SnapshotStateList<NavKey>.debugReplaceAll(route: NavKey) {
+  logcat.v(TAG) { "ReplaceAll $route - backStack=[$backStackString]" }
+  clear()
+  add(route)
+}
+
 fun SnapshotStateList<NavKey>.debugPopUpToAndPush(
   route: NavKey,
   predicate: (NavKey) -> Boolean,

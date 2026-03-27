@@ -2,6 +2,9 @@ package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
 import aktual.account.vm.LoginViewModel
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.ListBudgetsNavigator
+import aktual.app.nav.ServerUrlNavigator
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.LoginMethod
@@ -55,7 +58,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun LoginScreen(nav: LoginNavigator, viewModel: LoginViewModel = metroViewModel()) {
+fun LoginScreen(
+  back: BackNavigator,
+  toServerUrl: ServerUrlNavigator,
+  toListBudgets: ListBudgetsNavigator,
+  viewModel: LoginViewModel = metroViewModel(),
+) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
   val url by viewModel.serverUrl.collectAsStateWithLifecycle()
@@ -65,7 +73,7 @@ fun LoginScreen(nav: LoginNavigator, viewModel: LoginViewModel = metroViewModel(
   val loginMethods by viewModel.loginMethods.collectAsStateWithLifecycle()
   val selectedLoginMethod by viewModel.selectedLoginMethod.collectAsStateWithLifecycle()
 
-  LaunchedEffect(Unit) { viewModel.token.collect { token -> nav.toListBudgets(token) } }
+  LaunchedEffect(Unit) { viewModel.token.collect { token -> toListBudgets(token) } }
 
   val uriHandler = LocalUriHandler.current
   LaunchedEffect(redirectUrl) {
@@ -85,8 +93,8 @@ fun LoginScreen(nav: LoginNavigator, viewModel: LoginViewModel = metroViewModel(
     selectedLoginMethod = selectedLoginMethod,
     onAction = { action ->
       when (action) {
-        LoginAction.ChangeServer -> nav.toUrl()
-        LoginAction.NavBack -> nav.back()
+        LoginAction.ChangeServer -> toServerUrl()
+        LoginAction.NavBack -> back()
         LoginAction.SignIn -> viewModel.onClickSignIn()
         is LoginAction.EnterPassword -> viewModel.onEnterPassword(action.password)
         is LoginAction.SelectLoginMethod -> viewModel.onSelectLoginMethod(action.method)

@@ -1,5 +1,7 @@
 package aktual.prefs.ui.theme
 
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.InspectThemeNavigator
 import aktual.core.l10n.Strings
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
@@ -53,7 +55,8 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ThemeSettingsScreen(
-  nav: ThemeSettingsNavigator,
+  back: BackNavigator,
+  toInspectTheme: InspectThemeNavigator,
   viewModel: ThemeSettingsViewModel = metroViewModel<ThemeSettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -75,8 +78,8 @@ fun ThemeSettingsScreen(
     snackbarHostState = snackbarHostState,
     onAction = { action ->
       when (action) {
-        ThemeSettingsAction.NavBack -> nav.back()
-        is ThemeSettingsAction.InspectTheme -> nav.inspectTheme(action.id)
+        ThemeSettingsAction.NavBack -> back()
+        is ThemeSettingsAction.InspectTheme -> toInspectTheme(action.id)
         is ThemeSettingsAction.SelectTheme -> viewModel.select(action.id)
         ThemeSettingsAction.ClearCache -> viewModel.clearCache()
         ThemeSettingsAction.RetryFetchCatalog -> viewModel.retry()

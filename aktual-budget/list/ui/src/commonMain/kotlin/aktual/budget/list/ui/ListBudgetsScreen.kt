@@ -1,8 +1,14 @@
 package aktual.budget.list.ui
 
+import aktual.app.nav.ChangePasswordNavigator
+import aktual.app.nav.InfoNavigator
+import aktual.app.nav.MetricsNavigator
+import aktual.app.nav.ServerUrlNavigator
+import aktual.app.nav.SettingsNavigator
+import aktual.app.nav.TransactionsNavigator
 import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
-import aktual.budget.list.ui.ListBudgetsAction.ChangeServer
 import aktual.budget.list.ui.ListBudgetsAction.Delete
+import aktual.budget.list.ui.ListBudgetsAction.LogOut
 import aktual.budget.list.ui.ListBudgetsAction.Open
 import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
 import aktual.budget.list.ui.ListBudgetsAction.OpenInBrowser
@@ -59,8 +65,13 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ListBudgetsScreen(
-  nav: ListBudgetsNavigator,
   token: Token,
+  toInfo: InfoNavigator,
+  toChangePassword: ChangePasswordNavigator,
+  toSettings: SettingsNavigator,
+  toMetrics: MetricsNavigator,
+  logOut: ServerUrlNavigator,
+  toBudget: TransactionsNavigator,
   viewModel: ListBudgetsViewModel = metroViewModel(token),
 ) {
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
@@ -108,7 +119,7 @@ fun ListBudgetsScreen(
     SyncBudgetDialog(
       budgetId = id,
       token = token,
-      onSyncComplete = { nav.toBudget(token, id) },
+      onSyncComplete = { toBudget(token, id) },
       onDismissRequest = { budgetToSync = null },
     )
   }
@@ -117,11 +128,11 @@ fun ListBudgetsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        ChangeServer -> nav.toUrl()
-        ChangePassword -> nav.toChangePassword()
-        OpenAbout -> nav.toAbout()
-        OpenSettings -> nav.toSettings()
-        OpenServerMetrics -> nav.toMetrics()
+        LogOut -> logOut()
+        ChangePassword -> toChangePassword()
+        OpenAbout -> toInfo()
+        OpenSettings -> toSettings()
+        OpenServerMetrics -> toMetrics()
         OpenInBrowser -> viewModel.open(serverUrl)
         Reload -> viewModel.retry()
         is Delete -> budgetToDelete = action.budget

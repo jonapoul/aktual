@@ -1,6 +1,7 @@
 package aktual.metrics.ui
 
 import aktual.api.model.metrics.GetMetricsResponse
+import aktual.app.nav.BackNavigator
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
@@ -86,7 +87,7 @@ import kotlinx.datetime.format.char
 
 @Composable
 fun MetricsScreen(
-  nav: MetricsNavigator,
+  back: BackNavigator,
   viewModel: MetricsViewModel = metroViewModel<MetricsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -95,7 +96,7 @@ fun MetricsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        MetricsAction.NavBack -> nav.back()
+        MetricsAction.NavBack -> back()
         MetricsAction.Refresh -> viewModel.refresh()
       }
     },

@@ -2,6 +2,8 @@ package aktual.account.ui.password
 
 import aktual.account.vm.ChangePasswordState
 import aktual.account.vm.ChangePasswordViewModel
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.ListBudgetsNavigator
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
@@ -46,7 +48,8 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 fun ChangePasswordScreen(
-  navigator: ChangePasswordNavigator,
+  navBack: BackNavigator,
+  navToListBudgets: ListBudgetsNavigator,
   viewModel: ChangePasswordViewModel = metroViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
@@ -59,7 +62,7 @@ fun ChangePasswordScreen(
 
   val token = newToken
   if (token != null) {
-    LaunchedEffect(Unit) { navigator.toListBudgets(token) }
+    LaunchedEffect(Unit) { navToListBudgets(token) }
   }
 
   ChangePasswordScaffold(
@@ -71,7 +74,7 @@ fun ChangePasswordScreen(
     versions = versions,
     onAction = { action ->
       when (action) {
-        PasswordAction.NavBack -> navigator.back()
+        PasswordAction.NavBack -> navBack()
         PasswordAction.Submit -> viewModel.submit()
         is PasswordAction.SetPassword1 -> viewModel.setPassword1(action.value)
         is PasswordAction.SetPassword2 -> viewModel.setPassword2(action.value)

@@ -2,6 +2,8 @@ package aktual.account.ui.url
 
 import aktual.account.vm.NavDestination
 import aktual.account.vm.ServerUrlViewModel
+import aktual.app.nav.InfoNavigator
+import aktual.app.nav.LoginNavigator
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -52,7 +54,11 @@ import kotlinx.coroutines.channels.consumeEach
 import logcat.logcat
 
 @Composable
-fun ServerUrlScreen(nav: ServerUrlNavigator, viewModel: ServerUrlViewModel = metroViewModel()) {
+fun ServerUrlScreen(
+  toLogin: LoginNavigator,
+  toInfo: InfoNavigator,
+  viewModel: ServerUrlViewModel = metroViewModel(),
+) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredUrl by viewModel.baseUrl.collectAsStateWithLifecycle()
   val protocol by viewModel.protocol.collectAsStateWithLifecycle()
@@ -69,8 +75,8 @@ fun ServerUrlScreen(nav: ServerUrlNavigator, viewModel: ServerUrlViewModel = met
       when (destination) {
         NavDestination.Back -> closeApp()
         NavDestination.ToBootstrap -> logcat.w { "Not implemented bootstrap yet!" }
-        NavDestination.ToLogin -> nav.toLogin()
-        NavDestination.ToAbout -> nav.toAbout()
+        NavDestination.ToLogin -> toLogin()
+        NavDestination.ToAbout -> toInfo()
       }
     }
   }

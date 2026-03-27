@@ -1,5 +1,7 @@
 package aktual.prefs.ui.root
 
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.ThemeSettingsNavigator
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
@@ -50,7 +52,8 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 fun SettingsScreen(
-  nav: SettingsNavigator,
+  back: BackNavigator,
+  toThemeSettings: ThemeSettingsNavigator,
   viewModel: SettingsViewModel = metroViewModel<SettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -59,8 +62,8 @@ fun SettingsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        SettingsAction.NavBack -> nav.back()
-        SettingsAction.NavToThemeSettings -> nav.toThemeSettings()
+        SettingsAction.NavBack -> back()
+        SettingsAction.NavToThemeSettings -> toThemeSettings()
       }
     },
   )
