@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 
 @Immutable
 class ListBudgetsNavigator(private val stack: SnapshotStateList<NavKey>) {
-  operator fun invoke(token: Token) = stack.debugPush(ListBudgetsNavRoute(token))
+  operator fun invoke(token: Token) = stack.debugReplaceAll(ListBudgetsNavRoute(token))
 }
 
 @Immutable @Serializable data class ListBudgetsNavRoute(val token: Token) : NavKey

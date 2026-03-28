@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 @Immutable
 data object MidnightTheme : DefaultTheme {
   override val id = ThemeId("Midnight")
+  override val isLight = false
 
   override val pageBackground = AktualColors.gray600
   override val pageBackgroundModalActive = AktualColors.gray700

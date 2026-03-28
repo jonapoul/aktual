@@ -5,6 +5,7 @@ import aktual.about.vm.BuildState
 import aktual.about.vm.CheckUpdatesState
 import aktual.app.nav.BackNavigator
 import aktual.app.nav.LicensesNavigator
+import aktual.app.nav.ManageStorageNavigator
 import aktual.core.icons.material.Apps
 import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.Cloud
@@ -71,6 +72,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 fun InfoScreen(
   back: BackNavigator,
   toLicenses: LicensesNavigator,
+  toManageStorage: ManageStorageNavigator,
   viewModel: AboutViewModel = metroViewModel(),
 ) {
   val theme = LocalTheme.current
@@ -108,6 +110,7 @@ fun InfoScreen(
         InfoAction.CheckUpdates -> viewModel.fetchLatestRelease()
         InfoAction.NavBack -> back()
         InfoAction.ViewLicenses -> toLicenses()
+        InfoAction.ManageStorage -> toManageStorage()
       }
     },
   )

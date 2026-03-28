@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 @Immutable
 data object LightTheme : DefaultTheme {
   override val id = ThemeId("Light")
+  override val isLight = true
 
   override val pageBackground = AktualColors.navy100
   override val pageBackgroundModalActive = AktualColors.navy200

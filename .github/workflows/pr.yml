@@ -170,7 +170,7 @@ jobs:
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
 
-  licensee:
+  other-checks:
     needs: validation
     if: ${{ !cancelled() && needs.validation.result == 'success' }}
     runs-on: ubuntu-latest
@@ -180,7 +180,7 @@ jobs:
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew licensee
+      - run: ./gradlew licensee androidManifestLock
 
   finish:
     if: ${{ !cancelled() }}
@@ -191,7 +191,7 @@ jobs:
       - assemble-desktop
       - detekt
       - tests
-      - licensee
+      - other-checks
     runs-on: ubuntu-latest
     outputs:
       result: ${{ steps.check.outputs.result }}

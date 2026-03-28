@@ -25,6 +25,7 @@ internal data class JsonCustomTheme(
   @SerialName("status") val status: StatusColors,
   @SerialName("form") val form: FormColors,
   @SerialName("misc") val misc: MiscColors,
+  @SerialName("isLight") override val isLight: Boolean,
 ) : CustomTheme {
 
   // Page

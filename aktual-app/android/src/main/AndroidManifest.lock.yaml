@@ -17,9 +17,17 @@ main:
       - armeabi-v7a
       - x86
       - x86_64
+  - libdatastore_shared_counter:
+      requiredBy: androidx.datastore:datastore-core-android
+      abis:
+      - arm64-v8a
+      - armeabi-v7a
+      - x86
+      - x86_64
   exports:
     activity:
     - aktual.app.android.AktualActivity
+    - aktual.app.android.ManageStorageActivity
     - androidx.compose.ui.tooling.PreviewActivity
     receiver:
     - androidx.profileinstaller.ProfileInstallReceiver
@@ -32,4 +40,4 @@ variants:
     namespace: dev.jonpoulton.aktual.app
     permissions:
     - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-fingerprint: 3066f120a3565471ad94b4624fa8bc2b
+fingerprint: 02443760c03641c5b5df4eaf7ad29dd5

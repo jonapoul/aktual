@@ -139,10 +139,7 @@ licensee {
 
 dependencies {
   coreLibraryDesugaring(libs.android.desugaring)
-  implementation(project(":aktual-app:di"))
-  implementation(project(":aktual-app:nav:ui"))
-  implementation(project(":aktual-core:logging:impl"))
-  implementation(project(":aktual-prefs"))
+  implementation(kotlin("stdlib"))
   implementation(libs.alakazam.compose)
   implementation(libs.alakazam.kotlin)
   implementation(libs.androidx.activity.compose)
@@ -152,12 +149,17 @@ dependencies {
   implementation(libs.androidx.lifecycle.viewmodel.ktx)
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
   implementation(libs.androidx.splash)
-  implementation(libs.kotlin.stdlib)
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.logcat)
   implementation(libs.material)
   implementation(libs.metrox.android)
   implementation(libs.metrox.viewmodel.compose)
+  implementation(project(":aktual-about:ui"))
+  implementation(project(":aktual-app:di"))
+  implementation(project(":aktual-app:nav:ui"))
+  implementation(project(":aktual-core:logging:impl"))
+  implementation(project(":aktual-prefs"))
+  implementation(libs.haze)
 }
 
 val exportMinSdk by tasks.registering {

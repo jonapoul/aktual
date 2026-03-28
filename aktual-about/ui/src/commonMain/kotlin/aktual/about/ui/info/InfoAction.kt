@@ -13,4 +13,6 @@ internal sealed interface InfoAction {
   data object ReportIssue : InfoAction
 
   data object OpenSourceCode : InfoAction
+
+  data object ManageStorage : InfoAction
 }
