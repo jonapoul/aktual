@@ -30,7 +30,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
-@ViewModelKey(ChangePasswordViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class ChangePasswordViewModel
 internal constructor(

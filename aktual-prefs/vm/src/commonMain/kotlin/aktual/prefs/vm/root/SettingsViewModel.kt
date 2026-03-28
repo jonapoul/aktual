@@ -23,7 +23,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-@ViewModelKey(SettingsViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class SettingsViewModel(
   private val systemUiPreferences: SystemUiPreferences,

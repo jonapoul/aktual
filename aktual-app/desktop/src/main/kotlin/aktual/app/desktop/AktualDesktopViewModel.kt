@@ -14,7 +14,7 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
-@ViewModelKey(AktualDesktopViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class AktualDesktopViewModel(
   themeResolver: ThemeResolver,

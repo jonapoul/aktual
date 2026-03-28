@@ -55,7 +55,7 @@ class TransactionsViewModel(
   contexts: CoroutineContexts,
 ) : ViewModel(), TransactionStateSource, TransactionIdSource {
   @AssistedFactory
-  @ManualViewModelAssistedFactoryKey(Factory::class)
+  @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(

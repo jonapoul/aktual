@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
-@ViewModelKey(AboutViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class AboutViewModel(
   private val buildConfig: BuildConfig,

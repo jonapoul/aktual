@@ -37,7 +37,7 @@ import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 
-@ActivityKey(ManageStorageActivity::class)
+@ActivityKey
 @ContributesIntoMap(AppScope::class, binding<Activity>())
 class ManageStorageActivity(override val defaultViewModelProviderFactory: MetroViewModelFactory) :
   ComponentActivity() {

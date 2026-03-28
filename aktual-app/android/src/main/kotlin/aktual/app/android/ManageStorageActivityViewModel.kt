@@ -9,7 +9,7 @@ import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.Flow
 
-@ViewModelKey(ManageStorageActivityViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class ManageStorageActivityViewModel(private val themeResolver: ThemeResolver) : ViewModel() {
   fun theme(isSystemInDarkTheme: Boolean): Flow<Theme> =

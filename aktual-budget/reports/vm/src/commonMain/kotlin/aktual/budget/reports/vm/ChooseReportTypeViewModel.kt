@@ -96,7 +96,7 @@ class ChooseReportTypeViewModel(
   data class ShouldNavigateEvent(val id: WidgetId)
 
   @AssistedFactory
-  @ManualViewModelAssistedFactoryKey(Factory::class)
+  @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(@Assisted budgetId: BudgetId): ChooseReportTypeViewModel

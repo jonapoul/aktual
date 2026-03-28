@@ -24,7 +24,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import logcat.logcat
 
-@ViewModelKey(MetricsViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class MetricsViewModel
 internal constructor(

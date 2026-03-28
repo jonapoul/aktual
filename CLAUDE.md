@@ -197,8 +197,7 @@ The project uses **Metro** (by Zac Sweers), a modern Kotlin-compiler-based DI fr
 
 **ViewModel Registration:**
 ```kotlin
-@Inject
-@ViewModelKey(YourViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(ViewModelScope::class)
 class YourViewModel(...) : ViewModel()
 ```
@@ -212,7 +211,7 @@ class YourViewModel(
 ) : ViewModel()
 
 @AssistedFactory
-@ManualViewModelAssistedFactoryKey(Factory::class)
+@ManualViewModelAssistedFactoryKey
 @ContributesIntoMap(ViewModelScope::class)
 fun interface Factory : ManualViewModelAssistedFactory {
   fun create(runtimeParam: Type): YourViewModel
