@@ -54,7 +54,7 @@ burst = { module = "app.cash.burst:burst", version.ref = "burst" }
 burstCoroutines = { module = "app.cash.burst:burst-coroutines", version.ref = "burst" }
 compose-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "compose" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.11.0-alpha04" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version = "1.11.0-alpha05" }
 compose-material3WindowSize = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "compose" }
 compose-navigation3 = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version = "1.1.0-alpha04" }
 compose-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose" }
