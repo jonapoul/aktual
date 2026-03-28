@@ -144,7 +144,7 @@ private fun ChooseReportTypeContent(
 ) {
   Box(modifier = modifier.fillMaxSize()) {
     LazyColumn(
-      modifier = Modifier.fillMaxWidth().scrollbar(lazyListState),
+      modifier = Modifier.fillMaxWidth().background(theme.pageBackground).scrollbar(lazyListState),
       state = lazyListState,
       verticalArrangement = Arrangement.spacedBy(8.dp),
       contentPadding = contentPadding,
