@@ -7,8 +7,6 @@ import androidx.compose.ui.graphics.luminance
 
 val LocalTheme = compositionLocalOf<Theme> { error("CompositionLocal Theme not present") }
 
-@Stable fun Theme.isLight(): Boolean = pageBackground.isLight()
-
 @Stable fun Color.isLight(): Boolean = luminance() > LUMINANCE_BOUNDARY
 
 private const val LUMINANCE_BOUNDARY = 0.5f

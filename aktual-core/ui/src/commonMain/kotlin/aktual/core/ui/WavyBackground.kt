@@ -7,7 +7,6 @@ import aktual.core.theme.LightTheme
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.MidnightTheme
 import aktual.core.theme.Theme
-import aktual.core.theme.isLight
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -31,7 +30,7 @@ private fun backgroundImage(theme: Theme) =
     DarkTheme -> Drawables.wavyBackgroundDark
     MidnightTheme -> Drawables.wavyBackgroundMidnight
     is CustomTheme ->
-      if (theme.isLight()) {
+      if (theme.isLight) {
         Drawables.wavyBackgroundLight
       } else {
         Drawables.wavyBackgroundDark

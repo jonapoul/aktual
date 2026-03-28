@@ -5,6 +5,7 @@ flowchart TD
   info["About"]
   licenses["Licenses"]
   login["Login"]
+  manageStorage["Manage Storage"]
   password["Change Password"]
   settings["Settings"]
   url["Server URL"]
@@ -30,7 +31,8 @@ flowchart TD
 
   budgetSync --budget synced--> budget
 
-  info -- tap licenses--> licenses
+  info --tap licenses--> licenses
+  info --tap manage storage--> manageStorage
 
   login --valid token--> budgetList
   login --tap about--> info

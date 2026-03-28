@@ -8,6 +8,7 @@ import androidx.compose.ui.graphics.Color
 @Suppress("ComplexInterface")
 sealed interface Theme {
   val id: ThemeId
+  val isLight: Boolean
 
   val pageBackground: Color
   val pageBackgroundModalActive: Color

@@ -2,7 +2,6 @@ package aktual.core.ui
 
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.theme.isLight
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
@@ -33,7 +32,7 @@ fun AktualTheme(theme: Theme, content: @Composable () -> Unit) {
     SetStatusBarColors(theme = theme)
 
     MaterialTheme(
-      colorScheme = if (theme.isLight()) lightColorScheme() else darkColorScheme(),
+      colorScheme = if (theme.isLight) lightColorScheme() else darkColorScheme(),
       typography = aktualTypography(theme),
       content = content,
     )

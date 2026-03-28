@@ -2,7 +2,6 @@ package aktual.core.ui
 
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.theme.isLight
 import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -41,7 +40,7 @@ fun Modifier.blurred(state: HazeState, orElse: Theme.() -> Color = { pageBackgro
   return if (config.blurAppBars) {
     val style =
       remember(config, theme) {
-        val tintAlpha: Float = if (theme.isLight()) 1f - config.blurAlpha else config.blurAlpha
+        val tintAlpha: Float = if (theme.isLight) 1f - config.blurAlpha else config.blurAlpha
         HazeStyle(
           blurRadius = config.blurRadius,
           backgroundColor = theme.cardBackground,
@@ -84,7 +83,7 @@ fun Modifier.blurredTopBar(state: BlurredTopBarState, isScrolled: Boolean): Modi
 
   val style =
     remember(config, theme, progress) {
-      val tintAlpha = if (theme.isLight()) 1f - config.blurAlpha else config.blurAlpha
+      val tintAlpha = if (theme.isLight) 1f - config.blurAlpha else config.blurAlpha
       HazeStyle(
         blurRadius = config.blurRadius * progress,
         backgroundColor = theme.cardBackground.copy(alpha = progress),

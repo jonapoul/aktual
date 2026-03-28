@@ -5,6 +5,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavKey
 
 @Immutable
-class BackNavigator(private val stack: SnapshotStateList<NavKey>) {
-  operator fun invoke(): Boolean = stack.debugPop()
+fun interface BackNavigator {
+  operator fun invoke()
 }
+
+fun BackNavigator(stack: SnapshotStateList<NavKey>) = BackNavigator { stack.debugPop() }

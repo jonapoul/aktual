@@ -7,6 +7,8 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-about:data"))
     api(libs.alakazam.kotlin)
+    implementation(project(":aktual-core:theme"))
+    implementation(project(":aktual-prefs"))
   }
 
   commonTestDependencies { implementation(project(":aktual-test")) }

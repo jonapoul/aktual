@@ -72,6 +72,14 @@ private fun LicensesButton(onAction: (InfoAction) -> Unit, modifier: Modifier = 
   )
 
 @Composable
+private fun ManageStorageButton(onAction: (InfoAction) -> Unit, modifier: Modifier = Modifier) =
+  NormalTextButton(
+    modifier = modifier,
+    text = Strings.storageToolbar,
+    onClick = { onAction(InfoAction.ManageStorage) },
+  )
+
+@Composable
 private fun InfoButtonsColumn(onAction: (InfoAction) -> Unit) =
   Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
     val buttonModifier = Modifier.fillMaxWidth()
@@ -79,6 +87,7 @@ private fun InfoButtonsColumn(onAction: (InfoAction) -> Unit) =
     CheckUpdatesButton(onAction, buttonModifier)
     ReportButton(onAction, buttonModifier)
     LicensesButton(onAction, buttonModifier)
+    ManageStorageButton(onAction, buttonModifier)
   }
 
 @Composable
@@ -102,6 +111,12 @@ private fun InfoButtonsGrid(onAction: (InfoAction) -> Unit) =
       ReportButton(onAction, Modifier.weight(1f))
       LicensesButton(onAction, Modifier.weight(1f))
     }
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),
+    ) {
+      ManageStorageButton(onAction, Modifier.weight(1f))
+    }
   }
 
 @Composable
@@ -114,6 +129,7 @@ private fun InfoButtonsRow(onAction: (InfoAction) -> Unit) =
     CheckUpdatesButton(onAction, Modifier.weight(1f))
     ReportButton(onAction, Modifier.weight(1f))
     LicensesButton(onAction, Modifier.weight(1f))
+    ManageStorageButton(onAction, Modifier.weight(1f))
   }
 
 private val HORIZONTAL_SPACING = 8.dp
