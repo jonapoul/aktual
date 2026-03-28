@@ -1,11 +1,13 @@
-package aktual.budget.reports.ui
+package aktual.budget.reports.ui.dashboard
 
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.ui.Action
+import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.ReportChart
-import aktual.budget.reports.vm.ReportDashboardItem
+import aktual.budget.reports.vm.dashboard.ReportDashboardItem
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons

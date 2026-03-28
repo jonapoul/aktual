@@ -14,6 +14,9 @@
   <string name="reports_choose_type_summary">Summary</string>
   <string name="reports_choose_type_calendar">Calendar</string>
   <string name="reports_choose_type_custom">Custom</string>
+  <string name="reports_choose_type_disabled">This report type is not currently supported.</string>
+  <string name="reports_choose_type_disabled_dialog_title">Caution</string>
+  <string name="reports_choose_type_disabled_dialog_dismiss">OK</string>
 
   <string name="reports_summary_show_as">Show as:</string>
   <string name="reports_summary_sum">Sum</string>

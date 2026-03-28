@@ -58,16 +58,25 @@ fun AlertDialog(
 
 @Composable
 fun AlertDialog(
-  title: String,
+  title: String?,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
   buttons: (@Composable RowScope.() -> Unit)? = null,
+  icon: ImageVector? = null,
   theme: Theme = LocalTheme.current,
+  titleColor: Color = theme.pageTextPositive,
   properties: DialogProperties = DialogProperties(),
   content: @Composable ColumnScope.() -> Unit,
 ) {
   AlertDialog(onDismissRequest = onDismissRequest, modifier = modifier, properties = properties) {
-    DialogContent(title = title, theme = theme, content = content, buttons = buttons)
+    DialogContent(
+      title = title,
+      buttons = buttons,
+      icon = icon,
+      theme = theme,
+      titleColor = titleColor,
+      content = content,
+    )
   }
 }
 

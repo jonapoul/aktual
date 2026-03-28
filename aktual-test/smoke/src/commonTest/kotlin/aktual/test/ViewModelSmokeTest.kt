@@ -6,8 +6,8 @@ import aktual.account.vm.ChangePasswordViewModel
 import aktual.account.vm.LoginViewModel
 import aktual.account.vm.ServerUrlViewModel
 import aktual.budget.list.vm.ListBudgetsViewModel
-import aktual.budget.reports.vm.ChooseReportTypeViewModel
-import aktual.budget.reports.vm.ReportsDashboardViewModel
+import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
+import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.di.BudgetGraph

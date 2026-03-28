@@ -1,4 +1,4 @@
-package aktual.budget.reports.vm
+package aktual.budget.reports.vm.dashboard
 
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
