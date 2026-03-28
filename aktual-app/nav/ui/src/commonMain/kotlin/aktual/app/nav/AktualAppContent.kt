@@ -21,7 +21,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,7 +38,7 @@ fun rememberBackStack(viewModel: RootViewModel): SnapshotStateList<NavKey>? {
   // don't collectAsStateWithLifecycle, we don't have a lifecycle yet (on desktop)
   val initialRoute by viewModel.initialRoute.collectAsState()
   val route = initialRoute ?: return null
-  return remember { mutableStateListOf(route) }
+  return remember(viewModel) { viewModel.getOrCreateBackStack(route) }
 }
 
 @Composable
@@ -55,7 +54,10 @@ fun AktualAppContent(
     }
   }
 
-  val theme by viewModel.theme(isSystemInDarkTheme()).collectAsStateWithLifecycle(null)
+  val isSystemDark = isSystemInDarkTheme()
+  LaunchedEffect(isSystemDark) { viewModel.updateSystemDarkTheme(isSystemDark) }
+
+  val theme by viewModel.theme.collectAsStateWithLifecycle()
   val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
   val formatConfig by viewModel.formatConfig.collectAsStateWithLifecycle()
   val blurConfig by viewModel.blurConfig.collectAsStateWithLifecycle()
@@ -73,7 +75,7 @@ fun AktualAppContent(
     blurConfig = blurConfig,
     dialogBlurState = remember { DialogBlurState() },
   ) {
-    AktualTheme(theme ?: return@WithCompositionLocals) {
+    AktualTheme(theme) {
       Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
         var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
 

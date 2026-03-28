@@ -86,7 +86,7 @@ fun BudgetNavRail(
 
   val activeStack: SnapshotStateList<BudgetNavKey> = tabStacks.getValue(selectedTab)
 
-  val onTabSelected: (BudgetTab) -> Unit = { tab ->
+  val onSelectTab: (BudgetTab) -> Unit = { tab ->
     if (tab == selectedTab) {
       val stack = tabStacks.getValue(tab)
       while (stack.size > 1) stack.removeAt(stack.lastIndex)
@@ -100,7 +100,7 @@ fun BudgetNavRail(
       contributors = contributors,
       activeStack = activeStack,
       selectedTab = selectedTab,
-      onTabSelected = onTabSelected,
+      onSelectTab = onSelectTab,
       onBack = { if (!activeStack.debugPop()) back() },
       modifier = modifier,
     )
@@ -109,7 +109,7 @@ fun BudgetNavRail(
       contributors = contributors,
       activeStack = activeStack,
       selectedTab = selectedTab,
-      onTabSelected = onTabSelected,
+      onSelectTab = onSelectTab,
       onBack = { if (!activeStack.debugPop()) back() },
       modifier = modifier,
     )
@@ -121,7 +121,7 @@ private fun BottomNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   activeStack: SnapshotStateList<BudgetNavKey>,
   selectedTab: BudgetTab,
-  onTabSelected: (BudgetTab) -> Unit,
+  onSelectTab: (BudgetTab) -> Unit,
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -132,7 +132,7 @@ private fun BottomNavLayout(
       onBack = onBack,
       modifier = Modifier.weight(1f),
     )
-    BottomNavBar(selectedTab = selectedTab, onTabSelected = onTabSelected)
+    BottomNavBar(selectedTab = selectedTab, onSelectTab = onSelectTab)
     BottomStatusBarSpacing()
     BottomNavBarSpacing()
   }
@@ -143,12 +143,12 @@ private fun SideNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   activeStack: SnapshotStateList<BudgetNavKey>,
   selectedTab: BudgetTab,
-  onTabSelected: (BudgetTab) -> Unit,
+  onSelectTab: (BudgetTab) -> Unit,
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier.fillMaxSize()) {
-    SideNavRail(selectedTab = selectedTab, onTabSelected = onTabSelected)
+    SideNavRail(selectedTab = selectedTab, onSelectTab = onSelectTab)
     BudgetNavDisplay(
       contributors = contributors,
       activeStack = activeStack,
@@ -186,7 +186,7 @@ private fun BudgetNavDisplay(
 @Composable
 private fun BottomNavBar(
   selectedTab: BudgetTab,
-  onTabSelected: (BudgetTab) -> Unit,
+  onSelectTab: (BudgetTab) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -200,7 +200,7 @@ private fun BottomNavBar(
         icon = { Icon(tab.icon(), contentDescription = tab.label()) },
         label = { Text(tab.label()) },
         selected = selectedTab == tab,
-        onClick = { onTabSelected(tab) },
+        onClick = { onSelectTab(tab) },
         colors = theme.navBarItem(),
       )
     }
@@ -210,7 +210,7 @@ private fun BottomNavBar(
 @Composable
 private fun SideNavRail(
   selectedTab: BudgetTab,
-  onTabSelected: (BudgetTab) -> Unit,
+  onSelectTab: (BudgetTab) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -224,7 +224,7 @@ private fun SideNavRail(
         icon = { Icon(tab.icon(), contentDescription = tab.label()) },
         label = { Text(tab.label()) },
         selected = selectedTab == tab,
-        onClick = { onTabSelected(tab) },
+        onClick = { onSelectTab(tab) },
         colors = theme.navRailItem(),
       )
     }
@@ -297,7 +297,7 @@ private fun PreviewBottomNavBar(@PreviewParameter(ThemeParameters::class) theme:
   PreviewWithColorScheme(theme) {
     Column(modifier = Modifier.fillMaxSize()) {
       PreviewContent(modifier = Modifier.weight(1f))
-      BottomNavBar(selectedTab = BudgetTab.Transactions, onTabSelected = {})
+      BottomNavBar(selectedTab = BudgetTab.Transactions, onSelectTab = {})
     }
   }
 
@@ -306,7 +306,7 @@ private fun PreviewBottomNavBar(@PreviewParameter(ThemeParameters::class) theme:
 private fun PreviewSideNavRail(@PreviewParameter(ThemeParameters::class) theme: Theme) =
   PreviewWithColorScheme(theme) {
     Row(modifier = Modifier.fillMaxSize()) {
-      SideNavRail(selectedTab = BudgetTab.Transactions, onTabSelected = {})
+      SideNavRail(selectedTab = BudgetTab.Transactions, onSelectTab = {})
       PreviewContent(modifier = Modifier.weight(1f))
     }
   }
