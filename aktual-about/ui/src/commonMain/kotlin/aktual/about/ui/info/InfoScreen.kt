@@ -23,7 +23,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.disabled
@@ -293,7 +293,7 @@ private val ItemHeight = 50.dp
 @TabletPreview
 @Composable
 private fun PreviewInfoScaffold(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     InfoScaffold(modifier = Modifier.fillMaxSize(), buildState = PreviewBuildState, onAction = {})
   }
 

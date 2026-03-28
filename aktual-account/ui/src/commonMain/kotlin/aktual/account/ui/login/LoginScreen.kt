@@ -19,7 +19,7 @@ import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
@@ -221,7 +221,7 @@ private fun Content(
 private fun PreviewLoginScaffold(
   @PreviewParameter(LoginScaffoldProvider::class) params: ThemedParams<LoginScaffoldParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     val data = params.data
     LoginScaffold(
       versions = data.versions,

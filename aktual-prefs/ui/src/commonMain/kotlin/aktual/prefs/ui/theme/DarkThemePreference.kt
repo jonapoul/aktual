@@ -9,7 +9,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.MidnightTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.isCompactWidth
@@ -96,7 +96,7 @@ private fun PreviewDarkThemePreference(
   @PreviewParameter(DarkThemePreferenceProvider::class)
   params: ThemedParams<DarkThemePreferenceParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     DarkThemePreference(
       onAction = {},
       preference =

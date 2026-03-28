@@ -19,7 +19,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.RowShape
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -361,7 +361,7 @@ private fun SuccessContentRow(title: String, value: String, modifier: Modifier =
 @Composable
 private fun PreviewMetricsScaffold(
   @PreviewParameter(MetricsStateProvider::class) params: ThemedParams<MetricsState>
-) = PreviewWithColorScheme(params.theme) { MetricsScaffold(state = params.data, onAction = {}) }
+) = PreviewWithTheme(params.theme) { MetricsScaffold(state = params.data, onAction = {}) }
 
 @Suppress("MagicNumber")
 private class MetricsStateProvider :

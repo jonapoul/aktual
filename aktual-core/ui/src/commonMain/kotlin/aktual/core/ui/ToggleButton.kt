@@ -117,7 +117,7 @@ private fun Theme.buttonTextColor(selectedIndex: Int, index: Int): Color =
 @Preview
 @Composable
 private fun PreviewStrings(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     var selectedA by remember { mutableIntStateOf(0) }
     SlidingToggleButton(
       modifier = Modifier.padding(4.dp),
@@ -130,7 +130,7 @@ private fun PreviewStrings(@PreviewParameter(ThemeParameters::class) theme: Them
 @Preview
 @Composable
 private fun PreviewEnum(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     var selectedB by remember { mutableIntStateOf(3) }
     SlidingToggleButton(
       modifier = Modifier.padding(4.dp),

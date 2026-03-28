@@ -5,7 +5,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.RowShape
 import aktual.core.ui.ThemeParameters
 import androidx.compose.foundation.background
@@ -98,7 +98,7 @@ internal fun ShimmerBudgetListItem(
 @Preview(widthDp = 1000)
 @Composable
 private fun PreviewShimmerVsReal() =
-  PreviewWithColorScheme(DarkTheme) {
+  PreviewWithTheme(DarkTheme) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
       ShimmerBudgetListItem(modifier = Modifier.weight(1f))
 
@@ -114,4 +114,4 @@ private fun PreviewShimmerVsReal() =
 @Preview
 @Composable
 private fun PreviewShimmerBudgetList(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) { ShimmerBudgetList(numLoadingItems = 4) }
+  PreviewWithTheme(theme) { ShimmerBudgetList(numLoadingItems = 4) }

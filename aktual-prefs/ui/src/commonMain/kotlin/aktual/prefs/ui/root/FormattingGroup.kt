@@ -10,7 +10,7 @@ import aktual.core.icons.material.DecimalIncrease
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Speed125
 import aktual.core.l10n.Strings
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.prefs.ui.BooleanPreferenceItem
@@ -114,7 +114,7 @@ private fun FirstDayOfWeek.string(): String =
 private fun PreviewFormattingGroup(
   @PreviewParameter(FormattingGroupProvider::class) params: ThemedParams<FormattingGroupState>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     FormattingGroup(
       FormatConfigState(
         numberFormat = ListPreference(params.data.numberFormat),

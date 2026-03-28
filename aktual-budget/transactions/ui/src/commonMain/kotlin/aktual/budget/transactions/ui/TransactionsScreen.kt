@@ -14,7 +14,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.blurredTopBarContent
@@ -104,7 +104,7 @@ internal fun TransactionsScaffold(
 @LandscapePreview
 @TabletPreview
 private fun PreviewTransactionsScaffold(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     TransactionsScaffold(
       transactionIdSource =
         PreviewTransactionIdSource(listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),

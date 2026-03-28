@@ -99,7 +99,7 @@ private fun FontFamily.textStyle(
 @Preview(widthDp = 1200)
 @Composable
 private fun PreviewTypography(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     Column {
       for ((name, style) in styles()) {
         Row(

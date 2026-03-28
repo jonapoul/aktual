@@ -4,7 +4,7 @@ import aktual.account.vm.ChangePasswordState
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.model.Password.Companion.Empty
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -111,7 +111,7 @@ internal fun ConfirmPasswordForm(
 private fun PreviewConfirmPassword(
   @PreviewParameter(ConfirmPasswordProvider::class) params: ThemedParams<ConfirmPasswordParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     ConfirmPasswordForm(
       inputPassword1 = params.data.password1,
       inputPassword2 = params.data.password2,

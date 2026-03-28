@@ -8,7 +8,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import androidx.compose.foundation.background
@@ -88,7 +88,7 @@ private fun dateRange(timeRange: ReportTimeRange): String =
 private fun PreviewCustomChart(
   @PreviewParameter(CustomChartProvider::class) params: ThemedParams<CustomChartParams>
 ) =
-  PreviewWithColorScheme(theme = params.theme, isPrivacyEnabled = params.data.isPrivacyEnabled) {
+  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CustomChart(
       modifier =
         Modifier.background(LocalTheme.current.tableBackground, CardShape)

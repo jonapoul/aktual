@@ -137,7 +137,7 @@ fun DialogContent(
 private fun PreviewExampleContentWithButtons(
   @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     DialogContent(
       title = "Hello world",
       buttons = {
@@ -160,7 +160,7 @@ private fun PreviewExampleContentWithButtons(
 private fun PreviewExampleContentWithoutButtons(
   @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     DialogContent(
       title = "Hello world",
       buttons = null,

@@ -14,7 +14,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -434,7 +434,7 @@ private fun RowScope.TransactionTableItem(
 private fun PreviewListFormat(
   @PreviewParameter(TransactionItemProvider::class) params: ThemedParams<TransactionItemParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     TransactionItem(
       state = params.data.state,
       format = List,
@@ -448,7 +448,7 @@ private fun PreviewListFormat(
 private fun PreviewTableFormat(
   @PreviewParameter(TransactionItemProvider::class) params: ThemedParams<TransactionItemParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     TransactionItem(
       state = params.data.state,
       format = Table,

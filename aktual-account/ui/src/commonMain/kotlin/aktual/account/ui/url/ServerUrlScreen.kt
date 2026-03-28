@@ -17,7 +17,7 @@ import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -215,7 +215,7 @@ private fun ServerUrlContent(
 private fun PreviewServerUrlScaffold(
   @PreviewParameter(ServerUrlScaffoldProvider::class) params: ThemedParams<ServerUrlScaffoldParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     ServerUrlScaffold(
       url = params.data.url,
       protocol = params.data.protocol,

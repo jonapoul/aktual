@@ -1,7 +1,7 @@
 package aktual.account.ui.password
 
 import aktual.core.model.Password
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TextField
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -51,7 +51,7 @@ internal fun PasswordEntryText(
 private fun PreviewPasswordEntryText(
   @PreviewParameter(PasswordEntryProvider::class) params: ThemedParams<PasswordEntryParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     PasswordEntryText(
       password = params.data.password,
       placeholderText = "Password",

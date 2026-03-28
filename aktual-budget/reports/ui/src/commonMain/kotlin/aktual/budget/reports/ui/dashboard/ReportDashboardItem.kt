@@ -17,7 +17,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedDropdownMenu
 import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
@@ -111,9 +111,7 @@ private fun ReportDropDownMenu(
 private fun PreviewReportDashboardItem(
   @PreviewParameter(ReportDashboardItemProvider::class) params: ThemedParams<ReportDashboardItem>
 ) =
-  PreviewWithColorScheme(theme = params.theme) {
-    ReportDashboardItem(item = params.data, onAction = {})
-  }
+  PreviewWithTheme(theme = params.theme) { ReportDashboardItem(item = params.data, onAction = {}) }
 
 private class ReportDashboardItemProvider :
   ThemedParameterProvider<ReportDashboardItem>(

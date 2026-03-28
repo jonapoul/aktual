@@ -154,7 +154,7 @@ private fun <T : Comparable<T>> YearMonthRange.rangeValues(
 @Preview
 @Composable
 private fun PreviewYearMonthPicker(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     YearMonthPicker(
       modifier = Modifier.padding(4.dp),
       value = YearMonth(2025, Month.FEBRUARY),
@@ -170,7 +170,7 @@ private fun PreviewYearMonthPicker(@PreviewParameter(ThemeParameters::class) the
 @Preview
 @Composable
 private fun PreviewDialogContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     PickDateDialogContent(
       value = YearMonth(2025, Month.FEBRUARY),
       range =
@@ -186,7 +186,7 @@ private fun PreviewDialogContent(@PreviewParameter(ThemeParameters::class) theme
 @Preview
 @Composable
 private fun PreviewDialogContentOutOfRange(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     PickDateDialogContent(
       value = YearMonth(2025, Month.AUGUST),
       range =

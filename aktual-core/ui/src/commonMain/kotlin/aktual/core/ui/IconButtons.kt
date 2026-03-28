@@ -180,20 +180,20 @@ private fun DefaultIconButtonContent(
 @Preview
 @Composable
 private fun PreviewBare(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     BareIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewNormal(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     NormalIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewPrimary(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     PrimaryIconButton(imageVector = MaterialIcons.Check, contentDescription = "OK", onClick = {})
   }

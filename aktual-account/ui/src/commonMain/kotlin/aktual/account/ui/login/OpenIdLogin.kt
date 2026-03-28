@@ -4,7 +4,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.ThemeParameters
 import androidx.compose.foundation.background
@@ -41,4 +41,4 @@ internal fun OpenIdLogin(modifier: Modifier = Modifier, theme: Theme = LocalThem
 @Preview
 @Composable
 private fun PreviewOpenIdLogin(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) { OpenIdLogin() }
+  PreviewWithTheme(theme) { OpenIdLogin() }

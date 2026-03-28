@@ -20,7 +20,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ExposedDropDownMenu
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -530,7 +530,7 @@ private fun string(type: SummaryChartType): String =
 private fun PreviewSummaryChart(
   @PreviewParameter(SummaryChartProvider::class) params: ThemedParams<SummaryChartParams>
 ) =
-  PreviewWithColorScheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
+  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
     SummaryChart(
       modifier =
         Modifier.background(LocalTheme.current.tableBackground, CardShape)
