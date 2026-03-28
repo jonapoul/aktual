@@ -198,10 +198,9 @@ private fun WidgetType(
           imageVector = MaterialIcons.Warning,
           contentDescription = Strings.reportsChooseTypeDisabled,
           onClick = { onAction(ChooseReportTypeAction.ShowDisabledDialog) },
-          colors = { theme, isPressed ->
-            theme
-              .normalIconButton(isPressed)
-              .copy(contentColor = if (isPressed) theme.errorText else theme.errorTextDark)
+          colors = { t, isPressed ->
+            t.normalIconButton(isPressed)
+              .copy(contentColor = if (isPressed) t.errorText else t.errorTextDark)
           },
         )
       }
