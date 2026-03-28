@@ -8,11 +8,11 @@ import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Immutable
-class CreateReportNavigator(private val stack: SnapshotStateList<NavKey>) {
+class BudgetNavRailNavigator(private val stack: SnapshotStateList<NavKey>) {
   operator fun invoke(token: Token, budgetId: BudgetId) =
-    stack.debugPush(CreateReportNavRoute(token, budgetId))
+    stack.debugReplaceAll(BudgetNavRailNavRoute(token, budgetId))
 }
 
 @Immutable
 @Serializable
-data class CreateReportNavRoute(val token: Token, val budgetId: BudgetId) : NavKey
+data class BudgetNavRailNavRoute(val token: Token, val budgetId: BudgetId) : NavKey

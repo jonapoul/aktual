@@ -1,4 +1,5 @@
 <resources>
+  <string name="transactions_title">Transactions</string>
   <string name="transactions_expand">Expand</string>
   <string name="transactions_collapse">Collapse</string>
   <string name="transactions_empty">No transactions</string>

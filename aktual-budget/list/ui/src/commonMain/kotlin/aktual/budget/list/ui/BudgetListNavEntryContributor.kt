@@ -1,5 +1,6 @@
 package aktual.budget.list.ui
 
+import aktual.app.nav.BudgetNavRailNavigator
 import aktual.app.nav.ChangePasswordNavigator
 import aktual.app.nav.InfoNavigator
 import aktual.app.nav.ListBudgetsNavRoute
@@ -8,7 +9,6 @@ import aktual.app.nav.NavEntryContributor
 import aktual.app.nav.NavScope
 import aktual.app.nav.ServerUrlNavigator
 import aktual.app.nav.SettingsNavigator
-import aktual.app.nav.TransactionsNavigator
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
@@ -25,7 +25,7 @@ class BudgetListNavEntryContributor : NavEntryContributor {
         toSettings = SettingsNavigator(stack),
         toMetrics = MetricsNavigator(stack),
         logOut = ServerUrlNavigator(stack),
-        toBudget = TransactionsNavigator(stack),
+        toBudget = BudgetNavRailNavigator(stack),
       )
     }
   }

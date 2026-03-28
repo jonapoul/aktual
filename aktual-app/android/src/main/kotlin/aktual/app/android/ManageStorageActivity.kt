@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -59,13 +60,15 @@ class ManageStorageActivity(override val defaultViewModelProviderFactory: MetroV
       BackHandler { closeApp() }
 
       val hazeState = rememberHazeState()
-      val theme by viewModel.theme(isSystemInDarkTheme()).collectAsStateWithLifecycle(null)
+      val isSystemDark = isSystemInDarkTheme()
+      LaunchedEffect(isSystemDark) { viewModel.updateSystemDarkTheme(isSystemDark) }
+      val theme by viewModel.theme.collectAsStateWithLifecycle()
 
       WithCompositionLocals(
         hazeState = hazeState,
         dialogBlurState = remember { DialogBlurState() },
       ) {
-        AktualTheme(theme ?: return@WithCompositionLocals) {
+        AktualTheme(theme) {
           Box(contentAlignment = Alignment.BottomCenter) {
             CompositionLocalProvider(
               LocalMetroViewModelFactory provides defaultViewModelProviderFactory

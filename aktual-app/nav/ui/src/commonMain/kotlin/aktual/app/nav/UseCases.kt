@@ -35,7 +35,6 @@ import androidx.navigation3.runtime.NavKey
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
@@ -146,7 +145,6 @@ class BottomBarStateUseCase(
 
 @Inject
 class AppLifecycleManager(
-  private val appScope: CoroutineScope,
   private val connectionMonitor: ConnectionMonitor,
   private val serverPinger: ServerPinger,
   private val serverVersionFetcher: ServerVersionFetcher,
@@ -173,7 +171,6 @@ class AppLifecycleManager(
     logcat.v { "destroy" }
     serverPinger.stop()
     connectionMonitor.stop()
-    appScope.cancel()
 
     with(files) {
       val tmpDir = tmp(mkdirs = false)

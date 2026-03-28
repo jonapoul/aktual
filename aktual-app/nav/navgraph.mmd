@@ -10,26 +10,26 @@ flowchart TD
   settings["Settings"]
   url["Server URL"]
 
-  subgraph budget["Budget"]
+  subgraph budgetNavRail["Budget Nav Rail"]
     transactions["Transactions"]
     reportsDashboard["Reports Dashboard"]
     report["Report"]
-    budgetSettings["Settings"]
+    createReport["Create Report"]
   end
 
   app --valid token--> budgetList
-  app --valid budget ID--> transactions
+  app --valid budget ID--> budgetNavRail
   app --no token--> login
   app --no token, no url--> url
 
   budgetList --tap budget - unsynced--> budgetSync
-  budgetList --tap budget - synced--> transactions
+  budgetList --tap budget - synced--> budgetNavRail
   budgetList --tap change password--> password
   budgetList --tap settings--> settings
   budgetList --tap change url--> url
   budgetList --tap about--> info
 
-  budgetSync --budget synced--> budget
+  budgetSync --budget synced--> budgetNavRail
 
   info --tap licenses--> licenses
   info --tap manage storage--> manageStorage
@@ -38,5 +38,8 @@ flowchart TD
   login --tap about--> info
   login --tap change url--> url
 
-  budget --close file--> budgetList
-  budget --tap about--> info
+  budgetNavRail --back--> budgetList
+  budgetNavRail --tap about--> info
+
+  reportsDashboard --tap report--> report
+  reportsDashboard --tap create--> createReport
