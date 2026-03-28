@@ -1,11 +1,11 @@
 package aktual.budget.list.ui
 
+import aktual.app.nav.BudgetNavRailNavigator
 import aktual.app.nav.ChangePasswordNavigator
 import aktual.app.nav.InfoNavigator
 import aktual.app.nav.MetricsNavigator
 import aktual.app.nav.ServerUrlNavigator
 import aktual.app.nav.SettingsNavigator
-import aktual.app.nav.TransactionsNavigator
 import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
 import aktual.budget.list.ui.ListBudgetsAction.Delete
 import aktual.budget.list.ui.ListBudgetsAction.LogOut
@@ -73,7 +73,7 @@ fun ListBudgetsScreen(
   toSettings: SettingsNavigator,
   toMetrics: MetricsNavigator,
   logOut: ServerUrlNavigator,
-  toBudget: TransactionsNavigator,
+  toBudget: BudgetNavRailNavigator,
   viewModel: ListBudgetsViewModel = metroViewModel(token),
 ) {
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()

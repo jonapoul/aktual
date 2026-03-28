@@ -9,4 +9,4 @@ fun interface BackNavigator {
   operator fun invoke()
 }
 
-fun BackNavigator(stack: SnapshotStateList<NavKey>) = BackNavigator { stack.debugPop() }
+fun <T : NavKey> BackNavigator(stack: SnapshotStateList<T>) = BackNavigator { stack.debugPop() }

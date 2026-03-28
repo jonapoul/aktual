@@ -1,4 +1,5 @@
 <resources>
+  <string name="reports_title">Reports</string>
   <string name="reports_dashboard_title">Reports</string>
   <string name="reports_dashboard_rename">Rename</string>
   <string name="reports_dashboard_delete">Delete</string>

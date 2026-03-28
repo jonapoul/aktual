@@ -1,21 +1,24 @@
 package aktual.budget.reports.ui
 
 import aktual.app.nav.BackNavigator
+import aktual.app.nav.BudgetNavEntryContributor
+import aktual.app.nav.BudgetNavKey
+import aktual.app.nav.BudgetNavScope
 import aktual.app.nav.CreateReportNavRoute
 import aktual.app.nav.CreateReportNavigator
-import aktual.app.nav.NavEntryContributor
-import aktual.app.nav.NavScope
 import aktual.app.nav.ReportNavRoute
 import aktual.app.nav.ReportNavigator
 import aktual.app.nav.ReportsListNavRoute
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
-import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
-@ContributesIntoSet(NavScope::class)
-class ReportsNavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: SnapshotStateList<NavKey>) {
+@ContributesIntoSet(BudgetNavScope::class)
+class ReportsNavEntryContributor : BudgetNavEntryContributor {
+  override fun contribute(
+    scope: EntryProviderScope<BudgetNavKey>,
+    stack: SnapshotStateList<BudgetNavKey>,
+  ) {
     scope.entry<ReportsListNavRoute> { route ->
       ReportsDashboardScreen(
         back = BackNavigator(stack),
