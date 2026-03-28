@@ -14,7 +14,7 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
-@ViewModelKey(AktualActivityViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class AktualActivityViewModel(
   themeResolver: ThemeResolver,

@@ -42,7 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
-@ViewModelKey(ServerUrlViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class ServerUrlViewModel
 internal constructor(

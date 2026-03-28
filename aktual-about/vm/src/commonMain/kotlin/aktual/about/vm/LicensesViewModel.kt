@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
-@ViewModelKey(LicensesViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class LicensesViewModel
 internal constructor(

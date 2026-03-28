@@ -177,7 +177,7 @@ class ListBudgetsViewModel(
     }
 
   @AssistedFactory
-  @ManualViewModelAssistedFactoryKey(Factory::class)
+  @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(AppScope::class)
   interface Factory : ManualViewModelAssistedFactory {
     fun create(@Assisted token: Token): ListBudgetsViewModel

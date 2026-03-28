@@ -20,7 +20,7 @@ import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 
-@ActivityKey(AktualActivity::class)
+@ActivityKey
 @ContributesIntoMap(AppScope::class, binding<Activity>())
 class AktualActivity(override val defaultViewModelProviderFactory: MetroViewModelFactory) :
   ComponentActivity() {

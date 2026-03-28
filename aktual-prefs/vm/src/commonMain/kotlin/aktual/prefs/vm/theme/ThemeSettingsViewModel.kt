@@ -38,7 +38,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
-@ViewModelKey(ThemeSettingsViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class ThemeSettingsViewModel(
   private val preferences: ThemePreferences,

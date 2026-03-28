@@ -29,7 +29,7 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 import okio.Path
 
-@ViewModelKey(ManageStorageViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class ManageStorageViewModel(
   private val files: BudgetFiles,
