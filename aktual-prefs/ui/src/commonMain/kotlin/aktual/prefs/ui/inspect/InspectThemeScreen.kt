@@ -16,7 +16,7 @@ import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.blurredTopBar
@@ -216,8 +216,7 @@ private fun Color.toHexString(): String {
 @Composable
 private fun PreviewInspectTheme(
   @PreviewParameter(InspectThemePreviewProvider::class) params: ThemedParams<InspectThemeState>
-) =
-  PreviewWithColorScheme(params.theme) { InspectThemeScaffold(state = params.data, onAction = {}) }
+) = PreviewWithTheme(params.theme) { InspectThemeScaffold(state = params.data, onAction = {}) }
 
 private class InspectThemePreviewProvider :
   ThemedParameterProvider<InspectThemeState>(

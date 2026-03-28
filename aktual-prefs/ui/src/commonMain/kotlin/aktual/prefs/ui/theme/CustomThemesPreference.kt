@@ -15,7 +15,7 @@ import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.NormalIconButton
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemedParameterProvider
@@ -445,7 +445,7 @@ private fun BoxPreviewColor(
 private fun PreviewCustomThemesPreference(
   @PreviewParameter(CustomThemesScaffoldProvider::class) params: ThemedParams<CatalogState>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     CustomThemesPreference(state = params.data, selectedTheme = null, enabled = true, onAction = {})
   }
 
@@ -469,7 +469,7 @@ private class CustomThemesScaffoldProvider :
 private fun PreviewCustomThemeListItem(
   @PreviewParameter(CustomThemeListItemProvider::class) params: ThemedParams<CustomThemeState>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     CatalogLoadedItem(
       item = PREVIEW_CATALOG_ITEM.copy(state = params.data),
       selectedId = null,
@@ -510,6 +510,6 @@ internal val PREVIEW_CATALOG_ITEM =
 @TabletPreview
 @Composable
 private fun PreviewCustomThemeListItemTablet() =
-  PreviewWithColorScheme(DarkTheme) {
+  PreviewWithTheme(DarkTheme) {
     CatalogLoadedItem(item = PREVIEW_CATALOG_ITEM, selectedId = null, enabled = true, onAction = {})
   }

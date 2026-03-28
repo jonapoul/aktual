@@ -164,7 +164,7 @@ fun WrapWidthTable(
 @Preview(widthDp = 500)
 @Composable
 private fun PreviewWeightedTable(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     WeightedTable(modifier = Modifier.wrapContentSize(), data = PREVIEW_CELLS)
   }
 
@@ -173,7 +173,7 @@ private fun PreviewWeightedTable(@PreviewParameter(ThemeParameters::class) theme
 private fun PreviewWeightedTableWithStylesAndPadding(
   @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     WeightedTable(
       modifier = Modifier.wrapContentSize(),
       data = PREVIEW_CELLS,
@@ -197,7 +197,7 @@ private fun PreviewWeightedTableWithStylesAndPadding(
 @Preview
 @Composable
 private fun PreviewWrapWidth(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     WrapWidthTable(modifier = Modifier.wrapContentSize(), data = PREVIEW_CELLS)
   }
 
@@ -206,7 +206,7 @@ private fun PreviewWrapWidth(@PreviewParameter(ThemeParameters::class) theme: Th
 private fun PreviewWrapWidthWithStylesAndPadding(
   @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     WrapWidthTable(
       modifier = Modifier.wrapContentSize(),
       data = PREVIEW_CELLS,

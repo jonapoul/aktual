@@ -1,6 +1,7 @@
-package aktual.budget.reports.vm
+package aktual.budget.reports.vm.dashboard
 
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.vm.ChartData
 import androidx.compose.runtime.Immutable
 
 @Immutable data class ReportDashboardItem(val id: WidgetId, val name: String, val data: ChartData)

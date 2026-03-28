@@ -12,7 +12,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
 import aktual.core.ui.NormalIconButton
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.disabledIf
 import aktual.core.ui.radioButton
@@ -139,7 +139,7 @@ private fun BuiltInThemeItem(
 @Preview
 @Composable
 private fun PreviewBuiltInThemesPreference(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     BuiltInThemesPreference(selectedTheme = LightTheme.id, enabled = true, onAction = {})
   }
 
@@ -148,6 +148,6 @@ private fun PreviewBuiltInThemesPreference(@PreviewParameter(ThemeParameters::cl
 private fun PreviewBuiltInThemesPreferenceDisabled(
   @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     BuiltInThemesPreference(selectedTheme = LightTheme.id, enabled = false, onAction = {})
   }

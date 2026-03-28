@@ -3,7 +3,7 @@ package aktual.budget.list.ui
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemeParameters
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -27,4 +27,4 @@ internal fun ContentLoading(modifier: Modifier = Modifier, theme: Theme = LocalT
 @PortraitPreview
 @Composable
 private fun PreviewContentLoading(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) { ContentLoading() }
+  PreviewWithTheme(theme) { ContentLoading() }

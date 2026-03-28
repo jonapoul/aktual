@@ -4,7 +4,7 @@ import aktual.account.domain.LoginResult
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import androidx.compose.material3.Text
@@ -44,7 +44,7 @@ internal fun LoginFailureText(
 @Composable
 private fun PreviewLoginFailureText(
   @PreviewParameter(LoginFailureProvider::class) params: ThemedParams<LoginResult.Failure>
-) = PreviewWithColorScheme(params.theme) { LoginFailureText(params.data) }
+) = PreviewWithTheme(params.theme) { LoginFailureText(params.data) }
 
 private class LoginFailureProvider :
   ThemedParameterProvider<LoginResult.Failure>(

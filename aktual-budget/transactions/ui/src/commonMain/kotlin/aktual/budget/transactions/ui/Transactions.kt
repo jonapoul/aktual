@@ -13,7 +13,7 @@ import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -132,7 +132,7 @@ private fun TransactionsFilled(
 private fun PreviewTransactions(
   @PreviewParameter(TransactionsProvider::class) params: ThemedParams<TransactionsParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     Transactions(
       listState = rememberLazyListState(),
       transactionIdSource = PreviewTransactionIdSource(params.data.transactions),

@@ -4,7 +4,7 @@ import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.disabled
@@ -117,7 +117,7 @@ private fun PreviewSliderPreferenceItem(
   @PreviewParameter(SliderPreferenceItemProvider::class)
   params: ThemedParams<SliderPreferenceItemParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     SliderPreferenceItem(
       value = params.data.value,
       range = params.data.range,

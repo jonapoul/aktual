@@ -194,7 +194,7 @@ private class TextInputPreviewProvider :
 private fun PreviewTextField(
   @PreviewParameter(TextInputPreviewProvider::class) params: ThemedParams<TextInputPreviewParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     TextField(
       value = params.data.value,
       onValueChange = {},
@@ -206,7 +206,7 @@ private fun PreviewTextField(
 @Preview
 @Composable
 private fun PreviewDropDownMenu(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     var value by remember { mutableStateOf("B") }
     val options = persistentListOf("A", "B", "C", "D")
     ExposedDropDownMenu(
@@ -219,7 +219,7 @@ private fun PreviewDropDownMenu(@PreviewParameter(ThemeParameters::class) theme:
 @Preview
 @Composable
 private fun PreviewDropDownMenuForcedWidth(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     var value by remember { mutableStateOf("B") }
     val options = persistentListOf("A", "B", "C", "D")
     ExposedDropDownMenu(
@@ -234,7 +234,7 @@ private fun PreviewDropDownMenuForcedWidth(@PreviewParameter(ThemeParameters::cl
 @Composable
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
 private fun PreviewDropDownMenuEnum(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     var value by remember { mutableStateOf(DateRangeType.YearToDate) }
     val options = DateRangeType.entries.toImmutableList()
     ExposedDropDownMenu(

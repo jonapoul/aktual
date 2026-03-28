@@ -6,7 +6,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AlertDialog
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.DialogContent
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemeParameters
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Arrangement
@@ -70,4 +70,4 @@ internal fun CheckUpdatesLoadingDialogContent(
 @Preview
 @Composable
 private fun PreviewCheckUpdatesContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) { CheckUpdatesLoadingDialogContent(onCancel = {}) }
+  PreviewWithTheme(theme) { CheckUpdatesLoadingDialogContent(onCancel = {}) }

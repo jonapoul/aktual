@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -33,6 +34,7 @@ fun PrimaryIconButton(
   enabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  colors: IconButtonColorProvider = IconButtonColorProvider.Primary,
   content: @Composable () -> Unit = {
     DefaultIconButtonContent(imageVector, contentDescription, size)
   },
@@ -41,7 +43,7 @@ fun PrimaryIconButton(
     imageVector = imageVector,
     contentDescription = contentDescription,
     onClick = onClick,
-    colors = { scheme, isPressed -> scheme.primaryIconButton(isPressed) },
+    colors = colors,
     modifier = modifier,
     size = size,
     enabled = enabled,
@@ -61,6 +63,7 @@ fun NormalIconButton(
   enabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  colors: IconButtonColorProvider = IconButtonColorProvider.Normal,
   content: @Composable () -> Unit = {
     DefaultIconButtonContent(imageVector, contentDescription, size)
   },
@@ -69,7 +72,7 @@ fun NormalIconButton(
     imageVector = imageVector,
     contentDescription = contentDescription,
     onClick = onClick,
-    colors = { scheme, isPressed -> scheme.normalIconButton(isPressed) },
+    colors = colors,
     modifier = modifier,
     size = size,
     enabled = enabled,
@@ -89,6 +92,7 @@ fun BareIconButton(
   enabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
+  colors: IconButtonColorProvider = IconButtonColorProvider.Bare,
   content: @Composable () -> Unit = {
     DefaultIconButtonContent(imageVector, contentDescription, size)
   },
@@ -97,7 +101,7 @@ fun BareIconButton(
     imageVector = imageVector,
     contentDescription = contentDescription,
     onClick = onClick,
-    colors = { scheme, isPressed -> scheme.bareIconButton(isPressed) },
+    colors = colors,
     modifier = modifier,
     size = size,
     enabled = enabled,
@@ -112,7 +116,7 @@ fun BasicIconButton(
   imageVector: ImageVector,
   contentDescription: String,
   onClick: () -> Unit,
-  colors: @Composable (theme: Theme, isPressed: Boolean) -> IconButtonColors,
+  colors: IconButtonColorProvider,
   modifier: Modifier = Modifier,
   size: Dp? = null,
   enabled: Boolean = true,
@@ -143,6 +147,17 @@ fun NavBackIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
   }
 }
 
+@Immutable
+fun interface IconButtonColorProvider {
+  @Composable operator fun invoke(theme: Theme, isPressed: Boolean): IconButtonColors
+
+  companion object {
+    val Bare = IconButtonColorProvider { theme, isPressed -> theme.bareIconButton(isPressed) }
+    val Primary = IconButtonColorProvider { theme, isPressed -> theme.primaryIconButton(isPressed) }
+    val Normal = IconButtonColorProvider { theme, isPressed -> theme.normalIconButton(isPressed) }
+  }
+}
+
 @Composable
 @Suppress("ModifierMissing")
 fun NavBackIconButton(onClick: () -> Unit) {
@@ -165,20 +180,20 @@ private fun DefaultIconButtonContent(
 @Preview
 @Composable
 private fun PreviewBare(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     BareIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewNormal(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     NormalIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewPrimary(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     PrimaryIconButton(imageVector = MaterialIcons.Check, contentDescription = "OK", onClick = {})
   }

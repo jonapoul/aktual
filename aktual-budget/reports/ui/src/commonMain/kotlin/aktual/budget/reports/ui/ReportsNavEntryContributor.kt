@@ -9,6 +9,8 @@ import aktual.app.nav.CreateReportNavigator
 import aktual.app.nav.ReportNavRoute
 import aktual.app.nav.ReportNavigator
 import aktual.app.nav.ReportsListNavRoute
+import aktual.budget.reports.ui.choosetype.ChooseReportTypeScreen
+import aktual.budget.reports.ui.dashboard.ReportsDashboardScreen
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import dev.zacsweers.metro.ContributesIntoSet

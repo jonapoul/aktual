@@ -19,7 +19,7 @@ import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.disabled
@@ -294,7 +294,7 @@ private fun BudgetTab.icon(): ImageVector =
 @PortraitPreview
 @Composable
 private fun PreviewBottomNavBar(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     Column(modifier = Modifier.fillMaxSize()) {
       PreviewContent(modifier = Modifier.weight(1f))
       BottomNavBar(selectedTab = BudgetTab.Transactions, onSelectTab = {})
@@ -304,7 +304,7 @@ private fun PreviewBottomNavBar(@PreviewParameter(ThemeParameters::class) theme:
 @TabletPreview
 @Composable
 private fun PreviewSideNavRail(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     Row(modifier = Modifier.fillMaxSize()) {
       SideNavRail(selectedTab = BudgetTab.Transactions, onSelectTab = {})
       PreviewContent(modifier = Modifier.weight(1f))

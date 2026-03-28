@@ -15,7 +15,7 @@ import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
@@ -197,7 +197,7 @@ private fun ChangePasswordState.Failure.errorMessage(): String =
 private fun PreviewChangePassword(
   @PreviewParameter(ChangePasswordProvider::class) params: ThemedParams<ChangePasswordParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     ChangePasswordScaffold(
       inputPassword1 = params.data.password1,
       inputPassword2 = params.data.password2,

@@ -244,7 +244,7 @@ val Typography.buttonTextStyle: TextStyle
 private fun PreviewBare(
   @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     BareTextButton(text = "Bare", isEnabled = params.data, onClick = {})
   }
 
@@ -253,7 +253,7 @@ private fun PreviewBare(
 private fun PreviewPrimary(
   @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     PrimaryTextButton(text = "Primary", isEnabled = params.data, onClick = {})
   }
 
@@ -262,7 +262,7 @@ private fun PreviewPrimary(
 private fun PreviewNormal(
   @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     NormalTextButton(text = "Normal", isEnabled = params.data, onClick = {})
   }
 
@@ -271,7 +271,7 @@ private fun PreviewNormal(
 private fun PreviewPrimaryWithLoadingNotLoading(
   @PreviewParameter(BoolColorSchemeParameters::class) params: ThemedParams<Boolean>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     PrimaryTextButtonWithLoading(text = "OK", isLoading = params.data, onClick = {})
   }
 

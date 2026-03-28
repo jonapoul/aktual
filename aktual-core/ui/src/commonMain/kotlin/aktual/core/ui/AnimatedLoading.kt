@@ -117,14 +117,14 @@ private fun loadingIcon(color: Color): ImageVector =
 @Preview
 @Composable
 private fun PreviewCheckUpdatesContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     Box(modifier = Modifier.size(50.dp), contentAlignment = Alignment.Center) { AnimatedLoading() }
   }
 
 @Preview
 @Composable
 private fun PreviewScaled() =
-  PreviewWithColorScheme(LightTheme) {
+  PreviewWithTheme(LightTheme) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
       AnimatedLoading(modifier = Modifier.size(20.dp))
       AnimatedLoading(modifier = Modifier.size(50.dp))

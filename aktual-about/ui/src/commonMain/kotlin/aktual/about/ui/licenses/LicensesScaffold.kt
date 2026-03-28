@@ -18,7 +18,7 @@ import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TextField
 import aktual.core.ui.ThemeParameters
@@ -299,7 +299,7 @@ private fun ErrorContent(
 @PortraitPreview
 @Composable
 private fun PreviewNoneFound(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     LicensesScaffold(
       state = LicensesState.NoneFound,
       searchBarState = SearchBarState.Gone,
@@ -310,7 +310,7 @@ private fun PreviewNoneFound(@PreviewParameter(ThemeParameters::class) theme: Th
 @PortraitPreview
 @Composable
 private fun PreviewLoading(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     LicensesScaffold(
       state = LicensesState.Loading,
       searchBarState = SearchBarState.Gone,
@@ -321,7 +321,7 @@ private fun PreviewLoading(@PreviewParameter(ThemeParameters::class) theme: Them
 @PortraitPreview
 @Composable
 private fun PreviewLoaded(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     LicensesScaffold(
       state =
         LicensesState.Loaded(
@@ -336,7 +336,7 @@ private fun PreviewLoaded(@PreviewParameter(ThemeParameters::class) theme: Theme
 @PortraitPreview
 @Composable
 private fun PreviewError(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     LicensesScaffold(
       state =
         LicensesState.Error(

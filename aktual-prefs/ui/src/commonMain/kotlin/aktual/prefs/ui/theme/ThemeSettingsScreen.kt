@@ -14,7 +14,7 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
@@ -179,7 +179,7 @@ private fun ThemeSettingsContent(
 @PortraitPreview
 @Composable
 private fun PreviewThemeSettings(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     ThemeSettingsScaffold(
       state =
         ThemeSettingsState(

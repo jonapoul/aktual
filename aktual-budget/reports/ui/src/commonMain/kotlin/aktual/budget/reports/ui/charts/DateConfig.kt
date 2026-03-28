@@ -7,7 +7,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.SlidingToggleButton
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.YearMonthPicker
@@ -126,7 +126,7 @@ private fun DateRangeMode.string() =
 @Preview
 @Composable
 private fun PreviewChartDateConfig(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     ChartDateConfig(
       modifier = Modifier.padding(8.dp),
       onNewConfig = {},

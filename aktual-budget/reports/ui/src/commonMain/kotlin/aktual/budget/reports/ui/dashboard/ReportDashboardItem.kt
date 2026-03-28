@@ -1,11 +1,13 @@
-package aktual.budget.reports.ui
+package aktual.budget.reports.ui.dashboard
 
 import aktual.budget.model.WidgetId
+import aktual.budget.reports.ui.Action
+import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.ReportChart
-import aktual.budget.reports.vm.ReportDashboardItem
+import aktual.budget.reports.vm.dashboard.ReportDashboardItem
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
@@ -15,7 +17,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedDropdownMenu
 import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
@@ -109,9 +111,7 @@ private fun ReportDropDownMenu(
 private fun PreviewReportDashboardItem(
   @PreviewParameter(ReportDashboardItemProvider::class) params: ThemedParams<ReportDashboardItem>
 ) =
-  PreviewWithColorScheme(theme = params.theme) {
-    ReportDashboardItem(item = params.data, onAction = {})
-  }
+  PreviewWithTheme(theme = params.theme) { ReportDashboardItem(item = params.data, onAction = {}) }
 
 private class ReportDashboardItemProvider :
   ThemedParameterProvider<ReportDashboardItem>(

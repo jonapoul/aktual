@@ -30,7 +30,7 @@ import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
@@ -242,7 +242,7 @@ private fun StateContent(
 @Composable
 private fun PreviewListBudgetsScaffold(
   @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ThemedParams<ListBudgetsState>
-) = PreviewWithColorScheme(params.theme) { ListBudgetsScaffold(state = params.data, onAction = {}) }
+) = PreviewWithTheme(params.theme) { ListBudgetsScaffold(state = params.data, onAction = {}) }
 
 private class ListBudgetsScaffoldProvider :
   ThemedParameterProvider<ListBudgetsState>(

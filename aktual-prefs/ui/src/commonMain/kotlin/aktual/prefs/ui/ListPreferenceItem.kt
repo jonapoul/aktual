@@ -5,7 +5,7 @@ import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TextField
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -192,7 +192,7 @@ private fun PreviewListPreferenceItem(
   @PreviewParameter(ListPreferenceItemProvider::class)
   params: ThemedParams<ListPreferenceItemParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     ListPreferenceItem(
       value = params.data.value,
       options = params.data.options,

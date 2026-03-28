@@ -5,7 +5,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
 import aktual.core.ui.NormalIconButton
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedBooleanParameters
 import aktual.core.ui.ThemedParams
 import aktual.prefs.ui.BasicPreferenceItem
@@ -36,4 +36,4 @@ internal fun ThemeSettingsItem(onClick: () -> Unit, modifier: Modifier = Modifie
 @Composable
 private fun PreviewThemeSettingsItem(
   @PreviewParameter(ThemedBooleanParameters::class) params: ThemedParams<Boolean>
-) = PreviewWithColorScheme(params.theme) { ThemeSettingsItem(onClick = {}) }
+) = PreviewWithTheme(params.theme) { ThemeSettingsItem(onClick = {}) }

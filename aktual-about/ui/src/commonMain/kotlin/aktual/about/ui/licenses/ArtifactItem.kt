@@ -6,7 +6,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import alakazam.compose.HorizontalSpacer
@@ -139,7 +139,7 @@ private val TextSize = 12.sp
 @Composable
 private fun PreviewArtifactItem(
   @PreviewParameter(ArtifactItemProvider::class) params: ThemedParams<ArtifactDetail>
-) = PreviewWithColorScheme(params.theme) { ArtifactItem(artifact = params.data, onLaunchUrl = {}) }
+) = PreviewWithTheme(params.theme) { ArtifactItem(artifact = params.data, onLaunchUrl = {}) }
 
 private class ArtifactItemProvider :
   ThemedParameterProvider<ArtifactDetail>(

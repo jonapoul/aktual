@@ -91,7 +91,7 @@ class ThemeParameters : PreviewParameters<Theme>(LightTheme, DarkTheme, Midnight
 class ThemedBooleanParameters : ThemedParameterProvider<Boolean>(true, false)
 
 @Composable
-fun PreviewWithColorScheme(
+fun PreviewWithTheme(
   theme: Theme,
   modifier: Modifier = Modifier,
   isPrivacyEnabled: Boolean = false,

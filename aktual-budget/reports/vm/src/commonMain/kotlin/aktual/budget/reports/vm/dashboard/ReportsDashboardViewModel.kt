@@ -1,4 +1,4 @@
-package aktual.budget.reports.vm
+package aktual.budget.reports.vm.dashboard
 
 import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetId

@@ -5,7 +5,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.ThemeParameters
 import alakazam.compose.VerticalSpacer
@@ -59,4 +59,4 @@ internal fun ContentEmpty(
 @PortraitPreview
 @Composable
 private fun PreviewContentEmpty(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) { ContentEmpty(onCreateBudgetInBrowser = {}) }
+  PreviewWithTheme(theme) { ContentEmpty(onCreateBudgetInBrowser = {}) }

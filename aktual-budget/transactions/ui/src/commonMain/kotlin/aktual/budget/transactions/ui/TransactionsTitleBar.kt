@@ -10,7 +10,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.BlurredTopBarState
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.blurredTopBar
@@ -70,7 +70,7 @@ internal fun TransactionsTitleBar(
 private fun PreviewTransactionsTitleBar(
   @PreviewParameter(TransactionsTitleBarProvider::class) params: ThemedParams<LoadedAccount>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     TransactionsTitleBar(
       blurState = rememberBlurredTopBarState(),
       listState = rememberLazyListState(),

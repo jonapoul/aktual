@@ -7,7 +7,7 @@ import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.background
@@ -57,7 +57,7 @@ internal fun ContentSuccess(
 @PortraitPreview
 @Composable
 private fun PreviewContentSuccess(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     ContentSuccess(
       modifier = Modifier.background(LocalTheme.current.pageBackground),
       budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),

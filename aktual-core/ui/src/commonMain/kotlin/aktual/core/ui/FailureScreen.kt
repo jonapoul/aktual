@@ -86,7 +86,7 @@ fun FailureScreen(
 private fun PreviewFailureScreen(
   @PreviewParameter(FailureScreenProvider::class) params: ThemedParams<FailureScreenParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     FailureScreen(
       title = params.data.title,
       reason = params.data.reason,

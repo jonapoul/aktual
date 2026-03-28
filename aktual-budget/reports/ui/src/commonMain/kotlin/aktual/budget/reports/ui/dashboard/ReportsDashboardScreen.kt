@@ -1,21 +1,22 @@
-package aktual.budget.reports.ui
+package aktual.budget.reports.ui.dashboard
 
 import aktual.app.nav.BackNavigator
 import aktual.app.nav.CreateReportNavigator
 import aktual.app.nav.ReportNavigator
 import aktual.budget.model.BudgetId
-import aktual.budget.reports.vm.DashboardState
-import aktual.budget.reports.vm.ReportDashboardItem
-import aktual.budget.reports.vm.ReportsDashboardViewModel
+import aktual.budget.reports.ui.Action
+import aktual.budget.reports.ui.ActionListener
+import aktual.budget.reports.vm.dashboard.DashboardState
+import aktual.budget.reports.vm.dashboard.ReportDashboardItem
+import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.BackHandler
 import aktual.core.ui.BlurredTopBarSpacing
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
@@ -40,7 +41,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -63,12 +63,11 @@ fun ReportsDashboardScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
-  BackHandler { back() }
-
   ReportsDashboardScaffold(
     state = state,
     onAction = { action ->
       when (action) {
+        Action.NavBack -> back()
         is Action.OpenItem -> toReport(token, budgetId, action.id)
         is Action.Rename -> viewModel.renameReport(action.id)
         is Action.Delete -> viewModel.deleteReport(action.id)
@@ -123,7 +122,6 @@ internal fun ReportsDashboardScaffold(
   }
 }
 
-@Stable
 @Composable
 private fun Content(
   state: DashboardState,
@@ -174,7 +172,7 @@ private fun ContentList(
 private fun PreviewReportDashboardItem(
   @PreviewParameter(DashboardStateProvider::class) params: ThemedParams<DashboardState>
 ) =
-  PreviewWithColorScheme(theme = params.theme) {
+  PreviewWithTheme(theme = params.theme) {
     ReportsDashboardScaffold(state = params.data, onAction = {})
   }
 
