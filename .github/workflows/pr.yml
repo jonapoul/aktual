@@ -73,7 +73,13 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - run: shellcheck $(git diff --name-only --diff-filter=ACMR origin/main -- '*.sh')
+        with:
+          fetch-depth: 0
+      - run: |
+          files=$(git diff --name-only --diff-filter=ACMR origin/main -- '*.sh')
+          if [[ -n "$files" ]]; then
+            shellcheck $files
+          fi
 
   gitleaks:
     runs-on: ubuntu-latest
