@@ -152,8 +152,11 @@ ${new_rows}
 EOF
 )"
 
+  # Clean up any stale remote branch (e.g. from a previous failed run)
+  git push origin --delete "$PR_BRANCH" 2>/dev/null || true
+
   # Create branch, commit, and push
-  git checkout -b "$PR_BRANCH"
+  git checkout -B "$PR_BRANCH"
   git add "$TRACKER_FILE"
   git commit -m "Update last known upstream migration to $newest_migration"
   git push -u origin "$PR_BRANCH"
