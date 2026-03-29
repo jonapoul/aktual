@@ -28,7 +28,7 @@ PR_BRANCH="auto/upstream-migrations"
 DRY_RUN="${DRY_RUN:-}"
 GITHUB_REPOSITORY="${GITHUB_REPOSITORY:-}"
 
-last_known="$(cat "$TRACKER_FILE" | tr -d '[:space:]')"
+last_known="$(tr -d '[:space:]' < "$TRACKER_FILE")"
 echo "Last known migration: $last_known"
 
 tmp_dir="$(mktemp -d)"
@@ -38,7 +38,7 @@ echo "Cloning upstream migrations (sparse checkout)..."
 git clone --depth 1 --filter=blob:none --sparse --quiet "$UPSTREAM_REPO" "$tmp_dir"
 git -C "$tmp_dir" sparse-checkout set "$MIGRATIONS_PATH"
 
-mapfile -t all_migrations < <(ls "$tmp_dir/$MIGRATIONS_PATH" | sort)
+mapfile -t all_migrations < <(find "$tmp_dir/$MIGRATIONS_PATH" -maxdepth 1 -type f -printf '%f\n' | sort)
 
 new_migrations=()
 found_last=false
