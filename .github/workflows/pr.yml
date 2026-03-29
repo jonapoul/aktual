@@ -76,9 +76,9 @@ jobs:
         with:
           fetch-depth: 0
       - run: |
-          files=$(git diff --name-only --diff-filter=ACMR origin/main -- '*.sh')
-          if [[ -n "$files" ]]; then
-            shellcheck $files
+          mapfile -t files < <(git diff --name-only --diff-filter=ACMR origin/main -- '*.sh')
+          if [[ ${#files[@]} -gt 0 ]]; then
+            shellcheck "${files[@]}"
           fi
 
   gitleaks:
