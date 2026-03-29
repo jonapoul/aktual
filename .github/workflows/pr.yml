@@ -25,6 +25,7 @@ jobs:
     outputs:
       renovate: ${{ steps.filter.outputs.renovate }}
       wrapper: ${{ steps.filter.outputs.wrapper }}
+      shell: ${{ steps.filter.outputs.shell }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
@@ -40,6 +41,8 @@ jobs:
               - 'gradle/wrapper/**'
               - 'gradlew'
               - 'gradlew.bat'
+            shell:
+              - '**/*.sh'
 
   validate-renovate:
     needs: changed-files
@@ -63,6 +66,21 @@ jobs:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - uses: gradle/actions/wrapper-validation@39e147cb9de83bb9910b8ef8bd7fff0ee20fcd6f # v6
 
+  shellcheck:
+    needs: changed-files
+    if: needs.changed-files.outputs.shell == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+      - run: |
+          files=$(git diff --name-only --diff-filter=ACMR origin/main -- '*.sh')
+          if [[ -n "$files" ]]; then
+            shellcheck $files
+          fi
+
   gitleaks:
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -81,7 +99,7 @@ jobs:
       - run: scripts/ktfmt.sh check --force
 
   validation:
-    needs: [ changed-files, validate-renovate, validate-wrapper, gitleaks, ktfmt ]
+    needs: [ changed-files, validate-renovate, validate-wrapper, shellcheck, gitleaks, ktfmt ]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
