@@ -1,0 +1,28 @@
+import aktual.budget.model.PayeeId;
+import aktual.budget.model.PayeeLocationId;
+import kotlin.Boolean;
+import kotlin.time.Instant;
+
+CREATE TABLE IF NOT EXISTS payee_locations(
+  id TEXT AS PayeeLocationId PRIMARY KEY,
+  payee_id TEXT AS PayeeId,
+  latitude REAL,
+  longitude REAL,
+  created_at INTEGER AS Instant,
+  tombstone INTEGER AS Boolean DEFAULT 0
+);
+
+CREATE INDEX IF NOT EXISTS idx_payee_locations_payee_id ON payee_locations (payee_id);
+
+CREATE INDEX IF NOT EXISTS idx_payee_locations_tombstone_payee_created ON payee_locations (tombstone, payee_id, created_at);
+
+CREATE INDEX IF NOT EXISTS idx_payee_locations_geo_tombstone ON payee_locations (tombstone, latitude, longitude);
+
+insert:
+  INSERT INTO payee_locations VALUES ?;
+
+delete:
+  DELETE FROM payee_locations WHERE id = ?;
+
+getById:
+  SELECT * FROM payee_locations WHERE id = ?;

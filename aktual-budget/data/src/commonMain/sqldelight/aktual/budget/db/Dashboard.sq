@@ -1,3 +1,4 @@
+import aktual.budget.model.DashboardPageId;
 import aktual.budget.model.WidgetId;
 import aktual.budget.model.WidgetType;
 import kotlin.Boolean;
@@ -11,7 +12,8 @@ CREATE TABLE IF NOT EXISTS dashboard(
   x INTEGER,
   y INTEGER,
   meta TEXT AS JsonObject,
-  tombstone INTEGER AS Boolean DEFAULT 0
+  tombstone INTEGER AS Boolean DEFAULT 0,
+  dashboard_page_id TEXT AS DashboardPageId
 );
 
 delete:

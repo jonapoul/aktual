@@ -9,12 +9,14 @@ import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.CustomReportMode
+import aktual.budget.model.DashboardPageId
 import aktual.budget.model.DateRangeType
 import aktual.budget.model.GraphType
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
 import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
+import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.ReportCondition
 import aktual.budget.model.ReportDate
 import aktual.budget.model.RuleId
@@ -25,6 +27,7 @@ import aktual.budget.model.ScheduleNextDateId
 import aktual.budget.model.SelectedCategory
 import aktual.budget.model.SortBy
 import aktual.budget.model.SyncedPrefKey
+import aktual.budget.model.TagId
 import aktual.budget.model.Timestamp
 import aktual.budget.model.TransactionFilterId
 import aktual.budget.model.TransactionId
@@ -138,12 +141,15 @@ private val syncedPrefKey = stringAdapter(SyncedPrefKey::decode, SyncedPrefKey::
 private val categoryGroupId = stringAdapter(::CategoryGroupId)
 private val categoryId = stringAdapter(::CategoryId)
 private val customReportsId = stringAdapter(::CustomReportId)
+private val dashboardPageId = stringAdapter(::DashboardPageId)
 private val payeeId = stringAdapter(::PayeeId)
+private val payeeLocationId = stringAdapter(::PayeeLocationId)
 private val reportDate = stringAdapter(ReportDate::parse)
 private val ruleId = stringAdapter(::RuleId)
 private val scheduleId = stringAdapter(::ScheduleId)
 private val scheduleJsonPathIndex = stringAdapter(::ScheduleJsonPathIndex)
 private val scheduleNextDateId = stringAdapter(::ScheduleNextDateId)
+private val tagId = stringAdapter(::TagId)
 private val timestamp = stringAdapter(Timestamp::parse)
 private val transactionFilterId = stringAdapter(::TransactionFilterId)
 private val transactionId = stringAdapter(::TransactionId)
@@ -177,7 +183,14 @@ internal val AccountsAdapter =
 internal val BanksAdapter = Banks.Adapter(idAdapter = uuid, bank_idAdapter = bankId)
 
 internal val DashboardAdapter =
-  Dashboard.Adapter(idAdapter = widgetId, typeAdapter = widgetType, metaAdapter = jsonObject)
+  Dashboard.Adapter(
+    idAdapter = widgetId,
+    typeAdapter = widgetType,
+    metaAdapter = jsonObject,
+    dashboard_page_idAdapter = dashboardPageId,
+  )
+
+internal val DashboardPagesAdapter = Dashboard_pages.Adapter(idAdapter = dashboardPageId)
 
 internal val PayeesAdapter = Payees.Adapter(idAdapter = payeeId, transfer_acctAdapter = accountId)
 
@@ -201,6 +214,7 @@ internal val CategoriesAdapter =
     idAdapter = categoryId,
     cat_groupAdapter = categoryGroupId,
     goal_defAdapter = jsonElement,
+    template_settingsAdapter = jsonObject,
   )
 
 internal val CategoryGroupsAdapter = Category_groups.Adapter(idAdapter = categoryGroupId)
@@ -229,6 +243,13 @@ internal val CustomReportsAdapter =
 internal val MessagesClockAdapter = Messages_clock.Adapter(clockAdapter = jsonObject)
 
 internal val MessagesCrdtAdapter = Messages_crdt.Adapter(timestampAdapter = timestamp)
+
+internal val PayeeLocationsAdapter =
+  Payee_locations.Adapter(
+    idAdapter = payeeLocationId,
+    payee_idAdapter = payeeId,
+    created_atAdapter = instantFromLong,
+  )
 
 internal val PayeeMappingAdapter =
   Payee_mapping.Adapter(idAdapter = payeeId, targetIdAdapter = payeeId)
@@ -271,6 +292,8 @@ internal val ReflectBudgetsAdapter =
     categoryAdapter = categoryId,
     amountAdapter = amount,
   )
+
+internal val TagsAdapter = Tags.Adapter(idAdapter = tagId)
 
 internal val TransactionFiltersAdapter =
   Transaction_filters.Adapter(

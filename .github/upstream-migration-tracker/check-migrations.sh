@@ -163,7 +163,7 @@ EOF
 
   gh pr create \
     --repo "$GITHUB_REPOSITORY" \
-    --title "New upstream database migration(s) detected" \
+    --title "Update database" \
     --body "$body" \
     --label "$PR_LABEL"
 

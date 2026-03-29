@@ -103,6 +103,7 @@ internal suspend fun BudgetDatabase.insertCategory(id: CategoryId, name: String)
         tombstone = false,
         hidden = false,
         goal_def = null,
+        template_settings = null,
       )
     )
   }

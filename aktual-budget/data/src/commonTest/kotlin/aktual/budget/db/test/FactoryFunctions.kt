@@ -85,4 +85,5 @@ internal fun buildCustomReport(
     tombstone = false,
     include_current = false,
     sort_by = SortBy.Desc,
+    trim_intervals = false,
   )
