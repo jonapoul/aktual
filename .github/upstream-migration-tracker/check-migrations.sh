@@ -128,8 +128,22 @@ if [[ -n "$existing_pr" ]]; then
   git commit -m "Update last known upstream migration to $newest_migration"
   git push origin "$PR_BRANCH"
 
-  # Append new rows to the PR body before the closing link line
-  updated_body="${existing_body//$'\n\n[View migrations'/$'\n'${new_rows}$'\n\n[View migrations'}"
+  # Extract existing table rows from the PR body and append new ones
+  existing_rows="$(echo "$existing_body" | sed -n '/^| \[/p')"
+  all_rows="${existing_rows}"$'\n'"${new_rows}"
+
+  updated_body="$(cat <<EOF
+## New Upstream Migrations
+
+The following database migrations have been added to [actualbudget/actual](https://github.com/actualbudget/actual) and may need corresponding changes in Aktual.
+
+| Migration | Type |
+|-----------|------|
+${all_rows}
+
+[View migrations directory](https://github.com/actualbudget/actual/tree/master/packages/loot-core/migrations)
+EOF
+)"
 
   gh pr edit "$pr_number" \
     --repo "$GITHUB_REPOSITORY" \
