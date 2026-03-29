@@ -1,0 +1,17 @@
+import aktual.budget.model.DashboardPageId;
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS dashboard_pages(
+  id TEXT AS DashboardPageId PRIMARY KEY,
+  name TEXT,
+  tombstone INTEGER AS Boolean DEFAULT 0
+);
+
+insert:
+  INSERT INTO dashboard_pages VALUES ?;
+
+delete:
+  DELETE FROM dashboard_pages WHERE id = ?;
+
+getById:
+  SELECT * FROM dashboard_pages WHERE id = ?;

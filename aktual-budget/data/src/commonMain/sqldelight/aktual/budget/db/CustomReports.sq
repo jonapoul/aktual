@@ -37,7 +37,8 @@ CREATE TABLE IF NOT EXISTS custom_reports(
   color_scheme TEXT,
   tombstone INTEGER AS Boolean DEFAULT 0,
   include_current INTEGER AS Boolean DEFAULT 0,
-  sort_by TEXT AS SortBy DEFAULT 'desc'
+  sort_by TEXT AS SortBy DEFAULT 'desc',
+  trim_intervals INTEGER AS Boolean DEFAULT 0
 );
 
 delete: DELETE FROM custom_reports WHERE id = ?;

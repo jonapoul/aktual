@@ -2,6 +2,7 @@ import aktual.budget.model.CategoryGroupId;
 import aktual.budget.model.CategoryId;
 import kotlin.Boolean;
 import kotlinx.serialization.json.JsonElement;
+import kotlinx.serialization.json.JsonObject;
 
 CREATE TABLE IF NOT EXISTS categories(
   id TEXT AS CategoryId PRIMARY KEY,
@@ -11,7 +12,8 @@ CREATE TABLE IF NOT EXISTS categories(
   sort_order REAL,
   tombstone INTEGER AS Boolean DEFAULT 0,
   hidden INTEGER AS Boolean NOT NULL DEFAULT 0,
-  goal_def TEXT AS JsonElement DEFAULT NULL
+  goal_def TEXT AS JsonElement DEFAULT NULL,
+  template_settings TEXT AS JsonObject DEFAULT '{"source": "notes"}'
 );
 
 CREATE VIEW IF NOT EXISTS v_categories AS
