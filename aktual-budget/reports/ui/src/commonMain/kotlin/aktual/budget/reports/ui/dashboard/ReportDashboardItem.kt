@@ -1,6 +1,7 @@
 package aktual.budget.reports.ui.dashboard
 
 import aktual.budget.model.WidgetId
+import aktual.budget.model.WidgetType
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
@@ -121,10 +122,22 @@ private class ReportDashboardItemProvider :
   )
 
 internal val PREVIEW_DASHBOARD_ITEM_1 =
-  ReportDashboardItem(id = WidgetId("abc-123"), name = "Pensions", data = PREVIEW_CASH_FLOW_DATA)
+  ReportDashboardItem(
+    id = WidgetId("abc-123"),
+    type = WidgetType.CashFlow,
+    data = PREVIEW_CASH_FLOW_DATA,
+  )
 
 internal val PREVIEW_DASHBOARD_ITEM_2 =
-  ReportDashboardItem(id = WidgetId("def-456"), name = "Groceries", data = PREVIEW_NET_WORTH_DATA)
+  ReportDashboardItem(
+    id = WidgetId("def-456"),
+    type = WidgetType.NetWorth,
+    data = PREVIEW_NET_WORTH_DATA,
+  )
 
 internal val PREVIEW_DASHBOARD_ITEM_3 =
-  ReportDashboardItem(id = WidgetId("xyz-789"), name = "Pensions", data = PER_TRANSACTION_DATA)
+  ReportDashboardItem(
+    id = WidgetId("xyz-789"),
+    type = WidgetType.Summary,
+    data = PER_TRANSACTION_DATA,
+  )

@@ -12,6 +12,7 @@ import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_SHORT_TEXT_DATA
 import aktual.budget.reports.ui.charts.ReportChart
 import aktual.budget.reports.ui.charts.THREE_MONTHS
+import aktual.budget.reports.ui.string
 import aktual.budget.reports.vm.ChartData
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeDialog
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
@@ -216,19 +217,8 @@ private fun WidgetType(
   }
 }
 
-@Composable
-private fun WidgetType.string() =
-  when (this) {
-    WidgetType.NetWorth -> Strings.reportsChooseTypeNetWorth
-    WidgetType.CashFlow -> Strings.reportsChooseTypeCashFlow
-    WidgetType.Spending -> Strings.reportsChooseTypeSpending
-    WidgetType.Custom -> Strings.reportsChooseTypeCustom
-    WidgetType.Markdown -> Strings.reportsChooseTypeMarkdown
-    WidgetType.Summary -> Strings.reportsChooseTypeSummary
-    WidgetType.Calendar -> Strings.reportsChooseTypeCalendar
-  }
-
 @Stable
+@Suppress("NotImplementedDeclaration")
 private fun WidgetType.sampleData(): ChartData =
   when (this) {
     WidgetType.NetWorth -> PREVIEW_NET_WORTH_DATA
@@ -238,6 +228,7 @@ private fun WidgetType.sampleData(): ChartData =
     WidgetType.Markdown -> PREVIEW_SHORT_TEXT_DATA
     WidgetType.Summary -> PER_TRANSACTION_DATA
     WidgetType.Calendar -> THREE_MONTHS
+    WidgetType.BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/1035")
   }
 
 @Composable
@@ -256,6 +247,7 @@ private fun WidgetType.isEnabled(): Boolean =
     WidgetType.Spending,
     WidgetType.Markdown,
     WidgetType.Summary,
+    WidgetType.BudgetAnalysis,
     WidgetType.Calendar -> true
   }
 

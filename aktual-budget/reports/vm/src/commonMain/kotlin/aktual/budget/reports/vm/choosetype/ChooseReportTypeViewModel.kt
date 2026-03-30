@@ -7,6 +7,7 @@ import aktual.budget.model.WidgetType
 import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.Empty
 import aktual.core.model.UuidGenerator
+import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.AppScope
@@ -32,11 +33,12 @@ import logcat.logcat
 class ChooseReportTypeViewModel(
   private val uuidGenerator: UuidGenerator,
   budgetComponents: BudgetGraphHolder,
+  contexts: CoroutineContexts,
   @Assisted budgetId: BudgetId,
 ) : ViewModel() {
   // data sources
   private val budgetGraph = budgetComponents.require()
-  private val dao = DashboardDao(budgetGraph.database)
+  private val dao = DashboardDao(budgetGraph.database, contexts)
 
   // state
   private var job: Job? = null
@@ -89,12 +91,12 @@ class ChooseReportTypeViewModel(
     val y = highest.y ?: 0L
     val w = highest.width ?: 0L
 
-    return if (x + w >= DashboardDao.Companion.MAX_WIDTH) {
+    return if (x + w >= DashboardDao.MAX_WIDTH) {
       // start of the next row down
-      Coords(y = y + DashboardDao.Companion.DEFAULT_HEIGHT)
+      Coords(y = y + DashboardDao.DEFAULT_HEIGHT)
     } else {
       // next column over on the same row
-      Coords(x = x + DashboardDao.Companion.DEFAULT_WIDTH, y = y)
+      Coords(x = x + DashboardDao.DEFAULT_WIDTH, y = y)
     }
   }
 
@@ -102,7 +104,7 @@ class ChooseReportTypeViewModel(
   private fun buildEmptyMetadata(type: WidgetType): JsonObject =
     when (type) {
       // TODO: implement properly
-      else -> JsonObject.Companion.Empty
+      else -> JsonObject.Empty
     }
 
   data class ShouldNavigateEvent(val id: WidgetId)

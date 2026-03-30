@@ -22,6 +22,9 @@ delete:
 getIds:
   SELECT id FROM dashboard WHERE tombstone = 0 ORDER BY y DESC, x DESC;
 
+getAll:
+  SELECT * FROM dashboard WHERE tombstone = 0 ORDER BY y DESC, x DESC;
+
 getPositionAndSize:
   SELECT x, y, width, height FROM dashboard WHERE tombstone = 0 ORDER BY y DESC, x DESC;
 
