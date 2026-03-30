@@ -64,6 +64,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun password() = testVm<ChangePasswordViewModel>()
 
+  @Test fun reportDashboard() = testVm<ReportsDashboardViewModel>()
+
   @Test fun settings() = testVm<SettingsViewModel>()
 
   @Test fun themeSettings() = testVm<ThemeSettingsViewModel>()
@@ -73,12 +75,6 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test
   fun budgetList() =
     testAssistedVM<ListBudgetsViewModel, ListBudgetsViewModel.Factory> { create(LOGIN_TOKEN) }
-
-  @Test
-  fun reportDashboard() =
-    testAssistedVM<ReportsDashboardViewModel, ReportsDashboardViewModel.Factory> {
-      create(LOGIN_TOKEN, BUDGET_ID)
-    }
 
   @Test
   fun reportList() =
