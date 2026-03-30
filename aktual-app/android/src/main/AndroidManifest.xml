@@ -30,14 +30,8 @@
 
     <activity
       android:name="aktual.app.android.ManageStorageActivity"
-      android:exported="true"
-      android:launchMode="singleInstance"
-      android:theme="@style/Theme.Aktual.SplashScreen">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-    </activity>
+      android:exported="false"
+      android:theme="@style/Theme.Aktual.SplashScreen" />
 
   </application>
 
