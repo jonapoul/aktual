@@ -13,7 +13,7 @@ fun DateRangeType.resolve(today: LocalDate): ResolvedDateRange {
   val firstOfMonth = LocalDate(today.year, today.month, 1)
   return when (this) {
     DateRangeType.ThisWeek -> {
-      val daysSinceMonday = (today.dayOfWeek.ordinal)
+      val daysSinceMonday = today.dayOfWeek.ordinal
       ResolvedDateRange(today.minus(daysSinceMonday, DAY), today)
     }
     DateRangeType.LastWeek -> {
