@@ -48,6 +48,15 @@ sealed interface SummaryData : ChartData, DateRange {
     val average: Amount,
   ) : SummaryData
 
+  data class AveragePerYear(
+    override val title: String,
+    override val start: LocalDate,
+    override val end: LocalDate,
+    val numYears: Float,
+    val total: Amount,
+    val average: Amount,
+  ) : SummaryData
+
   data class AveragePerTransaction(
     override val title: String,
     override val start: LocalDate,
@@ -89,6 +98,7 @@ interface DateRange {
 enum class SummaryChartType {
   Sum,
   AveragePerMonth,
+  AveragePerYear,
   AveragePerTransaction,
   Percentage,
 }

@@ -15,23 +15,24 @@ import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.BlurredTopBarSpacing
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.blurredTopBarContentPadding
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
@@ -48,7 +49,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -59,7 +60,7 @@ fun ReportsDashboardScreen(
   toCreateReport: CreateReportNavigator,
   budgetId: BudgetId,
   token: Token,
-  viewModel: ReportsDashboardViewModel = metroViewModel(token, budgetId),
+  viewModel: ReportsDashboardViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -82,22 +83,19 @@ fun ReportsDashboardScreen(
 }
 
 @Composable
-private fun metroViewModel(token: Token, budgetId: BudgetId) =
-  assistedMetroViewModel<ReportsDashboardViewModel, ReportsDashboardViewModel.Factory> {
-    create(token, budgetId)
-  }
-
-@Composable
 internal fun ReportsDashboardScaffold(
   state: DashboardState,
   onAction: ActionListener,
   theme: Theme = LocalTheme.current,
 ) {
   val blurState = rememberBlurredTopBarState()
+  val listState = rememberLazyListState()
+
   Scaffold(
+    modifier = Modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState),
+        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
         title = { Text(Strings.reportsDashboardTitle) },
         actions = {
@@ -109,30 +107,36 @@ internal fun ReportsDashboardScaffold(
           }
         },
       )
-    }
+    },
   ) { innerPadding ->
     Box {
-      WavyBackground()
-
-      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
-        BlurredTopBarSpacing(blurState, innerPadding)
-        Content(state = state, onAction = onAction, theme = theme)
-      }
+      PageBackground()
+      ReportsDashboardContent(
+        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        state = state,
+        listState = listState,
+        onAction = onAction,
+        theme = theme,
+      )
     }
   }
 }
 
 @Composable
-private fun Content(
+private fun ReportsDashboardContent(
   state: DashboardState,
+  listState: LazyListState,
   onAction: ActionListener,
+  contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   when (state) {
     DashboardState.Loading -> ContentLoading(modifier, theme)
     DashboardState.Empty -> ContentEmpty(modifier, theme)
-    is DashboardState.Loaded -> ContentList(state.items, onAction, modifier, theme)
+    is DashboardState.Loaded ->
+      ContentList(state.items, listState, onAction, contentPadding, modifier, theme)
   }
 }
 
@@ -154,16 +158,23 @@ private fun ContentEmpty(modifier: Modifier = Modifier, theme: Theme = LocalThem
 @Composable
 private fun ContentList(
   items: ImmutableList<ReportDashboardItem>,
+  listState: LazyListState,
   onAction: ActionListener,
+  contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val listState = rememberLazyListState()
   LazyColumn(
     state = listState,
-    modifier = modifier.fillMaxWidth().scrollbar(listState).padding(5.dp),
+    contentPadding = contentPadding,
+    modifier = modifier.scrollbar(listState),
   ) {
     items(items) { item -> ReportDashboardItem(item = item, onAction = onAction, theme = theme) }
+
+    item {
+      BottomStatusBarSpacing()
+      BottomNavBarSpacing()
+    }
   }
 }
 

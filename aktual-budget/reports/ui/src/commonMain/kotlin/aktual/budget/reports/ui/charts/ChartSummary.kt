@@ -87,6 +87,13 @@ internal fun SummaryChart(
           RegularPerMonth(data, onAction)
         }
 
+      is SummaryData.AveragePerYear ->
+        if (compact) {
+          CompactAmount(data.average)
+        } else {
+          RegularPerYear(data, onAction)
+        }
+
       is SummaryData.AveragePerTransaction ->
         if (compact) {
           CompactAmount(data.average)
@@ -227,6 +234,82 @@ private fun RegularPerMonth(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = "%.2f".format(data.numMonths),
+          fontSize = 30.sp,
+          textAlign = TextAlign.Center,
+          color = theme.pageText,
+        )
+      }
+
+      HorizontalSpacer(10.dp)
+      Equals()
+      HorizontalSpacer(10.dp)
+
+      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average, theme = theme) }
+    }
+  }
+
+@Composable
+private fun RegularPerYear(
+  data: SummaryData.AveragePerYear,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) =
+  Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
+    ShowAs(data, onAction)
+
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Column(
+        modifier = Modifier.width(IntrinsicSize.Max),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          SumColumn(data)
+          FilterDisplay(theme)
+        }
+
+        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = Strings.reportsSummaryNumYears,
+          fontSize = 25.sp,
+          textAlign = TextAlign.Center,
+          color = theme.pageText,
+        )
+      }
+
+      HorizontalSpacer(10.dp)
+      Equals()
+      HorizontalSpacer(10.dp)
+
+      Column(
+        modifier = Modifier.width(IntrinsicSize.Max),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = data.total.formattedString(),
+          fontSize = 30.sp,
+          textAlign = TextAlign.Center,
+          color = theme.pageText,
+        )
+
+        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = "%.2f".format(data.numYears),
           fontSize = 30.sp,
           textAlign = TextAlign.Center,
           color = theme.pageText,
@@ -436,6 +519,7 @@ private fun ShowAs(
     val currentType =
       when (data) {
         is SummaryData.AveragePerMonth -> SummaryChartType.AveragePerMonth
+        is SummaryData.AveragePerYear -> SummaryChartType.AveragePerYear
         is SummaryData.AveragePerTransaction -> SummaryChartType.AveragePerTransaction
         is SummaryData.Percentage -> SummaryChartType.Percentage
         is SummaryData.Sum -> SummaryChartType.Sum
@@ -521,6 +605,7 @@ private fun string(type: SummaryChartType): String =
   when (type) {
     SummaryChartType.Sum -> Strings.reportsSummarySum
     SummaryChartType.AveragePerMonth -> Strings.reportsSummaryPerMonth
+    SummaryChartType.AveragePerYear -> Strings.reportsSummaryPerYear
     SummaryChartType.AveragePerTransaction -> Strings.reportsSummaryPerTransaction
     SummaryChartType.Percentage -> Strings.reportsSummaryPercentage
   }

@@ -170,3 +170,58 @@ SELECT COUNT(*) FROM v_transactions;
 
 getIdsByAccountCount:
 SELECT COUNT(*) FROM v_transactions WHERE account = :account;
+
+-- Chart data queries for dashboard widgets
+
+cashFlowByMonth:
+SELECT
+  (t.date / 100) AS yearMonth,
+  SUM(CASE WHEN t.amount > 0 AND t.transferred_id IS NULL THEN t.amount ELSE 0 END) AS income,
+  SUM(CASE WHEN t.amount < 0 AND t.transferred_id IS NULL THEN t.amount ELSE 0 END) AS expenses,
+  SUM(CASE WHEN t.transferred_id IS NOT NULL THEN t.amount ELSE 0 END) AS transfers
+FROM transactions t
+INNER JOIN accounts a ON a.id = t.acct
+WHERE t.isParent = 0 AND t.tombstone = 0 AND a.offbudget = 0 AND a.tombstone = 0
+  AND t.date >= :startDate AND t.date <= :endDate
+GROUP BY (t.date / 100)
+ORDER BY yearMonth ASC;
+
+netWorthChangesByMonth:
+SELECT
+  (t.date / 100) AS yearMonth,
+  SUM(t.amount) AS change
+FROM transactions t
+INNER JOIN accounts a ON a.id = t.acct
+WHERE t.isParent = 0 AND t.tombstone = 0 AND a.tombstone = 0
+  AND t.date >= :startDate AND t.date <= :endDate
+GROUP BY (t.date / 100)
+ORDER BY yearMonth ASC;
+
+netWorthBalanceBefore:
+SELECT SUM(t.amount) AS balance
+FROM transactions t
+INNER JOIN accounts a ON a.id = t.acct
+WHERE t.isParent = 0 AND t.tombstone = 0 AND a.tombstone = 0 AND t.date < :startDate;
+
+calendarByDay:
+SELECT
+  t.date,
+  SUM(CASE WHEN t.amount > 0 THEN t.amount ELSE 0 END) AS income,
+  SUM(CASE WHEN t.amount < 0 THEN t.amount ELSE 0 END) AS expenses
+FROM transactions t
+INNER JOIN accounts a ON a.id = t.acct
+WHERE t.isParent = 0 AND t.tombstone = 0 AND a.offbudget = 0 AND a.tombstone = 0
+  AND t.transferred_id IS NULL
+  AND t.date >= :startDate AND t.date <= :endDate
+GROUP BY t.date
+ORDER BY t.date ASC;
+
+summaryInRange:
+SELECT
+  SUM(t.amount) AS total,
+  COUNT(*) AS transactionCount
+FROM transactions t
+INNER JOIN accounts a ON a.id = t.acct
+WHERE t.isParent = 0 AND t.tombstone = 0 AND a.offbudget = 0 AND a.tombstone = 0
+  AND t.transferred_id IS NULL
+  AND t.date >= :startDate AND t.date <= :endDate;
