@@ -27,7 +27,6 @@ main:
   exports:
     activity:
     - aktual.app.android.AktualActivity
-    - aktual.app.android.ManageStorageActivity
     - androidx.compose.ui.tooling.PreviewActivity
     receiver:
     - androidx.profileinstaller.ProfileInstallReceiver
@@ -40,4 +39,4 @@ variants:
     namespace: dev.jonpoulton.aktual.app
     permissions:
     - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-fingerprint: 02443760c03641c5b5df4eaf7ad29dd5
+fingerprint: 19aa1d8d5b2fb95326a912ea8e413503
