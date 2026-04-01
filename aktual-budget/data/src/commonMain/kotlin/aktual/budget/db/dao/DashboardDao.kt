@@ -12,6 +12,7 @@ import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.json.JsonObject
 
 class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
@@ -30,14 +31,16 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
   }
 
   fun observeAll(): Flow<List<Dashboard>> =
-    queries.getAll().asFlow().mapToList(contexts.default).distinctUntilChanged()
-
-  suspend fun getIds(): List<WidgetId> = queries.withResult { getIds().executeAsList() }
+    queries.getAll().asFlow().mapToList(contexts.default).filterNotNull().distinctUntilChanged()
 
   suspend fun deleteById(id: WidgetId): Long = queries.withResult { delete(id) }
 
   suspend fun getPositionAndSize(): List<GetPositionAndSize> = queries.withResult {
     getPositionAndSize().executeAsList()
+  }
+
+  suspend fun updateMeta(id: WidgetId, meta: JsonObject) = queries.withResult {
+    updateMeta(meta, id)
   }
 
   companion object {

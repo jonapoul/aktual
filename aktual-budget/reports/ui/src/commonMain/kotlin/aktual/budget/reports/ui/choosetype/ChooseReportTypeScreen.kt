@@ -229,6 +229,7 @@ private fun WidgetType.sampleData(): ChartData =
     WidgetType.Summary -> PER_TRANSACTION_DATA
     WidgetType.Calendar -> THREE_MONTHS
     WidgetType.BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/1035")
+    WidgetType.Formula -> TODO("https://github.com/jonapoul/aktual/issues/1054")
   }
 
 @Composable
@@ -241,13 +242,15 @@ private fun metroViewModel(budgetId: BudgetId) =
 @Stable
 private fun WidgetType.isEnabled(): Boolean =
   when (this) {
+    WidgetType.BudgetAnalysis,
+    WidgetType.Formula,
     WidgetType.Custom -> false
+
     WidgetType.NetWorth,
     WidgetType.CashFlow,
     WidgetType.Spending,
     WidgetType.Markdown,
     WidgetType.Summary,
-    WidgetType.BudgetAnalysis,
     WidgetType.Calendar -> true
   }
 

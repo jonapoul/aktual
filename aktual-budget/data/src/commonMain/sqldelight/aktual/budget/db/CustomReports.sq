@@ -47,3 +47,4 @@ getIdByName: SELECT id FROM custom_reports WHERE tombstone = 0 AND name = ? LIMI
 getIds: SELECT id FROM custom_reports;
 getMetadataById: SELECT metadata FROM custom_reports WHERE id = ?;
 insert: INSERT INTO custom_reports VALUES ?;
+rename: UPDATE custom_reports SET name = ? WHERE id = ?;

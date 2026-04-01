@@ -3,6 +3,7 @@ package aktual.budget.reports.ui.charts
 import aktual.budget.model.Amount
 import aktual.budget.reports.vm.CashFlowData
 import aktual.budget.reports.vm.CashFlowDatum
+import aktual.budget.reports.vm.CashFlowReportMeta
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
@@ -292,6 +293,8 @@ private class CashFlowChartProvider :
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = false, isPrivacyEnabled = true),
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = true),
   )
+
+internal val PREVIEW_CASH_FLOW_META = CashFlowReportMeta()
 
 internal val PREVIEW_CASH_FLOW_DATA =
   CashFlowData(

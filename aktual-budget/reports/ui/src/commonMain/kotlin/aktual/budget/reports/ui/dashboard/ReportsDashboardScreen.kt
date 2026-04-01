@@ -6,8 +6,9 @@ import aktual.app.nav.ReportNavigator
 import aktual.budget.model.BudgetId
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
-import aktual.budget.reports.vm.dashboard.DashboardState
-import aktual.budget.reports.vm.dashboard.ReportDashboardItem
+import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
+import aktual.budget.reports.vm.ChartData
+import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
@@ -18,7 +19,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.PageBackground
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.blurredTopBar
@@ -27,15 +28,15 @@ import aktual.core.ui.blurredTopBarContentPadding
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -52,6 +53,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
 fun ReportsDashboardScreen(
@@ -62,15 +64,16 @@ fun ReportsDashboardScreen(
   token: Token,
   viewModel: ReportsDashboardViewModel = metroViewModel(),
 ) {
-  val state by viewModel.state.collectAsStateWithLifecycle()
+  val items by viewModel.items.collectAsStateWithLifecycle()
 
   ReportsDashboardScaffold(
-    state = state,
+    items = items,
+    observer = viewModel::observeChartData,
     onAction = { action ->
       when (action) {
         Action.NavBack -> back()
         is Action.OpenItem -> toReport(token, budgetId, action.id)
-        is Action.Rename -> viewModel.renameReport(action.id)
+        is Action.Rename -> viewModel.renameReport(action.item, action.name)
         is Action.Delete -> viewModel.deleteReport(action.id)
         is Action.SetSummaryType -> TODO()
         is Action.SetAllTimeDivisor -> TODO()
@@ -84,7 +87,8 @@ fun ReportsDashboardScreen(
 
 @Composable
 internal fun ReportsDashboardScaffold(
-  state: DashboardState,
+  items: ImmutableList<DashboardItem>,
+  observer: DashboardItemObserver,
   onAction: ActionListener,
   theme: Theme = LocalTheme.current,
 ) {
@@ -114,10 +118,10 @@ internal fun ReportsDashboardScaffold(
       ReportsDashboardContent(
         modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
         contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
-        state = state,
+        items = items,
+        observer = observer,
         listState = listState,
         onAction = onAction,
-        theme = theme,
       )
     }
   }
@@ -125,29 +129,26 @@ internal fun ReportsDashboardScaffold(
 
 @Composable
 private fun ReportsDashboardContent(
-  state: DashboardState,
+  items: ImmutableList<DashboardItem>,
+  observer: DashboardItemObserver,
   listState: LazyListState,
   onAction: ActionListener,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
-  when (state) {
-    DashboardState.Loading -> ContentLoading(modifier, theme)
-    DashboardState.Empty -> ContentEmpty(modifier, theme)
-    is DashboardState.Loaded ->
-      ContentList(state.items, listState, onAction, contentPadding, modifier, theme)
-  }
-}
-
-@Composable
-private fun ContentLoading(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) =
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    CircularProgressIndicator(
-      modifier = Modifier.size(50.dp),
-      color = theme.buttonPrimaryBackground,
+  if (items.isEmpty()) {
+    ContentEmpty(modifier)
+  } else {
+    ContentList(
+      items = items,
+      observer = observer,
+      listState = listState,
+      onAction = onAction,
+      contentPadding = contentPadding,
+      modifier = modifier,
     )
   }
+}
 
 @Composable
 private fun ContentEmpty(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) =
@@ -157,19 +158,20 @@ private fun ContentEmpty(modifier: Modifier = Modifier, theme: Theme = LocalThem
 
 @Composable
 private fun ContentList(
-  items: ImmutableList<ReportDashboardItem>,
+  items: ImmutableList<DashboardItem>,
+  observer: DashboardItemObserver,
   listState: LazyListState,
   onAction: ActionListener,
   contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   LazyColumn(
+    modifier = modifier.scrollbar(listState).padding(4.dp),
     state = listState,
     contentPadding = contentPadding,
-    modifier = modifier.scrollbar(listState),
+    verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    items(items) { item -> ReportDashboardItem(item = item, onAction = onAction, theme = theme) }
+    items(items) { item -> DashboardItem(item, observer, onAction) }
 
     item {
       BottomStatusBarSpacing()
@@ -180,23 +182,33 @@ private fun ContentList(
 
 @Preview
 @Composable
-private fun PreviewReportDashboardItem(
-  @PreviewParameter(DashboardStateProvider::class) params: ThemedParams<DashboardState>
+private fun PreviewReportsDashboardScaffold(
+  @PreviewParameter(ReportsDashboardScaffoldProvider::class)
+  params: ThemedParams<ReportsDashboardScaffoldParams>
 ) =
-  PreviewWithTheme(theme = params.theme) {
-    ReportsDashboardScaffold(state = params.data, onAction = {})
+  PreviewWithThemedParams(params) {
+    ReportsDashboardScaffold(
+      items = items,
+      observer = { if (chartData == null) flowOf() else flowOf(chartData) },
+      onAction = {},
+    )
   }
 
-private class DashboardStateProvider :
-  ThemedParameterProvider<DashboardState>(
-    DashboardState.Loaded(
+private data class ReportsDashboardScaffoldParams(
+  val items: ImmutableList<DashboardItem>,
+  val chartData: ChartData?,
+)
+
+private class ReportsDashboardScaffoldProvider :
+  ThemedParameterProvider<ReportsDashboardScaffoldParams>(
+    ReportsDashboardScaffoldParams(
       items =
         persistentListOf(
           PREVIEW_DASHBOARD_ITEM_1,
           PREVIEW_DASHBOARD_ITEM_2,
           PREVIEW_DASHBOARD_ITEM_3,
-        )
+        ),
+      chartData = PREVIEW_CASH_FLOW_DATA,
     ),
-    DashboardState.Loading,
-    DashboardState.Empty,
+    ReportsDashboardScaffoldParams(items = persistentListOf(), chartData = null),
   )

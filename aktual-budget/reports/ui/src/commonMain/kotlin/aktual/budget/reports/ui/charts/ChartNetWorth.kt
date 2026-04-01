@@ -1,7 +1,16 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
+import aktual.budget.model.Interval.Weekly
+import aktual.budget.model.Operator.Is
+import aktual.budget.model.ReportCondition
+import aktual.budget.model.ReportCondition.Field.Transfer
+import aktual.budget.model.ReportCondition.Type.Boolean
 import aktual.budget.reports.vm.NetWorthData
+import aktual.budget.reports.vm.NetWorthMode.Stacked
+import aktual.budget.reports.vm.NetWorthReportMeta
+import aktual.budget.reports.vm.TimeFrame
+import aktual.budget.reports.vm.TimeFrameMode.SlidingWindow
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
@@ -45,7 +54,16 @@ import com.patrykandpatrick.vico.multiplatform.cartesian.rememberVicoScrollState
 import com.patrykandpatrick.vico.multiplatform.common.Fill
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.runBlocking
-import kotlinx.datetime.Month
+import kotlinx.datetime.Month.AUGUST
+import kotlinx.datetime.Month.DECEMBER
+import kotlinx.datetime.Month.FEBRUARY
+import kotlinx.datetime.Month.JANUARY
+import kotlinx.datetime.Month.JULY
+import kotlinx.datetime.Month.JUNE
+import kotlinx.datetime.Month.MARCH
+import kotlinx.datetime.YearMonth
+import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonPrimitive
 
 @Composable
 internal fun NetWorthChart(
@@ -221,21 +239,50 @@ private class NetWorthChartProvider :
     NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = false, private = true),
   )
 
+internal val PREVIEW_NET_WORTH_META =
+  NetWorthReportMeta(
+    name = "My Net Worth",
+    conditions =
+      listOf(
+        ReportCondition(
+          field = Transfer,
+          operator = Is,
+          value =
+            JsonArray(
+              listOf(
+                JsonPrimitive("13a3d249-1bda-4e72-8ab1-eddae21fc795"),
+                JsonPrimitive("7d7c7459-59bf-4158-ae33-116c2e841020"),
+              )
+            ),
+          type = Boolean,
+        )
+      ),
+    conditionsOp = null,
+    timeFrame =
+      TimeFrame(
+        start = YearMonth(2026, JANUARY),
+        end = YearMonth(2026, MARCH),
+        mode = SlidingWindow,
+      ),
+    interval = Weekly,
+    mode = Stacked,
+  )
+
 internal val PREVIEW_NET_WORTH_DATA =
   NetWorthData(
     title = "My Net Worth",
     items =
       persistentMapOf(
-        date(2023, Month.JANUARY) to Amount(-44_000.00),
-        date(2024, Month.JANUARY) to Amount(-18_000.00),
-        date(2024, Month.FEBRUARY) to Amount(21_000.34),
-        date(2024, Month.MARCH) to Amount(25_000.67),
-        date(2024, Month.JULY) to Amount(-10123.98),
-        date(2024, Month.AUGUST) to Amount(-5123.69),
-        date(2024, Month.DECEMBER) to Amount(-6789.12),
-        date(2025, Month.JANUARY) to Amount(198.0),
-        date(2025, Month.FEBRUARY) to Amount(1.98),
-        date(2025, Month.MARCH) to Amount(256.0),
-        date(2025, Month.JUNE) to Amount(30000.0),
+        date(2023, JANUARY) to Amount(-44_000.00),
+        date(2024, JANUARY) to Amount(-18_000.00),
+        date(2024, FEBRUARY) to Amount(21_000.34),
+        date(2024, MARCH) to Amount(25_000.67),
+        date(2024, JULY) to Amount(-10123.98),
+        date(2024, AUGUST) to Amount(-5123.69),
+        date(2024, DECEMBER) to Amount(-6789.12),
+        date(2025, JANUARY) to Amount(198.0),
+        date(2025, FEBRUARY) to Amount(1.98),
+        date(2025, MARCH) to Amount(256.0),
+        date(2025, JUNE) to Amount(30000.0),
       ),
   )
