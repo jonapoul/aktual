@@ -9,7 +9,8 @@ enum class WidgetType(private val value: String) {
   Markdown("markdown-card"),
   Summary("summary-card"),
   Calendar("calendar-card"),
-  BudgetAnalysis("budget-analysis-card");
+  BudgetAnalysis("budget-analysis-card"),
+  Formula("formula-card");
 
   override fun toString(): String = value
 }

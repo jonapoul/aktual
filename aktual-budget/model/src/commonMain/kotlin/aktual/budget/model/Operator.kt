@@ -25,5 +25,5 @@ enum class Operator(override val value: String) : SerializableByString {
   OnBudget("onBudget"),
   OneOf("oneOf");
 
-  object Serializer : KSerializer<Operator> by enumStringSerializer()
+  internal object Serializer : KSerializer<Operator> by enumStringSerializer()
 }

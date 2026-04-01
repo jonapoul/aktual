@@ -7,6 +7,9 @@ import aktual.budget.reports.vm.DateRange
 import aktual.budget.reports.vm.PercentageDivisor
 import aktual.budget.reports.vm.SummaryChartType
 import aktual.budget.reports.vm.SummaryData
+import aktual.budget.reports.vm.SummaryReportMeta
+import aktual.budget.reports.vm.TimeFrame
+import aktual.budget.reports.vm.TimeFrameMode.Static
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloseBracket
 import aktual.core.icons.Equals
@@ -60,6 +63,9 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month.JANUARY
+import kotlinx.datetime.Month.JULY
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.yearMonth
 
 @Composable
@@ -687,4 +693,18 @@ private val PERCENT_DATA =
     denominator = Amount(4043.87),
     percent = 153.28.percent,
     divisor = PercentageDivisor.AllTime,
+  )
+
+internal val PER_TRANSACTION_META =
+  SummaryReportMeta(
+    conditions = emptyList(),
+    conditionsOp = And,
+    timeFrame =
+      TimeFrame(start = YearMonth(2024, JANUARY), end = YearMonth(2025, JULY), mode = Static),
+    content =
+      """
+      {"type":"percentage","fontSize":98,"divisorConditions":[],"divisorConditionsOp":"and",
+      "divisorAllTimeDateRange":true}
+      """
+        .trimIndent(),
   )

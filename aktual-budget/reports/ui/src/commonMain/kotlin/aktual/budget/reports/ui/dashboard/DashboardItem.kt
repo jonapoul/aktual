@@ -1,14 +1,13 @@
 package aktual.budget.reports.ui.dashboard
 
-import aktual.budget.model.WidgetId
-import aktual.budget.model.WidgetType
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.ui.charts.PREVIEW_NET_WORTH_DATA
 import aktual.budget.reports.ui.charts.ReportChart
-import aktual.budget.reports.vm.dashboard.ReportDashboardItem
+import aktual.budget.reports.vm.ChartData
+import aktual.budget.reports.vm.dashboard.DashboardItem
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
@@ -16,9 +15,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
-import aktual.core.ui.LandscapePreview
-import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.ThemedDropdownMenu
 import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
@@ -37,26 +34,33 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.flowOf
 
 @Composable
-internal fun ReportDashboardItem(
-  item: ReportDashboardItem,
+internal fun DashboardItem(
+  item: DashboardItem,
+  observer: DashboardItemObserver,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   var showContextMenu by remember { mutableStateOf(false) }
 
+  val flow = remember(item) { observer(item) }
+  val chartData by flow.collectAsStateWithLifecycle(initialValue = null)
+
   Box(
     modifier =
       modifier
-        .padding(4.dp)
         .fillMaxWidth()
         .wrapContentHeight()
         .background(theme.tableBackground, CardShape)
         .combinedClickable(
+          enabled = chartData != null,
           onClick = { onAction(Action.OpenItem(item.id)) },
           onLongClick = { showContextMenu = true },
         )
@@ -69,18 +73,20 @@ internal fun ReportDashboardItem(
       onAction = onAction,
     )
 
-    ReportChart(
-      modifier = Modifier.fillMaxWidth(),
-      data = item.data,
-      compact = true,
-      onAction = onAction,
-    )
+    chartData?.let { data ->
+      ReportChart(
+        modifier = Modifier.fillMaxWidth(),
+        data = data,
+        compact = true,
+        onAction = onAction,
+      )
+    }
   }
 }
 
 @Composable
 private fun ReportDropDownMenu(
-  item: ReportDashboardItem,
+  item: DashboardItem,
   expanded: Boolean,
   onDismiss: () -> Unit,
   onAction: ActionListener,
@@ -92,7 +98,7 @@ private fun ReportDropDownMenu(
       leadingIcon = { Icon(MaterialIcons.Edit, Strings.reportsDashboardRename) },
       onClick = {
         onDismiss()
-        onAction(Action.Rename(item.id))
+        onAction(Action.Rename(item, name = "TODO: rename"))
       },
     )
     ThemedDropdownMenuItem(
@@ -106,38 +112,25 @@ private fun ReportDropDownMenu(
   }
 }
 
-@PortraitPreview
-@LandscapePreview
+@Preview
 @Composable
 private fun PreviewReportDashboardItem(
-  @PreviewParameter(ReportDashboardItemProvider::class) params: ThemedParams<ReportDashboardItem>
+  @PreviewParameter(ReportDashboardItemProvider::class) params: ThemedParams<DashboardItemParams>
 ) =
-  PreviewWithTheme(theme = params.theme) { ReportDashboardItem(item = params.data, onAction = {}) }
+  PreviewWithThemedParams(params) {
+    DashboardItem(
+      item = item,
+      onAction = {},
+      observer = { if (chartData == null) flowOf() else flowOf(chartData) },
+    )
+  }
+
+private data class DashboardItemParams(val item: DashboardItem, val chartData: ChartData?)
 
 private class ReportDashboardItemProvider :
-  ThemedParameterProvider<ReportDashboardItem>(
-    PREVIEW_DASHBOARD_ITEM_1,
-    PREVIEW_DASHBOARD_ITEM_2,
-    PREVIEW_DASHBOARD_ITEM_3,
-  )
-
-internal val PREVIEW_DASHBOARD_ITEM_1 =
-  ReportDashboardItem(
-    id = WidgetId("abc-123"),
-    type = WidgetType.CashFlow,
-    data = PREVIEW_CASH_FLOW_DATA,
-  )
-
-internal val PREVIEW_DASHBOARD_ITEM_2 =
-  ReportDashboardItem(
-    id = WidgetId("def-456"),
-    type = WidgetType.NetWorth,
-    data = PREVIEW_NET_WORTH_DATA,
-  )
-
-internal val PREVIEW_DASHBOARD_ITEM_3 =
-  ReportDashboardItem(
-    id = WidgetId("xyz-789"),
-    type = WidgetType.Summary,
-    data = PER_TRANSACTION_DATA,
+  ThemedParameterProvider<DashboardItemParams>(
+    DashboardItemParams(PREVIEW_DASHBOARD_ITEM_1, PREVIEW_CASH_FLOW_DATA),
+    DashboardItemParams(PREVIEW_DASHBOARD_ITEM_2, PREVIEW_NET_WORTH_DATA),
+    DashboardItemParams(PREVIEW_DASHBOARD_ITEM_3, PER_TRANSACTION_DATA),
+    DashboardItemParams(PREVIEW_DASHBOARD_ITEM_3, null),
   )

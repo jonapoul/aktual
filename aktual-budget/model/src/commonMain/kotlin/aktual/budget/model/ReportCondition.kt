@@ -20,11 +20,19 @@ data class ReportCondition(
   @SerialName("op") val operator: Operator,
   @SerialName("value") val value: JsonElement,
   @SerialName("options") val options: Options? = null,
-  @SerialName("conditionsOp") val conditionsOp: String? = null,
+  @SerialName("conditionsOp") val conditionsOp: Op? = null,
   @SerialName("type") val type: Type? = null,
   @SerialName("customName") val customName: String? = null,
   @SerialName("queryFilter") val queryFilter: JsonElement? = null,
 ) {
+  @Serializable(Op.Serializer::class)
+  enum class Op(override val value: String) : SerializableByString {
+    And("and"),
+    Or("or");
+
+    object Serializer : KSerializer<Op> by enumStringSerializer()
+  }
+
   @Serializable
   data class Options(
     val inflow: Boolean?,
@@ -38,6 +46,7 @@ data class ReportCondition(
     Account("account"),
     Amount("amount"),
     Category("category"),
+    CategoryGroup("category_group"),
     Date("date"),
     Notes("notes"),
     Payee("payee"),
