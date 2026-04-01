@@ -91,6 +91,7 @@ class ReportsDashboardViewModel(budgetGraphHolder: BudgetGraphHolder, contexts: 
     )
   }
 
+  @Suppress("BracesOnWhenStatements")
   private suspend fun ReportMeta.renamed(name: String): ReportMeta? =
     when (this) {
       // Named

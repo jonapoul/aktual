@@ -73,10 +73,10 @@ internal fun DashboardItem(
       onAction = onAction,
     )
 
-    chartData?.let {
+    chartData?.let { data ->
       ReportChart(
         modifier = Modifier.fillMaxWidth(),
-        data = it,
+        data = data,
         compact = true,
         onAction = onAction,
       )
