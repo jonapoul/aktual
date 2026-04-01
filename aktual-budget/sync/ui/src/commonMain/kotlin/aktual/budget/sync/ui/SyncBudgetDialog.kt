@@ -20,6 +20,7 @@ import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.TextField
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.checkbox
+import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
@@ -155,7 +156,8 @@ private fun SyncBudgetDialog(
         when {
           passwordState is KeyPasswordState.Active -> {
             val enabled = passwordState.input.isNotEmpty()
-            val color = if (enabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText
+            val color =
+              if (enabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText.disabled
             TextButton(
               enabled = enabled,
               onClick = { onAction(SyncBudgetAction.ConfirmKeyPassword) },
@@ -169,10 +171,12 @@ private fun SyncBudgetDialog(
             )
           }
           else -> {
+            val enabled = overallState == SyncOverallState.Succeeded
+            val color = if (enabled) theme.reportsGreen else theme.buttonNormalDisabledText.disabled
             TextButton(
-              enabled = overallState == SyncOverallState.Succeeded,
+              enabled = enabled,
               onClick = { onAction(SyncBudgetAction.Continue) },
-              content = { Text(text = Strings.syncOpen) },
+              content = { Text(text = Strings.syncOpen, color = color) },
             )
           }
         }

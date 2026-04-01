@@ -4,16 +4,19 @@ package aktual.app.nav
 
 import aktual.api.client.TokenExpiredEvent
 import aktual.budget.model.BudgetFiles
+import aktual.budget.model.BudgetId
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.NumberFormat
+import aktual.budget.model.database
+import aktual.budget.model.metadata
+import aktual.budget.model.readMetadata
 import aktual.core.connection.ConnectionMonitor
 import aktual.core.connection.ServerPinger
 import aktual.core.connection.ServerVersionFetcher
 import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.PingStateHolder
-import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.ui.BlurConfig
 import aktual.core.ui.BottomBarState
@@ -100,21 +103,51 @@ class FormatConfigUseCase(
 }
 
 @Inject
-class InitialRouteUseCase(private val preferences: AppPreferences) {
-  private data class AuthPrefs(val serverUrl: ServerUrl?, val token: Token?)
-
+class InitialRouteUseCase(
+  private val preferences: AppPreferences,
+  private val files: BudgetFiles,
+  private val budgetGraphHolder: BudgetGraphHolder,
+) {
   operator fun invoke(scope: CoroutineScope): StateFlow<NavKey?> {
-    val authPrefs = combine(preferences.serverUrl.asFlow(), preferences.token.asFlow(), ::AuthPrefs)
+    val prefValues =
+      combine(
+        preferences.serverUrl.asFlow(),
+        preferences.token.asFlow(),
+        preferences.lastOpenedBudgetId.asFlow(),
+        ::Triple,
+      )
     return scope.launchMolecule(Immediate) {
-      val prefs by authPrefs.collectAsState(null)
-      val p = prefs ?: return@launchMolecule null // still loading
+      val prefs by prefValues.collectAsState(null)
+      val (url, token, budgetId) = prefs ?: return@launchMolecule null // still loading
       when {
-        p.serverUrl == null -> ServerUrlNavRoute
-        p.token != null -> ListBudgetsNavRoute(p.token)
+        url == null -> ServerUrlNavRoute
+        token != null -> resolveAuthenticatedRoute(token, budgetId)
         else -> LoginNavRoute
       }
     }
   }
+
+  private fun resolveAuthenticatedRoute(token: Token, budgetId: BudgetId?): NavKey =
+    when {
+      budgetId == null -> ListBudgetsNavRoute(token)
+
+      !localFilesExist(budgetId) -> ListBudgetsNavRoute(token)
+
+      else ->
+        try {
+          val metadata = files.readMetadata(budgetId)
+          budgetGraphHolder.update(metadata)
+          BudgetNavRailNavRoute(token, budgetId)
+        } catch (e: Exception) {
+          logcat.w(e) { "Failed to auto-open budget $budgetId, falling back to budget list" }
+          ListBudgetsNavRoute(token)
+        }
+    }
+
+  private fun localFilesExist(id: BudgetId): Boolean =
+    with(files) {
+      listOf(database(id, mkdirs = false), metadata(id, mkdirs = false)).all(fileSystem::exists)
+    }
 }
 
 @Inject
@@ -163,6 +196,7 @@ class AppLifecycleManager(
       tokenExpired.collect {
         logcat.w { "Token expired, clearing stored token" }
         preferences.token.delete()
+        preferences.lastOpenedBudgetId.delete()
       }
     }
   }

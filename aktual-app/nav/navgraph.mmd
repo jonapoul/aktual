@@ -18,7 +18,7 @@ flowchart TD
   end
 
   app --valid token--> budgetList
-  app --valid budget ID--> budgetNavRail
+  app --"valid token + last opened budget with local files"--> budgetNavRail
   app --no token--> login
   app --no token, no url--> url
 
