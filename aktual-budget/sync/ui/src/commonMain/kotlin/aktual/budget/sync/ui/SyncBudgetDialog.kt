@@ -156,7 +156,8 @@ private fun SyncBudgetDialog(
         when {
           passwordState is KeyPasswordState.Active -> {
             val enabled = passwordState.input.isNotEmpty()
-            val color = if (enabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText.disabled
+            val color =
+              if (enabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText.disabled
             TextButton(
               enabled = enabled,
               onClick = { onAction(SyncBudgetAction.ConfirmKeyPassword) },
