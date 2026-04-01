@@ -7,5 +7,6 @@ kotlin {
     api(project(":aktual-app:nav"))
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:model"))
+    api(project(":aktual-prefs"))
   }
 }

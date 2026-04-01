@@ -1,5 +1,6 @@
 package aktual.prefs
 
+import aktual.budget.model.BudgetId
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import androidx.datastore.core.DataStore
@@ -31,4 +32,11 @@ class AppPreferencesImpl(dataStore: DataStore<Preferences>) : AppPreferences {
 
   override val mostRecentNumBudgets: Preference<Int> =
     dataStore.int(key = intPreferencesKey("mostRecentNumBudgets"), default = 3).required()
+
+  override val lastOpenedBudgetId: NullablePreference<BudgetId> =
+    dataStore.translated(
+      key = stringPreferencesKey("lastOpenedBudgetId"),
+      default = null,
+      translator = toStringTranslator(::BudgetId),
+    )
 }

@@ -14,6 +14,7 @@ import aktual.core.model.Token
 import aktual.core.model.UrlOpener
 import aktual.prefs.AppPreferences
 import aktual.prefs.asStateFlow
+import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -105,6 +106,7 @@ class ListBudgetsViewModel(
         val budgetDir = directory(id)
         withContext(contexts.io) { fileSystem.deleteRecursively(budgetDir) }
       }
+      clearLastOpenedIfMatches(id)
 
       // delete remote
       try {
@@ -137,6 +139,7 @@ class ListBudgetsViewModel(
         }
 
         logcat.d { "Successfully deleted $budgetDir" }
+        clearLastOpenedIfMatches(id)
         clearDeletingState()
         mutableCloseDialog.emit(true)
       }
@@ -168,6 +171,12 @@ class ListBudgetsViewModel(
           }
         }
       mutableState.update { newState }
+    }
+  }
+
+  private suspend fun clearLastOpenedIfMatches(id: BudgetId) {
+    if (preferences.lastOpenedBudgetId.get() == id) {
+      preferences.lastOpenedBudgetId.delete()
     }
   }
 
