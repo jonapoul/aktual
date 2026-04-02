@@ -5,6 +5,7 @@ import aktual.budget.db.CustomReports
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.BalanceType
+import aktual.budget.model.Condition
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.CustomReportMode
 import aktual.budget.model.DateRangeType
@@ -12,7 +13,6 @@ import aktual.budget.model.GraphType
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
 import aktual.budget.model.Operator
-import aktual.budget.model.ReportCondition
 import aktual.budget.model.ReportDate
 import aktual.budget.model.SelectedCategory
 import aktual.budget.model.SortBy
@@ -58,7 +58,7 @@ internal fun buildCustomReport(
   endDate: ReportDate = ReportDate.Month(YearMonth(2025, Month.DECEMBER)),
   range: DateRangeType = DateRangeType.Last12Months,
   selectedCategories: List<SelectedCategory> = emptyList(),
-  conditions: List<ReportCondition> = emptyList(),
+  conditions: List<Condition> = emptyList(),
   metadata: JsonObject? = null,
 ) =
   CustomReports(

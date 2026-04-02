@@ -7,6 +7,7 @@ import aktual.budget.model.BalanceType
 import aktual.budget.model.BankId
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.Condition
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.CustomReportMode
 import aktual.budget.model.DashboardPageId
@@ -17,7 +18,6 @@ import aktual.budget.model.Interval
 import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
-import aktual.budget.model.ReportCondition
 import aktual.budget.model.ReportDate
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
@@ -97,7 +97,7 @@ private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>
     override fun encode(value: T): String = Json.encodeToString(serializer, value)
   }
 
-private val reportConditions = jsonSerializable(ReportCondition.ListSerializer)
+private val conditions = jsonSerializable(Condition.ListSerializer)
 private val selectedCategories = jsonSerializable(ListSerializer(SelectedCategory.serializer()))
 
 private val localDate =
@@ -232,7 +232,7 @@ internal val CustomReportsAdapter =
     group_byAdapter = groupBy,
     balance_typeAdapter = balanceType,
     graph_typeAdapter = graphType,
-    conditionsAdapter = reportConditions,
+    conditionsAdapter = conditions,
     conditions_opAdapter = operator,
     metadataAdapter = jsonObject,
     sort_byAdapter = sortBy,

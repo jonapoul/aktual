@@ -15,7 +15,7 @@ import kotlinx.serialization.json.JsonElement
  * Both are [JsonElement] for now.
  */
 @Serializable
-data class ReportCondition(
+data class Condition(
   @SerialName("field") val field: Field,
   @SerialName("op") val operator: Operator,
   @SerialName("value") val value: JsonElement,
@@ -73,6 +73,6 @@ data class ReportCondition(
   }
 
   companion object {
-    val ListSerializer: KSerializer<List<ReportCondition>> = ListSerializer(serializer())
+    val ListSerializer: KSerializer<List<Condition>> = ListSerializer(serializer())
   }
 }
