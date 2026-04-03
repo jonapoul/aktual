@@ -9,12 +9,15 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.ProvideTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
@@ -70,5 +73,30 @@ fun ThemedDropdownMenuItem(
     colors = colors,
     contentPadding = contentPadding,
     interactionSource = interactionSource,
+  )
+}
+
+@Composable
+fun ThemedDropdownMenuItem(
+  text: String,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  leadingIcon: ImageVector? = null,
+  trailingIcon: ImageVector? = null,
+  enabled: Boolean = true,
+  contentPadding: PaddingValues = MenuDefaults.DropdownMenuItemContentPadding,
+  interactionSource: MutableInteractionSource? = remember { MutableInteractionSource() },
+  theme: Theme = LocalTheme.current,
+) {
+  ThemedDropdownMenuItem(
+    text = { Text(text) },
+    onClick = onClick,
+    modifier = modifier,
+    leadingIcon = leadingIcon?.let { { Icon(it, text) } },
+    trailingIcon = trailingIcon?.let { { Icon(it, text) } },
+    enabled = enabled,
+    contentPadding = contentPadding,
+    interactionSource = interactionSource,
+    theme = theme,
   )
 }

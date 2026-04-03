@@ -2,6 +2,8 @@ package aktual.budget.rules.ui.list
 
 import aktual.app.nav.BackNavigator
 import aktual.budget.model.BudgetId
+import aktual.budget.rules.vm.CheckboxesState
+import aktual.budget.rules.vm.CheckboxesState.Active
 import aktual.budget.rules.vm.ListRulesState
 import aktual.budget.rules.vm.ListRulesState.Empty
 import aktual.budget.rules.vm.ListRulesState.Failure
@@ -60,6 +62,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 
 @Composable
 fun ListRulesScreen(
@@ -70,10 +73,12 @@ fun ListRulesScreen(
   viewModel: ListRulesViewModel = listRulesViewModel(token, budgetId),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val checkboxes by viewModel.checkboxes.collectAsStateWithLifecycle()
 
   ListRulesScaffold(
     modifier = modifier,
     state = state,
+    checkboxes = checkboxes,
     onAction = { action ->
       when (action) {
         Reload -> viewModel.reload()
@@ -81,6 +86,8 @@ fun ListRulesScreen(
         is Open -> TODO()
         is Edit -> TODO()
         is OpenUrl -> TODO()
+        is Check -> viewModel.check(action.id)
+        is Uncheck -> viewModel.uncheck(action.id)
       }
     },
   )
@@ -93,6 +100,7 @@ private fun listRulesViewModel(token: Token, budgetId: BudgetId) =
 @Composable
 private fun ListRulesScaffold(
   state: ListRulesState,
+  checkboxes: CheckboxesState,
   onAction: (ListRulesAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -121,7 +129,7 @@ private fun ListRulesScaffold(
           contentAlignment = Alignment.Center,
           onRefresh = { onAction(Reload) },
           isRefreshing = state is Loading,
-          content = { ListRulesContent(state, onAction, listState) },
+          content = { ListRulesContent(state, checkboxes, onAction, listState) },
         )
       }
     }
@@ -131,6 +139,7 @@ private fun ListRulesScaffold(
 @Composable
 private fun ListRulesContent(
   state: ListRulesState,
+  checkboxes: CheckboxesState,
   onAction: (ListRulesAction) -> Unit,
   listState: LazyListState,
   modifier: Modifier = Modifier,
@@ -144,7 +153,7 @@ private fun ListRulesContent(
     when (state) {
       is Loading -> {
         Column(verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
-          repeat(times = 10) { ShimmerRuleListItem() }
+          repeat(times = 10) { ShimmerRuleListItem(checkboxes) }
         }
       }
 
@@ -171,7 +180,12 @@ private fun ListRulesContent(
       }
 
       is Success -> {
-        ContentSuccess(rules = state.rules, listState = listState, onAction = onAction)
+        ContentSuccess(
+          rules = state.rules,
+          checkboxes = checkboxes,
+          listState = listState,
+          onAction = onAction,
+        )
       }
     }
 
@@ -184,6 +198,7 @@ private fun ListRulesContent(
 @Suppress("UnusedReceiverParameter") // to suppress detekt
 private fun ColumnScope.ContentSuccess(
   rules: ImmutableList<RuleListItem>,
+  checkboxes: CheckboxesState,
   onAction: (ListRulesAction) -> Unit,
   modifier: Modifier = Modifier,
   listState: LazyListState = rememberLazyListState(),
@@ -217,7 +232,9 @@ private fun ColumnScope.ContentSuccess(
         }
       }
 
-      items(items) { rule -> ListRulesItem(rule = rule, onAction = onAction) }
+      items(items) { rule ->
+        ListRulesItem(rule = rule, checkboxes = checkboxes, onAction = onAction)
+      }
     }
   }
 }
@@ -226,13 +243,22 @@ private fun ColumnScope.ContentSuccess(
 @Composable
 private fun PreviewListRulesScaffold(
   @PreviewParameter(ListRulesStateProvider::class) params: ThemedParams<ListRulesStateParams>
-) = PreviewWithThemedParams(params) { ListRulesScaffold(state = state, onAction = {}) }
+) =
+  PreviewWithThemedParams(params) {
+    ListRulesScaffold(state = state, checkboxes = checkboxes, onAction = {})
+  }
 
-private data class ListRulesStateParams(val state: ListRulesState)
+private data class ListRulesStateParams(
+  val state: ListRulesState,
+  val checkboxes: CheckboxesState = CheckboxesState.Inactive,
+)
 
 private class ListRulesStateProvider :
   ThemedParameterProvider<ListRulesStateParams>(
-    ListRulesStateParams(Success(persistentListOf(PreviewRuleListItem1, PreviewRuleListItem2))),
+    ListRulesStateParams(
+      Success(persistentListOf(PreviewRuleListItem1, PreviewRuleListItem2)),
+      checkboxes = Active(persistentSetOf(PreviewRuleListItem1.id)),
+    ),
     ListRulesStateParams(Loading),
     ListRulesStateParams(Empty),
     ListRulesStateParams(Failure("Something broke")),

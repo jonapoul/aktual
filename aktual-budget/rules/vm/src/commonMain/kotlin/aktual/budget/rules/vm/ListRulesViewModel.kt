@@ -23,10 +23,12 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -44,6 +46,9 @@ class ListRulesViewModel(
   private val mutableRules = MutableStateFlow<ImmutableList<RuleListItem>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableFailure = MutableStateFlow<String?>(null)
+  private val mutableCheckboxes = MutableStateFlow<CheckboxesState>(CheckboxesState.Inactive)
+
+  val checkboxes: StateFlow<CheckboxesState> = mutableCheckboxes.asStateFlow()
 
   val state: StateFlow<ListRulesState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -83,6 +88,14 @@ class ListRulesViewModel(
   fun delete(id: RuleId) {
     // TBC
   }
+
+  fun showCheckboxes() = mutableCheckboxes.update { CheckboxesState.Active(persistentSetOf()) }
+
+  fun hideCheckboxes() = mutableCheckboxes.update { CheckboxesState.Inactive }
+
+  fun check(id: RuleId) = mutableCheckboxes.update { it + id }
+
+  fun uncheck(id: RuleId) = mutableCheckboxes.update { it - id }
 
   private fun toListItem(rule: Rules): RuleListItem =
     RuleListItem(
