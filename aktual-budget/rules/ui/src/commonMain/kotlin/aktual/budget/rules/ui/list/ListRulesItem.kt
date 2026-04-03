@@ -240,6 +240,17 @@ internal fun ShimmerRuleListItem(modifier: Modifier = Modifier, theme: Theme = L
             .background(theme.pageText, CardShape)
       )
     }
+
+    Box(
+      modifier = Modifier.size(LocalMinimumInteractiveComponentSize.current),
+      contentAlignment = Alignment.Center,
+    ) {
+      Box(
+        modifier =
+          Modifier.size(LocalMinimumInteractiveComponentSize.current / 2)
+            .background(theme.pageText, CardShape)
+      )
+    }
   }
 }
 
