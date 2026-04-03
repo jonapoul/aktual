@@ -156,7 +156,7 @@ private fun RowScope.AppBarButtons(
     is Active -> {
       BareIconButton(
         imageVector = MaterialIcons.Deselect,
-        contentDescription = Strings.rulesToolbarCheckboxesEnable,
+        contentDescription = Strings.rulesToolbarCheckboxesDisable,
         enabled = state is Success,
         onClick = { onAction(DisableCheckboxes) },
       )
@@ -165,7 +165,7 @@ private fun RowScope.AppBarButtons(
     Inactive -> {
       BareIconButton(
         imageVector = MaterialIcons.SelectAll,
-        contentDescription = Strings.rulesToolbarCheckboxesDisable,
+        contentDescription = Strings.rulesToolbarCheckboxesEnable,
         enabled = state is Success,
         onClick = { onAction(EnableCheckboxes) },
       )

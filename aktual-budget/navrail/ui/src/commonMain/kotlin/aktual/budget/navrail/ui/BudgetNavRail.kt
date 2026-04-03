@@ -201,7 +201,7 @@ private fun BottomNavBar(
   NavigationBar(
     modifier = modifier,
     containerColor = theme.sidebarBackground,
-    contentColor = Color.Green,
+    contentColor = theme.sidebarItemText,
   ) {
     for (tab in BudgetTab.entries) {
       NavigationBarItem(
@@ -225,7 +225,7 @@ private fun SideNavRail(
   NavigationRail(
     modifier = modifier,
     containerColor = theme.sidebarBackground,
-    contentColor = Color.Green,
+    contentColor = theme.sidebarItemText,
   ) {
     for (tab in BudgetTab.entries) {
       NavigationRailItem(

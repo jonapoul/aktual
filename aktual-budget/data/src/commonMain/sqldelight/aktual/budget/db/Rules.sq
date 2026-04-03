@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS rules(
 
 delete: DELETE FROM rules WHERE id = ?;
 
-getAll: SELECT * FROM rules WHERE tombstone != 0;
+getAll: SELECT * FROM rules WHERE tombstone = 0;
 
 insert:
   INSERT OR REPLACE
