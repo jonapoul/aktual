@@ -100,7 +100,6 @@ molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
 okio = { module = "com.squareup.okio:okio", version = "3.17.0" }
 redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version = "1.3.3" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-dialect = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqldelight" }
 sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
