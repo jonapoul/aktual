@@ -15,7 +15,7 @@ import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
-import aktual.core.di.BudgetGraphHolder
+import aktual.budget.di.BudgetGraphHolder
 import aktual.core.model.Token
 import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel

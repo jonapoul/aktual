@@ -15,7 +15,7 @@ import aktual.budget.model.readMetadata
 import aktual.core.connection.ConnectionMonitor
 import aktual.core.connection.ServerPinger
 import aktual.core.connection.ServerVersionFetcher
-import aktual.core.di.BudgetGraphHolder
+import aktual.budget.di.BudgetGraphHolder
 import aktual.core.model.PingStateHolder
 import aktual.core.model.Token
 import aktual.core.ui.BlurConfig

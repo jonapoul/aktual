@@ -9,6 +9,7 @@ kotlin {
     implementation(project(":aktual-app:di"))
     implementation(project(":aktual-app:nav:ui"))
     implementation(project(":aktual-budget:model"))
+    implementation(project(":aktual-core:di"))
     implementation(project(":aktual-core:model"))
     implementation(project(":aktual-test"))
 
@@ -19,7 +20,6 @@ kotlin {
     implementation(project(":aktual-budget:reports:vm"))
     implementation(project(":aktual-budget:sync:vm"))
     implementation(project(":aktual-budget:transactions:vm"))
-    implementation(project(":aktual-core:di"))
     implementation(project(":aktual-metrics:vm"))
     implementation(project(":aktual-prefs:vm"))
   }

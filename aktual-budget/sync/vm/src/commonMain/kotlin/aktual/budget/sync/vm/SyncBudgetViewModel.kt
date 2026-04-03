@@ -11,7 +11,7 @@ import aktual.budget.model.encryptedZip
 import aktual.budget.sync.vm.SyncStep.DownloadingDatabase
 import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
-import aktual.core.di.BudgetGraphHolder
+import aktual.budget.di.BudgetGraphHolder
 import aktual.core.model.Password
 import aktual.core.model.Percent
 import aktual.core.model.Token

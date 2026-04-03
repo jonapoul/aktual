@@ -1,4 +1,4 @@
-package aktual.core.di
+package aktual.budget.di
 
 import aktual.budget.db.JvmSqlDriverFactory
 import aktual.budget.model.BudgetFiles

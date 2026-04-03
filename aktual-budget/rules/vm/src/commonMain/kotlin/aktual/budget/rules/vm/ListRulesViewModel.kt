@@ -6,7 +6,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.Condition
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
-import aktual.core.di.BudgetGraphHolder
+import aktual.budget.di.BudgetGraphHolder
 import aktual.core.model.Token
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable

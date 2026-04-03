@@ -20,7 +20,7 @@ kotlin {
     api(libs.alakazam.kotlin)
     api(libs.androidx.paging.common)
     api(libs.kotlinx.datetime)
-    implementation(project(":aktual-core:di"))
+    implementation(project(":aktual-budget:di"))
     implementation(project(":aktual-core:model"))
     implementation(project(":aktual-prefs"))
   }

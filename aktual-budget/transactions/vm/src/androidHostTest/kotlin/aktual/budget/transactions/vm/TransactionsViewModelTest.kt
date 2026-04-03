@@ -8,9 +8,9 @@ import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionsSpec
-import aktual.core.di.AppGraph
-import aktual.core.di.BudgetGraph
-import aktual.core.di.BudgetGraphHolder
+import aktual.core.model.AppGraph
+import aktual.budget.di.BudgetGraph
+import aktual.budget.di.BudgetGraphHolder
 import aktual.test.coroutineContainer
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts

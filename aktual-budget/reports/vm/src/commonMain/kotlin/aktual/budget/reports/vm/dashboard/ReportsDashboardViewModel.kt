@@ -16,7 +16,7 @@ import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.SpendingReportMeta
 import aktual.budget.reports.vm.SummaryReportMeta
-import aktual.core.di.BudgetGraphHolder
+import aktual.budget.di.BudgetGraphHolder
 import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

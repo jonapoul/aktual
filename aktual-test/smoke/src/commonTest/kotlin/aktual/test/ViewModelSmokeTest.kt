@@ -10,7 +10,7 @@ import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
-import aktual.core.di.BudgetGraph
+import aktual.budget.di.BudgetGraph
 import aktual.core.theme.DarkTheme
 import aktual.metrics.vm.MetricsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel

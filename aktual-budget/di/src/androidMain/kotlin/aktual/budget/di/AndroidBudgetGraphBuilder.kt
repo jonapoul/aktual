@@ -1,4 +1,4 @@
-package aktual.core.di
+package aktual.budget.di
 
 import aktual.budget.db.AndroidSqlDriverFactory
 import aktual.budget.model.BudgetFiles

@@ -17,7 +17,6 @@ class ModuleViewModel : Plugin<Project> {
 
       kotlin {
         commonMainDependencies {
-          api(project(":aktual-core:di"))
           api(libs["androidx.lifecycle.viewmodel.core"])
           api(libs["kotlinx.coroutines.core"])
           api(libs["kotlinx.immutable"])

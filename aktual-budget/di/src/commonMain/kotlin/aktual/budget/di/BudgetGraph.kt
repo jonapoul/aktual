@@ -1,4 +1,4 @@
-package aktual.core.di
+package aktual.budget.di
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.SqlDriverFactory
