@@ -6,6 +6,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Rect
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 @Composable
 fun rememberShimmer(
@@ -30,7 +31,7 @@ internal constructor(
   internal val boundsFlow = MutableStateFlow(bounds)
 
   fun updateBounds(bounds: Rect?) {
-    boundsFlow.value = bounds
+    boundsFlow.update { bounds }
   }
 
   override fun equals(other: Any?): Boolean {

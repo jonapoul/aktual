@@ -89,17 +89,16 @@ internal class ShimmerArea(private val widthOfShimmer: Float, rotationInDegree: 
    * (decreasing). Inputs between 180 and 270 have to be mapped to the values between 0 and 90. And
    * inputs between 270 and 360 have to be mapped to the values between 90 and 0 again.
    */
+  @Suppress("MagicNumber")
   private fun Float.reduceRotation(): Float {
-    if (this < 0f) {
-      throw IllegalArgumentException("The shimmer's rotation must be a positive number")
-    }
+    require(this >= 0f) { "The shimmer's rotation must be a positive number" }
     var rotation = this % 180 // 0..179, 0
     rotation -= 90 // -90..0..89, -90
     rotation = -abs(rotation) // -90..0..-90
     return rotation + 90 // 0..90..0
   }
 
-  private fun Float.toRadian(): Float = this / 180 * 3.1415927f
+  @Suppress("MagicNumber") private fun Float.toRadian(): Float = this / 180 * 3.1415927f
 
   override fun equals(other: Any?): Boolean {
     if (this === other) return true

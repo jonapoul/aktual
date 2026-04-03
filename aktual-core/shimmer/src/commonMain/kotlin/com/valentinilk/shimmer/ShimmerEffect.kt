@@ -60,7 +60,8 @@ internal class ShimmerEffect(
 
   private val emptyPaint = Paint()
 
-  // Cached shader state to avoid recreating the shader every frame when the gradient endpoints haven't changed
+  // Cached shader state to avoid recreating the shader every frame when the gradient endpoints
+  // haven't changed
   private var cachedFrom = Offset.Unspecified
   private var cachedTo = Offset.Unspecified
 
@@ -78,20 +79,24 @@ internal class ShimmerEffect(
       val progress = animatedState.value
       val traversal = -translationDistance / 2 + translationDistance * progress + pivotPoint.x
 
-      transformationMatrix.apply {
-        reset()
-        translate(pivotPoint.x, pivotPoint.y, 0f)
-        rotateZ(rotation)
-        translate(-pivotPoint.x, -pivotPoint.y, 0f)
-        translate(traversal, 0f, 0f)
-      }
+      transformationMatrix.reset()
+      transformationMatrix.translate(pivotPoint.x, pivotPoint.y, 0f)
+      transformationMatrix.rotateZ(rotation)
+      transformationMatrix.translate(-pivotPoint.x, -pivotPoint.y, 0f)
+      transformationMatrix.translate(traversal, 0f, 0f)
 
       val newFrom = transformationMatrix.map(gradientFrom)
       val newTo = transformationMatrix.map(gradientTo)
       if (newFrom != cachedFrom || newTo != cachedTo) {
         cachedFrom = newFrom
         cachedTo = newTo
-        paint.shader = LinearGradientShader(from = newFrom, to = newTo, colors = shaderColors, colorStops = shaderColorStops)
+        paint.shader =
+          LinearGradientShader(
+            from = newFrom,
+            to = newTo,
+            colors = shaderColors,
+            colorStops = shaderColorStops,
+          )
       }
 
       val drawArea = size.toRect()
