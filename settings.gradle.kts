@@ -77,6 +77,8 @@ include(
   ":aktual-budget:navrail:vm",
   ":aktual-budget:reports:ui",
   ":aktual-budget:reports:vm",
+  ":aktual-budget:rules:ui",
+  ":aktual-budget:rules:vm",
   ":aktual-budget:sync:ui",
   ":aktual-budget:sync:vm",
   ":aktual-budget:transactions:ui",

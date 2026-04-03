@@ -2,8 +2,8 @@ package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
-import aktual.budget.model.Condition.Field.Transfer
 import aktual.budget.model.Condition.Type.Boolean
+import aktual.budget.model.Field.Transfer
 import aktual.budget.model.Interval.Weekly
 import aktual.budget.model.Operator.Is
 import aktual.budget.reports.vm.NetWorthData

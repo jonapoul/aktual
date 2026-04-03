@@ -78,6 +78,7 @@ value class RuleId(private val value: String) : Comparable<RuleId> {
 }
 
 @JvmInline
+@Serializable
 value class ScheduleId(private val value: String) : Comparable<ScheduleId> {
   override fun toString(): String = value
 

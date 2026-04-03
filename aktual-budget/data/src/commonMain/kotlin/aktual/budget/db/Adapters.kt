@@ -19,6 +19,7 @@ import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
 import aktual.budget.model.ReportDate
+import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
@@ -98,6 +99,7 @@ private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>
   }
 
 private val conditions = jsonSerializable(Condition.ListSerializer)
+private val ruleActions = jsonSerializable(ListSerializer(RuleAction.serializer()))
 private val selectedCategories = jsonSerializable(ListSerializer(SelectedCategory.serializer()))
 
 private val localDate =
@@ -137,11 +139,11 @@ private val yearMonth =
 private val accountId = stringAdapter(::AccountId)
 private val accountSyncSource = stringAdapter(AccountSyncSource::fromString)
 private val bankId = stringAdapter(::BankId)
-private val syncedPrefKey = stringAdapter(SyncedPrefKey::decode, SyncedPrefKey::key)
 private val categoryGroupId = stringAdapter(::CategoryGroupId)
 private val categoryId = stringAdapter(::CategoryId)
 private val customReportsId = stringAdapter(::CustomReportId)
 private val dashboardPageId = stringAdapter(::DashboardPageId)
+private val operator = stringAdapter(decode = Operator::parse, encode = Operator::string)
 private val payeeId = stringAdapter(::PayeeId)
 private val payeeLocationId = stringAdapter(::PayeeLocationId)
 private val reportDate = stringAdapter(ReportDate::parse)
@@ -149,16 +151,17 @@ private val ruleId = stringAdapter(::RuleId)
 private val scheduleId = stringAdapter(::ScheduleId)
 private val scheduleJsonPathIndex = stringAdapter(::ScheduleJsonPathIndex)
 private val scheduleNextDateId = stringAdapter(::ScheduleNextDateId)
+private val syncedPrefKey = stringAdapter(SyncedPrefKey::decode, SyncedPrefKey::key)
 private val tagId = stringAdapter(::TagId)
 private val timestamp = stringAdapter(Timestamp::parse)
 private val transactionFilterId = stringAdapter(::TransactionFilterId)
 private val transactionId = stringAdapter(::TransactionId)
-private val widgetId = stringAdapter(::WidgetId)
 private val uuid = stringAdapter(Uuid::parse)
+private val widgetId = stringAdapter(::WidgetId)
 private val zeroBudgetMonthId = stringAdapter(::ZeroBudgetMonthId)
 
 private val balanceType = enumStringAdapter<BalanceType>()
-private val operator = enumStringAdapter<Operator>()
+private val conditionsOp = enumStringAdapter<Condition.Op>()
 private val customReportMode = enumStringAdapter<CustomReportMode>()
 private val dateRangeType = enumStringAdapter<DateRangeType>()
 private val graphType = enumStringAdapter<GraphType>()
@@ -233,7 +236,7 @@ internal val CustomReportsAdapter =
     balance_typeAdapter = balanceType,
     graph_typeAdapter = graphType,
     conditionsAdapter = conditions,
-    conditions_opAdapter = operator,
+    conditions_opAdapter = conditionsOp,
     metadataAdapter = jsonObject,
     sort_byAdapter = sortBy,
     intervalAdapter = interval,
@@ -260,9 +263,9 @@ internal val RulesAdapter =
   Rules.Adapter(
     idAdapter = ruleId,
     stageAdapter = ruleStage,
-    conditionsAdapter = jsonArray,
-    actionsAdapter = jsonArray,
-    conditions_opAdapter = operator,
+    conditionsAdapter = conditions,
+    actionsAdapter = ruleActions,
+    conditions_opAdapter = conditionsOp,
   )
 
 internal val SchedulesAdapter = Schedules.Adapter(idAdapter = scheduleId, ruleAdapter = ruleId)
