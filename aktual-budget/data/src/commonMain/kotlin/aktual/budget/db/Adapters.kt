@@ -81,11 +81,14 @@ private inline fun <reified E> enumStringAdapter(): ColumnAdapter<E, String>
     ?: error("No ${E::class.qualifiedName} matching '$string'")
 }
 
+private val DbJson = Json { encodeDefaults = true }
+
 private inline fun <reified T : JsonElement> jsonElement(crossinline getter: JsonElement.() -> T) =
   object : ColumnAdapter<T, String> {
-    override fun encode(value: T): String = Json.encodeToString(value)
+    override fun encode(value: T): String = DbJson.encodeToString(value)
 
-    override fun decode(databaseValue: String): T = Json.parseToJsonElement(databaseValue).getter()
+    override fun decode(databaseValue: String): T =
+      DbJson.parseToJsonElement(databaseValue).getter()
   }
 
 private val jsonElement = jsonElement<JsonElement> { this }
@@ -94,9 +97,10 @@ private val jsonArray = jsonElement<JsonArray> { jsonArray }
 
 private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>) =
   object : ColumnAdapter<T, String> {
-    override fun decode(databaseValue: String): T = Json.decodeFromString(serializer, databaseValue)
+    override fun decode(databaseValue: String): T =
+      DbJson.decodeFromString(serializer, databaseValue)
 
-    override fun encode(value: T): String = Json.encodeToString(serializer, value)
+    override fun encode(value: T): String = DbJson.encodeToString(serializer, value)
   }
 
 private val conditions = jsonSerializable(Condition.ListSerializer)

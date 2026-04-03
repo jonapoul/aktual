@@ -61,6 +61,8 @@ sealed interface RuleAction {
   data class LinkSchedule(
     @SerialName("value") val value: ScheduleId,
     @SerialName("op") val op: Op = Op.LinkSchedule,
+    @SerialName("field") val field: Field? = null,
+    @SerialName("type") val type: String? = null,
   ) : RuleAction
 
   @Serializable
