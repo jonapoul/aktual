@@ -35,6 +35,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -62,7 +63,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ListRulesScreen(
-  back: BackNavigator,
+  @Suppress("unused") back: BackNavigator, // TODO
   token: Token,
   budgetId: BudgetId,
   modifier: Modifier = Modifier,
@@ -142,7 +143,7 @@ private fun ListRulesContent(
   ) {
     when (state) {
       is Loading -> {
-        Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
+        Column(verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
           repeat(times = 10) { ShimmerRuleListItem() }
         }
       }
@@ -180,7 +181,8 @@ private fun ListRulesContent(
 }
 
 @Composable
-private fun ContentSuccess(
+@Suppress("UnusedReceiverParameter") // to suppress detekt
+private fun ColumnScope.ContentSuccess(
   rules: ImmutableList<RuleListItem>,
   onAction: (ListRulesAction) -> Unit,
   modifier: Modifier = Modifier,

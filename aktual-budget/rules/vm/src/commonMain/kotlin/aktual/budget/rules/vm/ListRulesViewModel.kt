@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
+@Suppress("unused") // TODO
 @Stable
 @AssistedInject
 class ListRulesViewModel(

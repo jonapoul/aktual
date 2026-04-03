@@ -14,7 +14,7 @@ internal val PreviewCondition1 =
   Condition(
     field = Field.Category,
     operator = Operator.Is,
-    value = JsonPrimitive("abc-123"),
+    value = JsonPrimitive("condition-1-value"),
     options = null,
     conditionsOp = Condition.Op.And,
     type = Condition.Type.String,
@@ -36,7 +36,7 @@ internal val PreviewCondition2 =
 
 internal val PreviewRuleListItem1 =
   RuleListItem(
-    id = RuleId("abc-123"),
+    id = RuleId("item-1-id"),
     stage = null,
     conditionsOp = Condition.Op.And,
     conditions = persistentListOf(PreviewCondition1),
@@ -52,7 +52,7 @@ internal val PreviewRuleListItem1 =
 
 internal val PreviewRuleListItem2 =
   RuleListItem(
-    id = RuleId("abc-123"),
+    id = RuleId("item-2-id"),
     stage = null,
     conditionsOp = Condition.Op.And,
     conditions = persistentListOf(PreviewCondition1, PreviewCondition2),

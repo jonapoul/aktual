@@ -6,8 +6,9 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
-import aktual.budget.model.Operator
+import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
+import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
@@ -15,8 +16,6 @@ import aktual.budget.model.ScheduleJsonPathIndex
 import aktual.budget.model.ScheduleNextDateId
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
 
 internal suspend fun BudgetDatabase.getAccountById(id: AccountId): Accounts? =
   accountsQueries.withResult {
@@ -56,16 +55,16 @@ internal suspend fun BudgetDatabase.insertMeta(key: String, value: String) =
 internal suspend fun BudgetDatabase.insertRule(
   id: String,
   stage: RuleStage? = null,
-  conditions: String?,
-  actions: String?,
+  conditions: List<Condition>? = emptyList(),
+  actions: List<RuleAction>? = emptyList(),
   tombstone: Boolean? = false,
-  conditionsOp: Operator? = Operator.And,
+  conditionsOp: Condition.Op? = Condition.Op.And,
 ) = rulesQueries.withResult {
   insert(
     id = RuleId(id),
     stage = stage,
-    conditions = conditions?.toJsonArray(),
-    actions = actions?.toJsonArray(),
+    conditions = conditions,
+    actions = actions,
     tombstone = tombstone,
     conditions_op = conditionsOp,
   )
@@ -131,5 +130,3 @@ internal suspend fun BudgetDatabase.insertPayeeMapping(id: String, targetId: Str
   }
 
 internal suspend fun BudgetDatabase.insertPayeeMapping(id: String) = insertPayeeMapping(id, id)
-
-private fun String.toJsonArray() = Json.parseToJsonElement(this).jsonArray

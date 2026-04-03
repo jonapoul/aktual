@@ -129,6 +129,7 @@ class InitialRouteUseCase(
   }
 
   @Composable
+  @Suppress("BracesOnWhenStatements")
   private fun resolveAuthenticatedRoute(token: Token, budgetId: BudgetId?): NavKey =
     when {
       budgetId == null -> ListBudgetsNavRoute(token)

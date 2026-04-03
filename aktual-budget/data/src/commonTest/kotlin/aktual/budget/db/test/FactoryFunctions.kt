@@ -12,7 +12,6 @@ import aktual.budget.model.DateRangeType
 import aktual.budget.model.GraphType
 import aktual.budget.model.GroupBy
 import aktual.budget.model.Interval
-import aktual.budget.model.Operator
 import aktual.budget.model.ReportDate
 import aktual.budget.model.SelectedCategory
 import aktual.budget.model.SortBy
@@ -78,7 +77,7 @@ internal fun buildCustomReport(
     selected_categories = selectedCategories,
     graph_type = GraphType.BarGraph,
     conditions = conditions,
-    conditions_op = Operator.And,
+    conditions_op = Condition.Op.And,
     metadata = metadata,
     interval = Interval.Monthly,
     color_scheme = null,
