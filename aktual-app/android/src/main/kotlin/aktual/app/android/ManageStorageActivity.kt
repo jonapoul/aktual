@@ -1,7 +1,6 @@
 package aktual.app.android
 
 import aktual.about.ui.storage.ManageStorageScreen
-import aktual.core.di.ActivityKey
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.BackHandler
 import aktual.core.ui.DialogBlurOverlay
