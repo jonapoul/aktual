@@ -16,6 +16,7 @@ enum class Field(override val value: String) : SerializableByString {
   Notes("notes"),
   Payee("payee"),
   PayeeName("payee_name"),
+  ImportedDescription("imported_description"),
   ImportedPayee("imported_payee"),
   Saved("saved"),
   Transfer("transfer"),

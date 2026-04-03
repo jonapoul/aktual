@@ -7,7 +7,6 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleAction.AppendNotes
 import aktual.budget.model.RuleAction.DeleteTransaction
 import aktual.budget.model.RuleAction.LinkSchedule
-import aktual.budget.model.RuleAction.Op
 import aktual.budget.model.RuleAction.PrependNotes
 import aktual.budget.model.RuleAction.Set as SetAction
 import aktual.budget.model.RuleAction.SetSplitAmount
@@ -16,7 +15,6 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.ui.AktualTypography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
@@ -36,7 +34,7 @@ internal fun RuleStage?.string(): String =
   when (this) {
     RuleStage.Pre -> Strings.rulesStagePre
     null -> Strings.rulesStageNone
-    RuleStage.Post -> Strings.rulesStagePre
+    RuleStage.Post -> Strings.rulesStagePost
   }
 
 @Composable
@@ -72,14 +70,16 @@ internal fun rememberConditionText(
   prefix: String,
   condition: Condition,
   styles: RuleSpanStyles,
-): AnnotatedString =
-  remember(prefix, condition, styles) {
+): AnnotatedString {
+  val fieldText = condition.field.string(condition.options)
+  val operatorText = condition.operator.displayString()
+  return remember(prefix, condition, styles, fieldText, operatorText) {
     buildAnnotatedString {
       withStyle(styles.default) { append(prefix) }
-      withStyle(styles.highlighted) { append(condition.field.string(condition.options)) }
+      withStyle(styles.highlighted) { append(fieldText) }
       withStyle(styles.default) {
         append(" ")
-        append(condition.operator.string)
+        append(operatorText)
         append(" ")
       }
       when (val value = condition.value) {
@@ -105,122 +105,115 @@ internal fun rememberConditionText(
       }
     }
   }
+}
 
 @Composable
-internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): AnnotatedString =
-  remember(action, styles) {
+internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): AnnotatedString {
+  val opText = action.opString()
+  val fieldText = (action as? SetAction)?.field?.string(options = null)
+  val setToText = if (action is SetAction) Strings.rulesActionSetTo else null
+  return remember(action, styles, opText, fieldText, setToText) {
     buildAnnotatedString {
       when (action) {
-        is AppendNotes -> append(action, styles)
-        is DeleteTransaction -> append(action, styles)
-        is LinkSchedule -> append(action, styles)
-        is PrependNotes -> append(action, styles)
-        is SetAction -> append(action, styles)
-        is SetSplitAmount -> append(action, styles)
+        is AppendNotes -> {
+          withStyle(styles.default) {
+            append(opText)
+            append(" ")
+          }
+          withStyle(styles.highlighted) { append(action.value) }
+        }
+        is DeleteTransaction -> {
+          withStyle(styles.default) { append(opText) }
+        }
+        is LinkSchedule -> {
+          withStyle(styles.default) {
+            append(opText)
+            append(" ")
+          }
+          withStyle(styles.highlighted) { append(action.value.toString()) }
+        }
+        is PrependNotes -> {
+          withStyle(styles.default) {
+            append(opText)
+            append(" ")
+          }
+          withStyle(styles.highlighted) { append(action.value) }
+        }
+        is SetAction -> {
+          withStyle(styles.default) {
+            append(opText)
+            append(" ")
+          }
+          withStyle(styles.highlighted) { append(fieldText) }
+          withStyle(styles.default) { append(setToText) }
+          withStyle(styles.highlighted) { append(action.value) }
+        }
+        is SetSplitAmount -> {
+          withStyle(styles.default) {
+            append(opText)
+            append(" ")
+          }
+          withStyle(styles.highlighted) { append(action.value?.toString()) }
+        }
       }
     }
   }
+}
 
-private fun AnnotatedString.Builder.append(action: AppendNotes, styles: RuleSpanStyles) {
-  withStyle(styles.default) {
-    append(action.op.string)
-    append(" ")
+@Composable
+private fun RuleAction.opString(): String =
+  when (this) {
+    is AppendNotes -> Strings.rulesOpAppendNotes
+    is DeleteTransaction -> Strings.rulesOpDeleteTransaction
+    is LinkSchedule -> Strings.rulesOpLinkSchedule
+    is PrependNotes -> Strings.rulesOpPrependNotes
+    is SetAction -> Strings.rulesOpSet
+    is SetSplitAmount -> Strings.rulesOpSetSplitAmount
   }
-  withStyle(styles.highlighted) { append(action.value) }
-}
 
-private fun AnnotatedString.Builder.append(action: DeleteTransaction, styles: RuleSpanStyles) {
-  withStyle(styles.default) { append(action.op.string) }
-}
-
-private fun AnnotatedString.Builder.append(action: LinkSchedule, styles: RuleSpanStyles) {
-  withStyle(styles.default) {
-    append(action.op.string)
-    append(" ")
+@Composable
+private fun Operator.displayString(): String =
+  when (this) {
+    Operator.Contains -> Strings.rulesOperatorContains
+    Operator.DoesNotContain -> Strings.rulesOperatorDoesNotContain
+    Operator.GreaterThan -> Strings.rulesOperatorGreaterThan
+    Operator.GreaterThanOrEquals -> Strings.rulesOperatorGreaterThanOrEquals
+    Operator.HasTags -> Strings.rulesOperatorHasTags
+    Operator.Is -> Strings.rulesOperatorIs
+    Operator.IsApprox -> Strings.rulesOperatorIsApprox
+    Operator.IsBetween -> Strings.rulesOperatorIsBetween
+    Operator.IsNot -> Strings.rulesOperatorIsNot
+    Operator.LessThan -> Strings.rulesOperatorLessThan
+    Operator.LessThanOrEquals -> Strings.rulesOperatorLessThanOrEquals
+    Operator.Matches -> Strings.rulesOperatorMatches
+    Operator.NotOneOf -> Strings.rulesOperatorNotOneOf
+    Operator.OffBudget -> Strings.rulesOperatorOffBudget
+    Operator.OnBudget -> Strings.rulesOperatorOnBudget
+    Operator.OneOf -> Strings.rulesOperatorOneOf
   }
-  withStyle(styles.highlighted) { append(action.value.toString()) }
-}
 
-private fun AnnotatedString.Builder.append(action: PrependNotes, styles: RuleSpanStyles) {
-  withStyle(styles.default) {
-    append(action.op.string)
-    append(" ")
-  }
-  withStyle(styles.highlighted) { append(action.value) }
-}
-
-private fun AnnotatedString.Builder.append(action: SetAction, styles: RuleSpanStyles) {
-  withStyle(styles.default) {
-    append(action.op.string)
-    append(" ")
-  }
-  withStyle(styles.highlighted) { append(action.field.value) }
-  withStyle(styles.default) { append(" to ") }
-  withStyle(styles.highlighted) { append(action.value) }
-}
-
-private fun AnnotatedString.Builder.append(action: SetSplitAmount, styles: RuleSpanStyles) {
-  withStyle(styles.default) {
-    append(action.op.string)
-    append(" ")
-  }
-  withStyle(styles.highlighted) { append(action.value?.toString()) }
-}
-
-private val Op.string: String
-  get() =
-    when (this) {
-      Op.Set -> "set"
-      Op.SetSplitAmount -> "allocate"
-      Op.LinkSchedule -> "link schedule"
-      Op.PrependNotes -> "prepend to notes"
-      Op.AppendNotes -> "append to notes"
-      Op.DeleteTransaction -> "delete transaction"
-    }
-
-@Stable
-private val Operator.string: String
-  get() =
-    when (this) {
-      Operator.Contains -> "contains"
-      Operator.DoesNotContain -> "does not contain"
-      Operator.GreaterThan -> "is greater than"
-      Operator.GreaterThanOrEquals -> "is greater than or equals"
-      Operator.HasTags -> "has tags"
-      Operator.Is -> "is"
-      Operator.IsApprox -> "is approx"
-      Operator.IsBetween -> "is between"
-      Operator.IsNot -> "is not"
-      Operator.LessThan -> "is less than"
-      Operator.LessThanOrEquals -> "is less than or equals"
-      Operator.Matches -> "matches"
-      Operator.NotOneOf -> "not one of"
-      Operator.OffBudget -> "off budget"
-      Operator.OnBudget -> "on budget"
-      Operator.OneOf -> "one of"
-    }
-
-@Stable
+@Composable
 private fun Field.string(options: Condition.Options?): String =
   when (this) {
-    Field.Account -> "account"
+    Field.Account -> Strings.rulesFieldAccount
     Field.Amount ->
       when {
-        options?.inflow == true -> "amount (inflow)"
-        options?.outflow == true -> "amount (outflow)"
-        else -> "amount"
+        options?.inflow == true -> Strings.rulesFieldAmountInflow
+        options?.outflow == true -> Strings.rulesFieldAmountOutflow
+        else -> Strings.rulesFieldAmount
       }
-    Field.Category -> "category"
-    Field.CategoryGroup -> "category group"
-    Field.Date -> "date"
-    Field.Description -> "description"
-    Field.Notes -> "notes"
-    Field.Payee -> "payee"
-    Field.PayeeName -> "payee (name)"
-    Field.ImportedPayee -> "imported payee"
-    Field.Saved -> "saved"
-    Field.Transfer -> "transfer"
-    Field.Parent -> "parent"
-    Field.Cleared -> "cleared"
-    Field.Reconciled -> "reconciled"
+    Field.Category -> Strings.rulesFieldCategory
+    Field.CategoryGroup -> Strings.rulesFieldCategoryGroup
+    Field.Date -> Strings.rulesFieldDate
+    Field.Description -> Strings.rulesFieldDescription
+    Field.Notes -> Strings.rulesFieldNotes
+    Field.Payee -> Strings.rulesFieldPayee
+    Field.PayeeName -> Strings.rulesFieldPayeeName
+    Field.ImportedDescription -> Strings.rulesFieldImportedDescription
+    Field.ImportedPayee -> Strings.rulesFieldImportedPayee
+    Field.Saved -> Strings.rulesFieldSaved
+    Field.Transfer -> Strings.rulesFieldTransfer
+    Field.Parent -> Strings.rulesFieldParent
+    Field.Cleared -> Strings.rulesFieldCleared
+    Field.Reconciled -> Strings.rulesFieldReconciled
   }

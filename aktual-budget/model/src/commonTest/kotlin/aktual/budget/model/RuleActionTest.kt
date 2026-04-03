@@ -30,11 +30,7 @@ class RuleActionTest(private val case: TestCase = burstValues(TEST_CASE_1, TEST_
       TestCase(
         expected =
           listOf(
-            Set(
-              field = Description,
-              type = "id",
-              value = "0c76632b-d784-47b0-8391-d9c3067ad6fd",
-            ),
+            Set(field = Description, type = "id", value = "0c76632b-d784-47b0-8391-d9c3067ad6fd"),
             Set(
               field = Category,
               type = "id",
@@ -67,8 +63,7 @@ class RuleActionTest(private val case: TestCase = burstValues(TEST_CASE_1, TEST_
 
     val TEST_CASE_2 =
       TestCase(
-        expected =
-          listOf(LinkSchedule(value = ScheduleId("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"))),
+        expected = listOf(LinkSchedule(value = ScheduleId("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"))),
         json =
           """
           [

@@ -35,7 +35,7 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.model.ZeroBudgetMonthId
-import alakazam.kotlin.parse
+import alakazam.kotlin.SerializableByString
 import app.cash.sqldelight.ColumnAdapter
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -75,10 +75,11 @@ private fun <T : Any> stringAdapter(
 private fun <T : Any> stringAdapter(decode: (String) -> T): ColumnAdapter<T, String> =
   stringAdapter(decode, encode = { it.toString() })
 
-private inline fun <reified E : Enum<E>> enumStringAdapter(): ColumnAdapter<E, String> =
-  stringAdapter {
-    E::class.parse(it)
-  }
+private inline fun <reified E> enumStringAdapter(): ColumnAdapter<E, String>
+  where E : Enum<E>, E : SerializableByString = stringAdapter { string ->
+  enumValues<E>().firstOrNull { it.value == string }
+    ?: error("No ${E::class.qualifiedName} matching '$string'")
+}
 
 private inline fun <reified T : JsonElement> jsonElement(crossinline getter: JsonElement.() -> T) =
   object : ColumnAdapter<T, String> {

@@ -1,7 +1,9 @@
 package aktual.budget.model
 
+import alakazam.kotlin.SerializableByString
+
 /** packages/loot-core/src/server/dashboard/app.ts, exportModel() */
-enum class WidgetType(private val value: String) {
+enum class WidgetType(override val value: String) : SerializableByString {
   NetWorth("net-worth-card"),
   CashFlow("cash-flow-card"),
   Spending("spending-card"),
