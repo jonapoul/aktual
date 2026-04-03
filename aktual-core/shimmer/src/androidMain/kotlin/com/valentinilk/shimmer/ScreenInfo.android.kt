@@ -7,7 +7,7 @@ import androidx.compose.ui.geometry.Rect
 
 @Composable
 internal actual fun rememberWindowBounds(): Rect = remember {
-    val metrics = Resources.getSystem().displayMetrics
+  val metrics = Resources.getSystem().displayMetrics
 
-    Rect(0f, 0f, metrics.widthPixels.toFloat(), metrics.heightPixels.toFloat())
+  Rect(0f, 0f, metrics.widthPixels.toFloat(), metrics.heightPixels.toFloat())
 }

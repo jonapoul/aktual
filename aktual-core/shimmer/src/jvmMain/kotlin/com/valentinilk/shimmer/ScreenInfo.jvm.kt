@@ -11,9 +11,7 @@ import androidx.compose.ui.unit.toSize
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 internal actual fun rememberWindowBounds(): Rect {
-    val windowInfo = LocalWindowInfo.current.containerSize
+  val windowInfo = LocalWindowInfo.current.containerSize
 
-    return remember(windowInfo) {
-        Rect(Offset.Zero, windowInfo.toSize())
-    }
+  return remember(windowInfo) { Rect(Offset.Zero, windowInfo.toSize()) }
 }

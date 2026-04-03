@@ -7,45 +7,44 @@ import kotlinx.coroutines.flow.MutableStateFlow
 
 @Composable
 fun rememberShimmer(
-    shimmerBounds: ShimmerBounds,
-    theme: ShimmerTheme = LocalShimmerTheme.current,
+  shimmerBounds: ShimmerBounds,
+  theme: ShimmerTheme = LocalShimmerTheme.current,
 ): Shimmer {
-    val effect = rememberShimmerEffect(theme)
-    val bounds = rememberShimmerBounds(shimmerBounds)
-    val shimmer = remember(theme, effect) {
-        Shimmer(theme, effect, bounds)
-    }
-    shimmer.updateBounds(bounds)
-    return shimmer
+  val effect = rememberShimmerEffect(theme)
+  val bounds = rememberShimmerBounds(shimmerBounds)
+  val shimmer = remember(theme, effect) { Shimmer(theme, effect, bounds) }
+  shimmer.updateBounds(bounds)
+  return shimmer
 }
 
-class Shimmer internal constructor(
-    internal val theme: ShimmerTheme,
-    internal val effect: ShimmerEffect,
-    bounds: Rect?,
+class Shimmer
+internal constructor(
+  internal val theme: ShimmerTheme,
+  internal val effect: ShimmerEffect,
+  bounds: Rect?,
 ) {
 
-    internal val boundsFlow = MutableStateFlow(bounds)
+  internal val boundsFlow = MutableStateFlow(bounds)
 
-    fun updateBounds(bounds: Rect?) {
-        boundsFlow.value = bounds
-    }
+  fun updateBounds(bounds: Rect?) {
+    boundsFlow.value = bounds
+  }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || this::class != other::class) return false
+  override fun equals(other: Any?): Boolean {
+    if (this === other) return true
+    if (other == null || this::class != other::class) return false
 
-        other as Shimmer
+    other as Shimmer
 
-        if (theme != other.theme) return false
-        if (effect != other.effect) return false
+    if (theme != other.theme) return false
+    if (effect != other.effect) return false
 
-        return true
-    }
+    return true
+  }
 
-    override fun hashCode(): Int {
-        var result = theme.hashCode()
-        result = 31 * result + effect.hashCode()
-        return result
-    }
+  override fun hashCode(): Int {
+    var result = theme.hashCode()
+    result = 31 * result + effect.hashCode()
+    return result
+  }
 }
