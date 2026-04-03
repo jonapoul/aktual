@@ -7,7 +7,7 @@ env:
   CI: true
   GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GITLEAKS_CONFIG: ./config/gitleaks.toml
+  BETTERLEAKS_CONFIG: ./config/betterleaks.toml
 
 permissions:
   contents: read
@@ -81,14 +81,22 @@ jobs:
             shellcheck "${files[@]}"
           fi
 
-  gitleaks:
+  betterleaks:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
+      - uses: dortort/betterleaks-action@cd0b905aa4befb8f42f8b1ab98150180c9e77515 # v0.1.0
+        id: betterleaks
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          fail-on-leak: 'false'
+      - uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4
+        if: always()
+        with:
+          sarif_file: ${{ steps.betterleaks.outputs.sarif-path }}
 
   ktfmt:
     runs-on: ubuntu-latest
@@ -99,7 +107,7 @@ jobs:
       - run: scripts/ktfmt.sh check --force
 
   validation:
-    needs: [ changed-files, validate-renovate, validate-wrapper, shellcheck, gitleaks, ktfmt ]
+    needs: [ changed-files, validate-renovate, validate-wrapper, shellcheck, betterleaks, ktfmt ]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
