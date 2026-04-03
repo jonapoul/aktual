@@ -1,8 +1,8 @@
 package aktual.test
 
-import aktual.core.di.AppGraph
-import aktual.core.di.BudgetGraph
-import aktual.core.di.BudgetGraphHolder
+import aktual.budget.di.BudgetGraph
+import aktual.budget.di.BudgetGraphHolder
+import aktual.core.model.AppGraph
 
 interface TestAppGraph : AppGraph {
   val budgetGraphBuilder: BudgetGraph.Builder

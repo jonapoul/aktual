@@ -1,4 +1,4 @@
-package aktual.core.di
+package aktual.core.model
 
 import dev.zacsweers.metrox.viewmodel.ViewModelGraph
 

@@ -8,8 +8,8 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(project(":aktual-app:nav"))
+    api(project(":aktual-budget:di"))
     api(project(":aktual-core:api"))
-    api(project(":aktual-core:di"))
     api(project(":aktual-core:l10n"))
     api(project(":aktual-core:logging"))
     api(project(":aktual-core:ui"))

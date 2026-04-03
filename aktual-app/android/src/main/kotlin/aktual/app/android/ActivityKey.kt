@@ -1,4 +1,4 @@
-package aktual.core.di
+package aktual.app.android
 
 import android.app.Activity
 import dev.zacsweers.metro.MapKey

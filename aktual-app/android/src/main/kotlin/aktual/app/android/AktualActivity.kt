@@ -2,7 +2,6 @@ package aktual.app.android
 
 import aktual.app.nav.AktualAppContent
 import aktual.app.nav.rememberBackStack
-import aktual.core.di.ActivityKey
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity

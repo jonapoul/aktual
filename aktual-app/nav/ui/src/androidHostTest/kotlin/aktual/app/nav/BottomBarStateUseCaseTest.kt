@@ -1,6 +1,6 @@
 package aktual.app.nav
 
-import aktual.core.di.BudgetGraphHolder
+import aktual.budget.di.BudgetGraphHolder
 import aktual.core.model.PingState.Failure
 import aktual.core.model.PingState.Success
 import aktual.core.model.PingState.Unknown

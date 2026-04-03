@@ -1,10 +1,10 @@
 package aktual.budget.reports.vm.choosetype
 
 import aktual.budget.db.dao.DashboardDao
+import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
-import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.Empty
 import aktual.core.model.UuidGenerator
 import alakazam.kotlin.CoroutineContexts

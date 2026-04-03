@@ -70,6 +70,7 @@ include(
   ":aktual-budget:data",
   ":aktual-budget:data-di",
   ":aktual-budget:data-impl",
+  ":aktual-budget:di",
   ":aktual-budget:list:ui",
   ":aktual-budget:list:vm",
   ":aktual-budget:model",

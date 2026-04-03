@@ -1,10 +1,11 @@
-package aktual.core.di
+package aktual.budget.di
 
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
+import aktual.core.model.AppGraph
 import aktual.test.coroutineContainer
 import aktual.test.messageContains
 import assertk.assertFailure

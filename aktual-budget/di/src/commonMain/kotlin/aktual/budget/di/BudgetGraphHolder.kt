@@ -1,4 +1,4 @@
-package aktual.core.di
+package aktual.budget.di
 
 import aktual.budget.model.DbMetadata
 import alakazam.kotlin.StateHolder

@@ -3,6 +3,7 @@
 package aktual.app.nav
 
 import aktual.api.client.TokenExpiredEvent
+import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.Currency
@@ -15,7 +16,6 @@ import aktual.budget.model.readMetadata
 import aktual.core.connection.ConnectionMonitor
 import aktual.core.connection.ServerPinger
 import aktual.core.connection.ServerVersionFetcher
-import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.PingStateHolder
 import aktual.core.model.Token
 import aktual.core.ui.BlurConfig

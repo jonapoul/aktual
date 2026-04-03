@@ -3,6 +3,7 @@ package aktual.budget.reports.vm.dashboard
 import aktual.budget.db.Dashboard
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
+import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.CalendarReportMeta
@@ -16,7 +17,6 @@ import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.SpendingReportMeta
 import aktual.budget.reports.vm.SummaryReportMeta
-import aktual.core.di.BudgetGraphHolder
 import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

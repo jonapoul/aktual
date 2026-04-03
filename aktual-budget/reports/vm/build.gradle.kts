@@ -11,7 +11,7 @@ kotlin {
     api(project(":aktual-budget:model"))
     api(project(":aktual-budget:data"))
     api(libs.kotlinx.datetime)
-    implementation(project(":aktual-core:di"))
+    implementation(project(":aktual-budget:di"))
     implementation(project(":aktual-core:model"))
   }
 
