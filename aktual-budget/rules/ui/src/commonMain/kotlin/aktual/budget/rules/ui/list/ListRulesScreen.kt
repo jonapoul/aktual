@@ -219,11 +219,6 @@ private fun ColumnScope.ContentSuccess(
 
       items(items) { rule -> ListRulesItem(rule = rule, onAction = onAction) }
     }
-
-    item {
-      BottomStatusBarSpacing()
-      BottomNavBarSpacing()
-    }
   }
 }
 

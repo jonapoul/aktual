@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
@@ -50,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -199,12 +201,12 @@ private fun BottomNavBar(
   NavigationBar(
     modifier = modifier,
     containerColor = theme.sidebarBackground,
-    contentColor = theme.sidebarItemText,
+    contentColor = Color.Green,
   ) {
     for (tab in BudgetTab.entries) {
       NavigationBarItem(
         icon = { Icon(tab.icon(), contentDescription = tab.label()) },
-        label = { Text(tab.label()) },
+        label = { Text(text = tab.label(), color = LocalContentColor.current) },
         selected = selectedTab == tab,
         onClick = { onSelectTab(tab) },
         colors = theme.navBarItem(),
@@ -223,12 +225,13 @@ private fun SideNavRail(
   NavigationRail(
     modifier = modifier,
     containerColor = theme.sidebarBackground,
-    contentColor = theme.sidebarItemText,
+    contentColor = Color.Green,
   ) {
     for (tab in BudgetTab.entries) {
       NavigationRailItem(
         icon = { Icon(tab.icon(), contentDescription = tab.label()) },
-        label = { Text(tab.label()) },
+        label = { Text(text = tab.label(), color = LocalContentColor.current) },
+        alwaysShowLabel = true,
         selected = selectedTab == tab,
         onClick = { onSelectTab(tab) },
         colors = theme.navRailItem(),
