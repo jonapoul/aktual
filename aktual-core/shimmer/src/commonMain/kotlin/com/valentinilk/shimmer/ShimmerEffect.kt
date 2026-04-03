@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
@@ -57,11 +58,18 @@ internal class ShimmerEffect(
       blendMode = this@ShimmerEffect.blendMode
     }
 
+  private val emptyPaint = Paint()
+
+  // Cached shader state to avoid recreating the shader every frame when the gradient endpoints haven't changed
+  private var cachedFrom = Offset.Unspecified
+  private var cachedTo = Offset.Unspecified
+
+  // Cached draw area to avoid allocating a new Rect every frame when size hasn't changed
+  private var cachedDrawArea = Rect.Zero
+
   internal suspend fun startAnimation() {
     animatedState.animateTo(targetValue = 1f, animationSpec = animationSpec)
   }
-
-  private val emptyPaint = Paint()
 
   fun ContentDrawScope.draw(shimmerArea: ShimmerArea) {
     with(shimmerArea) {
@@ -78,19 +86,22 @@ internal class ShimmerEffect(
         translate(traversal, 0f, 0f)
       }
 
-      paint.shader =
-        LinearGradientShader(
-          from = transformationMatrix.map(gradientFrom),
-          to = transformationMatrix.map(gradientTo),
-          colors = shaderColors,
-          colorStops = shaderColorStops,
-        )
+      val newFrom = transformationMatrix.map(gradientFrom)
+      val newTo = transformationMatrix.map(gradientTo)
+      if (newFrom != cachedFrom || newTo != cachedTo) {
+        cachedFrom = newFrom
+        cachedTo = newTo
+        paint.shader = LinearGradientShader(from = newFrom, to = newTo, colors = shaderColors, colorStops = shaderColorStops)
+      }
 
       val drawArea = size.toRect()
+      if (drawArea != cachedDrawArea) {
+        cachedDrawArea = drawArea
+      }
       drawIntoCanvas { canvas ->
-        canvas.withSaveLayer(bounds = drawArea, paint = emptyPaint) {
+        canvas.withSaveLayer(bounds = cachedDrawArea, paint = emptyPaint) {
           drawContent()
-          canvas.drawRect(drawArea, paint)
+          canvas.drawRect(cachedDrawArea, paint)
         }
       }
     }

@@ -4,12 +4,16 @@ import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
+@Immutable
 data class ShimmerTheme(
 
   /**
@@ -38,10 +42,10 @@ data class ShimmerTheme(
    * of the list has to be kept in sync with the [shaderColorStops]. Consult the docs of the
    * [androidx.compose.ui.graphics.LinearGradientShader] for more information.
    */
-  val shaderColors: List<Color>,
+  val shaderColors: ImmutableList<Color>,
 
   /** See docs of [shaderColors]. */
-  val shaderColorStops: List<Float>?,
+  val shaderColorStops: ImmutableList<Float>?,
 
   /** Controls the width used to distribute the [shaderColors]. */
   val shimmerWidth: Dp,
@@ -57,12 +61,12 @@ val defaultShimmerTheme: ShimmerTheme =
     blendMode = BlendMode.DstIn,
     rotation = 15.0f,
     shaderColors =
-      listOf(
+      persistentListOf(
         Color.White.copy(alpha = 0.25f),
         Color.White.copy(alpha = 1.00f),
         Color.White.copy(alpha = 0.25f),
       ),
-    shaderColorStops = listOf(0.0f, 0.5f, 1.0f),
+    shaderColorStops = persistentListOf(0.0f, 0.5f, 1.0f),
     shimmerWidth = 400.dp,
   )
 

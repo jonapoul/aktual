@@ -1,6 +1,7 @@
 package com.valentinilk.shimmer
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.geometry.Rect
 
 @Composable
@@ -12,6 +13,7 @@ internal fun rememberShimmerBounds(shimmerBounds: ShimmerBounds): Rect? {
   }
 }
 
+@Immutable
 sealed interface ShimmerBounds {
   data object Custom : ShimmerBounds
 
