@@ -7,7 +7,6 @@ env:
   CI: true
   GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  BETTERLEAKS_CONFIG: ./config/betterleaks.toml
 
 permissions:
   contents: read
@@ -92,7 +91,8 @@ jobs:
         id: betterleaks
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
-          fail-on-leak: 'false'
+          config: ./config/betterleaks.toml
+          fail-on-leak: 'true'
       - uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4
         if: always()
         with:
