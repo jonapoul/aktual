@@ -22,7 +22,7 @@ class TemporaryFolder(override val fileSystem: FileSystem = FileSystem.SYSTEM) :
       mutableRoot = createTempDirectory().toOkioPath()
       testFunction()
     } finally {
-      fileSystem.deleteRecursively(root)
+      runCatching { fileSystem.deleteRecursively(root) }
     }
 }
 
@@ -37,7 +37,7 @@ class CoTemporaryFolder(override val fileSystem: FileSystem = FileSystem.SYSTEM)
       mutableRoot = createTempDirectory().toOkioPath()
       testFunction()
     } finally {
-      fileSystem.deleteRecursively(root)
+      runCatching { fileSystem.deleteRecursively(root) }
     }
 }
 
