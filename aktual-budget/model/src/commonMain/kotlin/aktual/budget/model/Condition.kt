@@ -35,6 +35,7 @@ data class Condition(
     object Serializer : KSerializer<Op> by enumStringSerializer()
   }
 
+  @Immutable
   @Serializable
   data class Options(
     val inflow: Boolean?,

@@ -7,6 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable(Field.Serializer::class)
 enum class Field(override val value: String) : SerializableByString {
+  Acct("acct"), // legacy
   Account("account"),
   Amount("amount"),
   Category("category"),

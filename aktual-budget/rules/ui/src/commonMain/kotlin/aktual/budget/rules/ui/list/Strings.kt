@@ -195,7 +195,8 @@ private fun Operator.displayString(): String =
 @Composable
 private fun Field.string(options: Condition.Options?): String =
   when (this) {
-    Field.Account -> Strings.rulesFieldAccount
+    Field.Account,
+    Field.Acct -> Strings.rulesFieldAccount
     Field.Amount ->
       when {
         options?.inflow == true -> Strings.rulesFieldAmountInflow
