@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.LocalShimmerTheme
 import com.valentinilk.shimmer.ShimmerTheme
 import com.valentinilk.shimmer.shimmerSpec
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 @Suppress("ModifierMissing")
@@ -67,12 +68,12 @@ private fun aktualShimmerTheme(theme: Theme) =
       blendMode = BlendMode.DstIn,
       rotation = 15.0f,
       shaderColors =
-        listOf(
+        persistentListOf(
           theme.pageText.copy(alpha = 0.1f),
           theme.pageText.copy(alpha = 0.3f),
           theme.pageText.copy(alpha = 0.1f),
         ),
-      shaderColorStops = listOf(0.0f, 0.5f, 1.0f),
+      shaderColorStops = persistentListOf(0.0f, 0.5f, 1.0f),
       shimmerWidth = 400.dp,
     )
   }
