@@ -4,10 +4,12 @@ import aktual.account.vm.ChangePasswordState
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.model.Password.Companion.Empty
+import aktual.core.theme.LocalTheme
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.checkbox
 import aktual.core.ui.keyboardFocusRequester
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -44,6 +46,7 @@ internal fun ConfirmPasswordForm(
 ) {
   val keyboard = LocalSoftwareKeyboardController.current
   val focusManager = LocalFocusManager.current
+  val theme = LocalTheme.current
   val isLoading = state is ChangePasswordState.Loading
 
   if (state is ChangePasswordState.Success) {
@@ -91,6 +94,7 @@ internal fun ConfirmPasswordForm(
         checked = showPasswords,
         interactionSource = interactionSource,
         onCheckedChange = { onAction(PasswordAction.SetPasswordsVisible(!showPasswords)) },
+        colors = theme.checkbox(),
       )
 
       Text(text = Strings.passwordShow, fontSize = 15.sp)

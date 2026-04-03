@@ -7,6 +7,7 @@ import aktual.budget.model.BalanceType
 import aktual.budget.model.BankId
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.Condition
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.CustomReportMode
 import aktual.budget.model.DashboardPageId
@@ -17,8 +18,8 @@ import aktual.budget.model.Interval
 import aktual.budget.model.Operator
 import aktual.budget.model.PayeeId
 import aktual.budget.model.PayeeLocationId
-import aktual.budget.model.ReportCondition
 import aktual.budget.model.ReportDate
+import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
@@ -34,7 +35,7 @@ import aktual.budget.model.TransactionId
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.model.ZeroBudgetMonthId
-import alakazam.kotlin.parse
+import alakazam.kotlin.SerializableByString
 import app.cash.sqldelight.ColumnAdapter
 import kotlin.time.Instant
 import kotlin.uuid.Uuid
@@ -74,16 +75,20 @@ private fun <T : Any> stringAdapter(
 private fun <T : Any> stringAdapter(decode: (String) -> T): ColumnAdapter<T, String> =
   stringAdapter(decode, encode = { it.toString() })
 
-private inline fun <reified E : Enum<E>> enumStringAdapter(): ColumnAdapter<E, String> =
-  stringAdapter {
-    E::class.parse(it)
-  }
+private inline fun <reified E> enumStringAdapter(): ColumnAdapter<E, String>
+  where E : Enum<E>, E : SerializableByString = stringAdapter { string ->
+  enumValues<E>().firstOrNull { it.value == string }
+    ?: error("No ${E::class.qualifiedName} matching '$string'")
+}
+
+private val DbJson = Json { encodeDefaults = true }
 
 private inline fun <reified T : JsonElement> jsonElement(crossinline getter: JsonElement.() -> T) =
   object : ColumnAdapter<T, String> {
-    override fun encode(value: T): String = Json.encodeToString(value)
+    override fun encode(value: T): String = DbJson.encodeToString(value)
 
-    override fun decode(databaseValue: String): T = Json.parseToJsonElement(databaseValue).getter()
+    override fun decode(databaseValue: String): T =
+      DbJson.parseToJsonElement(databaseValue).getter()
   }
 
 private val jsonElement = jsonElement<JsonElement> { this }
@@ -92,12 +97,14 @@ private val jsonArray = jsonElement<JsonArray> { jsonArray }
 
 private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>) =
   object : ColumnAdapter<T, String> {
-    override fun decode(databaseValue: String): T = Json.decodeFromString(serializer, databaseValue)
+    override fun decode(databaseValue: String): T =
+      DbJson.decodeFromString(serializer, databaseValue)
 
-    override fun encode(value: T): String = Json.encodeToString(serializer, value)
+    override fun encode(value: T): String = DbJson.encodeToString(serializer, value)
   }
 
-private val reportConditions = jsonSerializable(ReportCondition.ListSerializer)
+private val conditions = jsonSerializable(Condition.ListSerializer)
+private val ruleActions = jsonSerializable(ListSerializer(RuleAction.serializer()))
 private val selectedCategories = jsonSerializable(ListSerializer(SelectedCategory.serializer()))
 
 private val localDate =
@@ -137,11 +144,11 @@ private val yearMonth =
 private val accountId = stringAdapter(::AccountId)
 private val accountSyncSource = stringAdapter(AccountSyncSource::fromString)
 private val bankId = stringAdapter(::BankId)
-private val syncedPrefKey = stringAdapter(SyncedPrefKey::decode, SyncedPrefKey::key)
 private val categoryGroupId = stringAdapter(::CategoryGroupId)
 private val categoryId = stringAdapter(::CategoryId)
 private val customReportsId = stringAdapter(::CustomReportId)
 private val dashboardPageId = stringAdapter(::DashboardPageId)
+private val operator = stringAdapter(decode = Operator::parse, encode = Operator::string)
 private val payeeId = stringAdapter(::PayeeId)
 private val payeeLocationId = stringAdapter(::PayeeLocationId)
 private val reportDate = stringAdapter(ReportDate::parse)
@@ -149,16 +156,17 @@ private val ruleId = stringAdapter(::RuleId)
 private val scheduleId = stringAdapter(::ScheduleId)
 private val scheduleJsonPathIndex = stringAdapter(::ScheduleJsonPathIndex)
 private val scheduleNextDateId = stringAdapter(::ScheduleNextDateId)
+private val syncedPrefKey = stringAdapter(SyncedPrefKey::decode, SyncedPrefKey::key)
 private val tagId = stringAdapter(::TagId)
 private val timestamp = stringAdapter(Timestamp::parse)
 private val transactionFilterId = stringAdapter(::TransactionFilterId)
 private val transactionId = stringAdapter(::TransactionId)
-private val widgetId = stringAdapter(::WidgetId)
 private val uuid = stringAdapter(Uuid::parse)
+private val widgetId = stringAdapter(::WidgetId)
 private val zeroBudgetMonthId = stringAdapter(::ZeroBudgetMonthId)
 
 private val balanceType = enumStringAdapter<BalanceType>()
-private val operator = enumStringAdapter<Operator>()
+private val conditionsOp = enumStringAdapter<Condition.Op>()
 private val customReportMode = enumStringAdapter<CustomReportMode>()
 private val dateRangeType = enumStringAdapter<DateRangeType>()
 private val graphType = enumStringAdapter<GraphType>()
@@ -232,8 +240,8 @@ internal val CustomReportsAdapter =
     group_byAdapter = groupBy,
     balance_typeAdapter = balanceType,
     graph_typeAdapter = graphType,
-    conditionsAdapter = reportConditions,
-    conditions_opAdapter = operator,
+    conditionsAdapter = conditions,
+    conditions_opAdapter = conditionsOp,
     metadataAdapter = jsonObject,
     sort_byAdapter = sortBy,
     intervalAdapter = interval,
@@ -260,9 +268,9 @@ internal val RulesAdapter =
   Rules.Adapter(
     idAdapter = ruleId,
     stageAdapter = ruleStage,
-    conditionsAdapter = jsonArray,
-    actionsAdapter = jsonArray,
-    conditions_opAdapter = operator,
+    conditionsAdapter = conditions,
+    actionsAdapter = ruleActions,
+    conditions_opAdapter = conditionsOp,
   )
 
 internal val SchedulesAdapter = Schedules.Adapter(idAdapter = scheduleId, ruleAdapter = ruleId)

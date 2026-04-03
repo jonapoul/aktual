@@ -3,12 +3,15 @@ package aktual.budget.navrail.ui
 import aktual.app.nav.BackNavigator
 import aktual.app.nav.BudgetNavEntryContributor
 import aktual.app.nav.BudgetNavKey
+import aktual.app.nav.ListRulesNavRoute
 import aktual.app.nav.ReportsListNavRoute
 import aktual.app.nav.TransactionsNavRoute
 import aktual.app.nav.debugPop
 import aktual.budget.model.BudgetId
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
-import aktual.core.icons.material.BarChart
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Reports
+import aktual.core.icons.Tuning
 import aktual.core.icons.material.LinearScale
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -29,6 +32,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
@@ -55,6 +59,7 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.serialization.json.Json
 
 @Composable
@@ -69,22 +74,20 @@ fun BudgetNavRail(
   var selectedTab by
     rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Transactions) }
 
-  val transactionsStack =
-    rememberSaveable(saver = budgetNavKeyStackSaver()) {
-      mutableStateListOf(TransactionsNavRoute(token, budgetId))
-    }
-
-  val reportsStack =
-    rememberSaveable(saver = budgetNavKeyStackSaver()) {
-      mutableStateListOf(ReportsListNavRoute(token, budgetId))
-    }
+  val transactionsStack = stackWithDefault(TransactionsNavRoute(token, budgetId))
+  val reportsStack = stackWithDefault(ReportsListNavRoute(token, budgetId))
+  val rulesStack = stackWithDefault(ListRulesNavRoute(token, budgetId))
 
   val tabStacks =
-    remember(transactionsStack, reportsStack) {
-      mapOf(BudgetTab.Transactions to transactionsStack, BudgetTab.Reports to reportsStack)
+    remember(transactionsStack, reportsStack, rulesStack) {
+      persistentMapOf(
+        BudgetTab.Transactions to transactionsStack,
+        BudgetTab.Reports to reportsStack,
+        BudgetTab.Rules to rulesStack,
+      )
     }
 
-  val activeStack: SnapshotStateList<BudgetNavKey> = tabStacks.getValue(selectedTab)
+  val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
 
   val onSelectTab: (BudgetTab) -> Unit = { tab ->
     if (tab == selectedTab) {
@@ -115,6 +118,10 @@ fun BudgetNavRail(
     )
   }
 }
+
+@Composable
+private fun stackWithDefault(default: BudgetNavKey) =
+  rememberSaveable(saver = budgetNavKeyStackSaver()) { mutableStateListOf(default) }
 
 @Composable
 private fun BottomNavLayout(
@@ -198,7 +205,7 @@ private fun BottomNavBar(
     for (tab in BudgetTab.entries) {
       NavigationBarItem(
         icon = { Icon(tab.icon(), contentDescription = tab.label()) },
-        label = { Text(tab.label()) },
+        label = { Text(text = tab.label(), color = LocalContentColor.current) },
         selected = selectedTab == tab,
         onClick = { onSelectTab(tab) },
         colors = theme.navBarItem(),
@@ -222,7 +229,8 @@ private fun SideNavRail(
     for (tab in BudgetTab.entries) {
       NavigationRailItem(
         icon = { Icon(tab.icon(), contentDescription = tab.label()) },
-        label = { Text(tab.label()) },
+        label = { Text(text = tab.label(), color = LocalContentColor.current) },
+        alwaysShowLabel = true,
         selected = selectedTab == tab,
         onClick = { onSelectTab(tab) },
         colors = theme.navRailItem(),
@@ -261,8 +269,8 @@ private fun metroViewModel(token: Token, budgetId: BudgetId) =
     create(token, budgetId)
   }
 
-private val TabSaver =
-  Saver<BudgetTab, Int>(save = { it.ordinal }, restore = { BudgetTab.entries[it] })
+private val TabSaver: Saver<BudgetTab, Int> =
+  Saver(save = { it.ordinal }, restore = { BudgetTab.entries[it] })
 
 private fun budgetNavKeyStackSaver() =
   Saver<SnapshotStateList<BudgetNavKey>, String>(
@@ -275,6 +283,7 @@ private fun budgetNavKeyStackSaver() =
 private enum class BudgetTab {
   Transactions,
   Reports,
+  Rules,
 }
 
 @Composable
@@ -282,13 +291,15 @@ private fun BudgetTab.label(): String =
   when (this) {
     BudgetTab.Transactions -> Strings.transactionsTitle
     BudgetTab.Reports -> Strings.reportsTitle
+    BudgetTab.Rules -> Strings.rulesTitle
   }
 
 @Composable
 private fun BudgetTab.icon(): ImageVector =
   when (this) {
     BudgetTab.Transactions -> MaterialIcons.LinearScale
-    BudgetTab.Reports -> MaterialIcons.BarChart
+    BudgetTab.Reports -> AktualIcons.Reports
+    BudgetTab.Rules -> AktualIcons.Tuning
   }
 
 @PortraitPreview

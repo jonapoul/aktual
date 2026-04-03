@@ -1,0 +1,73 @@
+<resources>
+  <string name="rules_title">Rules</string>
+  <string name="rules_toolbar">Rules</string>
+
+  <string name="rules_toolbar_checkboxes_enable">Enable multi-select</string>
+  <string name="rules_toolbar_checkboxes_disable">Disable multi-select</string>
+
+  <string name="rules_failure_prefix">Failed loading rules</string>
+  <string name="rules_failure_default_message">Unknown cause</string>
+  <string name="rules_failure_retry">Retry</string>
+  <string name="rules_success_empty">No rules found!</string>
+
+  <string name="rules_item_menu">Menu</string>
+  <string name="rules_item_edit">Edit</string>
+  <string name="rules_item_delete">Delete</string>
+
+  <string name="rules_header_text">Rules are always run in the order that you see them.</string>
+  <string name="rules_header_learn_more">Learn more</string>
+
+  <string name="rules_stage_prefix">Stage: %1$s</string>
+  <string name="rules_stage_pre">Pre</string>
+  <string name="rules_stage_none">Default</string>
+  <string name="rules_stage_post">Post</string>
+
+  <!-- Rule action operations -->
+  <string name="rules_op_set">set</string>
+  <string name="rules_op_set_split_amount">allocate</string>
+  <string name="rules_op_link_schedule">link schedule</string>
+  <string name="rules_op_prepend_notes">prepend to notes</string>
+  <string name="rules_op_append_notes">append to notes</string>
+  <string name="rules_op_delete_transaction">delete transaction</string>
+
+  <!-- Rule action "set" connector -->
+  <string name="rules_action_set_to"> to </string>
+
+  <!-- Condition operators -->
+  <string name="rules_operator_contains">contains</string>
+  <string name="rules_operator_does_not_contain">does not contain</string>
+  <string name="rules_operator_greater_than">is greater than</string>
+  <string name="rules_operator_greater_than_or_equals">is greater than or equals</string>
+  <string name="rules_operator_has_tags">has tags</string>
+  <string name="rules_operator_is">is</string>
+  <string name="rules_operator_is_approx">is approx</string>
+  <string name="rules_operator_is_between">is between</string>
+  <string name="rules_operator_is_not">is not</string>
+  <string name="rules_operator_less_than">is less than</string>
+  <string name="rules_operator_less_than_or_equals">is less than or equals</string>
+  <string name="rules_operator_matches">matches</string>
+  <string name="rules_operator_not_one_of">not one of</string>
+  <string name="rules_operator_off_budget">off budget</string>
+  <string name="rules_operator_on_budget">on budget</string>
+  <string name="rules_operator_one_of">one of</string>
+
+  <!-- Condition fields -->
+  <string name="rules_field_account">account</string>
+  <string name="rules_field_amount">amount</string>
+  <string name="rules_field_amount_inflow">amount (inflow)</string>
+  <string name="rules_field_amount_outflow">amount (outflow)</string>
+  <string name="rules_field_category">category</string>
+  <string name="rules_field_category_group">category group</string>
+  <string name="rules_field_date">date</string>
+  <string name="rules_field_description">description</string>
+  <string name="rules_field_notes">notes</string>
+  <string name="rules_field_payee">payee</string>
+  <string name="rules_field_payee_name">payee (name)</string>
+  <string name="rules_field_imported_description">imported description</string>
+  <string name="rules_field_imported_payee">imported payee</string>
+  <string name="rules_field_saved">saved</string>
+  <string name="rules_field_transfer">transfer</string>
+  <string name="rules_field_parent">parent</string>
+  <string name="rules_field_cleared">cleared</string>
+  <string name="rules_field_reconciled">reconciled</string>
+</resources>

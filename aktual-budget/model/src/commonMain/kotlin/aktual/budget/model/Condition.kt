@@ -2,6 +2,7 @@ package aktual.budget.model
 
 import alakazam.kotlin.SerializableByString
 import alakazam.kotlin.enumStringSerializer
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -14,8 +15,9 @@ import kotlinx.serialization.json.JsonElement
  * [value] is a stupidly complex typescript type, and no idea what [queryFilter] is meant to be.
  * Both are [JsonElement] for now.
  */
+@Immutable
 @Serializable
-data class ReportCondition(
+data class Condition(
   @SerialName("field") val field: Field,
   @SerialName("op") val operator: Operator,
   @SerialName("value") val value: JsonElement,
@@ -33,6 +35,7 @@ data class ReportCondition(
     object Serializer : KSerializer<Op> by enumStringSerializer()
   }
 
+  @Immutable
   @Serializable
   data class Options(
     val inflow: Boolean?,
@@ -40,26 +43,6 @@ data class ReportCondition(
     val month: Boolean?,
     val year: Boolean?,
   )
-
-  @Serializable(Field.Serializer::class)
-  enum class Field(override val value: String) : SerializableByString {
-    Account("account"),
-    Amount("amount"),
-    Category("category"),
-    CategoryGroup("category_group"),
-    Date("date"),
-    Notes("notes"),
-    Payee("payee"),
-    PayeeName("payee_name"),
-    ImportedPayee("imported_payee"),
-    Saved("saved"),
-    Transfer("transfer"),
-    Parent("parent"),
-    Cleared("cleared"),
-    Reconciled("reconciled");
-
-    object Serializer : KSerializer<Field> by enumStringSerializer()
-  }
 
   @Serializable(Type.Serializer::class)
   enum class Type(override val value: String) : SerializableByString {
@@ -73,6 +56,6 @@ data class ReportCondition(
   }
 
   companion object {
-    val ListSerializer: KSerializer<List<ReportCondition>> = ListSerializer(serializer())
+    val ListSerializer: KSerializer<List<Condition>> = ListSerializer(serializer())
   }
 }

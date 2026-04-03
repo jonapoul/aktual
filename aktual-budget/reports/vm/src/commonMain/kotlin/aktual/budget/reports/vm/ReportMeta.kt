@@ -1,8 +1,8 @@
 package aktual.budget.reports.vm
 
+import aktual.budget.model.Condition
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.Interval
-import aktual.budget.model.ReportCondition
 import aktual.budget.model.WidgetType
 import alakazam.kotlin.SerializableByString
 import alakazam.kotlin.enumStringSerializer
@@ -39,8 +39,8 @@ data class CustomReportMeta(@SerialName("id") val id: CustomReportId) : ReportMe
 @Serializable
 data class NetWorthReportMeta(
   @SerialName("name") val name: String? = null,
-  @SerialName("conditions") val conditions: List<ReportCondition>? = null,
-  @SerialName("conditionsOp") val conditionsOp: ReportCondition.Op? = null,
+  @SerialName("conditions") val conditions: List<Condition>? = null,
+  @SerialName("conditionsOp") val conditionsOp: Condition.Op? = null,
   @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
   @SerialName("interval") val interval: Interval? = null,
   @SerialName("mode") val mode: NetWorthMode? = null,
@@ -50,8 +50,8 @@ data class NetWorthReportMeta(
 @Serializable
 data class CashFlowReportMeta(
   @SerialName("name") val name: String? = null,
-  @SerialName("conditions") val conditions: List<ReportCondition>? = null,
-  @SerialName("conditionsOp") val conditionsOp: ReportCondition.Op? = null,
+  @SerialName("conditions") val conditions: List<Condition>? = null,
+  @SerialName("conditionsOp") val conditionsOp: Condition.Op? = null,
   @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
   @SerialName("showBalance") val showBalance: Boolean? = null,
 ) : ReportMeta
@@ -60,8 +60,8 @@ data class CashFlowReportMeta(
 @Serializable
 data class SpendingReportMeta(
   @SerialName("name") val name: String? = null,
-  @SerialName("conditions") val conditions: List<ReportCondition>? = null,
-  @SerialName("conditionsOp") val conditionsOp: ReportCondition.Op? = null,
+  @SerialName("conditions") val conditions: List<Condition>? = null,
+  @SerialName("conditionsOp") val conditionsOp: Condition.Op? = null,
   @SerialName("compare") val compare: String? = null,
   @SerialName("compareTo") val compareTo: String? = null,
   @SerialName("isLive") val isLive: Boolean? = null,
@@ -72,8 +72,8 @@ data class SpendingReportMeta(
 @Serializable
 data class BudgetAnalysisReportMeta(
   @SerialName("name") val name: String? = null,
-  @SerialName("conditions") val conditions: List<ReportCondition>? = null,
-  @SerialName("conditionsOp") val conditionsOp: ReportCondition.Op? = null,
+  @SerialName("conditions") val conditions: List<Condition>? = null,
+  @SerialName("conditionsOp") val conditionsOp: Condition.Op? = null,
   @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
   @SerialName("interval") val interval: Interval? = null,
   @SerialName("graphType") val graphType: GraphType? = null,
@@ -91,8 +91,8 @@ data class MarkdownReportMeta(
 @Serializable
 data class SummaryReportMeta(
   @SerialName("name") val name: String? = null,
-  @SerialName("conditions") val conditions: List<ReportCondition>? = null,
-  @SerialName("conditionsOp") val conditionsOp: ReportCondition.Op? = null,
+  @SerialName("conditions") val conditions: List<Condition>? = null,
+  @SerialName("conditionsOp") val conditionsOp: Condition.Op? = null,
   @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
   @SerialName("content") val content: String? = null,
 ) : ReportMeta
@@ -101,8 +101,8 @@ data class SummaryReportMeta(
 @Serializable
 data class CalendarReportMeta(
   @SerialName("name") val name: String? = null,
-  @SerialName("conditions") val conditions: List<ReportCondition>? = null,
-  @SerialName("conditionsOp") val conditionsOp: ReportCondition.Op? = null,
+  @SerialName("conditions") val conditions: List<Condition>? = null,
+  @SerialName("conditionsOp") val conditionsOp: Condition.Op? = null,
   @SerialName("timeFrame") val timeFrame: TimeFrame? = null,
 ) : ReportMeta
 
@@ -122,8 +122,8 @@ data class FormulaReportMeta(
 @Immutable
 @Serializable
 data class FormulaQuery(
-  @SerialName("conditions") val conditions: List<ReportCondition>,
-  @SerialName("conditionsOp") val conditionsOp: ReportCondition.Op?,
+  @SerialName("conditions") val conditions: List<Condition>,
+  @SerialName("conditionsOp") val conditionsOp: Condition.Op?,
   @SerialName("timeFrame") val timeFrame: TimeFrame?,
 )
 

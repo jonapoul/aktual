@@ -9,10 +9,12 @@ import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.MidnightTheme
+import aktual.core.theme.Theme
 import aktual.core.theme.isLight
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
@@ -133,6 +135,7 @@ private fun InspectThemeContent(
   contentPadding: PaddingValues,
   onAction: (InspectThemeAction) -> Unit,
   modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   when (state) {
     is InspectThemeState.Loading -> {
@@ -142,13 +145,15 @@ private fun InspectThemeContent(
     }
 
     is InspectThemeState.NotFound -> {
-      FailureScreen(
-        modifier = modifier.fillMaxSize(),
-        title = Strings.settingsThemeInspectNotFound,
-        reason = Strings.settingsThemeInspectNotFoundReason(state.id.value),
-        retryText = Strings.settingsThemeInspectRetry,
-        onClickRetry = { onAction(InspectThemeAction.Retry) },
-      )
+      Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        FailureScreen(
+          modifier = Modifier.background(theme.tableBackground, CardShape),
+          title = Strings.settingsThemeInspectNotFound,
+          reason = Strings.settingsThemeInspectNotFoundReason(state.id.value),
+          retryText = Strings.settingsThemeInspectRetry,
+          onClickRetry = { onAction(InspectThemeAction.Retry) },
+        )
+      }
     }
 
     is InspectThemeState.Loaded -> {

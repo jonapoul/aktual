@@ -1,6 +1,8 @@
 package aktual.budget.model
 
-enum class GroupBy(private val value: String) {
+import alakazam.kotlin.SerializableByString
+
+enum class GroupBy(override val value: String) : SerializableByString {
   Account(value = "Account"),
   Category(value = "Category"),
   Group(value = "Group"),

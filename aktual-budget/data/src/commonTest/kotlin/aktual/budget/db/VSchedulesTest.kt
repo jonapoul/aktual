@@ -1,4 +1,4 @@
-@file:Suppress("LongMethod")
+@file:Suppress("LongMethod", "UnnecessaryLet")
 
 package aktual.budget.db
 
@@ -7,7 +7,9 @@ import aktual.budget.db.test.insertRule
 import aktual.budget.db.test.insertSchedule
 import aktual.budget.db.test.insertScheduleJsonPaths
 import aktual.budget.db.test.insertScheduleNextDate
+import aktual.budget.model.Condition
 import aktual.budget.model.PayeeId
+import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.test.runDatabaseTest
@@ -15,9 +17,8 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
 import kotlinx.datetime.LocalDate
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.jsonArray
-import org.intellij.lang.annotations.Language
 
 internal class VSchedulesTest {
   @Test
@@ -115,8 +116,8 @@ internal class VSchedulesTest {
           """{"start":"2024-01-09","interval":1,"frequency":"weekly","patterns":[],""" +
             """"skipWeekend":false,"weekendSolveMode":"after","endMode":"never",""" +
             """"endOccurrences":1,"endDate":"2024-01-14"}""",
-        _conditions = Json.parseToJsonElement(RULE_1_CONDITIONS).jsonArray,
-        _actions = Json.parseToJsonElement(RULE_1_ACTIONS).jsonArray,
+        _conditions = RULE_1_CONDITIONS,
+        _actions = RULE_1_ACTIONS,
       )
     val expected2 =
       V_schedules(
@@ -135,8 +136,8 @@ internal class VSchedulesTest {
           """{"start":"2023-02-20","frequency":"yearly","patterns":[],""" +
             """"skipWeekend":false,"weekendSolveMode":"after","endMode":"never",""" +
             """"endOccurrences":1,"endDate":"2024-01-14","interval":1}""",
-        _conditions = Json.parseToJsonElement(RULE_2_CONDITIONS).jsonArray,
-        _actions = Json.parseToJsonElement(RULE_2_ACTIONS).jsonArray,
+        _conditions = RULE_2_CONDITIONS,
+        _actions = RULE_2_ACTIONS,
       )
     val expected3 =
       V_schedules(
@@ -155,8 +156,8 @@ internal class VSchedulesTest {
           """{"start":"2024-02-01","frequency":"monthly","patterns":[],""" +
             """"skipWeekend":true,"weekendSolveMode":"after","endMode":"never",""" +
             """"endOccurrences":1,"endDate":"2024-01-14","interval":1}""",
-        _conditions = Json.parseToJsonElement(RULE_3_CONDITIONS).jsonArray,
-        _actions = Json.parseToJsonElement(RULE_3_ACTIONS).jsonArray,
+        _conditions = RULE_3_CONDITIONS,
+        _actions = RULE_3_ACTIONS,
       )
 
     assertThat(schedulesQueries.getFromVSchedules().executeAsList())
@@ -164,151 +165,160 @@ internal class VSchedulesTest {
   }
 }
 
-@Language("JSON")
-private const val RULE_1_CONDITIONS =
+private val ActionsSerializer = ListSerializer(RuleAction.serializer())
+private val ConditionsSerializer = ListSerializer(Condition.serializer())
+
+private val RULE_1_CONDITIONS =
   """
-[
-  {
-    "op": "is",
-    "field": "description",
-    "value": "2745db0b-b454-4877-a728-3c9f2b7056e5",
-    "type": "id"
-  },
-  {
-    "op": "is",
-    "field": "acct",
-    "value": "78055dbe-680f-4605-bcd5-46a67feedcec",
-    "type": "id"
-  },
-  {
-    "op": "isapprox",
-    "field": "date",
-    "value": {
-      "start": "2024-01-09",
-      "interval": 1,
-      "frequency": "weekly",
-      "patterns": [],
-      "skipWeekend": false,
-      "weekendSolveMode": "after",
-      "endMode": "never",
-      "endOccurrences": 1,
-      "endDate": "2024-01-14"
+  [
+    {
+      "op": "is",
+      "field": "description",
+      "value": "2745db0b-b454-4877-a728-3c9f2b7056e5",
+      "type": "id"
     },
-    "type": "date"
-  },
-  {
-    "op": "isapprox",
-    "field": "amount",
-    "value": 0
-  }
-]
-"""
-
-@Language("JSON")
-private const val RULE_1_ACTIONS =
-  """
-[
-  {
-    "op": "link-schedule",
-    "field": null,
-    "value": "a2aea0d7-00fb-4cf1-ab38-8aa7fb19ab54",
-    "type": "id"
-  }
-]
-"""
-
-@Language("JSON")
-private const val RULE_2_CONDITIONS =
-  """
-[
-  {
-    "op": "is",
-    "field": "description",
-    "value": "2002c385-1504-48bc-824f-be6b79e0e9ef"
-  },
-  {
-    "op": "is",
-    "field": "acct",
-    "value": "eb08ea4f-bbb0-437f-873a-1fdee4154683"
-  },
-  {
-    "op": "isapprox",
-    "field": "date",
-    "value": {
-      "start": "2023-02-20",
-      "frequency": "yearly",
-      "patterns": [],
-      "skipWeekend": false,
-      "weekendSolveMode": "after",
-      "endMode": "never",
-      "endOccurrences": 1,
-      "endDate": "2024-01-14",
-      "interval": 1
+    {
+      "op": "is",
+      "field": "acct",
+      "value": "78055dbe-680f-4605-bcd5-46a67feedcec",
+      "type": "id"
+    },
+    {
+      "op": "isapprox",
+      "field": "date",
+      "value": {
+        "start": "2024-01-09",
+        "interval": 1,
+        "frequency": "weekly",
+        "patterns": [],
+        "skipWeekend": false,
+        "weekendSolveMode": "after",
+        "endMode": "never",
+        "endOccurrences": 1,
+        "endDate": "2024-01-14"
+      },
+      "type": "date"
+    },
+    {
+      "op": "isapprox",
+      "field": "amount",
+      "value": 0
     }
-  },
-  {
-    "op": "isapprox",
-    "field": "amount",
-    "value": -864
-  }
-]
-"""
-
-@Language("JSON")
-private const val RULE_2_ACTIONS =
+  ]
   """
-[
-  {
-    "op": "link-schedule",
-    "value": "5c333823-2640-4d27-85a3-e97fabfe21d7"
-  }
-]
-"""
+    .trimIndent()
+    .let { Json.decodeFromString(ConditionsSerializer, it) }
 
-@Language("JSON")
-private const val RULE_3_CONDITIONS =
+private val RULE_1_ACTIONS =
   """
-[
-  {
-    "op": "is",
-    "field": "description",
-    "value": "866bd20a-dc48-4d2c-8d69-b9567a94fc32"
-  },
-  {
-    "op": "is",
-    "field": "acct",
-    "value": "78055dbe-680f-4605-bcd5-46a67feedcec"
-  },
-  {
-    "op": "isapprox",
-    "field": "date",
-    "value": {
-      "start": "2024-02-01",
-      "frequency": "monthly",
-      "patterns": [],
-      "skipWeekend": true,
-      "weekendSolveMode": "after",
-      "endMode": "never",
-      "endOccurrences": 1,
-      "endDate": "2024-01-14",
-      "interval": 1
+  [
+    {
+      "op": "link-schedule",
+      "field": null,
+      "value": "a2aea0d7-00fb-4cf1-ab38-8aa7fb19ab54",
+      "type": "id"
     }
-  },
-  {
-    "op": "is",
-    "field": "amount",
-    "value": -20000
-  }
-]
-"""
-
-@Language("JSON")
-private const val RULE_3_ACTIONS =
+  ]
   """
-[
-  {
-    "op": "link-schedule",
-    "value": "a9896b6c-a6f1-45b6-8384-61fc1f68fe62"
-  }
-]
-"""
+    .trimIndent()
+    .let { Json.decodeFromString(ActionsSerializer, it) }
+
+private val RULE_2_CONDITIONS =
+  """
+  [
+    {
+      "op": "is",
+      "field": "description",
+      "value": "2002c385-1504-48bc-824f-be6b79e0e9ef"
+    },
+    {
+      "op": "is",
+      "field": "acct",
+      "value": "eb08ea4f-bbb0-437f-873a-1fdee4154683"
+    },
+    {
+      "op": "isapprox",
+      "field": "date",
+      "value": {
+        "start": "2023-02-20",
+        "frequency": "yearly",
+        "patterns": [],
+        "skipWeekend": false,
+        "weekendSolveMode": "after",
+        "endMode": "never",
+        "endOccurrences": 1,
+        "endDate": "2024-01-14",
+        "interval": 1
+      }
+    },
+    {
+      "op": "isapprox",
+      "field": "amount",
+      "value": -864
+    }
+  ]
+  """
+    .trimIndent()
+    .let { Json.decodeFromString(ConditionsSerializer, it) }
+
+private val RULE_2_ACTIONS =
+  """
+  [
+    {
+      "op": "link-schedule",
+      "value": "5c333823-2640-4d27-85a3-e97fabfe21d7"
+    }
+  ]
+  """
+    .trimIndent()
+    .let { Json.decodeFromString(ActionsSerializer, it) }
+
+private val RULE_3_CONDITIONS =
+  """
+  [
+    {
+      "op": "is",
+      "field": "description",
+      "value": "866bd20a-dc48-4d2c-8d69-b9567a94fc32"
+    },
+    {
+      "op": "is",
+      "field": "acct",
+      "value": "78055dbe-680f-4605-bcd5-46a67feedcec"
+    },
+    {
+      "op": "isapprox",
+      "field": "date",
+      "value": {
+        "start": "2024-02-01",
+        "frequency": "monthly",
+        "patterns": [],
+        "skipWeekend": true,
+        "weekendSolveMode": "after",
+        "endMode": "never",
+        "endOccurrences": 1,
+        "endDate": "2024-01-14",
+        "interval": 1
+      }
+    },
+    {
+      "op": "is",
+      "field": "amount",
+      "value": -20000
+    }
+  ]
+  """
+    .trimIndent()
+    .let { Json.decodeFromString(ConditionsSerializer, it) }
+
+private val RULE_3_ACTIONS =
+  """
+  [
+    {
+      "op": "link-schedule",
+      "value": "a9896b6c-a6f1-45b6-8384-61fc1f68fe62"
+    }
+  ]
+  """
+    .trimIndent()
+    .let { Json.decodeFromString(ActionsSerializer, it) }

@@ -1,11 +1,11 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
+import aktual.budget.model.Condition
+import aktual.budget.model.Condition.Type.Boolean
+import aktual.budget.model.Field.Transfer
 import aktual.budget.model.Interval.Weekly
 import aktual.budget.model.Operator.Is
-import aktual.budget.model.ReportCondition
-import aktual.budget.model.ReportCondition.Field.Transfer
-import aktual.budget.model.ReportCondition.Type.Boolean
 import aktual.budget.reports.vm.NetWorthData
 import aktual.budget.reports.vm.NetWorthMode.Stacked
 import aktual.budget.reports.vm.NetWorthReportMeta
@@ -244,7 +244,7 @@ internal val PREVIEW_NET_WORTH_META =
     name = "My Net Worth",
     conditions =
       listOf(
-        ReportCondition(
+        Condition(
           field = Transfer,
           operator = Is,
           value =

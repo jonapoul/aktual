@@ -27,6 +27,7 @@ import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.checkbox
 import aktual.core.ui.formattedString
 import aktual.core.ui.stringShort
 import alakazam.compose.HorizontalSpacer
@@ -561,12 +562,14 @@ private fun DivisorCheckbox(
   data: SummaryData.Percentage,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     Checkbox(
       modifier = Modifier.minimumInteractiveComponentSize(),
       checked = data.divisor is PercentageDivisor.AllTime,
       onCheckedChange = { newValue -> onAction(Action.SetAllTimeDivisor(newValue)) },
+      colors = theme.checkbox(),
     )
 
     HorizontalSpacer(4.dp)

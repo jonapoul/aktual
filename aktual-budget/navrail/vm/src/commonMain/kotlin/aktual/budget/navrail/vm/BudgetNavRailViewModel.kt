@@ -5,6 +5,7 @@ import aktual.app.nav.BudgetNavGraph
 import aktual.budget.model.BudgetId
 import aktual.core.model.Token
 import aktual.prefs.AppPreferences
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.AppScope
@@ -18,6 +19,7 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.toImmutableSet
 import kotlinx.coroutines.launch
 
+@Stable
 @AssistedInject
 class BudgetNavRailViewModel(
   @Assisted val token: Token,

@@ -36,6 +36,8 @@ private val aktualIcons =
       FileDouble,
       Key,
       OpenBracket,
+      Reports,
       Sum,
+      Tuning,
     )
   }

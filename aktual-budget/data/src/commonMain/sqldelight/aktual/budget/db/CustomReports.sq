@@ -5,8 +5,7 @@ import aktual.budget.model.DateRangeType;
 import aktual.budget.model.GraphType;
 import aktual.budget.model.GroupBy;
 import aktual.budget.model.Interval;
-import aktual.budget.model.Operator;
-import aktual.budget.model.ReportCondition;
+import aktual.budget.model.Condition;
 import aktual.budget.model.ReportDate;
 import aktual.budget.model.SelectedCategory;
 import aktual.budget.model.SortBy;
@@ -30,8 +29,8 @@ CREATE TABLE IF NOT EXISTS custom_reports(
   show_uncategorized INTEGER AS Boolean DEFAULT 0,
   selected_categories TEXT AS List<SelectedCategory>,
   graph_type TEXT AS GraphType DEFAULT 'BarGraph',
-  conditions TEXT AS List<ReportCondition>,
-  conditions_op TEXT AS Operator DEFAULT 'and',
+  conditions TEXT AS List<Condition>,
+  conditions_op TEXT AS Condition.Op DEFAULT 'and',
   metadata TEXT AS JsonObject,
   interval TEXT AS Interval DEFAULT 'Monthly',
   color_scheme TEXT,

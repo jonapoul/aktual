@@ -29,6 +29,7 @@ import aktual.prefs.asStateFlow
 import aktual.prefs.delete
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -127,21 +128,26 @@ class InitialRouteUseCase(
     }
   }
 
+  @Composable
+  @Suppress("BracesOnWhenStatements")
   private fun resolveAuthenticatedRoute(token: Token, budgetId: BudgetId?): NavKey =
     when {
       budgetId == null -> ListBudgetsNavRoute(token)
 
       !localFilesExist(budgetId) -> ListBudgetsNavRoute(token)
 
-      else ->
-        try {
+      else -> {
+        LaunchedEffect(budgetId) {
           val metadata = files.readMetadata(budgetId)
           budgetGraphHolder.update(metadata)
+        }
+        try {
           BudgetNavRailNavRoute(token, budgetId)
         } catch (e: Exception) {
           logcat.w(e) { "Failed to auto-open budget $budgetId, falling back to budget list" }
           ListBudgetsNavRoute(token)
         }
+      }
     }
 
   private fun localFilesExist(id: BudgetId): Boolean =

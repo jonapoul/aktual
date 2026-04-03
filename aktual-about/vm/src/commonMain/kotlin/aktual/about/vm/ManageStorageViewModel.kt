@@ -73,8 +73,7 @@ class ManageStorageViewModel(
       budgetGraphHolder.clear()
       withContext(contexts.io) {
         val root = appDirectory.get()
-        files.fileSystem.deleteRecursively(root)
-        files.fileSystem.createDirectories(root)
+        with(files.fileSystem) { list(root).forEach { deleteRecursively(it) } }
       }
       logcat.d { "Cleared all files" }
       loadStorageInfo()

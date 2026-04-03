@@ -10,7 +10,6 @@ import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -34,7 +33,7 @@ fun FailureScreen(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  Box(modifier = modifier.padding(20.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
+  Box(modifier = modifier.padding(20.dp), contentAlignment = Alignment.Center) {
     Column(
       modifier =
         Modifier.padding(Dimens.Small).background(Color.Transparent, CardShape).padding(30.dp),

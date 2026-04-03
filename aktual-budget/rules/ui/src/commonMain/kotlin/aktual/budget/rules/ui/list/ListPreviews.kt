@@ -1,0 +1,62 @@
+package aktual.budget.rules.ui.list
+
+import aktual.budget.model.Condition
+import aktual.budget.model.Field
+import aktual.budget.model.Operator
+import aktual.budget.model.RuleAction
+import aktual.budget.model.RuleId
+import aktual.budget.model.RuleStage
+import aktual.budget.model.ScheduleId
+import aktual.budget.rules.vm.RuleListItem
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.serialization.json.JsonPrimitive
+
+internal val PreviewCondition1 =
+  Condition(
+    field = Field.Category,
+    operator = Operator.Is,
+    value = JsonPrimitive("condition-1-value"),
+    options = null,
+    conditionsOp = Condition.Op.And,
+    type = Condition.Type.String,
+    customName = "My condition",
+    queryFilter = null,
+  )
+
+internal val PreviewCondition2 =
+  Condition(
+    field = Field.ImportedPayee,
+    operator = Operator.Contains,
+    value = JsonPrimitive("amazon"),
+    options = null,
+    conditionsOp = null,
+    type = Condition.Type.String,
+    customName = null,
+    queryFilter = null,
+  )
+
+internal val PreviewRuleListItem1 =
+  RuleListItem(
+    id = RuleId("item-1-id"),
+    stage = RuleStage.Default,
+    conditionsOp = Condition.Op.And,
+    conditions = persistentListOf(PreviewCondition1),
+    actions =
+      persistentListOf(
+        RuleAction.Set(
+          field = Field.Description,
+          type = "payee",
+          value = "0c76632b-d784-47b0-8391-d9c3067ad6fd",
+        )
+      ),
+  )
+
+internal val PreviewRuleListItem2 =
+  RuleListItem(
+    id = RuleId("item-2-id"),
+    stage = RuleStage.Default,
+    conditionsOp = Condition.Op.And,
+    conditions = persistentListOf(PreviewCondition1, PreviewCondition2),
+    actions =
+      persistentListOf(RuleAction.LinkSchedule(ScheduleId("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"))),
+  )

@@ -1,6 +1,8 @@
 package aktual.budget.model
 
-enum class GraphType(private val value: String) {
+import alakazam.kotlin.SerializableByString
+
+enum class GraphType(override val value: String) : SerializableByString {
   AreaGraph(value = "AreaGraph"),
   BarGraph(value = "BarGraph"),
   DonutGraph(value = "DonutGraph"),

@@ -7,7 +7,7 @@ import kotlin.test.Test
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 
-class ReportConditionTest {
+class ConditionTest {
   @Test
   fun `Multiple conditions`() {
     val json =
@@ -31,16 +31,16 @@ class ReportConditionTest {
 
     val data =
       listOf(
-        ReportCondition(
-          field = ReportCondition.Field.Account,
+        Condition(
+          field = Field.Account,
           operator = Operator.Is,
-          type = ReportCondition.Type.Id,
+          type = Condition.Type.Id,
           value = JsonPrimitive("eb08ea4f-bbb0-437f-873a-1fdee4154683"),
         ),
-        ReportCondition(
-          field = ReportCondition.Field.Payee,
+        Condition(
+          field = Field.Payee,
           operator = Operator.Is,
-          type = ReportCondition.Type.Id,
+          type = Condition.Type.Id,
           value = JsonPrimitive("92ac5221-2605-419d-821a-6ec04ea38b57"),
         ),
       )
@@ -48,7 +48,7 @@ class ReportConditionTest {
     val serialized = PrettyJson.encodeToString(data)
     assertThat(serialized).isEqualTo(json)
 
-    val deserialized = PrettyJson.decodeFromString(ReportCondition.ListSerializer, serialized)
+    val deserialized = PrettyJson.decodeFromString(Condition.ListSerializer, serialized)
     assertThat(deserialized).isEqualTo(data)
   }
 
@@ -78,10 +78,10 @@ class ReportConditionTest {
 
     val data =
       listOf(
-        ReportCondition(
-          field = ReportCondition.Field.Category,
+        Condition(
+          field = Field.Category,
           operator = Operator.OneOf,
-          type = ReportCondition.Type.Id,
+          type = Condition.Type.Id,
           value =
             JsonArray(
               content =
@@ -103,7 +103,7 @@ class ReportConditionTest {
     val serialized = PrettyJson.encodeToString(data)
     assertThat(serialized).isEqualTo(json)
 
-    val deserialized = PrettyJson.decodeFromString(ReportCondition.ListSerializer, serialized)
+    val deserialized = PrettyJson.decodeFromString(Condition.ListSerializer, serialized)
     assertThat(deserialized).isEqualTo(data)
   }
 }
