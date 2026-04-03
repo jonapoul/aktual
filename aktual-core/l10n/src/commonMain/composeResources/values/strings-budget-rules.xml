@@ -2,6 +2,9 @@
   <string name="rules_title">Rules</string>
   <string name="rules_toolbar">Rules</string>
 
+  <string name="rules_toolbar_checkboxes_enable">Enable multi-select</string>
+  <string name="rules_toolbar_checkboxes_disable">Disable multi-select</string>
+
   <string name="rules_failure_prefix">Failed loading rules</string>
   <string name="rules_failure_default_message">Unknown cause</string>
   <string name="rules_failure_retry">Retry</string>

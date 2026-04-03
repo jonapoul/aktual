@@ -4,6 +4,7 @@ import aktual.app.nav.BackNavigator
 import aktual.budget.model.BudgetId
 import aktual.budget.rules.vm.CheckboxesState
 import aktual.budget.rules.vm.CheckboxesState.Active
+import aktual.budget.rules.vm.CheckboxesState.Inactive
 import aktual.budget.rules.vm.ListRulesState
 import aktual.budget.rules.vm.ListRulesState.Empty
 import aktual.budget.rules.vm.ListRulesState.Failure
@@ -11,12 +12,16 @@ import aktual.budget.rules.vm.ListRulesState.Loading
 import aktual.budget.rules.vm.ListRulesState.Success
 import aktual.budget.rules.vm.ListRulesViewModel
 import aktual.budget.rules.vm.RuleListItem
+import aktual.core.icons.material.Deselect
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.SelectAll
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.model.groupBy
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
@@ -38,6 +43,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -88,6 +94,8 @@ fun ListRulesScreen(
         is OpenUrl -> TODO()
         is Check -> viewModel.check(action.id)
         is Uncheck -> viewModel.uncheck(action.id)
+        DisableCheckboxes -> viewModel.hideCheckboxes()
+        EnableCheckboxes -> viewModel.showCheckboxes()
       }
     },
   )
@@ -115,7 +123,7 @@ private fun ListRulesScaffold(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
         title = { Text(Strings.rulesToolbar) },
-        actions = {},
+        actions = { AppBarButtons(state, checkboxes, onAction) },
       )
     },
   ) { innerPadding ->
@@ -132,6 +140,34 @@ private fun ListRulesScaffold(
           content = { ListRulesContent(state, checkboxes, onAction, listState) },
         )
       }
+    }
+  }
+}
+
+@Composable
+@Suppress("UnusedReceiverParameter")
+private fun RowScope.AppBarButtons(
+  state: ListRulesState,
+  checkboxes: CheckboxesState,
+  onAction: (ListRulesAction) -> Unit,
+) {
+  when (checkboxes) {
+    is Active -> {
+      BareIconButton(
+        imageVector = MaterialIcons.Deselect,
+        contentDescription = Strings.rulesToolbarCheckboxesEnable,
+        enabled = state is Success,
+        onClick = { onAction(DisableCheckboxes) },
+      )
+    }
+
+    Inactive -> {
+      BareIconButton(
+        imageVector = MaterialIcons.SelectAll,
+        contentDescription = Strings.rulesToolbarCheckboxesDisable,
+        enabled = state is Success,
+        onClick = { onAction(EnableCheckboxes) },
+      )
     }
   }
 }
@@ -163,8 +199,8 @@ private fun ListRulesContent(
             modifier = Modifier.background(theme.tableBackground, CardShape),
             title = Strings.rulesFailurePrefix,
             reason = state.cause ?: Strings.rulesFailureDefaultMessage,
-            onClickRetry = null,
-            retryText = null,
+            onClickRetry = { onAction(Reload) },
+            retryText = Strings.syncRetry,
           )
         }
       }
@@ -250,7 +286,7 @@ private fun PreviewListRulesScaffold(
 
 private data class ListRulesStateParams(
   val state: ListRulesState,
-  val checkboxes: CheckboxesState = CheckboxesState.Inactive,
+  val checkboxes: CheckboxesState = Inactive,
 )
 
 private class ListRulesStateProvider :

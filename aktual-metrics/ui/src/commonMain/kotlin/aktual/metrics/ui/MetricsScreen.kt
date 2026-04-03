@@ -215,14 +215,16 @@ private fun FailureContent(
   theme: Theme,
   modifier: Modifier = Modifier,
 ) {
-  FailureScreen(
-    modifier = modifier,
-    title = Strings.metricsFailure,
-    reason = message,
-    retryText = Strings.metricsFailureRetry,
-    onClickRetry = { onAction(MetricsAction.Refresh) },
-    theme = theme,
-  )
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    FailureScreen(
+      modifier = Modifier.background(theme.tableBackground, CardShape),
+      title = Strings.metricsFailure,
+      reason = message,
+      retryText = Strings.metricsFailureRetry,
+      onClickRetry = { onAction(MetricsAction.Refresh) },
+      theme = theme,
+    )
+  }
 }
 
 @Composable

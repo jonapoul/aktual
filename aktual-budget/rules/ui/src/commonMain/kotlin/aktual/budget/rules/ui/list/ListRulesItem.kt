@@ -99,18 +99,34 @@ internal fun ListRulesItem(
 
     var showMenu by remember { mutableStateOf(false) }
 
-    BareIconButton(
-      imageVector = MaterialIcons.MoreVert,
-      contentDescription = Strings.rulesItemMenu,
-      onClick = { showMenu = true },
-    )
+    Box {
+      BareIconButton(
+        imageVector = MaterialIcons.MoreVert,
+        contentDescription = Strings.rulesItemMenu,
+        onClick = { showMenu = true },
+      )
 
-    ListRulesItemMenu(
-      rule = rule,
-      expanded = showMenu,
-      onDismiss = { showMenu = false },
-      onAction = onAction,
-    )
+      val onDismiss = { showMenu = false }
+
+      ThemedDropdownMenu(expanded = showMenu, onDismissRequest = onDismiss) {
+        ThemedDropdownMenuItem(
+          text = Strings.rulesItemEdit,
+          leadingIcon = MaterialIcons.Edit,
+          onClick = {
+            onDismiss()
+            onAction(Edit(rule))
+          },
+        )
+        ThemedDropdownMenuItem(
+          text = Strings.rulesItemDelete,
+          leadingIcon = MaterialIcons.DeleteForever,
+          onClick = {
+            onDismiss()
+            onAction(Delete(rule.id))
+          },
+        )
+      }
+    }
   }
 }
 
@@ -166,33 +182,6 @@ private fun ListRulesItemActions(
         Text(text = rememberActionText(action, styles), overflow = Ellipsis, maxLines = 1)
       }
     }
-  }
-}
-
-@Composable
-private fun ListRulesItemMenu(
-  rule: RuleListItem,
-  expanded: Boolean,
-  onDismiss: () -> Unit,
-  onAction: (ListRulesAction) -> Unit,
-) {
-  ThemedDropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
-    ThemedDropdownMenuItem(
-      text = Strings.rulesItemEdit,
-      leadingIcon = MaterialIcons.Edit,
-      onClick = {
-        onDismiss()
-        onAction(Edit(rule))
-      },
-    )
-    ThemedDropdownMenuItem(
-      text = Strings.rulesItemDelete,
-      leadingIcon = MaterialIcons.DeleteForever,
-      onClick = {
-        onDismiss()
-        onAction(Delete(rule.id))
-      },
-    )
   }
 }
 

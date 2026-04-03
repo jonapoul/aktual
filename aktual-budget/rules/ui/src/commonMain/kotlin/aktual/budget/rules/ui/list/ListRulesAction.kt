@@ -16,6 +16,10 @@ internal data object Reload : ListRulesAction
 
 @JvmInline internal value class OpenUrl(val url: String) : ListRulesAction
 
+internal data object EnableCheckboxes : ListRulesAction
+
+internal data object DisableCheckboxes : ListRulesAction
+
 @JvmInline internal value class Check(val id: RuleId) : ListRulesAction
 
 @JvmInline internal value class Uncheck(val id: RuleId) : ListRulesAction
