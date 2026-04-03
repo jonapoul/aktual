@@ -43,6 +43,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -133,7 +134,7 @@ private fun ListRulesScaffold(
       Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
         BlurredTopBarSpacing(blurState, innerPadding)
         PullToRefreshBox(
-          modifier = Modifier.padding(8.dp),
+          modifier = Modifier.padding(horizontal = 8.dp),
           contentAlignment = Alignment.Center,
           onRefresh = { onAction(Reload) },
           isRefreshing = state is Loading,
@@ -255,12 +256,14 @@ private fun ColumnScope.ContentSuccess(
   ) {
     stagedItems.forEach { (stage, items) ->
       stickyHeader {
-        Box(
-          modifier = Modifier.fillMaxWidth().background(theme.pillBackgroundSelected, CardShape)
+        Row(
+          modifier =
+            Modifier.fillMaxWidth()
+              .background(theme.pillBackgroundSelected, CardShape)
+              .padding(Dimens.Large)
         ) {
           Text(
-            modifier = Modifier.padding(Dimens.Large),
-            text = stage.string(),
+            text = Strings.rulesStagePrefix(stage.string()),
             style = AktualTypography.titleSmall,
             fontWeight = FontWeight.Bold,
             color = theme.pillTextSelected,

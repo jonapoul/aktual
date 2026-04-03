@@ -5,6 +5,7 @@ import aktual.budget.db.dao.RulesDao
 import aktual.budget.model.BudgetId
 import aktual.budget.model.Condition
 import aktual.budget.model.RuleId
+import aktual.budget.model.RuleStage
 import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.Token
 import alakazam.kotlin.requireMessage
@@ -100,7 +101,7 @@ class ListRulesViewModel(
   private fun toListItem(rule: Rules): RuleListItem =
     RuleListItem(
       id = rule.id,
-      stage = rule.stage,
+      stage = rule.stage ?: RuleStage.Default,
       conditions = rule.conditions.orEmpty().toImmutableList(),
       conditionsOp = rule.conditions_op ?: Condition.Op.And,
       actions = rule.actions.orEmpty().toImmutableList(),

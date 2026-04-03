@@ -30,10 +30,10 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonPrimitive
 
 @Composable
-internal fun RuleStage?.string(): String =
+internal fun RuleStage.string(): String =
   when (this) {
     RuleStage.Pre -> Strings.rulesStagePre
-    null -> Strings.rulesStageNone
+    RuleStage.Default -> Strings.rulesStageNone
     RuleStage.Post -> Strings.rulesStagePost
   }
 

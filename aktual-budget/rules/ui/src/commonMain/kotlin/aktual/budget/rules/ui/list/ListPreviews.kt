@@ -5,6 +5,7 @@ import aktual.budget.model.Field
 import aktual.budget.model.Operator
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
+import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
 import aktual.budget.rules.vm.RuleListItem
 import kotlinx.collections.immutable.persistentListOf
@@ -37,7 +38,7 @@ internal val PreviewCondition2 =
 internal val PreviewRuleListItem1 =
   RuleListItem(
     id = RuleId("item-1-id"),
-    stage = null,
+    stage = RuleStage.Default,
     conditionsOp = Condition.Op.And,
     conditions = persistentListOf(PreviewCondition1),
     actions =
@@ -53,7 +54,7 @@ internal val PreviewRuleListItem1 =
 internal val PreviewRuleListItem2 =
   RuleListItem(
     id = RuleId("item-2-id"),
-    stage = null,
+    stage = RuleStage.Default,
     conditionsOp = Condition.Op.And,
     conditions = persistentListOf(PreviewCondition1, PreviewCondition2),
     actions =

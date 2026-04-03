@@ -23,7 +23,7 @@ sealed interface ListRulesState {
 @Immutable
 data class RuleListItem(
   val id: RuleId,
-  val stage: RuleStage?,
+  val stage: RuleStage,
   val conditions: ImmutableList<Condition>,
   val conditionsOp: Condition.Op,
   val actions: ImmutableList<RuleAction>,
@@ -45,5 +45,11 @@ sealed interface CheckboxesState {
     when (this) {
       Inactive -> this
       is Active -> Active((ids - id).toImmutableSet())
+    }
+
+  operator fun contains(id: RuleId): Boolean =
+    when (this) {
+      Inactive -> false
+      is Active -> id in ids
     }
 }

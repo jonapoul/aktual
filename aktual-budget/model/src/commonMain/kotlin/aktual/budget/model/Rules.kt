@@ -97,6 +97,7 @@ sealed interface RuleAction {
 @Serializable(RuleStage.Serializer::class)
 enum class RuleStage(override val value: String) : SerializableByString {
   Pre(value = "pre"),
+  Default(value = "default"),
   Post(value = "post");
 
   override fun toString(): String = value

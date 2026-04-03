@@ -4,6 +4,7 @@ import aktual.budget.model.Condition
 import aktual.budget.model.RuleAction
 import aktual.budget.rules.vm.CheckboxesState
 import aktual.budget.rules.vm.CheckboxesState.Active
+import aktual.budget.rules.vm.CheckboxesState.Inactive
 import aktual.budget.rules.vm.RuleListItem
 import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.Edit
@@ -71,7 +72,7 @@ internal fun ListRulesItem(
   theme: Theme = LocalTheme.current,
 ) {
   Row(
-    modifier = modifier.ruleRow(theme) { onAction(Open(rule.id)) },
+    modifier = modifier.ruleRow(rule, checkboxes, theme, onAction),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -196,9 +197,11 @@ internal fun ShimmerRuleListItem(
 
   Row(
     modifier =
-      modifier.fillMaxWidth().ruleRow(theme, onClick = null).shimmer(shimmer).onGloballyPositioned {
-        shimmer.updateBounds(it.unclippedBoundsInWindow())
-      },
+      modifier
+        .fillMaxWidth()
+        .ruleRow(null, checkboxes, theme, null)
+        .shimmer(shimmer)
+        .onGloballyPositioned { shimmer.updateBounds(it.unclippedBoundsInWindow()) },
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -254,13 +257,33 @@ internal fun ShimmerRuleListItem(
   }
 }
 
-private fun Modifier.ruleRow(theme: Theme, onClick: (() -> Unit)?): Modifier =
-  fillMaxWidth()
+private fun Modifier.ruleRow(
+  rule: RuleListItem?,
+  checkboxes: CheckboxesState,
+  theme: Theme,
+  onAction: ((ListRulesAction) -> Unit)?,
+): Modifier {
+  val onClick = rule?.let { r ->
+    when (checkboxes) {
+      is Active -> {
+        if (r.id in checkboxes) {
+          { onAction?.invoke(Uncheck(r.id)) }
+        } else {
+          { onAction?.invoke(Check(r.id)) }
+        }
+      }
+      is Inactive -> {
+        { onAction?.invoke(Open(r.id)) }
+      }
+    }
+  }
+  return fillMaxWidth()
     .clip(RowShape)
     .background(theme.tableBackground, RowShape)
     .border(Dp.Hairline, theme.tableBorder, RowShape)
     .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
     .padding(horizontal = 15.dp, vertical = 12.dp)
+}
 
 @Preview
 @Composable
@@ -273,7 +296,7 @@ private fun PreviewRuleListItem(
 
 private data class RuleListItemParams(
   val item: RuleListItem,
-  val checkboxes: CheckboxesState = CheckboxesState.Inactive,
+  val checkboxes: CheckboxesState = Inactive,
 )
 
 private class RuleListItemProvider :
@@ -289,5 +312,5 @@ private class RuleListItemProvider :
 @Composable
 private fun PreviewShimmerListItem(@PreviewParameter(ThemeParameters::class) theme: Theme) =
   PreviewWithTheme(theme) {
-    ShimmerRuleListItem(checkboxes = CheckboxesState.Inactive, modifier = Modifier.fillMaxWidth())
+    ShimmerRuleListItem(checkboxes = Inactive, modifier = Modifier.fillMaxWidth())
   }
