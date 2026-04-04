@@ -91,6 +91,7 @@ private const val LEARN_MORE_URL = "https://actualbudget.org/docs/budgeting/rule
 private fun JsonArray.toList(): List<String> = map { it.jsonPrimitive.content }
 
 @Composable
+@Suppress("ElseCaseInsteadOfExhaustiveWhen")
 internal fun rememberConditionText(
   prefix: String,
   condition: Condition,
@@ -146,22 +147,19 @@ internal fun rememberConditionText(
       when (val value = fieldNames ?: condition.value) {
         is JsonPrimitive -> {
           withStyle(styles.highlighted) {
-            when (condition.field) {
-              Field.Amount -> {
-                append(
-                  Amount(value.int)
-                    .toString(
-                      numberFormatConfig = numberFormat,
-                      currencyConfig = currency,
-                      includeSign = true,
-                      isPrivacyEnabled = privacy,
-                    )
-                )
-              }
-
-              else -> {
-                append(value.content)
-              }
+            if (condition.field == Field.Amount) {
+              append(
+                Amount(value.int)
+                  .toString(
+                    numberFormatConfig = numberFormat,
+                    currencyConfig = currency,
+                    includeSign = true,
+                    isPrivacyEnabled = privacy,
+                  )
+              )
+            }
+            else {
+              append(value.content)
             }
           }
         }
@@ -194,6 +192,7 @@ internal fun rememberConditionText(
 }
 
 @Composable
+@Suppress("ElseCaseInsteadOfExhaustiveWhen")
 internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): AnnotatedString {
   val opText = action.opString()
   val fieldText = (action as? SetAction)?.field?.string(options = null)

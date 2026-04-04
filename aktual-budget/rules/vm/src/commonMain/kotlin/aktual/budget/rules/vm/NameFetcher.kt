@@ -28,6 +28,7 @@ interface NameFetcher {
   fun names(field: Field, ids: List<String>): Flow<JsonArray>
 }
 
+@Suppress("ElseCaseInsteadOfExhaustiveWhen")
 internal class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
   private val accounts = AccountDao(database)
   private val categories = CategoryDao(database)
