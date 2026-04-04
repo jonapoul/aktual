@@ -157,8 +157,7 @@ internal fun rememberConditionText(
                     isPrivacyEnabled = privacy,
                   )
               )
-            }
-            else {
+            } else {
               append(value.content)
             }
           }
