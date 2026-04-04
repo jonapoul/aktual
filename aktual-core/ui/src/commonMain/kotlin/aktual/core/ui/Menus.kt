@@ -15,6 +15,7 @@ import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -33,6 +34,14 @@ fun ThemedDropdownMenu(
   theme: Theme = LocalTheme.current,
   content: @Composable ColumnScope.() -> Unit,
 ) {
+  val dialogBlurState = LocalDialogBlurState.current
+  if (expanded) {
+    DisposableEffect(Unit) {
+      dialogBlurState.activeDialogCount++
+      onDispose { dialogBlurState.activeDialogCount-- }
+    }
+  }
+
   DropdownMenu(
     expanded = expanded,
     onDismissRequest = onDismissRequest,
