@@ -8,6 +8,7 @@ import aktual.budget.model.BankId
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.CustomReportMode
 import aktual.budget.model.DashboardPageId
@@ -81,7 +82,10 @@ private inline fun <reified E> enumStringAdapter(): ColumnAdapter<E, String>
     ?: error("No ${E::class.qualifiedName} matching '$string'")
 }
 
-private val DbJson = Json { encodeDefaults = true }
+private val DbJson = Json {
+  encodeDefaults = true
+  explicitNulls = false
+}
 
 private inline fun <reified T : JsonElement> jsonElement(crossinline getter: JsonElement.() -> T) =
   object : ColumnAdapter<T, String> {
@@ -103,7 +107,7 @@ private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>
     override fun encode(value: T): String = DbJson.encodeToString(serializer, value)
   }
 
-private val conditions = jsonSerializable(Condition.ListSerializer)
+private val conditions = jsonSerializable(ListSerializer(Condition.serializer()))
 private val ruleActions = jsonSerializable(ListSerializer(RuleAction.serializer()))
 private val selectedCategories = jsonSerializable(ListSerializer(SelectedCategory.serializer()))
 
@@ -166,7 +170,7 @@ private val widgetId = stringAdapter(::WidgetId)
 private val zeroBudgetMonthId = stringAdapter(::ZeroBudgetMonthId)
 
 private val balanceType = enumStringAdapter<BalanceType>()
-private val conditionsOp = enumStringAdapter<Condition.Op>()
+private val conditionsOp = enumStringAdapter<ConditionOp>()
 private val customReportMode = enumStringAdapter<CustomReportMode>()
 private val dateRangeType = enumStringAdapter<DateRangeType>()
 private val graphType = enumStringAdapter<GraphType>()

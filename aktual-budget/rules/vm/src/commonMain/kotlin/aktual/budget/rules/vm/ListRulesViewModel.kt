@@ -4,7 +4,7 @@ import aktual.budget.db.Rules
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.model.BudgetId
-import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.core.model.Token
@@ -103,7 +103,7 @@ class ListRulesViewModel(
       id = rule.id,
       stage = rule.stage ?: RuleStage.Default,
       conditions = rule.conditions.orEmpty().toImmutableList(),
-      conditionsOp = rule.conditions_op ?: Condition.Op.And,
+      conditionsOp = rule.conditions_op ?: ConditionOp.And,
       actions = rule.actions.orEmpty().toImmutableList(),
     )
 

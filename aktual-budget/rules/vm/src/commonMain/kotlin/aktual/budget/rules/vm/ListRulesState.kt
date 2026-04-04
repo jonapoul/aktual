@@ -1,6 +1,7 @@
 package aktual.budget.rules.vm
 
 import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
@@ -25,7 +26,7 @@ data class RuleListItem(
   val id: RuleId,
   val stage: RuleStage,
   val conditions: ImmutableList<Condition>,
-  val conditionsOp: Condition.Op,
+  val conditionsOp: ConditionOp,
   val actions: ImmutableList<RuleAction>,
 )
 

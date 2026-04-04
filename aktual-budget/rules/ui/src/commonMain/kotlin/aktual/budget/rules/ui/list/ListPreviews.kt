@@ -1,6 +1,8 @@
 package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
+import aktual.budget.model.ConditionType
 import aktual.budget.model.Field
 import aktual.budget.model.Operator
 import aktual.budget.model.RuleAction
@@ -17,8 +19,8 @@ internal val PreviewCondition1 =
     operator = Operator.Is,
     value = JsonPrimitive("condition-1-value"),
     options = null,
-    conditionsOp = Condition.Op.And,
-    type = Condition.Type.String,
+    conditionsOp = ConditionOp.And,
+    type = ConditionType.String,
     customName = "My condition",
     queryFilter = null,
   )
@@ -30,7 +32,7 @@ internal val PreviewCondition2 =
     value = JsonPrimitive("amazon"),
     options = null,
     conditionsOp = null,
-    type = Condition.Type.String,
+    type = ConditionType.String,
     customName = null,
     queryFilter = null,
   )
@@ -39,7 +41,7 @@ internal val PreviewRuleListItem1 =
   RuleListItem(
     id = RuleId("item-1-id"),
     stage = RuleStage.Default,
-    conditionsOp = Condition.Op.And,
+    conditionsOp = ConditionOp.And,
     conditions = persistentListOf(PreviewCondition1),
     actions =
       persistentListOf(
@@ -55,7 +57,7 @@ internal val PreviewRuleListItem2 =
   RuleListItem(
     id = RuleId("item-2-id"),
     stage = RuleStage.Default,
-    conditionsOp = Condition.Op.And,
+    conditionsOp = ConditionOp.And,
     conditions = persistentListOf(PreviewCondition1, PreviewCondition2),
     actions =
       persistentListOf(RuleAction.LinkSchedule(ScheduleId("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"))),

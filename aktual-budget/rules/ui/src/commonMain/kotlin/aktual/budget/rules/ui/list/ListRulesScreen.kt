@@ -2,6 +2,7 @@ package aktual.budget.rules.ui.list
 
 import aktual.app.nav.BackNavigator
 import aktual.budget.model.BudgetId
+import aktual.budget.model.RuleStage
 import aktual.budget.rules.vm.CheckboxesState
 import aktual.budget.rules.vm.CheckboxesState.Active
 import aktual.budget.rules.vm.CheckboxesState.Inactive
@@ -12,12 +13,14 @@ import aktual.budget.rules.vm.ListRulesState.Loading
 import aktual.budget.rules.vm.ListRulesState.Success
 import aktual.budget.rules.vm.ListRulesViewModel
 import aktual.budget.rules.vm.RuleListItem
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.ChevronDown
+import aktual.core.icons.ChevronUp
 import aktual.core.icons.material.Deselect
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.SelectAll
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
-import aktual.core.model.groupBy
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -39,6 +42,7 @@ import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -52,12 +56,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,6 +77,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ListRulesScreen(
@@ -232,7 +240,7 @@ private fun ListRulesContent(
 }
 
 @Composable
-@Suppress("UnusedReceiverParameter") // to suppress detekt
+@Suppress("UnusedReceiverParameter")
 private fun ColumnScope.ContentSuccess(
   rules: ImmutableList<RuleListItem>,
   checkboxes: CheckboxesState,
@@ -241,7 +249,14 @@ private fun ColumnScope.ContentSuccess(
   listState: LazyListState = rememberLazyListState(),
   theme: Theme = LocalTheme.current,
 ) {
-  val stagedItems = remember(rules) { rules.groupBy { it.stage } }
+  val stagedItems: ImmutableList<Pair<RuleStage, List<RuleListItem>>> =
+    remember(rules) {
+      rules.groupBy { it.stage }.toList().sortedBy { (stage, _) -> stage }.toImmutableList()
+    }
+
+  val expandedStages = remember {
+    mutableStateMapOf(RuleStage.Pre to true, RuleStage.Default to true, RuleStage.Post to true)
+  }
 
   Text(
     modifier = Modifier.padding(Dimens.Medium).fillMaxWidth(),
@@ -255,24 +270,43 @@ private fun ColumnScope.ContentSuccess(
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     stagedItems.forEach { (stage, items) ->
+      val isExpanded = expandedStages.getValue(stage)
       stickyHeader {
         Row(
           modifier =
-            Modifier.fillMaxWidth()
-              .background(theme.pillBackgroundSelected, CardShape)
-              .padding(Dimens.Large)
+            Modifier.fillMaxWidth().background(theme.pillBackgroundSelected, CardShape).clickable {
+              expandedStages[stage] = !isExpanded
+            },
+          verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(
+            modifier = Modifier.weight(1f).padding(Dimens.Large),
             text = Strings.rulesStagePrefix(stage.string()),
             style = AktualTypography.titleSmall,
             fontWeight = FontWeight.Bold,
             color = theme.pillTextSelected,
           )
+
+          Text(
+            modifier = Modifier.padding(Dimens.Large),
+            text = Strings.rulesStageCount(items.size),
+            style = AktualTypography.bodyLarge,
+            textAlign = TextAlign.End,
+            color = theme.pillText,
+          )
+
+          Icon(
+            modifier = Modifier.minimumInteractiveComponentSize(),
+            imageVector = if (isExpanded) AktualIcons.ChevronUp else AktualIcons.ChevronDown,
+            contentDescription = "",
+          )
         }
       }
 
-      items(items) { rule ->
-        ListRulesItem(rule = rule, checkboxes = checkboxes, onAction = onAction)
+      if (isExpanded) {
+        items(items) { rule ->
+          ListRulesItem(rule = rule, checkboxes = checkboxes, onAction = onAction)
+        }
       }
     }
   }

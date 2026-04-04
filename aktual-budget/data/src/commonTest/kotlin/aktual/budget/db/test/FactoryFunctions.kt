@@ -6,6 +6,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.BalanceType
 import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.CustomReportMode
 import aktual.budget.model.DateRangeType
@@ -77,7 +78,7 @@ internal fun buildCustomReport(
     selected_categories = selectedCategories,
     graph_type = GraphType.BarGraph,
     conditions = conditions,
-    conditions_op = Condition.Op.And,
+    conditions_op = ConditionOp.And,
     metadata = metadata,
     interval = Interval.Monthly,
     color_scheme = null,

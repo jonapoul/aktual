@@ -7,6 +7,7 @@ import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.AccountId
 import aktual.budget.model.Condition
+import aktual.budget.model.ConditionOp
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
@@ -58,7 +59,7 @@ internal suspend fun BudgetDatabase.insertRule(
   conditions: List<Condition>? = emptyList(),
   actions: List<RuleAction>? = emptyList(),
   tombstone: Boolean? = false,
-  conditionsOp: Condition.Op? = Condition.Op.And,
+  conditionsOp: ConditionOp? = ConditionOp.And,
 ) = rulesQueries.withResult {
   insert(
     id = RuleId(id),

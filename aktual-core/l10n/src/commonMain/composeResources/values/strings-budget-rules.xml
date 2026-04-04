@@ -21,6 +21,7 @@
   <string name="rules_stage_pre">Pre</string>
   <string name="rules_stage_none">Default</string>
   <string name="rules_stage_post">Post</string>
+  <string name="rules_stage_count">%1$d rules</string>
 
   <!-- Rule action operations -->
   <string name="rules_op_set">set</string>
