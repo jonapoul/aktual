@@ -316,12 +316,12 @@ private fun ContentSuccess(
       state = listState,
       verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
     ) {
-      stagedRules.forEach { (stage, rules) ->
+      stagedRules.forEach { (stage, r) ->
         val isExpanded = expandedStages.getValue(stage)
-        stickyHeader { StageHeader(expandedStages, stage, isExpanded, rules) }
+        stickyHeader { StageHeader(expandedStages, stage, isExpanded, r) }
 
         if (isExpanded) {
-          items(rules) { rule -> ListRulesItem(rule, checkboxes, onAction) }
+          items(r) { rule -> ListRulesItem(rule, checkboxes, onAction) }
         }
       }
     }
