@@ -39,6 +39,7 @@ import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -259,6 +260,7 @@ private fun ColumnScope.ContentSuccess(
         Row(
           modifier =
             Modifier.fillMaxWidth()
+              .clickable(indication = null, interactionSource = null) {} // to block click events underneath
               .background(theme.pillBackgroundSelected, CardShape)
               .padding(Dimens.Large)
         ) {

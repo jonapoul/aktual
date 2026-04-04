@@ -1,3 +1,5 @@
+@file:Suppress("JUnitMalformedDeclaration")
+
 package aktual.budget.model
 
 import aktual.budget.model.Field.Category
@@ -14,11 +16,11 @@ import kotlinx.serialization.json.Json
 import org.intellij.lang.annotations.Language
 
 @Burst
-class RuleActionTest(private val case: TestCase = burstValues(TEST_CASE_1, TEST_CASE_2)) {
+class RuleActionTest {
   data class TestCase(val expected: List<RuleAction>, @param:Language("JSON") val json: String)
 
   @Test
-  fun `Parse action from JSON`() {
+  fun `Parse action from JSON`(case: TestCase = burstValues(TEST_CASE_1, TEST_CASE_2)) {
     assertEquals(
       expected = case.expected,
       actual = Json.decodeFromString(ListSerializer(RuleAction.serializer()), case.json),

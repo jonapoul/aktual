@@ -77,7 +77,7 @@ internal fun buildCustomReport(
     selected_categories = selectedCategories,
     graph_type = GraphType.BarGraph,
     conditions = conditions,
-    conditions_op = Condition.Op.And,
+    conditions_op = ConditionOp.And,
     metadata = metadata,
     interval = Interval.Monthly,
     color_scheme = null,

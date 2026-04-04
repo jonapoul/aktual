@@ -7,17 +7,17 @@ import assertk.assertions.isEqualTo
 import kotlin.test.Test
 
 @Burst
-class AccountSyncSourceTest(
-  val source: AccountSyncSource =
-    burstValues(
-      AccountSyncSource.SimpleFin,
-      AccountSyncSource.GoCardless,
-      AccountSyncSource.PluggyAi,
-      AccountSyncSource.Other("something-else"),
-    )
-) {
+class AccountSyncSourceTest {
   @Test
-  fun `Encode and decode`() {
+  fun `Encode and decode`(
+    source: AccountSyncSource =
+      burstValues(
+        AccountSyncSource.SimpleFin,
+        AccountSyncSource.GoCardless,
+        AccountSyncSource.PluggyAi,
+        AccountSyncSource.Other("something-else"),
+      )
+  ) {
     val encoded = source.toString()
     assertThat(source).isEqualTo(AccountSyncSource.fromString(encoded))
   }

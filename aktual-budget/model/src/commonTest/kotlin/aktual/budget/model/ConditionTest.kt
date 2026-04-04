@@ -4,6 +4,7 @@ import aktual.test.PrettyJson
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -34,13 +35,13 @@ class ConditionTest {
         Condition(
           field = Field.Account,
           operator = Operator.Is,
-          type = Condition.Type.Id,
+          type = ConditionType.Id,
           value = JsonPrimitive("eb08ea4f-bbb0-437f-873a-1fdee4154683"),
         ),
         Condition(
           field = Field.Payee,
           operator = Operator.Is,
-          type = Condition.Type.Id,
+          type = ConditionType.Id,
           value = JsonPrimitive("92ac5221-2605-419d-821a-6ec04ea38b57"),
         ),
       )
@@ -48,7 +49,8 @@ class ConditionTest {
     val serialized = PrettyJson.encodeToString(data)
     assertThat(serialized).isEqualTo(json)
 
-    val deserialized = PrettyJson.decodeFromString(Condition.ListSerializer, serialized)
+    val deserialized =
+      PrettyJson.decodeFromString(ListSerializer(Condition.serializer()), serialized)
     assertThat(deserialized).isEqualTo(data)
   }
 
@@ -81,7 +83,7 @@ class ConditionTest {
         Condition(
           field = Field.Category,
           operator = Operator.OneOf,
-          type = Condition.Type.Id,
+          type = ConditionType.Id,
           value =
             JsonArray(
               content =
@@ -103,7 +105,8 @@ class ConditionTest {
     val serialized = PrettyJson.encodeToString(data)
     assertThat(serialized).isEqualTo(json)
 
-    val deserialized = PrettyJson.decodeFromString(Condition.ListSerializer, serialized)
+    val deserialized =
+      PrettyJson.decodeFromString(ListSerializer(Condition.serializer()), serialized)
     assertThat(deserialized).isEqualTo(data)
   }
 }

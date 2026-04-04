@@ -4,6 +4,7 @@ import kotlin.uuid.Uuid
 import kotlinx.serialization.Serializable
 
 @JvmInline
+@Serializable
 value class AccountId(private val value: String) : Comparable<AccountId> {
   override fun toString(): String = value
 
@@ -57,6 +58,7 @@ value class DashboardPageId(private val value: String) : Comparable<DashboardPag
 }
 
 @JvmInline
+@Serializable
 value class PayeeId(private val value: String) : Comparable<PayeeId> {
   override fun toString(): String = value
 

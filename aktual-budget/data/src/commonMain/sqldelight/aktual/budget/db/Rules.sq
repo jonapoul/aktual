@@ -1,4 +1,5 @@
 import aktual.budget.model.Condition;
+import aktual.budget.model.ConditionOp;
 import aktual.budget.model.RuleAction;
 import aktual.budget.model.RuleId;
 import aktual.budget.model.RuleStage;
@@ -11,7 +12,7 @@ CREATE TABLE IF NOT EXISTS rules(
   conditions TEXT AS List<Condition>,
   actions TEXT AS List<RuleAction>,
   tombstone INTEGER AS Boolean DEFAULT 0,
-  conditions_op TEXT AS Condition.Op DEFAULT 'and'
+  conditions_op TEXT AS ConditionOp DEFAULT 'and'
 );
 
 delete: DELETE FROM rules WHERE id = ?;

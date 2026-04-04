@@ -58,7 +58,7 @@ internal suspend fun BudgetDatabase.insertRule(
   conditions: List<Condition>? = emptyList(),
   actions: List<RuleAction>? = emptyList(),
   tombstone: Boolean? = false,
-  conditionsOp: Condition.Op? = Condition.Op.And,
+  conditionsOp: ConditionOp? = ConditionOp.And,
 ) = rulesQueries.withResult {
   insert(
     id = RuleId(id),
