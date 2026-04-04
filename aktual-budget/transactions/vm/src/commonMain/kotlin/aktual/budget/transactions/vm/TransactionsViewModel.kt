@@ -1,6 +1,6 @@
 package aktual.budget.transactions.vm
 
-import aktual.budget.db.dao.AccountsDao
+import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.TransactionsDao
 import aktual.budget.db.transactions.GetById
@@ -67,7 +67,7 @@ class TransactionsViewModel(
 
   // data sources
   private val budgetGraph = budgetGraphs.require()
-  private val accountsDao = AccountsDao(budgetGraph.database, contexts)
+  private val mAccountDao = AccountDao(budgetGraph.database)
   private val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
   private val prefs = budgetGraph.localPreferences
   private val syncedPrefs = PreferencesDao(budgetGraph.database, contexts)
@@ -101,7 +101,7 @@ class TransactionsViewModel(
 
       is AccountSpec.SpecificAccount ->
         viewModelScope.launch {
-          val account = accountsDao[s.id] ?: error("No account matching $s")
+          val account = mAccountDao[s.id] ?: error("No account matching $s")
           mutableLoadedAccount.update { SpecificAccount(account) }
         }
     }

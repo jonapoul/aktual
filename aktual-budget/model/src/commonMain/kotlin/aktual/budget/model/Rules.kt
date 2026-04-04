@@ -67,13 +67,13 @@ sealed interface RuleAction {
 
   @Serializable
   data class PrependNotes(
-    @SerialName("value") val value: String,
+    @SerialName("value") val value: String, // the string to prepend
     @SerialName("op") val op: Op = Op.PrependNotes,
   ) : RuleAction
 
   @Serializable
   data class AppendNotes(
-    @SerialName("value") val value: String,
+    @SerialName("value") val value: String, // the string to append
     @SerialName("op") val op: Op = Op.AppendNotes,
   ) : RuleAction
 

@@ -25,29 +25,20 @@ LEFT JOIN accounts
   -- Either this is not a transfer payee, if the account exists
 WHERE p.transfer_acct IS NULL OR a.id IS NOT NULL;
 
-getIdByTransferAccount:
-  SELECT id
-    FROM payees
-    WHERE transfer_acct = ?;
+getAll: SELECT * FROM payees;
 
-getIdByName:
-  SELECT id
-    FROM payees
-    WHERE LOWER(name) = ?
-    AND tombstone = 0;
+deleteById: DELETE FROM payees WHERE id = ?;
 
-getById:
-  SELECT *
-    FROM payees
-    WHERE id = ?
-    LIMIT 1;
+getById: SELECT * FROM payees WHERE id = ? LIMIT 1;
+
+getName:
+  SELECT name
+    FROM v_payees
+    WHERE id = COALESCE((SELECT targetId FROM payee_mapping WHERE id = :id), :id);
+
+getNames: SELECT name FROM v_payees WHERE id IN ?;
 
 insert:
   INSERT OR REPLACE
     INTO payees(id, name, category, tombstone, transfer_acct, favorite, learn_categories)
     VALUES(?,?,?,?,?,?,?);
-
-deleteById:
-  DELETE
-    FROM payees
-    WHERE id = ?;

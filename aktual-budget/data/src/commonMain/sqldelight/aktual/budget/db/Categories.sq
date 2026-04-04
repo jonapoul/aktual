@@ -27,28 +27,21 @@ CREATE VIEW IF NOT EXISTS v_categories AS
     tombstone
   FROM categories;
 
-insert:
-  INSERT INTO categories VALUES ?;
+insert: INSERT INTO categories VALUES ?;
 
-getById:
-  SELECT *
-    FROM categories
-    WHERE id = ?;
+getById: SELECT * FROM categories WHERE id = ?;
 
-isIncome:
-  SELECT is_income
-    FROM categories
-    WHERE id = ?;
+getName: SELECT name FROM categories WHERE id = ?;
 
-idsMatchingGroup:
-  SELECT id
-    FROM categories
-    WHERE cat_group = ? AND tombstone = 0;
+getNames: SELECT name FROM categories WHERE id IN ?;
 
-matchingGroup:
-  SELECT *
-    FROM categories
-    WHERE tombstone = 0 AND cat_group = ?;
+isIncome: SELECT is_income FROM categories WHERE id = ?;
+
+idsMatchingGroup: SELECT id FROM categories WHERE cat_group = ? AND tombstone = 0;
+
+matchingGroup: SELECT * FROM categories WHERE tombstone = 0 AND cat_group = ?;
+
+delete: DELETE FROM categories WHERE id = ?;
 
 clearGoalDef:
   UPDATE categories
@@ -89,7 +82,3 @@ categoriesInGroup:
     WHERE cat_group IN :ids AND tombstone = 0
     ORDER BY sort_order, id;
 
-delete:
-  DELETE
-    FROM categories
-    WHERE id = ?;

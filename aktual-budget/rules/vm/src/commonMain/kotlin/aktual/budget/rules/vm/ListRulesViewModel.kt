@@ -42,7 +42,10 @@ class ListRulesViewModel(
   @Assisted private val budgetId: BudgetId,
   budgetGraphs: BudgetGraphHolder,
 ) : ViewModel() {
-  private val rulesDao = RulesDao(budgetGraphs.require().database)
+  private val database = budgetGraphs.require().database
+  private val rulesDao = RulesDao(database)
+
+  val nameFetcher: NameFetcher = NameFetcherImpl(database)
 
   private val mutableRules = MutableStateFlow<ImmutableList<RuleListItem>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)

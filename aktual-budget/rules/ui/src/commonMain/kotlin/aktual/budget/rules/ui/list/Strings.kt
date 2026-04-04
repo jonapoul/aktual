@@ -2,6 +2,7 @@
 
 package aktual.budget.rules.ui.list
 
+import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOptions
 import aktual.budget.model.Field
@@ -23,7 +24,11 @@ import aktual.budget.model.WeekendSolveMode
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.LocalCurrencyConfig
+import aktual.core.ui.LocalNumberFormatConfig
+import aktual.core.ui.LocalPrivacyEnabled
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
@@ -33,6 +38,10 @@ import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.util.fastMap
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.DayOfWeek
 import kotlinx.datetime.Month
 import kotlinx.serialization.json.Json
@@ -40,6 +49,7 @@ import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.int
 import kotlinx.serialization.json.jsonPrimitive
 
 @Composable
@@ -78,26 +88,79 @@ internal fun headerText(onAction: (ListRulesAction) -> Unit): AnnotatedString {
 
 private const val LEARN_MORE_URL = "https://actualbudget.org/docs/budgeting/rules/"
 
+private fun JsonArray.toList(): List<String> = map { it.jsonPrimitive.content }
+
 @Composable
+@Suppress("ElseCaseInsteadOfExhaustiveWhen")
 internal fun rememberConditionText(
   prefix: String,
   condition: Condition,
   styles: RuleSpanStyles,
 ): AnnotatedString {
   val fieldText = condition.field.string(condition.options)
-  val operatorText = condition.operator.displayString()
-  return remember(prefix, condition, styles, fieldText, operatorText) {
+  val opText = condition.operator.displayString()
+
+  val numberFormat = LocalNumberFormatConfig.current
+  val currency = LocalCurrencyConfig.current
+  val privacy = LocalPrivacyEnabled.current
+
+  val nameFetcher = LocalNameFetcher.current
+  val fieldNamesFlow =
+    remember(nameFetcher, condition) {
+      when (condition.field) {
+        Field.Acct,
+        Field.Account,
+        Field.Category,
+        Field.CategoryGroup,
+        Field.Description,
+        Field.Payee ->
+          when (val value = condition.value) {
+            is JsonArray -> nameFetcher.names(condition.field, value.toList())
+            is JsonPrimitive ->
+              nameFetcher.name(condition.field, value.content).filterNotNull().map(::JsonPrimitive)
+            else -> flowOf(null)
+          }
+        else -> flowOf(null)
+      }
+    }
+
+  val fieldNames by fieldNamesFlow.collectAsStateWithLifecycle(initialValue = null)
+
+  return remember(
+    condition,
+    styles,
+    opText,
+    fieldText,
+    fieldNames,
+    numberFormat,
+    currency,
+    privacy,
+  ) {
     buildAnnotatedString {
       withStyle(styles.default) { append(prefix) }
       withStyle(styles.highlighted) { append(fieldText) }
       withStyle(styles.default) {
         append(" ")
-        append(operatorText)
+        append(opText)
         append(" ")
       }
-      when (val value = condition.value) {
+      when (val value = fieldNames ?: condition.value) {
         is JsonPrimitive -> {
-          withStyle(styles.highlighted) { append(value.content) }
+          withStyle(styles.highlighted) {
+            if (condition.field == Field.Amount) {
+              append(
+                Amount(value.int)
+                  .toString(
+                    numberFormatConfig = numberFormat,
+                    currencyConfig = currency,
+                    includeSign = true,
+                    isPrivacyEnabled = privacy,
+                  )
+              )
+            } else {
+              append(value.content)
+            }
+          }
         }
 
         is JsonArray -> {
@@ -120,7 +183,7 @@ internal fun rememberConditionText(
             error("Should only see a JSON object in a condition value for a date: $condition")
           }
           val recurConfig = Json.decodeFromJsonElement(RecurConfig.serializer(), value)
-          recurConfig.string()
+          withStyle(styles.highlighted) { append(recurConfig.string()) }
         }
       }
     }
@@ -128,11 +191,39 @@ internal fun rememberConditionText(
 }
 
 @Composable
+@Suppress("ElseCaseInsteadOfExhaustiveWhen")
 internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): AnnotatedString {
   val opText = action.opString()
   val fieldText = (action as? SetAction)?.field?.string(options = null)
   val setToText = if (action is SetAction) Strings.rulesActionSetTo else null
-  return remember(action, styles, opText, fieldText, setToText) {
+
+  val numberFormat = LocalNumberFormatConfig.current
+  val currency = LocalCurrencyConfig.current
+  val privacy = LocalPrivacyEnabled.current
+
+  val nameFetcher = LocalNameFetcher.current
+  val fieldNameFlow =
+    remember(nameFetcher, action) {
+      when (action) {
+        is SetAction -> nameFetcher.name(action.field, action.value)
+        is LinkSchedule -> nameFetcher.name(action.value)
+        else -> flowOf("")
+      }
+    }
+
+  val fieldName by fieldNameFlow.collectAsStateWithLifecycle(initialValue = "...")
+
+  return remember(
+    action,
+    styles,
+    opText,
+    fieldText,
+    setToText,
+    fieldName,
+    numberFormat,
+    currency,
+    privacy,
+  ) {
     buildAnnotatedString {
       when (action) {
         is AppendNotes -> {
@@ -150,7 +241,7 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
             append(opText)
             append(" ")
           }
-          withStyle(styles.highlighted) { append(action.value.toString()) }
+          withStyle(styles.highlighted) { append(fieldName) }
         }
         is PrependNotes -> {
           withStyle(styles.default) {
@@ -166,14 +257,25 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
           }
           withStyle(styles.highlighted) { append(fieldText) }
           withStyle(styles.default) { append(setToText) }
-          withStyle(styles.highlighted) { append(action.value) }
+          withStyle(styles.highlighted) { append(fieldName) }
         }
         is SetSplitAmount -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
           }
-          withStyle(styles.highlighted) { append(action.value?.toString()) }
+          withStyle(styles.highlighted) {
+            append(
+              action.value
+                ?.let(::Amount)
+                ?.toString(
+                  numberFormatConfig = numberFormat,
+                  currencyConfig = currency,
+                  includeSign = true,
+                  isPrivacyEnabled = privacy,
+                )
+            )
+          }
         }
       }
     }
@@ -226,11 +328,11 @@ private fun Field.string(options: ConditionOptions?): String =
     Field.Category -> Strings.rulesFieldCategory
     Field.CategoryGroup -> Strings.rulesFieldCategoryGroup
     Field.Date -> Strings.rulesFieldDate
-    Field.Description -> Strings.rulesFieldDescription
     Field.Notes -> Strings.rulesFieldNotes
+    Field.Description,
     Field.Payee -> Strings.rulesFieldPayee
     Field.PayeeName -> Strings.rulesFieldPayeeName
-    Field.ImportedDescription -> Strings.rulesFieldImportedDescription
+    Field.ImportedDescription,
     Field.ImportedPayee -> Strings.rulesFieldImportedPayee
     Field.Saved -> Strings.rulesFieldSaved
     Field.Transfer -> Strings.rulesFieldTransfer
@@ -294,8 +396,7 @@ private fun RecurConfig.monthlyRecurConfigDesc(): String {
   val interval = interval ?: 1
   return if (!patterns.isNullOrEmpty()) {
     // Sort the days ascending. We filter out -1 because that represents "last days" and should
-    // always be last, but
-    // this sort would put them first
+    // always be last, but this sort would put them first
     val sortedPatterns =
       patterns
         .asSequence()
