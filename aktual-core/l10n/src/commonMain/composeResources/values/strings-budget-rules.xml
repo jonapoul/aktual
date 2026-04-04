@@ -69,4 +69,11 @@
   <string name="rules_field_parent">parent</string>
   <string name="rules_field_cleared">cleared</string>
   <string name="rules_field_reconciled">reconciled</string>
+
+  <plurals name="rules_checkbox_counter">
+    <item quantity="one">Selected %1$d rule</item>
+    <item quantity="other">Selected %1$d rules</item>
+  </plurals>
+  <string name="rules_checkbox_delete">Delete</string>
+  <string name="rules_checkbox_clear">Clear selected</string>
 </resources>

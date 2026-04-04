@@ -72,7 +72,13 @@ internal fun ListRulesItem(
   theme: Theme = LocalTheme.current,
 ) {
   val isChecked = checkboxes is Active && rule.id in checkboxes.ids
-  val toggleCheck = { onAction(if (isChecked) Uncheck(rule.id) else Check(rule.id)) }
+
+  val toggleCheck =
+    if (checkboxes is Active) {
+      { onAction(if (isChecked) Uncheck(rule.id) else Check(rule.id)) }
+    } else {
+      null
+    }
 
   Row(
     modifier =
@@ -84,7 +90,7 @@ internal fun ListRulesItem(
       Checkbox(
         modifier = Modifier.minimumInteractiveComponentSize(),
         checked = rule.id in checkboxes.ids,
-        onCheckedChange = { toggleCheck() },
+        onCheckedChange = { toggleCheck?.invoke() },
         colors = theme.checkbox(),
       )
     }

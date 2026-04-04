@@ -9,6 +9,7 @@ import aktual.budget.di.BudgetGraph
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
+import aktual.budget.rules.vm.ListRulesViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.theme.DarkTheme
@@ -57,6 +58,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun about() = testVm<AboutViewModel>()
 
   @Test fun licenses() = testVm<LicensesViewModel>()
+
+  @Test fun listRules() = testVm<ListRulesViewModel>()
 
   @Test fun login() = testVm<LoginViewModel>()
 

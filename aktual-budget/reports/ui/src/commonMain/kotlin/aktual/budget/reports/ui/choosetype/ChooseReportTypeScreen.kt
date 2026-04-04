@@ -36,7 +36,6 @@ import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.blurredTopBarContentPadding
 import aktual.core.ui.disabledIf
-import aktual.core.ui.normalIconButton
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -199,10 +198,7 @@ private fun WidgetType(
           imageVector = MaterialIcons.Warning,
           contentDescription = Strings.reportsChooseTypeDisabled,
           onClick = { onAction(ChooseReportTypeAction.ShowDisabledDialog) },
-          colors = { t, isPressed ->
-            t.normalIconButton(isPressed)
-              .copy(contentColor = if (isPressed) t.errorText else t.errorTextDark)
-          },
+          colors = NormalRed,
         )
       }
     }

@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS rules(
   conditions_op TEXT AS ConditionOp DEFAULT 'and'
 );
 
-delete: DELETE FROM rules WHERE id = ?;
+delete: DELETE FROM rules WHERE id IN ?;
 
 getAll: SELECT * FROM rules WHERE tombstone = 0;
 

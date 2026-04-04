@@ -3,11 +3,15 @@ package aktual.budget.rules.vm
 import aktual.budget.db.Rules
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.di.BudgetGraphHolder
-import aktual.budget.model.BudgetId
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
-import aktual.core.model.Token
+import aktual.budget.rules.vm.CheckboxesState.Active
+import aktual.budget.rules.vm.CheckboxesState.Inactive
+import aktual.budget.rules.vm.ListRulesState.Empty
+import aktual.budget.rules.vm.ListRulesState.Failure
+import aktual.budget.rules.vm.ListRulesState.Loading
+import aktual.budget.rules.vm.ListRulesState.Success
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -16,13 +20,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
@@ -34,14 +36,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
-@Suppress("unused") // TODO
 @Stable
-@AssistedInject
-class ListRulesViewModel(
-  @Assisted private val token: Token,
-  @Assisted private val budgetId: BudgetId,
-  budgetGraphs: BudgetGraphHolder,
-) : ViewModel() {
+@ViewModelKey
+@ContributesIntoMap(AppScope::class, binding<ViewModel>())
+class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
   private val database = budgetGraphs.require().database
   private val rulesDao = RulesDao(database)
 
@@ -50,7 +48,7 @@ class ListRulesViewModel(
   private val mutableRules = MutableStateFlow<ImmutableList<RuleListItem>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableFailure = MutableStateFlow<String?>(null)
-  private val mutableCheckboxes = MutableStateFlow<CheckboxesState>(CheckboxesState.Inactive)
+  private val mutableCheckboxes = MutableStateFlow<CheckboxesState>(Inactive)
 
   val checkboxes: StateFlow<CheckboxesState> = mutableCheckboxes.asStateFlow()
 
@@ -60,10 +58,10 @@ class ListRulesViewModel(
       val isLoading by mutableIsLoading.collectAsState()
       val failure by mutableFailure.collectAsState()
       when {
-        isLoading -> ListRulesState.Loading
-        failure != null -> ListRulesState.Failure(failure)
-        rules.isEmpty() -> ListRulesState.Empty
-        else -> ListRulesState.Success(rules)
+        isLoading -> Loading
+        failure != null -> Failure(failure)
+        rules.isEmpty() -> Empty
+        else -> Success(rules)
       }
     }
 
@@ -73,7 +71,6 @@ class ListRulesViewModel(
 
   fun reload() {
     mutableIsLoading.update { true }
-    mutableRules.update { persistentListOf() }
     viewModelScope.launch {
       try {
         val rules = rulesDao.getAll().map(::toListItem).toImmutableList()
@@ -89,17 +86,26 @@ class ListRulesViewModel(
     }
   }
 
-  fun delete(id: RuleId) {
-    // TBC
+  fun delete(id: RuleId) = delete(persistentSetOf(id))
+
+  fun delete(ids: ImmutableSet<RuleId>) {
+    viewModelScope.launch {
+      val numDeleted = rulesDao.delete(ids)
+      mutableCheckboxes.update { Inactive }
+      reload()
+      logcat.d { "Deleted $numDeleted rules: $ids" }
+    }
   }
 
-  fun showCheckboxes() = mutableCheckboxes.update { CheckboxesState.Active(persistentSetOf()) }
+  fun showCheckboxes() = mutableCheckboxes.update { Active(persistentSetOf()) }
 
-  fun hideCheckboxes() = mutableCheckboxes.update { CheckboxesState.Inactive }
+  fun hideCheckboxes() = mutableCheckboxes.update { Inactive }
 
   fun check(id: RuleId) = mutableCheckboxes.update { it + id }
 
   fun uncheck(id: RuleId) = mutableCheckboxes.update { it - id }
+
+  fun uncheckAll() = showCheckboxes()
 
   private fun toListItem(rule: Rules): RuleListItem =
     RuleListItem(
@@ -109,11 +115,4 @@ class ListRulesViewModel(
       conditionsOp = rule.conditions_op ?: ConditionOp.And,
       actions = rule.actions.orEmpty().toImmutableList(),
     )
-
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  interface Factory : ManualViewModelAssistedFactory {
-    fun create(@Assisted token: Token, @Assisted budgetId: BudgetId): ListRulesViewModel
-  }
 }

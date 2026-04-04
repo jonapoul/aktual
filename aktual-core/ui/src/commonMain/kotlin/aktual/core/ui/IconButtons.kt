@@ -155,6 +155,16 @@ fun interface IconButtonColorProvider {
     val Bare = IconButtonColorProvider { theme, isPressed -> theme.bareIconButton(isPressed) }
     val Primary = IconButtonColorProvider { theme, isPressed -> theme.primaryIconButton(isPressed) }
     val Normal = IconButtonColorProvider { theme, isPressed -> theme.normalIconButton(isPressed) }
+
+    val NormalRed = IconButtonColorProvider { theme, isPressed ->
+      theme
+        .normalIconButton(isPressed)
+        .copy(
+          containerColor = theme.errorBackground,
+          disabledContainerColor = theme.errorBackground.disabled,
+          contentColor = theme.errorText,
+        )
+    }
   }
 }
 

@@ -37,6 +37,7 @@ private val materialIcons =
       CalendarViewWeek,
       Check,
       Clear,
+      ClearAll,
       Cloud,
       CurrencyPound,
       DarkMode,
