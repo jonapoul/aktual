@@ -54,10 +54,7 @@ data class CreateReportNavRoute(val token: Token, val budgetId: BudgetId) : Budg
 
 @Immutable
 class ListRulesNavigator(private val stack: SnapshotStateList<BudgetNavKey>) {
-  operator fun invoke(token: Token, budgetId: BudgetId) =
-    stack.debugPush(ListRulesNavRoute(token, budgetId))
+  operator fun invoke() = stack.debugPush(ListRulesNavRoute)
 }
 
-@Immutable
-@Serializable
-data class ListRulesNavRoute(val token: Token, val budgetId: BudgetId) : BudgetNavKey
+@Immutable @Serializable data object ListRulesNavRoute : BudgetNavKey

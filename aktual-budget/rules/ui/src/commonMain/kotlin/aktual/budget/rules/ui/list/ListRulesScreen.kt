@@ -1,7 +1,7 @@
 package aktual.budget.rules.ui.list
 
 import aktual.app.nav.BackNavigator
-import aktual.budget.model.BudgetId
+import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.rules.vm.CheckboxesState
 import aktual.budget.rules.vm.CheckboxesState.Active
@@ -16,11 +16,13 @@ import aktual.budget.rules.vm.RuleListItem
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.ChevronDown
 import aktual.core.icons.ChevronUp
+import aktual.core.icons.material.ClearAll
+import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Deselect
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.SelectAll
+import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
-import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -31,6 +33,7 @@ import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithThemedParams
@@ -41,17 +44,21 @@ import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -67,15 +74,18 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
@@ -83,10 +93,8 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun ListRulesScreen(
   @Suppress("unused") back: BackNavigator, // TODO
-  token: Token,
-  budgetId: BudgetId,
   modifier: Modifier = Modifier,
-  viewModel: ListRulesViewModel = listRulesViewModel(token, budgetId),
+  viewModel: ListRulesViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val checkboxes by viewModel.checkboxes.collectAsStateWithLifecycle()
@@ -100,11 +108,13 @@ fun ListRulesScreen(
         when (action) {
           Reload -> viewModel.reload()
           is Delete -> viewModel.delete(action.id)
+          is DeleteMultiple -> viewModel.delete(action.ids)
           is Open -> TODO()
           is Edit -> TODO()
           is OpenUrl -> TODO()
           is Check -> viewModel.check(action.id)
           is Uncheck -> viewModel.uncheck(action.id)
+          UncheckAll -> viewModel.uncheckAll()
           DisableCheckboxes -> viewModel.hideCheckboxes()
           EnableCheckboxes -> viewModel.showCheckboxes()
         }
@@ -112,10 +122,6 @@ fun ListRulesScreen(
     )
   }
 }
-
-@Composable
-private fun listRulesViewModel(token: Token, budgetId: BudgetId) =
-  assistedMetroViewModel<ListRulesViewModel, ListRulesViewModel.Factory> { create(token, budgetId) }
 
 @Composable
 private fun ListRulesScaffold(
@@ -243,75 +249,137 @@ private fun ListRulesContent(
 }
 
 @Composable
-@Suppress("UnusedReceiverParameter")
-private fun ColumnScope.ContentSuccess(
+private fun CheckboxSelectionBar(
+  selectedIds: ImmutableSet<RuleId>,
+  onAction: (ListRulesAction) -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) {
+  Row(
+    modifier =
+      modifier.fillMaxWidth().background(theme.modalBackground, CardShape).padding(Dimens.Large),
+    horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    val count = selectedIds.size
+    Text(modifier = Modifier.weight(1f), text = Plurals.rulesCheckboxCounter(count, count))
+
+    NormalIconButton(
+      enabled = count > 0,
+      imageVector = MaterialIcons.ClearAll,
+      contentDescription = Strings.rulesCheckboxClear,
+      onClick = { onAction(UncheckAll) },
+    )
+
+    NormalIconButton(
+      enabled = count > 0,
+      imageVector = MaterialIcons.Delete,
+      contentDescription = Strings.rulesCheckboxDelete,
+      colors = NormalRed,
+      onClick = { onAction(DeleteMultiple(selectedIds)) },
+    )
+  }
+}
+
+@Composable
+private fun ContentSuccess(
   rules: ImmutableList<RuleListItem>,
   checkboxes: CheckboxesState,
   onAction: (ListRulesAction) -> Unit,
   modifier: Modifier = Modifier,
   listState: LazyListState = rememberLazyListState(),
-  theme: Theme = LocalTheme.current,
 ) {
-  val stagedItems: ImmutableList<Pair<RuleStage, List<RuleListItem>>> =
+  val stagedRules: ImmutableList<Pair<RuleStage, ImmutableList<RuleListItem>>> =
     remember(rules) {
-      rules.groupBy { it.stage }.toList().sortedBy { (stage, _) -> stage }.toImmutableList()
+      rules
+        .groupBy { it.stage }
+        .toList()
+        .sortedBy { (stage, _) -> stage }
+        .map { (stage, items) -> stage to items.toImmutableList() }
+        .toImmutableList()
     }
 
   val expandedStages = remember {
     mutableStateMapOf(RuleStage.Pre to true, RuleStage.Default to true, RuleStage.Post to true)
   }
 
-  Text(
-    modifier = Modifier.padding(Dimens.Medium).fillMaxWidth(),
-    textAlign = TextAlign.Start,
-    text = headerText(onAction),
-  )
+  Column(modifier) {
+    Text(
+      modifier = Modifier.padding(Dimens.Medium).fillMaxWidth(),
+      textAlign = TextAlign.Start,
+      text = headerText(onAction),
+      style = AktualTypography.bodySmall,
+    )
 
-  LazyColumn(
-    modifier = modifier.scrollbar(listState),
-    state = listState,
-    verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
-  ) {
-    stagedItems.forEach { (stage, items) ->
-      val isExpanded = expandedStages.getValue(stage)
-      stickyHeader {
-        Row(
-          modifier =
-            Modifier.fillMaxWidth().background(theme.pillBackgroundSelected, CardShape).clickable {
-              expandedStages[stage] = !isExpanded
-            },
-          verticalAlignment = Alignment.CenterVertically,
-        ) {
-          Text(
-            modifier = Modifier.weight(1f).padding(Dimens.Large),
-            text = Strings.rulesStagePrefix(stage.string()),
-            style = AktualTypography.titleSmall,
-            fontWeight = FontWeight.Bold,
-            color = theme.pillTextSelected,
-          )
+    LazyColumn(
+      modifier = Modifier.scrollbar(listState).weight(1f),
+      state = listState,
+      verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
+    ) {
+      stagedRules.forEach { (stage, r) ->
+        val isExpanded = expandedStages.getValue(stage)
+        stickyHeader { StageHeader(expandedStages, stage, isExpanded, r) }
 
-          Text(
-            modifier = Modifier.padding(Dimens.Large),
-            text = Strings.rulesStageCount(items.size),
-            style = AktualTypography.bodyLarge,
-            textAlign = TextAlign.End,
-            color = theme.pillText,
-          )
-
-          Icon(
-            modifier = Modifier.minimumInteractiveComponentSize(),
-            imageVector = if (isExpanded) AktualIcons.ChevronUp else AktualIcons.ChevronDown,
-            contentDescription = "",
-          )
-        }
-      }
-
-      if (isExpanded) {
-        items(items) { rule ->
-          ListRulesItem(rule = rule, checkboxes = checkboxes, onAction = onAction)
+        if (isExpanded) {
+          items(r) { rule -> ListRulesItem(rule, checkboxes, onAction) }
         }
       }
     }
+
+    AnimatedVisibility(
+      visible = checkboxes is Active,
+      enter = slideInVertically { it },
+      exit = slideOutVertically { it },
+      label = "CheckboxCounterBar",
+    ) {
+      if (checkboxes is Active) {
+        CheckboxSelectionBar(
+          modifier = Modifier.wrapContentHeight(),
+          selectedIds = checkboxes.ids,
+          onAction = onAction,
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun StageHeader(
+  expandedStages: SnapshotStateMap<RuleStage, Boolean>,
+  stage: RuleStage,
+  isExpanded: Boolean,
+  rules: ImmutableList<RuleListItem>,
+  theme: Theme = LocalTheme.current,
+) {
+  Row(
+    modifier =
+      Modifier.fillMaxWidth()
+        .background(theme.pillBackgroundSelected, CardShape)
+        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
+        .clickable { expandedStages[stage] = !isExpanded },
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Text(
+      modifier = Modifier.weight(1f).padding(Dimens.Large),
+      text = Strings.rulesStagePrefix(stage.string()),
+      style = AktualTypography.titleSmall,
+      fontWeight = FontWeight.Bold,
+      color = theme.pillTextSelected,
+    )
+
+    Text(
+      modifier = Modifier.padding(Dimens.Large),
+      text = Strings.rulesStageCount(rules.size),
+      style = AktualTypography.bodyLarge,
+      textAlign = TextAlign.End,
+      color = theme.pillText,
+    )
+
+    Icon(
+      modifier = Modifier.minimumInteractiveComponentSize(),
+      imageVector = if (isExpanded) AktualIcons.ChevronUp else AktualIcons.ChevronDown,
+      contentDescription = "",
+    )
   }
 }
 

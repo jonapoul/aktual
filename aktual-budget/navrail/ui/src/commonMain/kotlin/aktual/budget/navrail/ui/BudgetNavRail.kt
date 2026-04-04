@@ -76,7 +76,7 @@ fun BudgetNavRail(
 
   val transactionsStack = stackWithDefault(TransactionsNavRoute(token, budgetId))
   val reportsStack = stackWithDefault(ReportsListNavRoute(token, budgetId))
-  val rulesStack = stackWithDefault(ListRulesNavRoute(token, budgetId))
+  val rulesStack = stackWithDefault(ListRulesNavRoute)
 
   val tabStacks =
     remember(transactionsStack, reportsStack, rulesStack) {

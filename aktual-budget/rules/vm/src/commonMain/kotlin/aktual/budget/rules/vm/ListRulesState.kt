@@ -34,7 +34,7 @@ data class RuleListItem(
 sealed interface CheckboxesState {
   data object Inactive : CheckboxesState
 
-  @JvmInline value class Active(val ids: ImmutableSet<RuleId>) : CheckboxesState
+  data class Active(val ids: ImmutableSet<RuleId>) : CheckboxesState
 
   operator fun plus(id: RuleId): CheckboxesState =
     when (this) {

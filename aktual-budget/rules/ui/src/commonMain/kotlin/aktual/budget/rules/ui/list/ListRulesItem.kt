@@ -24,6 +24,7 @@ import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.checkbox
+import aktual.core.ui.isCompactWidth
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,6 +32,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -72,7 +74,13 @@ internal fun ListRulesItem(
   theme: Theme = LocalTheme.current,
 ) {
   val isChecked = checkboxes is Active && rule.id in checkboxes.ids
-  val toggleCheck = { onAction(if (isChecked) Uncheck(rule.id) else Check(rule.id)) }
+
+  val toggleCheck =
+    if (checkboxes is Active) {
+      { onAction(if (isChecked) Uncheck(rule.id) else Check(rule.id)) }
+    } else {
+      null
+    }
 
   Row(
     modifier =
@@ -84,21 +92,12 @@ internal fun ListRulesItem(
       Checkbox(
         modifier = Modifier.minimumInteractiveComponentSize(),
         checked = rule.id in checkboxes.ids,
-        onCheckedChange = { toggleCheck() },
+        onCheckedChange = { toggleCheck?.invoke() },
         colors = theme.checkbox(),
       )
     }
 
-    Column(
-      modifier = Modifier.weight(1f),
-      verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-      val styles = rememberRuleSpanStyles()
-      ListRulesItemConditions(rule.conditions, styles)
-      Text("↓", color = theme.tableText)
-      ListRulesItemActions(rule.actions, styles)
-    }
+    ItemContent(rule)
 
     var showMenu by remember { mutableStateOf(false) }
 
@@ -129,6 +128,32 @@ internal fun ListRulesItem(
           },
         )
       }
+    }
+  }
+}
+
+@Composable
+private fun RowScope.ItemContent(rule: RuleListItem, theme: Theme = LocalTheme.current) {
+  val styles = rememberRuleSpanStyles()
+  if (isCompactWidth()) {
+    Column(
+      modifier = Modifier.weight(1f),
+      verticalArrangement = Arrangement.Center,
+      horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
+      ListRulesItemConditions(rule.conditions, styles)
+      Text("↓", color = theme.tableText)
+      ListRulesItemActions(rule.actions, styles)
+    }
+  } else {
+    Row(
+      modifier = Modifier.weight(1f),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      ListRulesItemConditions(rule.conditions, styles, modifier = Modifier.weight(1f))
+      Text("→", color = theme.tableText)
+      ListRulesItemActions(rule.actions, styles, modifier = Modifier.weight(1f))
     }
   }
 }

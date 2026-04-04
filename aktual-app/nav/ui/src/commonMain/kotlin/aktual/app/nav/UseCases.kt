@@ -33,7 +33,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation3.runtime.NavKey
 import app.cash.molecule.launchMolecule
@@ -130,22 +132,37 @@ class InitialRouteUseCase(
 
   @Composable
   @Suppress("BracesOnWhenStatements")
-  private fun resolveAuthenticatedRoute(token: Token, budgetId: BudgetId?): NavKey =
+  private fun resolveAuthenticatedRoute(token: Token, budgetId: BudgetId?): NavKey? =
     when {
       budgetId == null -> ListBudgetsNavRoute(token)
 
       !localFilesExist(budgetId) -> ListBudgetsNavRoute(token)
 
       else -> {
-        LaunchedEffect(budgetId) {
-          val metadata = files.readMetadata(budgetId)
-          budgetGraphHolder.update(metadata)
+        var graphReady by
+          remember(budgetId) {
+            // If the graph is already loaded for this budget, skip re-initialization
+            mutableStateOf(budgetGraphHolder.value?.budgetId == budgetId)
+          }
+        var failed by remember(budgetId) { mutableStateOf(false) }
+        if (!graphReady) {
+          LaunchedEffect(budgetId) {
+            try {
+              val metadata = files.readMetadata(budgetId)
+              budgetGraphHolder.update(metadata)
+              graphReady = true
+            } catch (e: Exception) {
+              logcat.w(e) {
+                "Failed to load budget graph for $budgetId, falling back to budget list"
+              }
+              failed = true
+            }
+          }
         }
-        try {
-          BudgetNavRailNavRoute(token, budgetId)
-        } catch (e: Exception) {
-          logcat.w(e) { "Failed to auto-open budget $budgetId, falling back to budget list" }
-          ListBudgetsNavRoute(token)
+        when {
+          failed -> ListBudgetsNavRoute(token)
+          graphReady -> BudgetNavRailNavRoute(token, budgetId)
+          else -> null // still loading budget graph
         }
       }
     }

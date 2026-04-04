@@ -15,8 +15,6 @@ class ListRulesNavEntryContributor : BudgetNavEntryContributor {
     scope: EntryProviderScope<BudgetNavKey>,
     stack: SnapshotStateList<BudgetNavKey>,
   ) {
-    scope.entry<ListRulesNavRoute> { route ->
-      ListRulesScreen(BackNavigator(stack), route.token, route.budgetId)
-    }
+    scope.entry<ListRulesNavRoute> { ListRulesScreen(BackNavigator(stack)) }
   }
 }

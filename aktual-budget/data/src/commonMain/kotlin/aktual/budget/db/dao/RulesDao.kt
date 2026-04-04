@@ -10,5 +10,5 @@ class RulesDao(database: BudgetDatabase) {
 
   suspend fun getAll(): List<Rules> = queries.withResult { getAll().executeAsList() }
 
-  suspend fun delete(id: RuleId) = queries.withResult { delete(id) }
+  suspend fun delete(ids: Set<RuleId>): Long = queries.withResult { delete(ids) }
 }
