@@ -9,6 +9,7 @@ import aktual.prefs.asStateFlow
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,6 +24,7 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
+@Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class SettingsViewModel(

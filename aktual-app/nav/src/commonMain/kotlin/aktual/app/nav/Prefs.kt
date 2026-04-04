@@ -19,3 +19,10 @@ class InspectThemeNavigator(private val stack: SnapshotStateList<NavKey>) {
 }
 
 @Immutable @Serializable data class InspectThemeNavRoute(val id: ThemeId) : NavKey
+
+@Immutable
+class ThemeSettingsNavigator(private val stack: SnapshotStateList<NavKey>) {
+  operator fun invoke() = stack.debugPush(ThemeSettingsNavRoute)
+}
+
+@Immutable @Serializable data object ThemeSettingsNavRoute : NavKey
