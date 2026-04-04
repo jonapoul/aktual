@@ -71,8 +71,12 @@ internal fun ListRulesItem(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
+  val isChecked = checkboxes is Active && rule.id in checkboxes.ids
+  val toggleCheck = { onAction(if (isChecked) Uncheck(rule.id) else Check(rule.id)) }
+
   Row(
-    modifier = modifier.ruleRow(rule, checkboxes, theme, onAction),
+    modifier =
+      modifier.ruleRow(theme, onOpen = { onAction(Open(rule.id)) }, onToggle = toggleCheck),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -80,9 +84,7 @@ internal fun ListRulesItem(
       Checkbox(
         modifier = Modifier.minimumInteractiveComponentSize(),
         checked = rule.id in checkboxes.ids,
-        onCheckedChange = { checked ->
-          onAction(if (checked) Check(rule.id) else Uncheck(rule.id))
-        },
+        onCheckedChange = { toggleCheck() },
         colors = theme.checkbox(),
       )
     }
@@ -199,7 +201,7 @@ internal fun ShimmerRuleListItem(
     modifier =
       modifier
         .fillMaxWidth()
-        .ruleRow(null, checkboxes, theme, null)
+        .ruleRow(theme, onOpen = null, onToggle = null)
         .shimmer(shimmer)
         .onGloballyPositioned { shimmer.updateBounds(it.unclippedBoundsInWindow()) },
     horizontalArrangement = Arrangement.Start,
@@ -258,25 +260,11 @@ internal fun ShimmerRuleListItem(
 }
 
 private fun Modifier.ruleRow(
-  rule: RuleListItem?,
-  checkboxes: CheckboxesState,
   theme: Theme,
-  onAction: ((ListRulesAction) -> Unit)?,
+  onOpen: (() -> Unit)?,
+  onToggle: (() -> Unit)?,
 ): Modifier {
-  val onClick = rule?.let { r ->
-    when (checkboxes) {
-      is Active -> {
-        if (r.id in checkboxes) {
-          { onAction?.invoke(Uncheck(r.id)) }
-        } else {
-          { onAction?.invoke(Check(r.id)) }
-        }
-      }
-      is Inactive -> {
-        { onAction?.invoke(Open(r.id)) }
-      }
-    }
-  }
+  val onClick = onToggle ?: onOpen
   return fillMaxWidth()
     .clip(RowShape)
     .background(theme.tableBackground, RowShape)
