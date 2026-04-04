@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Condition
@@ -251,7 +253,7 @@ internal fun RecurConfig.string(): String {
     when (weekendSolveMode) {
         WeekendSolveMode.After -> "(after weekend)"
         WeekendSolveMode.Before -> "(before weekend)"
-        else -> ""
+        null -> ""
       }
       .takeIf { skipWeekend == true }
       .orEmpty()
@@ -261,19 +263,23 @@ internal fun RecurConfig.string(): String {
   val dt = interval ?: 1
   val desc =
     when (frequency) {
-      RecurFrequency.Daily ->
+      RecurFrequency.Daily -> {
         if (dt != 1) {
           "Every $dt days"
         } else {
           "Every day"
         }
-      RecurFrequency.Weekly ->
+      }
+      RecurFrequency.Weekly -> {
         if (dt != 1) {
           "Every $dt weeks on ${start.dayOfWeek.nice}"
         } else {
           "Every week on ${start.dayOfWeek.nice}"
         }
-      RecurFrequency.Monthly -> monthlyRecurConfigDesc()
+      }
+      RecurFrequency.Monthly -> {
+        monthlyRecurConfigDesc()
+      }
       RecurFrequency.Yearly -> {
         val dateStr = "${start.month.nice} ${numberSuffix(start.day)}"
         if (dt != 1) "Every $dt years on $dateStr" else "Every year on $dateStr"
@@ -292,9 +298,11 @@ private fun RecurConfig.monthlyRecurConfigDesc(): String {
     // this sort would put them first
     val sortedPatterns =
       patterns
+        .asSequence()
         .sortedWith(RecurPatternComparator)
         .filter { it.value != -1 }
         .plus(patterns.filter { it.value == -1 }) // Add on all -1 values to the end
+        .toList()
 
     val strings = mutableListOf<String>()
     val uniqueDays = sortedPatterns.fastMap { it.type }.distinct()
@@ -306,8 +314,11 @@ private fun RecurConfig.monthlyRecurConfigDesc(): String {
         } else if (isSameDay) {
           if (p.value == -1) "last" else numberSuffix(p.value)
         } else {
-          if (p.value == -1) "last " + dayName(p.type)
-          else numberSuffix(p.value) + " " + dayName(p.type)
+          if (p.value == -1) {
+            "last " + dayName(p.type)
+          } else {
+            numberSuffix(p.value) + " " + dayName(p.type)
+          }
         }
     }
 
@@ -340,14 +351,14 @@ private fun RecurConfig.monthlyRecurConfigDesc(): String {
 }
 
 private object RecurPatternComparator : Comparator<RecurPattern> {
+  private val RecurType.sortValue
+    get() = if (this == RecurType.Day) 1 else 0
+
   override fun compare(p1: RecurPattern, p2: RecurPattern): Int {
     val typeOrder = p1.type.sortValue - p2.type.sortValue
     val valueOrder = p1.value - p2.value
     return if (typeOrder == 0) valueOrder else typeOrder
   }
-
-  private val RecurType.sortValue
-    get() = if (this == RecurType.Day) 1 else 0
 }
 
 private fun numberSuffix(number: Int): String {

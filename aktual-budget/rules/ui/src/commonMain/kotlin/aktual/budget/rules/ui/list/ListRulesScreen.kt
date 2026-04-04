@@ -274,9 +274,9 @@ private fun ColumnScope.ContentSuccess(
       stickyHeader {
         Row(
           modifier =
-            Modifier.fillMaxWidth()
-              .clickable { expandedStages[stage] = !isExpanded }
-              .background(theme.pillBackgroundSelected, CardShape),
+            Modifier.fillMaxWidth().background(theme.pillBackgroundSelected, CardShape).clickable {
+              expandedStages[stage] = !isExpanded
+            },
           verticalAlignment = Alignment.CenterVertically,
         ) {
           Text(
