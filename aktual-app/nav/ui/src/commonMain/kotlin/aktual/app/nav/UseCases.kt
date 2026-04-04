@@ -139,10 +139,11 @@ class InitialRouteUseCase(
       !localFilesExist(budgetId) -> ListBudgetsNavRoute(token)
 
       else -> {
-        var graphReady by remember(budgetId) {
-          // If the graph is already loaded for this budget, skip re-initialization
-          mutableStateOf(budgetGraphHolder.value?.budgetId == budgetId)
-        }
+        var graphReady by
+          remember(budgetId) {
+            // If the graph is already loaded for this budget, skip re-initialization
+            mutableStateOf(budgetGraphHolder.value?.budgetId == budgetId)
+          }
         var failed by remember(budgetId) { mutableStateOf(false) }
         if (!graphReady) {
           LaunchedEffect(budgetId) {
@@ -151,7 +152,9 @@ class InitialRouteUseCase(
               budgetGraphHolder.update(metadata)
               graphReady = true
             } catch (e: Exception) {
-              logcat.w(e) { "Failed to load budget graph for $budgetId, falling back to budget list" }
+              logcat.w(e) {
+                "Failed to load budget graph for $budgetId, falling back to budget list"
+              }
               failed = true
             }
           }
