@@ -19,3 +19,7 @@ getWithIds:
   SELECT * FROM category_groups
     WHERE id IN :ids AND tombstone = 0
     ORDER BY is_income, sort_order, id;
+
+getName: SELECT name FROM category_groups WHERE id = ?;
+
+getNames: SELECT name FROM category_groups WHERE id IN ?;

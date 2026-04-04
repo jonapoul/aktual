@@ -1,4 +1,3 @@
-import aktual.budget.model.AccountId;
 import aktual.budget.model.RuleId;
 import aktual.budget.model.ScheduleId;
 import kotlin.Boolean;
@@ -44,25 +43,14 @@ insert:
     INTO schedules(id, rule, active, completed, posts_transaction, tombstone, name)
     VALUES(?,?,?,?,?,?,?);
 
-setRule:
-  UPDATE schedules
-    SET rule = ?
-    WHERE id = ?;
+setRule: UPDATE schedules SET rule = ? WHERE id = ?;
 
-getIdByName:
-  SELECT id
-    FROM schedules
-    WHERE tombstone = 0 AND name = ?;
+getIdByName: SELECT id FROM schedules WHERE tombstone = 0 AND name = ?;
 
-delete:
-  DELETE
-    FROM schedules
-    WHERE id = ?;
+delete: DELETE FROM schedules WHERE id = ?;
 
-getById:
-  SELECT id
-    FROM schedules
-    WHERE rule = ?;
+getById: SELECT id FROM schedules WHERE rule = ?;
 
-getFromVSchedules:
-  SELECT * FROM v_schedules;
+getFromVSchedules: SELECT * FROM v_schedules;
+
+getName: SELECT name FROM schedules WHERE id = ?;

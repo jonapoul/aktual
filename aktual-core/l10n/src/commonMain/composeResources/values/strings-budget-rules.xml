@@ -60,11 +60,9 @@
   <string name="rules_field_category">category</string>
   <string name="rules_field_category_group">category group</string>
   <string name="rules_field_date">date</string>
-  <string name="rules_field_description">description</string>
   <string name="rules_field_notes">notes</string>
   <string name="rules_field_payee">payee</string>
   <string name="rules_field_payee_name">payee (name)</string>
-  <string name="rules_field_imported_description">imported description</string>
   <string name="rules_field_imported_payee">imported payee</string>
   <string name="rules_field_saved">saved</string>
   <string name="rules_field_transfer">transfer</string>

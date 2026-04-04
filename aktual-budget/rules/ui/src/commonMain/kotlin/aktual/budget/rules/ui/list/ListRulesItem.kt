@@ -140,7 +140,7 @@ private fun ListRulesItemConditions(
 ) {
   Column(
     modifier = modifier,
-    horizontalAlignment = Alignment.Start,
+    horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
   ) {
     conditions.fastForEachIndexed { index, condition ->
@@ -170,7 +170,7 @@ private fun ListRulesItemActions(
 ) {
   Column(
     modifier = modifier,
-    horizontalAlignment = Alignment.Start,
+    horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
   ) {
     actions.fastForEach { action ->

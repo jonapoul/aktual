@@ -63,6 +63,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
@@ -90,24 +91,26 @@ fun ListRulesScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val checkboxes by viewModel.checkboxes.collectAsStateWithLifecycle()
 
-  ListRulesScaffold(
-    modifier = modifier,
-    state = state,
-    checkboxes = checkboxes,
-    onAction = { action ->
-      when (action) {
-        Reload -> viewModel.reload()
-        is Delete -> viewModel.delete(action.id)
-        is Open -> TODO()
-        is Edit -> TODO()
-        is OpenUrl -> TODO()
-        is Check -> viewModel.check(action.id)
-        is Uncheck -> viewModel.uncheck(action.id)
-        DisableCheckboxes -> viewModel.hideCheckboxes()
-        EnableCheckboxes -> viewModel.showCheckboxes()
-      }
-    },
-  )
+  CompositionLocalProvider(LocalNameFetcher provides viewModel.nameFetcher) {
+    ListRulesScaffold(
+      modifier = modifier,
+      state = state,
+      checkboxes = checkboxes,
+      onAction = { action ->
+        when (action) {
+          Reload -> viewModel.reload()
+          is Delete -> viewModel.delete(action.id)
+          is Open -> TODO()
+          is Edit -> TODO()
+          is OpenUrl -> TODO()
+          is Check -> viewModel.check(action.id)
+          is Uncheck -> viewModel.uncheck(action.id)
+          DisableCheckboxes -> viewModel.hideCheckboxes()
+          EnableCheckboxes -> viewModel.showCheckboxes()
+        }
+      },
+    )
+  }
 }
 
 @Composable
