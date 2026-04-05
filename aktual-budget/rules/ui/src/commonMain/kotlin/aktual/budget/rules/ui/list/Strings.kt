@@ -25,6 +25,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.LocalCurrencyConfig
+import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
 import androidx.compose.runtime.Composable
@@ -43,7 +44,9 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
+import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
@@ -100,6 +103,7 @@ internal fun rememberConditionText(
   val fieldText = condition.field.string(condition.options)
   val opText = condition.operator.displayString()
 
+  val dateFormat = LocalDateFormatter.current
   val numberFormat = LocalNumberFormatConfig.current
   val currency = LocalCurrencyConfig.current
   val privacy = LocalPrivacyEnabled.current
@@ -132,6 +136,7 @@ internal fun rememberConditionText(
     opText,
     fieldText,
     fieldNames,
+    dateFormat,
     numberFormat,
     currency,
     privacy,
@@ -183,7 +188,7 @@ internal fun rememberConditionText(
             error("Should only see a JSON object in a condition value for a date: $condition")
           }
           val recurConfig = Json.decodeFromJsonElement(RecurConfig.serializer(), value)
-          withStyle(styles.highlighted) { append(recurConfig.string()) }
+          withStyle(styles.highlighted) { append(recurConfig.string(dateFormat)) }
         }
       }
     }
@@ -197,6 +202,7 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
   val fieldText = (action as? SetAction)?.field?.string(options = null)
   val setToText = if (action is SetAction) Strings.rulesActionSetTo else null
 
+  val dateFormat = LocalDateFormatter.current
   val numberFormat = LocalNumberFormatConfig.current
   val currency = LocalCurrencyConfig.current
   val privacy = LocalPrivacyEnabled.current
@@ -220,6 +226,7 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
     fieldText,
     setToText,
     fieldName,
+    dateFormat,
     numberFormat,
     currency,
     privacy,
@@ -342,11 +349,11 @@ private fun Field.string(options: ConditionOptions?): String =
   }
 
 // From getRecurringDescription in packages/loot-core/src/shared/schedules.ts
-internal fun RecurConfig.string(): String {
+internal fun RecurConfig.string(dateFormat: DateTimeFormat<LocalDate>): String {
   val endModeSuffix =
     when (endMode) {
       RecurEndMode.AfterNOccurrences -> if (endOccurrences == 1) "once" else "$endOccurrences times"
-      RecurEndMode.OnDate -> "until $endDate"
+      RecurEndMode.OnDate -> "until ${endDate?.let(dateFormat::format)}"
       RecurEndMode.Never -> null
       null -> null
     }

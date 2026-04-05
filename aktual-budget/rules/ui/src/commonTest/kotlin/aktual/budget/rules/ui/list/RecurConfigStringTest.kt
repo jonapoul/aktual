@@ -2,6 +2,7 @@
 
 package aktual.budget.rules.ui.list
 
+import aktual.budget.model.DateFormat.YyyyMmDd
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.RecurEndMode.AfterNOccurrences
 import aktual.budget.model.RecurEndMode.Never
@@ -14,6 +15,7 @@ import aktual.budget.model.RecurType.Day
 import aktual.budget.model.RecurType.Friday
 import aktual.budget.model.RecurType.Saturday
 import aktual.budget.model.WeekendSolveMode.Before
+import aktual.core.ui.formatter
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
 import kotlin.test.Test
@@ -58,7 +60,7 @@ class RecurConfigStringTest {
         MONTHLY_END_DATE,
       )
   ) {
-    assertEquals(expected = test.expected, actual = test.config.string())
+    assertEquals(expected = test.expected, actual = test.config.string(YyyyMmDd.formatter()))
   }
 
   companion object {

@@ -2,11 +2,16 @@
 
 package aktual.core.ui
 
+import aktual.budget.model.DateFormat
 import aktual.core.l10n.Strings
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import kotlinx.datetime.DayOfWeek
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.format.DateTimeFormat
+import kotlinx.datetime.format.char
 
 @Composable
 fun YearMonth.stringLong(): String {
@@ -65,3 +70,49 @@ fun Month.stringLong() =
     Month.NOVEMBER -> Strings.monthNovLong
     Month.DECEMBER -> Strings.monthDecLong
   }
+
+@Stable
+fun DateFormat.formatter(): DateTimeFormat<LocalDate> =
+  when (this) {
+    DateFormat.MmDdYyyy -> MmDdYyyy
+    DateFormat.DdMmYyyy -> DdMmYyyy
+    DateFormat.YyyyMmDd -> YyyyMmDd
+    DateFormat.MmDdYyyyDot -> MmDdYyyyDot
+    DateFormat.DdMmYyyyDot -> DdMmYyyyDot
+  }
+
+private val MmDdYyyy = LocalDate.Format {
+  monthNumber()
+  char('/')
+  day()
+  char('/')
+  year()
+}
+private val DdMmYyyy = LocalDate.Format {
+  day()
+  char('/')
+  monthNumber()
+  char('/')
+  year()
+}
+private val YyyyMmDd = LocalDate.Format {
+  year()
+  char('-')
+  monthNumber()
+  char('-')
+  day()
+}
+private val MmDdYyyyDot = LocalDate.Format {
+  monthNumber()
+  char('.')
+  day()
+  char('.')
+  year()
+}
+private val DdMmYyyyDot = LocalDate.Format {
+  day()
+  char('.')
+  monthNumber()
+  char('.')
+  year()
+}
