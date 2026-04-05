@@ -3,7 +3,9 @@ package aktual.core.ui
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import alakazam.compose.VerticalSpacer
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -78,18 +80,15 @@ fun Modifier.blurredTopBar(state: BlurredTopBarState, isScrolled: Boolean): Modi
 
   if (!state.blurEnabled) return this
 
-  val progress by animateFloatAsState(if (isScrolled) 1f else 0f)
+  val progress by
+    animateFloatAsState(
+      targetValue = if (isScrolled) 1f else 0f,
+      animationSpec = DefaultAnimationSpec,
+    )
+
   if (progress == 0f) return this
 
-  val style =
-    remember(config, theme, progress) {
-      val tintAlpha = if (theme.isLight) 1f - config.blurAlpha else config.blurAlpha
-      HazeStyle(
-        blurRadius = config.blurRadius * progress,
-        backgroundColor = theme.cardBackground.copy(alpha = progress),
-        tint = HazeTint(theme.cardBackground.copy(alpha = tintAlpha * progress)),
-      )
-    }
+  val style = rememberAnimatedHazeStyle(config, theme, progress)
   return hazeEffect(state.hazeState, style)
 }
 
@@ -142,21 +141,35 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
   val hazeState = LocalHazeState.current
   val theme = LocalTheme.current
 
-  val target = if (dialogBlurState.isActive && blurConfig.blurDialogs) 1f else 0f
-  val progress by animateFloatAsState(target)
+  val progress by
+    animateFloatAsState(
+      targetValue = if (dialogBlurState.isActive && blurConfig.blurDialogs) 1f else 0f,
+      animationSpec = DefaultAnimationSpec,
+    )
 
   if (progress > 0f) {
-    val style =
-      remember(blurConfig, theme, progress) {
-        HazeStyle(
-          blurRadius = blurConfig.blurRadius * progress,
-          backgroundColor = theme.cardBackground.copy(alpha = progress * 0.1f),
-          tint = HazeTint(theme.cardBackground.copy(alpha = blurConfig.blurAlpha * progress)),
-        )
-      }
+    val style = rememberAnimatedHazeStyle(blurConfig, theme, progress)
     Box(modifier = modifier.fillMaxSize().hazeEffect(hazeState, style))
   }
 }
+
+private val DefaultAnimationSpec = tween<Float>(durationMillis = 200, easing = FastOutSlowInEasing)
+
+@Composable
+private fun rememberAnimatedHazeStyle(
+  config: BlurConfig,
+  theme: Theme,
+  progress: Float,
+  backgroundAlpha: Float = progress,
+  tintAlpha: Float = config.blurAlpha * progress,
+): HazeStyle =
+  remember(config, theme, progress, backgroundAlpha, tintAlpha) {
+    HazeStyle(
+      blurRadius = config.blurRadius * progress,
+      backgroundColor = theme.cardBackground.copy(alpha = backgroundAlpha),
+      tint = HazeTint(theme.cardBackground.copy(alpha = tintAlpha)),
+    )
+  }
 
 @Immutable
 data class BlurConfig(
