@@ -291,11 +291,10 @@ private fun ContentSuccess(
 ) {
   val stagedRules: ImmutableList<Pair<RuleStage, ImmutableList<RuleListItem>>> =
     remember(rules) {
-      rules
-        .groupBy { it.stage }
-        .toList()
-        .sortedBy { (stage, _) -> stage }
-        .map { (stage, items) -> stage to items.toImmutableList() }
+      // always show all stages, even if no rules
+      val grouped = rules.groupBy { it.stage }
+      RuleStage.entries
+        .map { stage -> stage to grouped[stage].orEmpty().toImmutableList() }
         .toImmutableList()
     }
 
