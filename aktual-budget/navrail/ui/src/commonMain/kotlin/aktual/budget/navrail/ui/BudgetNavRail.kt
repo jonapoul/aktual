@@ -14,6 +14,7 @@ import aktual.core.icons.Reports
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.LinearScale
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Menu
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
@@ -25,6 +26,8 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
+import aktual.core.ui.ThemedDropdownMenu
+import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
 import androidx.compose.foundation.layout.Box
@@ -71,8 +74,6 @@ fun BudgetNavRail(
   viewModel: BudgetNavRailViewModel = metroViewModel(token, budgetId),
 ) {
   val contributors = viewModel.budgetNavEntryContributors
-  var selectedTab by
-    rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Transactions) }
 
   val transactionsStack = stackWithDefault(TransactionsNavRoute(token, budgetId))
   val reportsStack = stackWithDefault(ReportsListNavRoute(token, budgetId))
@@ -87,14 +88,25 @@ fun BudgetNavRail(
       )
     }
 
+  var showMenu by remember { mutableStateOf(false) }
+  var selectedTab by
+    rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Transactions) }
+
   val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
 
+  @Suppress("ElseCaseInsteadOfExhaustiveWhen")
   val onSelectTab: (BudgetTab) -> Unit = { tab ->
-    if (tab == selectedTab) {
-      val stack = tabStacks.getValue(tab)
-      while (stack.size > 1) stack.removeAt(stack.lastIndex)
-    } else {
-      selectedTab = tab
+    when (tab) {
+      BudgetTab.Menu -> {
+        showMenu = true
+      }
+      selectedTab -> {
+        val stack = tabStacks.getValue(tab)
+        while (stack.size > 1) stack.removeAt(stack.lastIndex)
+      }
+      else -> {
+        selectedTab = tab
+      }
     }
   }
 
@@ -103,6 +115,8 @@ fun BudgetNavRail(
       contributors = contributors,
       activeStack = activeStack,
       selectedTab = selectedTab,
+      showMenu = showMenu,
+      onDismissMenu = { showMenu = false },
       onSelectTab = onSelectTab,
       onBack = { if (!activeStack.debugPop()) back() },
       modifier = modifier,
@@ -112,6 +126,8 @@ fun BudgetNavRail(
       contributors = contributors,
       activeStack = activeStack,
       selectedTab = selectedTab,
+      showMenu = showMenu,
+      onDismissMenu = { showMenu = false },
       onSelectTab = onSelectTab,
       onBack = { if (!activeStack.debugPop()) back() },
       modifier = modifier,
@@ -128,6 +144,8 @@ private fun BottomNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   activeStack: SnapshotStateList<BudgetNavKey>,
   selectedTab: BudgetTab,
+  showMenu: Boolean,
+  onDismissMenu: () -> Unit,
   onSelectTab: (BudgetTab) -> Unit,
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
@@ -139,7 +157,10 @@ private fun BottomNavLayout(
       onBack = onBack,
       modifier = Modifier.weight(1f),
     )
-    BottomNavBar(selectedTab = selectedTab, onSelectTab = onSelectTab)
+    Box(contentAlignment = Alignment.TopEnd) {
+      BottomNavBar(selectedTab, onSelectTab)
+      BudgetMenu(expanded = showMenu, onDismissRequest = onDismissMenu)
+    }
     BottomStatusBarSpacing()
     BottomNavBarSpacing()
   }
@@ -150,12 +171,21 @@ private fun SideNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   activeStack: SnapshotStateList<BudgetNavKey>,
   selectedTab: BudgetTab,
+  showMenu: Boolean,
+  onDismissMenu: () -> Unit,
   onSelectTab: (BudgetTab) -> Unit,
   onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier.fillMaxSize()) {
-    SideNavRail(selectedTab = selectedTab, onSelectTab = onSelectTab)
+    Box(contentAlignment = Alignment.TopStart) {
+      SideNavRail(selectedTab, onSelectTab)
+      BudgetMenu(
+        expanded = showMenu,
+        onDismissRequest = onDismissMenu,
+        modifier = Modifier.align(Alignment.TopEnd),
+      )
+    }
     BudgetNavDisplay(
       contributors = contributors,
       activeStack = activeStack,
@@ -280,10 +310,24 @@ private fun budgetNavKeyStackSaver() =
     },
   )
 
+@Composable
+private fun BudgetMenu(
+  expanded: Boolean,
+  onDismissRequest: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Box(modifier = modifier) {
+    ThemedDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
+      ThemedDropdownMenuItem(text = "TODO", onClick = onDismissRequest)
+    }
+  }
+}
+
 private enum class BudgetTab {
   Transactions,
   Reports,
   Rules,
+  Menu,
 }
 
 @Composable
@@ -292,6 +336,7 @@ private fun BudgetTab.label(): String =
     BudgetTab.Transactions -> Strings.transactionsTitle
     BudgetTab.Reports -> Strings.reportsTitle
     BudgetTab.Rules -> Strings.rulesTitle
+    BudgetTab.Menu -> Strings.budgetNavMenu
   }
 
 @Composable
@@ -300,6 +345,7 @@ private fun BudgetTab.icon(): ImageVector =
     BudgetTab.Transactions -> MaterialIcons.LinearScale
     BudgetTab.Reports -> AktualIcons.Reports
     BudgetTab.Rules -> AktualIcons.Tuning
+    BudgetTab.Menu -> MaterialIcons.Menu
   }
 
 @PortraitPreview
