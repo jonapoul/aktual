@@ -3,8 +3,9 @@ package aktual.core.connection
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.ApiBuilder
 import aktual.core.model.ServerUrl
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.prefs.AppPreferences
+import aktual.prefs.AppPreferencesImpl
+import aktual.prefs.delete
 import aktual.test.CoLogcatInterceptor
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -30,12 +31,12 @@ class ConnectionMonitorTest {
   @InterceptTest val logger = CoLogcatInterceptor()
 
   private lateinit var connectionMonitor: ConnectionMonitor
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: AppPreferences
   private lateinit var apiStateHolder: AktualApisStateHolder
 
   private fun TestScope.before() {
     val prefs = buildPreferences(unconfinedDispatcher)
-    preferences = AppGlobalPreferencesImpl(prefs)
+    preferences = AppPreferencesImpl(prefs)
     apiStateHolder = AktualApisStateHolder()
 
     val apiBuilder =

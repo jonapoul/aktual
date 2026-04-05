@@ -5,11 +5,14 @@ package aktual.account.ui.login
 import aktual.account.domain.LoginRequester
 import aktual.account.domain.LoginResult
 import aktual.account.vm.LoginViewModel
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.ListBudgetsNavigator
+import aktual.app.nav.ServerUrlNavigator
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.prefs.AppPreferences
+import aktual.prefs.AppPreferencesImpl
 import aktual.test.TestBuildConfig
 import aktual.test.assertEditableTextEquals
 import aktual.test.buildPreferences
@@ -24,12 +27,17 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
+import assertk.assertThat
+import assertk.assertions.isEqualTo
+import assertk.assertions.isNull
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
+import io.mockk.slot
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -43,23 +51,42 @@ class LoginScreenTest {
   // real
   private lateinit var viewModel: LoginViewModel
   private lateinit var versionsStateHolder: AktualVersionsStateHolder
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: AppPreferences
 
   // mock
-  private lateinit var navigator: LoginNavigator
   private lateinit var loginRequester: LoginRequester
+  private lateinit var serverUrlNavigator: ServerUrlNavigator
+  private lateinit var listBudgetsNavigator: ListBudgetsNavigator
+  private var toListBudgetsToken: Token? = null
+  private var toServerUrlCalled = false
 
   @BeforeTest
   fun before() {
     ShadowLog.stream = System.out
 
-    navigator = mockk(relaxed = true)
-    loginRequester = mockk()
+    toListBudgetsToken = null
+    toServerUrlCalled = false
+    loginRequester = mockk { coEvery { fetchLoginMethods() } returns emptyList() }
     setLoginResult { LoginResult.Success(TOKEN) }
 
+    serverUrlNavigator =
+      mockk<ServerUrlNavigator> {
+        every { this@mockk.invoke() } answers { toServerUrlCalled = true }
+      }
+
+    val tokenSlot = slot<Token>()
+    listBudgetsNavigator =
+      mockk<ListBudgetsNavigator> {
+        every { this@mockk.invoke(capture(tokenSlot)) } answers
+          {
+            toListBudgetsToken = tokenSlot.captured
+          }
+      }
+
     versionsStateHolder = AktualVersionsStateHolder(BUILD_CONFIG)
-    val prefs = buildPreferences(UnconfinedTestDispatcher())
-    preferences = AppGlobalPreferencesImpl(prefs)
+    val scope = TestScope(UnconfinedTestDispatcher())
+    val prefs = scope.buildPreferences()
+    preferences = AppPreferencesImpl(prefs)
   }
 
   private fun buildViewModel(password: Password = Password.Empty) {
@@ -76,11 +103,18 @@ class LoginScreenTest {
   fun `Login success`() = composeRule.runTest {
     // given initial state with empty password
     buildViewModel(password = Password.Empty)
-    setAndroidThemedContent { LoginScreen(navigator, viewModel) }
+    setAndroidThemedContent {
+      LoginScreen(
+        back = BackNavigator(mockk(relaxed = true)),
+        toServerUrl = serverUrlNavigator,
+        toListBudgets = listBudgetsNavigator,
+        viewModel = viewModel,
+      )
+    }
 
     // and the login takes half a second before succeeding
     setLoginResult {
-      preferences.token.setAndCommit(TOKEN) // to trigger nav behaviour
+      preferences.token.set(TOKEN) // to trigger nav behaviour
       LoginResult.Success(TOKEN)
     }
 
@@ -100,11 +134,11 @@ class LoginScreenTest {
       .performImeAction()
 
     runOnIdle {
-      // and the login was triggered
-      coVerify(exactly = 1) { loginRequester.logIn(PASSWORD) }
+      // then the login was triggered
+      coVerify(exactly = 1) { loginRequester.logIn(PASSWORD, any()) }
 
       // and the navigation was triggered when it succeeded
-      verify(exactly = 1) { navigator.toListBudgets(TOKEN) }
+      assertThat(toListBudgetsToken).isEqualTo(TOKEN)
     }
   }
 
@@ -112,7 +146,14 @@ class LoginScreenTest {
   fun `Login failure`() = composeRule.runTest {
     // given initial state with dummy password
     buildViewModel(password = PASSWORD)
-    setAndroidThemedContent { LoginScreen(navigator, viewModel) }
+    setAndroidThemedContent {
+      LoginScreen(
+        back = BackNavigator(mockk(relaxed = true)),
+        toServerUrl = serverUrlNavigator,
+        toListBudgets = listBudgetsNavigator,
+        viewModel = viewModel,
+      )
+    }
 
     // and the login takes half a second before failing
     setLoginResult { LoginResult.HttpFailure(code = 404, message = "It failed") }
@@ -124,10 +165,10 @@ class LoginScreenTest {
 
     runOnIdle {
       // then the login was triggered
-      coVerify(exactly = 1) { loginRequester.logIn(PASSWORD) }
+      coVerify(exactly = 1) { loginRequester.logIn(PASSWORD, any()) }
 
       // and the navigation was not triggered
-      verify(exactly = 0) { navigator.toListBudgets(TOKEN) }
+      assertThat(toListBudgetsToken).isNull()
     }
 
     // and the login failure text is visible
@@ -136,7 +177,7 @@ class LoginScreenTest {
   }
 
   private fun setLoginResult(block: suspend () -> LoginResult) {
-    coEvery { loginRequester.logIn(any()) } coAnswers { block() }
+    coEvery { loginRequester.logIn(any(), any()) } coAnswers { block() }
   }
 
   private companion object {

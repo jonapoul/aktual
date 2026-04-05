@@ -25,6 +25,8 @@ private val aktualIcons =
     listOf(
       ArrowThickDown,
       ArrowThickUp,
+      ChevronDown,
+      ChevronUp,
       CloseBracket,
       Cloud,
       CloudCheck,
@@ -36,6 +38,8 @@ private val aktualIcons =
       FileDouble,
       Key,
       OpenBracket,
+      Reports,
       Sum,
+      Tuning,
     )
   }

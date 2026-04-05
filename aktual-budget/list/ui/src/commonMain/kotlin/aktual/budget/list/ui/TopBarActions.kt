@@ -1,7 +1,7 @@
 package aktual.budget.list.ui
 
 import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
-import aktual.budget.list.ui.ListBudgetsAction.ChangeServer
+import aktual.budget.list.ui.ListBudgetsAction.LogOut
 import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
 import aktual.budget.list.ui.ListBudgetsAction.OpenServerMetrics
 import aktual.budget.list.ui.ListBudgetsAction.OpenSettings
@@ -14,9 +14,9 @@ import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Settings
 import aktual.core.l10n.Strings
 import aktual.core.ui.BasicIconButton
+import aktual.core.ui.ThemedDropdownMenu
+import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.normalIconButton
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -50,20 +50,24 @@ internal fun MoreMenu(
   onAction: (ListBudgetsAction) -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-) =
-  DropdownMenu(modifier = modifier, expanded = showMenu, onDismissRequest = onDismissRequest) {
+) {
+  ThemedDropdownMenu(
+    modifier = modifier,
+    expanded = showMenu,
+    onDismissRequest = onDismissRequest,
+  ) {
     val serverText = Strings.listBudgetsChangeServer
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(serverText) },
       onClick = {
         onDismissRequest()
-        onAction(ChangeServer)
+        onAction(LogOut)
       },
       leadingIcon = { Icon(MaterialIcons.Cloud, contentDescription = serverText) },
     )
 
     val passwordText = Strings.listBudgetsChangePassword
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(passwordText) },
       onClick = {
         onDismissRequest()
@@ -73,7 +77,7 @@ internal fun MoreMenu(
     )
 
     val metricsText = Strings.metricsToolbar
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(metricsText) },
       onClick = {
         onDismissRequest()
@@ -83,7 +87,7 @@ internal fun MoreMenu(
     )
 
     val aboutText = Strings.listBudgetsAbout
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(aboutText) },
       onClick = {
         onDismissRequest()
@@ -92,3 +96,4 @@ internal fun MoreMenu(
       leadingIcon = { Icon(MaterialIcons.Info, contentDescription = aboutText) },
     )
   }
+}

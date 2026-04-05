@@ -7,7 +7,6 @@ env:
   CI: true
   GRADLE_ENCRYPTION_KEY: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  GITLEAKS_CONFIG: ./config/gitleaks.toml
 
 permissions:
   contents: read
@@ -25,6 +24,7 @@ jobs:
     outputs:
       renovate: ${{ steps.filter.outputs.renovate }}
       wrapper: ${{ steps.filter.outputs.wrapper }}
+      shell: ${{ steps.filter.outputs.shell }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
       - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
@@ -40,6 +40,8 @@ jobs:
               - 'gradle/wrapper/**'
               - 'gradlew'
               - 'gradlew.bat'
+            shell:
+              - '**/*.sh'
 
   validate-renovate:
     needs: changed-files
@@ -61,16 +63,40 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - uses: gradle/actions/wrapper-validation@0723195856401067f7a2779048b490ace7a47d7c # v5
+      - uses: gradle/actions/wrapper-validation@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6
 
-  gitleaks:
+  shellcheck:
+    needs: changed-files
+    if: needs.changed-files.outputs.shell == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          fetch-depth: 0
+      - run: |
+          mapfile -t files < <(git diff --name-only --diff-filter=ACMR origin/main -- '*.sh')
+          if [[ ${#files[@]} -gt 0 ]]; then
+            shellcheck "${files[@]}"
+          fi
+
+  betterleaks:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
         with:
           fetch-depth: 0
-      - uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7 # v2
+      - uses: dortort/betterleaks-action@cd0b905aa4befb8f42f8b1ab98150180c9e77515 # v0.1.0
+        id: betterleaks
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          config: ./config/betterleaks.toml
+          fail-on-leak: 'true'
+      - uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4
+        if: always()
+        with:
+          sarif_file: ${{ steps.betterleaks.outputs.sarif-path }}
 
   ktfmt:
     runs-on: ubuntu-latest
@@ -81,7 +107,7 @@ jobs:
       - run: scripts/ktfmt.sh check --force
 
   validation:
-    needs: [ changed-files, validate-renovate, validate-wrapper, gitleaks, ktfmt ]
+    needs: [ changed-files, validate-renovate, validate-wrapper, shellcheck, betterleaks, ktfmt ]
     if: ${{ !cancelled() }}
     runs-on: ubuntu-latest
     steps:
@@ -144,7 +170,7 @@ jobs:
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew detektReportMergeSarif
-      - uses: github/codeql-action/upload-sarif@c6f931105cb2c34c8f901cc885ba1e2e259cf745 # v4
+      - uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4
         if: ${{ !cancelled() }}
         with:
           sarif_file: build/reports/detekt/merge.sarif.json
@@ -170,7 +196,7 @@ jobs:
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
 
-  licensee:
+  other-checks:
     needs: validation
     if: ${{ !cancelled() && needs.validation.result == 'success' }}
     runs-on: ubuntu-latest
@@ -180,7 +206,26 @@ jobs:
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew licensee
+      - run: ./gradlew licensee androidManifestLock
+
+  atlas:
+    needs: validation
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - run: sudo apt-get update && sudo apt-get install -y graphviz
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - run: ./gradlew atlasGenerate
+      - name: Check for uncommitted changes
+        run: |
+          if ! git diff --exit-code; then
+            echo "::error::atlasGenerate produced changes that were not committed. Please run './gradlew atlasGenerate' locally and commit the results."
+            exit 1
+          fi
 
   finish:
     if: ${{ !cancelled() }}
@@ -191,7 +236,8 @@ jobs:
       - assemble-desktop
       - detekt
       - tests
-      - licensee
+      - other-checks
+      - atlas
     runs-on: ubuntu-latest
     outputs:
       result: ${{ steps.check.outputs.result }}
@@ -207,7 +253,7 @@ jobs:
           fi
 
   claude-review:
-    if: ${{ !cancelled() && !contains(github.head_ref, 'anthropics-claude-code-action') }}
+    if: ${{ !cancelled() && !startsWith(github.head_ref, 'renovate/') }}
     needs: finish
     runs-on: ubuntu-latest
     permissions:
@@ -219,7 +265,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: anthropics/claude-code-action@df37d2f0760a4b5683a6e617c9325bc1a36443f6 # v1
+      - uses: anthropics/claude-code-action@1eddb334cfa79fdb21ecbe2180ca1a016e8e7d47 # v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed_bots: 'renovate'
@@ -245,9 +291,11 @@ jobs:
             Submit a review using:
                gh api repos/$REPO/pulls/$PR_NUMBER/reviews -f event=COMMENT -f body="Review summary" -f 'comments[][path]=file.kt' -f 'comments[][line]=42' -f 'comments[][body]=Your comment'
 
-            Keep comments brief and actionable. Only comment where something should be addressed — don't leave praise or nitpicks. To clarify: if you have nothing to say besides "LGTM", **DO NOT LEAVE A COMMENT**
+            Keep comments brief and actionable.
 
-            If CI failed, include the failure analysis in the review summary. If everything looks fine and CI passed, leave a single approving comment via `gh pr comment`.
+            *IMPORTANT* Only leave a comment if something should be addressed — don't leave praise or nitpicks. To clarify: if you have nothing to say besides "LGTM", **DO NOT LEAVE A COMMENT AT ALL**
+
+            If CI failed, include the failure analysis in the review summary.
 
             Use the repository's CLAUDE.md for guidance on style and conventions.
           claude_args: '--allowed-tools "Bash(gh api:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh run view:*)"'

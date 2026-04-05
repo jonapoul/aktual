@@ -1,8 +1,7 @@
 package aktual.metrics.ui
 
 import aktual.api.model.metrics.GetMetricsResponse
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Refresh
+import aktual.app.nav.BackNavigator
 import aktual.core.l10n.Strings
 import aktual.core.model.GB
 import aktual.core.model.MB
@@ -12,7 +11,7 @@ import aktual.core.model.kB
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.AnimatedLoading
+import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
@@ -20,28 +19,35 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.RowShape
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.WavyBackground
+import aktual.core.ui.blurredTopBar
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.core.ui.verticalScrollWithBar
 import aktual.metrics.vm.MetricsState
 import aktual.metrics.vm.MetricsViewModel
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -49,11 +55,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.valentinilk.shimmer.ShimmerBounds
+import com.valentinilk.shimmer.rememberShimmer
+import com.valentinilk.shimmer.shimmer
+import com.valentinilk.shimmer.unclippedBoundsInWindow
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlin.time.Clock
 import kotlin.time.Duration
@@ -70,7 +82,7 @@ import kotlinx.datetime.format.char
 
 @Composable
 fun MetricsScreen(
-  nav: MetricsNavigator,
+  back: BackNavigator,
   viewModel: MetricsViewModel = metroViewModel<MetricsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
@@ -79,7 +91,7 @@ fun MetricsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        MetricsAction.NavBack -> nav.back()
+        MetricsAction.NavBack -> back()
         MetricsAction.Refresh -> viewModel.refresh()
       }
     },
@@ -92,23 +104,32 @@ internal fun MetricsScaffold(
   onAction: (MetricsAction) -> Unit,
   theme: Theme = LocalTheme.current,
 ) {
+  val blurState = rememberBlurredTopBarState()
+
   Scaffold(
     topBar = {
       TopAppBar(
+        modifier = Modifier.blurredTopBar(blurState, isScrolled = false),
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(MetricsAction.NavBack) } },
         title = { Text(Strings.metricsToolbar) },
-        actions = {
-          if (state is MetricsState.Success) {
-            IconButton(onClick = { onAction(MetricsAction.Refresh) }) {
-              Icon(imageVector = MaterialIcons.Refresh, contentDescription = Strings.metricsRefresh)
-            }
-          }
-        },
       )
     }
   ) { innerPadding ->
-    MetricsContent(modifier = Modifier.padding(innerPadding), state = state, onAction = onAction)
+    Box {
+      WavyBackground()
+
+      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
+        BlurredTopBarSpacing(blurState, innerPadding)
+        PullToRefreshBox(
+          modifier = Modifier.padding(8.dp),
+          contentAlignment = Alignment.Center,
+          onRefresh = { onAction(MetricsAction.Refresh) },
+          isRefreshing = state is MetricsState.Loading,
+          content = { MetricsContent(state, onAction) },
+        )
+      }
+    }
   }
 }
 
@@ -119,23 +140,70 @@ private fun MetricsContent(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  Box(modifier = modifier.fillMaxSize().padding(horizontal = Dimens.Huge)) {
+  Column(
+    modifier = modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Top,
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
     when (state) {
-      MetricsState.Loading -> {
-        AnimatedLoading(modifier = Modifier.align(Alignment.Center).size(50.dp))
-      }
+      MetricsState.Loading -> LoadingContent()
+      MetricsState.Disconnected -> FailureContent(Strings.metricsDisconnected, onAction, theme)
+      is MetricsState.Failure -> FailureContent(state.cause, onAction, theme)
+      is MetricsState.Success -> SuccessContent(state, theme)
+    }
 
-      MetricsState.Disconnected -> {
-        FailureContent(Strings.metricsDisconnected, onAction, theme)
-      }
+    BottomStatusBarSpacing()
+    BottomNavBarSpacing()
+  }
+}
 
-      is MetricsState.Failure -> {
-        FailureContent(state.cause, onAction, theme)
-      }
+@Composable
+private fun LoadingContent(modifier: Modifier = Modifier) {
+  Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
+    repeat(times = 3) { LoadingItem() }
+  }
+}
 
-      is MetricsState.Success -> {
-        SuccessContent(state, theme)
-      }
+@Composable
+internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
+  val shimmer = rememberShimmer(ShimmerBounds.Custom)
+
+  Row(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clip(RowShape)
+        .background(theme.buttonNormalBackground, RowShape)
+        .border(Dp.Hairline, theme.pillBorderDark, RowShape)
+        .padding(horizontal = 15.dp, vertical = 12.dp)
+        .shimmer(shimmer)
+        .onGloballyPositioned { shimmer.updateBounds(it.unclippedBoundsInWindow()) },
+    horizontalArrangement = Arrangement.Start,
+    verticalAlignment = Alignment.CenterVertically,
+  ) {
+    Column(modifier = Modifier.weight(1f)) {
+      Box(
+        modifier =
+          Modifier.fillMaxWidth(fraction = 0.55f)
+            .height(20.dp)
+            .background(theme.pageText, CardShape)
+      )
+
+      Box(
+        modifier =
+          Modifier.padding(top = 4.dp)
+            .fillMaxWidth(fraction = 0.35f)
+            .height(18.dp)
+            .background(theme.pageText, CardShape)
+      )
+
+      Box(
+        modifier =
+          Modifier.padding(top = 4.dp)
+            .fillMaxWidth(fraction = 0.45f)
+            .height(20.dp)
+            .background(theme.pageText, CardShape)
+      )
     }
   }
 }
@@ -147,14 +215,16 @@ private fun FailureContent(
   theme: Theme,
   modifier: Modifier = Modifier,
 ) {
-  FailureScreen(
-    modifier = modifier.fillMaxSize(),
-    title = Strings.metricsFailure,
-    reason = message,
-    retryText = Strings.metricsFailureRetry,
-    onClickRetry = { onAction(MetricsAction.Refresh) },
-    theme = theme,
-  )
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    FailureScreen(
+      modifier = Modifier.background(theme.tableBackground, CardShape),
+      title = Strings.metricsFailure,
+      reason = message,
+      retryText = Strings.metricsFailureRetry,
+      onClickRetry = { onAction(MetricsAction.Refresh) },
+      theme = theme,
+    )
+  }
 }
 
 @Composable
@@ -163,51 +233,63 @@ private fun SuccessContent(
   theme: Theme,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier = modifier.verticalScrollWithBar(),
-    verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
+  val lazyListState = rememberLazyListState()
+
+  val dataModifier =
+    Modifier.fillMaxWidth()
+      .clip(CardShape)
+      .background(theme.buttonNormalBackground, CardShape)
+      .border(Dp.Hairline, theme.pillBorderDark, CardShape)
+      .padding(Dimens.VeryLarge)
+
+  LazyColumn(
+    modifier = modifier.scrollbar(lazyListState),
+    state = lazyListState,
+    verticalArrangement = Arrangement.spacedBy(VERTICAL_SPACING),
   ) {
-    val dataModifier =
-      Modifier.fillMaxWidth()
-        .clip(CardShape)
-        .background(theme.pillBackgroundLight, CardShape)
-        .padding(Dimens.VeryLarge)
-
-    SuccessContentRow(
-      modifier = dataModifier,
-      title = Strings.metricsLastUpdate,
-      value = formatted(state.lastUpdate),
-    )
-
-    SuccessContentRow(
-      modifier = dataModifier,
-      title = Strings.metricsUptime,
-      value = formatted(state.uptime),
-    )
-
-    Column(modifier = dataModifier) {
-      Text(
-        text = Strings.metricsMemory,
-        fontWeight = FontWeight.Bold,
-        style = AktualTypography.titleLarge,
+    item {
+      SuccessContentRow(
+        modifier = dataModifier,
+        title = Strings.metricsLastUpdate,
+        value = formatted(state.lastUpdate),
       )
+    }
 
-      VerticalSpacer(10.dp)
+    item {
+      SuccessContentRow(
+        modifier = dataModifier,
+        title = Strings.metricsUptime,
+        value = formatted(state.uptime),
+      )
+    }
 
-      with(state.memory) {
-        SuccessContentRow(title = Strings.metricsMemoryRss, value = rss.toString())
-        SuccessContentRow(title = Strings.metricsMemoryHeapTotal, value = heapTotal.toString())
-        SuccessContentRow(title = Strings.metricsMemoryHeapUsed, value = heapUsed.toString())
-        SuccessContentRow(title = Strings.metricsMemoryExternal, value = external.toString())
-        SuccessContentRow(
-          title = Strings.metricsMemoryArrayBuffers,
-          value = arrayBuffers.toString(),
+    item {
+      Column(modifier = dataModifier) {
+        Text(
+          text = Strings.metricsMemory,
+          fontWeight = FontWeight.Bold,
+          style = AktualTypography.titleLarge,
         )
+
+        VerticalSpacer(10.dp)
+
+        with(state.memory) {
+          SuccessContentRow(title = Strings.metricsMemoryRss, value = rss.toString())
+          SuccessContentRow(title = Strings.metricsMemoryHeapTotal, value = heapTotal.toString())
+          SuccessContentRow(title = Strings.metricsMemoryHeapUsed, value = heapUsed.toString())
+          SuccessContentRow(title = Strings.metricsMemoryExternal, value = external.toString())
+          SuccessContentRow(
+            title = Strings.metricsMemoryArrayBuffers,
+            value = arrayBuffers.toString(),
+          )
+        }
       }
     }
 
-    BottomStatusBarSpacing()
-    BottomNavBarSpacing()
+    item {
+      BottomStatusBarSpacing()
+      BottomNavBarSpacing()
+    }
   }
 }
 
@@ -227,6 +309,8 @@ private fun formatted(duration: Duration): String =
       else -> "0s"
     }
   }
+
+private val VERTICAL_SPACING = 8.dp
 
 private val TIMESTAMP_FORMAT = DateTimeComponents.Format {
   date(LocalDate.Formats.ISO)
@@ -279,7 +363,7 @@ private fun SuccessContentRow(title: String, value: String, modifier: Modifier =
 @Composable
 private fun PreviewMetricsScaffold(
   @PreviewParameter(MetricsStateProvider::class) params: ThemedParams<MetricsState>
-) = PreviewWithColorScheme(params.theme) { MetricsScaffold(state = params.data, onAction = {}) }
+) = PreviewWithTheme(params.theme) { MetricsScaffold(state = params.data, onAction = {}) }
 
 @Suppress("MagicNumber")
 private class MetricsStateProvider :

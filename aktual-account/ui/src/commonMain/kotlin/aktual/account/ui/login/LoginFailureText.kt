@@ -4,7 +4,7 @@ import aktual.account.domain.LoginResult
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import androidx.compose.material3.Text
@@ -26,6 +26,7 @@ internal fun LoginFailureText(
   val errorMessage =
     when (result) {
       is LoginResult.InvalidPassword -> Strings.loginFailurePassword
+      is LoginResult.TokenExpired -> Strings.loginFailureTokenExpired
       is LoginResult.HttpFailure -> Strings.loginFailureHttp(result.code, result.message)
       is LoginResult.NetworkFailure -> Strings.loginFailureNetwork(result.reason)
       is LoginResult.OtherFailure -> Strings.loginFailureOther(result.reason)
@@ -43,11 +44,12 @@ internal fun LoginFailureText(
 @Composable
 private fun PreviewLoginFailureText(
   @PreviewParameter(LoginFailureProvider::class) params: ThemedParams<LoginResult.Failure>
-) = PreviewWithColorScheme(params.theme) { LoginFailureText(params.data) }
+) = PreviewWithTheme(params.theme) { LoginFailureText(params.data) }
 
 private class LoginFailureProvider :
   ThemedParameterProvider<LoginResult.Failure>(
     LoginResult.InvalidPassword,
+    LoginResult.TokenExpired,
     LoginResult.HttpFailure(code = 404, message = "Resource not found"),
     LoginResult.NetworkFailure(reason = "Network problem"),
     LoginResult.OtherFailure("Something broke"),

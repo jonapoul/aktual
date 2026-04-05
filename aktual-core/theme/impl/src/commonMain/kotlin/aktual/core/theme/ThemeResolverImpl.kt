@@ -1,15 +1,15 @@
 package aktual.core.theme
 
+import aktual.core.model.ThemeId
+import aktual.prefs.ThemePreferences
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import kotlin.coroutines.cancellation.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import logcat.logcat
 
-@Inject
 @ContributesBinding(AppScope::class)
 class ThemeResolverImpl(
   private val preferences: ThemePreferences,
@@ -30,7 +30,7 @@ class ThemeResolverImpl(
       }
       .map { id -> resolveWithFallback(id, isSystemInDarkTheme) }
 
-  override suspend fun resolve(id: Theme.Id): Theme? {
+  override suspend fun resolve(id: ThemeId): Theme? {
     Theme.Defaults.firstOrNull { it.id == id }
       ?.let {
         return it
@@ -39,7 +39,7 @@ class ThemeResolverImpl(
     return cache.theme(repo)
   }
 
-  private suspend fun resolveWithFallback(id: Theme.Id, isSystemInDarkTheme: Boolean): Theme {
+  private suspend fun resolveWithFallback(id: ThemeId, isSystemInDarkTheme: Boolean): Theme {
     resolve(id)?.let {
       return it
     }
@@ -68,7 +68,7 @@ class ThemeResolverImpl(
     }
   }
 
-  private fun Theme.Id.toRepo(): CustomThemeRepo? {
+  private fun ThemeId.toRepo(): CustomThemeRepo? {
     if ('/' !in value) return null
     val parts = value.split('/')
     if (parts.size != 2) return null

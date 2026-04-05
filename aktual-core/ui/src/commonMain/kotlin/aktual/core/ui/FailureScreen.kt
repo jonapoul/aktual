@@ -10,7 +10,6 @@ import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
@@ -28,13 +27,13 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun FailureScreen(
   title: String,
-  reason: String,
-  retryText: String,
-  onClickRetry: () -> Unit,
+  reason: String?,
+  retryText: String?,
+  onClickRetry: (() -> Unit)?,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  Box(modifier = modifier.padding(20.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
+  Box(modifier = modifier.padding(20.dp), contentAlignment = Alignment.Center) {
     Column(
       modifier =
         Modifier.padding(Dimens.Small).background(Color.Transparent, CardShape).padding(30.dp),
@@ -57,22 +56,26 @@ fun FailureScreen(
         fontWeight = FontWeight.Bold,
       )
 
-      VerticalSpacer(15.dp)
+      if (reason != null) {
+        VerticalSpacer(15.dp)
 
-      Text(
-        text = reason,
-        color = theme.warningTextDark,
-        fontSize = 16.sp,
-        textAlign = TextAlign.Center,
-      )
+        Text(
+          text = reason,
+          color = theme.warningTextDark,
+          fontSize = 16.sp,
+          textAlign = TextAlign.Center,
+        )
+      }
 
-      VerticalSpacer(30.dp)
+      if (retryText != null && onClickRetry != null) {
+        VerticalSpacer(30.dp)
 
-      PrimaryTextButton(
-        prefix = { Icon(imageVector = MaterialIcons.Refresh, contentDescription = retryText) },
-        text = retryText,
-        onClick = onClickRetry,
-      )
+        PrimaryTextButton(
+          prefix = { Icon(imageVector = MaterialIcons.Refresh, contentDescription = retryText) },
+          text = retryText,
+          onClick = onClickRetry,
+        )
+      }
     }
   }
 }
@@ -80,19 +83,28 @@ fun FailureScreen(
 @PortraitPreview
 @Composable
 private fun PreviewFailureScreen(
-  @PreviewParameter(FailureScreenProvider::class) params: ThemedParams<String>
+  @PreviewParameter(FailureScreenProvider::class) params: ThemedParams<FailureScreenParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     FailureScreen(
-      title = "Failed syncing the doodads",
-      reason = params.data,
-      retryText = "Retry",
+      title = params.data.title,
+      reason = params.data.reason,
+      retryText = params.data.retryText,
       onClickRetry = {},
     )
   }
 
+private data class FailureScreenParams(
+  val reason: String? = null,
+  val title: String = "Failed syncing the doodads",
+  val retryText: String? = "Retry",
+)
+
 private class FailureScreenProvider :
-  ThemedParameterProvider<String?>(
-    "Some error",
-    "Failed to do the thing, here's a bit more text to show how it behaves when wrapping",
+  ThemedParameterProvider<FailureScreenParams>(
+    FailureScreenParams(reason = "Some error"),
+    FailureScreenParams(
+      reason = "Failed to do the thing, here's a bit more text to show how it behaves when wrapping"
+    ),
+    FailureScreenParams(retryText = null),
   )

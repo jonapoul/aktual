@@ -4,11 +4,9 @@ import aktual.account.domain.LoginRequester
 import aktual.account.domain.LoginResult
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password
-import aktual.core.model.Protocol
-import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.prefs.AppPreferences
+import aktual.prefs.AppPreferencesImpl
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
@@ -38,7 +36,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 internal class LoginViewModelTest {
   // real
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: AppPreferences
   private lateinit var viewModel: LoginViewModel
   private lateinit var versionsStateHolder: AktualVersionsStateHolder
 
@@ -48,7 +46,7 @@ internal class LoginViewModelTest {
   private fun TestScope.before() {
     Dispatchers.setMain(standardDispatcher)
     val prefs = buildPreferences(unconfinedDispatcher)
-    preferences = AppGlobalPreferencesImpl(prefs)
+    preferences = AppPreferencesImpl(prefs)
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
     loginRequester = mockk(relaxed = true)
     viewModel =
@@ -83,21 +81,6 @@ internal class LoginViewModelTest {
   }
 
   @Test
-  fun `Server URL`() = runTest {
-    before()
-    viewModel.serverUrl.test {
-      assertThatNextEmission().isNull()
-
-      val url = ServerUrl(Protocol.Https, baseUrl = "url.for.my.server.com")
-      preferences.serverUrl.set(url)
-
-      assertThat(awaitItem()).isEqualTo(url)
-      expectNoEvents()
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  @Test
   fun `Signing in with invalid password`() = runTest {
     before()
     combine(viewModel.loginFailure, viewModel.isLoading, ::Pair).distinctUntilChanged().test {
@@ -107,7 +90,8 @@ internal class LoginViewModelTest {
       assertThat(loading1).isFalse()
 
       // When we make the failing request
-      coEvery { loginRequester.logIn(any()) } returns LoginResult.InvalidPassword
+      coEvery { loginRequester.logIn(any(), any()) } returns LoginResult.InvalidPassword
+      viewModel.onEnterPassword("password")
       viewModel.onClickSignIn()
 
       // Then we're loading but not failed
@@ -123,6 +107,40 @@ internal class LoginViewModelTest {
       // Then failed
       val (failure4, loading4) = awaitItem()
       assertThat(failure4).isEqualTo(LoginResult.InvalidPassword)
+      assertThat(loading4).isFalse()
+
+      expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Signing in with token expired`() = runTest {
+    before()
+    combine(viewModel.loginFailure, viewModel.isLoading, ::Pair).distinctUntilChanged().test {
+      // Initially not loading or failed
+      val (failure1, loading1) = awaitItem()
+      assertThat(failure1).isNull()
+      assertThat(loading1).isFalse()
+
+      // When we make the failing request
+      coEvery { loginRequester.logIn(any(), any()) } returns LoginResult.TokenExpired
+      viewModel.onEnterPassword("password")
+      viewModel.onClickSignIn()
+
+      // Then we're loading but not failed
+      val (failure2, loading2) = awaitItem()
+      assertThat(failure2).isNull()
+      assertThat(loading2).isTrue()
+
+      // Then not loading
+      val (failure3, loading3) = awaitItem()
+      assertThat(failure3).isNull()
+      assertThat(loading3).isFalse()
+
+      // Then failed with token expired
+      val (failure4, loading4) = awaitItem()
+      assertThat(failure4).isEqualTo(LoginResult.TokenExpired)
       assertThat(loading4).isFalse()
 
       expectNoEvents()

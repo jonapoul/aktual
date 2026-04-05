@@ -4,12 +4,11 @@ import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.ApiBuilder
 import aktual.core.model.ServerUrl
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.collectFlow
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -17,14 +16,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.update
 import logcat.logcat
 
-@Inject
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
 class ConnectionMonitorImpl(
   private val scope: CoroutineScope,
   private val contexts: CoroutineContexts,
   private val apiStateHolder: AktualApisStateHolder,
-  private val preferences: AppGlobalPreferences,
+  private val preferences: AppPreferences,
   private val apiBuilder: ApiBuilder.Factory,
 ) : ConnectionMonitor {
   private var job: Job? = null

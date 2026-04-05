@@ -2,6 +2,7 @@ import aktual.budget.model.CategoryGroupId;
 import aktual.budget.model.CategoryId;
 import kotlin.Boolean;
 import kotlinx.serialization.json.JsonElement;
+import kotlinx.serialization.json.JsonObject;
 
 CREATE TABLE IF NOT EXISTS categories(
   id TEXT AS CategoryId PRIMARY KEY,
@@ -11,7 +12,8 @@ CREATE TABLE IF NOT EXISTS categories(
   sort_order REAL,
   tombstone INTEGER AS Boolean DEFAULT 0,
   hidden INTEGER AS Boolean NOT NULL DEFAULT 0,
-  goal_def TEXT AS JsonElement DEFAULT NULL
+  goal_def TEXT AS JsonElement DEFAULT NULL,
+  template_settings TEXT AS JsonObject DEFAULT '{"source": "notes"}'
 );
 
 CREATE VIEW IF NOT EXISTS v_categories AS
@@ -25,28 +27,21 @@ CREATE VIEW IF NOT EXISTS v_categories AS
     tombstone
   FROM categories;
 
-insert:
-  INSERT INTO categories VALUES ?;
+insert: INSERT INTO categories VALUES ?;
 
-getById:
-  SELECT *
-    FROM categories
-    WHERE id = ?;
+getById: SELECT * FROM categories WHERE id = ?;
 
-isIncome:
-  SELECT is_income
-    FROM categories
-    WHERE id = ?;
+getName: SELECT name FROM categories WHERE id = ?;
 
-idsMatchingGroup:
-  SELECT id
-    FROM categories
-    WHERE cat_group = ? AND tombstone = 0;
+getNames: SELECT name FROM categories WHERE id IN ?;
 
-matchingGroup:
-  SELECT *
-    FROM categories
-    WHERE tombstone = 0 AND cat_group = ?;
+isIncome: SELECT is_income FROM categories WHERE id = ?;
+
+idsMatchingGroup: SELECT id FROM categories WHERE cat_group = ? AND tombstone = 0;
+
+matchingGroup: SELECT * FROM categories WHERE tombstone = 0 AND cat_group = ?;
+
+delete: DELETE FROM categories WHERE id = ?;
 
 clearGoalDef:
   UPDATE categories
@@ -87,7 +82,3 @@ categoriesInGroup:
     WHERE cat_group IN :ids AND tombstone = 0
     ORDER BY sort_order, id;
 
-delete:
-  DELETE
-    FROM categories
-    WHERE id = ?;

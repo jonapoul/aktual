@@ -12,8 +12,10 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.RowShape
+import aktual.core.ui.ThemedDropdownMenu
+import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import alakazam.compose.HorizontalSpacer
@@ -27,8 +29,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,7 +46,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-/** actual/packages/desktop-client/src/components/manager/BudgetList.tsx */
+/**
+ * actual/packages/desktop-client/src/components/manager/BudgetList.tsx
+ *
+ * When updating this, make sure to also change [ShimmerBudgetListItem]
+ */
 @Composable
 internal fun BudgetListItem(
   budget: Budget,
@@ -59,7 +63,7 @@ internal fun BudgetListItem(
     modifier =
       modifier
         .clip(RowShape)
-        .background(theme.pillBackgroundLight, RowShape)
+        .background(theme.buttonNormalBackground, RowShape)
         .border(Dp.Hairline, theme.pillBorderDark, RowShape)
         .clickable(onClick = onClickOpen)
         .padding(horizontal = 15.dp, vertical = 12.dp),
@@ -122,9 +126,9 @@ internal fun BudgetListItem(
 
 @Composable
 private fun DeleteMenu(expanded: Boolean, onDismiss: () -> Unit, onClickDelete: () -> Unit) {
-  DropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
+  ThemedDropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
     val deleteText = Strings.budgetDelete
-    DropdownMenuItem(
+    ThemedDropdownMenuItem(
       text = { Text(deleteText) },
       leadingIcon = {
         Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = deleteText)
@@ -151,10 +155,10 @@ private fun budgetDescription(budget: Budget) =
 private fun PreviewBudgetListItem(
   @PreviewParameter(BudgetListItemProvider::class) params: ThemedParams<BudgetListItemParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithThemedParams(params) {
     BudgetListItem(
-      modifier = params.data.width?.let { w -> Modifier.width(w) } ?: Modifier.fillMaxWidth(),
-      budget = params.data.budget,
+      modifier = width?.let { w -> Modifier.width(w) } ?: Modifier.fillMaxWidth(),
+      budget = budget,
       onClickOpen = {},
       onClickDelete = {},
     )

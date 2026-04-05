@@ -9,7 +9,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.verticalScrollWithBar
@@ -125,7 +125,7 @@ internal fun TextChart(
 private fun PreviewTextChart(
   @PreviewParameter(TextChartProvider::class) params: ThemedParams<TextChartParams>
 ) =
-  PreviewWithColorScheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
+  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
     TextChart(
       modifier =
         Modifier.background(LocalTheme.current.tableBackground, CardShape)

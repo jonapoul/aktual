@@ -5,9 +5,7 @@ import android.content.Intent
 import androidx.core.net.toUri
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 
-@Inject
 @ContributesBinding(AppScope::class)
 class AndroidUrlOpener(private val context: Context) : UrlOpener {
   override fun invoke(url: String) {

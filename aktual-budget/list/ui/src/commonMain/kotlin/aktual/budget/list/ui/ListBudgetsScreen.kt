@@ -1,8 +1,14 @@
 package aktual.budget.list.ui
 
+import aktual.app.nav.BudgetNavRailNavigator
+import aktual.app.nav.ChangePasswordNavigator
+import aktual.app.nav.InfoNavigator
+import aktual.app.nav.MetricsNavigator
+import aktual.app.nav.ServerUrlNavigator
+import aktual.app.nav.SettingsNavigator
 import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
-import aktual.budget.list.ui.ListBudgetsAction.ChangeServer
 import aktual.budget.list.ui.ListBudgetsAction.Delete
+import aktual.budget.list.ui.ListBudgetsAction.LogOut
 import aktual.budget.list.ui.ListBudgetsAction.Open
 import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
 import aktual.budget.list.ui.ListBudgetsAction.OpenInBrowser
@@ -12,21 +18,36 @@ import aktual.budget.list.ui.ListBudgetsAction.Reload
 import aktual.budget.list.vm.ListBudgetsState
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
+import aktual.budget.model.BudgetId
+import aktual.budget.sync.ui.SyncBudgetDialog
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.DesktopPreview
+import aktual.core.ui.BackHandler
+import aktual.core.ui.BlurredTopBarSpacing
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.CardShape
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.LandscapePreview
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.WavyBackground
+import aktual.core.ui.blurredTopBar
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.rememberAppCloser
+import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -48,8 +69,13 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun ListBudgetsScreen(
-  nav: ListBudgetsNavigator,
   token: Token,
+  toInfo: InfoNavigator,
+  toChangePassword: ChangePasswordNavigator,
+  toSettings: SettingsNavigator,
+  toMetrics: MetricsNavigator,
+  logOut: ServerUrlNavigator,
+  toBudget: BudgetNavRailNavigator,
   viewModel: ListBudgetsViewModel = metroViewModel(token),
 ) {
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
@@ -92,19 +118,32 @@ fun ListBudgetsScreen(
     }
   }
 
+  var budgetToSync by remember { mutableStateOf<BudgetId?>(null) }
+  budgetToSync?.let { id ->
+    SyncBudgetDialog(
+      budgetId = id,
+      token = token,
+      onSyncComplete = { toBudget(token, id) },
+      onDismissRequest = { budgetToSync = null },
+    )
+  }
+
+  val closeApp = rememberAppCloser()
+  BackHandler { closeApp() }
+
   ListBudgetsScaffold(
     state = state,
     onAction = { action ->
       when (action) {
-        ChangeServer -> nav.toUrl()
-        ChangePassword -> nav.toChangePassword()
-        OpenAbout -> nav.toAbout()
-        OpenSettings -> nav.toSettings()
-        OpenServerMetrics -> nav.toMetrics()
+        LogOut -> logOut()
+        ChangePassword -> toChangePassword()
+        OpenAbout -> toInfo()
+        OpenSettings -> toSettings()
+        OpenServerMetrics -> toMetrics()
         OpenInBrowser -> viewModel.open(serverUrl)
         Reload -> viewModel.retry()
         is Delete -> budgetToDelete = action.budget
-        is Open -> nav.toSyncBudget(token, action.budget.cloudFileId)
+        is Open -> budgetToSync = action.budget.cloudFileId
       }
     },
   )
@@ -117,24 +156,34 @@ private fun metroViewModel(token: Token) =
 @Composable
 internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: (ListBudgetsAction) -> Unit) {
   val theme = LocalTheme.current
+  val blurState = rememberBlurredTopBarState()
+  val listState = rememberLazyListState()
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
+        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
         title = { ScaffoldTitle(theme) },
         actions = { TopBarActions(onAction) },
       )
     },
   ) { innerPadding ->
-    PullToRefreshBox(
-      modifier = Modifier.padding(innerPadding).fillMaxSize().padding(16.dp),
-      contentAlignment = Alignment.Center,
-      onRefresh = { onAction(Reload) },
-      isRefreshing = state is ListBudgetsState.Loading,
-      content = { StateContent(state, onAction, theme) },
-    )
+    Box {
+      WavyBackground()
+
+      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
+        BlurredTopBarSpacing(blurState, innerPadding)
+        PullToRefreshBox(
+          modifier = Modifier.padding(8.dp),
+          contentAlignment = Alignment.Center,
+          onRefresh = { onAction(Reload) },
+          isRefreshing = state is ListBudgetsState.Loading,
+          content = { StateContent(state, onAction, listState) },
+        )
+      }
+    }
   }
 }
 
@@ -151,58 +200,61 @@ private fun ScaffoldTitle(theme: Theme) =
 private fun StateContent(
   state: ListBudgetsState,
   onAction: (ListBudgetsAction) -> Unit,
+  listState: LazyListState,
   theme: Theme = LocalTheme.current,
 ) {
-  when (state) {
-    is ListBudgetsState.Loading -> {
-      // Empty content - we've already got the pull-to-refresh indicator
-      Box(modifier = Modifier.fillMaxSize())
-    }
+  Column(
+    modifier = Modifier.fillMaxSize(),
+    verticalArrangement = Arrangement.Top,
+    horizontalAlignment = Alignment.CenterHorizontally,
+  ) {
+    when (state) {
+      is ListBudgetsState.Loading -> {
+        ShimmerBudgetList(state.numLoadingItems)
+      }
 
-    is ListBudgetsState.Failure -> {
-      FailureScreen(
-        modifier = Modifier.fillMaxSize(),
-        title = Strings.budgetFailureMessage,
-        reason = state.reason ?: Strings.budgetFailureDefaultMessage,
-        retryText = Strings.budgetFailureRetry,
-        onClickRetry = { onAction(Reload) },
-        theme = theme,
-      )
-    }
+      is ListBudgetsState.Failure -> {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+          FailureScreen(
+            modifier = Modifier.background(theme.tableBackground, CardShape),
+            title = Strings.budgetFailureMessage,
+            reason = state.reason ?: Strings.budgetFailureDefaultMessage,
+            retryText = Strings.budgetFailureRetry,
+            onClickRetry = { onAction(Reload) },
+          )
+        }
+      }
 
-    is ListBudgetsState.Success -> {
-      if (state.budgets.isEmpty()) {
-        ContentEmpty(
-          modifier = Modifier.fillMaxSize(),
-          theme = theme,
-          onCreateBudgetInBrowser = { onAction(OpenInBrowser) },
-        )
-      } else {
-        ContentSuccess(
-          modifier = Modifier.fillMaxSize(),
-          budgets = state.budgets,
-          theme = theme,
-          onClickOpen = { budget -> onAction(Open(budget)) },
-          onClickDelete = { budget -> onAction(Delete(budget)) },
-        )
+      is ListBudgetsState.Success -> {
+        if (state.budgets.isEmpty()) {
+          ContentEmpty(onCreateBudgetInBrowser = { onAction(OpenInBrowser) })
+        } else {
+          ContentSuccess(
+            budgets = state.budgets,
+            listState = listState,
+            onClickOpen = { budget -> onAction(Open(budget)) },
+            onClickDelete = { budget -> onAction(Delete(budget)) },
+          )
+        }
       }
     }
+
+    BottomStatusBarSpacing()
+    BottomNavBarSpacing()
   }
 }
 
 @PortraitPreview
-@LandscapePreview
-@DesktopPreview
 @Composable
 private fun PreviewListBudgetsScaffold(
   @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ThemedParams<ListBudgetsState>
-) = PreviewWithColorScheme(params.theme) { ListBudgetsScaffold(state = params.data, onAction = {}) }
+) = PreviewWithTheme(params.theme) { ListBudgetsScaffold(state = params.data, onAction = {}) }
 
 private class ListBudgetsScaffoldProvider :
   ThemedParameterProvider<ListBudgetsState>(
     ListBudgetsState.Success(
       persistentListOf(PreviewBudgetSynced, PreviewBudgetSyncing, PreviewBudgetBroken)
     ),
-    ListBudgetsState.Loading,
+    ListBudgetsState.Loading(numLoadingItems = 3),
     ListBudgetsState.Failure(reason = "Something broke lol"),
   )

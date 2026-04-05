@@ -1,6 +1,6 @@
 package aktual.app.android
 
-import aktual.core.di.AppGraph
+import aktual.core.model.AppGraph
 import aktual.core.model.BuildConfig
 import android.content.Context
 import dev.zacsweers.metro.AppScope

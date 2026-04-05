@@ -2,7 +2,6 @@ package aktual.core.theme
 
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -10,7 +9,6 @@ import io.ktor.http.URLProtocol.Companion.HTTPS
 import io.ktor.http.path
 import kotlinx.serialization.builtins.ListSerializer
 
-@Inject
 @ContributesBinding(AppScope::class)
 class ThemeApiImpl(@param:ThemeClient private val client: HttpClient) : ThemeApi {
   override suspend fun fetchCatalog(): List<CustomThemeSummary> {

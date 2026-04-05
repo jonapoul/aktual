@@ -33,6 +33,7 @@ internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomTheme {
       JsonCustomTheme(
         name = summary.name,
         repo = summary.repo,
+        isLight = summary.mode == ThemeMode.Light,
         page =
           PageColors(
             pageBackground = pageBackground,

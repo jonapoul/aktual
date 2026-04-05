@@ -13,7 +13,7 @@ import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -21,11 +21,13 @@ import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,11 +42,13 @@ import androidx.paging.compose.itemKey
 
 @Composable
 internal fun Transactions(
+  listState: LazyListState,
   transactionIdSource: TransactionIdSource,
   format: TransactionsFormat,
   source: TransactionStateSource,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
   theme: Theme = LocalTheme.current,
 ) {
   val pagingItems = transactionIdSource.pagingData.collectAsLazyPagingItems()
@@ -52,11 +56,13 @@ internal fun Transactions(
     TransactionsEmpty(modifier = modifier, theme = theme)
   } else {
     TransactionsFilled(
+      listState = listState,
       pagingItems = pagingItems,
       format = format,
       source = source,
       onAction = onAction,
       modifier = modifier,
+      contentPadding = contentPadding,
       theme = theme,
     )
   }
@@ -80,17 +86,19 @@ private fun TransactionsEmpty(modifier: Modifier = Modifier, theme: Theme = Loca
 
 @Composable
 private fun TransactionsFilled(
+  listState: LazyListState,
   pagingItems: LazyPagingItems<TransactionId>,
   format: TransactionsFormat,
   source: TransactionStateSource,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
   theme: Theme = LocalTheme.current,
 ) {
-  val listState = rememberLazyListState()
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState).padding(horizontal = Dimens.Large),
     state = listState,
+    contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     if (format == Table) {
@@ -124,8 +132,9 @@ private fun TransactionsFilled(
 private fun PreviewTransactions(
   @PreviewParameter(TransactionsProvider::class) params: ThemedParams<TransactionsParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     Transactions(
+      listState = rememberLazyListState(),
       transactionIdSource = PreviewTransactionIdSource(params.data.transactions),
       format = params.data.format,
       source = previewTransactionStateSource(params.data.transactions),

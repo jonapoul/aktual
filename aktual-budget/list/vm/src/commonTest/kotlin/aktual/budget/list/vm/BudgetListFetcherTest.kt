@@ -4,13 +4,14 @@ import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApi
 import aktual.api.client.SyncApiImpl
+import aktual.api.model.account.FailureReason
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.model.BudgetState
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.KeyPreferences
+import aktual.prefs.KeyPreferences
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
 import aktual.test.testHttpClient
@@ -41,7 +42,7 @@ class BudgetListFetcherTest {
   private fun TestScope.before() {
     mockEngine = emptyMockEngine()
     apisStateHolder = AktualApisStateHolder()
-    keyPreferences = mockk { every { contains(any()) } returns false }
+    keyPreferences = mockk { coEvery { contains(any()) } returns false }
     budgetListFetcher =
       BudgetListFetcher(
         contexts = TestCoroutineContexts(standardDispatcher),
@@ -153,7 +154,8 @@ class BudgetListFetcherTest {
     val result = budgetListFetcher.fetchBudgets(TOKEN)
 
     // then
-    assertThat(result).isEqualTo(FetchBudgetsResult.FailureResponse(reason = "something broke"))
+    assertThat(result)
+      .isEqualTo(FetchBudgetsResult.FailureResponse(FailureReason("something broke")))
   }
 
   private fun buildApis(

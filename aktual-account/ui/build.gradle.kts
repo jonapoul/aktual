@@ -12,6 +12,7 @@ kotlin {
     api(project(":aktual-core:model"))
     api(project(":aktual-core:ui"))
     implementation(project(":aktual-account:domain"))
+    implementation(project(":aktual-app:nav"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:logging"))
   }

@@ -6,6 +6,7 @@ import app.cash.turbine.TurbineTestContext
 import assertk.assertThat
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
+import kotlinx.coroutines.CancellationException
 
 suspend fun <T> TurbineTestContext<T>.assertThatNextEmission() = assertThat(awaitItem())
 
@@ -21,6 +22,8 @@ suspend fun <T> TurbineTestContext<List<T>>.assertListEmitted(vararg expected: T
   val actualList =
     try {
       awaitItem()
+    } catch (e: CancellationException) {
+      throw e
     } catch (t: Throwable) {
       throw AssertionError("Timed out waiting for $expectedList", t)
     }

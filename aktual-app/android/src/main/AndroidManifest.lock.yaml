@@ -17,6 +17,13 @@ main:
       - armeabi-v7a
       - x86
       - x86_64
+  - libdatastore_shared_counter:
+      requiredBy: androidx.datastore:datastore-core-android
+      abis:
+      - arm64-v8a
+      - armeabi-v7a
+      - x86
+      - x86_64
   exports:
     activity:
     - aktual.app.android.AktualActivity
@@ -32,4 +39,4 @@ variants:
     namespace: dev.jonpoulton.aktual.app
     permissions:
     - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-fingerprint: 3066f120a3565471ad94b4624fa8bc2b
+fingerprint: 19aa1d8d5b2fb95326a912ea8e413503

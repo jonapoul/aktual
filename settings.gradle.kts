@@ -10,8 +10,8 @@ pluginManagement { includeBuild("gradle/build-logic") }
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-  id("com.gradle.develocity") version "4.3.2"
-  id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.7"
+  id("com.gradle.develocity") version "4.4.0"
+  id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.8"
 }
 
 develocity.buildScan {
@@ -66,14 +66,20 @@ include(
   ":aktual-app:desktop",
   ":aktual-app:di",
   ":aktual-app:nav",
+  ":aktual-app:nav:ui",
   ":aktual-budget:data",
   ":aktual-budget:data-di",
   ":aktual-budget:data-impl",
+  ":aktual-budget:di",
   ":aktual-budget:list:ui",
   ":aktual-budget:list:vm",
   ":aktual-budget:model",
+  ":aktual-budget:navrail:ui",
+  ":aktual-budget:navrail:vm",
   ":aktual-budget:reports:ui",
   ":aktual-budget:reports:vm",
+  ":aktual-budget:rules:ui",
+  ":aktual-budget:rules:vm",
   ":aktual-budget:sync:ui",
   ":aktual-budget:sync:vm",
   ":aktual-budget:transactions:ui",
@@ -87,18 +93,20 @@ include(
   ":aktual-core:logging",
   ":aktual-core:logging:impl",
   ":aktual-core:model",
-  ":aktual-core:prefs",
-  ":aktual-core:prefs:di",
-  ":aktual-core:prefs:impl",
+  ":aktual-core:shimmer",
   ":aktual-core:theme",
   ":aktual-core:theme:di",
   ":aktual-core:theme:impl",
   ":aktual-core:ui",
   ":aktual-metrics:ui",
   ":aktual-metrics:vm",
-  ":aktual-settings:ui",
-  ":aktual-settings:vm",
+  ":aktual-prefs",
+  ":aktual-prefs:di",
+  ":aktual-prefs:impl",
+  ":aktual-prefs:ui",
+  ":aktual-prefs:vm",
   ":aktual-test",
   ":aktual-test:api",
   ":aktual-test:compose",
+  ":aktual-test:smoke",
 )

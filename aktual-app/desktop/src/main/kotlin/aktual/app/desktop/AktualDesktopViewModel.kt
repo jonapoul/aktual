@@ -1,47 +1,36 @@
 package aktual.app.desktop
 
+import aktual.app.nav.AppLifecycleManager
+import aktual.app.nav.BlurConfigUseCase
+import aktual.app.nav.BottomBarStateUseCase
+import aktual.app.nav.FormatConfigUseCase
+import aktual.app.nav.InitialRouteUseCase
+import aktual.app.nav.NavGraph
 import aktual.app.nav.RootViewModel
-import aktual.budget.model.BudgetFiles
-import aktual.core.connection.ConnectionMonitor
-import aktual.core.connection.ServerPinger
-import aktual.core.connection.ServerVersionFetcher
-import aktual.core.di.BudgetGraphHolder
-import aktual.core.model.PingStateHolder
-import aktual.core.prefs.AppGlobalPreferences
 import aktual.core.theme.ThemeResolver
-import alakazam.kotlin.CoroutineContexts
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
-import kotlinx.coroutines.CoroutineScope
 
-@Inject
-@ViewModelKey(AktualDesktopViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class AktualDesktopViewModel(
-  appScope: CoroutineScope,
-  contexts: CoroutineContexts,
-  connectionMonitor: ConnectionMonitor,
-  serverPinger: ServerPinger,
-  pingStateHolder: PingStateHolder,
-  serverVersionFetcher: ServerVersionFetcher,
-  files: BudgetFiles,
-  budgetComponents: BudgetGraphHolder,
-  preferences: AppGlobalPreferences,
   themeResolver: ThemeResolver,
+  appLifecycleManager: AppLifecycleManager,
+  navGraphFactory: NavGraph.Factory,
+  formatConfigUseCase: FormatConfigUseCase,
+  blurConfigUseCase: BlurConfigUseCase,
+  initialRouteUseCase: InitialRouteUseCase,
+  bottomBarStateUseCase: BottomBarStateUseCase,
 ) :
   RootViewModel(
-    appScope = appScope,
-    contexts = contexts,
-    connectionMonitor = connectionMonitor,
-    serverPinger = serverPinger,
-    pingStateHolder = pingStateHolder,
-    serverVersionFetcher = serverVersionFetcher,
-    files = files,
-    budgetComponents = budgetComponents,
-    preferences = preferences,
     themeResolver = themeResolver,
+    appLifecycleManager = appLifecycleManager,
+    navGraphFactory = navGraphFactory,
+    formatConfigUseCase = formatConfigUseCase,
+    blurConfigUseCase = blurConfigUseCase,
+    initialRouteUseCase = initialRouteUseCase,
+    bottomBarStateUseCase = bottomBarStateUseCase,
   )

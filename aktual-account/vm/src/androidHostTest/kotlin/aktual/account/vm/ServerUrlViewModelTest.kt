@@ -8,8 +8,8 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.prefs.AppPreferences
+import aktual.prefs.AppPreferencesImpl
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
@@ -47,7 +47,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlViewModelTest {
   // Real
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: AppPreferences
   private lateinit var viewModel: ServerUrlViewModel
   private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var versionsStateHolder: AktualVersionsStateHolder
@@ -75,9 +75,9 @@ class ServerUrlViewModelTest {
     mockEngine.close()
   }
 
-  private fun TestScope.buildPreferences() {
+  private suspend fun TestScope.buildPreferences() {
     val prefs = buildPreferences(UnconfinedTestDispatcher(testScheduler))
-    preferences = AppGlobalPreferencesImpl(prefs)
+    preferences = AppPreferencesImpl(prefs)
     preferences.serverUrl.set(EXAMPLE_URL)
   }
 
@@ -222,9 +222,9 @@ class ServerUrlViewModelTest {
 
       // when we save a token and a URL
       val initialUrl = ServerUrl(Protocol.Https, "website.com")
-      preferences.serverUrl.setAndCommit(initialUrl)
+      preferences.serverUrl.set(initialUrl)
       val token = Token("abc-123")
-      preferences.token.setAndCommit(token)
+      preferences.token.set(token)
 
       // then the token has been saved
       assertThatNextEmissionIsEqualTo(token)

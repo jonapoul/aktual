@@ -13,7 +13,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -436,7 +436,7 @@ private val TABLE_SPACING = 2.dp
 private fun PreviewCalendarChart(
   @PreviewParameter(CalendarChartProvider::class) params: ThemedParams<CalendarChartParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     CalendarChart(
       modifier =
         Modifier.background(LocalTheme.current.tableBackground, CardShape)
@@ -464,7 +464,7 @@ private class CalendarChartProvider :
 private fun PreviewMonthHeader(
   @PreviewParameter(MonthHeaderProvider::class) params: ThemedParams<MonthHeaderParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     MonthHeader(month = params.data.month, compact = params.data.compact)
   }
 
@@ -481,7 +481,7 @@ private class MonthHeaderProvider :
 private fun PreviewCalendarSummary(
   @PreviewParameter(CalendarSummaryProvider::class) params: ThemedParams<CalendarSummaryParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     CalendarSummary(data = params.data.data, compact = params.data.compact)
   }
 
@@ -499,7 +499,7 @@ private class CalendarSummaryProvider :
 private fun PreviewDayButton(
   @PreviewParameter(DayButtonProvider::class) params: ThemedParams<DayButtonParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     DayButton(
       modifier = Modifier.size(params.data.size),
       day = params.data.day,
@@ -531,7 +531,7 @@ private class DayButtonProvider :
 private fun PreviewCalendarMonth(
   @PreviewParameter(CalendarMonthProvider::class) params: ThemedParams<CalendarMonthParams>
 ) =
-  PreviewWithColorScheme(theme = params.theme, isPrivacyEnabled = params.data.isPrivacyEnabled) {
+  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CalendarMonth(month = params.data.month, compact = params.data.compact, onAction = {})
   }
 

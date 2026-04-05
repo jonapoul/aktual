@@ -6,7 +6,7 @@ import aktual.api.model.sync.UserFile
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetState
 import aktual.core.model.Token
-import aktual.core.prefs.KeyPreferences
+import aktual.prefs.KeyPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
@@ -29,7 +29,7 @@ internal constructor(
     val apis = apisStateHolder.value ?: return FetchBudgetsResult.NotLoggedIn
     return try {
       val response = withContext(contexts.io) { apis.sync.fetchUserFiles(token) }
-      val result = FetchBudgetsResult.Success(response.data.map(::toBudget))
+      val result = FetchBudgetsResult.Success(response.data.map { toBudget(it) })
       logcat.d { "Fetched budgets: $result" }
       result
     } catch (e: CancellationException) {
@@ -52,12 +52,12 @@ internal constructor(
   private suspend fun parseResponseException(e: ResponseException): FetchBudgetsResult =
     try {
       val body = e.response.body<ListUserFilesResponse.Failure>()
-      FetchBudgetsResult.FailureResponse(body.reason.reason)
+      FetchBudgetsResult.FailureResponse(body.reason)
     } catch (e: JsonConvertException) {
       FetchBudgetsResult.OtherFailure(e.requireMessage())
     }
 
-  private fun toBudget(item: UserFile) =
+  private suspend fun toBudget(item: UserFile) =
     Budget(
       name = item.name,
       state = BudgetState.Unknown,

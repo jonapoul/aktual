@@ -3,14 +3,17 @@ package aktual.core.ui
 import aktual.core.theme.Theme
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CheckboxColors
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
-import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.SegmentedButtonColors
 import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SliderColors
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwitchColors
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.TextFieldColors
@@ -21,7 +24,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 
-@Stable
 @Composable
 fun Theme.topAppBarColors(
   containerColor: Color = mobileHeaderBackground,
@@ -36,7 +38,6 @@ fun Theme.topAppBarColors(
     actionIconContentColor = actionIconContentColor,
   )
 
-@Stable
 @Composable
 fun Theme.transparentTopAppBarColors(): TopAppBarColors =
   topAppBarColors(
@@ -46,15 +47,22 @@ fun Theme.transparentTopAppBarColors(): TopAppBarColors =
     titleContentColor = pageText,
   )
 
-@Stable
-@Composable
-fun Theme.dropDownMenuItem(): MenuItemColors = MenuDefaults.itemColors(textColor = formInputText)
+fun Theme.dropDownMenuItem(): MenuItemColors =
+  MenuItemColors(
+    textColor = menuItemText,
+    leadingIconColor = menuItemText,
+    trailingIconColor = menuItemText,
+    disabledTextColor = menuItemText.disabled,
+    disabledLeadingIconColor = menuItemText.disabled,
+    disabledTrailingIconColor = menuItemText.disabled,
+  )
 
-@Stable
 @Composable
 fun Theme.textField(
   focusedContainer: Color = formInputBackground,
   unfocusedContainer: Color = focusedContainer,
+  border: Color = formInputBorder,
+  unfocusedBorder: Color = border,
   text: Color = formInputText,
   textPlaceholder: Color = formInputTextPlaceholder,
   icon: Color = formInputText,
@@ -69,9 +77,9 @@ fun Theme.textField(
     focusedLabelColor = textPlaceholder,
     unfocusedLabelColor = textPlaceholder,
     disabledLabelColor = textPlaceholder.disabled,
-    focusedIndicatorColor = Color.Transparent,
-    unfocusedIndicatorColor = Color.Transparent,
-    disabledIndicatorColor = Color.Transparent,
+    focusedIndicatorColor = border,
+    unfocusedIndicatorColor = unfocusedBorder,
+    disabledIndicatorColor = border.disabled,
     focusedContainerColor = focusedContainer,
     unfocusedContainerColor = unfocusedContainer,
     disabledContainerColor = unfocusedContainer.disabled,
@@ -84,13 +92,11 @@ fun Theme.textField(
     disabledTrailingIconColor = icon.disabled,
   )
 
-@Stable
 @Composable
 fun Theme.exposedDropDownMenu(): TextFieldColors =
   textField()
     .copy(focusedTrailingIconColor = formInputText, unfocusedTrailingIconColor = formInputText)
 
-@Stable
 @Composable
 fun Theme.primaryButton(isPressed: Boolean): ButtonColors =
   ButtonDefaults.buttonColors(
@@ -100,7 +106,6 @@ fun Theme.primaryButton(isPressed: Boolean): ButtonColors =
     disabledContentColor = buttonPrimaryDisabledText,
   )
 
-@Stable
 @Composable
 fun Theme.normalButton(
   isPressed: Boolean,
@@ -118,7 +123,6 @@ fun Theme.normalButton(
     disabledContentColor = textDisabled,
   )
 
-@Stable
 @Composable
 fun Theme.bareButton(isPressed: Boolean): ButtonColors =
   ButtonDefaults.buttonColors(
@@ -128,7 +132,6 @@ fun Theme.bareButton(isPressed: Boolean): ButtonColors =
     disabledContentColor = buttonBareDisabledText,
   )
 
-@Stable
 @Composable
 fun Theme.primaryIconButton(isPressed: Boolean): IconButtonColors =
   IconButtonDefaults.filledIconButtonColors(
@@ -138,7 +141,6 @@ fun Theme.primaryIconButton(isPressed: Boolean): IconButtonColors =
     disabledContentColor = buttonPrimaryDisabledText,
   )
 
-@Stable
 @Composable
 fun Theme.normalIconButton(isPressed: Boolean): IconButtonColors =
   IconButtonDefaults.filledIconButtonColors(
@@ -148,7 +150,6 @@ fun Theme.normalIconButton(isPressed: Boolean): IconButtonColors =
     disabledContentColor = buttonNormalDisabledText,
   )
 
-@Stable
 @Composable
 fun Theme.bareIconButton(isPressed: Boolean): IconButtonColors =
   IconButtonDefaults.filledIconButtonColors(
@@ -158,7 +159,6 @@ fun Theme.bareIconButton(isPressed: Boolean): IconButtonColors =
     disabledContentColor = buttonBareDisabledText,
   )
 
-@Stable
 @Composable
 fun Theme.segmentedButton(): SegmentedButtonColors =
   SegmentedButtonDefaults.colors(
@@ -176,7 +176,6 @@ fun Theme.segmentedButton(): SegmentedButtonColors =
     disabledInactiveBorderColor = Color.Transparent,
   )
 
-@Stable
 @Composable
 fun Theme.switch(): SwitchColors =
   SwitchDefaults.colors(
@@ -194,7 +193,6 @@ fun Theme.switch(): SwitchColors =
     disabledUncheckedBorderColor = checkboxToggleDisabled,
   )
 
-@Stable
 @Composable
 fun Theme.radioButton(): RadioButtonColors =
   RadioButtonDefaults.colors(
@@ -202,6 +200,39 @@ fun Theme.radioButton(): RadioButtonColors =
     unselectedColor = pageText.disabled,
     disabledSelectedColor = pageText.disabled,
     disabledUnselectedColor = pageText.disabled,
+  )
+
+@Composable
+fun Theme.slider(): SliderColors =
+  SliderDefaults.colors(
+    thumbColor = checkboxToggleBackgroundSelected,
+    activeTrackColor = checkboxToggleBackgroundSelected,
+    activeTickColor = checkboxText,
+    inactiveTrackColor = checkboxToggleBackground,
+    inactiveTickColor = pageText.disabled,
+    disabledThumbColor = checkboxToggleBackgroundSelected.disabled,
+    disabledActiveTrackColor = checkboxToggleBackgroundSelected.disabled,
+    disabledActiveTickColor = checkboxText.disabled,
+    disabledInactiveTrackColor = checkboxToggleBackground.disabled,
+    disabledInactiveTickColor = pageText.disabled,
+  )
+
+@Composable
+fun Theme.checkbox(): CheckboxColors =
+  CheckboxDefaults.colors(
+    checkedCheckmarkColor = checkboxText,
+    uncheckedCheckmarkColor = Color.Transparent,
+    disabledCheckmarkColor = checkboxText,
+    checkedBoxColor = checkboxBackgroundSelected,
+    uncheckedBoxColor = Color.Transparent,
+    disabledCheckedBoxColor = checkboxBackgroundSelected.disabled,
+    disabledUncheckedBoxColor = Color.Transparent,
+    disabledIndeterminateBoxColor = checkboxBackgroundSelected.disabled,
+    checkedBorderColor = checkboxBorderSelected,
+    uncheckedBorderColor = pageText.disabled,
+    disabledBorderColor = checkboxBorderSelected.disabled,
+    disabledUncheckedBorderColor = pageText.disabled,
+    disabledIndeterminateBorderColor = checkboxBorderSelected.disabled,
   )
 
 @get:Stable

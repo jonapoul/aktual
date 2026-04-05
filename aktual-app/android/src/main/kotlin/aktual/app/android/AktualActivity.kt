@@ -2,7 +2,6 @@ package aktual.app.android
 
 import aktual.app.nav.AktualAppContent
 import aktual.app.nav.rememberBackStack
-import aktual.core.di.ActivityKey
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -16,18 +15,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 
-@Inject
-@ActivityKey(AktualActivity::class)
+@ActivityKey
 @ContributesIntoMap(AppScope::class, binding<Activity>())
-class AktualActivity(private val viewModelFactory: MetroViewModelFactory) : ComponentActivity() {
-  override val defaultViewModelProviderFactory = viewModelFactory
-
-  private val viewModel by viewModels<AktualActivityViewModel> { viewModelFactory }
+class AktualActivity(override val defaultViewModelProviderFactory: MetroViewModelFactory) :
+  ComponentActivity() {
+  private val viewModel by viewModels<AktualActivityViewModel> { defaultViewModelProviderFactory }
 
   override fun onDestroy() {
     super.onDestroy()
@@ -44,7 +40,7 @@ class AktualActivity(private val viewModelFactory: MetroViewModelFactory) : Comp
       navigationBarStyle = SystemBarStyle.auto(transparent, transparent),
     )
 
-    setContent { Content(viewModel = viewModel, viewModelFactory = viewModelFactory) }
+    setContent { Content(viewModel, defaultViewModelProviderFactory) }
   }
 }
 
@@ -52,7 +48,7 @@ class AktualActivity(private val viewModelFactory: MetroViewModelFactory) : Comp
 @Suppress("ViewModelForwarding")
 private fun Content(viewModel: AktualActivityViewModel, viewModelFactory: MetroViewModelFactory) {
   CompositionLocalProvider(LocalMetroViewModelFactory provides viewModelFactory) {
-    val backStack = rememberBackStack(viewModel)
+    val backStack = rememberBackStack(viewModel) ?: return@CompositionLocalProvider
     AktualAppContent(viewModel, backStack)
   }
 }

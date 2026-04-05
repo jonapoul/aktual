@@ -16,6 +16,7 @@ import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -63,45 +64,57 @@ class AccountApiImpl(private val client: HttpClient, private val serverUrl: Serv
       }
       .body<BootstrapResponse.Success>()
 
-  override suspend fun login(body: LoginRequest.Password): LoginResponse.Success =
-    client
-      .post {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/account/login")
+  override suspend fun login(body: LoginRequest.Password): LoginResponse =
+    try {
+      client
+        .post {
+          url {
+            protocol = urlProtocol
+            host = serverUrl.baseUrl
+            path("/account/login")
+          }
+          contentType(ContentType.Application.Json)
+          setBody(body)
         }
-        contentType(ContentType.Application.Json)
-        setBody(body)
-      }
-      .body<LoginResponse.Success>()
+        .body<LoginResponse.Success>()
+    } catch (e: ResponseException) {
+      e.response.body<LoginResponse.Failure>()
+    }
 
-  override suspend fun login(body: LoginRequest.OpenId): LoginResponse.Success =
-    client
-      .post {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/account/login")
+  override suspend fun login(body: LoginRequest.OpenId): LoginResponse =
+    try {
+      client
+        .post {
+          url {
+            protocol = urlProtocol
+            host = serverUrl.baseUrl
+            path("/account/login")
+          }
+          contentType(ContentType.Application.Json)
+          setBody(body)
         }
-        contentType(ContentType.Application.Json)
-        setBody(body)
-      }
-      .body<LoginResponse.Success>()
+        .body<LoginResponse.Success>()
+    } catch (e: ResponseException) {
+      e.response.body<LoginResponse.Failure>()
+    }
 
-  override suspend fun login(body: LoginRequest.Header, password: Password): LoginResponse.Success =
-    client
-      .post {
-        url {
-          protocol = urlProtocol
-          host = serverUrl.baseUrl
-          path("/account/login")
+  override suspend fun login(body: LoginRequest.Header, password: Password): LoginResponse =
+    try {
+      client
+        .post {
+          url {
+            protocol = urlProtocol
+            host = serverUrl.baseUrl
+            path("/account/login")
+          }
+          header(AktualHeaders.PASSWORD, password)
+          contentType(ContentType.Application.Json)
+          setBody(body)
         }
-        header(AktualHeaders.PASSWORD, password)
-        contentType(ContentType.Application.Json)
-        setBody(body)
-      }
-      .body<LoginResponse.Success>()
+        .body<LoginResponse.Success>()
+    } catch (e: ResponseException) {
+      e.response.body<LoginResponse.Failure>()
+    }
 
   override suspend fun changePassword(
     body: ChangePasswordRequest,

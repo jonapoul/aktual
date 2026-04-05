@@ -3,7 +3,7 @@ package aktual.budget.transactions.ui
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemeParameters
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
@@ -86,4 +86,4 @@ private fun RowScope.CategoryHeaderText(
 @Preview
 @Composable
 private fun PreviewTransactionsSorting(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) { CategoryHeader() }
+  PreviewWithTheme(theme) { CategoryHeader() }

@@ -11,8 +11,8 @@ import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.core.prefs.AppGlobalPreferences
-import aktual.core.prefs.AppGlobalPreferencesImpl
+import aktual.prefs.AppPreferences
+import aktual.prefs.AppPreferencesImpl
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
 import aktual.test.emptyMockEngine
@@ -46,7 +46,7 @@ import org.robolectric.RobolectricTestRunner
 internal class LoginRequesterTest {
   private lateinit var loginRequester: LoginRequester
   private lateinit var apisStateHolder: AktualApisStateHolder
-  private lateinit var preferences: AppGlobalPreferences
+  private lateinit var preferences: AppPreferences
   private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var mockEngine: MockEngine.Queue
   private lateinit var fileSystem: FileSystem
@@ -59,7 +59,7 @@ internal class LoginRequesterTest {
   private fun TestScope.before() {
     val dispatcher = unconfinedDispatcher
     val flowPrefs = buildPreferences(dispatcher)
-    preferences = AppGlobalPreferencesImpl(flowPrefs)
+    preferences = AppPreferencesImpl(flowPrefs)
     apisStateHolder = AktualApisStateHolder()
     mockEngine = emptyMockEngine()
     fileSystem = FileSystem.SYSTEM
@@ -161,7 +161,7 @@ internal class LoginRequesterTest {
   }
 
   @Test
-  fun `HTTP failure`() = runTest {
+  fun `HTTP failure with token expired`() = runTest {
     before()
 
     // Given a URL is set
@@ -171,20 +171,47 @@ internal class LoginRequesterTest {
     connectionMonitor.start()
     apisStateHolder.filterNotNull().first()
 
-    // When we log in with a failed response
+    // When we log in with a token-expired error response
     val body =
       """
       {
         "status": "error",
-        "reason": "Some error"
+        "reason": "token-expired"
+      }
+      """
+        .trimIndent()
+    mockEngine += { respondJson(body, HttpStatusCode.Unauthorized) }
+    val result = loginRequester.logIn(EXAMPLE_PASSWORD)
+
+    // Then we get a token expired result
+    assertThat(result).isEqualTo(LoginResult.TokenExpired)
+  }
+
+  @Test
+  fun `HTTP failure with other reason`() = runTest {
+    before()
+
+    // Given a URL is set
+    preferences.serverUrl.set(EXAMPLE_URL)
+
+    // and we have a non-null api
+    connectionMonitor.start()
+    apisStateHolder.filterNotNull().first()
+
+    // When we log in with an error response
+    val body =
+      """
+      {
+        "status": "error",
+        "reason": "some-error"
       }
       """
         .trimIndent()
     mockEngine += { respondJson(body, HttpStatusCode.InternalServerError) }
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
 
-    // Then a HTTP result
-    assertThat(result).isInstanceOf<LoginResult.HttpFailure>()
+    // Then we get an other failure result with the reason
+    assertThat(result).isEqualTo(LoginResult.OtherFailure("some-error"))
   }
 
   private companion object {

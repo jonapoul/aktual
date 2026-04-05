@@ -7,8 +7,9 @@ import aktual.core.theme.LightTheme
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.MidnightTheme
 import aktual.core.theme.Theme
-import aktual.core.theme.isLight
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,13 +26,17 @@ fun WavyBackground(modifier: Modifier = Modifier, theme: Theme = LocalTheme.curr
   )
 
 @Composable
+fun PageBackground(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) =
+  Box(modifier = modifier.fillMaxSize().background(theme.pageBackground))
+
+@Composable
 private fun backgroundImage(theme: Theme) =
   when (theme) {
     LightTheme -> Drawables.wavyBackgroundLight
     DarkTheme -> Drawables.wavyBackgroundDark
     MidnightTheme -> Drawables.wavyBackgroundMidnight
     is CustomTheme ->
-      if (theme.isLight()) {
+      if (theme.isLight) {
         Drawables.wavyBackgroundLight
       } else {
         Drawables.wavyBackgroundDark

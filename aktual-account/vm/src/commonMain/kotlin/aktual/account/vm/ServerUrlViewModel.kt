@@ -7,7 +7,8 @@ import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
-import aktual.core.prefs.AppGlobalPreferences
+import aktual.prefs.AppPreferences
+import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.ResettableStateFlow
 import alakazam.kotlin.collectFlow
@@ -21,7 +22,6 @@ import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.Inject
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
@@ -42,15 +42,13 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
-@Suppress("NonBooleanPropertyPrefixedWithIs")
-@Inject
-@ViewModelKey(ServerUrlViewModel::class)
+@ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class ServerUrlViewModel
 internal constructor(
   private val contexts: CoroutineContexts,
   private val apiStateHolder: AktualApisStateHolder,
-  private val preferences: AppGlobalPreferences,
+  private val preferences: AppPreferences,
   versionsStateHolder: AktualVersionsStateHolder,
   buildConfig: BuildConfig,
 ) : ViewModel() {
@@ -94,13 +92,18 @@ internal constructor(
       }
 
       // Also clear any previous login state
-      preferences.token.deleteAndCommit()
+      preferences.token.delete()
     }
 
     viewModelScope.collectFlow(mutableConfirmResult) { result ->
       val navDestination = result.navDestination()
       if (navDestination != null) mutableNavDestination.send(navDestination)
     }
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    clearState()
   }
 
   fun clearState() {
@@ -129,6 +132,7 @@ internal constructor(
 
   fun onClickConfirm() {
     logcat.v { "onClickConfirm" }
+    mutableConfirmResult.reset()
     mutableIsLoading.update { true }
     viewModelScope.launch {
       val protocol = mutableProtocol.value
@@ -139,17 +143,13 @@ internal constructor(
       if (url != previousUrl) {
         // saving a new URL, so the existing token and API objects are invalidated
         apiStateHolder.update { null }
-        preferences.token.deleteAndCommit()
+        preferences.token.delete()
       }
 
       preferences.serverUrl.set(url)
       checkIfNeedsBootstrap(url)
       mutableIsLoading.update { false }
     }
-  }
-
-  fun onClickBack() {
-    mutableNavDestination.trySend(NavDestination.Back)
   }
 
   fun onClickAbout() {
@@ -161,7 +161,6 @@ internal constructor(
       logcat.v { "checkIfNeedsBootstrap $url" }
       val apis = apiStateHolder.filterNotNull().filter { it.serverUrl == url }.first()
 
-      logcat.v { "apis = $apis" }
       val response =
         try {
           withContext(contexts.io) { apis.account.needsBootstrap() }
@@ -184,7 +183,7 @@ internal constructor(
       logcat.w(e) { "Failed checking bootstrap for $url" }
 
       // hit an error, we can't use this URL?
-      preferences.serverUrl.deleteAndCommit()
+      preferences.serverUrl.delete()
 
       mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
     }
@@ -218,8 +217,6 @@ internal sealed interface ConfirmResult {
 
 @Immutable
 sealed interface NavDestination {
-  data object Back : NavDestination
-
   data object ToBootstrap : NavDestination
 
   data object ToLogin : NavDestination

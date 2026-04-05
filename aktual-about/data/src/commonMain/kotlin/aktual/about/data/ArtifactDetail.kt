@@ -1,6 +1,6 @@
 package aktual.about.data
 
-import androidx.compose.runtime.Stable
+import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
 
 /**
@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
  * https://github.com/cashapp/licensee/blob/trunk/src/main/kotlin/app/cash/licensee/outputModel.kt
  */
 @Serializable
+@Immutable
 data class ArtifactDetail(
   val groupId: String,
   val artifactId: String,
@@ -17,12 +18,13 @@ data class ArtifactDetail(
   val unknownLicenses: Set<UnknownLicense> = emptySet(),
   val scm: ArtifactScm? = null,
 ) {
-  @get:Stable
   val id: String
     get() = "$groupId:$artifactId:$version"
 }
 
-@Serializable data class SpdxLicense(val identifier: String, val name: String, val url: String)
+@Immutable
+@Serializable
+data class SpdxLicense(val identifier: String, val name: String, val url: String)
 
 val Apache2 =
   SpdxLicense(
@@ -31,6 +33,6 @@ val Apache2 =
     url = "https://www.apache.org/licenses/LICENSE-2.0",
   )
 
-@Serializable data class UnknownLicense(val name: String?, val url: String?)
+@Immutable @Serializable data class UnknownLicense(val name: String?, val url: String?)
 
-@Serializable data class ArtifactScm(val url: String)
+@Immutable @Serializable data class ArtifactScm(val url: String)

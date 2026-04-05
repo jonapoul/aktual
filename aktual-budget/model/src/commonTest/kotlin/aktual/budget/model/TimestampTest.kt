@@ -1,3 +1,5 @@
+@file:Suppress("JUnitMalformedDeclaration")
+
 package aktual.budget.model
 
 import app.cash.burst.Burst
@@ -9,9 +11,9 @@ import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
 
 @Burst
-class TimestampTest(private val case: TestCase = burstValues(TEST_CASE_1, TEST_CASE_2)) {
+class TimestampTest {
   @Test
-  fun `Parse and stringify`() = runTest {
+  fun `Parse and stringify`(case: TestCase = burstValues(TEST_CASE_1, TEST_CASE_2)) = runTest {
     val parsed = Timestamp.parse(case.string)
     assertThat(parsed).isEqualTo(case.timestamp)
     val stringified = parsed.toString()

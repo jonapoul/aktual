@@ -1,0 +1,19 @@
+import aktual.budget.model.TagId;
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS tags(
+  id TEXT AS TagId PRIMARY KEY,
+  tag TEXT UNIQUE,
+  color TEXT,
+  description TEXT,
+  tombstone INTEGER AS Boolean DEFAULT 0
+);
+
+insert:
+  INSERT INTO tags VALUES ?;
+
+delete:
+  DELETE FROM tags WHERE id = ?;
+
+getById:
+  SELECT * FROM tags WHERE id = ?;

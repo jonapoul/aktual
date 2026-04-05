@@ -3,6 +3,7 @@ package aktual.core.ui
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import alakazam.compose.VerticalSpacer
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.navigationBars
@@ -12,10 +13,7 @@ import androidx.compose.ui.graphics.Color
 
 @Composable
 fun SetStatusBarColors(theme: Theme = LocalTheme.current) =
-  SetStatusBarColors(
-    statusBarColor = theme.pageBackground,
-    navigationBarColor = theme.pageBackground,
-  )
+  SetStatusBarColors(statusBarColor = theme.pageBackground, navigationBarColor = Color.Transparent)
 
 @Composable internal expect fun SetStatusBarColors(statusBarColor: Color, navigationBarColor: Color)
 
@@ -23,7 +21,6 @@ fun SetStatusBarColors(theme: Theme = LocalTheme.current) =
 // it
 @Composable
 fun BottomNavBarSpacing(modifier: Modifier = Modifier) =
-  VerticalSpacer(
-    modifier = modifier,
-    height = WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
-  )
+  VerticalSpacer(modifier = modifier, height = bottomNavBarPadding().calculateBottomPadding())
+
+@Composable fun bottomNavBarPadding(): PaddingValues = WindowInsets.navigationBars.asPaddingValues()

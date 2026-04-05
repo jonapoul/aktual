@@ -11,10 +11,11 @@ kotlin {
     api(project(":aktual-budget:model"))
     api(project(":aktual-budget:transactions:vm"))
     api(project(":aktual-core:ui"))
+    implementation(project(":aktual-app:nav"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:model"))
+    implementation(project(":aktual-core:shimmer"))
     implementation(libs.androidx.paging.compose)
     implementation(libs.kotlinx.datetime)
-    implementation(libs.shimmer)
   }
 }

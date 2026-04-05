@@ -7,6 +7,9 @@ import aktual.budget.reports.vm.DateRange
 import aktual.budget.reports.vm.PercentageDivisor
 import aktual.budget.reports.vm.SummaryChartType
 import aktual.budget.reports.vm.SummaryData
+import aktual.budget.reports.vm.SummaryReportMeta
+import aktual.budget.reports.vm.TimeFrame
+import aktual.budget.reports.vm.TimeFrameMode.Static
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloseBracket
 import aktual.core.icons.Equals
@@ -20,10 +23,11 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ExposedDropDownMenu
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.checkbox
 import aktual.core.ui.formattedString
 import aktual.core.ui.stringShort
 import alakazam.compose.HorizontalSpacer
@@ -60,6 +64,9 @@ import kotlinx.collections.immutable.ImmutableMap
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toImmutableMap
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.Month.JANUARY
+import kotlinx.datetime.Month.JULY
+import kotlinx.datetime.YearMonth
 import kotlinx.datetime.yearMonth
 
 @Composable
@@ -85,6 +92,13 @@ internal fun SummaryChart(
           CompactAmount(data.average)
         } else {
           RegularPerMonth(data, onAction)
+        }
+
+      is SummaryData.AveragePerYear ->
+        if (compact) {
+          CompactAmount(data.average)
+        } else {
+          RegularPerYear(data, onAction)
         }
 
       is SummaryData.AveragePerTransaction ->
@@ -227,6 +241,82 @@ private fun RegularPerMonth(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = "%.2f".format(data.numMonths),
+          fontSize = 30.sp,
+          textAlign = TextAlign.Center,
+          color = theme.pageText,
+        )
+      }
+
+      HorizontalSpacer(10.dp)
+      Equals()
+      HorizontalSpacer(10.dp)
+
+      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average, theme = theme) }
+    }
+  }
+
+@Composable
+private fun RegularPerYear(
+  data: SummaryData.AveragePerYear,
+  onAction: ActionListener,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) =
+  Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
+    ShowAs(data, onAction)
+
+    Row(
+      modifier = Modifier.fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      Column(
+        modifier = Modifier.width(IntrinsicSize.Max),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Row(
+          modifier = Modifier.fillMaxWidth(),
+          horizontalArrangement = Arrangement.Center,
+          verticalAlignment = Alignment.CenterVertically,
+        ) {
+          SumColumn(data)
+          FilterDisplay(theme)
+        }
+
+        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = Strings.reportsSummaryNumYears,
+          fontSize = 25.sp,
+          textAlign = TextAlign.Center,
+          color = theme.pageText,
+        )
+      }
+
+      HorizontalSpacer(10.dp)
+      Equals()
+      HorizontalSpacer(10.dp)
+
+      Column(
+        modifier = Modifier.width(IntrinsicSize.Max),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = data.total.formattedString(),
+          fontSize = 30.sp,
+          textAlign = TextAlign.Center,
+          color = theme.pageText,
+        )
+
+        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+
+        Text(
+          modifier = Modifier.fillMaxWidth(),
+          text = "%.2f".format(data.numYears),
           fontSize = 30.sp,
           textAlign = TextAlign.Center,
           color = theme.pageText,
@@ -436,6 +526,7 @@ private fun ShowAs(
     val currentType =
       when (data) {
         is SummaryData.AveragePerMonth -> SummaryChartType.AveragePerMonth
+        is SummaryData.AveragePerYear -> SummaryChartType.AveragePerYear
         is SummaryData.AveragePerTransaction -> SummaryChartType.AveragePerTransaction
         is SummaryData.Percentage -> SummaryChartType.Percentage
         is SummaryData.Sum -> SummaryChartType.Sum
@@ -471,12 +562,14 @@ private fun DivisorCheckbox(
   data: SummaryData.Percentage,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     Checkbox(
       modifier = Modifier.minimumInteractiveComponentSize(),
       checked = data.divisor is PercentageDivisor.AllTime,
       onCheckedChange = { newValue -> onAction(Action.SetAllTimeDivisor(newValue)) },
+      colors = theme.checkbox(),
     )
 
     HorizontalSpacer(4.dp)
@@ -521,6 +614,7 @@ private fun string(type: SummaryChartType): String =
   when (type) {
     SummaryChartType.Sum -> Strings.reportsSummarySum
     SummaryChartType.AveragePerMonth -> Strings.reportsSummaryPerMonth
+    SummaryChartType.AveragePerYear -> Strings.reportsSummaryPerYear
     SummaryChartType.AveragePerTransaction -> Strings.reportsSummaryPerTransaction
     SummaryChartType.Percentage -> Strings.reportsSummaryPercentage
   }
@@ -530,7 +624,7 @@ private fun string(type: SummaryChartType): String =
 private fun PreviewSummaryChart(
   @PreviewParameter(SummaryChartProvider::class) params: ThemedParams<SummaryChartParams>
 ) =
-  PreviewWithColorScheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
+  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
     SummaryChart(
       modifier =
         Modifier.background(LocalTheme.current.tableBackground, CardShape)
@@ -602,4 +696,18 @@ private val PERCENT_DATA =
     denominator = Amount(4043.87),
     percent = 153.28.percent,
     divisor = PercentageDivisor.AllTime,
+  )
+
+internal val PER_TRANSACTION_META =
+  SummaryReportMeta(
+    conditions = emptyList(),
+    conditionsOp = And,
+    timeFrame =
+      TimeFrame(start = YearMonth(2024, JANUARY), end = YearMonth(2025, JULY), mode = Static),
+    content =
+      """
+      {"type":"percentage","fontSize":98,"divisorConditions":[],"divisorConditionsOp":"and",
+      "divisorAllTimeDateRange":true}
+      """
+        .trimIndent(),
   )

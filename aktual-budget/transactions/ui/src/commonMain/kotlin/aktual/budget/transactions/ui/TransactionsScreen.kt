@@ -1,5 +1,6 @@
 package aktual.budget.transactions.ui
 
+import aktual.app.nav.BackNavigator
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.BudgetId
 import aktual.budget.model.TransactionsFormat
@@ -12,11 +13,16 @@ import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.LandscapePreview
+import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
-import androidx.compose.foundation.layout.padding
+import aktual.core.ui.blurredTopBarContent
+import aktual.core.ui.blurredTopBarContentPadding
+import aktual.core.ui.rememberBlurredTopBarState
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,7 +34,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 @Composable
 @Suppress("ViewModelForwarding")
 fun TransactionsScreen(
-  nav: TransactionsNavigator,
+  back: BackNavigator,
   budgetId: BudgetId,
   token: Token,
   spec: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
@@ -44,7 +50,7 @@ fun TransactionsScreen(
     source = viewModel,
     onAction = { action ->
       when (action) {
-        Action.NavBack -> nav.back()
+        Action.NavBack -> back()
         is Action.CheckItem -> viewModel.setChecked(action.id, action.isChecked)
         is Action.SetPrivacyMode -> viewModel.setPrivacyMode(action.isPrivacyEnabled)
       }
@@ -68,15 +74,33 @@ internal fun TransactionsScaffold(
   onAction: ActionListener,
 ) {
   val theme = LocalTheme.current
-  Scaffold(topBar = { TransactionsTitleBar(loadedAccount, onAction, theme) }) { innerPadding ->
-    Transactions(
-      modifier = Modifier.padding(innerPadding),
-      transactionIdSource = transactionIdSource,
-      format = format,
-      source = source,
-      onAction = onAction,
-      theme = theme,
-    )
+  val blurState = rememberBlurredTopBarState()
+  val listState = rememberLazyListState()
+
+  Scaffold(
+    topBar = {
+      TransactionsTitleBar(
+        blurState = blurState,
+        listState = listState,
+        loadedAccount = loadedAccount,
+        onAction = onAction,
+        theme = theme,
+      )
+    }
+  ) { innerPadding ->
+    Box {
+      PageBackground()
+      Transactions(
+        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        listState = listState,
+        transactionIdSource = transactionIdSource,
+        format = format,
+        source = source,
+        onAction = onAction,
+        theme = theme,
+      )
+    }
   }
 }
 
@@ -85,7 +109,7 @@ internal fun TransactionsScaffold(
 @LandscapePreview
 @TabletPreview
 private fun PreviewTransactionsScaffold(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     TransactionsScaffold(
       transactionIdSource =
         PreviewTransactionIdSource(listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),

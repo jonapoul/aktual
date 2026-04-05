@@ -13,6 +13,7 @@ kotlin {
     api(libs.compose.uiGraphics)
     api(project(":aktual-core:api"))
     api(project(":aktual-core:theme"))
+    api(project(":aktual-prefs"))
     compileOnly(libs.compose.runtime)
     implementation(project(":aktual-core:logging"))
   }
@@ -20,7 +21,7 @@ kotlin {
   commonTestDependencies {
     implementation(project(":aktual-budget:data-di"))
     implementation(project(":aktual-core:di"))
-    implementation(project(":aktual-core:prefs:di"))
+    implementation(project(":aktual-prefs:di"))
     implementation(project(":aktual-core:theme:di"))
     implementation(project(":aktual-test:api"))
   }

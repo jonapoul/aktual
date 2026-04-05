@@ -2,6 +2,8 @@ package aktual.account.ui.password
 
 import aktual.account.vm.ChangePasswordState
 import aktual.account.vm.ChangePasswordViewModel
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.ListBudgetsNavigator
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
@@ -13,7 +15,7 @@ import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
@@ -30,15 +32,12 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -46,7 +45,8 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 
 @Composable
 fun ChangePasswordScreen(
-  navigator: ChangePasswordNavigator,
+  navBack: BackNavigator,
+  navToListBudgets: ListBudgetsNavigator,
   viewModel: ChangePasswordViewModel = metroViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
@@ -59,7 +59,7 @@ fun ChangePasswordScreen(
 
   val token = newToken
   if (token != null) {
-    LaunchedEffect(Unit) { navigator.toListBudgets(token) }
+    LaunchedEffect(Unit) { navToListBudgets(token) }
   }
 
   ChangePasswordScaffold(
@@ -71,7 +71,7 @@ fun ChangePasswordScreen(
     versions = versions,
     onAction = { action ->
       when (action) {
-        PasswordAction.NavBack -> navigator.back()
+        PasswordAction.NavBack -> navBack()
         PasswordAction.Submit -> viewModel.submit()
         is PasswordAction.SetPassword1 -> viewModel.setPassword1(action.value)
         is PasswordAction.SetPassword2 -> viewModel.setPassword2(action.value)
@@ -91,18 +91,16 @@ internal fun ChangePasswordScaffold(
   versions: AktualVersions,
   onAction: (PasswordAction) -> Unit,
 ) {
-  val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   val theme = LocalTheme.current
+
   Scaffold(
-    modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(PasswordAction.NavBack) } },
         title = { /* empty */ },
-        scrollBehavior = scrollBehavior,
       )
-    },
+    }
   ) { innerPadding ->
     Box {
       WavyBackground()
@@ -199,7 +197,7 @@ private fun ChangePasswordState.Failure.errorMessage(): String =
 private fun PreviewChangePassword(
   @PreviewParameter(ChangePasswordProvider::class) params: ThemedParams<ChangePasswordParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
     ChangePasswordScaffold(
       inputPassword1 = params.data.password1,
       inputPassword2 = params.data.password2,

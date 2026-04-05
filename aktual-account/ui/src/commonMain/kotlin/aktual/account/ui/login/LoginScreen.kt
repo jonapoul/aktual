@@ -2,12 +2,15 @@ package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
 import aktual.account.vm.LoginViewModel
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.ListBudgetsNavigator
+import aktual.app.nav.ServerUrlNavigator
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
+import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.model.Password.Companion.Dummy
 import aktual.core.model.Password.Companion.Empty
-import aktual.core.model.ServerUrl
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -16,10 +19,9 @@ import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.UsingServerText
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
@@ -39,40 +41,58 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun LoginScreen(nav: LoginNavigator, viewModel: LoginViewModel = metroViewModel()) {
+fun LoginScreen(
+  back: BackNavigator,
+  toServerUrl: ServerUrlNavigator,
+  toListBudgets: ListBudgetsNavigator,
+  viewModel: LoginViewModel = metroViewModel(),
+) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
-  val url by viewModel.serverUrl.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
+  val redirectUrl by viewModel.redirectUrl.collectAsStateWithLifecycle()
+  val loginMethods by viewModel.loginMethods.collectAsStateWithLifecycle()
+  val selectedLoginMethod by viewModel.selectedLoginMethod.collectAsStateWithLifecycle()
 
-  LaunchedEffect(Unit) { viewModel.token.collect { token -> nav.toListBudgets(token) } }
+  LaunchedEffect(Unit) { viewModel.token.collect { token -> toListBudgets(token) } }
+
+  val uriHandler = LocalUriHandler.current
+  LaunchedEffect(redirectUrl) {
+    val url = redirectUrl ?: return@LaunchedEffect
+    uriHandler.openUri(url)
+  }
 
   DisposableEffect(Unit) { onDispose { viewModel.clearState() } }
 
   LoginScaffold(
     versions = versions,
     enteredPassword = enteredPassword,
-    url = url,
     isLoading = isLoading,
     loginFailure = loginFailure,
+    loginMethods = loginMethods,
+    selectedLoginMethod = selectedLoginMethod,
     onAction = { action ->
       when (action) {
-        LoginAction.ChangeServer -> nav.toUrl()
-        LoginAction.NavBack -> nav.back()
+        LoginAction.ChangeServer -> toServerUrl()
+        LoginAction.NavBack -> back()
         LoginAction.SignIn -> viewModel.onClickSignIn()
         is LoginAction.EnterPassword -> viewModel.onEnterPassword(action.password)
+        is LoginAction.SelectLoginMethod -> viewModel.onSelectLoginMethod(action.method)
       }
     },
   )
@@ -82,9 +102,10 @@ fun LoginScreen(nav: LoginNavigator, viewModel: LoginViewModel = metroViewModel(
 internal fun LoginScaffold(
   versions: AktualVersions,
   enteredPassword: Password,
-  url: ServerUrl?,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
+  loginMethods: ImmutableList<LoginMethod>,
+  selectedLoginMethod: LoginMethod,
   onAction: (LoginAction) -> Unit,
   theme: Theme = LocalTheme.current,
 ) {
@@ -107,9 +128,10 @@ internal fun LoginScaffold(
         modifier = Modifier.padding(innerPadding),
         versions = versions,
         enteredPassword = enteredPassword,
-        url = url,
         isLoading = isLoading,
         loginFailure = loginFailure,
+        loginMethods = loginMethods,
+        selectedLoginMethod = selectedLoginMethod,
         onAction = onAction,
         theme = theme,
       )
@@ -117,14 +139,14 @@ internal fun LoginScaffold(
   }
 }
 
-@Stable
 @Composable
 private fun Content(
   versions: AktualVersions,
   enteredPassword: Password,
-  url: ServerUrl?,
   isLoading: Boolean,
   loginFailure: LoginResult.Failure?,
+  loginMethods: ImmutableList<LoginMethod>,
+  selectedLoginMethod: LoginMethod,
   onAction: (LoginAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -135,12 +157,10 @@ private fun Content(
   ) {
     Column(
       modifier = Modifier.wrapContentWidth().weight(1f),
-      verticalArrangement = Arrangement.Top,
+      verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Top),
       horizontalAlignment = Alignment.Start,
     ) {
       Text(text = Strings.loginTitle, style = AktualTypography.headlineLarge)
-
-      VerticalSpacer(15.dp)
 
       Text(
         text = Strings.loginMessage,
@@ -148,30 +168,43 @@ private fun Content(
         style = AktualTypography.bodyLarge,
       )
 
-      VerticalSpacer(20.dp)
+      if (loginMethods.size > 1) {
+        LoginMethodPicker(
+          modifier = Modifier.fillMaxWidth(),
+          methods = loginMethods,
+          selectedMethod = selectedLoginMethod,
+          onAction = onAction,
+        )
+      }
 
-      PasswordLogin(
-        modifier = Modifier.fillMaxWidth(),
-        isLoading = isLoading,
-        enteredPassword = enteredPassword,
-        theme = theme,
-        onAction = onAction,
-      )
+      when (selectedLoginMethod) {
+        LoginMethod.Password -> {
+          PasswordLogin(
+            modifier = Modifier.fillMaxWidth(),
+            isLoading = isLoading,
+            enteredPassword = enteredPassword,
+            onAction = onAction,
+          )
+        }
+
+        LoginMethod.Header -> {
+          HeaderLogin(
+            modifier = Modifier.fillMaxWidth(),
+            isLoading = isLoading,
+            hasFailure = loginFailure != null,
+            onAction = onAction,
+          )
+        }
+
+        LoginMethod.OpenId -> {
+          OpenIdLogin(modifier = Modifier.fillMaxWidth())
+        }
+      }
 
       if (loginFailure != null) {
-        VerticalSpacer(20.dp)
-
-        LoginFailureText(modifier = Modifier.fillMaxWidth(), result = loginFailure, theme = theme)
+        LoginFailureText(modifier = Modifier.fillMaxWidth(), result = loginFailure)
       }
     }
-
-    VerticalSpacer(20.dp)
-
-    UsingServerText(
-      url = url,
-      theme = theme,
-      onClickChange = { onAction(LoginAction.ChangeServer) },
-    )
 
     VerticalSpacer(4.dp)
 
@@ -188,13 +221,15 @@ private fun Content(
 private fun PreviewLoginScaffold(
   @PreviewParameter(LoginScaffoldProvider::class) params: ThemedParams<LoginScaffoldParams>
 ) =
-  PreviewWithColorScheme(params.theme) {
+  PreviewWithTheme(params.theme) {
+    val data = params.data
     LoginScaffold(
-      versions = AktualVersions.Dummy,
-      enteredPassword = Empty,
-      url = ServerUrl.Demo,
-      isLoading = false,
-      loginFailure = null,
+      versions = data.versions,
+      enteredPassword = data.password,
+      isLoading = data.isLoading,
+      loginFailure = data.loginFailure,
+      loginMethods = data.loginMethods,
+      selectedLoginMethod = data.selectedLoginMethod,
       onAction = {},
     )
   }
@@ -202,10 +237,13 @@ private fun PreviewLoginScaffold(
 private data class LoginScaffoldParams(
   val versions: AktualVersions = AktualVersions.Dummy,
   val password: Password = Dummy,
-  val url: ServerUrl = ServerUrl.Demo,
   val isLoading: Boolean = false,
   val loginFailure: LoginResult.Failure? = null,
+  val loginMethods: ImmutableList<LoginMethod> = persistentListOf(),
+  val selectedLoginMethod: LoginMethod = LoginMethod.Password,
 )
+
+private val ALL_METHODS = LoginMethod.entries.toImmutableList()
 
 private class LoginScaffoldProvider :
   ThemedParameterProvider<LoginScaffoldParams>(
@@ -215,4 +253,11 @@ private class LoginScaffoldProvider :
       isLoading = true,
       loginFailure = LoginResult.InvalidPassword,
     ),
+    LoginScaffoldParams(loginMethods = ALL_METHODS, selectedLoginMethod = LoginMethod.Password),
+    LoginScaffoldParams(
+      loginMethods = ALL_METHODS,
+      selectedLoginMethod = LoginMethod.Header,
+      isLoading = true,
+    ),
+    LoginScaffoldParams(loginMethods = ALL_METHODS, selectedLoginMethod = LoginMethod.OpenId),
   )

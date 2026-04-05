@@ -4,8 +4,6 @@ package aktual.core.ui
 
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import alakazam.compose.HorizontalSpacer
-import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,6 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,41 +31,52 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
 
+/**
+ * A wrapper around [BasicAlertDialog] that signals [DialogBlurState] so the background blur overlay
+ * animates in while this dialog is showing.
+ */
 @Composable
 fun AlertDialog(
-  title: String,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-  buttons: (@Composable RowScope.() -> Unit)? = null,
-  theme: Theme = LocalTheme.current,
   properties: DialogProperties = DialogProperties(),
-  content: @Composable ColumnScope.() -> Unit,
+  content: @Composable () -> Unit,
 ) {
+  val dialogBlurState = LocalDialogBlurState.current
+  DisposableEffect(Unit) {
+    dialogBlurState.activeDialogCount++
+    onDispose { dialogBlurState.activeDialogCount-- }
+  }
+
   BasicAlertDialog(
     onDismissRequest = onDismissRequest,
     modifier = modifier,
     properties = properties,
-  ) {
-    DialogContent(title = title, theme = theme, content = content, buttons = buttons)
-  }
+    content = content,
+  )
 }
 
 @Composable
 fun AlertDialog(
-  title: String,
-  text: String,
+  title: String?,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
   buttons: (@Composable RowScope.() -> Unit)? = null,
+  icon: ImageVector? = null,
   theme: Theme = LocalTheme.current,
+  titleColor: Color = theme.pageTextPositive,
   properties: DialogProperties = DialogProperties(),
+  content: @Composable ColumnScope.() -> Unit,
 ) {
-  BasicAlertDialog(
-    onDismissRequest = onDismissRequest,
-    modifier = modifier,
-    properties = properties,
-  ) {
-    DialogContent(title = title, theme = theme, buttons = buttons, content = { Text(text) })
+  AlertDialog(onDismissRequest = onDismissRequest, modifier = modifier, properties = properties) {
+    DialogContent(
+      title = title,
+      buttons = buttons,
+      icon = icon,
+      theme = theme,
+      titleColor = titleColor,
+      content = content,
+    )
   }
 }
 
@@ -92,13 +102,14 @@ fun DialogContent(
           .background(theme.modalBackground)
           .padding(Dimens.VeryLarge),
       horizontalAlignment = Alignment.CenterHorizontally,
-      verticalArrangement = Arrangement.Top,
+      verticalArrangement = Arrangement.spacedBy(Dimens.Medium, alignment = Alignment.Top),
     ) {
-      Row(modifier = Modifier, verticalAlignment = Alignment.CenterVertically) {
+      Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+      ) {
         if (icon != null) {
           Icon(imageVector = icon, contentDescription = null, tint = titleColor)
-
-          HorizontalSpacer(10.dp)
         }
 
         if (title != null) {
@@ -110,11 +121,7 @@ fun DialogContent(
         }
       }
 
-      VerticalSpacer(Dimens.Medium)
-
       CompositionLocalProvider(LocalContentColor provides theme.pageText) { content() }
-
-      VerticalSpacer(Dimens.Medium)
 
       if (buttons != null) {
         CompositionLocalProvider(LocalContentColor provides theme.pageTextPositive) {
@@ -130,7 +137,7 @@ fun DialogContent(
 private fun PreviewExampleContentWithButtons(
   @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     DialogContent(
       title = "Hello world",
       buttons = {
@@ -153,7 +160,7 @@ private fun PreviewExampleContentWithButtons(
 private fun PreviewExampleContentWithoutButtons(
   @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
-  PreviewWithColorScheme(theme) {
+  PreviewWithTheme(theme) {
     DialogContent(
       title = "Hello world",
       buttons = null,

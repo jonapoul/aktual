@@ -9,13 +9,14 @@ import aktual.budget.encryption.generateKeyFromPassword
 import aktual.budget.model.BudgetId
 import aktual.core.model.Password
 import aktual.core.model.Token
-import aktual.core.prefs.KeyPreferences
+import aktual.prefs.KeyPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.NonCancellable
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import okio.Buffer
@@ -52,7 +53,7 @@ class KeyFetcher(
 
     val (keyId, salt, test) = response.data
     val key = generateKeyFromPassword(keyPassword, salt)
-    keyPreferences.setAndCommit(keyId, key.encoded) // committed because we'll use it straight away
+    keyPreferences[keyId] = key.encoded
 
     // test the new key
     try {
@@ -73,7 +74,7 @@ class KeyFetcher(
       return FetchKeyResult.TestFailure
     } finally {
       // This is only inserted for the sake of the decryption test
-      keyPreferences.delete(keyId)
+      withContext(NonCancellable) { keyPreferences.delete(keyId) }
     }
 
     return FetchKeyResult.Success(key.encoded)

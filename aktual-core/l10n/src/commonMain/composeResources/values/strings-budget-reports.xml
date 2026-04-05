@@ -1,4 +1,5 @@
 <resources>
+  <string name="reports_title">Reports</string>
   <string name="reports_dashboard_title">Reports</string>
   <string name="reports_dashboard_rename">Rename</string>
   <string name="reports_dashboard_delete">Delete</string>
@@ -12,16 +13,23 @@
   <string name="reports_choose_type_markdown">Markdown</string>
   <string name="reports_choose_type_summary">Summary</string>
   <string name="reports_choose_type_calendar">Calendar</string>
+  <string name="reports_choose_type_budget_analysis">Budget Analysis</string>
+  <string name="reports_choose_type_formula">Formula</string>
   <string name="reports_choose_type_custom">Custom</string>
+  <string name="reports_choose_type_disabled">This report type is not currently supported.</string>
+  <string name="reports_choose_type_disabled_dialog_title">Caution</string>
+  <string name="reports_choose_type_disabled_dialog_dismiss">OK</string>
 
   <string name="reports_summary_show_as">Show as:</string>
   <string name="reports_summary_sum">Sum</string>
   <string name="reports_summary_per_month">Average per month</string>
+  <string name="reports_summary_per_year">Average per year</string>
   <string name="reports_summary_per_transaction">Average per transaction</string>
   <string name="reports_summary_percentage">Percentage</string>
 
   <string name="reports_summary_all">all transactions</string>
   <string name="reports_summary_num_months">number of months</string>
+  <string name="reports_summary_num_years">number of years</string>
   <string name="reports_summary_num_transactions">number of transactions</string>
   <string name="reports_summary_all_time_divisor">All time divisor</string>
 

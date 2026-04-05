@@ -1,10 +1,11 @@
 *.jks
 *.keystore
-.claude/
+.claude/*
 .gradle/
 .kotlin/
 build/
 local.properties
+symlinks/
 
 # API secrets
 *.private.env.json

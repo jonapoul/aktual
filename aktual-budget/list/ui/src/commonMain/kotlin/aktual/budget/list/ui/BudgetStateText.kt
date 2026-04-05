@@ -12,7 +12,7 @@ import aktual.core.icons.material.Sync
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithColorScheme
+import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import alakazam.compose.HorizontalSpacer
@@ -95,6 +95,6 @@ private fun BudgetState.iconColor(theme: Theme): Color =
 @Composable
 private fun PreviewBudgetStateText(
   @PreviewParameter(BudgetStateProvider::class) params: ThemedParams<BudgetState>
-) = PreviewWithColorScheme(params.theme) { BudgetStateText(params.data) }
+) = PreviewWithTheme(params.theme) { BudgetStateText(params.data) }
 
 private class BudgetStateProvider : ThemedParameterProvider<BudgetState>(BudgetState.entries)

@@ -10,11 +10,9 @@ import aktual.budget.model.Timestamp
 import aktual.budget.prefs.BudgetLocalPreferences
 import aktual.core.model.KeyId
 import dev.zacsweers.metro.ContributesBinding
-import dev.zacsweers.metro.Inject
 import okio.Buffer
 import okio.ByteString
 
-@Inject
 @ContributesBinding(BudgetScope::class)
 class SyncRequestEncoderImpl(
   private val encrypter: BufferEncrypter,

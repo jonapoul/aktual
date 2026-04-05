@@ -1,6 +1,8 @@
 package aktual.budget.model
 
-enum class DateRangeType(val value: String) {
+import alakazam.kotlin.SerializableByString
+
+enum class DateRangeType(override val value: String) : SerializableByString {
   ThisWeek(value = "This week"),
   LastWeek(value = "Last week"),
   ThisMonth(value = "This month"),

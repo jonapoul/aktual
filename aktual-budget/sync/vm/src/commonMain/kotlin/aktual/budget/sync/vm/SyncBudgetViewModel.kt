@@ -2,6 +2,7 @@ package aktual.budget.sync.vm
 
 import aktual.api.model.sync.EncryptMeta
 import aktual.api.model.sync.UserFile
+import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.FileDecrypter
 import aktual.budget.model.BudgetFiles
@@ -11,12 +12,11 @@ import aktual.budget.model.encryptedZip
 import aktual.budget.sync.vm.SyncStep.DownloadingDatabase
 import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
-import aktual.core.di.BudgetGraphHolder
 import aktual.core.model.Password
 import aktual.core.model.Percent
 import aktual.core.model.Token
 import aktual.core.model.UrlOpener
-import aktual.core.prefs.KeyPreferences
+import aktual.prefs.KeyPreferences
 import alakazam.kotlin.launchInfiniteLoop
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -40,11 +40,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -73,11 +70,6 @@ class SyncBudgetViewModel(
   private val mutableSteps =
     MutableStateFlow<PersistentMap<SyncStep, SyncStepState>>(defaultStates())
   val stepStates: StateFlow<ImmutableMap<SyncStep, SyncStepState>> = mutableSteps.asStateFlow()
-
-  val budgetIsLoaded: StateFlow<Boolean> =
-    budgetGraphs
-      .map { it?.budgetId == budgetId }
-      .stateIn(viewModelScope, Eagerly, initialValue = false)
 
   val overallState: StateFlow<SyncOverallState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -140,14 +132,14 @@ class SyncBudgetViewModel(
 
     setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
     viewModelScope.launch {
-      when (val fetched = keyFetcher(budgetId, token, state.input)) {
+      when (val fetched = keyFetcher(budgetId, token, keyPassword = state.input)) {
         is FetchKeyResult.Failure -> {
           logcat.w { "Failed fetching keys: $fetched" }
           handleDecryptFailure(
-            DecryptResult.FailedFetchingKey,
-            cachedData.encryptedPath,
-            cachedData.userFile,
-            meta,
+            result = DecryptResult.FailedFetchingKey,
+            encryptedPath = cachedData.encryptedPath,
+            userFile = cachedData.userFile,
+            meta = meta,
           )
         }
 
@@ -332,7 +324,7 @@ class SyncBudgetViewModel(
   )
 
   @AssistedFactory
-  @ManualViewModelAssistedFactoryKey(Factory::class)
+  @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(AppScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
     fun create(@Assisted token: Token, @Assisted budgetId: BudgetId): SyncBudgetViewModel

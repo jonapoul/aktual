@@ -13,6 +13,7 @@ kotlin {
     api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.immutable)
     api(libs.kotlinx.serialization.json)
+    api(libs.metrox.viewmodel)
     api(libs.okio)
     compileOnly(libs.androidx.compose.annotation)
     compileOnly(libs.redacted.annotations)

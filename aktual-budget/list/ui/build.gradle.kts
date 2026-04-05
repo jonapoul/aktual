@@ -11,7 +11,9 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:list:vm"))
     api(project(":aktual-core:ui"))
+    implementation(project(":aktual-app:nav"))
     implementation(project(":aktual-budget:model"))
+    implementation(project(":aktual-budget:sync:ui"))
     implementation(project(":aktual-core:l10n"))
     implementation(project(":aktual-core:model"))
   }

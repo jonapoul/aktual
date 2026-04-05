@@ -9,7 +9,7 @@ internal sealed interface ListBudgetsAction {
 
   data object ChangePassword : ListBudgetsAction
 
-  data object ChangeServer : ListBudgetsAction
+  data object LogOut : ListBudgetsAction
 
   data object OpenAbout : ListBudgetsAction
 

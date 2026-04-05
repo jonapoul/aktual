@@ -24,6 +24,7 @@ internal val ShadesOfCoffeeTheme =
   JsonCustomTheme(
     name = ShadesOfCoffeeThemeSummary.name,
     repo = ShadesOfCoffeeThemeSummary.repo,
+    isLight = true,
     page =
       PageColors(
         pageBackground = Color(0xFFe2d8cf),

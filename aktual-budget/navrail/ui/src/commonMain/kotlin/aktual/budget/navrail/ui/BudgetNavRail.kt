@@ -1,0 +1,376 @@
+package aktual.budget.navrail.ui
+
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.BudgetNavEntryContributor
+import aktual.app.nav.BudgetNavKey
+import aktual.app.nav.ListRulesNavRoute
+import aktual.app.nav.ReportsListNavRoute
+import aktual.app.nav.TransactionsNavRoute
+import aktual.app.nav.debugPop
+import aktual.budget.model.BudgetId
+import aktual.budget.navrail.vm.BudgetNavRailViewModel
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.Reports
+import aktual.core.icons.Tuning
+import aktual.core.icons.material.LinearScale
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Menu
+import aktual.core.l10n.Strings
+import aktual.core.model.Token
+import aktual.core.theme.LocalTheme
+import aktual.core.theme.Theme
+import aktual.core.ui.AktualTypography
+import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.PortraitPreview
+import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.TabletPreview
+import aktual.core.ui.ThemeParameters
+import aktual.core.ui.ThemedDropdownMenu
+import aktual.core.ui.ThemedDropdownMenuItem
+import aktual.core.ui.disabled
+import aktual.core.ui.isCompactWidth
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemColors
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationRailItemColors
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
+import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentMapOf
+import kotlinx.serialization.json.Json
+
+@Composable
+fun BudgetNavRail(
+  back: BackNavigator,
+  token: Token,
+  budgetId: BudgetId,
+  modifier: Modifier = Modifier,
+  viewModel: BudgetNavRailViewModel = metroViewModel(token, budgetId),
+) {
+  val contributors = viewModel.budgetNavEntryContributors
+
+  val transactionsStack = stackWithDefault(TransactionsNavRoute(token, budgetId))
+  val reportsStack = stackWithDefault(ReportsListNavRoute(token, budgetId))
+  val rulesStack = stackWithDefault(ListRulesNavRoute)
+
+  val tabStacks =
+    remember(transactionsStack, reportsStack, rulesStack) {
+      persistentMapOf(
+        BudgetTab.Transactions to transactionsStack,
+        BudgetTab.Reports to reportsStack,
+        BudgetTab.Rules to rulesStack,
+      )
+    }
+
+  var showMenu by remember { mutableStateOf(false) }
+  var selectedTab by
+    rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Transactions) }
+
+  val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
+
+  @Suppress("ElseCaseInsteadOfExhaustiveWhen")
+  val onSelectTab: (BudgetTab) -> Unit = { tab ->
+    when (tab) {
+      BudgetTab.Menu -> {
+        showMenu = true
+      }
+      selectedTab -> {
+        val stack = tabStacks.getValue(tab)
+        while (stack.size > 1) stack.removeAt(stack.lastIndex)
+      }
+      else -> {
+        selectedTab = tab
+      }
+    }
+  }
+
+  if (isCompactWidth()) {
+    BottomNavLayout(
+      contributors = contributors,
+      activeStack = activeStack,
+      selectedTab = selectedTab,
+      showMenu = showMenu,
+      onDismissMenu = { showMenu = false },
+      onSelectTab = onSelectTab,
+      onBack = { if (!activeStack.debugPop()) back() },
+      modifier = modifier,
+    )
+  } else {
+    SideNavLayout(
+      contributors = contributors,
+      activeStack = activeStack,
+      selectedTab = selectedTab,
+      showMenu = showMenu,
+      onDismissMenu = { showMenu = false },
+      onSelectTab = onSelectTab,
+      onBack = { if (!activeStack.debugPop()) back() },
+      modifier = modifier,
+    )
+  }
+}
+
+@Composable
+private fun stackWithDefault(default: BudgetNavKey) =
+  rememberSaveable(saver = budgetNavKeyStackSaver()) { mutableStateListOf(default) }
+
+@Composable
+private fun BottomNavLayout(
+  contributors: ImmutableSet<BudgetNavEntryContributor>,
+  activeStack: SnapshotStateList<BudgetNavKey>,
+  selectedTab: BudgetTab,
+  showMenu: Boolean,
+  onDismissMenu: () -> Unit,
+  onSelectTab: (BudgetTab) -> Unit,
+  onBack: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Column(modifier = modifier.fillMaxSize()) {
+    BudgetNavDisplay(
+      contributors = contributors,
+      activeStack = activeStack,
+      onBack = onBack,
+      modifier = Modifier.weight(1f),
+    )
+    Box(contentAlignment = Alignment.TopEnd) {
+      BottomNavBar(selectedTab, onSelectTab)
+      BudgetMenu(expanded = showMenu, onDismissRequest = onDismissMenu)
+    }
+    BottomStatusBarSpacing()
+    BottomNavBarSpacing()
+  }
+}
+
+@Composable
+private fun SideNavLayout(
+  contributors: ImmutableSet<BudgetNavEntryContributor>,
+  activeStack: SnapshotStateList<BudgetNavKey>,
+  selectedTab: BudgetTab,
+  showMenu: Boolean,
+  onDismissMenu: () -> Unit,
+  onSelectTab: (BudgetTab) -> Unit,
+  onBack: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Row(modifier = modifier.fillMaxSize()) {
+    Box(contentAlignment = Alignment.TopStart) {
+      SideNavRail(selectedTab, onSelectTab)
+      BudgetMenu(
+        expanded = showMenu,
+        onDismissRequest = onDismissMenu,
+        modifier = Modifier.align(Alignment.TopEnd),
+      )
+    }
+    BudgetNavDisplay(
+      contributors = contributors,
+      activeStack = activeStack,
+      onBack = onBack,
+      modifier = Modifier.weight(1f),
+    )
+  }
+}
+
+@Composable
+private fun BudgetNavDisplay(
+  contributors: ImmutableSet<BudgetNavEntryContributor>,
+  activeStack: SnapshotStateList<BudgetNavKey>,
+  onBack: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  NavDisplay(
+    backStack = activeStack,
+    modifier = modifier,
+    onBack = { onBack() },
+    entryDecorators =
+      listOf(
+        rememberSaveableStateHolderNavEntryDecorator(),
+        rememberViewModelStoreNavEntryDecorator(),
+      ),
+    entryProvider =
+      entryProvider {
+        for (contributor in contributors) {
+          contributor.contribute(scope = this, activeStack)
+        }
+      },
+  )
+}
+
+@Composable
+private fun BottomNavBar(
+  selectedTab: BudgetTab,
+  onSelectTab: (BudgetTab) -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) {
+  NavigationBar(
+    modifier = modifier,
+    containerColor = theme.sidebarBackground,
+    contentColor = theme.sidebarItemText,
+  ) {
+    for (tab in BudgetTab.entries) {
+      NavigationBarItem(
+        icon = { Icon(tab.icon(), contentDescription = tab.label()) },
+        label = { Text(text = tab.label(), color = LocalContentColor.current) },
+        selected = selectedTab == tab,
+        onClick = { onSelectTab(tab) },
+        colors = theme.navBarItem(),
+      )
+    }
+  }
+}
+
+@Composable
+private fun SideNavRail(
+  selectedTab: BudgetTab,
+  onSelectTab: (BudgetTab) -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) {
+  NavigationRail(
+    modifier = modifier,
+    containerColor = theme.sidebarBackground,
+    contentColor = theme.sidebarItemText,
+  ) {
+    for (tab in BudgetTab.entries) {
+      NavigationRailItem(
+        icon = { Icon(tab.icon(), contentDescription = tab.label()) },
+        label = { Text(text = tab.label(), color = LocalContentColor.current) },
+        alwaysShowLabel = true,
+        selected = selectedTab == tab,
+        onClick = { onSelectTab(tab) },
+        colors = theme.navRailItem(),
+      )
+    }
+  }
+}
+
+@Composable
+private fun Theme.navBarItem(): NavigationBarItemColors =
+  NavigationBarItemColors(
+    selectedIconColor = sidebarItemTextSelected,
+    selectedTextColor = sidebarItemTextSelected,
+    selectedIndicatorColor = sidebarItemTextSelected.disabled,
+    unselectedIconColor = sidebarItemText,
+    unselectedTextColor = sidebarItemText,
+    disabledIconColor = sidebarItemText.disabled,
+    disabledTextColor = sidebarItemText.disabled,
+  )
+
+@Composable
+private fun Theme.navRailItem(): NavigationRailItemColors =
+  NavigationRailItemColors(
+    selectedIconColor = sidebarItemTextSelected,
+    selectedTextColor = sidebarItemTextSelected,
+    selectedIndicatorColor = sidebarItemTextSelected.disabled,
+    unselectedIconColor = sidebarItemText,
+    unselectedTextColor = sidebarItemText,
+    disabledIconColor = sidebarItemText.disabled,
+    disabledTextColor = sidebarItemText.disabled,
+  )
+
+@Composable
+private fun metroViewModel(token: Token, budgetId: BudgetId) =
+  assistedMetroViewModel<BudgetNavRailViewModel, BudgetNavRailViewModel.Factory> {
+    create(token, budgetId)
+  }
+
+private val TabSaver: Saver<BudgetTab, Int> =
+  Saver(save = { it.ordinal }, restore = { BudgetTab.entries[it] })
+
+private fun budgetNavKeyStackSaver() =
+  Saver<SnapshotStateList<BudgetNavKey>, String>(
+    save = { stack -> Json.encodeToString(stack.toList()) },
+    restore = { json ->
+      mutableStateListOf<BudgetNavKey>().apply { addAll(Json.decodeFromString(json)) }
+    },
+  )
+
+@Composable
+private fun BudgetMenu(
+  expanded: Boolean,
+  onDismissRequest: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Box(modifier = modifier) {
+    ThemedDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
+      ThemedDropdownMenuItem(text = "TODO", onClick = onDismissRequest)
+    }
+  }
+}
+
+private enum class BudgetTab {
+  Transactions,
+  Reports,
+  Rules,
+  Menu,
+}
+
+@Composable
+private fun BudgetTab.label(): String =
+  when (this) {
+    BudgetTab.Transactions -> Strings.transactionsTitle
+    BudgetTab.Reports -> Strings.reportsTitle
+    BudgetTab.Rules -> Strings.rulesTitle
+    BudgetTab.Menu -> Strings.budgetNavMenu
+  }
+
+@Composable
+private fun BudgetTab.icon(): ImageVector =
+  when (this) {
+    BudgetTab.Transactions -> MaterialIcons.LinearScale
+    BudgetTab.Reports -> AktualIcons.Reports
+    BudgetTab.Rules -> AktualIcons.Tuning
+    BudgetTab.Menu -> MaterialIcons.Menu
+  }
+
+@PortraitPreview
+@Composable
+private fun PreviewBottomNavBar(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithTheme(theme) {
+    Column(modifier = Modifier.fillMaxSize()) {
+      PreviewContent(modifier = Modifier.weight(1f))
+      BottomNavBar(selectedTab = BudgetTab.Transactions, onSelectTab = {})
+    }
+  }
+
+@TabletPreview
+@Composable
+private fun PreviewSideNavRail(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithTheme(theme) {
+    Row(modifier = Modifier.fillMaxSize()) {
+      SideNavRail(selectedTab = BudgetTab.Transactions, onSelectTab = {})
+      PreviewContent(modifier = Modifier.weight(1f))
+    }
+  }
+
+@Composable
+private fun PreviewContent(modifier: Modifier = Modifier) {
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    Text(text = "Content", style = AktualTypography.headlineMedium)
+  }
+}
