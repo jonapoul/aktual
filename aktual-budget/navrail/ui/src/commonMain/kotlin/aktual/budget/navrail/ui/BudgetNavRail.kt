@@ -94,6 +94,7 @@ fun BudgetNavRail(
 
   val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
 
+  @Suppress("ElseCaseInsteadOfExhaustiveWhen")
   val onSelectTab: (BudgetTab) -> Unit = { tab ->
     when (tab) {
       BudgetTab.Menu -> {
