@@ -4,6 +4,7 @@ import aktual.budget.model.Amount
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.CurrencySymbolPosition
+import aktual.budget.model.DateFormat
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
 import alakazam.compose.VerticalSpacer
@@ -19,10 +20,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.rememberHazeState
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.format.DateTimeFormat
 
 val LocalPrivacyEnabled = compositionLocalOf { false }
 
 val LocalBottomStatusBarHeight = compositionLocalOf { 0.dp }
+
+val LocalDateFormatter =
+  compositionLocalOf<DateTimeFormat<LocalDate>> { error("No LocalDateFormat value provided") }
 
 val LocalNumberFormatConfig =
   compositionLocalOf<NumberFormatConfig> { error("No NumberFormatConfig value provided") }
@@ -64,12 +70,14 @@ fun WithCompositionLocals(
   currency: Currency = Currency.None,
   currencyPosition: CurrencySymbolPosition = CurrencySymbolPosition.BeforeAmount,
   addCurrencySpace: Boolean = true,
+  dateFormat: DateFormat = DateFormat.Default,
   hazeState: HazeState = rememberHazeState(),
   blurConfig: BlurConfig = remember { BlurConfig() },
   dialogBlurState: DialogBlurState = remember { DialogBlurState() },
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
+    LocalDateFormatter provides dateFormat.formatter(),
     LocalNumberFormatConfig provides NumberFormatConfig(format, hideFraction),
     LocalCurrencyConfig provides CurrencyConfig(currency, currencyPosition, addCurrencySpace),
     LocalPrivacyEnabled provides isPrivacyEnabled,

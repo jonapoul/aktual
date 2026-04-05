@@ -4,6 +4,7 @@ import aktual.core.theme.Theme
 import aktual.core.theme.ThemeResolver
 import aktual.core.ui.BlurConfig
 import aktual.core.ui.BottomBarState
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.ViewModel
@@ -20,6 +21,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 
+@Stable
 @Suppress("AbstractClassCanBeConcreteClass")
 abstract class RootViewModel(
   private val themeResolver: ThemeResolver,

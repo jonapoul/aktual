@@ -71,6 +71,7 @@ fun AktualAppContent(
     currency = formatConfig.currency,
     currencyPosition = formatConfig.symbolPosition,
     addCurrencySpace = formatConfig.spaceBetweenAmountAndSymbol,
+    dateFormat = formatConfig.dateFormat,
     hazeState = hazeState,
     blurConfig = blurConfig,
     dialogBlurState = remember { DialogBlurState() },

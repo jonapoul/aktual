@@ -8,6 +8,7 @@ import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
+import aktual.budget.model.DateFormat
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.database
@@ -71,6 +72,7 @@ class BlurConfigUseCase(private val preferences: SystemUiPreferences) {
 
 @Immutable
 data class FormatConfig(
+  val dateFormat: DateFormat,
   val numberFormat: NumberFormat,
   val hideFraction: Boolean,
   val currency: Currency,
@@ -87,6 +89,7 @@ class FormatConfigUseCase(
 ) {
   operator fun invoke(scope: CoroutineScope): StateFlow<FormatConfig> =
     scope.launchMolecule(Immediate) {
+      val dateFormat by formats.dateFormat.collectAsStateFlow(scope)
       val numberFormat by formats.numberFormat.collectAsStateFlow(scope)
       val hideFraction by formats.hideFraction.collectAsStateFlow(scope)
       val currency by currencies.currency.collectAsStateFlow(scope)
@@ -95,6 +98,7 @@ class FormatConfigUseCase(
         currencies.spaceBetweenAmountAndSymbol.collectAsStateFlow(scope)
       val isPrivacyEnabled by prefs.isPrivacyEnabled.collectAsStateFlow(scope)
       FormatConfig(
+        dateFormat = dateFormat,
         numberFormat = numberFormat,
         hideFraction = hideFraction,
         currency = currency,
