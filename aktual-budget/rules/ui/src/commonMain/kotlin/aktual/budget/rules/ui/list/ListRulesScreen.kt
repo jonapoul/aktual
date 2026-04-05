@@ -294,7 +294,7 @@ private fun ContentSuccess(
       // always show all stages, even if no rules
       val grouped = rules.groupBy { it.stage }
       RuleStage.entries
-        .map { stage -> stage to (grouped[stage].orEmpty().toImmutableList()) }
+        .map { stage -> stage to grouped[stage].orEmpty().toImmutableList() }
         .toImmutableList()
     }
 
