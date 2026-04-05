@@ -54,6 +54,7 @@ private val materialIcons =
       LinearScale,
       LineEndArrowNotch,
       LineStartArrowNotch,
+      Menu,
       MoreVert,
       Numbers,
       OpenInNew,
