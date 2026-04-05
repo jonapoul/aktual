@@ -3,6 +3,7 @@ package aktual.about.vm
 import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
 import aktual.core.model.UrlOpener
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
+@Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class LicensesViewModel

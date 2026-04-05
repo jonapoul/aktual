@@ -1,20 +1,22 @@
 package aktual.budget.navrail.ui
 
-import aktual.app.nav.BackNavigator
 import aktual.app.nav.BudgetNavEntryContributor
 import aktual.app.nav.BudgetNavKey
 import aktual.app.nav.ListRulesNavRoute
 import aktual.app.nav.ReportsListNavRoute
 import aktual.app.nav.TransactionsNavRoute
-import aktual.app.nav.debugPop
 import aktual.budget.model.BudgetId
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Reports
 import aktual.core.icons.Tuning
+import aktual.core.icons.material.Info
 import aktual.core.icons.material.LinearScale
+import aktual.core.icons.material.Logout
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Menu
+import aktual.core.icons.material.Settings
+import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
@@ -55,6 +57,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -67,9 +70,9 @@ import kotlinx.serialization.json.Json
 
 @Composable
 fun BudgetNavRail(
-  back: BackNavigator,
   token: Token,
   budgetId: BudgetId,
+  onAction: (BudgetNavAction) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: BudgetNavRailViewModel = metroViewModel(token, budgetId),
 ) {
@@ -88,25 +91,17 @@ fun BudgetNavRail(
       )
     }
 
-  var showMenu by remember { mutableStateOf(false) }
   var selectedTab by
     rememberSaveable(stateSaver = TabSaver) { mutableStateOf(BudgetTab.Transactions) }
 
   val activeStack = remember(tabStacks, selectedTab) { tabStacks.getValue(selectedTab) }
 
-  @Suppress("ElseCaseInsteadOfExhaustiveWhen")
   val onSelectTab: (BudgetTab) -> Unit = { tab ->
-    when (tab) {
-      BudgetTab.Menu -> {
-        showMenu = true
-      }
-      selectedTab -> {
-        val stack = tabStacks.getValue(tab)
-        while (stack.size > 1) stack.removeAt(stack.lastIndex)
-      }
-      else -> {
-        selectedTab = tab
-      }
+    if (tab == selectedTab) {
+      val stack = tabStacks.getValue(tab)
+      while (stack.size > 1) stack.removeAt(stack.lastIndex)
+    } else {
+      selectedTab = tab
     }
   }
 
@@ -115,10 +110,8 @@ fun BudgetNavRail(
       contributors = contributors,
       activeStack = activeStack,
       selectedTab = selectedTab,
-      showMenu = showMenu,
-      onDismissMenu = { showMenu = false },
       onSelectTab = onSelectTab,
-      onBack = { if (!activeStack.debugPop()) back() },
+      onAction = onAction,
       modifier = modifier,
     )
   } else {
@@ -126,10 +119,8 @@ fun BudgetNavRail(
       contributors = contributors,
       activeStack = activeStack,
       selectedTab = selectedTab,
-      showMenu = showMenu,
-      onDismissMenu = { showMenu = false },
       onSelectTab = onSelectTab,
-      onBack = { if (!activeStack.debugPop()) back() },
+      onAction = onAction,
       modifier = modifier,
     )
   }
@@ -144,22 +135,20 @@ private fun BottomNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   activeStack: SnapshotStateList<BudgetNavKey>,
   selectedTab: BudgetTab,
-  showMenu: Boolean,
-  onDismissMenu: () -> Unit,
   onSelectTab: (BudgetTab) -> Unit,
-  onBack: () -> Unit,
+  onAction: (BudgetNavAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  var showMenu by remember { mutableStateOf(false) }
   Column(modifier = modifier.fillMaxSize()) {
     BudgetNavDisplay(
       contributors = contributors,
       activeStack = activeStack,
-      onBack = onBack,
       modifier = Modifier.weight(1f),
     )
     Box(contentAlignment = Alignment.TopEnd) {
-      BottomNavBar(selectedTab, onSelectTab)
-      BudgetMenu(expanded = showMenu, onDismissRequest = onDismissMenu)
+      BottomNavBar(selectedTab, onSelectTab, onMenuClick = { showMenu = true })
+      BudgetMenu(expanded = showMenu, onAction = onAction, onDismissRequest = { showMenu = false })
     }
     BottomStatusBarSpacing()
     BottomNavBarSpacing()
@@ -171,25 +160,24 @@ private fun SideNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   activeStack: SnapshotStateList<BudgetNavKey>,
   selectedTab: BudgetTab,
-  showMenu: Boolean,
-  onDismissMenu: () -> Unit,
   onSelectTab: (BudgetTab) -> Unit,
-  onBack: () -> Unit,
+  onAction: (BudgetNavAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
+  var showMenu by remember { mutableStateOf(false) }
   Row(modifier = modifier.fillMaxSize()) {
     Box(contentAlignment = Alignment.TopStart) {
-      SideNavRail(selectedTab, onSelectTab)
+      SideNavRail(selectedTab, onSelectTab, onMenuClick = { showMenu = true })
       BudgetMenu(
         expanded = showMenu,
-        onDismissRequest = onDismissMenu,
+        onAction = onAction,
+        onDismissRequest = { showMenu = false },
         modifier = Modifier.align(Alignment.TopEnd),
       )
     }
     BudgetNavDisplay(
       contributors = contributors,
       activeStack = activeStack,
-      onBack = onBack,
       modifier = Modifier.weight(1f),
     )
   }
@@ -199,13 +187,11 @@ private fun SideNavLayout(
 private fun BudgetNavDisplay(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   activeStack: SnapshotStateList<BudgetNavKey>,
-  onBack: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   NavDisplay(
     backStack = activeStack,
     modifier = modifier,
-    onBack = { onBack() },
     entryDecorators =
       listOf(
         rememberSaveableStateHolderNavEntryDecorator(),
@@ -224,6 +210,7 @@ private fun BudgetNavDisplay(
 private fun BottomNavBar(
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
+  onMenuClick: () -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -241,6 +228,13 @@ private fun BottomNavBar(
         colors = theme.navBarItem(),
       )
     }
+    NavigationBarItem(
+      icon = { Icon(MaterialIcons.Menu, contentDescription = Strings.budgetNavMenu) },
+      label = { Text(text = Strings.budgetNavMenu, color = LocalContentColor.current) },
+      selected = false,
+      onClick = onMenuClick,
+      colors = theme.navBarItem(),
+    )
   }
 }
 
@@ -248,6 +242,7 @@ private fun BottomNavBar(
 private fun SideNavRail(
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
+  onMenuClick: () -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -266,6 +261,14 @@ private fun SideNavRail(
         colors = theme.navRailItem(),
       )
     }
+    NavigationRailItem(
+      icon = { Icon(MaterialIcons.Menu, contentDescription = Strings.budgetNavMenu) },
+      label = { Text(text = Strings.budgetNavMenu, color = LocalContentColor.current) },
+      alwaysShowLabel = true,
+      selected = false,
+      onClick = onMenuClick,
+      colors = theme.navRailItem(),
+    )
   }
 }
 
@@ -314,11 +317,43 @@ private fun budgetNavKeyStackSaver() =
 private fun BudgetMenu(
   expanded: Boolean,
   onDismissRequest: () -> Unit,
+  onAction: (BudgetNavAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier) {
     ThemedDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
-      ThemedDropdownMenuItem(text = "TODO", onClick = onDismissRequest)
+      ThemedDropdownMenuItem(
+        text = Strings.budgetNavMenuSwitchBudget,
+        leadingIcon = MaterialIcons.SwapHoriz,
+        onClick = {
+          onDismissRequest()
+          onAction(BudgetNavAction.SwitchFile)
+        },
+      )
+      ThemedDropdownMenuItem(
+        text = Strings.budgetNavMenuLogOut,
+        leadingIcon = MaterialIcons.Logout,
+        onClick = {
+          onDismissRequest()
+          onAction(BudgetNavAction.LogOut)
+        },
+      )
+      ThemedDropdownMenuItem(
+        text = Strings.budgetNavMenuSettings,
+        leadingIcon = MaterialIcons.Settings,
+        onClick = {
+          onDismissRequest()
+          onAction(BudgetNavAction.Settings)
+        },
+      )
+      ThemedDropdownMenuItem(
+        text = Strings.budgetNavMenuAbout,
+        leadingIcon = MaterialIcons.Info,
+        onClick = {
+          onDismissRequest()
+          onAction(BudgetNavAction.About)
+        },
+      )
     }
   }
 }
@@ -327,7 +362,6 @@ private enum class BudgetTab {
   Transactions,
   Reports,
   Rules,
-  Menu,
 }
 
 @Composable
@@ -336,7 +370,6 @@ private fun BudgetTab.label(): String =
     BudgetTab.Transactions -> Strings.transactionsTitle
     BudgetTab.Reports -> Strings.reportsTitle
     BudgetTab.Rules -> Strings.rulesTitle
-    BudgetTab.Menu -> Strings.budgetNavMenu
   }
 
 @Composable
@@ -345,7 +378,15 @@ private fun BudgetTab.icon(): ImageVector =
     BudgetTab.Transactions -> MaterialIcons.LinearScale
     BudgetTab.Reports -> AktualIcons.Reports
     BudgetTab.Rules -> AktualIcons.Tuning
-    BudgetTab.Menu -> MaterialIcons.Menu
+  }
+
+@Preview
+@Composable
+private fun PreviewBudgetMenu(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithTheme(theme) {
+    Box(modifier = Modifier.fillMaxSize()) {
+      BudgetMenu(expanded = true, onAction = {}, onDismissRequest = {})
+    }
   }
 
 @PortraitPreview
@@ -354,7 +395,7 @@ private fun PreviewBottomNavBar(@PreviewParameter(ThemeParameters::class) theme:
   PreviewWithTheme(theme) {
     Column(modifier = Modifier.fillMaxSize()) {
       PreviewContent(modifier = Modifier.weight(1f))
-      BottomNavBar(selectedTab = BudgetTab.Transactions, onSelectTab = {})
+      BottomNavBar(selectedTab = BudgetTab.Transactions, onSelectTab = {}, onMenuClick = {})
     }
   }
 
@@ -363,7 +404,7 @@ private fun PreviewBottomNavBar(@PreviewParameter(ThemeParameters::class) theme:
 private fun PreviewSideNavRail(@PreviewParameter(ThemeParameters::class) theme: Theme) =
   PreviewWithTheme(theme) {
     Row(modifier = Modifier.fillMaxSize()) {
-      SideNavRail(selectedTab = BudgetTab.Transactions, onSelectTab = {})
+      SideNavRail(selectedTab = BudgetTab.Transactions, onSelectTab = {}, onMenuClick = {})
       PreviewContent(modifier = Modifier.weight(1f))
     }
   }

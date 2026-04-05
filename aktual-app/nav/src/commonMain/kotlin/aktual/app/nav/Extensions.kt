@@ -4,7 +4,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavKey
 import logcat.logcat
 
-internal fun <T : NavKey> SnapshotStateList<T>.debugPush(route: T) {
+fun <T : NavKey> SnapshotStateList<T>.debugPush(route: T) {
   logcat.v(TAG) { "Push $route - backStack=[$backStackString]" }
   add(route)
 }

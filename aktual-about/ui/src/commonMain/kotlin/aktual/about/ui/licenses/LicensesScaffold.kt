@@ -22,6 +22,7 @@ import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TextField
 import aktual.core.ui.ThemeParameters
+import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.blurredTopBarContentPadding
@@ -104,34 +105,37 @@ internal fun LicensesScaffold(
       )
     }
   ) { innerPadding ->
-    Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
-      LicensesSearchInput(
-        modifier =
-          Modifier.fillMaxWidth()
-            .padding(
-              start = 20.dp,
-              end = 20.dp,
-              top = if (blurState.blurEnabled) innerPadding.calculateTopPadding() else 0.dp,
-            )
-            .wrapContentHeight(),
-        searchState = searchBarState,
-        licensesState = state,
-        onAction = onAction,
-        theme = theme,
-      )
+    Box {
+      WavyBackground()
+      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
+        LicensesSearchInput(
+          modifier =
+            Modifier.fillMaxWidth()
+              .padding(
+                start = 20.dp,
+                end = 20.dp,
+                top = if (blurState.blurEnabled) innerPadding.calculateTopPadding() else 0.dp,
+              )
+              .wrapContentHeight(),
+          searchState = searchBarState,
+          licensesState = state,
+          onAction = onAction,
+          theme = theme,
+        )
 
-      Content(
-        state = state,
-        contentPadding =
-          if (searchBarState is SearchBarState.Visible) {
-            PaddingValues.Zero
-          } else {
-            blurredTopBarContentPadding(blurState, innerPadding)
-          },
-        listState = listState,
-        theme = theme,
-        onAction = onAction,
-      )
+        Content(
+          state = state,
+          contentPadding =
+            if (searchBarState is SearchBarState.Visible) {
+              PaddingValues.Zero
+            } else {
+              blurredTopBarContentPadding(blurState, innerPadding)
+            },
+          listState = listState,
+          theme = theme,
+          onAction = onAction,
+        )
+      }
     }
   }
 }
