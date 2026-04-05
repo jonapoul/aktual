@@ -156,9 +156,9 @@ private fun BottomNavLayout(
       onBack = onBack,
       modifier = Modifier.weight(1f),
     )
-    Box {
+    Box(contentAlignment = Alignment.TopEnd) {
       BottomNavBar(selectedTab, onSelectTab)
-      BudgetMenu(showMenu, onDismissMenu)
+      BudgetMenu(expanded = showMenu, onDismissRequest = onDismissMenu)
     }
     BottomStatusBarSpacing()
     BottomNavBarSpacing()
@@ -177,9 +177,13 @@ private fun SideNavLayout(
   modifier: Modifier = Modifier,
 ) {
   Row(modifier = modifier.fillMaxSize()) {
-    Box {
+    Box(contentAlignment = Alignment.TopStart) {
       SideNavRail(selectedTab, onSelectTab)
-      BudgetMenu(showMenu, onDismissMenu)
+      BudgetMenu(
+        expanded = showMenu,
+        onDismissRequest = onDismissMenu,
+        modifier = Modifier.align(Alignment.TopEnd),
+      )
     }
     BudgetNavDisplay(
       contributors = contributors,
@@ -306,9 +310,15 @@ private fun budgetNavKeyStackSaver() =
   )
 
 @Composable
-private fun BudgetMenu(showMenu: Boolean, onDismissRequest: () -> Unit) {
-  ThemedDropdownMenu(expanded = showMenu, onDismissRequest = onDismissRequest) {
-    ThemedDropdownMenuItem(text = "TODO", onClick = onDismissRequest)
+private fun BudgetMenu(
+  expanded: Boolean,
+  onDismissRequest: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  Box(modifier = modifier) {
+    ThemedDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
+      ThemedDropdownMenuItem(text = "TODO", onClick = onDismissRequest)
+    }
   }
 }
 
