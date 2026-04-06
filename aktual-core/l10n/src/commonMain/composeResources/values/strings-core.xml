@@ -12,7 +12,7 @@
   <string name="budget_loaded">Loaded:</string>
   <string name="connection_connected">Connected</string>
   <string name="connection_disconnected">Disconnected</string>
-  <string name="connection_unknown">Unknown</string>>
+  <string name="connection_unknown">Unknown</string>
 
   <string name="sync">Sync</string>
   <string name="sync_no_token">No token</string>
