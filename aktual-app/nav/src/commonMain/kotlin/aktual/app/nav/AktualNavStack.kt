@@ -26,7 +26,6 @@ class AktualNavStack<T : NavKey>(
       }
 
       1 -> {
-        removeAt(lastIndex)
         logcat.v(TAG) { "Pop - closing app" }
         appCloser?.invoke()
         true
