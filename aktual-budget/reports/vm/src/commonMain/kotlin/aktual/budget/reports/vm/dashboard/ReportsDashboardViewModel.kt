@@ -18,6 +18,7 @@ import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.SpendingReportMeta
 import aktual.budget.reports.vm.SummaryReportMeta
 import alakazam.kotlin.CoroutineContexts
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.AppScope
@@ -37,6 +38,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
 
+@Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class ReportsDashboardViewModel(budgetGraphHolder: BudgetGraphHolder, contexts: CoroutineContexts) :

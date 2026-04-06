@@ -4,7 +4,6 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -15,14 +14,14 @@ import kotlinx.collections.immutable.ImmutableSet
 
 @Composable
 fun AktualNavHost(
-  backStack: SnapshotStateList<NavKey>,
+  navStack: AktualNavStack<NavKey>,
   contributors: ImmutableSet<NavEntryContributor>,
   modifier: Modifier = Modifier,
 ) {
   NavDisplay(
-    backStack = backStack,
+    backStack = navStack,
     modifier = modifier,
-    onBack = { backStack.debugPop() },
+    onBack = { navStack.pop() },
     // Forward: new screen slides in from right, old screen slides out to left
     transitionSpec = {
       slideInHorizontally(initialOffsetX = { width -> width }) togetherWith
@@ -46,7 +45,7 @@ fun AktualNavHost(
     entryProvider =
       entryProvider {
         for (contributor in contributors) {
-          contributor.contribute(scope = this, backStack)
+          contributor.contribute(scope = this, navStack)
         }
       },
   )

@@ -88,9 +88,8 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
         CompositionLocalProvider(
           LocalViewModelStoreOwner provides viewModelStoreOwner,
           LocalMetroViewModelFactory provides graph.metroViewModelFactory,
-        ) {
-          AktualAppContent(viewModel = viewModel, backStack = backStack)
-        }
+          content = { AktualAppContent(viewModel = viewModel, navStack = backStack) },
+        )
       }
     }
   }

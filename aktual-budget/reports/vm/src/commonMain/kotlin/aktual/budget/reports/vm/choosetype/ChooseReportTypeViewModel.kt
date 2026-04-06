@@ -8,6 +8,7 @@ import aktual.budget.model.WidgetType
 import aktual.core.model.Empty
 import aktual.core.model.UuidGenerator
 import alakazam.kotlin.CoroutineContexts
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.AppScope
@@ -29,6 +30,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import logcat.logcat
 
+@Stable
 @AssistedInject
 class ChooseReportTypeViewModel(
   private val uuidGenerator: UuidGenerator,

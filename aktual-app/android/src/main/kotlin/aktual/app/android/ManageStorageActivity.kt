@@ -2,11 +2,11 @@ package aktual.app.android
 
 import aktual.about.ui.storage.ManageStorageScreen
 import aktual.core.ui.AktualTheme
-import aktual.core.ui.BackHandler
 import aktual.core.ui.DialogBlurOverlay
 import aktual.core.ui.DialogBlurState
 import aktual.core.ui.WithCompositionLocals
-import aktual.core.ui.rememberAppCloser
+import aktual.nav.core.BackHandler
+import aktual.nav.core.rememberAppCloser
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -77,7 +77,7 @@ class ManageStorageActivity(override val defaultViewModelProviderFactory: MetroV
                   Modifier.fillMaxSize()
                     .consumeWindowInsets(WindowInsets.navigationBars)
                     .hazeSource(hazeState),
-                navBack = null,
+                navBack = { closeApp() },
                 onStorageNavEvent = {}, // no stack to modify
               )
             }

@@ -8,6 +8,7 @@ import aktual.core.ui.DialogBlurState
 import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.WithCompositionLocals
 import aktual.core.ui.blurred
+import aktual.nav.core.rememberAppCloser
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,23 +34,25 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 
 @Composable
-fun rememberBackStack(viewModel: RootViewModel): SnapshotStateList<NavKey>? {
+fun rememberBackStack(viewModel: RootViewModel): AktualNavStack<NavKey>? {
   // don't collectAsStateWithLifecycle, we don't have a lifecycle yet (on desktop)
   val initialRoute by viewModel.initialRoute.collectAsState()
   val route = initialRoute ?: return null
-  return remember(viewModel) { viewModel.getOrCreateBackStack(route) }
+  val closer = rememberAppCloser()
+  val stack = remember(viewModel) { viewModel.getOrCreateBackStack(route) }
+  return remember { AktualNavStack(closer, stack) }
 }
 
 @Composable
 fun AktualAppContent(
   viewModel: RootViewModel,
-  backStack: SnapshotStateList<NavKey>,
+  navStack: AktualNavStack<NavKey>,
   modifier: Modifier = Modifier,
 ) {
   LaunchedEffect(viewModel) {
     viewModel.tokenExpired.collect {
-      backStack.clear()
-      backStack.add(LoginNavRoute)
+      navStack.clear()
+      navStack.add(LoginNavRoute)
     }
   }
 
@@ -86,7 +88,7 @@ fun AktualAppContent(
               Modifier.fillMaxSize()
                 .consumeWindowInsets(WindowInsets.navigationBars)
                 .hazeSource(hazeState),
-            backStack = backStack,
+            navStack = navStack,
             contributors = viewModel.navEntryContributors,
           )
         }

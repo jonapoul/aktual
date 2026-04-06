@@ -4,6 +4,7 @@ import aktual.about.ui.info.InfoScreen
 import aktual.about.ui.licenses.LicensesScreen
 import aktual.about.ui.storage.ManageStorageScreen
 import aktual.about.vm.StorageNavEvent
+import aktual.app.nav.AktualNavStack
 import aktual.app.nav.BackNavigator
 import aktual.app.nav.BudgetNavRailNavRoute
 import aktual.app.nav.InfoNavRoute
@@ -13,15 +14,13 @@ import aktual.app.nav.ManageStorageNavRoute
 import aktual.app.nav.ManageStorageNavigator
 import aktual.app.nav.NavEntryContributor
 import aktual.app.nav.NavScope
-import aktual.app.nav.debugLog
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(NavScope::class)
 class AboutNavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: SnapshotStateList<NavKey>) {
+  override fun contribute(scope: EntryProviderScope<NavKey>, stack: AktualNavStack<NavKey>) {
     scope.entry<InfoNavRoute> {
       InfoScreen(
         back = BackNavigator(stack),
@@ -40,7 +39,7 @@ class AboutNavEntryContributor : NavEntryContributor {
     }
   }
 
-  private fun adjustStackIfInvalidated(stack: SnapshotStateList<NavKey>, event: StorageNavEvent) {
+  private fun adjustStackIfInvalidated(stack: AktualNavStack<NavKey>, event: StorageNavEvent) {
     when (event) {
       is StorageNavEvent.ActiveBudgetCleared -> {
         stack.removeIf { it is BudgetNavRailNavRoute }
@@ -55,6 +54,6 @@ class AboutNavEntryContributor : NavEntryContributor {
       }
     }
 
-    stack.debugLog()
+    stack.log()
   }
 }

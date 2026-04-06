@@ -1,5 +1,6 @@
 package aktual.budget.reports.ui
 
+import aktual.app.nav.AktualNavStack
 import aktual.app.nav.BackNavigator
 import aktual.app.nav.BudgetNavEntryContributor
 import aktual.app.nav.BudgetNavKey
@@ -11,7 +12,6 @@ import aktual.app.nav.ReportNavigator
 import aktual.app.nav.ReportsListNavRoute
 import aktual.budget.reports.ui.choosetype.ChooseReportTypeScreen
 import aktual.budget.reports.ui.dashboard.ReportsDashboardScreen
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 import dev.zacsweers.metro.ContributesIntoSet
 
@@ -19,7 +19,7 @@ import dev.zacsweers.metro.ContributesIntoSet
 class ReportsNavEntryContributor : BudgetNavEntryContributor {
   override fun contribute(
     scope: EntryProviderScope<BudgetNavKey>,
-    stack: SnapshotStateList<BudgetNavKey>,
+    stack: AktualNavStack<BudgetNavKey>,
   ) {
     scope.entry<ReportsListNavRoute> { route ->
       ReportsDashboardScreen(
