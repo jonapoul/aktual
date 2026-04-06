@@ -16,6 +16,7 @@ import aktual.prefs.AppPreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.AppScope
@@ -43,6 +44,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
+@Stable
 @AssistedInject
 class ListBudgetsViewModel(
   @Assisted private val token: Token,
