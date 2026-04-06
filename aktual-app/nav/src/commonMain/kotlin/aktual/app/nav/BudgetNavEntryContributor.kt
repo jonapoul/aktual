@@ -1,7 +1,6 @@
 package aktual.app.nav
 
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.EntryProviderScope
 
 /**
@@ -9,5 +8,5 @@ import androidx.navigation3.runtime.EntryProviderScope
  */
 @Immutable
 fun interface BudgetNavEntryContributor {
-  fun contribute(scope: EntryProviderScope<BudgetNavKey>, stack: SnapshotStateList<BudgetNavKey>)
+  fun contribute(scope: EntryProviderScope<BudgetNavKey>, stack: AktualNavStack<BudgetNavKey>)
 }

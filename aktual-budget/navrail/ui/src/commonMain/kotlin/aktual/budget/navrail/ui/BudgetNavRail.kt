@@ -1,5 +1,6 @@
 package aktual.budget.navrail.ui
 
+import aktual.app.nav.AktualNavStack
 import aktual.app.nav.BudgetNavEntryContributor
 import aktual.app.nav.BudgetNavKey
 import aktual.app.nav.ListRulesNavRoute
@@ -53,7 +54,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -127,13 +127,15 @@ fun BudgetNavRail(
 }
 
 @Composable
-private fun stackWithDefault(default: BudgetNavKey) =
-  rememberSaveable(saver = budgetNavKeyStackSaver()) { mutableStateListOf(default) }
+private fun stackWithDefault(default: BudgetNavKey): AktualNavStack<BudgetNavKey> =
+  rememberSaveable(saver = budgetNavKeyStackSaver()) {
+    AktualNavStack(appCloser = null, stack = mutableStateListOf(default))
+  }
 
 @Composable
 private fun BottomNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
-  activeStack: SnapshotStateList<BudgetNavKey>,
+  activeStack: AktualNavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onAction: (BudgetNavAction) -> Unit,
@@ -158,7 +160,7 @@ private fun BottomNavLayout(
 @Composable
 private fun SideNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
-  activeStack: SnapshotStateList<BudgetNavKey>,
+  activeStack: AktualNavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onAction: (BudgetNavAction) -> Unit,
@@ -186,7 +188,7 @@ private fun SideNavLayout(
 @Composable
 private fun BudgetNavDisplay(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
-  activeStack: SnapshotStateList<BudgetNavKey>,
+  activeStack: AktualNavStack<BudgetNavKey>,
   modifier: Modifier = Modifier,
 ) {
   NavDisplay(
@@ -306,10 +308,13 @@ private val TabSaver: Saver<BudgetTab, Int> =
   Saver(save = { it.ordinal }, restore = { BudgetTab.entries[it] })
 
 private fun budgetNavKeyStackSaver() =
-  Saver<SnapshotStateList<BudgetNavKey>, String>(
+  Saver<AktualNavStack<BudgetNavKey>, String>(
     save = { stack -> Json.encodeToString(stack.toList()) },
     restore = { json ->
-      mutableStateListOf<BudgetNavKey>().apply { addAll(Json.decodeFromString(json)) }
+      AktualNavStack(
+        appCloser = null,
+        stack = mutableStateListOf<BudgetNavKey>().apply { addAll(Json.decodeFromString(json)) },
+      )
     },
   )
 

@@ -1,6 +1,6 @@
 package aktual.app.desktop
 
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import aktual.app.nav.AktualNavStack
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.isAltPressed
@@ -13,7 +13,7 @@ import androidx.navigation3.runtime.NavKey
 import logcat.logcat
 
 /** Return false => pass event up to the parent. In this case that means it gets ignored entirely */
-internal class KeyboardEventHandler(private val backStack: SnapshotStateList<NavKey>) {
+internal class KeyboardEventHandler(private val backStack: AktualNavStack<NavKey>) {
   // Intercept keys before any composable handles them
   // Use for: app-level shortcuts that should always work
   fun onKeyEvent(event: KeyEvent): Boolean =

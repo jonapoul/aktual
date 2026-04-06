@@ -4,16 +4,15 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetId
 import aktual.core.model.Token
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.navigation3.runtime.NavKey
 import kotlinx.serialization.Serializable
 
 @Immutable @Serializable sealed interface BudgetNavKey : NavKey
 
 @Immutable
-class TransactionsNavigator(private val stack: SnapshotStateList<BudgetNavKey>) {
+class TransactionsNavigator(private val stack: AktualNavStack<BudgetNavKey>) {
   operator fun invoke(token: Token, budgetId: BudgetId) =
-    stack.debugReplaceAll(TransactionsNavRoute(token, budgetId))
+    stack.replaceAll(TransactionsNavRoute(token, budgetId))
 }
 
 @Immutable
@@ -22,9 +21,9 @@ data class TransactionsNavRoute(val token: Token, val budgetId: BudgetId) : Budg
 
 @Suppress("unused")
 @Immutable
-class ReportsListNavigator(private val stack: SnapshotStateList<BudgetNavKey>) {
+class ReportsListNavigator(private val stack: AktualNavStack<BudgetNavKey>) {
   operator fun invoke(token: Token, budgetId: BudgetId) =
-    stack.debugPush(ReportsListNavRoute(token, budgetId))
+    stack.push(ReportsListNavRoute(token, budgetId))
 }
 
 @Immutable
@@ -32,9 +31,9 @@ class ReportsListNavigator(private val stack: SnapshotStateList<BudgetNavKey>) {
 data class ReportsListNavRoute(val token: Token, val budgetId: BudgetId) : BudgetNavKey
 
 @Immutable
-class ReportNavigator(private val stack: SnapshotStateList<BudgetNavKey>) {
+class ReportNavigator(private val stack: AktualNavStack<BudgetNavKey>) {
   operator fun invoke(token: Token, budgetId: BudgetId, widgetId: WidgetId) =
-    stack.debugPush(ReportNavRoute(token, budgetId, widgetId))
+    stack.push(ReportNavRoute(token, budgetId, widgetId))
 }
 
 @Immutable
@@ -43,9 +42,9 @@ data class ReportNavRoute(val token: Token, val budgetId: BudgetId, val widgetId
   BudgetNavKey
 
 @Immutable
-class CreateReportNavigator(private val stack: SnapshotStateList<BudgetNavKey>) {
+class CreateReportNavigator(private val stack: AktualNavStack<BudgetNavKey>) {
   operator fun invoke(token: Token, budgetId: BudgetId) =
-    stack.debugPush(CreateReportNavRoute(token, budgetId))
+    stack.push(CreateReportNavRoute(token, budgetId))
 }
 
 @Immutable
@@ -53,8 +52,8 @@ class CreateReportNavigator(private val stack: SnapshotStateList<BudgetNavKey>) 
 data class CreateReportNavRoute(val token: Token, val budgetId: BudgetId) : BudgetNavKey
 
 @Immutable
-class ListRulesNavigator(private val stack: SnapshotStateList<BudgetNavKey>) {
-  operator fun invoke() = stack.debugPush(ListRulesNavRoute)
+class ListRulesNavigator(private val stack: AktualNavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(ListRulesNavRoute)
 }
 
 @Immutable @Serializable data object ListRulesNavRoute : BudgetNavKey

@@ -14,6 +14,7 @@ import aktual.about.vm.BudgetStorageItem
 import aktual.about.vm.ManageStorageState
 import aktual.about.vm.ManageStorageViewModel
 import aktual.about.vm.StorageDialog
+import aktual.about.vm.StorageNavEvent
 import aktual.app.nav.BackNavigator
 import aktual.budget.model.BudgetId
 import aktual.core.icons.material.Delete
@@ -73,6 +74,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -92,19 +94,21 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ManageStorageScreen(
-  navBack: BackNavigator?,
+  navBack: BackNavigator,
+  onStorageNavEvent: (StorageNavEvent) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: ManageStorageViewModel = metroViewModel<ManageStorageViewModel>(),
 ) {
+  LaunchedEffect(viewModel) { viewModel.navigationEvents.collect(onStorageNavEvent) }
+
   val state by viewModel.state.collectAsStateWithLifecycle()
 
   ManageStorageScaffold(
     state = state,
     modifier = modifier,
-    canNavBack = navBack != null,
     onAction = { action ->
       when (action) {
-        NavBack -> navBack?.invoke()
+        NavBack -> navBack()
         Reload -> viewModel.reload()
         RequestClearAllFiles -> viewModel.showDialog(StorageDialog.ConfirmClearAllFiles)
         is RequestClearBudget ->
@@ -124,7 +128,6 @@ fun ManageStorageScreen(
 @Composable
 private fun ManageStorageScaffold(
   state: ManageStorageState,
-  canNavBack: Boolean,
   onAction: (ManageStorageAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -137,7 +140,7 @@ private fun ManageStorageScaffold(
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = LocalTheme.current.transparentTopAppBarColors(),
-        navigationIcon = { if (canNavBack) NavBackIconButton { onAction(NavBack) } },
+        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.storageToolbar) },
       )
     },
@@ -565,11 +568,6 @@ private fun PreviewManageStorage(
   @PreviewParameter(StoragePreviewParams::class) params: ThemedParams<ManageStorageState>
 ) {
   PreviewWithThemedParams(params) {
-    ManageStorageScaffold(
-      state = this,
-      canNavBack = true,
-      onAction = {},
-      modifier = Modifier.fillMaxSize(),
-    )
+    ManageStorageScaffold(state = this, onAction = {}, modifier = Modifier.fillMaxSize())
   }
 }

@@ -45,7 +45,7 @@ Navigation bar insets are consumed at the `AktualNavHost` level via `Modifier.co
 | `NavEntryContributor.kt` | Interface for feature modules to contribute nav entries |
 | `NavScope.kt` | Scope marker for nav entry contributor bindings (child of `AppScope`) |
 | `NavGraph.kt` | `@GraphExtension(NavScope::class)` exposing `Set<NavEntryContributor>` |
-| `Extensions.kt` | `debugPush`, `debugPop`, `debugPopUpToAndPush` helpers |
+| `Extensions.kt` | `push`, `debugPop`, `debugPopUpToAndPush` helpers |
 
 ### aktual-app:nav:ui
 

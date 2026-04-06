@@ -1,5 +1,6 @@
-package aktual.core.ui
+package aktual.nav.core
 
+import aktual.core.model.AppCloser
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.remember

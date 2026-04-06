@@ -14,6 +14,7 @@ import alakazam.kotlin.ResettableStateFlow
 import alakazam.kotlin.collectFlow
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -42,6 +43,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
+@Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class ServerUrlViewModel

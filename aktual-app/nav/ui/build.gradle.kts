@@ -23,5 +23,6 @@ kotlin {
     implementation(libs.compose.savedstate)
     implementation(libs.compose.viewmodelNavigation3)
     implementation(libs.logcat)
+    implementation(project(":aktual-app:nav:core"))
   }
 }

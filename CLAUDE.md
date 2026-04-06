@@ -353,8 +353,8 @@ To change the Java version, simply update the `.java-version` file. Both the Gra
    ```kotlin
    // YourNavigator.kt
    @Immutable
-   class YourNavigator(private val stack: SnapshotStateList<NavKey>) {
-     operator fun invoke(param: Param) = stack.debugPush(YourNavRoute(param))
+   class YourNavigator(private val stack: AktualNavStack) {
+     operator fun invoke(param: Param) = stack.push(YourNavRoute(param))
    }
 
    @Immutable @Serializable data class YourNavRoute(val param: Param) : NavKey
@@ -364,7 +364,7 @@ To change the Java version, simply update the `.java-version` file. Both the Gra
    ```kotlin
    @ContributesIntoSet(NavScope::class)
    class YourFeatureNavEntryContributor : NavEntryContributor {
-     override fun contribute(scope: EntryProviderScope<NavKey>, stack: SnapshotStateList<NavKey>) {
+     override fun contribute(scope: EntryProviderScope<NavKey>, stack: AktualNavStack) {
        scope.entry<YourNavRoute> { route -> YourScreen(BackNavigator(stack), route.param) }
      }
    }

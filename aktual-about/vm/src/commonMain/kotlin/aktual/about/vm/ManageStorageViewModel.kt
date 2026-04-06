@@ -10,9 +10,11 @@ import aktual.core.model.Bytes
 import aktual.core.model.Percent
 import aktual.core.model.bytes
 import aktual.core.theme.CustomThemeCache
-import aktual.prefs.AppPreferences
-import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
+import androidx.compose.runtime.Stable
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.AppScope
@@ -20,15 +22,20 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import java.io.File
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.Channel.Factory.BUFFERED
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
 import okio.Path
 
+@Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
 class ManageStorageViewModel(
@@ -36,12 +43,15 @@ class ManageStorageViewModel(
   private val appDirectory: AppDirectory,
   private val contexts: CoroutineContexts,
   private val customThemeCache: CustomThemeCache,
-  private val appPreferences: AppPreferences,
   private val budgetGraphHolder: BudgetGraphHolder,
+  private val dataStore: DataStore<Preferences>,
 ) : ViewModel() {
 
   private val mutableState = MutableStateFlow<ManageStorageState>(ManageStorageState.Loading)
   val state: StateFlow<ManageStorageState> = mutableState.asStateFlow()
+
+  private val navEventChannel = Channel<StorageNavEvent>(BUFFERED)
+  val navigationEvents: Flow<StorageNavEvent> = navEventChannel.receiveAsFlow()
 
   init {
     loadStorageInfo()
@@ -76,6 +86,7 @@ class ManageStorageViewModel(
         with(files.fileSystem) { list(root).forEach { deleteRecursively(it) } }
       }
       logcat.d { "Cleared all files" }
+      navEventChannel.send(StorageNavEvent.AllFilesCleared)
       loadStorageInfo()
     }
   }
@@ -83,7 +94,8 @@ class ManageStorageViewModel(
   fun clearBudget(id: BudgetId) {
     viewModelScope.launch {
       dismissDialog()
-      if (budgetGraphHolder.value?.budgetId == id) {
+      val wasActiveBudget = budgetGraphHolder.value?.budgetId == id
+      if (wasActiveBudget) {
         budgetGraphHolder.clear()
       }
       withContext(contexts.io) {
@@ -93,6 +105,9 @@ class ManageStorageViewModel(
         }
       }
       logcat.d { "Cleared budget $id" }
+      if (wasActiveBudget) {
+        navEventChannel.send(StorageNavEvent.ActiveBudgetCleared(id))
+      }
       loadStorageInfo()
     }
   }
@@ -116,9 +131,9 @@ class ManageStorageViewModel(
   fun clearPreferences() {
     viewModelScope.launch {
       dismissDialog()
-      appPreferences.token.delete()
-      appPreferences.serverUrl.delete()
+      dataStore.edit { it.clear() }
       logcat.d { "Cleared preferences" }
+      navEventChannel.send(StorageNavEvent.PreferencesCleared)
       loadStorageInfo()
     }
   }

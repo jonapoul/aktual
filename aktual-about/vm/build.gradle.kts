@@ -5,11 +5,12 @@ plugins { id("aktual.module.viewmodel") }
 
 kotlin {
   commonMainDependencies {
+    api(libs.alakazam.kotlin)
     api(project(":aktual-about:data"))
     api(project(":aktual-budget:di"))
-    api(libs.alakazam.kotlin)
+    implementation(libs.androidx.datastore.core)
+    implementation(libs.androidx.datastore.prefs)
     implementation(project(":aktual-core:theme"))
-    implementation(project(":aktual-prefs"))
   }
 
   commonTestDependencies { implementation(project(":aktual-test")) }

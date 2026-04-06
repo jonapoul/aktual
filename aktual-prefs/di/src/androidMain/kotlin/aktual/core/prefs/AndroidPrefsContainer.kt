@@ -3,9 +3,9 @@ package aktual.core.prefs
 import alakazam.kotlin.CoroutineContexts
 import android.content.Context
 import androidx.datastore.core.DataStore
+import androidx.datastore.dataStoreFile
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStoreFile
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
@@ -25,7 +25,7 @@ object AndroidPrefsContainer {
     contexts: CoroutineContexts,
   ): DataStore<Preferences> {
     return PreferenceDataStoreFactory.create(
-      produceFile = { context.preferencesDataStoreFile("settings") },
+      produceFile = { context.dataStoreFile("settings.preferences_pb") },
       scope = scope + contexts.io,
       migrations = emptyList(),
     )

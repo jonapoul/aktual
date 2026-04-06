@@ -12,7 +12,6 @@ import aktual.core.model.Protocol
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.BackHandler
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
@@ -24,7 +23,6 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.normalIconButton
-import aktual.core.ui.rememberAppCloser
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,9 +61,6 @@ fun ServerUrlScreen(
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
-
-  val closeApp = rememberAppCloser()
-  BackHandler { closeApp() }
 
   DisposableEffect(Unit) { onDispose { viewModel.clearState() } }
 

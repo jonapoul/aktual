@@ -23,7 +23,6 @@ import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
@@ -74,14 +73,12 @@ import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun ChooseReportTypeScreen(
-  back: BackNavigator,
+  @Suppress("unused") back: BackNavigator,
   toReport: ReportNavigator,
   budgetId: BudgetId,
   token: Token,
   viewModel: ChooseReportTypeViewModel = metroViewModel(budgetId),
 ) {
-  BackHandler { back() }
-
   LaunchedEffect(Unit) {
     viewModel.shouldNavigateEvent.collectLatest { event ->
       toReport(token, budgetId, widgetId = event.id)
