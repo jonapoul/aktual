@@ -44,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -55,7 +54,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
-import com.valentinilk.shimmer.unclippedBoundsInWindow
 
 @Composable
 internal fun TransactionItem(
@@ -104,7 +102,7 @@ private fun LoadingItem(
   theme: Theme = LocalTheme.current,
 ) {
   val dimens = LocalTableDimens.current
-  val shimmer = rememberShimmer(ShimmerBounds.Custom)
+  val shimmer = rememberShimmer(ShimmerBounds.Window)
 
   Row(
     modifier =
@@ -113,11 +111,7 @@ private fun LoadingItem(
         .height(LocalMinimumInteractiveComponentSize.current)
         .clip(CardShape)
         .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal)
-        .shimmer(shimmer)
-        .onGloballyPositioned { layoutCoordinates ->
-          val position = layoutCoordinates.unclippedBoundsInWindow()
-          shimmer.updateBounds(position)
-        },
+        .shimmer(shimmer),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     when (format) {

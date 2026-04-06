@@ -21,7 +21,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
@@ -29,7 +28,6 @@ import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
-import com.valentinilk.shimmer.unclippedBoundsInWindow
 
 /** Shimmer placeholder that mimics the layout of [BudgetListItem]. */
 @Composable
@@ -48,7 +46,7 @@ internal fun ShimmerBudgetListItem(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val shimmer = rememberShimmer(ShimmerBounds.Custom)
+  val shimmer = rememberShimmer(ShimmerBounds.Window)
 
   Row(
     modifier =
@@ -58,8 +56,7 @@ internal fun ShimmerBudgetListItem(
         .background(theme.buttonNormalBackground, RowShape)
         .border(Dp.Hairline, theme.pillBorderDark, RowShape)
         .padding(horizontal = 15.dp, vertical = 12.dp)
-        .shimmer(shimmer)
-        .onGloballyPositioned { shimmer.updateBounds(it.unclippedBoundsInWindow()) },
+        .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
   ) {

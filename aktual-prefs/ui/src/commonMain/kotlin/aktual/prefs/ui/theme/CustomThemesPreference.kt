@@ -67,7 +67,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -77,7 +76,6 @@ import androidx.compose.ui.util.fastForEach
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
-import com.valentinilk.shimmer.unclippedBoundsInWindow
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -176,7 +174,7 @@ private fun CatalogFailure(
 
 @Composable
 private fun CatalogLoading(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
-  val shimmer = rememberShimmer(ShimmerBounds.Custom)
+  val shimmer = rememberShimmer(ShimmerBounds.Window)
 
   Column(
     modifier =
@@ -184,11 +182,7 @@ private fun CatalogLoading(modifier: Modifier = Modifier, theme: Theme = LocalTh
         .padding(horizontal = 8.dp, vertical = 4.dp)
         .fillMaxWidth()
         .clip(CardShape)
-        .shimmer(shimmer)
-        .onGloballyPositioned { layoutCoordinates ->
-          val position = layoutCoordinates.unclippedBoundsInWindow()
-          shimmer.updateBounds(position)
-        },
+        .shimmer(shimmer),
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     val shimmerModifier =
