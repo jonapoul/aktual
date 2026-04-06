@@ -153,7 +153,7 @@ class SyncResponseDecoderTest {
       RESOURCES_DIR.resolve(name).source().buffer().use { it.readUtf8().decodeBase64() }
         ?: error("No resource at $name")
 
-    val buffer = Buffer().also { it.write(b64) }
+    val buffer = Buffer().apply { write(b64) }
 
     val keys = EncryptionKeys { KEY }
     val contexts = TestCoroutineContexts(EmptyCoroutineContext)
