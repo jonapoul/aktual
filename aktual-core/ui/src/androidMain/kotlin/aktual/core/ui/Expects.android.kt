@@ -20,5 +20,7 @@ actual fun rememberAppCloser(): AppCloser {
 
 @Immutable
 private class AndroidAppCloser(private val activity: () -> Activity) : AppCloser {
-  override operator fun invoke() = activity().finish()
+  override operator fun invoke() {
+    activity().finish()
+  }
 }

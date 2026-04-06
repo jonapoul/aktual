@@ -73,11 +73,12 @@ class ManageStorageActivity(override val defaultViewModelProviderFactory: MetroV
               LocalMetroViewModelFactory provides defaultViewModelProviderFactory
             ) {
               ManageStorageScreen(
-                navBack = null,
                 modifier =
                   Modifier.fillMaxSize()
                     .consumeWindowInsets(WindowInsets.navigationBars)
                     .hazeSource(hazeState),
+                navBack = null,
+                onStorageNavEvent = {}, // no stack to modify
               )
             }
 

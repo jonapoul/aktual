@@ -14,6 +14,7 @@ import aktual.about.vm.BudgetStorageItem
 import aktual.about.vm.ManageStorageState
 import aktual.about.vm.ManageStorageViewModel
 import aktual.about.vm.StorageDialog
+import aktual.about.vm.StorageNavEvent
 import aktual.app.nav.BackNavigator
 import aktual.budget.model.BudgetId
 import aktual.core.icons.material.Delete
@@ -26,6 +27,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.AlertDialog
+import aktual.core.ui.BackHandler
 import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
@@ -44,6 +46,7 @@ import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
+import aktual.core.ui.rememberAppCloser
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -73,6 +76,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -93,10 +97,18 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun ManageStorageScreen(
   navBack: BackNavigator?,
+  onStorageNavEvent: (StorageNavEvent) -> Unit,
   modifier: Modifier = Modifier,
   viewModel: ManageStorageViewModel = metroViewModel<ManageStorageViewModel>(),
 ) {
+  LaunchedEffect(viewModel) { viewModel.navigationEvents.collect(onStorageNavEvent) }
+
   val state by viewModel.state.collectAsStateWithLifecycle()
+
+  val closeApp = rememberAppCloser()
+  BackHandler {
+    if (navBack != null) navBack() else closeApp()
+  }
 
   ManageStorageScaffold(
     state = state,
