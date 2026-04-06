@@ -143,6 +143,8 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
    * then sorts within each stage by condition specificity score, with rule ID as tiebreaker.
    */
   private object RuleComparator : Comparator<RuleListItem> {
+    private val EXACT_OPERATORS = setOf(Is, IsNot, IsApprox, OneOf, NotOneOf)
+
     override fun compare(a: RuleListItem, b: RuleListItem): Int {
       val stageDiff = a.stage.ordinal - b.stage.ordinal
       if (stageDiff != 0) return stageDiff
@@ -177,7 +179,5 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
         OnBudget,
         OffBudget -> 0
       }
-
-    private val EXACT_OPERATORS = setOf(Is, IsNot, IsApprox, OneOf, NotOneOf)
   }
 }

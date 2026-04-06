@@ -245,6 +245,7 @@ private data class BottomBarParams(
   val budgetName: String? = null,
 )
 
+@Suppress("StringLiteralDuplication")
 private class BottomBarProvider :
   ThemedParameterProvider<BottomBarParams>(
     BottomBarParams(state = Success, budgetName = "My Budget"),

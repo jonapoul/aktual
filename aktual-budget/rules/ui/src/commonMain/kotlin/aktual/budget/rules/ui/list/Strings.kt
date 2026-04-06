@@ -218,9 +218,13 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
           }
         }
 
-        RuleAction.Op.LinkSchedule -> nameFetcher.name(ScheduleId(action.value.content))
+        RuleAction.Op.LinkSchedule -> {
+          nameFetcher.name(ScheduleId(action.value.content))
+        }
 
-        else -> flowOf(null)
+        else -> {
+          flowOf(null)
+        }
       }
     }
 
@@ -301,9 +305,7 @@ private fun formatAmount(
   currency: CurrencyConfig,
   privacy: Boolean,
 ): String =
-  action.value.content
-    .toInt()
-    .let(::Amount)
+  Amount(action.value.content.toInt())
     .toString(
       numberFormatConfig = numberFormat,
       currencyConfig = currency,
