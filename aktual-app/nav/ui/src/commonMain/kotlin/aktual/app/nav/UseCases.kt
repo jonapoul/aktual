@@ -11,6 +11,7 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.NumberFormat
+import aktual.budget.model.SyncStateHolder
 import aktual.budget.model.database
 import aktual.budget.model.metadata
 import aktual.budget.model.readMetadata
@@ -182,6 +183,7 @@ class BottomBarStateUseCase(
   private val preferences: SystemUiPreferences,
   private val budgetGraphHolder: BudgetGraphHolder,
   private val pingStateHolder: PingStateHolder,
+  private val syncStateHolder: SyncStateHolder,
 ) {
   operator fun invoke(scope: CoroutineScope): StateFlow<BottomBarState> {
     val showStatusBar = preferences.showBottomBar.asStateFlow(scope)
@@ -194,8 +196,9 @@ class BottomBarStateUseCase(
       val showStatusBar by showStatusBar.collectAsState()
       val budgetName by budgetName.collectAsState(initial = null)
       val pingState by pingStateHolder.collectAsState()
+      val syncState by syncStateHolder.collectAsState()
       if (showStatusBar) {
-        BottomBarState.Visible(pingState = pingState, budgetName = budgetName)
+        BottomBarState.Visible(pingState, syncState, budgetName)
       } else {
         BottomBarState.Hidden
       }

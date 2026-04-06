@@ -4,15 +4,13 @@ package aktual.budget.model
 
 import aktual.budget.model.Field.Category
 import aktual.budget.model.Field.Description
-import aktual.budget.model.RuleAction.LinkSchedule
-import aktual.budget.model.RuleAction.Set
-import aktual.budget.model.RuleAction.Set.Options
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
 import org.intellij.lang.annotations.Language
 
 @Burst
@@ -32,12 +30,18 @@ class RuleActionTest {
       TestCase(
         expected =
           listOf(
-            Set(field = Description, type = "id", value = "0c76632b-d784-47b0-8391-d9c3067ad6fd"),
-            Set(
+            RuleAction(
+              field = Description,
+              type = "id",
+              op = RuleAction.Op.Set,
+              value = JsonPrimitive("0c76632b-d784-47b0-8391-d9c3067ad6fd"),
+            ),
+            RuleAction(
               field = Category,
               type = "id",
-              options = Options(splitIndex = 0),
-              value = "51ad3781-25af-4b79-b69c-4e6e62fffabb",
+              op = RuleAction.Op.Set,
+              options = RuleAction.Options(splitIndex = 0),
+              value = JsonPrimitive("51ad3781-25af-4b79-b69c-4e6e62fffabb"),
             ),
           ),
         json =
@@ -65,7 +69,13 @@ class RuleActionTest {
 
     val TEST_CASE_2 =
       TestCase(
-        expected = listOf(LinkSchedule(value = ScheduleId("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"))),
+        expected =
+          listOf(
+            RuleAction(
+              op = RuleAction.Op.LinkSchedule,
+              value = JsonPrimitive("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"),
+            )
+          ),
         json =
           """
           [

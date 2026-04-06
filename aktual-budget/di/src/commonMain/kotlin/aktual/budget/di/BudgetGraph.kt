@@ -6,6 +6,7 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.BudgetScope
 import aktual.budget.model.DbMetadata
 import aktual.budget.prefs.BudgetLocalPreferences
+import aktual.budget.sync.domain.BudgetSyncController
 import app.cash.sqldelight.db.SqlDriver
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesTo
@@ -13,11 +14,17 @@ import dev.zacsweers.metro.GraphExtension
 import dev.zacsweers.metro.Provides
 
 @GraphExtension(BudgetScope::class)
-interface BudgetGraph {
+interface BudgetGraph : AutoCloseable {
   val driver: SqlDriver
   val database: BudgetDatabase
   val localPreferences: BudgetLocalPreferences
+  val syncController: BudgetSyncController
   val budgetId: BudgetId
+
+  override fun close() {
+    driver.close()
+    syncController.cancel()
+  }
 
   @GraphExtension.Factory
   @ContributesTo(AppScope::class)

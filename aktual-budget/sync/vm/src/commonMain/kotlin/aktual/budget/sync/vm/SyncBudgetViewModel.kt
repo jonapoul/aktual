@@ -18,6 +18,7 @@ import aktual.core.model.Token
 import aktual.core.model.UrlOpener
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.launchInfiniteLoop
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -48,6 +49,7 @@ import logcat.logcat
 import okio.Path
 
 @Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
+@Stable
 @AssistedInject
 class SyncBudgetViewModel(
   @Assisted private val token: Token,

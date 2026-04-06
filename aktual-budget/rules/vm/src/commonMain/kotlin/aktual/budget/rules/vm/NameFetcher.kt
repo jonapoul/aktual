@@ -36,6 +36,7 @@ internal class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
   private val payees = PayeeDao(database)
   private val schedules = ScheduleDao(database)
 
+  // Make sure this stays in sync with aktual.budget.model.FieldKt.FIELDS_WITH_IDS
   override fun name(field: Field, id: String): Flow<String?> = flow {
     emit(
       when (field) {

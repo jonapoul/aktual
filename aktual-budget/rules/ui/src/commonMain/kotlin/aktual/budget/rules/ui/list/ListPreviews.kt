@@ -8,7 +8,6 @@ import aktual.budget.model.Operator
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
-import aktual.budget.model.ScheduleId
 import aktual.budget.rules.vm.RuleListItem
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.json.JsonPrimitive
@@ -45,10 +44,11 @@ internal val PreviewRuleListItem1 =
     conditions = persistentListOf(PreviewCondition1),
     actions =
       persistentListOf(
-        RuleAction.Set(
+        RuleAction(
           field = Field.Description,
           type = "payee",
-          value = "0c76632b-d784-47b0-8391-d9c3067ad6fd",
+          value = JsonPrimitive("0c76632b-d784-47b0-8391-d9c3067ad6fd"),
+          op = RuleAction.Op.Set,
         )
       ),
   )
@@ -60,5 +60,10 @@ internal val PreviewRuleListItem2 =
     conditionsOp = ConditionOp.And,
     conditions = persistentListOf(PreviewCondition1, PreviewCondition2),
     actions =
-      persistentListOf(RuleAction.LinkSchedule(ScheduleId("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"))),
+      persistentListOf(
+        RuleAction(
+          value = JsonPrimitive("b08a2607-399b-4a6b-9a5c-3b2d083fe07f"),
+          op = RuleAction.Op.LinkSchedule,
+        )
+      ),
   )

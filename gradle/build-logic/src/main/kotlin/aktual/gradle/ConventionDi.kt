@@ -17,7 +17,7 @@ class ConventionDi : Plugin<Project> {
       extensions.configure<MetroPluginExtension> {
         enableKotlinVersionCompatibilityChecks.set(true)
         @OptIn(DelicateMetroGradleApi::class) enableFullBindingGraphValidation.set(true)
-        @OptIn(RequiresIdeSupport::class) generateAssistedFactories.set(false)
+        @OptIn(RequiresIdeSupport::class) generateAssistedFactories.set(true)
         generateContributionHints.set(true)
         @OptIn(DelicateMetroGradleApi::class) shrinkUnusedBindings.set(true)
         warnOnInjectAnnotationPlacement.set(true)

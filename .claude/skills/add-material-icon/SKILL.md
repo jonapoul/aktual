@@ -1,21 +1,33 @@
 ---
 name: add-material-icon
 description: Fetch a Material Icon SVG and convert it to a Compose ImageVector in the aktual-core:icons module. Use when the user wants to add a new Material icon.
-argument-hint: "<IconName> [--symbols]"
+argument-hint: "<icon_name> [--classic]"
 ---
 
 Add a Material Design icon to the `aktual-core/icons` module by fetching its SVG source and converting it to a Kotlin `ImageVector`.
 
+Do NOT ask clarifying questions — just execute.
+
 ## Arguments
 
-- `$ARGUMENTS` should contain the icon name in PascalCase (e.g., `Favorite`, `AccountCircle`)
-- If `--symbols` is included, fetch from Material Symbols (960x960 viewport) instead of classic Material Icons (24x24)
+- `$ARGUMENTS` should contain the icon name in either snake_case or PascalCase (e.g., `calendar_today` or `CalendarToday`)
+- If `--classic` is included, fetch from classic Material Icons (24x24) instead of Material Symbols
+- If `--material` is included, use `MaterialIcons` as the receiver instead of `AktualIcons`
 
 ## Step-by-Step Process
 
 ### 1. Determine source and fetch SVG
 
-**Classic Material Icons (default, 24x24):**
+**Material Symbols (default, 960x960):**
+
+Fetch the filled variant SVG directly from the Google Fonts CDN:
+```
+https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/{snake_case_name}/fill1/24px.svg
+```
+
+The `fill1` path segment selects the filled variant. The response is a plain SVG file (not base64).
+
+**Classic Material Icons (with `--classic`, 24x24):**
 
 The source repo is: `https://android.googlesource.com/platform/frameworks/support/+/1de65587b7e999a38df120bd8827c3594974864d/compose/material/material/icons/generator/raw-icons/filled/`
 
@@ -27,15 +39,6 @@ https://android.googlesource.com/platform/frameworks/support/+/1de65587b7e999a38
 ```
 
 The response is base64 encoded. Decode it to get the Android Vector Drawable XML.
-
-**Material Symbols (with `--symbols`, 960x960):**
-
-Fetch the filled variant SVG directly from the Google Fonts CDN:
-```
-https://fonts.gstatic.com/s/i/short-term/release/materialsymbolsoutlined/{snake_case_name}/fill1/24px.svg
-```
-
-The `fill1` path segment selects the filled variant. The response is a plain SVG file (not base64).
 
 ### 2. Parse the SVG/Vector Drawable
 

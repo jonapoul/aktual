@@ -1,9 +1,29 @@
 package aktual.budget.rules.vm
 
 import aktual.budget.db.Rules
+import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.RulesDao
+import aktual.budget.db.dao.tombstone
 import aktual.budget.di.BudgetGraphHolder
+import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
+import aktual.budget.model.Operator
+import aktual.budget.model.Operator.Contains
+import aktual.budget.model.Operator.DoesNotContain
+import aktual.budget.model.Operator.GreaterThan
+import aktual.budget.model.Operator.GreaterThanOrEquals
+import aktual.budget.model.Operator.HasTags
+import aktual.budget.model.Operator.Is
+import aktual.budget.model.Operator.IsApprox
+import aktual.budget.model.Operator.IsBetween
+import aktual.budget.model.Operator.IsNot
+import aktual.budget.model.Operator.LessThan
+import aktual.budget.model.Operator.LessThanOrEquals
+import aktual.budget.model.Operator.Matches
+import aktual.budget.model.Operator.NotOneOf
+import aktual.budget.model.Operator.OffBudget
+import aktual.budget.model.Operator.OnBudget
+import aktual.budget.model.Operator.OneOf
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.rules.vm.CheckboxesState.Active
@@ -40,10 +60,10 @@ import logcat.logcat
 @ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
-  private val database = budgetGraphs.require().database
-  private val rulesDao = RulesDao(database)
+  private val budgetGraph = budgetGraphs.require()
+  private val rulesDao = RulesDao(budgetGraph.database)
 
-  val nameFetcher: NameFetcher = NameFetcherImpl(database)
+  val nameFetcher: NameFetcher = NameFetcherImpl(budgetGraph.database)
 
   private val mutableRules = MutableStateFlow<ImmutableList<RuleListItem>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
@@ -73,7 +93,7 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
     mutableIsLoading.update { true }
     viewModelScope.launch {
       try {
-        val rules = rulesDao.getAll().map(::toListItem).toImmutableList()
+        val rules = rulesDao.getAll().map(::toListItem).sortedWith(RuleComparator).toImmutableList()
         mutableRules.update { rules }
       } catch (e: CancellationException) {
         throw e
@@ -90,10 +110,11 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
 
   fun delete(ids: ImmutableSet<RuleId>) {
     viewModelScope.launch {
-      val numDeleted = rulesDao.delete(ids)
+      val changes = ids.map { id -> tombstone(dataset = RULES, row = id.toString()) }
+      budgetGraph.syncController.syncChanges(changes)
       mutableCheckboxes.update { Inactive }
       reload()
-      logcat.d { "Deleted $numDeleted rules: $ids" }
+      logcat.d { "Tombstoned ${ids.size} rules: $ids" }
     }
   }
 
@@ -115,4 +136,48 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
       conditionsOp = rule.conditions_op ?: ConditionOp.And,
       actions = rule.actions.orEmpty().toImmutableList(),
     )
+
+  /**
+   * Sorts rules to match execution order. Mirrors rankRules in
+   * packages/loot-core/src/server/rules/rule-utils.ts. Groups by stage (pre -> default -> post),
+   * then sorts within each stage by condition specificity score, with rule ID as tiebreaker.
+   */
+  private object RuleComparator : Comparator<RuleListItem> {
+    private val EXACT_OPERATORS = setOf(Is, IsNot, IsApprox, OneOf, NotOneOf)
+
+    override fun compare(a: RuleListItem, b: RuleListItem): Int {
+      val stageDiff = a.stage.ordinal - b.stage.ordinal
+      if (stageDiff != 0) return stageDiff
+      val scoreDiff = computeScore(b.conditions) - computeScore(a.conditions)
+      if (scoreDiff != 0) return scoreDiff
+      return a.id.compareTo(b.id)
+    }
+
+    private fun computeScore(conditions: List<Condition>): Int {
+      val score = conditions.sumOf { operatorScore(it.operator) }
+      val allExact = conditions.isNotEmpty() && conditions.all { it.operator in EXACT_OPERATORS }
+      return if (allExact) score * 2 else score
+    }
+
+    @Suppress("MagicNumber")
+    private fun operatorScore(op: Operator): Int =
+      when (op) {
+        Is,
+        IsNot -> 10
+        OneOf,
+        NotOneOf -> 9
+        IsApprox,
+        IsBetween -> 5
+        GreaterThan,
+        GreaterThanOrEquals,
+        LessThan,
+        LessThanOrEquals -> 1
+        Contains,
+        DoesNotContain,
+        Matches,
+        HasTags,
+        OnBudget,
+        OffBudget -> 0
+      }
+  }
 }

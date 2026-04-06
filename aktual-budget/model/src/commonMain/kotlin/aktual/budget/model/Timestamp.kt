@@ -1,6 +1,7 @@
 package aktual.budget.model
 
 import alakazam.kotlin.SimpleSerializer
+import kotlin.time.Clock
 import kotlin.time.Instant
 import kotlinx.serialization.Serializable
 
@@ -25,12 +26,30 @@ data class Timestamp(val instant: Instant, val counter: Long, val node: String) 
 
   companion object {
     private const val BASE_COUNTER = "0000"
-    private const val BASE_NODE = "0000000000000000"
-    private const val MAX_COUNTER = 0xFFFF
+    const val MAX_COUNTER = 0xFFFF
     private const val MAX_NODE_LENGTH = 16
     private const val SEPARATOR = "-"
 
+    const val BASE_NODE = "0000000000000000"
+
     val MAXIMUM = parse("9999-12-31T23:59:59.999Z-FFFF-FFFFFFFFFFFFFFFF")
+
+    /**
+     * Generate a unique, monotonic timestamp for a local change. Mirrors
+     * packages/crdt/src/crdt/timestamp.ts#send. Advances [current] so that the logical time never
+     * goes backward and the counter increments when physical time doesn't advance.
+     */
+    fun send(current: Timestamp, clock: Clock): Timestamp {
+      val phys = clock.now().toEpochMilliseconds()
+      val lOld = current.milliseconds
+      val lNew = maxOf(lOld, phys)
+      val cNew = if (lOld == lNew) current.counter + 1 else 0L
+      check(cNew <= MAX_COUNTER) { "Timestamp counter overflow" }
+      return fromMilliseconds(lNew, cNew, current.node)
+    }
+
+    fun fromMilliseconds(millis: Long, counter: Long = 0, node: String = BASE_NODE): Timestamp =
+      Timestamp(instant = Instant.fromEpochMilliseconds(millis), counter = counter, node = node)
 
     @Suppress("MagicNumber")
     fun parse(string: String): Timestamp {

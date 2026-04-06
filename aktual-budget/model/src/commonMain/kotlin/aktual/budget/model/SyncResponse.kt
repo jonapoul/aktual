@@ -1,28 +1,31 @@
 package aktual.budget.model
 
 import java.util.stream.IntStream
+import kotlin.String as KString
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 
 data class SyncResponse(val messages: List<MessageEnvelope>, val merkle: Merkle)
 
-class Merkle(private val encoded: String) :
+data class Merkle(private val encoded: KString) :
   Lazy<JsonObject> by lazyMerkle(encoded), CharSequence by encoded {
   override fun chars(): IntStream = encoded.chars()
 
   override fun codePoints(): IntStream = encoded.codePoints()
+
+  override fun toString(): KString = encoded
 }
 
-private fun lazyMerkle(string: String) = lazy {
+private fun lazyMerkle(string: KString) = lazy {
   Json.decodeFromString(JsonObject.serializer(), string)
 }
 
 data class MessageEnvelope(val timestamp: Timestamp, val isEncrypted: Boolean, val content: Message)
 
 data class Message(
-  val dataset: String,
-  val row: String,
-  val column: String,
+  val dataset: KString,
+  val row: KString,
+  val column: KString,
   val timestamp: Timestamp,
   val value: MessageValue,
 )
@@ -30,19 +33,19 @@ data class Message(
 sealed interface MessageValue {
   @JvmInline value class Number(val value: Long) : MessageValue
 
-  @JvmInline value class String(val value: kotlin.String) : MessageValue
+  @JvmInline value class String(val value: KString) : MessageValue
 
   data object Null : MessageValue
 
-  fun encode(): kotlin.String =
+  fun encode(): KString =
     when (this) {
       is String -> "S:$value"
       is Number -> "N:$value"
-      Null -> "0"
+      Null -> "0:"
     }
 
   companion object {
-    fun decode(value: kotlin.String): MessageValue =
+    fun decode(value: KString): MessageValue =
       when (val type = value[0]) {
         'N' -> Number(value.substring(startIndex = 2).toLong())
         'S' -> String(value.substring(startIndex = 2))

@@ -21,6 +21,9 @@ import kotlin.coroutines.EmptyCoroutineContext
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
+import okio.Buffer
+import okio.ByteString.Companion.decodeBase64
+import okio.buffer
 import okio.source
 
 class SyncResponseDecoderTest {
@@ -146,13 +149,17 @@ class SyncResponseDecoderTest {
   }
 
   private suspend fun readResponse(name: String): SyncResponse {
-    val source = RESOURCES_DIR.resolve(name).source()
+    val b64 =
+      RESOURCES_DIR.resolve(name).source().buffer().use { it.readUtf8().decodeBase64() }
+        ?: error("No resource at $name")
+
+    val buffer = Buffer().apply { write(b64) }
 
     val keys = EncryptionKeys { KEY }
     val contexts = TestCoroutineContexts(EmptyCoroutineContext)
     val decrypter = BufferDecrypterImpl(contexts, keys)
     decoder = SyncResponseDecoderImpl(decrypter)
-    return decoder(source, metadata)
+    return decoder(buffer, metadata)
   }
 
   private companion object {

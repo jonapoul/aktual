@@ -3,7 +3,6 @@ package aktual.budget.proto
 import aktual.budget.encryption.BufferDecrypter
 import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.DefaultMeta
-import aktual.budget.model.BudgetScope
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Merkle
 import aktual.budget.model.Message
@@ -12,17 +11,17 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.SyncResponse
 import aktual.budget.model.Timestamp
 import aktual.core.model.KeyId
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import okio.Buffer
 import okio.ByteString
-import okio.ByteString.Companion.decodeBase64
 import okio.Source
 import okio.buffer
 
-@ContributesBinding(BudgetScope::class)
+@ContributesBinding(AppScope::class)
 class SyncResponseDecoderImpl(private val decrypter: BufferDecrypter) : SyncResponseDecoder {
   override suspend fun invoke(source: Source, metadata: DbMetadata): SyncResponse {
-    val byteString = source.buffer().use { requireNotNull(it.readUtf8().decodeBase64()) }
+    val byteString = source.buffer().use { it.readByteString() }
     val response = ProtoSyncResponse.ADAPTER.decode(byteString)
     val encryptKeyId = metadata[DbMetadata.EncryptKeyId]
     return SyncResponse(
