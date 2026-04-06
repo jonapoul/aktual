@@ -1,6 +1,8 @@
 package aktual.budget.db.dao
 
-/** Table names for all synced tables in the budget database, for use with [SyncDao.sendMessages]. */
+/**
+ * Table names for all synced tables in the budget database, for use with [SyncDao.sendMessages].
+ */
 object DatabaseTables {
   const val ACCOUNTS = "accounts"
   const val CATEGORIES = "categories"

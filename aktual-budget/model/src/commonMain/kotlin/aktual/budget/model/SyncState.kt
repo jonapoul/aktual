@@ -9,13 +9,14 @@ import dev.zacsweers.metro.SingleIn
 @Immutable
 sealed interface SyncState {
   data object Inactive : SyncState
+
   data object Syncing : SyncState
 
   sealed interface Error : SyncState
+
   data object NoToken : Error
+
   data class SyncFailed(val cause: String) : Error
 }
 
-@Inject
-@SingleIn(AppScope::class)
-class SyncStateHolder : StateHolder<SyncState>(Inactive)
+@Inject @SingleIn(AppScope::class) class SyncStateHolder : StateHolder<SyncState>(Inactive)

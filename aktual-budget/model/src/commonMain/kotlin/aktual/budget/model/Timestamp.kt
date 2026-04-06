@@ -35,9 +35,9 @@ data class Timestamp(val instant: Instant, val counter: Long, val node: String) 
     val MAXIMUM = parse("9999-12-31T23:59:59.999Z-FFFF-FFFFFFFFFFFFFFFF")
 
     /**
-     * Generate a unique, monotonic timestamp for a local change. Mirrors packages/crdt/src/crdt/timestamp.ts#send.
-     * Advances [current] so that the logical time never goes backward and the counter increments when physical time
-     * doesn't advance.
+     * Generate a unique, monotonic timestamp for a local change. Mirrors
+     * packages/crdt/src/crdt/timestamp.ts#send. Advances [current] so that the logical time never
+     * goes backward and the counter increments when physical time doesn't advance.
      */
     fun send(current: Timestamp, clock: Clock): Timestamp {
       val phys = clock.now().toEpochMilliseconds()

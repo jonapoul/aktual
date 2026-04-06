@@ -22,7 +22,8 @@ import logcat.logcat
 
 @Inject
 @SingleIn(BudgetScope::class)
-class BudgetSyncController internal constructor(
+class BudgetSyncController
+internal constructor(
   private val syncStateHolder: SyncStateHolder,
   private val syncer: IncrementalSyncer,
   private val scope: CoroutineScope,

@@ -287,9 +287,7 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
             append(" ")
           }
           withStyle(styles.highlighted) {
-            append(
-              formatAmount(action, numberFormat, currency, privacy)
-            )
+            append(formatAmount(action, numberFormat, currency, privacy))
           }
         }
       }
@@ -301,16 +299,17 @@ private fun formatAmount(
   action: RuleAction,
   numberFormat: NumberFormatConfig,
   currency: CurrencyConfig,
-  privacy: Boolean
-): String = action.value.content
-  .toInt()
-  .let(::Amount)
-  .toString(
-    numberFormatConfig = numberFormat,
-    currencyConfig = currency,
-    includeSign = true,
-    isPrivacyEnabled = privacy,
-  )
+  privacy: Boolean,
+): String =
+  action.value.content
+    .toInt()
+    .let(::Amount)
+    .toString(
+      numberFormatConfig = numberFormat,
+      currencyConfig = currency,
+      includeSign = true,
+      isPrivacyEnabled = privacy,
+    )
 
 @Composable
 private fun RuleAction.opString(): String =

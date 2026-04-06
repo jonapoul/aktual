@@ -33,7 +33,11 @@ class RuleActionTest {
       TestCase(
         expected =
           listOf(
-            Set(field = Description, type = "id", value = JsonPrimitive("0c76632b-d784-47b0-8391-d9c3067ad6fd")),
+            Set(
+              field = Description,
+              type = "id",
+              value = JsonPrimitive("0c76632b-d784-47b0-8391-d9c3067ad6fd"),
+            ),
             Set(
               field = Category,
               type = "id",
