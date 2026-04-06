@@ -100,6 +100,7 @@ fun AktualAppContent(
               modifier = Modifier.wrapContentHeight(),
               state = bbs,
               onMeasureHeight = { bottomStatusBarHeight = it },
+              onClickSync = { viewModel.startSync() },
             )
           }
           BottomNavBarSpacing()

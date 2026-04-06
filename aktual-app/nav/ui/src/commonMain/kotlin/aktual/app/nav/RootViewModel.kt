@@ -1,5 +1,6 @@
 package aktual.app.nav
 
+import aktual.budget.di.BudgetGraphHolder
 import aktual.core.theme.Theme
 import aktual.core.theme.ThemeResolver
 import aktual.core.ui.BlurConfig
@@ -31,6 +32,7 @@ abstract class RootViewModel(
   blurConfigUseCase: BlurConfigUseCase,
   initialRouteUseCase: InitialRouteUseCase,
   bottomBarStateUseCase: BottomBarStateUseCase,
+  private val budgetGraphHolder: BudgetGraphHolder,
 ) : ViewModel() {
   val navEntryContributors: ImmutableSet<NavEntryContributor> =
     navGraphFactory.create().navEntryContributors.toImmutableSet()
@@ -62,4 +64,8 @@ abstract class RootViewModel(
   }
 
   fun onDestroy() = appLifecycleManager.destroy()
+
+  fun startSync() {
+    budgetGraphHolder.value?.syncController?.schedule()
+  }
 }

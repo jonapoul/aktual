@@ -13,6 +13,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonPrimitive
 import org.intellij.lang.annotations.Language
 
 @Burst
@@ -32,12 +33,12 @@ class RuleActionTest {
       TestCase(
         expected =
           listOf(
-            Set(field = Description, type = "id", value = "0c76632b-d784-47b0-8391-d9c3067ad6fd"),
+            Set(field = Description, type = "id", value = JsonPrimitive("0c76632b-d784-47b0-8391-d9c3067ad6fd")),
             Set(
               field = Category,
               type = "id",
               options = Options(splitIndex = 0),
-              value = "51ad3781-25af-4b79-b69c-4e6e62fffabb",
+              value = JsonPrimitive("51ad3781-25af-4b79-b69c-4e6e62fffabb"),
             ),
           ),
         json =
