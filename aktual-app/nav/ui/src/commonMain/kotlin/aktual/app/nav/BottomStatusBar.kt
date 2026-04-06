@@ -19,18 +19,12 @@ import aktual.core.model.PingState.Unknown
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BottomBarState.Visible
-import aktual.core.ui.ButtonShape
 import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.normalButton
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.LocalIndication
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -40,7 +34,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -172,18 +165,11 @@ private fun SyncState(
   val text = state.text()
   val tint = state.tint(theme)
 
-  val interactionSource = remember { MutableInteractionSource() }
-  val isPressed by interactionSource.collectIsPressedAsState()
-  val colors = theme.normalButton(isPressed)
-  val isEnabled = state is Inactive
-  val background = if (isEnabled) colors.containerColor else colors.disabledContainerColor
-
   Row(
     modifier =
       modifier
-        .background(background, ButtonShape)
         .padding(horizontal = 4.dp)
-        .clickable(interactionSource, LocalIndication.current, isEnabled, onClick = onClickSync),
+        .clickable(enabled = state is Inactive, onClick = onClickSync),
     horizontalArrangement = Arrangement.spacedBy(5.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {
