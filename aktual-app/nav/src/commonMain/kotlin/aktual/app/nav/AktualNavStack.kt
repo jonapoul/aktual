@@ -12,6 +12,9 @@ class AktualNavStack<T : NavKey>(
   private val appCloser: AppCloser?,
   private val stack: SnapshotStateList<T>,
 ) : MutableList<T> by stack, StateObject by stack, RandomAccess by stack {
+  private val backStackString: String
+    get() = joinToString { it.toString() }
+
   fun push(route: T) {
     add(route)
     logcat.v(TAG) { "Push $route - backStack=[$backStackString]" }
@@ -47,9 +50,6 @@ class AktualNavStack<T : NavKey>(
   fun log() {
     logcat.v(TAG) { "Log backStack=[$backStackString]" }
   }
-
-  private val backStackString: String
-    get() = joinToString { it.toString() }
 
   private companion object {
     private const val TAG = "Navigation"
