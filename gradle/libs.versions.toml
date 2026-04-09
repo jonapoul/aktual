@@ -14,7 +14,7 @@ kotlinx-coroutines = "1.10.2"
 kotlinx-serialization = "1.10.0"
 ktor = "3.4.2"
 markdown = "0.39.2"
-metro = "0.12.1"
+metro = "0.13.1"
 redacted = "1.16.0"
 sqldelight = "2.3.2"
 
