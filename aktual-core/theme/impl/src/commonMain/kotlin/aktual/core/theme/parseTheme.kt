@@ -207,6 +207,7 @@ internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomTheme {
             noticeTextLight = "noticeTextLight".attr(noticeTextLight),
             noticeTextDark = "noticeTextDark".attr(noticeTextDark),
             noticeTextMenu = "noticeTextMenu".attr(noticeTextMenu),
+            noticeTextMenuHover = "noticeTextMenuHover".attr(noticeTextMenuHover),
             noticeBorder = "noticeBorder".attr(noticeBorder),
             warningBackground = "warningBackground".attr(warningBackground),
             warningText = "warningText".attr(warningText),
@@ -301,6 +302,18 @@ internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomTheme {
             tooltipBackground = "tooltipBackground".attr(tooltipBackground),
             tooltipBorder = "tooltipBorder".attr(tooltipBorder),
             overlayBackground = "overlayBackground".attr(overlayBackground),
+          ),
+        chartQual =
+          ChartQualColors(
+            chartQual1 = "chartQual1".attr(chartQual1),
+            chartQual2 = "chartQual2".attr(chartQual2),
+            chartQual3 = "chartQual3".attr(chartQual3),
+            chartQual4 = "chartQual4".attr(chartQual4),
+            chartQual5 = "chartQual5".attr(chartQual5),
+            chartQual6 = "chartQual6".attr(chartQual6),
+            chartQual7 = "chartQual7".attr(chartQual7),
+            chartQual8 = "chartQual8".attr(chartQual8),
+            chartQual9 = "chartQual9".attr(chartQual9),
           ),
       )
     }

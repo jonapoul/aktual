@@ -25,6 +25,7 @@ internal data class JsonCustomTheme(
   @SerialName("status") val status: StatusColors,
   @SerialName("form") val form: FormColors,
   @SerialName("misc") val misc: MiscColors,
+  @SerialName("chartQual") val chartQual: ChartQualColors,
   @SerialName("isLight") override val isLight: Boolean,
 ) : CustomTheme {
 
@@ -421,6 +422,9 @@ internal data class JsonCustomTheme(
   override val noticeText: Color
     get() = status.noticeText
 
+  override val noticeTextMenuHover: Color
+    get() = status.noticeTextMenuHover
+
   override val noticeTextLight: Color
     get() = status.noticeTextLight
 
@@ -674,6 +678,33 @@ internal data class JsonCustomTheme(
 
   override val overlayBackground: Color
     get() = misc.overlayBackground
+
+  override val chartQual1: Color
+    get() = chartQual.chartQual1
+
+  override val chartQual2: Color
+    get() = chartQual.chartQual2
+
+  override val chartQual3: Color
+    get() = chartQual.chartQual3
+
+  override val chartQual4: Color
+    get() = chartQual.chartQual4
+
+  override val chartQual5: Color
+    get() = chartQual.chartQual5
+
+  override val chartQual6: Color
+    get() = chartQual.chartQual6
+
+  override val chartQual7: Color
+    get() = chartQual.chartQual7
+
+  override val chartQual8: Color
+    get() = chartQual.chartQual8
+
+  override val chartQual9: Color
+    get() = chartQual.chartQual9
 }
 
 @Serializable
@@ -827,6 +858,7 @@ internal data class StatusColors(
   @SerialName("noticeBackgroundLight") val noticeBackgroundLight: Color,
   @SerialName("noticeBackgroundDark") val noticeBackgroundDark: Color,
   @SerialName("noticeText") val noticeText: Color,
+  @SerialName("noticeTextMenuHover") val noticeTextMenuHover: Color,
   @SerialName("noticeTextLight") val noticeTextLight: Color,
   @SerialName("noticeTextDark") val noticeTextDark: Color,
   @SerialName("noticeTextMenu") val noticeTextMenu: Color,
@@ -919,4 +951,17 @@ internal data class MiscColors(
   @SerialName("tooltipBackground") val tooltipBackground: Color,
   @SerialName("tooltipBorder") val tooltipBorder: Color,
   @SerialName("overlayBackground") val overlayBackground: Color,
+)
+
+@Serializable
+internal data class ChartQualColors(
+  @SerialName("chartQual1") val chartQual1: Color,
+  @SerialName("chartQual2") val chartQual2: Color,
+  @SerialName("chartQual3") val chartQual3: Color,
+  @SerialName("chartQual4") val chartQual4: Color,
+  @SerialName("chartQual5") val chartQual5: Color,
+  @SerialName("chartQual6") val chartQual6: Color,
+  @SerialName("chartQual7") val chartQual7: Color,
+  @SerialName("chartQual8") val chartQual8: Color,
+  @SerialName("chartQual9") val chartQual9: Color,
 )
