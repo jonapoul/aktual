@@ -28,7 +28,7 @@ UPSTREAM_REPO="https://github.com/actualbudget/actual.git"
 THEME_CONTRACT_DIR="packages/component-library/src"
 THEME_CONTRACT_FILE="packages/component-library/src/theme.ts"
 THEME_DIR="packages/desktop-client/src/style/themes"
-PR_LABEL="theme-attributes"
+PR_LABEL="upstream-changes"
 PR_BRANCH="auto/upstream-theme-attributes"
 
 DRY_RUN="${DRY_RUN:-}"
@@ -53,7 +53,7 @@ grep -oP '^\s+(\w+)\s*:' "$tmp_dir/$THEME_CONTRACT_FILE" \
 
 # Extract export names from each theme file (lines like "export const someName = ...")
 for theme_file in "$tmp_dir/$THEME_DIR"/*.ts; do
-  grep -oP '^export const (\w+)' "$theme_file" | sed 's/export const //'
+  grep -oP '^export const (\w+)' "$theme_file" | sed 's/export const //' || true
 done | sort -u > "$tmp_dir/theme_file_attrs.txt"
 
 # Union of all attributes
