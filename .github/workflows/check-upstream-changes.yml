@@ -1,4 +1,4 @@
-name: Check Upstream Migrations
+name: Check Upstream Changes
 
 on:
   # 8am daily
@@ -22,6 +22,21 @@ jobs:
       - run: chmod +x .github/upstream-migration-tracker/check-migrations.sh
 
       - run: .github/upstream-migration-tracker/check-migrations.sh
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+
+  check-theme-attributes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+        with:
+          ref: main
+
+      - run: chmod +x .github/upstream-theme-tracker/check-theme-attributes.sh
+
+      - run: .github/upstream-theme-tracker/check-theme-attributes.sh
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
