@@ -22,7 +22,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TRACKER_FILE="$SCRIPT_DIR/last-known-migration.txt"
 UPSTREAM_REPO="https://github.com/actualbudget/actual.git"
 MIGRATIONS_PATH="packages/loot-core/migrations"
-PR_LABEL="db-migration"
+PR_LABEL="upstream-changes"
 PR_BRANCH="auto/upstream-migrations"
 
 DRY_RUN="${DRY_RUN:-}"
