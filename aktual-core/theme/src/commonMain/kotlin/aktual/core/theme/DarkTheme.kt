@@ -157,7 +157,7 @@ data object DarkTheme : DefaultTheme {
   override val noticeTextLight = AktualColors.green500
   override val noticeTextDark = AktualColors.green150
   override val noticeTextMenu = AktualColors.green500
-  override val noticeTextMenuHover = AktualColors.green800
+  override val noticeTextMenuHover = noticeTextMenu
   override val noticeBorder = AktualColors.green800
   override val warningBackground = AktualColors.orange800
   override val warningText = AktualColors.orange300

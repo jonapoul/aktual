@@ -422,9 +422,6 @@ internal data class JsonCustomTheme(
   override val noticeText: Color
     get() = status.noticeText
 
-  override val noticeTextMenuHover: Color
-    get() = status.noticeTextMenuHover
-
   override val noticeTextLight: Color
     get() = status.noticeTextLight
 
@@ -433,6 +430,9 @@ internal data class JsonCustomTheme(
 
   override val noticeTextMenu: Color
     get() = status.noticeTextMenu
+
+  override val noticeTextMenuHover: Color
+    get() = status.noticeTextMenuHover
 
   override val noticeBorder: Color
     get() = status.noticeBorder
@@ -858,10 +858,10 @@ internal data class StatusColors(
   @SerialName("noticeBackgroundLight") val noticeBackgroundLight: Color,
   @SerialName("noticeBackgroundDark") val noticeBackgroundDark: Color,
   @SerialName("noticeText") val noticeText: Color,
-  @SerialName("noticeTextMenuHover") val noticeTextMenuHover: Color,
   @SerialName("noticeTextLight") val noticeTextLight: Color,
   @SerialName("noticeTextDark") val noticeTextDark: Color,
   @SerialName("noticeTextMenu") val noticeTextMenu: Color,
+  @SerialName("noticeTextMenuHover") val noticeTextMenuHover: Color,
   @SerialName("noticeBorder") val noticeBorder: Color,
   @SerialName("warningBackground") val warningBackground: Color,
   @SerialName("warningText") val warningText: Color,
