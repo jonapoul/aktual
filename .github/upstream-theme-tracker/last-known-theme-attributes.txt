@@ -52,6 +52,15 @@ calendarText
 cardBackground
 cardBorder
 cardShadow
+chartQual1
+chartQual2
+chartQual3
+chartQual4
+chartQual5
+chartQual6
+chartQual7
+chartQual8
+chartQual9
 checkboxBackgroundSelected
 checkboxBorderSelected
 checkboxShadowSelected
@@ -130,6 +139,7 @@ noticeText
 noticeTextDark
 noticeTextLight
 noticeTextMenu
+noticeTextMenuHover
 numberNegative
 numberNeutral
 numberPositive

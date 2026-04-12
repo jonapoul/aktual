@@ -157,6 +157,7 @@ sealed interface Theme {
   val noticeTextLight: Color
   val noticeTextDark: Color
   val noticeTextMenu: Color
+  val noticeTextMenuHover: Color
   val noticeBorder: Color
   val warningBackground: Color
   val warningText: Color
@@ -246,6 +247,16 @@ sealed interface Theme {
   val tooltipBorder: Color
 
   val overlayBackground: Color
+
+  val chartQual1: Color
+  val chartQual2: Color
+  val chartQual3: Color
+  val chartQual4: Color
+  val chartQual5: Color
+  val chartQual6: Color
+  val chartQual7: Color
+  val chartQual8: Color
+  val chartQual9: Color
 
   companion object {
     val Defaults = setOf(LightTheme, DarkTheme, MidnightTheme)

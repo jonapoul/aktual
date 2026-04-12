@@ -87,4 +87,13 @@ internal object AktualColors {
   val white = Color.White
   val black = Color.Black
   val hover = Color(color = 0xFFFAFAFA)
+  val chartQual1 = Color(color = 0xFF45B29D)
+  val chartQual2 = Color(color = 0xFFEFC94C)
+  val chartQual3 = Color(color = 0xFFE27A3F)
+  val chartQual4 = Color(color = 0xFFDF5A49)
+  val chartQual5 = Color(color = 0xFF5F91B8)
+  val chartQual6 = Color(color = 0xFFE2A37F)
+  val chartQual7 = Color(color = 0xFF55DBC1)
+  val chartQual8 = Color(color = 0xFFEFDA97)
+  val chartQual9 = Color(color = 0xFFDF948A)
 }

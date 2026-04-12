@@ -187,6 +187,7 @@ body="$(build_body)"
 existing_pr="$(gh pr list \
   --repo "$GITHUB_REPOSITORY" \
   --label "$PR_LABEL" \
+  --head "$PR_BRANCH" \
   --state open \
   --limit 1 \
   --json number,body \

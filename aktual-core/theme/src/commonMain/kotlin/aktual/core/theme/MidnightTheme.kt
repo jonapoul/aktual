@@ -157,6 +157,7 @@ data object MidnightTheme : DefaultTheme {
   override val noticeTextLight = AktualColors.green400
   override val noticeTextDark = AktualColors.green150
   override val noticeTextMenu = AktualColors.green400
+  override val noticeTextMenuHover = AktualColors.green700
   override val noticeBorder = AktualColors.green800
   override val warningBackground = AktualColors.orange800
   override val warningText = AktualColors.orange200
@@ -246,4 +247,14 @@ data object MidnightTheme : DefaultTheme {
   override val tooltipBorder = AktualColors.gray600
 
   override val overlayBackground = Color(color = 0x4D000000)
+
+  override val chartQual1 = AktualColors.chartQual1
+  override val chartQual2 = AktualColors.chartQual2
+  override val chartQual3 = AktualColors.chartQual3
+  override val chartQual4 = AktualColors.chartQual4
+  override val chartQual5 = AktualColors.chartQual5
+  override val chartQual6 = AktualColors.chartQual6
+  override val chartQual7 = AktualColors.chartQual7
+  override val chartQual8 = AktualColors.chartQual8
+  override val chartQual9 = AktualColors.chartQual9
 }

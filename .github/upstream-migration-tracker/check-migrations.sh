@@ -110,6 +110,7 @@ git config user.email "jpoulton@pm.me"
 existing_pr="$(gh pr list \
   --repo "$GITHUB_REPOSITORY" \
   --label "$PR_LABEL" \
+  --head "$PR_BRANCH" \
   --state open \
   --limit 1 \
   --json number,body \
