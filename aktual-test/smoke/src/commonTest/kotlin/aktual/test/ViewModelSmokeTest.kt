@@ -17,6 +17,7 @@ import aktual.metrics.vm.MetricsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.root.SettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
+import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import androidx.lifecycle.ViewModel
 import app.cash.burst.InterceptTest
 import assertk.assertThat
@@ -56,6 +57,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   protected abstract fun optionallySkip()
 
   @Test fun about() = testVm<AboutViewModel>()
+
+  @Test fun customThemeSettings() = testVm<CustomThemeSettingsViewModel>()
 
   @Test fun licenses() = testVm<LicensesViewModel>()
 

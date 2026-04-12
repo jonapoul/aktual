@@ -25,3 +25,10 @@ class ThemeSettingsNavigator(private val stack: AktualNavStack<NavKey>) {
 }
 
 @Immutable @Serializable data object ThemeSettingsNavRoute : NavKey
+
+@Immutable
+class CustomThemesNavigator(private val stack: AktualNavStack<NavKey>) {
+  operator fun invoke() = stack.push(CustomThemeSettingsNavRoute)
+}
+
+@Immutable @Serializable data object CustomThemeSettingsNavRoute : NavKey
