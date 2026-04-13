@@ -18,6 +18,12 @@ data class CustomThemeRepo(val userName: String, val repoName: String) :
   override fun compareTo(other: CustomThemeRepo): Int = toString().compareTo(other.toString())
 }
 
+fun CustomThemeRepo(string: String): CustomThemeRepo {
+  val parts = string.split('/')
+  require(parts.size == 2) { "Malformed repository ID: '$string'" }
+  return CustomThemeRepo(userName = parts[0], repoName = parts[1])
+}
+
 fun CustomThemeRepo.toId(): ThemeId = ThemeId(toString())
 
 // E.g. "Juulz/simple-dark"
@@ -27,10 +33,6 @@ internal object CustomThemeRepoSerializer : KSerializer<CustomThemeRepo> {
   override fun serialize(encoder: Encoder, value: CustomThemeRepo) =
     encoder.encodeString(value.toString())
 
-  override fun deserialize(decoder: Decoder): CustomThemeRepo {
-    val string = decoder.decodeString()
-    val parts = string.split('/')
-    require(parts.size == 2) { "Malformed repository ID: $string" }
-    return CustomThemeRepo(userName = parts[0], repoName = parts[1])
-  }
+  override fun deserialize(decoder: Decoder): CustomThemeRepo =
+    CustomThemeRepo(decoder.decodeString())
 }

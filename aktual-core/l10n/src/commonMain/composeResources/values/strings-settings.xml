@@ -15,13 +15,18 @@
 
   <string name="settings_theme_built_in">Built-in themes</string>
   <string name="settings_theme_preview">Preview %1$s theme</string>
-  <string name="settings_theme_custom_themes">Custom themes</string>
-  <string name="settings_theme_fetching_themes">Fetching themes…</string>
-  <string name="settings_theme_loading">Loading themes…</string>
   <string name="settings_theme_failed">Failed to load themes: %1$s</string>
-  <string name="settings_theme_retry">Retry</string>
-  <string name="settings_theme_refresh">Refresh</string>
+  <string name="settings_theme_custom_title">Custom Themes</string>
+  <string name="settings_theme_custom_button">View catalog</string>
+  <string name="settings_theme_custom_clear_cache">Clear cache and refresh</string>
   <string name="settings_theme_refresh_success">Theme catalog refreshed</string>
+  <string name="settings_theme_refresh_prefix">Error</string>
+  <string name="settings_theme_refresh_failure">Failed fetching catalog</string>
+  <string name="settings_theme_refresh_retry">Retry</string>
+  <string name="settings_theme_filter_all">All themes</string>
+  <string name="settings_theme_filter_light">Light themes only</string>
+  <string name="settings_theme_filter_dark">Dark themes only</string>
+  <string name="settings_theme_fetch_failed">Failed fetching %1$s: %2$s</string>
 
   <string name="settings_theme_inspect_loading">Loading…</string>
   <string name="settings_theme_inspect_open_repo">Open on GitHub</string>

@@ -1,10 +1,14 @@
 package aktual.core.theme
 
-import kotlinx.serialization.SerialName
+import alakazam.kotlin.SerializableByString
+import alakazam.kotlin.enumStringSerializer
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 
-@Serializable
-enum class ThemeMode {
-  @SerialName("light") Light,
-  @SerialName("dark") Dark,
+@Serializable(ThemeMode.Serializer::class)
+enum class ThemeMode(override val value: String) : SerializableByString {
+  Light("light"),
+  Dark("dark");
+
+  internal object Serializer : KSerializer<ThemeMode> by enumStringSerializer()
 }

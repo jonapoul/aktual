@@ -2,6 +2,8 @@ package aktual.prefs.ui
 
 import aktual.app.nav.AktualNavStack
 import aktual.app.nav.BackNavigator
+import aktual.app.nav.CustomThemeSettingsNavRoute
+import aktual.app.nav.CustomThemesNavigator
 import aktual.app.nav.InspectThemeNavRoute
 import aktual.app.nav.InspectThemeNavigator
 import aktual.app.nav.NavEntryContributor
@@ -12,6 +14,7 @@ import aktual.app.nav.ThemeSettingsNavigator
 import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.root.SettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
+import aktual.prefs.ui.theme.custom.CustomThemeSettingsScreen
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -24,7 +27,15 @@ class SettingsNavEntryContributor : NavEntryContributor {
     }
 
     scope.entry<ThemeSettingsNavRoute> {
-      ThemeSettingsScreen(BackNavigator(stack), InspectThemeNavigator(stack))
+      ThemeSettingsScreen(
+        back = BackNavigator(stack),
+        toCustomThemes = CustomThemesNavigator(stack),
+        toInspectTheme = InspectThemeNavigator(stack),
+      )
+    }
+
+    scope.entry<CustomThemeSettingsNavRoute> {
+      CustomThemeSettingsScreen(BackNavigator(stack), InspectThemeNavigator(stack))
     }
 
     scope.entry<InspectThemeNavRoute> { route ->
