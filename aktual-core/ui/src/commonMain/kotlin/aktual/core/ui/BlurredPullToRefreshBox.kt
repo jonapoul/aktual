@@ -10,9 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
-/**
- * To help align the content of the PTR box with the content underneath a scaffold's top bar.
- */
+/** To help align the content of the PTR box with the content underneath a scaffold's top bar. */
 @Composable
 fun BlurredPullToRefreshBox(
   blurState: BlurredTopBarState,
