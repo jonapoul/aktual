@@ -5,11 +5,9 @@ import aktual.about.vm.LicensesState
 import aktual.about.vm.LicensesViewModel
 import aktual.about.vm.SearchBarState
 import aktual.app.nav.BackNavigator
-import aktual.core.icons.material.Error
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
-import aktual.core.icons.material.Warning
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
@@ -17,11 +15,12 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TextField
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.WavyBackground
@@ -39,14 +38,13 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
@@ -66,7 +64,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -234,25 +231,13 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun NoneFoundContent(theme: Theme, modifier: Modifier = Modifier) {
-  Column(
-    modifier = modifier.fillMaxSize(),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    Icon(
-      modifier = Modifier.size(80.dp),
-      imageVector = MaterialIcons.Warning,
-      contentDescription = null,
-      tint = theme.warningText,
-    )
-
-    VerticalSpacer(Dimens.Large)
-
-    Text(
-      text = Strings.licensesNoneFound,
-      fontSize = 20.sp,
-      textAlign = TextAlign.Center,
-      color = theme.warningText,
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    FailureScreen(
+      modifier = Modifier.padding(Dimens.Huge).background(theme.tableBackground, CardShape),
+      title = Strings.licensesError,
+      reason = Strings.licensesNoneFound,
+      retryText = null,
+      onClickRetry = null,
     )
   }
 }
@@ -295,32 +280,13 @@ private fun ErrorContent(
   onAction: (LicensesAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Column(
-    modifier = modifier.fillMaxSize().padding(32.dp),
-    verticalArrangement = Arrangement.Center,
-    horizontalAlignment = Alignment.CenterHorizontally,
-  ) {
-    Icon(
-      modifier = Modifier.size(80.dp),
-      imageVector = MaterialIcons.Error,
-      contentDescription = null,
-      tint = theme.errorText,
-    )
-
-    VerticalSpacer(Dimens.Large)
-
-    Text(
-      text = Strings.licensesFailed(errorMessage),
-      fontSize = 20.sp,
-      textAlign = TextAlign.Center,
-      color = theme.errorText,
-    )
-
-    VerticalSpacer(Dimens.Large)
-
-    PrimaryTextButton(
-      text = Strings.licensesFailedRetry,
-      onClick = { onAction(LicensesAction.Reload) },
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+    FailureScreen(
+      modifier = Modifier.padding(Dimens.Huge).background(theme.tableBackground, CardShape),
+      title = Strings.licensesError,
+      reason = Strings.licensesFailed(errorMessage),
+      retryText = Strings.licensesFailedRetry,
+      onClickRetry = { onAction(LicensesAction.Reload) },
     )
   }
 }
