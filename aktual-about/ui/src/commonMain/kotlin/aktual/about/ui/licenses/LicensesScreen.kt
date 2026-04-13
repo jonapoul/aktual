@@ -2,8 +2,14 @@ package aktual.about.ui.licenses
 
 import aktual.about.data.ArtifactDetail
 import aktual.about.vm.LicensesState
+import aktual.about.vm.LicensesState.Error
+import aktual.about.vm.LicensesState.Loaded
+import aktual.about.vm.LicensesState.Loading
+import aktual.about.vm.LicensesState.NoneFound
 import aktual.about.vm.LicensesViewModel
 import aktual.about.vm.SearchBarState
+import aktual.about.vm.SearchBarState.Gone
+import aktual.about.vm.SearchBarState.Visible
 import aktual.app.nav.BackNavigator
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Search
@@ -12,6 +18,7 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualTypography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
@@ -20,9 +27,10 @@ import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.TextField
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.ThemedParameterProvider
+import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
@@ -32,30 +40,26 @@ import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
 import aktual.core.ui.transparentTopAppBarColors
-import alakazam.compose.VerticalSpacer
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -64,14 +68,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroViewModel()) {
@@ -102,6 +106,7 @@ private fun LicensesScaffold(
   val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
+  val sheetState = rememberModalBottomSheetState()
 
   Scaffold(
     topBar = {
@@ -112,103 +117,95 @@ private fun LicensesScaffold(
         title = {
           Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
         },
-        actions = {
-          IconButton(onClick = { onAction(LicensesAction.ToggleSearchBar) }) {
-            Icon(
-              imageVector =
-                when (searchBarState) {
-                  SearchBarState.Gone -> MaterialIcons.Search
-                  is SearchBarState.Visible -> MaterialIcons.SearchOff
-                },
-              contentDescription = Strings.licensesToolbarSearch,
-            )
-          }
-        },
+        actions = { SearchButton(onAction, searchBarState) },
       )
     }
   ) { innerPadding ->
     Box {
       WavyBackground()
-      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
-        LicensesSearchInput(
-          modifier =
-            Modifier.fillMaxWidth()
-              .padding(
-                start = 20.dp,
-                end = 20.dp,
-                top = if (blurState.blurEnabled) innerPadding.calculateTopPadding() else 0.dp,
-              )
-              .wrapContentHeight(),
-          searchState = searchBarState,
-          licensesState = state,
-          onAction = onAction,
-          theme = theme,
-        )
-
-        Content(
-          state = state,
-          contentPadding =
-            if (searchBarState is SearchBarState.Visible) {
-              PaddingValues.Zero
-            } else {
-              blurredTopBarContentPadding(blurState, innerPadding)
-            },
-          listState = listState,
-          theme = theme,
-          onAction = onAction,
-        )
-      }
+      LicensesContent(
+        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+        state = state,
+        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        listState = listState,
+        theme = theme,
+        onAction = onAction,
+      )
     }
+  }
+
+  if (searchBarState is Visible) {
+    SearchInputBottomSheet(
+      searchState = searchBarState,
+      licensesState = state,
+      sheetState = sheetState,
+      onAction = onAction,
+    )
   }
 }
 
 @Composable
-private fun LicensesSearchInput(
-  searchState: SearchBarState,
+private fun SearchButton(onAction: (LicensesAction) -> Unit, state: SearchBarState) {
+  IconButton(onClick = { onAction(LicensesAction.ToggleSearchBar) }) {
+    Icon(
+      imageVector =
+        when (state) {
+          Gone -> MaterialIcons.Search
+          is Visible -> MaterialIcons.SearchOff
+        },
+      contentDescription = Strings.licensesToolbarSearch,
+    )
+  }
+}
+
+@Composable
+private fun SearchInputBottomSheet(
+  searchState: Visible,
   licensesState: LicensesState,
   onAction: (LicensesAction) -> Unit,
+  sheetState: SheetState,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   val keyboard = LocalSoftwareKeyboardController.current
-  val isVisible = searchState is SearchBarState.Visible
+  val isVisible = sheetState.isVisible
   LaunchedEffect(isVisible) { if (isVisible) keyboard?.show() else keyboard?.hide() }
 
-  AnimatedVisibility(
-    visible = isVisible,
-    enter = slideInVertically() + fadeIn(),
-    exit = slideOutVertically() + fadeOut(),
+  ModalBottomSheet(
+    modifier = modifier,
+    onDismissRequest = { onAction(LicensesAction.ToggleSearchBar) },
+    sheetState = sheetState,
+    containerColor = theme.modalBackground,
+    contentColor = theme.pageText,
   ) {
-    val text = (searchState as? SearchBarState.Visible)?.text.orEmpty()
-    val colors =
-      theme.textField(text = theme.mobileHeaderTextSubdued, icon = theme.mobileHeaderTextSubdued)
-
-    Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.End) {
+    Column(
+      modifier = modifier.padding(Dimens.Huge).fillMaxWidth(),
+      verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
       TextField(
         modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester(keyboard)),
-        value = text,
+        value = searchState.text,
         onValueChange = { query -> onAction(LicensesAction.EditSearchText(query)) },
         placeholderText = Strings.licensesSearchPlaceholder,
         leadingIcon = { Icon(imageVector = MaterialIcons.Search, contentDescription = null) },
         clearable = true,
         theme = theme,
-        colors = colors,
+        colors = theme.textField(),
       )
 
-      val numResults =
-        remember(licensesState) { (licensesState as? LicensesState.Loaded)?.artifacts?.size ?: 0 }
+      val numResults = remember(licensesState) { (licensesState as? Loaded)?.artifacts?.size ?: 0 }
       Text(
-        modifier = Modifier.wrapContentWidth().padding(horizontal = Dimens.Large),
+        modifier = Modifier.fillMaxWidth(),
+        textAlign = TextAlign.End,
         text = Plurals.licensesSearchNumResults(numResults, numResults),
-        fontSize = 12.sp,
-        color = theme.mobileHeaderTextSubdued,
+        style = AktualTypography.labelMedium,
       )
     }
   }
 }
 
 @Composable
-private fun Content(
+private fun LicensesContent(
   state: LicensesState,
   contentPadding: PaddingValues,
   listState: LazyListState,
@@ -217,11 +214,11 @@ private fun Content(
   theme: Theme = LocalTheme.current,
 ) =
   when (state) {
-    LicensesState.Loading -> LoadingContent(modifier)
-    LicensesState.NoneFound -> NoneFoundContent(theme, modifier)
-    is LicensesState.Loaded ->
+    Loading -> LoadingContent(modifier)
+    NoneFound -> NoneFoundContent(theme, modifier)
+    is Loaded ->
       LoadedContent(theme, state.artifacts, contentPadding, listState, onAction, modifier)
-    is LicensesState.Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
+    is Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
   }
 
 @Composable
@@ -252,9 +249,10 @@ private fun LoadedContent(
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
-    modifier = modifier.fillMaxSize().scrollbar(listState).padding(horizontal = Dimens.Large),
+    modifier = modifier.fillMaxSize().padding(horizontal = 4.dp).scrollbar(listState),
     contentPadding = contentPadding,
     state = listState,
+    verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     items(artifacts) { artifact ->
       ArtifactItem(
@@ -262,8 +260,6 @@ private fun LoadedContent(
         onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },
         theme = theme,
       )
-
-      VerticalSpacer(5.dp)
     }
 
     item {
@@ -293,51 +289,28 @@ private fun ErrorContent(
 
 @PortraitPreview
 @Composable
-private fun PreviewNoneFound(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
-    LicensesScaffold(
-      state = LicensesState.NoneFound,
-      searchBarState = SearchBarState.Gone,
-      onAction = {},
-    )
+private fun PreviewLicenses(
+  @PreviewParameter(LicensesParamsProvider::class) params: ThemedParams<LicensesParams>
+) {
+  PreviewWithThemedParams(params) {
+    LicensesScaffold(state = state, searchBarState = searchState, onAction = {})
   }
+}
 
-@PortraitPreview
-@Composable
-private fun PreviewLoading(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
-    LicensesScaffold(
-      state = LicensesState.Loading,
-      searchBarState = SearchBarState.Gone,
-      onAction = {},
-    )
-  }
+private data class LicensesParams(val state: LicensesState, val searchState: SearchBarState = Gone)
 
-@PortraitPreview
-@Composable
-private fun PreviewLoaded(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
-    LicensesScaffold(
-      state =
-        LicensesState.Loaded(
-          artifacts =
-            persistentListOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi)
-        ),
-      searchBarState = SearchBarState.Visible(text = "My wicked search query"),
-      onAction = {},
-    )
-  }
+private val LOADED_STATE =
+  Loaded(
+    artifacts = List(size = 5) { listOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi) }
+      .flatten()
+      .toImmutableList()
+  )
 
-@PortraitPreview
-@Composable
-private fun PreviewError(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
-    LicensesScaffold(
-      state =
-        LicensesState.Error(
-          errorMessage = "Something broke lol! Here's some more shite to show how it looks"
-        ),
-      searchBarState = SearchBarState.Gone,
-      onAction = {},
-    )
-  }
+private class LicensesParamsProvider :
+  ThemedParameterProvider<LicensesParams>(
+    LicensesParams(Error("Something broke lol! Here's some more shite to show how it looks")),
+    LicensesParams(NoneFound),
+    LicensesParams(Loading),
+    LicensesParams(LOADED_STATE, searchState = Gone),
+    LicensesParams(LOADED_STATE, searchState = Visible("My wicked search query")),
+  )
