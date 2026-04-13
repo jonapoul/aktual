@@ -7,6 +7,8 @@ import androidx.compose.material3.CheckboxColors
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.IconButtonDefaults
+import androidx.compose.material3.ListItemColors
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
@@ -233,6 +235,15 @@ fun Theme.checkbox(): CheckboxColors =
     disabledBorderColor = checkboxBorderSelected.disabled,
     disabledUncheckedBorderColor = pageText.disabled,
     disabledIndeterminateBorderColor = checkboxBorderSelected.disabled,
+  )
+
+@Composable
+fun Theme.listItem(): ListItemColors =
+  ListItemDefaults.colors(
+    containerColor = Color.Transparent,
+    headlineColor = pageText,
+    leadingIconColor = pageText,
+    trailingIconColor = pageText,
   )
 
 @get:Stable

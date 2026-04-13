@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -61,6 +62,8 @@ class CustomThemeSettingsViewModel(
 
   val events: SharedFlow<CustomThemeEvent> = mutableEvents
 
+  val filter: StateFlow<ThemeFilter> = mutableFilter.asStateFlow()
+
   val state: StateFlow<CatalogState> =
     viewModelScope.launchMolecule(Immediate) {
       val isFetchingCatalog by mutableIsFetchingCatalog.collectAsState()
@@ -87,14 +90,10 @@ class CustomThemeSettingsViewModel(
             selected = selected,
           )
         }
-      CatalogState.Success(filter = filter, items = items)
+      CatalogState.Success(items)
     }
 
   init {
-    loadCatalog()
-  }
-
-  fun loadCatalog() {
     viewModelScope.launch { fetchCatalog(showSnackbar = false) }
   }
 

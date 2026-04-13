@@ -9,7 +9,7 @@ import kotlinx.collections.immutable.ImmutableList
 sealed interface CatalogState {
   data object Loading : CatalogState
 
-  data class Success(val items: ImmutableList<CatalogItem>, val filter: ThemeFilter) : CatalogState
+  data class Success(val items: ImmutableList<CatalogItem>) : CatalogState
 
   @Immutable
   sealed interface Failed : CatalogState {

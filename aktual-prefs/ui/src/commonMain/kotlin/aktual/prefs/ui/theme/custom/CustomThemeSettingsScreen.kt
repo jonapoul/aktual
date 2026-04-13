@@ -6,6 +6,7 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Cloud
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.material.ArrowRight
+import aktual.core.icons.material.FilterList
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OfflinePin
 import aktual.core.icons.material.Sync
@@ -13,11 +14,14 @@ import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.settings_theme_refresh_failure
 import aktual.core.l10n.settings_theme_refresh_success
+import aktual.core.model.ThemeId
+import aktual.core.model.immutableList
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
@@ -26,33 +30,31 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
+import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.blurredTopBar
-import aktual.core.ui.blurredTopBarContent
-import aktual.core.ui.blurredTopBarContentPadding
 import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.disabledIf
 import aktual.core.ui.radioButton
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.ClearCache
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.InspectTheme
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.NavBack
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.RetryFetchCatalog
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SelectTheme
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SetModeFilter
+import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.ShowFilterSheet
 import aktual.prefs.vm.theme.custom.CacheState
 import aktual.prefs.vm.theme.custom.CatalogItem
 import aktual.prefs.vm.theme.custom.CatalogState
 import aktual.prefs.vm.theme.custom.CustomThemeEvent
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import aktual.prefs.vm.theme.custom.ThemeFilter
-import aktual.prefs.vm.theme.custom.ThemeFilter.All
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -82,10 +84,13 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -99,7 +104,6 @@ import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
-import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.getString
 
 @Composable
@@ -109,7 +113,15 @@ fun CustomThemeSettingsScreen(
   viewModel: CustomThemeSettingsViewModel = metroViewModel<CustomThemeSettingsViewModel>(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val filter by viewModel.filter.collectAsStateWithLifecycle()
   val snackbar = remember { SnackbarHostState() }
+  var showFilterSheet by remember { mutableStateOf(false) }
+
+  LaunchedEffect(state) {
+    if (state !is CatalogState.Success) {
+      showFilterSheet = false
+    }
+  }
 
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
@@ -127,12 +139,15 @@ fun CustomThemeSettingsScreen(
 
   CustomThemeSettingsScaffold(
     state = state,
+    filter = filter,
+    showFilterSheet = showFilterSheet,
     snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         NavBack -> back()
-        ClearCache -> viewModel.clearCache()
-        RetryFetchCatalog -> viewModel.loadCatalog()
+        RetryFetchCatalog -> viewModel.clearCache()
+        ShowFilterSheet -> showFilterSheet = true
+        DismissBottomSheet -> showFilterSheet = false
         is InspectTheme -> viewModel.fetchAndNavigate(action.summary)
         is SelectTheme -> viewModel.select(action.summary)
         is SetModeFilter -> viewModel.setFilter(action.mode)
@@ -144,12 +159,15 @@ fun CustomThemeSettingsScreen(
 @Composable
 private fun CustomThemeSettingsScaffold(
   state: CatalogState,
-  onAction: (CustomThemeSettingsAction) -> Unit,
+  filter: ThemeFilter,
+  showFilterSheet: Boolean,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
+  onAction: (CustomThemeSettingsAction) -> Unit,
 ) {
   val theme = LocalTheme.current
   val listState = rememberLazyListState()
   val blurState = rememberBlurredTopBarState()
+  val sheetState = rememberModalBottomSheetState()
 
   Scaffold(
     topBar = {
@@ -158,7 +176,7 @@ private fun CustomThemeSettingsScaffold(
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsThemeCustomTitle) },
-        actions = { RefreshButton(state, onAction) },
+        actions = { FilterButton(state, onAction) },
       )
     },
     snackbarHost = {
@@ -172,23 +190,39 @@ private fun CustomThemeSettingsScaffold(
       )
     },
   ) { innerPadding ->
-    CustomThemeSettingsContent(
-      modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
-      contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
-      state = state,
-      listState = listState,
-      onAction = onAction,
-    )
+    Box {
+      PageBackground()
+
+      BlurredPullToRefreshBox(
+        modifier = Modifier.padding(horizontal = 8.dp),
+        onRefresh = { onAction(RetryFetchCatalog) },
+        isRefreshing = state is CatalogState.Loading,
+        contentAlignment = Alignment.Center,
+        blurState = blurState,
+        innerPadding = innerPadding,
+      ) { padding ->
+        CustomThemeSettingsContent(
+          state = state,
+          onAction = onAction,
+          listState = listState,
+          contentPadding = padding,
+        )
+      }
+    }
+  }
+
+  if (showFilterSheet && state is CatalogState.Success) {
+    ThemeFilterBottomSheet(selected = filter, sheetState = sheetState, onAction = onAction)
   }
 }
 
 @Composable
-private fun RefreshButton(state: CatalogState, onAction: (CustomThemeSettingsAction) -> Unit) {
+private fun FilterButton(state: CatalogState, onAction: (CustomThemeSettingsAction) -> Unit) {
   BareIconButton(
-    imageVector = MaterialIcons.Sync,
+    imageVector = MaterialIcons.FilterList,
     contentDescription = Strings.settingsThemeCustomClearCache,
     enabled = state !is CatalogState.Loading,
-    onClick = { onAction(ClearCache) },
+    onClick = { onAction(ShowFilterSheet) },
   )
 }
 
@@ -204,8 +238,7 @@ private fun CustomThemeSettingsContent(
     when (state) {
       CatalogState.Loading -> LoadingContent(contentPadding)
       is CatalogState.Failed -> FailedContent(state, onAction)
-      is CatalogState.Success ->
-        SuccessContent(state.items, state.filter, listState, contentPadding, onAction)
+      is CatalogState.Success -> SuccessContent(state.items, listState, contentPadding, onAction)
     }
   }
 }
@@ -301,7 +334,6 @@ private fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme
 @Composable
 private fun SuccessContent(
   items: ImmutableList<CatalogItem>,
-  filter: ThemeFilter,
   listState: LazyListState,
   contentPadding: PaddingValues,
   onAction: (CustomThemeSettingsAction) -> Unit,
@@ -426,12 +458,32 @@ private const val PREVIEW_WEIGHT = 1f
 @Composable
 @PortraitPreview
 private fun PreviewCustomThemeSettings(
-  @PreviewParameter(CatalogStateProvider::class) params: ThemedParams<CatalogState>
-) = PreviewWithThemedParams(params) { CustomThemeSettingsScaffold(state = this, onAction = {}) }
+  @PreviewParameter(CatalogStateProvider::class) params: ThemedParams<CustomThemeSettingsParams>
+) =
+  PreviewWithThemedParams(params) {
+    CustomThemeSettingsScaffold(
+      state = state,
+      filter = filter,
+      showFilterSheet = showFilterSheet,
+      onAction = {},
+    )
+  }
+
+private data class CustomThemeSettingsParams(
+  val state: CatalogState,
+  val filter: ThemeFilter = ThemeFilter.Dark,
+  val showFilterSheet: Boolean = false,
+)
+
+private val SUCCESS_STATE =
+  CatalogState.Success(
+    items = immutableList(size = 15) { i -> PREVIEW_CATALOG_ITEM.copy(id = ThemeId(i.toString())) }
+  )
 
 private class CatalogStateProvider :
-  ThemedParameterProvider<CatalogState>(
-    CatalogState.Loading,
-    CatalogState.Failed.FetchingCatalog,
-    CatalogState.Success(items = persistentListOf(PREVIEW_CATALOG_ITEM), filter = All),
+  ThemedParameterProvider<CustomThemeSettingsParams>(
+    CustomThemeSettingsParams(CatalogState.Loading),
+    CustomThemeSettingsParams(CatalogState.Failed.FetchingCatalog),
+    CustomThemeSettingsParams(SUCCESS_STATE),
+    CustomThemeSettingsParams(SUCCESS_STATE, showFilterSheet = true),
   )

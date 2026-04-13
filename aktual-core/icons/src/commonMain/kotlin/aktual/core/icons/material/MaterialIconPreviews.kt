@@ -50,6 +50,7 @@ private val materialIcons =
       Dialogs,
       Edit,
       Error,
+      FilterList,
       Info,
       Key,
       LinearScale,
