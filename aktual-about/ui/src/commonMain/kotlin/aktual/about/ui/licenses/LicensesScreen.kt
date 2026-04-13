@@ -301,9 +301,10 @@ private data class LicensesParams(val state: LicensesState, val searchState: Sea
 
 private val LOADED_STATE =
   Loaded(
-    artifacts = List(size = 5) { listOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi) }
-      .flatten()
-      .toImmutableList()
+    artifacts =
+      List(size = 5) { listOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi) }
+        .flatten()
+        .toImmutableList()
   )
 
 private class LicensesParamsProvider :
