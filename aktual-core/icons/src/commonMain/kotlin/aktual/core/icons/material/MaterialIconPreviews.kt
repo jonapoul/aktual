@@ -53,6 +53,7 @@ private val materialIcons =
       FilterList,
       Info,
       Key,
+      LightMode,
       LinearScale,
       Logout,
       LineEndArrowNotch,

@@ -6,10 +6,14 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Cloud
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.material.ArrowRight
+import aktual.core.icons.material.Check
+import aktual.core.icons.material.DarkMode
 import aktual.core.icons.material.FilterList
+import aktual.core.icons.material.LightMode
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OfflinePin
 import aktual.core.icons.material.Sync
+import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.settings_theme_refresh_failure
@@ -39,6 +43,7 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.disabledIf
+import aktual.core.ui.listItem
 import aktual.core.ui.radioButton
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
@@ -77,8 +82,11 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -94,6 +102,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
@@ -104,6 +114,7 @@ import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 import org.jetbrains.compose.resources.getString
 
 @Composable
@@ -448,6 +459,62 @@ private fun RowScope.BoxPreviewColor(summary: CustomThemeSummary, index: Int) =
         .height(PREVIEW_HEIGHT)
         .background(summary.colors[index], CardShape)
   )
+
+@Composable
+private fun ThemeFilterBottomSheet(
+  selected: ThemeFilter,
+  onAction: (CustomThemeSettingsAction) -> Unit,
+  sheetState: SheetState,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) {
+  ModalBottomSheet(
+    modifier = modifier,
+    onDismissRequest = { onAction(DismissBottomSheet) },
+    sheetState = sheetState,
+    containerColor = theme.modalBackground,
+    contentColor = theme.pageText,
+  ) {
+    val listState = rememberLazyListState()
+    LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
+      items(ThemeFilter.entries) { filter ->
+        val isSelected = filter == selected
+        val label = filter.string()
+        ListItem(
+          modifier =
+            Modifier.clickable {
+              onAction(SetModeFilter(filter))
+              onAction(DismissBottomSheet)
+            },
+          leadingContent = { Icon(imageVector = filter.icon(), contentDescription = label) },
+          headlineContent = {
+            Text(modifier = Modifier.weight(1f), text = label, textAlign = TextAlign.Center)
+          },
+          trailingContent = {
+            if (isSelected) Icon(MaterialIcons.Check, contentDescription = null)
+          },
+          colors = theme.listItem(),
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun ThemeFilter.string(): String =
+  when (this) {
+    ThemeFilter.All -> Strings.settingsThemeFilterAll
+    ThemeFilter.Light -> Strings.settingsThemeFilterLight
+    ThemeFilter.Dark -> Strings.settingsThemeFilterDark
+  }
+
+@Composable
+private fun ThemeFilter.icon(): ImageVector =
+  when (this) {
+    ThemeFilter.All -> MaterialIcons.ThemeRoutine
+    ThemeFilter.Light -> MaterialIcons.LightMode
+    ThemeFilter.Dark -> MaterialIcons.DarkMode
+  }
 
 private val ITEM_PADDING = PaddingValues(horizontal = 15.dp, vertical = 12.dp)
 private val ITEM_SPACING = 4.dp

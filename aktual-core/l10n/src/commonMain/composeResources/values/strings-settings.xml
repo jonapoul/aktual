@@ -23,6 +23,9 @@
   <string name="settings_theme_refresh_prefix">Error</string>
   <string name="settings_theme_refresh_failure">Failed fetching catalog</string>
   <string name="settings_theme_refresh_retry">Retry</string>
+  <string name="settings_theme_filter_all">All themes</string>
+  <string name="settings_theme_filter_light">Light themes only</string>
+  <string name="settings_theme_filter_dark">Dark themes only</string>
   <string name="settings_theme_fetch_failed">Failed fetching %1$s: %2$s</string>
 
   <string name="settings_theme_inspect_loading">Loading…</string>
