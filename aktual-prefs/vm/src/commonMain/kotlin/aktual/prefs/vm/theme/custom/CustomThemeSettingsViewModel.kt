@@ -219,10 +219,7 @@ class CustomThemeSettingsViewModel(
     mutableCachedThemes.value[summary.repo.toId()]?.let {
       return it
     }
-    cache.theme(summary.repo)?.let {
-      return CacheState.Cached(summary)
-    }
-    return CacheState.Remote
+    return if (cache.theme(summary.repo) != null) CacheState.Cached(summary) else CacheState.Remote
   }
 
   private fun updateFetchState(themeId: ThemeId, fetchState: CacheState) {

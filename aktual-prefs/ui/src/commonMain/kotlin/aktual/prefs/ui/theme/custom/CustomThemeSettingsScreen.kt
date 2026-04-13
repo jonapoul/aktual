@@ -377,8 +377,8 @@ internal fun CustomThemeItem(
         .fillMaxWidth()
         .clip(RowShape)
         .background(theme.buttonNormalBackground, RowShape)
-        .clickable(enabled) { onAction(SelectTheme(item.summary)) }
         .border(Dp.Hairline, theme.pillBorderDark, RowShape)
+        .clickable(enabled) { onAction(SelectTheme(item.summary)) }
         .padding(ITEM_PADDING),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
