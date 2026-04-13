@@ -27,6 +27,7 @@
   <string name="licenses_toolbar_search">Search</string>
   <string name="licenses_failed">Failed reading licenses: %1$s</string>
   <string name="licenses_failed_retry">Retry</string>
+  <string name="licenses_error">Error</string>
   <string name="licenses_none_found">No licenses found!</string>
   <string name="licenses_item_artifact">Artifact:</string>
   <string name="licenses_item_version">Version:</string>

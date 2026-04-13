@@ -42,15 +42,11 @@ internal constructor(
   val licensesState: StateFlow<LicensesState> =
     viewModelScope.launchMolecule(Immediate) {
       val licensesState by mutableState.collectAsState()
-      val searchBarState by searchBarState.collectAsState()
-      when (val searchState = searchBarState) {
-        SearchBarState.Gone -> licensesState
+      val searchTerm by searchTerm.collectAsState()
 
-        is SearchBarState.Visible ->
-          when (val licenses = licensesState) {
-            is LicensesState.Loaded -> licenses.filteredBy(searchState.text)
-            else -> licenses
-          }
+      when (val licenses = licensesState) {
+        is LicensesState.Loaded -> licenses.filteredBy(searchTerm)
+        else -> licenses
       }
     }
 

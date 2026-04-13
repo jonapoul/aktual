@@ -1,11 +1,14 @@
 package aktual.about.ui.licenses
 
 import aktual.about.data.ArtifactDetail
+import aktual.core.icons.material.ArrowRight
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -19,7 +22,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -27,12 +31,20 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFontFamilyResolver
+import androidx.compose.ui.text.ParagraphIntrinsics
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun ArtifactItem(
@@ -42,7 +54,7 @@ internal fun ArtifactItem(
   theme: Theme = LocalTheme.current,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
-  Column(
+  Row(
     modifier =
       modifier
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
@@ -50,19 +62,81 @@ internal fun ArtifactItem(
         .border(Dp.Hairline, theme.pillBorderDark, CardShape)
         .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
         .padding(Dimens.Large),
-    verticalArrangement = Arrangement.Top,
+    verticalAlignment = Alignment.CenterVertically,
   ) {
-    Text(
-      text = artifact.name ?: artifact.artifactId,
-      fontWeight = FontWeight.W700,
-      color = theme.pageTextPositive,
-      fontSize = 15.sp,
-    )
+    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Top) {
+      Text(
+        text = artifact.name ?: artifact.artifactId,
+        fontWeight = FontWeight.W700,
+        color = theme.pageTextPositive,
+        fontSize = 15.sp,
+      )
 
-    LibraryTableRow(title = Strings.licensesItemArtifact, value = artifact.fullArtifact)
-    LibraryTableRow(title = Strings.licensesItemVersion, value = artifact.version)
-    LibraryTableRow(title = Strings.licensesItemLicense, value = artifact.license())
+      val headerStyle =
+        LocalTextStyle.current.copy(fontWeight = FontWeight.Bold, fontSize = TextSize)
+
+      val headerWidth =
+        persistentListOf(
+            Strings.licensesItemArtifact,
+            Strings.licensesItemVersion,
+            Strings.licensesItemLicense,
+          )
+          .maxOf { estimateTextWidth(it) }
+
+      LibraryTableRow(
+        title = Strings.licensesItemArtifact,
+        value = artifact.fullArtifact,
+        headerStyle = headerStyle,
+        headerWidth = headerWidth,
+      )
+      LibraryTableRow(
+        title = Strings.licensesItemVersion,
+        value = artifact.version,
+        headerStyle = headerStyle,
+        headerWidth = headerWidth,
+      )
+      LibraryTableRow(
+        title = Strings.licensesItemLicense,
+        value = artifact.license(),
+        headerStyle = headerStyle,
+        headerWidth = headerWidth,
+      )
+    }
+
+    val url = artifact.scm?.url
+    if (url != null) {
+      NormalIconButton(
+        modifier = Modifier.clip(CardShape),
+        imageVector = MaterialIcons.ArrowRight,
+        onClick = { onLaunchUrl(url) },
+        contentDescription = null,
+      )
+    }
   }
+}
+
+@Stable
+@Composable
+private fun estimateTextWidth(
+  text: String,
+  density: Density = LocalDensity.current,
+  resolver: FontFamily.Resolver = LocalFontFamilyResolver.current,
+  style: TextStyle = LocalTextStyle.current,
+): Dp {
+  val textStyle = remember(style) { style.copy(fontSize = TextSize, fontWeight = FontWeight.Bold) }
+  val widthInPx =
+    remember(text, textStyle, density, resolver) {
+      ParagraphIntrinsics(
+          text = text,
+          style = textStyle,
+          annotations = emptyList(),
+          density = density,
+          fontFamilyResolver = resolver,
+        )
+        .maxIntrinsicWidth
+    }
+
+  return with(density) { widthInPx.toDp() }
 }
 
 @get:Stable
@@ -92,11 +166,12 @@ private fun ArtifactDetail.license(): String {
   error("No licenses for $this?")
 }
 
-@Stable
 @Composable
 private fun LibraryTableRow(
   title: String,
   value: String?,
+  headerStyle: TextStyle,
+  headerWidth: Dp,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -105,21 +180,20 @@ private fun LibraryTableRow(
     return
   }
 
-  Row(modifier = modifier.fillMaxWidth().wrapContentHeight(), verticalAlignment = Alignment.Top) {
+  Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.Top) {
     Text(
-      modifier = Modifier.weight(TITLE_WEIGHT).wrapContentHeight(),
+      modifier = Modifier.width(headerWidth),
       text = title,
       textAlign = TextAlign.Start,
       color = theme.pageTextLight,
       lineHeight = LineHeight,
-      fontSize = TextSize,
-      fontWeight = FontWeight.Bold,
+      style = headerStyle,
     )
 
-    HorizontalSpacer(Dimens.Medium)
+    HorizontalSpacer(Dimens.Large)
 
     Text(
-      modifier = Modifier.weight(VALUE_WEIGHT).wrapContentHeight(),
+      modifier = Modifier.weight(1f),
       text = value,
       textAlign = TextAlign.Start,
       color = theme.pageText,
@@ -128,9 +202,6 @@ private fun LibraryTableRow(
     )
   }
 }
-
-private const val TITLE_WEIGHT = 1f
-private const val VALUE_WEIGHT = 3f
 
 private val LineHeight = 15.sp
 private val TextSize = 12.sp
