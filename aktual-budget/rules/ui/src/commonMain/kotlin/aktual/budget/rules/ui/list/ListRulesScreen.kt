@@ -14,7 +14,6 @@ import aktual.budget.rules.vm.ListRulesState.Success
 import aktual.budget.rules.vm.ListRulesViewModel
 import aktual.budget.rules.vm.RuleListItem
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.ChevronDown
 import aktual.core.icons.ChevronUp
 import aktual.core.icons.material.ClearAll
 import aktual.core.icons.material.Delete
@@ -45,6 +44,7 @@ import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
@@ -76,6 +76,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -374,9 +375,10 @@ private fun StageHeader(
       color = theme.pillText,
     )
 
+    val rotation by animateFloatAsState(if (isExpanded) 0f else 180f)
     Icon(
-      modifier = Modifier.minimumInteractiveComponentSize(),
-      imageVector = if (isExpanded) AktualIcons.ChevronUp else AktualIcons.ChevronDown,
+      modifier = Modifier.minimumInteractiveComponentSize().rotate(rotation),
+      imageVector = AktualIcons.ChevronUp,
       contentDescription = "",
     )
   }
