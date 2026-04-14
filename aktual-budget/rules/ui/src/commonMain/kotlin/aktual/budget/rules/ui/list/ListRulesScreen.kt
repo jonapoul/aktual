@@ -54,7 +54,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -163,8 +162,7 @@ private fun ListRulesScaffold(
 }
 
 @Composable
-@Suppress("UnusedReceiverParameter")
-private fun RowScope.AppBarButtons(
+private fun AppBarButtons(
   state: ListRulesState,
   checkboxes: CheckboxesState,
   onAction: (ListRulesAction) -> Unit,
@@ -225,10 +223,12 @@ private fun ListRulesContent(
 
       is Empty -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Text(
-            modifier = Modifier.background(theme.tableBackground, CardShape).padding(40.dp),
-            text = Strings.rulesSuccessEmpty,
-            color = theme.warningText,
+          FailureScreen(
+            modifier = Modifier.background(theme.tableBackground, CardShape),
+            title = Strings.rulesSuccessEmpty,
+            reason = null,
+            onClickRetry = { onAction(Reload) },
+            retryText = Strings.syncRetry,
           )
         }
       }
