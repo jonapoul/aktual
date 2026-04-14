@@ -20,6 +20,8 @@ import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
 import aktual.budget.sync.ui.SyncBudgetDialog
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
@@ -28,6 +30,7 @@ import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
@@ -231,8 +234,12 @@ private fun StateContent(
               modifier = Modifier.background(theme.tableBackground, CardShape),
               title = Strings.budgetFailureMessage,
               reason = state.reason ?: Strings.budgetFailureDefaultMessage,
-              retryText = Strings.budgetFailureRetry,
-              onClickRetry = { onAction(Reload) },
+              action =
+                FailureAction(
+                  text = { Strings.budgetFailureRetry },
+                  onClick = { onAction(Reload) },
+                  icon = MaterialIcons.Refresh,
+                ),
             )
           }
         }

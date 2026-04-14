@@ -1,10 +1,7 @@
-package aktual.budget.rules.vm
+package aktual.budget.rules.vm.list
 
-import aktual.budget.model.Condition
-import aktual.budget.model.ConditionOp
-import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
-import aktual.budget.model.RuleStage
+import aktual.budget.rules.vm.Rule
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
@@ -18,17 +15,8 @@ sealed interface ListRulesState {
 
   data object Empty : ListRulesState
 
-  @JvmInline value class Success(val rules: ImmutableList<RuleListItem>) : ListRulesState
+  @JvmInline value class Success(val rules: ImmutableList<Rule>) : ListRulesState
 }
-
-@Immutable
-data class RuleListItem(
-  val id: RuleId,
-  val stage: RuleStage,
-  val conditions: ImmutableList<Condition>,
-  val conditionsOp: ConditionOp,
-  val actions: ImmutableList<RuleAction>,
-)
 
 @Immutable
 sealed interface CheckboxesState {

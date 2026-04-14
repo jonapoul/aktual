@@ -12,6 +12,7 @@ import aktual.core.icons.material.FilterList
 import aktual.core.icons.material.LightMode
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OfflinePin
+import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Sync
 import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Res
@@ -30,6 +31,7 @@ import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.NavBackIconButton
@@ -268,8 +270,12 @@ private fun BoxScope.FailedContent(
     modifier = Modifier.align(Alignment.Center).background(theme.tableBackground, CardShape),
     title = Strings.settingsThemeRefreshPrefix,
     reason = cause,
-    onClickRetry = { onAction(RetryFetchCatalog) },
-    retryText = Strings.settingsThemeRefreshRetry,
+    action =
+      FailureAction(
+        text = { Strings.settingsThemeRefreshRetry },
+        onClick = { onAction(RetryFetchCatalog) },
+        icon = MaterialIcons.Refresh,
+      ),
   )
 }
 

@@ -7,7 +7,8 @@
 
   <string name="rules_failure_prefix">Failed loading rules</string>
   <string name="rules_failure_default_message">Unknown cause</string>
-  <string name="rules_success_empty">No rules found!</string>
+  <string name="rules_empty">No rules found!</string>
+  <string name="rules_empty_create">Create new</string>
 
   <string name="rules_item_menu">Menu</string>
   <string name="rules_item_edit">Edit</string>
@@ -75,4 +76,9 @@
   </plurals>
   <string name="rules_checkbox_delete">Delete</string>
   <string name="rules_checkbox_clear">Clear selected</string>
+
+  <string name="edit_rules_toolbar_edit">Edit Rule</string>
+  <string name="edit_rules_toolbar_create">Create Rule</string>
+  <string name="edit_rules_menu">Menu</string>
+  <string name="edit_rules_action_delete">Delete Rule</string>
 </resources>

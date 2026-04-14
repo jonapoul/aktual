@@ -1,4 +1,4 @@
-package aktual.budget.rules.vm
+package aktual.budget.rules.vm.list
 
 import aktual.budget.db.Rules
 import aktual.budget.db.dao.DatabaseTables.RULES
@@ -26,12 +26,10 @@ import aktual.budget.model.Operator.OnBudget
 import aktual.budget.model.Operator.OneOf
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
-import aktual.budget.rules.vm.CheckboxesState.Active
-import aktual.budget.rules.vm.CheckboxesState.Inactive
-import aktual.budget.rules.vm.ListRulesState.Empty
-import aktual.budget.rules.vm.ListRulesState.Failure
-import aktual.budget.rules.vm.ListRulesState.Loading
-import aktual.budget.rules.vm.ListRulesState.Success
+import aktual.budget.rules.vm.Rule
+import aktual.budget.rules.vm.list.CheckboxesState.Inactive
+import aktual.budget.rules.vm.list.ListRulesState.Empty
+import aktual.budget.rules.vm.list.ListRulesState.Loading
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -65,7 +63,7 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
 
   val nameFetcher: NameFetcher = NameFetcherImpl(budgetGraph.database)
 
-  private val mutableRules = MutableStateFlow<ImmutableList<RuleListItem>>(persistentListOf())
+  private val mutableRules = MutableStateFlow<ImmutableList<Rule>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableFailure = MutableStateFlow<String?>(null)
   private val mutableCheckboxes = MutableStateFlow<CheckboxesState>(Inactive)
@@ -79,9 +77,9 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
       val failure by mutableFailure.collectAsState()
       when {
         isLoading -> Loading
-        failure != null -> Failure(failure)
+        failure != null -> ListRulesState.Failure(failure)
         rules.isEmpty() -> Empty
-        else -> Success(rules)
+        else -> ListRulesState.Success(rules)
       }
     }
 
@@ -93,7 +91,7 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
     mutableIsLoading.update { true }
     viewModelScope.launch {
       try {
-        val rules = rulesDao.getAll().map(::toListItem).sortedWith(RuleComparator).toImmutableList()
+        val rules = rulesDao.getAll().map(::toRule).sortedWith(RuleComparator).toImmutableList()
         mutableRules.update { rules }
       } catch (e: CancellationException) {
         throw e
@@ -118,7 +116,7 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
     }
   }
 
-  fun showCheckboxes() = mutableCheckboxes.update { Active(persistentSetOf()) }
+  fun showCheckboxes() = mutableCheckboxes.update { CheckboxesState.Active(persistentSetOf()) }
 
   fun hideCheckboxes() = mutableCheckboxes.update { Inactive }
 
@@ -128,8 +126,8 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
 
   fun uncheckAll() = showCheckboxes()
 
-  private fun toListItem(rule: Rules): RuleListItem =
-    RuleListItem(
+  private fun toRule(rule: Rules): Rule =
+    Rule(
       id = rule.id,
       stage = rule.stage ?: RuleStage.Default,
       conditions = rule.conditions.orEmpty().toImmutableList(),
@@ -142,10 +140,10 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
    * packages/loot-core/src/server/rules/rule-utils.ts. Groups by stage (pre -> default -> post),
    * then sorts within each stage by condition specificity score, with rule ID as tiebreaker.
    */
-  private object RuleComparator : Comparator<RuleListItem> {
+  private object RuleComparator : Comparator<Rule> {
     private val EXACT_OPERATORS = setOf(Is, IsNot, IsApprox, OneOf, NotOneOf)
 
-    override fun compare(a: RuleListItem, b: RuleListItem): Int {
+    override fun compare(a: Rule, b: Rule): Int {
       val stageDiff = a.stage.ordinal - b.stage.ordinal
       if (stageDiff != 0) return stageDiff
       val scoreDiff = computeScore(b.conditions) - computeScore(a.conditions)

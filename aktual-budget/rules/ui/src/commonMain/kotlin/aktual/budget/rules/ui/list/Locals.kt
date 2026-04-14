@@ -2,7 +2,7 @@ package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Field
 import aktual.budget.model.ScheduleId
-import aktual.budget.rules.vm.NameFetcher
+import aktual.budget.rules.vm.list.NameFetcher
 import androidx.compose.runtime.staticCompositionLocalOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf

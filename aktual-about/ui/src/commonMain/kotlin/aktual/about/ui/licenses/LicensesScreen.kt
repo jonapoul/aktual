@@ -12,6 +12,7 @@ import aktual.about.vm.SearchBarState.Gone
 import aktual.about.vm.SearchBarState.Visible
 import aktual.app.nav.BackNavigator
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Plurals
@@ -24,6 +25,7 @@ import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
@@ -233,8 +235,7 @@ private fun NoneFoundContent(theme: Theme, modifier: Modifier = Modifier) {
       modifier = Modifier.padding(Dimens.Huge).background(theme.tableBackground, CardShape),
       title = Strings.licensesError,
       reason = Strings.licensesNoneFound,
-      retryText = null,
-      onClickRetry = null,
+      action = null,
     )
   }
 }
@@ -281,8 +282,12 @@ private fun ErrorContent(
       modifier = Modifier.padding(Dimens.Huge).background(theme.tableBackground, CardShape),
       title = Strings.licensesError,
       reason = Strings.licensesFailed(errorMessage),
-      retryText = Strings.licensesFailedRetry,
-      onClickRetry = { onAction(LicensesAction.Reload) },
+      action =
+        FailureAction(
+          text = { Strings.licensesFailedRetry },
+          onClick = { onAction(LicensesAction.Reload) },
+          icon = MaterialIcons.Refresh,
+        ),
     )
   }
 }
