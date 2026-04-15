@@ -95,7 +95,6 @@ include(
   ":aktual-core:logging",
   ":aktual-core:logging:impl",
   ":aktual-core:model",
-  ":aktual-core:shimmer",
   ":aktual-core:theme",
   ":aktual-core:theme:di",
   ":aktual-core:theme:impl",
