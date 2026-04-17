@@ -8,6 +8,8 @@ import aktual.app.nav.NavEntryContributor
 import aktual.app.nav.NavScope
 import aktual.app.nav.ServerUrlNavRoute
 import aktual.app.nav.SettingsNavRoute
+import aktual.core.ui.LocalBottomBarThemeAttrs
+import androidx.compose.runtime.DisposableEffect
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
@@ -16,6 +18,12 @@ import dev.zacsweers.metro.ContributesIntoSet
 class BudgetNavRailNavEntryContributor : NavEntryContributor {
   override fun contribute(scope: EntryProviderScope<NavKey>, stack: AktualNavStack<NavKey>) {
     scope.entry<BudgetNavRailNavRoute> { route ->
+      val themeAttrsStack = LocalBottomBarThemeAttrs.current
+      DisposableEffect(themeAttrsStack) {
+        themeAttrsStack.push(BudgetNavRailThemeAttrs)
+        onDispose { themeAttrsStack.pop(BudgetNavRailThemeAttrs) }
+      }
+
       BudgetNavRail(
         token = route.token,
         budgetId = route.budgetId,

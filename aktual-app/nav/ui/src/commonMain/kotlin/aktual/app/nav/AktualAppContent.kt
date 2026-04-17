@@ -4,10 +4,9 @@ import aktual.core.ui.AktualTheme
 import aktual.core.ui.BottomBarState
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.DialogBlurOverlay
-import aktual.core.ui.DialogBlurState
 import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.WithCompositionLocals
-import aktual.core.ui.blurred
+import aktual.core.ui.blurredBottomBar
 import aktual.nav.core.rememberAppCloser
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -76,7 +75,6 @@ fun AktualAppContent(
     dateFormat = formatConfig.dateFormat,
     hazeState = hazeState,
     blurConfig = blurConfig,
-    dialogBlurState = remember { DialogBlurState() },
   ) {
     AktualTheme(theme) {
       Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
@@ -95,7 +93,7 @@ fun AktualAppContent(
 
         DialogBlurOverlay()
 
-        Column(modifier = Modifier.blurred(orElse = { pageBackground })) {
+        Column(modifier = Modifier.blurredBottomBar()) {
           val bbs = bottomBarState
           if (bbs is BottomBarState.Visible) {
             BottomStatusBar(

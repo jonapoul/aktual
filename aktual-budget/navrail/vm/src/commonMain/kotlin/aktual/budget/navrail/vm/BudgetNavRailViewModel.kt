@@ -3,7 +3,6 @@ package aktual.budget.navrail.vm
 import aktual.app.nav.BudgetNavEntryContributor
 import aktual.app.nav.BudgetNavGraph
 import aktual.budget.model.BudgetId
-import aktual.core.model.Token
 import aktual.prefs.AppPreferences
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -22,7 +21,6 @@ import kotlinx.coroutines.launch
 @Stable
 @AssistedInject
 class BudgetNavRailViewModel(
-  @Assisted val token: Token,
   @Assisted val budgetId: BudgetId,
   factory: BudgetNavGraph.Factory,
   private val appPreferences: AppPreferences,
@@ -38,6 +36,6 @@ class BudgetNavRailViewModel(
   @ManualViewModelAssistedFactoryKey
   @ContributesIntoMap(AppScope::class)
   interface Factory : ManualViewModelAssistedFactory {
-    fun create(token: Token, budgetId: BudgetId): BudgetNavRailViewModel
+    fun create(budgetId: BudgetId): BudgetNavRailViewModel
   }
 }

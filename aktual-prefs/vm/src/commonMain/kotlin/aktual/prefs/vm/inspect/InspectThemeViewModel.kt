@@ -5,6 +5,7 @@ import aktual.core.model.UrlOpener
 import aktual.core.theme.CustomTheme
 import aktual.core.theme.ThemeResolver
 import aktual.prefs.vm.theme.properties
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.AppScope
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
+@Stable
 @AssistedInject
 class InspectThemeViewModel(
   @Assisted private val themeId: ThemeId,
