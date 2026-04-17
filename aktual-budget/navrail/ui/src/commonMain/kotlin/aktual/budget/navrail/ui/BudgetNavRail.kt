@@ -71,6 +71,8 @@ import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDe
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentMapOf
@@ -152,10 +154,11 @@ private fun BottomNavLayout(
   var showMenu by remember { mutableStateOf(false) }
   val density = LocalDensity.current
 
-  // Reuse the root LocalHazeState so the nav rail blur and the app-level BottomStatusBar blur
-  // sample the same source. Two separate HazeStates produced a visible seam where their tints
-  // didn't line up. AktualNavHost is already the hazeSource, and BudgetNavDisplay lives inside
-  // it — no extra hazeSource needed here
+  // Use a local HazeState so the nav rail's hazeEffect samples BudgetNavDisplay rather than the
+  // root AktualNavHost. hazeEffect doesn't work when the effect composable is *inside* the
+  // hazeSource — it just renders transparent. Giving the nav display its own hazeSource with a
+  // local state avoids that problem while keeping the same color/style as the root bottom bar
+  val localHazeState = rememberHazeState()
   var height by remember { mutableStateOf(0.dp) }
   val rootBottomChromeHeight = LocalBottomStatusBarHeight.current
 
@@ -168,7 +171,7 @@ private fun BottomNavLayout(
       BudgetNavDisplay(
         contributors = contributors,
         activeStack = activeStack,
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().hazeSource(localHazeState),
       )
     }
 
@@ -179,7 +182,7 @@ private fun BottomNavLayout(
           onSelectTab = onSelectTab,
           onMenuClick = { showMenu = true },
           modifier =
-            Modifier.blurredBottomBar().onSizeChanged { size ->
+            Modifier.blurredBottomBar(state = localHazeState).onSizeChanged { size ->
               height = with(density) { size.height.toDp() }
             },
         )
