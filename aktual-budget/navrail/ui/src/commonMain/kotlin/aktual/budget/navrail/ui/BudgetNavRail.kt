@@ -25,18 +25,21 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.ThemedDropdownMenu
 import aktual.core.ui.ThemedDropdownMenuItem
+import aktual.core.ui.blurredBottomBar
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.NavigationBar
@@ -47,6 +50,7 @@ import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.NavigationRailItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -56,13 +60,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentMapOf
@@ -74,7 +84,7 @@ fun BudgetNavRail(
   budgetId: BudgetId,
   onAction: (BudgetNavAction) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: BudgetNavRailViewModel = metroViewModel(token, budgetId),
+  viewModel: BudgetNavRailViewModel = metroViewModel(budgetId),
 ) {
   val contributors = viewModel.budgetNavEntryContributors
 
@@ -142,18 +152,53 @@ private fun BottomNavLayout(
   modifier: Modifier = Modifier,
 ) {
   var showMenu by remember { mutableStateOf(false) }
-  Column(modifier = modifier.fillMaxSize()) {
-    BudgetNavDisplay(
-      contributors = contributors,
-      activeStack = activeStack,
-      modifier = Modifier.weight(1f),
-    )
-    Box(contentAlignment = Alignment.TopEnd) {
-      BottomNavBar(selectedTab, onSelectTab, onMenuClick = { showMenu = true })
-      BudgetMenu(expanded = showMenu, onAction = onAction, onDismissRequest = { showMenu = false })
+  val density = LocalDensity.current
+
+  // Use a local HazeState so the nav rail's hazeEffect samples BudgetNavDisplay rather than the
+  // root AktualNavHost. hazeEffect doesn't work when the effect composable is *inside* the
+  // hazeSource — it just renders transparent. Giving the nav display its own hazeSource with a
+  // local state avoids that problem while keeping the same color/style as the root bottom bar
+  val localHazeState = rememberHazeState()
+  var height by remember { mutableStateOf(0.dp) }
+  val rootBottomChromeHeight = LocalBottomStatusBarHeight.current
+
+  Box(modifier = modifier.fillMaxSize()) {
+    // Child screens end their content with BottomStatusBarSpacing() — extend that reservation
+    // to also cover the overlaid BottomNavBar, so the last visible items aren't hidden behind it
+    CompositionLocalProvider(LocalBottomStatusBarHeight provides rootBottomChromeHeight + height) {
+      BudgetNavDisplay(
+        contributors = contributors,
+        activeStack = activeStack,
+        modifier = Modifier.fillMaxSize().hazeSource(localHazeState),
+      )
     }
-    BottomStatusBarSpacing()
-    BottomNavBarSpacing()
+
+    // Blur the entire Column (nav rail + spacers) so the seam between the local and root haze
+    // effects falls behind the root bottom-bar Column in AktualAppContent, which sits on top in
+    // Z-order and covers the spacer area
+    Column(
+      modifier =
+        Modifier.align(Alignment.BottomCenter)
+          .fillMaxWidth()
+          .blurredBottomBar(state = localHazeState)
+    ) {
+      Box(contentAlignment = Alignment.TopEnd) {
+        BottomNavRail(
+          selectedTab = selectedTab,
+          onSelectTab = onSelectTab,
+          onMenuClick = { showMenu = true },
+          modifier =
+            Modifier.onSizeChanged { size -> height = with(density) { size.height.toDp() } },
+        )
+        BudgetMenu(
+          expanded = showMenu,
+          onAction = onAction,
+          onDismissRequest = { showMenu = false },
+        )
+      }
+      BottomStatusBarSpacing(height = rootBottomChromeHeight)
+      BottomNavBarSpacing()
+    }
   }
 }
 
@@ -209,16 +254,18 @@ private fun BudgetNavDisplay(
 }
 
 @Composable
-private fun BottomNavBar(
+private fun BottomNavRail(
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onMenuClick: () -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
+  // containerColor is transparent so the blur applied via Modifier.blurred(...) on the modifier
+  // above shows through — an opaque color here would paint over the hazeEffect
   NavigationBar(
     modifier = modifier,
-    containerColor = theme.sidebarBackground,
+    containerColor = Color.Transparent,
     contentColor = theme.sidebarItemText,
   ) {
     for (tab in BudgetTab.entries) {
@@ -299,9 +346,9 @@ private fun Theme.navRailItem(): NavigationRailItemColors =
   )
 
 @Composable
-private fun metroViewModel(token: Token, budgetId: BudgetId) =
+private fun metroViewModel(budgetId: BudgetId) =
   assistedMetroViewModel<BudgetNavRailViewModel, BudgetNavRailViewModel.Factory> {
-    create(token, budgetId)
+    create(budgetId)
   }
 
 private val TabSaver: Saver<BudgetTab, Int> =
@@ -396,11 +443,11 @@ private fun PreviewBudgetMenu(@PreviewParameter(ThemeParameters::class) theme: T
 
 @PortraitPreview
 @Composable
-private fun PreviewBottomNavBar(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+private fun PreviewBottomNavRail(@PreviewParameter(ThemeParameters::class) theme: Theme) =
   PreviewWithTheme(theme) {
     Column(modifier = Modifier.fillMaxSize()) {
       PreviewContent(modifier = Modifier.weight(1f))
-      BottomNavBar(selectedTab = BudgetTab.Transactions, onSelectTab = {}, onMenuClick = {})
+      BottomNavRail(selectedTab = BudgetTab.Transactions, onSelectTab = {}, onMenuClick = {})
     }
   }
 

@@ -1,5 +1,6 @@
 package aktual.core.ui
 
+import aktual.core.theme.BottomBarThemeAttrs
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import alakazam.compose.VerticalSpacer
@@ -19,7 +20,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -31,27 +31,29 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 
 @Composable
-fun Modifier.blurred(orElse: Theme.() -> Color = { pageBackground }): Modifier =
-  blurred(LocalHazeState.current, orElse)
-
-@Composable
-fun Modifier.blurred(state: HazeState, orElse: Theme.() -> Color = { pageBackground }): Modifier {
+fun Modifier.blurredBottomBar(
+  attrs: BottomBarThemeAttrs = LocalBottomBarThemeAttrs.current.current,
+  state: HazeState = LocalHazeState.current,
+): Modifier {
   val config = LocalBlurConfig.current
   val theme = LocalTheme.current
+  val color = attrs.background(theme)
 
   return if (config.blurAppBars) {
     val style =
-      remember(config, theme) {
+      remember(config, theme, color) {
         val tintAlpha: Float = if (theme.isLight) 1f - config.blurAlpha else config.blurAlpha
         HazeStyle(
           blurRadius = config.blurRadius,
-          backgroundColor = theme.cardBackground,
-          tint = HazeTint(theme.cardBackground.copy(alpha = tintAlpha)),
+          backgroundColor = color,
+          tint = HazeTint(color.copy(alpha = tintAlpha)),
         )
       }
     hazeEffect(state, style)
   } else {
-    background(theme.orElse())
+    // when blur is off, fall back to a flat fill with the same color, so the bar still matches
+    // what the blurred variant would have shown
+    background(color)
   }
 }
 
@@ -68,9 +70,6 @@ fun rememberBlurredTopBarState(): BlurredTopBarState {
 }
 
 @Stable data class BlurredTopBarState(val hazeState: HazeState, val blurEnabled: Boolean)
-
-@Composable
-fun Modifier.blurredTopBar(state: BlurredTopBarState): Modifier = blurred(state.hazeState)
 
 /** Variant that animates between transparent and blurred based on [isScrolled]. */
 @Composable

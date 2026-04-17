@@ -16,6 +16,7 @@ import aktual.core.model.PingState
 import aktual.core.model.PingState.Failure
 import aktual.core.model.PingState.Success
 import aktual.core.model.PingState.Unknown
+import aktual.core.theme.BottomBarThemeAttrs
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BottomBarState.Visible
@@ -61,6 +62,7 @@ private val PADDING = PaddingValues(vertical = 3.dp, horizontal = 8.dp)
 @Composable
 internal fun BottomStatusBar(
   state: Visible,
+  attrs: BottomBarThemeAttrs,
   onClickSync: () -> Unit,
   onMeasureHeight: (Dp) -> Unit,
   modifier: Modifier = Modifier,
@@ -79,14 +81,14 @@ internal fun BottomStatusBar(
       Text(
         text = loadedString(name),
         fontSize = FONT_SIZE,
-        color = theme.pageText,
+        color = attrs.foreground(theme),
         maxLines = 1,
         overflow = Ellipsis,
       )
 
       HorizontalSpacer(weight = 1f)
 
-      SyncState(state.syncState, onClickSync)
+      SyncState(state.syncState, attrs, onClickSync)
     }
 
     HorizontalSpacer(weight = 1f)
@@ -158,12 +160,13 @@ private fun loadedString(budgetName: String): AnnotatedString {
 @Composable
 private fun SyncState(
   state: SyncState,
+  attrs: BottomBarThemeAttrs,
   onClickSync: () -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   val text = state.text()
-  val tint = state.tint(theme)
+  val tint = state.tint(theme, attrs)
 
   Row(
     modifier =
@@ -203,12 +206,12 @@ private fun SyncState.text() =
   }
 
 @Stable
-private fun SyncState.tint(theme: Theme) =
+private fun SyncState.tint(theme: Theme, attrs: BottomBarThemeAttrs) =
   when (this) {
     NoToken -> theme.warningText
     is SyncFailed -> theme.errorText
     Syncing -> theme.reportsBlue
-    Inactive -> theme.pageText
+    Inactive -> attrs.foreground(theme)
   }
 
 @Preview
@@ -222,6 +225,12 @@ private fun PreviewBottomBar(
       state = Visible(state, syncState, budgetName),
       onMeasureHeight = {},
       onClickSync = {},
+      attrs =
+        BottomBarThemeAttrs(
+          shouldBlurOnRootLevel = true,
+          background = { cardBackground },
+          foreground = { pageText },
+        ),
     )
   }
 
