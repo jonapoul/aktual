@@ -166,7 +166,7 @@ private fun BottomNavLayout(
     // Child screens end their content with BottomStatusBarSpacing() — extend that reservation
     // to also cover the overlaid BottomNavBar, so the last visible items aren't hidden behind it
     CompositionLocalProvider(
-      LocalBottomStatusBarHeight provides (rootBottomChromeHeight + height)
+      LocalBottomStatusBarHeight provides rootBottomChromeHeight + height
     ) {
       BudgetNavDisplay(
         contributors = contributors,
@@ -182,7 +182,7 @@ private fun BottomNavLayout(
       modifier =
         Modifier.align(Alignment.BottomCenter)
           .fillMaxWidth()
-          .blurredBottomBar(state = localHazeState),
+          .blurredBottomBar(state = localHazeState)
     ) {
       Box(contentAlignment = Alignment.TopEnd) {
         BottomNavRail(

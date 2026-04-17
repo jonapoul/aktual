@@ -88,7 +88,7 @@ internal fun BottomStatusBar(
 
       HorizontalSpacer(weight = 1f)
 
-      SyncState(state.syncState, onClickSync)
+      SyncState(state.syncState, attrs, onClickSync)
     }
 
     HorizontalSpacer(weight = 1f)
@@ -160,12 +160,13 @@ private fun loadedString(budgetName: String): AnnotatedString {
 @Composable
 private fun SyncState(
   state: SyncState,
+  attrs: BottomBarThemeAttrs,
   onClickSync: () -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   val text = state.text()
-  val tint = state.tint(theme)
+  val tint = state.tint(theme, attrs)
 
   Row(
     modifier =
@@ -205,12 +206,12 @@ private fun SyncState.text() =
   }
 
 @Stable
-private fun SyncState.tint(theme: Theme) =
+private fun SyncState.tint(theme: Theme, attrs: BottomBarThemeAttrs) =
   when (this) {
     NoToken -> theme.warningText
     is SyncFailed -> theme.errorText
     Syncing -> theme.reportsBlue
-    Inactive -> theme.pageText
+    Inactive -> attrs.foreground(theme)
   }
 
 @Preview

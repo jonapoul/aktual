@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
-class BottomBarThemeAttrs(
+data class BottomBarThemeAttrs(
   val shouldBlurOnRootLevel: Boolean,
   val background: Theme.() -> Color,
   val foreground: Theme.() -> Color,

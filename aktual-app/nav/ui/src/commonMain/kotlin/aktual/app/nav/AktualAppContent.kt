@@ -95,8 +95,9 @@ fun AktualAppContent(
         DialogBlurOverlay()
 
         val attrs = LocalBottomBarThemeAttrs.current.current
-        val modifier = if (attrs.shouldBlurOnRootLevel) Modifier.blurredBottomBar(attrs) else Modifier
-        Column(modifier = modifier) {
+        val bottomModifier =
+          if (attrs.shouldBlurOnRootLevel) Modifier.blurredBottomBar(attrs) else Modifier
+        Column(modifier = bottomModifier) {
           val bbs = bottomBarState
           if (bbs is BottomBarState.Visible) {
             BottomStatusBar(
