@@ -175,16 +175,22 @@ private fun BottomNavLayout(
       )
     }
 
-    Column(modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth()) {
+    // Blur the entire Column (nav rail + spacers) so the seam between the local and root haze
+    // effects falls behind the root bottom-bar Column in AktualAppContent, which sits on top in
+    // Z-order and covers the spacer area
+    Column(
+      modifier =
+        Modifier.align(Alignment.BottomCenter)
+          .fillMaxWidth()
+          .blurredBottomBar(state = localHazeState),
+    ) {
       Box(contentAlignment = Alignment.TopEnd) {
         BottomNavRail(
           selectedTab = selectedTab,
           onSelectTab = onSelectTab,
           onMenuClick = { showMenu = true },
           modifier =
-            Modifier.blurredBottomBar(state = localHazeState).onSizeChanged { size ->
-              height = with(density) { size.height.toDp() }
-            },
+            Modifier.onSizeChanged { size -> height = with(density) { size.height.toDp() } },
         )
         BudgetMenu(
           expanded = showMenu,

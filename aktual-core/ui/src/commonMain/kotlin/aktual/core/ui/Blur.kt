@@ -32,12 +32,12 @@ import dev.chrisbanes.haze.rememberHazeState
 
 @Composable
 fun Modifier.blurredBottomBar(
-  barColor: BottomBarThemeAttrs = LocalBottomBarThemeAttrs.current.current,
+  attrs: BottomBarThemeAttrs = LocalBottomBarThemeAttrs.current.current,
   state: HazeState = LocalHazeState.current,
 ): Modifier {
   val config = LocalBlurConfig.current
   val theme = LocalTheme.current
-  val color = barColor(theme)
+  val color = attrs.background(theme)
 
   return if (config.blurAppBars) {
     val style =

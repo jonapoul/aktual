@@ -4,6 +4,7 @@ import aktual.core.ui.AktualTheme
 import aktual.core.ui.BottomBarState
 import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.DialogBlurOverlay
+import aktual.core.ui.LocalBottomBarThemeAttrs
 import aktual.core.ui.LocalBottomStatusBarHeight
 import aktual.core.ui.WithCompositionLocals
 import aktual.core.ui.blurredBottomBar
@@ -93,12 +94,15 @@ fun AktualAppContent(
 
         DialogBlurOverlay()
 
-        Column(modifier = Modifier.blurredBottomBar()) {
+        val attrs = LocalBottomBarThemeAttrs.current.current
+        val modifier = if (attrs.shouldBlurOnRootLevel) Modifier.blurredBottomBar(attrs) else Modifier
+        Column(modifier = modifier) {
           val bbs = bottomBarState
           if (bbs is BottomBarState.Visible) {
             BottomStatusBar(
               modifier = Modifier.wrapContentHeight(),
               state = bbs,
+              attrs = attrs,
               onMeasureHeight = { bottomStatusBarHeight = it },
               onClickSync = { viewModel.startSync() },
             )

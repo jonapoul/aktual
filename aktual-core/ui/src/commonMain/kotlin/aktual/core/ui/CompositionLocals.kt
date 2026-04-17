@@ -31,14 +31,13 @@ val LocalPrivacyEnabled = compositionLocalOf { false }
 
 val LocalBottomStatusBarHeight = compositionLocalOf { 0.dp }
 
-private val DefaultBottomBarThemeAttrs = BottomBarThemeAttrs { theme -> theme.cardBackground }
+internal val DefaultBottomBarThemeAttrs =
+  BottomBarThemeAttrs(
+    shouldBlurOnRootLevel = true,
+    background = { cardBackground },
+    foreground = { pageText },
+  )
 
-/**
- * Holds a stack of [BottomBarThemeAttrs] overrides from descendants, so that individual screens
- * can influence the color of the blur behind the root-level bottom status bar. Screens push their
- * preferred attrs on enter and pop them on dispose via `DisposableEffect`, and the root layout
- * reads [current] to drive the blur color.
- */
 @Stable
 class BottomBarThemeAttrsStack {
   private val overrides = mutableStateListOf<BottomBarThemeAttrs>()

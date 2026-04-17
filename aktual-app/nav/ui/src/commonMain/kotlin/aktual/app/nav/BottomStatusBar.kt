@@ -16,6 +16,7 @@ import aktual.core.model.PingState
 import aktual.core.model.PingState.Failure
 import aktual.core.model.PingState.Success
 import aktual.core.model.PingState.Unknown
+import aktual.core.theme.BottomBarThemeAttrs
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BottomBarState.Visible
@@ -61,6 +62,7 @@ private val PADDING = PaddingValues(vertical = 3.dp, horizontal = 8.dp)
 @Composable
 internal fun BottomStatusBar(
   state: Visible,
+  attrs: BottomBarThemeAttrs,
   onClickSync: () -> Unit,
   onMeasureHeight: (Dp) -> Unit,
   modifier: Modifier = Modifier,
@@ -79,7 +81,7 @@ internal fun BottomStatusBar(
       Text(
         text = loadedString(name),
         fontSize = FONT_SIZE,
-        color = theme.pageText,
+        color = attrs.foreground(theme),
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -222,6 +224,12 @@ private fun PreviewBottomBar(
       state = Visible(state, syncState, budgetName),
       onMeasureHeight = {},
       onClickSync = {},
+      attrs =
+        BottomBarThemeAttrs(
+          shouldBlurOnRootLevel = true,
+          background = { cardBackground },
+          foreground = { pageText },
+        ),
     )
   }
 
