@@ -165,9 +165,7 @@ private fun BottomNavLayout(
   Box(modifier = modifier.fillMaxSize()) {
     // Child screens end their content with BottomStatusBarSpacing() — extend that reservation
     // to also cover the overlaid BottomNavBar, so the last visible items aren't hidden behind it
-    CompositionLocalProvider(
-      LocalBottomStatusBarHeight provides rootBottomChromeHeight + height
-    ) {
+    CompositionLocalProvider(LocalBottomStatusBarHeight provides rootBottomChromeHeight + height) {
       BudgetNavDisplay(
         contributors = contributors,
         activeStack = activeStack,
