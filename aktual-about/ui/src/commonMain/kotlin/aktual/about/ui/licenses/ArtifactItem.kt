@@ -109,7 +109,7 @@ internal fun ArtifactItem(
         modifier = Modifier.clip(CardShape),
         imageVector = MaterialIcons.ArrowRight,
         onClick = { onLaunchUrl(url) },
-        contentDescription = null,
+        contentDescription = Strings.licensesItemLaunch,
       )
     }
   }
