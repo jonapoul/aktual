@@ -4,18 +4,14 @@
   <string name="settings_theme">App theme</string>
   <string name="settings_dark_theme">Dark theme</string>
 
-  <string name="settings_dialog_dismiss">Dismiss</string>
-
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Use System Default</string>
-  <string name="settings_theme_all">All</string>
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
   <string name="settings_theme_midnight">Midnight</string>
 
   <string name="settings_theme_built_in">Built-in themes</string>
   <string name="settings_theme_preview">Preview %1$s theme</string>
-  <string name="settings_theme_failed">Failed to load themes: %1$s</string>
   <string name="settings_theme_custom_title">Custom Themes</string>
   <string name="settings_theme_custom_button">View catalog</string>
   <string name="settings_theme_custom_clear_cache">Clear cache and refresh</string>
@@ -26,7 +22,6 @@
   <string name="settings_theme_filter_all">All themes</string>
   <string name="settings_theme_filter_light">Light themes only</string>
   <string name="settings_theme_filter_dark">Dark themes only</string>
-  <string name="settings_theme_fetch_failed">Failed fetching %1$s: %2$s</string>
 
   <string name="settings_theme_inspect_loading">Loading…</string>
   <string name="settings_theme_inspect_open_repo">Open on GitHub</string>

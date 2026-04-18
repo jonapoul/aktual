@@ -1,6 +1,5 @@
 <resources>
   <string name="metrics_toolbar">Server Metrics</string>
-  <string name="metrics_refresh">Refresh</string>
 
   <string name="metrics_last_update">Last fetched</string>
 

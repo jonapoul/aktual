@@ -7,7 +7,6 @@
 
   <string name="rules_failure_prefix">Failed loading rules</string>
   <string name="rules_failure_default_message">Unknown cause</string>
-  <string name="rules_failure_retry">Retry</string>
   <string name="rules_success_empty">No rules found!</string>
 
   <string name="rules_item_menu">Menu</string>

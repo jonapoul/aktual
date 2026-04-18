@@ -4,11 +4,6 @@
 
   <string name="input_clear">Clear</string>
 
-  <string name="theme_system">System</string>
-  <string name="theme_light">Light</string>
-  <string name="theme_dark">Dark</string>
-  <string name="theme_midnight">Midnight</string>
-
   <string name="budget_loaded">Loaded:</string>
   <string name="connection_connected">Connected</string>
   <string name="connection_disconnected">Disconnected</string>
@@ -62,7 +57,6 @@
   <string name="week_sunday">Sunday</string>
 
   <string name="year_month_picker_title">Select month</string>
-  <string name="year_month_picker_to">to</string>
   <string name="year_month_picker_save">Save</string>
   <string name="year_month_picker_cancel">Cancel</string>
   <string name="year_month_picker_out_of_range">Out of range: must be from %1$s to %2$s inclusive</string>
