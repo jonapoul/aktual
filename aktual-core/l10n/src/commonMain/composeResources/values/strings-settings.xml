@@ -4,11 +4,8 @@
   <string name="settings_theme">App theme</string>
   <string name="settings_dark_theme">Dark theme</string>
 
-  <string name="settings_dialog_dismiss">Dismiss</string>
-
   <string name="settings_theme_toolbar">Theme</string>
   <string name="settings_theme_use_system">Use System Default</string>
-  <string name="settings_theme_all">All</string>
   <string name="settings_theme_light">Light</string>
   <string name="settings_theme_dark">Dark</string>
   <string name="settings_theme_midnight">Midnight</string>
@@ -19,7 +16,6 @@
   <string name="settings_theme_custom_title">Custom Themes</string>
   <string name="settings_theme_custom_button">View catalog</string>
   <string name="settings_theme_custom_clear_cache">Clear cache and refresh</string>
-  <string name="settings_theme_refresh_success">Theme catalog refreshed</string>
   <string name="settings_theme_refresh_prefix">Error</string>
   <string name="settings_theme_refresh_failure">Failed fetching catalog</string>
   <string name="settings_theme_refresh_retry">Retry</string>
