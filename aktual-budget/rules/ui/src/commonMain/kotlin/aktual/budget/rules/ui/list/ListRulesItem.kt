@@ -2,10 +2,10 @@ package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Condition
 import aktual.budget.model.RuleAction
-import aktual.budget.rules.vm.CheckboxesState
-import aktual.budget.rules.vm.CheckboxesState.Active
-import aktual.budget.rules.vm.CheckboxesState.Inactive
-import aktual.budget.rules.vm.RuleListItem
+import aktual.budget.rules.vm.Rule
+import aktual.budget.rules.vm.list.CheckboxesState
+import aktual.budget.rules.vm.list.CheckboxesState.Active
+import aktual.budget.rules.vm.list.CheckboxesState.Inactive
 import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
@@ -62,10 +62,10 @@ import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentSetOf
 
-/** Keep this in sync with [ShimmerRuleListItem] */
+/** Keep this in sync with [ShimmerListRulesItem] */
 @Composable
 internal fun ListRulesItem(
-  rule: RuleListItem,
+  rule: Rule,
   checkboxes: CheckboxesState,
   onAction: (ListRulesAction) -> Unit,
   modifier: Modifier = Modifier,
@@ -131,7 +131,7 @@ internal fun ListRulesItem(
 }
 
 @Composable
-private fun RowScope.ItemContent(rule: RuleListItem, theme: Theme = LocalTheme.current) {
+private fun RowScope.ItemContent(rule: Rule, theme: Theme = LocalTheme.current) {
   val styles = rememberRuleSpanStyles()
   if (isCompactWidth()) {
     Column(
@@ -213,7 +213,7 @@ private fun ListRulesItemActions(
 
 /** Keep this in sync with [ListRulesItem] */
 @Composable
-internal fun ShimmerRuleListItem(
+internal fun ShimmerListRulesItem(
   checkboxes: CheckboxesState,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -294,30 +294,24 @@ private fun Modifier.ruleRow(
 
 @Preview
 @Composable
-private fun PreviewRuleListItem(
-  @PreviewParameter(RuleListItemProvider::class) params: ThemedParams<RuleListItemParams>
+private fun PreviewListRulesItem(
+  @PreviewParameter(ListRulesItemProvider::class) params: ThemedParams<ListRulesItemParams>
 ) =
   PreviewWithThemedParams(params) {
     ListRulesItem(rule = item, checkboxes = checkboxes, onAction = {})
   }
 
-private data class RuleListItemParams(
-  val item: RuleListItem,
-  val checkboxes: CheckboxesState = Inactive,
-)
+private data class ListRulesItemParams(val item: Rule, val checkboxes: CheckboxesState = Inactive)
 
-private class RuleListItemProvider :
-  ThemedParameterProvider<RuleListItemParams>(
-    RuleListItemParams(item = PreviewRuleListItem1),
-    RuleListItemParams(
-      item = PreviewRuleListItem2,
-      checkboxes = Active(persistentSetOf(PreviewRuleListItem2.id)),
-    ),
+private class ListRulesItemProvider :
+  ThemedParameterProvider<ListRulesItemParams>(
+    ListRulesItemParams(item = PreviewRule1),
+    ListRulesItemParams(item = PreviewRule2, checkboxes = Active(persistentSetOf(PreviewRule2.id))),
   )
 
 @Preview
 @Composable
 private fun PreviewShimmerListItem(@PreviewParameter(ThemeParameters::class) theme: Theme) =
   PreviewWithTheme(theme) {
-    ShimmerRuleListItem(checkboxes = Inactive, modifier = Modifier.fillMaxWidth())
+    ShimmerListRulesItem(checkboxes = Inactive, modifier = Modifier.fillMaxWidth())
   }

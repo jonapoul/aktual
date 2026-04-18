@@ -73,6 +73,7 @@ value class PayeeLocationId(private val value: String) : Comparable<PayeeLocatio
 }
 
 @JvmInline
+@Serializable
 value class RuleId(private val value: String) : Comparable<RuleId> {
   override fun toString(): String = value
 

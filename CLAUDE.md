@@ -198,7 +198,7 @@ The project uses **Metro** (by Zac Sweers), a modern Kotlin-compiler-based DI fr
 **ViewModel Registration:**
 ```kotlin
 @ViewModelKey
-@ContributesIntoMap(ViewModelScope::class)
+@ContributesIntoMap(AppScope::class)
 class YourViewModel(...) : ViewModel()
 ```
 

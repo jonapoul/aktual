@@ -8,7 +8,7 @@ import aktual.budget.model.Operator
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
-import aktual.budget.rules.vm.RuleListItem
+import aktual.budget.rules.vm.Rule
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.serialization.json.JsonPrimitive
 
@@ -36,8 +36,8 @@ internal val PreviewCondition2 =
     queryFilter = null,
   )
 
-internal val PreviewRuleListItem1 =
-  RuleListItem(
+internal val PreviewRule1 =
+  Rule(
     id = RuleId("item-1-id"),
     stage = RuleStage.Default,
     conditionsOp = ConditionOp.And,
@@ -53,8 +53,8 @@ internal val PreviewRuleListItem1 =
       ),
   )
 
-internal val PreviewRuleListItem2 =
-  RuleListItem(
+internal val PreviewRule2 =
+  Rule(
     id = RuleId("item-2-id"),
     stage = RuleStage.Default,
     conditionsOp = ConditionOp.And,

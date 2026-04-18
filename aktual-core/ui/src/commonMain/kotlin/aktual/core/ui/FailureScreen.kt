@@ -15,9 +15,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -28,8 +30,7 @@ import androidx.compose.ui.unit.sp
 fun FailureScreen(
   title: String,
   reason: String?,
-  retryText: String?,
-  onClickRetry: (() -> Unit)?,
+  action: FailureAction?,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -67,37 +68,40 @@ fun FailureScreen(
         )
       }
 
-      if (retryText != null && onClickRetry != null) {
+      if (action != null) {
         VerticalSpacer(30.dp)
 
         PrimaryTextButton(
-          prefix = { Icon(imageVector = MaterialIcons.Refresh, contentDescription = retryText) },
-          text = retryText,
-          onClick = onClickRetry,
+          prefix = { Icon(imageVector = action.icon, contentDescription = action.text()) },
+          text = action.text(),
+          isEnabled = action.enabled,
+          onClick = action.onClick,
         )
       }
     }
   }
 }
 
+@Immutable
+data class FailureAction(
+  val text: @Composable () -> String,
+  val enabled: Boolean = true,
+  val icon: ImageVector,
+  val onClick: () -> Unit,
+)
+
 @PortraitPreview
 @Composable
 private fun PreviewFailureScreen(
   @PreviewParameter(FailureScreenProvider::class) params: ThemedParams<FailureScreenParams>
 ) =
-  PreviewWithTheme(params.theme) {
-    FailureScreen(
-      title = params.data.title,
-      reason = params.data.reason,
-      retryText = params.data.retryText,
-      onClickRetry = {},
-    )
-  }
+  PreviewWithThemedParams(params) { FailureScreen(title = title, reason = reason, action = action) }
 
 private data class FailureScreenParams(
   val reason: String? = null,
   val title: String = "Failed syncing the doodads",
-  val retryText: String? = "Retry",
+  val action: FailureAction? =
+    FailureAction(text = { "Retry" }, icon = MaterialIcons.Refresh, onClick = {}),
 )
 
 private class FailureScreenProvider :
@@ -106,5 +110,5 @@ private class FailureScreenProvider :
     FailureScreenParams(
       reason = "Failed to do the thing, here's a bit more text to show how it behaves when wrapping"
     ),
-    FailureScreenParams(retryText = null),
+    FailureScreenParams(action = null),
   )

@@ -2,6 +2,8 @@ package aktual.metrics.ui
 
 import aktual.api.model.metrics.GetMetricsResponse
 import aktual.app.nav.BackNavigator
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.model.GB
 import aktual.core.model.MB
@@ -16,6 +18,7 @@ import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
@@ -217,9 +220,12 @@ private fun FailureContent(
       modifier = Modifier.background(theme.tableBackground, CardShape),
       title = Strings.metricsFailure,
       reason = message,
-      retryText = Strings.metricsFailureRetry,
-      onClickRetry = { onAction(MetricsAction.Refresh) },
-      theme = theme,
+      action =
+        FailureAction(
+          text = { Strings.metricsFailureRetry },
+          onClick = { onAction(MetricsAction.Refresh) },
+          icon = MaterialIcons.Refresh,
+        ),
     )
   }
 }

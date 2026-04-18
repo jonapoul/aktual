@@ -1,4 +1,4 @@
-package aktual.budget.rules.vm
+package aktual.budget.rules.vm.list
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.AccountDao

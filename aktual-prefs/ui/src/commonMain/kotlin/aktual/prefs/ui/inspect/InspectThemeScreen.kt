@@ -3,6 +3,7 @@ package aktual.prefs.ui.inspect
 import aktual.app.nav.BackNavigator
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OpenInNew
+import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.theme.DarkTheme
@@ -16,6 +17,7 @@ import aktual.core.ui.BottomNavBarSpacing
 import aktual.core.ui.BottomStatusBarSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PreviewWithTheme
@@ -162,8 +164,12 @@ private fun InspectThemeContent(
           modifier = Modifier.background(theme.tableBackground, CardShape),
           title = Strings.settingsThemeInspectNotFound,
           reason = Strings.settingsThemeInspectNotFoundReason(state.id.value),
-          retryText = Strings.settingsThemeInspectRetry,
-          onClickRetry = { onAction(Retry) },
+          action =
+            FailureAction(
+              text = { Strings.settingsThemeInspectRetry },
+              onClick = { onAction(Retry) },
+              icon = MaterialIcons.Refresh,
+            ),
         )
       }
     }

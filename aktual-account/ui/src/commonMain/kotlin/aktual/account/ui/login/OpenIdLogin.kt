@@ -29,12 +29,7 @@ internal fun OpenIdLogin(modifier: Modifier = Modifier, theme: Theme = LocalThem
         .background(theme.pillBackgroundLight, RounderCardShape)
         .padding(8.dp)
   ) {
-    FailureScreen(
-      title = Strings.loginOpenidUnsupported,
-      reason = null,
-      retryText = null,
-      onClickRetry = null,
-    )
+    FailureScreen(title = Strings.loginOpenidUnsupported, reason = null, action = null)
   }
 }
 
