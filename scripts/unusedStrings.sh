@@ -47,15 +47,22 @@ fi
 unused_all=()
 total_count=0
 
-# check_catalog <container> <file> <awk_program>
-# The awk program must print "<accessor> <resource_name>" lines for every entry
-# in <file>. We then look for `<container>.<accessor>` or
-# `import aktual.core.l10n.<container>.<accessor>` across all sources, and
-# report the resource_name of any accessor with no hits.
+# check_catalog <container> <res_kind> <file> <awk_program>
+# - container: "Strings" or "Plurals" (the catalog object name)
+# - res_kind: "string" or "plurals" (matches Res.<res_kind>.<name>)
+#
+# The awk program must print "<accessor> <resource>" lines for every entry in
+# <file>. An entry counts as used if any source references either:
+#   - the catalog accessor:   <container>.<accessor>
+#   - the raw resource:       Res.<res_kind>.<resource>
+#   - an import of either:    import aktual.core.l10n.<container>.<accessor>
+#                             import aktual.core.l10n.<resource>
+# Reports the <resource> (snake_case) of any entry with no hits.
 check_catalog() {
   local container="$1"
-  local file="$2"
-  local awk_prog="$3"
+  local res_kind="$2"
+  local file="$3"
+  local awk_prog="$4"
 
   mapfile -t pairs < <(awk "$awk_prog" "$file")
 
@@ -66,34 +73,48 @@ check_catalog() {
 
   total_count=$((total_count + ${#pairs[@]}))
 
-  local -a accessors=()
+  local -a accessors=() resources=()
   declare -A resource_of
   local pair accessor resource
   for pair in "${pairs[@]}"; do
     accessor="${pair%% *}"
     resource="${pair#* }"
     accessors+=("$accessor")
+    resources+=("$resource")
     resource_of["$accessor"]="$resource"
   done
 
-  local alt
-  alt=$(IFS='|'; echo "${accessors[*]}")
-  local usage_pattern="\\b${container}\\.(${alt})\\b"
-  local import_pattern="^[[:space:]]*import[[:space:]]+aktual\\.core\\.l10n\\.${container}\\.([A-Za-z_][A-Za-z0-9_]*)"
+  local acc_alt res_alt
+  acc_alt=$(IFS='|'; echo "${accessors[*]}")
+  res_alt=$(IFS='|'; echo "${resources[*]}")
 
-  declare -A used
+  local accessor_pattern="\\b${container}\\.(${acc_alt})\\b"
+  local accessor_import_pattern="^[[:space:]]*import[[:space:]]+aktual\\.core\\.l10n\\.${container}\\.([A-Za-z_][A-Za-z0-9_]*)"
+  local resource_pattern="\\bRes\\.${res_kind}\\.(${res_alt})\\b"
+  local resource_import_pattern="^[[:space:]]*import[[:space:]]+aktual\\.core\\.l10n\\.(${res_alt})\\b"
+
+  declare -A used_accessors used_resources
   while IFS= read -r name; do
-    used["$name"]=1
+    used_accessors["$name"]=1
   done < <(
     {
-      grep -hEo "$usage_pattern" "${SOURCES[@]}" | sed -E "s/^${container}\\.//"
-      grep -hEo "$import_pattern" "${SOURCES[@]}" | sed -E "s/^[[:space:]]*import[[:space:]]+aktual\\.core\\.l10n\\.${container}\\.//"
+      grep -hEo "$accessor_pattern" "${SOURCES[@]}" | sed -E "s/^${container}\\.//"
+      grep -hEo "$accessor_import_pattern" "${SOURCES[@]}" | sed -E "s/^[[:space:]]*import[[:space:]]+aktual\\.core\\.l10n\\.${container}\\.//"
+    } | sort -u
+  )
+  while IFS= read -r name; do
+    used_resources["$name"]=1
+  done < <(
+    {
+      grep -hEo "$resource_pattern" "${SOURCES[@]}" | sed -E "s/^Res\\.${res_kind}\\.//"
+      grep -hEo "$resource_import_pattern" "${SOURCES[@]}" | sed -E 's/^[[:space:]]*import[[:space:]]+aktual\.core\.l10n\.//'
     } | sort -u
   )
 
   for accessor in "${accessors[@]}"; do
-    if [[ -z "${used[$accessor]:-}" ]]; then
-      unused_all+=("${resource_of[$accessor]}")
+    resource="${resource_of[$accessor]}"
+    if [[ -z "${used_accessors[$accessor]:-}" && -z "${used_resources[$resource]:-}" ]]; then
+      unused_all+=("$resource")
     fi
   done
 }
@@ -103,7 +124,7 @@ check_catalog() {
 # Parameterized are a single-line `public fun <accessor>(...): String =
 # stringResource(Res.string.<resource>, ...)`.
 # shellcheck disable=SC2016
-check_catalog "Strings" "$STRINGS_FILE" '
+check_catalog "Strings" "string" "$STRINGS_FILE" '
   match($0, /public fun ([A-Za-z_][A-Za-z0-9_]*)\(.*Res\.string\.([A-Za-z_][A-Za-z0-9_]*)/, m) {
     print m[1], m[2]; acc = ""; next
   }
@@ -116,7 +137,7 @@ check_catalog "Strings" "$STRINGS_FILE" '
 # Plurals: both accessor and resource on the same line
 #   `public fun <accessor>(...): String = pluralStringResource(Res.plurals.<resource>, ...)`
 # shellcheck disable=SC2016
-check_catalog "Plurals" "$PLURALS_FILE" '
+check_catalog "Plurals" "plurals" "$PLURALS_FILE" '
   match($0, /public fun ([A-Za-z_][A-Za-z0-9_]*)\(.*Res\.plurals\.([A-Za-z_][A-Za-z0-9_]*)/, m) {
     print m[1], m[2]
   }
