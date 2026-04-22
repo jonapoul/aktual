@@ -60,7 +60,7 @@ private fun DarkThemeContent(
     options = preference.options,
     selected = preference.value,
     isEnabled = preference.enabled,
-    onSelected = { id -> onAction(ThemeSettingsAction.SetDarkTheme(id)) },
+    onSelect = { id -> onAction(ThemeSettingsAction.SetDarkTheme(id)) },
     string = { id ->
       when (id) {
         DarkTheme.id -> Strings.settingsThemeDark

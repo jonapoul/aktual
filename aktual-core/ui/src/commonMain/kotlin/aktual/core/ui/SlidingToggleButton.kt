@@ -42,7 +42,7 @@ import kotlinx.collections.immutable.toImmutableList
 fun <T : Any> SlidingToggleButton(
   selected: T,
   options: ImmutableList<T>,
-  onSelected: (T) -> Unit,
+  onSelect: (T) -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
   theme: Theme = LocalTheme.current,
@@ -78,7 +78,7 @@ fun <T : Any> SlidingToggleButton(
       // Children 1 to N: The Labels
       options.fastForEachIndexed { index, option ->
         Box(
-          modifier = Modifier.clickable(isEnabled) { onSelected(option) }.padding(itemPadding),
+          modifier = Modifier.clickable(isEnabled) { onSelect(option) }.padding(itemPadding),
           contentAlignment = Alignment.Center,
         ) {
           Text(
@@ -151,7 +151,7 @@ private fun PreviewStrings(
       modifier = Modifier.padding(4.dp),
       options = persistentListOf("Option A", "Option B"),
       selected = selected,
-      onSelected = { value -> selected = value },
+      onSelect = { value -> selected = value },
       isEnabled = this,
     )
   }
@@ -165,7 +165,7 @@ private fun PreviewEnum(@PreviewParameter(ThemeParameters::class) theme: Theme) 
       modifier = Modifier.padding(4.dp),
       options = Interval.entries.toImmutableList(),
       selected = selected,
-      onSelected = { value -> selected = value },
+      onSelect = { value -> selected = value },
       string = { interval ->
         when (interval) {
           Interval.Daily -> "Daily"

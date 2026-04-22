@@ -52,7 +52,7 @@ internal fun LoginMethodPicker(
       modifier = Modifier.fillMaxWidth().padding(Dimens.VeryLarge),
       options = methods,
       selected = selectedMethod,
-      onSelected = { m -> onAction(LoginAction.SelectLoginMethod(m)) },
+      onSelect = { m -> onAction(LoginAction.SelectLoginMethod(m)) },
       string = { m -> m.string() },
     )
   }
