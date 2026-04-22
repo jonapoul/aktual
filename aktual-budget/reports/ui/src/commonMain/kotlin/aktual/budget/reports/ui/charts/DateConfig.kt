@@ -23,7 +23,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -51,12 +51,12 @@ internal fun ChartDateConfig(
     verticalArrangement = Arrangement.Top,
   ) {
     val modes = remember { DateRangeMode.entries.toImmutableList() }
-    var selectedIndex by remember { mutableIntStateOf(modes.indexOf(config.mode)) }
+    var selected by remember { mutableStateOf(config.mode) }
     SlidingToggleButton(
       modifier = Modifier.wrapContentSize(),
       options = modes,
-      onSelectOption = { index -> selectedIndex = index },
-      selectedIndex = selectedIndex,
+      onSelect = { selected = it },
+      selected = selected,
       theme = theme,
       string = { type -> type.string() },
     )
