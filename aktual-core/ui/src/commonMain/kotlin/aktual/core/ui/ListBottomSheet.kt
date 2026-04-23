@@ -94,9 +94,13 @@ private fun Theme.listItem(): ListItemColors =
   )
 
 @Composable
-fun BottomSheetIcon(imageVector: ImageVector, contentDescription: String? = null) {
+fun BottomSheetIcon(
+  imageVector: ImageVector,
+  modifier: Modifier = Modifier,
+  contentDescription: String? = null,
+) {
   Icon(
-    modifier = Modifier.size(24.dp),
+    modifier = modifier.size(24.dp),
     imageVector = imageVector,
     contentDescription = contentDescription,
   )
