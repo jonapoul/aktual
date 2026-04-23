@@ -35,6 +35,7 @@ private val aktualIcons =
       CloudWarning,
       Equals,
       FileDouble,
+      Git,
       Key,
       OpenBracket,
       Reports,

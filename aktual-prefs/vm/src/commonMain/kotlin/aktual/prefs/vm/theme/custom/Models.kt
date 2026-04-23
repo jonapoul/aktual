@@ -31,6 +31,11 @@ enum class ThemeFilter {
   Dark,
 }
 
+enum class ThemeSorting {
+  ByName,
+  ByRepo,
+}
+
 @Immutable
 sealed interface CacheState {
   data object Remote : CacheState

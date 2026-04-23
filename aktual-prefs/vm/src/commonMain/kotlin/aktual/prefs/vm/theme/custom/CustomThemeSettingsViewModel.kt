@@ -48,6 +48,7 @@ class CustomThemeSettingsViewModel(
 ) : ViewModel() {
   private val mutableIsFetchingCatalog = MutableStateFlow(false)
   private val mutableFilter = MutableStateFlow(ThemeFilter.All)
+  private val mutableSorting = MutableStateFlow(ThemeSorting.ByName)
   private val mutableFailure = MutableStateFlow<CatalogState.Failed?>(null)
   private val mutableSummaries = MutableStateFlow(persistentListOf<CustomThemeSummary>())
   private val mutableCachedThemes = MutableStateFlow(persistentMapOf<ThemeId, CacheState>())
@@ -64,6 +65,8 @@ class CustomThemeSettingsViewModel(
 
   val filter: StateFlow<ThemeFilter> = mutableFilter.asStateFlow()
 
+  val sorting: StateFlow<ThemeSorting> = mutableSorting.asStateFlow()
+
   val state: StateFlow<CatalogState> =
     viewModelScope.launchMolecule(Immediate) {
       val isFetchingCatalog by mutableIsFetchingCatalog.collectAsState()
@@ -77,14 +80,16 @@ class CustomThemeSettingsViewModel(
       }
 
       val filter by mutableFilter.collectAsState()
+      val sorting by mutableSorting.collectAsState()
       val summaries by mutableSummaries.collectAsState()
       val themes by mutableCachedThemes.collectAsState()
       val selected by selectedTheme.collectAsState()
 
       val items =
-        remember(filter, summaries, themes, selected) {
+        remember(filter, sorting, summaries, themes, selected) {
           buildItems(
             filter = filter,
+            sorting = sorting,
             summaries = summaries,
             cachedThemes = themes,
             selected = selected,
@@ -117,6 +122,10 @@ class CustomThemeSettingsViewModel(
 
   fun setFilter(filter: ThemeFilter) {
     mutableFilter.update { filter }
+  }
+
+  fun setSorting(sorting: ThemeSorting) {
+    mutableSorting.update { sorting }
   }
 
   fun fetchAndNavigate(summary: CustomThemeSummary) {
@@ -161,6 +170,7 @@ class CustomThemeSettingsViewModel(
 
   private fun buildItems(
     filter: ThemeFilter,
+    sorting: ThemeSorting,
     summaries: List<CustomThemeSummary>,
     cachedThemes: Map<ThemeId, CacheState>,
     selected: ThemeId?,
@@ -168,7 +178,12 @@ class CustomThemeSettingsViewModel(
     summaries
       .asSequence()
       .filter { summary -> byThemeMode(filter, summary) }
-      .sortedBy { summary -> summary.name }
+      .sortedBy { summary ->
+        when (sorting) {
+          ThemeSorting.ByName -> summary.name.lowercase()
+          ThemeSorting.ByRepo -> summary.repo.toString().lowercase()
+        }
+      }
       .map { summary -> toCatalogItem(summary, selected, cachedThemes) }
       .toImmutableList()
 
