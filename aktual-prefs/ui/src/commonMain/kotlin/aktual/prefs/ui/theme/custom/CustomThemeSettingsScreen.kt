@@ -6,15 +6,12 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.Cloud
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.Check
-import aktual.core.icons.material.DarkMode
 import aktual.core.icons.material.FilterList
-import aktual.core.icons.material.LightMode
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OfflinePin
 import aktual.core.icons.material.Refresh
+import aktual.core.icons.material.Sort
 import aktual.core.icons.material.Sync
-import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
 import aktual.core.l10n.settings_theme_refresh_failure
@@ -45,7 +42,6 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.disabledIf
-import aktual.core.ui.listItem
 import aktual.core.ui.radioButton
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
@@ -56,6 +52,7 @@ import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.RetryFetchCatalog
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SelectTheme
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SetModeFilter
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.ShowFilterSheet
+import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.ShowSortSheet
 import aktual.prefs.vm.theme.custom.CacheState
 import aktual.prefs.vm.theme.custom.CatalogItem
 import aktual.prefs.vm.theme.custom.CatalogState
@@ -84,11 +81,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -104,8 +98,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
@@ -126,12 +118,13 @@ fun CustomThemeSettingsScreen(
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
   val filter by viewModel.filter.collectAsStateWithLifecycle()
+  val sorting by viewModel.sorting.collectAsStateWithLifecycle()
   val snackbar = remember { SnackbarHostState() }
-  var showFilterSheet by remember { mutableStateOf(false) }
+  var bottomSheet by remember { mutableStateOf<BottomSheet?>(null) }
 
   LaunchedEffect(state) {
     if (state !is CatalogState.Success) {
-      showFilterSheet = false
+      bottomSheet = null
     }
   }
 
@@ -151,18 +144,19 @@ fun CustomThemeSettingsScreen(
 
   CustomThemeSettingsScaffold(
     state = state,
-    filter = filter,
-    showFilterSheet = showFilterSheet,
+    bottomSheet = bottomSheet,
     snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         RetryFetchCatalog -> viewModel.clearCache()
-        ShowFilterSheet -> showFilterSheet = true
-        DismissBottomSheet -> showFilterSheet = false
+        ShowFilterSheet -> bottomSheet = ThemeFilterBottomSheet(filter)
+        ShowSortSheet -> bottomSheet = ThemeSortingBottomSheet(sorting)
+        DismissBottomSheet -> bottomSheet = null
         is InspectTheme -> viewModel.fetchAndNavigate(action.summary)
         is SelectTheme -> viewModel.select(action.summary)
         is SetModeFilter -> viewModel.setFilter(action.mode)
+        is SetSorting -> viewModel.setSorting(action.sorting)
       }
     },
   )
@@ -171,8 +165,7 @@ fun CustomThemeSettingsScreen(
 @Composable
 private fun CustomThemeSettingsScaffold(
   state: CatalogState,
-  filter: ThemeFilter,
-  showFilterSheet: Boolean,
+  bottomSheet: BottomSheet?,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
   onAction: (CustomThemeSettingsAction) -> Unit,
 ) {
@@ -188,7 +181,10 @@ private fun CustomThemeSettingsScaffold(
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsThemeCustomTitle) },
-        actions = { FilterButton(state, onAction) },
+        actions = {
+          FilterButton(state, onAction)
+          SortButton(state, onAction)
+        },
       )
     },
     snackbarHost = {
@@ -223,8 +219,12 @@ private fun CustomThemeSettingsScaffold(
     }
   }
 
-  if (showFilterSheet && state is CatalogState.Success) {
-    ThemeFilterBottomSheet(selected = filter, sheetState = sheetState, onAction = onAction)
+  if (state is CatalogState.Success) {
+    when (bottomSheet) {
+      is ThemeFilterBottomSheet -> ThemeFilterBottomSheet(bottomSheet.value, onAction, sheetState)
+      is ThemeSortingBottomSheet -> ThemeSortingBottomSheet(bottomSheet.value, onAction, sheetState)
+      null -> Unit
+    }
   }
 }
 
@@ -232,9 +232,19 @@ private fun CustomThemeSettingsScaffold(
 private fun FilterButton(state: CatalogState, onAction: (CustomThemeSettingsAction) -> Unit) {
   BareIconButton(
     imageVector = MaterialIcons.FilterList,
-    contentDescription = Strings.settingsThemeCustomClearCache,
+    contentDescription = Strings.settingsThemeFilter,
     enabled = state !is CatalogState.Loading,
     onClick = { onAction(ShowFilterSheet) },
+  )
+}
+
+@Composable
+private fun SortButton(state: CatalogState, onAction: (CustomThemeSettingsAction) -> Unit) {
+  BareIconButton(
+    imageVector = MaterialIcons.Sort,
+    contentDescription = Strings.settingsThemeSort,
+    enabled = state !is CatalogState.Loading,
+    onClick = { onAction(ShowSortSheet) },
   )
 }
 
@@ -306,13 +316,10 @@ private fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Box(
-      modifier =
-        Modifier.minimumInteractiveComponentSize()
-          .padding(ITEM_PADDING)
-          .background(theme.pageText, CardShape)
-    )
+    // Checkbox
+    Box(modifier = Modifier.minimumInteractiveComponentSize().background(theme.pageText, CardShape))
 
+    // Text
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
       Box(
         modifier =
@@ -328,6 +335,7 @@ private fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme
             .background(theme.pageText, CardShape)
       )
 
+      // Preview colours
       Row(
         modifier = Modifier.wrapContentWidth(),
         horizontalArrangement = Arrangement.spacedBy(PREVIEW_SPACING),
@@ -343,6 +351,7 @@ private fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme
       }
     }
 
+    // Inspect button
     Box(modifier = Modifier.minimumInteractiveComponentSize().background(theme.pageText, CardShape))
   }
 }
@@ -360,7 +369,7 @@ private fun SuccessContent(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ITEM_SPACING),
   ) {
-    items(items) { item -> CustomThemeItem(item, onAction) }
+    items(items, key = { it.id.value }) { item -> CustomThemeItem(item, onAction) }
 
     item {
       BottomStatusBarSpacing()
@@ -465,62 +474,6 @@ private fun RowScope.BoxPreviewColor(summary: CustomThemeSummary, index: Int) =
         .background(summary.colors[index], CardShape)
   )
 
-@Composable
-private fun ThemeFilterBottomSheet(
-  selected: ThemeFilter,
-  onAction: (CustomThemeSettingsAction) -> Unit,
-  sheetState: SheetState,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) {
-  ModalBottomSheet(
-    modifier = modifier,
-    onDismissRequest = { onAction(DismissBottomSheet) },
-    sheetState = sheetState,
-    containerColor = theme.modalBackground,
-    contentColor = theme.pageText,
-  ) {
-    val listState = rememberLazyListState()
-    LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
-      items(ThemeFilter.entries) { filter ->
-        val isSelected = filter == selected
-        val label = filter.string()
-        ListItem(
-          modifier =
-            Modifier.clickable {
-              onAction(SetModeFilter(filter))
-              onAction(DismissBottomSheet)
-            },
-          leadingContent = { Icon(imageVector = filter.icon(), contentDescription = label) },
-          headlineContent = {
-            Text(modifier = Modifier.weight(1f), text = label, textAlign = TextAlign.Center)
-          },
-          trailingContent = {
-            if (isSelected) Icon(MaterialIcons.Check, contentDescription = null)
-          },
-          colors = theme.listItem(),
-        )
-      }
-    }
-  }
-}
-
-@Composable
-private fun ThemeFilter.string(): String =
-  when (this) {
-    ThemeFilter.All -> Strings.settingsThemeFilterAll
-    ThemeFilter.Light -> Strings.settingsThemeFilterLight
-    ThemeFilter.Dark -> Strings.settingsThemeFilterDark
-  }
-
-@Composable
-private fun ThemeFilter.icon(): ImageVector =
-  when (this) {
-    ThemeFilter.All -> MaterialIcons.ThemeRoutine
-    ThemeFilter.Light -> MaterialIcons.LightMode
-    ThemeFilter.Dark -> MaterialIcons.DarkMode
-  }
-
 private val ITEM_PADDING = PaddingValues(horizontal = 15.dp, vertical = 12.dp)
 private val ITEM_SPACING = 4.dp
 private val PREVIEW_SPACING = 2.dp
@@ -533,18 +486,12 @@ private fun PreviewCustomThemeSettings(
   @PreviewParameter(CatalogStateProvider::class) params: ThemedParams<CustomThemeSettingsParams>
 ) =
   PreviewWithThemedParams(params) {
-    CustomThemeSettingsScaffold(
-      state = state,
-      filter = filter,
-      showFilterSheet = showFilterSheet,
-      onAction = {},
-    )
+    CustomThemeSettingsScaffold(state = state, bottomSheet = bottomSheet, onAction = {})
   }
 
 private data class CustomThemeSettingsParams(
   val state: CatalogState,
-  val filter: ThemeFilter = ThemeFilter.Dark,
-  val showFilterSheet: Boolean = false,
+  val bottomSheet: BottomSheet? = null,
 )
 
 private val SUCCESS_STATE =
@@ -557,5 +504,5 @@ private class CatalogStateProvider :
     CustomThemeSettingsParams(CatalogState.Loading),
     CustomThemeSettingsParams(CatalogState.Failed.FetchingCatalog),
     CustomThemeSettingsParams(SUCCESS_STATE),
-    CustomThemeSettingsParams(SUCCESS_STATE, showFilterSheet = true),
+    CustomThemeSettingsParams(SUCCESS_STATE, bottomSheet = ThemeFilterBottomSheet(ThemeFilter.Dark)),
   )
