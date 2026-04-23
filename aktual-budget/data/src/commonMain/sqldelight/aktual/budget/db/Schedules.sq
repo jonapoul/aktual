@@ -9,7 +9,8 @@ CREATE TABLE IF NOT EXISTS schedules(
   completed INTEGER AS Boolean DEFAULT 0,
   posts_transaction INTEGER AS Boolean DEFAULT 0,
   tombstone INTEGER AS Boolean DEFAULT 0,
-  name TEXT DEFAULT NULL
+  name TEXT DEFAULT NULL,
+  custom_upcoming_length TEXT DEFAULT NULL
 );
 
 CREATE VIEW IF NOT EXISTS v_schedules AS
