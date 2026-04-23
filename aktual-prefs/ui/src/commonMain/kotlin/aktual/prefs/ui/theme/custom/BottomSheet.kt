@@ -3,36 +3,24 @@ package aktual.prefs.ui.theme.custom
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Git
 import aktual.core.icons.material.Badge
-import aktual.core.icons.material.Check
 import aktual.core.icons.material.DarkMode
 import aktual.core.icons.material.LightMode
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.listItem
-import aktual.core.ui.scrollbar
+import aktual.core.ui.BottomSheetIcon
+import aktual.core.ui.ListBottomSheet
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SetModeFilter
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SetSorting
 import aktual.prefs.vm.theme.custom.ThemeFilter
 import aktual.prefs.vm.theme.custom.ThemeSorting
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.toImmutableList
 
 @Immutable internal sealed interface BottomSheet
 
@@ -46,36 +34,18 @@ internal fun ThemeSortingBottomSheet(
   onAction: (CustomThemeSettingsAction) -> Unit,
   sheetState: SheetState,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
-  ModalBottomSheet(
+  ListBottomSheet(
     modifier = modifier,
-    onDismissRequest = { onAction(DismissBottomSheet) },
+    value = value,
+    options = ThemeSorting.entries.toImmutableList(),
+    onDismiss = { onAction(DismissBottomSheet) },
+    onSelect = { onAction(SetSorting(it)) },
+    string = { it.string() },
+    leadingContent = { BottomSheetIcon(it.icon()) },
     sheetState = sheetState,
-    containerColor = theme.modalBackground,
-    contentColor = theme.pageText,
-  ) {
-    val listState = rememberLazyListState()
-    LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
-      items(ThemeSorting.entries) { sorting ->
-        val isSelected = sorting == value
-        val label = sorting.string()
-        ListItem(
-          modifier =
-            Modifier.clickable {
-              onAction(SetSorting(sorting))
-              onAction(DismissBottomSheet)
-            },
-          leadingContent = { BottomSheetIcon(sorting.icon(), contentDescription = label) },
-          headlineContent = {
-            Text(modifier = Modifier.weight(1f), text = label, textAlign = TextAlign.Center)
-          },
-          trailingContent = { if (isSelected) BottomSheetIcon(MaterialIcons.Check) },
-          colors = theme.listItem(),
-        )
-      }
-    }
-  }
+    key = { it.ordinal },
+  )
 }
 
 @Composable
@@ -84,40 +54,18 @@ internal fun ThemeFilterBottomSheet(
   onAction: (CustomThemeSettingsAction) -> Unit,
   sheetState: SheetState,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
-  ModalBottomSheet(
+  ListBottomSheet(
     modifier = modifier,
-    onDismissRequest = { onAction(DismissBottomSheet) },
+    value = value,
+    options = ThemeFilter.entries.toImmutableList(),
+    onDismiss = { onAction(DismissBottomSheet) },
+    onSelect = { onAction(SetModeFilter(it)) },
+    string = { it.string() },
+    leadingContent = { BottomSheetIcon(it.icon()) },
     sheetState = sheetState,
-    containerColor = theme.modalBackground,
-    contentColor = theme.pageText,
-  ) {
-    val listState = rememberLazyListState()
-    LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
-      items(ThemeFilter.entries) { filter ->
-        val isSelected = filter == value
-        val label = filter.string()
-        ListItem(
-          modifier =
-            Modifier.clickable {
-              onAction(SetModeFilter(filter))
-              onAction(DismissBottomSheet)
-            },
-          leadingContent = {
-            BottomSheetIcon(imageVector = filter.icon(), contentDescription = label)
-          },
-          headlineContent = {
-            Text(modifier = Modifier.weight(1f), text = label, textAlign = TextAlign.Center)
-          },
-          trailingContent = {
-            if (isSelected) BottomSheetIcon(MaterialIcons.Check, contentDescription = null)
-          },
-          colors = theme.listItem(),
-        )
-      }
-    }
-  }
+    key = { it.ordinal },
+  )
 }
 
 @Composable
@@ -127,7 +75,7 @@ private fun ThemeSorting.string(): String =
     ThemeSorting.ByRepo -> Strings.settingsThemeSortByRepo
   }
 
-@Composable
+@Stable
 private fun ThemeSorting.icon(): ImageVector =
   when (this) {
     ThemeSorting.ByName -> MaterialIcons.Badge
@@ -142,19 +90,10 @@ private fun ThemeFilter.string(): String =
     ThemeFilter.Dark -> Strings.settingsThemeFilterDark
   }
 
-@Composable
+@Stable
 private fun ThemeFilter.icon(): ImageVector =
   when (this) {
     ThemeFilter.All -> MaterialIcons.ThemeRoutine
     ThemeFilter.Light -> MaterialIcons.LightMode
     ThemeFilter.Dark -> MaterialIcons.DarkMode
   }
-
-@Composable
-private fun BottomSheetIcon(imageVector: ImageVector, contentDescription: String? = null) {
-  Icon(
-    modifier = Modifier.size(24.dp),
-    imageVector = imageVector,
-    contentDescription = contentDescription,
-  )
-}
