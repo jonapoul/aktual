@@ -46,7 +46,7 @@ fun Modifier.blurredBottomBar(
         HazeStyle(
           blurRadius = config.blurRadius,
           backgroundColor = color,
-          tint = HazeTint(color.copy(alpha = tintAlpha)),
+          tint = HazeTint(color.copy(alpha = config.blurAlpha)),
         )
       }
     hazeEffect(state, style)
