@@ -1,44 +1,31 @@
 package aktual.prefs.ui
 
-import aktual.core.icons.material.Check
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TextField
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
-import aktual.core.ui.listItem
-import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
 import aktual.prefs.vm.ListPreference
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -121,55 +108,17 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   )
 
   if (showSheet) {
-    ModalBottomSheet(
-      onDismissRequest = { showSheet = false },
+    ListBottomSheet(
+      value = value,
+      options = options,
+      onDismiss = { showSheet = false },
+      onSelect = onValueChange,
       sheetState = sheetState,
-      containerColor = theme.modalBackground,
-      contentColor = theme.pageText,
-    ) {
-      val listState = rememberLazyListState()
-      LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
-        items(options) { option ->
-          val label = optionString(option)
-          val isSelected = option == value
-          ListItem(
-            modifier =
-              Modifier.clickable {
-                onValueChange(option)
-                showSheet = false
-              },
-            headlineContent = { Text(label) },
-            trailingContent =
-              if (isSelected || optionSuffix != null) {
-                { TrailingContent(option, isSelected, optionSuffix) }
-              } else {
-                null
-              },
-            colors = theme.listItem(),
-          )
-        }
-      }
-    }
-  }
-}
-
-@Composable
-private fun <E : Enum<E>> TrailingContent(
-  value: E,
-  isSelected: Boolean,
-  content: (@Composable (E) -> Unit)?,
-  modifier: Modifier = Modifier,
-) {
-  Row(
-    modifier = modifier,
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    if (isSelected) {
-      Icon(MaterialIcons.Check, contentDescription = null)
-    }
-
-    content?.invoke(value)
+      string = optionString,
+      trailingContent = optionSuffix,
+      key = { it.ordinal },
+      theme = theme,
+    )
   }
 }
 

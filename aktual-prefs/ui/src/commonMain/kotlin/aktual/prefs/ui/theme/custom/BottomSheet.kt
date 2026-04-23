@@ -8,20 +8,18 @@ import aktual.core.icons.material.LightMode
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
+import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.ListBottomSheet
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SetModeFilter
 import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SetSorting
 import aktual.prefs.vm.theme.custom.ThemeFilter
 import aktual.prefs.vm.theme.custom.ThemeSorting
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Icon
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.toImmutableList
 
 @Immutable internal sealed interface BottomSheet
@@ -44,7 +42,7 @@ internal fun ThemeSortingBottomSheet(
     onDismiss = { onAction(DismissBottomSheet) },
     onSelect = { onAction(SetSorting(it)) },
     string = { it.string() },
-    leadingIcon = { it.icon() },
+    leadingContent = { BottomSheetIcon(it.icon()) },
     sheetState = sheetState,
     key = { it.ordinal },
   )
@@ -64,7 +62,7 @@ internal fun ThemeFilterBottomSheet(
     onDismiss = { onAction(DismissBottomSheet) },
     onSelect = { onAction(SetModeFilter(it)) },
     string = { it.string() },
-    leadingIcon = { it.icon() },
+    leadingContent = { BottomSheetIcon(it.icon()) },
     sheetState = sheetState,
     key = { it.ordinal },
   )
@@ -99,12 +97,3 @@ private fun ThemeFilter.icon(): ImageVector =
     ThemeFilter.Light -> MaterialIcons.LightMode
     ThemeFilter.Dark -> MaterialIcons.DarkMode
   }
-
-@Composable
-private fun BottomSheetIcon(imageVector: ImageVector, contentDescription: String? = null) {
-  Icon(
-    modifier = Modifier.size(24.dp),
-    imageVector = imageVector,
-    contentDescription = contentDescription,
-  )
-}

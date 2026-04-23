@@ -20,10 +20,10 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
@@ -37,8 +37,8 @@ fun <T : Any> ListBottomSheet(
   sheetState: SheetState,
   string: @Composable (T) -> String,
   modifier: Modifier = Modifier,
-  leadingIcon: (@Composable (T) -> ImageVector)? = null,
-  trailingIcon: (@Composable (T) -> ImageVector)? = null,
+  leadingContent: (@Composable (T) -> Unit)? = null,
+  trailingContent: (@Composable (T) -> Unit)? = null,
   key: ((T) -> Any)? = null,
   isEnabled: (T) -> Boolean = { true },
   theme: Theme = LocalTheme.current,
@@ -53,23 +53,30 @@ fun <T : Any> ListBottomSheet(
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
       items(options, key) { item ->
-        val label = string(value)
+        val label = string(item)
+        val isSelected = item == value
         ListItem(
           modifier =
             Modifier.clickable(isEnabled(item)) {
               onSelect(item)
               onDismiss()
             },
-          leadingContent = leadingIcon?.let { { BottomSheetIcon(imageVector = it(item), label) } },
-          headlineContent = {
-            Text(modifier = Modifier.weight(1f), text = label, textAlign = TextAlign.Center)
-          },
-          trailingContent = {
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-              if (item == value) BottomSheetIcon(MaterialIcons.Check)
-              trailingIcon?.let { BottomSheetIcon(imageVector = it(item), label) }
-            }
-          },
+          leadingContent = leadingContent?.let { { it(item) } },
+          headlineContent = { Text(text = label) },
+          trailingContent =
+            if (isSelected || trailingContent != null) {
+              {
+                Row(
+                  horizontalArrangement = Arrangement.spacedBy(8.dp),
+                  verticalAlignment = Alignment.CenterVertically,
+                ) {
+                  if (isSelected) BottomSheetIcon(MaterialIcons.Check)
+                  trailingContent?.invoke(item)
+                }
+              }
+            } else {
+              null
+            },
           colors = theme.listItem(),
         )
       }
@@ -87,7 +94,7 @@ private fun Theme.listItem(): ListItemColors =
   )
 
 @Composable
-private fun BottomSheetIcon(imageVector: ImageVector, contentDescription: String? = null) {
+fun BottomSheetIcon(imageVector: ImageVector, contentDescription: String? = null) {
   Icon(
     modifier = Modifier.size(24.dp),
     imageVector = imageVector,
