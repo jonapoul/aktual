@@ -347,9 +347,10 @@ private fun Theme.navRailItem(): NavigationRailItemColors =
 
 @Composable
 private fun metroViewModel(budgetId: BudgetId) =
-  assistedMetroViewModel<BudgetNavRailViewModel, BudgetNavRailViewModel.Factory> {
-    create(budgetId)
-  }
+  assistedMetroViewModel<BudgetNavRailViewModel, BudgetNavRailViewModel.Factory>(
+    key = budgetId.value,
+    createViewModel = { create(budgetId) },
+  )
 
 private val TabSaver: Saver<BudgetTab, Int> =
   Saver(save = { it.ordinal }, restore = { BudgetTab.entries[it] })

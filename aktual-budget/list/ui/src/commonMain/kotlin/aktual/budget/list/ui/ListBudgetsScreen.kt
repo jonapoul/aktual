@@ -148,7 +148,9 @@ fun ListBudgetsScreen(
 
 @Composable
 private fun metroViewModel(token: Token) =
-  assistedMetroViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory> { create(token) }
+  assistedMetroViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory>(key = token.value) {
+    create(token)
+  }
 
 @Composable
 internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: (ListBudgetsAction) -> Unit) {

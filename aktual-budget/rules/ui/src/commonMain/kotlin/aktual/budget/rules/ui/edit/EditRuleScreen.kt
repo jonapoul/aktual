@@ -71,7 +71,9 @@ internal fun EditRuleScreen(
 
 @Composable
 private fun metroViewModel(id: RuleId?) =
-  assistedMetroViewModel<EditRuleViewModel, EditRuleViewModel.Factory> { create(id) }
+  assistedMetroViewModel<EditRuleViewModel, EditRuleViewModel.Factory>(key = id.toString()) {
+    create(id)
+  }
 
 @Composable
 private fun EditRuleScaffold(

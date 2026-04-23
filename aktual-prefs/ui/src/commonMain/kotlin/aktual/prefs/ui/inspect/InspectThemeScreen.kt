@@ -96,7 +96,10 @@ fun InspectThemeScreen(
 
 @Composable
 private fun metroViewModel(themeId: ThemeId) =
-  assistedMetroViewModel<InspectThemeViewModel, InspectThemeViewModel.Factory> { create(themeId) }
+  assistedMetroViewModel<InspectThemeViewModel, InspectThemeViewModel.Factory>(
+    key = themeId.value,
+    createViewModel = { create(themeId) },
+  )
 
 @Composable
 private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThemeAction) -> Unit) {
