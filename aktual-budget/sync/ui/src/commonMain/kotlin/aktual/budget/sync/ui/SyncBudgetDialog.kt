@@ -187,9 +187,10 @@ private fun SyncBudgetDialog(
 
 @Composable
 private fun syncBudgetViewModel(token: Token, budgetId: BudgetId): SyncBudgetViewModel =
-  assistedMetroViewModel<SyncBudgetViewModel, SyncBudgetViewModel.Factory> {
-    create(token, budgetId)
-  }
+  assistedMetroViewModel<SyncBudgetViewModel, SyncBudgetViewModel.Factory>(
+    key = "$budgetId-$token",
+    createViewModel = { create(token, budgetId) },
+  )
 
 @Composable
 @Suppress("UnusedReceiverParameter")
