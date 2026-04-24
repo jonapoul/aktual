@@ -35,6 +35,9 @@ import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.blurredBottomBar
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -237,8 +240,24 @@ private fun BudgetNavDisplay(
   modifier: Modifier = Modifier,
 ) {
   NavDisplay(
-    backStack = activeStack,
     modifier = modifier,
+    backStack = activeStack,
+    onBack = { activeStack.pop() },
+    // Forward: new screen slides in from right, old screen slides out to left
+    transitionSpec = {
+      slideInHorizontally(initialOffsetX = { width -> width }) togetherWith
+        slideOutHorizontally(targetOffsetX = { width -> -width })
+    },
+    // Back: previous screen slides in from left, current screen slides out to right
+    popTransitionSpec = {
+      slideInHorizontally(initialOffsetX = { width -> -width }) togetherWith
+        slideOutHorizontally(targetOffsetX = { width -> width })
+    },
+    // Predictive back gesture: same as pop
+    predictivePopTransitionSpec = {
+      slideInHorizontally(initialOffsetX = { width -> -width }) togetherWith
+        slideOutHorizontally(targetOffsetX = { width -> width })
+    },
     entryDecorators =
       listOf(
         rememberSaveableStateHolderNavEntryDecorator(),
