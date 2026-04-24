@@ -1,7 +1,7 @@
-# aktual-budget:data-di
+# aktual-budget:data:impl
 
 <!--region chart-->
 ![chart](atlas/chart.png)
 
-![legend](../../atlas/legend.png)
+![legend](../../../atlas/legend.png)
 <!--endregion-->

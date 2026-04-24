@@ -5,13 +5,14 @@ plugins { id("aktual.module.kotlin") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:data"))
+    api(project(":aktual-budget:data:db"))
+    api(project(":aktual-budget:data:prefs"))
     api(project(":aktual-budget:model"))
     api(project(":aktual-budget:sync:domain"))
   }
 
   commonTestDependencies {
-    implementation(project(":aktual-budget:data-di"))
+    implementation(project(":aktual-budget:data:di"))
     implementation(project(":aktual-core:api:di"))
     implementation(project(":aktual-core:di"))
     implementation(project(":aktual-prefs:di"))

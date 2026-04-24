@@ -19,7 +19,7 @@ kotlin {
   }
 
   commonTestDependencies {
-    implementation(project(":aktual-budget:data-di"))
+    implementation(project(":aktual-budget:data:di"))
     implementation(project(":aktual-core:di"))
     implementation(project(":aktual-prefs:di"))
     implementation(project(":aktual-core:theme:di"))
