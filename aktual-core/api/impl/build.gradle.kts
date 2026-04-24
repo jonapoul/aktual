@@ -8,6 +8,8 @@ kotlin {
     api(libs.kotlinx.coroutines.core)
     api(libs.ktor.core)
     api(libs.okio)
+    api(project(":aktual-budget:data:prefs"))
+    api(project(":aktual-budget:data:proto"))
     api(project(":aktual-core:api"))
     api(project(":aktual-prefs"))
     implementation(libs.ktor.auth)

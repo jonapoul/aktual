@@ -19,7 +19,8 @@ kotlin {
     api(libs.logcat)
     api(libs.okio)
     api(libs.turbine)
-    api(project(":aktual-budget:data"))
+    api(project(":aktual-budget:data:db"))
+    api(project(":aktual-budget:data:prefs"))
     implementation(libs.sqldelight.driver.sqlite)
   }
 

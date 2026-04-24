@@ -11,7 +11,7 @@ kotlin {
   commonMainDependencies {
     // DI modules
     api(project(":aktual-about:di"))
-    api(project(":aktual-budget:data-di"))
+    api(project(":aktual-budget:data:di"))
     api(project(":aktual-budget:di"))
     api(project(":aktual-core:api:di"))
     api(project(":aktual-core:di"))

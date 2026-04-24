@@ -15,7 +15,7 @@ buildConfig {
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:data"))
+    api(project(":aktual-budget:data:db"))
     api(project(":aktual-budget:model"))
     api(libs.alakazam.kotlin)
     api(libs.androidx.paging.common)
@@ -29,7 +29,7 @@ kotlin {
     implementation(libs.sqldelight.driver.android)
     implementation(project(":aktual-about:di"))
     implementation(project(":aktual-app:di"))
-    implementation(project(":aktual-budget:data-di"))
+    implementation(project(":aktual-budget:data:di"))
     implementation(project(":aktual-test"))
   }
 }

@@ -1,0 +1,7 @@
+# aktual-budget:data:db
+
+<!--region chart-->
+![chart](atlas/chart.png)
+
+![legend](../../../atlas/legend.png)
+<!--endregion-->
