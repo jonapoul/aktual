@@ -23,9 +23,8 @@ import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
-import aktual.core.ui.LocalBottomStatusBarHeight
+import aktual.core.ui.BottomSpacing
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
@@ -163,12 +162,12 @@ private fun BottomNavLayout(
   // local state avoids that problem while keeping the same color/style as the root bottom bar
   val localHazeState = rememberHazeState()
   var height by remember { mutableStateOf(0.dp) }
-  val rootBottomChromeHeight = LocalBottomStatusBarHeight.current
+  val rootBottomChromeHeight = LocalBottomSpacing.current
 
   Box(modifier = modifier.fillMaxSize()) {
-    // Child screens end their content with BottomStatusBarSpacing() — extend that reservation
+    // Child screens end their content with BottomSpacing() — extend that reservation
     // to also cover the overlaid BottomNavBar, so the last visible items aren't hidden behind it
-    CompositionLocalProvider(LocalBottomStatusBarHeight provides rootBottomChromeHeight + height) {
+    CompositionLocalProvider(LocalBottomSpacing provides rootBottomChromeHeight + height) {
       BudgetNavDisplay(
         contributors = contributors,
         activeStack = activeStack,
@@ -199,8 +198,7 @@ private fun BottomNavLayout(
           onDismissRequest = { showMenu = false },
         )
       }
-      BottomStatusBarSpacing(height = rootBottomChromeHeight)
-      BottomNavBarSpacing()
+      BottomSpacing(height = rootBottomChromeHeight)
     }
   }
 }

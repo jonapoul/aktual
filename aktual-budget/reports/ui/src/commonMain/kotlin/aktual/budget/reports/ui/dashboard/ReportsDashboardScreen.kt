@@ -16,8 +16,7 @@ import aktual.core.l10n.Strings
 import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.ThemedParameterProvider
@@ -173,10 +172,7 @@ private fun ContentList(
   ) {
     items(items) { item -> DashboardItem(item, observer, onAction) }
 
-    item {
-      BottomStatusBarSpacing()
-      BottomNavBarSpacing()
-    }
+    item { BottomSpacing() }
   }
 }
 

@@ -8,7 +8,6 @@ import aktual.budget.model.DateFormat
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
 import aktual.core.theme.BottomBarThemeAttrs
-import alakazam.compose.VerticalSpacer
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
@@ -20,16 +19,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.format.DateTimeFormat
 
 val LocalPrivacyEnabled = compositionLocalOf { false }
-
-val LocalBottomStatusBarHeight = compositionLocalOf { 0.dp }
 
 internal val DefaultBottomBarThemeAttrs =
   BottomBarThemeAttrs(
@@ -125,6 +120,3 @@ fun WithCompositionLocals(
     content = content,
   )
 }
-
-@Composable
-fun BottomStatusBarSpacing(height: Dp = LocalBottomStatusBarHeight.current) = VerticalSpacer(height)

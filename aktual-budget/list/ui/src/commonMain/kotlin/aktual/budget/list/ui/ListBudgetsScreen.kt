@@ -27,8 +27,7 @@ import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BlurredPullToRefreshBox
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -252,8 +251,7 @@ private fun StateContent(
         }
       }
 
-      BottomStatusBarSpacing()
-      BottomNavBarSpacing()
+      BottomSpacing()
     }
   }
 }

@@ -2,10 +2,10 @@ package aktual.app.nav
 
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.BottomBarState
-import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.DialogBlurOverlay
 import aktual.core.ui.LocalBottomBarThemeAttrs
-import aktual.core.ui.LocalBottomStatusBarHeight
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.WithCompositionLocals
 import aktual.core.ui.blurredBottomBar
 import aktual.nav.core.rememberAppCloser
@@ -81,7 +81,7 @@ fun AktualAppContent(
       Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
         var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
 
-        CompositionLocalProvider(LocalBottomStatusBarHeight provides bottomStatusBarHeight) {
+        CompositionLocalProvider(LocalBottomSpacing provides bottomStatusBarHeight) {
           AktualNavHost(
             modifier =
               Modifier.fillMaxSize()
@@ -108,7 +108,7 @@ fun AktualAppContent(
               onClickSync = { viewModel.startSync() },
             )
           }
-          BottomNavBarSpacing()
+          BottomSpacing()
         }
       }
     }

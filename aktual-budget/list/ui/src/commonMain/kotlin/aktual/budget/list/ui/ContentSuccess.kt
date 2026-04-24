@@ -3,8 +3,7 @@ package aktual.budget.list.ui
 import aktual.budget.model.Budget
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
@@ -50,10 +49,7 @@ internal fun ContentSuccess(
       )
     }
 
-    item {
-      BottomStatusBarSpacing()
-      BottomNavBarSpacing()
-    }
+    item { BottomSpacing() }
   }
 }
 

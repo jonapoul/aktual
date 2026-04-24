@@ -13,8 +13,7 @@ import aktual.core.theme.MidnightTheme
 import aktual.core.theme.Theme
 import aktual.core.theme.isLight
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
@@ -186,10 +185,7 @@ private fun InspectThemeContent(
       ) {
         items(state.properties) { property -> ThemePropertyRow(property) }
 
-        item {
-          BottomStatusBarSpacing()
-          BottomNavBarSpacing()
-        }
+        item { BottomSpacing() }
       }
     }
   }
