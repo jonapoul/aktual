@@ -10,8 +10,7 @@ import aktual.budget.model.NumberFormat
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
@@ -113,10 +112,7 @@ private fun SettingsContent(
     item { SystemUiGroup(state.systemUi) }
     item { FormattingGroup(state.format) }
     item { CurrencyGroup(state.currency) }
-    item {
-      BottomStatusBarSpacing()
-      BottomNavBarSpacing()
-    }
+    item { BottomSpacing() }
   }
 }
 

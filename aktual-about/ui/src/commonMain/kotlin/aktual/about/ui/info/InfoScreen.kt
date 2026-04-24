@@ -16,8 +16,7 @@ import aktual.core.model.AktualVersions
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.LandscapePreview
@@ -167,8 +166,7 @@ private fun InfoScreenContent(
       InfoBuildState(buildState, theme, contentModifier)
       InfoButtons(onAction, contentModifier)
 
-      BottomStatusBarSpacing()
-      BottomNavBarSpacing()
+      BottomSpacing()
     }
   }
 

@@ -13,8 +13,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BasicIconButton
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
@@ -200,8 +199,7 @@ private fun ServerUrlContent(
       VersionsText(modifier = Modifier.align(Alignment.BottomEnd), versions = versions)
     }
 
-    BottomStatusBarSpacing()
-    BottomNavBarSpacing()
+    BottomSpacing()
   }
 }
 

@@ -29,8 +29,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredTopBarSpacing
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
@@ -228,8 +227,7 @@ private fun ListRulesContent(
                   onClick = { onAction(Reload) },
                 ),
             )
-            BottomStatusBarSpacing()
-            BottomNavBarSpacing()
+            BottomSpacing()
           }
         }
       }
@@ -248,8 +246,7 @@ private fun ListRulesContent(
                   onClick = { onAction(CreateNew) },
                 ),
             )
-            BottomStatusBarSpacing()
-            BottomNavBarSpacing()
+            BottomSpacing()
           }
         }
       }
@@ -264,8 +261,7 @@ private fun ListRulesContent(
       }
     }
 
-    BottomStatusBarSpacing()
-    BottomNavBarSpacing()
+    BottomSpacing()
   }
 }
 
@@ -345,10 +341,7 @@ private fun ContentSuccess(
         }
       }
 
-      item {
-        BottomStatusBarSpacing()
-        BottomNavBarSpacing()
-      }
+      item { BottomSpacing() }
     }
 
     AnimatedVisibility(

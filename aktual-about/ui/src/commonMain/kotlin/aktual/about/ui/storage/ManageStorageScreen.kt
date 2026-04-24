@@ -28,8 +28,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.AlertDialog
 import aktual.core.ui.BlurredTopBarSpacing
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
@@ -221,10 +220,7 @@ private fun ManageStorageLoadedContent(
 
       item { ActionButtons(onAction, theme) }
 
-      item {
-        BottomStatusBarSpacing()
-        BottomNavBarSpacing()
-      }
+      item { BottomSpacing() }
     }
   } else {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -233,8 +229,7 @@ private fun ManageStorageLoadedContent(
 
         TotalStorageText(state, theme)
 
-        BottomStatusBarSpacing()
-        BottomNavBarSpacing()
+        BottomSpacing()
       }
 
       LazyColumn(
@@ -249,10 +244,7 @@ private fun ManageStorageLoadedContent(
 
         item { ActionButtons(onAction, theme) }
 
-        item {
-          BottomStatusBarSpacing()
-          BottomNavBarSpacing()
-        }
+        item { BottomSpacing() }
       }
     }
   }

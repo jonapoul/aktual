@@ -24,13 +24,12 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredPullToRefreshBox
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
-import aktual.core.ui.LocalBottomStatusBarHeight
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
@@ -190,11 +189,7 @@ private fun CustomThemeSettingsScaffold(
     snackbarHost = {
       SnackbarHost(
         hostState = snackbarHostState,
-        modifier =
-          Modifier.padding(
-            bottom =
-              LocalBottomStatusBarHeight.current + bottomNavBarPadding().calculateBottomPadding()
-          ),
+        modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
       )
     },
   ) { innerPadding ->
@@ -371,10 +366,7 @@ private fun SuccessContent(
   ) {
     items(items, key = { it.id.value }) { item -> CustomThemeItem(item, onAction) }
 
-    item {
-      BottomStatusBarSpacing()
-      BottomNavBarSpacing()
-    }
+    item { BottomSpacing() }
   }
 }
 
