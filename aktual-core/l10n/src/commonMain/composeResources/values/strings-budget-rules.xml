@@ -90,8 +90,6 @@
   <string name="edit_rule_conditions">Conditions</string>
   <string name="edit_rule_conditions_desc_prefix">If</string>
   <string name="edit_rule_conditions_desc_suffix">of these conditions match:</string>
-  <string name="edit_rule_actions">Actions</string>
-  <string name="edit_rule_actions_desc">Then apply these actions:</string>
   <string name="edit_rule_save">Save</string>
   <string name="edit_rule_create">Create</string>
   <string name="edit_rule_and">all</string>
