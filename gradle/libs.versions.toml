@@ -121,7 +121,7 @@ buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.9" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.5.1" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
-detekt = { id = "dev.detekt", version = "main-SNAPSHOT" }
+detekt = { id = "dev.detekt", version = "2.0.0-alpha.3" }
 doctor = { id = "com.osacky.doctor", version = "0.12.1" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
