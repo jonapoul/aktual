@@ -74,7 +74,7 @@
     <item quantity="one">Selected %1$d rule</item>
     <item quantity="other">Selected %1$d rules</item>
   </plurals>
-  <string name="rules_checkbox_delete">Delete</string>¬
+  <string name="rules_checkbox_delete">Delete</string>
   <string name="rules_checkbox_clear">Clear selected</string>
 
   <string name="edit_rule_toolbar_edit">Edit Rule</string>

@@ -94,7 +94,7 @@ internal fun ConditionValueEditor(
 
 private fun JsonElement.asEditableString(): String =
   when (this) {
-    is JsonPrimitive -> if (isString) content else content
+    is JsonPrimitive -> content
     JsonNull -> ""
     is JsonArray,
     is JsonObject -> toString()
