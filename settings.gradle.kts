@@ -24,7 +24,7 @@ develocity.buildScan {
   buildCache {
     remote(develocity.buildCache) {
       isEnabled = true
-      isPush = System.getenv("CI") == "true" // only CI pushes
+      isPush = System.getenv("CI") == "true"
     }
   }
 }
