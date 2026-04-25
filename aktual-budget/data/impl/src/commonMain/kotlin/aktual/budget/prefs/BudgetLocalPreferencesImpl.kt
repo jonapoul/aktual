@@ -3,7 +3,6 @@ package aktual.budget.prefs
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetScope
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.writeMetadata
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject

@@ -1,7 +1,6 @@
 package aktual.budget.encryption
 
 import aktual.budget.model.BudgetId
-import aktual.budget.model.decryptedZip
 import okio.Buffer
 import okio.Path
 

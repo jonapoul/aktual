@@ -4,7 +4,6 @@ import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.readMetadata
 import aktual.core.model.AppDirectory
 import aktual.core.model.Bytes
 import aktual.core.model.Percent

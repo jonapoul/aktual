@@ -12,9 +12,6 @@ import aktual.budget.model.DateFormat
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.SyncStateHolder
-import aktual.budget.model.database
-import aktual.budget.model.metadata
-import aktual.budget.model.readMetadata
 import aktual.core.connection.ConnectionMonitor
 import aktual.core.connection.ServerPinger
 import aktual.core.connection.ServerVersionFetcher

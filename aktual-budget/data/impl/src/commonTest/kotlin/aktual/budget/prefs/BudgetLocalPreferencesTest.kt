@@ -5,11 +5,9 @@ import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Timestamp
 import aktual.budget.model.cloudFileId
-import aktual.budget.model.metadata
-import aktual.budget.model.writeMetadata
 import aktual.test.CoTemporaryFolder
-import aktual.test.TestBudgetFiles
 import aktual.test.assertThatNextEmissionIsEqualTo
+import aktual.test.testBudgetFiles
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
 import app.cash.burst.InterceptTest
@@ -36,7 +34,7 @@ class BudgetLocalPreferencesTest {
 
   @BeforeTest
   fun before() {
-    files = TestBudgetFiles(temporaryFolder)
+    files = testBudgetFiles(temporaryFolder)
     contexts = TestCoroutineContexts(EmptyCoroutineContext)
   }
 
