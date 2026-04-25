@@ -20,6 +20,13 @@ develocity.buildScan {
   }
 
   uploadInBackground = false
+
+  buildCache {
+    remote(develocity.buildCache) {
+      isEnabled = true
+      isPush = System.getenv("CI") == "true"  // only CI pushes
+    }
+  }
 }
 
 kover {
