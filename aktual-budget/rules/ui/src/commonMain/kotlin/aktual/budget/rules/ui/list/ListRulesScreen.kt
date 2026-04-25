@@ -3,6 +3,9 @@ package aktual.budget.rules.ui.list
 import aktual.app.nav.EditRuleNavigator
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
+import aktual.budget.rules.ui.LocalNameFetcher
+import aktual.budget.rules.ui.PreviewRule1
+import aktual.budget.rules.ui.PreviewRule2
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.list.CheckboxesState
 import aktual.budget.rules.vm.list.CheckboxesState.Active
@@ -112,8 +115,7 @@ fun ListRulesScreen(
           CreateNew -> editRule()
           is Delete -> viewModel.delete(action.id)
           is DeleteMultiple -> viewModel.delete(action.ids)
-          is Open -> TODO()
-          is Edit -> editRule(action.rule.id)
+          is Edit -> editRule(action.id)
           is OpenUrl -> TODO()
           is Check -> viewModel.check(action.id)
           is Uncheck -> viewModel.uncheck(action.id)
@@ -282,14 +284,14 @@ private fun CheckboxSelectionBar(
     Text(modifier = Modifier.weight(1f), text = Plurals.rulesCheckboxCounter(count, count))
 
     NormalIconButton(
-      enabled = count > 0,
+      isEnabled = count > 0,
       imageVector = MaterialIcons.ClearAll,
       contentDescription = Strings.rulesCheckboxClear,
       onClick = { onAction(UncheckAll) },
     )
 
     NormalIconButton(
-      enabled = count > 0,
+      isEnabled = count > 0,
       imageVector = MaterialIcons.Delete,
       contentDescription = Strings.rulesCheckboxDelete,
       colors = NormalRed,

@@ -65,6 +65,8 @@ private val materialIcons =
       OfflinePin,
       OpenInNew,
       Refresh,
+      Save,
+      SaveAs,
       Search,
       SearchOff,
       SelectAll,

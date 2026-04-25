@@ -5,10 +5,10 @@ import dev.zacsweers.metro.ContributesBinding
 import kotlin.uuid.Uuid
 
 fun interface UuidGenerator {
-  operator fun invoke(): Uuid
+  operator fun invoke(): String
 }
 
 @ContributesBinding(AppScope::class)
 class RandomUuidGenerator : UuidGenerator {
-  override fun invoke(): Uuid = Uuid.random()
+  override fun invoke(): String = Uuid.random().toString()
 }

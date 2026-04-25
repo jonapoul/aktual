@@ -18,7 +18,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,7 +32,6 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@Stable
 @Composable
 fun PrimaryTextButton(
   text: String,
@@ -46,10 +44,11 @@ fun PrimaryTextButton(
   style: TextStyle = AktualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
+  suffix: (@Composable () -> Unit)? = null,
   theme: Theme = LocalTheme.current,
   colors: @Composable (Boolean) -> ButtonColors = { pressed -> theme.primaryButton(pressed) },
   content: @Composable RowScope.() -> Unit = {
-    DefaultTextButtonContent(text, style, fontSize, prefix)
+    DefaultTextButtonContent(text, style, fontSize, prefix, suffix)
   },
 ) {
   BasicTextButton(
@@ -118,7 +117,6 @@ fun PrimaryTextButtonWithLoading(
   )
 }
 
-@Stable
 @Composable
 fun NormalTextButton(
   text: String,
@@ -131,10 +129,11 @@ fun NormalTextButton(
   style: TextStyle = AktualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
+  suffix: (@Composable () -> Unit)? = null,
   theme: Theme = LocalTheme.current,
   colors: @Composable (Boolean) -> ButtonColors = { pressed -> theme.normalButton(pressed) },
   content: @Composable RowScope.() -> Unit = {
-    DefaultTextButtonContent(text, style, fontSize, prefix)
+    DefaultTextButtonContent(text, style, fontSize, prefix, suffix)
   },
 ) {
   BareTextButton(
@@ -154,7 +153,6 @@ fun NormalTextButton(
   )
 }
 
-@Stable
 @Composable
 fun BareTextButton(
   text: String,
@@ -167,10 +165,11 @@ fun BareTextButton(
   style: TextStyle = AktualTypography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
+  suffix: (@Composable () -> Unit)? = null,
   theme: Theme = LocalTheme.current,
   colors: @Composable (Boolean) -> ButtonColors = { pressed -> theme.bareButton(pressed) },
   content: @Composable RowScope.() -> Unit = {
-    DefaultTextButtonContent(text, style, fontSize, prefix)
+    DefaultTextButtonContent(text, style, fontSize, prefix, suffix)
   },
 ) {
   BasicTextButton(
@@ -189,7 +188,6 @@ fun BareTextButton(
   )
 }
 
-@Stable
 @Composable
 fun BasicTextButton(
   text: String,
@@ -203,8 +201,9 @@ fun BasicTextButton(
   style: TextStyle = LocalTextStyle.current,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
+  suffix: (@Composable () -> Unit)? = null,
   content: @Composable RowScope.() -> Unit = {
-    DefaultTextButtonContent(text, style, fontSize, prefix)
+    DefaultTextButtonContent(text, style, fontSize, prefix, suffix)
   },
 ) {
   val isPressed by interactionSource.collectIsPressedAsState()
@@ -221,17 +220,17 @@ fun BasicTextButton(
   )
 }
 
-@Stable
 @Composable
 private fun RowScope.DefaultTextButtonContent(
   text: String,
   style: TextStyle,
   fontSize: TextUnit,
   prefix: (@Composable () -> Unit)?,
+  suffix: (@Composable () -> Unit)?,
 ) {
   prefix?.invoke()
-
   Text(text = text, style = style, fontSize = fontSize)
+  suffix?.invoke()
 }
 
 private val ButtonPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)

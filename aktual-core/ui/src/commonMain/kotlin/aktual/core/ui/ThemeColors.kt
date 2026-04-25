@@ -45,6 +45,7 @@ fun Theme.transparentTopAppBarColors(): TopAppBarColors =
     titleContentColor = pageText,
   )
 
+@Stable
 fun Theme.dropDownMenuItem(): MenuItemColors =
   MenuItemColors(
     textColor = menuItemText,

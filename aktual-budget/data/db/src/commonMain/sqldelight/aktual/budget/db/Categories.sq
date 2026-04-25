@@ -35,6 +35,8 @@ getName: SELECT name FROM categories WHERE id = ?;
 
 getNames: SELECT name FROM categories WHERE id IN ?;
 
+getAllActive: SELECT id, name FROM categories WHERE tombstone = 0 AND hidden = 0 ORDER BY sort_order, name;
+
 isIncome: SELECT is_income FROM categories WHERE id = ?;
 
 idsMatchingGroup: SELECT id FROM categories WHERE cat_group = ? AND tombstone = 0;

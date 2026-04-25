@@ -12,11 +12,11 @@ import kotlinx.serialization.json.JsonPrimitive
 @Immutable
 @Serializable
 data class RuleAction(
-  @SerialName("value") val value: JsonPrimitive,
+  @SerialName("value") val value: JsonPrimitive?,
   @SerialName("op") val op: Op,
   @SerialName("field") val field: Field? = null,
   @SerialName("options") val options: Options? = null,
-  @SerialName("type") val type: String? = null,
+  @SerialName("type") val type: Type? = null,
 ) {
   @Serializable
   data class Options(
@@ -46,6 +46,44 @@ data class RuleAction(
     DeleteTransaction("delete-transaction"); // value == empty string
 
     internal object Serializer : KSerializer<Op> by enumStringSerializer()
+
+    companion object {
+      val Default = Set
+    }
+  }
+
+  //  ┌─────────────────────┬───────────────────────────────────────────┬───────────────────────┐
+  //  │          op         │                 type value                │              source   │
+  //  ├─────────────────────┼───────────────────────────────────────────┼───────────────────────┤
+  //  │                     │ FIELD_TYPES.get(field) → 'date' | 'id' |  │ action.ts:53-56 (from │
+  //  │ set                 │ 'saved' | 'string' | 'number' | 'boolean' │ TYPE_INFO keys in     │
+  //  │                     │                                           │ shared/rules.ts)      │
+  //  ├─────────────────────┼───────────────────────────────────────────┼───────────────────────┤
+  //  │ set-split-amount    │ 'number'                                  │ action.ts:70          │
+  //  ├─────────────────────┼───────────────────────────────────────────┼───────────────────────┤
+  //  │ link-schedule       │ 'id'                                      │ action.ts:73          │
+  //  ├─────────────────────┼───────────────────────────────────────────┼───────────────────────┤
+  //  │ prepend-notes /     │ 'id'                                      │ action.ts:76          │
+  //  │ append-notes        │                                           │                       │
+  //  ├─────────────────────┼───────────────────────────────────────────┼───────────────────────┤
+  //  │ delete-transaction  │ unset (undefined)                         │ no branch sets it     │
+  //  └─────────────────────┴───────────────────────────────────────────┴───────────────────────┘
+  // Derived from FIELD_TYPES in packages/loot-core/src/shared/rules.ts; set by the
+  // Action constructor in packages/loot-core/src/server/rules/action.ts.
+  @Serializable(Type.Serializer::class)
+  enum class Type(override val value: String) : SerializableByString {
+    Boolean("boolean"),
+    Date("date"),
+    Id("id"),
+    Number("number"),
+    Saved("saved"),
+    String("string");
+
+    internal object Serializer : KSerializer<Type> by enumStringSerializer()
+
+    companion object {
+      val Default = Id
+    }
   }
 }
 

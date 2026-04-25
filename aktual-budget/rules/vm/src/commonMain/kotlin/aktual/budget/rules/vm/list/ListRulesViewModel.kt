@@ -7,29 +7,21 @@ import aktual.budget.db.dao.tombstone
 import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
-import aktual.budget.model.Operator
-import aktual.budget.model.Operator.Contains
-import aktual.budget.model.Operator.DoesNotContain
-import aktual.budget.model.Operator.GreaterThan
-import aktual.budget.model.Operator.GreaterThanOrEquals
-import aktual.budget.model.Operator.HasTags
 import aktual.budget.model.Operator.Is
 import aktual.budget.model.Operator.IsApprox
-import aktual.budget.model.Operator.IsBetween
 import aktual.budget.model.Operator.IsNot
-import aktual.budget.model.Operator.LessThan
-import aktual.budget.model.Operator.LessThanOrEquals
-import aktual.budget.model.Operator.Matches
 import aktual.budget.model.Operator.NotOneOf
-import aktual.budget.model.Operator.OffBudget
-import aktual.budget.model.Operator.OnBudget
 import aktual.budget.model.Operator.OneOf
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
+import aktual.budget.rules.vm.NameFetcher
+import aktual.budget.rules.vm.NameFetcherImpl
 import aktual.budget.rules.vm.Rule
+import aktual.budget.rules.vm.list.CheckboxesState.Active
 import aktual.budget.rules.vm.list.CheckboxesState.Inactive
 import aktual.budget.rules.vm.list.ListRulesState.Empty
 import aktual.budget.rules.vm.list.ListRulesState.Loading
+import aktual.budget.rules.vm.score
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -116,7 +108,7 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
     }
   }
 
-  fun showCheckboxes() = mutableCheckboxes.update { CheckboxesState.Active(persistentSetOf()) }
+  fun showCheckboxes() = mutableCheckboxes.update { Active(ids = persistentSetOf()) }
 
   fun hideCheckboxes() = mutableCheckboxes.update { Inactive }
 
@@ -152,30 +144,9 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
     }
 
     private fun computeScore(conditions: List<Condition>): Int {
-      val score = conditions.sumOf { operatorScore(it.operator) }
+      val score = conditions.sumOf { it.operator.score() }
       val allExact = conditions.isNotEmpty() && conditions.all { it.operator in EXACT_OPERATORS }
       return if (allExact) score * 2 else score
     }
-
-    @Suppress("MagicNumber")
-    private fun operatorScore(op: Operator): Int =
-      when (op) {
-        Is,
-        IsNot -> 10
-        OneOf,
-        NotOneOf -> 9
-        IsApprox,
-        IsBetween -> 5
-        GreaterThan,
-        GreaterThanOrEquals,
-        LessThan,
-        LessThanOrEquals -> 1
-        Contains,
-        DoesNotContain,
-        Matches,
-        HasTags,
-        OnBudget,
-        OffBudget -> 0
-      }
   }
 }

@@ -129,7 +129,7 @@ private fun BuiltInThemeItem(
     NormalIconButton(
       modifier = Modifier.clip(CardShape),
       imageVector = MaterialIcons.ArrowRight,
-      enabled = enabled,
+      isEnabled = enabled,
       onClick = { onAction(ThemeSettingsAction.InspectTheme(id)) },
       contentDescription = Strings.settingsThemePreview(name),
     )

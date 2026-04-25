@@ -19,6 +19,7 @@ sealed interface Operator {
     CategoryGroupOperator,
     NotesOperator,
     PayeeOperator,
+    PayeeNameOperator,
     ImportedPayeeOperator
 
   data object DoesNotContain :
@@ -27,13 +28,14 @@ sealed interface Operator {
     CategoryGroupOperator,
     NotesOperator,
     PayeeOperator,
+    PayeeNameOperator,
     ImportedPayeeOperator
 
   data object GreaterThan : AmountOperator, DateOperator
 
   data object GreaterThanOrEquals : AmountOperator, DateOperator
 
-  data object HasTags : NotesOperator
+  data object HasTags : NotesOperator, PayeeNameOperator
 
   data object Is :
     AccountOperator,
@@ -43,10 +45,12 @@ sealed interface Operator {
     DateOperator,
     NotesOperator,
     PayeeOperator,
+    PayeeNameOperator,
     ImportedPayeeOperator,
     SavedOperator,
     ClearedOperator,
     ReconciledOperator,
+    ParentOperator,
     TransferOperator
 
   data object IsApprox : AmountOperator, DateOperator
@@ -59,6 +63,7 @@ sealed interface Operator {
     CategoryGroupOperator,
     NotesOperator,
     PayeeOperator,
+    PayeeNameOperator,
     ImportedPayeeOperator
 
   data object LessThan : AmountOperator, DateOperator
@@ -71,17 +76,28 @@ sealed interface Operator {
     CategoryGroupOperator,
     NotesOperator,
     PayeeOperator,
+    PayeeNameOperator,
     ImportedPayeeOperator
 
   data object NotOneOf :
-    AccountOperator, CategoryOperator, CategoryGroupOperator, PayeeOperator, ImportedPayeeOperator
+    AccountOperator,
+    CategoryOperator,
+    CategoryGroupOperator,
+    PayeeOperator,
+    PayeeNameOperator,
+    ImportedPayeeOperator
 
   data object OffBudget : AccountOperator
 
   data object OnBudget : AccountOperator
 
   data object OneOf :
-    AccountOperator, CategoryOperator, CategoryGroupOperator, PayeeOperator, ImportedPayeeOperator
+    AccountOperator,
+    CategoryOperator,
+    CategoryGroupOperator,
+    PayeeOperator,
+    PayeeNameOperator,
+    ImportedPayeeOperator
 
   fun string(): String = OperatorMap.first { it.second == this }.first
 
@@ -92,25 +108,29 @@ sealed interface Operator {
 
 sealed interface AccountOperator : Operator
 
-sealed interface CategoryOperator : Operator
+sealed interface AmountOperator : Operator
 
 sealed interface CategoryGroupOperator : Operator
 
-sealed interface AmountOperator : Operator
-
-sealed interface DateOperator : Operator
-
-sealed interface NotesOperator : Operator
-
-sealed interface PayeeOperator : Operator
-
-sealed interface ImportedPayeeOperator : Operator
-
-sealed interface SavedOperator : Operator
+sealed interface CategoryOperator : Operator
 
 sealed interface ClearedOperator : Operator
 
+sealed interface DateOperator : Operator
+
+sealed interface ImportedPayeeOperator : Operator
+
+sealed interface NotesOperator : Operator
+
+sealed interface ParentOperator : Operator
+
+sealed interface PayeeOperator : Operator
+
+sealed interface PayeeNameOperator : Operator
+
 sealed interface ReconciledOperator : Operator
+
+sealed interface SavedOperator : Operator
 
 sealed interface TransferOperator : Operator
 

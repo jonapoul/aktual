@@ -4,11 +4,9 @@ package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
-import aktual.budget.model.ConditionOptions
 import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.Field
 import aktual.budget.model.NumberFormatConfig
-import aktual.budget.model.Operator
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.RecurEndMode
 import aktual.budget.model.RecurFrequency
@@ -19,6 +17,9 @@ import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.WeekendSolveMode
 import aktual.budget.model.isIdField
+import aktual.budget.rules.ui.LocalNameFetcher
+import aktual.budget.rules.ui.displayString
+import aktual.budget.rules.ui.string
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.ui.AktualTypography
@@ -208,18 +209,19 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
   val nameFetcher = LocalNameFetcher.current
   val fieldNameFlow =
     remember(nameFetcher, action) {
+      val value = action.value
       when (action.op) {
         RuleAction.Op.Set -> {
           val field = action.field
-          if (field.isIdField()) {
-            nameFetcher.name(field, action.value.content)
+          if (field.isIdField() && value != null) {
+            nameFetcher.name(field, value.content)
           } else {
             flowOf(null)
           }
         }
 
         RuleAction.Op.LinkSchedule -> {
-          nameFetcher.name(ScheduleId(action.value.content))
+          value?.let { nameFetcher.name(ScheduleId(it.content)) } ?: flowOf(null)
         }
 
         else -> {
@@ -243,13 +245,14 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
     privacy,
   ) {
     buildAnnotatedString {
+      val content = action.value?.content.orEmpty()
       when (action.op) {
         RuleAction.Op.AppendNotes -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
           }
-          withStyle(styles.highlighted) { append(action.value.content) }
+          withStyle(styles.highlighted) { append(content) }
         }
         RuleAction.Op.DeleteTransaction -> {
           withStyle(styles.default) { append(opText) }
@@ -266,7 +269,7 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
             append(opText)
             append(" ")
           }
-          withStyle(styles.highlighted) { append(action.value.content) }
+          withStyle(styles.highlighted) { append(content) }
         }
         RuleAction.Op.Set -> {
           withStyle(styles.default) {
@@ -281,7 +284,7 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
             } else if (fieldName != null) {
               append(fieldName)
             } else {
-              append(action.value.content)
+              append(content)
             }
           }
         }
@@ -305,7 +308,7 @@ private fun formatAmount(
   currency: CurrencyConfig,
   privacy: Boolean,
 ): String =
-  Amount(action.value.content.toInt())
+  Amount(action.value?.content?.toInt() ?: 0)
     .toString(
       numberFormatConfig = numberFormat,
       currencyConfig = currency,
@@ -322,54 +325,6 @@ private fun RuleAction.opString(): String =
     RuleAction.Op.PrependNotes -> Strings.rulesOpPrependNotes
     RuleAction.Op.Set -> Strings.rulesOpSet
     RuleAction.Op.SetSplitAmount -> Strings.rulesOpSetSplitAmount
-  }
-
-@Composable
-private fun Operator.displayString(): String =
-  when (this) {
-    Operator.Contains -> Strings.rulesOperatorContains
-    Operator.DoesNotContain -> Strings.rulesOperatorDoesNotContain
-    Operator.GreaterThan -> Strings.rulesOperatorGreaterThan
-    Operator.GreaterThanOrEquals -> Strings.rulesOperatorGreaterThanOrEquals
-    Operator.HasTags -> Strings.rulesOperatorHasTags
-    Operator.Is -> Strings.rulesOperatorIs
-    Operator.IsApprox -> Strings.rulesOperatorIsApprox
-    Operator.IsBetween -> Strings.rulesOperatorIsBetween
-    Operator.IsNot -> Strings.rulesOperatorIsNot
-    Operator.LessThan -> Strings.rulesOperatorLessThan
-    Operator.LessThanOrEquals -> Strings.rulesOperatorLessThanOrEquals
-    Operator.Matches -> Strings.rulesOperatorMatches
-    Operator.NotOneOf -> Strings.rulesOperatorNotOneOf
-    Operator.OffBudget -> Strings.rulesOperatorOffBudget
-    Operator.OnBudget -> Strings.rulesOperatorOnBudget
-    Operator.OneOf -> Strings.rulesOperatorOneOf
-  }
-
-@Composable
-private fun Field.string(options: ConditionOptions?): String =
-  when (this) {
-    Field.Account,
-    Field.Acct -> Strings.rulesFieldAccount
-    Field.Amount ->
-      when {
-        options?.inflow == true -> Strings.rulesFieldAmountInflow
-        options?.outflow == true -> Strings.rulesFieldAmountOutflow
-        else -> Strings.rulesFieldAmount
-      }
-    Field.Category -> Strings.rulesFieldCategory
-    Field.CategoryGroup -> Strings.rulesFieldCategoryGroup
-    Field.Date -> Strings.rulesFieldDate
-    Field.Notes -> Strings.rulesFieldNotes
-    Field.Description,
-    Field.Payee -> Strings.rulesFieldPayee
-    Field.PayeeName -> Strings.rulesFieldPayeeName
-    Field.ImportedDescription,
-    Field.ImportedPayee -> Strings.rulesFieldImportedPayee
-    Field.Saved -> Strings.rulesFieldSaved
-    Field.Transfer -> Strings.rulesFieldTransfer
-    Field.Parent -> Strings.rulesFieldParent
-    Field.Cleared -> Strings.rulesFieldCleared
-    Field.Reconciled -> Strings.rulesFieldReconciled
   }
 
 // From getRecurringDescription in packages/loot-core/src/shared/schedules.ts

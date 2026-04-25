@@ -1,4 +1,4 @@
-package aktual.budget.rules.ui.list
+package aktual.budget.rules.ui
 
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
@@ -46,7 +46,7 @@ internal val PreviewRule1 =
       persistentListOf(
         RuleAction(
           field = Field.Description,
-          type = "payee",
+          type = RuleAction.Type.Id,
           value = JsonPrimitive("0c76632b-d784-47b0-8391-d9c3067ad6fd"),
           op = RuleAction.Op.Set,
         )
