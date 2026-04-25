@@ -13,6 +13,7 @@ import aktual.core.model.KeyId
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
+import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.withContext
 
@@ -124,13 +125,13 @@ internal constructor(
     )
 }
 
-private fun List<UserWithAccess>.toModelList() =
-  map {
+private fun List<UserWithAccess>.toModelList(): ImmutableList<BudgetUserWithAccess> =
+  map { user ->
       BudgetUserWithAccess(
-        userId = it.userId,
-        userName = it.userName,
-        displayName = it.displayName,
-        isOwner = it.isOwner,
+        userId = user.userId,
+        userName = user.userName,
+        displayName = user.displayName,
+        isOwner = user.isOwner,
       )
     }
     .toImmutableList()
