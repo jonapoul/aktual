@@ -19,6 +19,7 @@ import aktual.budget.list.vm.ListBudgetsState
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
+import aktual.budget.model.directoryId
 import aktual.budget.sync.ui.SyncBudgetDialog
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
@@ -83,21 +84,19 @@ fun ListBudgetsScreen(
   var budgetToDelete by remember { mutableStateOf<Budget?>(null) }
   budgetToDelete?.let { budget ->
     val deletingState by viewModel.deletingState.collectAsStateWithLifecycle()
-    val localFilesExist by viewModel.localFilesExist.collectAsStateWithLifecycle()
-    val thisFileExists = localFilesExist.getOrElse(budget.cloudFileId) { false }
 
     DeleteBudgetDialog(
       budget = budget,
       deletingState = deletingState,
-      localFileExists = thisFileExists,
+      localFileExists = budget !is Budget.Remote,
       onAction = { action ->
         when (action) {
           DeleteDialogAction.DeleteLocal -> {
-            viewModel.deleteLocal(budget.cloudFileId)
+            viewModel.deleteLocal(budget.directoryId)
           }
 
           DeleteDialogAction.DeleteRemote -> {
-            viewModel.deleteRemote(budget.cloudFileId)
+            if (budget is Budget.Cloud) viewModel.deleteRemote(budget.cloudFileId)
           }
 
           DeleteDialogAction.Dismiss -> {
@@ -139,7 +138,7 @@ fun ListBudgetsScreen(
         OpenInBrowser -> viewModel.open(serverUrl)
         Reload -> viewModel.retry()
         is Delete -> budgetToDelete = action.budget
-        is Open -> budgetToSync = action.budget.cloudFileId
+        is Open -> budgetToSync = action.budget.directoryId
       }
     },
   )
@@ -264,7 +263,7 @@ private fun PreviewListBudgetsScaffold(
 
 private val PREVIEW_ITEMS =
   List(size = 5) { PreviewBudgetSynced } +
-    List(size = 5) { PreviewBudgetSyncing } +
+    List(size = 5) { PreviewBudgetRemote } +
     List(size = 5) { PreviewBudgetBroken }
 
 private class ListBudgetsScaffoldProvider :

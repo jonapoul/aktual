@@ -2,11 +2,7 @@ package aktual.budget.list.vm
 
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.model.sync.ListUserFilesResponse
-import aktual.api.model.sync.UserFile
-import aktual.budget.model.Budget
-import aktual.budget.model.BudgetState
 import aktual.core.model.Token
-import aktual.prefs.KeyPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
@@ -14,6 +10,7 @@ import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
 import io.ktor.serialization.JsonConvertException
 import java.io.IOException
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
 import logcat.logcat
@@ -23,13 +20,12 @@ class BudgetListFetcher
 internal constructor(
   private val contexts: CoroutineContexts,
   private val apisStateHolder: AktualApisStateHolder,
-  private val keyPreferences: KeyPreferences,
 ) {
   suspend fun fetchBudgets(token: Token): FetchBudgetsResult {
     val apis = apisStateHolder.value ?: return FetchBudgetsResult.NotLoggedIn
     return try {
       val response = withContext(contexts.io) { apis.sync.fetchUserFiles(token) }
-      val result = FetchBudgetsResult.Success(response.data.map { toBudget(it) })
+      val result = FetchBudgetsResult.Success(response.data.toImmutableList())
       logcat.d { "Fetched budgets: $result" }
       result
     } catch (e: CancellationException) {
@@ -56,14 +52,4 @@ internal constructor(
     } catch (e: JsonConvertException) {
       FetchBudgetsResult.OtherFailure(e.requireMessage())
     }
-
-  private suspend fun toBudget(item: UserFile) =
-    Budget(
-      name = item.name,
-      state = BudgetState.Unknown,
-      encryptKeyId = item.encryptKeyId?.value,
-      groupId = item.groupId,
-      cloudFileId = item.fileId,
-      hasKey = item.encryptKeyId in keyPreferences,
-    )
 }
