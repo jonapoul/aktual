@@ -3,6 +3,7 @@ package aktual.budget.sync.vm
 import aktual.api.client.AktualApis
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApiImpl
+import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.encryptedZip
 import aktual.budget.sync.vm.DownloadState.Done
@@ -13,11 +14,11 @@ import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.bytes
 import aktual.test.CoTemporaryFolder
-import aktual.test.TestBudgetFiles
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.emptyMockEngine
 import aktual.test.enqueueResponse
 import aktual.test.existsOn
+import aktual.test.testBudgetFiles
 import aktual.test.testHttpClient
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.unconfinedDispatcher
@@ -44,14 +45,14 @@ class BudgetFileDownloaderTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
   private lateinit var budgetFileDownloader: BudgetFileDownloader
-  private lateinit var budgetFiles: TestBudgetFiles
+  private lateinit var budgetFiles: BudgetFiles
   private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var mockEngine: MockEngine.Queue
   private lateinit var fileSystem: FileSystem
 
   fun TestScope.before() {
     fileSystem = FileSystem.SYSTEM
-    budgetFiles = TestBudgetFiles(temporaryFolder)
+    budgetFiles = testBudgetFiles(temporaryFolder)
     mockEngine = emptyMockEngine()
 
     val syncApi =

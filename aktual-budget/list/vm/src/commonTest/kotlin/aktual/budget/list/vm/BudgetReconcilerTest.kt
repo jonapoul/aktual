@@ -2,13 +2,13 @@ package aktual.budget.list.vm
 
 import aktual.api.model.sync.UserFile
 import aktual.budget.model.Budget
+import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
-import aktual.budget.model.writeMetadata
 import aktual.core.model.KeyId
 import aktual.prefs.KeyPreferences
 import aktual.test.CoTemporaryFolder
-import aktual.test.TestBudgetFiles
+import aktual.test.testBudgetFiles
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import app.cash.burst.InterceptTest
@@ -25,11 +25,11 @@ class BudgetReconcilerTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
   private lateinit var reconciler: BudgetReconciler
-  private lateinit var files: TestBudgetFiles
+  private lateinit var files: BudgetFiles
   private lateinit var keyPreferences: KeyPreferences
 
   private fun TestScope.before(hasKeys: Boolean = false) {
-    files = TestBudgetFiles(temporaryFolder)
+    files = testBudgetFiles(temporaryFolder)
     keyPreferences = mockk { coEvery { contains(any()) } returns hasKeys }
     reconciler =
       BudgetReconciler(
