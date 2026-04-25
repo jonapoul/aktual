@@ -4,6 +4,8 @@ import aktual.budget.model.BudgetFiles
 import okio.FileSystem
 import okio.Path
 
-class TestBudgetFiles(fileSystem: FileSystem, root: Path) : BudgetFiles(fileSystem, root) {
-  constructor(temporaryFolder: ITemporaryFolder) : this(FileSystem.SYSTEM, temporaryFolder.root)
-}
+fun testBudgetFiles(fileSystem: FileSystem, root: Path): BudgetFiles =
+  BudgetFiles(fileSystem = fileSystem, directoryPath = root)
+
+fun testBudgetFiles(temporaryFolder: ITemporaryFolder): BudgetFiles =
+  BudgetFiles(fileSystem = FileSystem.SYSTEM, directoryPath = temporaryFolder.root)

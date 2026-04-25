@@ -2,7 +2,6 @@ package aktual.budget.db
 
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
-import aktual.budget.model.database
 import android.content.Context
 import androidx.sqlite.db.SupportSQLiteDatabase
 import app.cash.sqldelight.async.coroutines.synchronous
