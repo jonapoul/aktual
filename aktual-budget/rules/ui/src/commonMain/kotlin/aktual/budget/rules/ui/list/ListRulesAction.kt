@@ -1,7 +1,6 @@
 package aktual.budget.rules.ui.list
 
 import aktual.budget.model.RuleId
-import aktual.budget.rules.vm.Rule
 import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.ImmutableSet
 
@@ -11,13 +10,11 @@ internal data object Reload : ListRulesAction
 
 internal data object CreateNew : ListRulesAction
 
-@JvmInline internal value class Open(val id: RuleId) : ListRulesAction
-
 @JvmInline internal value class Delete(val id: RuleId) : ListRulesAction
 
 @JvmInline internal value class DeleteMultiple(val ids: ImmutableSet<RuleId>) : ListRulesAction
 
-@JvmInline internal value class Edit(val rule: Rule) : ListRulesAction
+@JvmInline internal value class Edit(val id: RuleId) : ListRulesAction
 
 @JvmInline internal value class OpenUrl(val url: String) : ListRulesAction
 

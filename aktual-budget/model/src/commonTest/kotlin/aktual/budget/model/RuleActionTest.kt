@@ -32,13 +32,13 @@ class RuleActionTest {
           listOf(
             RuleAction(
               field = Description,
-              type = "id",
+              type = RuleAction.Type.Id,
               op = RuleAction.Op.Set,
               value = JsonPrimitive("0c76632b-d784-47b0-8391-d9c3067ad6fd"),
             ),
             RuleAction(
               field = Category,
-              type = "id",
+              type = RuleAction.Type.Id,
               op = RuleAction.Op.Set,
               options = RuleAction.Options(splitIndex = 0),
               value = JsonPrimitive("51ad3781-25af-4b79-b69c-4e6e62fffabb"),

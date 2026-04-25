@@ -42,6 +42,10 @@ enum class ConditionOp(override val value: String) : SerializableByString {
   Or("or");
 
   object Serializer : KSerializer<ConditionOp> by enumStringSerializer()
+
+  companion object {
+    val Default = And
+  }
 }
 
 @Serializable(ConditionType.Serializer::class)

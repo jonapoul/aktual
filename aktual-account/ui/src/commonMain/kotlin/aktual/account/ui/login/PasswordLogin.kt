@@ -46,7 +46,7 @@ internal fun PasswordLogin(
           .fillMaxWidth(1f)
           .focusRequester(keyboardFocusRequester(keyboard)),
       value = enteredPassword.value,
-      enabled = !isLoading,
+      isEnabled = !isLoading,
       onValueChange = { password -> onAction(LoginAction.EnterPassword(password)) },
       placeholderText = Strings.loginPasswordHint,
       visualTransformation = PasswordVisualTransformation(),

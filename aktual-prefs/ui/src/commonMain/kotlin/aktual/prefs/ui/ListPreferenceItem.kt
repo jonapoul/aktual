@@ -93,7 +93,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
           onValueChange = {},
           placeholderText = null,
           readOnly = true,
-          enabled = enabled,
+          isEnabled = enabled,
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
           leadingIcon = optionSuffix?.let { suffix -> { suffix(value) } },
           colors =

@@ -1,6 +1,7 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.categoryGroups.GetAllActive
 import aktual.budget.db.withResult
 import aktual.budget.model.CategoryGroupId
 
@@ -13,5 +14,9 @@ class CategoryGroupDao(database: BudgetDatabase) {
 
   suspend fun names(ids: List<CategoryGroupId>): List<String> = queries.withResult {
     getNames(ids).executeAsList().map { g -> g.name ?: error("Required name for $g") }
+  }
+
+  suspend fun getAllActive(): List<GetAllActive> = queries.withResult {
+    getAllActive().executeAsList()
   }
 }
