@@ -97,7 +97,7 @@ internal fun BudgetListItem(
     ) {
       if (budget.encryptKeyId != null) {
         Icon(
-          modifier = Modifier.padding(10.dp).size(13.dp),
+          modifier = Modifier.size(13.dp),
           imageVector = AktualIcons.Key,
           contentDescription = description,
           tint = if (budget.hasKey) theme.formLabelText else theme.buttonNormalDisabledText,

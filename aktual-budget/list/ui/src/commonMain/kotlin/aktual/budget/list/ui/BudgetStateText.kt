@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,7 +29,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@Stable
 @Composable
 internal fun BudgetStateText(
   state: BudgetState,
@@ -39,17 +37,18 @@ internal fun BudgetStateText(
 ) {
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     val text = state.text()
+    val color = state.color(theme)
 
     Icon(
       modifier = Modifier.size(18.dp),
       imageVector = state.icon(),
       contentDescription = text,
-      tint = state.iconColor(theme),
+      tint = color,
     )
 
     HorizontalSpacer(5.dp)
 
-    Text(text = text, color = theme.pageText, fontSize = 13.sp)
+    Text(text = text, color = color, fontSize = 13.sp)
   }
 }
 
@@ -65,7 +64,6 @@ private fun BudgetState.text(): String =
   }
 
 @Stable
-@Composable
 private fun BudgetState.icon(): ImageVector =
   when (this) {
     BudgetState.Local -> AktualIcons.FileDouble
@@ -77,14 +75,14 @@ private fun BudgetState.icon(): ImageVector =
   }
 
 @Stable
-@Composable
-@ReadOnlyComposable
-@Suppress("ElseCaseInsteadOfExhaustiveWhen")
-private fun BudgetState.iconColor(theme: Theme): Color =
+private fun BudgetState.color(theme: Theme): Color =
   when (this) {
-    BudgetState.Broken,
+    BudgetState.Broken -> theme.errorText
     BudgetState.Detached -> theme.warningText
-    else -> theme.pageText
+    BudgetState.Local -> theme.pageTextPositive
+    BudgetState.Remote -> theme.reportsBlue
+    BudgetState.Synced -> theme.reportsGreen
+    BudgetState.Unknown -> theme.reportsGray
   }
 
 @Preview
