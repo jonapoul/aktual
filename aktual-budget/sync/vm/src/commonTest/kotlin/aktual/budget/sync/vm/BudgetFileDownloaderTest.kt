@@ -5,7 +5,6 @@ import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApiImpl
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
-import aktual.budget.model.encryptedZip
 import aktual.budget.sync.vm.DownloadState.Done
 import aktual.budget.sync.vm.DownloadState.Failure
 import aktual.budget.sync.vm.DownloadState.InProgress

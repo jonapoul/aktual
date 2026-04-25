@@ -7,8 +7,6 @@ import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.FileDecrypter
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
-import aktual.budget.model.decryptedZip
-import aktual.budget.model.encryptedZip
 import aktual.budget.sync.vm.SyncStep.DownloadingDatabase
 import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
