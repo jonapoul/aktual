@@ -74,11 +74,26 @@
     <item quantity="one">Selected %1$d rule</item>
     <item quantity="other">Selected %1$d rules</item>
   </plurals>
-  <string name="rules_checkbox_delete">Delete</string>
+  <string name="rules_checkbox_delete">Delete</string>¬
   <string name="rules_checkbox_clear">Clear selected</string>
 
-  <string name="edit_rules_toolbar_edit">Edit Rule</string>
-  <string name="edit_rules_toolbar_create">Create Rule</string>
-  <string name="edit_rules_menu">Menu</string>
-  <string name="edit_rules_action_delete">Delete Rule</string>
+  <string name="edit_rule_toolbar_edit">Edit Rule</string>
+  <string name="edit_rule_toolbar_create">Create Rule</string>
+  <string name="edit_rule_menu">Menu</string>
+  <string name="edit_rule_action_delete">Delete Rule</string>
+  <string name="edit_rule_failed_title">Error</string>
+  <string name="edit_rule_failed_no_match">No rule found!</string>
+  <string name="edit_rule_failed_saving">Failed while trying to save: %1$s</string>
+  <string name="edit_rule_failed_other">Unexpected failure: %1$s</string>
+  <string name="edit_rule_stage_desc">The stage of a rule allows you to force a specific order. Pre rules always run first, and post rules always run last. Within each stage rules are automatically ordered from least to most specific.</string>
+  <string name="edit_rule_stage">Rule stage</string>
+  <string name="edit_rule_conditions">Conditions</string>
+  <string name="edit_rule_conditions_desc_prefix">If</string>
+  <string name="edit_rule_conditions_desc_suffix">of these conditions match:</string>
+  <string name="edit_rule_save">Save</string>
+  <string name="edit_rule_create">Create</string>
+  <string name="edit_rule_and">all</string>
+  <string name="edit_rule_or">any</string>
+  <string name="edit_rule_condition_delete">Delete</string>
+  <string name="edit_rule_condition_nothing">nothing</string>
 </resources>

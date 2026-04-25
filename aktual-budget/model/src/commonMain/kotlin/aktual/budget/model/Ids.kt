@@ -1,6 +1,5 @@
 package aktual.budget.model
 
-import kotlin.uuid.Uuid
 import kotlinx.serialization.Serializable
 
 @JvmInline
@@ -119,8 +118,6 @@ value class TransactionFilterId(private val value: String) : Comparable<Transact
 @JvmInline
 @Serializable
 value class WidgetId(private val value: String) : Comparable<WidgetId> {
-  constructor(uuid: Uuid) : this(uuid.toString())
-
   override fun toString(): String = value
 
   override fun compareTo(other: WidgetId) = value.compareTo(other.value)

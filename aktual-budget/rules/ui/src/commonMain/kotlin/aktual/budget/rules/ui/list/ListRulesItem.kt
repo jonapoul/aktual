@@ -2,6 +2,8 @@ package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Condition
 import aktual.budget.model.RuleAction
+import aktual.budget.rules.ui.PreviewRule1
+import aktual.budget.rules.ui.PreviewRule2
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.list.CheckboxesState
 import aktual.budget.rules.vm.list.CheckboxesState.Active
@@ -82,7 +84,7 @@ internal fun ListRulesItem(
 
   Row(
     modifier =
-      modifier.ruleRow(theme, onOpen = { onAction(Open(rule.id)) }, onToggle = toggleCheck),
+      modifier.ruleRow(theme, onOpen = { onAction(Edit(rule.id)) }, onToggle = toggleCheck),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -114,7 +116,7 @@ internal fun ListRulesItem(
           leadingIcon = MaterialIcons.Edit,
           onClick = {
             onDismiss()
-            onAction(Edit(rule))
+            onAction(Edit(rule.id))
           },
         )
         ThemedDropdownMenuItem(

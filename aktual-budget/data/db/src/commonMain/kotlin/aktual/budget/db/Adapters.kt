@@ -82,7 +82,7 @@ private inline fun <reified E> enumStringAdapter(): ColumnAdapter<E, String>
     ?: error("No ${E::class.qualifiedName} matching '$string'")
 }
 
-private val DbJson = Json {
+val DbJson = Json {
   encodeDefaults = true
   explicitNulls = false
 }

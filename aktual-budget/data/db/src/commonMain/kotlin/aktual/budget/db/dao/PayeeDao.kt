@@ -1,6 +1,7 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.payees.GetAllActive
 import aktual.budget.db.withResult
 import aktual.budget.model.PayeeId
 
@@ -13,5 +14,9 @@ class PayeeDao(database: BudgetDatabase) {
 
   suspend fun names(ids: List<PayeeId>): List<String> = queries.withResult {
     getNames(ids).executeAsList().map { p -> p.name ?: error("Required name for $p") }
+  }
+
+  suspend fun getAllActive(): List<GetAllActive> = queries.withResult {
+    getAllActive().executeAsList()
   }
 }

@@ -10,28 +10,38 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuAnchorType
+import androidx.compose.material3.ExposedDropdownMenuAnchorType.Companion.PrimaryNotEditable
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -48,7 +58,7 @@ fun TextField(
   modifier: Modifier = Modifier,
   shape: Shape = TextFieldShape,
   readOnly: Boolean = false,
-  enabled: Boolean = true,
+  isEnabled: Boolean = true,
   singleLine: Boolean = false,
   leadingIcon: (@Composable () -> Unit)? = null,
   trailingIcon: (@Composable () -> Unit)? = null,
@@ -58,6 +68,7 @@ fun TextField(
   keyboardActions: KeyboardActions = KeyboardActions.Default,
   colors: TextFieldColors? = null,
   clearable: Boolean = false,
+  textStyle: TextStyle = LocalTextStyle.current,
   theme: Theme = LocalTheme.current,
 ) {
   val isFocused by interactionSource.collectIsFocusedAsState()
@@ -89,7 +100,7 @@ fun TextField(
     shape = shape,
     colors = colors ?: theme.textField(),
     readOnly = readOnly,
-    enabled = enabled,
+    enabled = isEnabled,
     singleLine = singleLine,
     leadingIcon = leadingIcon,
     trailingIcon = trailingIcon ?: clearButton,
@@ -98,6 +109,7 @@ fun TextField(
     keyboardOptions = keyboardOptions,
     keyboardActions = keyboardActions,
     onValueChange = onValueChange,
+    textStyle = textStyle,
   )
 }
 
@@ -114,15 +126,19 @@ fun ExposedDropDownMenu(
   onValueChange: (String) -> Unit,
   options: ImmutableList<String>,
   modifier: Modifier = Modifier,
+  isEnabled: Boolean = true,
   theme: Theme = LocalTheme.current,
+  textStyle: TextStyle = LocalTextStyle.current,
 ) =
   ExposedDropDownMenu(
     value = value,
     onValueChange = onValueChange,
     options = options,
     modifier = modifier,
+    isEnabled = isEnabled,
     theme = theme,
     string = { it },
+    textStyle = textStyle,
   )
 
 @Composable
@@ -130,34 +146,71 @@ fun <T> ExposedDropDownMenu(
   value: T,
   onValueChange: (T) -> Unit,
   options: ImmutableList<T>,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   string: @Composable (T) -> String,
+  modifier: Modifier = Modifier,
+  isEnabled: Boolean = true,
+  theme: Theme = LocalTheme.current,
+  textStyle: TextStyle = LocalTextStyle.current,
+  contentPadding: PaddingValues = DROPDOWN_CONTENT_PADDING,
 ) {
   var isExpanded by remember { mutableStateOf(false) }
   var selectedOption by remember { mutableStateOf(value) }
 
+  val selectedString = string(selectedOption)
+
+  val textMeasurer = rememberTextMeasurer()
+  val density = LocalDensity.current
+  val trailingIconSize = LocalMinimumInteractiveComponentSize.current
+  val contentWidth =
+    remember(selectedString, textStyle, density, trailingIconSize) {
+      with(density) {
+        textMeasurer.measure(selectedString, textStyle).size.width.toDp() + trailingIconSize + 10.dp
+      }
+    }
+
+  val interactionSource = remember { MutableInteractionSource() }
+  val isFocused by interactionSource.collectIsFocusedAsState()
+  val borderColor =
+    if (isFocused) theme.formInputBorderSelected else theme.formInputBackgroundSelected
+
   ExposedDropdownMenuBox(
-    modifier = modifier,
+    modifier = modifier.then(Modifier.width(contentWidth)),
     expanded = isExpanded,
     onExpandedChange = { isExpanded = it },
   ) {
-    TextField(
+    BasicTextField(
       modifier =
-        Modifier.menuAnchor(ExposedDropdownMenuAnchorType.PrimaryNotEditable, enabled = true),
-      readOnly = true,
-      placeholderText = null,
-      value = string(selectedOption),
+        Modifier.menuAnchor(PrimaryNotEditable, enabled = isEnabled)
+          .fillMaxWidth()
+          .clip(TextFieldShape)
+          .border(1.dp, borderColor, TextFieldShape),
+      value = selectedString,
       onValueChange = {},
-      trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
-      colors = theme.exposedDropDownMenu(),
-      theme = theme,
+      readOnly = true,
+      enabled = isEnabled,
+      singleLine = true,
+      textStyle = textStyle.copy(color = theme.formInputText),
+      interactionSource = interactionSource,
+      decorationBox = { innerTextField ->
+        TextFieldDefaults.DecorationBox(
+          value = selectedString,
+          innerTextField = innerTextField,
+          enabled = isEnabled,
+          singleLine = true,
+          visualTransformation = VisualTransformation.None,
+          interactionSource = interactionSource,
+          trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
+          colors = theme.exposedDropDownMenu(),
+          contentPadding = contentPadding,
+        )
+      },
     )
 
     ExposedDropdownMenu(
       modifier = Modifier.background(theme.menuBackground),
       expanded = isExpanded,
       onDismissRequest = { isExpanded = false },
+      matchAnchorWidth = false,
     ) {
       val itemColors = theme.dropDownMenuItem()
       options.fastForEach { o ->
@@ -175,6 +228,17 @@ fun <T> ExposedDropDownMenu(
     }
   }
 }
+
+private val DROPDOWN_PADDING_H = 16.dp
+private val DROPDOWN_PADDING_V = 12.dp
+
+private val DROPDOWN_CONTENT_PADDING =
+  TextFieldDefaults.contentPaddingWithoutLabel(
+    start = DROPDOWN_PADDING_H,
+    end = DROPDOWN_PADDING_H,
+    top = DROPDOWN_PADDING_V,
+    bottom = DROPDOWN_PADDING_V,
+  )
 
 private data class TextInputPreviewParams(
   val value: String,

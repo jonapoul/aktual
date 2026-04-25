@@ -33,6 +33,8 @@ internal constructor(
   private var syncJob: Job? = null
   private var inactiveJob: Job? = null
 
+  suspend fun syncChanges(vararg changes: LocalChange) = syncChanges(changes.toList())
+
   suspend fun syncChanges(changes: List<LocalChange>) {
     syncDao.sendMessages(changes)
     schedule()

@@ -450,7 +450,7 @@ internal fun CustomThemeItem(
     NormalIconButton(
       modifier = Modifier.clip(CardShape).fillMaxHeight(),
       imageVector = MaterialIcons.ArrowRight,
-      enabled = enabled,
+      isEnabled = enabled,
       onClick = { onAction(InspectTheme(item.summary)) },
       contentDescription = Strings.settingsThemePreview(item.summary.name),
     )

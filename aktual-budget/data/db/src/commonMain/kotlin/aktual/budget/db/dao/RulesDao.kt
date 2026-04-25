@@ -10,5 +10,20 @@ class RulesDao(database: BudgetDatabase) {
 
   suspend fun getAll(): List<Rules> = queries.withResult { getAll().executeAsList() }
 
-  suspend fun delete(ids: Set<RuleId>): Long = queries.withResult { delete(ids) }
+  suspend operator fun get(id: RuleId): Rules? = queries.withResult { get(id).executeAsOneOrNull() }
+
+  suspend fun tombstone(ids: Set<RuleId>): Long = queries.withResult { tombstone(ids) }
+
+  suspend fun insert(rule: Rules): Long = queries.withResult {
+    with(rule) {
+      insert(
+        id = id,
+        stage = stage,
+        conditions = conditions,
+        actions = actions,
+        tombstone = tombstone,
+        conditions_op = conditions_op,
+      )
+    }
+  }
 }
