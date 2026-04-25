@@ -38,3 +38,17 @@ fun BudgetFiles.readMetadata(id: BudgetId): DbMetadata {
   val json = fileSystem.source(path).buffer().use { source -> source.readUtf8() }
   return Json.decodeFromString(DbMetadata.serializer(), json)
 }
+
+data class LocalBudget(val id: BudgetId, val metadata: DbMetadata?)
+
+fun BudgetFiles.listLocal(): List<LocalBudget> {
+  if (!fileSystem.exists(directoryPath)) return emptyList()
+  return fileSystem
+    .list(directoryPath)
+    .filter { it.name != "tmp" && fileSystem.metadataOrNull(it)?.isDirectory == true }
+    .map { dir ->
+      val id = BudgetId(dir.name)
+      val metadata = runCatching { readMetadata(id) }.getOrNull()
+      LocalBudget(id = id, metadata = metadata)
+    }
+}

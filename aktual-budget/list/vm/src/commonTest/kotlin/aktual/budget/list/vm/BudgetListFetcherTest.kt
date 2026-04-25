@@ -5,13 +5,12 @@ import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApi
 import aktual.api.client.SyncApiImpl
 import aktual.api.model.account.FailureReason
-import aktual.budget.model.Budget
+import aktual.api.model.sync.UserFile
 import aktual.budget.model.BudgetId
-import aktual.budget.model.BudgetState
+import aktual.core.model.KeyId
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import aktual.prefs.KeyPreferences
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
 import aktual.test.testHttpClient
@@ -28,6 +27,7 @@ import io.mockk.mockk
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -37,17 +37,14 @@ class BudgetListFetcherTest {
   private lateinit var budgetListFetcher: BudgetListFetcher
   private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var mockEngine: MockEngine.Queue
-  private lateinit var keyPreferences: KeyPreferences
 
   private fun TestScope.before() {
     mockEngine = emptyMockEngine()
     apisStateHolder = AktualApisStateHolder()
-    keyPreferences = mockk { coEvery { contains(any()) } returns false }
     budgetListFetcher =
       BudgetListFetcher(
         contexts = TestCoroutineContexts(standardDispatcher),
         apisStateHolder = apisStateHolder,
-        keyPreferences = keyPreferences,
       )
   }
 
@@ -79,15 +76,15 @@ class BudgetListFetcherTest {
     assertThat(result)
       .isEqualTo(
         FetchBudgetsResult.Success(
-          budgets =
-            listOf(
-              Budget(
-                name = "Main Budget",
-                state = BudgetState.Unknown,
-                encryptKeyId = "7fe20d96-ab62-43bc-b69c-53f55a26cbbf",
+          userFiles =
+            persistentListOf(
+              UserFile(
+                deleted = 0,
+                fileId = BudgetId("525fecc4-5080-4d01-b2ea-6032e5ee25c1"),
                 groupId = "16f9c400-cdf5-43ae-983f-4dbcccb10ccf",
-                cloudFileId = BudgetId("525fecc4-5080-4d01-b2ea-6032e5ee25c1"),
-                hasKey = false,
+                name = "Main Budget",
+                encryptKeyId = KeyId("7fe20d96-ab62-43bc-b69c-53f55a26cbbf"),
+                owner = null,
               )
             )
         )

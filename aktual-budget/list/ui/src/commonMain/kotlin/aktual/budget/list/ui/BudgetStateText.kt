@@ -7,8 +7,6 @@ import aktual.core.icons.CloudDownload
 import aktual.core.icons.CloudUnknown
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.FileDouble
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Sync
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
@@ -61,7 +59,6 @@ private fun BudgetState.text(): String =
     BudgetState.Local -> Strings.budgetStateLocal
     BudgetState.Remote -> Strings.budgetStateRemote
     BudgetState.Synced -> Strings.budgetStateSynced
-    BudgetState.Syncing -> Strings.budgetStateSyncing
     BudgetState.Detached -> Strings.budgetStateDetached
     BudgetState.Broken -> Strings.budgetStateBroken
     BudgetState.Unknown -> Strings.budgetStateUnknown
@@ -74,7 +71,6 @@ private fun BudgetState.icon(): ImageVector =
     BudgetState.Local -> AktualIcons.FileDouble
     BudgetState.Remote -> AktualIcons.CloudDownload
     BudgetState.Synced -> AktualIcons.CloudCheck
-    BudgetState.Syncing -> MaterialIcons.Sync
     BudgetState.Detached -> AktualIcons.CloudWarning
     BudgetState.Broken -> AktualIcons.CloudWarning
     BudgetState.Unknown -> AktualIcons.CloudUnknown

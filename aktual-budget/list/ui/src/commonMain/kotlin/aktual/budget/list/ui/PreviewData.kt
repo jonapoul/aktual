@@ -4,24 +4,32 @@ package aktual.budget.list.ui
 
 import aktual.budget.model.Budget
 import aktual.budget.model.BudgetId
-import aktual.budget.model.BudgetState
 
 internal val PreviewBudgetSynced =
-  Budget(
+  Budget.Synced(
     name = "Main Budget",
-    state = BudgetState.Synced,
-    encryptKeyId = "abc123",
-    groupId = "abc123",
-    cloudFileId = BudgetId("abc123"),
     hasKey = true,
+    encryptKeyId = "abc123",
+    cloudFileId = BudgetId("abc123"),
+    groupId = "abc123",
+    owner = null,
   )
 
-internal val PreviewBudgetSyncing =
-  PreviewBudgetSynced.copy(
-    name = "Syncing Budget",
-    state = BudgetState.Syncing,
+internal val PreviewBudgetRemote =
+  Budget.Remote(
+    name = "Remote Budget",
+    hasKey = false,
     encryptKeyId = null,
+    cloudFileId = BudgetId("def456"),
+    groupId = "def456",
+    owner = null,
   )
 
 internal val PreviewBudgetBroken =
-  PreviewBudgetSynced.copy(name = "Broken Budget", state = BudgetState.Broken, encryptKeyId = null)
+  Budget.Broken(
+    name = "Broken Budget",
+    hasKey = false,
+    encryptKeyId = null,
+    cloudFileId = BudgetId("ghi789"),
+    groupId = "ghi789",
+  )
