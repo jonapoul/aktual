@@ -23,6 +23,7 @@ private class AktualIconsProvider : CollectionPreviewParameterProvider<ImageVect
 private val aktualIcons =
   with(AktualIcons) {
     listOf(
+      Add,
       ArrowThickDown,
       ArrowThickUp,
       ChevronUp,
@@ -39,6 +40,7 @@ private val aktualIcons =
       Key,
       OpenBracket,
       Reports,
+      Subtract,
       Sum,
       Tuning,
     )

@@ -1,5 +1,6 @@
 package aktual.budget.model
 
+import androidx.compose.runtime.Immutable
 import java.text.NumberFormat as JNumberFormat
 import java.util.Locale
 import kotlin.math.absoluteValue
@@ -7,6 +8,7 @@ import kotlin.math.roundToLong
 
 /** Stores an amount of money, e.g. £123.45 is stored in [value] as the integer 12345. */
 @JvmInline
+@Immutable
 value class Amount(private val value: Long) : Comparable<Amount> {
   constructor(value: Int) : this(value.toLong())
 
