@@ -94,7 +94,8 @@ internal fun AmountTextField(
         }
       )
     },
-    placeholderText = Amount.Zero.formattedString(),
+    placeholderText =
+      Amount.Zero.formattedString(currencyConfig = currencyConfig.copy(currency = Currency.None)),
     isEnabled = isEnabled,
     leadingIcon = {
       LeadingContent(
