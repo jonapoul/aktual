@@ -173,11 +173,6 @@ fun <T> ExposedDropDownMenu(
 
   val dialogBlurState = LocalDialogBlurState.current
 
-  // Ensure cleanup if this composable leaves the tree while expanded
-  DisposableEffect(Unit) {
-    onDispose { dialogBlurState.excludedFromBlur.remove(ExposedDropdownMenuAnchorKey) }
-  }
-
   ExposedDropdownMenuBox(
     modifier = modifier.then(Modifier.width(contentWidth)),
     expanded = isExpanded,

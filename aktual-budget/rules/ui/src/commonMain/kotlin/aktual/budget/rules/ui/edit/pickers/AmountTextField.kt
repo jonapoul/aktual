@@ -115,7 +115,9 @@ internal fun AmountTextField(
     singleLine = true,
     textStyle = textStyle,
     visualTransformation =
-      NumberFormatTransformation(numberFormatConfig, currencyConfig, isPrivacyEnabled),
+      remember(numberFormatConfig, currencyConfig, isPrivacyEnabled) {
+        NumberFormatTransformation(numberFormatConfig, currencyConfig, isPrivacyEnabled)
+      },
   )
 }
 
