@@ -29,6 +29,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldColors
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,6 +39,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
@@ -66,10 +69,10 @@ fun TextField(
   visualTransformation: VisualTransformation = VisualTransformation.None,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActions = KeyboardActions.Default,
-  colors: TextFieldColors? = null,
+  theme: Theme = LocalTheme.current,
+  colors: TextFieldColors = theme.textField(),
   clearable: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
-  theme: Theme = LocalTheme.current,
 ) {
   val isFocused by interactionSource.collectIsFocusedAsState()
   val borderColor =
@@ -83,12 +86,7 @@ fun TextField(
 
   val clearButton: (@Composable () -> Unit)? =
     if (clearable && value.isNotEmpty()) {
-      {
-        ClearButton(
-          tint = colors?.focusedTrailingIconColor ?: theme.pageText,
-          onClick = { onValueChange("") },
-        )
-      }
+      { ClearButton(tint = colors.focusedTrailingIconColor, onClick = { onValueChange("") }) }
     } else {
       null
     }
@@ -98,7 +96,7 @@ fun TextField(
     value = value,
     placeholder = placeholderText?.let { { Text(text = it) } },
     shape = shape,
-    colors = colors ?: theme.textField(),
+    colors = colors,
     readOnly = readOnly,
     enabled = isEnabled,
     singleLine = singleLine,
@@ -173,6 +171,13 @@ fun <T> ExposedDropDownMenu(
   val borderColor =
     if (isFocused) theme.formInputBorderSelected else theme.formInputBackgroundSelected
 
+  val dialogBlurState = LocalDialogBlurState.current
+
+  // Ensure cleanup if this composable leaves the tree while expanded
+  DisposableEffect(Unit) {
+    onDispose { dialogBlurState.excludedFromBlur.remove(ExposedDropdownMenuAnchorKey) }
+  }
+
   ExposedDropdownMenuBox(
     modifier = modifier.then(Modifier.width(contentWidth)),
     expanded = isExpanded,
@@ -183,7 +188,12 @@ fun <T> ExposedDropDownMenu(
         Modifier.menuAnchor(PrimaryNotEditable, enabled = isEnabled)
           .fillMaxWidth()
           .clip(TextFieldShape)
-          .border(1.dp, borderColor, TextFieldShape),
+          .border(1.dp, borderColor, TextFieldShape)
+          .onGloballyPositioned { coords ->
+            if (isExpanded) {
+              dialogBlurState.excludedFromBlur[ExposedDropdownMenuAnchorKey] = coords.boundsInRoot()
+            }
+          },
       value = selectedString,
       onValueChange = {},
       readOnly = true,
@@ -212,6 +222,11 @@ fun <T> ExposedDropDownMenu(
       onDismissRequest = { isExpanded = false },
       matchAnchorWidth = false,
     ) {
+      DisposableEffect(Unit) {
+        dialogBlurState.activeDialogCount++
+        onDispose { dialogBlurState.activeDialogCount-- }
+      }
+
       val itemColors = theme.dropDownMenuItem()
       options.fastForEach { o ->
         DropdownMenuItem(
@@ -228,6 +243,8 @@ fun <T> ExposedDropDownMenu(
     }
   }
 }
+
+private data object ExposedDropdownMenuAnchorKey
 
 private val DROPDOWN_PADDING_H = 16.dp
 private val DROPDOWN_PADDING_V = 12.dp

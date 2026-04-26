@@ -74,7 +74,7 @@
     <item quantity="one">Selected %1$d rule</item>
     <item quantity="other">Selected %1$d rules</item>
   </plurals>
-  <string name="rules_checkbox_delete">Delete</string>¬
+  <string name="rules_checkbox_delete">Delete</string>
   <string name="rules_checkbox_clear">Clear selected</string>
 
   <string name="edit_rule_toolbar_edit">Edit Rule</string>
@@ -96,4 +96,7 @@
   <string name="edit_rule_or">any</string>
   <string name="edit_rule_condition_delete">Delete</string>
   <string name="edit_rule_condition_nothing">nothing</string>
+  <string name="edit_rule_amount_clear">Clear</string>
+  <string name="edit_rule_amount_sign_positive">Make negative</string>
+  <string name="edit_rule_amount_sign_negative">Make positive</string>
 </resources>

@@ -229,7 +229,7 @@ class EditRuleViewModel(
     )
 
   private fun emptyCondition() =
-    Condition(field = Field.Description, operator = Is, type = ConditionType.Id, value = JsonNull)
+    Condition(field = Field.Payee, operator = Is, type = ConditionType.Id, value = JsonNull)
 
   private fun emptyAction() =
     RuleAction(

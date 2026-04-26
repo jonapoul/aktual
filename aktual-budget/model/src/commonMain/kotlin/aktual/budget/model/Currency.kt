@@ -309,12 +309,20 @@ enum class Currency(
     decimalPlaces = 2,
     numberFormat = DotComma,
     symbolPosition = AfterAmount,
-  ),
+  );
+
+  companion object {
+    val Default = None
+  }
 }
 
 enum class CurrencySymbolPosition {
   BeforeAmount,
-  AfterAmount,
+  AfterAmount;
+
+  companion object {
+    val Default = BeforeAmount
+  }
 }
 
 @Immutable

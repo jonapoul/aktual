@@ -20,8 +20,18 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.PathFillType
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.HazeStyle
@@ -147,7 +157,32 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
 
   if (progress > 0f) {
     val style = rememberAnimatedHazeStyle(blurConfig, theme, progress)
-    Box(modifier = modifier.fillMaxSize().hazeEffect(hazeState, style))
+    val excluded = dialogBlurState.excludedFromBlur
+    Box(
+      modifier =
+        modifier
+          .fillMaxSize()
+          .then(if (excluded.isEmpty()) Modifier else Modifier.clip(HoledShape(excluded.values)))
+          .hazeEffect(hazeState, style)
+    )
+  }
+}
+
+// Shape covering the full composable area minus rectangular holes, used to punch the blur
+// overlay out from behind expanded dropdown anchors so they appear unblurred.
+private class HoledShape(private val holes: Collection<Rect>) : Shape {
+  override fun createOutline(
+    size: Size,
+    layoutDirection: LayoutDirection,
+    density: Density,
+  ): Outline {
+    val path =
+      Path().apply {
+        addRect(Rect(Offset.Zero, size))
+        fillType = PathFillType.EvenOdd
+        holes.forEach { addRect(it) }
+      }
+    return Outline.Generic(path)
   }
 }
 

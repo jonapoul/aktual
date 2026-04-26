@@ -1,6 +1,7 @@
 package aktual.budget.rules.ui.edit
 
 import aktual.budget.model.Field
+import aktual.budget.rules.ui.edit.pickers.AmountTextField
 import aktual.budget.rules.ui.edit.pickers.EntityIdPicker
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTypography
@@ -68,11 +69,18 @@ internal fun ConditionValueEditor(
         fetchEntities = { it.categoryGroups() },
       )
 
+    Field.Amount ->
+      AmountTextField(
+        modifier = modifier,
+        value = value,
+        isEnabled = isEnabled,
+        onValueChange = emit,
+      )
+
     Field.Notes,
     Field.PayeeName,
     Field.ImportedPayee,
     Field.ImportedDescription,
-    Field.Amount,
     Field.Date,
     Field.Saved,
     Field.Transfer,
@@ -94,7 +102,7 @@ internal fun ConditionValueEditor(
 
 private fun JsonElement.asEditableString(): String =
   when (this) {
-    is JsonPrimitive -> if (isString) content else content
+    is JsonPrimitive -> content
     JsonNull -> ""
     is JsonArray,
     is JsonObject -> toString()
