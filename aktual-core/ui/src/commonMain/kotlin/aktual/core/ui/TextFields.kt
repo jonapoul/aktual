@@ -66,10 +66,10 @@ fun TextField(
   visualTransformation: VisualTransformation = VisualTransformation.None,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   keyboardActions: KeyboardActions = KeyboardActions.Default,
-  colors: TextFieldColors? = null,
+  theme: Theme = LocalTheme.current,
+  colors: TextFieldColors = theme.textField(),
   clearable: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
-  theme: Theme = LocalTheme.current,
 ) {
   val isFocused by interactionSource.collectIsFocusedAsState()
   val borderColor =
@@ -83,12 +83,7 @@ fun TextField(
 
   val clearButton: (@Composable () -> Unit)? =
     if (clearable && value.isNotEmpty()) {
-      {
-        ClearButton(
-          tint = colors?.focusedTrailingIconColor ?: theme.pageText,
-          onClick = { onValueChange("") },
-        )
-      }
+      { ClearButton(tint = colors.focusedTrailingIconColor, onClick = { onValueChange("") }) }
     } else {
       null
     }
@@ -98,7 +93,7 @@ fun TextField(
     value = value,
     placeholder = placeholderText?.let { { Text(text = it) } },
     shape = shape,
-    colors = colors ?: theme.textField(),
+    colors = colors,
     readOnly = readOnly,
     enabled = isEnabled,
     singleLine = singleLine,
