@@ -2,6 +2,7 @@ package aktual.budget.rules.ui.edit
 
 import aktual.budget.model.Field
 import aktual.budget.rules.ui.edit.pickers.AmountTextField
+import aktual.budget.rules.ui.edit.pickers.DateTextField
 import aktual.budget.rules.ui.edit.pickers.EntityIdPicker
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTypography
@@ -77,11 +78,13 @@ internal fun ConditionValueEditor(
         onValueChange = emit,
       )
 
+    Field.Date ->
+      DateTextField(modifier = modifier, value = value, isEnabled = isEnabled, onValueChange = emit)
+
     Field.Notes,
     Field.PayeeName,
     Field.ImportedPayee,
     Field.ImportedDescription,
-    Field.Date,
     Field.Saved,
     Field.Transfer,
     Field.Parent,

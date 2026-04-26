@@ -99,4 +99,8 @@
   <string name="edit_rule_amount_clear">Clear</string>
   <string name="edit_rule_amount_sign_positive">Make negative</string>
   <string name="edit_rule_amount_sign_negative">Make positive</string>
+
+  <string name="edit_rule_date_clear">Clear</string>
+  <string name="edit_rule_date_picker_ok">OK</string>
+  <string name="edit_rule_date_picker_cancel">Cancel</string>
 </resources>

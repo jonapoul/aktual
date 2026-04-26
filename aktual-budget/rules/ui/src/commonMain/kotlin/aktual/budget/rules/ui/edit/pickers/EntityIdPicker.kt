@@ -12,7 +12,6 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.ListBottomSheet
-import aktual.core.ui.textField
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -92,11 +91,7 @@ internal fun EntityIdPicker(
           ExposedDropdownMenuDefaults.TrailingIcon(expanded = showSheet)
         }
       },
-      colors =
-        theme.textField(
-          focusedContainer = theme.buttonNormalBackground,
-          border = theme.buttonNormalBorder,
-        ),
+      colors = theme.pickerField(),
     )
     Box(modifier = Modifier.matchParentSize().clickable(isEnabled) { showSheet = true })
   }
