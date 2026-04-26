@@ -148,7 +148,7 @@ private fun LeadingContent(
 
     if (config.currency != Currency.None && config.position == BeforeAmount) {
       Text(
-        modifier = modifier.minimumInteractiveComponentSize(),
+        modifier = Modifier.minimumInteractiveComponentSize(),
         text = config.currency.symbol,
         style = AktualTypography.bodyMedium,
         color = theme.pageTextSubdued,
@@ -181,7 +181,7 @@ private fun TrailingContent(
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     if (config.currency != Currency.None && config.position == AfterAmount) {
       Text(
-        modifier = modifier.minimumInteractiveComponentSize(),
+        modifier = Modifier.minimumInteractiveComponentSize(),
         text = config.currency.symbol,
         style = AktualTypography.bodyMedium,
         color = theme.pageTextSubdued,
@@ -262,12 +262,14 @@ private data class AmountTextFieldParams(
   val isPrivacyEnabled: Boolean = false,
 )
 
+@Suppress("MagicNumber")
 private class AmountTextFieldProvider :
   CollectionPreviewParameterProvider<AmountTextFieldParams>(
     listOf(
       AmountTextFieldParams(value = JsonNull),
       AmountTextFieldParams(value = JsonPrimitive(5)),
       AmountTextFieldParams(value = JsonPrimitive(12345)),
+      AmountTextFieldParams(value = JsonPrimitive(-12345)),
       AmountTextFieldParams(value = JsonPrimitive(12345), isEnabled = false),
       AmountTextFieldParams(value = JsonPrimitive(12345), position = AfterAmount),
       AmountTextFieldParams(value = JsonPrimitive(12345), includeSpace = false),
