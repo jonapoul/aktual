@@ -137,7 +137,6 @@ private fun LeadingContent(
 ) {
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     BareIconButton(
-      modifier = Modifier.size(20.dp).minimumInteractiveComponentSize(),
       enabled = isEnabled,
       imageVector = if (isPositive) AktualIcons.Add else AktualIcons.Subtract,
       contentDescription =
