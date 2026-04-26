@@ -16,9 +16,11 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.geometry.Rect
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.datetime.LocalDate
@@ -83,6 +85,10 @@ class DialogBlurState {
 
   val isActive: Boolean
     get() = activeDialogCount > 0
+
+  // Bounds (in root coordinates) that should be punched out of the blur overlay.
+  // Keyed by an identity token so multiple simultaneous anchors don't collide.
+  internal val excludedFromBlur = mutableStateMapOf<Any, Rect>()
 }
 
 @Composable
