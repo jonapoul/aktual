@@ -167,7 +167,7 @@ val exportMinSdk by tasks.registering {
   group = "documentation"
   description = "Updates the API level badge in README.md"
   inputs.property("minSdk", android.defaultConfig.minSdk)
-  val readme = layout.projectDirectory.file("README.md")
+  val readme = rootProject.layout.projectDirectory.file("README.md")
   inputs.file(readme)
   outputs.file(readme)
   doLast {
