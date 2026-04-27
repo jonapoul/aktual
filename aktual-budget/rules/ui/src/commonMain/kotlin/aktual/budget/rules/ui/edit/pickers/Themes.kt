@@ -7,4 +7,8 @@ import androidx.compose.runtime.Composable
 
 @Composable
 internal fun Theme.pickerField(): TextFieldColors =
-  textField(focusedContainer = buttonNormalBackground, border = buttonNormalBorder)
+  textField(
+    focusedContainer = buttonNormalBackground,
+    border = buttonNormalBorder,
+    textPlaceholder = formInputTextPlaceholder,
+  )

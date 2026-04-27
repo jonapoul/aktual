@@ -42,7 +42,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.encodeToJsonElement
 
 @Composable
 internal fun DateTextField(
@@ -130,8 +129,8 @@ internal fun DateTextField(
 
 private fun RecurConfig?.serializeWith(date: LocalDate?): JsonElement {
   date ?: return JsonNull
-  this ?: return JsonNull
-  return Json.encodeToJsonElement(this.copy(start = date))
+  val config = this ?: RecurConfig(frequency = RecurFrequency.Monthly, start = date)
+  return Json.encodeToJsonElement(RecurConfig.serializer(), config.copy(start = date))
 }
 
 @Preview
@@ -152,16 +151,17 @@ private data class DateTextFieldParams(val value: JsonElement, val isEnabled: Bo
 private val PreviewRecurConfig =
   Json.encodeToJsonElement(
     serializer = RecurConfig.serializer(),
-    value = RecurConfig(
-      frequency = RecurFrequency.Monthly,
-      start = LocalDate.parse("2025-03-02"),
-      interval = 1,
-      patterns = emptyList(),
-      skipWeekend = false,
-      endMode = RecurEndMode.Never,
-      endOccurrences = 1,
-      endDate = LocalDate.parse("2025-03-06"),
-    ),
+    value =
+      RecurConfig(
+        frequency = RecurFrequency.Monthly,
+        start = LocalDate.parse("2025-03-02"),
+        interval = 1,
+        patterns = emptyList(),
+        skipWeekend = false,
+        endMode = RecurEndMode.Never,
+        endOccurrences = 1,
+        endDate = LocalDate.parse("2025-03-06"),
+      ),
   )
 
 private class DateTextFieldProvider :
