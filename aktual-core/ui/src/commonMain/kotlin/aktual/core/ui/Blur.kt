@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -154,6 +155,15 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
       targetValue = if (dialogBlurState.isActive && blurConfig.blurDialogs) 1f else 0f,
       animationSpec = DefaultAnimationSpec,
     )
+
+  LaunchedEffect(progress) {
+    // Only clear this from the root overlay, because we only want to stop excluding these areas
+    // when the blur effect
+    // is totally gone
+    if (progress == 0f) {
+      dialogBlurState.excludedFromBlur.clear()
+    }
+  }
 
   if (progress > 0f) {
     val style = rememberAnimatedHazeStyle(blurConfig, theme, progress)

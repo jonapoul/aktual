@@ -30,6 +30,7 @@ import aktual.core.ui.formattedString
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
@@ -58,7 +59,6 @@ internal fun AmountTextField(
   isEnabled: Boolean,
   onValueChange: (JsonElement) -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   currencyConfig: CurrencyConfig = LocalCurrencyConfig.current,
   numberFormatConfig: NumberFormatConfig = LocalNumberFormatConfig.current,
   isPrivacyEnabled: Boolean = LocalPrivacyEnabled.current,
@@ -66,13 +66,12 @@ internal fun AmountTextField(
   require(value is JsonNull || value is JsonPrimitive) { "Need primitive or null, got $value" }
 
   val textStyle =
-    AktualTypography.bodyMedium.copy(
-      color = theme.pageText,
+    LocalTextStyle.current.copy(
       textAlign =
         when (currencyConfig.position) {
           BeforeAmount -> TextAlign.Start
           AfterAmount -> TextAlign.End
-        },
+        }
     )
 
   var isPositive by remember(value) { mutableStateOf(value.isPositive()) }
@@ -115,7 +114,9 @@ internal fun AmountTextField(
     singleLine = true,
     textStyle = textStyle,
     visualTransformation =
-      NumberFormatTransformation(numberFormatConfig, currencyConfig, isPrivacyEnabled),
+      remember(numberFormatConfig, currencyConfig, isPrivacyEnabled) {
+        NumberFormatTransformation(numberFormatConfig, currencyConfig, isPrivacyEnabled)
+      },
   )
 }
 
