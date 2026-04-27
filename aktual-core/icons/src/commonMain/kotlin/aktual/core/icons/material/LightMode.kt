@@ -1,0 +1,72 @@
+@file:Suppress("UnusedReceiverParameter")
+
+package aktual.core.icons.material
+
+import aktual.core.icons.material.internal.materialIcon
+import aktual.core.icons.material.internal.materialPath
+import androidx.compose.ui.graphics.vector.ImageVector
+
+val MaterialIcons.LightMode: ImageVector by lazy {
+  materialIcon(name = "LightMode", viewportSize = 960f) {
+    materialPath {
+      moveTo(338.5f, 621.5f)
+      quadTo(280f, 563f, 280f, 480f)
+      reflectiveQuadToRelative(58.5f, -141.5f)
+      quadTo(397f, 280f, 480f, 280f)
+      reflectiveQuadToRelative(141.5f, 58.5f)
+      quadTo(680f, 397f, 680f, 480f)
+      reflectiveQuadToRelative(-58.5f, 141.5f)
+      quadTo(563f, 680f, 480f, 680f)
+      reflectiveQuadToRelative(-141.5f, -58.5f)
+      close()
+      moveTo(200f, 520f)
+      horizontalLineTo(40f)
+      verticalLineToRelative(-80f)
+      horizontalLineToRelative(160f)
+      verticalLineToRelative(80f)
+      close()
+      moveToRelative(720f, 0f)
+      horizontalLineTo(760f)
+      verticalLineToRelative(-80f)
+      horizontalLineToRelative(160f)
+      verticalLineToRelative(80f)
+      close()
+      moveTo(440f, 200f)
+      verticalLineToRelative(-160f)
+      horizontalLineToRelative(80f)
+      verticalLineToRelative(160f)
+      horizontalLineToRelative(-80f)
+      close()
+      moveToRelative(0f, 720f)
+      verticalLineToRelative(-160f)
+      horizontalLineToRelative(80f)
+      verticalLineToRelative(160f)
+      horizontalLineToRelative(-80f)
+      close()
+      moveTo(256f, 310f)
+      lineToRelative(-101f, -97f)
+      lineToRelative(57f, -59f)
+      lineToRelative(96f, 100f)
+      lineToRelative(-52f, 56f)
+      close()
+      moveToRelative(492f, 496f)
+      lineToRelative(-97f, -101f)
+      lineToRelative(53f, -55f)
+      lineToRelative(101f, 97f)
+      lineToRelative(-57f, 59f)
+      close()
+      moveToRelative(-98f, -550f)
+      lineToRelative(97f, -101f)
+      lineToRelative(59f, 57f)
+      lineToRelative(-100f, 96f)
+      lineToRelative(-56f, -52f)
+      close()
+      moveTo(154f, 748f)
+      lineToRelative(101f, -97f)
+      lineToRelative(55f, 53f)
+      lineToRelative(-97f, 101f)
+      lineToRelative(-59f, -57f)
+      close()
+    }
+  }
+}

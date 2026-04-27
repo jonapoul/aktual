@@ -2,6 +2,8 @@ package aktual.metrics.ui
 
 import aktual.api.model.metrics.GetMetricsResponse
 import aktual.app.nav.BackNavigator
+import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.model.GB
 import aktual.core.model.MB
@@ -12,10 +14,10 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BlurredTopBarSpacing
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
@@ -55,7 +57,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -65,7 +66,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
-import com.valentinilk.shimmer.unclippedBoundsInWindow
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlin.time.Clock
 import kotlin.time.Duration
@@ -152,8 +152,7 @@ private fun MetricsContent(
       is MetricsState.Success -> SuccessContent(state, theme)
     }
 
-    BottomStatusBarSpacing()
-    BottomNavBarSpacing()
+    BottomSpacing()
   }
 }
 
@@ -166,7 +165,7 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
 
 @Composable
 internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
-  val shimmer = rememberShimmer(ShimmerBounds.Custom)
+  val shimmer = rememberShimmer(ShimmerBounds.Window)
 
   Row(
     modifier =
@@ -176,8 +175,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalThem
         .background(theme.buttonNormalBackground, RowShape)
         .border(Dp.Hairline, theme.pillBorderDark, RowShape)
         .padding(horizontal = 15.dp, vertical = 12.dp)
-        .shimmer(shimmer)
-        .onGloballyPositioned { shimmer.updateBounds(it.unclippedBoundsInWindow()) },
+        .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -220,9 +218,12 @@ private fun FailureContent(
       modifier = Modifier.background(theme.tableBackground, CardShape),
       title = Strings.metricsFailure,
       reason = message,
-      retryText = Strings.metricsFailureRetry,
-      onClickRetry = { onAction(MetricsAction.Refresh) },
-      theme = theme,
+      action =
+        FailureAction(
+          text = { Strings.metricsFailureRetry },
+          onClick = { onAction(MetricsAction.Refresh) },
+          icon = MaterialIcons.Refresh,
+        ),
     )
   }
 }
@@ -286,10 +287,7 @@ private fun SuccessContent(
       }
     }
 
-    item {
-      BottomStatusBarSpacing()
-      BottomNavBarSpacing()
-    }
+    item { BottomSpacing() }
   }
 }
 

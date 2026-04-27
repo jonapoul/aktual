@@ -12,10 +12,8 @@ import aktual.core.model.Protocol
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.BackHandler
 import aktual.core.ui.BasicIconButton
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
@@ -24,7 +22,6 @@ import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.normalIconButton
-import aktual.core.ui.rememberAppCloser
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -63,9 +60,6 @@ fun ServerUrlScreen(
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val isEnabled by viewModel.isEnabled.collectAsStateWithLifecycle()
   val errorMessage by viewModel.errorMessage.collectAsStateWithLifecycle()
-
-  val closeApp = rememberAppCloser()
-  BackHandler { closeApp() }
 
   DisposableEffect(Unit) { onDispose { viewModel.clearState() } }
 
@@ -205,8 +199,7 @@ private fun ServerUrlContent(
       VersionsText(modifier = Modifier.align(Alignment.BottomEnd), versions = versions)
     }
 
-    BottomStatusBarSpacing()
-    BottomNavBarSpacing()
+    BottomSpacing()
   }
 }
 

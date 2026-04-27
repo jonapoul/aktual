@@ -1,0 +1,2 @@
+-- https://github.com/actualbudget/actual/blob/master/packages/loot-core/migrations/1769000000000_add_custom_upcoming_length.sql
+ALTER TABLE schedules ADD COLUMN custom_upcoming_length TEXT DEFAULT NULL;

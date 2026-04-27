@@ -7,8 +7,6 @@ import aktual.core.icons.CloudDownload
 import aktual.core.icons.CloudUnknown
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.FileDouble
-import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Sync
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
@@ -21,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,7 +29,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-@Stable
 @Composable
 internal fun BudgetStateText(
   state: BudgetState,
@@ -41,17 +37,18 @@ internal fun BudgetStateText(
 ) {
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     val text = state.text()
+    val color = state.color(theme)
 
     Icon(
       modifier = Modifier.size(18.dp),
       imageVector = state.icon(),
       contentDescription = text,
-      tint = state.iconColor(theme),
+      tint = color,
     )
 
     HorizontalSpacer(5.dp)
 
-    Text(text = text, color = theme.pageText, fontSize = 13.sp)
+    Text(text = text, color = color, fontSize = 13.sp)
   }
 }
 
@@ -61,34 +58,31 @@ private fun BudgetState.text(): String =
     BudgetState.Local -> Strings.budgetStateLocal
     BudgetState.Remote -> Strings.budgetStateRemote
     BudgetState.Synced -> Strings.budgetStateSynced
-    BudgetState.Syncing -> Strings.budgetStateSyncing
     BudgetState.Detached -> Strings.budgetStateDetached
     BudgetState.Broken -> Strings.budgetStateBroken
     BudgetState.Unknown -> Strings.budgetStateUnknown
   }
 
 @Stable
-@Composable
 private fun BudgetState.icon(): ImageVector =
   when (this) {
     BudgetState.Local -> AktualIcons.FileDouble
     BudgetState.Remote -> AktualIcons.CloudDownload
     BudgetState.Synced -> AktualIcons.CloudCheck
-    BudgetState.Syncing -> MaterialIcons.Sync
     BudgetState.Detached -> AktualIcons.CloudWarning
     BudgetState.Broken -> AktualIcons.CloudWarning
     BudgetState.Unknown -> AktualIcons.CloudUnknown
   }
 
 @Stable
-@Composable
-@ReadOnlyComposable
-@Suppress("ElseCaseInsteadOfExhaustiveWhen")
-private fun BudgetState.iconColor(theme: Theme): Color =
+private fun BudgetState.color(theme: Theme): Color =
   when (this) {
-    BudgetState.Broken,
+    BudgetState.Broken -> theme.errorText
     BudgetState.Detached -> theme.warningText
-    else -> theme.pageText
+    BudgetState.Local -> theme.pageTextPositive
+    BudgetState.Remote -> theme.reportsBlue
+    BudgetState.Synced -> theme.reportsGreen
+    BudgetState.Unknown -> theme.reportsGray
   }
 
 @Preview

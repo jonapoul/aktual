@@ -4,7 +4,6 @@ import alakazam.kotlin.TimeZoneProvider
 import co.touchlab.kermit.Logger
 import co.touchlab.kermit.Severity
 import co.touchlab.kermit.loggerConfigInit
-import co.touchlab.kermit.platformLogWriter
 import kotlin.time.Clock
 import logcat.LogPriority
 import okio.FileSystem
@@ -19,8 +18,7 @@ class KermitFileLogger(
   private val fileWriter =
     FileLogWriter(storage = storage, clock = clock, timeZone = timeZone, fileSystem = fileSystem)
 
-  private val kermitLogger =
-    Logger(config = loggerConfigInit(platformLogWriter(), fileWriter), tag = "Aktual")
+  private val kermitLogger = Logger(config = loggerConfigInit(fileWriter), tag = "Aktual")
 
   private val LogPriority.severity: Severity
     get() =

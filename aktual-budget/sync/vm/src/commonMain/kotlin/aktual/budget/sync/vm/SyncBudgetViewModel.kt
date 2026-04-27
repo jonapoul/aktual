@@ -7,8 +7,6 @@ import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.FileDecrypter
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
-import aktual.budget.model.decryptedZip
-import aktual.budget.model.encryptedZip
 import aktual.budget.sync.vm.SyncStep.DownloadingDatabase
 import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
@@ -18,6 +16,7 @@ import aktual.core.model.Token
 import aktual.core.model.UrlOpener
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.launchInfiniteLoop
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
@@ -48,6 +47,7 @@ import logcat.logcat
 import okio.Path
 
 @Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
+@Stable
 @AssistedInject
 class SyncBudgetViewModel(
   @Assisted private val token: Token,

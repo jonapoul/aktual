@@ -4,7 +4,6 @@ import aktual.budget.db.JvmSqlDriverFactory
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.cloudFileId
-import aktual.budget.model.database
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 

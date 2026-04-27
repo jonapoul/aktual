@@ -3,6 +3,7 @@ package aktual.prefs.ui.inspect
 import aktual.app.nav.BackNavigator
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OpenInNew
+import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.theme.DarkTheme
@@ -12,10 +13,10 @@ import aktual.core.theme.MidnightTheme
 import aktual.core.theme.Theme
 import aktual.core.theme.isLight
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PreviewWithTheme
@@ -27,7 +28,13 @@ import aktual.core.ui.blurredTopBarContentPadding
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import aktual.prefs.ui.inspect.InspectThemeAction.NavBack
+import aktual.prefs.ui.inspect.InspectThemeAction.OpenRepo
+import aktual.prefs.ui.inspect.InspectThemeAction.Retry
 import aktual.prefs.vm.inspect.InspectThemeState
+import aktual.prefs.vm.inspect.InspectThemeState.Loaded
+import aktual.prefs.vm.inspect.InspectThemeState.Loading
+import aktual.prefs.vm.inspect.InspectThemeState.NotFound
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.inspect.ThemeProperty
 import aktual.prefs.vm.theme.properties
@@ -42,6 +49,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
@@ -51,6 +59,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -76,9 +85,9 @@ fun InspectThemeScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        InspectThemeAction.NavBack -> back()
-        InspectThemeAction.OpenRepo -> viewModel.openRepo()
-        InspectThemeAction.Retry -> viewModel.retry()
+        NavBack -> back()
+        OpenRepo -> viewModel.openRepo()
+        Retry -> viewModel.retry()
       }
     },
   )
@@ -86,37 +95,32 @@ fun InspectThemeScreen(
 
 @Composable
 private fun metroViewModel(themeId: ThemeId) =
-  assistedMetroViewModel<InspectThemeViewModel, InspectThemeViewModel.Factory> { create(themeId) }
+  assistedMetroViewModel<InspectThemeViewModel, InspectThemeViewModel.Factory>(
+    key = themeId.value,
+    createViewModel = { create(themeId) },
+  )
 
 @Composable
 private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThemeAction) -> Unit) {
   val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
+  val listState = rememberLazyListState()
 
   val title =
     when (state) {
-      is InspectThemeState.Loading -> Strings.settingsThemeInspectLoading
-      is InspectThemeState.NotFound -> Strings.settingsThemeInspectNotFound
-      is InspectThemeState.Loaded -> state.id.value
+      is Loading -> Strings.settingsThemeInspectLoading
+      is NotFound -> Strings.settingsThemeInspectNotFound
+      is Loaded -> state.id.value
     }
 
   Scaffold(
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState),
+        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.isScrollInProgress),
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(InspectThemeAction.NavBack) } },
+        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(title) },
-        actions = {
-          if (state is InspectThemeState.Loaded && state.isCustom) {
-            IconButton(onClick = { onAction(InspectThemeAction.OpenRepo) }) {
-              Icon(
-                imageVector = MaterialIcons.OpenInNew,
-                contentDescription = Strings.settingsThemeInspectOpenRepo,
-              )
-            }
-          }
-        },
+        actions = { if (state is Loaded && state.isCustom) OpenRepoButton(onAction) },
       )
     }
   ) { innerPadding ->
@@ -124,7 +128,18 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThe
       modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
       contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
       state = state,
+      listState = listState,
       onAction = onAction,
+    )
+  }
+}
+
+@Composable
+private fun OpenRepoButton(onAction: (InspectThemeAction) -> Unit) {
+  IconButton(onClick = { onAction(OpenRepo) }) {
+    Icon(
+      imageVector = MaterialIcons.OpenInNew,
+      contentDescription = Strings.settingsThemeInspectOpenRepo,
     )
   }
 }
@@ -133,31 +148,35 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThe
 private fun InspectThemeContent(
   state: InspectThemeState,
   contentPadding: PaddingValues,
+  listState: LazyListState,
   onAction: (InspectThemeAction) -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   when (state) {
-    is InspectThemeState.Loading -> {
+    is Loading -> {
       Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
       }
     }
 
-    is InspectThemeState.NotFound -> {
+    is NotFound -> {
       Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         FailureScreen(
           modifier = Modifier.background(theme.tableBackground, CardShape),
           title = Strings.settingsThemeInspectNotFound,
           reason = Strings.settingsThemeInspectNotFoundReason(state.id.value),
-          retryText = Strings.settingsThemeInspectRetry,
-          onClickRetry = { onAction(InspectThemeAction.Retry) },
+          action =
+            FailureAction(
+              text = { Strings.settingsThemeInspectRetry },
+              onClick = { onAction(Retry) },
+              icon = MaterialIcons.Refresh,
+            ),
         )
       }
     }
 
-    is InspectThemeState.Loaded -> {
-      val listState = rememberLazyListState()
+    is Loaded -> {
       LazyColumn(
         modifier = modifier.fillMaxSize().scrollbar(listState).padding(Dimens.Large),
         state = listState,
@@ -166,10 +185,7 @@ private fun InspectThemeContent(
       ) {
         items(state.properties) { property -> ThemePropertyRow(property) }
 
-        item {
-          BottomStatusBarSpacing()
-          BottomNavBarSpacing()
-        }
+        item { BottomSpacing() }
       }
     }
   }
@@ -195,7 +211,7 @@ private fun ThemePropertyRow(property: ThemeProperty) {
     )
 
     Text(
-      text = remember(property.color) { property.color.toHexString() },
+      text = property.color.toHexString(),
       color = textColor,
       style = AktualTypography.labelMedium,
       textAlign = TextAlign.End,
@@ -204,6 +220,7 @@ private fun ThemePropertyRow(property: ThemeProperty) {
   }
 }
 
+@Stable
 @Suppress("MagicNumber")
 private fun Color.toHexString(): String {
   val r = (red * 255).roundToInt()
@@ -225,9 +242,9 @@ private fun PreviewInspectTheme(
 
 private class InspectThemePreviewProvider :
   ThemedParameterProvider<InspectThemeState>(
-    InspectThemeState.NotFound(id = ThemeId("username/repo")),
-    InspectThemeState.Loading,
-    InspectThemeState.Loaded(LightTheme.id, false, LightTheme.properties()),
-    InspectThemeState.Loaded(DarkTheme.id, false, DarkTheme.properties()),
-    InspectThemeState.Loaded(MidnightTheme.id, true, MidnightTheme.properties()),
+    NotFound(id = ThemeId("username/repo")),
+    Loading,
+    Loaded(LightTheme.id, false, LightTheme.properties()),
+    Loaded(DarkTheme.id, false, DarkTheme.properties()),
+    Loaded(MidnightTheme.id, true, MidnightTheme.properties()),
   )

@@ -50,7 +50,7 @@ jobs:
     timeout-minutes: 5
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
-      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 'lts/*'
       - run: npm install -g renovate
@@ -93,7 +93,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           config: ./config/betterleaks.toml
           fail-on-leak: 'true'
-      - uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4
+      - uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4
         if: always()
         with:
           sarif_file: ${{ steps.betterleaks.outputs.sarif-path }}
@@ -170,7 +170,7 @@ jobs:
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew detektReportMergeSarif
-      - uses: github/codeql-action/upload-sarif@c10b8064de6f491fea524254123dbe5e09572f13 # v4
+      - uses: github/codeql-action/upload-sarif@95e58e9a2cdfd71adc6e0353d5c52f41a045d225 # v4
         if: ${{ !cancelled() }}
         with:
           sarif_file: build/reports/detekt/merge.sarif.json
@@ -188,7 +188,7 @@ jobs:
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew testAll koverHtmlReport koverVerify -Pkover
-      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         if: ${{ !cancelled() }}
         with:
           name: kover-report
@@ -206,7 +206,8 @@ jobs:
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew licensee androidManifestLock
+      - run: ./gradlew licensee androidManifestLock :aktual-core:l10n:catalog
+      - run: ./scripts/unusedStrings.sh
 
   atlas:
     needs: validation
@@ -265,7 +266,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: anthropics/claude-code-action@1eddb334cfa79fdb21ecbe2180ca1a016e8e7d47 # v1
+      - uses: anthropics/claude-code-action@b4d67413279fc18c6e5de930ae307c4f108714eb # v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed_bots: 'renovate'

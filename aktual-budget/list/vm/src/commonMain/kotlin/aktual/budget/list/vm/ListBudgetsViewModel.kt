@@ -2,13 +2,12 @@ package aktual.budget.list.vm
 
 import aktual.api.client.AktualApisStateHolder
 import aktual.api.model.sync.DeleteUserFileRequest
+import aktual.api.model.sync.UserFile
 import aktual.budget.list.vm.ListBudgetsState.Failure
 import aktual.budget.list.vm.ListBudgetsState.Loading
 import aktual.budget.list.vm.ListBudgetsState.Success
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
-import aktual.budget.model.database
-import aktual.budget.model.metadata
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.UrlOpener
@@ -16,6 +15,7 @@ import aktual.prefs.AppPreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.AppScope
@@ -35,19 +35,18 @@ import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import logcat.logcat
 
+@Stable
 @AssistedInject
 class ListBudgetsViewModel(
   @Assisted private val token: Token,
   private val preferences: AppPreferences,
   private val budgetListFetcher: BudgetListFetcher,
+  private val reconciler: BudgetReconciler,
   private val files: BudgetFiles,
   private val contexts: CoroutineContexts,
   private val apisStateHolder: AktualApisStateHolder,
@@ -63,28 +62,21 @@ class ListBudgetsViewModel(
   private val mutableDeletingState = MutableStateFlow<DeletingState>(DeletingState.Inactive)
   val deletingState: StateFlow<DeletingState> = mutableDeletingState.asStateFlow()
 
-  private val mutableLocalFileExists = MutableStateFlow(emptyMap<BudgetId, Boolean>())
-  val localFilesExist: StateFlow<Map<BudgetId, Boolean>> = mutableLocalFileExists.asStateFlow()
-
   private val mutableCloseDialog = MutableSharedFlow<Boolean>()
   val closeDialog: SharedFlow<Boolean> = mutableCloseDialog.asSharedFlow()
+
+  private var lastUserFiles: List<UserFile>? = null
 
   init {
     logcat.d { "init" }
     fetchState()
 
-    // Periodically check whether our files still exist
+    // Periodically re-reconcile so newly downloaded / deleted local files update the list
     viewModelScope.launch {
-      state
-        .filterIsInstance<Success>()
-        .map { state -> state.budgets.map { it.cloudFileId } }
-        .collectLatest { budgetIds ->
-          while (true) {
-            delay(500.milliseconds)
-            val existing = budgetIds.associateWith(::localFilesExist)
-            mutableLocalFileExists.update { existing }
-          }
-        }
+      while (true) {
+        delay(500.milliseconds)
+        applyReconcile(lastUserFiles)
+      }
     }
   }
 
@@ -142,6 +134,7 @@ class ListBudgetsViewModel(
         clearLastOpenedIfMatches(id)
         clearDeletingState()
         mutableCloseDialog.emit(true)
+        applyReconcile(lastUserFiles)
       }
     }
   }
@@ -161,11 +154,15 @@ class ListBudgetsViewModel(
       val newState =
         when (result) {
           is FetchBudgetsResult.Failure -> {
-            Failure(result.reason)
+            // Even on failure, surface anything we already have locally as Unknown/Local
+            val budgets = reconciler.reconcile(remote = null).toImmutableList()
+            lastUserFiles = null
+            if (budgets.isEmpty()) Failure(result.reason) else Success(budgets)
           }
 
           is FetchBudgetsResult.Success -> {
-            val budgets = result.budgets.toImmutableList()
+            lastUserFiles = result.userFiles
+            val budgets = reconciler.reconcile(result.userFiles).toImmutableList()
             preferences.mostRecentNumBudgets.set(budgets.size)
             Success(budgets)
           }
@@ -174,16 +171,19 @@ class ListBudgetsViewModel(
     }
   }
 
+  private suspend fun applyReconcile(userFiles: List<UserFile>?) {
+    if (mutableState.value !is Success) return
+    val budgets = reconciler.reconcile(userFiles).toImmutableList()
+    val current = mutableState.value
+    if (current is Success && current.budgets == budgets) return
+    mutableState.update { Success(budgets) }
+  }
+
   private suspend fun clearLastOpenedIfMatches(id: BudgetId) {
     if (preferences.lastOpenedBudgetId.get() == id) {
       preferences.lastOpenedBudgetId.delete()
     }
   }
-
-  private fun localFilesExist(id: BudgetId): Boolean =
-    with(files) {
-      listOf(database(id, mkdirs = false), metadata(id, mkdirs = false)).all(fileSystem::exists)
-    }
 
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey

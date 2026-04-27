@@ -156,6 +156,7 @@ dependencies {
   implementation(libs.metrox.viewmodel.compose)
   implementation(project(":aktual-about:ui"))
   implementation(project(":aktual-app:di"))
+  implementation(project(":aktual-app:nav:core"))
   implementation(project(":aktual-app:nav:ui"))
   implementation(project(":aktual-core:logging:impl"))
   implementation(project(":aktual-prefs"))
@@ -165,17 +166,22 @@ dependencies {
 val exportMinSdk by tasks.registering {
   group = "documentation"
   description = "Updates the API level badge in README.md"
-  val minSdk = android.defaultConfig.minSdk
-  val readmeFile = rootDir.resolve("README.md")
+  inputs.property("minSdk", android.defaultConfig.minSdk)
+  val readme = rootProject.layout.projectDirectory.file("README.md")
+  inputs.file(readme)
+  outputs.file(readme)
   doLast {
-    val originalContent = readmeFile.readText()
+    val minSdk = inputs.properties["minSdk"] as Int
+    val inputFile = inputs.files.singleFile
+    val outputFile = outputs.files.singleFile
+    val originalContent = inputFile.readText()
     val newContent =
       originalContent
         .replace("API-\\d+%2B".toRegex(), "API-$minSdk%2B")
         .replace("level=\\d+".toRegex(), "level=$minSdk")
-    readmeFile.writeText(newContent)
+    outputFile.writeText(newContent)
     if (originalContent != newContent) {
-      throw GradleException("Updated $readmeFile with minSdk=$minSdk - you need to commit it!")
+      throw GradleException("Updated $outputFile with minSdk=$minSdk - you need to commit it!")
     }
   }
 }

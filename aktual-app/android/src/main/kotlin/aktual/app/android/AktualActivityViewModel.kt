@@ -7,6 +7,7 @@ import aktual.app.nav.FormatConfigUseCase
 import aktual.app.nav.InitialRouteUseCase
 import aktual.app.nav.NavGraph
 import aktual.app.nav.RootViewModel
+import aktual.budget.di.BudgetGraphHolder
 import aktual.core.theme.ThemeResolver
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.AppScope
@@ -24,6 +25,7 @@ class AktualActivityViewModel(
   blurConfigUseCase: BlurConfigUseCase,
   initialRouteUseCase: InitialRouteUseCase,
   bottomBarStateUseCase: BottomBarStateUseCase,
+  budgetGraphHolder: BudgetGraphHolder,
 ) :
   RootViewModel(
     themeResolver = themeResolver,
@@ -33,4 +35,5 @@ class AktualActivityViewModel(
     blurConfigUseCase = blurConfigUseCase,
     initialRouteUseCase = initialRouteUseCase,
     bottomBarStateUseCase = bottomBarStateUseCase,
+    budgetGraphHolder = budgetGraphHolder,
   )

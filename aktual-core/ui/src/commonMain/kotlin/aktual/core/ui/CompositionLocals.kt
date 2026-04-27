@@ -7,17 +7,20 @@ import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.NumberFormat
 import aktual.budget.model.NumberFormatConfig
-import alakazam.compose.VerticalSpacer
+import aktual.core.theme.BottomBarThemeAttrs
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
+import androidx.compose.runtime.staticCompositionLocalOf
+import androidx.compose.ui.geometry.Rect
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.datetime.LocalDate
@@ -25,7 +28,37 @@ import kotlinx.datetime.format.DateTimeFormat
 
 val LocalPrivacyEnabled = compositionLocalOf { false }
 
-val LocalBottomStatusBarHeight = compositionLocalOf { 0.dp }
+internal val DefaultBottomBarThemeAttrs =
+  BottomBarThemeAttrs(
+    shouldBlurOnRootLevel = true,
+    background = { cardBackground },
+    foreground = { pageText },
+  )
+
+@Stable
+class BottomBarThemeAttrsStack {
+  private val overrides = mutableStateListOf<BottomBarThemeAttrs>()
+
+  val current: BottomBarThemeAttrs by derivedStateOf {
+    overrides.lastOrNull() ?: DefaultBottomBarThemeAttrs
+  }
+
+  fun push(attrs: BottomBarThemeAttrs) {
+    overrides.add(attrs)
+  }
+
+  fun pop(attrs: BottomBarThemeAttrs) {
+    // remove from the top so nested push/pop pairs stay LIFO even when the same attrs
+    // instance is pushed multiple times
+    val index = overrides.lastIndexOf(attrs)
+    if (index >= 0) overrides.removeAt(index)
+  }
+}
+
+val LocalBottomBarThemeAttrs =
+  staticCompositionLocalOf<BottomBarThemeAttrsStack> {
+    error("No BottomBarThemeAttrsStack value provided")
+  }
 
 val LocalDateFormatter =
   compositionLocalOf<DateTimeFormat<LocalDate>> { error("No LocalDateFormat value provided") }
@@ -52,6 +85,10 @@ class DialogBlurState {
 
   val isActive: Boolean
     get() = activeDialogCount > 0
+
+  // Bounds (in root coordinates) that should be punched out of the blur overlay.
+  // Keyed by an identity token so multiple simultaneous anchors don't collide.
+  internal val excludedFromBlur = mutableStateMapOf<Any, Rect>()
 }
 
 @Composable
@@ -67,13 +104,14 @@ fun WithCompositionLocals(
   isPrivacyEnabled: Boolean = false,
   format: NumberFormat = NumberFormat.Default,
   hideFraction: Boolean = false,
-  currency: Currency = Currency.None,
-  currencyPosition: CurrencySymbolPosition = CurrencySymbolPosition.BeforeAmount,
+  currency: Currency = Currency.Default,
+  currencyPosition: CurrencySymbolPosition = CurrencySymbolPosition.Default,
   addCurrencySpace: Boolean = true,
   dateFormat: DateFormat = DateFormat.Default,
   hazeState: HazeState = rememberHazeState(),
   blurConfig: BlurConfig = remember { BlurConfig() },
   dialogBlurState: DialogBlurState = remember { DialogBlurState() },
+  bottomBarThemeAttrs: BottomBarThemeAttrsStack = remember { BottomBarThemeAttrsStack() },
   content: @Composable () -> Unit,
 ) {
   CompositionLocalProvider(
@@ -84,9 +122,7 @@ fun WithCompositionLocals(
     LocalHazeState provides hazeState,
     LocalBlurConfig provides blurConfig,
     LocalDialogBlurState provides dialogBlurState,
+    LocalBottomBarThemeAttrs provides bottomBarThemeAttrs,
     content = content,
   )
 }
-
-@Composable
-fun BottomStatusBarSpacing(height: Dp = LocalBottomStatusBarHeight.current) = VerticalSpacer(height)

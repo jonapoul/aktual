@@ -1,93 +1,33 @@
 # aktual-prefs
 
-Preferences and settings, split into `vm` (ViewModel/state) and `ui` (Compose UI).
+Preferences and settings, split into `vm` (state) and `ui` (Compose).
 
-## Adding a New Setting
+## Adding a new setting
 
-### 1. Add the preference
+1. **Declare it.** Pick the right interface in `aktual-prefs/src/.../` — `AppPreferences`, `CurrencyPreferences`, `FormatPreferences`, `SystemUiPreferences`, or `ThemePreferences` — and add `val myPref: Preference<T>`. Implement in the matching `*PreferencesImpl.kt` using `dataStore.boolean/float/int/string/translated(...).required()`.
 
-Choose the appropriate interface in `aktual-prefs/` based on the preference's domain:
-- `AppPreferences` — core app prefs (token, serverUrl, privacy)
-- `CurrencyPreferences` — currency display (currency, symbol position, spacing)
-- `FormatPreferences` — data formatting (number format, date format, first day of week, hide fraction)
-- `SystemUiPreferences` — UI chrome (bottom bar visibility, blur settings)
-- `ThemePreferences` — theme selection (system default toggle, night theme, constant theme)
+1. **Feed a config (if needed).** If the pref contributes to a config object (e.g. `BlurConfig`, `FormatConfig`), update the corresponding use case in `aktual-app/nav/ui/.../UseCases.kt`.
 
-**Interface:** `aktual-prefs/src/.../[Chosen]Preferences.kt`
-```kotlin
-val myNewPref: Preference<Boolean>
-```
+1. **Add to state.** In `aktual-prefs/vm/.../SettingsScreenState.kt` add a field to the relevant `*ConfigState` using the appropriate wrapper:
+   - `BooleanPreference` — toggle
+   - `SliderPreference` — float slider (wrap in a factory for range; see `BlurRadiusPreference`)
+   - `ListPreference<T>` — enum dropdown
 
-**Implementation:** `aktual-prefs/impl/src/.../[Chosen]PreferencesImpl.kt`
-```kotlin
-override val myNewPref: Preference<Boolean> =
-  dataStore.boolean(key = booleanPreferencesKey("myNewPref"), default = true).required()
-```
+1. **Collect in the VM.** In `SettingsViewModel.kt`'s relevant `*State()` composable:
+   ```kotlin
+   val myPref by preferences.myPref.collectAsStateFlow()
+   // ... myPref = BooleanPreference(value = myPref, onChange = { preferences.myPref.launchAndSet(it) })
+   ```
 
-Supported types: `boolean`, `float`, `int`, `string`, or `translated` (for enums).
+1. **Add the string.** In `aktual-core/l10n/src/commonMain/composeResources/values/strings-settings.xml`, then `./gradlew :aktual-core:l10n:catalog`. Access via `Strings.settingsSectionMyPref` (snake_case → camelCase).
 
-### 2. Wire into the use case (if needed)
+1. **Add the UI.** In the matching group under `aktual-prefs/ui/.../root/`, use `BooleanPreferenceItem` / `SliderPreferenceItem` / `ListPreferenceItem`.
 
-If the preference feeds a config object (e.g., `BlurConfig`, `FormatConfig`), update the corresponding use case in `aktual-app/nav/ui/.../UseCases.kt` to collect and include the new field.
+1. **Fix previews** that construct state objects directly.
 
-### 3. Add to screen state
+## Adding a new section
 
-**State class:** `aktual-prefs/vm/.../SettingsScreenState.kt` — add a field to the appropriate `*ConfigState` data class (e.g., `SystemUiConfigState`).
-
-Use the appropriate wrapper type:
-- `BooleanPreference` — toggle switch
-- `SliderPreference` — float slider (wrap with a factory function for range, see `BlurRadiusPreference`)
-- `ListPreference<T>` — dropdown/list picker for enums
-
-### 4. Collect in ViewModel
-
-**ViewModel:** `aktual-prefs/vm/.../SettingsViewModel.kt` — in the relevant `*State()` composable method:
-```kotlin
-val myNewPref by preferences.myNewPref.collectAsStateFlow()
-// ...add to returned state object:
-myNewPref = BooleanPreference(
-  value = myNewPref,
-  onChange = { preferences.myNewPref.launchAndSet(it) },
-),
-```
-
-### 5. Add localization string
-
-**XML:** `aktual-core/l10n/src/commonMain/composeResources/values/strings-settings.xml`
-```xml
-<string name="settings_section_my_new_pref">My new preference</string>
-```
-
-**Regenerate:** `./gradlew :aktual-core:l10n:catalog`
-
-Access via `Strings.settingsSectionMyNewPref` (XML `snake_case` → Kotlin `camelCase`).
-
-### 6. Add UI item
-
-**Group composable:** `aktual-prefs/ui/.../root/` — add to the appropriate group file (e.g., `SystemUiGroup.kt`):
-```kotlin
-BooleanPreferenceItem(
-  preference = state.myNewPref,
-  title = Strings.settingsSectionMyNewPref,
-  subtitle = null,
-  icon = MaterialIcons.SomeIcon,
-  includeBackground = false,
-)
-```
-
-Available UI components:
-- `BooleanPreferenceItem` — switch toggle
-- `SliderPreferenceItem` — slider with value label
-- `ListPreferenceItem` — dropdown list
-
-### 7. Fix previews
-
-Update any preview composables (e.g., in `SettingsScreen.kt`) that construct state objects directly — add the new field with a default value.
-
-## Adding a New Section
-
-1. Create a new `*ConfigState` data class in `SettingsScreenState.kt`
-2. Add it to `SettingsScreenState`
-3. Add a `@Composable` state builder method in `SettingsViewModel`
-4. Create a new `*Group.kt` composable in `aktual-prefs/ui/.../root/` using `PreferenceGroup`
-5. Add `item { NewGroup(state.newSection) }` to the `LazyColumn` in `SettingsScreen.kt`
+1. New `*ConfigState` in `SettingsScreenState.kt`, add to `SettingsScreenState`.
+1. New `@Composable` state builder in `SettingsViewModel`.
+1. New `*Group.kt` under `aktual-prefs/ui/.../root/` using `PreferenceGroup`.
+1. `item { NewGroup(state.newSection) }` in the `LazyColumn` of `SettingsScreen.kt`.

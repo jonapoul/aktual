@@ -174,6 +174,7 @@ internal val ShadesOfCoffeeTheme =
         noticeTextLight = Color(0xFF27AB83),
         noticeTextDark = Color(0xFF014D40),
         noticeTextMenu = Color(0xFF8EEDC7),
+        noticeTextMenuHover = Color(0xFF8EEDC7),
         noticeBorder = Color(0xFF27AB83),
         warningBackground = Color(0xFFffe066),
         warningText = Color(0xFFb88115),
@@ -261,5 +262,17 @@ internal val ShadesOfCoffeeTheme =
         tooltipBackground = Color(0xFFffffff),
         tooltipBorder = Color(0xFFd9e2ec),
         overlayBackground = Color(0x4D000000),
+      ),
+    chartQual =
+      ChartQualColors(
+        chartQual1 = Color(color = 0xFF45B29D),
+        chartQual2 = Color(color = 0xFFEFC94C),
+        chartQual3 = Color(color = 0xFFE27A3F),
+        chartQual4 = Color(color = 0xFFDF5A49),
+        chartQual5 = Color(color = 0xFF5F91B8),
+        chartQual6 = Color(color = 0xFFE2A37F),
+        chartQual7 = Color(color = 0xFF55DBC1),
+        chartQual8 = Color(color = 0xFFEFDA97),
+        chartQual9 = Color(color = 0xFFDF948A),
       ),
   )

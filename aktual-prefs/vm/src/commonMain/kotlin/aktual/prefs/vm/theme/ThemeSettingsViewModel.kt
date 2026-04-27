@@ -1,19 +1,14 @@
 package aktual.prefs.vm.theme
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.CustomThemeCache
-import aktual.core.theme.CustomThemeSummary
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.MidnightTheme
-import aktual.core.theme.ThemeApi
-import aktual.core.theme.ThemeMode
-import aktual.core.theme.toId
 import aktual.prefs.ThemePreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
-import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -25,51 +20,16 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.collections.immutable.toImmutableList
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import logcat.logcat
 
+@Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class ThemeSettingsViewModel(
-  private val preferences: ThemePreferences,
-  private val themeApi: ThemeApi,
-  private val cache: CustomThemeCache,
-) : ViewModel() {
+class ThemeSettingsViewModel(private val preferences: ThemePreferences) : ViewModel() {
   private val useSystemDefault = preferences.useSystemDefault.asStateFlow(viewModelScope)
   private val nightTheme = preferences.nightTheme.asStateFlow(viewModelScope)
   private val constantTheme = preferences.constantTheme.asStateFlow(viewModelScope)
-
-  private sealed interface LoadState {
-    data object Loading : LoadState
-
-    data class Failed(val reason: String) : LoadState
-
-    data class Loaded(
-      val summaries: List<CustomThemeSummary>,
-      val states: Map<ThemeId, CustomThemeState>,
-    ) : LoadState
-  }
-
-  private val mutableEvents =
-    MutableSharedFlow<ThemeSettingsEvent>(
-      replay = 0,
-      extraBufferCapacity = 1,
-      onBufferOverflow = BufferOverflow.DROP_OLDEST,
-    )
-  val events: SharedFlow<ThemeSettingsEvent> = mutableEvents
-
-  private val mutableLoadState = MutableStateFlow<LoadState>(LoadState.Loading)
-  private val mutableModeFilter = MutableStateFlow(ThemeModeFilter.All)
 
   val state: StateFlow<ThemeSettingsState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -84,53 +44,6 @@ class ThemeSettingsViewModel(
       )
     }
 
-  val catalogState: StateFlow<CatalogState> =
-    viewModelScope.launchMolecule(Immediate) {
-      val loadState by mutableLoadState.collectAsState()
-      when (val s = loadState) {
-        is LoadState.Loading -> {
-          CatalogState.Loading
-        }
-
-        is LoadState.Failed -> {
-          CatalogState.Failed(s.reason)
-        }
-
-        is LoadState.Loaded -> {
-          val selected by constantTheme.collectAsState()
-          val modeFilter by mutableModeFilter.collectAsState()
-          CatalogState.Success(
-            themes =
-              s.summaries
-                .asSequence()
-                .sortedBy { it.name }
-                .filter { summary -> byThemeMode(modeFilter, summary) }
-                .map { summary -> toCustomThemeItem(summary, selected, s) }
-                .toImmutableList(),
-            modeFilter = modeFilter,
-          )
-        }
-      }
-    }
-
-  init {
-    retry()
-  }
-
-  fun retry() {
-    viewModelScope.launch { fetchCatalogThenThemes() }
-  }
-
-  fun clearCache() {
-    viewModelScope.launch {
-      cache.clear()
-      fetchCatalogThenThemes()
-      if (mutableLoadState.value is LoadState.Loaded) {
-        mutableEvents.tryEmit(ThemeSettingsEvent.CacheRefreshed)
-      }
-    }
-  }
-
   fun select(id: ThemeId) {
     viewModelScope.launch { preferences.constantTheme.set(id) }
   }
@@ -141,10 +54,6 @@ class ThemeSettingsViewModel(
 
   fun setDarkTheme(value: ThemeId) {
     viewModelScope.launch { preferences.nightTheme.set(value) }
-  }
-
-  fun setModeFilter(filter: ThemeModeFilter) {
-    mutableModeFilter.update { filter }
   }
 
   @Composable
@@ -159,77 +68,5 @@ class ThemeSettingsViewModel(
         options = persistentListOf(DarkTheme.id, MidnightTheme.id),
         enabled = enabled,
       )
-    }
-
-  private fun toCustomThemeItem(
-    summary: CustomThemeSummary,
-    selected: ThemeId?,
-    state: LoadState.Loaded,
-  ): CatalogItem {
-    val themeId = summary.repo.toId()
-    return CatalogItem(
-      id = themeId,
-      summary = summary,
-      isSelected = selected == themeId,
-      state = state.states[themeId] ?: CustomThemeState.Fetching,
-    )
-  }
-
-  private suspend fun fetchCatalogThenThemes() {
-    mutableLoadState.update { LoadState.Loading }
-    try {
-      val summaries =
-        cache.summaries().ifEmpty {
-          val fetched = themeApi.fetchCatalog()
-          cache.save(fetched)
-          fetched
-        }
-
-      val initialFetchStates = summaries.associate { it.repo.toId() to CustomThemeState.Fetching }
-      mutableLoadState.update { LoadState.Loaded(summaries, initialFetchStates) }
-
-      summaries.map { summary -> viewModelScope.async { fetchTheme(summary) } }.awaitAll()
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.e(e) { "Failed fetching theme catalog" }
-      mutableLoadState.update { LoadState.Failed(e.requireMessage()) }
-    }
-  }
-
-  private suspend fun fetchTheme(summary: CustomThemeSummary) {
-    val themeId = summary.repo.toId()
-    try {
-      val cached = cache.theme(summary.repo)
-      if (cached != null) {
-        updateFetchState(themeId, CustomThemeState.Cached)
-      } else {
-        val theme = themeApi.fetchTheme(summary)
-        cache.save(theme)
-        updateFetchState(themeId, CustomThemeState.Cached)
-      }
-    } catch (e: CancellationException) {
-      throw e
-    } catch (e: Exception) {
-      logcat.e(e) { "Failed fetching theme ${summary.repo}" }
-      updateFetchState(themeId, CustomThemeState.Failed(e.requireMessage()))
-    }
-  }
-
-  private fun updateFetchState(themeId: ThemeId, fetchState: CustomThemeState) {
-    mutableLoadState.update { current ->
-      if (current is LoadState.Loaded) {
-        current.copy(states = current.states + (themeId to fetchState))
-      } else {
-        current
-      }
-    }
-  }
-
-  private fun byThemeMode(modeFilter: ThemeModeFilter, summary: CustomThemeSummary): Boolean =
-    when (modeFilter) {
-      ThemeModeFilter.All -> true
-      ThemeModeFilter.Light -> summary.mode == ThemeMode.Light
-      ThemeModeFilter.Dark -> summary.mode == ThemeMode.Dark
     }
 }

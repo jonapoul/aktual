@@ -4,23 +4,22 @@ package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
-import aktual.budget.model.ConditionOptions
+import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.Field
-import aktual.budget.model.Operator
+import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.RecurEndMode
 import aktual.budget.model.RecurFrequency
 import aktual.budget.model.RecurPattern
 import aktual.budget.model.RecurType
 import aktual.budget.model.RuleAction
-import aktual.budget.model.RuleAction.AppendNotes
-import aktual.budget.model.RuleAction.DeleteTransaction
-import aktual.budget.model.RuleAction.LinkSchedule
-import aktual.budget.model.RuleAction.PrependNotes
-import aktual.budget.model.RuleAction.Set as SetAction
-import aktual.budget.model.RuleAction.SetSplitAmount
 import aktual.budget.model.RuleStage
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.WeekendSolveMode
+import aktual.budget.model.isIdField
+import aktual.budget.rules.ui.LocalNameFetcher
+import aktual.budget.rules.ui.displayString
+import aktual.budget.rules.ui.string
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.ui.AktualTypography
@@ -199,8 +198,8 @@ internal fun rememberConditionText(
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
 internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): AnnotatedString {
   val opText = action.opString()
-  val fieldText = (action as? SetAction)?.field?.string(options = null)
-  val setToText = if (action is SetAction) Strings.rulesActionSetTo else null
+  val fieldText = action.field?.string(options = null)
+  val setToText = if (action.op == RuleAction.Op.Set) Strings.rulesActionSetTo else null
 
   val dateFormat = LocalDateFormatter.current
   val numberFormat = LocalNumberFormatConfig.current
@@ -210,10 +209,24 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
   val nameFetcher = LocalNameFetcher.current
   val fieldNameFlow =
     remember(nameFetcher, action) {
-      when (action) {
-        is SetAction -> nameFetcher.name(action.field, action.value)
-        is LinkSchedule -> nameFetcher.name(action.value)
-        else -> flowOf("")
+      val value = action.value
+      when (action.op) {
+        RuleAction.Op.Set -> {
+          val field = action.field
+          if (field.isIdField() && value != null) {
+            nameFetcher.name(field, value.content)
+          } else {
+            flowOf(null)
+          }
+        }
+
+        RuleAction.Op.LinkSchedule -> {
+          value?.let { nameFetcher.name(ScheduleId(it.content)) } ?: flowOf(null)
+        }
+
+        else -> {
+          flowOf(null)
+        }
       }
     }
 
@@ -232,56 +245,56 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
     privacy,
   ) {
     buildAnnotatedString {
-      when (action) {
-        is AppendNotes -> {
+      val content = action.value?.content.orEmpty()
+      when (action.op) {
+        RuleAction.Op.AppendNotes -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
           }
-          withStyle(styles.highlighted) { append(action.value) }
+          withStyle(styles.highlighted) { append(content) }
         }
-        is DeleteTransaction -> {
+        RuleAction.Op.DeleteTransaction -> {
           withStyle(styles.default) { append(opText) }
         }
-        is LinkSchedule -> {
+        RuleAction.Op.LinkSchedule -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
           }
           withStyle(styles.highlighted) { append(fieldName) }
         }
-        is PrependNotes -> {
+        RuleAction.Op.PrependNotes -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
           }
-          withStyle(styles.highlighted) { append(action.value) }
+          withStyle(styles.highlighted) { append(content) }
         }
-        is SetAction -> {
+        RuleAction.Op.Set -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
           }
           withStyle(styles.highlighted) { append(fieldText) }
           withStyle(styles.default) { append(setToText) }
-          withStyle(styles.highlighted) { append(fieldName) }
+          withStyle(styles.highlighted) {
+            if (action.field == Field.Amount) {
+              append(formatAmount(action, numberFormat, currency, privacy))
+            } else if (fieldName != null) {
+              append(fieldName)
+            } else {
+              append(content)
+            }
+          }
         }
-        is SetSplitAmount -> {
+        RuleAction.Op.SetSplitAmount -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
           }
           withStyle(styles.highlighted) {
-            append(
-              action.value
-                ?.let(::Amount)
-                ?.toString(
-                  numberFormatConfig = numberFormat,
-                  currencyConfig = currency,
-                  includeSign = true,
-                  isPrivacyEnabled = privacy,
-                )
-            )
+            append(formatAmount(action, numberFormat, currency, privacy))
           }
         }
       }
@@ -289,63 +302,29 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
   }
 }
 
+private fun formatAmount(
+  action: RuleAction,
+  numberFormat: NumberFormatConfig,
+  currency: CurrencyConfig,
+  privacy: Boolean,
+): String =
+  Amount(action.value?.content?.toInt() ?: 0)
+    .toString(
+      numberFormatConfig = numberFormat,
+      currencyConfig = currency,
+      includeSign = true,
+      isPrivacyEnabled = privacy,
+    )
+
 @Composable
 private fun RuleAction.opString(): String =
-  when (this) {
-    is AppendNotes -> Strings.rulesOpAppendNotes
-    is DeleteTransaction -> Strings.rulesOpDeleteTransaction
-    is LinkSchedule -> Strings.rulesOpLinkSchedule
-    is PrependNotes -> Strings.rulesOpPrependNotes
-    is SetAction -> Strings.rulesOpSet
-    is SetSplitAmount -> Strings.rulesOpSetSplitAmount
-  }
-
-@Composable
-private fun Operator.displayString(): String =
-  when (this) {
-    Operator.Contains -> Strings.rulesOperatorContains
-    Operator.DoesNotContain -> Strings.rulesOperatorDoesNotContain
-    Operator.GreaterThan -> Strings.rulesOperatorGreaterThan
-    Operator.GreaterThanOrEquals -> Strings.rulesOperatorGreaterThanOrEquals
-    Operator.HasTags -> Strings.rulesOperatorHasTags
-    Operator.Is -> Strings.rulesOperatorIs
-    Operator.IsApprox -> Strings.rulesOperatorIsApprox
-    Operator.IsBetween -> Strings.rulesOperatorIsBetween
-    Operator.IsNot -> Strings.rulesOperatorIsNot
-    Operator.LessThan -> Strings.rulesOperatorLessThan
-    Operator.LessThanOrEquals -> Strings.rulesOperatorLessThanOrEquals
-    Operator.Matches -> Strings.rulesOperatorMatches
-    Operator.NotOneOf -> Strings.rulesOperatorNotOneOf
-    Operator.OffBudget -> Strings.rulesOperatorOffBudget
-    Operator.OnBudget -> Strings.rulesOperatorOnBudget
-    Operator.OneOf -> Strings.rulesOperatorOneOf
-  }
-
-@Composable
-private fun Field.string(options: ConditionOptions?): String =
-  when (this) {
-    Field.Account,
-    Field.Acct -> Strings.rulesFieldAccount
-    Field.Amount ->
-      when {
-        options?.inflow == true -> Strings.rulesFieldAmountInflow
-        options?.outflow == true -> Strings.rulesFieldAmountOutflow
-        else -> Strings.rulesFieldAmount
-      }
-    Field.Category -> Strings.rulesFieldCategory
-    Field.CategoryGroup -> Strings.rulesFieldCategoryGroup
-    Field.Date -> Strings.rulesFieldDate
-    Field.Notes -> Strings.rulesFieldNotes
-    Field.Description,
-    Field.Payee -> Strings.rulesFieldPayee
-    Field.PayeeName -> Strings.rulesFieldPayeeName
-    Field.ImportedDescription,
-    Field.ImportedPayee -> Strings.rulesFieldImportedPayee
-    Field.Saved -> Strings.rulesFieldSaved
-    Field.Transfer -> Strings.rulesFieldTransfer
-    Field.Parent -> Strings.rulesFieldParent
-    Field.Cleared -> Strings.rulesFieldCleared
-    Field.Reconciled -> Strings.rulesFieldReconciled
+  when (op) {
+    RuleAction.Op.AppendNotes -> Strings.rulesOpAppendNotes
+    RuleAction.Op.DeleteTransaction -> Strings.rulesOpDeleteTransaction
+    RuleAction.Op.LinkSchedule -> Strings.rulesOpLinkSchedule
+    RuleAction.Op.PrependNotes -> Strings.rulesOpPrependNotes
+    RuleAction.Op.Set -> Strings.rulesOpSet
+    RuleAction.Op.SetSplitAmount -> Strings.rulesOpSetSplitAmount
   }
 
 // From getRecurringDescription in packages/loot-core/src/shared/schedules.ts

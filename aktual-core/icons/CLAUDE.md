@@ -1,15 +1,15 @@
 # aktual-core:icons
 
-Custom and Material icon definitions for Aktual, stored as `ImageVector` properties.
+Icon definitions as `ImageVector` properties, split into two families:
 
-## Two icon families
+- **`AktualIcons`** (package `aktual.core.icons`) — custom SVG icons. Built with `aktualIcon()` + `aktualPath {}`; typical size 20f or 24f.
+- **`MaterialIcons`** (package `aktual.core.icons.material`) — Material Design icons. Built with `materialIcon()` + `materialPath {}`; 24dp, or 960-unit viewport for Material Symbols.
 
-- **`AktualIcons`** — custom SVG icons (non-Material). Package: `aktual.core.icons`. Use `aktualIcon()` + `aktualPath {}`. Size is typically 20f or 24f.
-- **`MaterialIcons`** — Material Design icons. Package: `aktual.core.icons.material`. Use `materialIcon()` + `materialPath {}`. Fixed 24dp, or 960-unit viewport for Material Symbols.
+Prefer the `/add-svg-icon` and `/add-material-icon` skills — they handle SVG → `ImageVector` conversion. The notes below are for when you need to do it by hand.
 
-## File patterns
+## File shape
 
-### AktualIcons (package `aktual.core.icons`)
+Each icon is its own file. Example — for `AktualIcons`:
 
 ```kotlin
 @file:Suppress("BooleanLiteralArgument", "UnusedReceiverParameter")
@@ -21,76 +21,21 @@ import aktual.core.icons.internal.aktualPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
 val AktualIcons.FooBar: ImageVector by lazy {
-  aktualIcon(name = "FooBar", size = 20f) {
-    aktualPath {
-      // path commands
-    }
-  }
+  aktualIcon(name = "FooBar", size = 20f) { aktualPath { /* path */ } }
 }
 ```
 
-### MaterialIcons (package `aktual.core.icons.material`)
-
-```kotlin
-@file:Suppress("UnusedReceiverParameter") // don't omit this
-
-package aktual.core.icons.material
-
-import aktual.core.icons.material.internal.materialIcon
-import aktual.core.icons.material.internal.materialPath
-import androidx.compose.ui.graphics.vector.ImageVector
-
-val MaterialIcons.FooBar: ImageVector by lazy {
-  materialIcon(name = "FooBar") {          // adds "Material." prefix
-    materialPath {
-      // path commands
-    }
-  }
-}
-```
+`MaterialIcons` is identical modulo package (`aktual.core.icons.material`) and helpers (`materialIcon`/`materialPath`). `materialIcon(name = "...")` automatically prefixes `"Material."`.
 
 ## Coordinate systems
 
-There are two coordinate systems in use:
+- **Standard Material (24×24)**: `viewBox="0 0 24 24"`, use `materialIcon(name = "...")`.
+- **Material Symbols (960×960)**: `viewBox="0 -960 960 960"` (y runs from -960 top to 0 bottom). Use `materialIcon(name = "...", viewportSize = 960f)`. Convert absolute y: `y_kotlin = y_svg + 960` (e.g. SVG `M480-120` → `moveTo(480f, 840f)`). Relative offsets are unchanged.
 
-### Standard Material Icons (24×24)
-- `viewBox="0 0 24 24"`, coordinates in [0, 24]
-- Use `materialIcon(name = "...")` with no extra args
-- Source: https://android.googlesource.com/platform//frameworks/support/+/1de65587b7e999a38df120bd8827c3594974864d/compose/material
+## SVG path → Compose path
 
-### Material Symbols (960×960)
-- `viewBox="0 -960 960 960"` — y-axis ranges from -960 (top) to 0 (bottom)
-- Use `materialIcon(name = "...", viewportSize = 960f)`
-- **Y conversion**: `y_kotlin = y_svg + 960` for absolute coordinates; relative offsets are unchanged
-- Example: SVG `M480-120` → `moveTo(480f, 840f)` (840 = -120 + 960)
-- Source: https://fonts.google.com/icons (download SVG, read viewBox to confirm)
+`M`→`moveTo`, `L`→`lineTo`, `l`→`lineToRelative`, `C`→`curveTo`, `c`→`curveToRelative`, `H`→`horizontalLineTo`, `h`→`horizontalLineToRelative`, `V`→`verticalLineTo`, `v`→`verticalLineToRelative`, `Z`→`close`.
 
-## SVG Path Conversion Reference
+## Wiring up a new icon
 
-- `M x y` → `moveTo(x.0f, y.0f)`
-- `L x y` → `lineTo(x.0f, y.0f)`
-- `l x y` → `lineToRelative(x.0f, y.0f)`
-- `C x1 y1 x2 y2 x y` → `curveTo(x1.0f, y1.0f, x2.0f, y2.0f, x.0f, y.0f)`
-- `c x1 y1 x2 y2 x y` → `curveToRelative(x1.0f, y1.0f, x2.0f, y2.0f, x.0f, y.0f)`
-- `H x` → `horizontalLineTo(x.0f)`
-- `h x` → `horizontalLineToRelative(x.0f)`
-- `V y` → `verticalLineTo(y.0f)`
-- `v y` → `verticalLineToRelative(y.0f)`
-- `Z` → `close()`
-
-## Adding a new icon
-
-**AktualIcons:** Create `IconName.kt` in `aktual/core/icons/`, add to `aktualIcons` list in `IconPreviews.kt`.
-
-**MaterialIcons:** Create `IconName.kt` in `aktual/core/icons/material/`, add to `materialIcons` list in `MaterialIconPreviews.kt`.
-
-Add icons in alphabetical order within the list.
-
-## Preview files
-
-| File                    | Icon family     | List variable  |
-|-------------------------|-----------------|----------------|
-| `IconPreviews.kt`       | `AktualIcons`   | `aktualIcons`  |
-| `material/MaterialIconPreviews.kt` | `MaterialIcons` | `materialIcons` |
-
-The `@PreviewParameter` provider uses `getDisplayName` to label each icon by name in the Android Studio preview panel, so all icons in a family appear in one parameterized preview.
+Create the file in the family's package, then append to the alphabetically-sorted list in the matching preview file (`IconPreviews.kt` → `aktualIcons`, or `material/MaterialIconPreviews.kt` → `materialIcons`). The `@PreviewParameter` renders the whole list in Android Studio.

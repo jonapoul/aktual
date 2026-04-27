@@ -7,9 +7,11 @@ import aktual.account.vm.LoginViewModel
 import aktual.account.vm.ServerUrlViewModel
 import aktual.budget.di.BudgetGraph
 import aktual.budget.list.vm.ListBudgetsViewModel
+import aktual.budget.model.RuleId
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
-import aktual.budget.rules.vm.ListRulesViewModel
+import aktual.budget.rules.vm.edit.EditRuleViewModel
+import aktual.budget.rules.vm.list.ListRulesViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.theme.DarkTheme
@@ -17,6 +19,7 @@ import aktual.metrics.vm.MetricsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.root.SettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
+import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import androidx.lifecycle.ViewModel
 import app.cash.burst.InterceptTest
 import assertk.assertThat
@@ -56,6 +59,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   protected abstract fun optionallySkip()
 
   @Test fun about() = testVm<AboutViewModel>()
+
+  @Test fun customThemeSettings() = testVm<CustomThemeSettingsViewModel>()
 
   @Test fun licenses() = testVm<LicensesViewModel>()
 
@@ -100,6 +105,10 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test
   fun inspectTheme() =
     testAssistedVM<InspectThemeViewModel, InspectThemeViewModel.Factory> { create(DarkTheme.id) }
+
+  @Test
+  fun editRule() =
+    testAssistedVM<EditRuleViewModel, EditRuleViewModel.Factory> { create(RuleId("abc-123")) }
 
   protected inline fun <reified VM : ViewModel> testVm() {
     assertThat(appGraph.viewModelProviders[VM::class])

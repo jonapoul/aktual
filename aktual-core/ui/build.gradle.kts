@@ -12,10 +12,10 @@ kotlin {
     api(libs.compose.material3WindowSize)
     api(libs.haze)
     api(libs.kotlinx.datetime)
+    api(libs.shimmer)
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:icons"))
     api(project(":aktual-core:model"))
-    api(project(":aktual-core:shimmer"))
     api(project(":aktual-core:theme"))
     implementation(project(":aktual-core:l10n"))
   }

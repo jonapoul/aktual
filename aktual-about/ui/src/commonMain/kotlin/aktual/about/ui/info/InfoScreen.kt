@@ -16,8 +16,7 @@ import aktual.core.model.AktualVersions
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.LandscapePreview
@@ -26,7 +25,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
-import aktual.core.ui.disabled
+import aktual.core.ui.WavyBackground
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.core.ui.verticalScrollWithBar
@@ -37,6 +36,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -56,7 +56,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -124,12 +123,15 @@ internal fun InfoScaffold(
 ) {
   val theme = LocalTheme.current
   Scaffold(modifier = modifier, topBar = { InfoTopBar(theme, onAction) }) { innerPadding ->
-    InfoScreenContent(
-      modifier = Modifier.padding(innerPadding),
-      buildState = buildState,
-      onAction = onAction,
-      theme = theme,
-    )
+    Box {
+      WavyBackground()
+      InfoScreenContent(
+        modifier = Modifier.padding(innerPadding),
+        buildState = buildState,
+        onAction = onAction,
+        theme = theme,
+      )
+    }
   }
 }
 
@@ -164,8 +166,7 @@ private fun InfoScreenContent(
       InfoBuildState(buildState, theme, contentModifier)
       InfoButtons(onAction, contentModifier)
 
-      BottomStatusBarSpacing()
-      BottomNavBarSpacing()
+      BottomSpacing()
     }
   }
 
@@ -175,8 +176,8 @@ private fun InfoHeader(year: Int, theme: Theme, modifier: Modifier = Modifier) {
     modifier =
       modifier
         .fillMaxWidth()
-        .background(theme.pillBackground.disabled, CardShape)
-        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
+        .background(theme.tableBackground, CardShape)
+        .border(Dp.Hairline, theme.tableBorder, CardShape)
         .padding(horizontal = 20.dp, vertical = 10.dp),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
@@ -212,8 +213,8 @@ private fun InfoBuildState(buildState: BuildState, theme: Theme, modifier: Modif
   Column(
     modifier =
       modifier
-        .background(theme.pillBackground.disabled, CardShape)
-        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
+        .background(theme.tableBackground, CardShape)
+        .border(Dp.Hairline, theme.tableBorder, CardShape)
   ) {
     BuildStateItem(
       modifier = Modifier.padding(ItemMargin).clip(CardShape),
@@ -255,7 +256,6 @@ private fun BuildStateItem(
       modifier
         .fillMaxWidth()
         .height(ItemHeight)
-        .background(Color.Transparent, CardShape)
         .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
         .padding(horizontal = ItemPadding),
     verticalAlignment = Alignment.CenterVertically,

@@ -22,7 +22,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TRACKER_FILE="$SCRIPT_DIR/last-known-migration.txt"
 UPSTREAM_REPO="https://github.com/actualbudget/actual.git"
 MIGRATIONS_PATH="packages/loot-core/migrations"
-PR_LABEL="db-migration"
+PR_LABEL="upstream-changes"
 PR_BRANCH="auto/upstream-migrations"
 
 DRY_RUN="${DRY_RUN:-}"
@@ -110,6 +110,7 @@ git config user.email "jpoulton@pm.me"
 existing_pr="$(gh pr list \
   --repo "$GITHUB_REPOSITORY" \
   --label "$PR_LABEL" \
+  --head "$PR_BRANCH" \
   --state open \
   --limit 1 \
   --json number,body \

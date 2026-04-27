@@ -15,7 +15,7 @@ class BudgetGraphHolder(private val budgetGraphBuilder: BudgetGraph.Builder) :
     get() = super.value
     set(value) {
       val previous = super.value
-      previous?.driver?.close()
+      previous?.close()
       super.value = value
     }
 
@@ -36,7 +36,7 @@ class BudgetGraphHolder(private val budgetGraphBuilder: BudgetGraph.Builder) :
   override fun compareAndSet(expect: BudgetGraph?, update: BudgetGraph?): Boolean {
     val previous = value
     val successfullySet = super.compareAndSet(expect, update)
-    if (successfullySet) previous?.driver?.close()
+    if (successfullySet) previous?.close()
     return successfullySet
   }
 }

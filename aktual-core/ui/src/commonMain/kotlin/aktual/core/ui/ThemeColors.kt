@@ -10,8 +10,6 @@ import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MenuItemColors
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.RadioButtonDefaults
-import androidx.compose.material3.SegmentedButtonColors
-import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SliderColors
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SwitchColors
@@ -47,6 +45,7 @@ fun Theme.transparentTopAppBarColors(): TopAppBarColors =
     titleContentColor = pageText,
   )
 
+@Stable
 fun Theme.dropDownMenuItem(): MenuItemColors =
   MenuItemColors(
     textColor = menuItemText,
@@ -157,23 +156,6 @@ fun Theme.bareIconButton(isPressed: Boolean): IconButtonColors =
     disabledContainerColor = buttonBareDisabledBackground,
     contentColor = if (isPressed) buttonBareTextHover else buttonBareText,
     disabledContentColor = buttonBareDisabledText,
-  )
-
-@Composable
-fun Theme.segmentedButton(): SegmentedButtonColors =
-  SegmentedButtonDefaults.colors(
-    activeContainerColor = checkboxToggleBackgroundSelected,
-    activeContentColor = checkboxText,
-    activeBorderColor = checkboxText,
-    inactiveContainerColor = checkboxToggleBackground,
-    inactiveContentColor = checkboxText.disabled,
-    inactiveBorderColor = checkboxText.disabled,
-    disabledActiveContainerColor = checkboxToggleBackgroundSelected.disabled,
-    disabledActiveContentColor = checkboxText.disabled,
-    disabledActiveBorderColor = Color.Transparent,
-    disabledInactiveContainerColor = checkboxToggleBackground.disabled,
-    disabledInactiveContentColor = checkboxText.disabled,
-    disabledInactiveBorderColor = Color.Transparent,
   )
 
 @Composable

@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.Dp
 @Composable
 fun PrimaryIconButton(
   imageVector: ImageVector,
-  contentDescription: String,
+  contentDescription: String?,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   size: Dp? = null,
@@ -56,11 +56,11 @@ fun PrimaryIconButton(
 @Composable
 fun NormalIconButton(
   imageVector: ImageVector,
-  contentDescription: String,
+  contentDescription: String?,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   size: Dp? = null,
-  enabled: Boolean = true,
+  isEnabled: Boolean = true,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   colors: IconButtonColorProvider = IconButtonColorProvider.Normal,
@@ -75,7 +75,7 @@ fun NormalIconButton(
     colors = colors,
     modifier = modifier,
     size = size,
-    enabled = enabled,
+    enabled = isEnabled,
     shape = shape,
     interactionSource = interactionSource,
     content = content,
@@ -85,7 +85,7 @@ fun NormalIconButton(
 @Composable
 fun BareIconButton(
   imageVector: ImageVector,
-  contentDescription: String,
+  contentDescription: String?,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
   size: Dp? = null,
@@ -114,7 +114,7 @@ fun BareIconButton(
 @Composable
 fun BasicIconButton(
   imageVector: ImageVector,
-  contentDescription: String,
+  contentDescription: String?,
   onClick: () -> Unit,
   colors: IconButtonColorProvider,
   modifier: Modifier = Modifier,
@@ -177,7 +177,7 @@ fun NavBackIconButton(onClick: () -> Unit) {
 @Composable
 private fun DefaultIconButtonContent(
   imageVector: ImageVector,
-  contentDescription: String,
+  contentDescription: String?,
   size: Dp? = null,
 ) {
   Icon(

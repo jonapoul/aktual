@@ -3,8 +3,7 @@ package aktual.budget.list.ui
 import aktual.budget.model.Budget
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
@@ -12,6 +11,7 @@ import aktual.core.ui.ThemeParameters
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
@@ -30,12 +30,14 @@ internal fun ContentSuccess(
   onClickOpen: (Budget) -> Unit,
   onClickDelete: (Budget) -> Unit,
   modifier: Modifier = Modifier,
+  contentPadding: PaddingValues = PaddingValues(),
   listState: LazyListState = rememberLazyListState(),
   theme: Theme = LocalTheme.current,
 ) {
   LazyColumn(
     modifier = modifier.scrollbar(listState),
     state = listState,
+    contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     items(budgets) { budget ->
@@ -47,10 +49,7 @@ internal fun ContentSuccess(
       )
     }
 
-    item {
-      BottomStatusBarSpacing()
-      BottomNavBarSpacing()
-    }
+    item { BottomSpacing() }
   }
 }
 

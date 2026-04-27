@@ -1,7 +1,6 @@
 package aktual.budget.list.ui
 
 import aktual.budget.model.Budget
-import aktual.budget.model.BudgetState
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Key
 import aktual.core.icons.material.DeleteForever
@@ -98,7 +97,7 @@ internal fun BudgetListItem(
     ) {
       if (budget.encryptKeyId != null) {
         Icon(
-          modifier = Modifier.padding(10.dp).size(13.dp),
+          modifier = Modifier.size(13.dp),
           imageVector = AktualIcons.Key,
           contentDescription = description,
           tint = if (budget.hasKey) theme.formLabelText else theme.buttonNormalDisabledText,
@@ -144,10 +143,10 @@ private fun DeleteMenu(expanded: Boolean, onDismiss: () -> Unit, onClickDelete: 
 @Composable
 private fun budgetDescription(budget: Budget) =
   when {
-    budget.state == BudgetState.Unknown -> Strings.listBudgetsOffline
+    budget is Budget.Unknown -> Strings.listBudgetsOffline
+    budget.encryptKeyId == null -> Strings.listBudgetsUnencrypted
     budget.hasKey -> Strings.listBudgetsEncryptedWithKey
-    budget.encryptKeyId != null -> Strings.listBudgetsEncryptedWithoutKey
-    else -> Strings.listBudgetsUnencrypted
+    else -> Strings.listBudgetsEncryptedWithoutKey
   }
 
 @Preview
@@ -170,5 +169,5 @@ private class BudgetListItemProvider :
   ThemedParameterProvider<BudgetListItemParams>(
     BudgetListItemParams(PreviewBudgetSynced),
     BudgetListItemParams(PreviewBudgetSynced, width = 300.dp),
-    BudgetListItemParams(PreviewBudgetSynced.copy(state = BudgetState.Broken, encryptKeyId = null)),
+    BudgetListItemParams(PreviewBudgetBroken),
   )

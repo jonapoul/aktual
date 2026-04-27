@@ -1,25 +1,29 @@
 package aktual.budget.rules.ui.list
 
-import aktual.app.nav.BackNavigator
+import aktual.app.nav.EditRuleNavigator
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
-import aktual.budget.rules.vm.CheckboxesState
-import aktual.budget.rules.vm.CheckboxesState.Active
-import aktual.budget.rules.vm.CheckboxesState.Inactive
-import aktual.budget.rules.vm.ListRulesState
-import aktual.budget.rules.vm.ListRulesState.Empty
-import aktual.budget.rules.vm.ListRulesState.Failure
-import aktual.budget.rules.vm.ListRulesState.Loading
-import aktual.budget.rules.vm.ListRulesState.Success
-import aktual.budget.rules.vm.ListRulesViewModel
-import aktual.budget.rules.vm.RuleListItem
+import aktual.budget.rules.ui.LocalNameFetcher
+import aktual.budget.rules.ui.PreviewRule1
+import aktual.budget.rules.ui.PreviewRule2
+import aktual.budget.rules.vm.Rule
+import aktual.budget.rules.vm.list.CheckboxesState
+import aktual.budget.rules.vm.list.CheckboxesState.Active
+import aktual.budget.rules.vm.list.CheckboxesState.Inactive
+import aktual.budget.rules.vm.list.ListRulesState
+import aktual.budget.rules.vm.list.ListRulesState.Empty
+import aktual.budget.rules.vm.list.ListRulesState.Failure
+import aktual.budget.rules.vm.list.ListRulesState.Loading
+import aktual.budget.rules.vm.list.ListRulesState.Success
+import aktual.budget.rules.vm.list.ListRulesViewModel
 import aktual.core.icons.AktualIcons
-import aktual.core.icons.ChevronDown
 import aktual.core.icons.ChevronUp
+import aktual.core.icons.material.Add
 import aktual.core.icons.material.ClearAll
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Deselect
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.SelectAll
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
@@ -28,10 +32,10 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredTopBarSpacing
-import aktual.core.ui.BottomNavBarSpacing
-import aktual.core.ui.BottomStatusBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
+import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
@@ -45,6 +49,7 @@ import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
@@ -54,7 +59,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -77,6 +81,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -92,7 +97,7 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ListRulesScreen(
-  @Suppress("unused") back: BackNavigator, // TODO
+  editRule: EditRuleNavigator,
   modifier: Modifier = Modifier,
   viewModel: ListRulesViewModel = metroViewModel(),
 ) {
@@ -107,10 +112,10 @@ fun ListRulesScreen(
       onAction = { action ->
         when (action) {
           Reload -> viewModel.reload()
+          CreateNew -> editRule()
           is Delete -> viewModel.delete(action.id)
           is DeleteMultiple -> viewModel.delete(action.ids)
-          is Open -> TODO()
-          is Edit -> TODO()
+          is Edit -> editRule(action.id)
           is OpenUrl -> TODO()
           is Check -> viewModel.check(action.id)
           is Uncheck -> viewModel.uncheck(action.id)
@@ -163,8 +168,7 @@ private fun ListRulesScaffold(
 }
 
 @Composable
-@Suppress("UnusedReceiverParameter")
-private fun RowScope.AppBarButtons(
+private fun AppBarButtons(
   state: ListRulesState,
   checkboxes: CheckboxesState,
   onAction: (ListRulesAction) -> Unit,
@@ -207,29 +211,45 @@ private fun ListRulesContent(
     when (state) {
       is Loading -> {
         Column(verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
-          repeat(times = 10) { ShimmerRuleListItem(checkboxes) }
+          repeat(times = 10) { ShimmerListRulesItem(checkboxes) }
         }
       }
 
       is Failure -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          FailureScreen(
-            modifier = Modifier.background(theme.tableBackground, CardShape),
-            title = Strings.rulesFailurePrefix,
-            reason = state.cause ?: Strings.rulesFailureDefaultMessage,
-            onClickRetry = { onAction(Reload) },
-            retryText = Strings.syncRetry,
-          )
+          Column {
+            FailureScreen(
+              modifier = Modifier.background(theme.tableBackground, CardShape),
+              title = Strings.rulesFailurePrefix,
+              reason = state.cause ?: Strings.rulesFailureDefaultMessage,
+              action =
+                FailureAction(
+                  text = { Strings.syncRetry },
+                  icon = MaterialIcons.Refresh,
+                  onClick = { onAction(Reload) },
+                ),
+            )
+            BottomSpacing()
+          }
         }
       }
 
       is Empty -> {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Text(
-            modifier = Modifier.background(theme.tableBackground, CardShape).padding(40.dp),
-            text = Strings.rulesSuccessEmpty,
-            color = theme.warningText,
-          )
+          Column {
+            FailureScreen(
+              modifier = Modifier.background(theme.tableBackground, CardShape),
+              title = Strings.rulesEmpty,
+              reason = null,
+              action =
+                FailureAction(
+                  text = { Strings.rulesEmptyCreate },
+                  icon = MaterialIcons.Add,
+                  onClick = { onAction(CreateNew) },
+                ),
+            )
+            BottomSpacing()
+          }
         }
       }
 
@@ -243,8 +263,7 @@ private fun ListRulesContent(
       }
     }
 
-    BottomStatusBarSpacing()
-    BottomNavBarSpacing()
+    BottomSpacing()
   }
 }
 
@@ -265,14 +284,14 @@ private fun CheckboxSelectionBar(
     Text(modifier = Modifier.weight(1f), text = Plurals.rulesCheckboxCounter(count, count))
 
     NormalIconButton(
-      enabled = count > 0,
+      isEnabled = count > 0,
       imageVector = MaterialIcons.ClearAll,
       contentDescription = Strings.rulesCheckboxClear,
       onClick = { onAction(UncheckAll) },
     )
 
     NormalIconButton(
-      enabled = count > 0,
+      isEnabled = count > 0,
       imageVector = MaterialIcons.Delete,
       contentDescription = Strings.rulesCheckboxDelete,
       colors = NormalRed,
@@ -283,13 +302,13 @@ private fun CheckboxSelectionBar(
 
 @Composable
 private fun ContentSuccess(
-  rules: ImmutableList<RuleListItem>,
+  rules: ImmutableList<Rule>,
   checkboxes: CheckboxesState,
   onAction: (ListRulesAction) -> Unit,
   modifier: Modifier = Modifier,
   listState: LazyListState = rememberLazyListState(),
 ) {
-  val stagedRules: ImmutableList<Pair<RuleStage, ImmutableList<RuleListItem>>> =
+  val stagedRules: ImmutableList<Pair<RuleStage, ImmutableList<Rule>>> =
     remember(rules) {
       // always show all stages, even if no rules
       val grouped = rules.groupBy { it.stage }
@@ -323,6 +342,8 @@ private fun ContentSuccess(
           items(r) { rule -> ListRulesItem(rule, checkboxes, onAction) }
         }
       }
+
+      item { BottomSpacing() }
     }
 
     AnimatedVisibility(
@@ -347,7 +368,7 @@ private fun StageHeader(
   expandedStages: SnapshotStateMap<RuleStage, Boolean>,
   stage: RuleStage,
   isExpanded: Boolean,
-  rules: ImmutableList<RuleListItem>,
+  rules: ImmutableList<Rule>,
   theme: Theme = LocalTheme.current,
 ) {
   Row(
@@ -374,9 +395,10 @@ private fun StageHeader(
       color = theme.pillText,
     )
 
+    val rotation by animateFloatAsState(if (isExpanded) 0f else 180f)
     Icon(
-      modifier = Modifier.minimumInteractiveComponentSize(),
-      imageVector = if (isExpanded) AktualIcons.ChevronUp else AktualIcons.ChevronDown,
+      modifier = Modifier.minimumInteractiveComponentSize().rotate(rotation),
+      imageVector = AktualIcons.ChevronUp,
       contentDescription = "",
     )
   }
@@ -399,8 +421,8 @@ private data class ListRulesStateParams(
 private class ListRulesStateProvider :
   ThemedParameterProvider<ListRulesStateParams>(
     ListRulesStateParams(
-      Success(persistentListOf(PreviewRuleListItem1, PreviewRuleListItem2)),
-      checkboxes = Active(persistentSetOf(PreviewRuleListItem1.id)),
+      Success(persistentListOf(PreviewRule1, PreviewRule2)),
+      checkboxes = Active(persistentSetOf(PreviewRule1.id)),
     ),
     ListRulesStateParams(Loading),
     ListRulesStateParams(Empty),

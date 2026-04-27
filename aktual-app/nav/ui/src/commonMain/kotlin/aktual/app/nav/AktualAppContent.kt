@@ -2,12 +2,13 @@ package aktual.app.nav
 
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.BottomBarState
-import aktual.core.ui.BottomNavBarSpacing
+import aktual.core.ui.BottomSpacing
 import aktual.core.ui.DialogBlurOverlay
-import aktual.core.ui.DialogBlurState
-import aktual.core.ui.LocalBottomStatusBarHeight
+import aktual.core.ui.LocalBottomBarThemeAttrs
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.WithCompositionLocals
-import aktual.core.ui.blurred
+import aktual.core.ui.blurredBottomBar
+import aktual.nav.core.rememberAppCloser
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +25,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -34,23 +34,25 @@ import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 
 @Composable
-fun rememberBackStack(viewModel: RootViewModel): SnapshotStateList<NavKey>? {
+fun rememberBackStack(viewModel: RootViewModel): AktualNavStack<NavKey>? {
   // don't collectAsStateWithLifecycle, we don't have a lifecycle yet (on desktop)
   val initialRoute by viewModel.initialRoute.collectAsState()
   val route = initialRoute ?: return null
-  return remember(viewModel) { viewModel.getOrCreateBackStack(route) }
+  val closer = rememberAppCloser()
+  val stack = remember(viewModel) { viewModel.getOrCreateBackStack(route) }
+  return remember { AktualNavStack(closer, stack) }
 }
 
 @Composable
 fun AktualAppContent(
   viewModel: RootViewModel,
-  backStack: SnapshotStateList<NavKey>,
+  navStack: AktualNavStack<NavKey>,
   modifier: Modifier = Modifier,
 ) {
   LaunchedEffect(viewModel) {
     viewModel.tokenExpired.collect {
-      backStack.clear()
-      backStack.add(LoginNavRoute)
+      navStack.clear()
+      navStack.add(LoginNavRoute)
     }
   }
 
@@ -74,35 +76,39 @@ fun AktualAppContent(
     dateFormat = formatConfig.dateFormat,
     hazeState = hazeState,
     blurConfig = blurConfig,
-    dialogBlurState = remember { DialogBlurState() },
   ) {
     AktualTheme(theme) {
       Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
         var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
 
-        CompositionLocalProvider(LocalBottomStatusBarHeight provides bottomStatusBarHeight) {
+        CompositionLocalProvider(LocalBottomSpacing provides bottomStatusBarHeight) {
           AktualNavHost(
             modifier =
               Modifier.fillMaxSize()
                 .consumeWindowInsets(WindowInsets.navigationBars)
                 .hazeSource(hazeState),
-            backStack = backStack,
+            navStack = navStack,
             contributors = viewModel.navEntryContributors,
           )
         }
 
         DialogBlurOverlay()
 
-        Column(modifier = Modifier.blurred(orElse = { pageBackground })) {
+        val attrs = LocalBottomBarThemeAttrs.current.current
+        val bottomModifier =
+          if (attrs.shouldBlurOnRootLevel) Modifier.blurredBottomBar(attrs) else Modifier
+        Column(modifier = bottomModifier) {
           val bbs = bottomBarState
           if (bbs is BottomBarState.Visible) {
             BottomStatusBar(
               modifier = Modifier.wrapContentHeight(),
               state = bbs,
+              attrs = attrs,
               onMeasureHeight = { bottomStatusBarHeight = it },
+              onClickSync = { viewModel.startSync() },
             )
           }
-          BottomNavBarSpacing()
+          BottomSpacing()
         }
       }
     }
