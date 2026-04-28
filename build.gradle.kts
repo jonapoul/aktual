@@ -37,8 +37,8 @@ plugins {
   id("aktual.convention.idea")
 }
 
-val detektReportMergeSarif by
-  tasks.registering(ReportMergeTask::class) {
+val detektReportMergeSarif =
+  tasks.register("detektReportMergeSarif", ReportMergeTask::class) {
     output = layout.buildDirectory.file("reports/detekt/merge.sarif.json")
   }
 

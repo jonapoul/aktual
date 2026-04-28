@@ -115,8 +115,8 @@ nucleus {
   }
 }
 
-val copyLicenseeReportToResources by
-  tasks.registering(Copy::class) {
+val copyLicenseeReportToResources =
+  tasks.register("copyLicenseeReportToResources", Copy::class) {
     from(tasks.licensee.map { it.jsonOutput })
     into("src/main/resources")
     rename { LICENSEE_REPORT_ASSET_NAME }
