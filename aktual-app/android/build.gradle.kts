@@ -163,7 +163,7 @@ dependencies {
   implementation(libs.haze)
 }
 
-val exportMinSdk by tasks.registering {
+val exportMinSdk = tasks.register("exportMinSdk") {
   group = "documentation"
   description = "Updates the API level badge in README.md"
   inputs.property("minSdk", android.defaultConfig.minSdk)
