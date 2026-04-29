@@ -1,3 +1,5 @@
+import dev.detekt.gradle.Detekt
+
 plugins {
   `kotlin-dsl`
   alias(libs.plugins.detekt)
@@ -14,6 +16,14 @@ detekt {
   source.from("**.kts", "**.kt")
   buildUponDefaultConfig = true
 }
+
+val detektCheck =
+  tasks.register("detektCheck") {
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
+    dependsOn(tasks.withType(Detekt::class))
+  }
+
+tasks.check.configure { dependsOn(detektCheck) }
 
 dependencies {
   fun compileOnlyPlugin(plugin: Provider<PluginDependency>) =
@@ -33,6 +43,8 @@ dependencies {
   compileOnlyPlugin(libs.plugins.kotlin.serialization)
   compileOnlyPlugin(libs.plugins.licensee)
   compileOnlyPlugin(libs.plugins.metro)
+
+  detektPlugins(libs.detektGradle)
 }
 
 tasks.validatePlugins {

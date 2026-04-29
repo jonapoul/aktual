@@ -43,6 +43,7 @@ class ConventionDetekt : Plugin<Project> {
       val detektReportMergeSarif =
         rootProject.tasks.named("detektReportMergeSarif", ReportMergeTask::class)
 
+      @Suppress("NoNameShadowing")
       detektReportMergeSarif.configure {
         input.from(detektTasks.map { it.reports.sarif.outputLocation })
       }
