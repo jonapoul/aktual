@@ -2,6 +2,7 @@ package aktual.gradle
 
 import app.cash.licensee.LicenseeExtension
 import app.cash.licensee.LicenseePlugin
+import app.cash.licensee.SpdxId
 import app.cash.licensee.UnusedAction.IGNORE
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -14,13 +15,11 @@ class ConventionLicensee : Plugin<Project> {
       pluginManager.apply(LicenseePlugin::class)
 
       extensions.configure<LicenseeExtension> {
-        allow("Apache-2.0")
-        allow("MIT")
-        allow("BSD-2-Clause") // hamcrest
-        allow("BSD-3-Clause") // androidx.datastore:datastore-preferences-external-protobuf
-        allow("EPL-1.0") // junit
-
-        allowUrl("https://opensource.org/license/mit") // slf4j
+        allow(SpdxId.Apache_20)
+        allow(SpdxId.MIT)
+        allow(SpdxId.BSD_2_Clause) // hamcrest
+        allow(SpdxId.BSD_3_Clause) // androidx.datastore:datastore-preferences-external-protobuf
+        allow(SpdxId.EPL_10) // junit
 
         unusedAction(IGNORE)
       }
