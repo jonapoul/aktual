@@ -6,6 +6,8 @@ Guidance for Claude Code when working in this repo.
 
 Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal budgeting software](https://github.com/actualbudget/actual), targeting Android and Desktop (JVM). Pet project, unaffiliated with upstream.
 
+Upstream API reference: `symlinks/actual/packages/docs/docs/api/reference.md`
+
 ## General
 
 - **IMPORTANT**: After any architectural/structural change, grep `**/CLAUDE.md` for references that need updating (scopes, annotations, module paths, DI patterns). Don't wait to be asked.
