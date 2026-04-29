@@ -5,6 +5,7 @@ androidx-activity = "1.13.0"
 androidx-datastore = "1.2.1"
 androidx-lifecycle = "2.10.0"
 androidx-paging = "3.4.2"
+blueprint = "2.2.0-SNAPSHOT"
 burst = "2.12.2"
 composeAndroidx = "1.11.0"
 compose = "1.11.0-beta03"
@@ -69,6 +70,7 @@ compose-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "c
 compose-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version = "2.10.0" }
 compose-viewmodelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0" }
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.8" }
+detektGradle = { module = "dev.jonpoulton.blueprint:detekt-rules", version.ref = "blueprint" }
 haze = { module = "dev.chrisbanes.haze:haze", version = "1.7.2" }
 junit = { module = "junit:junit", version = "4.13.2" }
 kermit = { module = "co.touchlab:kermit", version = "2.1.0" }
@@ -116,7 +118,7 @@ agp-app = { id = "com.android.application", version.ref = "agp" }
 agp-kmp = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 androidCacheFix = { id = "org.gradle.android.cache-fix", version = "3.0.3" }
 atlas = { id = "dev.jonpoulton.atlas.graphviz", version = "0.4.0" }
-blueprint = { id = "dev.jonpoulton.blueprint", version = "2.1.0" }
+blueprint = { id = "dev.jonpoulton.blueprint", version.ref = "blueprint" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.9" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.5.1" }
