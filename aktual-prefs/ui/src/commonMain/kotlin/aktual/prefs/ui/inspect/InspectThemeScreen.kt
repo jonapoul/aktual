@@ -14,7 +14,6 @@ import aktual.core.theme.Theme
 import aktual.core.theme.isLight
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -161,19 +160,18 @@ private fun InspectThemeContent(
     }
 
     is NotFound -> {
-      Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        FailureScreen(
-          modifier = Modifier.background(theme.tableBackground, CardShape),
-          title = Strings.settingsThemeInspectNotFound,
-          reason = Strings.settingsThemeInspectNotFoundReason(state.id.value),
-          action =
-            FailureAction(
-              text = { Strings.settingsThemeInspectRetry },
-              onClick = { onAction(Retry) },
-              icon = MaterialIcons.Refresh,
-            ),
-        )
-      }
+      FailureScreen(
+        modifier = modifier,
+        title = Strings.settingsThemeInspectNotFound,
+        reason = Strings.settingsThemeInspectNotFoundReason(state.id.value),
+        background = theme.tableBackground,
+        action =
+          FailureAction(
+            text = { Strings.settingsThemeInspectRetry },
+            onClick = { onAction(Retry) },
+            icon = MaterialIcons.Refresh,
+          ),
+      )
     }
 
     is Loaded -> {

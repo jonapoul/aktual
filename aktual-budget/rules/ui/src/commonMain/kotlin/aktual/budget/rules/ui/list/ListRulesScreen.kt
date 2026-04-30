@@ -216,41 +216,31 @@ private fun ListRulesContent(
       }
 
       is Failure -> {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Column {
-            FailureScreen(
-              modifier = Modifier.background(theme.tableBackground, CardShape),
-              title = Strings.rulesFailurePrefix,
-              reason = state.cause ?: Strings.rulesFailureDefaultMessage,
-              action =
-                FailureAction(
-                  text = { Strings.syncRetry },
-                  icon = MaterialIcons.Refresh,
-                  onClick = { onAction(Reload) },
-                ),
-            )
-            BottomSpacing()
-          }
-        }
+        FailureScreen(
+          title = Strings.rulesFailurePrefix,
+          reason = state.cause ?: Strings.rulesFailureDefaultMessage,
+          background = theme.tableBackground,
+          action =
+            FailureAction(
+              text = { Strings.syncRetry },
+              icon = MaterialIcons.Refresh,
+              onClick = { onAction(Reload) },
+            ),
+        )
       }
 
       is Empty -> {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-          Column {
-            FailureScreen(
-              modifier = Modifier.background(theme.tableBackground, CardShape),
-              title = Strings.rulesEmpty,
-              reason = null,
-              action =
-                FailureAction(
-                  text = { Strings.rulesEmptyCreate },
-                  icon = MaterialIcons.Add,
-                  onClick = { onAction(CreateNew) },
-                ),
-            )
-            BottomSpacing()
-          }
-        }
+        FailureScreen(
+          title = Strings.rulesEmpty,
+          reason = null,
+          background = theme.tableBackground,
+          action =
+            FailureAction(
+              text = { Strings.rulesEmptyCreate },
+              icon = MaterialIcons.Add,
+              onClick = { onAction(CreateNew) },
+            ),
+        )
       }
 
       is Success -> {

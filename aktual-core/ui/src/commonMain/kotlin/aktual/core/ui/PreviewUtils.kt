@@ -6,7 +6,6 @@ import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
 import aktual.core.theme.MidnightTheme
 import aktual.core.theme.Theme
-import androidx.compose.foundation.background
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -99,7 +98,7 @@ fun PreviewWithTheme(
 ) =
   WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
     AktualTheme(theme) {
-      Surface(modifier = modifier.background(theme.pageBackground), content = content)
+      Surface(modifier = modifier, color = theme.pageBackground, content = content)
     }
   }
 
@@ -112,7 +111,7 @@ fun <T> PreviewWithThemedParams(
 ) {
   WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
     AktualTheme(params.theme) {
-      Surface(modifier = modifier.background(params.theme.pageBackground)) {
+      Surface(modifier = modifier, color = params.theme.pageBackground) {
         with(params.data) { content() }
       }
     }
