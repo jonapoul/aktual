@@ -35,8 +35,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import dev.chrisbanes.haze.HazeState
-import dev.chrisbanes.haze.HazeStyle
-import dev.chrisbanes.haze.HazeTint
+import dev.chrisbanes.haze.blur.HazeBlurStyle
+import dev.chrisbanes.haze.blur.HazeColorEffect
+import dev.chrisbanes.haze.blur.blurEffect
 import dev.chrisbanes.haze.hazeEffect
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
@@ -45,21 +46,21 @@ import dev.chrisbanes.haze.rememberHazeState
 fun Modifier.blurredBottomBar(
   attrs: BottomBarThemeAttrs = LocalBottomBarThemeAttrs.current.current,
   state: HazeState = LocalHazeState.current,
+  config: BlurConfig = LocalBlurConfig.current,
+  theme: Theme = LocalTheme.current,
 ): Modifier {
-  val config = LocalBlurConfig.current
-  val theme = LocalTheme.current
   val color = attrs.background(theme)
 
   return if (config.blurAppBars) {
-    val style =
+    val blurStyle =
       remember(config, theme, color) {
-        HazeStyle(
+        HazeBlurStyle(
           blurRadius = config.blurRadius,
           backgroundColor = color,
-          tint = HazeTint(color.copy(alpha = config.blurAlpha)),
+          colorEffect = HazeColorEffect.tint(color.copy(alpha = config.blurAlpha)),
         )
       }
-    hazeEffect(state, style)
+    hazeEffect(state) { blurEffect { style = blurStyle } }
   } else {
     // when blur is off, fall back to a flat fill with the same color, so the bar still matches
     // what the blurred variant would have shown
@@ -83,10 +84,12 @@ fun rememberBlurredTopBarState(): BlurredTopBarState {
 
 /** Variant that animates between transparent and blurred based on [isScrolled]. */
 @Composable
-fun Modifier.blurredTopBar(state: BlurredTopBarState, isScrolled: Boolean): Modifier {
-  val config = LocalBlurConfig.current
-  val theme = LocalTheme.current
-
+fun Modifier.blurredTopBar(
+  state: BlurredTopBarState,
+  isScrolled: Boolean,
+  config: BlurConfig = LocalBlurConfig.current,
+  theme: Theme = LocalTheme.current,
+): Modifier {
   if (!state.blurEnabled) return this
 
   val progress by
@@ -97,8 +100,8 @@ fun Modifier.blurredTopBar(state: BlurredTopBarState, isScrolled: Boolean): Modi
 
   if (progress == 0f) return this
 
-  val style = rememberAnimatedHazeStyle(config, theme, progress)
-  return hazeEffect(state.hazeState, style)
+  val blurStyle = rememberAnimatedHazeStyle(config, theme, progress)
+  return hazeEffect(state.hazeState) { blurEffect { style = blurStyle } }
 }
 
 @Composable
@@ -166,14 +169,14 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
   }
 
   if (progress > 0f) {
-    val style = rememberAnimatedHazeStyle(blurConfig, theme, progress)
+    val blurStyle = rememberAnimatedHazeStyle(blurConfig, theme, progress)
     val excluded = dialogBlurState.excludedFromBlur
     Box(
       modifier =
         modifier
           .fillMaxSize()
           .then(if (excluded.isEmpty()) Modifier else Modifier.clip(HoledShape(excluded.values)))
-          .hazeEffect(hazeState, style)
+          .hazeEffect(hazeState) { blurEffect { style = blurStyle } }
     )
   }
 }
@@ -205,12 +208,12 @@ private fun rememberAnimatedHazeStyle(
   progress: Float,
   backgroundAlpha: Float = progress,
   tintAlpha: Float = config.blurAlpha * progress,
-): HazeStyle =
+): HazeBlurStyle =
   remember(config, theme, progress, backgroundAlpha, tintAlpha) {
-    HazeStyle(
+    HazeBlurStyle(
       blurRadius = config.blurRadius * progress,
       backgroundColor = theme.cardBackground.copy(alpha = backgroundAlpha),
-      tint = HazeTint(theme.cardBackground.copy(alpha = tintAlpha)),
+      colorEffect = HazeColorEffect.tint(theme.cardBackground.copy(alpha = tintAlpha)),
     )
   }
 
