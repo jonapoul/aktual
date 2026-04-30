@@ -26,7 +26,6 @@ import aktual.core.ui.AktualTooltip
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
-import aktual.core.ui.Dimens
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
@@ -253,14 +252,12 @@ private fun EditRuleContent(
 ) {
   when (state) {
     is Failure -> {
-      Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-        FailureScreen(
-          modifier = Modifier.padding(Dimens.Huge).background(theme.tableBackground, CardShape),
-          title = Strings.editRuleFailedTitle,
-          reason = state.reason,
-          action = null,
-        )
-      }
+      FailureScreen(
+        title = Strings.editRuleFailedTitle,
+        reason = state.reason,
+        background = theme.tableBackground,
+        action = null,
+      )
     }
 
     Loading -> {

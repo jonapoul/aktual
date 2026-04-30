@@ -22,7 +22,6 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -41,7 +40,6 @@ import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.textField
 import aktual.core.ui.transparentTopAppBarColors
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -229,14 +227,13 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun NoneFoundContent(theme: Theme, modifier: Modifier = Modifier) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    FailureScreen(
-      modifier = Modifier.padding(Dimens.Huge).background(theme.tableBackground, CardShape),
-      title = Strings.licensesError,
-      reason = Strings.licensesNoneFound,
-      action = null,
-    )
-  }
+  FailureScreen(
+    modifier = modifier,
+    title = Strings.licensesError,
+    reason = Strings.licensesNoneFound,
+    background = theme.tableBackground,
+    action = null,
+  )
 }
 
 @Composable
@@ -273,19 +270,18 @@ private fun ErrorContent(
   onAction: (LicensesAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    FailureScreen(
-      modifier = Modifier.padding(Dimens.Huge).background(theme.tableBackground, CardShape),
-      title = Strings.licensesError,
-      reason = Strings.licensesFailed(errorMessage),
-      action =
-        FailureAction(
-          text = { Strings.licensesFailedRetry },
-          onClick = { onAction(LicensesAction.Reload) },
-          icon = MaterialIcons.Refresh,
-        ),
-    )
-  }
+  FailureScreen(
+    modifier = modifier,
+    title = Strings.licensesError,
+    reason = Strings.licensesFailed(errorMessage),
+    background = theme.tableBackground,
+    action =
+      FailureAction(
+        text = { Strings.licensesFailedRetry },
+        onClick = { onAction(LicensesAction.Reload) },
+        icon = MaterialIcons.Refresh,
+      ),
+  )
 }
 
 @PortraitPreview

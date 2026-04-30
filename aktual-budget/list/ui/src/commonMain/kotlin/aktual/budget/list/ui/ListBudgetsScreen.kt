@@ -29,7 +29,6 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.CardShape
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
@@ -40,7 +39,6 @@ import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.transparentTopAppBarColors
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -229,19 +227,17 @@ private fun StateContent(
         }
 
         is ListBudgetsState.Failure -> {
-          Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            FailureScreen(
-              modifier = Modifier.background(theme.tableBackground, CardShape),
-              title = Strings.budgetFailureMessage,
-              reason = state.reason ?: Strings.budgetFailureDefaultMessage,
-              action =
-                FailureAction(
-                  text = { Strings.budgetFailureRetry },
-                  onClick = { onAction(Reload) },
-                  icon = MaterialIcons.Refresh,
-                ),
-            )
-          }
+          FailureScreen(
+            title = Strings.budgetFailureMessage,
+            reason = state.reason ?: Strings.budgetFailureDefaultMessage,
+            background = theme.tableBackground,
+            action =
+              FailureAction(
+                text = { Strings.budgetFailureRetry },
+                onClick = { onAction(Reload) },
+                icon = MaterialIcons.Refresh,
+              ),
+          )
         }
 
         is ListBudgetsState.Success -> {
