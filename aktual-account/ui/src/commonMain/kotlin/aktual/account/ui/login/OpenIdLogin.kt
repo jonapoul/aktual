@@ -23,7 +23,7 @@ internal fun OpenIdLogin(modifier: Modifier = Modifier, theme: Theme = LocalThem
     title = Strings.loginOpenidUnsupported,
     reason = null,
     action = null,
-    background = theme.pillBorderDark,
+    background = theme.pillBackgroundLight,
   )
 }
 
