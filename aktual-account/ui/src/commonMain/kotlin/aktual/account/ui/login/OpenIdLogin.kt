@@ -3,14 +3,11 @@ package aktual.account.ui.login
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.FailureScreen
+import aktual.core.ui.FailureCard
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.RounderCardShape
 import aktual.core.ui.ThemeParameters
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -21,16 +18,13 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun OpenIdLogin(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
-  Box(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .border(Dp.Hairline, theme.pillBorderDark, RounderCardShape)
-        .background(theme.pillBackgroundLight, RounderCardShape)
-        .padding(8.dp)
-  ) {
-    FailureScreen(title = Strings.loginOpenidUnsupported, reason = null, action = null)
-  }
+  FailureCard(
+    modifier = modifier.border(Dp.Hairline, theme.pillBorderDark, RounderCardShape).padding(8.dp),
+    title = Strings.loginOpenidUnsupported,
+    reason = null,
+    action = null,
+    background = theme.pillBorderDark,
+  )
 }
 
 @Preview

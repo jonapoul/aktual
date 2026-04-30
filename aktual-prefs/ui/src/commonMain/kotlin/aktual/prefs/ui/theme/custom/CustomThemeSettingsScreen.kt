@@ -63,13 +63,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -251,19 +249,19 @@ private fun CustomThemeSettingsContent(
   onAction: (CustomThemeSettingsAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
-    when (state) {
-      CatalogState.Loading -> LoadingContent(contentPadding)
-      is CatalogState.Failed -> FailedContent(state, onAction)
-      is CatalogState.Success -> SuccessContent(state.items, listState, contentPadding, onAction)
-    }
+  when (state) {
+    CatalogState.Loading -> LoadingContent(contentPadding, modifier)
+    is CatalogState.Failed -> FailedContent(state, onAction, modifier)
+    is CatalogState.Success ->
+      SuccessContent(state.items, listState, contentPadding, onAction, modifier)
   }
 }
 
 @Composable
-private fun BoxScope.FailedContent(
+private fun FailedContent(
   state: CatalogState.Failed,
   onAction: (CustomThemeSettingsAction) -> Unit,
+  modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   val cause =
@@ -272,9 +270,10 @@ private fun BoxScope.FailedContent(
     }
 
   FailureScreen(
-    modifier = Modifier.align(Alignment.Center).background(theme.tableBackground, CardShape),
+    modifier = modifier,
     title = Strings.settingsThemeRefreshPrefix,
     reason = cause,
+    background = theme.tableBackground,
     action =
       FailureAction(
         text = { Strings.settingsThemeRefreshRetry },
@@ -285,9 +284,9 @@ private fun BoxScope.FailedContent(
 }
 
 @Composable
-private fun LoadingContent(contentPadding: PaddingValues) {
+private fun LoadingContent(contentPadding: PaddingValues, modifier: Modifier = Modifier) {
   LazyColumn(
-    modifier = Modifier.padding(Dimens.Large),
+    modifier = modifier.padding(Dimens.Large),
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ITEM_SPACING),
   ) {
@@ -357,9 +356,10 @@ private fun SuccessContent(
   listState: LazyListState,
   contentPadding: PaddingValues,
   onAction: (CustomThemeSettingsAction) -> Unit,
+  modifier: Modifier = Modifier,
 ) {
   LazyColumn(
-    modifier = Modifier.scrollbar(listState).padding(Dimens.Large),
+    modifier = modifier.scrollbar(listState).padding(Dimens.Large),
     state = listState,
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ITEM_SPACING),

@@ -196,7 +196,9 @@ private fun Content(
         }
 
         LoginMethod.OpenId -> {
-          OpenIdLogin(modifier = Modifier.fillMaxWidth())
+          Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+            OpenIdLogin()
+          }
         }
       }
 

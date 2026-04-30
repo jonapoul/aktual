@@ -213,19 +213,18 @@ private fun FailureContent(
   theme: Theme,
   modifier: Modifier = Modifier,
 ) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    FailureScreen(
-      modifier = Modifier.background(theme.tableBackground, CardShape),
-      title = Strings.metricsFailure,
-      reason = message,
-      action =
-        FailureAction(
-          text = { Strings.metricsFailureRetry },
-          onClick = { onAction(MetricsAction.Refresh) },
-          icon = MaterialIcons.Refresh,
-        ),
-    )
-  }
+  FailureScreen(
+    modifier = modifier,
+    title = Strings.metricsFailure,
+    reason = message,
+    background = theme.tableBackground,
+    action =
+      FailureAction(
+        text = { Strings.metricsFailureRetry },
+        onClick = { onAction(MetricsAction.Refresh) },
+        icon = MaterialIcons.Refresh,
+      ),
+  )
 }
 
 @Composable
