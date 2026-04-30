@@ -13,6 +13,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
+import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemeParameters
@@ -32,6 +33,7 @@ import aktual.prefs.vm.root.SettingsScreenState
 import aktual.prefs.vm.root.SettingsViewModel
 import aktual.prefs.vm.root.SystemUiConfigState
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -84,13 +86,16 @@ private fun SettingsScaffold(state: SettingsScreenState, onAction: (SettingsActi
       )
     }
   ) { innerPadding ->
-    SettingsContent(
-      modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
-      contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
-      listState = listState,
-      state = state,
-      onAction = onAction,
-    )
+    Box {
+      PageBackground()
+      SettingsContent(
+        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        listState = listState,
+        state = state,
+        onAction = onAction,
+      )
+    }
   }
 }
 

@@ -304,7 +304,7 @@ private fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.buttonNormalBackground, RowShape)
+        .background(theme.cardBackground, RowShape)
         .border(Dp.Hairline, theme.pillBorderDark, RowShape)
         .padding(ITEM_PADDING)
         .shimmer(shimmer),
@@ -383,7 +383,7 @@ internal fun CustomThemeItem(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.buttonNormalBackground, RowShape)
+        .background(theme.cardBackground, RowShape)
         .border(Dp.Hairline, theme.pillBorderDark, RowShape)
         .clickable(enabled) { onAction(SelectTheme(item.summary)) }
         .padding(ITEM_PADDING),
