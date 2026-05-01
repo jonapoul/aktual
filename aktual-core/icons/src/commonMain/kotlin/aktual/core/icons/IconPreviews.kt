@@ -26,6 +26,7 @@ private val aktualIcons =
       Add,
       ArrowThickDown,
       ArrowThickUp,
+      Calendar3,
       ChevronUp,
       CloseBracket,
       Cloud,
