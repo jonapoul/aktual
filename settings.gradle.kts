@@ -84,6 +84,8 @@ include(
   ":aktual-budget:reports:vm",
   ":aktual-budget:rules:ui",
   ":aktual-budget:rules:vm",
+  ":aktual-budget:schedules:ui",
+  ":aktual-budget:schedules:vm",
   ":aktual-budget:sync:domain",
   ":aktual-budget:sync:ui",
   ":aktual-budget:sync:vm",

@@ -2,6 +2,7 @@ package aktual.app.nav
 
 import aktual.budget.model.BudgetId
 import aktual.budget.model.RuleId
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.WidgetId
 import aktual.core.model.Token
 import androidx.compose.runtime.Immutable
@@ -69,3 +70,24 @@ class EditRuleNavigator(private val stack: AktualNavStack<BudgetNavKey>) {
 @Immutable @Serializable @JvmInline value class EditRuleNavRoute(val id: RuleId) : BudgetNavKey
 
 @Immutable @Serializable data object CreateRuleNavRoute : BudgetNavKey
+
+@Immutable
+class ListSchedulesNavigator(private val stack: AktualNavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(ListRulesNavRoute)
+}
+
+@Immutable @Serializable data object ListSchedulesNavRoute : BudgetNavKey
+
+@Immutable @Serializable data object CreateScheduleNavRoute : BudgetNavKey
+
+@JvmInline
+@Immutable
+@Serializable
+value class EditScheduleNavRoute(val id: ScheduleId) : BudgetNavKey
+
+@Immutable
+class EditScheduleNavigator(private val stack: AktualNavStack<BudgetNavKey>) {
+  operator fun invoke(id: ScheduleId) = stack.push(EditScheduleNavRoute(id))
+
+  operator fun invoke() = stack.push(CreateScheduleNavRoute)
+}

@@ -4,11 +4,13 @@ import aktual.app.nav.AktualNavStack
 import aktual.app.nav.BudgetNavEntryContributor
 import aktual.app.nav.BudgetNavKey
 import aktual.app.nav.ListRulesNavRoute
+import aktual.app.nav.ListSchedulesNavRoute
 import aktual.app.nav.ReportsListNavRoute
 import aktual.app.nav.TransactionsNavRoute
 import aktual.budget.model.BudgetId
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
 import aktual.core.icons.AktualIcons
+import aktual.core.icons.Calendar3
 import aktual.core.icons.Reports
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.Info
@@ -92,6 +94,7 @@ fun BudgetNavRail(
 
   val transactionsStack = stackWithDefault(TransactionsNavRoute(token, budgetId))
   val reportsStack = stackWithDefault(ReportsListNavRoute(token, budgetId))
+  val schedulesStack = stackWithDefault(ListSchedulesNavRoute)
   val rulesStack = stackWithDefault(ListRulesNavRoute)
 
   val tabStacks =
@@ -99,6 +102,7 @@ fun BudgetNavRail(
       persistentMapOf(
         BudgetTab.Transactions to transactionsStack,
         BudgetTab.Reports to reportsStack,
+        BudgetTab.Schedules to schedulesStack,
         BudgetTab.Rules to rulesStack,
       )
     }
@@ -431,6 +435,7 @@ private fun BudgetMenu(
 private enum class BudgetTab {
   Transactions,
   Reports,
+  Schedules,
   Rules,
 }
 
@@ -439,6 +444,7 @@ private fun BudgetTab.label(): String =
   when (this) {
     BudgetTab.Transactions -> Strings.transactionsTitle
     BudgetTab.Reports -> Strings.reportsTitle
+    BudgetTab.Schedules -> Strings.listSchedulesTitle
     BudgetTab.Rules -> Strings.rulesTitle
   }
 
@@ -447,6 +453,7 @@ private fun BudgetTab.icon(): ImageVector =
   when (this) {
     BudgetTab.Transactions -> MaterialIcons.LinearScale
     BudgetTab.Reports -> AktualIcons.Reports
+    BudgetTab.Schedules -> AktualIcons.Calendar3
     BudgetTab.Rules -> AktualIcons.Tuning
   }
 

@@ -34,7 +34,7 @@ fun FailureCard(
   reason: String?,
   action: FailureAction?,
   modifier: Modifier = Modifier,
-  icon: ImageVector = AktualIcons.CloudWarning,
+  icon: ImageVector? = AktualIcons.CloudWarning,
   theme: Theme = LocalTheme.current,
   background: Color = theme.cardBackground,
 ) {
@@ -42,14 +42,16 @@ fun FailureCard(
     modifier = modifier.padding(30.dp).background(background, CardShape).padding(30.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
-    Icon(
-      modifier = Modifier.size(100.dp),
-      imageVector = icon,
-      tint = theme.warningText,
-      contentDescription = title,
-    )
+    if (icon != null) {
+      Icon(
+        modifier = Modifier.size(100.dp),
+        imageVector = icon,
+        tint = theme.warningText,
+        contentDescription = title,
+      )
 
-    VerticalSpacer(30.dp)
+      VerticalSpacer(30.dp)
+    }
 
     Text(
       text = title,
@@ -89,7 +91,7 @@ fun FailureScreen(
   reason: String?,
   action: FailureAction?,
   modifier: Modifier = Modifier,
-  icon: ImageVector = AktualIcons.CloudWarning,
+  icon: ImageVector? = AktualIcons.CloudWarning,
   theme: Theme = LocalTheme.current,
   background: Color = Color.Transparent,
 ) {
