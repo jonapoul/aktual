@@ -47,7 +47,7 @@ internal fun ListSchedulesItem(
         .clip(RowShape)
         .background(theme.tableBackground, RowShape)
         .border(Dp.Hairline, theme.tableBorder, RowShape)
-        .padding(ListSchedulesDS.itemPadding)
+        .padding(ListSchedulesDS.itemCardPadding)
         .clickable { onAction(Open(schedule.id)) },
     horizontalArrangement =
       Arrangement.spacedBy(ListSchedulesDS.itemHorizontalSpacing, Alignment.Start),
@@ -71,7 +71,7 @@ internal fun ShimmerListSchedulesItem(
         .clip(RowShape)
         .background(theme.tableBackground, RowShape)
         .border(Dp.Hairline, theme.tableBorder, RowShape)
-        .padding(ListSchedulesDS.itemPadding)
+        .padding(ListSchedulesDS.itemCardPadding)
         .shimmer(shimmer),
     horizontalArrangement =
       Arrangement.spacedBy(ListSchedulesDS.itemHorizontalSpacing, Alignment.Start),

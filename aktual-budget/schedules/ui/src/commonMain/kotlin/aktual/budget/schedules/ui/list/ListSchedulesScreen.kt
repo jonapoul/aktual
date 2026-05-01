@@ -45,7 +45,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -96,7 +95,7 @@ private fun ListSchedulesScaffold(
       PageBackground()
 
       BlurredPullToRefreshBox(
-        modifier = Modifier.padding(horizontal = 8.dp),
+        modifier = Modifier.padding(ListSchedulesDS.listPadding),
         contentAlignment = Alignment.Center,
         onRefresh = { onAction(Reload) },
         isRefreshing = state is Loading,
