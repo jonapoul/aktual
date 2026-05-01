@@ -67,6 +67,7 @@ include(
   ":aktual-app:di",
   ":aktual-app:nav",
   ":aktual-app:nav:core",
+  ":aktual-app:nav:di",
   ":aktual-app:nav:ui",
   ":aktual-budget:data:db",
   ":aktual-budget:data:di",
