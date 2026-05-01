@@ -87,6 +87,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -324,7 +325,7 @@ private fun ContentSuccess(
       state = listState,
       verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
     ) {
-      stagedRules.forEach { (stage, r) ->
+      stagedRules.fastForEach { (stage, r) ->
         val isExpanded = expandedStages.getValue(stage)
         stickyHeader { StageHeader(expandedStages, stage, isExpanded, r) }
 
