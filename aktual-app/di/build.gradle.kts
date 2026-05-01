@@ -9,28 +9,13 @@ plugins { id("aktual.module.di") }
 
 kotlin {
   commonMainDependencies {
-    // DI modules
     api(project(":aktual-about:di"))
     api(project(":aktual-budget:data:di"))
     api(project(":aktual-budget:di"))
     api(project(":aktual-core:api:di"))
     api(project(":aktual-core:di"))
-    api(project(":aktual-core:model"))
     api(project(":aktual-core:theme:di"))
     api(project(":aktual-prefs:di"))
-
-    // UI modules - needed so Metro discovers @ContributesIntoSet nav entry contributors
-    api(project(":aktual-about:ui"))
-    api(project(":aktual-account:ui"))
-    api(project(":aktual-budget:list:ui"))
-    api(project(":aktual-budget:navrail:ui"))
-    api(project(":aktual-budget:reports:ui"))
-    api(project(":aktual-budget:rules:ui"))
-    api(project(":aktual-budget:schedules:ui"))
-    api(project(":aktual-budget:sync:ui"))
-    api(project(":aktual-budget:transactions:ui"))
-    api(project(":aktual-metrics:ui"))
-    api(project(":aktual-prefs:ui"))
   }
 }
 
