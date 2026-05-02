@@ -29,6 +29,7 @@ import aktual.core.ui.BottomSpacing
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.SideSpacing
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.ThemedDropdownMenu
@@ -36,6 +37,7 @@ import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.blurredBottomBar
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
+import aktual.core.ui.isMobileLandscape
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
@@ -232,6 +234,10 @@ private fun SideNavLayout(
       activeStack = activeStack,
       modifier = Modifier.weight(1f),
     )
+
+    if (isMobileLandscape()) {
+      SideSpacing()
+    }
   }
 }
 
