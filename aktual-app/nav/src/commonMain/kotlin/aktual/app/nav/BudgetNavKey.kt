@@ -73,7 +73,7 @@ class EditRuleNavigator(private val stack: AktualNavStack<BudgetNavKey>) {
 
 @Immutable
 class ListSchedulesNavigator(private val stack: AktualNavStack<BudgetNavKey>) {
-  operator fun invoke() = stack.push(ListRulesNavRoute)
+  operator fun invoke() = stack.push(ListSchedulesNavRoute)
 }
 
 @Immutable @Serializable data object ListSchedulesNavRoute : BudgetNavKey
