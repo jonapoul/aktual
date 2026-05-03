@@ -5,7 +5,14 @@ argument-hint: "<FeatureName> <gradle-module-path>"
 ---
 
 Generate a pair of VM and UI Gradle modules for a new scrolling list screen, following the exact patterns from
-`aktual-budget:schedules`. Do NOT ask clarifying questions — just execute.
+`aktual-budget:schedules`.
+
+## Before starting — ask one question
+
+**Ask the user:** "Is this feature budget-scoped? (i.e. does it live inside an open budget, using `BudgetNavEntryContributor` / `BudgetNavScope` / `BudgetNavKey`?)"
+
+Wait for the answer, then proceed. Use `{budgetScoped}` = `true` or `false` to select the correct
+`NavEntryContributor` template in Step 2 below.
 
 ## Arguments
 
@@ -452,22 +459,51 @@ private fun ContentSuccess(
 
 ### `{dir}/ui/src/commonMain/kotlin/{pkg}/ui/{Name}NavEntryContributor.kt`
 
+**If budget-scoped** (use `BudgetNavEntryContributor` / `BudgetNavScope` / `BudgetNavKey`):
+
 ```kotlin
 package {pkg}.ui
 
 import {pkg}.ui.list.List{Name}Screen
+import aktual.app.nav.AktualNavStack
+import aktual.app.nav.BudgetNavEntryContributor
+import aktual.app.nav.BudgetNavKey
+import aktual.app.nav.BudgetNavScope
+import aktual.app.nav.List{Name}NavRoute
+import aktual.app.nav.budgetEntry
 import androidx.navigation3.runtime.EntryProviderScope
 import dev.zacsweers.metro.ContributesIntoSet
 
-// TODO: replace TODOs with the correct nav scope, key type, route, and navigator
-// See aktual-app/nav/CLAUDE.md and SchedulesNavEntryContributor for reference
-@ContributesIntoSet(TODO_NavScope::class)
-class {Name}NavEntryContributor : TODO_NavEntryContributor {
+@ContributesIntoSet(BudgetNavScope::class)
+class {Name}NavEntryContributor : BudgetNavEntryContributor {
   override fun contribute(
-    scope: EntryProviderScope<TODO_NavKey>,
-    stack: TODO_NavStack,
+    scope: EntryProviderScope<BudgetNavKey>,
+    stack: AktualNavStack<BudgetNavKey>,
   ) {
-    scope.TODO_entry<TODO_{Name}NavRoute> { List{Name}Screen(/* navigators */) }
+    scope.budgetEntry<List{Name}NavRoute> { List{Name}Screen(/* navigators */) }
+  }
+}
+```
+
+**If NOT budget-scoped** (use `NavEntryContributor` / `NavScope` / `NavKey`):
+
+```kotlin
+package {pkg}.ui
+
+import {pkg}.ui.list.List{Name}Screen
+import aktual.app.nav.AktualNavStack
+import aktual.app.nav.BackNavigator
+import aktual.app.nav.{Name}NavRoute
+import aktual.app.nav.NavEntryContributor
+import aktual.app.nav.NavScope
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
+import dev.zacsweers.metro.ContributesIntoSet
+
+@ContributesIntoSet(NavScope::class)
+class {Name}NavEntryContributor : NavEntryContributor {
+  override fun contribute(scope: EntryProviderScope<NavKey>, stack: AktualNavStack<NavKey>) {
+    scope.entry<{Name}NavRoute> { List{Name}Screen(BackNavigator(stack)) }
   }
 }
 ```
@@ -529,6 +565,6 @@ After the skill completes:
 - [ ] Add feature-specific actions to `List{Name}Action` (e.g. `Open`, `CreateNew`)
 - [ ] Wire up the `Open` action in `List{Name}Item.clickable`
 - [ ] Implement `reload()` in the ViewModel
-- [ ] Fix `{Name}NavEntryContributor` — add nav key, scope, route (see `aktual-app/nav/CLAUDE.md`)
+- [ ] Add the `{Name}NavRoute` and any feature-specific navigator to `aktual-app:nav` (see that module's CLAUDE.md)
 - [ ] Add the `:ui` module to `aktual-app:nav:di/build.gradle.kts`
 - [ ] Add VM dependencies for data access (DAO / repository)
