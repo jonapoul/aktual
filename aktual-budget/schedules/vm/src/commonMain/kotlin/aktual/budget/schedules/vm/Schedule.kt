@@ -26,4 +26,5 @@ data class Schedule(
   val amount: Amount,
   val amountOp: AmountOperator,
   val date: LocalDate,
+  val status: ScheduleStatus,
 )
