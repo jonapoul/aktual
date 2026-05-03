@@ -10,6 +10,7 @@ import aktual.app.nav.CreateReportNavigator
 import aktual.app.nav.ReportNavRoute
 import aktual.app.nav.ReportNavigator
 import aktual.app.nav.ReportsListNavRoute
+import aktual.app.nav.budgetEntry
 import aktual.budget.reports.ui.choosetype.ChooseReportTypeScreen
 import aktual.budget.reports.ui.dashboard.ReportsDashboardScreen
 import androidx.navigation3.runtime.EntryProviderScope
@@ -21,7 +22,7 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
     scope: EntryProviderScope<BudgetNavKey>,
     stack: AktualNavStack<BudgetNavKey>,
   ) {
-    scope.entry<ReportsListNavRoute> { route ->
+    scope.budgetEntry<ReportsListNavRoute> { route ->
       ReportsDashboardScreen(
         back = BackNavigator(stack),
         toReport = ReportNavigator(stack),
@@ -31,11 +32,11 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
       )
     }
 
-    scope.entry<ReportNavRoute> {
+    scope.budgetEntry<ReportNavRoute> {
       // TBC
     }
 
-    scope.entry<CreateReportNavRoute> { route ->
+    scope.budgetEntry<CreateReportNavRoute> { route ->
       ChooseReportTypeScreen(
         back = BackNavigator(stack),
         toReport = ReportNavigator(stack),

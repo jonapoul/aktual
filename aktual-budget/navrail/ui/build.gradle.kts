@@ -10,6 +10,7 @@ kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:navrail:vm"))
     implementation(project(":aktual-app:nav"))
+    implementation(project(":aktual-app:nav:core"))
     implementation(project(":aktual-budget:model"))
     implementation(project(":aktual-core:icons"))
     implementation(project(":aktual-core:l10n"))

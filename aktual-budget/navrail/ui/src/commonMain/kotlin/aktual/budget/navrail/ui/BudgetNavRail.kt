@@ -3,6 +3,7 @@ package aktual.budget.navrail.ui
 import aktual.app.nav.AktualNavStack
 import aktual.app.nav.BudgetNavEntryContributor
 import aktual.app.nav.BudgetNavKey
+import aktual.app.nav.BudgetTab
 import aktual.app.nav.ListRulesNavRoute
 import aktual.app.nav.ListSchedulesNavRoute
 import aktual.app.nav.ReportsListNavRoute
@@ -38,8 +39,12 @@ import aktual.core.ui.blurredBottomBar
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.isMobileLandscape
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
+import aktual.nav.core.rememberAppCloser
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.End
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Start
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,6 +62,7 @@ import androidx.compose.material3.NavigationRailItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -73,6 +79,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
@@ -123,12 +130,22 @@ fun BudgetNavRail(
     }
   }
 
+  val closeApp = rememberAppCloser()
+  val onPopBackToTransactions: () -> Unit = {
+    if (selectedTab != BudgetTab.Transactions) {
+      selectedTab = BudgetTab.Transactions
+    } else {
+      closeApp()
+    }
+  }
+
   if (isCompactWidth()) {
     BottomNavLayout(
       contributors = contributors,
       activeStack = activeStack,
       selectedTab = selectedTab,
       onSelectTab = onSelectTab,
+      onPopBackToTransactions = onPopBackToTransactions,
       onAction = onAction,
       modifier = modifier,
     )
@@ -138,6 +155,7 @@ fun BudgetNavRail(
       activeStack = activeStack,
       selectedTab = selectedTab,
       onSelectTab = onSelectTab,
+      onPopBackToTransactions = onPopBackToTransactions,
       onAction = onAction,
       modifier = modifier,
     )
@@ -156,6 +174,7 @@ private fun BottomNavLayout(
   activeStack: AktualNavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
+  onPopBackToTransactions: () -> Unit,
   onAction: (BudgetNavAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -177,6 +196,7 @@ private fun BottomNavLayout(
       BudgetNavDisplay(
         contributors = contributors,
         activeStack = activeStack,
+        onPopBackToTransactions = onPopBackToTransactions,
         modifier = Modifier.fillMaxSize().hazeSource(localHazeState),
       )
     }
@@ -215,12 +235,13 @@ private fun SideNavLayout(
   activeStack: AktualNavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
+  onPopBackToTransactions: () -> Unit,
   onAction: (BudgetNavAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
   var showMenu by remember { mutableStateOf(false) }
   Row(modifier = modifier.fillMaxSize()) {
-    Box(contentAlignment = Alignment.TopStart) {
+    Box(modifier = Modifier.zIndex(1f), contentAlignment = Alignment.TopStart) {
       SideNavRail(selectedTab, onSelectTab, onMenuClick = { showMenu = true })
       BudgetMenu(
         expanded = showMenu,
@@ -232,6 +253,7 @@ private fun SideNavLayout(
     BudgetNavDisplay(
       contributors = contributors,
       activeStack = activeStack,
+      onPopBackToTransactions = onPopBackToTransactions,
       modifier = Modifier.weight(1f),
     )
 
@@ -245,27 +267,25 @@ private fun SideNavLayout(
 private fun BudgetNavDisplay(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
   activeStack: AktualNavStack<BudgetNavKey>,
+  onPopBackToTransactions: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
   NavDisplay(
     modifier = modifier,
     backStack = activeStack,
-    onBack = { activeStack.pop() },
-    // Forward: new screen slides in from right, old screen slides out to left
+    onBack = { if (activeStack.size > 1) activeStack.pop() else onPopBackToTransactions() },
     transitionSpec = {
-      slideInHorizontally(initialOffsetX = { width -> width }) togetherWith
-        slideOutHorizontally(targetOffsetX = { width -> -width })
+      val initialTab = initialState.key as BudgetTab
+      val targetTab = targetState.key as BudgetTab
+      val direction = initialTab.ordinal - targetTab.ordinal
+      when {
+        direction < 0 -> slideIntoContainer(towards = Start) togetherWith fadeOut()
+        direction > 0 -> slideIntoContainer(towards = End) togetherWith fadeOut()
+        else -> EnterTransition.None togetherWith ExitTransition.None
+      }
     },
-    // Back: previous screen slides in from left, current screen slides out to right
-    popTransitionSpec = {
-      slideInHorizontally(initialOffsetX = { width -> -width }) togetherWith
-        slideOutHorizontally(targetOffsetX = { width -> width })
-    },
-    // Predictive back gesture: same as pop
-    predictivePopTransitionSpec = {
-      slideInHorizontally(initialOffsetX = { width -> -width }) togetherWith
-        slideOutHorizontally(targetOffsetX = { width -> width })
-    },
+    popTransitionSpec = { slideIntoContainer(towards = End) togetherWith fadeOut() },
+    predictivePopTransitionSpec = { slideIntoContainer(towards = End) togetherWith fadeOut() },
     entryDecorators =
       listOf(
         rememberSaveableStateHolderNavEntryDecorator(),
@@ -438,13 +458,6 @@ private fun BudgetMenu(
   }
 }
 
-private enum class BudgetTab {
-  Transactions,
-  Reports,
-  Schedules,
-  Rules,
-}
-
 @Composable
 private fun BudgetTab.label(): String =
   when (this) {
@@ -454,6 +467,7 @@ private fun BudgetTab.label(): String =
     BudgetTab.Rules -> Strings.rulesTitle
   }
 
+@Stable
 @Composable
 private fun BudgetTab.icon(): ImageVector =
   when (this) {
