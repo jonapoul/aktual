@@ -33,6 +33,7 @@ import aktual.budget.model.TagId
 import aktual.budget.model.Timestamp
 import aktual.budget.model.TransactionFilterId
 import aktual.budget.model.TransactionId
+import aktual.budget.model.UpcomingLength
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.model.ZeroBudgetMonthId
@@ -144,6 +145,9 @@ private val yearMonth =
     },
     encode = { ym -> ym.year * YEAR_MONTH_FACTOR.toLong() + ym.month.number },
   )
+
+private val upcomingLengthAdapter =
+  stringAdapter(decode = UpcomingLength::decode, encode = UpcomingLength::encode)
 
 private val accountId = stringAdapter(::AccountId)
 private val accountSyncSource = stringAdapter(AccountSyncSource::fromString)
@@ -277,7 +281,12 @@ internal val RulesAdapter =
     conditions_opAdapter = conditionsOp,
   )
 
-internal val SchedulesAdapter = Schedules.Adapter(idAdapter = scheduleId, ruleAdapter = ruleId)
+internal val SchedulesAdapter =
+  Schedules.Adapter(
+    idAdapter = scheduleId,
+    ruleAdapter = ruleId,
+    custom_upcoming_lengthAdapter = upcomingLengthAdapter,
+  )
 
 internal val SchedulesJsonPathsAdapter =
   Schedules_json_paths.Adapter(
