@@ -6,6 +6,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 
 @Composable
 actual fun isMobileLandscape(): Boolean {
-  val configuration = LocalConfiguration.current
-  return configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+  val isLandscape = LocalConfiguration.current.orientation == Configuration.ORIENTATION_LANDSCAPE
+  val isMobile = isCompactWidth()
+  return isLandscape && isMobile
 }
