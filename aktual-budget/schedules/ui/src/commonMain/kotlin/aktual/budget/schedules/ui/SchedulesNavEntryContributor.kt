@@ -6,6 +6,7 @@ import aktual.app.nav.BudgetNavKey
 import aktual.app.nav.BudgetNavScope
 import aktual.app.nav.EditScheduleNavigator
 import aktual.app.nav.ListSchedulesNavRoute
+import aktual.app.nav.budgetEntry
 import aktual.budget.schedules.ui.list.ListSchedulesScreen
 import androidx.navigation3.runtime.EntryProviderScope
 import dev.zacsweers.metro.ContributesIntoSet
@@ -16,6 +17,6 @@ class SchedulesNavEntryContributor : BudgetNavEntryContributor {
     scope: EntryProviderScope<BudgetNavKey>,
     stack: AktualNavStack<BudgetNavKey>,
   ) {
-    scope.entry<ListSchedulesNavRoute> { ListSchedulesScreen(EditScheduleNavigator(stack)) }
+    scope.budgetEntry<ListSchedulesNavRoute> { ListSchedulesScreen(EditScheduleNavigator(stack)) }
   }
 }

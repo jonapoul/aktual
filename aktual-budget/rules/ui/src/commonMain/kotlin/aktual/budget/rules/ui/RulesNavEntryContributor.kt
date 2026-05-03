@@ -9,6 +9,7 @@ import aktual.app.nav.CreateRuleNavRoute
 import aktual.app.nav.EditRuleNavRoute
 import aktual.app.nav.EditRuleNavigator
 import aktual.app.nav.ListRulesNavRoute
+import aktual.app.nav.budgetEntry
 import aktual.budget.rules.ui.edit.EditRuleScreen
 import aktual.budget.rules.ui.list.ListRulesScreen
 import androidx.navigation3.runtime.EntryProviderScope
@@ -20,12 +21,12 @@ class RulesNavEntryContributor : BudgetNavEntryContributor {
     scope: EntryProviderScope<BudgetNavKey>,
     stack: AktualNavStack<BudgetNavKey>,
   ) {
-    scope.entry<ListRulesNavRoute> { ListRulesScreen(EditRuleNavigator(stack)) }
+    scope.budgetEntry<ListRulesNavRoute> { ListRulesScreen(EditRuleNavigator(stack)) }
 
-    scope.entry<EditRuleNavRoute> { route ->
+    scope.budgetEntry<EditRuleNavRoute> { route ->
       EditRuleScreen(id = route.id, back = BackNavigator(stack))
     }
 
-    scope.entry<CreateRuleNavRoute> { EditRuleScreen(id = null, back = BackNavigator(stack)) }
+    scope.budgetEntry<CreateRuleNavRoute> { EditRuleScreen(id = null, back = BackNavigator(stack)) }
   }
 }

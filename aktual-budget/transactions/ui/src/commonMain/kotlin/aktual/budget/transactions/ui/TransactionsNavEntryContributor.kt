@@ -6,6 +6,7 @@ import aktual.app.nav.BudgetNavEntryContributor
 import aktual.app.nav.BudgetNavKey
 import aktual.app.nav.BudgetNavScope
 import aktual.app.nav.TransactionsNavRoute
+import aktual.app.nav.budgetEntry
 import androidx.navigation3.runtime.EntryProviderScope
 import dev.zacsweers.metro.ContributesIntoSet
 
@@ -15,7 +16,7 @@ class TransactionsNavEntryContributor : BudgetNavEntryContributor {
     scope: EntryProviderScope<BudgetNavKey>,
     stack: AktualNavStack<BudgetNavKey>,
   ) {
-    scope.entry<TransactionsNavRoute> { route ->
+    scope.budgetEntry<TransactionsNavRoute> { route ->
       TransactionsScreen(BackNavigator(stack), route.budgetId, route.token)
     }
   }

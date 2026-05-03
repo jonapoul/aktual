@@ -18,6 +18,14 @@ Each `:ui` module owns its nav entries via a `NavEntryContributor` annotated `@C
 
 To add a screen: create `YourNavigator.kt` (+ `YourNavRoute`) here, then implement `NavEntryContributor` in your `:ui` module.
 
+### Budget-scoped entries
+
+Budget screens implement `BudgetNavEntryContributor` with `@ContributesIntoSet(BudgetNavScope::class)`. Every `BudgetNavKey` carries a `tab: BudgetTab`, and entries **must** pass it as the content key so the nav rail can track the active tab:
+
+```kotlin
+scope.entry<YourNavRoute>(clazzContentKey = { it.tab }) { route -> ... }
+```
+
 ## Window insets
 
 Nav bar insets are consumed at the `AktualNavHost` level via `Modifier.consumeWindowInsets(WindowInsets.navigationBars)`, so screen Scaffolds will **not** see them in `innerPadding`. The haze-effect Column in `AktualAppContent` instead renders `BottomSpacing()`, which sums `bottomNavBarPadding()` with whatever height is provided via `LocalBottomSpacing` — screens that render their own bottom status bar publish its height through that composition local so a single spacer covers both.
