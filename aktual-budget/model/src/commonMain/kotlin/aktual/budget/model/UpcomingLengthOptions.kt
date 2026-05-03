@@ -1,3 +1,5 @@
+@file:Suppress("StringLiteralDuplication")
+
 package aktual.budget.model
 
 import kotlinx.datetime.DateTimeUnit.Companion.DAY
@@ -75,6 +77,7 @@ sealed interface UpcomingLength {
 }
 
 // packages/loot-core/src/shared/schedules.ts getUpcomingDays
+@Suppress("MagicNumber")
 fun UpcomingLength.upcomingDays(today: LocalDate): Int {
   val startOfMonth = LocalDate(today.year, today.month, 1)
   val startOfNextMonth = startOfMonth.plus(1, MONTH)

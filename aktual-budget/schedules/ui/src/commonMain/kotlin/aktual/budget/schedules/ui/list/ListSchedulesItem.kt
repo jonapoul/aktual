@@ -27,9 +27,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -54,9 +52,14 @@ internal fun ListSchedulesItem(
   theme: Theme = LocalTheme.current,
 ) {
   val dateFormatter = LocalDateFormatter.current
+
+  @Suppress("ElseCaseInsteadOfExhaustiveWhen")
   val amountPrefix =
-    if (schedule.amountOp is Operator.IsApprox || schedule.amountOp is Operator.IsBetween) "~"
-    else ""
+    when (schedule.amountOp) {
+      is Operator.IsApprox,
+      is Operator.IsBetween -> "~"
+      else -> ""
+    }
   val amountStr = amountPrefix + schedule.amount.formattedString(includeSign = true)
 
   Row(
@@ -207,8 +210,7 @@ internal fun ShimmerListSchedulesItem(
 
     Box(
       modifier =
-        Modifier
-          .height(ListSchedulesDS.shimmerItemTextHeight)
+        Modifier.height(ListSchedulesDS.shimmerItemTextHeight)
           .width(40.dp)
           .background(theme.pageText, CardShape)
     )
