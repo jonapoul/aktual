@@ -1,5 +1,6 @@
 import aktual.budget.model.RuleId;
 import aktual.budget.model.ScheduleId;
+import aktual.budget.model.UpcomingLength;
 import kotlin.Boolean;
 
 CREATE TABLE IF NOT EXISTS schedules(
@@ -10,7 +11,7 @@ CREATE TABLE IF NOT EXISTS schedules(
   posts_transaction INTEGER AS Boolean DEFAULT 0,
   tombstone INTEGER AS Boolean DEFAULT 0,
   name TEXT DEFAULT NULL,
-  custom_upcoming_length TEXT DEFAULT NULL
+  custom_upcoming_length TEXT AS UpcomingLength DEFAULT NULL
 );
 
 CREATE VIEW IF NOT EXISTS v_schedules AS

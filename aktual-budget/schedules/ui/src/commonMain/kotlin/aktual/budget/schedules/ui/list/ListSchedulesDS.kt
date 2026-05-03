@@ -9,6 +9,11 @@ internal object ListSchedulesDS {
 
   val itemHorizontalSpacing = 4.dp
   val itemCardPadding = 8.dp
+  val itemContentSpacing = 4.dp
+  val itemMetaGroupSpacing = 8.dp
+
+  val statusBadgePadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
 
   val shimmerItemTextHeight = 20.dp
+  val shimmerItemTextHeightSmall = 15.dp
 }

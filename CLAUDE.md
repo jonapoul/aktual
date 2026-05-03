@@ -78,7 +78,7 @@ See [aktual-app:nav](aktual-app/nav/CLAUDE.md).
 1. Dependencies: UI → VM (api) → Domain (api) → core models. Any module can depend on core UI / L10n / logging.
 1. Create a navigator + `NavKey` in `aktual-app:nav` (see that module's CLAUDE.md).
 1. Implement `NavEntryContributor` in the `:ui` module with `@ContributesIntoSet(NavScope::class)`.
-1. Add the `:ui` module to `aktual-app:di/build.gradle.kts` so Metro finds contribution hints.
+1. Add the `:ui` module to `aktual-app:nav:di/build.gradle.kts` so Metro finds contribution hints.
 
 ## Dependency helpers
 

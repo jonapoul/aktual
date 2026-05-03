@@ -1,3 +1,14 @@
 <resources>
   <string name="list_schedules_title">Schedules</string>
+  <string name="list_schedules_unnamed_schedule">Unnamed schedule</string>
+  <string name="list_schedules_label_payee">Payee:</string>
+  <string name="list_schedules_label_account">Account:</string>
+  <string name="list_schedules_label_amount">Amount:</string>
+  <string name="list_schedules_label_next">Next:</string>
+  <string name="list_schedules_status_missed">Missed</string>
+  <string name="list_schedules_status_due">Due</string>
+  <string name="list_schedules_status_upcoming">Upcoming</string>
+  <string name="list_schedules_status_paid">Paid</string>
+  <string name="list_schedules_status_completed">Completed</string>
+  <string name="list_schedules_status_scheduled">Scheduled</string>
 </resources>

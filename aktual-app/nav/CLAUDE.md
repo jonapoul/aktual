@@ -14,7 +14,7 @@ Navigation API: navigator classes, `NavKey` routes, stack extensions, and the `N
 
 ## Decentralized entries
 
-Each `:ui` module owns its nav entries via a `NavEntryContributor` annotated `@ContributesIntoSet(NavScope::class)`. `NavGraph` is a `@GraphExtension(NavScope::class)` child of `AppScope` exposing `Set<NavEntryContributor>`; `RootViewModel` creates it and `AktualNavHost` iterates contributors to build the entry provider. `aktual-app:di` depends on all `:ui` modules so Metro can discover the contribution hints.
+Each `:ui` module owns its nav entries via a `NavEntryContributor` annotated `@ContributesIntoSet(NavScope::class)`. `NavGraph` is a `@GraphExtension(NavScope::class)` child of `AppScope` exposing `Set<NavEntryContributor>`; `RootViewModel` creates it and `AktualNavHost` iterates contributors to build the entry provider. `aktual-app:nav:di` depends on all `:ui` modules so Metro can discover the contribution hints.
 
 To add a screen: create `YourNavigator.kt` (+ `YourNavRoute`) here, then implement `NavEntryContributor` in your `:ui` module.
 
