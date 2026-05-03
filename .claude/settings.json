@@ -1,0 +1,80 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew *)",
+      "Bash(./scripts/*)",
+      "Bash(awk:*)",
+      "Bash(cut:*)",
+      "Bash(echo:*)",
+      "Bash(find:*)",
+      "Bash(gh api:*)",
+      "Bash(gh issue:*)",
+      "Bash(gh pr:*)",
+      "Bash(gh project:*)",
+      "Bash(gh release:*)",
+      "Bash(gh repo view:*)",
+      "Bash(gh run:*)",
+      "Bash(gh search:*)",
+      "Bash(git add:*)",
+      "Bash(git blame:*)",
+      "Bash(git branch:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git diff:*)",
+      "Bash(git fetch:*)",
+      "Bash(git log:*)",
+      "Bash(git rebase:*)",
+      "Bash(git show:*)",
+      "Bash(git stash:*)",
+      "Bash(git status:*)",
+      "Bash(git switch:*)",
+      "Bash(grep:*)",
+      "Bash(head:*)",
+      "Bash(jq:*)",
+      "Bash(ls:*)",
+      "Bash(mkdir:*)",
+      "Bash(sort:*)",
+      "Bash(tail:*)",
+      "Bash(tree:*)",
+      "Bash(uniq:*)",
+      "Bash(wc:*)",
+      "Bash(xargs cat:*)",
+      "Bash(xargs ls:*)",
+      "WebFetch(domain:fonts.googleapis.com)",
+      "WebFetch(domain:fonts.gstatic.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "mcp__ide__getDiagnostics"
+    ],
+    "deny": [
+      "Bash(gh issue comment*)",
+      "Bash(gh pr comment*)",
+      "Bash(gh pr review*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/block-dangerous-git.sh",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd \"$CLAUDE_PROJECT_DIR\" && ./scripts/ktfmt.sh 2>/dev/null",
+            "timeout": 30
+          }
+        ]
+      }
+    ]
+  }
+}
