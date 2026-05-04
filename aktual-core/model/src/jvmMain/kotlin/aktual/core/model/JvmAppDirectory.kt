@@ -7,6 +7,6 @@ import okio.Path
 import okio.Path.Companion.toOkioPath
 
 @ContributesBinding(AppScope::class)
-class JvmAppDirectory : AppDirectory {
+object JvmAppDirectory : AppDirectory {
   override fun get(): Path = File(System.getProperty("user.home")).toOkioPath().resolve(".aktual")
 }

@@ -29,9 +29,7 @@ class BudgetGraphHolder(private val budgetGraphBuilder: BudgetGraph.Builder) :
     return budgetGraph
   }
 
-  override fun close() {
-    value?.driver?.close()
-  }
+  override fun close() = clear()
 
   override fun compareAndSet(expect: BudgetGraph?, update: BudgetGraph?): Boolean {
     val previous = value

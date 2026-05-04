@@ -1,7 +1,6 @@
 package aktual.budget.di
 
 import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.SqlDriverFactory
 import aktual.budget.model.BudgetId
 import aktual.budget.model.BudgetScope
 import aktual.budget.model.DbMetadata
@@ -32,7 +31,7 @@ interface BudgetGraph : AutoCloseable {
     fun create(
       @Provides budgetId: BudgetId,
       @Provides metadata: DbMetadata,
-      @Provides driverFactory: SqlDriverFactory,
+      @Provides driver: SqlDriver,
     ): BudgetGraph
   }
 

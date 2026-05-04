@@ -1,7 +1,10 @@
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
 
-plugins { id("aktual.module.kotlin") }
+plugins {
+  id("aktual.module.kotlin")
+  id("aktual.convention.db-test")
+}
 
 kotlin {
   commonMainDependencies {

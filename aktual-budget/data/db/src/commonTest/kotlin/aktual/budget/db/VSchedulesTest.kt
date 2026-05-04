@@ -13,6 +13,7 @@ import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
 import aktual.test.runDatabaseTest
+import app.cash.sqldelight.async.coroutines.awaitAsList
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
@@ -160,7 +161,7 @@ internal class VSchedulesTest {
         _actions = RULE_3_ACTIONS,
       )
 
-    assertThat(schedulesQueries.getFromVSchedules().executeAsList())
+    assertThat(schedulesQueries.getFromVSchedules().awaitAsList())
       .isEqualTo(listOf(expected1, expected2, expected3))
   }
 }

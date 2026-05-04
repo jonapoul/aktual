@@ -1,6 +1,9 @@
 import blueprint.core.commonMainDependencies
 
-plugins { id("aktual.module.viewmodel") }
+plugins {
+  id("aktual.module.viewmodel")
+  id("aktual.convention.db-test")
+}
 
 buildConfig {
   packageName("aktual.budget.transactions.vm")
@@ -26,7 +29,6 @@ kotlin {
   }
 
   androidHostTestDependencies {
-    implementation(libs.sqldelight.driver.android)
     implementation(project(":aktual-about:di"))
     implementation(project(":aktual-app:di"))
     implementation(project(":aktual-budget:data:di"))

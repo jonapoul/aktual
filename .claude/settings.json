@@ -63,18 +63,6 @@
           }
         ]
       }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Write|Edit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "cd \"$CLAUDE_PROJECT_DIR\" && ./scripts/ktfmt.sh 2>/dev/null",
-            "timeout": 30
-          }
-        ]
-      }
     ]
   }
 }

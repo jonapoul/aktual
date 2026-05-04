@@ -5,6 +5,7 @@ androidx-activity = "1.13.0"
 androidx-datastore = "1.2.1"
 androidx-lifecycle = "2.10.0"
 androidx-paging = "3.4.2"
+androidx-sqlite = "2.6.2"
 blueprint = "2.2.0-SNAPSHOT"
 burst = "2.12.2"
 composeAndroidx = "1.11.0"
@@ -43,6 +44,8 @@ androidx-paging-common = { module = "androidx.paging:paging-common", version.ref
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
+androidx-sqliteBundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "androidx-sqlite" }
+androidx-sqliteBundledJvm = { module = "androidx.sqlite:sqlite-bundled-jvm", version.ref = "androidx-sqlite" }
 androidx-test-arch = { module = "androidx.arch.core:core-testing", version = "2.2.0" }
 androidx-test-composeJunit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "composeAndroidx" }
 androidx-test-coreKtx = { module = "androidx.test:core-ktx", version = "1.7.0" }
@@ -100,12 +103,13 @@ metrox-viewmodel-compose = { module = "dev.zacsweers.metro:metrox-viewmodel-comp
 mockk = { module = "io.mockk:mockk", version = "1.14.9" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
 okio = { module = "com.squareup.okio:okio", version = "3.17.0" }
+proguard = { module = "com.guardsquare:proguard-gradle ", version = "7.9.1" }
 redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
 shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version = "1.5.0-beta02" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-dialect = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqldelight" }
-sqldelight-driver-android = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-driver-androidx = { module = "com.eygraber:sqldelight-androidx-driver", version = "0.1.1" }
 sqldelight-driver-sqlite = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-json = { module = "app.cash.sqldelight:sqlite-json-module", version.ref = "sqldelight" }
 sqldelight-primitive = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }

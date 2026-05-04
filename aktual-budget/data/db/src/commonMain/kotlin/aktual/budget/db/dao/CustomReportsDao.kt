@@ -5,6 +5,8 @@ import aktual.budget.db.CustomReports
 import aktual.budget.db.withResult
 import aktual.budget.model.CustomReportId
 import alakazam.kotlin.CoroutineContexts
+import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOneOrNull
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +20,7 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
   suspend fun insert(reports: CustomReports): Long = queries.withResult { insert(reports) }
 
   suspend operator fun get(id: CustomReportId): CustomReports? = queries.withResult {
-    getById(id).executeAsOneOrNull()
+    getById(id).awaitAsOneOrNull()
   }
 
   fun observeMetadataById(id: CustomReportId): Flow<JsonObject?> =
@@ -29,10 +31,10 @@ class CustomReportsDao(database: BudgetDatabase, private val contexts: Coroutine
       .map { it?.metadata }
       .distinctUntilChanged()
 
-  suspend fun getIds(): List<CustomReportId> = queries.withResult { getIds().executeAsList() }
+  suspend fun getIds(): List<CustomReportId> = queries.withResult { getIds().awaitAsList() }
 
   suspend fun getIdByName(name: String): CustomReportId? = queries.withResult {
-    getIdByName(name).executeAsOneOrNull()
+    getIdByName(name).awaitAsOneOrNull()
   }
 
   suspend fun deleteById(id: CustomReportId): Long = queries.withResult { delete(id) }
