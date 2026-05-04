@@ -1,5 +1,3 @@
-import blueprint.core.androidMainDependencies
-import blueprint.core.boolProperty
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
 
@@ -22,31 +20,20 @@ sqldelight {
   }
 }
 
-buildConfig {
-  forClass("DatabaseBuildConfig") {
-    packageName("aktual.budget.db")
-    buildConfigField<Boolean>(
-      "FOREIGN_KEY_CONSTRAINTS",
-      providers.boolProperty(key = "aktual.db.foreignKeyConstraints"),
-    )
-  }
-}
-
 kotlin {
   commonMainDependencies {
     api(libs.kotlinx.datetime)
     api(libs.okio)
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:model"))
+    implementation(libs.androidx.sqlite)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.coroutines)
-    implementation(libs.sqldelight.driver.sqlite)
+    implementation(libs.sqldelight.driver.androidx)
     implementation(libs.sqldelight.primitive)
     implementation(libs.sqldelight.runtime)
     implementation(project(":aktual-core:logging"))
   }
 
   commonTestDependencies { implementation(project(":aktual-test")) }
-
-  androidMainDependencies { implementation(libs.sqldelight.driver.android) }
 }

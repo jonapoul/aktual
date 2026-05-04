@@ -27,6 +27,5 @@ kotlin {
   androidMainDependencies {
     api(libs.androidx.test.coreKtx)
     api(project(":aktual-prefs:impl"))
-    implementation(libs.sqldelight.driver.android)
   }
 }
