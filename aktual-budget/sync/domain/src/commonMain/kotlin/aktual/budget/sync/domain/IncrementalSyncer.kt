@@ -9,8 +9,6 @@ import aktual.budget.model.MerkleOperations
 import aktual.budget.model.Timestamp
 import aktual.budget.prefs.BudgetLocalPreferences
 import aktual.budget.proto.SyncRequestEncoder
-import aktual.core.model.Token
-import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.Inject
 import io.ktor.utils.io.CancellationException
 import kotlin.time.Clock
@@ -21,18 +19,15 @@ import logcat.logcat
 
 @Inject
 internal class IncrementalSyncer(
-  private val apiFactory: BudgetSyncApi.Factory,
+  private val syncApi: BudgetSyncApi,
   private val encoder: SyncRequestEncoder,
   private val budgetMetadata: BudgetLocalPreferences,
-  private val prefs: AppPreferences,
   private val clock: Clock,
   private val syncDao: SyncDao,
 ) {
-  suspend fun sync(token: Token): SyncResult =
+  suspend fun sync(): SyncResult =
     try {
-      val url = prefs.serverUrl.get() ?: error("No server URL?")
-      val api = apiFactory.create(url)
-      fullSync(api, token, sinceTimestamp = null, count = 0, prevDiffTime = null)
+      fullSync(sinceTimestamp = null, count = 0, prevDiffTime = null)
     } catch (e: CancellationException) {
       throw e
     } catch (e: IOException) {
@@ -43,8 +38,6 @@ internal class IncrementalSyncer(
     }
 
   private tailrec suspend fun fullSync(
-    api: BudgetSyncApi,
-    token: Token,
     sinceTimestamp: Timestamp?,
     count: Int,
     prevDiffTime: Long?,
@@ -62,7 +55,7 @@ internal class IncrementalSyncer(
     val since = sinceTimestamp ?: budgetMetadata[LastSyncedTimestamp] ?: fiveMinutesAgo()
     val localMessages = syncDao.getMessagesSince(since)
     val requestBody = encoder(groupId, budgetId, since, localMessages)
-    val response = api.syncBudget(token, requestBody)
+    val response = syncApi.syncBudget(requestBody)
 
     val currentMerkle = syncDao.getCurrentMerkle()
     val applyResult = syncDao.applyMessages(response.messages, currentMerkle)
@@ -74,8 +67,6 @@ internal class IncrementalSyncer(
       if (count < MAX_RECURSIONS && (count < MAX_SAME_DIFF || diffTime != prevDiffTime)) {
         logcat.d { "Merkle diff at $diffTime, recursing (attempt ${count + 1})" }
         return fullSync(
-          api = api,
-          token = token,
           sinceTimestamp = Timestamp.fromMilliseconds(diffTime),
           count = count + 1,
           prevDiffTime = diffTime,

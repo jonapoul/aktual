@@ -4,20 +4,19 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.TransactionsDao
 import aktual.budget.db.transactions.GetById
-import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
-import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsFormat
 import aktual.budget.model.TransactionsSpec
+import aktual.budget.prefs.BudgetLocalPreferences
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
-import aktual.core.model.Token
-import alakazam.kotlin.CoroutineContexts
+import aktual.di.BudgetScope
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.paging.Pager
@@ -25,7 +24,6 @@ import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.PagingSource
 import androidx.paging.cachedIn
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -46,38 +44,26 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
+@Stable
 @AssistedInject
 class TransactionsViewModel(
-  @Suppress("unused") @Assisted private val token: Token,
-  @Assisted private val budgetId: BudgetId,
   @Assisted private val spec: TransactionsSpec,
-  budgetGraphs: BudgetGraphHolder,
-  contexts: CoroutineContexts,
+  private val prefs: BudgetLocalPreferences,
+  private val accountDao: AccountDao,
+  private val transactionsDao: TransactionsDao,
+  private val preferencesDao: PreferencesDao,
 ) : ViewModel(), TransactionStateSource, TransactionIdSource {
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(BudgetScope::class)
   fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(
-      @Assisted token: Token,
-      @Assisted budgetId: BudgetId,
-      @Assisted spec: TransactionsSpec,
-    ): TransactionsViewModel
+    fun create(@Assisted spec: TransactionsSpec): TransactionsViewModel
   }
 
-  // data sources
-  private val budgetGraph = budgetGraphs.require()
-  private val mAccountDao = AccountDao(budgetGraph.database)
-  private val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-  private val prefs = budgetGraph.localPreferences
-  private val syncedPrefs = PreferencesDao(budgetGraph.database, contexts)
-
-  // local data
   private val mutableLoadedAccount = MutableStateFlow<LoadedAccount>(Loading)
   private val checkedTransactionIds = MutableStateFlow(persistentMapOf<TransactionId, Boolean>())
   private var currentPagingSource: PagingSource<Int, TransactionId>? = null
 
-  // API
   val loadedAccount: StateFlow<LoadedAccount> = mutableLoadedAccount.asStateFlow()
 
   val format: StateFlow<TransactionsFormat> =
@@ -94,14 +80,12 @@ class TransactionsViewModel(
       .cachedIn(viewModelScope)
 
   init {
-    budgetGraph.throwIfWrongBudget(budgetId)
-
     when (val s = spec.accountSpec) {
       is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }
 
       is AccountSpec.SpecificAccount ->
         viewModelScope.launch {
-          val account = mAccountDao[s.id] ?: error("No account matching $s")
+          val account = accountDao[s.id] ?: error("No account matching $s")
           mutableLoadedAccount.update { SpecificAccount(account) }
         }
     }
@@ -136,7 +120,7 @@ class TransactionsViewModel(
 
   fun setPrivacyMode(privacyMode: Boolean) {
     viewModelScope.launch {
-      syncedPrefs[SyncedPrefKey.Global.IsPrivacyEnabled] = privacyMode.toString()
+      preferencesDao[SyncedPrefKey.Global.IsPrivacyEnabled] = privacyMode.toString()
     }
   }
 

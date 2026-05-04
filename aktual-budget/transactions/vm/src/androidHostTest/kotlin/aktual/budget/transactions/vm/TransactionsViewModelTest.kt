@@ -1,8 +1,6 @@
 package aktual.budget.transactions.vm
 
 import aktual.budget.db.dao.TransactionsDao
-import aktual.budget.di.BudgetGraph
-import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.AccountSpec.AllAccounts
@@ -10,7 +8,10 @@ import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionsSpec
-import aktual.core.model.AppGraph
+import aktual.di.AppGraph
+import aktual.di.AppScope
+import aktual.di.BudgetGraph
+import aktual.di.RunLevelController
 import aktual.test.coroutineContainer
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
@@ -18,7 +19,6 @@ import android.os.Looper
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingSource.LoadParams
 import assertk.assertThat
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.createDynamicGraph
 import kotlin.test.AfterTest
@@ -40,7 +40,7 @@ class TransactionsViewModelTest {
   private lateinit var contexts: CoroutineContexts
 
   // fake
-  private lateinit var appGraph: TestGraph
+  private lateinit var appGraph: TestAppGraph
 
   @AfterTest
   fun after() {
@@ -53,7 +53,7 @@ class TransactionsViewModelTest {
 
   private suspend fun TestScope.buildViewModel(spec: AccountSpec) {
     contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
-    appGraph = createDynamicGraph<TestGraph>(coroutineContainer(contexts))
+    appGraph = createDynamicGraph<TestAppGraph>(coroutineContainer(contexts))
 
     budgetGraph = appGraph.budgetGraphHolder.update(METADATA)
 
@@ -219,7 +219,7 @@ class TransactionsViewModelTest {
   }
 
   @DependencyGraph(AppScope::class)
-  internal interface TestGraph : AppGraph {
-    val budgetGraphHolder: BudgetGraphHolder
+  internal interface TestAppGraph : AppGraph {
+    val runLevelController: RunLevelController
   }
 }

@@ -5,7 +5,9 @@ import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.CategoryGroupDao
 import aktual.budget.db.dao.PayeeDao
+import aktual.di.BudgetScope
 import androidx.compose.runtime.Immutable
+import dev.zacsweers.metro.ContributesBinding
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
@@ -22,7 +24,8 @@ interface EntityListFetcher {
   suspend fun categoryGroups(): ImmutableList<EntitySummary>
 }
 
-internal class EntityListFetcherImpl(database: BudgetDatabase) : EntityListFetcher {
+@ContributesBinding(BudgetScope::class)
+class EntityListFetcherImpl(database: BudgetDatabase) : EntityListFetcher {
   private val payees = PayeeDao(database)
   private val accounts = AccountDao(database)
   private val categories = CategoryDao(database)

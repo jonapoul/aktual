@@ -10,7 +10,6 @@ import aktual.core.icons.material.Error
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
-import aktual.core.model.Token
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AlertDialog
@@ -83,12 +82,11 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun SyncBudgetDialog(
   budgetId: BudgetId,
-  token: Token,
   onSyncComplete: () -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
-  viewModel: SyncBudgetViewModel = syncBudgetViewModel(token, budgetId),
+  viewModel: SyncBudgetViewModel = syncBudgetViewModel(budgetId),
 ) {
   val invalidateAndDismiss = {
     viewModel.clearBudget()
@@ -186,10 +184,10 @@ private fun SyncBudgetDialog(
 }
 
 @Composable
-private fun syncBudgetViewModel(token: Token, budgetId: BudgetId): SyncBudgetViewModel =
+private fun syncBudgetViewModel(budgetId: BudgetId): SyncBudgetViewModel =
   assistedMetroViewModel<SyncBudgetViewModel, SyncBudgetViewModel.Factory>(
-    key = "$budgetId-$token",
-    createViewModel = { create(token, budgetId) },
+    key = budgetId.toString(),
+    createViewModel = { create(budgetId) },
   )
 
 @Composable

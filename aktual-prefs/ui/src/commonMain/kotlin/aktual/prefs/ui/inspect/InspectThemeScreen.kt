@@ -1,11 +1,11 @@
 package aktual.prefs.ui.inspect
 
-import aktual.app.nav.BackNavigator
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.OpenInNew
 import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
+import aktual.core.nav.BackNavigator
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
 import aktual.core.theme.LocalTheme

@@ -7,6 +7,7 @@ import aktual.core.theme.CustomThemeSummary
 import aktual.core.theme.ThemeApi
 import aktual.core.theme.ThemeMode
 import aktual.core.theme.toId
+import aktual.di.AppScope
 import aktual.prefs.ThemePreferences
 import aktual.prefs.asStateFlow
 import alakazam.kotlin.requireMessage
@@ -18,7 +19,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableList

@@ -10,13 +10,11 @@ optIn(EXPERIMENTAL_MATERIAL_3)
 kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:list:vm"))
+    api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
-    implementation(project(":aktual-app:nav"))
-    implementation(project(":aktual-budget:model"))
     implementation(project(":aktual-budget:sync:ui"))
     implementation(project(":aktual-core:l10n"))
-    implementation(project(":aktual-core:model"))
   }
 
-  androidMainDependencies { implementation(libs.androidx.coreKtx) }
+  androidMainDependencies { implementation(libs.androidx.core) }
 }

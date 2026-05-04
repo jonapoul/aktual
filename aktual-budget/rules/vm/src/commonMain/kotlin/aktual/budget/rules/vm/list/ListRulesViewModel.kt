@@ -3,8 +3,7 @@ package aktual.budget.rules.vm.list
 import aktual.budget.db.Rules
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.RulesDao
-import aktual.budget.db.dao.tombstone
-import aktual.budget.di.BudgetGraphHolder
+import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Operator.Is
@@ -14,14 +13,15 @@ import aktual.budget.model.Operator.NotOneOf
 import aktual.budget.model.Operator.OneOf
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
+import aktual.budget.model.tombstone
 import aktual.budget.rules.vm.NameFetcher
-import aktual.budget.rules.vm.NameFetcherImpl
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.list.CheckboxesState.Active
 import aktual.budget.rules.vm.list.CheckboxesState.Inactive
 import aktual.budget.rules.vm.list.ListRulesState.Empty
 import aktual.budget.rules.vm.list.ListRulesState.Loading
 import aktual.budget.rules.vm.score
+import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -29,9 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.launchMolecule
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
@@ -48,13 +46,12 @@ import logcat.logcat
 
 @Stable
 @ViewModelKey
-@ContributesIntoMap(AppScope::class, binding<ViewModel>())
-class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
-  private val budgetGraph = budgetGraphs.require()
-  private val rulesDao = RulesDao(budgetGraph.database)
-
-  val nameFetcher: NameFetcher = NameFetcherImpl(budgetGraph.database)
-
+@ContributesIntoMap(BudgetScope::class)
+class ListRulesViewModel(
+  private val rulesDao: RulesDao,
+  private val syncController: BudgetSyncController,
+  val nameFetcher: NameFetcher,
+) : ViewModel() {
   private val mutableRules = MutableStateFlow<ImmutableList<Rule>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableFailure = MutableStateFlow<String?>(null)
@@ -101,7 +98,7 @@ class ListRulesViewModel(budgetGraphs: BudgetGraphHolder) : ViewModel() {
   fun delete(ids: ImmutableSet<RuleId>) {
     viewModelScope.launch {
       val changes = ids.map { id -> tombstone(dataset = RULES, row = id.toString()) }
-      budgetGraph.syncController.syncChanges(changes)
+      syncController.syncChanges(changes)
       mutableCheckboxes.update { Inactive }
       reload()
       logcat.d { "Tombstoned ${ids.size} rules: $ids" }

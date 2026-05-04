@@ -1,13 +1,13 @@
 package aktual.prefs.ui.root
 
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.ThemeSettingsNavigator
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
 import aktual.budget.model.FirstDayOfWeek
 import aktual.budget.model.NumberFormat
 import aktual.core.l10n.Strings
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.ThemeSettingsNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BottomSpacing

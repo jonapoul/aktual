@@ -1,7 +1,6 @@
 package aktual.metrics.ui
 
 import aktual.api.model.metrics.GetMetricsResponse
-import aktual.app.nav.BackNavigator
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
@@ -10,6 +9,7 @@ import aktual.core.model.MB
 import aktual.core.model.TB
 import aktual.core.model.bytes
 import aktual.core.model.kB
+import aktual.core.nav.BackNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography

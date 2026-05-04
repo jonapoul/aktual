@@ -1,6 +1,5 @@
 package aktual.about.vm
 
-import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
@@ -9,6 +8,10 @@ import aktual.core.model.Bytes
 import aktual.core.model.Percent
 import aktual.core.model.bytes
 import aktual.core.theme.CustomThemeCache
+import aktual.di.AppScope
+import aktual.di.BudgetGraph
+import aktual.di.RunLevelController
+import aktual.di.RunLevelState
 import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.Stable
 import androidx.datastore.core.DataStore
@@ -16,7 +19,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import java.io.File
@@ -42,7 +44,8 @@ class ManageStorageViewModel(
   private val appDirectory: AppDirectory,
   private val contexts: CoroutineContexts,
   private val customThemeCache: CustomThemeCache,
-  private val budgetGraphHolder: BudgetGraphHolder,
+  private val runLevelState: RunLevelState,
+  private val runLevelController: RunLevelController,
   private val dataStore: DataStore<Preferences>,
 ) : ViewModel() {
 
@@ -79,7 +82,7 @@ class ManageStorageViewModel(
   fun clearAllFiles() {
     viewModelScope.launch {
       dismissDialog()
-      budgetGraphHolder.clear()
+      runLevelController.onServerCleared()
       withContext(contexts.io) {
         val root = appDirectory.get()
         with(files.fileSystem) { list(root).forEach { deleteRecursively(it) } }
@@ -93,9 +96,9 @@ class ManageStorageViewModel(
   fun clearBudget(id: BudgetId) {
     viewModelScope.launch {
       dismissDialog()
-      val wasActiveBudget = budgetGraphHolder.value?.budgetId == id
+      val wasActiveBudget = runLevelState[BudgetGraph::class]?.id == id
       if (wasActiveBudget) {
-        budgetGraphHolder.clear()
+        runLevelController.onBudgetClosed()
       }
       withContext(contexts.io) {
         val budgetDir = files.directory(id)

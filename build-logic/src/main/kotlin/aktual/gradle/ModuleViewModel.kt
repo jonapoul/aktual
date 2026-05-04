@@ -18,7 +18,7 @@ class ModuleViewModel : Plugin<Project> {
 
       kotlin {
         commonMainDependencies {
-          api(libs["androidx.lifecycle.viewmodel.core"])
+          api(libs["androidx.lifecycle.viewmodel"])
           api(libs["kotlinx.coroutines.core"])
           api(libs["kotlinx.immutable"])
           api(libs["metrox.viewmodel"])

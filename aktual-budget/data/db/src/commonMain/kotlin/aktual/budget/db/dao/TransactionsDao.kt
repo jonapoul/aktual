@@ -10,9 +10,11 @@ import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToOne
 import app.cash.sqldelight.coroutines.mapToOneOrNull
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 
+@Inject
 class TransactionsDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
   private val queries = database.transactionsQueries
 

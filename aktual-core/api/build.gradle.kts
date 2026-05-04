@@ -12,7 +12,6 @@ kotlin {
     api(libs.kotlinx.serialization.json)
     api(libs.ktor.core)
     api(project(":aktual-budget:data:encryption"))
-    api(project(":aktual-core:model"))
   }
 
   commonTestDependencies { implementation(project(":aktual-test:api")) }

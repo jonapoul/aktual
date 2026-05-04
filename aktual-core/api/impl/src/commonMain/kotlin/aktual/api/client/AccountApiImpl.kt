@@ -14,6 +14,8 @@ import aktual.api.model.account.ValidateResponse
 import aktual.core.model.Password
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.di.ServerChosenScope
+import dev.zacsweers.metro.ContributesBinding
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.ResponseException
@@ -25,8 +27,11 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.path
 
-class AccountApiImpl(private val client: HttpClient, private val serverUrl: ServerUrl) :
-  AccountApi {
+@ContributesBinding(ServerChosenScope::class)
+class AccountApiImpl(
+  @param:AktualClient private val client: HttpClient,
+  private val serverUrl: ServerUrl,
+) : AccountApi {
   private val urlProtocol = serverUrl.protocol()
 
   override suspend fun needsBootstrap(): NeedsBootstrapResponse.Success =

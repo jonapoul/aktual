@@ -5,12 +5,12 @@ package aktual.account.ui.login
 import aktual.account.domain.LoginRequester
 import aktual.account.domain.LoginResult
 import aktual.account.vm.LoginViewModel
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.ListBudgetsNavigator
-import aktual.app.nav.ServerUrlNavigator
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password
 import aktual.core.model.Token
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.ListBudgetsNavigator
+import aktual.core.nav.ServerUrlNavigator
 import aktual.prefs.AppPreferences
 import aktual.prefs.AppPreferencesImpl
 import aktual.test.TestBuildConfig
@@ -28,13 +28,12 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performImeAction
 import androidx.compose.ui.test.performTextInput
 import assertk.assertThat
-import assertk.assertions.isEqualTo
-import assertk.assertions.isNull
+import assertk.assertions.isFalse
+import assertk.assertions.isTrue
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.slot
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
@@ -57,14 +56,14 @@ class LoginScreenTest {
   private lateinit var loginRequester: LoginRequester
   private lateinit var serverUrlNavigator: ServerUrlNavigator
   private lateinit var listBudgetsNavigator: ListBudgetsNavigator
-  private var toListBudgetsToken: Token? = null
+  private var toBudgetListCalled = false
   private var toServerUrlCalled = false
 
   @BeforeTest
   fun before() {
     ShadowLog.stream = System.out
 
-    toListBudgetsToken = null
+    toBudgetListCalled = false
     toServerUrlCalled = false
     loginRequester = mockk { coEvery { fetchLoginMethods() } returns emptyList() }
     setLoginResult { LoginResult.Success(TOKEN) }
@@ -74,13 +73,9 @@ class LoginScreenTest {
         every { this@mockk.invoke() } answers { toServerUrlCalled = true }
       }
 
-    val tokenSlot = slot<Token>()
     listBudgetsNavigator =
       mockk<ListBudgetsNavigator> {
-        every { this@mockk.invoke(capture(tokenSlot)) } answers
-          {
-            toListBudgetsToken = tokenSlot.captured
-          }
+        every { this@mockk.invoke() } answers { toBudgetListCalled = true }
       }
 
     versionsStateHolder = AktualVersionsStateHolder(BUILD_CONFIG)
@@ -138,7 +133,7 @@ class LoginScreenTest {
       coVerify(exactly = 1) { loginRequester.logIn(PASSWORD, any()) }
 
       // and the navigation was triggered when it succeeded
-      assertThat(toListBudgetsToken).isEqualTo(TOKEN)
+      assertThat(toBudgetListCalled).isTrue()
     }
   }
 
@@ -168,7 +163,7 @@ class LoginScreenTest {
       coVerify(exactly = 1) { loginRequester.logIn(PASSWORD, any()) }
 
       // and the navigation was not triggered
-      assertThat(toListBudgetsToken).isNull()
+      assertThat(toBudgetListCalled).isFalse()
     }
 
     // and the login failure text is visible

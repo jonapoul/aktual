@@ -5,7 +5,6 @@ import aktual.about.vm.LicensesViewModel
 import aktual.account.vm.ChangePasswordViewModel
 import aktual.account.vm.LoginViewModel
 import aktual.account.vm.ServerUrlViewModel
-import aktual.budget.di.BudgetGraph
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.RuleId
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
@@ -22,44 +21,53 @@ import aktual.prefs.vm.root.SettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import androidx.lifecycle.ViewModel
-import app.cash.burst.InterceptTest
 import assertk.assertThat
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
+import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.test.runTest
 import logcat.LogcatLogger
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toOkioPath
 
 /** To be implemented for each target - makes sure VMs are bound as expected to DI graph */
 abstract class ViewModelSmokeTest<G : TestAppGraph> {
-  @InterceptTest val temporaryFolder = TemporaryFolder()
-
+  private lateinit var rootDir: Path
   protected lateinit var appGraph: G
-  private lateinit var budgetGraph: BudgetGraph
 
   protected abstract fun buildGraph(container: TestContainer): G
 
   @BeforeTest
   fun before() {
     optionallySkip()
-    val container = TestContainer(temporaryFolder)
-    appGraph = buildGraph(container)
-    budgetGraph = appGraph.budgetGraphBuilder.invoke(DB_METADATA)
-    appGraph.budgetGraphHolder.update { budgetGraph }
+    rootDir = createTempDirectory().toOkioPath()
+    appGraph = buildGraph(TestContainer(rootDir))
+    with(appGraph.runLevelController) {
+      init(listOf(appGraph))
+      onServerChosen(SERVER_URL)
+      onLoggedIn(LOGIN_TOKEN)
+      onBudget(DB_METADATA)
+    }
   }
 
   @AfterTest
   fun after() {
     LogcatLogger.uninstall()
-    budgetGraph.driver.close()
+    appGraph.runLevelController.close()
+    FileSystem.SYSTEM.deleteRecursively(rootDir)
   }
 
   protected abstract fun optionallySkip()
 
   @Test fun about() = testVm<AboutViewModel>()
+
+  @Test fun budgetList() = testVm<ListBudgetsViewModel>()
 
   @Test fun customThemeSettings() = testVm<CustomThemeSettingsViewModel>()
 
@@ -77,6 +85,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun reportDashboard() = testVm<ReportsDashboardViewModel>()
 
+  @Test fun reportList() = testVm<ChooseReportTypeViewModel>()
+
   @Test fun settings() = testVm<SettingsViewModel>()
 
   @Test fun themeSettings() = testVm<ThemeSettingsViewModel>()
@@ -84,25 +94,13 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun url() = testVm<ServerUrlViewModel>()
 
   @Test
-  fun budgetList() =
-    testAssistedVM<ListBudgetsViewModel, ListBudgetsViewModel.Factory> { create(LOGIN_TOKEN) }
-
-  @Test
-  fun reportList() =
-    testAssistedVM<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory> {
-      create(BUDGET_ID)
-    }
-
-  @Test
   fun syncBudget() =
-    testAssistedVM<SyncBudgetViewModel, SyncBudgetViewModel.Factory> {
-      create(LOGIN_TOKEN, BUDGET_ID)
-    }
+    testAssistedVM<SyncBudgetViewModel, SyncBudgetViewModel.Factory> { create(BUDGET_ID) }
 
   @Test
   fun transactions() =
     testAssistedVM<TransactionsViewModel, TransactionsViewModel.Factory> {
-      create(LOGIN_TOKEN, BUDGET_ID, TRANSACTIONS_SPEC)
+      create(TRANSACTIONS_SPEC)
     }
 
   @Test
@@ -113,8 +111,9 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   fun editRule() =
     testAssistedVM<EditRuleViewModel, EditRuleViewModel.Factory> { create(RuleId("abc-123")) }
 
-  protected inline fun <reified VM : ViewModel> testVm() {
-    assertThat(appGraph.viewModelProviders[VM::class])
+  protected inline fun <reified VM : ViewModel> testVm() = runTest {
+    val vmGraph = appGraph.runLevelState.viewModelGraph().first()
+    assertThat(vmGraph.viewModelProviders[VM::class])
       .isNotNull()
       .transform { provider -> provider() }
       .isInstanceOf(VM::class)
@@ -123,8 +122,9 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   protected inline fun <
     reified VM : ViewModel,
     reified F : ManualViewModelAssistedFactory,
-  > testAssistedVM(build: F.() -> VM) {
-    assertThat(appGraph.manualAssistedFactoryProviders[F::class])
+  > testAssistedVM(crossinline build: F.() -> VM) = runTest {
+    val vmGraph = appGraph.runLevelState.viewModelGraph().first()
+    assertThat(vmGraph.manualAssistedFactoryProviders[F::class])
       .isNotNull()
       .transform { provider -> provider() }
       .isInstanceOf<F>()

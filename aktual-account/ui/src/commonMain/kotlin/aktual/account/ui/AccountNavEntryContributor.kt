@@ -3,28 +3,28 @@ package aktual.account.ui
 import aktual.account.ui.login.LoginScreen
 import aktual.account.ui.password.ChangePasswordScreen
 import aktual.account.ui.url.ServerUrlScreen
-import aktual.app.nav.AktualNavStack
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.ChangePasswordNavRoute
-import aktual.app.nav.InfoNavigator
-import aktual.app.nav.ListBudgetsNavigator
-import aktual.app.nav.LoginNavRoute
-import aktual.app.nav.LoginNavigator
-import aktual.app.nav.NavEntryContributor
-import aktual.app.nav.NavScope
-import aktual.app.nav.ServerUrlNavRoute
-import aktual.app.nav.ServerUrlNavigator
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.ChangePasswordNavRoute
+import aktual.core.nav.InfoNavigator
+import aktual.core.nav.ListBudgetsNavigator
+import aktual.core.nav.LoginNavRoute
+import aktual.core.nav.LoginNavigator
+import aktual.core.nav.NavEntryContributor
+import aktual.core.nav.NavStack
+import aktual.core.nav.ServerUrlNavRoute
+import aktual.core.nav.ServerUrlNavigator
+import aktual.di.AppScope
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
-@ContributesIntoSet(NavScope::class)
+@ContributesIntoSet(AppScope::class)
 class AccountNavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: AktualNavStack<NavKey>) {
+  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
     scope.entry<ChangePasswordNavRoute> {
       ChangePasswordScreen(
         navBack = BackNavigator(stack),
-        navToListBudgets = ListBudgetsNavigator(stack),
+        toListBudgets = ListBudgetsNavigator(stack),
       )
     }
 

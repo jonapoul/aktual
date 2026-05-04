@@ -4,7 +4,10 @@ import aktual.budget.model.AccountSpec
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.TransactionsSpec
+import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+
+internal val SERVER_URL = ServerUrl("https://website.com")
 
 internal val LOGIN_TOKEN = Token("abc-123")
 

@@ -3,6 +3,7 @@ package aktual.prefs.vm.theme
 import aktual.core.model.ThemeId
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.MidnightTheme
+import aktual.di.AppScope
 import aktual.prefs.ThemePreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.vm.BooleanPreference
@@ -16,7 +17,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.persistentListOf

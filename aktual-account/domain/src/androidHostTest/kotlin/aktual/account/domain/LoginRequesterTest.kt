@@ -1,12 +1,7 @@
 package aktual.account.domain
 
 import aktual.api.client.AccountApi
-import aktual.api.client.AktualApis
-import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.ApiBuilderImpl
 import aktual.api.model.account.LoginRequest
-import aktual.core.connection.ConnectionMonitor
-import aktual.core.connection.ConnectionMonitorImpl
 import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
@@ -45,9 +40,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 internal class LoginRequesterTest {
   private lateinit var loginRequester: LoginRequester
-  private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var preferences: AppPreferences
-  private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var mockEngine: MockEngine.Queue
   private lateinit var fileSystem: FileSystem
 

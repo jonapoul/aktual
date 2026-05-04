@@ -1,15 +1,13 @@
 package aktual.budget.transactions.ui
 
-import aktual.app.nav.BackNavigator
 import aktual.budget.model.AccountSpec
-import aktual.budget.model.BudgetId
 import aktual.budget.model.TransactionsFormat
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount
 import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.budget.transactions.vm.TransactionsViewModel
-import aktual.core.model.Token
+import aktual.core.nav.BackNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.LandscapePreview
@@ -35,10 +33,8 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 @Suppress("ViewModelForwarding")
 fun TransactionsScreen(
   back: BackNavigator,
-  budgetId: BudgetId,
-  token: Token,
   spec: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
-  viewModel: TransactionsViewModel = metroViewModel(token, budgetId, spec),
+  viewModel: TransactionsViewModel = metroViewModel(spec),
 ) {
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
   val format by viewModel.format.collectAsStateWithLifecycle()
@@ -59,10 +55,10 @@ fun TransactionsScreen(
 }
 
 @Composable
-private fun metroViewModel(token: Token, budgetId: BudgetId, spec: TransactionsSpec) =
+private fun metroViewModel(spec: TransactionsSpec) =
   assistedMetroViewModel<TransactionsViewModel, TransactionsViewModel.Factory>(
-    key = "$token-$budgetId-$spec",
-    createViewModel = { create(token, budgetId, spec) },
+    key = spec.toString(),
+    createViewModel = { create(spec) },
   )
 
 @Composable

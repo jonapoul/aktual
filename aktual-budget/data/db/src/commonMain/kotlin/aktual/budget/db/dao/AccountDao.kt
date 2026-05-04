@@ -7,7 +7,9 @@ import aktual.budget.db.withResult
 import aktual.budget.model.AccountId
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
+import dev.zacsweers.metro.Inject
 
+@Inject
 class AccountDao(database: BudgetDatabase) {
   private val queries = database.accountsQueries
 

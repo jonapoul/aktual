@@ -4,23 +4,23 @@ import aktual.about.ui.info.InfoScreen
 import aktual.about.ui.licenses.LicensesScreen
 import aktual.about.ui.storage.ManageStorageScreen
 import aktual.about.vm.StorageNavEvent
-import aktual.app.nav.AktualNavStack
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.BudgetNavRailNavRoute
-import aktual.app.nav.InfoNavRoute
-import aktual.app.nav.LicensesNavRoute
-import aktual.app.nav.LicensesNavigator
-import aktual.app.nav.ManageStorageNavRoute
-import aktual.app.nav.ManageStorageNavigator
-import aktual.app.nav.NavEntryContributor
-import aktual.app.nav.NavScope
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.BudgetNavRailNavRoute
+import aktual.core.nav.InfoNavRoute
+import aktual.core.nav.LicensesNavRoute
+import aktual.core.nav.LicensesNavigator
+import aktual.core.nav.ManageStorageNavRoute
+import aktual.core.nav.ManageStorageNavigator
+import aktual.core.nav.NavEntryContributor
+import aktual.core.nav.NavStack
+import aktual.di.AppScope
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
-@ContributesIntoSet(NavScope::class)
+@ContributesIntoSet(AppScope::class)
 class AboutNavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: AktualNavStack<NavKey>) {
+  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
     scope.entry<InfoNavRoute> {
       InfoScreen(
         back = BackNavigator(stack),
@@ -39,7 +39,7 @@ class AboutNavEntryContributor : NavEntryContributor {
     }
   }
 
-  private fun adjustStackIfInvalidated(stack: AktualNavStack<NavKey>, event: StorageNavEvent) {
+  private fun adjustStackIfInvalidated(stack: NavStack<NavKey>, event: StorageNavEvent) {
     when (event) {
       is StorageNavEvent.ActiveBudgetCleared -> {
         stack.removeIf { it is BudgetNavRailNavRoute }

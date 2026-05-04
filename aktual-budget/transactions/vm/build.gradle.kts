@@ -20,19 +20,16 @@ buildConfig {
 kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:data:db"))
-    api(project(":aktual-budget:model"))
+    api(project(":aktual-budget:data:prefs"))
     api(libs.alakazam.kotlin)
     api(libs.androidx.paging.common)
     api(libs.kotlinx.datetime)
-    implementation(project(":aktual-budget:di"))
-    implementation(project(":aktual-core:model"))
     implementation(project(":aktual-prefs"))
   }
 
   androidHostTestDependencies {
-    implementation(project(":aktual-about:di"))
     implementation(project(":aktual-app:di"))
-    implementation(project(":aktual-budget:data:di"))
+    implementation(project(":aktual-di:runlevel"))
     implementation(project(":aktual-test"))
   }
 }

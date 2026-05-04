@@ -25,7 +25,7 @@ kotlin {
   }
 
   androidMainDependencies {
-    api(libs.androidx.test.coreKtx)
+    api(libs.androidx.test.core)
     api(project(":aktual-prefs:impl"))
   }
 }

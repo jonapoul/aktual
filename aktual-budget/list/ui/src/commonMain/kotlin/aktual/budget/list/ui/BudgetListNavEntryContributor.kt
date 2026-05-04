@@ -1,25 +1,24 @@
 package aktual.budget.list.ui
 
-import aktual.app.nav.AktualNavStack
-import aktual.app.nav.BudgetNavRailNavigator
-import aktual.app.nav.ChangePasswordNavigator
-import aktual.app.nav.InfoNavigator
-import aktual.app.nav.ListBudgetsNavRoute
-import aktual.app.nav.MetricsNavigator
-import aktual.app.nav.NavEntryContributor
-import aktual.app.nav.NavScope
-import aktual.app.nav.ServerUrlNavigator
-import aktual.app.nav.SettingsNavigator
+import aktual.core.nav.BudgetNavRailNavigator
+import aktual.core.nav.ChangePasswordNavigator
+import aktual.core.nav.InfoNavigator
+import aktual.core.nav.ListBudgetsNavRoute
+import aktual.core.nav.MetricsNavigator
+import aktual.core.nav.NavEntryContributor
+import aktual.core.nav.NavStack
+import aktual.core.nav.ServerUrlNavigator
+import aktual.core.nav.SettingsNavigator
+import aktual.di.AppScope
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
-@ContributesIntoSet(NavScope::class)
+@ContributesIntoSet(AppScope::class)
 class BudgetListNavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: AktualNavStack<NavKey>) {
+  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
     scope.entry<ListBudgetsNavRoute> { route ->
       ListBudgetsScreen(
-        token = route.token,
         toInfo = InfoNavigator(stack),
         toChangePassword = ChangePasswordNavigator(stack),
         toSettings = SettingsNavigator(stack),
