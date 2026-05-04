@@ -14,6 +14,8 @@ import aktual.core.model.AppGraph
 import aktual.test.coroutineContainer
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
+import android.os.Looper
+import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingSource.LoadParams
 import assertk.assertThat
 import dev.zacsweers.metro.AppScope
@@ -21,12 +23,14 @@ import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.createDynamicGraph
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
+import org.robolectric.Shadows
 
 @RunWith(RobolectricTestRunner::class)
 class TransactionsViewModelTest {
@@ -40,6 +44,10 @@ class TransactionsViewModelTest {
 
   @AfterTest
   fun after() {
+    // viewModelScope holds SQLDelight Flow subscriptions; cancel it and flush the main looper
+    // so connections are released before we close the driver
+    if (::viewModel.isInitialized) viewModel.viewModelScope.cancel()
+    Shadows.shadowOf(Looper.getMainLooper()).idle()
     budgetGraph.driver.close()
   }
 
