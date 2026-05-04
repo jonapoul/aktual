@@ -49,7 +49,7 @@ class ConventionDetekt : Plugin<Project> {
       }
 
       detektTasks.configureEach { t ->
-        t.enabled = !name.contains("release", ignoreCase = true)
+        t.enabled = !t.name.contains("release", ignoreCase = true)
 
         t.reports { r ->
           r.html.required.set(true)
