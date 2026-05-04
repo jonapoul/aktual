@@ -4,14 +4,14 @@ import kotlinx.serialization.Serializable
 
 @JvmInline
 @Serializable
-value class AccountId(private val value: String) : Comparable<AccountId> {
+value class AccountId(val value: String) : Comparable<AccountId> {
   override fun toString(): String = value
 
   override fun compareTo(other: AccountId) = value.compareTo(other.value)
 }
 
 @JvmInline
-value class BankId(private val value: String) : Comparable<BankId> {
+value class BankId(val value: String) : Comparable<BankId> {
   override fun toString(): String = value
 
   override fun compareTo(other: BankId) = value.compareTo(other.value)
@@ -27,7 +27,7 @@ value class BudgetId(val value: String) : Comparable<BudgetId> {
 
 @JvmInline
 @Serializable
-value class CategoryId(private val value: String) : Comparable<CategoryId> {
+value class CategoryId(val value: String) : Comparable<CategoryId> {
   override fun toString(): String = value
 
   override fun compareTo(other: CategoryId) = value.compareTo(other.value)
@@ -35,7 +35,7 @@ value class CategoryId(private val value: String) : Comparable<CategoryId> {
 
 @JvmInline
 @Serializable
-value class CategoryGroupId(private val value: String) : Comparable<CategoryGroupId> {
+value class CategoryGroupId(val value: String) : Comparable<CategoryGroupId> {
   override fun toString(): String = value
 
   override fun compareTo(other: CategoryGroupId) = value.compareTo(other.value)
@@ -50,7 +50,7 @@ value class CustomReportId(val value: String) : Comparable<CustomReportId> {
 }
 
 @JvmInline
-value class DashboardPageId(private val value: String) : Comparable<DashboardPageId> {
+value class DashboardPageId(val value: String) : Comparable<DashboardPageId> {
   override fun toString(): String = value
 
   override fun compareTo(other: DashboardPageId) = value.compareTo(other.value)
@@ -58,14 +58,14 @@ value class DashboardPageId(private val value: String) : Comparable<DashboardPag
 
 @JvmInline
 @Serializable
-value class PayeeId(private val value: String) : Comparable<PayeeId> {
+value class PayeeId(val value: String) : Comparable<PayeeId> {
   override fun toString(): String = value
 
   override fun compareTo(other: PayeeId) = value.compareTo(other.value)
 }
 
 @JvmInline
-value class PayeeLocationId(private val value: String) : Comparable<PayeeLocationId> {
+value class PayeeLocationId(val value: String) : Comparable<PayeeLocationId> {
   override fun toString(): String = value
 
   override fun compareTo(other: PayeeLocationId) = value.compareTo(other.value)
@@ -73,7 +73,7 @@ value class PayeeLocationId(private val value: String) : Comparable<PayeeLocatio
 
 @JvmInline
 @Serializable
-value class RuleId(private val value: String) : Comparable<RuleId> {
+value class RuleId(val value: String) : Comparable<RuleId> {
   override fun toString(): String = value
 
   override fun compareTo(other: RuleId) = value.compareTo(other.value)
@@ -81,35 +81,35 @@ value class RuleId(private val value: String) : Comparable<RuleId> {
 
 @JvmInline
 @Serializable
-value class ScheduleId(private val value: String) : Comparable<ScheduleId> {
+value class ScheduleId(val value: String) : Comparable<ScheduleId> {
   override fun toString(): String = value
 
   override fun compareTo(other: ScheduleId) = value.compareTo(other.value)
 }
 
 @JvmInline
-value class ScheduleNextDateId(private val value: String) : Comparable<ScheduleNextDateId> {
+value class ScheduleNextDateId(val value: String) : Comparable<ScheduleNextDateId> {
   override fun toString(): String = value
 
   override fun compareTo(other: ScheduleNextDateId) = value.compareTo(other.value)
 }
 
 @JvmInline
-value class TagId(private val value: String) : Comparable<TagId> {
+value class TagId(val value: String) : Comparable<TagId> {
   override fun toString(): String = value
 
   override fun compareTo(other: TagId) = value.compareTo(other.value)
 }
 
 @JvmInline
-value class TransactionId(private val value: String) : Comparable<TransactionId> {
+value class TransactionId(val value: String) : Comparable<TransactionId> {
   override fun toString(): String = value
 
   override fun compareTo(other: TransactionId) = value.compareTo(other.value)
 }
 
 @JvmInline
-value class TransactionFilterId(private val value: String) : Comparable<TransactionFilterId> {
+value class TransactionFilterId(val value: String) : Comparable<TransactionFilterId> {
   override fun toString(): String = value
 
   override fun compareTo(other: TransactionFilterId) = value.compareTo(other.value)
@@ -117,14 +117,14 @@ value class TransactionFilterId(private val value: String) : Comparable<Transact
 
 @JvmInline
 @Serializable
-value class WidgetId(private val value: String) : Comparable<WidgetId> {
+value class WidgetId(val value: String) : Comparable<WidgetId> {
   override fun toString(): String = value
 
   override fun compareTo(other: WidgetId) = value.compareTo(other.value)
 }
 
 @JvmInline
-value class ZeroBudgetMonthId(private val value: String) : Comparable<ZeroBudgetMonthId> {
+value class ZeroBudgetMonthId(val value: String) : Comparable<ZeroBudgetMonthId> {
   override fun toString(): String = value
 
   override fun compareTo(other: ZeroBudgetMonthId) = value.compareTo(other.value)
