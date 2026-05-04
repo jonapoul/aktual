@@ -20,7 +20,6 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -29,10 +28,6 @@ import org.robolectric.RobolectricTestRunner
 class BudgetGraphHolderTest {
   private lateinit var holder: BudgetGraphHolder
 
-  private fun TestScope.before() {
-    holder = createDynamicGraph<TestGraph>(coroutineContainer()).budgetGraphHolder
-  }
-
   @AfterTest
   fun after() {
     holder.close()
@@ -40,7 +35,7 @@ class BudgetGraphHolderTest {
 
   @Test
   fun `Close database when updating`() = runTest {
-    before()
+    holder = createDynamicGraph<TestGraph>(coroutineContainer()).budgetGraphHolder
 
     val bankId = BankId("my-bank-id")
     val metadata1 = metadata(id = "abc-123")
