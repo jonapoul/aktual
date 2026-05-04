@@ -40,7 +40,7 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
     getPositionAndSize().awaitAsList()
   }
 
-  suspend fun updateMeta(id: WidgetId, meta: JsonObject) = queries.withResult {
+  suspend fun updateMeta(id: WidgetId, meta: JsonObject) = queries.withoutResult {
     updateMeta(meta, id)
   }
 

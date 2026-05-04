@@ -7,6 +7,7 @@ import aktual.budget.model.Message
 import aktual.budget.model.MessageEnvelope
 import aktual.budget.model.MessageValue
 import aktual.budget.model.Timestamp
+import app.cash.sqldelight.async.coroutines.await
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.db.SqlDriver
@@ -158,29 +159,32 @@ class SyncDao(
    * back to INSERT. Skips the "prefs" pseudo-dataset which is handled separately by the upstream
    * protocol.
    */
-  private fun applyToTable(dataset: String, row: String, column: String, value: MessageValue) {
+  private suspend fun applyToTable(
+    dataset: String,
+    row: String,
+    column: String,
+    value: MessageValue,
+  ) {
     if (dataset == PREFS_DATASET) return
 
     // Try UPDATE first
     val updated =
-      driver
-        .execute(
-          identifier = null,
-          sql = "UPDATE $dataset SET $column = ? WHERE id = ?",
-          parameters = 2,
-        ) {
-          when (value) {
-            is MessageValue.Number -> bindLong(0, value.value)
-            is MessageValue.String -> bindString(0, value.value)
-            MessageValue.Null -> bindString(0, null)
-          }
-          bindString(1, row)
+      driver.await(
+        identifier = null,
+        sql = "UPDATE $dataset SET $column = ? WHERE id = ?",
+        parameters = 2,
+      ) {
+        when (value) {
+          is MessageValue.Number -> bindLong(0, value.value)
+          is MessageValue.String -> bindString(0, value.value)
+          MessageValue.Null -> bindString(0, null)
         }
-        .value
+        bindString(1, row)
+      }
 
     // If no rows updated, INSERT
     if (updated == 0L) {
-      driver.execute(
+      driver.await(
         identifier = null,
         sql = "INSERT INTO $dataset (id, $column) VALUES (?, ?)",
         parameters = 2,

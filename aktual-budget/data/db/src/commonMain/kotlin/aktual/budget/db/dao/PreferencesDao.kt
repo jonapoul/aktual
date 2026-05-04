@@ -1,7 +1,6 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.PreferencesQueries
 import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.SyncedPrefKey
@@ -19,15 +18,15 @@ import kotlinx.coroutines.flow.map
 class PreferencesDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
   private val queries = database.preferencesQueries
 
-  suspend fun getAll(): Map<SyncedPrefKey, String?> = withResult {
+  suspend fun getAll(): Map<SyncedPrefKey, String?> = queries.withResult {
     getAll().awaitAsList().associate { (key, value) -> key to value }
   }
 
-  suspend operator fun get(key: SyncedPrefKey): String? = withResult {
+  suspend operator fun get(key: SyncedPrefKey): String? = queries.withResult {
     getValue(key).awaitAsOneOrNull()?.value_
   }
 
-  suspend operator fun set(key: SyncedPrefKey, value: String?) = withoutResult {
+  suspend operator fun set(key: SyncedPrefKey, value: String?) = queries.withoutResult {
     setValue(key, value)
   }
 
@@ -38,10 +37,4 @@ class PreferencesDao(database: BudgetDatabase, private val contexts: CoroutineCo
       .mapToOneOrNull(contexts.default)
       .map { it?.value_ }
       .distinctUntilChanged()
-
-  suspend fun <R> withResult(query: suspend PreferencesQueries.() -> R): R =
-    queries.withResult(query)
-
-  suspend fun withoutResult(query: suspend PreferencesQueries.() -> Unit) =
-    queries.withoutResult(query)
 }

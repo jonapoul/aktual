@@ -2,6 +2,7 @@ package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.transactions.GetById
+import aktual.budget.db.withResult
 import aktual.budget.model.AccountId
 import aktual.budget.model.TransactionId
 import alakazam.kotlin.CoroutineContexts
@@ -18,14 +19,17 @@ class TransactionsDao(database: BudgetDatabase, private val contexts: CoroutineC
   fun observeById(id: TransactionId): Flow<GetById?> =
     queries.getById(id).asFlow().mapToOneOrNull(contexts.default).distinctUntilChanged()
 
-  suspend fun getIdsPaged(limit: Long, offset: Long): List<TransactionId> =
-    queries.getIdsPaged(limit, offset).awaitAsList()
+  suspend fun getIdsPaged(limit: Long, offset: Long): List<TransactionId> = queries.withResult {
+    getIdsPaged(limit, offset).awaitAsList()
+  }
 
   suspend fun getIdsByAccountPaged(
     account: AccountId,
     limit: Long,
     offset: Long,
-  ): List<TransactionId> = queries.getIdsByAccountPaged(account, limit, offset).awaitAsList()
+  ): List<TransactionId> = queries.withResult {
+    getIdsByAccountPaged(account, limit, offset).awaitAsList()
+  }
 
   fun observeCount(): Flow<Long> =
     queries.getIdsCount().asFlow().mapToOne(contexts.default).distinctUntilChanged()

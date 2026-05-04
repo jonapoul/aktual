@@ -10,9 +10,9 @@ import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 class RulesDao(database: BudgetDatabase) {
   private val queries = database.rulesQueries
 
-  suspend fun getAll(): List<Rules> = queries.getAll().awaitAsList()
+  suspend fun getAll(): List<Rules> = queries.withResult { getAll().awaitAsList() }
 
-  suspend operator fun get(id: RuleId): Rules? = queries.get(id).awaitAsOneOrNull()
+  suspend operator fun get(id: RuleId): Rules? = queries.withResult { get(id).awaitAsOneOrNull() }
 
   suspend fun tombstone(ids: Set<RuleId>): Long = queries.withResult { tombstone(ids) }
 
