@@ -58,7 +58,7 @@ class ConventionTest : Plugin<Project> {
         // To work around https://github.com/gradle/gradle/issues/33619
         t.failOnNoDiscoveredTests.set(false)
 
-        if (name.contains("release", ignoreCase = true)) {
+        if (t.name.contains("release", ignoreCase = true)) {
           t.enabled = false
         }
 
