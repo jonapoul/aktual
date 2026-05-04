@@ -1,0 +1,4 @@
+# Native libraries extracted from sqlite-bundled-jvm at build time — not committed
+*.so
+*.dylib
+*.dll
