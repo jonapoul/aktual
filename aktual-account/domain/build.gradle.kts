@@ -1,3 +1,4 @@
+import aktual.gradle.dsl.androidHostTestDependencies
 import blueprint.core.commonMainDependencies
 import blueprint.core.commonTestDependencies
 

@@ -1,14 +1,21 @@
 import dev.detekt.gradle.Detekt
 
 plugins {
-  `kotlin-dsl`
+  `java-gradle-plugin`
+  alias(libs.plugins.kotlin.jvm)
   alias(libs.plugins.detekt)
 }
 
 val javaFile = layout.projectDirectory.file("../.java-version")
 val jdkVersion = providers.fileContents(javaFile).asText.map { it.trim().toInt() }
 
-kotlin { jvmToolchain(jdkVersion.get()) }
+kotlin {
+  jvmToolchain(jdkVersion.get())
+  compilerOptions {
+    allWarningsAsErrors.set(true)
+    freeCompilerArgs.addAll("-Xcontext-parameters")
+  }
+}
 
 detekt {
   config.from(file("../config/detekt.yml"))
@@ -46,7 +53,7 @@ dependencies {
   detektPlugins(libs.detektGradle)
 }
 
-tasks.validatePlugins {
+tasks.named("validatePlugins", ValidatePlugins::class.java).configure {
   enableStricterValidation = true
   failOnWarning = true
 }
