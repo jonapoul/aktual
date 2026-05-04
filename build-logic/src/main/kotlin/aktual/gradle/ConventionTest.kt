@@ -31,8 +31,8 @@ class ConventionTest : Plugin<Project> {
       }
 
       extensions.configure(BuildConfigExtension::class) {
-        sourceSets.named("test") {
-          forClass("Resources") { spec ->
+        sourceSets.named("test") { ss ->
+          ss.forClass("Resources") { spec ->
             spec.packageName("aktual.test")
             spec.useKotlinOutput { o -> o.topLevelConstants = true }
             spec.buildConfigField(
