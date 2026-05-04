@@ -1,4 +1,4 @@
-package aktual.gradle
+package aktual.gradle.dsl
 
 import org.gradle.api.Project
 

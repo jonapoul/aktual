@@ -1,5 +1,8 @@
 package aktual.gradle
 
+import aktual.gradle.dsl.apply
+import aktual.gradle.dsl.configure
+import aktual.gradle.dsl.withType
 import app.cash.burst.gradle.BurstPlugin
 import com.github.gmazzo.buildconfig.BuildConfigExtension
 import com.github.gmazzo.buildconfig.BuildConfigPlugin
@@ -11,10 +14,6 @@ import org.gradle.api.tasks.testing.logging.TestExceptionFormat.FULL
 import org.gradle.api.tasks.testing.logging.TestLogEvent.FAILED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.PASSED
 import org.gradle.api.tasks.testing.logging.TestLogEvent.SKIPPED
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.buildConfigField
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.withType
 import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
@@ -32,11 +31,12 @@ class ConventionTest : Plugin<Project> {
       }
 
       extensions.configure(BuildConfigExtension::class) {
-        sourceSets.named("test") {
-          forClass("Resources") {
-            packageName("aktual.test")
-            useKotlinOutput { topLevelConstants = true }
-            buildConfigField<File>(
+        sourceSets.named("test") { ss ->
+          ss.forClass("Resources") { spec ->
+            spec.packageName("aktual.test")
+            spec.useKotlinOutput { o -> o.topLevelConstants = true }
+            spec.buildConfigField(
+              File::class.java,
               "RESOURCES_DIR",
               layout.projectDirectory.dir("src/commonTest/resources").asFile,
             )
@@ -44,32 +44,32 @@ class ConventionTest : Plugin<Project> {
         }
       }
 
-      val testTasks = tasks.withType<Test>()
+      val testTasks = tasks.withType(Test::class)
 
-      tasks.register("testAll") {
-        group = VERIFICATION_GROUP
-        dependsOn(testTasks)
+      tasks.register("testAll") { t ->
+        t.group = VERIFICATION_GROUP
+        t.dependsOn(testTasks)
       }
 
-      testTasks.configureEach {
+      testTasks.configureEach { t ->
         // Suppresses mockk warning - see https://github.com/mockk/mockk/issues/1171
-        jvmArgs("-XX:+EnableDynamicAgentLoading")
+        t.jvmArgs("-XX:+EnableDynamicAgentLoading")
 
         // To work around https://github.com/gradle/gradle/issues/33619
-        failOnNoDiscoveredTests.set(false)
+        t.failOnNoDiscoveredTests.set(false)
 
         if (name.contains("release", ignoreCase = true)) {
-          enabled = false
+          t.enabled = false
         }
 
-        testLogging {
-          events = setOf(PASSED, SKIPPED, FAILED)
-          exceptionFormat = FULL
-          showCauses = true
-          showExceptions = true
-          showStackTraces = true
-          showStandardStreams = false
-          displayGranularity = 2
+        t.testLogging { tl ->
+          tl.events = setOf(PASSED, SKIPPED, FAILED)
+          tl.exceptionFormat = FULL
+          tl.showCauses = true
+          tl.showExceptions = true
+          tl.showStackTraces = true
+          tl.showStandardStreams = false
+          tl.displayGranularity = 2
         }
       }
     }

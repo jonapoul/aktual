@@ -1,17 +1,10 @@
-package aktual.gradle
+package aktual.gradle.dsl
 
 import blueprint.core.get
 import blueprint.core.libs
-import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.MinimalExternalModuleDependency
-import org.gradle.api.plugins.ExtensionAware
 import org.gradle.api.provider.Provider
-import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-
-internal fun ExtensionAware.kotlin(action: Action<KotlinMultiplatformExtension>) =
-  extensions.configure(KotlinMultiplatformExtension::class, action)
 
 internal val Project.testLibraries: List<Provider<MinimalExternalModuleDependency>>
   get() =

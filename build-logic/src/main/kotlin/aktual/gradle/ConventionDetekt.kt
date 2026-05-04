@@ -2,6 +2,11 @@
 
 package aktual.gradle
 
+import aktual.gradle.dsl.apply
+import aktual.gradle.dsl.configure
+import aktual.gradle.dsl.dependencies
+import aktual.gradle.dsl.invoke
+import aktual.gradle.dsl.withType
 import blueprint.core.get
 import blueprint.core.libs
 import dev.detekt.gradle.Detekt
@@ -10,19 +15,14 @@ import dev.detekt.gradle.plugin.DetektPlugin
 import dev.detekt.gradle.report.ReportMergeTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.dependencies
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.withType
 import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
 
 class ConventionDetekt : Plugin<Project> {
   override fun apply(target: Project) =
     with(target) {
-      with(plugins) { apply(DetektPlugin::class) }
+      pluginManager.apply(DetektPlugin::class)
 
-      extensions.configure<DetektExtension> {
+      extensions.configure(DetektExtension::class) {
         with(rootProject.isolated.projectDirectory) {
           config.from(file("config/detekt.yml"), file("config/detekt-compose.yml"))
         }
@@ -33,36 +33,36 @@ class ConventionDetekt : Plugin<Project> {
         debug.set(false)
       }
 
-      val detektTasks = tasks.withType<Detekt>()
+      val detektTasks = tasks.withType(Detekt::class)
 
-      tasks.register("detektCheck") {
-        group = VERIFICATION_GROUP
-        dependsOn(detektTasks)
+      tasks.register("detektCheck") { t ->
+        t.group = VERIFICATION_GROUP
+        t.dependsOn(detektTasks)
       }
 
       val detektReportMergeSarif =
-        rootProject.tasks.named("detektReportMergeSarif", ReportMergeTask::class)
+        rootProject.tasks.named("detektReportMergeSarif", ReportMergeTask::class.java)
 
       @Suppress("NoNameShadowing")
-      detektReportMergeSarif.configure {
-        input.from(detektTasks.map { it.reports.sarif.outputLocation })
+      detektReportMergeSarif.configure { t ->
+        t.input.from(detektTasks.map { it.reports.sarif.outputLocation })
       }
 
-      detektTasks.configureEach {
-        enabled = !name.contains("release", ignoreCase = true)
+      detektTasks.configureEach { t ->
+        t.enabled = !name.contains("release", ignoreCase = true)
 
-        reports {
-          html.required.set(true)
-          sarif.required.set(true)
-          checkstyle.required.set(false)
-          markdown.required.set(false)
+        t.reports { r ->
+          r.html.required.set(true)
+          r.sarif.required.set(true)
+          r.checkstyle.required.set(false)
+          r.markdown.required.set(false)
         }
 
-        exclude { node ->
+        t.exclude { node ->
           !node.isDirectory && node.file.absolutePath.contains("generated", ignoreCase = true)
         }
 
-        finalizedBy(detektReportMergeSarif)
+        t.finalizedBy(detektReportMergeSarif)
       }
 
       dependencies { "detektPlugins"(libs["detektCompose"]) }
