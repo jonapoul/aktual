@@ -61,6 +61,7 @@ gradlePlugin {
       }
 
     "aktual.convention.compose"(impl = "aktual.gradle.ConventionCompose")
+    "aktual.convention.db-test"(impl = "aktual.gradle.ConventionDatabaseTest")
     "aktual.convention.idea"(impl = "aktual.gradle.ConventionIdea")
     "aktual.convention.kotlin"(impl = "aktual.gradle.ConventionKotlinJvm")
     "aktual.convention.style"(impl = "aktual.gradle.ConventionStyle")

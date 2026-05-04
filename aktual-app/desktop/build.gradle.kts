@@ -35,6 +35,7 @@ nucleus {
       )
 
     buildTypes.release.proguard {
+      version = libs.proguard.map { it.version }
       obfuscate = true
       optimize = true
       configurationFiles.from(file("proguard-rules.pro"), file("../common-rules.pro"))

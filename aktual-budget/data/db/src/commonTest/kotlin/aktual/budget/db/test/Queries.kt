@@ -15,13 +15,12 @@ import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.ScheduleJsonPathIndex
 import aktual.budget.model.ScheduleNextDateId
+import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import kotlin.time.Instant
 import kotlinx.datetime.LocalDate
 
 internal suspend fun BudgetDatabase.getAccountById(id: AccountId): Accounts? =
-  accountsQueries.withResult {
-    getById(id).executeAsOneOrNull()
-  }
+  accountsQueries.getById(id).awaitAsOneOrNull()
 
 internal suspend fun BudgetDatabase.insertAccounts(vararg accounts: Accounts) =
   accountsQueries.withoutResult {
@@ -45,7 +44,7 @@ internal suspend fun BudgetDatabase.insertBanks(vararg banks: Banks) = banksQuer
 }
 
 internal suspend fun BudgetDatabase.getMetaValue(key: String): String? = metaQueries.withResult {
-  getValue(key).executeAsOneOrNull()?.value_
+  getValue(key).awaitAsOneOrNull()?.value_
 }
 
 internal suspend fun BudgetDatabase.insertMeta(key: String, value: String) =

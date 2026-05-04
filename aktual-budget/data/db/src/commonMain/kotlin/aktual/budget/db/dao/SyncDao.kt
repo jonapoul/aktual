@@ -7,6 +7,9 @@ import aktual.budget.model.Message
 import aktual.budget.model.MessageEnvelope
 import aktual.budget.model.MessageValue
 import aktual.budget.model.Timestamp
+import app.cash.sqldelight.async.coroutines.await
+import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.db.SqlDriver
 import dev.zacsweers.metro.Inject
 import kotlin.time.Clock
@@ -70,8 +73,8 @@ class SyncDao(
   }
 
   /** Fetch all CRDT messages with timestamps after [since]. */
-  fun getMessagesSince(since: Timestamp): List<Message> =
-    crdtQueries.getMessagesSince(since).executeAsList().map { row ->
+  suspend fun getMessagesSince(since: Timestamp): List<Message> =
+    crdtQueries.getMessagesSince(since).awaitAsList().map { row ->
       Message(
         dataset = row.dataset,
         row = row.row,
@@ -127,8 +130,8 @@ class SyncDao(
   }
 
   /** Read the current merkle trie from the messages_clock table. */
-  fun getCurrentMerkle(): JsonObject {
-    val row = clockQueries.getFirst().executeAsOneOrNull() ?: return MerkleOperations.emptyTrie()
+  suspend fun getCurrentMerkle(): JsonObject {
+    val row = clockQueries.getFirst().awaitAsOneOrNull() ?: return MerkleOperations.emptyTrie()
     val clock = row.clock ?: return MerkleOperations.emptyTrie()
     return clock[MERKLE_KEY]?.jsonObject ?: MerkleOperations.emptyTrie()
   }
@@ -138,12 +141,12 @@ class SyncDao(
    * message is "old" if a local message with the same (dataset, row, column) and an equal-or-newer
    * timestamp already exists -- meaning our local data is already up to date for that cell.
    */
-  private fun compareMessages(
+  private suspend fun compareMessages(
     envelopes: List<MessageEnvelope>
   ): List<Pair<MessageEnvelope, Boolean>> = envelopes.mapNotNull { envelope ->
     val msg = envelope.content
     val existing =
-      crdtQueries.getTimestamp(msg.dataset, msg.row, msg.column, envelope.timestamp).executeAsList()
+      crdtQueries.getTimestamp(msg.dataset, msg.row, msg.column, envelope.timestamp).awaitAsList()
     when {
       existing.isEmpty() -> envelope to false // New message
       existing.first() != envelope.timestamp -> envelope to true // Old message (local is newer)
@@ -156,29 +159,32 @@ class SyncDao(
    * back to INSERT. Skips the "prefs" pseudo-dataset which is handled separately by the upstream
    * protocol.
    */
-  private fun applyToTable(dataset: String, row: String, column: String, value: MessageValue) {
+  private suspend fun applyToTable(
+    dataset: String,
+    row: String,
+    column: String,
+    value: MessageValue,
+  ) {
     if (dataset == PREFS_DATASET) return
 
     // Try UPDATE first
     val updated =
-      driver
-        .execute(
-          identifier = null,
-          sql = "UPDATE $dataset SET $column = ? WHERE id = ?",
-          parameters = 2,
-        ) {
-          when (value) {
-            is MessageValue.Number -> bindLong(0, value.value)
-            is MessageValue.String -> bindString(0, value.value)
-            MessageValue.Null -> bindString(0, null)
-          }
-          bindString(1, row)
+      driver.await(
+        identifier = null,
+        sql = "UPDATE $dataset SET $column = ? WHERE id = ?",
+        parameters = 2,
+      ) {
+        when (value) {
+          is MessageValue.Number -> bindLong(0, value.value)
+          is MessageValue.String -> bindString(0, value.value)
+          MessageValue.Null -> bindString(0, null)
         }
-        .value
+        bindString(1, row)
+      }
 
     // If no rows updated, INSERT
     if (updated == 0L) {
-      driver.execute(
+      driver.await(
         identifier = null,
         sql = "INSERT INTO $dataset (id, $column) VALUES (?, ?)",
         parameters = 2,
@@ -194,14 +200,14 @@ class SyncDao(
   }
 
   /** Read the current clock timestamp from the messages_clock table, or a zero-epoch fallback. */
-  private fun getClockTimestamp(): Timestamp {
-    val clock = clockQueries.getFirst().executeAsOneOrNull()?.clock ?: return EPOCH_TIMESTAMP
+  private suspend fun getClockTimestamp(): Timestamp {
+    val clock = clockQueries.getFirst().awaitAsOneOrNull()?.clock ?: return EPOCH_TIMESTAMP
     val raw = clock[TIMESTAMP_KEY]?.jsonPrimitive?.contentOrNull ?: return EPOCH_TIMESTAMP
     return Timestamp.parse(raw)
   }
 
   private suspend fun saveClock(merkle: JsonObject, clockTimestamp: Timestamp? = null) {
-    val existing = clockQueries.getFirst().executeAsOneOrNull()
+    val existing = clockQueries.getFirst().awaitAsOneOrNull()
     val updatedClock = buildJsonObject {
       existing?.clock?.forEach(::put)
       put(MERKLE_KEY, merkle)

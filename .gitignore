@@ -11,3 +11,8 @@ symlinks/
 
 # Atlas charts
 *.dot
+
+# Native libraries extracted from sqlite-bundled-android at build time for tests
+*.so
+*.dylib
+*.dll

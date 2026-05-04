@@ -1,6 +1,5 @@
 package aktual.budget.di
 
-import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
@@ -8,6 +7,8 @@ import aktual.budget.model.DbMetadata
 import aktual.core.model.AppGraph
 import aktual.test.coroutineContainer
 import aktual.test.messageContains
+import android.database.SQLException
+import app.cash.sqldelight.async.coroutines.awaitAsList
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasSize
@@ -20,7 +21,6 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.uuid.Uuid
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -29,10 +29,6 @@ import org.robolectric.RobolectricTestRunner
 class BudgetGraphHolderTest {
   private lateinit var holder: BudgetGraphHolder
 
-  private fun TestScope.before() {
-    holder = createDynamicGraph<TestGraph>(coroutineContainer()).budgetGraphHolder
-  }
-
   @AfterTest
   fun after() {
     holder.close()
@@ -40,7 +36,7 @@ class BudgetGraphHolderTest {
 
   @Test
   fun `Close database when updating`() = runTest {
-    before()
+    holder = createDynamicGraph<TestGraph>(coroutineContainer()).budgetGraphHolder
 
     val bankId = BankId("my-bank-id")
     val metadata1 = metadata(id = "abc-123")
@@ -64,21 +60,21 @@ class BudgetGraphHolderTest {
 
     // try to access the first db, but it's closed
     assertFailure { graph1.fetchData(bankId) }
-      .isInstanceOf<IllegalStateException>()
-      .messageContains("attempt to re-open an already-closed object")
+      .isInstanceOf<SQLException>()
+      .messageContains("Error code: 21, message: connection is closed")
 
     // close the second one
     holder.close()
 
     // and accessing it fails
-    assertFailure { graph2.fetchData(bankId) }.isInstanceOf<IllegalStateException>()
+    assertFailure { graph2.fetchData(bankId) }.isInstanceOf<SQLException>()
   }
 
   private fun metadata(id: String) =
     DbMetadata(data = persistentMapOf(DbMetadata.CloudFileId to BudgetId(id)))
 
   private suspend fun BudgetGraph.fetchData(bankId: BankId) =
-    database.banksQueries.withResult { getByBankId(bankId).executeAsList() }
+    database.banksQueries.getByBankId(bankId).awaitAsList()
 
   private suspend fun BudgetGraph.insertData(
     bankId: BankId,
