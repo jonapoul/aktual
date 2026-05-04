@@ -1,4 +1,4 @@
-# gradle/build-logic
+# build-logic
 
 Gradle convention plugins that centralize build config. Included build — `settings.gradle.kts` applies `../repositories.gradle.kts` and registers the root version catalog.
 

@@ -74,7 +74,7 @@ See [aktual-app:nav](aktual-app/nav/CLAUDE.md).
 ## Creating a new feature module
 
 1. Add `modules/<feature>/{domain,vm,ui}` and register in `settings.gradle.kts` with `module("<feature>:...")`.
-1. Apply the right module plugin per layer — `aktual.module.kotlin` (domain), `aktual.module.viewmodel` (vm), `aktual.module.compose` (ui). See [gradle/build-logic](gradle/build-logic/CLAUDE.md) for what each plugin sets up.
+1. Apply the right module plugin per layer — `aktual.module.kotlin` (domain), `aktual.module.viewmodel` (vm), `aktual.module.compose` (ui). See [build-logic](gradle/build-logic/CLAUDE.md) for what each plugin sets up.
 1. Dependencies: UI → VM (api) → Domain (api) → core models. Any module can depend on core UI / L10n / logging.
 1. Create a navigator + `NavKey` in `aktual-app:nav` (see that module's CLAUDE.md).
 1. Implement `NavEntryContributor` in the `:ui` module with `@ContributesIntoSet(NavScope::class)`.
@@ -104,4 +104,4 @@ Default new code to `commonMain`; reach for `androidMain` / `jvmMain` only when 
 - [aktual-prefs](aktual-prefs/CLAUDE.md) — adding a new setting
 - [aktual-test/api](aktual-test/api/CLAUDE.md) — test HTTP mocks + generated fixtures
 - [aktual-test/smoke](aktual-test/smoke/CLAUDE.md) — VM DI smoke tests
-- [gradle/build-logic](gradle/build-logic/CLAUDE.md) — convention plugins
+- [gradle/build-logic](build-logic/CLAUDE.md) — convention plugins
