@@ -40,7 +40,7 @@ class ConventionDatabaseTest : Plugin<Project> {
               "win" in osName -> "natives/windows_x64"
               else -> "natives/linux_x64"
             }
-          from(zipTree(sqliteJniNative.map { it.singleFile })) {
+          from(zipTree(sqliteJniNative.map { c -> c.singleFile })) {
             include("$nativesDir/*")
             eachFile { relativePath = RelativePath(true, name) }
             includeEmptyDirs = false
