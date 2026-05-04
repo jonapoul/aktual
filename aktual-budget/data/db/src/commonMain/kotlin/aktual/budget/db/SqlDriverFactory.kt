@@ -32,7 +32,7 @@ class AndroidxSqlDriverFactory(private val files: BudgetFiles) : SqlDriverFactor
           isForeignKeyConstraintsEnabled = true,
           journalMode = SqliteJournalMode.WAL,
         ),
-      migrateEmptySchema = true,
+      migrateEmptySchema = false,
       onConfigure = { logcat.d(TAG) { "onConfigure" } },
       onCreate = { logcat.d(TAG) { "onCreate" } },
       onUpdate = { before, after -> onUpdate(before, after) },

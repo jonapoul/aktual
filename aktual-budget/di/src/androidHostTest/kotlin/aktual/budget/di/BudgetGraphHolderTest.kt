@@ -7,6 +7,7 @@ import aktual.budget.model.DbMetadata
 import aktual.core.model.AppGraph
 import aktual.test.coroutineContainer
 import aktual.test.messageContains
+import android.database.SQLException
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import assertk.assertFailure
 import assertk.assertThat
@@ -59,14 +60,14 @@ class BudgetGraphHolderTest {
 
     // try to access the first db, but it's closed
     assertFailure { graph1.fetchData(bankId) }
-      .isInstanceOf<IllegalStateException>()
-      .messageContains("attempt to re-open an already-closed object")
+      .isInstanceOf<SQLException>()
+      .messageContains("Error code: 21, message: connection is closed")
 
     // close the second one
     holder.close()
 
     // and accessing it fails
-    assertFailure { graph2.fetchData(bankId) }.isInstanceOf<IllegalStateException>()
+    assertFailure { graph2.fetchData(bankId) }.isInstanceOf<SQLException>()
   }
 
   private fun metadata(id: String) =
