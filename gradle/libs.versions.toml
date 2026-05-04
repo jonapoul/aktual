@@ -44,7 +44,7 @@ androidx-paging-common = { module = "androidx.paging:paging-common", version.ref
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
 androidx-splash = { module = "androidx.core:core-splashscreen", version = "1.2.0" }
-androidx-sqlite = { module = "androidx.sqlite:sqlite-bundled", version.ref = "androidx-sqlite" }
+androidx-sqliteBundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "androidx-sqlite" }
 androidx-sqliteBundledJvm = { module = "androidx.sqlite:sqlite-bundled-jvm", version.ref = "androidx-sqlite" }
 androidx-test-arch = { module = "androidx.arch.core:core-testing", version = "2.2.0" }
 androidx-test-composeJunit4 = { module = "androidx.compose.ui:ui-test-junit4", version.ref = "composeAndroidx" }
