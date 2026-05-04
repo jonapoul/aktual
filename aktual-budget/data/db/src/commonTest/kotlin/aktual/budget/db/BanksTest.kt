@@ -7,6 +7,7 @@ import aktual.budget.model.AccountId
 import aktual.budget.model.BankId
 import aktual.test.isEqualToList
 import aktual.test.runDatabaseTest
+import app.cash.sqldelight.async.coroutines.awaitAsList
 import assertk.assertThat
 import kotlin.test.Test
 import kotlin.uuid.Uuid
@@ -46,7 +47,7 @@ internal class BanksTest {
     insertAccounts(accountA, accountB, accountC)
 
     // When
-    val result = banksQueries.withResult { getAccountsWithBank().executeAsList() }
+    val result = banksQueries.withResult { getAccountsWithBank().awaitAsList() }
 
     // Then
     assertThat(result)

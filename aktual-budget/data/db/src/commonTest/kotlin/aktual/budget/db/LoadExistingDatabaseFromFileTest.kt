@@ -4,6 +4,7 @@ import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.core.model.AppDirectory
 import alakazam.test.getResourceAsStream
+import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.db.SqlDriver
 import assertk.assertThat
 import assertk.assertions.exists
@@ -40,7 +41,7 @@ abstract class LoadExistingDatabaseFromFileTest {
     val db = buildDatabase(driver)
 
     val viewHash =
-      db.metaQueries.withResult { getValue(key = "view-hash").executeAsOneOrNull()?.value_ }
+      db.metaQueries.withResult { getValue(key = "view-hash").awaitAsOneOrNull()?.value_ }
 
     assertThat(viewHash).isEqualTo("c379fa428efd55a684aba4947ad054e0")
     assertThat(file).exists()

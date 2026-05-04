@@ -8,6 +8,7 @@ import aktual.budget.db.withoutResult
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
 import alakazam.kotlin.CoroutineContexts
+import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
 import kotlinx.coroutines.flow.Flow
@@ -36,7 +37,7 @@ class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineCont
   suspend fun deleteById(id: WidgetId): Long = queries.withResult { delete(id) }
 
   suspend fun getPositionAndSize(): List<GetPositionAndSize> = queries.withResult {
-    getPositionAndSize().executeAsList()
+    getPositionAndSize().awaitAsList()
   }
 
   suspend fun updateMeta(id: WidgetId, meta: JsonObject) = queries.withResult {

@@ -1,6 +1,5 @@
 package aktual.budget.di
 
-import aktual.budget.db.withResult
 import aktual.budget.db.withoutResult
 import aktual.budget.model.BankId
 import aktual.budget.model.BudgetId
@@ -8,6 +7,7 @@ import aktual.budget.model.DbMetadata
 import aktual.core.model.AppGraph
 import aktual.test.coroutineContainer
 import aktual.test.messageContains
+import app.cash.sqldelight.async.coroutines.awaitAsList
 import assertk.assertFailure
 import assertk.assertThat
 import assertk.assertions.hasSize
@@ -78,7 +78,7 @@ class BudgetGraphHolderTest {
     DbMetadata(data = persistentMapOf(DbMetadata.CloudFileId to BudgetId(id)))
 
   private suspend fun BudgetGraph.fetchData(bankId: BankId) =
-    database.banksQueries.withResult { getByBankId(bankId).executeAsList() }
+    database.banksQueries.getByBankId(bankId).awaitAsList()
 
   private suspend fun BudgetGraph.insertData(
     bankId: BankId,
