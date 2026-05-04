@@ -103,6 +103,7 @@ metrox-viewmodel-compose = { module = "dev.zacsweers.metro:metrox-viewmodel-comp
 mockk = { module = "io.mockk:mockk", version = "1.14.9" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
 okio = { module = "com.squareup.okio:okio", version = "3.17.0" }
+proguard = { module = "com.guardsquare:proguard-gradle ", version = "7.9.1" }
 redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
 shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version = "1.5.0-beta02" }
