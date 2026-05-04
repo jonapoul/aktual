@@ -1,6 +1,6 @@
 @file:Suppress("UnstableApiUsage")
 
-package aktual.gradle
+package aktual.gradle.dsl
 
 import com.android.build.api.dsl.Lint
 import org.gradle.api.Project

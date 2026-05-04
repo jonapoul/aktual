@@ -6,7 +6,7 @@ rootProject.name = "aktual"
 
 apply(from = "gradle/repositories.gradle.kts")
 
-pluginManagement { includeBuild("gradle/build-logic") }
+pluginManagement { includeBuild("build-logic") }
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"

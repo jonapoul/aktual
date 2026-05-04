@@ -1,11 +1,14 @@
 package aktual.gradle
 
+import aktual.gradle.dsl.androidTestLibraries
+import aktual.gradle.dsl.dependencies
+import aktual.gradle.dsl.invoke
+import aktual.gradle.dsl.testLibraries
 import blueprint.core.get
 import blueprint.core.libs
 import com.android.build.gradle.api.AndroidBasePlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.dependencies
 
 class ConventionTestDependencies : Plugin<Project> {
   override fun apply(target: Project): Unit =

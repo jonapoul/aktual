@@ -2,15 +2,16 @@
 
 package aktual.gradle
 
+import aktual.gradle.dsl.apply
+import aktual.gradle.dsl.configure
+import aktual.gradle.dsl.dependencies
+import aktual.gradle.dsl.invoke
 import blueprint.core.get
 import blueprint.core.libs
 import blueprint.core.withAnyId
 import com.android.build.api.dsl.CommonExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.compose.resources.ResourcesExtension
@@ -35,7 +36,7 @@ class ConventionCompose : Plugin<Project> {
       val stabilityFile =
         rootProject.isolated.projectDirectory.file("config/compose-stability.conf")
 
-      extensions.configure<ComposeCompilerGradlePluginExtension> {
+      extensions.configure(ComposeCompilerGradlePluginExtension::class) {
         metricsDestination.set(metricReportDir)
         reportsDestination.set(metricReportDir)
         stabilityConfigurationFiles.add(stabilityFile)

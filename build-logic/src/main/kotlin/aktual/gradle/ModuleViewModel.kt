@@ -1,11 +1,12 @@
 package aktual.gradle
 
+import aktual.gradle.dsl.apply
+import aktual.gradle.dsl.kotlin
 import blueprint.core.commonMainDependencies
 import blueprint.core.get
 import blueprint.core.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
 
 class ModuleViewModel : Plugin<Project> {
   override fun apply(target: Project) =

@@ -1,9 +1,11 @@
 package aktual.gradle
 
+import aktual.gradle.dsl.apply
+import aktual.gradle.dsl.dependencies
+import aktual.gradle.dsl.invoke
+import aktual.gradle.dsl.testLibraries
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.dependencies
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper
 
 class ModuleJvm : Plugin<Project> {

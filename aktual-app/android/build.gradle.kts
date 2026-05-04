@@ -1,7 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
-import aktual.gradle.commonConfigure
+import aktual.gradle.dsl.commonConfigure
 import blueprint.core.getOptional
 import blueprint.core.gitVersionCode
 import blueprint.core.gitVersionDate
