@@ -5,7 +5,7 @@ runs:
   using: composite
   steps:
     - name: Report build results
-      uses: gmazzo/publish-report-annotations@8a848c2642d68a51451fec8b36f6ea173488b60d # v1
+      uses: gmazzo/publish-report-annotations@c76b3572e2d4588eb5abce88d5b9390dff17bf82 # v1
       if: ${{ !cancelled() }}
       with:
         filterPassedTests: true
