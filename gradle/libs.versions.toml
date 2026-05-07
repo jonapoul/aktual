@@ -109,7 +109,7 @@ robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
 shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version = "1.5.0-beta02" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-dialect = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqldelight" }
-sqldelight-driver-androidx = { module = "com.eygraber:sqldelight-androidx-driver", version = "0.1.1" }
+sqldelight-driver-androidx = { module = "com.eygraber:sqldelight-androidx-driver", version = "0.2.0" }
 sqldelight-driver-sqlite = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 sqldelight-json = { module = "app.cash.sqldelight:sqlite-json-module", version.ref = "sqldelight" }
 sqldelight-primitive = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
