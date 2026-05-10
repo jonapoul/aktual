@@ -1,7 +1,5 @@
 package aktual.budget.sync.vm
 
-import aktual.api.client.AktualApis
-import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApiImpl
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
@@ -13,7 +11,6 @@ import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.bytes
 import aktual.test.CoTemporaryFolder
-import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.emptyMockEngine
 import aktual.test.enqueueResponse
 import aktual.test.existsOn
@@ -29,12 +26,10 @@ import assertk.assertions.isInstanceOf
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
-import io.mockk.every
-import io.mockk.mockk
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
@@ -45,50 +40,34 @@ class BudgetFileDownloaderTest {
 
   private lateinit var budgetFileDownloader: BudgetFileDownloader
   private lateinit var budgetFiles: BudgetFiles
-  private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var mockEngine: MockEngine.Queue
-  private lateinit var fileSystem: FileSystem
 
-  fun TestScope.before() {
-    fileSystem = FileSystem.SYSTEM
-    budgetFiles = testBudgetFiles(temporaryFolder)
+  @BeforeTest
+  fun before() {
     mockEngine = emptyMockEngine()
+  }
 
-    val syncApi =
+  fun TestScope.before(
+    syncApi: SyncApiImpl =
       SyncApiImpl(
         serverUrl = SERVER_URL,
         client = testHttpClient(mockEngine),
-        fileSystem = fileSystem,
+        fileSystem = FileSystem.SYSTEM,
       )
-
-    apisStateHolder = AktualApisStateHolder()
-    apisStateHolder.update { mockk<AktualApis>(relaxed = true) { every { sync } returns syncApi } }
-
+  ) {
+    budgetFiles = testBudgetFiles(temporaryFolder)
     budgetFileDownloader =
       BudgetFileDownloader(
         contexts = TestCoroutineContexts(unconfinedDispatcher),
         budgetFiles = budgetFiles,
-        apisStateHolder = apisStateHolder,
+        syncApi = syncApi,
+        token = TOKEN,
       )
   }
 
   @AfterTest
   fun after() {
     mockEngine.close()
-  }
-
-  @Test
-  fun `Fail if no APIs`() = runTest {
-    // given
-    before()
-    apisStateHolder.reset()
-
-    // when
-    budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
-      // then
-      assertThatNextEmissionIsEqualTo(Failure.NotLoggedIn)
-      awaitComplete()
-    }
   }
 
   @Test
@@ -100,7 +79,7 @@ class BudgetFileDownloaderTest {
     mockEngine.enqueueResponse(data)
 
     // when
-    budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
+    budgetFileDownloader.download(BUDGET_ID).test {
       // Then progress state is emitted
       var state = awaitItem()
       while (state !is Done) {
@@ -115,8 +94,8 @@ class BudgetFileDownloaderTest {
 
       // and it contains all our data, nothing more or less
       val path = budgetFiles.encryptedZip(BUDGET_ID)
-      assertThat(path).existsOn(fileSystem)
-      val downloadedData = fileSystem.read(path) { readByteArray() }
+      assertThat(path).existsOn(FileSystem.SYSTEM)
+      val downloadedData = FileSystem.SYSTEM.read(path) { readByteArray() }
       assertThat(downloadedData).isEqualTo(data)
 
       awaitComplete()
@@ -130,7 +109,7 @@ class BudgetFileDownloaderTest {
     mockEngine += { throw NoRouteToHostException() }
 
     // when
-    budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
+    budgetFileDownloader.download(BUDGET_ID).test {
       // Then progress state is emitted
       var state = awaitItem()
       while (state is InProgress) {
@@ -155,7 +134,7 @@ class BudgetFileDownloaderTest {
     mockEngine += { respondError(HttpStatusCode.NotFound) }
 
     // when
-    budgetFileDownloader.download(TOKEN, BUDGET_ID).test {
+    budgetFileDownloader.download(BUDGET_ID).test {
       // Then in progress momentarily
       var state = awaitItem()
       while (state is InProgress) {

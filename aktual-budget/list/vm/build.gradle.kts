@@ -5,7 +5,7 @@ plugins { id("aktual.module.viewmodel") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:model"))
+    api(project(":aktual-di:runlevel"))
     api(libs.alakazam.kotlin)
     implementation(project(":aktual-core:api"))
     implementation(project(":aktual-prefs"))

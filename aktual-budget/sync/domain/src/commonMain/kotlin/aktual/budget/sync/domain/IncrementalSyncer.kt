@@ -2,12 +2,12 @@ package aktual.budget.sync.domain
 
 import aktual.api.client.BudgetSyncApi
 import aktual.budget.db.dao.SyncDao
+import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata.Companion.CloudFileId
 import aktual.budget.model.DbMetadata.Companion.GroupId
 import aktual.budget.model.DbMetadata.Companion.LastSyncedTimestamp
 import aktual.budget.model.MerkleOperations
 import aktual.budget.model.Timestamp
-import aktual.budget.prefs.BudgetLocalPreferences
 import aktual.budget.proto.SyncRequestEncoder
 import dev.zacsweers.metro.Inject
 import io.ktor.utils.io.CancellationException

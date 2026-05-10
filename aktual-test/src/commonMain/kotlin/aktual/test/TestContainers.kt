@@ -1,5 +1,6 @@
 package aktual.test
 
+import aktual.budget.model.BudgetFiles
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
@@ -9,6 +10,8 @@ import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.Provides
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.test.TestScope
+import okio.FileSystem
+import okio.Path
 
 @BindingContainer
 class TestCoroutineContainer(
@@ -27,4 +30,10 @@ fun TestScope.coroutineContainer(
 @BindingContainer
 class TestPreferencesContainer(private val preferences: DataStore<Preferences>) {
   @Provides fun preferences(): DataStore<Preferences> = preferences
+}
+
+@BindingContainer
+class TestContainer(private val directoryPath: Path) {
+  @Provides
+  fun budgetFiles(fileSystem: FileSystem): BudgetFiles = BudgetFiles(fileSystem, directoryPath)
 }

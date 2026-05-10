@@ -13,7 +13,6 @@ kotlin {
     api(libs.okio)
     api(project(":aktual-budget:data:encryption"))
     api(project(":aktual-budget:data:proto"))
-    api(project(":aktual-budget:data:prefs"))
     implementation(project(":aktual-core:logging"))
   }
 

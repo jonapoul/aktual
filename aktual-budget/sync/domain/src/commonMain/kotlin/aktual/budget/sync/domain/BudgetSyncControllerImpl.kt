@@ -10,8 +10,12 @@ import aktual.budget.model.SyncState.SyncFailed
 import aktual.budget.model.SyncState.Syncing
 import aktual.budget.model.SyncStateHolder
 import aktual.di.BudgetScope
+import aktual.di.Closeable
 import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.ContributesIntoSet
+import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metro.binding
 import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -20,7 +24,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
-@ContributesBinding(BudgetScope::class)
+@SingleIn(BudgetScope::class)
+@ContributesBinding(BudgetScope::class, binding<BudgetSyncController>())
+@ContributesIntoSet(BudgetScope::class, binding<Closeable>())
 class BudgetSyncControllerImpl
 internal constructor(
   private val syncStateHolder: SyncStateHolder,
@@ -28,7 +34,7 @@ internal constructor(
   private val scope: CoroutineScope,
   private val prefs: AppPreferences,
   private val syncDao: SyncDao,
-) : BudgetSyncController {
+) : BudgetSyncController, Closeable {
   private var syncJob: Job? = null
   private var inactiveJob: Job? = null
 
@@ -47,7 +53,7 @@ internal constructor(
     }
   }
 
-  override fun cancel() {
+  override fun close() {
     synchronized(this) {
       syncJob?.cancel()
       syncJob = null

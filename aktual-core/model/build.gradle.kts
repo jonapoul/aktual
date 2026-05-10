@@ -15,7 +15,7 @@ kotlin {
     api(libs.kotlinx.serialization.json)
     api(libs.metrox.viewmodel)
     api(libs.okio)
-    api(project(":aktual-di:scopes"))
+    api(project(":aktual-di:core"))
     compileOnly(libs.androidx.compose.annotation)
     compileOnly(libs.redacted.annotations)
   }

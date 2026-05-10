@@ -21,6 +21,7 @@ import aktual.prefs.vm.root.SettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.CreationExtras
 import assertk.assertThat
 import assertk.assertions.isInstanceOf
 import assertk.assertions.isNotNull
@@ -112,19 +113,18 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     testAssistedVM<EditRuleViewModel, EditRuleViewModel.Factory> { create(RuleId("abc-123")) }
 
   protected inline fun <reified VM : ViewModel> testVm() = runTest {
-    val vmGraph = appGraph.runLevelState.viewModelGraph().first()
-    assertThat(vmGraph.viewModelProviders[VM::class])
-      .isNotNull()
-      .transform { provider -> provider() }
-      .isInstanceOf(VM::class)
+    val viewModelFactory = appGraph.runLevelState.viewModelFactory().first()
+    val viewModel = viewModelFactory.create(VM::class, CreationExtras.Empty)
+    assertThat(viewModel).isNotNull().isInstanceOf(VM::class)
   }
 
   protected inline fun <
     reified VM : ViewModel,
     reified F : ManualViewModelAssistedFactory,
   > testAssistedVM(crossinline build: F.() -> VM) = runTest {
-    val vmGraph = appGraph.runLevelState.viewModelGraph().first()
-    assertThat(vmGraph.manualAssistedFactoryProviders[F::class])
+    val viewModelFactory = appGraph.runLevelState.viewModelFactory().first()
+    val factory = viewModelFactory.createManuallyAssistedFactory(F::class)
+    assertThat(factory)
       .isNotNull()
       .transform { provider -> provider() }
       .isInstanceOf<F>()

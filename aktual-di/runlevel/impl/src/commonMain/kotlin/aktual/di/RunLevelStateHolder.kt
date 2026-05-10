@@ -6,23 +6,27 @@ import aktual.budget.model.cloudFileId
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import alakazam.kotlin.StateHolder
-import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.SingleIn
-import dev.zacsweers.metrox.viewmodel.ViewModelGraph
+import dev.zacsweers.metro.binding
+import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 import kotlin.reflect.KClass
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.update
 
-@Inject
 @SingleIn(AppScope::class)
-internal class RunLevelHolder(private val driverFactory: SqlDriverFactory) :
+@ContributesBinding(AppScope::class, binding<RunLevelController>())
+@ContributesBinding(AppScope::class, binding<RunLevelState>())
+class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
   StateHolder<List<AktualGraph>>(initialState = emptyList()),
   AutoCloseable,
   RunLevelState,
   RunLevelController {
-  override fun viewModelGraph(): Flow<ViewModelGraph> = map { it.last() }.distinctUntilChanged()
+  override fun viewModelFactory(): Flow<MetroViewModelFactory> =
+    mapNotNull { it.lastOrNull()?.let(::AktualViewModelFactory) }.distinctUntilChanged()
 
   @Suppress("UNCHECKED_CAST")
   override fun <G : AktualGraph> get(type: KClass<G>): G? =
@@ -52,38 +56,28 @@ internal class RunLevelHolder(private val driverFactory: SqlDriverFactory) :
   }
 
   override fun onServerChosen(url: ServerUrl): ServerChosenGraph {
-    var serverChosenGraph: ServerChosenGraph? = null
-    update { levels ->
-      val appGraph = levels[AppGraph::class]
-      serverChosenGraph = appGraph.serverChosenGraphFactory.create(url)
-      serverChosenGraph.initialize()
-      (levels + serverChosenGraph).also(::assertAllDistinct).sorted()
-    }
-    return requireNotNull(serverChosenGraph)
+    val serverChosenGraph = value[AppGraph::class].serverChosenGraphFactory.create(url)
+    serverChosenGraph.initialize()
+    update { levels -> (levels + serverChosenGraph).also(::assertAllDistinct).sorted() }
+    return serverChosenGraph
   }
 
   override fun onLoggedIn(token: Token): LoggedInGraph {
-    var loggedInGraph: LoggedInGraph? = null
-    update { levels ->
-      val serverChosenGraph = levels[ServerChosenGraph::class]
-      loggedInGraph = serverChosenGraph.loggedInGraphFactory.create(token)
-      loggedInGraph.initialize()
-      (levels + loggedInGraph).also(::assertAllDistinct).sorted()
-    }
-    return requireNotNull(loggedInGraph)
+    val loggedInGraph = value[ServerChosenGraph::class].loggedInGraphFactory.create(token)
+    loggedInGraph.initialize()
+    update { levels -> (levels + loggedInGraph).also(::assertAllDistinct).sorted() }
+    return loggedInGraph
   }
 
   override fun onBudget(metadata: DbMetadata): BudgetGraph {
-    var budgetGraph: BudgetGraph? = null
-    update { levels ->
-      val loggedInGraph = levels[LoggedInGraph::class]
-      val driver = driverFactory.create(metadata.cloudFileId)
-      budgetGraph =
-        loggedInGraph.budgetGraphFactory.create(id = metadata.cloudFileId, metadata, driver)
-      budgetGraph.initialize()
-      (levels + budgetGraph).also(::assertAllDistinct).sorted()
-    }
-    return requireNotNull(budgetGraph)
+    val driver = driverFactory.create(metadata.cloudFileId)
+    val budgetGraph =
+      value[LoggedInGraph::class]
+        .budgetGraphFactory
+        .create(id = metadata.cloudFileId, metadata, driver)
+    budgetGraph.initialize()
+    update { levels -> (levels + budgetGraph).also(::assertAllDistinct).sorted() }
+    return budgetGraph
   }
 
   override fun onBudgetClosed() = update { levels -> levels.popTo<LoggedInGraph>().sorted() }

@@ -1,6 +1,5 @@
-package aktual.budget.prefs
+package aktual.budget.model
 
-import aktual.budget.model.DbMetadata
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

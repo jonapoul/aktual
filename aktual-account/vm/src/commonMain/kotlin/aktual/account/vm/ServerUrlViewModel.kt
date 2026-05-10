@@ -31,7 +31,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -65,9 +65,7 @@ class ServerUrlViewModel(
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
 
   val isEnabled: StateFlow<Boolean> =
-    baseUrl
-      .map { it.isNotBlank() }
-      .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
+    baseUrl.map { it.isNotBlank() }.stateIn(viewModelScope, Eagerly, initialValue = false)
 
   val navDestination: ReceiveChannel<NavDestination> = mutableNavDestination
 
@@ -137,16 +135,14 @@ class ServerUrlViewModel(
       val protocol = mutableProtocol.value
       val baseUrl = mutableBaseUrl.value
       val url = ServerUrl(protocol, baseUrl)
-      val previousUrl = preferences.serverUrl.get()
-
-      if (url != previousUrl) {
+      if (url != preferences.serverUrl.get()) {
         preferences.token.delete()
-        runLevelController.onServerCleared()
       }
 
       val serverChosenGraph = runLevelController.onServerChosen(url)
       preferences.serverUrl.set(url)
-      checkIfNeedsBootstrap(url, serverChosenGraph.accountApi)
+      val accountApi = serverChosenGraph[AccountApi::class]
+      checkIfNeedsBootstrap(url, accountApi)
       mutableIsLoading.update { false }
     }
   }

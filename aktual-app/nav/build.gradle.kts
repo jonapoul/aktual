@@ -8,7 +8,7 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.androidx.lifecycle.viewmodel)
-    api(libs.androidx.navigation3.ui)
+    api(libs.compose.navigation3.ui)
     api(libs.compose.resources)
     api(libs.compose.runtime)
     api(libs.molecule)

@@ -27,8 +27,6 @@ interface BudgetSyncController {
   suspend fun syncChanges(changes: List<LocalChange>)
 
   fun schedule()
-
-  fun cancel()
 }
 
 /**

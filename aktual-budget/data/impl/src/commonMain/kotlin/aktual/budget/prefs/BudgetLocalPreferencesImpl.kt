@@ -1,6 +1,7 @@
 package aktual.budget.prefs
 
 import aktual.budget.model.BudgetFiles
+import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
 import aktual.di.BudgetScope
 import alakazam.kotlin.CoroutineContexts

@@ -82,6 +82,7 @@ fun ListBudgetsScreen(
     viewModel.event.collect { event ->
       when (event) {
         ListBudgetsEvent.NavToBudget -> toBudget()
+        ListBudgetsEvent.LogOut -> logOut()
       }
     }
   }
@@ -134,7 +135,7 @@ fun ListBudgetsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        LogOut -> logOut()
+        LogOut -> viewModel.logOut()
         ChangePassword -> toChangePassword()
         OpenAbout -> toInfo()
         OpenSettings -> toSettings()

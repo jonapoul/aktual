@@ -2,16 +2,16 @@ package aktual.budget.transactions.vm
 
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.PreferencesDao
-import aktual.budget.db.dao.TransactionsDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.transactions.GetById
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
+import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsFormat
 import aktual.budget.model.TransactionsSpec
-import aktual.budget.prefs.BudgetLocalPreferences
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
@@ -50,7 +50,7 @@ class TransactionsViewModel(
   @Assisted private val spec: TransactionsSpec,
   private val prefs: BudgetLocalPreferences,
   private val accountDao: AccountDao,
-  private val transactionsDao: TransactionsDao,
+  private val transactionDao: TransactionDao,
   private val preferencesDao: PreferencesDao,
 ) : ViewModel(), TransactionStateSource, TransactionIdSource {
   @AssistedFactory
@@ -95,8 +95,8 @@ class TransactionsViewModel(
     viewModelScope.launch {
       val countFlow =
         when (val s = spec.accountSpec) {
-          AccountSpec.AllAccounts -> transactionsDao.observeCount()
-          is AccountSpec.SpecificAccount -> transactionsDao.observeCountByAccount(s.id)
+          AccountSpec.AllAccounts -> transactionDao.observeCount()
+          is AccountSpec.SpecificAccount -> transactionDao.observeCountByAccount(s.id)
         }
       countFlow.drop(count = 1).collect {
         logcat.d { "Transactions table updated, invalidating paging source..." }
@@ -125,7 +125,7 @@ class TransactionsViewModel(
   }
 
   override fun transactionState(id: TransactionId) =
-    transactionsDao
+    transactionDao
       .observeById(id)
       .also { logcat.d { "Observing transaction with ID $id" } }
       .distinctUntilChanged()
@@ -149,7 +149,7 @@ class TransactionsViewModel(
   }
 
   private fun buildPagingSource() =
-    TransactionsPagingSource(transactionsDao, spec.accountSpec).also { currentPagingSource = it }
+    TransactionsPagingSource(transactionDao, spec.accountSpec).also { currentPagingSource = it }
 
   private companion object {
     val TransactionFormatKey = DbMetadata.enumKey<TransactionsFormat>("transactionFormat")

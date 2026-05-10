@@ -1,7 +1,7 @@
-# aktual-budget:data:prefs
+# aktual-di:core
 
 <!--region chart-->
 ![chart](atlas/chart.png)
 
-![legend](../../../atlas/legend.png)
+![legend](../../atlas/legend.png)
 <!--endregion-->

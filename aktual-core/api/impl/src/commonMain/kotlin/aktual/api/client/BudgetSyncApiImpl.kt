@@ -1,7 +1,7 @@
 package aktual.api.client
 
+import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.SyncResponse
-import aktual.budget.prefs.BudgetLocalPreferences
 import aktual.budget.proto.SyncResponseDecoder
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl

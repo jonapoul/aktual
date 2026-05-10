@@ -7,6 +7,7 @@ import aktual.api.model.account.LoginResponse
 import aktual.core.model.AvailableLoginMethod
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
+import aktual.di.RunLevelController
 import aktual.prefs.AppPreferences
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
@@ -21,6 +22,7 @@ class LoginRequester(
   private val accountApi: AccountApi,
   private val contexts: CoroutineContexts,
   private val preferences: AppPreferences,
+  private val runLevelController: RunLevelController,
 ) {
   suspend fun fetchLoginMethods(): List<AvailableLoginMethod> =
     try {
@@ -77,6 +79,7 @@ class LoginRequester(
       }
 
       is LoginResponse.Data.Valid -> {
+        runLevelController.onLoggedIn(token)
         preferences.token.set(token)
         LoginResult.Success(token)
       }

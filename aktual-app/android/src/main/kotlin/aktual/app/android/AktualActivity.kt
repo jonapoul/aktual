@@ -2,6 +2,7 @@ package aktual.app.android
 
 import aktual.app.nav.AktualAppContent
 import aktual.app.nav.rememberBackStack
+import aktual.core.ui.LoadingScreenIfNotNull
 import aktual.di.AppScope
 import android.app.Activity
 import android.os.Bundle
@@ -21,7 +22,6 @@ import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
-import kotlinx.coroutines.flow.map
 
 @ActivityKey
 @ContributesIntoMap(AppScope::class, binding<Activity>())
@@ -44,20 +44,20 @@ class AktualActivity(override val defaultViewModelProviderFactory: MetroViewMode
       navigationBarStyle = SystemBarStyle.auto(transparent, transparent),
     )
 
-    setContent { Content(viewModel, defaultViewModelProviderFactory) }
+    setContent { Content(viewModel) }
   }
 }
 
 @Composable
 @Suppress("ViewModelForwarding")
-private fun Content(viewModel: AktualActivityViewModel, viewModelFactory: MetroViewModelFactory) {
-  val factoryFlow = remember {
-    viewModel.runLevels.viewModelGraph().map { it.metroViewModelFactory }
-  }
-  val factory by factoryFlow.collectAsState(initial = viewModelFactory)
+private fun Content(viewModel: AktualActivityViewModel) {
+  val viewModelFactory by
+    remember { viewModel.runLevels.viewModelFactory() }.collectAsState(initial = null)
 
-  CompositionLocalProvider(LocalMetroViewModelFactory provides factory) {
-    val backStack = rememberBackStack(viewModel) ?: return@CompositionLocalProvider
-    AktualAppContent(viewModel, backStack)
+  LoadingScreenIfNotNull(viewModelFactory) { vmf ->
+    CompositionLocalProvider(LocalMetroViewModelFactory provides vmf) {
+      val backStack = rememberBackStack(viewModel) ?: return@CompositionLocalProvider
+      AktualAppContent(viewModel, backStack)
+    }
   }
 }

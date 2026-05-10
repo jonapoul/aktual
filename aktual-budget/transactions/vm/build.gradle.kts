@@ -20,7 +20,6 @@ buildConfig {
 kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:data:db"))
-    api(project(":aktual-budget:data:prefs"))
     api(libs.alakazam.kotlin)
     api(libs.androidx.paging.common)
     api(libs.kotlinx.datetime)

@@ -1,9 +1,9 @@
 package aktual.di
 
 import aktual.budget.model.BudgetId
+import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.DbMetadata
-import aktual.budget.prefs.BudgetLocalPreferences
 import app.cash.sqldelight.db.SqlDriver
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo

@@ -1,12 +1,12 @@
 package aktual.core.connection
 
-import aktual.api.client.AktualApis
-import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.BaseApi
 import aktual.api.model.base.Build
 import aktual.api.model.base.InfoResponse
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
+import aktual.core.model.PingState
+import aktual.core.model.PingStateHolder
 import aktual.test.TestBuildConfig
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.kotlin.LoopController
@@ -18,123 +18,117 @@ import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import java.io.IOException
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Ignore
 import kotlin.test.Test
-import kotlin.time.Duration.Companion.seconds
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
-import org.junit.Before
 
 class ServerVersionFetcherTest {
   // real
   private lateinit var fetcher: ServerVersionFetcher
-  private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var versionsStateHolder: AktualVersionsStateHolder
+  private lateinit var pingStateHolder: PingStateHolder
 
   // mock
-  private lateinit var apis: AktualApis
   private lateinit var baseApi: BaseApi
 
-  @Before
+  @BeforeTest
   fun before() {
     baseApi = mockk()
-    apis = mockk { every { base } returns baseApi }
-
-    apisStateHolder = AktualApisStateHolder()
-    apisStateHolder.update { apis }
     versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
+    pingStateHolder = PingStateHolder()
+  }
+
+  @AfterTest
+  fun after() {
+    fetcher.close()
   }
 
   private fun TestScope.build(loopController: LoopController = SingleLoopController()) {
     fetcher =
       ServerVersionFetcher(
         contexts = TestCoroutineContexts(unconfinedDispatcher),
-        apisStateHolder = apisStateHolder,
+        baseApi = baseApi,
         versionsStateHolder = versionsStateHolder,
+        pingStateHolder = pingStateHolder,
         loopController = loopController,
         scope = this,
       )
   }
 
   @Test
-  fun `No APIs means nothing is fetched`() =
-    runTest(timeout = 5.seconds) {
-      // Given
-      build()
-      apisStateHolder.reset()
+  fun `Nothing fetched when not pinging`() = runTest {
+    // Given
+    build()
+    fetcher.initialize()
+    advanceUntilIdle()
+
+    // When / Then
+    versionsStateHolder.test {
+      assertThatNextEmissionIsEqualTo(emptyState())
       advanceUntilIdle()
-
-      // When
-      val fetchJob = launch { fetcher.initialize() }
-
-      advanceUntilIdle()
-      versionsStateHolder.test {
-        // Then
-        assertThatNextEmissionIsEqualTo(emptyState())
-        advanceUntilIdle()
-
-        expectNoEvents()
-        cancelAndIgnoreRemainingEvents()
-        fetchJob.cancel()
-      }
+      expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
     }
+    fetcher.close()
+  }
 
   @Test
-  fun `Valid fetch response`() =
-    runTest(timeout = 5.seconds) {
-      // Given
-      build()
-      coEvery { baseApi.fetchInfo() } returns
-        InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
+  fun `Valid fetch response`() = runTest {
+    // Given
+    build()
+    coEvery { baseApi.fetchInfo() } returns
+      InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
 
-      // When
-      versionsStateHolder.test {
-        assertThatNextEmissionIsEqualTo(emptyState())
+    // When
+    versionsStateHolder.test {
+      assertThatNextEmissionIsEqualTo(emptyState())
 
-        val fetchJob = launch { fetcher.initialize() }
+      fetcher.initialize()
+      pingStateHolder.update { PingState.Success }
 
-        // Then
-        assertThat(awaitItem().server).isEqualTo("1.2.3")
-        cancelAndIgnoreRemainingEvents()
-        fetchJob.cancel()
-      }
+      // Then
+      assertThat(awaitItem().server).isEqualTo("1.2.3")
+      cancelAndIgnoreRemainingEvents()
     }
+    fetcher.close()
+  }
 
   @Test
   @Ignore("Fails if you run the full test suite, passes otherwise")
-  fun `Failed then successful fetch response`() =
-    runTest(timeout = 5.seconds) {
-      // Given
-      val validResponse =
-        InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
-      val failureReason = "SOMETHING BROKE"
-      coEvery { baseApi.fetchInfo() } answers
-        {
-          coEvery { baseApi.fetchInfo() } returns validResponse
-          throw IOException(failureReason)
-        }
-
-      val loopController = FiniteLoopController(maxLoops = 2)
-      build(loopController)
-
-      // When
-      versionsStateHolder.test {
-        assertThatNextEmissionIsEqualTo(emptyState())
-
-        val fetchJob = launch { fetcher.initialize() }
-
-        // Then
-        assertThat(awaitItem().server).isEqualTo("1.2.3")
-        cancelAndIgnoreRemainingEvents()
-        fetchJob.cancel()
+  fun `Failed then successful fetch response`() = runTest {
+    // Given
+    val validResponse =
+      InfoResponse(build = Build(name = "ABC", description = "XYZ", version = "1.2.3"))
+    val failureReason = "SOMETHING BROKE"
+    coEvery { baseApi.fetchInfo() } answers
+      {
+        coEvery { baseApi.fetchInfo() } returns validResponse
+        throw IOException(failureReason)
       }
+
+    val loopController = FiniteLoopController(maxLoops = 2)
+    build(loopController)
+
+    // When
+    versionsStateHolder.test {
+      assertThatNextEmissionIsEqualTo(emptyState())
+
+      fetcher.initialize()
+      pingStateHolder.update { PingState.Success }
+
+      // Then
+      assertThat(awaitItem().server).isEqualTo("1.2.3")
+      cancelAndIgnoreRemainingEvents()
     }
+    fetcher.close()
+  }
 
   private fun emptyState() = AktualVersions(TestBuildConfig.versionName, server = null)
 }

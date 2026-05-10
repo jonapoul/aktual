@@ -12,6 +12,7 @@ import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.UrlOpener
 import aktual.di.LoggedInScope
+import aktual.di.RunLevelController
 import aktual.prefs.AppPreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.delete
@@ -50,6 +51,7 @@ class ListBudgetsViewModel(
   private val syncApi: SyncApi,
   private val urlOpener: UrlOpener,
   private val appPreferences: AppPreferences,
+  private val runLevels: RunLevelController,
 ) : ViewModel() {
   private val mutableEvent = MutableSharedFlow<ListBudgetsEvent>(extraBufferCapacity = 1)
   val event: Flow<ListBudgetsEvent> = mutableEvent.asSharedFlow()
@@ -150,6 +152,14 @@ class ListBudgetsViewModel(
   fun open(serverUrl: ServerUrl?) {
     val url = serverUrl?.toString() ?: return
     urlOpener(url)
+  }
+
+  fun logOut() {
+    viewModelScope.launch {
+      preferences.token.delete()
+      runLevels.onLoggedOut()
+      mutableEvent.emit(ListBudgetsEvent.LogOut)
+    }
   }
 
   private fun fetchState() {

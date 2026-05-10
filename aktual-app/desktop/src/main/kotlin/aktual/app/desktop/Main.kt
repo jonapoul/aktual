@@ -7,6 +7,7 @@ import aktual.core.l10n.Strings
 import aktual.core.logging.JvmLogStorage
 import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
+import aktual.core.ui.LoadingScreenIfNotNull
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -22,7 +23,6 @@ import dev.zacsweers.metro.createGraph
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import logcat.LogPriority
@@ -75,10 +75,8 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
       )
 
     val backStack = rememberBackStack(viewModel)
-    val vmGraphFlow = remember {
-      graph.runLevelState.viewModelGraph().map { it.metroViewModelFactory }
-    }
-    val viewModelFactory by vmGraphFlow.collectAsState(initial = graph.metroViewModelFactory)
+    val viewModelFactory by
+      remember { graph.runLevelState.viewModelFactory() }.collectAsState(initial = null)
 
     if (backStack != null) {
       val keyHandler = remember { KeyboardEventHandler(backStack) }
@@ -98,11 +96,13 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
           exitApplication()
         },
       ) {
-        CompositionLocalProvider(
-          LocalViewModelStoreOwner provides viewModelStoreOwner,
-          LocalMetroViewModelFactory provides viewModelFactory,
-          content = { AktualAppContent(viewModel = viewModel, navStack = backStack) },
-        )
+        LoadingScreenIfNotNull(viewModelFactory) { vmf ->
+          CompositionLocalProvider(
+            LocalViewModelStoreOwner provides viewModelStoreOwner,
+            LocalMetroViewModelFactory provides vmf,
+            content = { AktualAppContent(viewModel = viewModel, navStack = backStack) },
+          )
+        }
       }
     }
   }
