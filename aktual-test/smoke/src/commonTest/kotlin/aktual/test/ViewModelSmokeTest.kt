@@ -60,7 +60,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @AfterTest
   fun after() {
     LogcatLogger.uninstall()
-    appGraph.runLevelController.close()
+    appGraph.close()
     FileSystem.SYSTEM.deleteRecursively(rootDir)
   }
 
