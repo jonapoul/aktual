@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: anthropics/claude-code-action@9db782c3a17ef2bfc274cd17411bc3e0a5ba1345 # v1
+      - uses: anthropics/claude-code-action@dde2242db6af13460b916652159b6ba19a598f30 # v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           additional_permissions: |
