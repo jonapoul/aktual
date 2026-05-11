@@ -93,7 +93,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           config: ./config/betterleaks.toml
           fail-on-leak: 'true'
-      - uses: github/codeql-action/upload-sarif@e46ed2cbd01164d986452f91f178727624ae40d7 # v4
+      - uses: github/codeql-action/upload-sarif@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4
         if: always()
         with:
           sarif_file: ${{ steps.betterleaks.outputs.sarif-path }}
@@ -170,7 +170,7 @@ jobs:
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew detektReportMergeSarif
-      - uses: github/codeql-action/upload-sarif@e46ed2cbd01164d986452f91f178727624ae40d7 # v4
+      - uses: github/codeql-action/upload-sarif@68bde559dea0fdcac2102bfdf6230c5f70eb485e # v4
         if: ${{ !cancelled() }}
         with:
           sarif_file: build/reports/detekt/merge.sarif.json
