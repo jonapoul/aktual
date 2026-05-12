@@ -4,9 +4,9 @@ import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.core.model.EncryptionKeys
 import aktual.core.model.KeyId
+import aktual.di.AppScope
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import javax.crypto.Cipher
 import javax.crypto.spec.GCMParameterSpec

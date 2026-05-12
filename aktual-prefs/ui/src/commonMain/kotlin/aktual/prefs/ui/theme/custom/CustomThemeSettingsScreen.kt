@@ -1,7 +1,5 @@
 package aktual.prefs.ui.theme.custom
 
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.InspectThemeNavigator
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Cloud
 import aktual.core.icons.CloudWarning
@@ -18,6 +16,8 @@ import aktual.core.l10n.settings_theme_refresh_failure
 import aktual.core.l10n.settings_theme_refresh_success
 import aktual.core.model.ThemeId
 import aktual.core.model.immutableList
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.InspectThemeNavigator
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme

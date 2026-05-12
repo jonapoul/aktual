@@ -1,11 +1,5 @@
 package aktual.budget.list.ui
 
-import aktual.app.nav.BudgetNavRailNavigator
-import aktual.app.nav.ChangePasswordNavigator
-import aktual.app.nav.InfoNavigator
-import aktual.app.nav.MetricsNavigator
-import aktual.app.nav.ServerUrlNavigator
-import aktual.app.nav.SettingsNavigator
 import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
 import aktual.budget.list.ui.ListBudgetsAction.Delete
 import aktual.budget.list.ui.ListBudgetsAction.LogOut
@@ -15,6 +9,7 @@ import aktual.budget.list.ui.ListBudgetsAction.OpenInBrowser
 import aktual.budget.list.ui.ListBudgetsAction.OpenServerMetrics
 import aktual.budget.list.ui.ListBudgetsAction.OpenSettings
 import aktual.budget.list.ui.ListBudgetsAction.Reload
+import aktual.budget.list.vm.ListBudgetsEvent
 import aktual.budget.list.vm.ListBudgetsState
 import aktual.budget.list.vm.ListBudgetsViewModel
 import aktual.budget.model.Budget
@@ -24,7 +19,12 @@ import aktual.budget.sync.ui.SyncBudgetDialog
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
-import aktual.core.model.Token
+import aktual.core.nav.BudgetNavRailNavigator
+import aktual.core.nav.ChangePasswordNavigator
+import aktual.core.nav.InfoNavigator
+import aktual.core.nav.MetricsNavigator
+import aktual.core.nav.ServerUrlNavigator
+import aktual.core.nav.SettingsNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BlurredPullToRefreshBox
@@ -62,22 +62,30 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ListBudgetsScreen(
-  token: Token,
   toInfo: InfoNavigator,
   toChangePassword: ChangePasswordNavigator,
   toSettings: SettingsNavigator,
   toMetrics: MetricsNavigator,
   logOut: ServerUrlNavigator,
   toBudget: BudgetNavRailNavigator,
-  viewModel: ListBudgetsViewModel = metroViewModel(token),
+  viewModel: ListBudgetsViewModel = metroViewModel(),
 ) {
   val serverUrl by viewModel.serverUrl.collectAsStateWithLifecycle()
   val state by viewModel.state.collectAsStateWithLifecycle()
+
+  LaunchedEffect(viewModel.event) {
+    viewModel.event.collect { event ->
+      when (event) {
+        ListBudgetsEvent.NavToBudget -> toBudget()
+        ListBudgetsEvent.LogOut -> logOut()
+      }
+    }
+  }
 
   var budgetToDelete by remember { mutableStateOf<Budget?>(null) }
   budgetToDelete?.let { budget ->
@@ -118,8 +126,7 @@ fun ListBudgetsScreen(
   budgetToSync?.let { id ->
     SyncBudgetDialog(
       budgetId = id,
-      token = token,
-      onSyncComplete = { toBudget(token, id) },
+      onSyncComplete = { viewModel.onSyncComplete(id) },
       onDismissRequest = { budgetToSync = null },
     )
   }
@@ -128,7 +135,7 @@ fun ListBudgetsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        LogOut -> logOut()
+        LogOut -> viewModel.logOut()
         ChangePassword -> toChangePassword()
         OpenAbout -> toInfo()
         OpenSettings -> toSettings()
@@ -141,12 +148,6 @@ fun ListBudgetsScreen(
     },
   )
 }
-
-@Composable
-private fun metroViewModel(token: Token) =
-  assistedMetroViewModel<ListBudgetsViewModel, ListBudgetsViewModel.Factory>(key = token.value) {
-    create(token)
-  }
 
 @Composable
 internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: (ListBudgetsAction) -> Unit) {

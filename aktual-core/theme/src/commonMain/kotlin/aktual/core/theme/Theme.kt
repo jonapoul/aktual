@@ -259,6 +259,7 @@ sealed interface Theme {
   val chartQual9: Color
 
   companion object {
+    val Fallback = LightTheme
     val Defaults = setOf(LightTheme, DarkTheme, MidnightTheme)
   }
 }

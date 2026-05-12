@@ -4,7 +4,9 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.withResult
 import aktual.budget.model.ScheduleId
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
+import dev.zacsweers.metro.Inject
 
+@Inject
 class ScheduleDao(database: BudgetDatabase) {
   private val queries = database.schedulesQueries
 

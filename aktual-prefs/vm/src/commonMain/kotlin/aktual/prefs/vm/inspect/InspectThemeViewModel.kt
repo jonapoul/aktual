@@ -4,11 +4,11 @@ import aktual.core.model.ThemeId
 import aktual.core.model.UrlOpener
 import aktual.core.theme.CustomTheme
 import aktual.core.theme.ThemeResolver
+import aktual.di.AppScope
 import aktual.prefs.vm.theme.properties
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject

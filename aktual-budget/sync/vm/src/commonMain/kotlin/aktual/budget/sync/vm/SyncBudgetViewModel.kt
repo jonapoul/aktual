@@ -2,7 +2,6 @@ package aktual.budget.sync.vm
 
 import aktual.api.model.sync.EncryptMeta
 import aktual.api.model.sync.UserFile
-import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.FileDecrypter
 import aktual.budget.model.BudgetFiles
@@ -12,8 +11,9 @@ import aktual.budget.sync.vm.SyncStep.FetchingFileInfo
 import aktual.budget.sync.vm.SyncStep.ValidatingDatabase
 import aktual.core.model.Password
 import aktual.core.model.Percent
-import aktual.core.model.Token
 import aktual.core.model.UrlOpener
+import aktual.di.LoggedInScope
+import aktual.di.RunLevelController
 import aktual.prefs.KeyPreferences
 import alakazam.kotlin.launchInfiniteLoop
 import androidx.compose.runtime.Stable
@@ -23,7 +23,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -46,11 +45,9 @@ import kotlinx.coroutines.launch
 import logcat.logcat
 import okio.Path
 
-@Suppress("LongParameterList", "ComplexCondition", "UnusedPrivateProperty")
 @Stable
 @AssistedInject
 class SyncBudgetViewModel(
-  @Assisted private val token: Token,
   @Assisted private val budgetId: BudgetId,
   private val fileDownloader: BudgetFileDownloader,
   private val infoFetcher: BudgetInfoFetcher,
@@ -60,7 +57,7 @@ class SyncBudgetViewModel(
   private val urlOpener: UrlOpener,
   private val keyFetcher: KeyFetcher,
   private val keyPreferences: KeyPreferences,
-  private val budgetGraphs: BudgetGraphHolder,
+  private val runLevelController: RunLevelController,
 ) : ViewModel() {
   private var cachedData: CachedEncryptedData? = null
 
@@ -105,7 +102,7 @@ class SyncBudgetViewModel(
 
   fun clearBudget() {
     logcat.v { "clearBudget" }
-    budgetGraphs.clear()
+    runLevelController.onBudgetClosed()
   }
 
   fun enterKeyPassword(input: Password) = mutablePasswordState.update {
@@ -126,13 +123,15 @@ class SyncBudgetViewModel(
     val cachedData = cachedData
     val meta = cachedData?.meta
     val keyId = meta?.keyId
+
+    @Suppress("ComplexCondition")
     if (state !is KeyPasswordState.Active || cachedData == null || meta == null || keyId == null) {
       error("Should never happen? state=$state, cachedData=$cachedData, meta=$meta, keyId=$keyId")
     }
 
     setStepState(ValidatingDatabase, SyncStepState.InProgress.Indefinite)
     viewModelScope.launch {
-      when (val fetched = keyFetcher(budgetId, token, keyPassword = state.input)) {
+      when (val fetched = keyFetcher(budgetId, keyPassword = state.input)) {
         is FetchKeyResult.Failure -> {
           logcat.w { "Failed fetching keys: $fetched" }
           handleDecryptFailure(
@@ -205,7 +204,7 @@ class SyncBudgetViewModel(
 
   private suspend fun fetchUserFileInfo(): UserFile? {
     setStepState(FetchingFileInfo, SyncStepState.InProgress.Indefinite)
-    return when (val result = infoFetcher.fetch(token, budgetId)) {
+    return when (val result = infoFetcher.fetch(budgetId)) {
       is BudgetInfoFetcher.Result.Failure -> {
         setStepState(FetchingFileInfo, SyncStepState.Failed(result.reason))
         null
@@ -222,7 +221,7 @@ class SyncBudgetViewModel(
     var downloadedDbPath: Path? = null
     setStepState(DownloadingDatabase, SyncStepState.InProgress.Indefinite)
 
-    fileDownloader.download(token, budgetId).collect { state ->
+    fileDownloader.download(budgetId).collect { state ->
       val stepState =
         when (state) {
           is DownloadState.InProgress -> {
@@ -310,8 +309,8 @@ class SyncBudgetViewModel(
       }
 
       is ImportResult.Success -> {
-        val budgetGraph = budgetGraphs.update(result.meta)
-        logcat.i { "Built new budget component from $budgetId: $budgetGraph" }
+        runLevelController.onBudget(result.meta)
+        logcat.i { "Built new budget component from $budgetId" }
         setStepState(ValidatingDatabase, SyncStepState.Succeeded)
       }
     }
@@ -323,13 +322,6 @@ class SyncBudgetViewModel(
     val meta: EncryptMeta?,
   )
 
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  fun interface Factory : ManualViewModelAssistedFactory {
-    fun create(@Assisted token: Token, @Assisted budgetId: BudgetId): SyncBudgetViewModel
-  }
-
   private companion object {
     const val LEARN_MORE_URL =
       "https://actualbudget.org/docs/getting-started/sync/#end-to-end-encryption"
@@ -340,5 +332,12 @@ class SyncBudgetViewModel(
         DownloadingDatabase to SyncStepState.NotStarted,
         ValidatingDatabase to SyncStepState.NotStarted,
       )
+  }
+
+  @AssistedFactory
+  @ManualViewModelAssistedFactoryKey
+  @ContributesIntoMap(LoggedInScope::class)
+  interface Factory : ManualViewModelAssistedFactory {
+    fun create(budgetId: BudgetId): SyncBudgetViewModel
   }
 }

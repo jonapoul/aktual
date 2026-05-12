@@ -2,15 +2,15 @@ package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
 import aktual.account.vm.LoginViewModel
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.ListBudgetsNavigator
-import aktual.app.nav.ServerUrlNavigator
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.model.Password.Companion.Dummy
 import aktual.core.model.Password.Companion.Empty
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.ListBudgetsNavigator
+import aktual.core.nav.ServerUrlNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -68,7 +68,7 @@ fun LoginScreen(
   val loginMethods by viewModel.loginMethods.collectAsStateWithLifecycle()
   val selectedLoginMethod by viewModel.selectedLoginMethod.collectAsStateWithLifecycle()
 
-  LaunchedEffect(Unit) { viewModel.token.collect { token -> toListBudgets(token) } }
+  LaunchedEffect(viewModel.token) { viewModel.token.collect { toListBudgets() } }
 
   val uriHandler = LocalUriHandler.current
   LaunchedEffect(redirectUrl) {

@@ -2,11 +2,11 @@ package aktual.account.ui.password
 
 import aktual.account.vm.ChangePasswordState
 import aktual.account.vm.ChangePasswordViewModel
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.ListBudgetsNavigator
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.Password
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.ListBudgetsNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -45,7 +45,7 @@ import dev.zacsweers.metrox.viewmodel.metroViewModel
 @Composable
 fun ChangePasswordScreen(
   navBack: BackNavigator,
-  navToListBudgets: ListBudgetsNavigator,
+  toListBudgets: ListBudgetsNavigator,
   viewModel: ChangePasswordViewModel = metroViewModel(),
 ) {
   val versions by viewModel.versions.collectAsStateWithLifecycle()
@@ -58,7 +58,7 @@ fun ChangePasswordScreen(
 
   val token = newToken
   if (token != null) {
-    LaunchedEffect(Unit) { navToListBudgets(token) }
+    LaunchedEffect(Unit) { toListBudgets() }
   }
 
   ChangePasswordScaffold(
@@ -186,7 +186,6 @@ private fun ChangePasswordState.Failure.errorMessage(): String =
     ChangePasswordState.NetworkFailure -> Strings.passwordFailureNetwork
     ChangePasswordState.OtherFailure -> Strings.passwordFailureOther
     ChangePasswordState.PasswordsDontMatch -> Strings.passwordFailureMatch
-    ChangePasswordState.NotLoggedIn -> Strings.passwordFailureLoggedOut
   }
 
 @PortraitPreview

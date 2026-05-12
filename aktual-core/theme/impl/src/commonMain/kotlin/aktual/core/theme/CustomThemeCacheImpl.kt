@@ -1,8 +1,8 @@
 package aktual.core.theme
 
 import aktual.core.model.AppDirectory
+import aktual.di.AppScope
 import alakazam.kotlin.CoroutineContexts
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.withContext

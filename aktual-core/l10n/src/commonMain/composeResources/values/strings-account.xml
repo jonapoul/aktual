@@ -27,7 +27,6 @@
   <string name="password_failure_match">Passwords do not match</string>
   <string name="password_failure_network">Unable to contact the server</string>
   <string name="password_failure_other">Internal error</string>
-  <string name="password_failure_logged_out">Can't change password - logged out</string>
 
   <string name="server_url_title">Where's the server?</string>
   <string name="server_url_menu_about">About</string>

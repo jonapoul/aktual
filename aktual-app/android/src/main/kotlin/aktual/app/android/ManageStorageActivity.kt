@@ -2,11 +2,12 @@ package aktual.app.android
 
 import aktual.about.ui.storage.ManageStorageScreen
 import aktual.core.ui.AktualTheme
+import aktual.core.ui.BackHandler
 import aktual.core.ui.DialogBlurOverlay
 import aktual.core.ui.DialogBlurState
 import aktual.core.ui.WithCompositionLocals
-import aktual.nav.core.BackHandler
-import aktual.nav.core.rememberAppCloser
+import aktual.core.ui.rememberAppCloser
+import aktual.di.AppScope
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,7 +32,6 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory

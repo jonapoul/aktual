@@ -15,13 +15,12 @@ kotlin {
     api(libs.shimmer)
     api(project(":aktual-budget:model"))
     api(project(":aktual-core:icons"))
-    api(project(":aktual-core:model"))
     api(project(":aktual-core:theme"))
     implementation(project(":aktual-core:l10n"))
   }
 
   androidMainDependencies {
     implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.coreKtx)
+    implementation(libs.androidx.core)
   }
 }

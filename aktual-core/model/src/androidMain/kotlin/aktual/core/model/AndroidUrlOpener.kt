@@ -1,9 +1,9 @@
 package aktual.core.model
 
+import aktual.di.AppScope
 import android.content.Context
 import android.content.Intent
 import androidx.core.net.toUri
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 
 @ContributesBinding(AppScope::class)

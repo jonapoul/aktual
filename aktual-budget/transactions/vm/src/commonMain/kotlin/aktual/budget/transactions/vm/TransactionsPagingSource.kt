@@ -1,6 +1,6 @@
 package aktual.budget.transactions.vm
 
-import aktual.budget.db.dao.TransactionsDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.TransactionId
 import androidx.paging.PagingSource
@@ -8,7 +8,7 @@ import androidx.paging.PagingState
 import kotlinx.coroutines.CancellationException
 
 internal class TransactionsPagingSource(
-  private val dao: TransactionsDao,
+  private val dao: TransactionDao,
   private val spec: AccountSpec,
 ) : PagingSource<Int, TransactionId>() {
   override suspend fun load(params: LoadParams<Int>): LoadResult<Int, TransactionId> =

@@ -10,7 +10,7 @@ kotlin {
   }
 
   commonTestDependencies {
-    implementation(project(":aktual-prefs:di"))
+    implementation(project(":aktual-app:di"))
     implementation(project(":aktual-test"))
   }
 }

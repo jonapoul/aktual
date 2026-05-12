@@ -6,10 +6,10 @@ plugins { id("aktual.module.kotlin") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-core:model"))
-    implementation(project(":aktual-core:api"))
+    api(project(":aktual-core:api"))
+    api(project(":aktual-di:runlevel"))
+    api(project(":aktual-prefs"))
     implementation(project(":aktual-core:logging"))
-    implementation(project(":aktual-prefs"))
     compileOnly(libs.androidx.compose.annotation)
   }
 

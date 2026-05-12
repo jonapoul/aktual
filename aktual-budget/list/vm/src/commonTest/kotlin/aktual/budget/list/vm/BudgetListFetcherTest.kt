@@ -1,7 +1,5 @@
 package aktual.budget.list.vm
 
-import aktual.api.client.AktualApis
-import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApi
 import aktual.api.client.SyncApiImpl
 import aktual.api.model.account.FailureReason
@@ -22,30 +20,30 @@ import assertk.assertions.isInstanceOf
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 
 class BudgetListFetcherTest {
   private lateinit var budgetListFetcher: BudgetListFetcher
-  private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var mockEngine: MockEngine.Queue
 
-  private fun TestScope.before() {
+  @BeforeTest
+  fun before() {
     mockEngine = emptyMockEngine()
-    apisStateHolder = AktualApisStateHolder()
+  }
+
+  private fun TestScope.before(
+    syncApi: SyncApi = SyncApiImpl(testHttpClient(mockEngine), FileSystem.SYSTEM, SERVER_URL)
+  ) {
     budgetListFetcher =
-      BudgetListFetcher(
-        contexts = TestCoroutineContexts(standardDispatcher),
-        apisStateHolder = apisStateHolder,
-      )
+      BudgetListFetcher(syncApi = syncApi, contexts = TestCoroutineContexts(standardDispatcher))
   }
 
   @AfterTest
@@ -54,20 +52,10 @@ class BudgetListFetcherTest {
   }
 
   @Test
-  fun `Failure if no APIs stored`() = runTest {
-    before()
-    apisStateHolder.update { null }
-    val result = budgetListFetcher.fetchBudgets(TOKEN)
-    assertThat(result).isEqualTo(FetchBudgetsResult.NotLoggedIn)
-  }
-
-  @Test
   fun `Handle success response`() = runTest {
-    before()
-
     // given
     mockEngine += { respondJson(VALID_RESPONSE) }
-    apisStateHolder.update { buildApis() }
+    before()
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)
@@ -93,8 +81,6 @@ class BudgetListFetcherTest {
 
   @Test
   fun `Handle invalid JSON format`() = runTest {
-    before()
-
     // given
     val body =
       """
@@ -105,7 +91,7 @@ class BudgetListFetcherTest {
       """
         .trimIndent()
     mockEngine += { respondJson(body) }
-    apisStateHolder.update { buildApis() }
+    before()
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)
@@ -116,13 +102,10 @@ class BudgetListFetcherTest {
 
   @Test
   fun `Handle network failure`() = runTest {
-    before()
-
     // given
     val syncApi =
       mockk<SyncApi> { coEvery { fetchUserFiles(TOKEN) } throws NoRouteToHostException() }
-    mockEngine += { respondJson(VALID_RESPONSE) }
-    apisStateHolder.update { buildApis(syncApi) }
+    before(syncApi)
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)
@@ -133,8 +116,6 @@ class BudgetListFetcherTest {
 
   @Test
   fun `Handle failure response`() = runTest {
-    before()
-
     // given
     val responseJson =
       """
@@ -145,7 +126,7 @@ class BudgetListFetcherTest {
       """
         .trimIndent()
     mockEngine += { respondJson(responseJson, HttpStatusCode.Forbidden) }
-    apisStateHolder.update { buildApis() }
+    before()
 
     // when
     val result = budgetListFetcher.fetchBudgets(TOKEN)
@@ -154,10 +135,6 @@ class BudgetListFetcherTest {
     assertThat(result)
       .isEqualTo(FetchBudgetsResult.FailureResponse(FailureReason("something broke")))
   }
-
-  private fun buildApis(
-    syncApi: SyncApi = SyncApiImpl(testHttpClient(mockEngine), FileSystem.SYSTEM, SERVER_URL)
-  ) = mockk<AktualApis> { every { sync } returns syncApi }
 
   private companion object {
     val TOKEN = Token(value = "abc-123")

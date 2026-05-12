@@ -1,6 +1,6 @@
 package aktual.test
 
-import dev.zacsweers.metro.AppScope
+import aktual.di.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metrox.android.MetroAppComponentProviders
 

@@ -1,6 +1,7 @@
 @file:Suppress("UnstableApiUsage")
 
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
+import aktual.gradle.ExportMinSdkTask
 import aktual.gradle.dsl.commonConfigure
 import blueprint.core.getOptional
 import blueprint.core.gitVersionCode
@@ -139,16 +140,16 @@ licensee {
 
 dependencies {
   coreLibraryDesugaring(libs.android.desugaring)
-  implementation(kotlin("stdlib"))
   implementation(libs.alakazam.compose)
   implementation(libs.alakazam.kotlin)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.activity.core)
   implementation(libs.androidx.activity.ktx)
   implementation(libs.androidx.annotation)
-  implementation(libs.androidx.lifecycle.viewmodel.ktx)
+  implementation(libs.androidx.lifecycle.viewmodel)
   implementation(libs.androidx.lifecycle.viewmodel.savedstate)
   implementation(libs.androidx.splash)
+  implementation(libs.haze)
   implementation(libs.kotlinx.coroutines.core)
   implementation(libs.logcat)
   implementation(libs.material)
@@ -156,36 +157,20 @@ dependencies {
   implementation(libs.metrox.viewmodel.compose)
   implementation(project(":aktual-about:ui"))
   implementation(project(":aktual-app:di"))
-  implementation(project(":aktual-app:nav:core"))
-  implementation(project(":aktual-app:nav:di"))
-  implementation(project(":aktual-app:nav:ui"))
-  implementation(project(":aktual-core:logging:impl"))
+  implementation(project(":aktual-app:nav"))
+  implementation(project(":aktual-app:ui-app"))
+  implementation(project(":aktual-app:ui-budget"))
+  implementation(project(":aktual-core:nav"))
+  implementation(project(":aktual-di:graphs"))
   implementation(project(":aktual-prefs"))
-  implementation(libs.haze)
 }
 
+val readme = rootProject.layout.projectDirectory.file("README.md")
 val exportMinSdk =
-  tasks.register("exportMinSdk") {
-    group = "documentation"
-    description = "Updates the API level badge in README.md"
-    inputs.property("minSdk", android.defaultConfig.minSdk)
-    val readme = rootProject.layout.projectDirectory.file("README.md")
-    inputs.file(readme)
-    outputs.file(readme)
-    doLast {
-      val minSdk = inputs.properties["minSdk"] as Int
-      val inputFile = inputs.files.singleFile
-      val outputFile = outputs.files.singleFile
-      val originalContent = inputFile.readText()
-      val newContent =
-        originalContent
-          .replace("API-\\d+%2B".toRegex(), "API-$minSdk%2B")
-          .replace("level=\\d+".toRegex(), "level=$minSdk")
-      outputFile.writeText(newContent)
-      if (originalContent != newContent) {
-        throw GradleException("Updated $outputFile with minSdk=$minSdk - you need to commit it!")
-      }
-    }
+  tasks.register("exportMinSdk", ExportMinSdkTask::class) {
+    minSdk = providers.intProperty(key = "aktual.android.minSdk")
+    readmeFile = readme
+    outputFile = readme
   }
 
 tasks.named("preBuild").configure { dependsOn(exportMinSdk) }

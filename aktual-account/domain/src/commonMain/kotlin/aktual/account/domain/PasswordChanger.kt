@@ -1,10 +1,10 @@
 package aktual.account.domain
 
-import aktual.api.client.AktualApisStateHolder
+import aktual.api.client.AccountApi
 import aktual.api.model.account.ChangePasswordRequest
 import aktual.api.model.account.ChangePasswordResponse
 import aktual.core.model.Password
-import aktual.prefs.AppPreferences
+import aktual.core.model.Token
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
@@ -16,22 +16,15 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 
 @Inject
-class PasswordChanger
-internal constructor(
+class PasswordChanger(
+  private val token: Token,
+  private val accountApi: AccountApi,
   private val contexts: CoroutineContexts,
-  private val apisStateHolder: AktualApisStateHolder,
-  private val preferences: AppPreferences,
 ) {
-  suspend fun submit(password: Password): ChangePasswordResult {
-    val apis = apisStateHolder.value
-    val token = preferences.token.get()
-    if (apis == null || token == null) {
-      return ChangePasswordResult.NotLoggedIn
-    }
-
-    return try {
+  suspend fun submit(password: Password): ChangePasswordResult =
+    try {
       val request = ChangePasswordRequest(password)
-      val response = withContext(contexts.io) { apis.account.changePassword(request, token) }
+      val response = withContext(contexts.io) { accountApi.changePassword(request, token) }
       logcat.v { "Received response: $response" }
       ChangePasswordResult.Success
     } catch (e: CancellationException) {
@@ -47,5 +40,4 @@ internal constructor(
       logcat.e(e) { "Failed changing password" }
       ChangePasswordResult.OtherFailure(e.requireMessage())
     }
-  }
 }

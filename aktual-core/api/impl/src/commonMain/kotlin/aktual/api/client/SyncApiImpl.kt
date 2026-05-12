@@ -9,6 +9,8 @@ import aktual.api.model.sync.ListUserFilesResponse
 import aktual.budget.model.BudgetId
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.di.ServerChosenScope
+import dev.zacsweers.metro.ContributesBinding
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -32,8 +34,9 @@ import okio.Path
 import okio.Sink as OkioSink
 import okio.buffer
 
+@ContributesBinding(ServerChosenScope::class)
 class SyncApiImpl(
-  private val client: HttpClient,
+  @param:AktualClient private val client: HttpClient,
   private val fileSystem: FileSystem,
   private val serverUrl: ServerUrl,
 ) : SyncApi {

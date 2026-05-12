@@ -1,15 +1,12 @@
 package aktual.api.client
 
-import aktual.budget.model.BudgetScope
+import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.SyncResponse
-import aktual.budget.prefs.BudgetLocalPreferences
 import aktual.budget.proto.SyncResponseDecoder
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
-import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.AssistedInject
+import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
 import io.ktor.client.HttpClient
 import io.ktor.client.request.header
@@ -25,10 +22,11 @@ import okio.ByteString
 import okio.buffer
 import okio.source
 
-@AssistedInject
+@ContributesBinding(BudgetScope::class)
 class BudgetSyncApiImpl(
   @param:AktualClient private val client: HttpClient,
-  @Assisted private val serverUrl: ServerUrl,
+  private val serverUrl: ServerUrl,
+  private val token: Token,
   private val prefs: BudgetLocalPreferences,
   private val decoder: SyncResponseDecoder,
 ) : BudgetSyncApi {
@@ -38,7 +36,7 @@ class BudgetSyncApiImpl(
       Protocol.Https -> URLProtocol.HTTPS
     }
 
-  override suspend fun syncBudget(token: Token, requestBody: ByteString): SyncResponse {
+  override suspend fun syncBudget(requestBody: ByteString): SyncResponse {
     val response = client.post {
       url {
         protocol = urlProtocol
@@ -57,11 +55,5 @@ class BudgetSyncApiImpl(
       source = response.bodyAsChannel().toInputStream().source().buffer(),
       metadata = prefs.value,
     )
-  }
-
-  @AssistedFactory
-  @ContributesBinding(BudgetScope::class)
-  fun interface Factory : BudgetSyncApi.Factory {
-    override fun create(@Assisted serverUrl: ServerUrl): BudgetSyncApiImpl
   }
 }

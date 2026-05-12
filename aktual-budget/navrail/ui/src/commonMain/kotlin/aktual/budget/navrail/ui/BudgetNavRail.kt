@@ -1,14 +1,5 @@
 package aktual.budget.navrail.ui
 
-import aktual.app.nav.AktualNavStack
-import aktual.app.nav.BudgetNavEntryContributor
-import aktual.app.nav.BudgetNavKey
-import aktual.app.nav.BudgetTab
-import aktual.app.nav.ListRulesNavRoute
-import aktual.app.nav.ListSchedulesNavRoute
-import aktual.app.nav.ReportsListNavRoute
-import aktual.app.nav.TransactionsNavRoute
-import aktual.budget.model.BudgetId
 import aktual.budget.navrail.vm.BudgetNavRailViewModel
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
@@ -22,7 +13,15 @@ import aktual.core.icons.material.Menu
 import aktual.core.icons.material.Settings
 import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Strings
-import aktual.core.model.Token
+import aktual.core.nav.BudgetNavEntryContributor
+import aktual.core.nav.BudgetNavKey
+import aktual.core.nav.BudgetTab
+import aktual.core.nav.ListRulesNavRoute
+import aktual.core.nav.ListSchedulesNavRoute
+import aktual.core.nav.NavStack
+import aktual.core.nav.NavStackImpl
+import aktual.core.nav.ReportsListNavRoute
+import aktual.core.nav.TransactionsNavRoute
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -39,7 +38,7 @@ import aktual.core.ui.blurredBottomBar
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.isMobileLandscape
-import aktual.nav.core.rememberAppCloser
+import aktual.core.ui.rememberAppCloser
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.End
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Start
 import androidx.compose.animation.EnterTransition
@@ -86,23 +85,21 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
-import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.serialization.json.Json
 
 @Composable
 fun BudgetNavRail(
-  token: Token,
-  budgetId: BudgetId,
   onAction: (BudgetNavAction) -> Unit,
   modifier: Modifier = Modifier,
-  viewModel: BudgetNavRailViewModel = metroViewModel(budgetId),
+  viewModel: BudgetNavRailViewModel = metroViewModel(),
 ) {
   val contributors = viewModel.budgetNavEntryContributors
 
-  val transactionsStack = stackWithDefault(TransactionsNavRoute(token, budgetId))
-  val reportsStack = stackWithDefault(ReportsListNavRoute(token, budgetId))
+  val transactionsStack = stackWithDefault(TransactionsNavRoute)
+  val reportsStack = stackWithDefault(ReportsListNavRoute)
   val schedulesStack = stackWithDefault(ListSchedulesNavRoute)
   val rulesStack = stackWithDefault(ListRulesNavRoute)
 
@@ -163,15 +160,15 @@ fun BudgetNavRail(
 }
 
 @Composable
-private fun stackWithDefault(default: BudgetNavKey): AktualNavStack<BudgetNavKey> =
+private fun stackWithDefault(default: BudgetNavKey): NavStack<BudgetNavKey> =
   rememberSaveable(saver = budgetNavKeyStackSaver()) {
-    AktualNavStack(appCloser = null, stack = mutableStateListOf(default))
+    NavStackImpl(appCloser = null, stack = mutableStateListOf(default))
   }
 
 @Composable
 private fun BottomNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
-  activeStack: AktualNavStack<BudgetNavKey>,
+  activeStack: NavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onPopBackToTransactions: () -> Unit,
@@ -232,7 +229,7 @@ private fun BottomNavLayout(
 @Composable
 private fun SideNavLayout(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
-  activeStack: AktualNavStack<BudgetNavKey>,
+  activeStack: NavStack<BudgetNavKey>,
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onPopBackToTransactions: () -> Unit,
@@ -266,7 +263,7 @@ private fun SideNavLayout(
 @Composable
 private fun BudgetNavDisplay(
   contributors: ImmutableSet<BudgetNavEntryContributor>,
-  activeStack: AktualNavStack<BudgetNavKey>,
+  activeStack: NavStack<BudgetNavKey>,
   onPopBackToTransactions: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
@@ -392,21 +389,14 @@ private fun Theme.navRailItem(): NavigationRailItemColors =
     disabledTextColor = sidebarItemText.disabled,
   )
 
-@Composable
-private fun metroViewModel(budgetId: BudgetId) =
-  assistedMetroViewModel<BudgetNavRailViewModel, BudgetNavRailViewModel.Factory>(
-    key = budgetId.value,
-    createViewModel = { create(budgetId) },
-  )
-
 private val TabSaver: Saver<BudgetTab, Int> =
   Saver(save = { it.ordinal }, restore = { BudgetTab.entries[it] })
 
 private fun budgetNavKeyStackSaver() =
-  Saver<AktualNavStack<BudgetNavKey>, String>(
+  Saver<NavStack<BudgetNavKey>, String>(
     save = { stack -> Json.encodeToString(stack.toList()) },
     restore = { json ->
-      AktualNavStack(
+      NavStackImpl(
         appCloser = null,
         stack = mutableStateListOf<BudgetNavKey>().apply { addAll(Json.decodeFromString(json)) },
       )

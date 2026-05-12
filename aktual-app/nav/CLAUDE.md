@@ -1,6 +1,6 @@
 # aktual-app:nav
 
-Navigation API: navigator classes, `NavKey` routes, stack extensions, and the `NavEntryContributor` interface. The sibling `:ui` module owns `AktualNavHost`, `AktualAppContent`, and `RootViewModel`.
+Navigation host: `AktualNavHost`, `AktualAppContent`, `RootViewModel`, and `UseCases`. Navigator classes, `NavKey` routes, stack extensions, and the `NavEntryContributor` interface live in `aktual-core:nav`.
 
 ## Instructions
 - **IMPORTANT**: Whenever any navigation logic changes, keep the mermaid diagram at [navgraph.mmd](./navgraph.mmd) up to date.
@@ -14,13 +14,13 @@ Navigation API: navigator classes, `NavKey` routes, stack extensions, and the `N
 
 ## Decentralized entries
 
-Each `:ui` module owns its nav entries via a `NavEntryContributor` annotated `@ContributesIntoSet(NavScope::class)`. `NavGraph` is a `@GraphExtension(NavScope::class)` child of `AppScope` exposing `Set<NavEntryContributor>`; `RootViewModel` creates it and `AktualNavHost` iterates contributors to build the entry provider. `aktual-app:nav:di` depends on all `:ui` modules so Metro can discover the contribution hints.
+Each `:ui` module owns its nav entries via a `NavEntryContributor` annotated `@ContributesIntoSet(AppScope::class)`. `RootViewModel` collects them and `AktualNavHost` iterates contributors to build the entry provider. `aktual-app:ui-app` depends on all non-budget `:ui` modules so Metro can discover the contribution hints.
 
-To add a screen: create `YourNavigator.kt` (+ `YourNavRoute`) here, then implement `NavEntryContributor` in your `:ui` module.
+To add a screen: create `YourNavigator.kt` (+ `YourNavRoute`) in `aktual-core:nav`, then implement `NavEntryContributor` in your `:ui` module.
 
 ### Budget-scoped entries
 
-Budget screens implement `BudgetNavEntryContributor` with `@ContributesIntoSet(BudgetNavScope::class)`. Every `BudgetNavKey` carries a `tab: BudgetTab`, and entries **must** pass it as the content key so the nav rail can track the active tab:
+Budget screens implement `BudgetNavEntryContributor` with `@ContributesIntoSet(BudgetScope::class)`. `aktual-app:ui-budget` aggregates those `:ui` modules. Every `BudgetNavKey` carries a `tab: BudgetTab`, and entries **must** pass it as the content key so the nav rail can track the active tab:
 
 ```kotlin
 scope.entry<YourNavRoute>(clazzContentKey = { it.tab }) { route -> ... }

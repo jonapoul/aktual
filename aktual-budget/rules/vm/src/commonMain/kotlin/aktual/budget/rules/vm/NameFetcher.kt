@@ -12,7 +12,9 @@ import aktual.budget.model.CategoryId
 import aktual.budget.model.Field
 import aktual.budget.model.PayeeId
 import aktual.budget.model.ScheduleId
+import aktual.di.BudgetScope
 import androidx.compose.runtime.Immutable
+import dev.zacsweers.metro.ContributesBinding
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.json.JsonArray
@@ -29,7 +31,8 @@ interface NameFetcher {
 }
 
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
-internal class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
+@ContributesBinding(BudgetScope::class)
+class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
   private val accounts = AccountDao(database)
   private val categories = CategoryDao(database)
   private val categoryGroups = CategoryGroupDao(database)

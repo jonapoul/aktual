@@ -3,27 +3,26 @@ package aktual.budget.rules.vm.edit
 import aktual.budget.db.DbJson
 import aktual.budget.db.Rules
 import aktual.budget.db.dao.DatabaseTables.RULES
-import aktual.budget.db.dao.LocalChange
 import aktual.budget.db.dao.RulesDao
-import aktual.budget.db.dao.tombstone
-import aktual.budget.di.BudgetGraphHolder
+import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.ConditionType
 import aktual.budget.model.Field
+import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.Operator
 import aktual.budget.model.RuleAction
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.model.messageValue
+import aktual.budget.model.tombstone
 import aktual.budget.rules.vm.EntityListFetcher
-import aktual.budget.rules.vm.EntityListFetcherImpl
 import aktual.budget.rules.vm.NameFetcher
-import aktual.budget.rules.vm.NameFetcherImpl
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
 import aktual.core.model.UuidGenerator
+import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -31,7 +30,6 @@ import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.launchMolecule
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
@@ -59,11 +57,11 @@ import logcat.logcat
 class EditRuleViewModel(
   @Assisted private val ruleId: RuleId?,
   private val uuidGenerator: UuidGenerator,
-  budgetGraphs: BudgetGraphHolder,
+  private val rulesDao: RulesDao,
+  private val syncController: BudgetSyncController,
+  val nameFetcher: NameFetcher,
+  val entityListFetcher: EntityListFetcher,
 ) : ViewModel() {
-  private val budgetGraph = budgetGraphs.require()
-  private val rulesDao = RulesDao(budgetGraph.database)
-
   private val mutableEvents =
     MutableSharedFlow<EditRuleEvent>(
       replay = 0,
@@ -75,10 +73,6 @@ class EditRuleViewModel(
   private val mutableIsWorking = MutableStateFlow(false)
   private val mutableFailure = MutableStateFlow<Failure?>(null)
   private val mutableRule = MutableStateFlow<Rule?>(null)
-
-  val nameFetcher: NameFetcher = NameFetcherImpl(budgetGraph.database)
-
-  val entityListFetcher: EntityListFetcher = EntityListFetcherImpl(budgetGraph.database)
 
   val events: SharedFlow<EditRuleEvent> = mutableEvents.asSharedFlow()
 
@@ -138,7 +132,7 @@ class EditRuleViewModel(
         rulesDao.tombstone(setOf(id))
         mutableEvents.tryEmit(EditRuleEvent.DeletedRule)
         val change = tombstone(dataset = RULES, row = id.toString())
-        budgetGraph.syncController.syncChanges(change)
+        syncController.syncChanges(change)
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {
@@ -171,7 +165,7 @@ class EditRuleViewModel(
             }
           rulesDao.insert(rule)
           logcat.i { "Saved $rule" }
-          budgetGraph.syncController.syncChanges(insertChanges(rule))
+          syncController.syncChanges(insertChanges(rule))
         }
       } catch (e: CancellationException) {
         throw e
@@ -221,7 +215,7 @@ class EditRuleViewModel(
 
   private fun emptyRule() =
     Rule(
-      id = RuleId(uuidGenerator()),
+      id = uuidGenerator(::RuleId),
       stage = RuleStage.Default,
       conditionsOp = ConditionOp.Default,
       conditions = persistentListOf(emptyCondition()),
@@ -257,7 +251,7 @@ class EditRuleViewModel(
 
   @AssistedFactory
   @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
+  @ContributesIntoMap(BudgetScope::class)
   interface Factory : ManualViewModelAssistedFactory {
     fun create(ruleId: RuleId?): EditRuleViewModel
   }

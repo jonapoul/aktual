@@ -2,9 +2,9 @@ package aktual.app.android
 
 import aktual.core.theme.Theme
 import aktual.core.theme.ThemeResolver
+import aktual.di.AppScope
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey

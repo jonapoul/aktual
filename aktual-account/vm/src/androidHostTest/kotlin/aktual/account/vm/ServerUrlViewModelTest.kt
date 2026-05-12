@@ -1,24 +1,22 @@
 package aktual.account.vm
 
-import aktual.api.client.AccountApi
-import aktual.api.client.AccountApiImpl
-import aktual.api.client.AktualApis
-import aktual.api.client.AktualApisStateHolder
-import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
+import aktual.di.AppGraph
+import aktual.di.AppScope
+import aktual.di.RunLevelController
 import aktual.prefs.AppPreferences
-import aktual.prefs.AppPreferencesImpl
-import aktual.test.TestBuildConfig
+import aktual.test.TestCoroutineContainer
+import aktual.test.TestHttpContainer
 import aktual.test.assertThatNextEmission
 import aktual.test.assertThatNextEmissionIsEqualTo
-import aktual.test.buildPreferences
 import aktual.test.clear
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
-import aktual.test.testHttpClient
 import alakazam.test.TestCoroutineContexts
+import alakazam.test.standardDispatcher
+import androidx.lifecycle.viewmodel.CreationExtras
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.contains
@@ -26,19 +24,15 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isNotEqualTo
 import assertk.assertions.isNotNull
 import assertk.assertions.isNull
+import dev.zacsweers.metro.DependencyGraph
+import dev.zacsweers.metro.createDynamicGraph
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpStatusCode
-import io.mockk.every
-import io.mockk.mockk
 import java.io.IOException
 import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.coroutines.flow.receiveAsFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.runner.RunWith
@@ -47,55 +41,40 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlViewModelTest {
   // Real
-  private lateinit var preferences: AppPreferences
   private lateinit var viewModel: ServerUrlViewModel
-  private lateinit var apisStateHolder: AktualApisStateHolder
-  private lateinit var versionsStateHolder: AktualVersionsStateHolder
+  private lateinit var appGraph: TestAppGraph
 
   // Mock
-  private lateinit var apis: AktualApis
-  private lateinit var accountApi: AccountApi
   private lateinit var mockEngine: MockEngine.Queue
-
-  @BeforeTest
-  fun before() {
-    versionsStateHolder = AktualVersionsStateHolder(TestBuildConfig)
-    mockEngine = emptyMockEngine()
-    accountApi = AccountApiImpl(testHttpClient(mockEngine), EXAMPLE_URL)
-    apis = mockk {
-      every { serverUrl } returns EXAMPLE_URL
-      every { account } returns accountApi
-    }
-    apisStateHolder = AktualApisStateHolder()
-    apisStateHolder.update { apis }
-  }
 
   @AfterTest
   fun after() {
     mockEngine.close()
+    appGraph.close()
   }
 
-  private suspend fun TestScope.buildPreferences() {
-    val prefs = buildPreferences(UnconfinedTestDispatcher(testScheduler))
-    preferences = AppPreferencesImpl(prefs)
-    preferences.serverUrl.set(EXAMPLE_URL)
-  }
+  private suspend fun TestScope.before() {
+    mockEngine = emptyMockEngine()
 
-  private fun TestScope.buildViewModel() {
-    viewModel =
-      ServerUrlViewModel(
-        contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
-        apiStateHolder = apisStateHolder,
-        preferences = preferences,
-        versionsStateHolder = versionsStateHolder,
-        buildConfig = TestBuildConfig.copy(defaultServerUrl = null),
+    val contexts = TestCoroutineContexts(standardDispatcher)
+    appGraph =
+      createDynamicGraph<TestAppGraph>(
+        TestCoroutineContainer(backgroundScope, contexts),
+        TestHttpContainer(mockEngine),
       )
+
+    appGraph.preferences.serverUrl.set(EXAMPLE_URL)
+    appGraph.runLevelController.init(listOf(appGraph))
+
+    advanceUntilIdle()
+
+    viewModel =
+      appGraph.metroViewModelFactory.create(ServerUrlViewModel::class, CreationExtras.Empty)
   }
 
   @Test
   fun `Nav to login when typing and clicking confirm if already bootstrapped`() = runTest {
-    buildPreferences()
-    buildViewModel()
+    before()
     viewModel.navDestination.receiveAsFlow().test {
       // Given we're currently not navigating, and the API returns that we're bootstrapped
       advanceUntilIdle()
@@ -117,8 +96,7 @@ class ServerUrlViewModelTest {
 
   @Test
   fun `Nav to bootstrap when typing and clicking confirm if not bootstrapped`() = runTest {
-    buildPreferences()
-    buildViewModel()
+    before()
     viewModel.navDestination.receiveAsFlow().test {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
       advanceUntilIdle()
@@ -141,24 +119,24 @@ class ServerUrlViewModelTest {
   @Test
   fun `Set initial parameters based on preferences`() = runTest {
     // Given
-    buildPreferences()
-    preferences.serverUrl.set(EXAMPLE_URL)
+    before()
 
     // When
-    buildViewModel()
     advanceUntilIdle()
 
     // Then
-    val protocol = viewModel.protocol.value
-    val baseUrl = viewModel.baseUrl.value
-    assertThat(protocol).isEqualTo(EXAMPLE_URL.protocol)
-    assertThat(baseUrl).isEqualTo(EXAMPLE_URL.baseUrl)
+    viewModel.protocol.test {
+      var protocol = awaitItem()
+      while (protocol != EXAMPLE_URL.protocol) {
+        protocol = awaitItem()
+      }
+    }
+    viewModel.baseUrl.test { assertThatNextEmission().isEqualTo(EXAMPLE_URL.baseUrl) }
   }
 
   @Test
   fun `Show error message if bootstrap request gives failure response`() = runTest {
-    buildPreferences()
-    buildViewModel()
+    before()
 
     viewModel.errorMessage.test {
       // Given we're currently not navigating
@@ -183,15 +161,14 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertThat(awaitItem()).isNotNull().contains(reason)
+      assertThatNextEmission().isNotNull().contains(reason)
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
   fun `Show error message if bootstrap request fails`() = runTest {
-    buildPreferences()
-    buildViewModel()
+    before()
     viewModel.errorMessage.test {
       // Given we're currently not navigating, and the API returns that we're not bootstrapped
       assertThatNextEmission().isNull()
@@ -207,24 +184,23 @@ class ServerUrlViewModelTest {
       viewModel.onClickConfirm()
 
       // Then
-      assertThat(awaitItem()).isNotNull().contains(reason)
+      assertThatNextEmission().isNotNull().contains(reason)
       cancelAndIgnoreRemainingEvents()
     }
   }
 
   @Test
   fun `Clear saved token if the confirmed URL is different from previously-saved`() = runTest {
-    buildPreferences()
-    buildViewModel()
-    preferences.token.asFlow().test {
+    before()
+    appGraph.preferences.token.asFlow().test {
       // Given no token initially saved
       assertThatNextEmission().isNull()
 
       // when we save a token and a URL
       val initialUrl = ServerUrl(Protocol.Https, "website.com")
-      preferences.serverUrl.set(initialUrl)
+      appGraph.preferences.serverUrl.set(initialUrl)
       val token = Token("abc-123")
-      preferences.token.set(token)
+      appGraph.preferences.token.set(token)
 
       // then the token has been saved
       assertThatNextEmissionIsEqualTo(token)
@@ -264,6 +240,12 @@ class ServerUrlViewModelTest {
         .trimIndent()
     mockEngine.clear()
     mockEngine += { respondJson(json) }
+  }
+
+  @DependencyGraph(AppScope::class)
+  internal interface TestAppGraph : AppGraph {
+    val runLevelController: RunLevelController
+    val preferences: AppPreferences
   }
 
   private companion object {

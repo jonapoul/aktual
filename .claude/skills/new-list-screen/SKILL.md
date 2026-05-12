@@ -97,7 +97,7 @@ package {pkg}.vm.list
 
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
-import dev.zacsweers.metro.AppScope
+import aktual.di.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
@@ -117,11 +117,6 @@ class List{Name}ViewModel : ViewModel() {
   }
 }
 ```
-
-> If the feature reads from a `BudgetGraph`, add `budgetGraphs: BudgetGraphHolder` to the constructor and
-> `api(project(":aktual-budget:di"))` to the build file — see `ListSchedulesViewModel` for the pattern.
-
----
 
 ## Step 2 — Create the UI module
 
@@ -465,10 +460,10 @@ private fun ContentSuccess(
 package {pkg}.ui
 
 import {pkg}.ui.list.List{Name}Screen
-import aktual.app.nav.AktualNavStack
+import aktual.app.nav.NavStack
 import aktual.app.nav.BudgetNavEntryContributor
 import aktual.app.nav.BudgetNavKey
-import aktual.app.nav.BudgetNavScope
+import aktual.di.BudgetNavScope
 import aktual.app.nav.List{Name}NavRoute
 import aktual.app.nav.budgetEntry
 import androidx.navigation3.runtime.EntryProviderScope
@@ -478,7 +473,7 @@ import dev.zacsweers.metro.ContributesIntoSet
 class {Name}NavEntryContributor : BudgetNavEntryContributor {
   override fun contribute(
     scope: EntryProviderScope<BudgetNavKey>,
-    stack: AktualNavStack<BudgetNavKey>,
+    stack: NavStack<BudgetNavKey>,
   ) {
     scope.budgetEntry<List{Name}NavRoute> { List{Name}Screen(/* navigators */) }
   }
@@ -491,18 +486,18 @@ class {Name}NavEntryContributor : BudgetNavEntryContributor {
 package {pkg}.ui
 
 import {pkg}.ui.list.List{Name}Screen
-import aktual.app.nav.AktualNavStack
+import aktual.app.nav.NavStack
 import aktual.app.nav.BackNavigator
 import aktual.app.nav.{Name}NavRoute
 import aktual.app.nav.NavEntryContributor
-import aktual.app.nav.NavScope
+import aktual.di.NavScope
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(NavScope::class)
 class {Name}NavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: AktualNavStack<NavKey>) {
+  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
     scope.entry<{Name}NavRoute> { List{Name}Screen(BackNavigator(stack)) }
   }
 }

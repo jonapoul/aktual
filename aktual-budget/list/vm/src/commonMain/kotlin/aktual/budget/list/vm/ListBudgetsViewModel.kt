@@ -1,6 +1,6 @@
 package aktual.budget.list.vm
 
-import aktual.api.client.AktualApisStateHolder
+import aktual.api.client.SyncApi
 import aktual.api.model.sync.DeleteUserFileRequest
 import aktual.api.model.sync.UserFile
 import aktual.budget.list.vm.ListBudgetsState.Failure
@@ -11,6 +11,8 @@ import aktual.budget.model.BudgetId
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.core.model.UrlOpener
+import aktual.di.LoggedInScope
+import aktual.di.RunLevelController
 import aktual.prefs.AppPreferences
 import aktual.prefs.asStateFlow
 import aktual.prefs.delete
@@ -18,17 +20,13 @@ import alakazam.kotlin.CoroutineContexts
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.Assisted
-import dev.zacsweers.metro.AssistedFactory
-import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
-import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlin.time.Duration.Companion.milliseconds
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -41,17 +39,23 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 
 @Stable
-@AssistedInject
+@ViewModelKey
+@ContributesIntoMap(LoggedInScope::class)
 class ListBudgetsViewModel(
-  @Assisted private val token: Token,
+  private val token: Token,
   private val preferences: AppPreferences,
   private val budgetListFetcher: BudgetListFetcher,
   private val reconciler: BudgetReconciler,
   private val files: BudgetFiles,
   private val contexts: CoroutineContexts,
-  private val apisStateHolder: AktualApisStateHolder,
+  private val syncApi: SyncApi,
   private val urlOpener: UrlOpener,
+  private val appPreferences: AppPreferences,
+  private val runLevels: RunLevelController,
 ) : ViewModel() {
+  private val mutableEvent = MutableSharedFlow<ListBudgetsEvent>(extraBufferCapacity = 1)
+  val event: Flow<ListBudgetsEvent> = mutableEvent.asSharedFlow()
+
   val serverUrl: StateFlow<ServerUrl?> = preferences.serverUrl.asStateFlow(viewModelScope)
 
   private val mutableState =
@@ -85,11 +89,17 @@ class ListBudgetsViewModel(
     fetchState()
   }
 
+  fun onSyncComplete(id: BudgetId) {
+    viewModelScope.launch {
+      appPreferences.lastOpenedBudgetId.set(id)
+      mutableEvent.emit(ListBudgetsEvent.NavToBudget)
+    }
+  }
+
   fun clearDeletingState() = mutableDeletingState.update { DeletingState.Inactive }
 
   fun deleteRemote(id: BudgetId) {
     logcat.d { "deleteRemote $id" }
-    val syncApi = apisStateHolder.value?.sync ?: error("No sync API found?")
     mutableDeletingState.update { DeletingState.Active(deletingRemote = true) }
 
     viewModelScope.launch {
@@ -144,6 +154,14 @@ class ListBudgetsViewModel(
     urlOpener(url)
   }
 
+  fun logOut() {
+    viewModelScope.launch {
+      preferences.token.delete()
+      runLevels.onLoggedOut()
+      mutableEvent.emit(ListBudgetsEvent.LogOut)
+    }
+  }
+
   private fun fetchState() {
     viewModelScope.launch {
       val mostRecentNumBudgets = preferences.mostRecentNumBudgets.get()
@@ -183,12 +201,5 @@ class ListBudgetsViewModel(
     if (preferences.lastOpenedBudgetId.get() == id) {
       preferences.lastOpenedBudgetId.delete()
     }
-  }
-
-  @AssistedFactory
-  @ManualViewModelAssistedFactoryKey
-  @ContributesIntoMap(AppScope::class)
-  interface Factory : ManualViewModelAssistedFactory {
-    fun create(@Assisted token: Token): ListBudgetsViewModel
   }
 }

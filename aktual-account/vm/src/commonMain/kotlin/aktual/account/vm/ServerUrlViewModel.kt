@@ -1,12 +1,14 @@
 package aktual.account.vm
 
-import aktual.api.client.AktualApisStateHolder
+import aktual.api.client.AccountApi
 import aktual.api.model.account.NeedsBootstrapResponse
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
+import aktual.di.AppScope
+import aktual.di.RunLevelController
 import aktual.prefs.AppPreferences
 import aktual.prefs.delete
 import alakazam.kotlin.CoroutineContexts
@@ -21,7 +23,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import io.ktor.client.call.body
@@ -30,12 +31,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -46,11 +44,10 @@ import logcat.logcat
 @Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class)
-class ServerUrlViewModel
-internal constructor(
+class ServerUrlViewModel(
   private val contexts: CoroutineContexts,
-  private val apiStateHolder: AktualApisStateHolder,
   private val preferences: AppPreferences,
+  private val runLevelController: RunLevelController,
   versionsStateHolder: AktualVersionsStateHolder,
   buildConfig: BuildConfig,
 ) : ViewModel() {
@@ -68,9 +65,7 @@ internal constructor(
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
 
   val isEnabled: StateFlow<Boolean> =
-    baseUrl
-      .map { it.isNotBlank() }
-      .stateIn(viewModelScope, SharingStarted.Eagerly, initialValue = false)
+    baseUrl.map { it.isNotBlank() }.stateIn(viewModelScope, Eagerly, initialValue = false)
 
   val navDestination: ReceiveChannel<NavDestination> = mutableNavDestination
 
@@ -140,16 +135,14 @@ internal constructor(
       val protocol = mutableProtocol.value
       val baseUrl = mutableBaseUrl.value
       val url = ServerUrl(protocol, baseUrl)
-      val previousUrl = preferences.serverUrl.get()
-
-      if (url != previousUrl) {
-        // saving a new URL, so the existing token and API objects are invalidated
-        apiStateHolder.update { null }
+      if (url != preferences.serverUrl.get()) {
         preferences.token.delete()
       }
 
+      val serverChosenGraph = runLevelController.onServerChosen(url)
       preferences.serverUrl.set(url)
-      checkIfNeedsBootstrap(url)
+      val accountApi = serverChosenGraph[AccountApi::class]
+      checkIfNeedsBootstrap(url, accountApi)
       mutableIsLoading.update { false }
     }
   }
@@ -158,14 +151,13 @@ internal constructor(
     mutableNavDestination.trySend(NavDestination.ToAbout)
   }
 
-  private suspend fun checkIfNeedsBootstrap(url: ServerUrl) =
+  private suspend fun checkIfNeedsBootstrap(url: ServerUrl, accountApi: AccountApi) {
     try {
       logcat.v { "checkIfNeedsBootstrap $url" }
-      val apis = apiStateHolder.filterNotNull().filter { it.serverUrl == url }.first()
 
       val response =
         try {
-          withContext(contexts.io) { apis.account.needsBootstrap() }
+          withContext(contexts.io) { accountApi.needsBootstrap() }
         } catch (e: ResponseException) {
           logcat.e(e) { "HTTP failure checking bootstrap for $url" }
           e.response.body<NeedsBootstrapResponse.Failure>()
@@ -176,6 +168,7 @@ internal constructor(
         when (response) {
           is NeedsBootstrapResponse.Success ->
             ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
+
           is NeedsBootstrapResponse.Failure -> ConfirmResult.Failed(reason = response.reason.reason)
         }
       mutableConfirmResult.update { confirmResult }
@@ -189,6 +182,7 @@ internal constructor(
 
       mutableConfirmResult.update { ConfirmResult.Failed(reason = e.requireMessage()) }
     }
+  }
 
   private fun ConfirmResult?.navDestination(): NavDestination? =
     when (this) {

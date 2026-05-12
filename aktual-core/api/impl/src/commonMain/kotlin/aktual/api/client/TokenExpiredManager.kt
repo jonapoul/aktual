@@ -1,6 +1,6 @@
 package aktual.api.client
 
-import dev.zacsweers.metro.AppScope
+import aktual.di.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.SingleIn
 import dev.zacsweers.metro.binding

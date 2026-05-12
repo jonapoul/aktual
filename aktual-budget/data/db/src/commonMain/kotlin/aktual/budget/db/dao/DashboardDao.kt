@@ -11,11 +11,13 @@ import alakazam.kotlin.CoroutineContexts
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.coroutines.asFlow
 import app.cash.sqldelight.coroutines.mapToList
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.serialization.json.JsonObject
 
+@Inject
 class DashboardDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
   private val queries = database.dashboardQueries
 

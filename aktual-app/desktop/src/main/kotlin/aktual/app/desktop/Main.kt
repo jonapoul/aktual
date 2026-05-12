@@ -7,8 +7,11 @@ import aktual.core.l10n.Strings
 import aktual.core.logging.JvmLogStorage
 import aktual.core.logging.KermitFileLogger
 import aktual.core.logging.TimestampedPrintStreamLogger
+import aktual.core.ui.LoadingScreenIfNotNull
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.window.Window
@@ -18,6 +21,9 @@ import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.zacsweers.metro.createGraph
 import dev.zacsweers.metrox.viewmodel.LocalMetroViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import logcat.LogPriority
 import logcat.LogcatLogger
@@ -27,6 +33,9 @@ private const val TAG = "Main"
 
 fun main() {
   val graph = createGraph<JvmAppGraph>()
+
+  @Suppress("InjectDispatcher")
+  CoroutineScope(Dispatchers.Default).launch { graph.initialiser(graph) }
 
   val logStorage = JvmLogStorage()
   val minPriority = LogPriority.VERBOSE
@@ -66,6 +75,8 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
       )
 
     val backStack = rememberBackStack(viewModel)
+    val viewModelFactory by
+      remember { graph.runLevelState.viewModelFactory() }.collectAsState(initial = null)
 
     if (backStack != null) {
       val keyHandler = remember { KeyboardEventHandler(backStack) }
@@ -85,11 +96,13 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
           exitApplication()
         },
       ) {
-        CompositionLocalProvider(
-          LocalViewModelStoreOwner provides viewModelStoreOwner,
-          LocalMetroViewModelFactory provides graph.metroViewModelFactory,
-          content = { AktualAppContent(viewModel = viewModel, navStack = backStack) },
-        )
+        LoadingScreenIfNotNull(viewModelFactory) { vmf ->
+          CompositionLocalProvider(
+            LocalViewModelStoreOwner provides viewModelStoreOwner,
+            LocalMetroViewModelFactory provides vmf,
+            content = { AktualAppContent(viewModel = viewModel, navStack = backStack) },
+          )
+        }
       }
     }
   }

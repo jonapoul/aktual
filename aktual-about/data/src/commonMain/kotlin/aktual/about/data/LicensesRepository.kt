@@ -9,8 +9,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.ListSerializer
 
 @Inject
-class LicensesRepository
-internal constructor(private val assets: Assets, private val contexts: CoroutineContexts) {
+class LicensesRepository(private val assets: Assets, private val contexts: CoroutineContexts) {
   suspend fun loadLicenses(): LicensesLoadState =
     try {
       val jsonString =

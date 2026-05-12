@@ -1,6 +1,6 @@
 package aktual.budget.sync.vm
 
-import aktual.api.client.AktualApisStateHolder
+import aktual.api.client.SyncApi
 import aktual.api.model.sync.GetUserKeyRequest
 import aktual.api.model.sync.GetUserKeyResponse
 import aktual.budget.encryption.BufferDecrypter
@@ -23,19 +23,14 @@ import okio.Buffer
 
 @Inject
 class KeyFetcher(
-  private val stateHolder: AktualApisStateHolder,
+  private val token: Token,
+  private val syncApi: SyncApi,
   private val contexts: CoroutineContexts,
   private val keyPreferences: KeyPreferences,
   private val decrypter: BufferDecrypter,
 ) {
-  suspend operator fun invoke(
-    budgetId: BudgetId,
-    token: Token,
-    keyPassword: Password,
-  ): FetchKeyResult {
+  suspend operator fun invoke(budgetId: BudgetId, keyPassword: Password): FetchKeyResult {
     logcat.d { "KeyFetcher $budgetId $token $keyPassword" }
-    val syncApi = stateHolder.value?.sync ?: return FetchKeyResult.NotLoggedIn
-
     val response =
       try {
         val request = GetUserKeyRequest(budgetId, token)

@@ -1,8 +1,5 @@
 package aktual.budget.reports.ui.choosetype
 
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.ReportNavigator
-import aktual.budget.model.BudgetId
 import aktual.budget.model.WidgetType
 import aktual.budget.reports.ui.charts.JUL_2025
 import aktual.budget.reports.ui.charts.PER_TRANSACTION_DATA
@@ -19,7 +16,8 @@ import aktual.budget.reports.vm.choosetype.ChooseReportTypeViewModel
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Warning
 import aktual.core.l10n.Strings
-import aktual.core.model.Token
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.ReportNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
@@ -66,7 +64,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
+import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.collectLatest
 
@@ -74,14 +72,10 @@ import kotlinx.coroutines.flow.collectLatest
 fun ChooseReportTypeScreen(
   @Suppress("unused") back: BackNavigator,
   toReport: ReportNavigator,
-  budgetId: BudgetId,
-  token: Token,
-  viewModel: ChooseReportTypeViewModel = metroViewModel(budgetId),
+  viewModel: ChooseReportTypeViewModel = metroViewModel(),
 ) {
   LaunchedEffect(Unit) {
-    viewModel.shouldNavigateEvent.collectLatest { event ->
-      toReport(token, budgetId, widgetId = event.id)
-    }
+    viewModel.shouldNavigateEvent.collectLatest { event -> toReport(event.id) }
   }
 
   val dialog by viewModel.dialog.collectAsStateWithLifecycle()
@@ -220,13 +214,6 @@ private fun WidgetType.sampleData(): ChartData =
     WidgetType.BudgetAnalysis -> TODO("https://github.com/jonapoul/aktual/issues/1035")
     WidgetType.Formula -> TODO("https://github.com/jonapoul/aktual/issues/1054")
   }
-
-@Composable
-private fun metroViewModel(budgetId: BudgetId) =
-  assistedMetroViewModel<ChooseReportTypeViewModel, ChooseReportTypeViewModel.Factory>(
-    key = budgetId.value,
-    createViewModel = { create(budgetId) },
-  )
 
 @Stable
 private fun WidgetType.isEnabled(): Boolean =

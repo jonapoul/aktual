@@ -61,11 +61,11 @@ Feature-based modular layout. Module list: `settings.gradle.kts` / `ls modules/`
 
 ### Metro DI
 
-Scopes: `AppScope` (app singletons), `NavScope` (child of App; nav entries), `ViewModelScope`, `BudgetScope` (per-budget).
+Scopes: `AppScope` (app singletons), `ServerChosenScope` (after server URL is set), `LoggedInScope` (after authentication), `BudgetScope` (per-budget). All defined in `aktual-di:scopes`.
 
-Graphs: `AppGraph` is root and creates `ViewModelGraph`, `BudgetGraph`, `NavGraph` (a `@GraphExtension(NavScope::class)` exposing `Set<NavEntryContributor>`).
+Graphs: All graphs implement `AktualGraph`. Hierarchy: `AppGraph` (root) → `ServerChosenGraph` → `LoggedInGraph` → `BudgetGraph`. Graph types live in `aktual-di:graphs`.
 
-Assisted VM factories use `@ManualViewModelAssistedFactoryKey` + `@ContributesIntoMap(ViewModelScope::class)` — copy the shape from an existing one.
+VMs are registered with `@ViewModelKey` + `@ContributesIntoMap(<Scope>::class)` where the scope is the narrowest graph that provides all the VM's dependencies (`AppScope` → `ServerChosenScope` → `LoggedInScope` → `BudgetScope`). Assisted VM factories use `@ManualViewModelAssistedFactoryKey` + `@ContributesIntoMap(<Scope>::class)` — copy the shape from an existing one.
 
 ### Navigation
 
@@ -76,9 +76,9 @@ See [aktual-app:nav](aktual-app/nav/CLAUDE.md).
 1. Add `modules/<feature>/{domain,vm,ui}` and register in `settings.gradle.kts` with `module("<feature>:...")`.
 1. Apply the right module plugin per layer — `aktual.module.kotlin` (domain), `aktual.module.viewmodel` (vm), `aktual.module.compose` (ui). See [build-logic](gradle/build-logic/CLAUDE.md) for what each plugin sets up.
 1. Dependencies: UI → VM (api) → Domain (api) → core models. Any module can depend on core UI / L10n / logging.
-1. Create a navigator + `NavKey` in `aktual-app:nav` (see that module's CLAUDE.md).
-1. Implement `NavEntryContributor` in the `:ui` module with `@ContributesIntoSet(NavScope::class)`.
-1. Add the `:ui` module to `aktual-app:nav:di/build.gradle.kts` so Metro finds contribution hints.
+1. Create a navigator + `NavKey` in `aktual-core:nav` (see `aktual-app/nav/CLAUDE.md`).
+1. Implement `NavEntryContributor` in the `:ui` module with `@ContributesIntoSet(AppScope::class)` (or `BudgetNavEntryContributor` with `@ContributesIntoSet(BudgetScope::class)` for budget screens).
+1. Add the `:ui` module to `aktual-app:ui-app/build.gradle.kts` (or `aktual-app:ui-budget/build.gradle.kts` for budget screens) so Metro finds contribution hints.
 
 ## Dependency helpers
 

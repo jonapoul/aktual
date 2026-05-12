@@ -1,7 +1,7 @@
 package aktual.app.desktop
 
 import aktual.core.model.BuildConfig
-import dev.zacsweers.metro.AppScope
+import aktual.di.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides

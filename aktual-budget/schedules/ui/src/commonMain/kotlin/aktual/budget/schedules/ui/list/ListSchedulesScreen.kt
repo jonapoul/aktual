@@ -1,6 +1,5 @@
 package aktual.budget.schedules.ui.list
 
-import aktual.app.nav.EditScheduleNavigator
 import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.list.Empty
 import aktual.budget.schedules.vm.list.Failure
@@ -12,6 +11,7 @@ import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
+import aktual.core.nav.EditScheduleNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BlurredPullToRefreshBox

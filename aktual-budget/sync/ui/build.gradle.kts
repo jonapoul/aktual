@@ -12,7 +12,6 @@ kotlin {
     api(project(":aktual-budget:sync:vm"))
     api(project(":aktual-core:ui"))
     implementation(project(":aktual-core:l10n"))
-    implementation(project(":aktual-core:model"))
   }
 
   androidMainDependencies { implementation(libs.androidx.activity.compose) }

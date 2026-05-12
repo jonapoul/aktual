@@ -1,9 +1,9 @@
 package aktual.prefs.ui.theme
 
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.CustomThemesNavigator
-import aktual.app.nav.InspectThemeNavigator
 import aktual.core.l10n.Strings
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.CustomThemesNavigator
+import aktual.core.nav.InspectThemeNavigator
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LightTheme
 import aktual.core.theme.LocalTheme

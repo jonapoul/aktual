@@ -9,13 +9,19 @@ plugins { id("aktual.module.di") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-about:di"))
-    api(project(":aktual-budget:data:di"))
-    api(project(":aktual-budget:di"))
-    api(project(":aktual-core:api:di"))
-    api(project(":aktual-core:di"))
-    api(project(":aktual-core:theme:di"))
-    api(project(":aktual-prefs:di"))
+    api(libs.androidx.datastore.core)
+    api(libs.androidx.datastore.prefs)
+    api(libs.ktor.core)
+    api(libs.sqldelight.runtime)
+    api(project(":aktual-about:data"))
+    api(project(":aktual-budget:data:impl"))
+    api(project(":aktual-budget:sync:domain"))
+    api(project(":aktual-core:api:impl"))
+    api(project(":aktual-core:logging:impl"))
+    api(project(":aktual-core:theme:impl"))
+    api(project(":aktual-di:bindings"))
+    api(project(":aktual-di:runlevel:impl"))
+    api(project(":aktual-prefs:impl"))
   }
 }
 

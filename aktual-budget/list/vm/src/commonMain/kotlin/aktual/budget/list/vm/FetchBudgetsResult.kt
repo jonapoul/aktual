@@ -13,10 +13,6 @@ sealed interface FetchBudgetsResult {
     val reason: String?
   }
 
-  data object NotLoggedIn : Failure {
-    override val reason = null
-  }
-
   data class FailureResponse(val failureReason: FailureReason) : Failure {
     override val reason: String
       get() = failureReason.reason

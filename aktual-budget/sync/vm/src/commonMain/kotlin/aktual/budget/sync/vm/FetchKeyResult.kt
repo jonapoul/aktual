@@ -8,8 +8,6 @@ interface FetchKeyResult {
 
   sealed interface Failure : FetchKeyResult
 
-  data object NotLoggedIn : Failure
-
   data class IOFailure(val message: String) : Failure
 
   data class ResponseFailure(val reason: FailureReason) : Failure

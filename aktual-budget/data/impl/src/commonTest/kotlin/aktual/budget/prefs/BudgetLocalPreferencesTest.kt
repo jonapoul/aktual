@@ -2,6 +2,7 @@ package aktual.budget.prefs
 
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
+import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Timestamp
 import aktual.budget.model.cloudFileId

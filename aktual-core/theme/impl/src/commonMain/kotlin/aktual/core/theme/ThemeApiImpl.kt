@@ -1,6 +1,6 @@
 package aktual.core.theme
 
-import dev.zacsweers.metro.AppScope
+import aktual.di.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get

@@ -13,11 +13,6 @@ sealed interface DownloadState {
   sealed interface Failure : DownloadState {
     val message: String
 
-    data object NotLoggedIn : Failure {
-      override val total = Bytes.Zero
-      override val message = "Not logged in"
-    }
-
     data class IO(override val message: String, override val total: Bytes) : Failure
 
     data class Http(val code: Int, override val message: String, override val total: Bytes) :

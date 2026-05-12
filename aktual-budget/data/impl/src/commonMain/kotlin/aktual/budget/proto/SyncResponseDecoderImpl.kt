@@ -11,7 +11,7 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.SyncResponse
 import aktual.budget.model.Timestamp
 import aktual.core.model.KeyId
-import dev.zacsweers.metro.AppScope
+import aktual.di.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import okio.Buffer
 import okio.ByteString

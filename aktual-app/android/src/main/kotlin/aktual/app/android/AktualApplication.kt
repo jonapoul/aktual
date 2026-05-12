@@ -8,6 +8,9 @@ import android.os.StrictMode
 import dev.zacsweers.metro.createGraphFactory
 import dev.zacsweers.metrox.android.MetroAppComponentProviders
 import dev.zacsweers.metrox.android.MetroApplication
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
@@ -22,6 +25,9 @@ class AktualApplication : Application(), MetroApplication {
       StrictMode.setThreadPolicy(threadPolicy())
       StrictMode.setVmPolicy(vmPolicy())
     }
+
+    @Suppress("InjectDispatcher")
+    CoroutineScope(Dispatchers.Default).launch { graph.initialiser(graph) }
 
     super.onCreate()
 

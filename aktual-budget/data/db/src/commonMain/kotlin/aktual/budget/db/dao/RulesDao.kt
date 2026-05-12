@@ -6,7 +6,9 @@ import aktual.budget.db.withResult
 import aktual.budget.model.RuleId
 import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
+import dev.zacsweers.metro.Inject
 
+@Inject
 class RulesDao(database: BudgetDatabase) {
   private val queries = database.rulesQueries
 

@@ -14,7 +14,7 @@ internal val Project.androidTestLibraries: List<Provider<MinimalExternalModuleDe
   get() =
     listOf(
         "androidx.test.arch",
-        "androidx.test.coreKtx",
+        "androidx.test.core",
         "androidx.test.junit",
         "androidx.test.rules",
         "androidx.test.runner",

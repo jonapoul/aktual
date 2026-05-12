@@ -3,9 +3,6 @@ package aktual.about.ui.info
 import aktual.about.vm.AboutViewModel
 import aktual.about.vm.BuildState
 import aktual.about.vm.CheckUpdatesState
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.LicensesNavigator
-import aktual.app.nav.ManageStorageNavigator
 import aktual.core.icons.material.Apps
 import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.Cloud
@@ -13,6 +10,9 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Drawables
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.LicensesNavigator
+import aktual.core.nav.ManageStorageNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography

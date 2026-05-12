@@ -7,11 +7,6 @@
     android:appComponentFactory="androidx.core.app.AppComponentFactory"
     tools:replace="android:appComponentFactory">
 
-    <!-- Causes initialization issues with Robolectric -->
-    <receiver
-      android:name="androidx.profileinstaller.ProfileInstallReceiver"
-      tools:node="remove" />
-
   </application>
 
 </manifest>

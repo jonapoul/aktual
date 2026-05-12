@@ -7,10 +7,7 @@ import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.LocalOverscrollFactory
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.ripple
@@ -18,10 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.LocalShimmerTheme
 import com.valentinilk.shimmer.ShimmerTheme
@@ -31,33 +25,28 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 @Suppress("ModifierMissing")
 fun AktualTheme(theme: Theme?, content: @Composable () -> Unit) {
-  if (theme == null) {
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-      Text("No theme", textAlign = TextAlign.Center)
+  LoadingScreenIfNotNull(theme) { t ->
+    CompositionLocalProvider(
+      LocalTheme provides t,
+      LocalIndication provides ripple(),
+      LocalShimmerTheme provides aktualShimmerTheme(t),
+      LocalOverscrollFactory provides null,
+    ) {
+      SetStatusBarColors(theme = t)
+
+      MaterialTheme(
+        colorScheme = if (t.isLight) lightColorScheme() else darkColorScheme(),
+        typography = aktualTypography(t),
+        content = content,
+      )
     }
-    return
-  }
-
-  CompositionLocalProvider(
-    LocalTheme provides theme,
-    LocalIndication provides ripple(),
-    LocalShimmerTheme provides aktualShimmerTheme(theme),
-    LocalOverscrollFactory provides null,
-  ) {
-    SetStatusBarColors(theme = theme)
-
-    MaterialTheme(
-      colorScheme = if (theme.isLight) lightColorScheme() else darkColorScheme(),
-      typography = aktualTypography(theme),
-      content = content,
-    )
   }
 }
 
 @Stable
 @Composable
 @Suppress("MagicNumber")
-private fun aktualShimmerTheme(theme: Theme) =
+private fun aktualShimmerTheme(theme: Theme): ShimmerTheme =
   remember(theme) {
     ShimmerTheme(
       animationSpec =
