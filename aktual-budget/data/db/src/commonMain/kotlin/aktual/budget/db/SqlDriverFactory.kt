@@ -12,7 +12,6 @@ import com.eygraber.sqldelight.androidx.driver.File
 import com.eygraber.sqldelight.androidx.driver.SqliteJournalMode
 import dev.zacsweers.metro.ContributesBinding
 import java.io.File
-import kotlinx.coroutines.runBlocking
 import logcat.logcat
 
 fun interface SqlDriverFactory {
@@ -42,18 +41,15 @@ class AndroidxSqlDriverFactory(private val files: BudgetFiles) : SqlDriverFactor
     )
   }
 
-  private fun SqlDriver.onUpdate(dbFile: File, before: Long, after: Long) {
+  private suspend fun SqlDriver.onUpdate(dbFile: File, before: Long, after: Long) {
     logcat.i(TAG) { "onUpdate $dbFile from $before to $after" }
-    runBlocking {
-      val query =
-        execute(
-          identifier = null,
-          sql = "INSERT INTO __migrations__(id) VALUES (?)",
-          parameters = 1,
-          binders = { bindLong(index = 0, long = after) },
-        )
-      query.await()
-    }
+    execute(
+        identifier = null,
+        sql = "INSERT INTO __migrations__(id) VALUES (?)",
+        parameters = 1,
+        binders = { bindLong(index = 0, long = after) },
+      )
+      .await()
   }
 
   private companion object {
