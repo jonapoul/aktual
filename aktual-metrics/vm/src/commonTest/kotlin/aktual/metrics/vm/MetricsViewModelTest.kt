@@ -79,7 +79,11 @@ class MetricsViewModelTest {
   @Test
   fun `Disconnected on IO error`() = runTest {
     // given
-    coEvery { metricsApi.getMetrics() } throws IOException("Connection error")
+    coEvery { metricsApi.getMetrics() } coAnswers
+      {
+        delay(200.milliseconds)
+        throw IOException("Connection error")
+      }
 
     // when
     buildViewModel()
