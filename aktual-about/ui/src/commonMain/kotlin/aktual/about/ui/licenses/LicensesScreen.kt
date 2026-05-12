@@ -10,13 +10,13 @@ import aktual.about.vm.LicensesViewModel
 import aktual.about.vm.SearchBarState
 import aktual.about.vm.SearchBarState.Gone
 import aktual.about.vm.SearchBarState.Visible
-import aktual.app.nav.BackNavigator
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
+import aktual.core.nav.BackNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography

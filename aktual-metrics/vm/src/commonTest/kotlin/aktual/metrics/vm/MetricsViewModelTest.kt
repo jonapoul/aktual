@@ -1,10 +1,7 @@
 package aktual.metrics.vm
 
-import aktual.api.client.AktualApis
-import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.MetricsApi
 import aktual.api.model.metrics.GetMetricsResponse
-import aktual.core.model.ServerUrl
 import aktual.core.model.bytes
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.test.TestClock
@@ -23,25 +20,22 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 import kotlin.time.Instant
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.SerializationException
 
 class MetricsViewModelTest {
   private lateinit var metricsApi: MetricsApi
-  private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var viewModel: MetricsViewModel
 
   @BeforeTest
   fun before() {
     metricsApi = mockk()
-    apisStateHolder = AktualApisStateHolder()
   }
 
   private fun buildViewModel() {
     viewModel =
       MetricsViewModel(
-        apisStateHolder = apisStateHolder,
+        metricsApi = metricsApi,
         contexts = TestCoroutineContexts(EmptyCoroutineContext),
         clock = TestClock(EXAMPLE_INSTANT),
       )
@@ -50,7 +44,6 @@ class MetricsViewModelTest {
   @Test
   fun `Fetch data on load and refresh`() = runTest {
     // given
-    apisStateHolder.update { buildApis() }
     coEvery { metricsApi.getMetrics() } coAnswers
       {
         delay(200.milliseconds)
@@ -84,9 +77,13 @@ class MetricsViewModelTest {
   }
 
   @Test
-  fun `Disconnected when no APIs available`() = runTest {
+  fun `Disconnected on IO error`() = runTest {
     // given
-    apisStateHolder.update { buildApis(metricsApi = null) }
+    coEvery { metricsApi.getMetrics() } coAnswers
+      {
+        delay(200.milliseconds)
+        throw IOException("Connection error")
+      }
 
     // when
     buildViewModel()
@@ -98,13 +95,12 @@ class MetricsViewModelTest {
       cancelAndIgnoreRemainingEvents()
     }
 
-    coVerify(exactly = 0) { metricsApi.getMetrics() }
+    coVerify(exactly = 1) { metricsApi.getMetrics() }
   }
 
   @Test
   fun `Handle serialization exception`() = runTest {
     // given
-    apisStateHolder.update { buildApis() }
     coEvery { metricsApi.getMetrics() } throws SerializationException("Failed lol")
 
     // when
@@ -122,7 +118,7 @@ class MetricsViewModelTest {
 
       // then
       assertThatNextEmissionIsEqualTo(MetricsState.Loading)
-      assertThatNextEmissionIsEqualTo(MetricsState.Failure(cause = "Connection problem"))
+      assertThatNextEmissionIsEqualTo(MetricsState.Disconnected)
       coVerify(exactly = 2) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
 
@@ -130,20 +126,7 @@ class MetricsViewModelTest {
     }
   }
 
-  private fun buildApis(metricsApi: MetricsApi? = this.metricsApi) = metricsApi?.let { m ->
-    AktualApis(
-      serverUrl = SERVER_URL,
-      account = mockk(),
-      base = mockk(),
-      health = mockk(),
-      metrics = m,
-      sync = mockk(),
-    )
-  }
-
   private companion object {
-    private val SERVER_URL = ServerUrl("https://server.com/actual-budget")
-
     // Mon Dec 08 2025 16:37:13.825
     private val EXAMPLE_INSTANT = Instant.fromEpochMilliseconds(1765211833825L)
     private val EXAMPLE_UPTIME = 123.days + 4.hours + 5.seconds + 678.milliseconds

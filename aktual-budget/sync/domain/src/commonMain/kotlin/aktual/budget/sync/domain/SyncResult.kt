@@ -2,7 +2,7 @@ package aktual.budget.sync.domain
 
 import kotlinx.io.IOException
 
-sealed interface SyncResult {
+internal sealed interface SyncResult {
   data class Success(val affectedTables: Set<String>) : SyncResult
 
   sealed interface Error : SyncResult

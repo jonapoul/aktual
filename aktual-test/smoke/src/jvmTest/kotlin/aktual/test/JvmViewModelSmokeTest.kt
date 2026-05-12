@@ -5,10 +5,11 @@ import dev.zacsweers.metro.createDynamicGraph
 import kotlin.test.Test
 
 class JvmViewModelSmokeTest : ViewModelSmokeTest<TestJvmAppGraph>() {
-  override fun buildGraph(container: TestContainer): TestJvmAppGraph =
-    createDynamicGraph<TestJvmAppGraph>(container)
+  override fun buildGraph(): TestJvmAppGraph =
+    createDynamicGraph<TestJvmAppGraph>(
+      TestAppDirectoryContainer(rootDir),
+      TestBudgetFilesContainer(rootDir),
+    )
 
   @Test fun root() = testVm<AktualDesktopViewModel>()
-
-  override fun optionallySkip() = Unit
 }

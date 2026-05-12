@@ -15,7 +15,6 @@ import aktual.about.vm.ManageStorageState
 import aktual.about.vm.ManageStorageViewModel
 import aktual.about.vm.StorageDialog
 import aktual.about.vm.StorageNavEvent
-import aktual.app.nav.BackNavigator
 import aktual.budget.model.BudgetId
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
@@ -23,6 +22,7 @@ import aktual.core.l10n.Strings
 import aktual.core.model.Bytes
 import aktual.core.model.bytes
 import aktual.core.model.percent
+import aktual.core.nav.BackNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography

@@ -52,6 +52,8 @@ class ConventionTest : Plugin<Project> {
       }
 
       testTasks.configureEach { t ->
+        t.systemProperty("kotlinx.coroutines.test.default_timeout", "10s")
+
         // Suppresses mockk warning - see https://github.com/mockk/mockk/issues/1171
         t.jvmArgs("-XX:+EnableDynamicAgentLoading")
 

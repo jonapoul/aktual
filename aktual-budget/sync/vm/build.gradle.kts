@@ -6,12 +6,10 @@ plugins { id("aktual.module.viewmodel") }
 kotlin {
   commonMainDependencies {
     api(project(":aktual-budget:data:encryption"))
-    api(project(":aktual-budget:di"))
-    api(project(":aktual-budget:model"))
+    api(project(":aktual-di:runlevel"))
     api(libs.alakazam.kotlin)
     api(libs.kotlinx.datetime)
     implementation(project(":aktual-core:api"))
-    implementation(project(":aktual-core:model"))
     implementation(project(":aktual-prefs"))
     implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
@@ -20,8 +18,7 @@ kotlin {
   }
 
   commonTestDependencies {
-    implementation(project(":aktual-budget:data:di"))
-    implementation(project(":aktual-core:api:di"))
+    implementation(project(":aktual-app:di"))
     implementation(project(":aktual-test:api"))
   }
 }

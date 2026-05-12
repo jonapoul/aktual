@@ -1,18 +1,16 @@
 package aktual.budget.transactions.vm
 
-import aktual.budget.db.BudgetDatabase
-import aktual.budget.db.Categories
-import aktual.budget.db.Transactions
-import aktual.budget.db.withoutResult
+import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.CategoryDao
+import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
-import aktual.budget.model.Amount
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionId
 import aktual.core.model.Token
-import kotlin.time.Duration.Companion.days
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month
@@ -32,84 +30,15 @@ internal val ID_D = TransactionId("d")
 internal val ID_E = TransactionId("e")
 internal val ID_F = TransactionId("f")
 
-internal val TRANSACTION_A =
-  Transaction(
-    id = ID_A,
-    date = DATE_1,
-    account = "Amex",
-    payee = "Argos",
-    notes = null,
-    category = "Additional",
-    amount = Amount(123.45),
-  )
-internal val TRANSACTION_B =
-  Transaction(
-    id = ID_B,
-    date = DATE_2,
-    account = "Barclays",
-    payee = "B&Q",
-    notes = null,
-    category = "Building",
-    amount = Amount(123.45),
-  )
-internal val TRANSACTION_C =
-  Transaction(
-    id = ID_C,
-    date = DATE_3,
-    account = "Chase",
-    payee = "Co-op",
-    notes = null,
-    category = "Car",
-    amount = Amount(123.45),
-  )
-
-internal suspend fun BudgetDatabase.insertAccount(id: AccountId, name: String) {
-  accountsQueries.withoutResult {
-    insert(
-      id = id,
-      account_id = id.toString(),
-      name = name,
-      official_name = name,
-      bank = null,
-      offbudget = false,
-      account_sync_source = null,
-    )
-  }
+internal suspend fun AccountDao.insertAccount(id: AccountId, name: String) {
+  insert(id = id, accountId = id.toString(), name = name, officialName = name)
 }
 
-internal suspend fun BudgetDatabase.insertPayee(id: PayeeId, name: String) {
-  payeesQueries.withoutResult {
-    insert(
-      id = id,
-      name = name,
-      category = null,
-      tombstone = false,
-      transfer_acct = null,
-      favorite = false,
-      learn_categories = null,
-    )
-  }
-}
+internal suspend fun PayeeDao.insertPayee(id: PayeeId, name: String) = insert(id, name)
 
-internal suspend fun BudgetDatabase.insertCategory(id: CategoryId, name: String) {
-  categoriesQueries.withoutResult {
-    insert(
-      Categories(
-        id = id,
-        name = name,
-        is_income = false,
-        cat_group = null,
-        sort_order = null,
-        tombstone = false,
-        hidden = false,
-        goal_def = null,
-        template_settings = null,
-      )
-    )
-  }
-}
+internal suspend fun CategoryDao.insertCategory(id: CategoryId, name: String) = insert(id, name)
 
-internal suspend fun BudgetDatabase.insertTransaction(
+internal suspend fun TransactionDao.insertTransaction(
   id: String,
   account: String,
   category: String,
@@ -117,35 +46,13 @@ internal suspend fun BudgetDatabase.insertTransaction(
   notes: String? = null,
   date: LocalDate = DATE_1,
   amount: Double = 123.45,
-) {
-  transactionsQueries.withoutResult {
-    insert(
-      Transactions(
-        id = TransactionId(id),
-        isParent = false,
-        isChild = false,
-        acct = AccountId(account),
-        category = CategoryId(category),
-        amount = Amount(amount),
-        description = PayeeId(payee),
-        notes = notes,
-        date = date,
-        financial_id = null,
-        type = null,
-        location = null,
-        error = null,
-        imported_description = null,
-        starting_balance_flag = null,
-        transferred_id = null,
-        sort_order = date.toEpochDays().days.inWholeMilliseconds.toDouble(),
-        tombstone = null,
-        cleared = null,
-        pending = null,
-        parent_id = null,
-        schedule = null,
-        reconciled = null,
-        raw_synced_data = null,
-      )
-    )
-  }
-}
+) =
+  insert(
+    id = id,
+    account = account,
+    category = category,
+    payee = payee,
+    notes = notes,
+    date = date,
+    amount = amount,
+  )

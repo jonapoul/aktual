@@ -1,8 +1,8 @@
 package aktual.test
 
+import aktual.di.AppScope
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides

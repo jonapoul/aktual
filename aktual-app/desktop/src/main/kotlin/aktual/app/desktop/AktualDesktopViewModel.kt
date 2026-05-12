@@ -5,35 +5,37 @@ import aktual.app.nav.BlurConfigUseCase
 import aktual.app.nav.BottomBarStateUseCase
 import aktual.app.nav.FormatConfigUseCase
 import aktual.app.nav.InitialRouteUseCase
-import aktual.app.nav.NavGraph
 import aktual.app.nav.RootViewModel
-import aktual.budget.di.BudgetGraphHolder
+import aktual.core.nav.NavEntryContributor
 import aktual.core.theme.ThemeResolver
+import aktual.di.AppScope
+import aktual.di.RunLevelState
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.binding
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 
+@Stable
 @ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
 class AktualDesktopViewModel(
   themeResolver: ThemeResolver,
   appLifecycleManager: AppLifecycleManager,
-  navGraphFactory: NavGraph.Factory,
+  navEntryContributors: Set<NavEntryContributor>,
   formatConfigUseCase: FormatConfigUseCase,
   blurConfigUseCase: BlurConfigUseCase,
   initialRouteUseCase: InitialRouteUseCase,
   bottomBarStateUseCase: BottomBarStateUseCase,
-  budgetGraphHolder: BudgetGraphHolder,
+  runLevels: RunLevelState,
 ) :
   RootViewModel(
     themeResolver = themeResolver,
     appLifecycleManager = appLifecycleManager,
-    navGraphFactory = navGraphFactory,
+    navEntryContributors = navEntryContributors,
     formatConfigUseCase = formatConfigUseCase,
     blurConfigUseCase = blurConfigUseCase,
     initialRouteUseCase = initialRouteUseCase,
     bottomBarStateUseCase = bottomBarStateUseCase,
-    budgetGraphHolder = budgetGraphHolder,
+    runLevels = runLevels,
   )

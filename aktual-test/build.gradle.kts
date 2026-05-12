@@ -20,12 +20,11 @@ kotlin {
     api(libs.okio)
     api(libs.turbine)
     api(project(":aktual-budget:data:db"))
-    api(project(":aktual-budget:data:prefs"))
     implementation(libs.sqldelight.driver.sqlite)
   }
 
   androidMainDependencies {
-    api(libs.androidx.test.coreKtx)
+    api(libs.androidx.test.core)
     api(project(":aktual-prefs:impl"))
   }
 }

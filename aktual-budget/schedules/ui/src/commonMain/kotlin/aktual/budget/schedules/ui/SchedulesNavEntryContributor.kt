@@ -1,22 +1,19 @@
 package aktual.budget.schedules.ui
 
-import aktual.app.nav.AktualNavStack
-import aktual.app.nav.BudgetNavEntryContributor
-import aktual.app.nav.BudgetNavKey
-import aktual.app.nav.BudgetNavScope
-import aktual.app.nav.EditScheduleNavigator
-import aktual.app.nav.ListSchedulesNavRoute
-import aktual.app.nav.budgetEntry
 import aktual.budget.schedules.ui.list.ListSchedulesScreen
+import aktual.core.nav.BudgetNavEntryContributor
+import aktual.core.nav.BudgetNavKey
+import aktual.core.nav.EditScheduleNavigator
+import aktual.core.nav.ListSchedulesNavRoute
+import aktual.core.nav.NavStack
+import aktual.core.nav.budgetEntry
+import aktual.di.BudgetScope
 import androidx.navigation3.runtime.EntryProviderScope
 import dev.zacsweers.metro.ContributesIntoSet
 
-@ContributesIntoSet(BudgetNavScope::class)
+@ContributesIntoSet(BudgetScope::class)
 class SchedulesNavEntryContributor : BudgetNavEntryContributor {
-  override fun contribute(
-    scope: EntryProviderScope<BudgetNavKey>,
-    stack: AktualNavStack<BudgetNavKey>,
-  ) {
+  override fun contribute(scope: EntryProviderScope<BudgetNavKey>, stack: NavStack<BudgetNavKey>) {
     scope.budgetEntry<ListSchedulesNavRoute> { ListSchedulesScreen(EditScheduleNavigator(stack)) }
   }
 }

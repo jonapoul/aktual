@@ -8,10 +8,11 @@ import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.Password
 import aktual.core.model.Token
+import aktual.di.LoggedInScope
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlin.time.Duration.Companion.seconds
@@ -30,10 +31,10 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
+@Stable
 @ViewModelKey
-@ContributesIntoMap(AppScope::class)
-class ChangePasswordViewModel
-internal constructor(
+@ContributesIntoMap(LoggedInScope::class)
+class ChangePasswordViewModel(
   versionsStateHolder: AktualVersionsStateHolder,
   private val passwordChanger: PasswordChanger,
   private val loginRequester: LoginRequester,
@@ -81,7 +82,6 @@ internal constructor(
           ChangePasswordResult.Success -> ChangePasswordState.Success
           ChangePasswordResult.InvalidPassword -> ChangePasswordState.InvalidPassword
           ChangePasswordResult.NetworkFailure -> ChangePasswordState.NetworkFailure
-          ChangePasswordResult.NotLoggedIn -> ChangePasswordState.NotLoggedIn
           is ChangePasswordResult.HttpFailure -> ChangePasswordState.OtherFailure
           is ChangePasswordResult.OtherFailure -> ChangePasswordState.OtherFailure
         }
@@ -122,8 +122,6 @@ sealed interface ChangePasswordState {
   sealed interface Failure : ChangePasswordState
 
   data object InvalidPassword : Failure
-
-  data object NotLoggedIn : Failure
 
   data object PasswordsDontMatch : Failure
 

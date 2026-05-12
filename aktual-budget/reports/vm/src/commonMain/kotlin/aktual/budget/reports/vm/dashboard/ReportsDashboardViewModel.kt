@@ -3,7 +3,6 @@ package aktual.budget.reports.vm.dashboard
 import aktual.budget.db.Dashboard
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
-import aktual.budget.di.BudgetGraphHolder
 import aktual.budget.model.WidgetId
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.CalendarReportMeta
@@ -17,11 +16,10 @@ import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.SpendingReportMeta
 import aktual.budget.reports.vm.SummaryReportMeta
-import alakazam.kotlin.CoroutineContexts
+import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableList
@@ -40,14 +38,13 @@ import kotlinx.serialization.json.jsonObject
 
 @Stable
 @ViewModelKey
-@ContributesIntoMap(AppScope::class)
-class ReportsDashboardViewModel(budgetGraphHolder: BudgetGraphHolder, contexts: CoroutineContexts) :
-  ViewModel() {
-  private val graph = budgetGraphHolder.require()
-  private val dashboardDao = DashboardDao(graph.database, contexts)
-  private val customReportsDao = CustomReportsDao(graph.database, contexts)
-  private val chartDataLoader = ChartDataLoader(graph.database.transactionsQueries)
-
+@ContributesIntoMap(BudgetScope::class)
+class ReportsDashboardViewModel
+internal constructor(
+  private val chartDataLoader: ChartDataLoader,
+  private val dashboardDao: DashboardDao,
+  private val customReportsDao: CustomReportsDao,
+) : ViewModel() {
   val items: StateFlow<ImmutableList<DashboardItem>> =
     dashboardDao
       .observeAll()

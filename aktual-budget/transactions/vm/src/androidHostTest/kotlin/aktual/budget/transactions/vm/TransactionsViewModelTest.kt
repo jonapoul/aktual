@@ -1,8 +1,9 @@
 package aktual.budget.transactions.vm
 
-import aktual.budget.db.dao.TransactionsDao
-import aktual.budget.di.BudgetGraph
-import aktual.budget.di.BudgetGraphHolder
+import aktual.budget.db.dao.AccountDao
+import aktual.budget.db.dao.CategoryDao
+import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.AccountSpec.AllAccounts
@@ -10,24 +11,34 @@ import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
 import aktual.budget.model.TransactionsSpec
-import aktual.core.model.AppGraph
-import aktual.test.coroutineContainer
+import aktual.core.model.ServerUrl
+import aktual.di.AppGraph
+import aktual.di.AppScope
+import aktual.di.RunLevelController
+import aktual.di.RunLevelState
+import aktual.test.TestAppDirectoryContainer
+import aktual.test.TestBudgetFilesContainer
+import aktual.test.TestCoroutineContainer
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
 import android.os.Looper
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingSource.LoadParams
 import assertk.assertThat
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.createDynamicGraph
+import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import okio.FileSystem
+import okio.Path
+import okio.Path.Companion.toOkioPath
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows
@@ -36,11 +47,15 @@ import org.robolectric.Shadows
 class TransactionsViewModelTest {
   // real
   private lateinit var viewModel: TransactionsViewModel
-  private lateinit var budgetGraph: BudgetGraph
   private lateinit var contexts: CoroutineContexts
+  private lateinit var accounts: AccountDao
+  private lateinit var transactions: TransactionDao
+  private lateinit var payees: PayeeDao
+  private lateinit var categories: CategoryDao
 
   // fake
-  private lateinit var appGraph: TestGraph
+  private lateinit var appGraph: TestAppGraph
+  private lateinit var rootDir: Path
 
   @AfterTest
   fun after() {
@@ -48,43 +63,57 @@ class TransactionsViewModelTest {
     // so connections are released before we close the driver
     if (::viewModel.isInitialized) viewModel.viewModelScope.cancel()
     Shadows.shadowOf(Looper.getMainLooper()).idle()
-    budgetGraph.driver.close()
+    appGraph.close()
+    FileSystem.SYSTEM.deleteRecursively(rootDir)
   }
 
   private suspend fun TestScope.buildViewModel(spec: AccountSpec) {
+    rootDir = createTempDirectory().toOkioPath()
     contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
-    appGraph = createDynamicGraph<TestGraph>(coroutineContainer(contexts))
+    appGraph =
+      createDynamicGraph<TestAppGraph>(
+        TestCoroutineContainer(backgroundScope, contexts),
+        TestBudgetFilesContainer(rootDir),
+        TestAppDirectoryContainer(rootDir),
+      )
 
-    budgetGraph = appGraph.budgetGraphHolder.update(METADATA)
-
-    // add some utility entities
-    with(budgetGraph.database) {
-      insertAccount(AccountId("a"), "Amex")
-      insertAccount(AccountId("b"), "Barclays")
-      insertAccount(AccountId("c"), "Chase")
-
-      insertPayee(PayeeId("a"), "Argos")
-      insertPayee(PayeeId("b"), "B&Q")
-      insertPayee(PayeeId("c"), "Co-op")
-
-      insertCategory(CategoryId("a"), "Additional")
-      insertCategory(CategoryId("b"), "Building")
-      insertCategory(CategoryId("c"), "Car")
+    with(appGraph.runLevelController) {
+      init(listOf(appGraph))
+      onServerChosen(ServerUrl.Demo)
+      onLoggedIn(TOKEN)
+      val budgetGraph = onBudget(METADATA)
+      accounts = budgetGraph[AccountDao::class]
+      transactions = budgetGraph[TransactionDao::class]
+      payees = budgetGraph[PayeeDao::class]
+      categories = budgetGraph[CategoryDao::class]
     }
 
+    // add some utility entities
+    accounts.insertAccount(AccountId("a"), "Amex")
+    accounts.insertAccount(AccountId("b"), "Barclays")
+    accounts.insertAccount(AccountId("c"), "Chase")
+
+    payees.insertPayee(PayeeId("a"), "Argos")
+    payees.insertPayee(PayeeId("b"), "B&Q")
+    payees.insertPayee(PayeeId("c"), "Co-op")
+
+    categories.insertCategory(CategoryId("a"), "Additional")
+    categories.insertCategory(CategoryId("b"), "Building")
+    categories.insertCategory(CategoryId("c"), "Car")
+
+    val viewModelFactory = appGraph.runLevelState.viewModelFactory().first()
     viewModel =
-      appGraph.metroViewModelFactory
+      viewModelFactory
         .createManuallyAssistedFactory(TransactionsViewModel.Factory::class)
         .invoke()
-        .create(TOKEN, BUDGET_ID, TransactionsSpec(spec))
+        .create(TransactionsSpec(spec))
   }
 
   @Test
   fun `Empty transaction list from all accounts`() = runTest {
     // given
     buildViewModel(AllAccounts)
-    val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val source = TransactionsPagingSource(transactionsDao, AllAccounts)
+    val source = TransactionsPagingSource(transactions, spec = AllAccounts)
 
     // when
     val result =
@@ -98,15 +127,14 @@ class TransactionsViewModelTest {
   fun `Transactions from all accounts`() = runTest {
     // given
     buildViewModel(AllAccounts)
-    with(budgetGraph.database) {
+    with(transactions) {
       insertTransaction(id = "a", account = "a", category = "a", payee = "a")
       insertTransaction(id = "b", account = "b", category = "b", payee = "b")
       insertTransaction(id = "c", account = "c", category = "c", payee = "c")
     }
     advanceUntilIdle()
 
-    val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val source = TransactionsPagingSource(transactionsDao, AllAccounts)
+    val source = TransactionsPagingSource(transactions, AllAccounts)
 
     // when
     val result =
@@ -124,15 +152,15 @@ class TransactionsViewModelTest {
   fun `Transactions from one account`() = runTest {
     // given
     buildViewModel(SpecificAccount(AccountId("a")))
-    with(budgetGraph.database) {
+    with(transactions) {
       insertTransaction(id = "a", account = "a", category = "a", payee = "a") // included
       insertTransaction(id = "b", account = "b", category = "b", payee = "b") // ignored
       insertTransaction(id = "c", account = "c", category = "c", payee = "c") // ignored
     }
     advanceUntilIdle()
 
-    val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val source = TransactionsPagingSource(transactionsDao, SpecificAccount(AccountId("a")))
+    val source =
+      TransactionsPagingSource(dao = transactions, spec = SpecificAccount(AccountId("a")))
 
     // when
     val result =
@@ -150,7 +178,7 @@ class TransactionsViewModelTest {
   fun `Multiple transactions with different dates`() = runTest {
     // given
     buildViewModel(AllAccounts)
-    with(budgetGraph.database) {
+    with(transactions) {
       insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
       insertTransaction(id = "b", account = "b", category = "b", payee = "b", date = DATE_1)
       insertTransaction(id = "c", account = "c", category = "c", payee = "c", date = DATE_1)
@@ -160,8 +188,7 @@ class TransactionsViewModelTest {
     }
     advanceUntilIdle()
 
-    val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val pagingSource = TransactionsPagingSource(transactionsDao, AllAccounts)
+    val pagingSource = TransactionsPagingSource(transactions, AllAccounts)
 
     // when
     val result =
@@ -179,7 +206,7 @@ class TransactionsViewModelTest {
   fun `Paging loads data in pages`() = runTest {
     // given
     buildViewModel(AllAccounts)
-    with(budgetGraph.database) {
+    with(transactions) {
       insertTransaction(id = "a", account = "a", category = "a", payee = "a", date = DATE_1)
       insertTransaction(id = "b", account = "b", category = "b", payee = "b", date = DATE_1)
       insertTransaction(id = "c", account = "c", category = "c", payee = "c", date = DATE_1)
@@ -189,8 +216,7 @@ class TransactionsViewModelTest {
     }
     advanceUntilIdle()
 
-    val transactionsDao = TransactionsDao(budgetGraph.database, contexts)
-    val source = TransactionsPagingSource(transactionsDao, AllAccounts)
+    val source = TransactionsPagingSource(transactions, AllAccounts)
 
     // when - load first page with size 2
     val firstPage =
@@ -219,7 +245,8 @@ class TransactionsViewModelTest {
   }
 
   @DependencyGraph(AppScope::class)
-  internal interface TestGraph : AppGraph {
-    val budgetGraphHolder: BudgetGraphHolder
+  internal interface TestAppGraph : AppGraph {
+    val runLevelController: RunLevelController
+    val runLevelState: RunLevelState
   }
 }

@@ -47,6 +47,7 @@ class ConventionKotlinBase : Plugin<Project> {
         "-Xcontext-sensitive-resolution", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-sensitive-resolution
         "-Xexpect-actual-classes",
         "-opt-in=kotlin.RequiresOptIn",
+        "-opt-in=kotlin.contracts.ExperimentalContracts",
         "-opt-in=kotlin.uuid.ExperimentalUuidApi",
       )
   }

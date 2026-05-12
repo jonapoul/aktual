@@ -3,12 +3,12 @@ package aktual.budget.proto
 import aktual.budget.encryption.BufferEncrypter
 import aktual.budget.encryption.EncryptResult
 import aktual.budget.model.BudgetId
-import aktual.budget.model.BudgetScope
+import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Message
 import aktual.budget.model.Timestamp
-import aktual.budget.prefs.BudgetLocalPreferences
 import aktual.core.model.KeyId
+import aktual.di.BudgetScope
 import dev.zacsweers.metro.ContributesBinding
 import okio.Buffer
 import okio.ByteString

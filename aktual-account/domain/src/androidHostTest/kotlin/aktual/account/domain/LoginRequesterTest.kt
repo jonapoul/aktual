@@ -1,12 +1,8 @@
 package aktual.account.domain
 
 import aktual.api.client.AccountApi
-import aktual.api.client.AktualApis
-import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.ApiBuilderImpl
+import aktual.api.client.AccountApiImpl
 import aktual.api.model.account.LoginRequest
-import aktual.core.connection.ConnectionMonitor
-import aktual.core.connection.ConnectionMonitorImpl
 import aktual.core.model.Password
 import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
@@ -28,14 +24,11 @@ import assertk.assertions.isNull
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpStatusCode
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import java.io.IOException
 import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
@@ -45,46 +38,34 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 internal class LoginRequesterTest {
   private lateinit var loginRequester: LoginRequester
-  private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var preferences: AppPreferences
-  private lateinit var connectionMonitor: ConnectionMonitor
   private lateinit var mockEngine: MockEngine.Queue
   private lateinit var fileSystem: FileSystem
+  private lateinit var accountApi: AccountApi
+
+  @BeforeTest
+  fun before() {
+    mockEngine = emptyMockEngine()
+    fileSystem = FileSystem.SYSTEM
+    accountApi = AccountApiImpl(client = testHttpClient(mockEngine), serverUrl = EXAMPLE_URL)
+  }
 
   @AfterTest
   fun after() {
     mockEngine.close()
   }
 
-  private fun TestScope.before() {
+  private fun TestScope.before(accountApi: AccountApi = this@LoginRequesterTest.accountApi) {
     val dispatcher = unconfinedDispatcher
-    val flowPrefs = buildPreferences(dispatcher)
-    preferences = AppPreferencesImpl(flowPrefs)
-    apisStateHolder = AktualApisStateHolder()
-    mockEngine = emptyMockEngine()
-    fileSystem = FileSystem.SYSTEM
-
-    val apiBuilder =
-      ApiBuilderImpl(
-        client = testHttpClient(mockEngine),
-        fileSystem = fileSystem,
-        serverUrl = EXAMPLE_URL,
-      )
-
-    connectionMonitor =
-      ConnectionMonitorImpl(
-        scope = backgroundScope,
-        contexts = TestCoroutineContexts(dispatcher),
-        apiStateHolder = apisStateHolder,
-        preferences = preferences,
-        apiBuilder = { apiBuilder },
-      )
+    val dataStore = buildPreferences(dispatcher)
+    preferences = AppPreferencesImpl(dataStore)
 
     loginRequester =
       LoginRequester(
+        accountApi = accountApi,
         contexts = TestCoroutineContexts(dispatcher),
-        apisStateHolder = apisStateHolder,
         preferences = preferences,
+        runLevelController = mockk(relaxed = true),
       )
   }
 
@@ -94,10 +75,6 @@ internal class LoginRequesterTest {
 
     // Given a URL is set
     preferences.serverUrl.set(EXAMPLE_URL)
-
-    // and we have a non-null api
-    connectionMonitor.start()
-    apisStateHolder.filterNotNull().first()
 
     preferences.token.asFlow().test {
       assertThatNextEmission().isNull()
@@ -116,15 +93,11 @@ internal class LoginRequesterTest {
 
   @Test
   fun `Network error`() = runTest {
-    before()
-
-    // Given a mock API is provided, which throws a network error when called
+    // Given a mock API throws a network error when called
     val errorMessage = "something broke"
     val accountApi = mockk<AccountApi>()
     coEvery { accountApi.login(any<LoginRequest.Password>()) } throws IOException(errorMessage)
-    val apis = mockk<AktualApis>()
-    every { apis.account } returns accountApi
-    apisStateHolder.update { apis }
+    before(accountApi)
 
     // When we log in
     val result = loginRequester.logIn(EXAMPLE_PASSWORD)
@@ -139,10 +112,6 @@ internal class LoginRequesterTest {
 
     // Given a URL is set
     preferences.serverUrl.set(EXAMPLE_URL)
-
-    // and we have a non-null api
-    connectionMonitor.start()
-    apisStateHolder.filterNotNull().first()
 
     // When we log in with a successful response, but a null token
     val body =
@@ -167,10 +136,6 @@ internal class LoginRequesterTest {
     // Given a URL is set
     preferences.serverUrl.set(EXAMPLE_URL)
 
-    // and we have a non-null api
-    connectionMonitor.start()
-    apisStateHolder.filterNotNull().first()
-
     // When we log in with a token-expired error response
     val body =
       """
@@ -193,10 +158,6 @@ internal class LoginRequesterTest {
 
     // Given a URL is set
     preferences.serverUrl.set(EXAMPLE_URL)
-
-    // and we have a non-null api
-    connectionMonitor.start()
-    apisStateHolder.filterNotNull().first()
 
     // When we log in with an error response
     val body =

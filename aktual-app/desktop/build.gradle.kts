@@ -136,17 +136,20 @@ afterEvaluate {
 }
 
 dependencies {
-  implementation(project(":aktual-app:di"))
-  implementation(project(":aktual-app:nav:di"))
-  implementation(project(":aktual-app:nav:ui"))
-  implementation(project(":aktual-core:logging:impl"))
-  implementation(project(":aktual-prefs"))
   implementation(compose.desktop.currentOs)
   implementation(libs.androidx.lifecycle.runtime.compose)
+  implementation(libs.androidx.lifecycle.viewmodel)
   implementation(libs.compose.material3)
-  implementation(libs.compose.viewmodel)
   implementation(libs.kotlinx.coroutines.swing)
+  implementation(libs.metrox.viewmodel)
   implementation(libs.metrox.viewmodel.compose)
+  implementation(project(":aktual-app:di"))
+  implementation(project(":aktual-app:nav"))
+  implementation(project(":aktual-app:ui-app"))
+  implementation(project(":aktual-app:ui-budget"))
+  implementation(project(":aktual-core:l10n"))
+  implementation(project(":aktual-di:graphs"))
+  implementation(project(":aktual-prefs"))
 
   nucleus {}
 }

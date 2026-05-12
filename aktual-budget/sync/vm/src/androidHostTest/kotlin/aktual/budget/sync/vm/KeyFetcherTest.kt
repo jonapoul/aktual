@@ -1,6 +1,5 @@
 package aktual.budget.sync.vm
 
-import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApi
 import aktual.api.client.SyncApiImpl
 import aktual.budget.encryption.BufferDecrypter
@@ -22,8 +21,6 @@ import alakazam.test.standardDispatcher
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import io.ktor.client.engine.mock.MockEngine
-import io.mockk.every
-import io.mockk.mockk
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -54,12 +51,11 @@ class KeyFetcherTest {
     decrypter = BufferDecrypterImpl(contexts, keyPreferences)
 
     syncApi = SyncApiImpl(testHttpClient(mockEngine), FileSystem.SYSTEM, SERVER_URL)
-    val stateHolder = AktualApisStateHolder()
-    stateHolder.value = mockk(relaxed = true) { every { sync } returns syncApi }
 
     keyFetcher =
       KeyFetcher(
-        stateHolder = stateHolder,
+        token = TOKEN,
+        syncApi = syncApi,
         contexts = contexts,
         keyPreferences = keyPreferences,
         decrypter = decrypter,
@@ -79,7 +75,7 @@ class KeyFetcherTest {
     mockEngine += { respondJson(VALID_RESPONSE) }
 
     // when
-    val result = keyFetcher(BUDGET_ID, TOKEN, CORRECT_PASSWORD)
+    val result = keyFetcher(BUDGET_ID, CORRECT_PASSWORD)
 
     // then
     assertThat(result)

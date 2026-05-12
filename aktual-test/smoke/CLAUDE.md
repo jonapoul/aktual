@@ -12,7 +12,7 @@ Catches DI wiring breakages at compile/test time rather than at runtime. Each te
 - `JvmViewModelSmokeTest` (jvmTest) — desktop target, creates `TestJvmAppGraph`.
 - `AndroidViewModelSmokeTest` (androidHostTest) — android target via Robolectric, creates `TestAndroidAppGraph`.
 - `TestContainer` — `@BindingContainer` providing test-specific bindings (e.g. `BudgetFiles` with a temp directory).
-- `TestAppGraph` — common interface extending `AppGraph`, exposing `BudgetGraph.Builder` and `BudgetGraphHolder`.
+- `TestAppGraph` — common interface extending `AppGraph`, exposing `RunLevelController` and `RunLevelState`, plus an empty `navEntryContributors` multibinding so the graph builds without UI modules.
 
 ## Known Issues
 

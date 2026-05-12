@@ -1,12 +1,18 @@
 package aktual.budget.model
 
+import aktual.di.Closeable
 import kotlinx.serialization.json.Json
 import okio.FileNotFoundException
 import okio.FileSystem
 import okio.Path
 import okio.buffer
 
-class BudgetFiles(val fileSystem: FileSystem, val directoryPath: Path) {
+class BudgetFiles(val fileSystem: FileSystem, val directoryPath: Path) : Closeable {
+  override fun close() {
+    val tmpDir = tmp(mkdirs = false)
+    fileSystem.deleteRecursively(tmpDir)
+  }
+
   fun directory(id: BudgetId, mkdirs: Boolean = false): Path =
     (directoryPath / id.value).also { if (mkdirs) fileSystem.createDirectories(it) }
 

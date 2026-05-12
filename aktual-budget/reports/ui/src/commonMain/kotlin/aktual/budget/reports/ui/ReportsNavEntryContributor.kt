@@ -1,34 +1,29 @@
 package aktual.budget.reports.ui
 
-import aktual.app.nav.AktualNavStack
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.BudgetNavEntryContributor
-import aktual.app.nav.BudgetNavKey
-import aktual.app.nav.BudgetNavScope
-import aktual.app.nav.CreateReportNavRoute
-import aktual.app.nav.CreateReportNavigator
-import aktual.app.nav.ReportNavRoute
-import aktual.app.nav.ReportNavigator
-import aktual.app.nav.ReportsListNavRoute
-import aktual.app.nav.budgetEntry
 import aktual.budget.reports.ui.choosetype.ChooseReportTypeScreen
 import aktual.budget.reports.ui.dashboard.ReportsDashboardScreen
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.BudgetNavEntryContributor
+import aktual.core.nav.BudgetNavKey
+import aktual.core.nav.CreateReportNavRoute
+import aktual.core.nav.CreateReportNavigator
+import aktual.core.nav.NavStack
+import aktual.core.nav.ReportNavRoute
+import aktual.core.nav.ReportNavigator
+import aktual.core.nav.ReportsListNavRoute
+import aktual.core.nav.budgetEntry
+import aktual.di.BudgetScope
 import androidx.navigation3.runtime.EntryProviderScope
 import dev.zacsweers.metro.ContributesIntoSet
 
-@ContributesIntoSet(BudgetNavScope::class)
+@ContributesIntoSet(BudgetScope::class)
 class ReportsNavEntryContributor : BudgetNavEntryContributor {
-  override fun contribute(
-    scope: EntryProviderScope<BudgetNavKey>,
-    stack: AktualNavStack<BudgetNavKey>,
-  ) {
-    scope.budgetEntry<ReportsListNavRoute> { route ->
+  override fun contribute(scope: EntryProviderScope<BudgetNavKey>, stack: NavStack<BudgetNavKey>) {
+    scope.budgetEntry<ReportsListNavRoute> {
       ReportsDashboardScreen(
         back = BackNavigator(stack),
         toReport = ReportNavigator(stack),
         toCreateReport = CreateReportNavigator(stack),
-        budgetId = route.budgetId,
-        token = route.token,
       )
     }
 
@@ -36,13 +31,8 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
       // TBC
     }
 
-    scope.budgetEntry<CreateReportNavRoute> { route ->
-      ChooseReportTypeScreen(
-        back = BackNavigator(stack),
-        toReport = ReportNavigator(stack),
-        budgetId = route.budgetId,
-        token = route.token,
-      )
+    scope.budgetEntry<CreateReportNavRoute> {
+      ChooseReportTypeScreen(back = BackNavigator(stack), toReport = ReportNavigator(stack))
     }
   }
 }

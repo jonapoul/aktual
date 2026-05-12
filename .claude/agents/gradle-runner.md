@@ -12,21 +12,21 @@ the parent context window clean by absorbing verbose Gradle noise in an isolated
 
 ## Execution
 
-Parse the caller's prompt for the Gradle task(s) to run and any extra flags, then run using this pattern
-to correctly capture the real Gradle exit code (not grep's):
+Parse the caller's prompt for the Gradle task(s) to run and any extra flags, then run via the wrapper
+script which handles output capture, filtering, and exit-code propagation:
 
 ```bash
-./gradlew <tasks> [flags] > /tmp/gradle-out.txt 2>&1; EXIT=$?; grep -E "^e: |^w: |error:|warning:|Unresolved reference|None of the following candidates|Could not resolve|Caused by:|Exception|FAILED|BUILD SUCCESS|BUILD FAILED|> Task :.*FAILED|at aktual\." /tmp/gradle-out.txt | head -200; echo "BUILD $([ $EXIT -eq 0 ] && echo SUCCESS || echo FAILED) (exit $EXIT)"
+./scripts/gradle-run.sh <tasks> [flags]
 ```
 
 ### Common invocations
 
 ```bash
 # Compile one module (most common)
-./gradlew :<module>:compileAll > /tmp/gradle-out.txt 2>&1; EXIT=$?; grep -E "^e: |error:|Unresolved reference|None of the following candidates|Could not resolve|Caused by:|FAILED|BUILD" /tmp/gradle-out.txt | head -100; echo "BUILD $([ $EXIT -eq 0 ] && echo SUCCESS || echo FAILED)"
+./scripts/gradle-run.sh :<module>:compileAll
 
 # Run tests for one module
-./gradlew :<module>:test --continue > /tmp/gradle-out.txt 2>&1; EXIT=$?; grep -E "FAILED|passed|error:|Exception|Caused by:|BUILD" /tmp/gradle-out.txt | head -100; echo "BUILD $([ $EXIT -eq 0 ] && echo SUCCESS || echo FAILED)"
+./scripts/gradle-run.sh :<module>:test --continue
 
 # Format check
 ./scripts/ktfmt.sh check 2>&1 | grep -v "^$" | head -50

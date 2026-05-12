@@ -1,6 +1,5 @@
 package aktual.budget.rules.ui.edit
 
-import aktual.app.nav.BackNavigator
 import aktual.budget.model.RuleId
 import aktual.budget.model.RuleStage
 import aktual.budget.rules.ui.LocalEntityListFetcher
@@ -20,6 +19,7 @@ import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Save
 import aktual.core.icons.material.SaveAs
 import aktual.core.l10n.Strings
+import aktual.core.nav.BackNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTooltip

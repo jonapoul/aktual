@@ -1,16 +1,16 @@
 package aktual.prefs.ui
 
-import aktual.app.nav.AktualNavStack
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.CustomThemeSettingsNavRoute
-import aktual.app.nav.CustomThemesNavigator
-import aktual.app.nav.InspectThemeNavRoute
-import aktual.app.nav.InspectThemeNavigator
-import aktual.app.nav.NavEntryContributor
-import aktual.app.nav.NavScope
-import aktual.app.nav.SettingsNavRoute
-import aktual.app.nav.ThemeSettingsNavRoute
-import aktual.app.nav.ThemeSettingsNavigator
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.CustomThemeSettingsNavRoute
+import aktual.core.nav.CustomThemesNavigator
+import aktual.core.nav.InspectThemeNavRoute
+import aktual.core.nav.InspectThemeNavigator
+import aktual.core.nav.NavEntryContributor
+import aktual.core.nav.NavStack
+import aktual.core.nav.SettingsNavRoute
+import aktual.core.nav.ThemeSettingsNavRoute
+import aktual.core.nav.ThemeSettingsNavigator
+import aktual.di.AppScope
 import aktual.prefs.ui.inspect.InspectThemeScreen
 import aktual.prefs.ui.root.SettingsScreen
 import aktual.prefs.ui.theme.ThemeSettingsScreen
@@ -19,9 +19,9 @@ import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavKey
 import dev.zacsweers.metro.ContributesIntoSet
 
-@ContributesIntoSet(NavScope::class)
+@ContributesIntoSet(AppScope::class)
 class SettingsNavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: AktualNavStack<NavKey>) {
+  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
     scope.entry<SettingsNavRoute> {
       SettingsScreen(BackNavigator(stack), ThemeSettingsNavigator(stack))
     }

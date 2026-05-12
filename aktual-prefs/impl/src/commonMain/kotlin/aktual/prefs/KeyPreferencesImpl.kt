@@ -3,11 +3,11 @@ package aktual.prefs
 import aktual.core.model.EncryptionKeys
 import aktual.core.model.KeyId
 import aktual.core.model.base64
+import aktual.di.AppScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.binding
 import kotlinx.coroutines.flow.Flow

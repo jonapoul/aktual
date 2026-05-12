@@ -1,6 +1,6 @@
 package aktual.budget.sync.vm
 
-import aktual.api.client.AktualApisStateHolder
+import aktual.api.client.SyncApi
 import aktual.api.model.account.FailureReason
 import aktual.api.model.sync.GetUserFileInfoResponse
 import aktual.api.model.sync.UserFile
@@ -17,20 +17,16 @@ import kotlinx.coroutines.withContext
 import logcat.logcat
 
 @Inject
-class BudgetInfoFetcher
-internal constructor(
+class BudgetInfoFetcher(
+  private val token: Token,
+  private val syncApi: SyncApi,
   private val contexts: CoroutineContexts,
-  private val apisStateHolder: AktualApisStateHolder,
 ) {
   sealed interface Result {
     data class Success(val userFile: UserFile) : Result
 
     sealed interface Failure : Result {
       val reason: String
-    }
-
-    data object NotLoggedIn : Failure {
-      override val reason = "Not logged in"
     }
 
     data class IOFailure(override val reason: String) : Failure
@@ -41,18 +37,12 @@ internal constructor(
     }
   }
 
-  suspend fun fetch(token: Token, budgetId: BudgetId): Result {
-    val api = apisStateHolder.value?.sync
-    if (api == null) {
-      logcat.w { "Not logged in?" }
-      return Result.NotLoggedIn
-    }
-
+  suspend fun fetch(budgetId: BudgetId): Result {
     logcat.d { "Fetching UserFile for budgetId=$budgetId" }
 
     val response =
       try {
-        withContext(contexts.io) { api.fetchUserFileInfo(token, budgetId) }
+        withContext(contexts.io) { syncApi.fetchUserFileInfo(token, budgetId) }
       } catch (e: ResponseException) {
         logcat.e { "Failed fetching UserFile for $budgetId with $token! Response = ${e.response}" }
         return e.parseFailure()

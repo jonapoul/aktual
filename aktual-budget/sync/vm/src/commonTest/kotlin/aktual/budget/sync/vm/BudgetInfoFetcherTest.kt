@@ -1,8 +1,5 @@
 package aktual.budget.sync.vm
 
-import aktual.api.client.AktualApis
-import aktual.api.client.AktualApisStateHolder
-import aktual.api.client.SyncApi
 import aktual.api.client.SyncApiImpl
 import aktual.api.model.account.FailureReason
 import aktual.api.model.sync.EncryptMeta
@@ -22,14 +19,11 @@ import assertk.assertThat
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.matchesPredicate
-import io.ktor.client.HttpClient
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.http.HttpStatusCode
-import io.mockk.mockk
 import java.net.NoRouteToHostException
 import kotlin.test.AfterTest
 import kotlin.test.Test
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
@@ -37,10 +31,7 @@ import okio.FileSystem
 
 class BudgetInfoFetcherTest {
   private lateinit var budgetInfoFetcher: BudgetInfoFetcher
-  private lateinit var apisStateHolder: AktualApisStateHolder
   private lateinit var mockEngine: MockEngine.Queue
-  private lateinit var client: HttpClient
-  private lateinit var syncApi: SyncApi
 
   @AfterTest
   fun after() {
@@ -49,14 +40,18 @@ class BudgetInfoFetcherTest {
 
   private fun TestScope.before() {
     mockEngine = emptyMockEngine()
-    client = testHttpClient(mockEngine, AktualJson)
-    syncApi = SyncApiImpl(client, FileSystem.SYSTEM, SERVER_URL)
-    apisStateHolder = AktualApisStateHolder()
-    apisStateHolder.update { aktualApis() }
+    val syncApi =
+      SyncApiImpl(
+        client = testHttpClient(mockEngine, AktualJson),
+        fileSystem = FileSystem.SYSTEM,
+        serverUrl = SERVER_URL,
+      )
+
     budgetInfoFetcher =
       BudgetInfoFetcher(
+        token = TOKEN,
+        syncApi = syncApi,
         contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler)),
-        apisStateHolder = apisStateHolder,
       )
   }
 
@@ -108,16 +103,6 @@ class BudgetInfoFetcherTest {
   }
 
   @Test
-  fun `Not logged in if no API client cached`() = runTest {
-    // given
-    before()
-    apisStateHolder.reset()
-
-    // then
-    assertThatFetchResult().isEqualTo(Result.NotLoggedIn)
-  }
-
-  @Test
   fun `Handle HTTP failure`() = runTest {
     // given
     before()
@@ -157,18 +142,7 @@ class BudgetInfoFetcherTest {
     assertThatFetchResult().isInstanceOf<Result.IOFailure>()
   }
 
-  private suspend fun assertThatFetchResult() =
-    assertThat(budgetInfoFetcher.fetch(TOKEN, BUDGET_ID))
-
-  private fun aktualApis() =
-    AktualApis(
-      serverUrl = SERVER_URL,
-      account = mockk(),
-      base = mockk(),
-      health = mockk(),
-      metrics = mockk(),
-      sync = syncApi,
-    )
+  private suspend fun assertThatFetchResult() = assertThat(budgetInfoFetcher.fetch(BUDGET_ID))
 
   private companion object {
     val TOKEN = Token("abc-123")

@@ -8,11 +8,12 @@ import aktual.core.model.BuildConfig
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
 import aktual.core.model.Token
+import aktual.di.ServerChosenScope
 import aktual.prefs.AppPreferences
 import alakazam.kotlin.ResettableStateFlow
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.collections.immutable.ImmutableList
@@ -30,8 +31,9 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
 
+@Stable
 @ViewModelKey
-@ContributesIntoMap(AppScope::class)
+@ContributesIntoMap(ServerChosenScope::class)
 class LoginViewModel(
   private val loginRequester: LoginRequester,
   versionsStateHolder: AktualVersionsStateHolder,

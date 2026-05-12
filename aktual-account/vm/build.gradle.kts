@@ -6,7 +6,7 @@ plugins { id("aktual.module.viewmodel") }
 kotlin {
   commonMainDependencies {
     api(project(":aktual-account:domain"))
-    api(project(":aktual-core:model"))
+    api(project(":aktual-di:runlevel"))
     api(project(":aktual-prefs"))
     api(libs.alakazam.kotlin)
     implementation(project(":aktual-core:api"))
@@ -14,8 +14,8 @@ kotlin {
   }
 
   commonTestDependencies {
+    implementation(project(":aktual-app:di"))
     implementation(project(":aktual-core:api:impl"))
-    implementation(project(":aktual-prefs:di"))
     implementation(project(":aktual-test:api"))
   }
 }

@@ -1,9 +1,5 @@
 package aktual.budget.reports.ui.dashboard
 
-import aktual.app.nav.BackNavigator
-import aktual.app.nav.CreateReportNavigator
-import aktual.app.nav.ReportNavigator
-import aktual.budget.model.BudgetId
 import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
@@ -13,7 +9,9 @@ import aktual.budget.reports.vm.dashboard.ReportsDashboardViewModel
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.model.Token
+import aktual.core.nav.BackNavigator
+import aktual.core.nav.CreateReportNavigator
+import aktual.core.nav.ReportNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BottomSpacing
@@ -59,8 +57,6 @@ fun ReportsDashboardScreen(
   back: BackNavigator,
   toReport: ReportNavigator,
   toCreateReport: CreateReportNavigator,
-  budgetId: BudgetId,
-  token: Token,
   viewModel: ReportsDashboardViewModel = metroViewModel(),
 ) {
   val items by viewModel.items.collectAsStateWithLifecycle()
@@ -71,14 +67,14 @@ fun ReportsDashboardScreen(
     onAction = { action ->
       when (action) {
         Action.NavBack -> back()
-        is Action.OpenItem -> toReport(token, budgetId, action.id)
+        is Action.OpenItem -> toReport(action.id)
         is Action.Rename -> viewModel.renameReport(action.item, action.name)
         is Action.Delete -> viewModel.deleteReport(action.id)
         is Action.SetSummaryType -> TODO()
         is Action.SetAllTimeDivisor -> TODO()
         is Action.ClickCalendarDay -> TODO()
         is Action.SaveTextContent -> TODO()
-        Action.CreateNewReport -> toCreateReport(token, budgetId)
+        Action.CreateNewReport -> toCreateReport()
       }
     },
   )

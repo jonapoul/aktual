@@ -11,10 +11,10 @@ kotlin {
     api(libs.alakazam.kotlin)
     api(libs.kotlinx.serialization.core)
     api(libs.ktor.core)
+    api(project(":aktual-core:model"))
     compileOnly(libs.androidx.compose.annotation)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.serialization.json)
-    implementation(project(":aktual-core:model"))
   }
 
   commonTestDependencies {

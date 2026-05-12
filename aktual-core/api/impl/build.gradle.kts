@@ -8,16 +8,15 @@ kotlin {
     api(libs.kotlinx.coroutines.core)
     api(libs.ktor.core)
     api(libs.okio)
-    api(project(":aktual-budget:data:prefs"))
     api(project(":aktual-budget:data:proto"))
     api(project(":aktual-core:api"))
+    api(project(":aktual-di:runlevel"))
     api(project(":aktual-prefs"))
     implementation(libs.ktor.auth)
     implementation(libs.ktor.contentNegotiation)
     implementation(libs.ktor.logging)
     implementation(libs.ktor.serialization.json)
     implementation(project(":aktual-core:logging"))
-    implementation(project(":aktual-core:model"))
   }
 
   commonTestDependencies {

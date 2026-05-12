@@ -15,9 +15,10 @@ kotlin {
     api(libs.kotlinx.serialization.json)
     api(libs.metrox.viewmodel)
     api(libs.okio)
+    api(project(":aktual-di:core"))
     compileOnly(libs.androidx.compose.annotation)
     compileOnly(libs.redacted.annotations)
   }
 
-  androidMainDependencies { implementation(libs.androidx.coreKtx) }
+  androidMainDependencies { implementation(libs.androidx.core) }
 }

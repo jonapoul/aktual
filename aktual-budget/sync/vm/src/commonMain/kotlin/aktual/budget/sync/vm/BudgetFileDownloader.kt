@@ -1,6 +1,5 @@
 package aktual.budget.sync.vm
 
-import aktual.api.client.AktualApisStateHolder
 import aktual.api.client.SyncApi
 import aktual.api.client.SyncDownloadState
 import aktual.budget.model.BudgetFiles
@@ -19,31 +18,24 @@ import java.io.IOException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import logcat.logcat
 
 @Inject
-class BudgetFileDownloader
-internal constructor(
+class BudgetFileDownloader(
   private val contexts: CoroutineContexts,
   private val budgetFiles: BudgetFiles,
-  private val apisStateHolder: AktualApisStateHolder,
+  private val syncApi: SyncApi,
+  private val token: Token,
 ) {
-  fun download(token: Token, budgetId: BudgetId): Flow<DownloadState> {
-    val api = apisStateHolder.value?.sync ?: return flowOf(Failure.NotLoggedIn)
-    return flow { emitState(api, token, budgetId) }.flowOn(contexts.io)
-  }
+  fun download(budgetId: BudgetId): Flow<DownloadState> =
+    flow { emitState(budgetId) }.flowOn(contexts.io)
 
-  private suspend fun FlowCollector<DownloadState>.emitState(
-    api: SyncApi,
-    token: Token,
-    id: BudgetId,
-  ) {
+  private suspend fun FlowCollector<DownloadState>.emitState(id: BudgetId) {
     val destinationPath = budgetFiles.encryptedZip(id, mkdirs = true)
     try {
       emit(InProgress(Zero, Zero))
-      api.downloadUserFile(token, id, destinationPath).collect { state ->
+      syncApi.downloadUserFile(token, id, destinationPath).collect { state ->
         when (state) {
           is SyncDownloadState.InProgress -> emit(InProgress(state))
           is SyncDownloadState.Done -> emit(Done(state))
