@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.update
 @ContributesBinding(AppScope::class, binding<RunLevelState>())
 class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
   StateHolder<List<AktualGraph>>(initialState = emptyList()),
-  AutoCloseable,
+  Closeable,
   RunLevelState,
   RunLevelController {
   override fun viewModelFactory(): Flow<MetroViewModelFactory> =

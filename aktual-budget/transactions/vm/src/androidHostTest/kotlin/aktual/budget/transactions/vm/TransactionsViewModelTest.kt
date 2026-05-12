@@ -16,7 +16,8 @@ import aktual.di.AppGraph
 import aktual.di.AppScope
 import aktual.di.RunLevelController
 import aktual.di.RunLevelState
-import aktual.test.TestContainer
+import aktual.test.TestAppDirectoryContainer
+import aktual.test.TestBudgetFilesContainer
 import aktual.test.TestCoroutineContainer
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
@@ -72,7 +73,8 @@ class TransactionsViewModelTest {
     appGraph =
       createDynamicGraph<TestAppGraph>(
         TestCoroutineContainer(backgroundScope, contexts),
-        TestContainer(rootDir),
+        TestBudgetFilesContainer(rootDir),
+        TestAppDirectoryContainer(rootDir),
       )
 
     with(appGraph.runLevelController) {

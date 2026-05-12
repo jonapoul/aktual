@@ -16,8 +16,11 @@ import org.robolectric.annotation.Config
 @RunWith(RobolectricTestRunner::class)
 @Config(sdk = [34], application = AktualApplication::class)
 class AndroidViewModelSmokeTest : ViewModelSmokeTest<TestAndroidAppGraph>() {
-  override fun buildGraph(container: TestContainer): TestAndroidAppGraph =
-    createDynamicGraph<TestAndroidAppGraph>(container)
+  override fun buildGraph(): TestAndroidAppGraph =
+    createDynamicGraph<TestAndroidAppGraph>(
+      TestAppDirectoryContainer(rootDir),
+      TestBudgetFilesContainer(rootDir),
+    )
 
   // runs after appGraph.close() so DataStore cancellation callbacks are already queued
   override fun afterPlatformCleanup() {

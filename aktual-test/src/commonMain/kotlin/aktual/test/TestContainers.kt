@@ -1,6 +1,7 @@
 package aktual.test
 
 import aktual.budget.model.BudgetFiles
+import aktual.core.model.AppDirectory
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
@@ -33,7 +34,12 @@ class TestPreferencesContainer(private val preferences: DataStore<Preferences>) 
 }
 
 @BindingContainer
-class TestContainer(private val directoryPath: Path) {
+class TestBudgetFilesContainer(private val directoryPath: Path) {
   @Provides
   fun budgetFiles(fileSystem: FileSystem): BudgetFiles = BudgetFiles(fileSystem, directoryPath)
+}
+
+@BindingContainer
+class TestAppDirectoryContainer(private val directoryPath: Path) {
+  @Provides fun appDir(): AppDirectory = AppDirectory { directoryPath }
 }

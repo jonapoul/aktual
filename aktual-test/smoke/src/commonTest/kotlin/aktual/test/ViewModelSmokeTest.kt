@@ -41,7 +41,7 @@ import okio.Path.Companion.toOkioPath
 
 /** To be implemented for each target - makes sure VMs are bound as expected to DI graph */
 abstract class ViewModelSmokeTest<G : TestAppGraph> {
-  private lateinit var rootDir: Path
+  protected lateinit var rootDir: Path
   protected lateinit var appGraph: G
   protected var viewModel: ViewModel? = null
 
@@ -49,7 +49,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   fun before() {
     optionallySkip()
     rootDir = createTempDirectory().toOkioPath()
-    appGraph = buildGraph(TestContainer(rootDir))
+    appGraph = buildGraph()
     with(appGraph.runLevelController) {
       init(listOf(appGraph))
       onServerChosen(SERVER_URL)
@@ -67,12 +67,13 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
     LogcatLogger.uninstall()
     appGraph.close()
     FileSystem.SYSTEM.deleteRecursively(rootDir)
+
     // platform hook: runs after graph teardown so platforms can drain pending async work
     // (e.g. Android needs to idle the main looper to avoid multiple-DataStore errors)
     afterPlatformCleanup()
   }
 
-  protected abstract fun buildGraph(container: TestContainer): G
+  protected abstract fun buildGraph(): G
 
   protected open fun afterPlatformCleanup() = Unit
 

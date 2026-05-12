@@ -15,7 +15,7 @@ import kotlinx.coroutines.plus
 
 @BindingContainer
 @ContributesTo(AppScope::class)
-object JvmPrefsContainer {
+object DataStoreContainer {
   @Provides
   @SingleIn(AppScope::class)
   fun dataStore(
@@ -28,6 +28,7 @@ object JvmPrefsContainer {
     return PreferenceDataStoreFactory.create(
       produceFile = { dir.resolve("settings.preferences_pb") },
       scope = scope + contexts.io,
+      migrations = emptyList(),
     )
   }
 }
