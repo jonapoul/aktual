@@ -17,7 +17,7 @@ import aktual.di.AppScope
 import aktual.di.RunLevelController
 import aktual.di.RunLevelState
 import aktual.test.TestContainer
-import aktual.test.coroutineContainer
+import aktual.test.TestCoroutineContainer
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
 import android.os.Looper
@@ -62,7 +62,7 @@ class TransactionsViewModelTest {
     // so connections are released before we close the driver
     if (::viewModel.isInitialized) viewModel.viewModelScope.cancel()
     Shadows.shadowOf(Looper.getMainLooper()).idle()
-    appGraph.runLevelController.close()
+    appGraph.close()
     FileSystem.SYSTEM.deleteRecursively(rootDir)
   }
 
@@ -70,7 +70,10 @@ class TransactionsViewModelTest {
     rootDir = createTempDirectory().toOkioPath()
     contexts = TestCoroutineContexts(StandardTestDispatcher(testScheduler))
     appGraph =
-      createDynamicGraph<TestAppGraph>(coroutineContainer(contexts), TestContainer(rootDir))
+      createDynamicGraph<TestAppGraph>(
+        TestCoroutineContainer(backgroundScope, contexts),
+        TestContainer(rootDir),
+      )
 
     with(appGraph.runLevelController) {
       init(listOf(appGraph))

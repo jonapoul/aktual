@@ -21,6 +21,7 @@ import aktual.prefs.vm.root.SettingsViewModel
 import aktual.prefs.vm.theme.ThemeSettingsViewModel
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
 import assertk.assertThat
 import assertk.assertions.isInstanceOf
@@ -30,6 +31,7 @@ import kotlin.io.path.createTempDirectory
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import logcat.LogcatLogger
@@ -41,8 +43,7 @@ import okio.Path.Companion.toOkioPath
 abstract class ViewModelSmokeTest<G : TestAppGraph> {
   private lateinit var rootDir: Path
   protected lateinit var appGraph: G
-
-  protected abstract fun buildGraph(container: TestContainer): G
+  protected var viewModel: ViewModel? = null
 
   @BeforeTest
   fun before() {
@@ -59,12 +60,23 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @AfterTest
   fun after() {
+    // cancel viewModelScope before after() deletes the temp dir, to avoid SQLITE_CANTOPEN
+    // from background coroutines that outlive the test
+    viewModel?.viewModelScope?.cancel()
+
     LogcatLogger.uninstall()
     appGraph.close()
     FileSystem.SYSTEM.deleteRecursively(rootDir)
+    // platform hook: runs after graph teardown so platforms can drain pending async work
+    // (e.g. Android needs to idle the main looper to avoid multiple-DataStore errors)
+    afterPlatformCleanup()
   }
 
-  protected abstract fun optionallySkip()
+  protected abstract fun buildGraph(container: TestContainer): G
+
+  protected open fun afterPlatformCleanup() = Unit
+
+  protected open fun optionallySkip() = Unit
 
   @Test fun about() = testVm<AboutViewModel>()
 
@@ -114,7 +126,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   protected inline fun <reified VM : ViewModel> testVm() = runTest {
     val viewModelFactory = appGraph.runLevelState.viewModelFactory().first()
-    val viewModel = viewModelFactory.create(VM::class, CreationExtras.Empty)
+    viewModel = viewModelFactory.create(VM::class, CreationExtras.Empty)
     assertThat(viewModel).isNotNull().isInstanceOf(VM::class)
   }
 
@@ -128,7 +140,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
       .isNotNull()
       .transform { provider -> provider() }
       .isInstanceOf<F>()
-      .transform { factory -> factory.build() }
+      .transform { f -> f.build().also { viewModel = it } }
       .isInstanceOf(VM::class)
   }
 }

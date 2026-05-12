@@ -49,10 +49,8 @@ class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
   override fun init(graphs: List<AktualGraph>) {
     assertAllDistinct(graphs)
     graphs.forEach { it.initialize() }
-    update { levels ->
-      closeAll(levels)
-      graphs.sorted()
-    }
+    closeAll(value)
+    update { graphs.sorted() }
   }
 
   override fun onServerChosen(url: ServerUrl): ServerChosenGraph {

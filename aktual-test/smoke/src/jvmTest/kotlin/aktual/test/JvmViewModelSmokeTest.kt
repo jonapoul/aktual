@@ -9,6 +9,4 @@ class JvmViewModelSmokeTest : ViewModelSmokeTest<TestJvmAppGraph>() {
     createDynamicGraph<TestJvmAppGraph>(container)
 
   @Test fun root() = testVm<AktualDesktopViewModel>()
-
-  override fun optionallySkip() = Unit
 }
