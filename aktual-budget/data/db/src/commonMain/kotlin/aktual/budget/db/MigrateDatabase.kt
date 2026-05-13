@@ -15,6 +15,7 @@ suspend fun migrateDatabase(driver: SqlDriver, db: BudgetDatabase) {
       for (statement in statements) {
         driver.execute(identifier = null, sql = statement, parameters = 0).await()
       }
+      db.migrationsQueries.withoutResult { insert(version) }
     }
   }
 }
