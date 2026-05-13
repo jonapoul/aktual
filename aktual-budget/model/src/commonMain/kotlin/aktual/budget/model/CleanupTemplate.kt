@@ -2,6 +2,7 @@ package aktual.budget.model
 
 import alakazam.kotlin.SerializableByString
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.JsonContentPolymorphicSerializer
@@ -16,15 +17,23 @@ sealed interface CleanupTemplate {
   val role: Role
 
   @Serializable
-  data class Source(val groupId: String?, override val role: Role = Role.Source) : CleanupTemplate
+  data class Source(
+    @SerialName("groupId") val groupId: CleanupGroupId?,
+    @SerialName("role") override val role: Role = Role.Source,
+  ) : CleanupTemplate
 
   @Serializable
-  data class Sink(val groupId: String?, val weight: Int, override val role: Role = Role.Sink) :
-    CleanupTemplate
+  data class Sink(
+    @SerialName("groupId") val groupId: CleanupGroupId?,
+    @SerialName("weight") val weight: Int,
+    @SerialName("role") override val role: Role = Role.Sink,
+  ) : CleanupTemplate
 
   @Serializable
-  data class Overspend(val groupId: String, override val role: Role = Role.Overspend) :
-    CleanupTemplate
+  data class Overspend(
+    @SerialName("groupId") val groupId: CleanupGroupId,
+    @SerialName("role") override val role: Role = Role.Overspend,
+  ) : CleanupTemplate
 
   @Serializable
   enum class Role(override val value: String) : SerializableByString {

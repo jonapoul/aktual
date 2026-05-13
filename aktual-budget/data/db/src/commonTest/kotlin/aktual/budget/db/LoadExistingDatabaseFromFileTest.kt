@@ -4,8 +4,11 @@ import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CleanupGroupId
 import aktual.budget.model.ScheduleId
-import aktual.core.model.AppDirectory
+import aktual.test.CoTemporaryFolder
+import aktual.test.testBudgetFiles
 import alakazam.test.getResourceAsStream
+import app.cash.burst.InterceptTest
+import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.db.SqlDriver
 import assertk.assertThat
 import assertk.assertions.exists
@@ -16,19 +19,16 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
-import okio.FileSystem
 
-abstract class LoadExistingDatabaseFromFileTest {
-  protected lateinit var fileSystem: FileSystem
-  protected lateinit var budgetFiles: BudgetFiles
-  protected lateinit var driver: SqlDriver
+class LoadExistingDatabaseFromFileTest {
+  @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
-  protected abstract fun appDirectory(): AppDirectory
+  private lateinit var budgetFiles: BudgetFiles
+  private lateinit var driver: SqlDriver
 
   @BeforeTest
   fun before() {
-    fileSystem = FileSystem.SYSTEM
-    budgetFiles = BudgetFiles(fileSystem, directoryPath = appDirectory().get())
+    budgetFiles = testBudgetFiles(temporaryFolder)
   }
 
   @AfterTest
@@ -53,22 +53,23 @@ abstract class LoadExistingDatabaseFromFileTest {
   }
 
   // Verify that the file was opened at all
-  private fun assertViewHash(db: BudgetDatabase) {
-    val viewHash = db.metaQueries.getValue(key = "view-hash").executeAsOneOrNull()?.value_
+  private suspend fun assertViewHash(db: BudgetDatabase) {
+    val viewHash = db.metaQueries.getValue(key = "view-hash").awaitAsOneOrNull()?.value_
     assertThat(viewHash).isEqualTo("c379fa428efd55a684aba4947ad054e0")
   }
 
   // Adds custom_upcoming_length column. migration sets to null by default
-  private fun checkMigration1769000000000(db: BudgetDatabase) {
+  private suspend fun checkMigration1769000000000(db: BudgetDatabase) {
     val customUpcomingLength =
-      db.schedulesQueries.getCustomUpcomingLength(id = ScheduleId("schedule-id"))
-    assertNull(customUpcomingLength.executeAsOneOrNull())
+      db.schedulesQueries.getCustomUpcomingLength(id = ScheduleId("schedule-id")).awaitAsOneOrNull()
+    assertNull(customUpcomingLength)
   }
 
   // Adds cleanup_def column and cleanup_group table. migration sets to null by default
-  private fun checkMigration1778510362740(db: BudgetDatabase) {
-    val cleanupGroup = db.cleanupGroupsQueries.getById(CleanupGroupId("cleanup-group"))
-    assertNull(cleanupGroup.executeAsOneOrNull())
+  private suspend fun checkMigration1778510362740(db: BudgetDatabase) {
+    val cleanupGroup =
+      db.cleanupGroupsQueries.getById(CleanupGroupId("cleanup-group")).awaitAsOneOrNull()
+    assertNull(cleanupGroup)
   }
 
   private fun loadDatabaseIntoFile(): File {

@@ -2,8 +2,8 @@ package aktual.app.di
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.buildDatabase
-import aktual.di.BudgetScope
 import aktual.budget.db.migrateDatabase
+import aktual.di.BudgetScope
 import app.cash.sqldelight.db.SqlDriver
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
