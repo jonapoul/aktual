@@ -8,6 +8,7 @@ import aktual.test.CoTemporaryFolder
 import aktual.test.testBudgetFiles
 import alakazam.test.getResourceAsStream
 import app.cash.burst.InterceptTest
+import app.cash.sqldelight.async.coroutines.awaitAsList
 import app.cash.sqldelight.async.coroutines.awaitAsOneOrNull
 import app.cash.sqldelight.db.SqlDriver
 import assertk.assertThat
@@ -37,13 +38,23 @@ class LoadExistingDatabaseFromFileTest {
   }
 
   @Test
+  fun `Fresh database has all migrations seeded by onCreate`() = runTest {
+    driver = AndroidxSqlDriverFactory(budgetFiles).create(BUDGET_ID)
+    val db = buildDatabase(driver)
+    migrateDatabase(driver, db)
+
+    val recorded = db.migrationsQueries.getAll().awaitAsList()
+    assertThat(recorded).isEqualTo(DatabaseMigrations.map { it.first })
+  }
+
+  @Test
   fun `Opening existing file and validate migrations`() = runTest {
     val file = loadDatabaseIntoFile()
     driver = AndroidxSqlDriverFactory(budgetFiles).create(BUDGET_ID)
 
     // DB starts at migration number 1738491452000
     val db = buildDatabase(driver)
-    migrateDatabase(driver, db).await()
+    migrateDatabase(driver, db)
 
     assertThat(file).exists()
 

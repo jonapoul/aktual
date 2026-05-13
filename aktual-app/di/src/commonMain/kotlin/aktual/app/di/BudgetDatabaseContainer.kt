@@ -20,7 +20,7 @@ object BudgetDatabaseContainer {
     val db = buildDatabase(driver)
 
     // TODO: Move this into a runlevel, not runBlocking?
-    runBlocking { migrateDatabase(driver, db).await() }
+    runBlocking { migrateDatabase(driver, db) }
 
     return db
   }
