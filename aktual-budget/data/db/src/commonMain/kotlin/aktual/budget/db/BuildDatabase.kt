@@ -10,6 +10,7 @@ fun buildDatabase(driver: SqlDriver): BudgetDatabase =
     categoriesAdapter = CategoriesAdapter,
     category_groupsAdapter = CategoryGroupsAdapter,
     category_mappingAdapter = CategoryMappingAdapter,
+    cleanup_groupsAdapter = CleanupGroupsAdapter,
     custom_reportsAdapter = CustomReportsAdapter,
     dashboardAdapter = DashboardAdapter,
     dashboard_pagesAdapter = DashboardPagesAdapter,

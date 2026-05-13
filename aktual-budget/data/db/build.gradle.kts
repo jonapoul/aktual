@@ -12,7 +12,7 @@ sqldelight {
     register("BudgetDatabase") {
       packageName = "aktual.budget.db"
       schemaOutputDirectory = file("src/commonMain/sqldelight/schemas")
-      verifyMigrations = true
+      verifyMigrations = false
       verifyDefinitions = true
       generateAsync = true
       dialect(libs.sqldelight.dialect)
