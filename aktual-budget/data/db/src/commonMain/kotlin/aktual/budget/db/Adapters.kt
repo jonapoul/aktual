@@ -7,6 +7,8 @@ import aktual.budget.model.BalanceType
 import aktual.budget.model.BankId
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
+import aktual.budget.model.CleanupGroupId
+import aktual.budget.model.CleanupTemplate
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.CustomReportId
@@ -111,6 +113,7 @@ private inline fun <reified T : Any> jsonSerializable(serializer: KSerializer<T>
 private val conditions = jsonSerializable(ListSerializer(Condition.serializer()))
 private val ruleActions = jsonSerializable(ListSerializer(RuleAction.serializer()))
 private val selectedCategories = jsonSerializable(ListSerializer(SelectedCategory.serializer()))
+private val cleanupDef = jsonSerializable(ListSerializer(CleanupTemplate.serializer()))
 
 private val localDate =
   longAdapter(
@@ -154,6 +157,7 @@ private val accountSyncSource = stringAdapter(AccountSyncSource::fromString)
 private val bankId = stringAdapter(::BankId)
 private val categoryGroupId = stringAdapter(::CategoryGroupId)
 private val categoryId = stringAdapter(::CategoryId)
+private val cleanupGroupsId = stringAdapter(::CleanupGroupId)
 private val customReportsId = stringAdapter(::CustomReportId)
 private val dashboardPageId = stringAdapter(::DashboardPageId)
 private val operator = stringAdapter(decode = Operator::parse, encode = Operator::string)
@@ -231,12 +235,15 @@ internal val CategoriesAdapter =
     cat_groupAdapter = categoryGroupId,
     goal_defAdapter = jsonElement,
     template_settingsAdapter = jsonObject,
+    cleanup_defAdapter = cleanupDef,
   )
 
 internal val CategoryGroupsAdapter = Category_groups.Adapter(idAdapter = categoryGroupId)
 
 internal val CategoryMappingAdapter =
   Category_mapping.Adapter(idAdapter = categoryId, transferIdAdapter = categoryId)
+
+internal val CleanupGroupsAdapter = Cleanup_groups.Adapter(idAdapter = cleanupGroupsId)
 
 internal val CustomReportsAdapter =
   Custom_reports.Adapter(

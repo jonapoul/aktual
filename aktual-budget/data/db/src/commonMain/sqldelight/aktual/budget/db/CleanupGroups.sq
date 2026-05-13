@@ -1,0 +1,12 @@
+import aktual.budget.model.CleanupGroupId;
+import kotlin.Boolean;
+
+CREATE TABLE cleanup_groups(
+  id TEXT AS CleanupGroupId PRIMARY KEY,
+  name TEXT NOT NULL,
+  tombstone INTEGER AS Boolean DEFAULT 0
+);
+
+insert: INSERT OR REPLACE INTO cleanup_groups(id, name) VALUES (?, ?);
+
+getById: SELECT * FROM cleanup_groups WHERE id = ?;
