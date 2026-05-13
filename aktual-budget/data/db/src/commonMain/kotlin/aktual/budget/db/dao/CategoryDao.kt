@@ -26,6 +26,7 @@ class CategoryDao(database: BudgetDatabase) {
         hidden = false,
         goal_def = null,
         template_settings = null,
+        cleanup_def = null,
       )
     )
   }

@@ -43,6 +43,14 @@ value class CategoryGroupId(val value: String) : Comparable<CategoryGroupId> {
 
 @JvmInline
 @Serializable
+value class CleanupGroupId(val value: String) : Comparable<CleanupGroupId> {
+  override fun toString(): String = value
+
+  override fun compareTo(other: CleanupGroupId) = value.compareTo(other.value)
+}
+
+@JvmInline
+@Serializable
 value class CustomReportId(val value: String) : Comparable<CustomReportId> {
   override fun toString(): String = value
 
