@@ -55,4 +55,8 @@ getById: SELECT id FROM schedules WHERE rule = ?;
 
 getFromVSchedules: SELECT * FROM v_schedules;
 
+getAllActive: SELECT * FROM v_schedules WHERE tombstone = 0;
+
 getName: SELECT name FROM schedules WHERE id = ?;
+
+getCustomUpcomingLength: SELECT custom_upcoming_length FROM schedules WHERE id = ?;
