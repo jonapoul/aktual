@@ -5,16 +5,14 @@ import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.core.model.AktualJson
+import aktual.core.model.Calendar
 import alakazam.kotlin.CoroutineContexts
-import alakazam.kotlin.TimeZoneProvider
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject
 import java.util.zip.ZipException
 import java.util.zip.ZipInputStream
-import kotlin.time.Clock
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.withContext
-import kotlinx.datetime.todayIn
 import kotlinx.serialization.SerializationException
 import logcat.logcat
 import okio.FileSystem
@@ -27,8 +25,7 @@ class DatabaseImporter(
   private val contexts: CoroutineContexts,
   private val fileSystem: FileSystem,
   private val budgetFiles: BudgetFiles,
-  private val clock: Clock,
-  private val timeZones: TimeZoneProvider,
+  private val calendar: Calendar,
 ) {
   suspend operator fun invoke(userFile: UserFile, zipPath: Path): ImportResult {
     val directory = budgetFiles.directory(userFile.fileId, mkdirs = true)
@@ -90,7 +87,7 @@ class DatabaseImporter(
       meta
         .set(DbMetadata.CloudFileId, userFile.fileId)
         .set(DbMetadata.GroupId, userFile.groupId)
-        .set(DbMetadata.LastUploaded, clock.todayIn(timeZones.get()))
+        .set(DbMetadata.LastUploaded, calendar.today())
         .set(DbMetadata.EncryptKeyId, userFile.encryptMeta?.keyId?.value)
 
     budgetFiles.writeMetadata(newMeta)

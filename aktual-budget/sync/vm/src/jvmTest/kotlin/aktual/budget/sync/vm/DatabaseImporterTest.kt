@@ -12,7 +12,6 @@ import aktual.test.copyTo
 import aktual.test.doesNotExistOn
 import aktual.test.existsOn
 import aktual.test.testBudgetFiles
-import alakazam.test.TestClock
 import alakazam.test.TestCoroutineContexts
 import app.cash.burst.InterceptTest
 import assertk.assertThat
@@ -23,8 +22,6 @@ import kotlin.test.Test
 import kotlin.time.Instant
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
-import kotlinx.datetime.Month
-import kotlinx.datetime.TimeZone
 import kotlinx.serialization.json.Json
 import okio.FileSystem
 import okio.Path
@@ -41,7 +38,7 @@ class DatabaseImporterTest {
 
   @BeforeTest
   fun before() {
-    fileSystem = FileSystem.SYSTEM
+    fileSystem = temporaryFolder.fileSystem
     root = temporaryFolder.root
     budgetFiles = testBudgetFiles(fileSystem, root)
     importer =
@@ -49,8 +46,7 @@ class DatabaseImporterTest {
         contexts = TestCoroutineContexts(EmptyCoroutineContext),
         fileSystem = fileSystem,
         budgetFiles = budgetFiles,
-        clock = TestClock { INSTANT },
-        timeZones = { TimeZone.UTC },
+        calendar = { TEST_DATE },
       )
   }
 
@@ -77,7 +73,7 @@ class DatabaseImporterTest {
     assertThat(metaPath).existsOn(fileSystem)
     val contentsJson = fileSystem.source(metaPath).buffer().use { it.readUtf8() }
     val contents = Json.decodeFromString<DbMetadata>(contentsJson)
-    assertThat(contents[DbMetadata.LastUploaded]).isEqualTo(LocalDate(2024, Month.MARCH, 18))
+    assertThat(contents[DbMetadata.LastUploaded]).isEqualTo(TEST_DATE)
   }
 
   @Test
@@ -99,7 +95,7 @@ class DatabaseImporterTest {
   }
 
   private companion object {
-    val INSTANT = Instant.fromEpochMilliseconds(1710786854286L) // Mon Mar 18 2024 18:34:14
+    val TEST_DATE = LocalDate.parse("2024-03-18")
 
     val BUDGET_ID = BudgetId("cf2b43ee-8067-48ed-ab5b-4e4e5531056e")
 
@@ -133,7 +129,7 @@ class DatabaseImporterTest {
             counter = 0,
             node = "93836f5283a57c87",
           ),
-        lastUploaded = LocalDate.parse("2024-03-18"),
+        lastUploaded = TEST_DATE,
         resetClock = true,
         userId = "583b50fe-3c55-42ca-9f09-a14ecd38677f",
       )

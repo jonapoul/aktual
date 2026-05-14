@@ -14,8 +14,8 @@ import aktual.budget.model.UpcomingLength
 import aktual.budget.model.upcomingDays
 import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.ScheduleStatus
+import aktual.core.model.Calendar
 import aktual.di.BudgetScope
-import alakazam.kotlin.TimeZoneProvider
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -26,7 +26,6 @@ import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
-import kotlin.time.Clock
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -39,7 +38,6 @@ import kotlinx.datetime.DateTimeUnit.Companion.DAY
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
-import kotlinx.datetime.todayIn
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
@@ -54,8 +52,7 @@ class ListSchedulesViewModel(
   private val scheduleDao: ScheduleDao,
   private val accountDao: AccountDao,
   private val payeeDao: PayeeDao,
-  private val clock: Clock,
-  private val timeZones: TimeZoneProvider,
+  private val calendar: Calendar,
 ) : ViewModel() {
   private val mutableSchedules = MutableStateFlow<ImmutableList<Schedule>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
@@ -82,7 +79,7 @@ class ListSchedulesViewModel(
     mutableIsLoading.update { true }
     viewModelScope.launch {
       try {
-        val today = clock.todayIn(timeZones.get())
+        val today = calendar.today()
         val rows = scheduleDao.getAll()
         val schedules =
           rows
