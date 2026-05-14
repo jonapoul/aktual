@@ -181,7 +181,7 @@ private fun InspectThemeContent(
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(2.dp),
       ) {
-        items(state.properties) { property -> ThemePropertyRow(property) }
+        items(state.properties, key = { it.name }) { property -> ThemePropertyRow(property) }
 
         item { BottomSpacing() }
       }

@@ -190,7 +190,7 @@ private fun ContentSuccess(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.listItemSpacing),
   ) {
-    items(schedules) { schedule -> ListSchedulesItem(schedule, onAction) }
+    items(schedules, key = { it.id }) { schedule -> ListSchedulesItem(schedule, onAction) }
     item { BottomSpacing() }
   }
 }

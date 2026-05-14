@@ -166,7 +166,7 @@ private fun ContentList(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    items(items) { item -> DashboardItem(item, observer, onAction) }
+    items(items, key = { it.id }) { item -> DashboardItem(item, observer, onAction) }
 
     item { BottomSpacing() }
   }

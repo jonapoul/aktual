@@ -251,7 +251,7 @@ private fun LoadedContent(
     state = listState,
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
-    items(artifacts) { artifact ->
+    items(artifacts, key = { it.id }) { artifact ->
       ArtifactItem(
         artifact = artifact,
         onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },

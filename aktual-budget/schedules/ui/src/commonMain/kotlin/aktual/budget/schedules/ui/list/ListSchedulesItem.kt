@@ -33,6 +33,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -100,7 +101,17 @@ internal fun ListSchedulesItem(
           theme = theme,
         )
 
-        LabelValue(label = Strings.listSchedulesLabelAmount, value = amountStr, theme = theme)
+        LabelValue(
+          label = Strings.listSchedulesLabelAmount,
+          value = amountStr,
+          theme = theme,
+          valueColor =
+            if (schedule.amount.isPositive()) {
+              theme.budgetNumberPositive
+            } else {
+              theme.budgetNumberNegative
+            },
+        )
 
         LabelValue(
           label = Strings.listSchedulesLabelNext,
@@ -120,6 +131,7 @@ private fun LabelValue(
   value: String,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
+  valueColor: Color = theme.pageText,
 ) {
   Row(
     modifier = modifier,
@@ -127,7 +139,7 @@ private fun LabelValue(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Text(label, style = AktualTypography.bodySmall, color = theme.pageTextSubdued)
-    Text(value, style = AktualTypography.bodySmall, color = theme.pageText)
+    Text(value, style = AktualTypography.bodySmall, color = valueColor)
   }
 }
 

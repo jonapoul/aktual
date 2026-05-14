@@ -85,6 +85,19 @@ new_rows="$(build_table_rows "${new_migrations[@]}")"
 
 newest_migration="${new_migrations[${#new_migrations[@]}-1]}"
 
+checklist="$(cat <<'CHECKLIST'
+### Implementation checklist
+
+See [aktual-budget/data/db/CLAUDE.md](aktual-budget/data/db/CLAUDE.md) for details.
+
+- [ ] Update the relevant `.sq` file(s) in `sqldelight/aktual/budget/db/` (new columns / new tables)
+- [ ] Add entry to `DatabaseMigrations` in `MigrateDatabase.kt`
+- [ ] Add model types / ID value classes in `aktual-budget:model` (if needed)
+- [ ] Wire adapters in `Adapters.kt` and `BuildDatabase.kt` (if needed)
+- [ ] Add assertion to `LoadExistingDatabaseFromFileTest` verifying the migrated column/table default
+CHECKLIST
+)"
+
 if [[ -n "$DRY_RUN" ]]; then
   echo ""
   echo "=== DRY RUN ==="
@@ -143,6 +156,8 @@ The following database migrations have been added to [actualbudget/actual](https
 ${all_rows}
 
 [View migrations directory](https://github.com/actualbudget/actual/tree/master/packages/loot-core/migrations)
+
+${checklist}
 EOF
 )"
 
@@ -164,6 +179,8 @@ The following database migrations have been added to [actualbudget/actual](https
 ${new_rows}
 
 [View migrations directory](https://github.com/actualbudget/actual/tree/master/packages/loot-core/migrations)
+
+${checklist}
 EOF
 )"
 
