@@ -12,8 +12,11 @@ suspend fun migrateDatabase(driver: SqlDriver, db: BudgetDatabase) {
   for ((version, statements) in DatabaseMigrations) {
     if (version !in previousMigrations) {
       logcat.i(TAG) { "Migrating DB to version $version" }
-      for (statement in statements) {
-        driver.execute(identifier = null, sql = statement, parameters = 0).await()
+      db.transaction {
+        for (statement in statements) {
+          driver.execute(identifier = null, sql = statement, parameters = 0).await()
+        }
+        db.migrationsQueries.insert(version)
       }
     }
   }

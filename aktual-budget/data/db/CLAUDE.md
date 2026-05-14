@@ -26,5 +26,5 @@ When `.github/upstream-migration-tracker/last-known-migration.txt` is updated wi
 ## Migration rules
 
 - Use `CREATE TABLE IF NOT EXISTS` — fresh databases already have the table from the schema
-- `ALTER TABLE ... ADD COLUMN` has no `IF NOT EXISTS` — the `version !in previousMigrations` guard handles idempotency
+- `ALTER TABLE ... ADD COLUMN` has no `IF NOT EXISTS` — the `version !in previousMigrations` guard handles idempotency; each migration's statements and version insert run in a single `db.transaction { }` so they're atomic
 - Never call `BudgetDatabase.Schema.migrate()` — upstream Actual doesn't use SQLite's `user_version` pragma
