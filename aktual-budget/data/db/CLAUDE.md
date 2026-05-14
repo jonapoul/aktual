@@ -17,7 +17,7 @@ When `.github/upstream-migration-tracker/last-known-migration.txt` is updated wi
 
 | File | Purpose |
 |------|---------|
-| `MigrateDatabase.kt` | Custom migration runner — one `migrateXXX()` extension function per upstream migration (XXX = numeric timestamp) |
+| `MigrateDatabase.kt` | Custom migration runner — `DatabaseMigrations` list maps `Long` timestamp → `List<String>` of SQL statements |
 | `Adapters.kt` | Column type adapters (JSON, typed IDs, enums) |
 | `BuildDatabase.kt` | Constructs `BudgetDatabase` with all adapters |
 | `sqldelight/aktual/budget/db/*.sq` | Table definitions and named queries |

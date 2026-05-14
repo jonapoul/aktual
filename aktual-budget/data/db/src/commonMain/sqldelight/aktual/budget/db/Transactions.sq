@@ -171,6 +171,14 @@ SELECT COUNT(*) FROM v_transactions;
 getIdsByAccountCount:
 SELECT COUNT(*) FROM v_transactions WHERE account = :account;
 
+-- Mirrors getHasTransactionsQuery in packages/loot-core/src/shared/schedules.ts.
+-- fromDate is next_date (fixed schedule) or next_date - 2 days (recurring) — callers decide.
+hasTransactionForSchedule:
+SELECT EXISTS(
+  SELECT 1 FROM transactions
+  WHERE schedule = ? AND date >= ? AND tombstone = 0
+);
+
 -- Chart data queries for dashboard widgets
 
 cashFlowByMonth:
