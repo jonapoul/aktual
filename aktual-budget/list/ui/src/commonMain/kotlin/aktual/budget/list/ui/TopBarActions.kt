@@ -13,9 +13,9 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.icons.material.Settings
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.BasicIconButton
-import aktual.core.ui.ThemedDropdownMenu
-import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.normalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -51,13 +51,13 @@ internal fun MoreMenu(
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  ThemedDropdownMenu(
+  AktualDropdownMenu(
     modifier = modifier,
     expanded = showMenu,
     onDismissRequest = onDismissRequest,
   ) {
     val serverText = Strings.listBudgetsChangeServer
-    ThemedDropdownMenuItem(
+    AktualDropdownMenuItem(
       text = { Text(serverText) },
       onClick = {
         onDismissRequest()
@@ -67,7 +67,7 @@ internal fun MoreMenu(
     )
 
     val passwordText = Strings.listBudgetsChangePassword
-    ThemedDropdownMenuItem(
+    AktualDropdownMenuItem(
       text = { Text(passwordText) },
       onClick = {
         onDismissRequest()
@@ -77,7 +77,7 @@ internal fun MoreMenu(
     )
 
     val metricsText = Strings.metricsToolbar
-    ThemedDropdownMenuItem(
+    AktualDropdownMenuItem(
       text = { Text(metricsText) },
       onClick = {
         onDismissRequest()
@@ -87,7 +87,7 @@ internal fun MoreMenu(
     )
 
     val aboutText = Strings.listBudgetsAbout
-    ThemedDropdownMenuItem(
+    AktualDropdownMenuItem(
       text = { Text(aboutText) },
       onClick = {
         onDismissRequest()
