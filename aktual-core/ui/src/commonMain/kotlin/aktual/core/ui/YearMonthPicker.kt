@@ -73,7 +73,7 @@ private fun PickDateDialog(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) =
-  AlertDialog(
+  AktualAlertDialog(
     modifier = modifier,
     onDismissRequest = onDismiss,
     content = {
@@ -99,7 +99,7 @@ internal fun PickDateDialogContent(
   var currentValue by remember { mutableStateOf(value) }
   val isWithinRange = currentValue in range
 
-  DialogContent(
+  AktualAlertDialogContent(
     modifier = modifier,
     theme = theme,
     title = Strings.yearMonthPickerTitle,

@@ -36,7 +36,7 @@ import androidx.compose.ui.window.DialogProperties
  * animates in while this dialog is showing.
  */
 @Composable
-fun AlertDialog(
+fun AktualAlertDialog(
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
   properties: DialogProperties = DialogProperties(),
@@ -57,7 +57,7 @@ fun AlertDialog(
 }
 
 @Composable
-fun AlertDialog(
+fun AktualAlertDialog(
   title: String?,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
@@ -68,8 +68,12 @@ fun AlertDialog(
   properties: DialogProperties = DialogProperties(),
   content: @Composable ColumnScope.() -> Unit,
 ) {
-  AlertDialog(onDismissRequest = onDismissRequest, modifier = modifier, properties = properties) {
-    DialogContent(
+  AktualAlertDialog(
+    onDismissRequest = onDismissRequest,
+    modifier = modifier,
+    properties = properties,
+  ) {
+    AktualAlertDialogContent(
       title = title,
       buttons = buttons,
       icon = icon,
@@ -81,7 +85,7 @@ fun AlertDialog(
 }
 
 @Composable
-fun DialogContent(
+fun AktualAlertDialogContent(
   title: String?,
   buttons: (@Composable RowScope.() -> Unit)?,
   modifier: Modifier = Modifier,
@@ -138,7 +142,7 @@ private fun PreviewExampleContentWithButtons(
   @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
   PreviewWithTheme(theme) {
-    DialogContent(
+    AktualAlertDialogContent(
       title = "Hello world",
       buttons = {
         TextButton(onClick = {}) { Text("Delete", color = theme.errorText) }
@@ -161,7 +165,7 @@ private fun PreviewExampleContentWithoutButtons(
   @PreviewParameter(ThemeParameters::class) theme: Theme
 ) =
   PreviewWithTheme(theme) {
-    DialogContent(
+    AktualAlertDialogContent(
       title = "Hello world",
       buttons = null,
       content = {

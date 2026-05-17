@@ -4,7 +4,7 @@ import aktual.budget.reports.vm.choosetype.ChooseReportTypeDialog
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.AlertDialog
+import aktual.core.ui.AktualAlertDialog
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -25,7 +25,7 @@ private fun UnsupportedTypeDialog(
   onAction: (ChooseReportTypeAction) -> Unit,
   theme: Theme = LocalTheme.current,
 ) {
-  AlertDialog(
+  AktualAlertDialog(
     title = Strings.reportsChooseTypeDisabledDialogTitle,
     titleColor = theme.warningText,
     onDismissRequest = { onAction(DismissDialog) },
