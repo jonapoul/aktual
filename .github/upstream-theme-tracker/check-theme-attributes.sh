@@ -47,7 +47,7 @@ git -C "$tmp_dir" sparse-checkout set "$THEME_DIR"
 # palette.css holds raw color values (e.g. --color-gray-100), not semantic attributes
 for theme_file in "$tmp_dir/$THEME_DIR"/*.css; do
   [[ "$(basename "$theme_file")" == "palette.css" ]] && continue
-  grep -oP '^\s+--color-\K\w+(?=\s*:)' "$theme_file" || true
+  grep -oP '^\s+--color-\K[\w-]+(?=\s*:)' "$theme_file" || true
 done | sort -u > "$tmp_dir/all_attrs.txt"
 
 # Find new attributes (in upstream but not in our tracker)
