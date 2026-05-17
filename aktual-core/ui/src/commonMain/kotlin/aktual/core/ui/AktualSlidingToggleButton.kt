@@ -39,7 +39,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun <T : Any> SlidingToggleButton(
+fun <T : Any> AktualSlidingToggleButton(
   selected: T,
   options: ImmutableList<T>,
   onSelect: (T) -> Unit,
@@ -147,7 +147,7 @@ private fun PreviewStrings(
 ) =
   PreviewWithThemedParams(params) {
     var selected by remember { mutableStateOf("Option A") }
-    SlidingToggleButton(
+    AktualSlidingToggleButton(
       modifier = Modifier.padding(4.dp),
       options = persistentListOf("Option A", "Option B"),
       selected = selected,
@@ -161,7 +161,7 @@ private fun PreviewStrings(
 private fun PreviewEnum(@PreviewParameter(ThemeParameters::class) theme: Theme) =
   PreviewWithTheme(theme) {
     var selected by remember { mutableStateOf(Interval.Weekly) }
-    SlidingToggleButton(
+    AktualSlidingToggleButton(
       modifier = Modifier.padding(4.dp),
       options = Interval.entries.toImmutableList(),
       selected = selected,
