@@ -40,7 +40,7 @@ fun YearMonthPicker(
   var showDialog by remember { mutableStateOf(false) }
   var selected by remember { mutableStateOf(value) }
 
-  TextField(
+  AktualTextField(
     modifier = modifier.wrapContentWidth().clickable { showDialog = true },
     readOnly = true,
     placeholderText = null,

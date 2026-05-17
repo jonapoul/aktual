@@ -5,8 +5,8 @@ import aktual.budget.rules.ui.edit.pickers.AmountTextField
 import aktual.budget.rules.ui.edit.pickers.DateTextField
 import aktual.budget.rules.ui.edit.pickers.EntityIdPicker
 import aktual.core.l10n.Strings
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.TextField
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -90,7 +90,7 @@ internal fun ConditionValueEditor(
     Field.Parent,
     Field.Cleared,
     Field.Reconciled ->
-      TextField(
+      AktualTextField(
         modifier = modifier.fillMaxWidth(),
         value = value.asEditableString(),
         onValueChange = { newText ->

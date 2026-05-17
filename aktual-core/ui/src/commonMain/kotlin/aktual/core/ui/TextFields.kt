@@ -54,7 +54,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 
 @Composable
-fun TextField(
+fun AktualTextField(
   value: String,
   onValueChange: (String) -> Unit,
   placeholderText: String?,
@@ -267,11 +267,11 @@ private class TextInputPreviewProvider :
 
 @Preview
 @Composable
-private fun PreviewTextField(
+private fun PreviewAktualTextField(
   @PreviewParameter(TextInputPreviewProvider::class) params: ThemedParams<TextInputPreviewParams>
 ) =
   PreviewWithTheme(params.theme) {
-    TextField(
+    AktualTextField(
       value = params.data.value,
       onValueChange = {},
       placeholderText = params.data.placeholderText,

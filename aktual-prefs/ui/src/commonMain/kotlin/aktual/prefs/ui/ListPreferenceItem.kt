@@ -4,9 +4,9 @@ import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.ListBottomSheet
 import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.TextField
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.textField
@@ -87,7 +87,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
     theme = theme,
     bottomContent = {
       Box {
-        TextField(
+        AktualTextField(
           modifier = Modifier.fillMaxWidth(),
           value = optionString(value),
           onValueChange = {},

@@ -4,9 +4,9 @@ import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
-import aktual.core.ui.TextField
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
@@ -40,7 +40,7 @@ internal fun PasswordLogin(
   Column(modifier = modifier) {
     val keyboard = LocalSoftwareKeyboardController.current
 
-    TextField(
+    AktualTextField(
       modifier =
         Modifier.testTag(Tags.PasswordLoginTextField)
           .fillMaxWidth(1f)
