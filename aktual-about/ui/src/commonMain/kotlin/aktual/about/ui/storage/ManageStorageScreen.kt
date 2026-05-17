@@ -25,8 +25,8 @@ import aktual.core.model.percent
 import aktual.core.nav.BackNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.AlertDialog
 import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
@@ -452,7 +452,7 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: (ManageStorageAction
     }
 
     StorageDialog.ConfirmClearAllFiles -> {
-      AlertDialog(
+      AktualAlertDialog(
         title = Strings.storageClearAllFilesTitle,
         onDismissRequest = { onAction(DismissDialog) },
         buttons = {
@@ -467,7 +467,7 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: (ManageStorageAction
     }
 
     is StorageDialog.ConfirmClearBudget -> {
-      AlertDialog(
+      AktualAlertDialog(
         title = Strings.storageClearBudgetTitle(dialog.name),
         onDismissRequest = { onAction(DismissDialog) },
         buttons = {
@@ -482,7 +482,7 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: (ManageStorageAction
     }
 
     StorageDialog.ConfirmClearCache -> {
-      AlertDialog(
+      AktualAlertDialog(
         title = Strings.storageClearCacheTitle,
         onDismissRequest = { onAction(DismissDialog) },
         buttons = {
@@ -497,7 +497,7 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: (ManageStorageAction
     }
 
     StorageDialog.ConfirmClearPreferences -> {
-      AlertDialog(
+      AktualAlertDialog(
         title = Strings.storageClearPrefsTitle,
         onDismissRequest = { onAction(DismissDialog) },
         buttons = {

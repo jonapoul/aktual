@@ -24,6 +24,8 @@ import aktual.core.nav.ReportsListNavRoute
 import aktual.core.nav.TransactionsNavRoute
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.LocalBottomSpacing
@@ -32,8 +34,6 @@ import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.SideSpacing
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.ThemeParameters
-import aktual.core.ui.ThemedDropdownMenu
-import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.blurredBottomBar
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
@@ -411,8 +411,8 @@ private fun BudgetMenu(
   modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier) {
-    ThemedDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
-      ThemedDropdownMenuItem(
+    AktualDropdownMenu(expanded = expanded, onDismissRequest = onDismissRequest) {
+      AktualDropdownMenuItem(
         text = Strings.budgetNavMenuSwitchBudget,
         leadingIcon = MaterialIcons.SwapHoriz,
         onClick = {
@@ -420,7 +420,7 @@ private fun BudgetMenu(
           onAction(BudgetNavAction.SwitchFile)
         },
       )
-      ThemedDropdownMenuItem(
+      AktualDropdownMenuItem(
         text = Strings.budgetNavMenuLogOut,
         leadingIcon = MaterialIcons.Logout,
         onClick = {
@@ -428,7 +428,7 @@ private fun BudgetMenu(
           onAction(BudgetNavAction.LogOut)
         },
       )
-      ThemedDropdownMenuItem(
+      AktualDropdownMenuItem(
         text = Strings.budgetNavMenuSettings,
         leadingIcon = MaterialIcons.Settings,
         onClick = {
@@ -436,7 +436,7 @@ private fun BudgetMenu(
           onAction(BudgetNavAction.Settings)
         },
       )
-      ThemedDropdownMenuItem(
+      AktualDropdownMenuItem(
         text = Strings.budgetNavMenuAbout,
         leadingIcon = MaterialIcons.Info,
         onClick = {

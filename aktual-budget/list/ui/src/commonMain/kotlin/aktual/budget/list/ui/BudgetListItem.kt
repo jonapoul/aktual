@@ -9,12 +9,12 @@ import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.RowShape
-import aktual.core.ui.ThemedDropdownMenu
-import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import alakazam.compose.HorizontalSpacer
@@ -125,9 +125,9 @@ internal fun BudgetListItem(
 
 @Composable
 private fun DeleteMenu(expanded: Boolean, onDismiss: () -> Unit, onClickDelete: () -> Unit) {
-  ThemedDropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
+  AktualDropdownMenu(expanded = expanded, onDismissRequest = onDismiss) {
     val deleteText = Strings.budgetDelete
-    ThemedDropdownMenuItem(
+    AktualDropdownMenuItem(
       text = { Text(deleteText) },
       leadingIcon = {
         Icon(imageVector = MaterialIcons.DeleteForever, contentDescription = deleteText)

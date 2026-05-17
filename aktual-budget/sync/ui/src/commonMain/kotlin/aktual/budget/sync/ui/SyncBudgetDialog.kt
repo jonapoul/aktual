@@ -12,11 +12,11 @@ import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.AlertDialog
-import aktual.core.ui.DialogContent
+import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualAlertDialogContent
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.MY_PHONE_WIDTH_DP
 import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.TextField
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.checkbox
 import aktual.core.ui.disabled
@@ -125,7 +125,7 @@ private fun SyncBudgetDialog(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  AlertDialog(
+  AktualAlertDialog(
     modifier = modifier,
     onDismissRequest = { onAction(SyncBudgetAction.Cancel) },
     properties =
@@ -135,7 +135,7 @@ private fun SyncBudgetDialog(
         usePlatformDefaultWidth = true,
       ),
   ) {
-    DialogContent(
+    AktualAlertDialogContent(
       theme = theme,
       title = null,
       content = {
@@ -307,7 +307,7 @@ private fun PasswordEntryLayout(
     val keyboard = LocalSoftwareKeyboardController.current
     var passwordVisible by remember { mutableStateOf(false) }
 
-    TextField(
+    AktualTextField(
       modifier =
         Modifier.padding(horizontal = 20.dp)
           .fillMaxWidth()

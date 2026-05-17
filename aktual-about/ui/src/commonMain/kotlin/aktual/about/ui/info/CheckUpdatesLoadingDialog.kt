@@ -3,9 +3,9 @@ package aktual.about.ui.info
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.AlertDialog
+import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AnimatedLoading
-import aktual.core.ui.DialogContent
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemeParameters
 import alakazam.compose.HorizontalSpacer
@@ -28,7 +28,7 @@ internal fun CheckUpdatesLoadingDialog(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  AlertDialog(
+  AktualAlertDialog(
     modifier = modifier,
     properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
     onDismissRequest = onCancel,
@@ -42,7 +42,7 @@ internal fun CheckUpdatesLoadingDialogContent(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  DialogContent(
+  AktualAlertDialogContent(
     modifier = modifier,
     theme = theme,
     title = null,

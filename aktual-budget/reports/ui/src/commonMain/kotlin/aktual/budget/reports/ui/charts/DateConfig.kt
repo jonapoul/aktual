@@ -6,9 +6,9 @@ import aktual.budget.reports.vm.DateRangeMode
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.SlidingToggleButton
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.YearMonthPicker
 import alakazam.compose.HorizontalSpacer
@@ -51,7 +51,7 @@ internal fun ChartDateConfig(
   ) {
     val modes = remember { DateRangeMode.entries.toImmutableList() }
     var selected by remember { mutableStateOf(config.mode) }
-    SlidingToggleButton(
+    AktualSlidingToggleButton(
       modifier = Modifier.fillMaxWidth(),
       options = modes,
       onSelect = { selected = it },

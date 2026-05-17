@@ -14,10 +14,10 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.CardShape
 import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedDropdownMenu
-import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import androidx.compose.foundation.background
@@ -92,8 +92,8 @@ private fun ReportDropDownMenu(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
-  ThemedDropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = onDismiss) {
-    ThemedDropdownMenuItem(
+  AktualDropdownMenu(modifier = modifier, expanded = expanded, onDismissRequest = onDismiss) {
+    AktualDropdownMenuItem(
       text = { Text(Strings.reportsDashboardRename) },
       leadingIcon = { Icon(MaterialIcons.Edit, Strings.reportsDashboardRename) },
       onClick = {
@@ -101,7 +101,7 @@ private fun ReportDropDownMenu(
         onAction(Action.Rename(item, name = "TODO: rename"))
       },
     )
-    ThemedDropdownMenuItem(
+    AktualDropdownMenuItem(
       text = { Text(Strings.reportsDashboardDelete) },
       leadingIcon = { Icon(MaterialIcons.Delete, Strings.reportsDashboardDelete) },
       onClick = {

@@ -15,14 +15,14 @@ import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.ThemeParameters
-import aktual.core.ui.ThemedDropdownMenu
-import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.checkbox
@@ -110,8 +110,8 @@ internal fun ListRulesItem(
 
       val onDismiss = { showMenu = false }
 
-      ThemedDropdownMenu(expanded = showMenu, onDismissRequest = onDismiss) {
-        ThemedDropdownMenuItem(
+      AktualDropdownMenu(expanded = showMenu, onDismissRequest = onDismiss) {
+        AktualDropdownMenuItem(
           text = Strings.rulesItemEdit,
           leadingIcon = MaterialIcons.Edit,
           onClick = {
@@ -119,7 +119,7 @@ internal fun ListRulesItem(
             onAction(Edit(rule.id))
           },
         )
-        ThemedDropdownMenuItem(
+        AktualDropdownMenuItem(
           text = Strings.rulesItemDelete,
           leadingIcon = MaterialIcons.DeleteForever,
           onClick = {

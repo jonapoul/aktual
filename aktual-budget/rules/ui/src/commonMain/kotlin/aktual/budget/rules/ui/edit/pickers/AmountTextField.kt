@@ -17,6 +17,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.IconButtonColorProvider
@@ -24,7 +25,6 @@ import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.TextField
 import aktual.core.ui.bareIconButton
 import aktual.core.ui.formattedString
 import androidx.compose.foundation.layout.Row
@@ -76,7 +76,7 @@ internal fun AmountTextField(
 
   var isPositive by remember(value) { mutableStateOf(value.isPositive()) }
 
-  TextField(
+  AktualTextField(
     modifier = modifier.fillMaxWidth(),
     value =
       when (value) {
