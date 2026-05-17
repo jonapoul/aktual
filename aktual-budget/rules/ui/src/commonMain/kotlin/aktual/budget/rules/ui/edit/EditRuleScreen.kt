@@ -22,6 +22,9 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualDropdownMenu
+import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTooltip
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomSpacing
@@ -32,9 +35,6 @@ import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.SlidingToggleButton
-import aktual.core.ui.ThemedDropdownMenu
-import aktual.core.ui.ThemedDropdownMenuItem
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.blurredTopBar
@@ -220,14 +220,14 @@ private fun MoreMenu(
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  ThemedDropdownMenu(
+  AktualDropdownMenu(
     modifier = modifier,
     expanded = showMenu,
     onDismissRequest = onDismissRequest,
   ) {
     val string = Strings.editRuleActionDelete
     val red = LocalTheme.current.errorText
-    ThemedDropdownMenuItem(
+    AktualDropdownMenuItem(
       enabled = state is Success,
       text = { Text(string, color = red) },
       onClick = {
@@ -357,7 +357,7 @@ private fun RuleStage(
     }
 
     val stages = remember { RuleStage.entries.toImmutableList() }
-    SlidingToggleButton(
+    AktualSlidingToggleButton(
       modifier = Modifier.fillMaxWidth(),
       options = stages,
       isEnabled = isEnabled,

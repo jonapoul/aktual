@@ -40,7 +40,7 @@ fun YearMonthPicker(
   var showDialog by remember { mutableStateOf(false) }
   var selected by remember { mutableStateOf(value) }
 
-  TextField(
+  AktualTextField(
     modifier = modifier.wrapContentWidth().clickable { showDialog = true },
     readOnly = true,
     placeholderText = null,
@@ -73,7 +73,7 @@ private fun PickDateDialog(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) =
-  AlertDialog(
+  AktualAlertDialog(
     modifier = modifier,
     onDismissRequest = onDismiss,
     content = {
@@ -99,7 +99,7 @@ internal fun PickDateDialogContent(
   var currentValue by remember { mutableStateOf(value) }
   val isWithinRange = currentValue in range
 
-  DialogContent(
+  AktualAlertDialogContent(
     modifier = modifier,
     theme = theme,
     title = Strings.yearMonthPickerTitle,
@@ -116,7 +116,7 @@ internal fun PickDateDialogContent(
       }
     },
   ) {
-    ExposedDropDownMenu(
+    AktualExposedDropDownMenu(
       value = currentValue.month,
       onValueChange = { currentValue = YearMonth(currentValue.year, it) },
       options = remember(range) { range.rangeValues { it.month } },
@@ -126,7 +126,7 @@ internal fun PickDateDialogContent(
 
     VerticalSpacer(8.dp)
 
-    ExposedDropDownMenu(
+    AktualExposedDropDownMenu(
       value = currentValue.year,
       onValueChange = { currentValue = YearMonth(it, currentValue.month) },
       options = remember(range) { range.rangeValues { it.year } },

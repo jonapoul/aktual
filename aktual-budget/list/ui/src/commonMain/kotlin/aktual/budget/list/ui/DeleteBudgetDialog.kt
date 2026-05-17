@@ -5,8 +5,8 @@ import aktual.budget.model.Budget
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTypography
-import aktual.core.ui.AlertDialog
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.PreviewWithThemedParams
@@ -53,7 +53,7 @@ internal fun DeleteBudgetDialog(
   onAction: (DeleteDialogAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  AlertDialog(
+  AktualAlertDialog(
     modifier = modifier,
     title = Strings.budgetDeleteDialogTitle(budget.name),
     onDismissRequest = { onAction(DeleteDialogAction.Dismiss) },

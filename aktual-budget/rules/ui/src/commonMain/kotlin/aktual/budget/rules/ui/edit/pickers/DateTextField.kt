@@ -10,10 +10,10 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.TextField
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -69,7 +69,7 @@ internal fun DateTextField(
   val displayText = remember(localDate) { localDate?.let(formatter::format).orEmpty() }
 
   Box(modifier = modifier) {
-    TextField(
+    AktualTextField(
       modifier = Modifier.fillMaxWidth().border(Dp.Hairline, theme.buttonNormalBorder),
       value = displayText,
       onValueChange = {},

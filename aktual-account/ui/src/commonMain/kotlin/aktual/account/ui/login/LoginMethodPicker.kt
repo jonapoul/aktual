@@ -4,10 +4,10 @@ import aktual.core.l10n.Strings
 import aktual.core.model.LoginMethod
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.Dimens
 import aktual.core.ui.RounderCardShape
-import aktual.core.ui.SlidingToggleButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
@@ -48,7 +48,7 @@ internal fun LoginMethodPicker(
       fontWeight = FontWeight.Bold,
     )
 
-    SlidingToggleButton(
+    AktualSlidingToggleButton(
       modifier = Modifier.fillMaxWidth().padding(Dimens.VeryLarge),
       options = methods,
       selected = selectedMethod,

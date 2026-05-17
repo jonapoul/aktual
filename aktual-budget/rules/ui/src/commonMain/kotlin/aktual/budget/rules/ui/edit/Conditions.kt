@@ -14,9 +14,9 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ExposedDropDownMenu
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithTheme
@@ -61,7 +61,7 @@ internal fun Conditions(
         ) {
           Text(text = Strings.editRuleConditionsDescPrefix, style = AktualTypography.bodyLarge)
 
-          ExposedDropDownMenu(
+          AktualExposedDropDownMenu(
             value = rule.conditionsOp,
             onValueChange = { op -> onAction(SetConditionOp(op)) },
             options = ConditionOp.entries.toImmutableList(),
@@ -102,7 +102,7 @@ private fun Condition(
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-      ExposedDropDownMenu(
+      AktualExposedDropDownMenu(
         modifier = Modifier.weight(1f),
         value = condition.field,
         onValueChange = { f -> onAction(SetConditionField(f, index)) },
@@ -122,7 +122,7 @@ private fun Condition(
       )
     }
 
-    ExposedDropDownMenu(
+    AktualExposedDropDownMenu(
       modifier = Modifier.fillMaxWidth(),
       value = condition.operator,
       onValueChange = { op -> onAction(SetConditionOperator(op, index)) },

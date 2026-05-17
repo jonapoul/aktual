@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 
 @Composable
-fun ThemedDropdownMenu(
+fun AktualDropdownMenu(
   expanded: Boolean,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
@@ -55,7 +55,7 @@ fun ThemedDropdownMenu(
 }
 
 @Composable
-fun ThemedDropdownMenuItem(
+fun AktualDropdownMenuItem(
   text: @Composable () -> Unit,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
@@ -86,7 +86,7 @@ fun ThemedDropdownMenuItem(
 }
 
 @Composable
-fun ThemedDropdownMenuItem(
+fun AktualDropdownMenuItem(
   text: String,
   onClick: () -> Unit,
   modifier: Modifier = Modifier,
@@ -97,7 +97,7 @@ fun ThemedDropdownMenuItem(
   interactionSource: MutableInteractionSource? = remember { MutableInteractionSource() },
   theme: Theme = LocalTheme.current,
 ) {
-  ThemedDropdownMenuItem(
+  AktualDropdownMenuItem(
     text = { Text(text) },
     onClick = onClick,
     modifier = modifier,

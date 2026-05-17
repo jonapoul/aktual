@@ -20,9 +20,9 @@ import aktual.core.model.Percent
 import aktual.core.model.percent
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
-import aktual.core.ui.ExposedDropDownMenu
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ScaleToFitText
 import aktual.core.ui.ThemedParameterProvider
@@ -532,7 +532,7 @@ private fun ShowAs(
         is SummaryData.Sum -> SummaryChartType.Sum
       }
 
-    ExposedDropDownMenu(
+    AktualExposedDropDownMenu(
       modifier = Modifier.wrapContentSize(),
       value = string(currentType),
       options = chartTypeMap.keys.toImmutableList(),

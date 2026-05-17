@@ -6,8 +6,8 @@ import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.theme.DarkTheme
 import aktual.core.theme.MidnightTheme
+import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.SlidingToggleButton
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.isCompactWidth
@@ -55,7 +55,7 @@ private fun DarkThemeContent(
   onAction: (ThemeSettingsAction) -> Unit,
   modifier: Modifier = Modifier,
 ) {
-  SlidingToggleButton(
+  AktualSlidingToggleButton(
     modifier = modifier.padding(10.dp),
     options = preference.options,
     selected = preference.value,

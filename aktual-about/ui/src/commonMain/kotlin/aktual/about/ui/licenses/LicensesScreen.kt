@@ -19,6 +19,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BottomSpacing
@@ -28,7 +29,6 @@ import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.TextField
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
@@ -181,7 +181,7 @@ private fun SearchInputBottomSheet(
       modifier = modifier.padding(Dimens.Huge).fillMaxWidth(),
       verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-      TextField(
+      AktualTextField(
         modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester(keyboard)),
         value = searchState.text,
         onValueChange = { query -> onAction(LicensesAction.EditSearchText(query)) },

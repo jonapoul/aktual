@@ -1,8 +1,8 @@
 package aktual.account.ui.password
 
 import aktual.core.model.Password
+import aktual.core.ui.AktualTextField
 import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.TextField
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import androidx.compose.foundation.text.KeyboardActions
@@ -27,7 +27,7 @@ internal fun PasswordEntryText(
   imeAction: ImeAction = ImeAction.Go,
   onGo: (() -> Unit)? = null,
 ) {
-  TextField(
+  AktualTextField(
     modifier = modifier,
     value = password.value,
     onValueChange = { value -> onValueChange(Password(value)) },

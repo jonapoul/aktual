@@ -3,8 +3,8 @@ package aktual.about.ui.info
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.AlertDialog
-import aktual.core.ui.DialogContent
+import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemeParameters
 import androidx.compose.material3.Text
@@ -20,7 +20,7 @@ internal fun NoUpdateFoundDialog(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  AlertDialog(
+  AktualAlertDialog(
     modifier = modifier,
     onDismissRequest = onDismiss,
     content = { NoUpdateFoundDialogContent(onDismiss = onDismiss, theme = theme) },
@@ -33,7 +33,7 @@ internal fun NoUpdateFoundDialogContent(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  DialogContent(
+  AktualAlertDialogContent(
     modifier = modifier,
     theme = theme,
     title = Strings.infoNoUpdateTitle,

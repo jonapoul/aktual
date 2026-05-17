@@ -143,8 +143,8 @@ fun BlurredTopBarSpacing(state: BlurredTopBarState, innerPadding: PaddingValues)
 }
 
 /**
- * Full-screen blur overlay that activates when any [AlertDialog] is showing. Place this in the root
- * layout on top of the main content but below the dialog window.
+ * Full-screen blur overlay that activates when any [AktualAlertDialog] is showing. Place this in
+ * the root layout on top of the main content but below the dialog window.
  */
 @Composable
 fun DialogBlurOverlay(modifier: Modifier = Modifier) {
