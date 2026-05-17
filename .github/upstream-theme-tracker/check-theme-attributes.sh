@@ -5,8 +5,7 @@
 # and lists the new attributes in the PR body.
 #
 # Monitored files:
-#   - packages/component-library/src/theme.ts        (theme contract / CSS variable names)
-#   - packages/desktop-client/src/style/themes/*.ts   (dark, light, midnight color values)
+#   - packages/component-library/src/themes/*.css   (dark, light, midnight CSS custom properties)
 #
 # Usage:
 #   # Dry run — prints what would happen without touching GitHub
@@ -25,9 +24,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 TRACKER_FILE="$SCRIPT_DIR/last-known-theme-attributes.txt"
 UPSTREAM_REPO="https://github.com/actualbudget/actual.git"
-THEME_CONTRACT_DIR="packages/component-library/src"
-THEME_CONTRACT_FILE="packages/component-library/src/theme.ts"
-THEME_DIR="packages/desktop-client/src/style/themes"
+THEME_DIR="packages/component-library/src/themes"
 PR_LABEL="upstream-changes"
 PR_BRANCH="auto/upstream-theme-attributes"
 
@@ -44,20 +41,14 @@ trap 'rm -rf "$tmp_dir"' EXIT
 
 echo "Cloning upstream theme files (sparse checkout)..."
 git clone --depth 1 --filter=blob:none --sparse --quiet "$UPSTREAM_REPO" "$tmp_dir"
-git -C "$tmp_dir" sparse-checkout set "$THEME_CONTRACT_DIR" "$THEME_DIR"
+git -C "$tmp_dir" sparse-checkout set "$THEME_DIR"
 
-# Extract attribute names from theme.ts (object keys like "  someKey: 'var(...)'")
-grep -oP '^\s+(\w+)\s*:' "$tmp_dir/$THEME_CONTRACT_FILE" \
-  | sed 's/[: ]//g' \
-  | sort -u > "$tmp_dir/contract_attrs.txt"
-
-# Extract export names from each theme file (lines like "export const someName = ...")
-for theme_file in "$tmp_dir/$THEME_DIR"/*.ts; do
-  grep -oP '^export const (\w+)' "$theme_file" | sed 's/export const //' || true
-done | sort -u > "$tmp_dir/theme_file_attrs.txt"
-
-# Union of all attributes
-sort -u "$tmp_dir/contract_attrs.txt" "$tmp_dir/theme_file_attrs.txt" > "$tmp_dir/all_attrs.txt"
+# Extract --color-* attribute names from each theme CSS file
+# palette.css holds raw color values (e.g. --color-gray-100), not semantic attributes
+for theme_file in "$tmp_dir/$THEME_DIR"/*.css; do
+  [[ "$(basename "$theme_file")" == "palette.css" ]] && continue
+  grep -oP '^\s+--color-\K\w+(?=\s*:)' "$theme_file" || true
+done | sort -u > "$tmp_dir/all_attrs.txt"
 
 # Find new attributes (in upstream but not in our tracker)
 new_attrs="$(comm -23 "$tmp_dir/all_attrs.txt" <(echo "$known_attrs"))"
@@ -86,12 +77,10 @@ fi
 build_new_rows() {
   while IFS= read -r attr; do
     sources=()
-    if grep -qx "$attr" "$tmp_dir/contract_attrs.txt"; then
-      sources+=("theme.ts")
-    fi
-    for theme_file in "$tmp_dir/$THEME_DIR"/*.ts; do
+    for theme_file in "$tmp_dir/$THEME_DIR"/*.css; do
       basename="$(basename "$theme_file")"
-      if grep -qP "^export const ${attr}\b" "$theme_file"; then
+      [[ "$basename" == "palette.css" ]] && continue
+      if grep -qP "^\s+--color-${attr}\s*:" "$theme_file"; then
         sources+=("$basename")
       fi
     done
@@ -176,8 +165,7 @@ REMOVEDTABLE
   cat <<'FOOTER'
 ### Upstream Files
 
-- [`theme.ts`](https://github.com/actualbudget/actual/blob/master/packages/component-library/src/theme.ts) (theme contract)
-- [`themes/`](https://github.com/actualbudget/actual/tree/master/packages/desktop-client/src/style/themes) (dark, light, midnight)
+- [`themes/`](https://github.com/actualbudget/actual/tree/master/packages/component-library/src/themes) (dark, light, midnight)
 FOOTER
 }
 
