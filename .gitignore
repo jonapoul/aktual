@@ -4,7 +4,6 @@
 .kotlin/
 build/
 local.properties
-symlinks/
 
 # API secrets
 *.private.env.json
