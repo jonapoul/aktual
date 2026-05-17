@@ -36,7 +36,7 @@ done
 
 # Collect every .kt file under any module's src/ directory, excluding build/.
 mapfile -t SOURCES < <(find "$REPO_ROOT" \
-  -type d \( -name build -o -name .git -o -name .gradle -o -name symlinks \) -prune -o \
+  -type d \( -name build -o -name .git -o -name .gradle \) -prune -o \
   -type f -name '*.kt' -path '*/src/*' -print)
 
 if [[ ${#SOURCES[@]} -eq 0 ]]; then

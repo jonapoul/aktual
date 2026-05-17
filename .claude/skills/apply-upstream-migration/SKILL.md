@@ -65,7 +65,7 @@ value class FooId(val value: String) : Comparable<FooId> {
 }
 ```
 
-**New JSON column type** — check the upstream TypeScript type at `symlinks/actual/packages/loot-core/src/types/models/`, then create a new file:
+**New JSON column type** — check the upstream TypeScript type at `actual/packages/loot-core/src/types/models/` in the parent repo, then create a new file:
 - Discriminated union → `sealed interface` + `JsonContentPolymorphicSerializer` (see `CleanupTemplate.kt` as a reference)
 - Plain object → `@Serializable data class`
 - Use typed IDs (e.g. `FooId`) for any ID fields, not raw `String`
