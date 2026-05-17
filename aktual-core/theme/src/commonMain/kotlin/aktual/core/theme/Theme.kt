@@ -24,9 +24,6 @@ sealed interface Theme {
   val pageTextPositive: Color
   val pageTextLink: Color
   val pageTextLinkLight: Color
-  val numberPositive: Color
-  val numberNegative: Color
-  val numberNeutral: Color
 
   val cardBackground: Color
   val cardBorder: Color
@@ -50,6 +47,19 @@ sealed interface Theme {
   val tableRowBackgroundHighlightText: Color
   val tableRowHeaderBackground: Color
   val tableRowHeaderText: Color
+
+  val numberPositive: Color
+  val numberNegative: Color
+  val numberNeutral: Color
+  val budgetNumberNegative: Color
+  val budgetNumberZero: Color
+  val budgetNumberNeutral: Color
+  val budgetNumberPositive: Color
+  val templateNumberFunded: Color
+  val templateNumberUnderFunded: Color
+  val toBudgetPositive: Color
+  val toBudgetZero: Color
+  val toBudgetNegative: Color
 
   val sidebarBackground: Color
   val sidebarItemBackgroundPending: Color
@@ -214,10 +224,10 @@ sealed interface Theme {
   val reportsGray: Color
   val reportsLabel: Color
   val reportsInnerLabel: Color
-  val reportsChartFill: Color
   val reportsNumberPositive: Color
   val reportsNumberNegative: Color
   val reportsNumberNeutral: Color
+  val reportsChartFill: Color
 
   val noteTagBackground: Color
   val noteTagBackgroundHover: Color
@@ -228,15 +238,6 @@ sealed interface Theme {
   val budgetOtherMonth: Color
   val budgetHeaderCurrentMonth: Color
   val budgetHeaderOtherMonth: Color
-  val budgetNumberZero: Color
-  val budgetNumberNegative: Color
-  val budgetNumberNeutral: Color
-  val budgetNumberPositive: Color
-  val templateNumberFunded: Color
-  val templateNumberUnderFunded: Color
-  val toBudgetPositive: Color
-  val toBudgetZero: Color
-  val toBudgetNegative: Color
 
   val floatingActionBarBackground: Color
   val floatingActionBarBorder: Color

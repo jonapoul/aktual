@@ -2,7 +2,7 @@ package aktual.core.theme.internal
 
 import androidx.compose.ui.graphics.Color
 
-/** actual/packages/desktop-client/src/style/palette.ts */
+/** actual/packages/component-library/src/themes/palette.css */
 @Suppress("unused")
 internal object AktualColors {
   val gray50 = Color(color = 0xFFF6F8FA)
@@ -87,6 +87,8 @@ internal object AktualColors {
   val white = Color.White
   val black = Color.Black
   val hover = Color(color = 0xFFFAFAFA)
+  val border = Color(color = 0xFFE8ECF0)
+  val selected = Color(color = 0xFFB3D9FF)
   val chartQual1 = Color(color = 0xFF45B29D)
   val chartQual2 = Color(color = 0xFFEFC94C)
   val chartQual3 = Color(color = 0xFFE27A3F)
