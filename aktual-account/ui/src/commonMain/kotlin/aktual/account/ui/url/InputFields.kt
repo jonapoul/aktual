@@ -3,8 +3,8 @@ package aktual.account.ui.url
 import aktual.core.model.Protocol
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTextField
-import aktual.core.ui.ExposedDropDownMenu
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
@@ -37,7 +37,7 @@ internal fun InputFields(
   theme: Theme = LocalTheme.current,
 ) {
   Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-    ExposedDropDownMenu(
+    AktualExposedDropDownMenu(
       modifier = Modifier.width(110.dp),
       value = protocol.toString(),
       options = PROTOCOLS,

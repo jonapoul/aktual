@@ -116,7 +116,7 @@ internal fun PickDateDialogContent(
       }
     },
   ) {
-    ExposedDropDownMenu(
+    AktualExposedDropDownMenu(
       value = currentValue.month,
       onValueChange = { currentValue = YearMonth(currentValue.year, it) },
       options = remember(range) { range.rangeValues { it.month } },
@@ -126,7 +126,7 @@ internal fun PickDateDialogContent(
 
     VerticalSpacer(8.dp)
 
-    ExposedDropDownMenu(
+    AktualExposedDropDownMenu(
       value = currentValue.year,
       onValueChange = { currentValue = YearMonth(it, currentValue.month) },
       options = remember(range) { range.rangeValues { it.year } },
