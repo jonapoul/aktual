@@ -24,9 +24,6 @@ data object DarkTheme : DefaultTheme {
   override val pageTextPositive = AktualColors.purple200
   override val pageTextLink = AktualColors.purple400
   override val pageTextLinkLight = AktualColors.purple200
-  override val numberPositive = AktualColors.green300
-  override val numberNegative = AktualColors.red200
-  override val numberNeutral = AktualColors.navy500
 
   override val cardBackground = AktualColors.gray800
   override val cardBorder = AktualColors.purple400
@@ -50,6 +47,19 @@ data object DarkTheme : DefaultTheme {
   override val tableRowBackgroundHighlightText = AktualColors.navy150
   override val tableRowHeaderBackground = AktualColors.navy700
   override val tableRowHeaderText = AktualColors.navy150
+
+  override val numberPositive = AktualColors.green300
+  override val numberNegative = AktualColors.red200
+  override val numberNeutral = AktualColors.navy500
+  override val budgetNumberNegative = numberNegative
+  override val budgetNumberZero = tableTextSubdued
+  override val budgetNumberNeutral = tableText
+  override val budgetNumberPositive = budgetNumberNeutral
+  override val templateNumberFunded = numberPositive
+  override val templateNumberUnderFunded = AktualColors.orange300
+  override val toBudgetPositive = numberPositive
+  override val toBudgetZero = numberPositive
+  override val toBudgetNegative = budgetNumberNegative
 
   override val sidebarBackground = AktualColors.navy900
   override val sidebarItemBackgroundPending = AktualColors.orange200
@@ -180,12 +190,12 @@ data object DarkTheme : DefaultTheme {
   override val formInputBackgroundSelected = AktualColors.navy700
   override val formInputBackgroundSelection = AktualColors.purple400
   override val formInputBorder = AktualColors.navy600
-  override val formInputTextReadOnlySelection = AktualColors.navy800
   override val formInputBorderSelected = AktualColors.purple400
   override val formInputText = AktualColors.navy150
   override val formInputTextSelected = AktualColors.black
   override val formInputTextPlaceholder = AktualColors.navy150
   override val formInputTextPlaceholderSelected = AktualColors.navy100
+  override val formInputTextReadOnlySelection = AktualColors.navy800
   override val formInputTextSelection = AktualColors.navy800
   override val formInputShadowSelected = AktualColors.purple200
   override val formInputTextHighlight = AktualColors.purple400
@@ -228,15 +238,6 @@ data object DarkTheme : DefaultTheme {
   override val budgetOtherMonth = AktualColors.navy900
   override val budgetHeaderCurrentMonth = tableHeaderBackground
   override val budgetHeaderOtherMonth = AktualColors.navy800
-  override val budgetNumberZero = tableTextSubdued
-  override val budgetNumberNegative = numberNegative
-  override val budgetNumberNeutral = tableText
-  override val budgetNumberPositive = budgetNumberNeutral
-  override val templateNumberFunded = numberPositive
-  override val templateNumberUnderFunded = AktualColors.orange300
-  override val toBudgetPositive = numberPositive
-  override val toBudgetZero = numberPositive
-  override val toBudgetNegative = budgetNumberNegative
 
   override val floatingActionBarBackground = AktualColors.purple800
   override val floatingActionBarBorder = floatingActionBarBackground

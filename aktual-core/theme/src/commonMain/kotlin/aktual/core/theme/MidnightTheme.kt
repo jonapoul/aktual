@@ -24,9 +24,6 @@ data object MidnightTheme : DefaultTheme {
   override val pageTextPositive = AktualColors.purple200
   override val pageTextLink = AktualColors.purple300
   override val pageTextLinkLight = AktualColors.purple300
-  override val numberPositive = AktualColors.green300
-  override val numberNegative = AktualColors.red200
-  override val numberNeutral = AktualColors.gray500
 
   override val cardBackground = AktualColors.gray800
   override val cardBorder = AktualColors.purple300
@@ -50,6 +47,19 @@ data object MidnightTheme : DefaultTheme {
   override val tableRowBackgroundHighlightText = AktualColors.gray800
   override val tableRowHeaderBackground = AktualColors.gray700
   override val tableRowHeaderText = AktualColors.gray150
+
+  override val numberPositive = AktualColors.green300
+  override val numberNegative = AktualColors.red200
+  override val numberNeutral = AktualColors.gray500
+  override val budgetNumberNegative = numberNegative
+  override val budgetNumberZero = tableTextSubdued
+  override val budgetNumberNeutral = tableText
+  override val budgetNumberPositive = budgetNumberNeutral
+  override val templateNumberFunded = numberPositive
+  override val templateNumberUnderFunded = AktualColors.orange200
+  override val toBudgetPositive = numberPositive
+  override val toBudgetZero = numberPositive
+  override val toBudgetNegative = budgetNumberNegative
 
   override val sidebarBackground = AktualColors.gray900
   override val sidebarItemBackgroundPending = AktualColors.orange200
@@ -180,12 +190,12 @@ data object MidnightTheme : DefaultTheme {
   override val formInputBackgroundSelected = AktualColors.gray700
   override val formInputBackgroundSelection = AktualColors.purple400
   override val formInputBorder = AktualColors.gray600
-  override val formInputTextReadOnlySelection = AktualColors.gray800
   override val formInputBorderSelected = AktualColors.purple300
   override val formInputText = AktualColors.gray150
   override val formInputTextSelected = AktualColors.black
   override val formInputTextPlaceholder = AktualColors.gray150
   override val formInputTextPlaceholderSelected = AktualColors.gray100
+  override val formInputTextReadOnlySelection = AktualColors.gray800
   override val formInputTextSelection = AktualColors.gray800
   override val formInputShadowSelected = AktualColors.purple400
   override val formInputTextHighlight = AktualColors.purple200
@@ -228,15 +238,6 @@ data object MidnightTheme : DefaultTheme {
   override val budgetOtherMonth = AktualColors.gray700
   override val budgetHeaderCurrentMonth = tableHeaderBackground
   override val budgetHeaderOtherMonth = AktualColors.gray800
-  override val budgetNumberZero = tableTextSubdued
-  override val budgetNumberNegative = numberNegative
-  override val budgetNumberNeutral = tableText
-  override val budgetNumberPositive = budgetNumberNeutral
-  override val templateNumberFunded = numberPositive
-  override val templateNumberUnderFunded = AktualColors.orange200
-  override val toBudgetPositive = numberPositive
-  override val toBudgetZero = numberPositive
-  override val toBudgetNegative = budgetNumberNegative
 
   override val floatingActionBarBackground = AktualColors.gray900
   override val floatingActionBarBorder = AktualColors.purple300
