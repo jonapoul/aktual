@@ -60,6 +60,8 @@ internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomTheme {
         table =
           TableColors(
             tableBackground = "tableBackground".attr(tableBackground),
+            tableRowBackgroundAlternate =
+              "tableRowBackgroundAlternate".attr(tableRowBackgroundAlternate),
             tableRowBackgroundHover = "tableRowBackgroundHover".attr(tableRowBackgroundHover),
             tableText = "tableText".attr(tableText),
             tableTextLight = "tableTextLight".attr(tableTextLight),
