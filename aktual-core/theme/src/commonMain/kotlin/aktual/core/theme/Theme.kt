@@ -30,6 +30,7 @@ sealed interface Theme {
   val cardShadow: Color
 
   val tableBackground: Color
+  val tableRowBackgroundAlternate: Color
   val tableRowBackgroundHover: Color
   val tableText: Color
   val tableTextLight: Color

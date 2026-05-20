@@ -8,7 +8,7 @@
 --color-pageBackgroundLineMid: #e8ecf0;
 --color-pageBackgroundLineBottom: #b3d9ff;
 --color-pageText: #272630;
---color-pageTextLight: #7d98b5;
+--color-pageTextLight: #9d8d7b;
 --color-pageTextSubdued: #7d98b5;
 --color-pageTextDark: #243B53;
 --color-pageTextPositive: #7A0ECC;
@@ -220,7 +220,7 @@
 --color-budgetOtherMonth: #f6f8fa;
 --color-budgetHeaderCurrentMonth: #f6f8fa;
 --color-budgetHeaderOtherMonth: #f0f4f6;
---color-budgetNumberZero: #e8ecf0;
+--color-budgetNumberZero: #7d98b5;
 --color-budgetNumberNegative: #e12d39;
 --color-budgetNumberNeutral: #272630;
 --color-budgetNumberPositive: #272630;

@@ -30,6 +30,7 @@ data object MidnightTheme : DefaultTheme {
   override val cardShadow = AktualColors.gray900
 
   override val tableBackground = AktualColors.gray800
+  override val tableRowBackgroundAlternate = tableBackground
   override val tableRowBackgroundHover = AktualColors.gray500
   override val tableText = AktualColors.gray150
   override val tableTextLight = tableText

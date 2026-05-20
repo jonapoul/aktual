@@ -94,6 +94,9 @@ internal data class JsonCustomTheme(
   override val tableBackground: Color
     get() = table.tableBackground
 
+  override val tableRowBackgroundAlternate: Color
+    get() = table.tableRowBackgroundAlternate
+
   override val tableRowBackgroundHover: Color
     get() = table.tableRowBackgroundHover
 
@@ -734,6 +737,7 @@ internal data class PageColors(
 @Serializable
 internal data class TableColors(
   @SerialName("tableBackground") val tableBackground: Color,
+  @SerialName("tableRowBackgroundAlternate") val tableRowBackgroundAlternate: Color,
   @SerialName("tableRowBackgroundHover") val tableRowBackgroundHover: Color,
   @SerialName("tableText") val tableText: Color,
   @SerialName("tableTextLight") val tableTextLight: Color,

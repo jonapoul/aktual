@@ -194,6 +194,7 @@ tableBorderSelected
 tableBorderSeparator
 tableHeaderBackground
 tableHeaderText
+tableRowBackgroundAlternate
 tableRowBackgroundHighlight
 tableRowBackgroundHighlightText
 tableRowBackgroundHover

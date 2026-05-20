@@ -30,6 +30,7 @@ data object DarkTheme : DefaultTheme {
   override val cardShadow = AktualColors.navy700
 
   override val tableBackground = AktualColors.navy800
+  override val tableRowBackgroundAlternate = tableBackground
   override val tableRowBackgroundHover = AktualColors.navy700
   override val tableText = AktualColors.navy150
   override val tableTextLight = tableText
