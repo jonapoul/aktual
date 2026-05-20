@@ -30,6 +30,7 @@ data object LightTheme : DefaultTheme {
   override val cardShadow = AktualColors.navy700
 
   override val tableBackground = AktualColors.white
+  override val tableRowBackgroundAlternate = tableBackground
   override val tableRowBackgroundHover = AktualColors.navy50
   override val tableText = pageText
   override val tableTextLight = AktualColors.navy400
