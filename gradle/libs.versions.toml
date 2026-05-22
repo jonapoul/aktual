@@ -72,7 +72,7 @@ compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.re
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose" }
 compose-viewmodelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0" }
-detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.8" }
+detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.9" }
 detektGradle = { module = "dev.jonpoulton.blueprint:detekt-rules", version.ref = "blueprint" }
 haze = { module = "dev.chrisbanes.haze:haze-blur", version = "2.0.0-alpha02" }
 junit = { module = "junit:junit", version = "4.13.2" }
