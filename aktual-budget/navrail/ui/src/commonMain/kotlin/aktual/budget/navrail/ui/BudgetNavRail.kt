@@ -91,7 +91,7 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.serialization.json.Json
 
 @Composable
-fun BudgetNavRail(
+internal fun BudgetNavRail(
   onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
   viewModel: BudgetNavRailViewModel = metroViewModel(),

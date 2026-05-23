@@ -156,8 +156,8 @@ fun CustomThemeSettingsScreen(
 private fun CustomThemeSettingsScaffold(
   state: CatalogState,
   bottomSheet: BottomSheet?,
-  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
   onAction: CustomThemeSettingsActionHandler,
+  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val theme = LocalTheme.current
   val listState = rememberLazyListState()
