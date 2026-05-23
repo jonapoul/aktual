@@ -87,11 +87,11 @@ fun LoginScreen(
     selectedLoginMethod = selectedLoginMethod,
     onAction = { action ->
       when (action) {
-        LoginAction.ChangeServer -> toServerUrl()
-        LoginAction.NavBack -> back()
-        LoginAction.SignIn -> viewModel.onClickSignIn()
-        is LoginAction.EnterPassword -> viewModel.onEnterPassword(action.password)
-        is LoginAction.SelectLoginMethod -> viewModel.onSelectLoginMethod(action.method)
+        ChangeServer -> toServerUrl()
+        NavBack -> back()
+        SignIn -> viewModel.onClickSignIn()
+        is EnterPassword -> viewModel.onEnterPassword(action.password)
+        is SelectLoginMethod -> viewModel.onSelectLoginMethod(action.method)
       }
     },
   )
@@ -105,7 +105,7 @@ internal fun LoginScaffold(
   loginFailure: LoginResult.Failure?,
   loginMethods: ImmutableList<LoginMethod>,
   selectedLoginMethod: LoginMethod,
-  onAction: (LoginAction) -> Unit,
+  onAction: LoginActionHandler,
   theme: Theme = LocalTheme.current,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
@@ -114,7 +114,7 @@ internal fun LoginScaffold(
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(LoginAction.NavBack) } },
+        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = {},
         scrollBehavior = scrollBehavior,
       )
@@ -146,7 +146,7 @@ private fun Content(
   loginFailure: LoginResult.Failure?,
   loginMethods: ImmutableList<LoginMethod>,
   selectedLoginMethod: LoginMethod,
-  onAction: (LoginAction) -> Unit,
+  onAction: LoginActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {

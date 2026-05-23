@@ -35,8 +35,7 @@ internal constructor(
   val searchBarState: StateFlow<SearchBarState> =
     viewModelScope.launchMolecule(Immediate) {
       val showSearchBar by showSearchBar.collectAsState()
-      val searchTerm by searchTerm.collectAsState()
-      if (showSearchBar) SearchBarState.Visible(searchTerm) else SearchBarState.Gone
+      if (showSearchBar) SearchBarState.Visible else SearchBarState.Gone
     }
 
   val licensesState: StateFlow<LicensesState> =

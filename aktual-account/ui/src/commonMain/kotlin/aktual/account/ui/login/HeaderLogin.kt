@@ -33,12 +33,12 @@ import androidx.compose.ui.unit.dp
 internal fun HeaderLogin(
   isLoading: Boolean,
   hasFailure: Boolean,
-  onAction: (LoginAction) -> Unit,
+  onAction: LoginActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   val latestOnAction by rememberUpdatedState(onAction)
-  LaunchedEffect(Unit) { latestOnAction(LoginAction.SignIn) }
+  LaunchedEffect(Unit) { latestOnAction(SignIn) }
 
   Column(
     modifier =
@@ -63,7 +63,7 @@ internal fun HeaderLogin(
     if (hasFailure) {
       NormalTextButton(
         text = Strings.loginHeaderFallback,
-        onClick = { onAction(LoginAction.SelectLoginMethod(LoginMethod.Password)) },
+        onClick = { onAction(SelectLoginMethod(LoginMethod.Password)) },
       )
     }
   }

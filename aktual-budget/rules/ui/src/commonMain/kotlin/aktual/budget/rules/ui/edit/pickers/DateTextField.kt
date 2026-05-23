@@ -18,6 +18,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.Icon
@@ -26,6 +27,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.getSelectedDate
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -68,11 +70,15 @@ internal fun DateTextField(
   val formatter = LocalDateFormatter.current
   val displayText = remember(localDate) { localDate?.let(formatter::format).orEmpty() }
 
+  val textState = rememberTextFieldState(initialText = displayText)
+  LaunchedEffect(displayText) {
+    if (textState.text.toString() != displayText) textState.edit { replace(0, length, displayText) }
+  }
+
   Box(modifier = modifier) {
     AktualTextField(
       modifier = Modifier.fillMaxWidth().border(Dp.Hairline, theme.buttonNormalBorder),
-      value = displayText,
-      onValueChange = {},
+      state = textState,
       placeholderText = Strings.editRuleConditionNothing,
       readOnly = true,
       isEnabled = isEnabled,
