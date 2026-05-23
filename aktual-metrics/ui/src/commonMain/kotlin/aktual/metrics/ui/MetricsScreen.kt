@@ -91,8 +91,8 @@ fun MetricsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        MetricsAction.NavBack -> back()
-        MetricsAction.Refresh -> viewModel.refresh()
+        NavBack -> back()
+        Refresh -> viewModel.refresh()
       }
     },
   )
@@ -101,7 +101,7 @@ fun MetricsScreen(
 @Composable
 internal fun MetricsScaffold(
   state: MetricsState,
-  onAction: (MetricsAction) -> Unit,
+  onAction: MetricsActionHandler,
   theme: Theme = LocalTheme.current,
 ) {
   val blurState = rememberBlurredTopBarState()
@@ -111,7 +111,7 @@ internal fun MetricsScaffold(
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = false),
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(MetricsAction.NavBack) } },
+        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.metricsToolbar) },
       )
     }
@@ -124,7 +124,7 @@ internal fun MetricsScaffold(
         PullToRefreshBox(
           modifier = Modifier.padding(8.dp),
           contentAlignment = Alignment.Center,
-          onRefresh = { onAction(MetricsAction.Refresh) },
+          onRefresh = { onAction(Refresh) },
           isRefreshing = state is MetricsState.Loading,
           content = { MetricsContent(state, onAction) },
         )
@@ -136,7 +136,7 @@ internal fun MetricsScaffold(
 @Composable
 private fun MetricsContent(
   state: MetricsState,
-  onAction: (MetricsAction) -> Unit,
+  onAction: MetricsActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -209,7 +209,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalThem
 @Composable
 private fun FailureContent(
   message: String,
-  onAction: (MetricsAction) -> Unit,
+  onAction: MetricsActionHandler,
   theme: Theme,
   modifier: Modifier = Modifier,
 ) {
@@ -221,7 +221,7 @@ private fun FailureContent(
     action =
       FailureAction(
         text = { Strings.metricsFailureRetry },
-        onClick = { onAction(MetricsAction.Refresh) },
+        onClick = { onAction(Refresh) },
         icon = MaterialIcons.Refresh,
       ),
   )

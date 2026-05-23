@@ -104,12 +104,12 @@ fun InfoScreen(
     buildState = buildState,
     onAction = { action ->
       when (action) {
-        InfoAction.OpenSourceCode -> viewModel.openRepo()
-        InfoAction.ReportIssue -> viewModel.reportIssues()
-        InfoAction.CheckUpdates -> viewModel.fetchLatestRelease()
-        InfoAction.NavBack -> back()
-        InfoAction.ViewLicenses -> toLicenses()
-        InfoAction.ManageStorage -> toManageStorage()
+        OpenSourceCode -> viewModel.openRepo()
+        ReportIssue -> viewModel.reportIssues()
+        CheckUpdates -> viewModel.fetchLatestRelease()
+        NavBack -> back()
+        ViewLicenses -> toLicenses()
+        ManageStorage -> toManageStorage()
       }
     },
   )
@@ -118,7 +118,7 @@ fun InfoScreen(
 @Composable
 internal fun InfoScaffold(
   buildState: BuildState,
-  onAction: (InfoAction) -> Unit,
+  onAction: InfoActionHandler,
   modifier: Modifier = Modifier,
 ) {
   val theme = LocalTheme.current
@@ -136,10 +136,10 @@ internal fun InfoScaffold(
 }
 
 @Composable
-private fun InfoTopBar(theme: Theme, onAction: (InfoAction) -> Unit) {
+private fun InfoTopBar(theme: Theme, onAction: InfoActionHandler) {
   TopAppBar(
     colors = theme.transparentTopAppBarColors(),
-    navigationIcon = { NavBackIconButton { onAction(InfoAction.NavBack) } },
+    navigationIcon = { NavBackIconButton { onAction(NavBack) } },
     title = {
       Text(text = Strings.infoToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
     },
@@ -149,7 +149,7 @@ private fun InfoTopBar(theme: Theme, onAction: (InfoAction) -> Unit) {
 @Composable
 private fun InfoScreenContent(
   buildState: BuildState,
-  onAction: (InfoAction) -> Unit,
+  onAction: InfoActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) =

@@ -133,7 +133,7 @@ fun ListRulesScreen(
 private fun ListRulesScaffold(
   state: ListRulesState,
   checkboxes: CheckboxesState,
-  onAction: (ListRulesAction) -> Unit,
+  onAction: ListRulesActionHandler,
   modifier: Modifier = Modifier,
 ) {
   val theme = LocalTheme.current
@@ -172,7 +172,7 @@ private fun ListRulesScaffold(
 private fun AppBarButtons(
   state: ListRulesState,
   checkboxes: CheckboxesState,
-  onAction: (ListRulesAction) -> Unit,
+  onAction: ListRulesActionHandler,
 ) {
   when (checkboxes) {
     is Active -> {
@@ -199,7 +199,7 @@ private fun AppBarButtons(
 private fun ListRulesContent(
   state: ListRulesState,
   checkboxes: CheckboxesState,
-  onAction: (ListRulesAction) -> Unit,
+  onAction: ListRulesActionHandler,
   listState: LazyListState,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -261,7 +261,7 @@ private fun ListRulesContent(
 @Composable
 private fun CheckboxSelectionBar(
   selectedIds: ImmutableSet<RuleId>,
-  onAction: (ListRulesAction) -> Unit,
+  onAction: ListRulesActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -295,7 +295,7 @@ private fun CheckboxSelectionBar(
 private fun ContentSuccess(
   rules: ImmutableList<Rule>,
   checkboxes: CheckboxesState,
-  onAction: (ListRulesAction) -> Unit,
+  onAction: ListRulesActionHandler,
   modifier: Modifier = Modifier,
   listState: LazyListState = rememberLazyListState(),
 ) {

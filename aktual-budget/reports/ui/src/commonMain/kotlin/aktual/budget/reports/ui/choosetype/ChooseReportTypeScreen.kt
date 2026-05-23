@@ -84,10 +84,9 @@ fun ChooseReportTypeScreen(
     dialog = dialog,
     onAction = { action ->
       when (action) {
-        is ChooseReportTypeAction.Create -> viewModel.createReport(action.type)
-        ChooseReportTypeAction.ShowDisabledDialog ->
-          viewModel.show(ChooseReportTypeDialog.UnsupportedType)
-        ChooseReportTypeAction.DismissDialog -> viewModel.hideDialogs()
+        is Create -> viewModel.createReport(action.type)
+        ShowDisabledDialog -> viewModel.show(ChooseReportTypeDialog.UnsupportedType)
+        DismissDialog -> viewModel.hideDialogs()
       }
     },
   )
@@ -96,7 +95,7 @@ fun ChooseReportTypeScreen(
 @Composable
 internal fun ChooseReportTypeScaffold(
   dialog: ChooseReportTypeDialog?,
-  onAction: (ChooseReportTypeAction) -> Unit,
+  onAction: ChooseReportTypeActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -126,7 +125,7 @@ internal fun ChooseReportTypeScaffold(
 @Composable
 private fun ChooseReportTypeContent(
   dialog: ChooseReportTypeDialog?,
-  onAction: (ChooseReportTypeAction) -> Unit,
+  onAction: ChooseReportTypeActionHandler,
   contentPadding: PaddingValues,
   lazyListState: LazyListState,
   modifier: Modifier = Modifier,
@@ -158,7 +157,7 @@ private fun ChooseReportTypeContent(
 @Composable
 private fun WidgetType(
   type: WidgetType,
-  onAction: (ChooseReportTypeAction) -> Unit,
+  onAction: ChooseReportTypeActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -169,7 +168,7 @@ private fun WidgetType(
         .clip(CardShape)
         .background(theme.tableBackground.disabledIf(!enabled), CardShape)
         .border(Dp.Hairline, theme.pillBorderDark, CardShape)
-        .clickable(enabled) { onAction(ChooseReportTypeAction.Create(type)) }
+        .clickable(enabled) { onAction(Create(type)) }
         .padding(8.dp)
   ) {
     Row(modifier = Modifier.padding(8.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -184,7 +183,7 @@ private fun WidgetType(
         NormalIconButton(
           imageVector = MaterialIcons.Warning,
           contentDescription = Strings.reportsChooseTypeDisabled,
-          onClick = { onAction(ChooseReportTypeAction.ShowDisabledDialog) },
+          onClick = { onAction(ShowDisabledDialog) },
           colors = NormalRed,
         )
       }

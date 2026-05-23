@@ -92,7 +92,7 @@ import kotlinx.serialization.json.Json
 
 @Composable
 fun BudgetNavRail(
-  onAction: (BudgetNavAction) -> Unit,
+  onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
   viewModel: BudgetNavRailViewModel = metroViewModel(),
 ) {
@@ -172,7 +172,7 @@ private fun BottomNavLayout(
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onPopBackToTransactions: () -> Unit,
-  onAction: (BudgetNavAction) -> Unit,
+  onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
   var showMenu by remember { mutableStateOf(false) }
@@ -233,7 +233,7 @@ private fun SideNavLayout(
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onPopBackToTransactions: () -> Unit,
-  onAction: (BudgetNavAction) -> Unit,
+  onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
   var showMenu by remember { mutableStateOf(false) }
@@ -407,7 +407,7 @@ private fun budgetNavKeyStackSaver() =
 private fun BudgetMenu(
   expanded: Boolean,
   onDismissRequest: () -> Unit,
-  onAction: (BudgetNavAction) -> Unit,
+  onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier) {
@@ -417,7 +417,7 @@ private fun BudgetMenu(
         leadingIcon = MaterialIcons.SwapHoriz,
         onClick = {
           onDismissRequest()
-          onAction(BudgetNavAction.SwitchFile)
+          onAction(SwitchFile)
         },
       )
       AktualDropdownMenuItem(
@@ -425,7 +425,7 @@ private fun BudgetMenu(
         leadingIcon = MaterialIcons.Logout,
         onClick = {
           onDismissRequest()
-          onAction(BudgetNavAction.LogOut)
+          onAction(LogOut)
         },
       )
       AktualDropdownMenuItem(
@@ -433,7 +433,7 @@ private fun BudgetMenu(
         leadingIcon = MaterialIcons.Settings,
         onClick = {
           onDismissRequest()
-          onAction(BudgetNavAction.Settings)
+          onAction(Settings)
         },
       )
       AktualDropdownMenuItem(
@@ -441,7 +441,7 @@ private fun BudgetMenu(
         leadingIcon = MaterialIcons.Info,
         onClick = {
           onDismissRequest()
-          onAction(BudgetNavAction.About)
+          onAction(About)
         },
       )
     }
