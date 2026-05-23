@@ -330,7 +330,14 @@ private fun ContentSuccess(
         stickyHeader { StageHeader(expandedStages, stage, isExpanded, r) }
 
         if (isExpanded) {
-          items(r, key = { it.id }) { rule -> ListRulesItem(rule, checkboxes, onAction) }
+          items(r, key = { it.id }) { rule ->
+            ListRulesItem(
+              modifier = Modifier.animateItem(),
+              rule = rule,
+              checkboxes = checkboxes,
+              onAction = onAction,
+            )
+          }
         }
       }
 

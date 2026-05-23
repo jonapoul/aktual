@@ -108,7 +108,7 @@ private fun TransactionsFilled(
       val id = pagingItems[index]
       if (id != null) {
         TransactionItem(
-          modifier = Modifier.fillMaxWidth(),
+          modifier = Modifier.fillMaxWidth().animateItem(),
           id = id,
           format = format,
           source = source,

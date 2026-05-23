@@ -57,7 +57,7 @@ fun <T : Any> ListBottomSheet(
         val isSelected = item == value
         ListItem(
           modifier =
-            Modifier.clickable(isEnabled(item)) {
+            Modifier.animateItem().clickable(isEnabled(item)) {
               onSelect(item)
               onDismiss()
             },

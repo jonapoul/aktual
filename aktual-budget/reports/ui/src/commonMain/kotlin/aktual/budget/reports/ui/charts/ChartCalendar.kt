@@ -130,7 +130,12 @@ private fun RegularCalendarChart(
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
       items(items = data.months, key = { it.month }) { month ->
-        CalendarMonth(month = month, compact = false, onAction = onAction)
+        CalendarMonth(
+          modifier = Modifier.animateItem(),
+          month = month,
+          compact = false,
+          onAction = onAction,
+        )
       }
     }
   }

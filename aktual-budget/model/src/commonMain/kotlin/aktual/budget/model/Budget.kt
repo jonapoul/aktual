@@ -1,6 +1,7 @@
 package aktual.budget.model
 
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.Stable
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -88,6 +89,7 @@ sealed interface Budget {
   }
 }
 
+@get:Stable
 val Budget.directoryId: BudgetId
   get() =
     when (this) {

@@ -178,7 +178,9 @@ private fun InspectThemeContent(
         contentPadding = contentPadding,
         verticalArrangement = Arrangement.spacedBy(2.dp),
       ) {
-        items(state.properties, key = { it.name }) { property -> ThemePropertyRow(property) }
+        items(state.properties, key = { it.name }) { property ->
+          ThemePropertyRow(property, modifier = Modifier.animateItem())
+        }
 
         item { BottomSpacing() }
       }
@@ -187,10 +189,10 @@ private fun InspectThemeContent(
 }
 
 @Composable
-private fun ThemePropertyRow(property: ThemeProperty) {
+private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modifier) {
   Row(
     modifier =
-      Modifier.fillMaxWidth().height(IntrinsicSize.Min).background(property.color).padding(4.dp),
+      modifier.fillMaxWidth().height(IntrinsicSize.Min).background(property.color).padding(4.dp),
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
