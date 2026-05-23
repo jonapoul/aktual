@@ -30,25 +30,28 @@ import aktual.core.ui.formattedString
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldBuffer
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.OffsetMapping
-import androidx.compose.ui.text.input.TransformedText
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
@@ -65,6 +68,8 @@ internal fun AmountTextField(
 ) {
   require(value is JsonNull || value is JsonPrimitive) { "Need primitive or null, got $value" }
 
+  val rememberOnValueChange by rememberUpdatedState(onValueChange)
+
   val textStyle =
     LocalTextStyle.current.copy(
       textAlign =
@@ -74,25 +79,44 @@ internal fun AmountTextField(
         }
     )
 
-  var isPositive by remember(value) { mutableStateOf(value.isPositive()) }
+  var lastEmittedValue by remember { mutableStateOf(value) }
+  val initialText =
+    when (value) {
+      is JsonNull -> ""
+      is JsonPrimitive -> value.content.removePrefix("-").removePrefix("+")
+    }
+  val textState = rememberTextFieldState(initialText = initialText)
+  var isPositive by remember { mutableStateOf(value.isPositive()) }
+
+  // Sync text field from external value changes (field type change, condition reset)
+  LaunchedEffect(value) {
+    if (value != lastEmittedValue) {
+      val newText =
+        when (value) {
+          is JsonNull -> ""
+          is JsonPrimitive -> value.content.removePrefix("-").removePrefix("+")
+        }
+      textState.edit { replace(0, length, newText) }
+      isPositive = value.isPositive()
+      lastEmittedValue = value
+    }
+  }
+
+  // Feed user input (text + sign) back to parent
+  LaunchedEffect(textState) {
+    snapshotFlow { textState.text.toString() to isPositive }
+      .distinctUntilChanged()
+      .collect { (text, positive) ->
+        val amount = text.toLongOrNull()
+        val json = if (amount == null) JsonNull else JsonPrimitive(amount * if (positive) 1 else -1)
+        lastEmittedValue = json
+        rememberOnValueChange(json)
+      }
+  }
 
   AktualTextField(
     modifier = modifier.fillMaxWidth(),
-    value =
-      when (value) {
-        is JsonNull -> ""
-        is JsonPrimitive -> value.content.removePrefix("-").removePrefix("+")
-      },
-    onValueChange = { newText ->
-      val amount = newText.toLongOrNull()
-      onValueChange(
-        if (amount == null) {
-          JsonNull
-        } else {
-          JsonPrimitive(amount * if (isPositive) 1 else -1)
-        }
-      )
-    },
+    state = textState,
     placeholderText =
       Amount.Zero.formattedString(currencyConfig = currencyConfig.copy(currency = Currency.None)),
     isEnabled = isEnabled,
@@ -107,15 +131,15 @@ internal fun AmountTextField(
       TrailingContent(
         isEnabled = isEnabled,
         canClear = value != JsonNull,
-        onClear = { onValueChange(JsonNull) },
+        onClear = { rememberOnValueChange(JsonNull) },
       )
     },
     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
     singleLine = true,
     textStyle = textStyle,
-    visualTransformation =
+    outputTransformation =
       remember(numberFormatConfig, currencyConfig, isPrivacyEnabled) {
-        NumberFormatTransformation(numberFormatConfig, currencyConfig, isPrivacyEnabled)
+        NumberOutputTransformation(numberFormatConfig, currencyConfig, isPrivacyEnabled)
       },
   )
 }
@@ -198,17 +222,15 @@ private fun TrailingContent(
   }
 }
 
-private class NumberFormatTransformation(
+private class NumberOutputTransformation(
   private val numberFormatConfig: NumberFormatConfig,
   private val currencyConfig: CurrencyConfig,
   private val isPrivacyEnabled: Boolean,
-) : VisualTransformation {
-  override fun filter(text: AnnotatedString): TransformedText {
-    val originalText = text.text
-    if (originalText.isEmpty()) return TransformedText(text, OffsetMapping.Identity)
-
-    val amount = originalText.amountOrNull() ?: Amount.Zero
-
+) : OutputTransformation {
+  override fun TextFieldBuffer.transformOutput() {
+    val rawText = toString()
+    if (rawText.isEmpty()) return
+    val amount = rawText.amountOrNull() ?: Amount.Zero
     val formatted =
       amount.toString(
         numberFormatConfig = numberFormatConfig,
@@ -216,16 +238,7 @@ private class NumberFormatTransformation(
         includeSign = false,
         isPrivacyEnabled = isPrivacyEnabled,
       )
-
-    // Logic to map cursor position; usually defaults to end for currency
-    val offsetMapping =
-      object : OffsetMapping {
-        override fun originalToTransformed(offset: Int): Int = formatted.length
-
-        override fun transformedToOriginal(offset: Int): Int = originalText.length
-      }
-
-    return TransformedText(AnnotatedString(formatted), offsetMapping)
+    replace(0, length, formatted)
   }
 }
 

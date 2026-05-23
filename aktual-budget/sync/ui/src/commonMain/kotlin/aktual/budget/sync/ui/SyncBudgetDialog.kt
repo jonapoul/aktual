@@ -16,6 +16,7 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.MY_PHONE_WIDTH_DP
+import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.checkbox
@@ -33,8 +34,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -43,11 +44,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -61,8 +64,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
@@ -105,12 +106,12 @@ fun SyncBudgetDialog(
     passwordState = passwordState,
     onAction = { action ->
       when (action) {
-        SyncBudgetAction.Continue -> onSyncComplete()
-        SyncBudgetAction.Retry -> viewModel.start()
-        SyncBudgetAction.ConfirmKeyPassword -> viewModel.confirmKeyPassword()
-        is SyncBudgetAction.EnterKeyPassword -> viewModel.enterKeyPassword(action.input)
-        SyncBudgetAction.LearnMore -> viewModel.learnMore()
-        SyncBudgetAction.Cancel -> invalidateAndDismiss()
+        Continue -> onSyncComplete()
+        Retry -> viewModel.start()
+        ConfirmKeyPassword -> viewModel.confirmKeyPassword()
+        is EnterKeyPassword -> viewModel.enterKeyPassword(action.input)
+        LearnMore -> viewModel.learnMore()
+        Cancel -> invalidateAndDismiss()
       }
     },
   )
@@ -121,13 +122,13 @@ private fun SyncBudgetDialog(
   overallState: SyncOverallState,
   stepStates: ImmutableMap<SyncStep, SyncStepState>,
   passwordState: KeyPasswordState,
-  onAction: (SyncBudgetAction) -> Unit,
+  onAction: SyncBudgetActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialog(
     modifier = modifier,
-    onDismissRequest = { onAction(SyncBudgetAction.Cancel) },
+    onDismissRequest = { onAction(Cancel) },
     properties =
       DialogProperties(
         dismissOnBackPress = false,
@@ -147,10 +148,7 @@ private fun SyncBudgetDialog(
         )
       },
       buttons = {
-        TextButton(
-          onClick = { onAction(SyncBudgetAction.Cancel) },
-          content = { Text(text = Strings.syncCancel) },
-        )
+        TextButton(onClick = { onAction(Cancel) }, content = { Text(text = Strings.syncCancel) })
         when {
           passwordState is KeyPasswordState.Active -> {
             val enabled = passwordState.input.isNotEmpty()
@@ -158,22 +156,19 @@ private fun SyncBudgetDialog(
               if (enabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText.disabled
             TextButton(
               enabled = enabled,
-              onClick = { onAction(SyncBudgetAction.ConfirmKeyPassword) },
+              onClick = { onAction(ConfirmKeyPassword) },
               content = { Text(text = Strings.syncPasswordConfirm, color = color) },
             )
           }
           overallState == SyncOverallState.Failed -> {
-            TextButton(
-              onClick = { onAction(SyncBudgetAction.Retry) },
-              content = { Text(text = Strings.syncRetry) },
-            )
+            TextButton(onClick = { onAction(Retry) }, content = { Text(text = Strings.syncRetry) })
           }
           else -> {
             val enabled = overallState == SyncOverallState.Succeeded
             val color = if (enabled) theme.reportsGreen else theme.buttonNormalDisabledText.disabled
             TextButton(
               enabled = enabled,
-              onClick = { onAction(SyncBudgetAction.Continue) },
+              onClick = { onAction(Continue) },
               content = { Text(text = Strings.syncOpen, color = color) },
             )
           }
@@ -195,7 +190,7 @@ private fun syncBudgetViewModel(budgetId: BudgetId): SyncBudgetViewModel =
 private fun ColumnScope.SyncBudgetDialogContent(
   stepStates: ImmutableMap<SyncStep, SyncStepState>,
   passwordState: KeyPasswordState,
-  onAction: (SyncBudgetAction) -> Unit,
+  onAction: SyncBudgetActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -291,7 +286,7 @@ private fun SyncStep.label(): String =
 @Composable
 private fun PasswordEntryLayout(
   password: Password,
-  onAction: (SyncBudgetAction) -> Unit,
+  onAction: SyncBudgetActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -306,18 +301,21 @@ private fun PasswordEntryLayout(
 
     val keyboard = LocalSoftwareKeyboardController.current
     var passwordVisible by remember { mutableStateOf(false) }
+    val passwordTextState = rememberTextFieldState(initialText = password.value)
+    LaunchedEffect(passwordTextState) {
+      snapshotFlow { passwordTextState.text.toString() }
+        .collect { text -> onAction(EnterKeyPassword(Password(text))) }
+    }
 
     AktualTextField(
       modifier =
         Modifier.padding(horizontal = 20.dp)
           .fillMaxWidth()
           .focusRequester(keyboardFocusRequester(keyboard)),
-      value = password.value,
-      onValueChange = { value -> onAction(SyncBudgetAction.EnterKeyPassword(Password(value))) },
+      state = passwordTextState,
       placeholderText = Strings.syncPasswordPlaceholder,
       singleLine = true,
-      visualTransformation =
-        if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+      outputTransformation = if (passwordVisible) null else PasswordTransformation,
       keyboardOptions =
         KeyboardOptions(
           autoCorrectEnabled = false,
@@ -325,13 +323,10 @@ private fun PasswordEntryLayout(
           keyboardType = KeyboardType.Password,
           imeAction = ImeAction.Go,
         ),
-      keyboardActions =
-        KeyboardActions(
-          onGo = {
-            keyboard?.hide()
-            onAction(SyncBudgetAction.ConfirmKeyPassword)
-          }
-        ),
+      onKeyboardAction = { _ ->
+        keyboard?.hide()
+        onAction(ConfirmKeyPassword)
+      },
     )
 
     Row(
@@ -351,7 +346,7 @@ private fun PasswordEntryLayout(
 
 @Stable
 @Composable
-private fun buildPasswordText(theme: Theme, onAction: (SyncBudgetAction) -> Unit): AnnotatedString =
+private fun buildPasswordText(theme: Theme, onAction: SyncBudgetActionHandler): AnnotatedString =
   buildAnnotatedString {
     append(Strings.syncPasswordText)
     append(" ")
@@ -360,7 +355,7 @@ private fun buildPasswordText(theme: Theme, onAction: (SyncBudgetAction) -> Unit
     val link =
       LinkAnnotation.Clickable(
         tag = Tags.KeyPasswordDialogLearnMore,
-        linkInteractionListener = { onAction(SyncBudgetAction.LearnMore) },
+        linkInteractionListener = { onAction(LearnMore) },
       )
     withStyle(style) { withLink(link) { append(Strings.syncPasswordLearnMore) } }
   }

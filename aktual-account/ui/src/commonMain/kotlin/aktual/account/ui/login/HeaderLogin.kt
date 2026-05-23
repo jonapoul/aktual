@@ -20,8 +20,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,12 +31,11 @@ import androidx.compose.ui.unit.dp
 internal fun HeaderLogin(
   isLoading: Boolean,
   hasFailure: Boolean,
-  onAction: (LoginAction) -> Unit,
+  onAction: LoginActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val latestOnAction by rememberUpdatedState(onAction)
-  LaunchedEffect(Unit) { latestOnAction(LoginAction.SignIn) }
+  LaunchedEffect(Unit) { onAction(SignIn) }
 
   Column(
     modifier =
@@ -63,7 +60,7 @@ internal fun HeaderLogin(
     if (hasFailure) {
       NormalTextButton(
         text = Strings.loginHeaderFallback,
-        onClick = { onAction(LoginAction.SelectLoginMethod(LoginMethod.Password)) },
+        onClick = { onAction(SelectLoginMethod(LoginMethod.Password)) },
       )
     }
   }

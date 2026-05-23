@@ -50,24 +50,22 @@ internal fun DeleteBudgetDialog(
   budget: Budget,
   deletingState: DeletingState,
   localFileExists: Boolean,
-  onAction: (DeleteDialogAction) -> Unit,
+  onAction: DeleteDialogActionHandler,
   modifier: Modifier = Modifier,
 ) {
   AktualAlertDialog(
     modifier = modifier,
     title = Strings.budgetDeleteDialogTitle(budget.name),
-    onDismissRequest = { onAction(DeleteDialogAction.Dismiss) },
+    onDismissRequest = { onAction(Dismiss) },
     buttons = {
-      TextButton(onClick = { onAction(DeleteDialogAction.Dismiss) }) {
-        Text(text = Strings.budgetDeleteDialogDismiss)
-      }
+      TextButton(onClick = { onAction(Dismiss) }) { Text(text = Strings.budgetDeleteDialogDismiss) }
     },
     content = {
       Content(
         deletingState = deletingState,
         localFileExists = localFileExists,
-        onDeleteLocal = { onAction(DeleteDialogAction.DeleteLocal) },
-        onDeleteRemote = { onAction(DeleteDialogAction.DeleteRemote) },
+        onDeleteLocal = { onAction(DeleteLocal) },
+        onDeleteRemote = { onAction(DeleteRemote) },
       )
     },
   )

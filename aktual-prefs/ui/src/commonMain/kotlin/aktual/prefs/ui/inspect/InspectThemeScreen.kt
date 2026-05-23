@@ -27,9 +27,6 @@ import aktual.core.ui.blurredTopBarContentPadding
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.prefs.ui.inspect.InspectThemeAction.NavBack
-import aktual.prefs.ui.inspect.InspectThemeAction.OpenRepo
-import aktual.prefs.ui.inspect.InspectThemeAction.Retry
 import aktual.prefs.vm.inspect.InspectThemeState
 import aktual.prefs.vm.inspect.InspectThemeState.Loaded
 import aktual.prefs.vm.inspect.InspectThemeState.Loading
@@ -100,7 +97,7 @@ private fun metroViewModel(themeId: ThemeId) =
   )
 
 @Composable
-private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThemeAction) -> Unit) {
+private fun InspectThemeScaffold(state: InspectThemeState, onAction: InspectThemeActionHandler) {
   val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
@@ -134,7 +131,7 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: (InspectThe
 }
 
 @Composable
-private fun OpenRepoButton(onAction: (InspectThemeAction) -> Unit) {
+private fun OpenRepoButton(onAction: InspectThemeActionHandler) {
   IconButton(onClick = { onAction(OpenRepo) }) {
     Icon(
       imageVector = MaterialIcons.OpenInNew,
@@ -148,7 +145,7 @@ private fun InspectThemeContent(
   state: InspectThemeState,
   contentPadding: PaddingValues,
   listState: LazyListState,
-  onAction: (InspectThemeAction) -> Unit,
+  onAction: InspectThemeActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {

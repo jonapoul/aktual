@@ -70,11 +70,11 @@ fun ChangePasswordScreen(
     versions = versions,
     onAction = { action ->
       when (action) {
-        PasswordAction.NavBack -> navBack()
-        PasswordAction.Submit -> viewModel.submit()
-        is PasswordAction.SetPassword1 -> viewModel.setPassword1(action.value)
-        is PasswordAction.SetPassword2 -> viewModel.setPassword2(action.value)
-        is PasswordAction.SetPasswordsVisible -> viewModel.setPasswordsVisible(action.visible)
+        NavBack -> navBack()
+        Submit -> viewModel.submit()
+        is SetPassword1 -> viewModel.setPassword1(action.value)
+        is SetPassword2 -> viewModel.setPassword2(action.value)
+        is SetPasswordsVisible -> viewModel.setPasswordsVisible(action.visible)
       }
     },
   )
@@ -88,7 +88,7 @@ internal fun ChangePasswordScaffold(
   passwordsMatch: Boolean,
   state: ChangePasswordState?,
   versions: AktualVersions,
-  onAction: (PasswordAction) -> Unit,
+  onAction: PasswordActionHandler,
 ) {
   val theme = LocalTheme.current
 
@@ -96,7 +96,7 @@ internal fun ChangePasswordScaffold(
     topBar = {
       TopAppBar(
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(PasswordAction.NavBack) } },
+        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { /* empty */ },
       )
     }
@@ -128,7 +128,7 @@ private fun ChangePasswordContent(
   passwordsMatch: Boolean,
   state: ChangePasswordState?,
   versions: AktualVersions,
-  onAction: (PasswordAction) -> Unit,
+  onAction: PasswordActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {

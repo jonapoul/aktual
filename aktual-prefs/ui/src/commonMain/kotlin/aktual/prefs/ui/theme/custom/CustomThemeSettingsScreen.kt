@@ -45,13 +45,6 @@ import aktual.core.ui.radioButton
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.InspectTheme
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.NavBack
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.RetryFetchCatalog
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SelectTheme
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SetModeFilter
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.ShowFilterSheet
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.ShowSortSheet
 import aktual.prefs.vm.theme.custom.CacheState
 import aktual.prefs.vm.theme.custom.CatalogItem
 import aktual.prefs.vm.theme.custom.CatalogState
@@ -163,8 +156,8 @@ fun CustomThemeSettingsScreen(
 private fun CustomThemeSettingsScaffold(
   state: CatalogState,
   bottomSheet: BottomSheet?,
+  onAction: CustomThemeSettingsActionHandler,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
-  onAction: (CustomThemeSettingsAction) -> Unit,
 ) {
   val theme = LocalTheme.current
   val listState = rememberLazyListState()
@@ -222,7 +215,7 @@ private fun CustomThemeSettingsScaffold(
 }
 
 @Composable
-private fun FilterButton(state: CatalogState, onAction: (CustomThemeSettingsAction) -> Unit) {
+private fun FilterButton(state: CatalogState, onAction: CustomThemeSettingsActionHandler) {
   BareIconButton(
     imageVector = MaterialIcons.FilterList,
     contentDescription = Strings.settingsThemeFilter,
@@ -232,7 +225,7 @@ private fun FilterButton(state: CatalogState, onAction: (CustomThemeSettingsActi
 }
 
 @Composable
-private fun SortButton(state: CatalogState, onAction: (CustomThemeSettingsAction) -> Unit) {
+private fun SortButton(state: CatalogState, onAction: CustomThemeSettingsActionHandler) {
   BareIconButton(
     imageVector = MaterialIcons.Sort,
     contentDescription = Strings.settingsThemeSort,
@@ -246,7 +239,7 @@ private fun CustomThemeSettingsContent(
   state: CatalogState,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: (CustomThemeSettingsAction) -> Unit,
+  onAction: CustomThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
 ) {
   when (state) {
@@ -260,7 +253,7 @@ private fun CustomThemeSettingsContent(
 @Composable
 private fun FailedContent(
   state: CatalogState.Failed,
-  onAction: (CustomThemeSettingsAction) -> Unit,
+  onAction: CustomThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -355,7 +348,7 @@ private fun SuccessContent(
   items: ImmutableList<CatalogItem>,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: (CustomThemeSettingsAction) -> Unit,
+  onAction: CustomThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
@@ -373,7 +366,7 @@ private fun SuccessContent(
 @Composable
 internal fun CustomThemeItem(
   item: CatalogItem,
-  onAction: (CustomThemeSettingsAction) -> Unit,
+  onAction: CustomThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {

@@ -104,10 +104,7 @@ class LicensesViewModelTest {
       assertThatNextEmissionIsEqualTo(SearchBarState.Gone)
 
       viewModel.toggleSearchBar()
-      assertThatNextEmissionIsEqualTo(SearchBarState.Visible(text = ""))
-
-      viewModel.setSearchText(text = "Hello world")
-      assertThatNextEmissionIsEqualTo(SearchBarState.Visible(text = "Hello world"))
+      assertThatNextEmissionIsEqualTo(SearchBarState.Visible)
 
       viewModel.toggleSearchBar()
       assertThatNextEmissionIsEqualTo(SearchBarState.Gone)

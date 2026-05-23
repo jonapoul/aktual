@@ -63,7 +63,7 @@ internal fun RuleStage.string(): String =
   }
 
 @Composable
-internal fun headerText(onAction: (ListRulesAction) -> Unit): AnnotatedString {
+internal fun headerText(onAction: ListRulesActionHandler): AnnotatedString {
   val headerText = Strings.rulesHeaderText
   val learnMoreText = Strings.rulesHeaderLearnMore
   val theme = LocalTheme.current

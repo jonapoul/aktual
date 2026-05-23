@@ -14,7 +14,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 internal fun CustomThemesPreference(
   enabled: Boolean,
-  onAction: (ThemeSettingsAction) -> Unit,
+  onAction: ThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
 ) {
   BasicPreferenceItem(
@@ -23,13 +23,13 @@ internal fun CustomThemesPreference(
     subtitle = null,
     icon = MaterialIcons.Build,
     enabled = enabled,
-    onClick = { onAction(ThemeSettingsAction.NavCustomThemes) },
+    onClick = { onAction(NavCustomThemes) },
     bottomContent = {
       PrimaryTextButton(
         modifier = Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 4.dp),
         text = Strings.settingsThemeCustomButton,
         isEnabled = enabled,
-        onClick = { onAction(ThemeSettingsAction.NavCustomThemes) },
+        onClick = { onAction(NavCustomThemes) },
       )
     },
   )

@@ -26,7 +26,7 @@ import kotlinx.collections.immutable.ImmutableList
 internal fun LoginMethodPicker(
   methods: ImmutableList<LoginMethod>,
   selectedMethod: LoginMethod,
-  onAction: (LoginAction) -> Unit,
+  onAction: LoginActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -52,7 +52,7 @@ internal fun LoginMethodPicker(
       modifier = Modifier.fillMaxWidth().padding(Dimens.VeryLarge),
       options = methods,
       selected = selectedMethod,
-      onSelect = { m -> onAction(LoginAction.SelectLoginMethod(m)) },
+      onSelect = { m -> onAction(SelectLoginMethod(m)) },
       string = { m -> m.string() },
     )
   }

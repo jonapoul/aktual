@@ -2,11 +2,15 @@ package aktual.prefs.ui.inspect
 
 import androidx.compose.runtime.Immutable
 
+@Immutable internal sealed interface InspectThemeAction
+
+internal data object NavBack : InspectThemeAction
+
+internal data object OpenRepo : InspectThemeAction
+
+internal data object Retry : InspectThemeAction
+
 @Immutable
-internal sealed interface InspectThemeAction {
-  data object NavBack : InspectThemeAction
-
-  data object OpenRepo : InspectThemeAction
-
-  data object Retry : InspectThemeAction
+internal fun interface InspectThemeActionHandler {
+  operator fun invoke(action: InspectThemeAction)
 }

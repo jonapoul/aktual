@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.dp
 internal fun BuiltInThemesPreference(
   selectedTheme: ThemeId?,
   enabled: Boolean,
-  onAction: (ThemeSettingsAction) -> Unit,
+  onAction: ThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
 ) {
   BasicPreferenceItem(
@@ -88,7 +88,7 @@ private fun BuiltInThemeItem(
   name: String,
   selectedId: ThemeId?,
   enabled: Boolean,
-  onAction: (ThemeSettingsAction) -> Unit,
+  onAction: ThemeSettingsActionHandler,
   theme: Theme = LocalTheme.current,
 ) {
   Row(
@@ -105,7 +105,7 @@ private fun BuiltInThemeItem(
         Modifier.fillMaxHeight().weight(1f).background(backgroundColor, CardShape).clickable(
           enabled
         ) {
-          onAction(ThemeSettingsAction.SelectTheme(id))
+          onAction(SelectTheme(id))
         },
       horizontalArrangement = Arrangement.spacedBy(8.dp),
       verticalAlignment = Alignment.CenterVertically,
@@ -130,7 +130,7 @@ private fun BuiltInThemeItem(
       modifier = Modifier.clip(CardShape),
       imageVector = MaterialIcons.ArrowRight,
       isEnabled = enabled,
-      onClick = { onAction(ThemeSettingsAction.InspectTheme(id)) },
+      onClick = { onAction(InspectTheme(id)) },
       contentDescription = Strings.settingsThemePreview(name),
     )
   }

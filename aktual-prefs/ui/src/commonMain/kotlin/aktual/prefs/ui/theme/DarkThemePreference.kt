@@ -25,7 +25,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun DarkThemePreference(
   preference: ListPreference<ThemeId>,
-  onAction: (ThemeSettingsAction) -> Unit,
+  onAction: ThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
   isCompact: Boolean = isCompactWidth(),
 ) {
@@ -52,7 +52,7 @@ internal fun DarkThemePreference(
 @Composable
 private fun DarkThemeContent(
   preference: ListPreference<ThemeId>,
-  onAction: (ThemeSettingsAction) -> Unit,
+  onAction: ThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
 ) {
   AktualSlidingToggleButton(
@@ -60,7 +60,7 @@ private fun DarkThemeContent(
     options = preference.options,
     selected = preference.value,
     isEnabled = preference.enabled,
-    onSelect = { id -> onAction(ThemeSettingsAction.SetDarkTheme(id)) },
+    onSelect = { id -> onAction(SetDarkTheme(id)) },
     string = { id ->
       when (id) {
         DarkTheme.id -> Strings.settingsThemeDark

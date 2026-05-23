@@ -3,17 +3,21 @@ package aktual.budget.sync.ui
 import aktual.core.model.Password
 import androidx.compose.runtime.Immutable
 
+@Immutable internal sealed interface SyncBudgetAction
+
+internal data object Retry : SyncBudgetAction
+
+internal data object Continue : SyncBudgetAction
+
+internal data class EnterKeyPassword(val input: Password) : SyncBudgetAction
+
+internal data object ConfirmKeyPassword : SyncBudgetAction
+
+internal data object LearnMore : SyncBudgetAction
+
+internal data object Cancel : SyncBudgetAction
+
 @Immutable
-internal sealed interface SyncBudgetAction {
-  data object Retry : SyncBudgetAction
-
-  data object Continue : SyncBudgetAction
-
-  data class EnterKeyPassword(val input: Password) : SyncBudgetAction
-
-  data object ConfirmKeyPassword : SyncBudgetAction
-
-  data object LearnMore : SyncBudgetAction
-
-  data object Cancel : SyncBudgetAction
+internal fun interface SyncBudgetActionHandler {
+  operator fun invoke(action: SyncBudgetAction)
 }

@@ -8,6 +8,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
@@ -30,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -82,10 +85,22 @@ fun <T> AktualExposedDropDownMenu(
   val textMeasurer = rememberTextMeasurer()
   val density = LocalDensity.current
   val trailingIconSize = LocalMinimumInteractiveComponentSize.current
+  val layoutDirection = LocalLayoutDirection.current
   val contentWidth =
-    remember(selectedString, textStyle, density, trailingIconSize) {
+    remember(
+      selectedString,
+      textStyle,
+      density,
+      trailingIconSize,
+      contentPadding,
+      layoutDirection,
+    ) {
       with(density) {
-        textMeasurer.measure(selectedString, textStyle).size.width.toDp() + trailingIconSize + 10.dp
+        val textWidth = textMeasurer.measure(selectedString, textStyle).size.width.toDp()
+        val hPadding =
+          contentPadding.calculateStartPadding(layoutDirection) +
+            contentPadding.calculateEndPadding(layoutDirection)
+        textWidth + trailingIconSize + hPadding
       }
     }
 
@@ -221,5 +236,18 @@ private fun PreviewDropDownMenuEnum(@PreviewParameter(ThemeParameters::class) th
           else -> t.name
         }
       },
+    )
+  }
+
+@Preview
+@Composable
+private fun PreviewDropDownMenuLonger(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+  PreviewWithTheme(theme) {
+    var value by remember { mutableStateOf("Much longer item") }
+    val options = persistentListOf("Much longer item", "A", "B")
+    AktualExposedDropDownMenu(
+      value = value,
+      onValueChange = { newValue -> value = newValue },
+      options = options,
     )
   }

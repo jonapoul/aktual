@@ -63,15 +63,15 @@ fun SettingsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        SettingsAction.NavBack -> back()
-        SettingsAction.NavToThemeSettings -> toThemeSettings()
+        NavBack -> back()
+        NavToThemeSettings -> toThemeSettings()
       }
     },
   )
 }
 
 @Composable
-private fun SettingsScaffold(state: SettingsScreenState, onAction: (SettingsAction) -> Unit) {
+private fun SettingsScaffold(state: SettingsScreenState, onAction: SettingsActionHandler) {
   val theme = LocalTheme.current
   val listState = rememberLazyListState()
   val blurState = rememberBlurredTopBarState()
@@ -81,7 +81,7 @@ private fun SettingsScaffold(state: SettingsScreenState, onAction: (SettingsActi
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(SettingsAction.NavBack) } },
+        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsToolbar) },
       )
     }
@@ -104,7 +104,7 @@ private fun SettingsContent(
   state: SettingsScreenState,
   contentPadding: PaddingValues,
   listState: LazyListState,
-  onAction: (SettingsAction) -> Unit,
+  onAction: SettingsActionHandler,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
@@ -113,7 +113,7 @@ private fun SettingsContent(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(10.dp),
   ) {
-    item { ThemeSettingsItem(onClick = { onAction(SettingsAction.NavToThemeSettings) }) }
+    item { ThemeSettingsItem(onClick = { onAction(NavToThemeSettings) }) }
     item { SystemUiGroup(state.systemUi) }
     item { FormattingGroup(state.format) }
     item { CurrencyGroup(state.currency) }

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 sealed interface SearchBarState {
-  @JvmInline value class Visible(val text: String) : SearchBarState
+  data object Visible : SearchBarState
 
   data object Gone : SearchBarState
 }

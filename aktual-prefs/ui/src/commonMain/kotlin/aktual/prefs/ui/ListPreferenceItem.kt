@@ -14,10 +14,12 @@ import aktual.prefs.vm.ListPreference
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -86,11 +88,17 @@ internal fun <E : Enum<E>> ListPreferenceItem(
     includeBackground = includeBackground,
     theme = theme,
     bottomContent = {
+      val displayText = optionString(value)
+      val textState = rememberTextFieldState(initialText = displayText)
+      LaunchedEffect(displayText) {
+        if (textState.text.toString() != displayText) {
+          textState.edit { replace(0, length, displayText) }
+        }
+      }
       Box {
         AktualTextField(
+          state = textState,
           modifier = Modifier.fillMaxWidth(),
-          value = optionString(value),
-          onValueChange = {},
           placeholderText = null,
           readOnly = true,
           isEnabled = enabled,

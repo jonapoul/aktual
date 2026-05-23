@@ -36,10 +36,10 @@ class BudgetNavRailNavEntryContributor(private val runLevelState: RunLevelState)
         BudgetNavRail(
           onAction = { action ->
             when (action) {
-              BudgetNavAction.LogOut -> stack.replaceAll(ServerUrlNavRoute)
-              BudgetNavAction.SwitchFile -> stack.replaceAll(ListBudgetsNavRoute)
-              BudgetNavAction.Settings -> stack.push(SettingsNavRoute)
-              BudgetNavAction.About -> stack.push(InfoNavRoute)
+              LogOut -> stack.replaceAll(ServerUrlNavRoute)
+              SwitchFile -> stack.replaceAll(ListBudgetsNavRoute)
+              Settings -> stack.push(SettingsNavRoute)
+              About -> stack.push(InfoNavRoute)
             }
           }
         )

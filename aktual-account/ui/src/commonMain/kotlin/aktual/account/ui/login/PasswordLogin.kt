@@ -5,6 +5,7 @@ import aktual.core.model.Password
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTextField
+import aktual.core.ui.PasswordTransformation
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PrimaryTextButtonWithLoading
 import aktual.core.ui.ThemedParameterProvider
@@ -14,9 +15,11 @@ import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -24,7 +27,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -33,23 +35,28 @@ import androidx.compose.ui.unit.dp
 internal fun PasswordLogin(
   isLoading: Boolean,
   enteredPassword: Password,
-  onAction: (LoginAction) -> Unit,
+  onAction: LoginActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   Column(modifier = modifier) {
     val keyboard = LocalSoftwareKeyboardController.current
+    val passwordTextState = rememberTextFieldState(initialText = enteredPassword.value)
+
+    LaunchedEffect(passwordTextState) {
+      snapshotFlow { passwordTextState.text.toString() }
+        .collect { password -> onAction(EnterPassword(password)) }
+    }
 
     AktualTextField(
       modifier =
         Modifier.testTag(Tags.PasswordLoginTextField)
           .fillMaxWidth(1f)
           .focusRequester(keyboardFocusRequester(keyboard)),
-      value = enteredPassword.value,
+      state = passwordTextState,
       isEnabled = !isLoading,
-      onValueChange = { password -> onAction(LoginAction.EnterPassword(password)) },
       placeholderText = Strings.loginPasswordHint,
-      visualTransformation = PasswordVisualTransformation(),
+      outputTransformation = PasswordTransformation,
       theme = theme,
       keyboardOptions =
         KeyboardOptions(
@@ -58,13 +65,10 @@ internal fun PasswordLogin(
           keyboardType = KeyboardType.Password,
           imeAction = ImeAction.Go,
         ),
-      keyboardActions =
-        KeyboardActions(
-          onGo = {
-            keyboard?.hide()
-            onAction(LoginAction.SignIn)
-          }
-        ),
+      onKeyboardAction = { _ ->
+        keyboard?.hide()
+        onAction(SignIn)
+      },
     )
 
     VerticalSpacer(20.dp)
@@ -74,7 +78,7 @@ internal fun PasswordLogin(
       text = Strings.loginSignIn,
       isLoading = isLoading,
       isEnabled = enteredPassword != Password.Empty,
-      onClick = { onAction(LoginAction.SignIn) },
+      onClick = { onAction(SignIn) },
     )
   }
 }

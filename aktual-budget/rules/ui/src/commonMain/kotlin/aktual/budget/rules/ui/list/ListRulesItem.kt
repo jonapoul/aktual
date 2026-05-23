@@ -69,7 +69,7 @@ import kotlinx.collections.immutable.persistentSetOf
 internal fun ListRulesItem(
   rule: Rule,
   checkboxes: CheckboxesState,
-  onAction: (ListRulesAction) -> Unit,
+  onAction: ListRulesActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {

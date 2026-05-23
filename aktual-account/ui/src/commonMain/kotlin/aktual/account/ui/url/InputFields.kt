@@ -13,10 +13,12 @@ import alakazam.kotlin.parse
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -32,25 +34,40 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun InputFields(
   url: String,
   protocol: Protocol,
-  onAction: (ServerUrlAction) -> Unit,
+  onAction: ServerUrlActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
     AktualExposedDropDownMenu(
-      modifier = Modifier.width(110.dp),
       value = protocol.toString(),
       options = PROTOCOLS,
-      onValueChange = { onAction(ServerUrlAction.SelectProtocol(Protocol::class.parse(it))) },
+      string = { it },
+      contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(),
+      onValueChange = { onAction(SelectProtocol(Protocol::class.parse(it))) },
       theme = theme,
     )
 
     val keyboard = LocalSoftwareKeyboardController.current
 
+    val textState = rememberTextFieldState(initialText = url)
+
+    // Sync from parent when URL changes externally (async prefs load)
+    LaunchedEffect(url) {
+      if (textState.text.toString() != url) {
+        textState.edit { replace(0, length, url) }
+      }
+    }
+
+    // Feed user edits to parent
+    LaunchedEffect(textState) {
+      snapshotFlow { textState.text.toString() }
+        .collect { text -> onAction(EnterUrl(text.lowercase())) }
+    }
+
     AktualTextField(
       modifier = Modifier.weight(1f).focusRequester(keyboardFocusRequester(keyboard)),
-      value = url,
-      onValueChange = { onAction(ServerUrlAction.EnterUrl(it.lowercase())) },
+      state = textState,
       placeholderText = EXAMPLE_URL,
       keyboardOptions =
         KeyboardOptions(
@@ -59,13 +76,10 @@ internal fun InputFields(
           keyboardType = KeyboardType.Uri,
           imeAction = ImeAction.Go,
         ),
-      keyboardActions =
-        KeyboardActions(
-          onGo = {
-            keyboard?.hide()
-            onAction(ServerUrlAction.ConfirmUrl)
-          }
-        ),
+      onKeyboardAction = { _ ->
+        keyboard?.hide()
+        onAction(ConfirmUrl)
+      },
     )
   }
 }

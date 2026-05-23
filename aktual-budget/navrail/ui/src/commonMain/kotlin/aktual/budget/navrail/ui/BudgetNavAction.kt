@@ -2,13 +2,17 @@ package aktual.budget.navrail.ui
 
 import androidx.compose.runtime.Immutable
 
+@Immutable internal sealed interface BudgetNavAction
+
+internal data object SwitchFile : BudgetNavAction
+
+internal data object LogOut : BudgetNavAction
+
+internal data object Settings : BudgetNavAction
+
+internal data object About : BudgetNavAction
+
 @Immutable
-sealed interface BudgetNavAction {
-  data object SwitchFile : BudgetNavAction
-
-  data object LogOut : BudgetNavAction
-
-  data object Settings : BudgetNavAction
-
-  data object About : BudgetNavAction
+internal fun interface BudgetNavActionHandler {
+  operator fun invoke(action: BudgetNavAction)
 }

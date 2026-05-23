@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 @Composable
 internal fun ChooseReportTypeDialogs(
   dialog: ChooseReportTypeDialog?,
-  onAction: (ChooseReportTypeAction) -> Unit,
+  onAction: ChooseReportTypeActionHandler,
 ) {
   when (dialog) {
     null -> return
@@ -22,7 +22,7 @@ internal fun ChooseReportTypeDialogs(
 
 @Composable
 private fun UnsupportedTypeDialog(
-  onAction: (ChooseReportTypeAction) -> Unit,
+  onAction: ChooseReportTypeActionHandler,
   theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialog(

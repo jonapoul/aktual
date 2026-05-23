@@ -8,8 +8,12 @@ import aktual.core.theme.Theme
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.KeyboardActionHandler
+import androidx.compose.foundation.text.input.OutputTransformation
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalTextStyle
@@ -24,15 +28,13 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun AktualTextField(
-  value: String,
-  onValueChange: (String) -> Unit,
+  state: TextFieldState,
   placeholderText: String?,
   modifier: Modifier = Modifier,
   shape: Shape = TextFieldShape,
@@ -42,9 +44,9 @@ fun AktualTextField(
   leadingIcon: (@Composable () -> Unit)? = null,
   trailingIcon: (@Composable () -> Unit)? = null,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  visualTransformation: VisualTransformation = VisualTransformation.None,
+  outputTransformation: OutputTransformation? = null,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-  keyboardActions: KeyboardActions = KeyboardActions.Default,
+  onKeyboardAction: KeyboardActionHandler? = null,
   theme: Theme = LocalTheme.current,
   colors: TextFieldColors = theme.textField(),
   clearable: Boolean = false,
@@ -54,35 +56,40 @@ fun AktualTextField(
   val borderColor =
     if (isFocused) theme.formInputBorderSelected else theme.formInputBackgroundSelected
 
-  var fieldModifier = modifier.border(1.dp, borderColor, shape)
-
-  if (isFocused) {
-    fieldModifier = fieldModifier.shadow(4.dp, shape, ambientColor = theme.formInputShadowSelected)
-  }
+  val shadowModifier =
+    if (isFocused) {
+      Modifier.shadow(4.dp, shape, ambientColor = theme.formInputShadowSelected)
+    } else {
+      Modifier
+    }
 
   val clearButton: (@Composable () -> Unit)? =
-    if (clearable && value.isNotEmpty()) {
-      { ClearButton(tint = colors.focusedTrailingIconColor, onClick = { onValueChange("") }) }
+    if (clearable && state.text.isNotEmpty()) {
+      {
+        ClearButton(
+          tint = colors.focusedTrailingIconColor,
+          onClick = { state.edit { replace(0, length, "") } },
+        )
+      }
     } else {
       null
     }
 
   TextField(
-    modifier = fieldModifier,
-    value = value,
+    modifier = modifier.border(1.dp, borderColor, shape).then(shadowModifier),
+    state = state,
     placeholder = placeholderText?.let { { Text(text = it) } },
     shape = shape,
     colors = colors,
     readOnly = readOnly,
     enabled = isEnabled,
-    singleLine = singleLine,
+    lineLimits = if (singleLine) TextFieldLineLimits.SingleLine else TextFieldLineLimits.Default,
     leadingIcon = leadingIcon,
     trailingIcon = trailingIcon ?: clearButton,
     interactionSource = interactionSource,
-    visualTransformation = visualTransformation,
+    outputTransformation = outputTransformation,
     keyboardOptions = keyboardOptions,
-    keyboardActions = keyboardActions,
-    onValueChange = onValueChange,
+    onKeyboardAction = onKeyboardAction,
     textStyle = textStyle,
   )
 }
@@ -94,17 +101,13 @@ private fun ClearButton(tint: Color, onClick: () -> Unit, modifier: Modifier = M
   }
 }
 
-private data class TextInputPreviewParams(
-  val value: String,
-  val placeholderText: String = "Placeholder",
-  val isClearable: Boolean = false,
-)
+private data class TextInputPreviewParams(val initialText: String, val clearable: Boolean = false)
 
 private class TextInputPreviewProvider :
   ThemedParameterProvider<TextInputPreviewParams>(
-    TextInputPreviewParams(value = ""),
-    TextInputPreviewParams(value = "I'm full"),
-    TextInputPreviewParams(value = "I'm full", isClearable = true),
+    TextInputPreviewParams(initialText = ""),
+    TextInputPreviewParams(initialText = "I'm full"),
+    TextInputPreviewParams(initialText = "I'm full", clearable = true),
   )
 
 @Preview
@@ -112,11 +115,10 @@ private class TextInputPreviewProvider :
 private fun PreviewAktualTextField(
   @PreviewParameter(TextInputPreviewProvider::class) params: ThemedParams<TextInputPreviewParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithThemedParams(params) {
     AktualTextField(
-      value = params.data.value,
-      onValueChange = {},
-      placeholderText = params.data.placeholderText,
-      clearable = params.data.isClearable,
+      state = rememberTextFieldState(initialText = initialText),
+      placeholderText = "Placeholder",
+      clearable = clearable,
     )
   }
