@@ -11,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal actual fun TopBarActions(onAction: (ListBudgetsAction) -> Unit) = Row {
+internal actual fun TopBarActions(onAction: ListBudgetsActionHandler) = Row {
   SettingsButton(modifier = Modifier.padding(horizontal = 5.dp), onAction = onAction)
 
   var showMenu by remember { mutableStateOf(false) }

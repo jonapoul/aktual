@@ -22,6 +22,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.AnimatedLoading
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
@@ -51,8 +52,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
@@ -63,6 +65,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
@@ -86,11 +89,11 @@ fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroView
     searchBarState = searchBarState,
     onAction = { action ->
       when (action) {
-        LicensesAction.NavBack -> back()
-        LicensesAction.Reload -> viewModel.load()
-        LicensesAction.ToggleSearchBar -> viewModel.toggleSearchBar()
-        is LicensesAction.EditSearchText -> viewModel.setSearchText(action.text)
-        is LicensesAction.LaunchUrl -> viewModel.openUrl(action.url)
+        NavBack -> back()
+        Reload -> viewModel.load()
+        ToggleSearchBar -> viewModel.toggleSearchBar()
+        is EditSearchText -> viewModel.setSearchText(action.text)
+        is LaunchUrl -> viewModel.openUrl(action.url)
       }
     },
   )
@@ -100,19 +103,24 @@ fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroView
 private fun LicensesScaffold(
   state: LicensesState,
   searchBarState: SearchBarState,
-  onAction: (LicensesAction) -> Unit,
+  onAction: LicensesActionHandler,
 ) {
   val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
   val sheetState = rememberModalBottomSheetState()
+  val searchTextState = rememberTextFieldState()
+  LaunchedEffect(searchTextState) {
+    snapshotFlow { searchTextState.text.toString() }
+      .collect { text -> onAction(EditSearchText(text)) }
+  }
 
   Scaffold(
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(LicensesAction.NavBack) } },
+        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = {
           Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
         },
@@ -135,7 +143,7 @@ private fun LicensesScaffold(
 
   if (searchBarState is Visible) {
     SearchInputBottomSheet(
-      searchState = searchBarState,
+      searchTextState = searchTextState,
       licensesState = state,
       sheetState = sheetState,
       onAction = onAction,
@@ -144,24 +152,23 @@ private fun LicensesScaffold(
 }
 
 @Composable
-private fun SearchButton(onAction: (LicensesAction) -> Unit, state: SearchBarState) {
-  IconButton(onClick = { onAction(LicensesAction.ToggleSearchBar) }) {
-    Icon(
-      imageVector =
-        when (state) {
-          Gone -> MaterialIcons.Search
-          is Visible -> MaterialIcons.SearchOff
-        },
-      contentDescription = Strings.licensesToolbarSearch,
-    )
-  }
+private fun SearchButton(onAction: LicensesActionHandler, state: SearchBarState) {
+  BareIconButton(
+    onClick = { onAction(ToggleSearchBar) },
+    contentDescription = Strings.licensesToolbarSearch,
+    imageVector =
+      when (state) {
+        Gone -> MaterialIcons.Search
+        is Visible -> MaterialIcons.SearchOff
+      },
+  )
 }
 
 @Composable
 private fun SearchInputBottomSheet(
-  searchState: Visible,
+  searchTextState: TextFieldState,
   licensesState: LicensesState,
-  onAction: (LicensesAction) -> Unit,
+  onAction: LicensesActionHandler,
   sheetState: SheetState,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -172,7 +179,7 @@ private fun SearchInputBottomSheet(
 
   ModalBottomSheet(
     modifier = modifier,
-    onDismissRequest = { onAction(LicensesAction.ToggleSearchBar) },
+    onDismissRequest = { onAction(ToggleSearchBar) },
     sheetState = sheetState,
     containerColor = theme.modalBackground,
     contentColor = theme.pageText,
@@ -183,8 +190,7 @@ private fun SearchInputBottomSheet(
     ) {
       AktualTextField(
         modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester(keyboard)),
-        value = searchState.text,
-        onValueChange = { query -> onAction(LicensesAction.EditSearchText(query)) },
+        state = searchTextState,
         placeholderText = Strings.licensesSearchPlaceholder,
         leadingIcon = { Icon(imageVector = MaterialIcons.Search, contentDescription = null) },
         clearable = true,
@@ -208,7 +214,7 @@ private fun LicensesContent(
   state: LicensesState,
   contentPadding: PaddingValues,
   listState: LazyListState,
-  onAction: (LicensesAction) -> Unit,
+  onAction: LicensesActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) =
@@ -242,7 +248,7 @@ private fun LoadedContent(
   artifacts: ImmutableList<ArtifactDetail>,
   contentPadding: PaddingValues,
   listState: LazyListState,
-  onAction: (LicensesAction) -> Unit,
+  onAction: LicensesActionHandler,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
@@ -252,11 +258,7 @@ private fun LoadedContent(
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     items(artifacts, key = { it.id }) { artifact ->
-      ArtifactItem(
-        artifact = artifact,
-        onLaunchUrl = { onAction(LicensesAction.LaunchUrl(it)) },
-        theme = theme,
-      )
+      ArtifactItem(artifact = artifact, onLaunchUrl = { onAction(LaunchUrl(it)) }, theme = theme)
     }
 
     item { BottomSpacing() }
@@ -267,7 +269,7 @@ private fun LoadedContent(
 private fun ErrorContent(
   theme: Theme,
   errorMessage: String,
-  onAction: (LicensesAction) -> Unit,
+  onAction: LicensesActionHandler,
   modifier: Modifier = Modifier,
 ) {
   FailureScreen(
@@ -278,7 +280,7 @@ private fun ErrorContent(
     action =
       FailureAction(
         text = { Strings.licensesFailedRetry },
-        onClick = { onAction(LicensesAction.Reload) },
+        onClick = { onAction(Reload) },
         icon = MaterialIcons.Refresh,
       ),
   )
@@ -310,5 +312,5 @@ private class LicensesParamsProvider :
     LicensesParams(NoneFound),
     LicensesParams(Loading),
     LicensesParams(LOADED_STATE, searchState = Gone),
-    LicensesParams(LOADED_STATE, searchState = Visible("My wicked search query")),
+    LicensesParams(LOADED_STATE, searchState = Visible),
   )

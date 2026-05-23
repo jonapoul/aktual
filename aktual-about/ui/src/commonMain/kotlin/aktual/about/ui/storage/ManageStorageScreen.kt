@@ -1,15 +1,5 @@
 package aktual.about.ui.storage
 
-import aktual.about.ui.storage.ManageStorageAction.ConfirmClearAllFiles
-import aktual.about.ui.storage.ManageStorageAction.ConfirmClearBudget
-import aktual.about.ui.storage.ManageStorageAction.ConfirmClearCache
-import aktual.about.ui.storage.ManageStorageAction.ConfirmClearPreferences
-import aktual.about.ui.storage.ManageStorageAction.DismissDialog
-import aktual.about.ui.storage.ManageStorageAction.NavBack
-import aktual.about.ui.storage.ManageStorageAction.RequestClearAllFiles
-import aktual.about.ui.storage.ManageStorageAction.RequestClearBudget
-import aktual.about.ui.storage.ManageStorageAction.RequestClearCache
-import aktual.about.ui.storage.ManageStorageAction.RequestClearPreferences
 import aktual.about.vm.BudgetStorageItem
 import aktual.about.vm.ManageStorageState
 import aktual.about.vm.ManageStorageViewModel
@@ -127,7 +117,7 @@ fun ManageStorageScreen(
 @Composable
 private fun ManageStorageScaffold(
   state: ManageStorageState,
-  onAction: (ManageStorageAction) -> Unit,
+  onAction: ManageStorageActionHandler,
   modifier: Modifier = Modifier,
 ) {
   val blurState = rememberBlurredTopBarState()
@@ -152,7 +142,7 @@ private fun ManageStorageScaffold(
         PullToRefreshBox(
           modifier = Modifier.padding(8.dp),
           contentAlignment = Alignment.Center,
-          onRefresh = { onAction(ManageStorageAction.Reload) },
+          onRefresh = { onAction(Reload) },
           isRefreshing = state is ManageStorageState.Loading,
           content = { ManageStorageContent(state, listState, onAction) },
         )
@@ -165,7 +155,7 @@ private fun ManageStorageScaffold(
 private fun ManageStorageContent(
   state: ManageStorageState,
   listState: LazyListState,
-  onAction: (ManageStorageAction) -> Unit,
+  onAction: ManageStorageActionHandler,
   modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
@@ -190,7 +180,7 @@ private fun ManageStorageContent(
 private fun ManageStorageLoadedContent(
   state: ManageStorageState.Loaded,
   listState: LazyListState,
-  onAction: (ManageStorageAction) -> Unit,
+  onAction: ManageStorageActionHandler,
   modifier: Modifier = Modifier,
 ) {
   val theme = LocalTheme.current
@@ -251,7 +241,7 @@ private fun ManageStorageLoadedContent(
 }
 
 @Composable
-private fun ActionButtons(onAction: (ManageStorageAction) -> Unit, theme: Theme) {
+private fun ActionButtons(onAction: ManageStorageActionHandler, theme: Theme) {
   Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
     NormalTextButton(
       text = Strings.storageClearCache,
@@ -308,7 +298,7 @@ private fun CacheSummary(
 private fun BudgetsSummary(
   state: ManageStorageState.Loaded,
   colors: ImmutableList<Color>,
-  onAction: (ManageStorageAction) -> Unit,
+  onAction: ManageStorageActionHandler,
   theme: Theme,
 ) {
   Column(
@@ -444,7 +434,7 @@ private fun LegendRow(label: String, size: String, color: Color, theme: Theme) {
 }
 
 @Composable
-private fun StorageDialogs(dialog: StorageDialog, onAction: (ManageStorageAction) -> Unit) {
+private fun StorageDialogs(dialog: StorageDialog, onAction: ManageStorageActionHandler) {
   val theme = LocalTheme.current
   when (dialog) {
     StorageDialog.None -> {

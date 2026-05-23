@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 @Suppress("MagicNumber")
-internal fun InfoButtons(onAction: (InfoAction) -> Unit, modifier: Modifier = Modifier) =
+internal fun InfoButtons(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
   BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
     val density = LocalDensity.current
     val fontScale = density.fontScale
@@ -40,47 +40,47 @@ internal fun InfoButtons(onAction: (InfoAction) -> Unit, modifier: Modifier = Mo
   }
 
 @Composable
-private fun SourceCodeButton(onAction: (InfoAction) -> Unit, modifier: Modifier = Modifier) =
+private fun SourceCodeButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier.testTag(Tags.SourceCodeButton),
     text = Strings.infoRepo,
-    onClick = { onAction(InfoAction.OpenSourceCode) },
+    onClick = { onAction(OpenSourceCode) },
   )
 
 @Composable
-private fun CheckUpdatesButton(onAction: (InfoAction) -> Unit, modifier: Modifier = Modifier) =
+private fun CheckUpdatesButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier.testTag(Tags.CheckUpdatesButton),
     text = Strings.infoCheckUpdates,
-    onClick = { onAction(InfoAction.CheckUpdates) },
+    onClick = { onAction(CheckUpdates) },
   )
 
 @Composable
-private fun ReportButton(onAction: (InfoAction) -> Unit, modifier: Modifier = Modifier) =
+private fun ReportButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier.testTag(Tags.ReportButton),
     text = Strings.infoReportIssues,
-    onClick = { onAction(InfoAction.ReportIssue) },
+    onClick = { onAction(ReportIssue) },
   )
 
 @Composable
-private fun LicensesButton(onAction: (InfoAction) -> Unit, modifier: Modifier = Modifier) =
+private fun LicensesButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier.testTag(Tags.LicensesButton),
     text = Strings.infoLicenses,
-    onClick = { onAction(InfoAction.ViewLicenses) },
+    onClick = { onAction(ViewLicenses) },
   )
 
 @Composable
-private fun ManageStorageButton(onAction: (InfoAction) -> Unit, modifier: Modifier = Modifier) =
+private fun ManageStorageButton(onAction: InfoActionHandler, modifier: Modifier = Modifier) =
   NormalTextButton(
     modifier = modifier,
     text = Strings.storageToolbar,
-    onClick = { onAction(InfoAction.ManageStorage) },
+    onClick = { onAction(ManageStorage) },
   )
 
 @Composable
-private fun InfoButtonsColumn(onAction: (InfoAction) -> Unit) =
+private fun InfoButtonsColumn(onAction: InfoActionHandler) =
   Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
     val buttonModifier = Modifier.fillMaxWidth()
     SourceCodeButton(onAction, buttonModifier)
@@ -91,7 +91,7 @@ private fun InfoButtonsColumn(onAction: (InfoAction) -> Unit) =
   }
 
 @Composable
-private fun InfoButtonsGrid(onAction: (InfoAction) -> Unit) =
+private fun InfoButtonsGrid(onAction: InfoActionHandler) =
   Column(
     modifier = Modifier.fillMaxWidth(),
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -120,7 +120,7 @@ private fun InfoButtonsGrid(onAction: (InfoAction) -> Unit) =
   }
 
 @Composable
-private fun InfoButtonsRow(onAction: (InfoAction) -> Unit) =
+private fun InfoButtonsRow(onAction: InfoActionHandler) =
   Row(
     modifier = Modifier.fillMaxWidth(),
     horizontalArrangement = Arrangement.spacedBy(HORIZONTAL_SPACING),

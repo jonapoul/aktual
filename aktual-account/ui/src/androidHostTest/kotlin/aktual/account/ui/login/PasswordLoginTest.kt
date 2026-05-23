@@ -28,7 +28,7 @@ class PasswordLoginTest {
       PasswordLogin(
         isLoading = true,
         enteredPassword = PASSWORD,
-        onAction = { wasClicked = it == LoginAction.SignIn },
+        onAction = { wasClicked = it == SignIn },
       )
     }
 

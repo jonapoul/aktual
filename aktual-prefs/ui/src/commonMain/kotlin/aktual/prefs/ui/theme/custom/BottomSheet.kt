@@ -10,8 +10,6 @@ import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
 import aktual.core.ui.BottomSheetIcon
 import aktual.core.ui.ListBottomSheet
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SetModeFilter
-import aktual.prefs.ui.theme.custom.CustomThemeSettingsAction.SetSorting
 import aktual.prefs.vm.theme.custom.ThemeFilter
 import aktual.prefs.vm.theme.custom.ThemeSorting
 import androidx.compose.material3.SheetState
@@ -31,7 +29,7 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 internal fun ThemeSortingBottomSheet(
   value: ThemeSorting,
-  onAction: (CustomThemeSettingsAction) -> Unit,
+  onAction: CustomThemeSettingsActionHandler,
   sheetState: SheetState,
   modifier: Modifier = Modifier,
 ) {
@@ -51,7 +49,7 @@ internal fun ThemeSortingBottomSheet(
 @Composable
 internal fun ThemeFilterBottomSheet(
   value: ThemeFilter,
-  onAction: (CustomThemeSettingsAction) -> Unit,
+  onAction: CustomThemeSettingsActionHandler,
   sheetState: SheetState,
   modifier: Modifier = Modifier,
 ) {

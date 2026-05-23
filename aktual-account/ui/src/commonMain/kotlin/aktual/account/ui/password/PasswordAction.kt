@@ -3,15 +3,19 @@ package aktual.account.ui.password
 import aktual.core.model.Password
 import androidx.compose.runtime.Immutable
 
+@Immutable internal sealed interface PasswordAction
+
+internal data object NavBack : PasswordAction
+
+internal data object Submit : PasswordAction
+
+@JvmInline internal value class SetPasswordsVisible(val visible: Boolean) : PasswordAction
+
+@JvmInline internal value class SetPassword1(val value: Password) : PasswordAction
+
+@JvmInline internal value class SetPassword2(val value: Password) : PasswordAction
+
 @Immutable
-internal sealed interface PasswordAction {
-  data object NavBack : PasswordAction
-
-  data object Submit : PasswordAction
-
-  data class SetPasswordsVisible(val visible: Boolean) : PasswordAction
-
-  data class SetPassword1(val value: Password) : PasswordAction
-
-  data class SetPassword2(val value: Password) : PasswordAction
+internal fun interface PasswordActionHandler {
+  operator fun invoke(action: PasswordAction)
 }
