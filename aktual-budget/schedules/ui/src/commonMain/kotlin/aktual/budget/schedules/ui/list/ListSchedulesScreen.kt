@@ -1,5 +1,7 @@
 package aktual.budget.schedules.ui.list
 
+import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleA
+import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleB
 import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.list.Empty
 import aktual.budget.schedules.vm.list.Failure
@@ -17,6 +19,7 @@ import aktual.core.nav.EditScheduleNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTextField
+import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
@@ -47,10 +50,12 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -109,18 +114,7 @@ private fun ListSchedulesScaffold(
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
-        title = {
-          AnimatedContent(
-            targetState = isSearchActive,
-            transitionSpec = { fadeIn() togetherWith fadeOut() },
-          ) { searching ->
-            if (searching) {
-              FilterInput(successState?.filterText, onAction)
-            } else {
-              Text(text = Strings.listSchedulesTitle)
-            }
-          }
-        },
+        title = { Title(isSearchActive, successState, onAction) },
         actions = {
           BareIconButton(
             imageVector = if (isSearchActive) MaterialIcons.SearchOff else MaterialIcons.Search,
@@ -149,6 +143,26 @@ private fun ListSchedulesScaffold(
           listState = listState,
         )
       }
+    }
+  }
+}
+
+@Composable
+private fun Title(
+  isSearchActive: Boolean,
+  successState: Success?,
+  onAction: ListSchedulesActionHandler,
+) {
+  AnimatedContent(
+    targetState = isSearchActive,
+    transitionSpec = { fadeIn() togetherWith fadeOut() },
+  ) { searching ->
+    if (searching) {
+      CompositionLocalProvider(LocalTextStyle provides AktualTypography.bodyLarge) {
+        FilterInput(successState?.filterText, onAction)
+      }
+    } else {
+      Text(text = Strings.listSchedulesTitle)
     }
   }
 }
@@ -262,18 +276,16 @@ private fun ContentSuccess(
   onAction: ListSchedulesActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  if (schedules.isEmpty()) {
-
-  } else {
-    LazyColumn(
-      modifier = modifier.scrollbar(listState),
-      state = listState,
-      contentPadding = contentPadding,
-      verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.listItemSpacing),
-    ) {
-      items(schedules, key = { it.id.value }) { schedule -> ListSchedulesItem(schedule, onAction) }
-      item { BottomSpacing() }
+  LazyColumn(
+    modifier = modifier.scrollbar(listState),
+    state = listState,
+    contentPadding = contentPadding,
+    verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.listItemSpacing),
+  ) {
+    items(schedules, key = { it.id.value }) { schedule ->
+      ListSchedulesItem(modifier = Modifier.animateItem(), schedule = schedule, onAction = onAction)
     }
+    item { BottomSpacing() }
   }
 }
 
@@ -286,15 +298,12 @@ private fun PreviewListSchedulesScaffold(
 private class ListSchedulesProvider :
   ThemedParameterProvider<ListSchedulesState>(
     Success(
-      schedules = persistentListOf(ListSchedulesPreview.scheduleA, ListSchedulesPreview.scheduleB),
+      schedules = persistentListOf(scheduleA, scheduleB),
       filterText = "",
       isSearchActive = false,
     ),
-    Success(
-      schedules = persistentListOf(ListSchedulesPreview.scheduleA),
-      filterText = "rent",
-      isSearchActive = true,
-    ),
+    Success(schedules = persistentListOf(scheduleA), filterText = "rent", isSearchActive = true),
+    Success(schedules = persistentListOf(), filterText = "rent", isSearchActive = true),
     Empty,
     Loading,
     Failure("Some problem happened"),
