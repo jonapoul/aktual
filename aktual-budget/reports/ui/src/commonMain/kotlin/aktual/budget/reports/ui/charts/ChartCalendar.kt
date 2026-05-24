@@ -101,7 +101,7 @@ private fun CompactCalendarChart(
       horizontalArrangement = Arrangement.spacedBy(4.dp),
       state = listState,
     ) {
-      items(items = data.months, key = { it.month }) { month ->
+      items(items = data.months, key = { it.month.toString() }) { month ->
         CalendarMonth(
           modifier = Modifier.width(500.dp),
           month = month,
@@ -129,7 +129,7 @@ private fun RegularCalendarChart(
     }
 
     LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-      items(items = data.months, key = { it.month }) { month ->
+      items(items = data.months, key = { it.month.toString() }) { month ->
         CalendarMonth(
           modifier = Modifier.animateItem(),
           month = month,

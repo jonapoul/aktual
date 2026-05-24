@@ -166,7 +166,7 @@ private fun ContentList(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
-    items(items, key = { it.id }) { item ->
+    items(items, key = { it.id.value }) { item ->
       DashboardItem(
         modifier = Modifier.animateItem(),
         item = item,
