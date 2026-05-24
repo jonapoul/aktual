@@ -69,6 +69,7 @@ class ListSchedulesViewModel(
       val failure by mutableFailure.collectAsState()
       val filterText by mutableFilterText.collectAsState()
       val isSearchActive by mutableIsSearchActive.collectAsState()
+      @Suppress("BracesOnWhenStatements")
       when {
         isLoading -> Loading
         failure != null -> Failure(failure)
@@ -149,7 +150,7 @@ class ListSchedulesViewModel(
     val accountId = row._account?.let { AccountId(it) } ?: return null
 
     val payeeName = payeeNames[payeeId] ?: return null
-    val accountName = accountNames[accountId] ?: ""
+    val accountName = accountNames[accountId].orEmpty()
 
     val amount = row._amount?.toLongOrNull()?.let { Amount(it) } ?: Amount.Zero
     val amountOp =
@@ -160,7 +161,7 @@ class ListSchedulesViewModel(
     val dateCondOp = row._conditions?.firstOrNull { it.field == Field.Date }?.operator
     val txFromDate =
       if (dateCondOp == Operator.Is) nextDate else nextDate.minus(value = 2, unit = DAY)
-    val hasTransaction = latestTxDates[row.id]?.let { it >= txFromDate } ?: false
+    val hasTransaction = latestTxDates[row.id]?.let { it >= txFromDate } == true
 
     val customUpcomingLength = row.custom_upcoming_length
 
