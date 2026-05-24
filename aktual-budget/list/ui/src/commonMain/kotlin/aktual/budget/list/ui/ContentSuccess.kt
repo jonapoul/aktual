@@ -1,6 +1,7 @@
 package aktual.budget.list.ui
 
 import aktual.budget.model.Budget
+import aktual.budget.model.directoryId
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.BottomSpacing
@@ -38,8 +39,9 @@ internal fun ContentSuccess(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
-    items(budgets) { budget ->
+    items(budgets, key = { it.directoryId.value }) { budget ->
       BudgetListItem(
+        modifier = Modifier.animateItem(),
         budget = budget,
         theme = theme,
         onClickOpen = { onClickOpen(budget) },

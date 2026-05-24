@@ -357,7 +357,9 @@ private fun SuccessContent(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ITEM_SPACING),
   ) {
-    items(items, key = { it.id.value }) { item -> CustomThemeItem(item, onAction) }
+    items(items, key = { it.id.value }) { item ->
+      CustomThemeItem(modifier = Modifier.animateItem(), item = item, onAction = onAction)
+    }
 
     item { BottomSpacing() }
   }
