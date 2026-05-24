@@ -7,9 +7,6 @@ import aktual.about.vm.LicensesState.Loaded
 import aktual.about.vm.LicensesState.Loading
 import aktual.about.vm.LicensesState.NoneFound
 import aktual.about.vm.LicensesViewModel
-import aktual.about.vm.SearchBarState
-import aktual.about.vm.SearchBarState.Gone
-import aktual.about.vm.SearchBarState.Visible
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
@@ -24,7 +21,6 @@ import aktual.core.ui.AktualTypography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
-import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
@@ -36,41 +32,39 @@ import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.blurredTopBarContentPadding
-import aktual.core.ui.keyboardFocusRequester
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
-import aktual.core.ui.textField
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.foundation.text.input.rememberTextFieldState
-import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -82,17 +76,16 @@ import kotlinx.collections.immutable.toImmutableList
 @Composable
 fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroViewModel()) {
   val licensesState by viewModel.licensesState.collectAsStateWithLifecycle()
-  val searchBarState by viewModel.searchBarState.collectAsStateWithLifecycle()
 
   LicensesScaffold(
     state = licensesState,
-    searchBarState = searchBarState,
     onAction = { action ->
       when (action) {
         NavBack -> back()
         Reload -> viewModel.load()
-        ToggleSearchBar -> viewModel.toggleSearchBar()
-        is EditSearchText -> viewModel.setSearchText(action.text)
+        OpenSearch -> viewModel.openSearch()
+        ClearFilter -> viewModel.clearFilter()
+        is EditFilterText -> viewModel.setFilterText(action.text)
         is LaunchUrl -> viewModel.openUrl(action.url)
       }
     },
@@ -100,33 +93,30 @@ fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroView
 }
 
 @Composable
-private fun LicensesScaffold(
-  state: LicensesState,
-  searchBarState: SearchBarState,
-  onAction: LicensesActionHandler,
-) {
+private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandler) {
   val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
-  val sheetState = rememberModalBottomSheetState()
-  val searchTextState = rememberTextFieldState()
-  LaunchedEffect(searchTextState) {
-    snapshotFlow { searchTextState.text.toString() }
-      .collect { text -> onAction(EditSearchText(text)) }
-  }
+  val loadedState = state as? Loaded
+  val isSearchActive = loadedState?.isSearchActive == true
 
   Scaffold(
+    modifier = Modifier.fillMaxSize().imePadding(),
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
-        title = {
-          Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+        title = { Title(isSearchActive, loadedState, onAction) },
+        actions = {
+          BareIconButton(
+            imageVector = if (isSearchActive) MaterialIcons.SearchOff else MaterialIcons.Search,
+            contentDescription = Strings.licensesToolbarSearch,
+            onClick = { onAction(if (isSearchActive) ClearFilter else OpenSearch) },
+          )
         },
-        actions = { SearchButton(onAction, searchBarState) },
       )
-    }
+    },
   ) { innerPadding ->
     Box {
       WavyBackground()
@@ -140,73 +130,48 @@ private fun LicensesScaffold(
       )
     }
   }
-
-  if (searchBarState is Visible) {
-    SearchInputBottomSheet(
-      searchTextState = searchTextState,
-      licensesState = state,
-      sheetState = sheetState,
-      onAction = onAction,
-    )
-  }
 }
 
 @Composable
-private fun SearchButton(onAction: LicensesActionHandler, state: SearchBarState) {
-  BareIconButton(
-    onClick = { onAction(ToggleSearchBar) },
-    contentDescription = Strings.licensesToolbarSearch,
-    imageVector =
-      when (state) {
-        Gone -> MaterialIcons.Search
-        is Visible -> MaterialIcons.SearchOff
-      },
-  )
-}
-
-@Composable
-private fun SearchInputBottomSheet(
-  searchTextState: TextFieldState,
-  licensesState: LicensesState,
-  onAction: LicensesActionHandler,
-  sheetState: SheetState,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) {
-  val keyboard = LocalSoftwareKeyboardController.current
-  val isVisible = sheetState.isVisible
-  LaunchedEffect(isVisible) { if (isVisible) keyboard?.show() else keyboard?.hide() }
-
-  ModalBottomSheet(
-    modifier = modifier,
-    onDismissRequest = { onAction(ToggleSearchBar) },
-    sheetState = sheetState,
-    containerColor = theme.modalBackground,
-    contentColor = theme.pageText,
-  ) {
-    Column(
-      modifier = modifier.padding(Dimens.Huge).fillMaxWidth(),
-      verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-      AktualTextField(
-        modifier = Modifier.fillMaxWidth().focusRequester(keyboardFocusRequester(keyboard)),
-        state = searchTextState,
-        placeholderText = Strings.licensesSearchPlaceholder,
-        leadingIcon = { Icon(imageVector = MaterialIcons.Search, contentDescription = null) },
-        clearable = true,
-        theme = theme,
-        colors = theme.textField(),
-      )
-
-      val numResults = remember(licensesState) { (licensesState as? Loaded)?.artifacts?.size ?: 0 }
-      Text(
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.End,
-        text = Plurals.licensesSearchNumResults(numResults, numResults),
-        style = AktualTypography.labelMedium,
-      )
+private fun Title(isSearchActive: Boolean, loadedState: Loaded?, onAction: LicensesActionHandler) {
+  AnimatedContent(
+    targetState = isSearchActive,
+    transitionSpec = { fadeIn() togetherWith fadeOut() },
+  ) { searching ->
+    if (searching) {
+      CompositionLocalProvider(LocalTextStyle provides AktualTypography.bodyLarge) {
+        FilterInput(loadedState?.filterText, loadedState?.artifacts?.size, onAction)
+      }
+    } else {
+      Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
     }
   }
+}
+
+@Composable
+private fun FilterInput(
+  filterText: String?,
+  numResults: Int?,
+  onAction: LicensesActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  val state = rememberTextFieldState(initialText = filterText.orEmpty())
+  val focusRequester = remember { FocusRequester() }
+
+  LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+  LaunchedEffect(state) {
+    snapshotFlow { state.text.toString() }.collect { filter -> onAction(EditFilterText(filter)) }
+  }
+
+  AktualTextField(
+    modifier = modifier.focusRequester(focusRequester).fillMaxWidth(),
+    state = state,
+    singleLine = true,
+    placeholderText = Strings.licensesSearchPlaceholder,
+    supportingText =
+      numResults?.let { n -> { Text(text = Plurals.licensesSearchNumResults(n, n)) } },
+  )
 }
 
 @Composable
@@ -221,8 +186,7 @@ private fun LicensesContent(
   when (state) {
     Loading -> LoadingContent(modifier)
     NoneFound -> NoneFoundContent(theme, modifier)
-    is Loaded ->
-      LoadedContent(theme, state.artifacts, contentPadding, listState, onAction, modifier)
+    is Loaded -> LoadedContent(theme, state, contentPadding, listState, onAction, modifier)
     is Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
   }
 
@@ -244,6 +208,34 @@ private fun NoneFoundContent(theme: Theme, modifier: Modifier = Modifier) {
 
 @Composable
 private fun LoadedContent(
+  theme: Theme,
+  state: Loaded,
+  contentPadding: PaddingValues,
+  listState: LazyListState,
+  onAction: LicensesActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  if (state.artifacts.isEmpty()) {
+    FailureScreen(
+      modifier = modifier,
+      title = Strings.licensesNoResults,
+      reason = null,
+      icon = null,
+      background = theme.tableBackground,
+      action =
+        FailureAction(
+          text = { Strings.licensesFilterClear },
+          icon = MaterialIcons.SearchOff,
+          onClick = { onAction(ClearFilter) },
+        ),
+    )
+  } else {
+    ArtifactList(theme, state.artifacts, contentPadding, listState, onAction, modifier)
+  }
+}
+
+@Composable
+private fun ArtifactList(
   theme: Theme,
   artifacts: ImmutableList<ArtifactDetail>,
   contentPadding: PaddingValues,
@@ -294,28 +286,30 @@ private fun ErrorContent(
 @PortraitPreview
 @Composable
 private fun PreviewLicenses(
-  @PreviewParameter(LicensesParamsProvider::class) params: ThemedParams<LicensesParams>
+  @PreviewParameter(LicensesParamsProvider::class) params: ThemedParams<LicensesState>
 ) {
-  PreviewWithThemedParams(params) {
-    LicensesScaffold(state = state, searchBarState = searchState, onAction = {})
-  }
+  PreviewWithThemedParams(params) { LicensesScaffold(state = this, onAction = {}) }
 }
-
-private data class LicensesParams(val state: LicensesState, val searchState: SearchBarState = Gone)
 
 private val LOADED_STATE =
   Loaded(
     artifacts =
       List(size = 5) { listOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi) }
         .flatten()
-        .toImmutableList()
+        .toImmutableList(),
+    filterText = "",
+    isSearchActive = false,
   )
 
 private class LicensesParamsProvider :
-  ThemedParameterProvider<LicensesParams>(
-    LicensesParams(Error("Something broke lol! Here's some more shite to show how it looks")),
-    LicensesParams(NoneFound),
-    LicensesParams(Loading),
-    LicensesParams(LOADED_STATE, searchState = Gone),
-    LicensesParams(LOADED_STATE, searchState = Visible),
+  ThemedParameterProvider<LicensesState>(
+    Error("Something broke lol! Here's some more shite to show how it looks"),
+    NoneFound,
+    Loading,
+    LOADED_STATE,
+    LOADED_STATE.copy(isSearchActive = true),
+    LOADED_STATE.copy(
+      artifacts = emptyList<ArtifactDetail>().toImmutableList(),
+      isSearchActive = true,
+    ),
   )

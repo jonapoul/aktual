@@ -38,7 +38,7 @@ changed_files=$(
     git diff --name-only "$MERGE_BASE" -- '*.kt' '*.kts' 2>/dev/null
     git ls-files --others --exclude-standard -- '*.kt' '*.kts' 2>/dev/null
   } | sort -u | while IFS= read -r file; do
-    [[ -f "$file" ]] && printf '%s\n' "$file"
+    if [[ -f "$file" ]]; then printf '%s\n' "$file"; fi
   done
 )
 
@@ -72,7 +72,7 @@ if [[ ${#tasks[@]} -eq 0 ]]; then
 fi
 
 # Sort for deterministic output
-IFS=$'\n' tasks=($(printf '%s\n' "${tasks[@]}" | sort)); unset IFS
+mapfile -t tasks < <(printf '%s\n' "${tasks[@]}" | sort)
 
 echo "Running detektCheck on ${#tasks[@]} module(s):"
 for task in "${tasks[@]}"; do

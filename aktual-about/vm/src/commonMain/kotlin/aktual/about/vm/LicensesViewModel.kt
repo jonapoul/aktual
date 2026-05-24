@@ -29,22 +29,17 @@ internal constructor(
   private val urlOpener: UrlOpener,
 ) : ViewModel() {
   private val mutableState = MutableStateFlow<LicensesState>(LicensesState.Loading)
-  private val showSearchBar = MutableStateFlow(value = false)
+  private val mutableIsSearchActive = MutableStateFlow(value = false)
   private val searchTerm = MutableStateFlow(value = "")
-
-  val searchBarState: StateFlow<SearchBarState> =
-    viewModelScope.launchMolecule(Immediate) {
-      val showSearchBar by showSearchBar.collectAsState()
-      if (showSearchBar) SearchBarState.Visible else SearchBarState.Gone
-    }
 
   val licensesState: StateFlow<LicensesState> =
     viewModelScope.launchMolecule(Immediate) {
       val licensesState by mutableState.collectAsState()
       val searchTerm by searchTerm.collectAsState()
+      val isSearchActive by mutableIsSearchActive.collectAsState()
 
       when (val licenses = licensesState) {
-        is LicensesState.Loaded -> licenses.filteredBy(searchTerm)
+        is LicensesState.Loaded -> licenses.filteredBy(searchTerm, isSearchActive)
         else -> licenses
       }
     }
@@ -71,7 +66,11 @@ internal constructor(
     if (libraries.isEmpty()) {
       LicensesState.NoneFound
     } else {
-      LicensesState.Loaded(libraries.toImmutableList())
+      LicensesState.Loaded(
+        artifacts = libraries.toImmutableList(),
+        filterText = "",
+        isSearchActive = false,
+      )
     }
 
   fun openUrl(url: String) {
@@ -79,13 +78,19 @@ internal constructor(
     urlOpener(url)
   }
 
-  fun toggleSearchBar() {
-    logcat.d { "toggleSearchBar existing=${showSearchBar.value}" }
-    showSearchBar.update { alreadyVisible -> !alreadyVisible }
+  fun openSearch() {
+    logcat.d { "openSearch" }
+    mutableIsSearchActive.update { true }
   }
 
-  fun setSearchText(text: String) {
-    logcat.d { "setSearchText $text" }
+  fun clearFilter() {
+    logcat.d { "clearFilter" }
+    searchTerm.update { "" }
+    mutableIsSearchActive.update { false }
+  }
+
+  fun setFilterText(text: String) {
+    logcat.d { "setFilterText $text" }
     searchTerm.update { text }
   }
 }
