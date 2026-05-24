@@ -261,7 +261,7 @@ private fun BottomNavLayout(
               selectedTab = selectedTab,
               onSelectTab = onSelectTab,
               onMenuClick = { sheetExpanded = true },
-              onNavBarHeightChanged = { navBarHeight = it },
+              onChangeNavBarHeight = { navBarHeight = it },
               animatedContentScope = this,
             )
           }
@@ -278,7 +278,7 @@ private fun SharedTransitionScope.CollapsedSheetContent(
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onMenuClick: () -> Unit,
-  onNavBarHeightChanged: (Dp) -> Unit,
+  onChangeNavBarHeight: (Dp) -> Unit,
   animatedContentScope: AnimatedContentScope,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
@@ -287,7 +287,7 @@ private fun SharedTransitionScope.CollapsedSheetContent(
   NavigationBar(
     modifier =
       modifier.fillMaxWidth().onSizeChanged { size ->
-        onNavBarHeightChanged(with(density) { size.height.toDp() })
+        onChangeNavBarHeight(with(density) { size.height.toDp() })
       },
     containerColor = Color.Transparent,
     contentColor = theme.sidebarItemText,
@@ -620,7 +620,6 @@ private fun BudgetTab.label(): String =
   }
 
 @Stable
-@Composable
 private fun BudgetTab.icon(): ImageVector =
   when (this) {
     BudgetTab.Transactions -> MaterialIcons.LinearScale
