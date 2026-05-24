@@ -66,5 +66,9 @@ class ConventionDetekt : Plugin<Project> {
       }
 
       dependencies { "detektPlugins"(libs["detektCompose"]) }
+
+      if (path != ":aktual-detekt") {
+        dependencies { "detektPlugins"(project(":aktual-detekt")) }
+      }
     }
 }

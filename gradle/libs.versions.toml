@@ -18,6 +18,7 @@ kotlinx-serialization = "1.11.0"
 ktor = "3.5.0"
 markdown = "0.41.0"
 metro = "1.1.1"
+detekt = "2.0.0-alpha.3"
 redacted = "1.16.0"
 sqldelight = "2.3.2"
 
@@ -72,10 +73,15 @@ compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.re
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose" }
 compose-viewmodelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0" }
+detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
+detekt-test = { module = "dev.detekt:detekt-test", version.ref = "detekt" }
+detekt-testJunit = { module = "dev.detekt:detekt-test-junit", version.ref = "detekt" }
+detekt-testUtils = { module = "dev.detekt:detekt-test-utils", version.ref = "detekt" }
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.9" }
 detektGradle = { module = "dev.jonpoulton.blueprint:detekt-rules", version.ref = "blueprint" }
 haze = { module = "dev.chrisbanes.haze:haze-blur", version = "2.0.0-alpha02" }
 junit = { module = "junit:junit", version = "4.13.2" }
+junitPlatformLauncher = { module = "org.junit.platform:junit-platform-launcher", version = "6.1.0" }
 kermit = { module = "co.touchlab:kermit", version = "2.1.0" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
@@ -127,7 +133,7 @@ buildconfig = { id = "com.github.gmazzo.buildconfig", version = "6.0.9" }
 burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.5.1" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
-detekt = { id = "dev.detekt", version = "2.0.0-alpha.3" }
+detekt = { id = "dev.detekt", version.ref = "detekt" }
 doctor = { id = "com.osacky.doctor", version = "0.12.1" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
