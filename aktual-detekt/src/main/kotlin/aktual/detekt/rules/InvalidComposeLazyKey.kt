@@ -6,6 +6,8 @@ import dev.detekt.api.Finding
 import dev.detekt.api.RequiresAnalysisApi
 import dev.detekt.api.Rule
 import org.jetbrains.kotlin.analysis.api.analyze
+import org.jetbrains.kotlin.analysis.api.symbols.KaClassKind
+import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
 import org.jetbrains.kotlin.analysis.api.types.KaClassType
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtLambdaExpression
@@ -15,7 +17,7 @@ import org.jetbrains.kotlin.psi.KtLambdaExpression
  *
  * Will update if so
  */
-internal class NonPrimitiveKey(config: Config) :
+internal class InvalidComposeLazyKey(config: Config) :
   Rule(
     config = config,
     description =
@@ -34,13 +36,13 @@ internal class NonPrimitiveKey(config: Config) :
     val lastStatement = lambda.bodyExpression?.statements?.lastOrNull() ?: return
 
     analyze(expression) {
-      val fqName =
-        (lastStatement.expressionType as? KaClassType)?.classId?.asSingleFqName()?.asString()
-          ?: return@analyze
+      val classType = lastStatement.expressionType as? KaClassType ?: return@analyze
+      val fqName = classType.classId.asSingleFqName().asString()
 
-      if (fqName !in PRIMITIVE_TYPES) {
-        report(Finding(entity = Entity.from(keyArg), message = description))
-      }
+      if (fqName in PRIMITIVE_TYPES) return@analyze
+      if ((classType.symbol as? KaClassSymbol)?.classKind == KaClassKind.ENUM_CLASS) return@analyze
+
+      report(Finding(entity = Entity.from(keyArg), message = description))
     }
   }
 

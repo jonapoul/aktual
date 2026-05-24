@@ -1,5 +1,5 @@
 ---
 aktual:
   active: true
-  NonPrimitiveKey:
+  InvalidComposeLazyKey:
     active: true

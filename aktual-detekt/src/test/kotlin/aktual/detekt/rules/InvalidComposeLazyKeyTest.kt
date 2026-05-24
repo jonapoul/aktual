@@ -14,8 +14,8 @@ import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
 import org.junit.jupiter.api.Test
 
 @KotlinCoreEnvironmentTest
-internal class NonPrimitiveKeyTest(private val env: KotlinEnvironmentContainer) {
-  private val rule = NonPrimitiveKey(Config.empty)
+internal class InvalidComposeLazyKeyTest(private val env: KotlinEnvironmentContainer) {
+  private val rule = InvalidComposeLazyKey(Config.empty)
 
   @Test
   fun `does not report when key returns Int`() =
@@ -63,6 +63,19 @@ internal class NonPrimitiveKeyTest(private val env: KotlinEnvironmentContainer) 
       $PREAMBLE
       fun foo() {
         items(list) {}
+      }
+    """
+          .trimIndent()
+      )
+      .isEmpty()
+
+  @Test
+  fun `does not report when key returns an enum`() =
+    assertThatLinted(
+        """
+      $PREAMBLE
+      fun foo() {
+        items(list, key = { it.enumVal }) {}
       }
     """
           .trimIndent()
@@ -166,6 +179,8 @@ internal class NonPrimitiveKeyTest(private val env: KotlinEnvironmentContainer) 
 
       object Singleton
 
+      enum class Status { ACTIVE, INACTIVE }
+
       data class Item(
         val intVal: Int,
         val longVal: Long,
@@ -174,9 +189,10 @@ internal class NonPrimitiveKeyTest(private val env: KotlinEnvironmentContainer) 
         val valueClassVal: ItemId,
         val interfaceVal: Marker,
         val objectVal: Singleton,
+        val enumVal: Status,
       )
 
-      val list = listOf(Item(1, 1L, "a", Tag("x"), ItemId("id"), MarkerImpl(), Singleton))
+      val list = listOf(Item(1, 1L, "a", Tag("x"), ItemId("id"), MarkerImpl(), Singleton, Status.ACTIVE))
       """
         .trimIndent()
   }
