@@ -11,6 +11,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
+import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.theme.LocalTheme
@@ -139,7 +140,7 @@ private fun Title(isSearchActive: Boolean, loadedState: Loaded?, onAction: Licen
   ) { searching ->
     if (searching) {
       CompositionLocalProvider(LocalTextStyle provides AktualTypography.bodyLarge) {
-        FilterInput(loadedState?.filterText, onAction)
+        FilterInput(loadedState?.filterText, loadedState?.artifacts?.size, onAction)
       }
     } else {
       Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -150,6 +151,7 @@ private fun Title(isSearchActive: Boolean, loadedState: Loaded?, onAction: Licen
 @Composable
 private fun FilterInput(
   filterText: String?,
+  numResults: Int?,
   onAction: LicensesActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -167,6 +169,8 @@ private fun FilterInput(
     state = state,
     singleLine = true,
     placeholderText = Strings.licensesSearchPlaceholder,
+    supportingText =
+      numResults?.let { n -> { Text(text = Plurals.licensesSearchNumResults(n, n)) } },
   )
 }
 

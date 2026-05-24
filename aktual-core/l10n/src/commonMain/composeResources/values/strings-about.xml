@@ -35,6 +35,10 @@
   <string name="licenses_item_launch">Open in browser</string>
   <string name="licenses_search_placeholder">Filter licenses…</string>
   <string name="licenses_no_results">No matches found</string>
+  <plurals name="licenses_search_num_results">
+    <item quantity="one">%1$d match</item>
+    <item quantity="other">%1$d matches</item>
+  </plurals>
   <string name="licenses_filter_clear">Clear filter</string>
 
   <string name="storage_toolbar">Manage Storage</string>
