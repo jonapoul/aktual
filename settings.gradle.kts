@@ -98,6 +98,7 @@ include(
   ":aktual-core:theme",
   ":aktual-core:theme:impl",
   ":aktual-core:ui",
+  ":aktual-detekt",
   ":aktual-di:bindings",
   ":aktual-di:core",
   ":aktual-di:graphs",

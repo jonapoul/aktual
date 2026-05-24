@@ -54,7 +54,7 @@ doctor {
 
 atlas {
   checkOutputs = false
-  ignoredConfigs = setOf("debug", "kover", "test", "classpath")
+  ignoredConfigs = setOf("debug", "kover", "test", "classpath", "detekt")
 
   pathTransforms { remove(":aktual-") }
 
