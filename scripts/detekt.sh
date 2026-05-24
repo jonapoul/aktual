@@ -38,7 +38,7 @@ changed_files=$(
     git diff --name-only "$MERGE_BASE" -- '*.kt' '*.kts' 2>/dev/null
     git ls-files --others --exclude-standard -- '*.kt' '*.kts' 2>/dev/null
   } | sort -u | while IFS= read -r file; do
-    [[ -f "$file" ]] && printf '%s\n' "$file"
+    if [[ -f "$file" ]]; then printf '%s\n' "$file"; fi
   done
 )
 
