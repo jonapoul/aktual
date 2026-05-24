@@ -325,55 +325,50 @@ private fun SharedTransitionScope.ExpandedSheetContent(
   animatedContentScope: AnimatedContentScope,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier.fillMaxWidth()) {
-    // Row 1: tab shortcuts — sharedBounds matched with CollapsedSheetContent
-    Row(modifier = Modifier.fillMaxWidth()) {
-      for (tab in BudgetTab.entries) {
-        NavSheetItem(
-          modifier =
-            Modifier.weight(1f)
-              .sharedBounds(
-                sharedContentState = rememberSharedContentState(key = "nav_tab_${tab.name}"),
-                animatedVisibilityScope = animatedContentScope,
-              ),
-          icon = tab.icon(),
-          label = tab.label(),
-          selected = selectedTab == tab,
-          onClick = { onSelectTab(tab) },
-        )
-      }
-    }
-    // Row 2: menu action shortcuts — fade in via default AnimatedContent transition
-    Row(modifier = Modifier.fillMaxWidth()) {
+  FlowRow(modifier = modifier.fillMaxWidth(), maxItemsInEachRow = BudgetTab.entries.size) {
+    for (tab in BudgetTab.entries) {
       NavSheetItem(
-        modifier = Modifier.weight(1f),
-        icon = MaterialIcons.SwapHoriz,
-        label = Strings.budgetNavMenuSwitchBudget,
-        selected = false,
-        onClick = { onAction(SwitchFile) },
-      )
-      NavSheetItem(
-        modifier = Modifier.weight(1f),
-        icon = MaterialIcons.Logout,
-        label = Strings.budgetNavMenuLogOut,
-        selected = false,
-        onClick = { onAction(LogOut) },
-      )
-      NavSheetItem(
-        modifier = Modifier.weight(1f),
-        icon = MaterialIcons.Settings,
-        label = Strings.budgetNavMenuSettings,
-        selected = false,
-        onClick = { onAction(Settings) },
-      )
-      NavSheetItem(
-        modifier = Modifier.weight(1f),
-        icon = MaterialIcons.Info,
-        label = Strings.budgetNavMenuAbout,
-        selected = false,
-        onClick = { onAction(About) },
+        modifier =
+          Modifier.weight(1f)
+            .sharedBounds(
+              sharedContentState = rememberSharedContentState(key = "nav_tab_${tab.name}"),
+              animatedVisibilityScope = animatedContentScope,
+            ),
+        icon = tab.icon(),
+        label = tab.label(),
+        selected = selectedTab == tab,
+        onClick = { onSelectTab(tab) },
       )
     }
+    // action shortcuts — fade in via default AnimatedContent transition
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.SwapHoriz,
+      label = Strings.budgetNavMenuSwitchBudget,
+      selected = false,
+      onClick = { onAction(SwitchFile) },
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Logout,
+      label = Strings.budgetNavMenuLogOut,
+      selected = false,
+      onClick = { onAction(LogOut) },
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Settings,
+      label = Strings.budgetNavMenuSettings,
+      selected = false,
+      onClick = { onAction(Settings) },
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Info,
+      label = Strings.budgetNavMenuAbout,
+      selected = false,
+      onClick = { onAction(About) },
+    )
   }
 }
 
@@ -699,48 +694,44 @@ private fun CollapsedNavSheetPreviewContent(
 
 @Composable
 private fun ExpandedNavSheetPreviewContent(selectedTab: BudgetTab) {
-  Column(modifier = Modifier.fillMaxWidth()) {
-    Row(modifier = Modifier.fillMaxWidth()) {
-      for (tab in BudgetTab.entries) {
-        NavSheetItem(
-          modifier = Modifier.weight(1f),
-          icon = tab.icon(),
-          label = tab.label(),
-          selected = selectedTab == tab,
-          onClick = {},
-        )
-      }
-    }
-    Row(modifier = Modifier.fillMaxWidth()) {
+  FlowRow(modifier = Modifier.fillMaxWidth(), maxItemsInEachRow = BudgetTab.entries.size) {
+    for (tab in BudgetTab.entries) {
       NavSheetItem(
         modifier = Modifier.weight(1f),
-        icon = MaterialIcons.SwapHoriz,
-        label = Strings.budgetNavMenuSwitchBudget,
-        selected = false,
-        onClick = {},
-      )
-      NavSheetItem(
-        modifier = Modifier.weight(1f),
-        icon = MaterialIcons.Logout,
-        label = Strings.budgetNavMenuLogOut,
-        selected = false,
-        onClick = {},
-      )
-      NavSheetItem(
-        modifier = Modifier.weight(1f),
-        icon = MaterialIcons.Settings,
-        label = Strings.budgetNavMenuSettings,
-        selected = false,
-        onClick = {},
-      )
-      NavSheetItem(
-        modifier = Modifier.weight(1f),
-        icon = MaterialIcons.Info,
-        label = Strings.budgetNavMenuAbout,
-        selected = false,
+        icon = tab.icon(),
+        label = tab.label(),
+        selected = selectedTab == tab,
         onClick = {},
       )
     }
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.SwapHoriz,
+      label = Strings.budgetNavMenuSwitchBudget,
+      selected = false,
+      onClick = {},
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Logout,
+      label = Strings.budgetNavMenuLogOut,
+      selected = false,
+      onClick = {},
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Settings,
+      label = Strings.budgetNavMenuSettings,
+      selected = false,
+      onClick = {},
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Info,
+      label = Strings.budgetNavMenuAbout,
+      selected = false,
+      onClick = {},
+    )
   }
 }
 
