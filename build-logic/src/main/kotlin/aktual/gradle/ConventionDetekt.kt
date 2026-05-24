@@ -67,8 +67,8 @@ class ConventionDetekt : Plugin<Project> {
 
       dependencies { "detektPlugins"(libs["detektCompose"]) }
 
-      if (target.path != ":aktual-detekt") {
-        dependencies { "detektPlugins"(project(":aktual-detekt")) }
+      if (target.path != ":detekt-rules") {
+        dependencies { "detektPlugins"(project(":detekt-rules")) }
 
         extensions.configure(DetektExtension::class) {
           config.from(rootProject.isolated.projectDirectory.file("config/detekt-aktual.yml"))
