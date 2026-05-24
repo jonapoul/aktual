@@ -91,7 +91,7 @@ class LicensesViewModelTest {
   }
 
   @Test
-  fun `Toggle search bar and enter text`() = runTest {
+  fun `Open and close search`() = runTest {
     // Given the repo fetches a library successfully
     val models = listOf(EXAMPLE_MODEL)
     coEvery { repository.loadLicenses() } returns LicensesLoadState.Success(models)
@@ -99,15 +99,14 @@ class LicensesViewModelTest {
     // When
     buildViewModel()
 
-    // Then
-    viewModel.searchBarState.test {
-      assertThatNextEmissionIsEqualTo(SearchBarState.Gone)
+    viewModel.licensesState.test {
+      assertLoaded(models)
 
-      viewModel.toggleSearchBar()
-      assertThatNextEmissionIsEqualTo(SearchBarState.Visible)
+      viewModel.openSearch()
+      assertLoaded(models, isSearchActive = true)
 
-      viewModel.toggleSearchBar()
-      assertThatNextEmissionIsEqualTo(SearchBarState.Gone)
+      viewModel.clearFilter()
+      assertLoaded(models)
 
       cancelAndIgnoreRemainingEvents()
     }
@@ -130,19 +129,22 @@ class LicensesViewModelTest {
       // No filter
       assertLoaded(allLibraries)
 
+      // Activate search
+      viewModel.openSearch()
+      assertLoaded(allLibraries, isSearchActive = true)
+
       // Apply filters
-      viewModel.toggleSearchBar()
-      viewModel.setSearchText(text = "my project")
-      assertLoaded(projectLib)
+      viewModel.setFilterText(text = "my project")
+      assertLoaded(listOf(projectLib), filterText = "my project", isSearchActive = true)
 
-      viewModel.setSearchText(text = "url")
-      assertLoaded(urlLib)
+      viewModel.setFilterText(text = "url")
+      assertLoaded(listOf(urlLib), filterText = "url", isSearchActive = true)
 
-      viewModel.setSearchText(text = "MIT")
-      assertLoaded(licenseLib)
+      viewModel.setFilterText(text = "MIT")
+      assertLoaded(listOf(licenseLib), filterText = "MIT", isSearchActive = true)
 
-      viewModel.setSearchText(text = "")
-      assertLoaded(allLibraries)
+      viewModel.setFilterText(text = "")
+      assertLoaded(allLibraries, filterText = "", isSearchActive = true)
 
       cancelAndIgnoreRemainingEvents()
     }
@@ -158,8 +160,18 @@ class LicensesViewModelTest {
     assertLoaded(models.toList())
   }
 
-  private suspend fun TurbineTestContext<LicensesState>.assertLoaded(models: List<ArtifactDetail>) {
-    assertThatNextEmissionIsEqualTo(LicensesState.Loaded(models.toImmutableList()))
+  private suspend fun TurbineTestContext<LicensesState>.assertLoaded(
+    models: List<ArtifactDetail>,
+    filterText: String = "",
+    isSearchActive: Boolean = false,
+  ) {
+    assertThatNextEmissionIsEqualTo(
+      LicensesState.Loaded(
+        artifacts = models.toImmutableList(),
+        filterText = filterText,
+        isSearchActive = isSearchActive,
+      )
+    )
   }
 
   private companion object {
