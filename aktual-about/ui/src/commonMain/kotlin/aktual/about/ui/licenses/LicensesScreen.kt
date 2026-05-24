@@ -258,7 +258,12 @@ private fun LoadedContent(
     verticalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     items(artifacts, key = { it.id }) { artifact ->
-      ArtifactItem(artifact = artifact, onLaunchUrl = { onAction(LaunchUrl(it)) }, theme = theme)
+      ArtifactItem(
+        modifier = Modifier.animateItem(),
+        artifact = artifact,
+        onLaunchUrl = { onAction(LaunchUrl(it)) },
+        theme = theme,
+      )
     }
 
     item { BottomSpacing() }
