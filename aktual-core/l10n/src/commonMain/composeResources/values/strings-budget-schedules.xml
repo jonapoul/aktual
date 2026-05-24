@@ -17,4 +17,8 @@
   <string name="list_schedules_filter">Filter</string>
   <string name="list_schedules_filter_placeholder">Filter schedules…</string>
   <string name="list_schedules_filter_clear">Clear filter</string>
+  <plurals name="list_schedules_num_results">
+    <item quantity="one">%1$d match</item>
+    <item quantity="other">%1$d matches</item>
+  </plurals>
 </resources>

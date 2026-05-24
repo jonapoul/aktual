@@ -9,17 +9,24 @@ import kotlinx.collections.immutable.toImmutableList
 sealed interface LicensesState {
   data object Loading : LicensesState
 
-  data class Loaded(val artifacts: ImmutableList<ArtifactDetail>) : LicensesState
+  @Immutable
+  data class Loaded(
+    val artifacts: ImmutableList<ArtifactDetail>,
+    val filterText: String,
+    val isSearchActive: Boolean,
+  ) : LicensesState
 
   data object NoneFound : LicensesState
 
   data class Error(val errorMessage: String) : LicensesState
 }
 
-internal fun LicensesState.Loaded.filteredBy(text: String): LicensesState.Loaded {
-  val filtered = artifacts.filter { lib -> lib.matches(text) }
-  return LicensesState.Loaded(artifacts = filtered.toImmutableList())
-}
+internal fun LicensesState.Loaded.filteredBy(text: String, isSearchActive: Boolean) =
+  copy(
+    artifacts = artifacts.filter { lib -> lib.matches(text) }.toImmutableList(),
+    filterText = text,
+    isSearchActive = isSearchActive,
+  )
 
 private fun ArtifactDetail.matches(text: String): Boolean =
   name.contains(text) ||

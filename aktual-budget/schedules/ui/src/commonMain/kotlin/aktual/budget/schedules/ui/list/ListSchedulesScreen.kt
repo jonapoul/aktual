@@ -14,6 +14,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
+import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.theme.LocalTheme
@@ -159,7 +160,7 @@ private fun Title(
   ) { searching ->
     if (searching) {
       CompositionLocalProvider(LocalTextStyle provides AktualTypography.bodyLarge) {
-        FilterInput(successState?.filterText, onAction)
+        FilterInput(successState?.filterText, successState?.schedules?.size, onAction)
       }
     } else {
       Text(text = Strings.listSchedulesTitle)
@@ -170,6 +171,7 @@ private fun Title(
 @Composable
 private fun FilterInput(
   filterText: String?,
+  numResults: Int?,
   onAction: ListSchedulesActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -187,6 +189,7 @@ private fun FilterInput(
     state = state,
     singleLine = true,
     placeholderText = Strings.listSchedulesFilterPlaceholder,
+    supportingText = numResults?.let { n -> { Text(text = Plurals.listSchedulesNumResults(n, n)) } },
   )
 }
 

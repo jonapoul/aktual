@@ -8,9 +8,11 @@ internal data object NavBack : LicensesAction
 
 internal data object Reload : LicensesAction
 
-internal data object ToggleSearchBar : LicensesAction
+internal data object OpenSearch : LicensesAction
 
-@JvmInline internal value class EditSearchText(val text: String) : LicensesAction
+internal data object ClearFilter : LicensesAction
+
+@JvmInline internal value class EditFilterText(val text: String) : LicensesAction
 
 @JvmInline internal value class LaunchUrl(val url: String) : LicensesAction
 

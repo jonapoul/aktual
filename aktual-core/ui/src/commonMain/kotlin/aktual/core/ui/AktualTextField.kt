@@ -51,6 +51,7 @@ fun AktualTextField(
   colors: TextFieldColors = theme.textField(),
   clearable: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
+  supportingText: (@Composable () -> Unit)? = null,
 ) {
   val isFocused by interactionSource.collectIsFocusedAsState()
   val borderColor =
@@ -91,6 +92,7 @@ fun AktualTextField(
     keyboardOptions = keyboardOptions,
     onKeyboardAction = onKeyboardAction,
     textStyle = textStyle,
+    supportingText = supportingText,
   )
 }
 
