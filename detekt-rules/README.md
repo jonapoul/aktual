@@ -1,4 +1,4 @@
-# aktual-detekt
+# detekt-rules
 
 <!--region chart-->
 ![chart](atlas/chart.png)

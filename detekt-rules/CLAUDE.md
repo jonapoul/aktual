@@ -1,4 +1,4 @@
-# aktual-detekt
+# detekt-rules
 
 Custom detekt rules, loaded as a `detektPlugins` dependency by `ConventionDetekt`.
 
