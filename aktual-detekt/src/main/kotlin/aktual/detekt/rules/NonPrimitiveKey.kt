@@ -6,6 +6,7 @@ import dev.detekt.api.Finding
 import dev.detekt.api.RequiresAnalysisApi
 import dev.detekt.api.Rule
 import org.jetbrains.kotlin.analysis.api.analyze
+import org.jetbrains.kotlin.analysis.api.types.KaClassType
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtLambdaExpression
 
@@ -34,7 +35,7 @@ internal class NonPrimitiveKey(config: Config) :
 
     analyze(expression) {
       val fqName =
-        lastStatement.expressionType?.expandedSymbol?.classId?.asSingleFqName()?.asString()
+        (lastStatement.expressionType as? KaClassType)?.classId?.asSingleFqName()?.asString()
           ?: return@analyze
 
       if (fqName !in PRIMITIVE_TYPES) {

@@ -23,7 +23,7 @@ internal class NonPrimitiveKeyTest(private val env: KotlinEnvironmentContainer) 
         """
       $PREAMBLE
       fun foo() {
-        items(list, key = { it.id }) {}
+        items(list, key = { it.intVal }) {}
       }
     """
           .trimIndent()
@@ -36,7 +36,7 @@ internal class NonPrimitiveKeyTest(private val env: KotlinEnvironmentContainer) 
         """
       $PREAMBLE
       fun foo() {
-        items(list, key = { it.serial }) {}
+        items(list, key = { it.longVal }) {}
       }
     """
           .trimIndent()
@@ -49,7 +49,7 @@ internal class NonPrimitiveKeyTest(private val env: KotlinEnvironmentContainer) 
         """
       $PREAMBLE
       fun foo() {
-        items(list, key = { it.name }) {}
+        items(list, key = { it.stringVal }) {}
       }
     """
           .trimIndent()
@@ -75,7 +75,46 @@ internal class NonPrimitiveKeyTest(private val env: KotlinEnvironmentContainer) 
         """
       $PREAMBLE
       fun foo() {
-        items(list, key = { it.tag }) {}
+        items(list, key = { it.dataClassVal }) {}
+      }
+    """
+          .trimIndent()
+      )
+      .hasSize(1)
+
+  @Test
+  fun `reports when key returns a value class`() =
+    assertThatLinted(
+        """
+      $PREAMBLE
+      fun foo() {
+        items(list, key = { it.valueClassVal }) {}
+      }
+    """
+          .trimIndent()
+      )
+      .hasSize(1)
+
+  @Test
+  fun `reports when key returns an interface type`() =
+    assertThatLinted(
+        """
+      $PREAMBLE
+      fun foo() {
+        items(list, key = { it.interfaceVal }) {}
+      }
+    """
+          .trimIndent()
+      )
+      .hasSize(1)
+
+  @Test
+  fun `reports when key returns an object`() =
+    assertThatLinted(
+        """
+      $PREAMBLE
+      fun foo() {
+        items(list, key = { it.objectVal }) {}
       }
     """
           .trimIndent()
@@ -118,9 +157,26 @@ internal class NonPrimitiveKeyTest(private val env: KotlinEnvironmentContainer) 
 
       data class Tag(val value: String)
 
-      data class Item(val id: Int, val serial: Long, val name: String, val tag: Tag)
+      @JvmInline
+      value class ItemId(val value: String)
 
-      val list = listOf(Item(1, 1L, "a", Tag("x")))
+      interface Marker
+
+      class MarkerImpl : Marker
+
+      object Singleton
+
+      data class Item(
+        val intVal: Int,
+        val longVal: Long,
+        val stringVal: String,
+        val dataClassVal: Tag,
+        val valueClassVal: ItemId,
+        val interfaceVal: Marker,
+        val objectVal: Singleton,
+      )
+
+      val list = listOf(Item(1, 1L, "a", Tag("x"), ItemId("id"), MarkerImpl(), Singleton))
       """
         .trimIndent()
   }
