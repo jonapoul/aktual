@@ -1,5 +1,7 @@
 package aktual.budget.schedules.ui.list
 
+import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleA
+import aktual.budget.schedules.ui.list.ListSchedulesPreview.scheduleB
 import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.list.Empty
 import aktual.budget.schedules.vm.list.Failure
@@ -10,10 +12,15 @@ import aktual.budget.schedules.vm.list.Success
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
+import aktual.core.icons.material.Search
+import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
+import aktual.core.ui.AktualTextField
+import aktual.core.ui.AktualTypography
+import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.FailureAction
@@ -26,23 +33,37 @@ import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -66,6 +87,9 @@ internal fun ListSchedulesScreen(
         Reload -> viewModel.reload()
         CreateNew -> editSchedule()
         is Open -> editSchedule(action.id)
+        OpenSearch -> viewModel.openSearch()
+        is EditFilterText -> viewModel.setFilterText(action.text)
+        ClearFilter -> viewModel.clearFilter()
       }
     },
   )
@@ -80,14 +104,24 @@ private fun ListSchedulesScaffold(
   val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
+  val successState = state as? Success
+
+  val isSearchActive = successState?.isSearchActive == true
 
   Scaffold(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().imePadding(),
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
-        title = { Text(Strings.listSchedulesTitle) },
+        title = { Title(isSearchActive, successState, onAction) },
+        actions = {
+          BareIconButton(
+            imageVector = if (isSearchActive) MaterialIcons.SearchOff else MaterialIcons.Search,
+            contentDescription = Strings.listSchedulesFilter,
+            onClick = { onAction(if (isSearchActive) ClearFilter else OpenSearch) },
+          )
+        },
       )
     },
   ) { innerPadding ->
@@ -111,6 +145,49 @@ private fun ListSchedulesScaffold(
       }
     }
   }
+}
+
+@Composable
+private fun Title(
+  isSearchActive: Boolean,
+  successState: Success?,
+  onAction: ListSchedulesActionHandler,
+) {
+  AnimatedContent(
+    targetState = isSearchActive,
+    transitionSpec = { fadeIn() togetherWith fadeOut() },
+  ) { searching ->
+    if (searching) {
+      CompositionLocalProvider(LocalTextStyle provides AktualTypography.bodyLarge) {
+        FilterInput(successState?.filterText, onAction)
+      }
+    } else {
+      Text(text = Strings.listSchedulesTitle)
+    }
+  }
+}
+
+@Composable
+private fun FilterInput(
+  filterText: String?,
+  onAction: ListSchedulesActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  val state = rememberTextFieldState(initialText = filterText.orEmpty())
+  val focusRequester = remember { FocusRequester() }
+
+  LaunchedEffect(Unit) { focusRequester.requestFocus() }
+
+  LaunchedEffect(state) {
+    snapshotFlow { state.text.toString() }.collect { filter -> onAction(EditFilterText(filter)) }
+  }
+
+  AktualTextField(
+    modifier = modifier.focusRequester(focusRequester).fillMaxWidth(),
+    state = state,
+    singleLine = true,
+    placeholderText = Strings.listSchedulesFilterPlaceholder,
+  )
 }
 
 @Composable
@@ -139,13 +216,13 @@ private fun ListSchedulesContent(
       }
       Empty -> {
         FailureScreen(
-          title = Strings.rulesEmpty,
+          title = Strings.listSchedulesEmpty,
           reason = null,
           icon = null,
           background = theme.tableBackground,
           action =
             FailureAction(
-              text = { Strings.rulesEmptyCreate },
+              text = { Strings.listSchedulesEmptyCreate },
               icon = MaterialIcons.Add,
               onClick = { onAction(CreateNew) },
             ),
@@ -165,12 +242,27 @@ private fun ListSchedulesContent(
         )
       }
       is Success -> {
-        ContentSuccess(
-          schedules = state.schedules,
-          listState = listState,
-          contentPadding = contentPadding,
-          onAction = onAction,
-        )
+        if (state.schedules.isEmpty()) {
+          FailureScreen(
+            title = Strings.listSchedulesNoResults,
+            reason = null,
+            icon = null,
+            background = theme.tableBackground,
+            action =
+              FailureAction(
+                text = { Strings.listSchedulesFilterClear },
+                icon = MaterialIcons.SearchOff,
+                onClick = { onAction(ClearFilter) },
+              ),
+          )
+        } else {
+          ContentSuccess(
+            schedules = state.schedules,
+            listState = listState,
+            contentPadding = contentPadding,
+            onAction = onAction,
+          )
+        }
       }
     }
   }
@@ -190,7 +282,9 @@ private fun ContentSuccess(
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ListSchedulesDS.listItemSpacing),
   ) {
-    items(schedules, key = { it.id }) { schedule -> ListSchedulesItem(schedule, onAction) }
+    items(schedules, key = { it.id.value }) { schedule ->
+      ListSchedulesItem(modifier = Modifier.animateItem(), schedule = schedule, onAction = onAction)
+    }
     item { BottomSpacing() }
   }
 }
@@ -198,17 +292,19 @@ private fun ContentSuccess(
 @Preview
 @Composable
 private fun PreviewListSchedulesScaffold(
-  @PreviewParameter(BottomBarProvider::class) params: ThemedParams<ListSchedulesParams>
-) = PreviewWithThemedParams(params) { ListSchedulesScaffold(state = state, onAction = {}) }
+  @PreviewParameter(ListSchedulesProvider::class) params: ThemedParams<ListSchedulesState>
+) = PreviewWithThemedParams(params) { ListSchedulesScaffold(state = this, onAction = {}) }
 
-private data class ListSchedulesParams(val state: ListSchedulesState)
-
-private class BottomBarProvider :
-  ThemedParameterProvider<ListSchedulesParams>(
-    ListSchedulesParams(
-      Success(persistentListOf(ListSchedulesPreview.scheduleA, ListSchedulesPreview.scheduleB))
+private class ListSchedulesProvider :
+  ThemedParameterProvider<ListSchedulesState>(
+    Success(
+      schedules = persistentListOf(scheduleA, scheduleB),
+      filterText = "",
+      isSearchActive = false,
     ),
-    ListSchedulesParams(Empty),
-    ListSchedulesParams(Loading),
-    ListSchedulesParams(Failure("Some problem happened")),
+    Success(schedules = persistentListOf(scheduleA), filterText = "rent", isSearchActive = true),
+    Success(schedules = persistentListOf(), filterText = "rent", isSearchActive = true),
+    Empty,
+    Loading,
+    Failure("Some problem happened"),
   )

@@ -10,6 +10,13 @@ data object Loading : ListSchedulesState
 
 @JvmInline value class Failure(val cause: String?) : ListSchedulesState
 
+// No schedules exist at all
 data object Empty : ListSchedulesState
 
-@JvmInline value class Success(val schedules: ImmutableList<Schedule>) : ListSchedulesState
+// Can be empty if there are schedules, but no matches with the given filter
+@Immutable
+data class Success(
+  val schedules: ImmutableList<Schedule>,
+  val filterText: String,
+  val isSearchActive: Boolean,
+) : ListSchedulesState
