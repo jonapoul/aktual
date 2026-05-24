@@ -72,7 +72,7 @@ if [[ ${#tasks[@]} -eq 0 ]]; then
 fi
 
 # Sort for deterministic output
-IFS=$'\n' tasks=($(printf '%s\n' "${tasks[@]}" | sort)); unset IFS
+mapfile -t tasks < <(printf '%s\n' "${tasks[@]}" | sort)
 
 echo "Running detektCheck on ${#tasks[@]} module(s):"
 for task in "${tasks[@]}"; do
