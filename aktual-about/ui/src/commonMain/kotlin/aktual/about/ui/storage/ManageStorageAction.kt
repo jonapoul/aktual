@@ -5,27 +5,27 @@ import androidx.compose.runtime.Immutable
 
 @Immutable internal sealed interface ManageStorageAction
 
-data object NavBack : ManageStorageAction
+internal data object NavBack : ManageStorageAction
 
-data object Reload : ManageStorageAction
+internal data object Reload : ManageStorageAction
 
-data object RequestClearAllFiles : ManageStorageAction
+internal data object RequestClearAllFiles : ManageStorageAction
 
-data class RequestClearBudget(val id: BudgetId, val name: String) : ManageStorageAction
+internal data class RequestClearBudget(val id: BudgetId, val name: String) : ManageStorageAction
 
-data object RequestClearCache : ManageStorageAction
+internal data object RequestClearCache : ManageStorageAction
 
-data object RequestClearPreferences : ManageStorageAction
+internal data object RequestClearPreferences : ManageStorageAction
 
-data object ConfirmClearAllFiles : ManageStorageAction
+internal data object ConfirmClearAllFiles : ManageStorageAction
 
-@JvmInline value class ConfirmClearBudget(val id: BudgetId) : ManageStorageAction
+@JvmInline internal value class ConfirmClearBudget(val id: BudgetId) : ManageStorageAction
 
-data object ConfirmClearCache : ManageStorageAction
+internal data object ConfirmClearCache : ManageStorageAction
 
-data object ConfirmClearPreferences : ManageStorageAction
+internal data object ConfirmClearPreferences : ManageStorageAction
 
-data object DismissDialog : ManageStorageAction
+internal data object DismissDialog : ManageStorageAction
 
 @Immutable
 internal fun interface ManageStorageActionHandler {

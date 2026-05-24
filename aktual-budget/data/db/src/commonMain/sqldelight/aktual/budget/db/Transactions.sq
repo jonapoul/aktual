@@ -179,6 +179,13 @@ SELECT EXISTS(
   WHERE schedule = ? AND date >= ? AND tombstone = 0
 );
 
+-- Bulk variant: fetches all (schedule, date) pairs on or after fromDate.
+-- Callers group by schedule and take max(date) to check per-schedule thresholds in Kotlin.
+transactionDatesFromDate:
+SELECT schedule, date
+FROM transactions
+WHERE schedule IS NOT NULL AND tombstone = 0 AND date >= :fromDate;
+
 -- Chart data queries for dashboard widgets
 
 cashFlowByMonth:

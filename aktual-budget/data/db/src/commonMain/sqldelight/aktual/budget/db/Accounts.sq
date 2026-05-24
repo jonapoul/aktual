@@ -46,6 +46,8 @@ getNames: SELECT name FROM accounts WHERE id IN ?;
 
 getAllActive: SELECT id, name FROM accounts WHERE tombstone = 0 AND closed = 0 ORDER BY sort_order, name;
 
+getAllNames: SELECT id, name FROM accounts WHERE tombstone = 0;
+
 insert:
 INSERT INTO accounts(id, account_id, name, official_name, bank, offbudget, account_sync_source)
   VALUES (?, ?, ?, ?, ?, ?, ?);

@@ -16,4 +16,6 @@ internal object ListSchedulesDS {
 
   val shimmerItemTextHeight = 20.dp
   val shimmerItemTextHeightSmall = 15.dp
+
+  val filterBarPadding = PaddingValues(6.dp)
 }
