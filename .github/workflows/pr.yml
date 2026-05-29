@@ -177,6 +177,20 @@ jobs:
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
 
+  lint:
+    needs: validation
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
+      - run: ./gradlew lint
+      - uses: ./.github/actions/report-build-results
+        if: ${{ !cancelled() }}
+
   tests:
     needs: validation
     if: ${{ !cancelled() && needs.validation.result == 'success' }}
@@ -236,6 +250,7 @@ jobs:
       - assemble-android
       - assemble-desktop
       - detekt
+      - lint
       - tests
       - other-checks
       - atlas

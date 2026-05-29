@@ -4,6 +4,7 @@ import aktual.app.nav.AktualAppContent
 import aktual.app.nav.rememberBackStack
 import aktual.core.ui.LoadingScreenIfNotNull
 import aktual.di.AppScope
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -50,6 +51,7 @@ class AktualActivity(override val defaultViewModelProviderFactory: MetroViewMode
 
 @Composable
 @Suppress("ViewModelForwarding")
+@SuppressLint("ComposeViewModelForwarding")
 private fun Content(viewModel: AktualActivityViewModel) {
   val viewModelFactory by
     remember { viewModel.runLevels.viewModelFactory() }.collectAsState(initial = null)
