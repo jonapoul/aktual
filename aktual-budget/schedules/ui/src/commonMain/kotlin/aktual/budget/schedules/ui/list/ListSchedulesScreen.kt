@@ -189,7 +189,8 @@ private fun FilterInput(
     state = state,
     singleLine = true,
     placeholderText = Strings.listSchedulesFilterPlaceholder,
-    supportingText = numResults?.let { n -> { Text(text = Plurals.listSchedulesNumResults(n, n)) } },
+    supportingText =
+      numResults?.let { n -> { Text(text = Plurals.listSchedulesNumResults(n, n)) } },
   )
 }
 

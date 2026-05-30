@@ -491,5 +491,8 @@ private class CatalogStateProvider :
     CustomThemeSettingsParams(CatalogState.Loading),
     CustomThemeSettingsParams(CatalogState.Failed.FetchingCatalog),
     CustomThemeSettingsParams(SUCCESS_STATE),
-    CustomThemeSettingsParams(SUCCESS_STATE, bottomSheet = ThemeFilterBottomSheet(ThemeFilter.Dark)),
+    CustomThemeSettingsParams(
+      SUCCESS_STATE,
+      bottomSheet = ThemeFilterBottomSheet(ThemeFilter.Dark),
+    ),
   )
