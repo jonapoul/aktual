@@ -44,6 +44,10 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
         """
           .trimIndent(),
       ),
+
+    // packages/loot-core/migrations/1780099200000_add_show_trend_lines_report_setting.sql
+    1780099200000L to
+      listOf("ALTER TABLE custom_reports ADD COLUMN show_trend_lines INTEGER DEFAULT 0"),
   )
 
 private const val TAG = "MigrateDatabase"

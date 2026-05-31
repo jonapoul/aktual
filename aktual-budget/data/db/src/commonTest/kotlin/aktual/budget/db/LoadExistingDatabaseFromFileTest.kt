@@ -3,6 +3,7 @@ package aktual.budget.db
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CleanupGroupId
+import aktual.budget.model.CustomReportId
 import aktual.budget.model.ScheduleId
 import aktual.test.CoTemporaryFolder
 import aktual.test.testBudgetFiles
@@ -61,6 +62,7 @@ class LoadExistingDatabaseFromFileTest {
     assertViewHash(db)
     checkMigration1769000000000(db)
     checkMigration1778510362740(db)
+    checkMigration1780099200000(db)
   }
 
   // Verify that the file was opened at all
@@ -81,6 +83,15 @@ class LoadExistingDatabaseFromFileTest {
     val cleanupGroup =
       db.cleanupGroupsQueries.getById(CleanupGroupId("cleanup-group")).awaitAsOneOrNull()
     assertNull(cleanupGroup)
+  }
+
+  // Adds show_trend_lines column to custom_reports. migration sets to 0 (false) by default
+  private suspend fun checkMigration1780099200000(db: BudgetDatabase) {
+    val showTrendLines =
+      db.customReportsQueries
+        .getShowTrendLines(id = CustomReportId("custom-report"))
+        .awaitAsOneOrNull()
+    assertNull(showTrendLines)
   }
 
   private fun loadDatabaseIntoFile(): File {
