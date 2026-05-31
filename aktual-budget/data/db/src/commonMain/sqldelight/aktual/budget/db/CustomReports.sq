@@ -38,7 +38,8 @@ CREATE TABLE IF NOT EXISTS custom_reports(
   tombstone INTEGER AS Boolean DEFAULT 0,
   include_current INTEGER AS Boolean DEFAULT 0,
   sort_by TEXT AS SortBy DEFAULT 'desc',
-  trim_intervals INTEGER AS Boolean DEFAULT 0
+  trim_intervals INTEGER AS Boolean DEFAULT 0,
+  show_trend_lines INTEGER AS Boolean DEFAULT 0
 );
 
 delete: DELETE FROM custom_reports WHERE id = ?;
@@ -46,5 +47,6 @@ getById: SELECT * FROM custom_reports WHERE id = ?;
 getIdByName: SELECT id FROM custom_reports WHERE tombstone = 0 AND name = ? LIMIT 1;
 getIds: SELECT id FROM custom_reports;
 getMetadataById: SELECT metadata FROM custom_reports WHERE id = ?;
+getShowTrendLines: SELECT show_trend_lines FROM custom_reports WHERE id = ?;
 insert: INSERT INTO custom_reports VALUES ?;
 rename: UPDATE custom_reports SET name = ? WHERE id = ?;
