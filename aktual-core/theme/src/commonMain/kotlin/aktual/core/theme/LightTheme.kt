@@ -33,6 +33,7 @@ data object LightTheme : DefaultTheme {
   override val tableRowBackgroundAlternate = tableBackground
   override val tableRowBackgroundHover = AktualColors.navy50
   override val tableText = pageText
+  override val tableTextItemAdded = tableText
   override val tableTextLight = AktualColors.navy400
   override val tableTextSubdued = AktualColors.navy100
   override val tableTextSelected = AktualColors.navy700
@@ -69,6 +70,7 @@ data object LightTheme : DefaultTheme {
   override val sidebarItemBackgroundHover = AktualColors.navy800
   override val sidebarItemAccentSelected = AktualColors.purple200
   override val sidebarItemText = AktualColors.navy150
+  override val sidebarItemTextUpdated = sidebarItemText
   override val sidebarItemTextSelected = AktualColors.purple200
   override val sidebarBudgetName = AktualColors.navy150
 

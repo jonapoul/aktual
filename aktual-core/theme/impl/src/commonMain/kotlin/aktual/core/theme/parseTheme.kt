@@ -64,6 +64,7 @@ internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomTheme {
               "tableRowBackgroundAlternate".attr(tableRowBackgroundAlternate),
             tableRowBackgroundHover = "tableRowBackgroundHover".attr(tableRowBackgroundHover),
             tableText = "tableText".attr(tableText),
+            tableTextItemAdded = "tableTextItemAdded".attr(tableTextItemAdded),
             tableTextLight = "tableTextLight".attr(tableTextLight),
             tableTextSubdued = "tableTextSubdued".attr(tableTextSubdued),
             tableTextSelected = "tableTextSelected".attr(tableTextSelected),
@@ -95,6 +96,7 @@ internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomTheme {
             sidebarItemBackgroundHover =
               "sidebarItemBackgroundHover".attr(sidebarItemBackgroundHover),
             sidebarItemText = "sidebarItemText".attr(sidebarItemText),
+            sidebarItemTextUpdated = "sidebarItemTextUpdated".attr(sidebarItemTextUpdated),
             sidebarItemTextSelected = "sidebarItemTextSelected".attr(sidebarItemTextSelected),
             sidebarBudgetName = "sidebarBudgetName".attr(sidebarBudgetName),
             menuBackground = "menuBackground".attr(menuBackground),

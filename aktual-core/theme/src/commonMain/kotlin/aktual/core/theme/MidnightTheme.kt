@@ -33,6 +33,7 @@ data object MidnightTheme : DefaultTheme {
   override val tableRowBackgroundAlternate = tableBackground
   override val tableRowBackgroundHover = AktualColors.gray500
   override val tableText = AktualColors.gray150
+  override val tableTextItemAdded = tableText
   override val tableTextLight = tableText
   override val tableTextSubdued = AktualColors.gray500
   override val tableTextSelected = AktualColors.gray800
@@ -69,6 +70,7 @@ data object MidnightTheme : DefaultTheme {
   override val sidebarItemAccentSelected = AktualColors.purple200
   override val sidebarItemBackgroundHover = AktualColors.gray700
   override val sidebarItemText = AktualColors.gray100
+  override val sidebarItemTextUpdated = sidebarItemText
   override val sidebarItemTextSelected = AktualColors.purple200
   override val sidebarBudgetName = AktualColors.gray300
 

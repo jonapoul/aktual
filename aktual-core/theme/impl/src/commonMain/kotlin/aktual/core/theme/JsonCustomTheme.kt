@@ -103,6 +103,9 @@ internal data class JsonCustomTheme(
   override val tableText: Color
     get() = table.tableText
 
+  override val tableTextItemAdded: Color
+    get() = table.tableTextItemAdded
+
   override val tableTextLight: Color
     get() = table.tableTextLight
 
@@ -169,6 +172,9 @@ internal data class JsonCustomTheme(
 
   override val sidebarItemText: Color
     get() = navigation.sidebarItemText
+
+  override val sidebarItemTextUpdated: Color
+    get() = navigation.sidebarItemTextUpdated
 
   override val sidebarItemTextSelected: Color
     get() = navigation.sidebarItemTextSelected
@@ -740,6 +746,7 @@ internal data class TableColors(
   @SerialName("tableRowBackgroundAlternate") val tableRowBackgroundAlternate: Color,
   @SerialName("tableRowBackgroundHover") val tableRowBackgroundHover: Color,
   @SerialName("tableText") val tableText: Color,
+  @SerialName("tableTextItemAdded") val tableTextItemAdded: Color,
   @SerialName("tableTextLight") val tableTextLight: Color,
   @SerialName("tableTextSubdued") val tableTextSubdued: Color,
   @SerialName("tableTextSelected") val tableTextSelected: Color,
@@ -766,6 +773,7 @@ internal data class NavigationColors(
   @SerialName("sidebarItemAccentSelected") val sidebarItemAccentSelected: Color,
   @SerialName("sidebarItemBackgroundHover") val sidebarItemBackgroundHover: Color,
   @SerialName("sidebarItemText") val sidebarItemText: Color,
+  @SerialName("sidebarItemTextUpdated") val sidebarItemTextUpdated: Color,
   @SerialName("sidebarItemTextSelected") val sidebarItemTextSelected: Color,
   @SerialName("sidebarBudgetName") val sidebarBudgetName: Color,
   @SerialName("menuBackground") val menuBackground: Color,

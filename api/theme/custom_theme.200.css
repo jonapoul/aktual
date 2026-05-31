@@ -26,6 +26,7 @@
 --color-tableBackground: #f5f2ef;
 --color-tableRowBackgroundHover: #ece5df;
 --color-tableText: #272630;
+--color-tableTextItemAdded: #272630;
 --color-tableTextLight: #829AB1;
 --color-tableTextSubdued: #7d98b5;
 --color-tableTextSelected: #7d98b5;
@@ -49,6 +50,7 @@
 --color-sidebarItemAccentSelected: #cfb3ff;
 --color-sidebarItemBackgroundHover: #604b39;
 --color-sidebarItemText: #D9E2EC;
+--color-sidebarItemTextUpdated: #D9E2EC;
 --color-sidebarItemTextSelected: #cfb3ff;
 --color-sidebarBudgetName: #e2d8cf;
 

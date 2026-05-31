@@ -33,6 +33,7 @@ data object DarkTheme : DefaultTheme {
   override val tableRowBackgroundAlternate = tableBackground
   override val tableRowBackgroundHover = AktualColors.navy700
   override val tableText = AktualColors.navy150
+  override val tableTextItemAdded = tableText
   override val tableTextLight = tableText
   override val tableTextSubdued = AktualColors.navy500
   override val tableTextSelected = AktualColors.navy150
@@ -69,6 +70,7 @@ data object DarkTheme : DefaultTheme {
   override val sidebarItemAccentSelected = AktualColors.purple200
   override val sidebarItemBackgroundHover = AktualColors.navy700
   override val sidebarItemText = AktualColors.navy150
+  override val sidebarItemTextUpdated = sidebarItemText
   override val sidebarItemTextSelected = AktualColors.purple200
   override val sidebarBudgetName = AktualColors.navy300
 

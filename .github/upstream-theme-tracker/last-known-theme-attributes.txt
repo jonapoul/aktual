@@ -187,6 +187,7 @@ sidebarItemBackgroundPending
 sidebarItemBackgroundPositive
 sidebarItemText
 sidebarItemTextSelected
+sidebarItemTextUpdated
 tableBackground
 tableBorder
 tableBorderHover
@@ -203,6 +204,7 @@ tableRowHeaderText
 tableText
 tableTextHover
 tableTextInactive
+tableTextItemAdded
 tableTextLight
 tableTextSelected
 tableTextSubdued

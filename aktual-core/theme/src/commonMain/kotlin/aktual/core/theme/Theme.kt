@@ -33,6 +33,7 @@ sealed interface Theme {
   val tableRowBackgroundAlternate: Color
   val tableRowBackgroundHover: Color
   val tableText: Color
+  val tableTextItemAdded: Color
   val tableTextLight: Color
   val tableTextSubdued: Color
   val tableTextSelected: Color
@@ -69,6 +70,7 @@ sealed interface Theme {
   val sidebarItemBackgroundHover: Color
   val sidebarItemAccentSelected: Color
   val sidebarItemText: Color
+  val sidebarItemTextUpdated: Color
   val sidebarItemTextSelected: Color
   val sidebarBudgetName: Color
 
