@@ -86,4 +86,5 @@ internal fun buildCustomReport(
     include_current = false,
     sort_by = SortBy.Desc,
     trim_intervals = false,
+    show_trend_lines = false,
   )
