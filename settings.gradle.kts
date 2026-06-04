@@ -10,7 +10,7 @@ pluginManagement { includeBuild("build-logic") }
 
 plugins {
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-  id("com.gradle.develocity") version "4.4.1"
+  id("com.gradle.develocity") version "4.4.2"
   id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.8"
 }
 
@@ -113,4 +113,5 @@ include(
   ":aktual-test:api",
   ":aktual-test:compose",
   ":aktual-test:smoke",
+  ":detekt-rules",
 )

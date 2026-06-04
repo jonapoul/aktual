@@ -16,10 +16,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-internal actual fun TopBarActions(onAction: (ListBudgetsAction) -> Unit) = Row {
+internal actual fun TopBarActions(onAction: ListBudgetsActionHandler) = Row {
   BasicIconButton(
     modifier = Modifier.padding(horizontal = 5.dp),
-    onClick = { onAction(ListBudgetsAction.Reload) },
+    onClick = { onAction(Reload) },
     imageVector = MaterialIcons.Refresh,
     contentDescription = Strings.listBudgetsRefresh,
     colors = { theme, isPressed -> theme.normalIconButton(isPressed) },

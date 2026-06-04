@@ -27,3 +27,8 @@ internal data object DisableCheckboxes : ListRulesAction
 @JvmInline internal value class Uncheck(val id: RuleId) : ListRulesAction
 
 internal data object UncheckAll : ListRulesAction
+
+@Immutable
+internal fun interface ListRulesActionHandler {
+  operator fun invoke(action: ListRulesAction)
+}

@@ -1,15 +1,17 @@
 package aktual.budget.schedules.vm.list
 
-import aktual.budget.db.V_schedules
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.PayeeDao
 import aktual.budget.db.dao.ScheduleDao
+import aktual.budget.db.schedules.GetAllActive
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.AmountOperator
 import aktual.budget.model.Field
 import aktual.budget.model.Operator
+import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
+import aktual.budget.model.ScheduleId
 import aktual.budget.model.UpcomingLength
 import aktual.budget.model.upcomingDays
 import aktual.budget.schedules.vm.Schedule
@@ -57,22 +59,48 @@ class ListSchedulesViewModel(
   private val mutableSchedules = MutableStateFlow<ImmutableList<Schedule>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableFailure = MutableStateFlow<String?>(null)
+  private val mutableFilterText = MutableStateFlow("")
+  private val mutableIsSearchActive = MutableStateFlow(false)
 
   val state: StateFlow<ListSchedulesState> =
     viewModelScope.launchMolecule(Immediate) {
       val schedules by mutableSchedules.collectAsState()
       val isLoading by mutableIsLoading.collectAsState()
       val failure by mutableFailure.collectAsState()
+      val filterText by mutableFilterText.collectAsState()
+      val isSearchActive by mutableIsSearchActive.collectAsState()
+      @Suppress("BracesOnWhenStatements")
       when {
         isLoading -> Loading
         failure != null -> Failure(failure)
         schedules.isEmpty() -> Empty
-        else -> Success(schedules)
+        else -> {
+          val filtered =
+            if (isSearchActive) {
+              schedules.filter { s -> filterText in s }.toImmutableList()
+            } else {
+              schedules
+            }
+          Success(schedules = filtered, filterText = filterText, isSearchActive = isSearchActive)
+        }
       }
     }
 
   init {
     reload()
+  }
+
+  fun openSearch() {
+    mutableIsSearchActive.update { true }
+  }
+
+  fun setFilterText(text: String) {
+    mutableFilterText.update { text }
+  }
+
+  fun clearFilter() {
+    mutableFilterText.update { "" }
+    mutableIsSearchActive.update { false }
   }
 
   fun reload() {
@@ -81,9 +109,18 @@ class ListSchedulesViewModel(
       try {
         val today = calendar.today()
         val rows = scheduleDao.getAll()
+
+        val payeeNames = payeeDao.getAllActive().associate { it.id to it.name }
+        val accountNames = accountDao.nameMap()
+
+        // Fetch transactions for all schedules in one query using the earliest possible fromDate
+        val minFromDate =
+          rows.mapNotNull { it.next_date }.minOrNull()?.minus(value = 2, unit = DAY) ?: today
+        val latestTxDates = scheduleDao.latestTransactionDates(minFromDate)
+
         val schedules =
           rows
-            .mapNotNull { row -> toSchedule(row, today) }
+            .mapNotNull { row -> toSchedule(row, today, payeeNames, accountNames, latestTxDates) }
             .sortedWith(compareBy({ it.nextDate }, { it.status.ordinal }))
             .toImmutableList()
         mutableSchedules.update { schedules }
@@ -100,14 +137,20 @@ class ListSchedulesViewModel(
   }
 
   @Suppress("ReturnCount")
-  private suspend fun toSchedule(row: V_schedules, today: LocalDate): Schedule? {
+  private fun toSchedule(
+    row: GetAllActive,
+    today: LocalDate,
+    payeeNames: Map<PayeeId, String?>,
+    accountNames: Map<AccountId, String?>,
+    latestTxDates: Map<ScheduleId, LocalDate>,
+  ): Schedule? {
     val nextDate = row.next_date ?: return null
     val ruleId = row.rule ?: return null
     val payeeId = row._payee ?: return null
     val accountId = row._account?.let { AccountId(it) } ?: return null
 
-    val payeeName = payeeDao.name(payeeId) ?: return null
-    val accountName = accountDao.name(accountId)
+    val payeeName = payeeNames[payeeId] ?: return null
+    val accountName = accountNames[accountId].orEmpty()
 
     val amount = row._amount?.toLongOrNull()?.let { Amount(it) } ?: Amount.Zero
     val amountOp =
@@ -116,14 +159,11 @@ class ListSchedulesViewModel(
 
     // Fixed date (op = 'is'): check from next_date; recurring: look back 2 days
     val dateCondOp = row._conditions?.firstOrNull { it.field == Field.Date }?.operator
-    val hasTransaction =
-      scheduleDao.hasTransaction(
-        id = row.id,
-        fromDate =
-          if (dateCondOp == Operator.Is) nextDate else nextDate.minus(value = 2, unit = DAY),
-      )
+    val txFromDate =
+      if (dateCondOp == Operator.Is) nextDate else nextDate.minus(value = 2, unit = DAY)
+    val hasTransaction = latestTxDates[row.id]?.let { it >= txFromDate } == true
 
-    val customUpcomingLength = scheduleDao.customUpcomingLength(row.id)
+    val customUpcomingLength = row.custom_upcoming_length
 
     return Schedule(
       id = row.id,
@@ -177,11 +217,25 @@ class ListSchedulesViewModel(
     raw ?: return fallback
     return when (val element = Json.parseToJsonElement(raw)) {
       is JsonNull,
-      is JsonArray -> error("Unexpected element $element")
+      is JsonArray -> {
+        logcat.e { "Got unexpected JSON data format in $element" }
+        fallback
+      }
 
-      is JsonObject -> Json.decodeFromJsonElement(RecurConfig.serializer(), element).start
+      is JsonObject -> {
+        Json.decodeFromJsonElement(RecurConfig.serializer(), element).start
+      }
 
-      is JsonPrimitive -> LocalDate.parse(element.content)
+      is JsonPrimitive -> {
+        LocalDate.parse(element.content)
+      }
     }
+  }
+
+  private operator fun Schedule.contains(query: String): Boolean {
+    val q = query.trim()
+    return name?.contains(q, ignoreCase = true) == true ||
+      payeeName.contains(q, ignoreCase = true) ||
+      accountName.contains(q, ignoreCase = true)
   }
 }

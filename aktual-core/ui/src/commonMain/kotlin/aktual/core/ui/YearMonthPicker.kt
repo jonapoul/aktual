@@ -7,11 +7,15 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.text.input.rememberTextFieldState
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,13 +43,19 @@ fun YearMonthPicker(
 
   var showDialog by remember { mutableStateOf(false) }
   var selected by remember { mutableStateOf(value) }
+  val displayText = selected.stringLong()
+  val textState = rememberTextFieldState(initialText = displayText)
+  LaunchedEffect(displayText) {
+    if (textState.text.toString() != displayText) {
+      textState.edit { replace(0, length, displayText) }
+    }
+  }
 
   AktualTextField(
+    state = textState,
     modifier = modifier.wrapContentWidth().clickable { showDialog = true },
     readOnly = true,
     placeholderText = null,
-    value = selected.stringLong(),
-    onValueChange = {},
     colors = theme.exposedDropDownMenu(),
     theme = theme,
   )
@@ -116,22 +126,27 @@ internal fun PickDateDialogContent(
       }
     },
   ) {
+    val centredTextStyle = LocalTextStyle.current.copy(textAlign = TextAlign.Center)
     AktualExposedDropDownMenu(
+      modifier = Modifier.fillMaxWidth(),
       value = currentValue.month,
       onValueChange = { currentValue = YearMonth(currentValue.year, it) },
       options = remember(range) { range.rangeValues { it.month } },
       theme = theme,
       string = { it.stringLong() },
+      textStyle = centredTextStyle,
     )
 
     VerticalSpacer(8.dp)
 
     AktualExposedDropDownMenu(
+      modifier = Modifier.fillMaxWidth(),
       value = currentValue.year,
       onValueChange = { currentValue = YearMonth(it, currentValue.month) },
       options = remember(range) { range.rangeValues { it.year } },
       theme = theme,
       string = { it.toString() },
+      textStyle = centredTextStyle,
     )
 
     if (!isWithinRange) {

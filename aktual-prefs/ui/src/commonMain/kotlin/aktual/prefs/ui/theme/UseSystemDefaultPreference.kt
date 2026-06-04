@@ -17,13 +17,13 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 @Composable
 internal fun UseSystemDefaultPreference(
   preference: BooleanPreference,
-  onAction: (ThemeSettingsAction) -> Unit,
+  onAction: ThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
 ) {
   BooleanPreferenceItem(
     modifier = modifier.fillMaxWidth(),
     value = preference.value,
-    onValueChange = { value -> onAction(ThemeSettingsAction.SetUseSystemDefault(value)) },
+    onValueChange = { value -> onAction(SetUseSystemDefault(value)) },
     title = Strings.settingsThemeUseSystem,
     subtitle = null,
     icon = MaterialIcons.ThemeRoutine,

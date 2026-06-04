@@ -1,10 +1,5 @@
 package aktual.budget.list.ui
 
-import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
-import aktual.budget.list.ui.ListBudgetsAction.LogOut
-import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
-import aktual.budget.list.ui.ListBudgetsAction.OpenServerMetrics
-import aktual.budget.list.ui.ListBudgetsAction.OpenSettings
 import aktual.core.icons.material.BarChart
 import aktual.core.icons.material.Cloud
 import aktual.core.icons.material.Info
@@ -22,10 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 
-@Composable internal expect fun TopBarActions(onAction: (ListBudgetsAction) -> Unit)
+@Composable internal expect fun TopBarActions(onAction: ListBudgetsActionHandler)
 
 @Composable
-internal fun SettingsButton(onAction: (ListBudgetsAction) -> Unit, modifier: Modifier = Modifier) =
+internal fun SettingsButton(onAction: ListBudgetsActionHandler, modifier: Modifier = Modifier) =
   BasicIconButton(
     modifier = modifier,
     onClick = { onAction(OpenSettings) },
@@ -47,7 +42,7 @@ internal fun MoreButton(onClick: () -> Unit, modifier: Modifier = Modifier) =
 @Composable
 internal fun MoreMenu(
   showMenu: Boolean,
-  onAction: (ListBudgetsAction) -> Unit,
+  onAction: ListBudgetsActionHandler,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
 ) {

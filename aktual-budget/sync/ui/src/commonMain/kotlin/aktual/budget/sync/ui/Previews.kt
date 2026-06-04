@@ -66,7 +66,9 @@ internal class SyncBudgetDialogProvider :
           FetchingFileInfo to Failed("Some error"),
           DownloadingDatabase to Failed("Whatever"),
           ValidatingDatabase to
-            Failed("Another error but this one's a lot longer, to see how it handles wrapping text"),
+            Failed(
+              "Another error but this one's a lot longer, to see how it handles wrapping text"
+            ),
         ),
     ),
     SyncBudgetDialogParams(

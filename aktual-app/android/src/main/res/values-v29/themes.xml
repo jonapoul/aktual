@@ -1,0 +1,8 @@
+<resources>
+
+  <style name="Theme.Aktual" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Requires API 29 -->
+    <item name="android:enforceNavigationBarContrast">false</item>
+  </style>
+
+</resources>

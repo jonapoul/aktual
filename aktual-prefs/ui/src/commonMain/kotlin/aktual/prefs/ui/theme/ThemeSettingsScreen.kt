@@ -59,22 +59,19 @@ fun ThemeSettingsScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        ThemeSettingsAction.NavBack -> back()
-        ThemeSettingsAction.NavCustomThemes -> toCustomThemes()
-        is ThemeSettingsAction.InspectTheme -> toInspectTheme(action.id)
-        is ThemeSettingsAction.SelectTheme -> viewModel.select(action.id)
-        is ThemeSettingsAction.SetUseSystemDefault -> viewModel.setUseSystemDefault(action.value)
-        is ThemeSettingsAction.SetDarkTheme -> viewModel.setDarkTheme(action.value)
+        NavBack -> back()
+        NavCustomThemes -> toCustomThemes()
+        is InspectTheme -> toInspectTheme(action.id)
+        is SelectTheme -> viewModel.select(action.id)
+        is SetUseSystemDefault -> viewModel.setUseSystemDefault(action.value)
+        is SetDarkTheme -> viewModel.setDarkTheme(action.value)
       }
     },
   )
 }
 
 @Composable
-private fun ThemeSettingsScaffold(
-  state: ThemeSettingsState,
-  onAction: (ThemeSettingsAction) -> Unit,
-) {
+private fun ThemeSettingsScaffold(state: ThemeSettingsState, onAction: ThemeSettingsActionHandler) {
   val theme = LocalTheme.current
   val listState = rememberLazyListState()
   val blurState = rememberBlurredTopBarState()
@@ -84,7 +81,7 @@ private fun ThemeSettingsScaffold(
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
         colors = theme.transparentTopAppBarColors(),
-        navigationIcon = { NavBackIconButton { onAction(ThemeSettingsAction.NavBack) } },
+        navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsThemeToolbar) },
       )
     }
@@ -107,7 +104,7 @@ private fun ThemeSettingsContent(
   state: ThemeSettingsState,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  onAction: (ThemeSettingsAction) -> Unit,
+  onAction: ThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(

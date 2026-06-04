@@ -11,4 +11,14 @@
   <string name="list_schedules_status_paid">Paid</string>
   <string name="list_schedules_status_completed">Completed</string>
   <string name="list_schedules_status_scheduled">Scheduled</string>
+  <string name="list_schedules_empty">No schedules found</string>
+  <string name="list_schedules_empty_create">Create new</string>
+  <string name="list_schedules_no_results">No schedules match</string>
+  <string name="list_schedules_filter">Filter</string>
+  <string name="list_schedules_filter_placeholder">Filter schedules…</string>
+  <string name="list_schedules_filter_clear">Clear filter</string>
+  <plurals name="list_schedules_num_results">
+    <item quantity="one">%1$d match</item>
+    <item quantity="other">%1$d matches</item>
+  </plurals>
 </resources>

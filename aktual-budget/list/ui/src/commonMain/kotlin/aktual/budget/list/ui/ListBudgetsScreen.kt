@@ -1,14 +1,5 @@
 package aktual.budget.list.ui
 
-import aktual.budget.list.ui.ListBudgetsAction.ChangePassword
-import aktual.budget.list.ui.ListBudgetsAction.Delete
-import aktual.budget.list.ui.ListBudgetsAction.LogOut
-import aktual.budget.list.ui.ListBudgetsAction.Open
-import aktual.budget.list.ui.ListBudgetsAction.OpenAbout
-import aktual.budget.list.ui.ListBudgetsAction.OpenInBrowser
-import aktual.budget.list.ui.ListBudgetsAction.OpenServerMetrics
-import aktual.budget.list.ui.ListBudgetsAction.OpenSettings
-import aktual.budget.list.ui.ListBudgetsAction.Reload
 import aktual.budget.list.vm.ListBudgetsEvent
 import aktual.budget.list.vm.ListBudgetsState
 import aktual.budget.list.vm.ListBudgetsViewModel
@@ -97,15 +88,15 @@ fun ListBudgetsScreen(
       localFileExists = budget !is Budget.Remote,
       onAction = { action ->
         when (action) {
-          DeleteDialogAction.DeleteLocal -> {
+          DeleteLocal -> {
             viewModel.deleteLocal(budget.directoryId)
           }
 
-          DeleteDialogAction.DeleteRemote -> {
+          DeleteRemote -> {
             if (budget is Budget.Cloud) viewModel.deleteRemote(budget.cloudFileId)
           }
 
-          DeleteDialogAction.Dismiss -> {
+          Dismiss -> {
             budgetToDelete = null
             viewModel.clearDeletingState()
           }
@@ -150,7 +141,7 @@ fun ListBudgetsScreen(
 }
 
 @Composable
-internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: (ListBudgetsAction) -> Unit) {
+internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: ListBudgetsActionHandler) {
   val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
@@ -200,7 +191,7 @@ private fun ScaffoldTitle(theme: Theme) =
 @Composable
 private fun StateContent(
   state: ListBudgetsState,
-  onAction: (ListBudgetsAction) -> Unit,
+  onAction: ListBudgetsActionHandler,
   listState: LazyListState,
   contentPadding: PaddingValues,
   theme: Theme = LocalTheme.current,

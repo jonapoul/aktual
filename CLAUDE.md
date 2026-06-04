@@ -105,3 +105,4 @@ Default new code to `commonMain`; reach for `androidMain` / `jvmMain` only when 
 - [aktual-test/smoke](aktual-test/smoke/CLAUDE.md) — VM DI smoke tests
 - [aktual-budget/data/db](aktual-budget/data/db/CLAUDE.md) — database schema, migrations, adapters
 - [gradle/build-logic](build-logic/CLAUDE.md) — convention plugins
+- [detekt-rules](detekt-rules/CLAUDE.md) — custom detekt rules

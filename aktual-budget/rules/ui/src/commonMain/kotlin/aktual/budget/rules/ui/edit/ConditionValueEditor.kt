@@ -8,7 +8,11 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTypography
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.key
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonElement
@@ -90,16 +94,24 @@ internal fun ConditionValueEditor(
     Field.Parent,
     Field.Cleared,
     Field.Reconciled ->
-      AktualTextField(
-        modifier = modifier.fillMaxWidth(),
-        value = value.asEditableString(),
-        onValueChange = { newText ->
-          emit(if (newText.isEmpty()) JsonNull else JsonPrimitive(newText))
-        },
-        placeholderText = Strings.editRuleConditionNothing,
-        isEnabled = isEnabled,
-        textStyle = AktualTypography.bodySmall,
-      )
+      // key(field) resets TextFieldState when switching between text-type fields (e.g. Notes →
+      // PayeeName)
+      key(field) {
+        val textState = rememberTextFieldState(initialText = value.asEditableString())
+        LaunchedEffect(textState) {
+          snapshotFlow { textState.text.toString() }
+            .collect { newText ->
+              emit(if (newText.isEmpty()) JsonNull else JsonPrimitive(newText))
+            }
+        }
+        AktualTextField(
+          modifier = modifier.fillMaxWidth(),
+          state = textState,
+          placeholderText = Strings.editRuleConditionNothing,
+          isEnabled = isEnabled,
+          textStyle = AktualTypography.bodySmall,
+        )
+      }
   }
 }
 

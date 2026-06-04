@@ -41,7 +41,7 @@ internal fun ConfirmPasswordForm(
   showPasswords: Boolean,
   state: ChangePasswordState?,
   passwordsMatch: Boolean,
-  onAction: (PasswordAction) -> Unit,
+  onAction: PasswordActionHandler,
   modifier: Modifier = Modifier,
 ) {
   val keyboard = LocalSoftwareKeyboardController.current
@@ -60,7 +60,7 @@ internal fun ConfirmPasswordForm(
       placeholderText = Strings.passwordInput,
       showPassword = showPasswords,
       imeAction = ImeAction.Next,
-      onValueChange = { pw -> onAction(PasswordAction.SetPassword1(pw)) },
+      onValueChange = { pw -> onAction(SetPassword1(pw)) },
       onGo = { focusManager.moveFocus(FocusDirection.Next) },
     )
 
@@ -70,9 +70,9 @@ internal fun ConfirmPasswordForm(
       placeholderText = Strings.passwordInputConfirm,
       showPassword = showPasswords,
       imeAction = ImeAction.Go,
-      onValueChange = { pw -> onAction(PasswordAction.SetPassword2(pw)) },
+      onValueChange = { pw -> onAction(SetPassword2(pw)) },
       onGo = {
-        if (passwordsMatch) onAction(PasswordAction.Submit)
+        if (passwordsMatch) onAction(Submit)
         keyboard?.hide()
       },
     )
@@ -86,14 +86,14 @@ internal fun ConfirmPasswordForm(
             interactionSource = interactionSource,
             indication = ripple(),
             enabled = true,
-            onClick = { onAction(PasswordAction.SetPasswordsVisible(!showPasswords)) },
+            onClick = { onAction(SetPasswordsVisible(!showPasswords)) },
           ),
       verticalAlignment = Alignment.CenterVertically,
     ) {
       Checkbox(
         checked = showPasswords,
         interactionSource = interactionSource,
-        onCheckedChange = { onAction(PasswordAction.SetPasswordsVisible(!showPasswords)) },
+        onCheckedChange = { onAction(SetPasswordsVisible(!showPasswords)) },
         colors = theme.checkbox(),
       )
 
@@ -105,7 +105,7 @@ internal fun ConfirmPasswordForm(
       text = Strings.passwordConfirm,
       isLoading = isLoading,
       isEnabled = !isLoading && passwordsMatch,
-      onClick = { onAction(PasswordAction.Submit) },
+      onClick = { onAction(Submit) },
     )
   }
 }

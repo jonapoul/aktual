@@ -27,6 +27,7 @@ import aktual.core.theme.Theme
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.PortraitPreview
@@ -39,17 +40,34 @@ import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.isMobileLandscape
 import aktual.core.ui.rememberAppCloser
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.End
 import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Start
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.SizeTransform
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.draggable
+import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.NavigationBar
@@ -71,12 +89,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
@@ -91,8 +111,8 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.serialization.json.Json
 
 @Composable
-fun BudgetNavRail(
-  onAction: (BudgetNavAction) -> Unit,
+internal fun BudgetNavRail(
+  onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
   viewModel: BudgetNavRailViewModel = metroViewModel(),
 ) {
@@ -172,23 +192,24 @@ private fun BottomNavLayout(
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onPopBackToTransactions: () -> Unit,
-  onAction: (BudgetNavAction) -> Unit,
+  onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  var showMenu by remember { mutableStateOf(false) }
+  var sheetExpanded by remember { mutableStateOf(false) }
   val density = LocalDensity.current
-
-  // Use a local HazeState so the nav rail's hazeEffect samples BudgetNavDisplay rather than the
-  // root AktualNavHost. hazeEffect doesn't work when the effect composable is *inside* the
-  // hazeSource — it just renders transparent. Giving the nav display its own hazeSource with a
-  // local state avoids that problem while keeping the same color/style as the root bottom bar
   val localHazeState = rememberHazeState()
-  var height by remember { mutableStateOf(0.dp) }
+  var navBarHeight by remember { mutableStateOf(0.dp) }
+  var handleHeight by remember { mutableStateOf(0.dp) }
+  val height = navBarHeight + handleHeight
   val rootBottomChromeHeight = LocalBottomSpacing.current
 
+  BackHandler(enabled = sheetExpanded) { sheetExpanded = false }
+
+  val dragAccumulator = remember { floatArrayOf(0f) }
+  val dragThreshold = with(density) { 40.dp.toPx() }
+  val draggableState = rememberDraggableState { delta -> dragAccumulator[0] += delta }
+
   Box(modifier = modifier.fillMaxSize()) {
-    // Child screens end their content with BottomSpacing() — extend that reservation
-    // to also cover the overlaid BottomNavBar, so the last visible items aren't hidden behind it
     CompositionLocalProvider(LocalBottomSpacing provides rootBottomChromeHeight + height) {
       BudgetNavDisplay(
         contributors = contributors,
@@ -198,31 +219,206 @@ private fun BottomNavLayout(
       )
     }
 
-    // Blur the entire Column (nav rail + spacers) so the seam between the local and root haze
-    // effects falls behind the root bottom-bar Column in AktualAppContent, which sits on top in
-    // Z-order and covers the spacer area
     Column(
       modifier =
         Modifier.align(Alignment.BottomCenter)
           .fillMaxWidth()
           .blurredBottomBar(state = localHazeState)
     ) {
-      Box(contentAlignment = Alignment.TopEnd) {
-        BottomNavRail(
-          selectedTab = selectedTab,
-          onSelectTab = onSelectTab,
-          onMenuClick = { showMenu = true },
-          modifier =
-            Modifier.onSizeChanged { size -> height = with(density) { size.height.toDp() } },
-        )
-        BudgetMenu(
-          expanded = showMenu,
-          onAction = onAction,
-          onDismissRequest = { showMenu = false },
-        )
+      NavSheetHandle(
+        modifier =
+          Modifier.onSizeChanged { size -> handleHeight = with(density) { size.height.toDp() } }
+            .draggable(
+              state = draggableState,
+              orientation = Orientation.Vertical,
+              onDragStopped = {
+                val d = dragAccumulator[0]
+                dragAccumulator[0] = 0f
+                when {
+                  d < -dragThreshold -> sheetExpanded = true
+                  d > dragThreshold -> sheetExpanded = false
+                }
+              },
+            )
+            .clickable { sheetExpanded = !sheetExpanded }
+      )
+
+      SharedTransitionLayout(modifier = Modifier.fillMaxWidth()) {
+        AnimatedContent(
+          targetState = sheetExpanded,
+          transitionSpec = { fadeIn() togetherWith fadeOut() using SizeTransform(clip = false) },
+          modifier = Modifier.fillMaxWidth(),
+        ) { expanded ->
+          if (expanded) {
+            ExpandedSheetContent(
+              selectedTab = selectedTab,
+              onSelectTab = onSelectTab,
+              onAction = onAction,
+              animatedContentScope = this,
+            )
+          } else {
+            CollapsedSheetContent(
+              selectedTab = selectedTab,
+              onSelectTab = onSelectTab,
+              onMenuClick = { sheetExpanded = true },
+              onChangeNavBarHeight = { navBarHeight = it },
+              animatedContentScope = this,
+            )
+          }
+        }
       }
+
       BottomSpacing(height = rootBottomChromeHeight)
     }
+  }
+}
+
+@Composable
+private fun SharedTransitionScope.CollapsedSheetContent(
+  selectedTab: BudgetTab,
+  onSelectTab: (BudgetTab) -> Unit,
+  onMenuClick: () -> Unit,
+  onChangeNavBarHeight: (Dp) -> Unit,
+  animatedContentScope: AnimatedContentScope,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) {
+  val density = LocalDensity.current
+  NavigationBar(
+    modifier =
+      modifier.fillMaxWidth().onSizeChanged { size ->
+        onChangeNavBarHeight(with(density) { size.height.toDp() })
+      },
+    containerColor = Color.Transparent,
+    contentColor = theme.sidebarItemText,
+  ) {
+    for (tab in BudgetTab.entries) {
+      NavigationBarItem(
+        modifier =
+          Modifier.sharedBounds(
+            sharedContentState = rememberSharedContentState(key = "nav_tab_${tab.name}"),
+            animatedVisibilityScope = animatedContentScope,
+          ),
+        icon = { Icon(tab.icon(), contentDescription = tab.label()) },
+        label = { Text(text = tab.label(), color = LocalContentColor.current) },
+        selected = selectedTab == tab,
+        onClick = { onSelectTab(tab) },
+        colors = theme.navBarItem(),
+      )
+    }
+    // Menu item has no sharedBounds — fades out with the default AnimatedContent transition
+    NavigationBarItem(
+      icon = { Icon(MaterialIcons.Menu, contentDescription = Strings.budgetNavMenu) },
+      label = { Text(text = Strings.budgetNavMenu, color = LocalContentColor.current) },
+      selected = false,
+      onClick = onMenuClick,
+      colors = theme.navBarItem(),
+    )
+  }
+}
+
+@Composable
+private fun SharedTransitionScope.ExpandedSheetContent(
+  selectedTab: BudgetTab,
+  onSelectTab: (BudgetTab) -> Unit,
+  onAction: BudgetNavActionHandler,
+  animatedContentScope: AnimatedContentScope,
+  modifier: Modifier = Modifier,
+) {
+  FlowRow(modifier = modifier.fillMaxWidth(), maxItemsInEachRow = BudgetTab.entries.size) {
+    for (tab in BudgetTab.entries) {
+      NavSheetItem(
+        modifier =
+          Modifier.weight(1f)
+            .sharedBounds(
+              sharedContentState = rememberSharedContentState(key = "nav_tab_${tab.name}"),
+              animatedVisibilityScope = animatedContentScope,
+            ),
+        icon = tab.icon(),
+        label = tab.label(),
+        selected = selectedTab == tab,
+        onClick = { onSelectTab(tab) },
+      )
+    }
+    // action shortcuts — fade in via default AnimatedContent transition
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.SwapHoriz,
+      label = Strings.budgetNavMenuSwitchBudget,
+      selected = false,
+      onClick = { onAction(SwitchFile) },
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Logout,
+      label = Strings.budgetNavMenuLogOut,
+      selected = false,
+      onClick = { onAction(LogOut) },
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Settings,
+      label = Strings.budgetNavMenuSettings,
+      selected = false,
+      onClick = { onAction(Settings) },
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Info,
+      label = Strings.budgetNavMenuAbout,
+      selected = false,
+      onClick = { onAction(About) },
+    )
+  }
+}
+
+@Composable
+private fun NavSheetHandle(modifier: Modifier = Modifier) {
+  Box(
+    modifier = modifier.fillMaxWidth().padding(vertical = 8.dp),
+    contentAlignment = Alignment.Center,
+  ) {
+    Box(
+      modifier =
+        Modifier.fillMaxWidth(fraction = 0.3f)
+          .height(4.dp)
+          .clip(RoundedCornerShape(percent = 50))
+          .background(LocalTheme.current.sidebarItemText.copy(alpha = 0.4f))
+    )
+  }
+}
+
+@Composable
+private fun NavSheetItem(
+  icon: ImageVector,
+  label: String,
+  selected: Boolean,
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) {
+  val indicatorColor = if (selected) theme.sidebarItemTextSelected.disabled else Color.Transparent
+  val contentColor = if (selected) theme.sidebarItemTextSelected else theme.sidebarItemText
+  Column(
+    modifier = modifier.clickable(onClick = onClick).padding(vertical = 8.dp),
+    horizontalAlignment = Alignment.CenterHorizontally,
+    verticalArrangement = Arrangement.spacedBy(4.dp),
+  ) {
+    Box(
+      modifier =
+        Modifier.size(width = 64.dp, height = 32.dp)
+          .clip(RoundedCornerShape(percent = 50))
+          .background(indicatorColor),
+      contentAlignment = Alignment.Center,
+    ) {
+      Icon(
+        imageVector = icon,
+        contentDescription = null,
+        tint = contentColor,
+        modifier = Modifier.size(24.dp),
+      )
+    }
+    Text(text = label, style = AktualTypography.labelSmall, color = contentColor)
   }
 }
 
@@ -233,7 +429,7 @@ private fun SideNavLayout(
   selectedTab: BudgetTab,
   onSelectTab: (BudgetTab) -> Unit,
   onPopBackToTransactions: () -> Unit,
-  onAction: (BudgetNavAction) -> Unit,
+  onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
   var showMenu by remember { mutableStateOf(false) }
@@ -295,40 +491,6 @@ private fun BudgetNavDisplay(
         }
       },
   )
-}
-
-@Composable
-private fun BottomNavRail(
-  selectedTab: BudgetTab,
-  onSelectTab: (BudgetTab) -> Unit,
-  onMenuClick: () -> Unit,
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) {
-  // containerColor is transparent so the blur applied via Modifier.blurred(...) on the modifier
-  // above shows through — an opaque color here would paint over the hazeEffect
-  NavigationBar(
-    modifier = modifier,
-    containerColor = Color.Transparent,
-    contentColor = theme.sidebarItemText,
-  ) {
-    for (tab in BudgetTab.entries) {
-      NavigationBarItem(
-        icon = { Icon(tab.icon(), contentDescription = tab.label()) },
-        label = { Text(text = tab.label(), color = LocalContentColor.current) },
-        selected = selectedTab == tab,
-        onClick = { onSelectTab(tab) },
-        colors = theme.navBarItem(),
-      )
-    }
-    NavigationBarItem(
-      icon = { Icon(MaterialIcons.Menu, contentDescription = Strings.budgetNavMenu) },
-      label = { Text(text = Strings.budgetNavMenu, color = LocalContentColor.current) },
-      selected = false,
-      onClick = onMenuClick,
-      colors = theme.navBarItem(),
-    )
-  }
 }
 
 @Composable
@@ -407,7 +569,7 @@ private fun budgetNavKeyStackSaver() =
 private fun BudgetMenu(
   expanded: Boolean,
   onDismissRequest: () -> Unit,
-  onAction: (BudgetNavAction) -> Unit,
+  onAction: BudgetNavActionHandler,
   modifier: Modifier = Modifier,
 ) {
   Box(modifier = modifier) {
@@ -417,7 +579,7 @@ private fun BudgetMenu(
         leadingIcon = MaterialIcons.SwapHoriz,
         onClick = {
           onDismissRequest()
-          onAction(BudgetNavAction.SwitchFile)
+          onAction(SwitchFile)
         },
       )
       AktualDropdownMenuItem(
@@ -425,7 +587,7 @@ private fun BudgetMenu(
         leadingIcon = MaterialIcons.Logout,
         onClick = {
           onDismissRequest()
-          onAction(BudgetNavAction.LogOut)
+          onAction(LogOut)
         },
       )
       AktualDropdownMenuItem(
@@ -433,7 +595,7 @@ private fun BudgetMenu(
         leadingIcon = MaterialIcons.Settings,
         onClick = {
           onDismissRequest()
-          onAction(BudgetNavAction.Settings)
+          onAction(Settings)
         },
       )
       AktualDropdownMenuItem(
@@ -441,7 +603,7 @@ private fun BudgetMenu(
         leadingIcon = MaterialIcons.Info,
         onClick = {
           onDismissRequest()
-          onAction(BudgetNavAction.About)
+          onAction(About)
         },
       )
     }
@@ -458,7 +620,6 @@ private fun BudgetTab.label(): String =
   }
 
 @Stable
-@Composable
 private fun BudgetTab.icon(): ImageVector =
   when (this) {
     BudgetTab.Transactions -> MaterialIcons.LinearScale
@@ -467,22 +628,25 @@ private fun BudgetTab.icon(): ImageVector =
     BudgetTab.Rules -> AktualIcons.Tuning
   }
 
-@Preview
+@PortraitPreview
 @Composable
-private fun PreviewBudgetMenu(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+private fun PreviewNavSheetCollapsed(@PreviewParameter(ThemeParameters::class) theme: Theme) =
   PreviewWithTheme(theme) {
-    Box(modifier = Modifier.fillMaxSize()) {
-      BudgetMenu(expanded = true, onAction = {}, onDismissRequest = {})
+    Column(modifier = Modifier.fillMaxSize()) {
+      PreviewContent(modifier = Modifier.weight(1f))
+      NavSheetHandle()
+      CollapsedNavSheetPreviewContent(selectedTab = BudgetTab.Transactions)
     }
   }
 
 @PortraitPreview
 @Composable
-private fun PreviewBottomNavRail(@PreviewParameter(ThemeParameters::class) theme: Theme) =
+private fun PreviewNavSheetExpanded(@PreviewParameter(ThemeParameters::class) theme: Theme) =
   PreviewWithTheme(theme) {
     Column(modifier = Modifier.fillMaxSize()) {
       PreviewContent(modifier = Modifier.weight(1f))
-      BottomNavRail(selectedTab = BudgetTab.Transactions, onSelectTab = {}, onMenuClick = {})
+      NavSheetHandle()
+      ExpandedNavSheetPreviewContent(selectedTab = BudgetTab.Transactions)
     }
   }
 
@@ -495,6 +659,80 @@ private fun PreviewSideNavRail(@PreviewParameter(ThemeParameters::class) theme: 
       PreviewContent(modifier = Modifier.weight(1f))
     }
   }
+
+@Composable
+private fun CollapsedNavSheetPreviewContent(
+  selectedTab: BudgetTab,
+  theme: Theme = LocalTheme.current,
+) {
+  NavigationBar(
+    modifier = Modifier.fillMaxWidth(),
+    containerColor = Color.Transparent,
+    contentColor = theme.sidebarItemText,
+  ) {
+    for (tab in BudgetTab.entries) {
+      NavigationBarItem(
+        icon = { Icon(tab.icon(), contentDescription = tab.label()) },
+        label = {
+          Text(text = tab.label(), color = LocalContentColor.current, textAlign = TextAlign.Center)
+        },
+        selected = selectedTab == tab,
+        onClick = {},
+        colors = theme.navBarItem(),
+      )
+    }
+    NavigationBarItem(
+      icon = { Icon(MaterialIcons.Menu, contentDescription = Strings.budgetNavMenu) },
+      label = { Text(text = Strings.budgetNavMenu, color = LocalContentColor.current) },
+      selected = false,
+      onClick = {},
+      colors = theme.navBarItem(),
+    )
+  }
+}
+
+@Composable
+private fun ExpandedNavSheetPreviewContent(selectedTab: BudgetTab) {
+  FlowRow(modifier = Modifier.fillMaxWidth(), maxItemsInEachRow = BudgetTab.entries.size) {
+    for (tab in BudgetTab.entries) {
+      NavSheetItem(
+        modifier = Modifier.weight(1f),
+        icon = tab.icon(),
+        label = tab.label(),
+        selected = selectedTab == tab,
+        onClick = {},
+      )
+    }
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.SwapHoriz,
+      label = Strings.budgetNavMenuSwitchBudget,
+      selected = false,
+      onClick = {},
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Logout,
+      label = Strings.budgetNavMenuLogOut,
+      selected = false,
+      onClick = {},
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Settings,
+      label = Strings.budgetNavMenuSettings,
+      selected = false,
+      onClick = {},
+    )
+    NavSheetItem(
+      modifier = Modifier.weight(1f),
+      icon = MaterialIcons.Info,
+      label = Strings.budgetNavMenuAbout,
+      selected = false,
+      onClick = {},
+    )
+  }
+}
 
 @Composable
 private fun PreviewContent(modifier: Modifier = Modifier) {

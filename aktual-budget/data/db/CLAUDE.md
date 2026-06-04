@@ -8,10 +8,11 @@ When `.github/upstream-migration-tracker/last-known-migration.txt` is updated wi
 
 1. Reading the upstream SQL from `/home/jon/dev/actual/packages/loot-core/migrations/`
 2. Updating the SQLDelight `.sq` files (new columns / new tables)
-3. Adding model types and ID value classes in `aktual-budget:model`
-4. Wiring adapters in `Adapters.kt` and `BuildDatabase.kt`
-5. Adding the migration function to `MigrateDatabase.kt`
-6. Adding a check to `LoadExistingDatabaseFromFileTest`
+3. Running `gradle generateDatabaseSchema`
+4. Adding model types and ID value classes in `aktual-budget:model`
+5. Wiring adapters in `Adapters.kt` and `BuildDatabase.kt`
+6. Adding the migration function to `MigrateDatabase.kt`
+7. Adding a check to `LoadExistingDatabaseFromFileTest`
 
 ## Key files
 

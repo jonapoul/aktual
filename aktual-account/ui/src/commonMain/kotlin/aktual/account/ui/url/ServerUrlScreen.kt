@@ -83,11 +83,11 @@ fun ServerUrlScreen(
     errorMessage = errorMessage,
     onAction = { action ->
       when (action) {
-        ServerUrlAction.ConfirmUrl -> viewModel.onClickConfirm()
-        ServerUrlAction.OpenAbout -> viewModel.onClickAbout()
-        is ServerUrlAction.EnterUrl -> viewModel.onEnterUrl(action.url)
-        is ServerUrlAction.SelectProtocol -> viewModel.onSelectProtocol(action.protocol)
-        is ServerUrlAction.UseDemoServer -> viewModel.onUseDemoServer()
+        ConfirmUrl -> viewModel.onClickConfirm()
+        OpenAbout -> viewModel.onClickAbout()
+        is EnterUrl -> viewModel.onEnterUrl(action.url)
+        is SelectProtocol -> viewModel.onSelectProtocol(action.protocol)
+        is UseDemoServer -> viewModel.onUseDemoServer()
       }
     },
   )
@@ -101,7 +101,7 @@ private fun ServerUrlScaffold(
   isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
-  onAction: (ServerUrlAction) -> Unit,
+  onAction: ServerUrlActionHandler,
 ) {
   val theme = LocalTheme.current
 
@@ -113,7 +113,7 @@ private fun ServerUrlScaffold(
         actions = {
           BasicIconButton(
             modifier = Modifier.padding(horizontal = 5.dp),
-            onClick = { onAction(ServerUrlAction.OpenAbout) },
+            onClick = { onAction(OpenAbout) },
             imageVector = MaterialIcons.Info,
             contentDescription = Strings.serverUrlMenuAbout,
             colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
@@ -149,7 +149,7 @@ private fun ServerUrlContent(
   isEnabled: Boolean,
   isLoading: Boolean,
   errorMessage: String?,
-  onAction: (ServerUrlAction) -> Unit,
+  onAction: ServerUrlActionHandler,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
@@ -180,7 +180,7 @@ private fun ServerUrlContent(
         text = Strings.serverUrlConfirm,
         isLoading = isLoading,
         isEnabled = isEnabled,
-        onClick = { onAction(ServerUrlAction.ConfirmUrl) },
+        onClick = { onAction(ConfirmUrl) },
       )
 
       if (errorMessage != null) {
