@@ -27,23 +27,28 @@ internal constructor(
     val locals = withContext(contexts.io) { files.listLocal() }
     val localsByCloudId =
       locals.mapNotNull { local -> local.metadata?.cloudFileIdOrNull?.let { it to local } }.toMap()
+    // A downloaded budget's directory is named after its cloud file id, so also match locals by
+    // directory id. This covers the window during/just after a download where metadata.json hasn't
+    // been written yet, which would otherwise emit both a Remote and a Local entry sharing the same
+    // directoryId and crash the list with a duplicate Compose key
+    val localsById = locals.associateBy { it.id }
 
     if (remote == null) {
       return locals.map { it.toOfflineBudget() }.sortedBy { it.name }
     }
 
-    val matchedCloudIds = mutableSetOf<BudgetId>()
+    val matchedLocalIds = mutableSetOf<BudgetId>()
     val out = mutableListOf<Budget>()
 
     for (file in remote.filter { it.deleted == 0 }) {
-      val local = localsByCloudId[file.fileId]
+      val local = localsByCloudId[file.fileId] ?: localsById[file.fileId]
       val encryptKeyId = file.encryptKeyId?.value
       val hasKey = file.encryptKeyId in keyPreferences
       val users = file.usersWithAccess.toModelList()
 
       out +=
         if (local != null) {
-          matchedCloudIds += file.fileId
+          matchedLocalIds += local.id
           val localGroupId = local.metadata?.get(DbMetadata.GroupId)
           if (localGroupId == file.groupId) {
             Budget.Synced(
@@ -80,8 +85,8 @@ internal constructor(
     }
 
     for (local in locals) {
+      if (local.id in matchedLocalIds) continue
       val cloudId = local.metadata?.cloudFileIdOrNull
-      if (cloudId != null && cloudId in matchedCloudIds) continue
       out += if (cloudId != null) local.toBroken(cloudId) else local.toLocal()
     }
 

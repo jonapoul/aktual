@@ -79,6 +79,7 @@ internal class BanksTest {
         account_sync_source = account_sync_source,
         last_sync = last_sync,
         last_reconciled = last_reconciled,
+        bank_sync_status = bank_sync_status,
         bankName = bank?.name,
         bankId = bank?.id,
       )

@@ -1,6 +1,8 @@
 package aktual.budget.db
 
 import app.cash.sqldelight.async.coroutines.awaitAsList
+import app.cash.sqldelight.db.QueryResult
+import app.cash.sqldelight.db.SqlCursor
 import app.cash.sqldelight.db.SqlDriver
 import logcat.logcat
 
@@ -14,7 +16,7 @@ suspend fun migrateDatabase(driver: SqlDriver, db: BudgetDatabase) {
       logcat.i(TAG) { "Migrating DB to version $version" }
       db.transaction {
         for (statement in statements) {
-          driver.execute(identifier = null, sql = statement, parameters = 0).await()
+          execute(driver, statement)
         }
         db.migrationsQueries.insert(version)
       }
@@ -48,6 +50,51 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
     // packages/loot-core/migrations/1780099200000_add_show_trend_lines_report_setting.sql
     1780099200000L to
       listOf("ALTER TABLE custom_reports ADD COLUMN show_trend_lines INTEGER DEFAULT 0"),
+
+    // packages/loot-core/migrations/1780327681000_add_tags_hidden.sql
+    1780327681000L to listOf("ALTER TABLE tags ADD COLUMN hidden INTEGER DEFAULT 0"),
+
+    // packages/loot-core/migrations/1780606215000_add_bank_sync_status.sql
+    1780606215000L to listOf("ALTER TABLE accounts ADD COLUMN bank_sync_status TEXT DEFAULT NULL"),
   )
 
 private const val TAG = "MigrateDatabase"
+
+// Keep ADD COLUMN migrations idempotent. Schema.create runs on every Actual DB we open (all
+// report user_version 0) and creates any table missing from the file with the full current schema,
+// so a column like tags.hidden on a pre-tags DB already exists before migrations run. Catching the
+// failure is unreliable: on the androidx host-test target it arrives as a message-less
+// android.database.SQLException. So we pre-check the column via PRAGMA and skip the ALTER if
+// present.
+private suspend fun execute(driver: SqlDriver, statement: String) {
+  ADD_COLUMN_REGEX.find(statement)?.let { match ->
+    val (table, column) = match.destructured
+    if (columnExists(driver, table, column)) {
+      logcat.w(TAG) { "$table.$column already present, skipping ADD COLUMN" }
+      return
+    }
+  }
+  driver.execute(identifier = null, sql = statement, parameters = 0).await()
+}
+
+private val ADD_COLUMN_REGEX =
+  Regex("""ALTER\s+TABLE\s+(\w+)\s+ADD\s+COLUMN\s+(\w+)""", RegexOption.IGNORE_CASE)
+
+private suspend fun columnExists(driver: SqlDriver, table: String, column: String): Boolean =
+  driver
+    .executeQuery(
+      identifier = null,
+      sql = "PRAGMA table_info($table)",
+      parameters = 0,
+      mapper = { cursor -> cursor.canFindString(column) },
+    )
+    .await()
+
+private fun SqlCursor.canFindString(column: String) = QueryResult.AsyncValue {
+  var found = false
+  // PRAGMA table_info columns: cid, name, type, notnull, dflt_value, pk
+  while (next().await()) {
+    if (getString(1) == column) found = true
+  }
+  found
+}

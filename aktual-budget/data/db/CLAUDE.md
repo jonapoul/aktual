@@ -27,5 +27,6 @@ When `.github/upstream-migration-tracker/last-known-migration.txt` is updated wi
 ## Migration rules
 
 - Use `CREATE TABLE IF NOT EXISTS` — fresh databases already have the table from the schema
-- `ALTER TABLE ... ADD COLUMN` has no `IF NOT EXISTS` — the `version !in previousMigrations` guard handles idempotency; each migration's statements and version insert run in a single `db.transaction { }` so they're atomic
+- `ALTER TABLE ... ADD COLUMN` has no `IF NOT EXISTS`. Two things keep it idempotent: the `version !in previousMigrations` guard (skips versions already recorded in `__migrations__`), and a `PRAGMA table_info` pre-check in `execute()` that skips the `ALTER` when the column already exists. The pre-check matters because `Schema.create` runs on every Actual DB we open (they all report `user_version` 0) and backfills any table missing from the file with the *full current schema* — so a column on such a table (e.g. `tags.hidden` on a pre-tags DB) is already present before migrations run. Don't try to catch the duplicate-column error instead: on the androidx host-test target the exception reaches the catch as a message-less `android.database.SQLException` (coroutines stacktrace recovery strips it), so message matching is unreliable
+- Each migration's statements and version insert run in a single `db.transaction { }`, so they're atomic
 - Never call `BudgetDatabase.Schema.migrate()` — upstream Actual doesn't use SQLite's `user_version` pragma

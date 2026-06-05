@@ -49,6 +49,7 @@ internal fun buildAccount(
     account_sync_source = syncSource,
     last_sync = null,
     last_reconciled = null,
+    bank_sync_status = null,
   )
 
 internal fun buildCustomReport(
