@@ -24,7 +24,7 @@ import kotlin.test.Test
 import kotlin.test.assertNull
 import kotlinx.coroutines.test.runTest
 
-class LoadExistingDatabaseFromFileTest {
+class DatabaseMigrationTest {
   @InterceptTest val temporaryFolder = CoTemporaryFolder()
 
   private lateinit var budgetFiles: BudgetFiles
