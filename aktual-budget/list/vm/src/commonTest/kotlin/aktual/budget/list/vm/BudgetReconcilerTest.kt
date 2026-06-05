@@ -155,6 +155,7 @@ class BudgetReconcilerTest {
   @Test
   fun `Local dir matching server file id without metadata is not duplicated`() = runTest {
     before()
+
     // Mimic a freshly downloaded budget: directory named after the cloud file id, but metadata.json
     // not written yet. This must collapse to a single entry rather than emitting both a Remote and
     // a Local sharing the same directoryId
@@ -163,17 +164,16 @@ class BudgetReconcilerTest {
     val result =
       reconciler.reconcile(remote = listOf(userFile(id = "a", groupId = "g1", name = "Main")))
 
-    assertThat(result)
-      .containsExactly(
-        Budget.Detached(
-          name = "Main",
-          hasKey = false,
-          encryptKeyId = null,
-          cloudFileId = BudgetId("a"),
-          groupId = "g1",
-          owner = null,
-        )
+    val expected =
+      Budget.Detached(
+        name = "Main",
+        hasKey = false,
+        encryptKeyId = null,
+        cloudFileId = BudgetId("a"),
+        groupId = "g1",
+        owner = null,
       )
+    assertThat(result).containsExactly(expected)
   }
 
   @Test
