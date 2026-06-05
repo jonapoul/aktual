@@ -5,6 +5,7 @@ import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
 import aktual.budget.model.BalanceType
 import aktual.budget.model.BankId
+import aktual.budget.model.BankSyncStatus
 import aktual.budget.model.CategoryGroupId
 import aktual.budget.model.CategoryId
 import aktual.budget.model.CleanupGroupId
@@ -155,6 +156,7 @@ private val upcomingLengthAdapter =
 private val accountId = stringAdapter(::AccountId)
 private val accountSyncSource = stringAdapter(AccountSyncSource::fromString)
 private val bankId = stringAdapter(::BankId)
+private val bankSyncStatus = stringAdapter(BankSyncStatus::fromString)
 private val categoryGroupId = stringAdapter(::CategoryGroupId)
 private val categoryId = stringAdapter(::CategoryId)
 private val cleanupGroupsId = stringAdapter(::CleanupGroupId)
@@ -198,6 +200,7 @@ internal val AccountsAdapter =
     account_sync_sourceAdapter = accountSyncSource,
     last_syncAdapter = instantMsFromString,
     last_reconciledAdapter = instantMsFromString,
+    bank_sync_statusAdapter = bankSyncStatus,
   )
 
 internal val BanksAdapter = Banks.Adapter(idAdapter = uuid, bank_idAdapter = bankId)

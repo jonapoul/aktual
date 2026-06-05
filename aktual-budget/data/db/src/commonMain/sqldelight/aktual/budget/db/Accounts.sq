@@ -1,6 +1,7 @@
 import aktual.budget.model.AccountId;
 import aktual.budget.model.AccountSyncSource;
 import aktual.budget.model.Amount;
+import aktual.budget.model.BankSyncStatus;
 import kotlin.Boolean;
 import kotlin.uuid.Uuid;
 import kotlin.time.Instant;
@@ -23,10 +24,13 @@ CREATE TABLE IF NOT EXISTS accounts(
   type TEXT,
   account_sync_source TEXT AS AccountSyncSource,
   last_sync TEXT AS Instant,
-  last_reconciled TEXT AS Instant
+  last_reconciled TEXT AS Instant,
+  bank_sync_status TEXT AS BankSyncStatus
 );
 
 getById: SELECT * FROM accounts WHERE id = ? LIMIT 1;
+
+getBankSyncStatus: SELECT bank_sync_status FROM accounts WHERE id = ?;
 
 -- packages/loot-core/src/server/accounts/app.ts closeAccount()
 getFirstNotTombstoned: SELECT * FROM accounts WHERE id = ? AND tombstone = 0 LIMIT 1;

@@ -1,10 +1,12 @@
 package aktual.budget.db
 
+import aktual.budget.model.AccountId
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CleanupGroupId
 import aktual.budget.model.CustomReportId
 import aktual.budget.model.ScheduleId
+import aktual.budget.model.TagId
 import aktual.test.CoTemporaryFolder
 import aktual.test.testBudgetFiles
 import alakazam.test.getResourceAsStream
@@ -63,6 +65,8 @@ class LoadExistingDatabaseFromFileTest {
     checkMigration1769000000000(db)
     checkMigration1778510362740(db)
     checkMigration1780099200000(db)
+    checkMigration1780327681000(db)
+    checkMigration1780606215000(db)
   }
 
   // Verify that the file was opened at all
@@ -92,6 +96,19 @@ class LoadExistingDatabaseFromFileTest {
         .getShowTrendLines(id = CustomReportId("custom-report"))
         .awaitAsOneOrNull()
     assertNull(showTrendLines)
+  }
+
+  // Adds hidden column to tags. migration sets to 0 (false) by default
+  private suspend fun checkMigration1780327681000(db: BudgetDatabase) {
+    val hidden = db.tagsQueries.getHidden(id = TagId("tag-id")).awaitAsOneOrNull()
+    assertNull(hidden)
+  }
+
+  // Adds bank_sync_status column to accounts. migration sets to null by default
+  private suspend fun checkMigration1780606215000(db: BudgetDatabase) {
+    val bankSyncStatus =
+      db.accountsQueries.getBankSyncStatus(id = AccountId("account-id")).awaitAsOneOrNull()
+    assertNull(bankSyncStatus)
   }
 
   private fun loadDatabaseIntoFile(): File {

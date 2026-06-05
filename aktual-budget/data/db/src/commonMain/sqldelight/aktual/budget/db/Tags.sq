@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS tags(
   tag TEXT UNIQUE,
   color TEXT,
   description TEXT,
-  tombstone INTEGER AS Boolean DEFAULT 0
+  tombstone INTEGER AS Boolean DEFAULT 0,
+  hidden INTEGER AS Boolean DEFAULT 0
 );
 
 insert:
@@ -17,3 +18,6 @@ delete:
 
 getById:
   SELECT * FROM tags WHERE id = ?;
+
+getHidden:
+  SELECT hidden FROM tags WHERE id = ?;
