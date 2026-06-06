@@ -47,6 +47,7 @@ import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -135,12 +136,20 @@ internal fun ListRulesItem(
       }
     }
 
-    // Only Pre/Post rules force an explicit ordering worth flagging; Default is the implicit norm.
-    if (rule.stage == RuleStage.Pre || rule.stage == RuleStage.Post) {
+    if (rule.stage.showBadge()) {
       RuleStageBadge(stage = rule.stage, modifier = Modifier.align(Alignment.TopStart))
     }
   }
 }
+
+// Only Pre/Post rules force an explicit ordering worth flagging; Default is the implicit norm.
+@Stable
+private fun RuleStage.showBadge() =
+  when (this) {
+    RuleStage.Default -> false
+    RuleStage.Pre,
+    RuleStage.Post -> true
+  }
 
 @Composable
 private fun RuleStageBadge(
@@ -153,7 +162,7 @@ private fun RuleStageBadge(
       modifier
         .padding(Dimens.Large)
         .clip(CardShape)
-        .background(theme.pillBackground, CardShape)
+        .background(theme.pillBackgroundSelected, CardShape)
         .border(Dp.Hairline, theme.pillBorder, CardShape)
         .padding(horizontal = 6.dp, vertical = 2.dp)
   ) {
