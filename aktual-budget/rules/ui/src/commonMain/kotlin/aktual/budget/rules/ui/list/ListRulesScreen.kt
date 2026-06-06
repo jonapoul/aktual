@@ -1,7 +1,6 @@
 package aktual.budget.rules.ui.list
 
 import aktual.budget.model.RuleId
-import aktual.budget.model.RuleStage
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
@@ -15,8 +14,6 @@ import aktual.budget.rules.vm.list.ListRulesState.Failure
 import aktual.budget.rules.vm.list.ListRulesState.Loading
 import aktual.budget.rules.vm.list.ListRulesState.Success
 import aktual.budget.rules.vm.list.ListRulesViewModel
-import aktual.core.icons.AktualIcons
-import aktual.core.icons.ChevronUp
 import aktual.core.icons.material.Add
 import aktual.core.icons.material.ClearAll
 import aktual.core.icons.material.Delete
@@ -31,7 +28,7 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.BlurredTopBarSpacing
+import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.Dimens
@@ -44,20 +41,17 @@ import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
 import aktual.core.ui.blurredTopBar
-import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -67,34 +61,30 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
+import kotlin.math.roundToInt
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
-import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun ListRulesScreen(
@@ -140,32 +130,78 @@ private fun ListRulesScaffold(
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
 
+  // Drives the collapsing header below the toolbar: it fades + slides out as the list scrolls
+  // down, and back in as it scrolls up (enter-always behaviour).
+  val headerState = rememberCollapsingHeaderState()
+
+  // Blur the bar as soon as content slips behind it. The header eats the first slice of scroll to
+  // collapse itself, so the list won't report canScrollBackward yet — treat a collapsing header as
+  // "scrolled" too, otherwise small scrolls leave a dead zone with no blur.
+  val isScrolled by remember {
+    derivedStateOf { listState.canScrollBackward || headerState.isCollapsing }
+  }
+
   Scaffold(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().nestedScroll(headerState.nestedScrollConnection),
     topBar = {
-      TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
-        title = { Text(Strings.rulesToolbar) },
-        actions = { AppBarButtons(state, checkboxes, onAction) },
-      )
+      Column(modifier = Modifier.blurredTopBar(blurState, isScrolled = isScrolled)) {
+        TopAppBar(
+          colors = theme.transparentTopAppBarColors(),
+          title = { Text(Strings.rulesToolbar) },
+          actions = { AppBarButtons(state, checkboxes, onAction) },
+        )
+        CollapsingHeader(state = headerState, onAction = onAction)
+      }
     },
   ) { innerPadding ->
     Box {
       PageBackground()
-
-      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
-        BlurredTopBarSpacing(blurState, innerPadding)
-        PullToRefreshBox(
-          modifier = Modifier.padding(horizontal = 8.dp),
-          contentAlignment = Alignment.Center,
-          onRefresh = { onAction(Reload) },
-          isRefreshing = state is Loading,
-          content = { ListRulesContent(state, checkboxes, onAction, listState) },
+      BlurredPullToRefreshBox(
+        modifier = Modifier.padding(horizontal = 8.dp),
+        contentAlignment = Alignment.Center,
+        onRefresh = { onAction(Reload) },
+        isRefreshing = state is Loading,
+        blurState = blurState,
+        innerPadding = innerPadding,
+      ) { padding ->
+        ListRulesContent(
+          state = state,
+          contentPadding = padding,
+          checkboxes = checkboxes,
+          onAction = onAction,
+          listState = listState,
         )
       }
     }
   }
+}
+
+// Descriptive header that lives in the top app bar and collapses (fades + slides up), driven by
+// [state] which the scaffold's nested-scroll connection updates as the list scrolls.
+@Composable
+private fun CollapsingHeader(
+  state: CollapsingHeaderState,
+  onAction: ListRulesActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  Text(
+    modifier =
+      modifier
+        .fillMaxWidth()
+        .clipToBounds()
+        .layout { measurable, constraints ->
+          val placeable = measurable.measure(constraints)
+          state.height = placeable.height.toFloat()
+          val collapsed = (placeable.height + state.offset).roundToInt().coerceAtLeast(0)
+          layout(placeable.width, collapsed) { placeable.place(0, state.offset.roundToInt()) }
+        }
+        .graphicsLayer { alpha = state.alpha }
+        .padding(horizontal = Dimens.Medium)
+        .padding(bottom = Dimens.Medium),
+    textAlign = TextAlign.Start,
+    text = headerText(onAction),
+    style = AktualTypography.bodySmall,
+  )
 }
 
 @Composable
@@ -198,6 +234,7 @@ private fun AppBarButtons(
 @Composable
 private fun ListRulesContent(
   state: ListRulesState,
+  contentPadding: PaddingValues,
   checkboxes: CheckboxesState,
   onAction: ListRulesActionHandler,
   listState: LazyListState,
@@ -249,6 +286,7 @@ private fun ListRulesContent(
           rules = state.rules,
           checkboxes = checkboxes,
           listState = listState,
+          contentPadding = contentPadding,
           onAction = onAction,
         )
       }
@@ -295,50 +333,27 @@ private fun CheckboxSelectionBar(
 private fun ContentSuccess(
   rules: ImmutableList<Rule>,
   checkboxes: CheckboxesState,
+  contentPadding: PaddingValues,
   onAction: ListRulesActionHandler,
   modifier: Modifier = Modifier,
   listState: LazyListState = rememberLazyListState(),
 ) {
-  val stagedRules: ImmutableList<Pair<RuleStage, ImmutableList<Rule>>> =
-    remember(rules) {
-      // always show all stages, even if no rules
-      val grouped = rules.groupBy { it.stage }
-      RuleStage.entries
-        .map { stage -> stage to grouped[stage].orEmpty().toImmutableList() }
-        .toImmutableList()
-    }
-
-  val expandedStages = remember {
-    mutableStateMapOf(RuleStage.Pre to true, RuleStage.Default to true, RuleStage.Post to true)
-  }
-
   Column(modifier) {
-    Text(
-      modifier = Modifier.padding(Dimens.Medium).fillMaxWidth(),
-      textAlign = TextAlign.Start,
-      text = headerText(onAction),
-      style = AktualTypography.bodySmall,
-    )
-
+    // Pass the top inset as the LazyColumn's contentPadding (not Modifier.padding on the Column)
+    // so items rest below the bar but scroll up *behind* it, which is what reveals the blur.
     LazyColumn(
       modifier = Modifier.scrollbar(listState).weight(1f),
       state = listState,
+      contentPadding = contentPadding,
       verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
     ) {
-      stagedRules.fastForEach { (stage, r) ->
-        val isExpanded = expandedStages.getValue(stage)
-        stickyHeader { StageHeader(expandedStages, stage, isExpanded, r) }
-
-        if (isExpanded) {
-          items(r, key = { it.id.value }) { rule ->
-            ListRulesItem(
-              modifier = Modifier.animateItem(),
-              rule = rule,
-              checkboxes = checkboxes,
-              onAction = onAction,
-            )
-          }
-        }
+      items(rules, key = { it.id.value }) { rule ->
+        ListRulesItem(
+          modifier = Modifier.animateItem(),
+          rule = rule,
+          checkboxes = checkboxes,
+          onAction = onAction,
+        )
       }
 
       item { BottomSpacing() }
@@ -358,47 +373,6 @@ private fun ContentSuccess(
         )
       }
     }
-  }
-}
-
-@Composable
-private fun StageHeader(
-  expandedStages: SnapshotStateMap<RuleStage, Boolean>,
-  stage: RuleStage,
-  isExpanded: Boolean,
-  rules: ImmutableList<Rule>,
-  theme: Theme = LocalTheme.current,
-) {
-  Row(
-    modifier =
-      Modifier.fillMaxWidth()
-        .background(theme.pillBackgroundSelected, CardShape)
-        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
-        .clickable { expandedStages[stage] = !isExpanded },
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Text(
-      modifier = Modifier.weight(1f).padding(Dimens.Large),
-      text = Strings.rulesStagePrefix(stage.string()),
-      style = AktualTypography.titleSmall,
-      fontWeight = FontWeight.Bold,
-      color = theme.pillTextSelected,
-    )
-
-    Text(
-      modifier = Modifier.padding(Dimens.Large),
-      text = Strings.rulesStageCount(rules.size),
-      style = AktualTypography.bodyLarge,
-      textAlign = TextAlign.End,
-      color = theme.pillText,
-    )
-
-    val rotation by animateFloatAsState(if (isExpanded) 0f else 180f)
-    Icon(
-      modifier = Modifier.minimumInteractiveComponentSize().rotate(rotation),
-      imageVector = AktualIcons.ChevronUp,
-      contentDescription = "",
-    )
   }
 }
 

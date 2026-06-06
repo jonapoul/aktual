@@ -118,7 +118,7 @@ Rules:
 
 ### 8. Update the migration test
 
-File: `aktual-budget/data/db/src/commonTest/kotlin/aktual/budget/db/LoadExistingDatabaseFromFileTest.kt`
+File: `aktual-budget/data/db/src/commonTest/kotlin/aktual/budget/db/DatabaseMigrationTest.kt`
 
 Add a call at the end of the test body:
 ```kotlin
