@@ -5,8 +5,7 @@ import aktual.budget.model.CurrencyConfig
 import aktual.budget.model.DateRangeType
 import aktual.budget.model.NumberFormatConfig
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
@@ -82,11 +81,11 @@ internal fun axisTickComponent(compact: Boolean) =
   }
 
 @Composable
-internal fun axisLabelComponent(compact: Boolean, theme: Theme = LocalTheme.current) =
+internal fun axisLabelComponent(compact: Boolean) =
   if (compact) {
     null
   } else {
-    rememberAxisLabelComponent(style = TextStyle(color = theme.pageText, fontSize = 12.sp))
+    rememberAxisLabelComponent(style = TextStyle(color = colors.pageText, fontSize = 12.sp))
   }
 
 @Composable
@@ -138,17 +137,16 @@ internal fun monthStringsMap(): ImmutableMap<Month, String> =
  */
 @Composable
 internal fun rememberMarker(
-  markerShape: Shape = RoundedCornerShape(CornerSize(percent = 50)),
-  theme: Theme = LocalTheme.current,
+  markerShape: Shape = RoundedCornerShape(CornerSize(percent = 50))
 ): CartesianMarker {
   val label =
     rememberTextComponent(
-      style = TextStyle(color = theme.pageText, textAlign = TextAlign.Center),
+      style = TextStyle(color = colors.pageText, textAlign = TextAlign.Center),
       padding = Insets(8.dp, 4.dp),
       minWidth = TextComponent.MinWidth.fixed(40.dp),
     )
   val indicatorFrontComponent =
-    rememberShapeComponent(fill = Fill(color = theme.pageBackground), shape = markerShape)
+    rememberShapeComponent(fill = Fill(color = colors.pageBackground), shape = markerShape)
   val guideline = rememberAxisGuidelineComponent()
   return rememberDefaultCartesianMarker(
     label = label,

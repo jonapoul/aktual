@@ -16,22 +16,22 @@ class ThemeResolverImpl(
   private val api: ThemeApi,
   private val cache: CustomThemeCache,
 ) : ThemeResolver {
-  override fun activeTheme(isSystemInDarkTheme: Boolean): Flow<Theme> =
+  override fun activeColors(isSystemInDarkTheme: Boolean): Flow<Colors> =
     combine(
         preferences.useSystemDefault.asFlow(),
         preferences.nightTheme.asFlow(),
         preferences.constantTheme.asFlow(),
       ) { useSystemDefault, nightThemeId, customThemeId ->
         if (useSystemDefault) {
-          if (isSystemInDarkTheme) nightThemeId else LightTheme.id
+          if (isSystemInDarkTheme) nightThemeId else LightColors.id
         } else {
-          customThemeId ?: DarkTheme.id
+          customThemeId ?: DarkColors.id
         }
       }
       .map { id -> resolveWithFallback(id, isSystemInDarkTheme) }
 
-  override suspend fun resolve(id: ThemeId): Theme? {
-    Theme.Defaults.firstOrNull { it.id == id }
+  override suspend fun resolve(id: ThemeId): Colors? {
+    Colors.Defaults.firstOrNull { it.id == id }
       ?.let {
         return it
       }
@@ -39,19 +39,19 @@ class ThemeResolverImpl(
     return cache.theme(repo)
   }
 
-  private suspend fun resolveWithFallback(id: ThemeId, isSystemInDarkTheme: Boolean): Theme {
+  private suspend fun resolveWithFallback(id: ThemeId, isSystemInDarkTheme: Boolean): Colors {
     resolve(id)?.let {
       return it
     }
     val repo = id.toRepo()
     if (repo == null) {
       logcat.e { "Failed to convert '$id' to a custom theme repository" }
-      return LightTheme
+      return LightColors
     }
     return fetchAndCache(repo, isSystemInDarkTheme)
   }
 
-  private suspend fun fetchAndCache(repo: CustomThemeRepo, isSystemInDarkTheme: Boolean): Theme {
+  private suspend fun fetchAndCache(repo: CustomThemeRepo, isSystemInDarkTheme: Boolean): Colors {
     try {
       val summaries = cache.summaries().ifEmpty { api.fetchCatalog() }
       val summary =
@@ -75,6 +75,6 @@ class ThemeResolverImpl(
     return CustomThemeRepo(userName = parts[0], repoName = parts[1])
   }
 
-  private fun fallback(isSystemInDarkTheme: Boolean): DefaultTheme =
-    if (isSystemInDarkTheme) DarkTheme else LightTheme
+  private fun fallback(isSystemInDarkTheme: Boolean): DefaultColors =
+    if (isSystemInDarkTheme) DarkColors else LightColors
 }

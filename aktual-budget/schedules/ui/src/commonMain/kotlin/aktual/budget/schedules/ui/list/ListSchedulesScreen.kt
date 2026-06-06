@@ -17,19 +17,18 @@ import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditScheduleNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualTextField
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PageBackground
-import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
@@ -102,7 +101,6 @@ private fun ListSchedulesScaffold(
   onAction: ListSchedulesActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
   val successState = state as? Success
@@ -114,7 +112,7 @@ private fun ListSchedulesScaffold(
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         title = { Title(isSearchActive, successState, onAction) },
         actions = {
           BareIconButton(
@@ -201,7 +199,6 @@ private fun ListSchedulesContent(
   onAction: ListSchedulesActionHandler,
   listState: LazyListState,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier = modifier.fillMaxSize(),
@@ -223,7 +220,7 @@ private fun ListSchedulesContent(
           title = Strings.listSchedulesEmpty,
           reason = null,
           icon = null,
-          background = theme.tableBackground,
+          background = colors.tableBackground,
           action =
             FailureAction(
               text = { Strings.listSchedulesEmptyCreate },
@@ -236,7 +233,7 @@ private fun ListSchedulesContent(
         FailureScreen(
           title = Strings.rulesFailurePrefix,
           reason = state.cause ?: Strings.rulesFailureDefaultMessage,
-          background = theme.tableBackground,
+          background = colors.tableBackground,
           action =
             FailureAction(
               text = { Strings.syncRetry },
@@ -251,7 +248,7 @@ private fun ListSchedulesContent(
             title = Strings.listSchedulesNoResults,
             reason = null,
             icon = null,
-            background = theme.tableBackground,
+            background = colors.tableBackground,
             action =
               FailureAction(
                 text = { Strings.listSchedulesFilterClear },
@@ -296,11 +293,11 @@ private fun ContentSuccess(
 @Preview
 @Composable
 private fun PreviewListSchedulesScaffold(
-  @PreviewParameter(ListSchedulesProvider::class) params: ThemedParams<ListSchedulesState>
-) = PreviewWithThemedParams(params) { ListSchedulesScaffold(state = this, onAction = {}) }
+  @PreviewParameter(ListSchedulesProvider::class) params: ColoredParams<ListSchedulesState>
+) = PreviewWithColoredParams(params) { ListSchedulesScaffold(state = this, onAction = {}) }
 
 private class ListSchedulesProvider :
-  ThemedParameterProvider<ListSchedulesState>(
+  ColoredParameterProvider<ListSchedulesState>(
     Success(
       schedules = persistentListOf(scheduleA, scheduleB),
       filterText = "",

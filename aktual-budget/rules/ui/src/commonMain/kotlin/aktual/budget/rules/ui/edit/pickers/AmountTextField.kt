@@ -14,17 +14,16 @@ import aktual.core.icons.Subtract
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.DarkColors
 import aktual.core.ui.AktualTextField
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.bareIconButton
 import aktual.core.ui.formattedString
 import androidx.compose.foundation.layout.Row
@@ -157,7 +156,6 @@ private fun LeadingContent(
   onToggleSign: (Boolean) -> Unit,
   modifier: Modifier = Modifier,
   config: CurrencyConfig = LocalCurrencyConfig.current,
-  theme: Theme = LocalTheme.current,
 ) {
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     BareIconButton(
@@ -174,7 +172,7 @@ private fun LeadingContent(
         modifier = Modifier.minimumInteractiveComponentSize(),
         text = config.currency.symbol,
         style = AktualTypography.bodyMedium,
-        color = theme.pageTextSubdued,
+        color = colors.pageTextSubdued,
       )
     }
   }
@@ -199,7 +197,6 @@ private fun TrailingContent(
   onClear: () -> Unit,
   modifier: Modifier = Modifier,
   config: CurrencyConfig = LocalCurrencyConfig.current,
-  theme: Theme = LocalTheme.current,
 ) {
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     if (config.currency != Currency.None && config.position == AfterAmount) {
@@ -207,7 +204,7 @@ private fun TrailingContent(
         modifier = Modifier.minimumInteractiveComponentSize(),
         text = config.currency.symbol,
         style = AktualTypography.bodyMedium,
-        color = theme.pageTextSubdued,
+        color = colors.pageTextSubdued,
       )
     }
 
@@ -249,7 +246,7 @@ private fun String.amountOrNull(): Amount? = toLongOrNull()?.let(::Amount)
 private fun PreviewAmountTextField(
   @PreviewParameter(AmountTextFieldProvider::class) params: AmountTextFieldParams
 ) {
-  PreviewWithTheme(DarkTheme) {
+  PreviewWithColors(DarkColors) {
     with(params) {
       var element by remember { mutableStateOf(value) }
       AmountTextField(

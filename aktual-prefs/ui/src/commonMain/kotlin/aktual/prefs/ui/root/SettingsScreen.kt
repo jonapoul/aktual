@@ -8,15 +8,15 @@ import aktual.budget.model.NumberFormat
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ThemeSettingsNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.blurredTopBarContentPadding
@@ -72,7 +72,6 @@ fun SettingsScreen(
 
 @Composable
 private fun SettingsScaffold(state: SettingsScreenState, onAction: SettingsActionHandler) {
-  val theme = LocalTheme.current
   val listState = rememberLazyListState()
   val blurState = rememberBlurredTopBarState()
 
@@ -80,7 +79,7 @@ private fun SettingsScaffold(state: SettingsScreenState, onAction: SettingsActio
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsToolbar) },
       )
@@ -123,8 +122,8 @@ private fun SettingsContent(
 
 @PortraitPreview
 @Composable
-private fun PreviewSettingsScaffold(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewSettingsScaffold(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     SettingsScaffold(
       onAction = {},
       state =

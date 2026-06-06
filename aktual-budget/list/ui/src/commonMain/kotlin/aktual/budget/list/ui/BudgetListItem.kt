@@ -7,16 +7,15 @@ import aktual.core.icons.material.DeleteForever
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.PreviewWithThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.RowShape
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -56,14 +55,13 @@ internal fun BudgetListItem(
   onClickOpen: () -> Unit,
   onClickDelete: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Row(
     modifier =
       modifier
         .clip(RowShape)
-        .background(theme.buttonNormalBackground, RowShape)
-        .border(Dp.Hairline, theme.pillBorderDark, RowShape)
+        .background(colors.buttonNormalBackground, RowShape)
+        .border(Dp.Hairline, colors.pillBorderDark, RowShape)
         .clickable(onClick = onClickOpen)
         .padding(horizontal = 15.dp, vertical = 12.dp),
     horizontalArrangement = Arrangement.Start,
@@ -76,16 +74,16 @@ internal fun BudgetListItem(
         text = budget.name,
         fontSize = 16.sp,
         fontWeight = FontWeight.W700,
-        color = theme.pageText,
+        color = colors.pageText,
       )
 
-      BudgetStateText(state = budget.state, theme = theme)
+      BudgetStateText(state = budget.state)
 
       Text(
         modifier = Modifier.padding(top = 4.dp),
         text = description,
         style = AktualTypography.bodySmall,
-        color = theme.pageTextSubdued,
+        color = colors.pageTextSubdued,
         fontSize = 10.sp,
         lineHeight = 12.sp,
       )
@@ -100,7 +98,7 @@ internal fun BudgetListItem(
           modifier = Modifier.size(13.dp),
           imageVector = AktualIcons.Key,
           contentDescription = description,
-          tint = if (budget.hasKey) theme.formLabelText else theme.buttonNormalDisabledText,
+          tint = if (budget.hasKey) colors.formLabelText else colors.buttonNormalDisabledText,
         )
 
         HorizontalSpacer(8.dp)
@@ -152,9 +150,9 @@ private fun budgetDescription(budget: Budget) =
 @Preview
 @Composable
 private fun PreviewBudgetListItem(
-  @PreviewParameter(BudgetListItemProvider::class) params: ThemedParams<BudgetListItemParams>
+  @PreviewParameter(BudgetListItemProvider::class) params: ColoredParams<BudgetListItemParams>
 ) =
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     BudgetListItem(
       modifier = width?.let { w -> Modifier.width(w) } ?: Modifier.fillMaxWidth(),
       budget = budget,
@@ -166,7 +164,7 @@ private fun PreviewBudgetListItem(
 private data class BudgetListItemParams(val budget: Budget, val width: Dp? = null)
 
 private class BudgetListItemProvider :
-  ThemedParameterProvider<BudgetListItemParams>(
+  ColoredParameterProvider<BudgetListItemParams>(
     BudgetListItemParams(PreviewBudgetSynced),
     BudgetListItemParams(PreviewBudgetSynced, width = 300.dp),
     BudgetListItemParams(PreviewBudgetBroken),

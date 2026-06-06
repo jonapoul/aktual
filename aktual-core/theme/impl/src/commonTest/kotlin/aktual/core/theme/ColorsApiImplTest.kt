@@ -17,7 +17,7 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.coroutines.test.runTest
 
-class ThemeApiImplTest {
+class ColorsApiImplTest {
   private lateinit var themeApi: ThemeApi
   private lateinit var mockEngine: MockEngine.Queue
 

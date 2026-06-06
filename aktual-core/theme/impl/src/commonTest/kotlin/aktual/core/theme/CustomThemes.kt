@@ -21,7 +21,7 @@ internal val ShadesOfCoffeeThemeSummary =
 
 // from Juulz/shades-of-coffee
 internal val ShadesOfCoffeeTheme =
-  JsonCustomTheme(
+  JsonCustomColors(
     name = ShadesOfCoffeeThemeSummary.name,
     repo = ShadesOfCoffeeThemeSummary.repo,
     isLight = true,
@@ -51,7 +51,7 @@ internal val ShadesOfCoffeeTheme =
     table =
       TableColors(
         tableBackground = Color(0xFFf5f2ef),
-        tableRowBackgroundAlternate = LightTheme.tableRowBackgroundAlternate,
+        tableRowBackgroundAlternate = LightColors.tableRowBackgroundAlternate,
         tableRowBackgroundHover = Color(0xFFece5df),
         tableText = Color(0xFF272630),
         tableTextItemAdded = Color(0xFF272630),

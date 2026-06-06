@@ -4,14 +4,13 @@ import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.vm.TextData
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.verticalScrollWithBar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -49,7 +48,6 @@ internal fun TextChart(
   compact: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(modifier = modifier) {
     var isEditing by remember { mutableStateOf(false) }
@@ -82,7 +80,7 @@ internal fun TextChart(
         Markdown(
           modifier = Modifier.fillMaxSize().verticalScrollWithBar(scrollState),
           content = data.content,
-          colors = markdownColor(theme.pageText),
+          colors = markdownColor(colors.pageText),
         )
       }
     }
@@ -123,12 +121,12 @@ internal fun TextChart(
 @Preview
 @Composable
 private fun PreviewTextChart(
-  @PreviewParameter(TextChartProvider::class) params: ThemedParams<TextChartParams>
+  @PreviewParameter(TextChartProvider::class) params: ColoredParams<TextChartParams>
 ) =
-  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
+  PreviewWithColors(params.colors, isPrivacyEnabled = params.data.private) {
     TextChart(
       modifier =
-        Modifier.background(LocalTheme.current.tableBackground, CardShape)
+        Modifier.background(colors.tableBackground, CardShape)
           .width(WIDTH.dp)
           .let { m -> if (params.data.compact) m.height(300.dp) else m }
           .padding(5.dp),
@@ -141,7 +139,7 @@ private fun PreviewTextChart(
 private data class TextChartParams(val data: TextData, val compact: Boolean, val private: Boolean)
 
 private class TextChartProvider :
-  ThemedParameterProvider<TextChartParams>(
+  ColoredParameterProvider<TextChartParams>(
     listOf(PREVIEW_TEXT_DATA, PREVIEW_SHORT_TEXT_DATA).flatMap { data ->
       listOf(true, false).flatMap { compact ->
         listOf(true, false).map { private -> TextChartParams(data, compact, private) }

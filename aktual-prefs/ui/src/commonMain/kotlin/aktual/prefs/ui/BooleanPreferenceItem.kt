@@ -2,11 +2,10 @@ package aktual.prefs.ui
 
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.switch
 import aktual.prefs.vm.BooleanPreference
 import androidx.compose.foundation.layout.ColumnScope
@@ -27,7 +26,6 @@ internal fun BooleanPreferenceItem(
   icon: ImageVector?,
   modifier: Modifier = Modifier,
   includeBackground: Boolean = true,
-  theme: Theme = LocalTheme.current,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
   BooleanPreferenceItem(
@@ -39,7 +37,6 @@ internal fun BooleanPreferenceItem(
     icon = icon,
     modifier = modifier,
     includeBackground = includeBackground,
-    theme = theme,
     bottomContent = bottomContent,
   )
 }
@@ -54,7 +51,6 @@ internal fun BooleanPreferenceItem(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   includeBackground: Boolean = true,
-  theme: Theme = LocalTheme.current,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
   BasicPreferenceItem(
@@ -72,7 +68,7 @@ internal fun BooleanPreferenceItem(
         checked = value,
         onCheckedChange = null,
         enabled = enabled,
-        colors = theme.switch(),
+        colors = colors.switch(),
       )
     },
   )
@@ -82,9 +78,9 @@ internal fun BooleanPreferenceItem(
 @Composable
 private fun PreviewBooleanPreferenceItem(
   @PreviewParameter(BooleanPreferenceItemProvider::class)
-  params: ThemedParams<BooleanPreferenceItemParams>
+  params: ColoredParams<BooleanPreferenceItemParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     BooleanPreferenceItem(
       value = params.data.value,
       onValueChange = {},
@@ -104,7 +100,7 @@ private data class BooleanPreferenceItemParams(
 )
 
 private class BooleanPreferenceItemProvider :
-  ThemedParameterProvider<BooleanPreferenceItemParams>(
+  ColoredParameterProvider<BooleanPreferenceItemParams>(
     BooleanPreferenceItemParams(
       value = true,
       title = "Change the doodad",

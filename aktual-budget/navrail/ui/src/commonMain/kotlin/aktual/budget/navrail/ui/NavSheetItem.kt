@@ -12,8 +12,7 @@ import aktual.core.icons.material.Settings
 import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Strings
 import aktual.core.nav.BudgetTab
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.disabled
 import androidx.compose.foundation.background
@@ -42,10 +41,9 @@ internal fun NavSheetItem(
   selected: Boolean,
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
-  val indicatorColor = if (selected) theme.sidebarItemTextSelected.disabled else Color.Transparent
-  val contentColor = if (selected) theme.sidebarItemTextSelected else theme.sidebarItemText
+  val indicatorColor = if (selected) colors.sidebarItemTextSelected.disabled else Color.Transparent
+  val contentColor = if (selected) colors.sidebarItemTextSelected else colors.sidebarItemText
   Column(
     modifier =
       modifier

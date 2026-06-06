@@ -20,23 +20,22 @@ import aktual.core.icons.material.Save
 import aktual.core.icons.material.SaveAs
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualSlidingToggleButton
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTooltip
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.blurredTopBarContentPadding
@@ -131,7 +130,6 @@ private fun EditRuleScaffold(
   onAction: EditRuleActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
 
@@ -140,7 +138,7 @@ private fun EditRuleScaffold(
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { EditRuleTitle(mode) },
         actions = { EditRuleActions(state, mode, onAction) },
@@ -226,7 +224,7 @@ private fun MoreMenu(
     onDismissRequest = onDismissRequest,
   ) {
     val string = Strings.editRuleActionDelete
-    val red = LocalTheme.current.errorText
+    val red = colors.errorText
     AktualDropdownMenuItem(
       enabled = state is Success,
       text = { Text(string, color = red) },
@@ -248,14 +246,13 @@ private fun EditRuleContent(
   contentPadding: PaddingValues,
   onAction: EditRuleActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   when (state) {
     is Failure -> {
       FailureScreen(
         title = Strings.editRuleFailedTitle,
         reason = state.reason,
-        background = theme.tableBackground,
+        background = colors.tableBackground,
         action = null,
       )
     }
@@ -335,11 +332,10 @@ private fun RuleStage(
   isEnabled: Boolean,
   onAction: EditRuleActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier =
-      modifier.fillMaxWidth().background(theme.cardBackground, CardShape).padding(CARD_PADDING),
+      modifier.fillMaxWidth().background(colors.cardBackground, CardShape).padding(CARD_PADDING),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Row {
@@ -371,15 +367,15 @@ private fun RuleStage(
 @PortraitPreview
 @Composable
 private fun PreviewEditRuleScaffold(
-  @PreviewParameter(EditRuleStateProvider::class) params: ThemedParams<EditRuleStateParams>
+  @PreviewParameter(EditRuleStateProvider::class) params: ColoredParams<EditRuleStateParams>
 ) {
-  PreviewWithThemedParams(params) { EditRuleScaffold(state = state, mode = mode, onAction = {}) }
+  PreviewWithColoredParams(params) { EditRuleScaffold(state = state, mode = mode, onAction = {}) }
 }
 
 private data class EditRuleStateParams(val state: EditRuleState, val mode: Mode = Mode.Edit)
 
 private class EditRuleStateProvider :
-  ThemedParameterProvider<EditRuleStateParams>(
+  ColoredParameterProvider<EditRuleStateParams>(
     EditRuleStateParams(Success(PreviewRule1, isWorking = false)),
     EditRuleStateParams(Success(PreviewRule1, isWorking = true)),
     EditRuleStateParams(Loading),

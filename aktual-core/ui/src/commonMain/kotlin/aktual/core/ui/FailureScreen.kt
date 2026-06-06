@@ -4,8 +4,8 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -35,8 +35,7 @@ fun FailureCard(
   action: FailureAction?,
   modifier: Modifier = Modifier,
   icon: ImageVector? = AktualIcons.CloudWarning,
-  theme: Theme = LocalTheme.current,
-  background: Color = theme.cardBackground,
+  background: Color = colors.cardBackground,
 ) {
   Column(
     modifier = modifier.padding(30.dp).background(background, CardShape).padding(30.dp),
@@ -46,7 +45,7 @@ fun FailureCard(
       Icon(
         modifier = Modifier.size(100.dp),
         imageVector = icon,
-        tint = theme.warningText,
+        tint = colors.warningText,
         contentDescription = title,
       )
 
@@ -55,7 +54,7 @@ fun FailureCard(
 
     Text(
       text = title,
-      color = theme.warningText,
+      color = colors.warningText,
       textAlign = TextAlign.Center,
       fontSize = 20.sp,
       fontWeight = FontWeight.Bold,
@@ -66,7 +65,7 @@ fun FailureCard(
 
       Text(
         text = reason,
-        color = theme.warningTextDark,
+        color = colors.warningTextDark,
         fontSize = 16.sp,
         textAlign = TextAlign.Center,
       )
@@ -92,7 +91,6 @@ fun FailureScreen(
   action: FailureAction?,
   modifier: Modifier = Modifier,
   icon: ImageVector? = AktualIcons.CloudWarning,
-  theme: Theme = LocalTheme.current,
   background: Color = Color.Transparent,
 ) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -102,7 +100,6 @@ fun FailureScreen(
         reason = reason,
         icon = icon,
         action = action,
-        theme = theme,
         background = background,
       )
 
@@ -122,28 +119,28 @@ data class FailureAction(
 @Preview
 @Composable
 private fun PreviewFailureCard(
-  @PreviewParameter(FailureScreenProvider::class) params: ThemedParams<FailureScreenParams>
+  @PreviewParameter(FailureScreenProvider::class) params: ColoredParams<FailureScreenParams>
 ) =
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     FailureCard(
       title = title,
       reason = reason,
       action = action,
-      background = LocalTheme.current.background(),
+      background = colors.background(),
     )
   }
 
 @PortraitPreview
 @Composable
 private fun PreviewFailureScreen(
-  @PreviewParameter(FailureScreenProvider::class) params: ThemedParams<FailureScreenParams>
+  @PreviewParameter(FailureScreenProvider::class) params: ColoredParams<FailureScreenParams>
 ) =
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     FailureScreen(
       title = title,
       reason = reason,
       action = action,
-      background = LocalTheme.current.background(),
+      background = colors.background(),
     )
   }
 
@@ -152,11 +149,11 @@ private data class FailureScreenParams(
   val title: String = "Failed syncing the doodads",
   val action: FailureAction? =
     FailureAction(text = { "Retry" }, icon = MaterialIcons.Refresh, onClick = {}),
-  val background: Theme.() -> Color = { cardBackground },
+  val background: Colors.() -> Color = { cardBackground },
 )
 
 private class FailureScreenProvider :
-  ThemedParameterProvider<FailureScreenParams>(
+  ColoredParameterProvider<FailureScreenParams>(
     FailureScreenParams(reason = "Some error", background = { buttonPrimaryBackground }),
     FailureScreenParams(
       reason = "Failed to do the thing, here's a bit more text to show how it behaves when wrapping"

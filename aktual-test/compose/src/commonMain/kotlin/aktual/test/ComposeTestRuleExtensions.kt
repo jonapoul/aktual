@@ -1,8 +1,8 @@
 package aktual.test
 
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.theme.DarkColors
+import aktual.core.theme.LocalColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.SemanticsNodeInteraction
@@ -23,6 +23,6 @@ fun ComposeContentTestRule.onDisplayedNodeWithTag(tag: String) =
   onNodeWithTag(tag).assertIsDisplayed()
 
 fun ComposeContentTestRule.setThemedContent(
-  theme: Theme = DarkTheme,
+  colors: Colors = DarkColors,
   content: @Composable () -> Unit,
-) = setContent { CompositionLocalProvider(LocalTheme provides theme, content = content) }
+) = setContent { CompositionLocalProvider(LocalColors provides colors, content = content) }

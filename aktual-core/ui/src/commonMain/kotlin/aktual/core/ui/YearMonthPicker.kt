@@ -3,8 +3,8 @@
 package aktual.core.ui
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,7 +37,6 @@ fun YearMonthPicker(
   range: YearMonthRange,
   onValueChange: (YearMonth) -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   require(value in range) { "Given month $value is not in range $range" }
 
@@ -56,8 +55,7 @@ fun YearMonthPicker(
     modifier = modifier.wrapContentWidth().clickable { showDialog = true },
     readOnly = true,
     placeholderText = null,
-    colors = theme.exposedDropDownMenu(),
-    theme = theme,
+    colors = colors.exposedDropDownMenu(),
   )
 
   if (showDialog) {
@@ -81,7 +79,6 @@ private fun PickDateDialog(
   onDismiss: () -> Unit,
   onValueChange: (YearMonth) -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   AktualAlertDialog(
     modifier = modifier,
@@ -92,7 +89,6 @@ private fun PickDateDialog(
         range = range,
         onDismiss = onDismiss,
         onValueChange = onValueChange,
-        theme = theme,
       )
     },
   )
@@ -104,24 +100,22 @@ internal fun PickDateDialogContent(
   onDismiss: () -> Unit,
   onValueChange: (YearMonth) -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   var currentValue by remember { mutableStateOf(value) }
   val isWithinRange = currentValue in range
 
   AktualAlertDialogContent(
     modifier = modifier,
-    theme = theme,
     title = Strings.yearMonthPickerTitle,
     buttons = {
       TextButton(onClick = onDismiss) {
-        Text(text = Strings.yearMonthPickerCancel, color = theme.pageText)
+        Text(text = Strings.yearMonthPickerCancel, color = colors.pageText)
       }
 
       TextButton(enabled = isWithinRange, onClick = { onValueChange(currentValue) }) {
         Text(
           text = Strings.yearMonthPickerSave,
-          color = if (isWithinRange) theme.pageTextPositive else theme.pageTextSubdued,
+          color = if (isWithinRange) colors.pageTextPositive else colors.pageTextSubdued,
         )
       }
     },
@@ -132,7 +126,6 @@ internal fun PickDateDialogContent(
       value = currentValue.month,
       onValueChange = { currentValue = YearMonth(currentValue.year, it) },
       options = remember(range) { range.rangeValues { it.month } },
-      theme = theme,
       string = { it.stringLong() },
       textStyle = centredTextStyle,
     )
@@ -144,7 +137,6 @@ internal fun PickDateDialogContent(
       value = currentValue.year,
       onValueChange = { currentValue = YearMonth(it, currentValue.month) },
       options = remember(range) { range.rangeValues { it.year } },
-      theme = theme,
       string = { it.toString() },
       textStyle = centredTextStyle,
     )
@@ -155,7 +147,7 @@ internal fun PickDateDialogContent(
       Text(
         modifier = Modifier.padding(8.dp),
         text = Strings.yearMonthPickerOutOfRange(start, end),
-        color = theme.errorText,
+        color = colors.errorText,
         textAlign = TextAlign.Center,
       )
     }
@@ -168,8 +160,8 @@ private fun <T : Comparable<T>> YearMonthRange.rangeValues(
 
 @Preview
 @Composable
-private fun PreviewYearMonthPicker(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewYearMonthPicker(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     YearMonthPicker(
       modifier = Modifier.padding(4.dp),
       value = YearMonth(2025, Month.FEBRUARY),
@@ -184,8 +176,8 @@ private fun PreviewYearMonthPicker(@PreviewParameter(ThemeParameters::class) the
 
 @Preview
 @Composable
-private fun PreviewDialogContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewDialogContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     PickDateDialogContent(
       value = YearMonth(2025, Month.FEBRUARY),
       range =
@@ -200,8 +192,10 @@ private fun PreviewDialogContent(@PreviewParameter(ThemeParameters::class) theme
 
 @Preview
 @Composable
-private fun PreviewDialogContentOutOfRange(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewDialogContentOutOfRange(
+  @PreviewParameter(ColoredParameters::class) colors: Colors
+) =
+  PreviewWithColors(colors) {
     PickDateDialogContent(
       value = YearMonth(2025, Month.AUGUST),
       range =

@@ -1,7 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.ColumnScope
@@ -31,7 +30,6 @@ fun AktualDropdownMenu(
   offset: DpOffset = DpOffset(0.dp, 0.dp),
   scrollState: ScrollState = rememberScrollState(),
   properties: PopupProperties = PopupProperties(focusable = true),
-  theme: Theme = LocalTheme.current,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   val dialogBlurState = LocalDialogBlurState.current
@@ -49,7 +47,7 @@ fun AktualDropdownMenu(
     offset = offset,
     scrollState = scrollState,
     properties = properties,
-    containerColor = theme.menuBackground,
+    containerColor = colors.menuBackground,
     content = content,
   )
 }
@@ -64,9 +62,8 @@ fun AktualDropdownMenuItem(
   enabled: Boolean = true,
   contentPadding: PaddingValues = MenuDefaults.DropdownMenuItemContentPadding,
   interactionSource: MutableInteractionSource? = remember { MutableInteractionSource() },
-  theme: Theme = LocalTheme.current,
 ) {
-  val colors = theme.dropDownMenuItem()
+  val colors = colors.dropDownMenuItem()
   val textColor = if (enabled) colors.textColor else colors.disabledTextColor
   DropdownMenuItem(
     text = {
@@ -79,7 +76,6 @@ fun AktualDropdownMenuItem(
     leadingIcon = leadingIcon,
     trailingIcon = trailingIcon,
     enabled = enabled,
-    colors = colors,
     contentPadding = contentPadding,
     interactionSource = interactionSource,
   )
@@ -95,7 +91,6 @@ fun AktualDropdownMenuItem(
   enabled: Boolean = true,
   contentPadding: PaddingValues = MenuDefaults.DropdownMenuItemContentPadding,
   interactionSource: MutableInteractionSource? = remember { MutableInteractionSource() },
-  theme: Theme = LocalTheme.current,
 ) {
   AktualDropdownMenuItem(
     text = { Text(text) },
@@ -106,6 +101,5 @@ fun AktualDropdownMenuItem(
     enabled = enabled,
     contentPadding = contentPadding,
     interactionSource = interactionSource,
-    theme = theme,
   )
 }

@@ -4,8 +4,7 @@ import aktual.core.icons.material.ArrowBack
 import aktual.core.icons.material.Check
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -126,9 +125,8 @@ fun BasicIconButton(
     DefaultIconButtonContent(imageVector, contentDescription, size)
   },
 ) {
-  val theme = LocalTheme.current
   val isPressed by interactionSource.collectIsPressedAsState()
-  val buttonColors = colors(theme, isPressed)
+  val buttonColors = colors(AktualTheme.colors, isPressed)
   val background = if (enabled) buttonColors.containerColor else buttonColors.disabledContainerColor
 
   IconButton(
@@ -149,7 +147,7 @@ fun NavBackIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
 
 @Immutable
 fun interface IconButtonColorProvider {
-  @Composable operator fun invoke(theme: Theme, isPressed: Boolean): IconButtonColors
+  @Composable operator fun invoke(colors: Colors, isPressed: Boolean): IconButtonColors
 
   companion object {
     val Bare = IconButtonColorProvider { theme, isPressed -> theme.bareIconButton(isPressed) }
@@ -189,21 +187,21 @@ private fun DefaultIconButtonContent(
 
 @Preview
 @Composable
-private fun PreviewBare(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewBare(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     BareIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
-private fun PreviewNormal(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewNormal(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     NormalIconButton(imageVector = MaterialIcons.Check, contentDescription = "Cancel", onClick = {})
   }
 
 @Preview
 @Composable
-private fun PreviewPrimary(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewPrimary(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     PrimaryIconButton(imageVector = MaterialIcons.Check, contentDescription = "OK", onClick = {})
   }

@@ -1,7 +1,7 @@
 package aktual.core.ui
 
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.theme.LocalColors
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.infiniteRepeatable
@@ -13,6 +13,8 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.BlendMode
@@ -22,21 +24,29 @@ import com.valentinilk.shimmer.ShimmerTheme
 import com.valentinilk.shimmer.shimmerSpec
 import kotlinx.collections.immutable.persistentListOf
 
+@Immutable
+object AktualTheme {
+  @get:Composable
+  @get:ReadOnlyComposable
+  val colors: Colors
+    get() = LocalColors.current
+}
+
 @Composable
 @Suppress("ModifierMissing")
-fun AktualTheme(theme: Theme?, content: @Composable () -> Unit) {
-  LoadingScreenIfNotNull(theme) { t ->
+fun AktualTheme(colors: Colors?, content: @Composable () -> Unit) {
+  LoadingScreenIfNotNull(colors) { c ->
     CompositionLocalProvider(
-      LocalTheme provides t,
+      LocalColors provides c,
       LocalIndication provides ripple(),
-      LocalShimmerTheme provides aktualShimmerTheme(t),
+      LocalShimmerTheme provides aktualShimmerTheme(c),
       LocalOverscrollFactory provides null,
     ) {
-      SetStatusBarColors(theme = t)
+      SetStatusBarColors(colors = c)
 
       MaterialTheme(
-        colorScheme = if (t.isLight) lightColorScheme() else darkColorScheme(),
-        typography = aktualTypography(t),
+        colorScheme = if (c.isLight) lightColorScheme() else darkColorScheme(),
+        typography = aktualTypography(c),
         content = content,
       )
     }
@@ -46,8 +56,8 @@ fun AktualTheme(theme: Theme?, content: @Composable () -> Unit) {
 @Stable
 @Composable
 @Suppress("MagicNumber")
-private fun aktualShimmerTheme(theme: Theme): ShimmerTheme =
-  remember(theme) {
+private fun aktualShimmerTheme(colors: Colors): ShimmerTheme =
+  remember(colors) {
     ShimmerTheme(
       animationSpec =
         infiniteRepeatable(
@@ -58,9 +68,9 @@ private fun aktualShimmerTheme(theme: Theme): ShimmerTheme =
       rotation = 15.0f,
       shaderColors =
         persistentListOf(
-          theme.pageText.copy(alpha = 0.1f),
-          theme.pageText.copy(alpha = 0.3f),
-          theme.pageText.copy(alpha = 0.1f),
+          colors.pageText.copy(alpha = 0.1f),
+          colors.pageText.copy(alpha = 0.3f),
+          colors.pageText.copy(alpha = 0.1f),
         ),
       shaderColorStops = persistentListOf(0.0f, 0.5f, 1.0f),
       shimmerWidth = 400.dp,

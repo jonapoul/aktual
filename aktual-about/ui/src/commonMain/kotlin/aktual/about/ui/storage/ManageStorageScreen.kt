@@ -13,22 +13,22 @@ import aktual.core.model.Bytes
 import aktual.core.model.bytes
 import aktual.core.model.percent
 import aktual.core.nav.BackNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualTheme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithThemedParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
@@ -128,7 +128,7 @@ private fun ManageStorageScaffold(
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = LocalTheme.current.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.storageToolbar) },
       )
@@ -183,7 +183,6 @@ private fun ManageStorageLoadedContent(
   onAction: ManageStorageActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val theme = LocalTheme.current
   val sliceCount = state.budgets.size + 2 // +cache +other
   val colors = rememberDistinctColors(count = sliceCount.coerceAtLeast(1))
 
@@ -202,13 +201,13 @@ private fun ManageStorageLoadedContent(
         )
       }
 
-      item { TotalStorageText(state, theme) }
+      item { TotalStorageText(state) }
 
-      item { BudgetsSummary(state, colors, onAction, theme) }
+      item { BudgetsSummary(state, colors, onAction) }
 
-      item { CacheSummary(state, colors, theme) }
+      item { CacheSummary(state, colors) }
 
-      item { ActionButtons(onAction, theme) }
+      item { ActionButtons(onAction) }
 
       item { BottomSpacing() }
     }
@@ -217,7 +216,7 @@ private fun ManageStorageLoadedContent(
       Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
         PieChart(state, colors, modifier = Modifier.padding(20.dp).weight(1f).aspectRatio(1f))
 
-        TotalStorageText(state, theme)
+        TotalStorageText(state)
 
         BottomSpacing()
       }
@@ -228,11 +227,11 @@ private fun ManageStorageLoadedContent(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
-        item { BudgetsSummary(state, colors, onAction, theme) }
+        item { BudgetsSummary(state, colors, onAction) }
 
-        item { CacheSummary(state, colors, theme) }
+        item { CacheSummary(state, colors) }
 
-        item { ActionButtons(onAction, theme) }
+        item { ActionButtons(onAction) }
 
         item { BottomSpacing() }
       }
@@ -241,7 +240,7 @@ private fun ManageStorageLoadedContent(
 }
 
 @Composable
-private fun ActionButtons(onAction: ManageStorageActionHandler, theme: Theme) {
+private fun ActionButtons(onAction: ManageStorageActionHandler) {
   Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
     NormalTextButton(
       text = Strings.storageClearCache,
@@ -259,7 +258,7 @@ private fun ActionButtons(onAction: ManageStorageActionHandler, theme: Theme) {
       text = Strings.storageClearAllFiles,
       onClick = { onAction(RequestClearAllFiles) },
       modifier = Modifier.fillMaxWidth(),
-      colors = { pressed -> errorButtonColors(pressed, theme) },
+      colors = { pressed -> errorButtonColors(pressed) },
     )
   }
 }
@@ -268,13 +267,12 @@ private fun ActionButtons(onAction: ManageStorageActionHandler, theme: Theme) {
 private fun CacheSummary(
   state: ManageStorageState.Loaded,
   colors: ImmutableList<Color>,
-  theme: Theme,
 ) {
   Column(
     modifier =
       Modifier.fillMaxWidth()
-        .background(theme.pillBackground.disabled, CardShape)
-        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
+        .background(AktualTheme.colors.pillBackground.disabled, CardShape)
+        .border(Dp.Hairline, AktualTheme.colors.pillBorderDark, CardShape)
         .padding(Dimens.Large),
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
@@ -282,14 +280,12 @@ private fun CacheSummary(
       label = Strings.storageCache,
       size = state.cacheSize.toString(),
       color = colors[state.budgets.size],
-      theme = theme,
     )
 
     LegendRow(
       label = Strings.storageOther,
       size = state.otherSize.toString(),
       color = colors[state.budgets.size + 1],
-      theme = theme,
     )
   }
 }
@@ -299,33 +295,35 @@ private fun BudgetsSummary(
   state: ManageStorageState.Loaded,
   colors: ImmutableList<Color>,
   onAction: ManageStorageActionHandler,
-  theme: Theme,
 ) {
   Column(
     modifier =
       Modifier.fillMaxWidth()
-        .background(theme.pillBackground.disabled, CardShape)
-        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
+        .background(AktualTheme.colors.pillBackground.disabled, CardShape)
+        .border(Dp.Hairline, AktualTheme.colors.pillBorderDark, CardShape)
         .padding(Dimens.Large),
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     Text(
       text = Strings.storageBudgets,
       style = AktualTypography.bodyLarge,
-      color = theme.pageText,
+      color = AktualTheme.colors.pageText,
       fontWeight = FontWeight.Bold,
       modifier = Modifier.padding(bottom = Dimens.Medium),
     )
 
     if (state.budgets.isEmpty()) {
-      Text(text = "No budgets", style = AktualTypography.bodyMedium, color = theme.pageTextSubdued)
+      Text(
+        text = "No budgets",
+        style = AktualTypography.bodyMedium,
+        color = AktualTheme.colors.pageTextSubdued,
+      )
     } else {
       state.budgets.forEachIndexed { index, budget ->
         BudgetRow(
           budget = budget,
           color = colors[index],
           onDelete = { onAction(RequestClearBudget(budget.id, budget.name)) },
-          theme = theme,
         )
       }
     }
@@ -333,17 +331,17 @@ private fun BudgetsSummary(
 }
 
 @Composable
-private fun TotalStorageText(state: ManageStorageState.Loaded, theme: Theme) {
+private fun TotalStorageText(state: ManageStorageState.Loaded) {
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
     Text(
       text = "${Strings.storageTotal}: ${state.totalSize}",
       style = AktualTypography.titleMedium,
-      color = theme.pageText,
+      color = colors.pageText,
     )
     Text(
       text = percentTotalStorage(state),
       style = AktualTypography.labelMedium,
-      color = theme.pageTextSubdued,
+      color = colors.pageTextSubdued,
     )
   }
 }
@@ -387,26 +385,26 @@ private fun rememberSlices(
   }
 
 @Composable
-private fun BudgetRow(budget: BudgetStorageItem, color: Color, onDelete: () -> Unit, theme: Theme) {
+private fun BudgetRow(budget: BudgetStorageItem, color: Color, onDelete: () -> Unit) {
   Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
     Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(color))
     HorizontalSpacer(Dimens.Large)
     Text(
       text = budget.name,
       style = AktualTypography.bodyMedium,
-      color = theme.pageText,
+      color = colors.pageText,
       modifier = Modifier.weight(1f),
     )
     Text(
       text = budget.size.toString(),
       style = AktualTypography.labelMedium,
-      color = theme.pageTextSubdued,
+      color = colors.pageTextSubdued,
     )
     IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
       Icon(
         imageVector = MaterialIcons.Delete,
         contentDescription = null,
-        tint = theme.errorText,
+        tint = colors.errorText,
         modifier = Modifier.size(18.dp),
       )
     }
@@ -414,7 +412,7 @@ private fun BudgetRow(budget: BudgetStorageItem, color: Color, onDelete: () -> U
 }
 
 @Composable
-private fun LegendRow(label: String, size: String, color: Color, theme: Theme) {
+private fun LegendRow(label: String, size: String, color: Color) {
   Row(
     modifier =
       Modifier.fillMaxWidth()
@@ -426,16 +424,15 @@ private fun LegendRow(label: String, size: String, color: Color, theme: Theme) {
     Text(
       text = label,
       style = AktualTypography.bodyMedium,
-      color = theme.pageText,
+      color = colors.pageText,
       modifier = Modifier.weight(1f),
     )
-    Text(text = size, style = AktualTypography.labelMedium, color = theme.pageTextSubdued)
+    Text(text = size, style = AktualTypography.labelMedium, color = colors.pageTextSubdued)
   }
 }
 
 @Composable
 private fun StorageDialogs(dialog: StorageDialog, onAction: ManageStorageActionHandler) {
-  val theme = LocalTheme.current
   when (dialog) {
     StorageDialog.None -> {
       // N/A
@@ -448,7 +445,7 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: ManageStorageActionH
         buttons = {
           TextButton(onClick = { onAction(DismissDialog) }) { Text(Strings.storageCancel) }
           TextButton(onClick = { onAction(ConfirmClearAllFiles) }) {
-            Text(Strings.storageConfirmDelete, color = theme.errorText)
+            Text(Strings.storageConfirmDelete, color = colors.errorText)
           }
         },
       ) {
@@ -463,7 +460,7 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: ManageStorageActionH
         buttons = {
           TextButton(onClick = { onAction(DismissDialog) }) { Text(Strings.storageCancel) }
           TextButton(onClick = { onAction(ConfirmClearBudget(dialog.id)) }) {
-            Text(Strings.storageConfirmDelete, color = theme.errorText)
+            Text(Strings.storageConfirmDelete, color = colors.errorText)
           }
         },
       ) {
@@ -478,7 +475,7 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: ManageStorageActionH
         buttons = {
           TextButton(onClick = { onAction(DismissDialog) }) { Text(Strings.storageCancel) }
           TextButton(onClick = { onAction(ConfirmClearCache) }) {
-            Text(Strings.storageConfirmClear, color = theme.errorText)
+            Text(Strings.storageConfirmClear, color = colors.errorText)
           }
         },
       ) {
@@ -493,7 +490,7 @@ private fun StorageDialogs(dialog: StorageDialog, onAction: ManageStorageActionH
         buttons = {
           TextButton(onClick = { onAction(DismissDialog) }) { Text(Strings.storageCancel) }
           TextButton(onClick = { onAction(ConfirmClearPreferences) }) {
-            Text(Strings.storageConfirmClear, color = theme.errorText)
+            Text(Strings.storageConfirmClear, color = colors.errorText)
           }
         },
       ) {
@@ -515,10 +512,10 @@ private fun percentTotalStorage(state: ManageStorageState.Loaded): String {
 
 @Stable
 @Composable
-private fun errorButtonColors(isPressed: Boolean, theme: Theme) =
+private fun errorButtonColors(isPressed: Boolean) =
   ButtonDefaults.buttonColors(
-    containerColor = if (isPressed) theme.buttonPrimaryBackground else theme.errorBackground,
-    contentColor = if (isPressed) theme.buttonPrimaryText else theme.errorText,
+    containerColor = if (isPressed) colors.buttonPrimaryBackground else colors.errorBackground,
+    contentColor = if (isPressed) colors.buttonPrimaryText else colors.errorText,
   )
 
 @Suppress("MagicNumber")
@@ -537,7 +534,7 @@ private val PreviewLoadedState =
   )
 
 private class StoragePreviewParams :
-  ThemedParameterProvider<ManageStorageState>(
+  ColoredParameterProvider<ManageStorageState>(
     PreviewLoadedState,
     ManageStorageState.Loading,
     PreviewLoadedState.copy(dialog = StorageDialog.ConfirmClearAllFiles),
@@ -547,9 +544,9 @@ private class StoragePreviewParams :
 @TabletPreview
 @Composable
 private fun PreviewManageStorage(
-  @PreviewParameter(StoragePreviewParams::class) params: ThemedParams<ManageStorageState>
+  @PreviewParameter(StoragePreviewParams::class) params: ColoredParams<ManageStorageState>
 ) {
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     ManageStorageScaffold(state = this, onAction = {}, modifier = Modifier.fillMaxSize())
   }
 }

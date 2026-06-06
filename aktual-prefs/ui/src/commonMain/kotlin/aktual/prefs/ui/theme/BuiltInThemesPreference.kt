@@ -4,16 +4,16 @@ import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.LightTheme
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.MidnightTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.theme.DarkColors
+import aktual.core.theme.LightColors
+import aktual.core.theme.MidnightColors
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.NormalIconButton
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.disabledIf
 import aktual.core.ui.radioButton
 import aktual.prefs.ui.BasicPreferenceItem
@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,21 +56,21 @@ internal fun BuiltInThemesPreference(
         verticalArrangement = Arrangement.spacedBy(2.dp),
       ) {
         BuiltInThemeItem(
-          id = LightTheme.id,
+          id = LightColors.id,
           name = Strings.settingsThemeLight,
           selectedId = selectedTheme,
           enabled = enabled,
           onAction = onAction,
         )
         BuiltInThemeItem(
-          id = DarkTheme.id,
+          id = DarkColors.id,
           name = Strings.settingsThemeDark,
           selectedId = selectedTheme,
           enabled = enabled,
           onAction = onAction,
         )
         BuiltInThemeItem(
-          id = MidnightTheme.id,
+          id = MidnightColors.id,
           name = Strings.settingsThemeMidnight,
           selectedId = selectedTheme,
           enabled = enabled,
@@ -89,17 +88,13 @@ private fun BuiltInThemeItem(
   selectedId: ThemeId?,
   enabled: Boolean,
   onAction: ThemeSettingsActionHandler,
-  theme: Theme = LocalTheme.current,
 ) {
   Row(
     modifier = Modifier.height(IntrinsicSize.Min),
     horizontalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     val isSelected = selectedId == id
-    val backgroundColor =
-      remember(theme, isSelected) {
-        theme.buttonNormalBackground.disabledIf(enabled || !isSelected)
-      }
+    val backgroundColor = colors.buttonNormalBackground.disabledIf(enabled || !isSelected)
     Row(
       modifier =
         Modifier.fillMaxHeight().weight(1f).background(backgroundColor, CardShape).clickable(
@@ -115,14 +110,14 @@ private fun BuiltInThemeItem(
         enabled = enabled,
         selected = isSelected,
         onClick = null,
-        colors = theme.radioButton(),
+        colors = colors.radioButton(),
       )
 
       Text(
         modifier = Modifier.weight(1f),
         text = name,
         style = AktualTypography.bodyLarge,
-        color = theme.buttonNormalText.disabledIf(!enabled),
+        color = colors.buttonNormalText.disabledIf(!enabled),
       )
     }
 
@@ -138,16 +133,18 @@ private fun BuiltInThemeItem(
 
 @Preview
 @Composable
-private fun PreviewBuiltInThemesPreference(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
-    BuiltInThemesPreference(selectedTheme = LightTheme.id, enabled = true, onAction = {})
+private fun PreviewBuiltInThemesPreference(
+  @PreviewParameter(ColoredParameters::class) colors: Colors
+) =
+  PreviewWithColors(colors) {
+    BuiltInThemesPreference(selectedTheme = LightColors.id, enabled = true, onAction = {})
   }
 
 @Preview
 @Composable
 private fun PreviewBuiltInThemesPreferenceDisabled(
-  @PreviewParameter(ThemeParameters::class) theme: Theme
+  @PreviewParameter(ColoredParameters::class) colors: Colors
 ) =
-  PreviewWithTheme(theme) {
-    BuiltInThemesPreference(selectedTheme = LightTheme.id, enabled = false, onAction = {})
+  PreviewWithColors(colors) {
+    BuiltInThemesPreference(selectedTheme = LightColors.id, enabled = false, onAction = {})
   }

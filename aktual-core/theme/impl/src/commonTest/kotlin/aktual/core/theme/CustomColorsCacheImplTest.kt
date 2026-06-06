@@ -16,7 +16,7 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import okio.FileSystem
 
-class CustomThemeCacheImplTest {
+class CustomColorsCacheImplTest {
   @InterceptTest val temporaryFolder = TemporaryFolder()
 
   private lateinit var cache: CustomThemeCache

@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
-data object MidnightTheme : DefaultTheme {
+data object MidnightColors : DefaultColors {
   override val id = ThemeId("Midnight")
   override val isLight = false
 

@@ -1,13 +1,13 @@
 package aktual.about.ui.info
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AnimatedLoading
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.ColoredParameters
+import aktual.core.ui.PreviewWithColors
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -26,13 +26,12 @@ import androidx.compose.ui.window.DialogProperties
 internal fun CheckUpdatesLoadingDialog(
   onCancel: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialog(
     modifier = modifier,
     properties = DialogProperties(dismissOnBackPress = false, dismissOnClickOutside = false),
     onDismissRequest = onCancel,
-    content = { CheckUpdatesLoadingDialogContent(onCancel = onCancel, theme = theme) },
+    content = { CheckUpdatesLoadingDialogContent(onCancel = onCancel) },
   )
 }
 
@@ -40,11 +39,9 @@ internal fun CheckUpdatesLoadingDialog(
 internal fun CheckUpdatesLoadingDialogContent(
   onCancel: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialogContent(
     modifier = modifier,
-    theme = theme,
     title = null,
     content = {
       Row(
@@ -56,12 +53,12 @@ internal fun CheckUpdatesLoadingDialogContent(
 
         HorizontalSpacer(15.dp)
 
-        Text(text = Strings.infoCheckingUpdatesLoading, color = theme.pageText)
+        Text(text = Strings.infoCheckingUpdatesLoading, color = colors.pageText)
       }
     },
     buttons = {
       TextButton(onClick = onCancel) {
-        Text(text = Strings.infoCheckingUpdatesCancel, color = theme.pageTextPositive)
+        Text(text = Strings.infoCheckingUpdatesCancel, color = colors.pageTextPositive)
       }
     },
   )
@@ -69,5 +66,5 @@ internal fun CheckUpdatesLoadingDialogContent(
 
 @Preview
 @Composable
-private fun PreviewCheckUpdatesContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) { CheckUpdatesLoadingDialogContent(onCancel = {}) }
+private fun PreviewCheckUpdatesContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { CheckUpdatesLoadingDialogContent(onCancel = {}) }

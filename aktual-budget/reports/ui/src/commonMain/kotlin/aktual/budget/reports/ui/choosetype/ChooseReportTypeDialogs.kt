@@ -2,9 +2,8 @@ package aktual.budget.reports.ui.choosetype
 
 import aktual.budget.reports.vm.choosetype.ChooseReportTypeDialog
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualAlertDialog
+import aktual.core.ui.AktualTheme.colors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -21,13 +20,10 @@ internal fun ChooseReportTypeDialogs(
 }
 
 @Composable
-private fun UnsupportedTypeDialog(
-  onAction: ChooseReportTypeActionHandler,
-  theme: Theme = LocalTheme.current,
-) {
+private fun UnsupportedTypeDialog(onAction: ChooseReportTypeActionHandler) {
   AktualAlertDialog(
     title = Strings.reportsChooseTypeDisabledDialogTitle,
-    titleColor = theme.warningText,
+    titleColor = colors.warningText,
     onDismissRequest = { onAction(DismissDialog) },
     buttons = {
       TextButton(onClick = { onAction(DismissDialog) }) {

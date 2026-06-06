@@ -3,12 +3,12 @@ package aktual.about.ui.info
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Warning
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ColoredParameters
+import aktual.core.ui.PreviewWithColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -21,13 +21,12 @@ internal fun UpdateCheckFailedDialog(
   cause: String,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialog(
     modifier = modifier,
     onDismissRequest = onDismiss,
     content = {
-      UpdateCheckFailedDialogContent(cause = cause, onDismiss = onDismiss, theme = theme)
+      UpdateCheckFailedDialogContent(cause = cause, onDismiss = onDismiss)
     },
   )
 }
@@ -37,18 +36,16 @@ internal fun UpdateCheckFailedDialogContent(
   cause: String,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialogContent(
     modifier = modifier,
-    theme = theme,
     title = Strings.infoCheckFailedTitle,
     icon = MaterialIcons.Warning,
-    titleColor = theme.errorText,
+    titleColor = colors.errorText,
     content = { Text(cause) },
     buttons = {
       TextButton(onClick = onDismiss) {
-        Text(text = Strings.infoCheckFailedOk, color = theme.errorText)
+        Text(text = Strings.infoCheckFailedOk, color = colors.errorText)
       }
     },
   )
@@ -56,8 +53,8 @@ internal fun UpdateCheckFailedDialogContent(
 
 @Preview
 @Composable
-private fun PreviewCheckFailedContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewCheckFailedContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     UpdateCheckFailedDialogContent(
       cause =
         "Something broke lol. And here's some other rubbish to show how the text looks when wrapping lines",

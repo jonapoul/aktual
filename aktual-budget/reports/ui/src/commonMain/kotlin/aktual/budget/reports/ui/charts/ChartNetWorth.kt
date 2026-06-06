@@ -12,13 +12,12 @@ import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode.SlidingWindow
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
 import alakazam.compose.VerticalSpacer
@@ -92,7 +91,6 @@ internal fun NetWorthChart(
 private fun Header(
   data: NetWorthData,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Row(
     modifier = modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp).fillMaxWidth(),
@@ -102,14 +100,14 @@ private fun Header(
       Text(
         text = data.title,
         overflow = TextOverflow.Ellipsis,
-        color = theme.pageText,
+        color = colors.pageText,
         style = AktualTypography.bodyLarge,
       )
 
       Text(
         text = dateRange(data.items.keys),
         overflow = TextOverflow.Ellipsis,
-        color = theme.pageTextSubdued,
+        color = colors.pageTextSubdued,
         style = AktualTypography.bodyMedium,
       )
     }
@@ -120,7 +118,7 @@ private fun Header(
         text = netWorthLatest.formattedString(includeSign = false),
         textAlign = TextAlign.End,
         style = AktualTypography.bodyLarge,
-        color = theme.pageText,
+        color = colors.pageText,
       )
 
       VerticalSpacer(4.dp)
@@ -134,7 +132,7 @@ private fun Header(
         text = netWorthChange.formattedString(includeSign = true),
         textAlign = TextAlign.End,
         style = AktualTypography.bodySmall,
-        color = if (netWorthChange.isPositive()) theme.noticeText else theme.errorText,
+        color = if (netWorthChange.isPositive()) colors.noticeText else colors.errorText,
       )
     }
   }
@@ -144,7 +142,6 @@ private fun Chart(
   data: NetWorthData,
   compact: Boolean,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
 
@@ -169,11 +166,11 @@ private fun Chart(
           lineProvider =
             LineCartesianLayer.LineProvider.series(
               LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(theme.reportsChartFill)),
+                fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsChartFill)),
                 areaFill =
                   LineCartesianLayer.AreaFill.double(
-                    topFill = Fill(theme.reportsNumberPositive.copy(alpha = 0.2f)),
-                    bottomFill = Fill(theme.reportsRed.copy(alpha = 0.2f)),
+                    topFill = Fill(colors.reportsNumberPositive.copy(alpha = 0.2f)),
+                    bottomFill = Fill(colors.reportsRed.copy(alpha = 0.2f)),
                   ),
               )
             )
@@ -211,12 +208,12 @@ private suspend fun CartesianChartModelProducer.populate(data: NetWorthData) =
 @Preview
 @Composable
 private fun PreviewNetWorthChart(
-  @PreviewParameter(NetWorthChartProvider::class) params: ThemedParams<NetWorthChartParams>
+  @PreviewParameter(NetWorthChartProvider::class) params: ColoredParams<NetWorthChartParams>
 ) =
-  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
+  PreviewWithColors(params.colors, isPrivacyEnabled = params.data.private) {
     NetWorthChart(
       modifier =
-        Modifier.background(LocalTheme.current.tableBackground, CardShape)
+        Modifier.background(colors.tableBackground, CardShape)
           .width(WIDTH.dp)
           .let { m -> if (params.data.compact) m.height(300.dp) else m }
           .padding(5.dp),
@@ -232,7 +229,7 @@ private data class NetWorthChartParams(
 )
 
 private class NetWorthChartProvider :
-  ThemedParameterProvider<NetWorthChartParams>(
+  ColoredParameterProvider<NetWorthChartParams>(
     NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = true, private = false),
     NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = true, private = true),
     NetWorthChartParams(PREVIEW_NET_WORTH_DATA, compact = false, private = false),

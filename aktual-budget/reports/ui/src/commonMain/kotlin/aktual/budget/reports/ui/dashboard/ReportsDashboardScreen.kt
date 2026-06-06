@@ -12,13 +12,12 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CreateReportNavigator
 import aktual.core.nav.ReportNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.PageBackground
-import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.blurredTopBarContentPadding
@@ -85,7 +84,6 @@ internal fun ReportsDashboardScaffold(
   items: ImmutableList<DashboardItem>,
   observer: DashboardItemObserver,
   onAction: ActionListener,
-  theme: Theme = LocalTheme.current,
 ) {
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
@@ -95,7 +93,7 @@ internal fun ReportsDashboardScaffold(
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         title = { Text(Strings.reportsDashboardTitle) },
         actions = {
           IconButton(onClick = { onAction(Action.CreateNewReport) }) {
@@ -146,9 +144,9 @@ private fun ReportsDashboardContent(
 }
 
 @Composable
-private fun ContentEmpty(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) =
+private fun ContentEmpty(modifier: Modifier = Modifier) =
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    Text(text = Strings.reportsDashboardEmpty, color = theme.pageText)
+    Text(text = Strings.reportsDashboardEmpty, color = colors.pageText)
   }
 
 @Composable
@@ -183,9 +181,9 @@ private fun ContentList(
 @Composable
 private fun PreviewReportsDashboardScaffold(
   @PreviewParameter(ReportsDashboardScaffoldProvider::class)
-  params: ThemedParams<ReportsDashboardScaffoldParams>
+  params: ColoredParams<ReportsDashboardScaffoldParams>
 ) =
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     ReportsDashboardScaffold(
       items = items,
       observer = { if (chartData == null) flowOf() else flowOf(chartData) },
@@ -199,7 +197,7 @@ private data class ReportsDashboardScaffoldParams(
 )
 
 private class ReportsDashboardScaffoldProvider :
-  ThemedParameterProvider<ReportsDashboardScaffoldParams>(
+  ColoredParameterProvider<ReportsDashboardScaffoldParams>(
     ReportsDashboardScaffoldParams(
       items =
         persistentListOf(

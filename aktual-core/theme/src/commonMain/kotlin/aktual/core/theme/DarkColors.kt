@@ -6,7 +6,7 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 
 @Immutable
-data object DarkTheme : DefaultTheme {
+data object DarkColors : DefaultColors {
   override val id = ThemeId("Dark")
   override val isLight = false
 

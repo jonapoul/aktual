@@ -24,22 +24,21 @@ import aktual.core.icons.material.SelectAll
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditRuleNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
@@ -126,7 +125,6 @@ private fun ListRulesScaffold(
   onAction: ListRulesActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
 
@@ -146,7 +144,7 @@ private fun ListRulesScaffold(
     topBar = {
       Column(modifier = Modifier.blurredTopBar(blurState, isScrolled = isScrolled)) {
         TopAppBar(
-          colors = theme.transparentTopAppBarColors(),
+          colors = colors.transparentTopAppBarColors(),
           title = { Text(Strings.rulesToolbar) },
           actions = { AppBarButtons(state, checkboxes, onAction) },
         )
@@ -239,7 +237,6 @@ private fun ListRulesContent(
   onAction: ListRulesActionHandler,
   listState: LazyListState,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier = modifier.fillMaxSize(),
@@ -257,7 +254,7 @@ private fun ListRulesContent(
         FailureScreen(
           title = Strings.rulesFailurePrefix,
           reason = state.cause ?: Strings.rulesFailureDefaultMessage,
-          background = theme.tableBackground,
+          background = colors.tableBackground,
           action =
             FailureAction(
               text = { Strings.syncRetry },
@@ -271,7 +268,7 @@ private fun ListRulesContent(
         FailureScreen(
           title = Strings.rulesEmpty,
           reason = null,
-          background = theme.tableBackground,
+          background = colors.tableBackground,
           action =
             FailureAction(
               text = { Strings.rulesEmptyCreate },
@@ -301,11 +298,10 @@ private fun CheckboxSelectionBar(
   selectedIds: ImmutableSet<RuleId>,
   onAction: ListRulesActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Row(
     modifier =
-      modifier.fillMaxWidth().background(theme.modalBackground, CardShape).padding(Dimens.Large),
+      modifier.fillMaxWidth().background(colors.modalBackground, CardShape).padding(Dimens.Large),
     horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
     verticalAlignment = Alignment.CenterVertically,
   ) {
@@ -379,9 +375,9 @@ private fun ContentSuccess(
 @PortraitPreview
 @Composable
 private fun PreviewListRulesScaffold(
-  @PreviewParameter(ListRulesStateProvider::class) params: ThemedParams<ListRulesStateParams>
+  @PreviewParameter(ListRulesStateProvider::class) params: ColoredParams<ListRulesStateParams>
 ) =
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     ListRulesScaffold(state = state, checkboxes = checkboxes, onAction = {})
   }
 
@@ -391,7 +387,7 @@ private data class ListRulesStateParams(
 )
 
 private class ListRulesStateProvider :
-  ThemedParameterProvider<ListRulesStateParams>(
+  ColoredParameterProvider<ListRulesStateParams>(
     ListRulesStateParams(
       Success(persistentListOf(PreviewRule1, PreviewRule2)),
       checkboxes = Active(persistentSetOf(PreviewRule1.id)),

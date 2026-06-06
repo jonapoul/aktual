@@ -10,15 +10,15 @@ import aktual.core.icons.material.Error
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
 import aktual.core.ui.AktualTextField
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.MY_PHONE_WIDTH_DP
 import aktual.core.ui.PasswordTransformation
-import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.checkbox
 import aktual.core.ui.disabled
 import aktual.core.ui.keyboardFocusRequester
@@ -86,7 +86,6 @@ fun SyncBudgetDialog(
   onSyncComplete: () -> Unit,
   onDismissRequest: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   viewModel: SyncBudgetViewModel = syncBudgetViewModel(budgetId),
 ) {
   val invalidateAndDismiss = {
@@ -100,7 +99,6 @@ fun SyncBudgetDialog(
 
   SyncBudgetDialog(
     modifier = modifier,
-    theme = theme,
     overallState = overallState,
     stepStates = stepStates,
     passwordState = passwordState,
@@ -124,7 +122,6 @@ private fun SyncBudgetDialog(
   passwordState: KeyPasswordState,
   onAction: SyncBudgetActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialog(
     modifier = modifier,
@@ -137,13 +134,11 @@ private fun SyncBudgetDialog(
       ),
   ) {
     AktualAlertDialogContent(
-      theme = theme,
       title = null,
       content = {
         SyncBudgetDialogContent(
           stepStates = stepStates,
           passwordState = passwordState,
-          theme = theme,
           onAction = onAction,
         )
       },
@@ -153,7 +148,7 @@ private fun SyncBudgetDialog(
           passwordState is KeyPasswordState.Active -> {
             val enabled = passwordState.input.isNotEmpty()
             val color =
-              if (enabled) theme.buttonPrimaryText else theme.buttonNormalDisabledText.disabled
+              if (enabled) colors.buttonPrimaryText else colors.buttonNormalDisabledText.disabled
             TextButton(
               enabled = enabled,
               onClick = { onAction(ConfirmKeyPassword) },
@@ -165,7 +160,8 @@ private fun SyncBudgetDialog(
           }
           else -> {
             val enabled = overallState == SyncOverallState.Succeeded
-            val color = if (enabled) theme.reportsGreen else theme.buttonNormalDisabledText.disabled
+            val color =
+              if (enabled) colors.reportsGreen else colors.buttonNormalDisabledText.disabled
             TextButton(
               enabled = enabled,
               onClick = { onAction(Continue) },
@@ -192,7 +188,6 @@ private fun ColumnScope.SyncBudgetDialogContent(
   passwordState: KeyPasswordState,
   onAction: SyncBudgetActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val stateList = remember(stepStates) { stepStates.toList().toImmutableList() }
 
@@ -202,7 +197,7 @@ private fun ColumnScope.SyncBudgetDialogContent(
     verticalAlignment = Alignment.Top,
   ) {
     stateList.fastForEach { (_, state) ->
-      SyncStepState(modifier = Modifier.weight(1f), state = state, theme = theme)
+      SyncStepState(modifier = Modifier.weight(1f), state = state)
     }
   }
 
@@ -215,21 +210,21 @@ private fun ColumnScope.SyncBudgetDialogContent(
     Text(
       text = activeStep.label(),
       style = MaterialTheme.typography.labelSmall,
-      color = theme.pageTextSubdued,
+      color = colors.pageTextSubdued,
       textAlign = TextAlign.Center,
       modifier = Modifier.fillMaxWidth(),
     )
   }
 
   if (passwordState is KeyPasswordState.Active) {
-    PasswordEntryLayout(password = passwordState.input, onAction = onAction, theme = theme)
+    PasswordEntryLayout(password = passwordState.input, onAction = onAction)
   }
 }
 
 private val ITEM_SIZE = 24.dp
 
 @Composable
-private fun SyncStepState(state: SyncStepState, theme: Theme, modifier: Modifier = Modifier) {
+private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier,
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -237,23 +232,23 @@ private fun SyncStepState(state: SyncStepState, theme: Theme, modifier: Modifier
   ) {
     when (state) {
       is SyncStepState.NotStarted -> {
-        TintedDot(size = 6.dp, color = theme.reportsNumberNeutral)
+        TintedDot(size = 6.dp, color = colors.reportsNumberNeutral)
       }
 
       is SyncStepState.InProgress.Indefinite -> {
-        CircularProgressIndicator(modifier = Modifier.size(ITEM_SIZE), color = theme.reportsBlue)
+        CircularProgressIndicator(modifier = Modifier.size(ITEM_SIZE), color = colors.reportsBlue)
       }
 
       is SyncStepState.InProgress.Definite -> {
         CircularProgressIndicator(
           progress = { state.progress.floatValue / 100f },
           modifier = Modifier.size(ITEM_SIZE),
-          color = theme.reportsBlue,
+          color = colors.reportsBlue,
         )
       }
 
       is SyncStepState.Succeeded -> {
-        TintedDot(size = 12.dp, color = theme.reportsNumberPositive)
+        TintedDot(size = 12.dp, color = colors.reportsNumberPositive)
       }
 
       is SyncStepState.Failed -> {
@@ -261,7 +256,7 @@ private fun SyncStepState(state: SyncStepState, theme: Theme, modifier: Modifier
           imageVector = MaterialIcons.Error,
           contentDescription = state.moreInfo,
           modifier = Modifier.size(ITEM_SIZE),
-          tint = theme.reportsNumberNegative,
+          tint = colors.reportsNumberNegative,
         )
       }
     }
@@ -288,12 +283,11 @@ private fun PasswordEntryLayout(
   password: Password,
   onAction: SyncBudgetActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
     Text(
       modifier = Modifier.padding(horizontal = 20.dp),
-      text = buildPasswordText(theme, onAction),
+      text = buildPasswordText(colors, onAction),
       fontSize = 14.sp,
     )
 
@@ -337,7 +331,7 @@ private fun PasswordEntryLayout(
         modifier = Modifier.minimumInteractiveComponentSize(),
         checked = passwordVisible,
         onCheckedChange = null,
-        colors = theme.checkbox(),
+        colors = colors.checkbox(),
       )
       Text(text = Strings.syncPasswordShowPassword)
     }
@@ -346,12 +340,12 @@ private fun PasswordEntryLayout(
 
 @Stable
 @Composable
-private fun buildPasswordText(theme: Theme, onAction: SyncBudgetActionHandler): AnnotatedString =
+private fun buildPasswordText(colors: Colors, onAction: SyncBudgetActionHandler): AnnotatedString =
   buildAnnotatedString {
     append(Strings.syncPasswordText)
     append(" ")
 
-    val style = SpanStyle(color = theme.pageTextLink, textDecoration = TextDecoration.Underline)
+    val style = SpanStyle(color = colors.pageTextLink, textDecoration = TextDecoration.Underline)
     val link =
       LinkAnnotation.Clickable(
         tag = Tags.KeyPasswordDialogLearnMore,
@@ -363,9 +357,9 @@ private fun buildPasswordText(theme: Theme, onAction: SyncBudgetActionHandler): 
 @Preview(widthDp = MY_PHONE_WIDTH_DP, heightDp = 500)
 @Composable
 private fun PreviewSyncBudgetDialog(
-  @PreviewParameter(SyncBudgetDialogProvider::class) params: ThemedParams<SyncBudgetDialogParams>
+  @PreviewParameter(SyncBudgetDialogProvider::class) params: ColoredParams<SyncBudgetDialogParams>
 ) {
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     SyncBudgetDialog(
       overallState = overallState,
       stepStates = stepStates,

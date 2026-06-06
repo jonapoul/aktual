@@ -12,16 +12,16 @@ import aktual.core.icons.material.Add
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualExposedDropDownMenu
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.NormalIconButton
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryIconButton
-import aktual.core.ui.ThemeParameters
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -44,11 +44,10 @@ internal fun Conditions(
   isEnabled: Boolean,
   onAction: EditRuleActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier =
-      modifier.fillMaxWidth().background(theme.cardBackground, CardShape).padding(CARD_PADDING),
+      modifier.fillMaxWidth().background(colors.cardBackground, CardShape).padding(CARD_PADDING),
     verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     Row(verticalAlignment = Alignment.Top) {
@@ -95,10 +94,9 @@ private fun Condition(
   isEnabled: Boolean,
   onAction: EditRuleActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
-    modifier = modifier.fillMaxWidth().background(theme.pillBackground, CardShape).padding(4.dp),
+    modifier = modifier.fillMaxWidth().background(colors.pillBackground, CardShape).padding(4.dp),
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -150,6 +148,6 @@ private val VISIBLE_FIELDS = Field.entries.minus(DUPE_FIELDS).toImmutableList()
 
 @Preview
 @Composable
-private fun PreviewConditions(@PreviewParameter(ThemeParameters::class) theme: Theme) {
-  PreviewWithTheme(theme) { Conditions(rule = PreviewRule1, isEnabled = true, onAction = {}) }
+private fun PreviewConditions(@PreviewParameter(ColoredParameters::class) colors: Colors) {
+  PreviewWithColors(colors) { Conditions(rule = PreviewRule1, isEnabled = true, onAction = {}) }
 }

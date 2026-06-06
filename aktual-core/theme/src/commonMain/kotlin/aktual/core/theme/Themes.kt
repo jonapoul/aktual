@@ -5,7 +5,7 @@ import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 
-val LocalTheme = staticCompositionLocalOf<Theme> { Theme.Fallback }
+val LocalColors = staticCompositionLocalOf<Colors> { Colors.Fallback }
 
 @Stable fun Color.isLight(): Boolean = luminance() > LUMINANCE_BOUNDARY
 

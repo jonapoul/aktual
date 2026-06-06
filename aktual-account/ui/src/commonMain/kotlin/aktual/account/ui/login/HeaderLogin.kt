@@ -2,14 +2,13 @@ package aktual.account.ui.login
 
 import aktual.core.l10n.Strings
 import aktual.core.model.LoginMethod
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RounderCardShape
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -33,7 +32,6 @@ internal fun HeaderLogin(
   hasFailure: Boolean,
   onAction: LoginActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   LaunchedEffect(Unit) { onAction(SignIn) }
 
@@ -41,8 +39,8 @@ internal fun HeaderLogin(
     modifier =
       modifier
         .fillMaxWidth()
-        .border(Dp.Hairline, theme.pillBorderDark, RounderCardShape)
-        .background(theme.pillBackgroundLight, RounderCardShape)
+        .border(Dp.Hairline, colors.pillBorderDark, RounderCardShape)
+        .background(colors.pillBackgroundLight, RounderCardShape)
         .padding(8.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(12.dp),
@@ -53,7 +51,7 @@ internal fun HeaderLogin(
       Text(
         text = Strings.loginHeaderChecking,
         style = AktualTypography.bodyMedium,
-        color = theme.tableRowHeaderText,
+        color = colors.tableRowHeaderText,
       )
     }
 
@@ -69,9 +67,9 @@ internal fun HeaderLogin(
 @Preview
 @Composable
 private fun PreviewHeaderLogin(
-  @PreviewParameter(HeaderLoginProvider::class) params: ThemedParams<HeaderLoginParams>
+  @PreviewParameter(HeaderLoginProvider::class) params: ColoredParams<HeaderLoginParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     val data = params.data
     HeaderLogin(isLoading = data.isLoading, hasFailure = data.hasFailure, onAction = {})
   }
@@ -82,7 +80,7 @@ private data class HeaderLoginParams(
 )
 
 private class HeaderLoginProvider :
-  ThemedParameterProvider<HeaderLoginParams>(
+  ColoredParameterProvider<HeaderLoginParams>(
     HeaderLoginParams(isLoading = false, hasFailure = false),
     HeaderLoginParams(isLoading = true, hasFailure = false),
     HeaderLoginParams(isLoading = false, hasFailure = true),

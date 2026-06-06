@@ -8,8 +8,7 @@ import aktual.budget.rules.vm.EntitySummary
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.ListBottomSheet
 import androidx.compose.foundation.border
@@ -49,7 +48,6 @@ internal fun EntityIdPicker(
   onValueChange: (JsonElement) -> Unit,
   fetchEntities: suspend (EntityListFetcher) -> ImmutableList<EntitySummary>,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val nameFetcher = LocalNameFetcher.current
   val entityListFetcher = LocalEntityListFetcher.current
@@ -74,7 +72,7 @@ internal fun EntityIdPicker(
 
   Box(modifier = modifier) {
     TextField(
-      modifier = Modifier.fillMaxWidth().border(Dp.Hairline, theme.buttonNormalBorder),
+      modifier = Modifier.fillMaxWidth().border(Dp.Hairline, colors.buttonNormalBorder),
       value = selectedName.orEmpty(),
       onValueChange = {},
       placeholder = { Text(Strings.editRuleConditionNothing, style = AktualTypography.bodySmall) },
@@ -91,7 +89,7 @@ internal fun EntityIdPicker(
           ExposedDropdownMenuDefaults.TrailingIcon(expanded = showSheet)
         }
       },
-      colors = theme.pickerField(),
+      colors = colors.pickerField(),
     )
     Box(modifier = Modifier.matchParentSize().clickable(isEnabled) { showSheet = true })
   }
@@ -108,7 +106,6 @@ internal fun EntityIdPicker(
       sheetState = sheetState,
       string = { it.name },
       key = EntitySummary::id,
-      theme = theme,
     )
   }
 }

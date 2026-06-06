@@ -19,13 +19,14 @@ import aktual.core.model.immutableList
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.InspectThemeNavigator
 import aktual.core.theme.CustomThemeSummary
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -34,10 +35,8 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithThemedParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.RowShape
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.disabledIf
@@ -159,7 +158,6 @@ private fun CustomThemeSettingsScaffold(
   onAction: CustomThemeSettingsActionHandler,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-  val theme = LocalTheme.current
   val listState = rememberLazyListState()
   val blurState = rememberBlurredTopBarState()
   val sheetState = rememberModalBottomSheetState()
@@ -168,7 +166,7 @@ private fun CustomThemeSettingsScaffold(
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsThemeCustomTitle) },
         actions = {
@@ -255,7 +253,6 @@ private fun FailedContent(
   state: CatalogState.Failed,
   onAction: CustomThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val cause =
     when (state) {
@@ -266,7 +263,7 @@ private fun FailedContent(
     modifier = modifier,
     title = Strings.settingsThemeRefreshPrefix,
     reason = cause,
-    background = theme.tableBackground,
+    background = colors.tableBackground,
     action =
       FailureAction(
         text = { Strings.settingsThemeRefreshRetry },
@@ -288,7 +285,7 @@ private fun LoadingContent(contentPadding: PaddingValues, modifier: Modifier = M
 }
 
 @Composable
-private fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
+private fun LoadingItem(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(ShimmerBounds.Window)
 
   Row(
@@ -296,15 +293,17 @@ private fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.cardBackground, RowShape)
-        .border(Dp.Hairline, theme.pillBorderDark, RowShape)
+        .background(colors.cardBackground, RowShape)
+        .border(Dp.Hairline, colors.pillBorderDark, RowShape)
         .padding(ITEM_PADDING)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.CenterVertically,
   ) {
     // Checkbox
-    Box(modifier = Modifier.minimumInteractiveComponentSize().background(theme.pageText, CardShape))
+    Box(
+      modifier = Modifier.minimumInteractiveComponentSize().background(colors.pageText, CardShape)
+    )
 
     // Text
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -312,14 +311,14 @@ private fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme
         modifier =
           Modifier.fillMaxWidth(fraction = 0.55f)
             .height(20.dp)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
 
       Box(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.35f)
             .height(15.dp)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
 
       // Preview colours
@@ -332,14 +331,16 @@ private fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme
             modifier =
               Modifier.weight(PREVIEW_WEIGHT)
                 .height(PREVIEW_HEIGHT)
-                .background(theme.pageText, CardShape)
+                .background(colors.pageText, CardShape)
           )
         }
       }
     }
 
     // Inspect button
-    Box(modifier = Modifier.minimumInteractiveComponentSize().background(theme.pageText, CardShape))
+    Box(
+      modifier = Modifier.minimumInteractiveComponentSize().background(colors.pageText, CardShape)
+    )
   }
 }
 
@@ -370,7 +371,6 @@ internal fun CustomThemeItem(
   item: CatalogItem,
   onAction: CustomThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val enabled = item.state !is CacheState.Fetching
   Row(
@@ -378,8 +378,8 @@ internal fun CustomThemeItem(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.cardBackground, RowShape)
-        .border(Dp.Hairline, theme.pillBorderDark, RowShape)
+        .background(colors.cardBackground, RowShape)
+        .border(Dp.Hairline, colors.pillBorderDark, RowShape)
         .clickable(enabled) { onAction(SelectTheme(item.summary)) }
         .padding(ITEM_PADDING),
     horizontalArrangement = Arrangement.Start,
@@ -390,7 +390,7 @@ internal fun CustomThemeItem(
       enabled = enabled,
       selected = item.isSelected,
       onClick = null,
-      colors = theme.radioButton(),
+      colors = colors.radioButton(),
     )
 
     Column(
@@ -402,14 +402,14 @@ internal fun CustomThemeItem(
           Text(
             text = item.summary.name,
             style = AktualTypography.bodyLarge,
-            color = theme.buttonNormalText.disabledIf(!enabled),
+            color = colors.buttonNormalText.disabledIf(!enabled),
             overflow = TextOverflow.Ellipsis,
           )
 
           Text(
             text = item.summary.repo.toString(),
             style = AktualTypography.labelMedium,
-            color = theme.pageTextSubdued.disabledIf(!enabled),
+            color = colors.pageTextSubdued.disabledIf(!enabled),
             overflow = TextOverflow.Ellipsis,
           )
         }
@@ -425,10 +425,10 @@ internal fun CustomThemeItem(
             },
           tint =
             when (item.state) {
-              is CacheState.Cached -> theme.pageText
-              is CacheState.Failed -> theme.errorText
-              CacheState.Fetching -> theme.pageTextSubdued
-              CacheState.Remote -> theme.pageText
+              is CacheState.Cached -> colors.pageText
+              is CacheState.Failed -> colors.errorText
+              CacheState.Fetching -> colors.pageTextSubdued
+              CacheState.Remote -> colors.pageText
             },
           contentDescription = null,
         )
@@ -470,9 +470,9 @@ private const val PREVIEW_WEIGHT = 1f
 @Composable
 @PortraitPreview
 private fun PreviewCustomThemeSettings(
-  @PreviewParameter(CatalogStateProvider::class) params: ThemedParams<CustomThemeSettingsParams>
+  @PreviewParameter(CatalogStateProvider::class) params: ColoredParams<CustomThemeSettingsParams>
 ) =
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     CustomThemeSettingsScaffold(state = state, bottomSheet = bottomSheet, onAction = {})
   }
 
@@ -487,7 +487,7 @@ private val SUCCESS_STATE =
   )
 
 private class CatalogStateProvider :
-  ThemedParameterProvider<CustomThemeSettingsParams>(
+  ColoredParameterProvider<CustomThemeSettingsParams>(
     CustomThemeSettingsParams(CatalogState.Loading),
     CustomThemeSettingsParams(CatalogState.Failed.FetchingCatalog),
     CustomThemeSettingsParams(SUCCESS_STATE),

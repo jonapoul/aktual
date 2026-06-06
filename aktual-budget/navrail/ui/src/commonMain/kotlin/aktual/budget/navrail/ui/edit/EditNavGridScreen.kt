@@ -13,19 +13,19 @@ import aktual.core.icons.material.Save
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.BudgetTab
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -109,7 +109,7 @@ private fun EditNavGridScaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        colors = LocalTheme.current.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = {
           if (state.hasChanges) {
             // Unsaved changes: a red cross that prompts the discard confirmation
@@ -117,7 +117,7 @@ private fun EditNavGridScaffold(
               Icon(
                 imageVector = MaterialIcons.Clear,
                 contentDescription = Strings.budgetNavGridDiscardDiscard,
-                tint = LocalTheme.current.errorText,
+                tint = colors.errorText,
               )
             }
           } else {
@@ -197,7 +197,6 @@ private fun EditNavGridContent(
   state: EditNavGridState,
   onAction: ActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val lazyGridState = rememberLazyGridState()
   val reorderState =
@@ -227,7 +226,7 @@ private fun EditNavGridContent(
               .fillMaxWidth()
               .longPressDraggableHandle()
               .background(
-                color = if (isDragging) theme.pillBackgroundSelected else theme.pillBackground,
+                color = if (isDragging) colors.pillBackgroundSelected else colors.pillBackground,
                 shape = CardShape,
               ),
           contentAlignment = Alignment.Center,
@@ -294,8 +293,8 @@ private val JIGGLE_ANIMATION_SPEC =
 
 @PortraitPreview
 @Composable
-private fun PreviewEditNavGridScreen(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewEditNavGridScreen(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     EditNavGridScaffold(
       onAction = {},
       showDiscardDialog = false,
@@ -311,9 +310,9 @@ private fun PreviewEditNavGridScreen(@PreviewParameter(ThemeParameters::class) t
 @PortraitPreview
 @Composable
 private fun PreviewEditNavGridDiscardDialog(
-  @PreviewParameter(ThemeParameters::class) theme: Theme
+  @PreviewParameter(ColoredParameters::class) colors: Colors
 ) =
-  PreviewWithTheme(theme) {
+  PreviewWithColors(colors) {
     EditNavGridScaffold(
       onAction = {},
       showDiscardDialog = true,
