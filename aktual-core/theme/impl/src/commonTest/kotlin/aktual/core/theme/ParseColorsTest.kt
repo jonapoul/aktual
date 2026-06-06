@@ -1,0 +1,14 @@
+package aktual.core.theme
+
+import aktual.test.ThemeResponses
+import assertk.assertThat
+import assertk.assertions.isDataClassEqualTo
+import kotlin.test.Test
+
+class ParseColorsTest {
+  @Test
+  fun `Parse CSS as theme`() {
+    assertThat(parseTheme(ShadesOfCoffeeThemeSummary, ThemeResponses.CUSTOM_THEME_200))
+      .isDataClassEqualTo(ShadesOfCoffeeTheme)
+  }
+}

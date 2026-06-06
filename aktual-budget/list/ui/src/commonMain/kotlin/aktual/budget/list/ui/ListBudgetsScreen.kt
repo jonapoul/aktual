@@ -16,16 +16,15 @@ import aktual.core.nav.InfoNavigator
 import aktual.core.nav.MetricsNavigator
 import aktual.core.nav.ServerUrlNavigator
 import aktual.core.nav.SettingsNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
@@ -142,7 +141,6 @@ fun ListBudgetsScreen(
 
 @Composable
 internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: ListBudgetsActionHandler) {
-  val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
 
@@ -151,8 +149,8 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: ListBudgetsA
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
-        title = { ScaffoldTitle(theme) },
+        colors = colors.transparentTopAppBarColors(),
+        title = { ScaffoldTitle() },
         actions = { TopBarActions(onAction) },
       )
     },
@@ -180,13 +178,14 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: ListBudgetsA
 }
 
 @Composable
-private fun ScaffoldTitle(theme: Theme) =
+private fun ScaffoldTitle() {
   Text(
     text = Strings.listBudgetsToolbar,
     maxLines = 1,
     overflow = TextOverflow.Ellipsis,
-    color = theme.pageText,
+    color = colors.pageText,
   )
+}
 
 @Composable
 private fun StateContent(
@@ -194,7 +193,6 @@ private fun StateContent(
   onAction: ListBudgetsActionHandler,
   listState: LazyListState,
   contentPadding: PaddingValues,
-  theme: Theme = LocalTheme.current,
 ) {
   if (state is ListBudgetsState.Success && state.budgets.isNotEmpty()) {
     // Scroll-under path: LazyColumn fills the full PullToRefreshBox (which extends behind
@@ -222,7 +220,7 @@ private fun StateContent(
           FailureScreen(
             title = Strings.budgetFailureMessage,
             reason = state.reason ?: Strings.budgetFailureDefaultMessage,
-            background = theme.tableBackground,
+            background = colors.tableBackground,
             action =
               FailureAction(
                 text = { Strings.budgetFailureRetry },
@@ -246,8 +244,8 @@ private fun StateContent(
 @PortraitPreview
 @Composable
 private fun PreviewListBudgetsScaffold(
-  @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ThemedParams<ListBudgetsState>
-) = PreviewWithTheme(params.theme) { ListBudgetsScaffold(state = params.data, onAction = {}) }
+  @PreviewParameter(ListBudgetsScaffoldProvider::class) params: ColoredParams<ListBudgetsState>
+) = PreviewWithColors(params.colors) { ListBudgetsScaffold(state = params.data, onAction = {}) }
 
 private val PREVIEW_ITEMS =
   List(size = 5) { PreviewBudgetSynced } +
@@ -255,7 +253,7 @@ private val PREVIEW_ITEMS =
     List(size = 5) { PreviewBudgetBroken }
 
 private class ListBudgetsScaffoldProvider :
-  ThemedParameterProvider<ListBudgetsState>(
+  ColoredParameterProvider<ListBudgetsState>(
     ListBudgetsState.Success(PREVIEW_ITEMS.toImmutableList()),
     ListBudgetsState.Loading(numLoadingItems = 3),
     ListBudgetsState.Failure(reason = "Something broke lol"),

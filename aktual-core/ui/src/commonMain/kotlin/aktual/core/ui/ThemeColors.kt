@@ -1,6 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CheckboxColors
@@ -23,7 +23,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun Theme.topAppBarColors(
+fun Colors.topAppBarColors(
   containerColor: Color = mobileHeaderBackground,
   titleContentColor: Color = mobileHeaderText,
   navigationIconContentColor: Color = mobileHeaderText,
@@ -37,7 +37,7 @@ fun Theme.topAppBarColors(
   )
 
 @Composable
-fun Theme.transparentTopAppBarColors(): TopAppBarColors =
+fun Colors.transparentTopAppBarColors(): TopAppBarColors =
   topAppBarColors(
     containerColor = Color.Transparent,
     navigationIconContentColor = pageText,
@@ -46,7 +46,7 @@ fun Theme.transparentTopAppBarColors(): TopAppBarColors =
   )
 
 @Stable
-fun Theme.dropDownMenuItem(): MenuItemColors =
+fun Colors.dropDownMenuItem(): MenuItemColors =
   MenuItemColors(
     textColor = menuItemText,
     leadingIconColor = menuItemText,
@@ -57,7 +57,7 @@ fun Theme.dropDownMenuItem(): MenuItemColors =
   )
 
 @Composable
-fun Theme.textField(
+fun Colors.textField(
   focusedContainer: Color = formInputBackground,
   unfocusedContainer: Color = focusedContainer,
   border: Color = formInputBorder,
@@ -92,12 +92,12 @@ fun Theme.textField(
   )
 
 @Composable
-fun Theme.exposedDropDownMenu(): TextFieldColors =
+fun Colors.exposedDropDownMenu(): TextFieldColors =
   textField()
     .copy(focusedTrailingIconColor = formInputText, unfocusedTrailingIconColor = formInputText)
 
 @Composable
-fun Theme.primaryButton(isPressed: Boolean): ButtonColors =
+fun Colors.primaryButton(isPressed: Boolean): ButtonColors =
   ButtonDefaults.buttonColors(
     containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
     disabledContainerColor = buttonPrimaryDisabledBackground,
@@ -106,7 +106,7 @@ fun Theme.primaryButton(isPressed: Boolean): ButtonColors =
   )
 
 @Composable
-fun Theme.normalButton(
+fun Colors.normalButton(
   isPressed: Boolean,
   container: Color = buttonNormalBackground,
   containerPressed: Color = buttonNormalSelectedBackground,
@@ -123,7 +123,7 @@ fun Theme.normalButton(
   )
 
 @Composable
-fun Theme.bareButton(isPressed: Boolean): ButtonColors =
+fun Colors.bareButton(isPressed: Boolean): ButtonColors =
   ButtonDefaults.buttonColors(
     containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
     disabledContainerColor = buttonBareDisabledBackground,
@@ -132,7 +132,7 @@ fun Theme.bareButton(isPressed: Boolean): ButtonColors =
   )
 
 @Composable
-fun Theme.primaryIconButton(isPressed: Boolean): IconButtonColors =
+fun Colors.primaryIconButton(isPressed: Boolean): IconButtonColors =
   IconButtonDefaults.filledIconButtonColors(
     containerColor = if (isPressed) buttonPrimaryBackground else buttonPrimaryBackgroundHover,
     disabledContainerColor = buttonPrimaryDisabledBackground,
@@ -141,7 +141,7 @@ fun Theme.primaryIconButton(isPressed: Boolean): IconButtonColors =
   )
 
 @Composable
-fun Theme.normalIconButton(isPressed: Boolean): IconButtonColors =
+fun Colors.normalIconButton(isPressed: Boolean): IconButtonColors =
   IconButtonDefaults.filledIconButtonColors(
     containerColor = if (isPressed) buttonNormalBackground else buttonNormalBackgroundHover,
     disabledContainerColor = buttonNormalDisabledBackground,
@@ -150,7 +150,7 @@ fun Theme.normalIconButton(isPressed: Boolean): IconButtonColors =
   )
 
 @Composable
-fun Theme.bareIconButton(isPressed: Boolean): IconButtonColors =
+fun Colors.bareIconButton(isPressed: Boolean): IconButtonColors =
   IconButtonDefaults.filledIconButtonColors(
     containerColor = if (isPressed) buttonBareBackgroundHover else buttonBareBackground,
     disabledContainerColor = buttonBareDisabledBackground,
@@ -159,7 +159,7 @@ fun Theme.bareIconButton(isPressed: Boolean): IconButtonColors =
   )
 
 @Composable
-fun Theme.switch(): SwitchColors =
+fun Colors.switch(): SwitchColors =
   SwitchDefaults.colors(
     checkedThumbColor = checkboxText,
     uncheckedThumbColor = checkboxText,
@@ -176,7 +176,7 @@ fun Theme.switch(): SwitchColors =
   )
 
 @Composable
-fun Theme.radioButton(): RadioButtonColors =
+fun Colors.radioButton(): RadioButtonColors =
   RadioButtonDefaults.colors(
     selectedColor = checkboxToggleBackgroundSelected,
     unselectedColor = pageText.disabled,
@@ -185,7 +185,7 @@ fun Theme.radioButton(): RadioButtonColors =
   )
 
 @Composable
-fun Theme.slider(): SliderColors =
+fun Colors.slider(): SliderColors =
   SliderDefaults.colors(
     thumbColor = checkboxToggleBackgroundSelected,
     activeTrackColor = checkboxToggleBackgroundSelected,
@@ -200,7 +200,7 @@ fun Theme.slider(): SliderColors =
   )
 
 @Composable
-fun Theme.checkbox(): CheckboxColors =
+fun Colors.checkbox(): CheckboxColors =
   CheckboxDefaults.colors(
     checkedCheckmarkColor = checkboxText,
     uncheckedCheckmarkColor = Color.Transparent,

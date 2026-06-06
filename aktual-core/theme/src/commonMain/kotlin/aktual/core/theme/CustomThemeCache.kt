@@ -5,11 +5,11 @@ interface CustomThemeCache {
 
   suspend fun summaries(): List<CustomThemeSummary>
 
-  suspend fun theme(repo: CustomThemeRepo): CustomTheme?
+  suspend fun theme(repo: CustomThemeRepo): CustomColors?
 
   suspend fun save(summaries: List<CustomThemeSummary>)
 
-  suspend fun save(theme: CustomTheme)
+  suspend fun save(theme: CustomColors)
 
   suspend fun clear()
 }

@@ -32,6 +32,12 @@
     public static ** valueOf(java.lang.String);
 }
 
+# The nav grid layout is persisted by BudgetTab.name, so the constant names must not be
+# obfuscated, otherwise a stored order can no longer be matched back to its entries
+-keepclassmembers enum aktual.core.nav.BudgetTab {
+    <fields>;
+}
+
 # https://www.guardsquare.com/manual/configuration/examples#annotations
 # Annotated interfaces (including methods which are also kept in implementing classes)
 -keepattributes Annotation

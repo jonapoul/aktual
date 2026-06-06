@@ -21,8 +21,8 @@ import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.displayString
 import aktual.budget.rules.ui.string
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalNumberFormatConfig
@@ -66,9 +66,8 @@ internal fun RuleStage.string(): String =
 internal fun headerText(onAction: ListRulesActionHandler): AnnotatedString {
   val headerText = Strings.rulesHeaderText
   val learnMoreText = Strings.rulesHeaderLearnMore
-  val theme = LocalTheme.current
-  val defaultStyle = AktualTypography.bodyMedium.copy(color = theme.pageTextLight)
-  val linkStyle = defaultStyle.copy(color = theme.pageTextLinkLight, textDecoration = Underline)
+  val defaultStyle = typography.bodyMedium.copy(color = colors.pageTextLight)
+  val linkStyle = defaultStyle.copy(color = colors.pageTextLinkLight, textDecoration = Underline)
   return remember(headerText, learnMoreText, defaultStyle, linkStyle) {
     buildAnnotatedString {
       withStyle(defaultStyle.toSpanStyle()) {
@@ -201,7 +200,6 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
   val fieldText = action.field?.string(options = null)
   val setToText = if (action.op == RuleAction.Op.Set) Strings.rulesActionSetTo else null
 
-  val dateFormat = LocalDateFormatter.current
   val numberFormat = LocalNumberFormatConfig.current
   val currency = LocalCurrencyConfig.current
   val privacy = LocalPrivacyEnabled.current
@@ -239,7 +237,6 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
     fieldText,
     setToText,
     fieldName,
-    dateFormat,
     numberFormat,
     currency,
     privacy,

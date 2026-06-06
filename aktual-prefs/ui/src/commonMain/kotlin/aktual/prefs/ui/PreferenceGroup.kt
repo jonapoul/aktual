@@ -1,8 +1,6 @@
 package aktual.prefs.ui
 
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -13,7 +11,6 @@ internal fun PreferenceGroup(
   subtitle: String?,
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
-  theme: Theme = LocalTheme.current,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   BasicPreferenceItem(
@@ -24,9 +21,8 @@ internal fun PreferenceGroup(
     modifier = modifier,
     enabled = enabled,
     includeBackground = true,
-    theme = theme,
     rightContent = null,
-    headerStyle = AktualTypography.titleMedium,
+    headerStyle = typography.titleMedium,
     bottomContent = content,
   )
 }

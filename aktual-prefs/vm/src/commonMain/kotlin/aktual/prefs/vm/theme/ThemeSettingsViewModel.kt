@@ -1,8 +1,8 @@
 package aktual.prefs.vm.theme
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.MidnightTheme
+import aktual.core.theme.DarkColors
+import aktual.core.theme.MidnightColors
 import aktual.di.AppScope
 import aktual.prefs.ThemePreferences
 import aktual.prefs.asStateFlow
@@ -65,7 +65,7 @@ class ThemeSettingsViewModel(private val preferences: ThemePreferences) : ViewMo
     remember(value, enabled) {
       ListPreference(
         value = value,
-        options = persistentListOf(DarkTheme.id, MidnightTheme.id),
+        options = persistentListOf(DarkColors.id, MidnightColors.id),
         enabled = enabled,
       )
     }

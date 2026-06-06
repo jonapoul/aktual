@@ -10,21 +10,20 @@ import aktual.core.model.TB
 import aktual.core.model.bytes
 import aktual.core.model.kB
 import aktual.core.nav.BackNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
@@ -102,7 +101,6 @@ fun MetricsScreen(
 internal fun MetricsScaffold(
   state: MetricsState,
   onAction: MetricsActionHandler,
-  theme: Theme = LocalTheme.current,
 ) {
   val blurState = rememberBlurredTopBarState()
 
@@ -110,7 +108,7 @@ internal fun MetricsScaffold(
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = false),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.metricsToolbar) },
       )
@@ -138,7 +136,6 @@ private fun MetricsContent(
   state: MetricsState,
   onAction: MetricsActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier = modifier.fillMaxSize(),
@@ -147,9 +144,9 @@ private fun MetricsContent(
   ) {
     when (state) {
       MetricsState.Loading -> LoadingContent()
-      MetricsState.Disconnected -> FailureContent(Strings.metricsDisconnected, onAction, theme)
-      is MetricsState.Failure -> FailureContent(state.cause, onAction, theme)
-      is MetricsState.Success -> SuccessContent(state, theme)
+      MetricsState.Disconnected -> FailureContent(Strings.metricsDisconnected, onAction)
+      is MetricsState.Failure -> FailureContent(state.cause, onAction)
+      is MetricsState.Success -> SuccessContent(state)
     }
 
     BottomSpacing()
@@ -164,7 +161,7 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
 }
 
 @Composable
-internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
+internal fun LoadingItem(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(ShimmerBounds.Window)
 
   Row(
@@ -172,8 +169,8 @@ internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalThem
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.buttonNormalBackground, RowShape)
-        .border(Dp.Hairline, theme.pillBorderDark, RowShape)
+        .background(colors.buttonNormalBackground, RowShape)
+        .border(Dp.Hairline, colors.pillBorderDark, RowShape)
         .padding(horizontal = 15.dp, vertical = 12.dp)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
@@ -184,7 +181,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalThem
         modifier =
           Modifier.fillMaxWidth(fraction = 0.55f)
             .height(20.dp)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
 
       Box(
@@ -192,7 +189,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalThem
           Modifier.padding(top = 4.dp)
             .fillMaxWidth(fraction = 0.35f)
             .height(18.dp)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
 
       Box(
@@ -200,7 +197,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalThem
           Modifier.padding(top = 4.dp)
             .fillMaxWidth(fraction = 0.45f)
             .height(20.dp)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
     }
   }
@@ -210,14 +207,13 @@ internal fun LoadingItem(modifier: Modifier = Modifier, theme: Theme = LocalThem
 private fun FailureContent(
   message: String,
   onAction: MetricsActionHandler,
-  theme: Theme,
   modifier: Modifier = Modifier,
 ) {
   FailureScreen(
     modifier = modifier,
     title = Strings.metricsFailure,
     reason = message,
-    background = theme.tableBackground,
+    background = colors.tableBackground,
     action =
       FailureAction(
         text = { Strings.metricsFailureRetry },
@@ -230,7 +226,6 @@ private fun FailureContent(
 @Composable
 private fun SuccessContent(
   state: MetricsState.Success,
-  theme: Theme,
   modifier: Modifier = Modifier,
 ) {
   val lazyListState = rememberLazyListState()
@@ -238,8 +233,8 @@ private fun SuccessContent(
   val dataModifier =
     Modifier.fillMaxWidth()
       .clip(CardShape)
-      .background(theme.buttonNormalBackground, CardShape)
-      .border(Dp.Hairline, theme.pillBorderDark, CardShape)
+      .background(colors.buttonNormalBackground, CardShape)
+      .border(Dp.Hairline, colors.pillBorderDark, CardShape)
       .padding(Dimens.VeryLarge)
 
   LazyColumn(
@@ -268,7 +263,7 @@ private fun SuccessContent(
         Text(
           text = Strings.metricsMemory,
           fontWeight = FontWeight.Bold,
-          style = AktualTypography.titleLarge,
+          style = typography.titleLarge,
         )
 
         VerticalSpacer(10.dp)
@@ -342,14 +337,14 @@ private fun SuccessContentRow(title: String, value: String, modifier: Modifier =
     Text(
       modifier = Modifier.weight(1f),
       text = title,
-      style = AktualTypography.bodyLarge,
+      style = typography.bodyLarge,
       fontWeight = FontWeight.Bold,
       textAlign = TextAlign.Start,
     )
     Text(
       modifier = Modifier.weight(1f),
       text = value,
-      style = AktualTypography.bodyMedium,
+      style = typography.bodyMedium,
       fontWeight = FontWeight.Normal,
       textAlign = TextAlign.End,
     )
@@ -359,12 +354,12 @@ private fun SuccessContentRow(title: String, value: String, modifier: Modifier =
 @PortraitPreview
 @Composable
 private fun PreviewMetricsScaffold(
-  @PreviewParameter(MetricsStateProvider::class) params: ThemedParams<MetricsState>
-) = PreviewWithTheme(params.theme) { MetricsScaffold(state = params.data, onAction = {}) }
+  @PreviewParameter(MetricsStateProvider::class) params: ColoredParams<MetricsState>
+) = PreviewWithColors(params.colors) { MetricsScaffold(state = params.data, onAction = {}) }
 
 @Suppress("MagicNumber")
 private class MetricsStateProvider :
-  ThemedParameterProvider<MetricsState>(
+  ColoredParameterProvider<MetricsState>(
     MetricsState.Loading,
     MetricsState.Disconnected,
     MetricsState.Failure("Something broke"),

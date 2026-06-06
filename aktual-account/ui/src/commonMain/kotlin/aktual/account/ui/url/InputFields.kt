@@ -1,13 +1,11 @@
 package aktual.account.ui.url
 
 import aktual.core.model.Protocol
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTextField
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.keyboardFocusRequester
 import alakazam.kotlin.parse
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +34,6 @@ internal fun InputFields(
   protocol: Protocol,
   onAction: ServerUrlActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Row(modifier = modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp)) {
     AktualExposedDropDownMenu(
@@ -45,7 +42,6 @@ internal fun InputFields(
       string = { it },
       contentPadding = TextFieldDefaults.contentPaddingWithoutLabel(),
       onValueChange = { onAction(SelectProtocol(Protocol::class.parse(it))) },
-      theme = theme,
     )
 
     val keyboard = LocalSoftwareKeyboardController.current
@@ -91,16 +87,16 @@ private const val EXAMPLE_URL = "example.com"
 @Preview
 @Composable
 private fun PreviewInputFields(
-  @PreviewParameter(InputFieldsProvider::class) params: ThemedParams<InputFieldsParams>
+  @PreviewParameter(InputFieldsProvider::class) params: ColoredParams<InputFieldsParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     InputFields(url = params.data.url, protocol = params.data.protocol, onAction = {})
   }
 
 private data class InputFieldsParams(val url: String, val protocol: Protocol)
 
 private class InputFieldsProvider :
-  ThemedParameterProvider<InputFieldsParams>(
+  ColoredParameterProvider<InputFieldsParams>(
     InputFieldsParams(url = "", protocol = Protocol.Http),
     InputFieldsParams(url = "my.server.com:1234/path", protocol = Protocol.Https),
   )

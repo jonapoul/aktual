@@ -7,13 +7,12 @@ import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.DarkColors
 import aktual.core.ui.AktualTextField
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.LocalDateFormatter
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.formatted
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -51,7 +50,6 @@ internal fun DateTextField(
   isEnabled: Boolean,
   onValueChange: (JsonElement) -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   require(value is JsonNull || value is JsonObject) { "Need object or null, got $value" }
 
@@ -67,8 +65,7 @@ internal fun DateTextField(
     }
 
   val localDate = recurConfig?.start
-  val formatter = LocalDateFormatter.current
-  val displayText = remember(localDate) { localDate?.let(formatter::format).orEmpty() }
+  val displayText = localDate?.formatted().orEmpty()
 
   val textState = rememberTextFieldState(initialText = displayText)
   LaunchedEffect(displayText) {
@@ -77,7 +74,7 @@ internal fun DateTextField(
 
   Box(modifier = modifier) {
     AktualTextField(
-      modifier = Modifier.fillMaxWidth().border(Dp.Hairline, theme.buttonNormalBorder),
+      modifier = Modifier.fillMaxWidth().border(Dp.Hairline, colors.buttonNormalBorder),
       state = textState,
       placeholderText = Strings.editRuleConditionNothing,
       readOnly = true,
@@ -97,7 +94,7 @@ internal fun DateTextField(
         } else {
           null
         },
-      colors = theme.pickerField(),
+      colors = colors.pickerField(),
     )
     Box(modifier = Modifier.matchParentSize().clickable(isEnabled) { showDialog = true })
   }
@@ -144,7 +141,7 @@ private fun RecurConfig?.serializeWith(date: LocalDate?): JsonElement {
 private fun PreviewDateTextField(
   @PreviewParameter(DateTextFieldProvider::class) params: DateTextFieldParams
 ) {
-  PreviewWithTheme(DarkTheme) {
+  PreviewWithColors(DarkColors) {
     with(params) {
       var element by remember { mutableStateOf(value) }
       DateTextField(value = element, isEnabled = isEnabled, onValueChange = { element = it })

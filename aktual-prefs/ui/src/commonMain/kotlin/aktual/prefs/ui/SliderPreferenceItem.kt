@@ -2,12 +2,11 @@ package aktual.prefs.ui
 
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
-import aktual.core.ui.disabled
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
+import aktual.core.ui.disabledIf
 import aktual.core.ui.slider
 import aktual.prefs.vm.SliderPreference
 import androidx.compose.foundation.layout.Row
@@ -40,7 +39,6 @@ internal fun SliderPreferenceItem(
   icon: ImageVector?,
   modifier: Modifier = Modifier,
   includeBackground: Boolean = true,
-  theme: Theme = LocalTheme.current,
 ) {
   SliderPreferenceItem(
     value = preference.value,
@@ -52,7 +50,6 @@ internal fun SliderPreferenceItem(
     icon = icon,
     modifier = modifier,
     includeBackground = includeBackground,
-    theme = theme,
   )
 }
 
@@ -67,7 +64,6 @@ internal fun SliderPreferenceItem(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   includeBackground: Boolean = true,
-  theme: Theme = LocalTheme.current,
 ) {
   var currentValue by remember(value) { mutableFloatStateOf(value) }
   BasicPreferenceItem(
@@ -87,7 +83,7 @@ internal fun SliderPreferenceItem(
           valueRange = range,
           onValueChangeFinished = { onValueChange(currentValue) },
           enabled = enabled,
-          colors = theme.slider(),
+          colors = colors.slider(),
         )
 
         val measurer = rememberTextMeasurer()
@@ -102,7 +98,7 @@ internal fun SliderPreferenceItem(
           maxLines = 1,
           overflow = TextOverflow.Ellipsis,
           style = style,
-          color = if (enabled) theme.pageText else theme.pageText.disabled,
+          color = colors.pageText.disabledIf(!enabled),
         )
       }
     },
@@ -115,9 +111,9 @@ private const val MEASURE_VALUE = 100f
 @Composable
 private fun PreviewSliderPreferenceItem(
   @PreviewParameter(SliderPreferenceItemProvider::class)
-  params: ThemedParams<SliderPreferenceItemParams>
+  params: ColoredParams<SliderPreferenceItemParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     SliderPreferenceItem(
       value = params.data.value,
       range = params.data.range,
@@ -139,7 +135,7 @@ private data class SliderPreferenceItemParams(
 )
 
 private class SliderPreferenceItemProvider :
-  ThemedParameterProvider<SliderPreferenceItemParams>(
+  ColoredParameterProvider<SliderPreferenceItemParams>(
     SliderPreferenceItemParams(
       value = 0f,
       range = 0f..100f,

@@ -1,7 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import androidx.compose.material3.PlainTooltip
 import androidx.compose.material3.Text
 import androidx.compose.material3.TooltipAnchorPosition.Companion.Above
@@ -27,7 +26,6 @@ fun AktualTooltip(
   modifier: Modifier = Modifier,
   state: TooltipState = rememberTooltipState(isPersistent = true),
   positionProvider: PopupPositionProvider = rememberTooltipPositionProvider(Above),
-  theme: Theme = LocalTheme.current,
 ) {
   val scope = rememberCoroutineScope()
 
@@ -46,8 +44,8 @@ fun AktualTooltip(
         modifier = Modifier.clip(CardShape),
         caretShape = CardShape,
         shape = CardShape,
-        contentColor = theme.tooltipText,
-        containerColor = theme.tooltipBackground,
+        contentColor = colors.tooltipText,
+        containerColor = colors.tooltipBackground,
         content = { Text(tooltipText) },
       )
     },

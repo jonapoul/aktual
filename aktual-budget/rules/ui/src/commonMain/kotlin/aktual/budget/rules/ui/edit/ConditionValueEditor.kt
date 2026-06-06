@@ -6,7 +6,7 @@ import aktual.budget.rules.ui.edit.pickers.DateTextField
 import aktual.budget.rules.ui.edit.pickers.EntityIdPicker
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.runtime.Composable
@@ -109,7 +109,7 @@ internal fun ConditionValueEditor(
           state = textState,
           placeholderText = Strings.editRuleConditionNothing,
           isEnabled = isEnabled,
-          textStyle = AktualTypography.bodySmall,
+          textStyle = typography.bodySmall,
         )
       }
   }

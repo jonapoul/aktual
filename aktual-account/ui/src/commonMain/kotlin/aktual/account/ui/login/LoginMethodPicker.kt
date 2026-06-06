@@ -2,10 +2,9 @@ package aktual.account.ui.login
 
 import aktual.core.l10n.Strings
 import aktual.core.model.LoginMethod
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualSlidingToggleButton
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.Dimens
 import aktual.core.ui.RounderCardShape
 import androidx.compose.foundation.background
@@ -28,23 +27,22 @@ internal fun LoginMethodPicker(
   selectedMethod: LoginMethod,
   onAction: LoginActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier =
       modifier
         .fillMaxWidth()
-        .border(Dp.Hairline, theme.pillBorderDark, RounderCardShape)
-        .background(theme.pillBackgroundLight, RounderCardShape)
+        .border(Dp.Hairline, colors.pillBorderDark, RounderCardShape)
+        .background(colors.pillBackgroundLight, RounderCardShape)
         .padding(Dimens.Large),
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     Text(
       modifier = Modifier.fillMaxWidth().padding(Dimens.VeryLarge),
       text = Strings.loginMethodSelect,
-      color = theme.tableRowHeaderText,
+      color = colors.tableRowHeaderText,
       textAlign = TextAlign.Start,
-      style = AktualTypography.bodyLarge,
+      style = typography.bodyLarge,
       fontWeight = FontWeight.Bold,
     )
 

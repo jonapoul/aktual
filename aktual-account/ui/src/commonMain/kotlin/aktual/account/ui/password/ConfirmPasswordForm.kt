@@ -4,11 +4,11 @@ import aktual.account.vm.ChangePasswordState
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
 import aktual.core.model.Password.Companion.Empty
-import aktual.core.theme.LocalTheme
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButtonWithLoading
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import aktual.core.ui.checkbox
 import aktual.core.ui.keyboardFocusRequester
 import androidx.compose.foundation.clickable
@@ -46,7 +46,6 @@ internal fun ConfirmPasswordForm(
 ) {
   val keyboard = LocalSoftwareKeyboardController.current
   val focusManager = LocalFocusManager.current
-  val theme = LocalTheme.current
   val isLoading = state is ChangePasswordState.Loading
 
   if (state is ChangePasswordState.Success) {
@@ -94,7 +93,7 @@ internal fun ConfirmPasswordForm(
         checked = showPasswords,
         interactionSource = interactionSource,
         onCheckedChange = { onAction(SetPasswordsVisible(!showPasswords)) },
-        colors = theme.checkbox(),
+        colors = colors.checkbox(),
       )
 
       Text(text = Strings.passwordShow, fontSize = 15.sp)
@@ -113,9 +112,9 @@ internal fun ConfirmPasswordForm(
 @Preview
 @Composable
 private fun PreviewConfirmPassword(
-  @PreviewParameter(ConfirmPasswordProvider::class) params: ThemedParams<ConfirmPasswordParams>
+  @PreviewParameter(ConfirmPasswordProvider::class) params: ColoredParams<ConfirmPasswordParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     ConfirmPasswordForm(
       inputPassword1 = params.data.password1,
       inputPassword2 = params.data.password2,
@@ -135,7 +134,7 @@ private data class ConfirmPasswordParams(
 )
 
 private class ConfirmPasswordProvider :
-  ThemedParameterProvider<ConfirmPasswordParams>(
+  ColoredParameterProvider<ConfirmPasswordParams>(
     ConfirmPasswordParams(password1 = Empty, password2 = Empty, showPasswords = false),
     ConfirmPasswordParams(showPasswords = true, passwordsMatch = true),
     ConfirmPasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),

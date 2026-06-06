@@ -26,7 +26,7 @@ class ThemeApiImpl(@param:ThemeClient private val client: HttpClient) : ThemeApi
     return ThemeJson.decodeFromString(serializer, httpResponse.bodyAsText())
   }
 
-  override suspend fun fetchTheme(summary: CustomThemeSummary): CustomTheme {
+  override suspend fun fetchTheme(summary: CustomThemeSummary): CustomColors {
     val httpResponse = client.get {
       url {
         protocol = HTTPS

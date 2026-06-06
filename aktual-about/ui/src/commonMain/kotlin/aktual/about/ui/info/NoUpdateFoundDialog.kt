@@ -1,12 +1,12 @@
 package aktual.about.ui.info
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ColoredParameters
+import aktual.core.ui.PreviewWithColors
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -18,12 +18,11 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 internal fun NoUpdateFoundDialog(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialog(
     modifier = modifier,
     onDismissRequest = onDismiss,
-    content = { NoUpdateFoundDialogContent(onDismiss = onDismiss, theme = theme) },
+    content = { NoUpdateFoundDialogContent(onDismiss = onDismiss) },
   )
 }
 
@@ -31,16 +30,14 @@ internal fun NoUpdateFoundDialog(
 internal fun NoUpdateFoundDialogContent(
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialogContent(
     modifier = modifier,
-    theme = theme,
     title = Strings.infoNoUpdateTitle,
     content = { Text(text = Strings.infoNoUpdateMessage) },
     buttons = {
       TextButton(onClick = onDismiss) {
-        Text(text = Strings.infoNoUpdateOk, color = theme.pageTextPositive)
+        Text(text = Strings.infoNoUpdateOk, color = colors.pageTextPositive)
       }
     },
   )
@@ -48,5 +45,5 @@ internal fun NoUpdateFoundDialogContent(
 
 @Preview
 @Composable
-private fun PreviewNoUpdatesContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) { NoUpdateFoundDialogContent(onDismiss = {}) }
+private fun PreviewNoUpdatesContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { NoUpdateFoundDialogContent(onDismiss = {}) }

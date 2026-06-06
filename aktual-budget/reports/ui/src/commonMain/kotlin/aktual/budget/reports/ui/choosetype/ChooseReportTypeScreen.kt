@@ -18,16 +18,15 @@ import aktual.core.icons.material.Warning
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ReportNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.blurredTopBarContentPadding
@@ -97,7 +96,6 @@ internal fun ChooseReportTypeScaffold(
   dialog: ChooseReportTypeDialog?,
   onAction: ChooseReportTypeActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val lazyListState = rememberLazyListState()
   val blurState = rememberBlurredTopBarState()
@@ -106,7 +104,7 @@ internal fun ChooseReportTypeScaffold(
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = lazyListState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         title = { Text(Strings.reportsChooseTypeTitle) },
       )
     },
@@ -117,7 +115,6 @@ internal fun ChooseReportTypeScaffold(
       contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
       lazyListState = lazyListState,
       onAction = onAction,
-      theme = theme,
     )
   }
 }
@@ -129,11 +126,10 @@ private fun ChooseReportTypeContent(
   contentPadding: PaddingValues,
   lazyListState: LazyListState,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Box(modifier = modifier.fillMaxSize()) {
     LazyColumn(
-      modifier = Modifier.fillMaxWidth().background(theme.pageBackground).scrollbar(lazyListState),
+      modifier = Modifier.fillMaxWidth().background(colors.pageBackground).scrollbar(lazyListState),
       state = lazyListState,
       verticalArrangement = Arrangement.spacedBy(8.dp),
       contentPadding = contentPadding,
@@ -143,7 +139,6 @@ private fun ChooseReportTypeContent(
           modifier = Modifier.fillMaxWidth(),
           type = type,
           onAction = onAction,
-          theme = theme,
         )
       }
 
@@ -159,15 +154,14 @@ private fun WidgetType(
   type: WidgetType,
   onAction: ChooseReportTypeActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val enabled = type.isEnabled()
   Column(
     modifier =
       modifier
         .clip(CardShape)
-        .background(theme.tableBackground.disabledIf(!enabled), CardShape)
-        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
+        .background(colors.tableBackground.disabledIf(!enabled), CardShape)
+        .border(Dp.Hairline, colors.pillBorderDark, CardShape)
         .clickable(enabled) { onAction(Create(type)) }
         .padding(8.dp)
   ) {
@@ -175,8 +169,8 @@ private fun WidgetType(
       Text(
         modifier = Modifier.weight(1f),
         text = type.string(),
-        color = theme.pageText.disabledIf(!enabled),
-        style = AktualTypography.titleLarge,
+        color = colors.pageText.disabledIf(!enabled),
+        style = typography.titleLarge,
       )
 
       if (!enabled) {
@@ -236,13 +230,13 @@ private val REPORT_HEIGHT = 250.dp
 @Composable
 private fun PreviewChooseReportTypeScaffold(
   @PreviewParameter(ChooseReportTypeScaffoldParameters::class)
-  params: ThemedParams<ChooseReportTypeScaffoldParams>
-) = PreviewWithThemedParams(params) { ChooseReportTypeScaffold(dialog = dialog, onAction = {}) }
+  params: ColoredParams<ChooseReportTypeScaffoldParams>
+) = PreviewWithColoredParams(params) { ChooseReportTypeScaffold(dialog = dialog, onAction = {}) }
 
 private data class ChooseReportTypeScaffoldParams(val dialog: ChooseReportTypeDialog?)
 
 private class ChooseReportTypeScaffoldParameters :
-  ThemedParameterProvider<ChooseReportTypeScaffoldParams>(
+  ColoredParameterProvider<ChooseReportTypeScaffoldParams>(
     ChooseReportTypeScaffoldParams(dialog = null),
     ChooseReportTypeScaffoldParams(dialog = ChooseReportTypeDialog.UnsupportedType),
   )

@@ -7,15 +7,14 @@ import aktual.budget.transactions.vm.Transaction
 import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,11 +47,10 @@ internal fun Transactions(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(),
-  theme: Theme = LocalTheme.current,
 ) {
   val pagingItems = transactionIdSource.pagingData.collectAsLazyPagingItems()
   if (pagingItems.itemCount == 0) {
-    TransactionsEmpty(modifier = modifier, theme = theme)
+    TransactionsEmpty(modifier = modifier)
   } else {
     TransactionsFilled(
       listState = listState,
@@ -62,22 +60,21 @@ internal fun Transactions(
       onAction = onAction,
       modifier = modifier,
       contentPadding = contentPadding,
-      theme = theme,
     )
   }
 }
 
 @Composable
-private fun TransactionsEmpty(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
+private fun TransactionsEmpty(modifier: Modifier = Modifier) {
   Column(modifier = modifier.fillMaxHeight()) {
-    CategoryHeader(modifier = Modifier.fillMaxWidth(), theme = theme)
+    CategoryHeader(modifier = Modifier.fillMaxWidth())
 
     Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
       Text(
         text = Strings.transactionsEmpty,
         textAlign = TextAlign.Center,
         fontStyle = FontStyle.Italic,
-        color = theme.tableText,
+        color = colors.tableText,
       )
     }
   }
@@ -92,7 +89,6 @@ private fun TransactionsFilled(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(),
-  theme: Theme = LocalTheme.current,
 ) {
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState).padding(horizontal = Dimens.Large),
@@ -101,7 +97,7 @@ private fun TransactionsFilled(
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
     if (format == Table) {
-      stickyHeader { CategoryHeader(modifier = Modifier.fillMaxWidth(), theme = theme) }
+      stickyHeader { CategoryHeader(modifier = Modifier.fillMaxWidth()) }
     }
 
     items(count = pagingItems.itemCount, key = pagingItems.itemKey { it.toString() }) { index ->
@@ -113,7 +109,6 @@ private fun TransactionsFilled(
           format = format,
           source = source,
           onAction = onAction,
-          theme = theme,
         )
       }
     }
@@ -126,9 +121,9 @@ private fun TransactionsFilled(
 @TabletPreview
 @Composable
 private fun PreviewTransactions(
-  @PreviewParameter(TransactionsProvider::class) params: ThemedParams<TransactionsParams>
+  @PreviewParameter(TransactionsProvider::class) params: ColoredParams<TransactionsParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     Transactions(
       listState = rememberLazyListState(),
       transactionIdSource = PreviewTransactionIdSource(params.data.transactions),
@@ -144,7 +139,7 @@ private data class TransactionsParams(
 )
 
 private class TransactionsProvider :
-  ThemedParameterProvider<TransactionsParams>(
+  ColoredParameterProvider<TransactionsParams>(
     TransactionsParams(
       format = TransactionsFormat.List,
       transactions = listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3),

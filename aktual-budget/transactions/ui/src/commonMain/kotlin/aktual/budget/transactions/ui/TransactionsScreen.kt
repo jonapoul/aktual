@@ -8,14 +8,13 @@ import aktual.budget.transactions.vm.TransactionIdSource
 import aktual.budget.transactions.vm.TransactionStateSource
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.nav.BackNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.ThemeParameters
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.blurredTopBarContentPadding
 import aktual.core.ui.rememberBlurredTopBarState
@@ -69,7 +68,6 @@ internal fun TransactionsScaffold(
   source: TransactionStateSource,
   onAction: ActionListener,
 ) {
-  val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
 
@@ -80,7 +78,6 @@ internal fun TransactionsScaffold(
         listState = listState,
         loadedAccount = loadedAccount,
         onAction = onAction,
-        theme = theme,
       )
     }
   ) { innerPadding ->
@@ -94,7 +91,6 @@ internal fun TransactionsScaffold(
         format = format,
         source = source,
         onAction = onAction,
-        theme = theme,
       )
     }
   }
@@ -104,8 +100,10 @@ internal fun TransactionsScaffold(
 @PortraitPreview
 @LandscapePreview
 @TabletPreview
-private fun PreviewTransactionsScaffold(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewTransactionsScaffold(
+  @PreviewParameter(ColoredParameters::class) colors: Colors
+) =
+  PreviewWithColors(colors) {
     TransactionsScaffold(
       transactionIdSource =
         PreviewTransactionIdSource(listOf(TRANSACTION_1, TRANSACTION_2, TRANSACTION_3)),

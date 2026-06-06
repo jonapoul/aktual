@@ -1,8 +1,8 @@
 package aktual.core.ui
 
 import aktual.budget.model.DateRangeType
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -51,7 +51,6 @@ fun AktualExposedDropDownMenu(
   options: ImmutableList<String>,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
-  theme: Theme = LocalTheme.current,
   textStyle: TextStyle = LocalTextStyle.current,
 ) =
   AktualExposedDropDownMenu(
@@ -60,7 +59,6 @@ fun AktualExposedDropDownMenu(
     options = options,
     modifier = modifier,
     isEnabled = isEnabled,
-    theme = theme,
     string = { it },
     textStyle = textStyle,
   )
@@ -73,7 +71,6 @@ fun <T> AktualExposedDropDownMenu(
   string: @Composable (T) -> String,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
-  theme: Theme = LocalTheme.current,
   textStyle: TextStyle = LocalTextStyle.current,
   contentPadding: PaddingValues = DROPDOWN_CONTENT_PADDING,
 ) {
@@ -107,7 +104,7 @@ fun <T> AktualExposedDropDownMenu(
   val interactionSource = remember { MutableInteractionSource() }
   val isFocused by interactionSource.collectIsFocusedAsState()
   val borderColor =
-    if (isFocused) theme.formInputBorderSelected else theme.formInputBackgroundSelected
+    if (isFocused) colors.formInputBorderSelected else colors.formInputBackgroundSelected
 
   val dialogBlurState = LocalDialogBlurState.current
 
@@ -132,7 +129,7 @@ fun <T> AktualExposedDropDownMenu(
       readOnly = true,
       enabled = isEnabled,
       singleLine = true,
-      textStyle = textStyle.copy(color = theme.formInputText),
+      textStyle = textStyle.copy(color = colors.formInputText),
       interactionSource = interactionSource,
       decorationBox = { innerTextField ->
         TextFieldDefaults.DecorationBox(
@@ -143,14 +140,14 @@ fun <T> AktualExposedDropDownMenu(
           visualTransformation = VisualTransformation.None,
           interactionSource = interactionSource,
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = isExpanded) },
-          colors = theme.exposedDropDownMenu(),
+          colors = colors.exposedDropDownMenu(),
           contentPadding = contentPadding,
         )
       },
     )
 
     ExposedDropdownMenu(
-      modifier = Modifier.background(theme.menuBackground),
+      modifier = Modifier.background(colors.menuBackground),
       expanded = isExpanded,
       onDismissRequest = { isExpanded = false },
       matchAnchorWidth = false,
@@ -160,7 +157,7 @@ fun <T> AktualExposedDropDownMenu(
         onDispose { dialogBlurState.activeDialogCount-- }
       }
 
-      val itemColors = theme.dropDownMenuItem()
+      val itemColors = colors.dropDownMenuItem()
       options.fastForEach { o ->
         DropdownMenuItem(
           text = { Text(string(o)) },
@@ -192,8 +189,8 @@ private val DROPDOWN_CONTENT_PADDING =
 
 @Preview
 @Composable
-private fun PreviewDropDownMenu(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewDropDownMenu(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     var value by remember { mutableStateOf("B") }
     val options = persistentListOf("A", "B", "C", "D")
     AktualExposedDropDownMenu(
@@ -205,8 +202,10 @@ private fun PreviewDropDownMenu(@PreviewParameter(ThemeParameters::class) theme:
 
 @Preview
 @Composable
-private fun PreviewDropDownMenuForcedWidth(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewDropDownMenuForcedWidth(
+  @PreviewParameter(ColoredParameters::class) colors: Colors
+) =
+  PreviewWithColors(colors) {
     var value by remember { mutableStateOf("B") }
     val options = persistentListOf("A", "B", "C", "D")
     AktualExposedDropDownMenu(
@@ -220,8 +219,8 @@ private fun PreviewDropDownMenuForcedWidth(@PreviewParameter(ThemeParameters::cl
 @Preview
 @Composable
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
-private fun PreviewDropDownMenuEnum(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewDropDownMenuEnum(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     var value by remember { mutableStateOf(DateRangeType.YearToDate) }
     val options = DateRangeType.entries.toImmutableList()
     AktualExposedDropDownMenu(
@@ -241,8 +240,8 @@ private fun PreviewDropDownMenuEnum(@PreviewParameter(ThemeParameters::class) th
 
 @Preview
 @Composable
-private fun PreviewDropDownMenuLonger(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewDropDownMenuLonger(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     var value by remember { mutableStateOf("Much longer item") }
     val options = persistentListOf("Much longer item", "A", "B")
     AktualExposedDropDownMenu(

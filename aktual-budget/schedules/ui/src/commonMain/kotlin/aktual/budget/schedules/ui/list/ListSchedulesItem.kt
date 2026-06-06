@@ -4,17 +4,17 @@ import aktual.budget.model.Operator
 import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.ScheduleStatus
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.LocalDateFormatter
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.PreviewWithThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParameters
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
-import aktual.core.ui.ThemeParameters
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -50,16 +50,17 @@ internal fun ListSchedulesItem(
   schedule: Schedule,
   onAction: ListSchedulesActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
-  val dateFormatter = LocalDateFormatter.current
-
-  @Suppress("ElseCaseInsteadOfExhaustiveWhen")
   val amountPrefix =
     when (schedule.amountOp) {
-      is Operator.IsApprox,
-      is Operator.IsBetween -> "~"
-      else -> ""
+      Operator.IsApprox,
+      Operator.IsBetween -> "~"
+
+      Operator.GreaterThan,
+      Operator.GreaterThanOrEquals,
+      Operator.Is,
+      Operator.LessThan,
+      Operator.LessThanOrEquals -> ""
     }
   val amountStr = amountPrefix + schedule.amount.formattedString(includeSign = true)
 
@@ -68,8 +69,8 @@ internal fun ListSchedulesItem(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.tableBackground, RowShape)
-        .border(Dp.Hairline, theme.tableBorder, RowShape)
+        .background(colors.tableBackground, RowShape)
+        .border(Dp.Hairline, colors.tableBorder, RowShape)
         .clickable { onAction(Open(schedule.id)) }
         .padding(ListSchedulesDS.itemCardPadding),
     horizontalArrangement =
@@ -82,9 +83,9 @@ internal fun ListSchedulesItem(
     ) {
       Text(
         text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
-        style = AktualTypography.bodyMedium,
+        style = typography.bodyMedium,
         fontWeight = FontWeight.SemiBold,
-        color = if (schedule.name != null) theme.pageText else theme.pageTextSubdued,
+        color = if (schedule.name != null) colors.pageText else colors.pageTextSubdued,
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
       )
@@ -93,35 +94,31 @@ internal fun ListSchedulesItem(
         LabelValue(
           label = Strings.listSchedulesLabelPayee,
           value = schedule.payeeName,
-          theme = theme,
         )
         LabelValue(
           label = Strings.listSchedulesLabelAccount,
           value = schedule.accountName,
-          theme = theme,
         )
 
         LabelValue(
           label = Strings.listSchedulesLabelAmount,
           value = amountStr,
-          theme = theme,
           valueColor =
             if (schedule.amount.isPositive()) {
-              theme.budgetNumberPositive
+              colors.budgetNumberPositive
             } else {
-              theme.budgetNumberNegative
+              colors.budgetNumberNegative
             },
         )
 
         LabelValue(
           label = Strings.listSchedulesLabelNext,
-          value = dateFormatter.format(schedule.nextDate),
-          theme = theme,
+          value = schedule.nextDate.formatted(),
         )
       }
     }
 
-    ScheduleStatusBadge(schedule.status, theme = theme)
+    ScheduleStatusBadge(schedule.status)
   }
 }
 
@@ -130,16 +127,15 @@ private fun LabelValue(
   label: String,
   value: String,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-  valueColor: Color = theme.pageText,
+  valueColor: Color = colors.pageText,
 ) {
   Row(
     modifier = modifier,
     horizontalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Text(label, style = AktualTypography.bodySmall, color = theme.pageTextSubdued)
-    Text(value, style = AktualTypography.bodySmall, color = valueColor)
+    Text(label, style = typography.bodySmall, color = colors.pageTextSubdued)
+    Text(value, style = typography.bodySmall, color = valueColor)
   }
 }
 
@@ -147,16 +143,15 @@ private fun LabelValue(
 private fun ScheduleStatusBadge(
   status: ScheduleStatus,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val (bgColor, textColor) =
     when (status) {
-      ScheduleStatus.Missed -> theme.errorBackground to theme.errorTextDarker
-      ScheduleStatus.Due -> theme.warningBackground to theme.warningTextDark
-      ScheduleStatus.Upcoming -> theme.upcomingBackground to theme.upcomingText
-      ScheduleStatus.Paid -> theme.noticeBackgroundLight to theme.noticeText
-      ScheduleStatus.Completed -> theme.tableRowHeaderBackground to theme.tableHeaderText
-      ScheduleStatus.Scheduled -> theme.tableRowHeaderBackground to theme.tableRowHeaderText
+      ScheduleStatus.Missed -> colors.errorBackground to colors.errorTextDarker
+      ScheduleStatus.Due -> colors.warningBackground to colors.warningTextDark
+      ScheduleStatus.Upcoming -> colors.upcomingBackground to colors.upcomingText
+      ScheduleStatus.Paid -> colors.noticeBackgroundLight to colors.noticeText
+      ScheduleStatus.Completed -> colors.tableRowHeaderBackground to colors.tableHeaderText
+      ScheduleStatus.Scheduled -> colors.tableRowHeaderBackground to colors.tableRowHeaderText
     }
   val label =
     when (status) {
@@ -170,24 +165,21 @@ private fun ScheduleStatusBadge(
   Box(
     modifier = modifier.background(bgColor, CardShape).padding(ListSchedulesDS.statusBadgePadding)
   ) {
-    Text(text = label, style = AktualTypography.labelSmall, color = textColor, maxLines = 1)
+    Text(text = label, style = typography.labelSmall, color = textColor, maxLines = 1)
   }
 }
 
 /** Keep in sync with [ListSchedulesItem] */
 @Composable
-internal fun ShimmerListSchedulesItem(
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) {
+internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(ShimmerBounds.Window)
   Row(
     modifier =
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.tableBackground, RowShape)
-        .border(Dp.Hairline, theme.tableBorder, RowShape)
+        .background(colors.tableBackground, RowShape)
+        .border(Dp.Hairline, colors.tableBorder, RowShape)
         .padding(ListSchedulesDS.itemCardPadding)
         .shimmer(shimmer),
     horizontalArrangement =
@@ -202,21 +194,21 @@ internal fun ShimmerListSchedulesItem(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.45f)
             .height(ListSchedulesDS.shimmerItemTextHeight)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
 
       Box(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.85f)
             .height(ListSchedulesDS.shimmerItemTextHeightSmall)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
 
       Box(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.75f)
             .height(ListSchedulesDS.shimmerItemTextHeightSmall)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
     }
 
@@ -224,7 +216,7 @@ internal fun ShimmerListSchedulesItem(
       modifier =
         Modifier.height(ListSchedulesDS.shimmerItemTextHeight)
           .width(40.dp)
-          .background(theme.pageText, CardShape)
+          .background(colors.pageText, CardShape)
     )
   }
 }
@@ -232,22 +224,22 @@ internal fun ShimmerListSchedulesItem(
 @Preview
 @Composable
 private fun PreviewScheduleStatus(
-  @PreviewParameter(ScheduleStatusProvider::class) params: ThemedParams<ScheduleStatus>
-) = PreviewWithThemedParams(params) { ScheduleStatusBadge(this) }
+  @PreviewParameter(ScheduleStatusProvider::class) params: ColoredParams<ScheduleStatus>
+) = PreviewWithColoredParams(params) { ScheduleStatusBadge(this) }
 
 private class ScheduleStatusProvider :
-  ThemedParameterProvider<ScheduleStatus>(ScheduleStatus.entries)
+  ColoredParameterProvider<ScheduleStatus>(ScheduleStatus.entries)
 
 @Preview
 @Composable
 private fun PreviewListItem(
-  @PreviewParameter(SchedulesProvider::class) params: ThemedParams<Schedule>
-) = PreviewWithThemedParams(params) { ListSchedulesItem(schedule = this, onAction = {}) }
+  @PreviewParameter(SchedulesProvider::class) params: ColoredParams<Schedule>
+) = PreviewWithColoredParams(params) { ListSchedulesItem(schedule = this, onAction = {}) }
 
 private class SchedulesProvider :
-  ThemedParameterProvider<Schedule>(ListSchedulesPreview.scheduleA, ListSchedulesPreview.scheduleB)
+  ColoredParameterProvider<Schedule>(ListSchedulesPreview.scheduleA, ListSchedulesPreview.scheduleB)
 
 @Preview
 @Composable
-private fun PreviewLoadingListItem(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) { ShimmerListSchedulesItem() }
+private fun PreviewLoadingListItem(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { ShimmerListSchedulesItem() }

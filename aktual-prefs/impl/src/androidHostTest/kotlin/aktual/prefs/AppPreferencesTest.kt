@@ -52,4 +52,28 @@ class AppPreferencesTest {
       }
     }
   }
+
+  @Test
+  fun `Nav grid order`() = runTest {
+    before()
+    with(preferences.navGridOrder) {
+      asFlow().test {
+        // Given the default is an empty (uncustomised) list
+        assertThatNextEmissionIsEqualTo(emptyList<String>())
+
+        // When a custom order is stored
+        set(listOf("Reports", "Transactions"))
+
+        // Then it round-trips
+        assertThatNextEmissionIsEqualTo(listOf("Reports", "Transactions"))
+
+        // When reset back to empty
+        set(emptyList())
+
+        // Then the empty list is restored
+        assertThatNextEmissionIsEqualTo(emptyList<String>())
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+  }
 }

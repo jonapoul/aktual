@@ -32,6 +32,7 @@ data class NetWorthData(val title: String, val items: ImmutableMap<YearMonth, Am
 sealed interface SummaryData : ChartData, DateRange {
   val title: String
 
+  @Immutable
   data class Sum(
     override val title: String,
     override val start: LocalDate,
@@ -39,6 +40,7 @@ sealed interface SummaryData : ChartData, DateRange {
     val value: Amount,
   ) : SummaryData
 
+  @Immutable
   data class AveragePerMonth(
     override val title: String,
     override val start: LocalDate,
@@ -48,6 +50,7 @@ sealed interface SummaryData : ChartData, DateRange {
     val average: Amount,
   ) : SummaryData
 
+  @Immutable
   data class AveragePerYear(
     override val title: String,
     override val start: LocalDate,
@@ -57,6 +60,7 @@ sealed interface SummaryData : ChartData, DateRange {
     val average: Amount,
   ) : SummaryData
 
+  @Immutable
   data class AveragePerTransaction(
     override val title: String,
     override val start: LocalDate,
@@ -66,6 +70,7 @@ sealed interface SummaryData : ChartData, DateRange {
     val average: Amount,
   ) : SummaryData
 
+  @Immutable
   data class Percentage(
     override val title: String,
     override val start: LocalDate,
