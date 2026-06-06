@@ -26,7 +26,7 @@ jobs:
       wrapper: ${{ steps.filter.outputs.wrapper }}
       shell: ${{ steps.filter.outputs.shell }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
         id: filter
         with:
@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6
         with:
           node-version: 'lts/*'
@@ -62,7 +62,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: gradle/actions/wrapper-validation@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6
 
   shellcheck:
@@ -71,7 +71,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0
       - run: |
@@ -84,7 +84,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0
       - uses: dortort/betterleaks-action@cd0b905aa4befb8f42f8b1ab98150180c9e77515 # v0.1.0
@@ -102,7 +102,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: ./.github/actions/setup-java
       - run: scripts/ktfmt.sh check --force
 
@@ -123,7 +123,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
@@ -137,7 +137,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
@@ -151,7 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
@@ -165,7 +165,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
@@ -183,7 +183,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
@@ -197,7 +197,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
@@ -216,7 +216,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
@@ -229,7 +229,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
       - run: sudo apt-get update && sudo apt-get install -y graphviz
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
@@ -279,7 +279,7 @@ jobs:
       id-token: write
       actions: read
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
 
       - uses: anthropics/claude-code-action@64de744025ca9e24df2b88204b4f1e968f39f009 # v1
         with:
