@@ -47,6 +47,7 @@ class ConventionKotlinBase : Plugin<Project> {
         "-Xcontext-parameters", // TODO: remove when the IDE supports kotlin 2.4
         "-Xcontext-sensitive-resolution", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-sensitive-resolution
         "-Xexpect-actual-classes",
+        "-Xintrinsic-const-evaluation", // https://kotlinlang.org/docs/whatsnew24.html#improved-compile-time-constants
         "-opt-in=kotlin.RequiresOptIn",
         "-opt-in=kotlin.contracts.ExperimentalContracts",
       )
