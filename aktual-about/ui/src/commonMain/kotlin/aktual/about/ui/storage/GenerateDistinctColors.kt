@@ -35,7 +35,7 @@ internal fun rememberDistinctColors(
   lightness: Float = 0.35f,
   colors: Colors = AktualTheme.colors,
 ): ImmutableList<Color> =
-  remember(count, saturation, lightness) {
+  remember(colors, count, saturation, lightness) {
     generateDistinctColors(colors, count, saturation, lightness).toImmutableList()
   }
 

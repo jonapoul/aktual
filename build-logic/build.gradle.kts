@@ -38,6 +38,7 @@ dependencies {
     )
 
   compileOnlyPlugin(libs.plugins.agp.app)
+  compileOnlyPlugin(libs.plugins.atlas)
   compileOnlyPlugin(libs.plugins.blueprint)
   compileOnlyPlugin(libs.plugins.buildconfig)
   compileOnlyPlugin(libs.plugins.burst)
