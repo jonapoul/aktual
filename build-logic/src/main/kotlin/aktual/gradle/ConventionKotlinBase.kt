@@ -47,7 +47,6 @@ class ConventionKotlinBase : Plugin<Project> {
     val FREE_COMPILER_ARGS =
       listOf(
         "-Xcollection-literals", // https://kotlinlang.org/docs/whatsnew24.html#support-for-collection-literals
-        "-Xcontext-parameters", // TODO: remove when the IDE supports kotlin 2.4
         "-Xcontext-sensitive-resolution", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-sensitive-resolution
         "-Xexpect-actual-classes",
         "-Xintrinsic-const-evaluation", // https://kotlinlang.org/docs/whatsnew24.html#improved-compile-time-constants
