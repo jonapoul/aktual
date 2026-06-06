@@ -53,7 +53,7 @@ fun Modifier.blurredBottomBar(
 
   return if (config.blurAppBars) {
     val blurStyle =
-      remember(config, theme, color) {
+      remember(config, color) {
         HazeBlurStyle(
           blurRadius = config.blurRadius,
           backgroundColor = color,
