@@ -24,8 +24,8 @@ import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AktualTooltip
-import aktual.core.ui.AktualTypography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
@@ -342,7 +342,7 @@ private fun RuleStage(
       Text(
         modifier = Modifier.weight(1f),
         text = Strings.editRuleStage,
-        style = AktualTypography.titleSmall,
+        style = typography.titleSmall,
       )
 
       AktualTooltip(

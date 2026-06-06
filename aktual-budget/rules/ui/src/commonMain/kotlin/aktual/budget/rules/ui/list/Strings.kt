@@ -22,11 +22,11 @@ import aktual.budget.rules.ui.displayString
 import aktual.budget.rules.ui.string
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember

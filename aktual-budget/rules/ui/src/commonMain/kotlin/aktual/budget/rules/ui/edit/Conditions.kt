@@ -15,7 +15,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.IconButtonColorProvider
@@ -52,25 +52,25 @@ internal fun Conditions(
   ) {
     Row(verticalAlignment = Alignment.Top) {
       Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(text = Strings.editRuleConditions, style = AktualTypography.titleSmall)
+        Text(text = Strings.editRuleConditions, style = typography.titleSmall)
 
         Row(
           horizontalArrangement = Arrangement.spacedBy(6.dp),
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          Text(text = Strings.editRuleConditionsDescPrefix, style = AktualTypography.bodyLarge)
+          Text(text = Strings.editRuleConditionsDescPrefix, style = typography.bodyLarge)
 
           AktualExposedDropDownMenu(
             value = rule.conditionsOp,
             onValueChange = { op -> onAction(SetConditionOp(op)) },
             options = ConditionOp.entries.toImmutableList(),
             string = { op -> op.string() },
-            textStyle = AktualTypography.bodySmall,
+            textStyle = typography.bodySmall,
             isEnabled = isEnabled,
             contentPadding = BUTTON_PADDING,
           )
 
-          Text(text = Strings.editRuleConditionsDescSuffix, style = AktualTypography.bodyLarge)
+          Text(text = Strings.editRuleConditionsDescSuffix, style = typography.bodyLarge)
         }
       }
       PrimaryIconButton(
@@ -106,7 +106,7 @@ private fun Condition(
         onValueChange = { f -> onAction(SetConditionField(f, index)) },
         options = VISIBLE_FIELDS,
         string = { f -> f.string(condition.options) },
-        textStyle = AktualTypography.bodySmall,
+        textStyle = typography.bodySmall,
         isEnabled = isEnabled,
         contentPadding = BUTTON_PADDING,
       )
@@ -126,7 +126,7 @@ private fun Condition(
       onValueChange = { op -> onAction(SetConditionOperator(op, index)) },
       options = filteredOperators(condition),
       string = { f -> f.displayString() },
-      textStyle = AktualTypography.bodySmall,
+      textStyle = typography.bodySmall,
       isEnabled = isEnabled,
       contentPadding = BUTTON_PADDING,
     )

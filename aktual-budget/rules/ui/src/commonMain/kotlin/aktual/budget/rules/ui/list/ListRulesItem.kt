@@ -18,7 +18,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
@@ -164,7 +164,7 @@ private fun RuleStageBadge(
         .border(Dp.Hairline, colors.pillBorder, CardShape)
         .padding(horizontal = 6.dp, vertical = 2.dp)
   ) {
-    Text(text = stage.string(), color = colors.pillText, style = AktualTypography.labelSmall)
+    Text(text = stage.string(), color = colors.pillText, style = typography.labelSmall)
   }
 }
 

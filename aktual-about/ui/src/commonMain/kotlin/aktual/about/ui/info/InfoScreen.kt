@@ -15,7 +15,7 @@ import aktual.core.nav.LicensesNavigator
 import aktual.core.nav.ManageStorageNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameters
@@ -262,13 +262,13 @@ private fun BuildStateItem(
       Text(
         modifier = Modifier.testTag(Tags.BuildStateItemTitle),
         text = title,
-        style = AktualTypography.bodyLarge,
+        style = typography.bodyLarge,
         color = colors.pillText,
       )
       Text(
         modifier = Modifier.testTag(Tags.BuildStateItemValue),
         text = subtitle,
-        style = AktualTypography.labelMedium,
+        style = typography.labelMedium,
         color = colors.pillTextSubdued,
       )
     }

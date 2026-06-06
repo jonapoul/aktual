@@ -16,7 +16,7 @@ import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
@@ -306,7 +306,7 @@ private fun BudgetsSummary(
   ) {
     Text(
       text = Strings.storageBudgets,
-      style = AktualTypography.bodyLarge,
+      style = typography.bodyLarge,
       color = AktualTheme.colors.pageText,
       fontWeight = FontWeight.Bold,
       modifier = Modifier.padding(bottom = Dimens.Medium),
@@ -315,7 +315,7 @@ private fun BudgetsSummary(
     if (state.budgets.isEmpty()) {
       Text(
         text = "No budgets",
-        style = AktualTypography.bodyMedium,
+        style = typography.bodyMedium,
         color = AktualTheme.colors.pageTextSubdued,
       )
     } else {
@@ -335,12 +335,12 @@ private fun TotalStorageText(state: ManageStorageState.Loaded) {
   Column(horizontalAlignment = Alignment.CenterHorizontally) {
     Text(
       text = "${Strings.storageTotal}: ${state.totalSize}",
-      style = AktualTypography.titleMedium,
+      style = typography.titleMedium,
       color = colors.pageText,
     )
     Text(
       text = percentTotalStorage(state),
-      style = AktualTypography.labelMedium,
+      style = typography.labelMedium,
       color = colors.pageTextSubdued,
     )
   }
@@ -391,13 +391,13 @@ private fun BudgetRow(budget: BudgetStorageItem, color: Color, onDelete: () -> U
     HorizontalSpacer(Dimens.Large)
     Text(
       text = budget.name,
-      style = AktualTypography.bodyMedium,
+      style = typography.bodyMedium,
       color = colors.pageText,
       modifier = Modifier.weight(1f),
     )
     Text(
       text = budget.size.toString(),
-      style = AktualTypography.labelMedium,
+      style = typography.labelMedium,
       color = colors.pageTextSubdued,
     )
     IconButton(onClick = onDelete, modifier = Modifier.size(32.dp)) {
@@ -423,11 +423,11 @@ private fun LegendRow(label: String, size: String, color: Color) {
     HorizontalSpacer(Dimens.Large)
     Text(
       text = label,
-      style = AktualTypography.bodyMedium,
+      style = typography.bodyMedium,
       color = colors.pageText,
       modifier = Modifier.weight(1f),
     )
-    Text(text = size, style = AktualTypography.labelMedium, color = colors.pageTextSubdued)
+    Text(text = size, style = typography.labelMedium, color = colors.pageTextSubdued)
   }
 }
 

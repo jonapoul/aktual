@@ -19,7 +19,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ReportNavigator
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
@@ -170,7 +170,7 @@ private fun WidgetType(
         modifier = Modifier.weight(1f),
         text = type.string(),
         color = colors.pageText.disabledIf(!enabled),
-        style = AktualTypography.titleLarge,
+        style = typography.titleLarge,
       )
 
       if (!enabled) {

@@ -8,7 +8,7 @@ import aktual.budget.reports.vm.SpendingDay
 import aktual.budget.reports.vm.SpendingDayNumber
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -174,7 +174,7 @@ private fun CompactHeader(
 ) =
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start) {
-      Text(text = data.title, color = colors.pageText, style = AktualTypography.bodyLarge)
+      Text(text = data.title, color = colors.pageText, style = typography.bodyLarge)
       Text(
         text =
           Strings.reportsSpendingDateRange(
@@ -182,7 +182,7 @@ private fun CompactHeader(
             data.comparison.string(),
           ),
         color = colors.pageTextSubdued,
-        style = AktualTypography.bodyMedium,
+        style = typography.bodyMedium,
       )
     }
 
@@ -208,7 +208,7 @@ private fun RegularLegend(
 
     HorizontalSpacer(weight = 1f)
 
-    val style = AktualTypography.bodySmall.copy(textAlign = TextAlign.End)
+    val style = typography.bodySmall.copy(textAlign = TextAlign.End)
     val mtdSpending = calculateMtdSpending(data)
     val padding = PaddingValues(horizontal = 4.dp)
 
@@ -246,7 +246,7 @@ private fun LegendItem(text: String, color: Color, modifier: Modifier = Modifier
 
     HorizontalSpacer(4.dp)
 
-    Text(text = text, style = AktualTypography.bodySmall)
+    Text(text = text, style = typography.bodySmall)
   }
 
 @Composable

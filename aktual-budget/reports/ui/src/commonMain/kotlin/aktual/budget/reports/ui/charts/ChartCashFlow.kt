@@ -6,7 +6,7 @@ import aktual.budget.reports.vm.CashFlowDatum
 import aktual.budget.reports.vm.CashFlowReportMeta
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -185,7 +185,7 @@ private fun RegularHeader(
 
     val padding = PaddingValues(horizontal = 2.dp)
     val normalStyle =
-      AktualTypography.labelMedium.copy(textAlign = TextAlign.Start, color = colors.pageText)
+      typography.labelMedium.copy(textAlign = TextAlign.Start, color = colors.pageText)
     val boldStyle = normalStyle.copy(textAlign = TextAlign.End, fontWeight = FontWeight.W600)
     val summaryData = summaryData(data)
 
@@ -231,7 +231,7 @@ private fun CompactHeader(
         text = dateRange(data.items.keys),
         color = colors.pageTextSubdued,
         overflow = TextOverflow.Ellipsis,
-        style = AktualTypography.labelMedium,
+        style = typography.labelMedium,
       )
     }
 

@@ -13,7 +13,7 @@ import aktual.budget.reports.vm.TimeFrame
 import aktual.budget.reports.vm.TimeFrameMode.SlidingWindow
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -101,14 +101,14 @@ private fun Header(
         text = data.title,
         overflow = TextOverflow.Ellipsis,
         color = colors.pageText,
-        style = AktualTypography.bodyLarge,
+        style = typography.bodyLarge,
       )
 
       Text(
         text = dateRange(data.items.keys),
         overflow = TextOverflow.Ellipsis,
         color = colors.pageTextSubdued,
-        style = AktualTypography.bodyMedium,
+        style = typography.bodyMedium,
       )
     }
 
@@ -117,7 +117,7 @@ private fun Header(
       Text(
         text = netWorthLatest.formattedString(includeSign = false),
         textAlign = TextAlign.End,
-        style = AktualTypography.bodyLarge,
+        style = typography.bodyLarge,
         color = colors.pageText,
       )
 
@@ -131,7 +131,7 @@ private fun Header(
       Text(
         text = netWorthChange.formattedString(includeSign = true),
         textAlign = TextAlign.End,
-        style = AktualTypography.bodySmall,
+        style = typography.bodySmall,
         color = if (netWorthChange.isPositive()) colors.noticeText else colors.errorText,
       )
     }

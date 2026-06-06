@@ -11,7 +11,7 @@ import aktual.core.model.bytes
 import aktual.core.model.kB
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
@@ -263,7 +263,7 @@ private fun SuccessContent(
         Text(
           text = Strings.metricsMemory,
           fontWeight = FontWeight.Bold,
-          style = AktualTypography.titleLarge,
+          style = typography.titleLarge,
         )
 
         VerticalSpacer(10.dp)
@@ -337,14 +337,14 @@ private fun SuccessContentRow(title: String, value: String, modifier: Modifier =
     Text(
       modifier = Modifier.weight(1f),
       text = title,
-      style = AktualTypography.bodyLarge,
+      style = typography.bodyLarge,
       fontWeight = FontWeight.Bold,
       textAlign = TextAlign.Start,
     )
     Text(
       modifier = Modifier.weight(1f),
       text = value,
-      style = AktualTypography.bodyMedium,
+      style = typography.bodyMedium,
       fontWeight = FontWeight.Normal,
       textAlign = TextAlign.End,
     )

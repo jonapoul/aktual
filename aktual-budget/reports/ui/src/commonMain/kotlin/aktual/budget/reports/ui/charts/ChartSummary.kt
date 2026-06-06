@@ -20,7 +20,7 @@ import aktual.core.model.Percent
 import aktual.core.model.percent
 import aktual.core.ui.AktualExposedDropDownMenu
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -129,14 +129,14 @@ private fun Header(
   modifier: Modifier = Modifier,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
-    Text(text = data.title, color = colors.pageText, style = AktualTypography.bodyLarge)
+    Text(text = data.title, color = colors.pageText, style = typography.bodyLarge)
 
     data.start?.yearMonth?.let { start ->
       data.end?.yearMonth?.let { end ->
         Text(
           text = dateRange(start, end),
           color = colors.pageTextSubdued,
-          style = AktualTypography.bodyMedium,
+          style = typography.bodyMedium,
         )
       }
     }

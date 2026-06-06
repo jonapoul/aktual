@@ -10,7 +10,7 @@ import aktual.core.model.Protocol
 import aktual.core.nav.InfoNavigator
 import aktual.core.nav.LoginNavigator
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
@@ -154,12 +154,12 @@ private fun ServerUrlContent(
     horizontalAlignment = Alignment.Start,
   ) {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-      Text(text = Strings.serverUrlTitle, style = AktualTypography.headlineLarge)
+      Text(text = Strings.serverUrlTitle, style = typography.headlineLarge)
 
       Text(
         text = Strings.serverUrlMessage,
         color = colors.tableRowHeaderText,
-        style = AktualTypography.bodyLarge,
+        style = typography.bodyLarge,
       )
 
       InputFields(

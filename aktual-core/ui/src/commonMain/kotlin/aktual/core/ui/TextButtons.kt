@@ -2,6 +2,7 @@
 
 package aktual.core.ui
 
+import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
@@ -39,7 +40,7 @@ fun PrimaryTextButton(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = AktualTypography.buttonTextStyle,
+  style: TextStyle = typography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   suffix: (@Composable () -> Unit)? = null,
@@ -77,7 +78,7 @@ fun PrimaryTextButtonWithLoading(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = AktualTypography.buttonTextStyle,
+  style: TextStyle = typography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   colors: @Composable (Boolean) -> ButtonColors = { pressed ->
@@ -126,7 +127,7 @@ fun NormalTextButton(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = AktualTypography.buttonTextStyle,
+  style: TextStyle = typography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   suffix: (@Composable () -> Unit)? = null,
@@ -162,7 +163,7 @@ fun BareTextButton(
   contentPadding: PaddingValues = ButtonPadding,
   shape: Shape = ButtonShape,
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
-  style: TextStyle = AktualTypography.buttonTextStyle,
+  style: TextStyle = typography.buttonTextStyle,
   fontSize: TextUnit = TextUnit.Unspecified,
   prefix: (@Composable () -> Unit)? = null,
   suffix: (@Composable () -> Unit)? = null,

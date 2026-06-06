@@ -3,7 +3,7 @@ package aktual.budget.list.ui
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
@@ -37,7 +37,7 @@ internal fun ContentEmpty(
     Text(
       text = Strings.budgetSuccessEmpty,
       textAlign = TextAlign.Center,
-      style = AktualTypography.headlineLarge,
+      style = typography.headlineLarge,
     )
 
     VerticalSpacer(20.dp)

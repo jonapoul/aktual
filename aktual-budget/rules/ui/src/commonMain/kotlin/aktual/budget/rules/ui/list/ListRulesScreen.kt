@@ -25,7 +25,7 @@ import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditRuleNavigator
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
@@ -198,7 +198,7 @@ private fun CollapsingHeader(
         .padding(bottom = Dimens.Medium),
     textAlign = TextAlign.Start,
     text = headerText(onAction),
-    style = AktualTypography.bodySmall,
+    style = typography.bodySmall,
   )
 }
 

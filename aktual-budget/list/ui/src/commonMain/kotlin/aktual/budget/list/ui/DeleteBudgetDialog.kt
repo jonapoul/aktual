@@ -6,7 +6,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
 import aktual.core.ui.ColoredParameterProvider
@@ -142,7 +142,7 @@ private fun LoadableBareTextButton(
       colors = colors,
       isEnabled = isEnabled,
       onClick = onClick,
-      style = if (isLoading) TextStyle(color = Transparent) else AktualTypography.buttonTextStyle,
+      style = if (isLoading) TextStyle(color = Transparent) else typography.buttonTextStyle,
     )
 
     Box(modifier = modifier.padding(IconPadding), contentAlignment = Alignment.Center) {

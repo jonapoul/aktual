@@ -6,7 +6,7 @@ import aktual.budget.model.DateRangeType
 import aktual.budget.model.NumberFormatConfig
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.LocalCurrencyConfig
 import aktual.core.ui.LocalNumberFormatConfig
 import aktual.core.ui.LocalPrivacyEnabled
@@ -193,11 +193,11 @@ internal fun dateRange(months: ImmutableCollection<YearMonth>): String =
 @Composable
 internal fun Footer(title: String, text: String, modifier: Modifier = Modifier) =
   Column(modifier = modifier.fillMaxWidth().padding(8.dp)) {
-    Text(text = title, fontWeight = FontWeight.Bold, style = AktualTypography.bodyMedium)
+    Text(text = title, fontWeight = FontWeight.Bold, style = typography.bodyMedium)
 
     VerticalSpacer(4.dp)
 
-    Text(text = text, style = AktualTypography.bodySmall)
+    Text(text = text, style = typography.bodySmall)
   }
 
 @Composable

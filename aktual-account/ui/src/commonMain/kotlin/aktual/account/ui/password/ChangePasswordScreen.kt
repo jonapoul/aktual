@@ -8,7 +8,7 @@ import aktual.core.model.Password
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ListBudgetsNavigator
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -133,14 +133,14 @@ private fun ChangePasswordContent(
       verticalArrangement = Arrangement.Top,
       horizontalAlignment = Alignment.Start,
     ) {
-      Text(text = Strings.passwordTitle, style = AktualTypography.headlineLarge)
+      Text(text = Strings.passwordTitle, style = typography.headlineLarge)
 
       VerticalSpacer(20.dp)
 
       Text(
         text = Strings.passwordMessage,
         color = colors.tableRowHeaderText,
-        style = AktualTypography.bodyLarge,
+        style = typography.bodyLarge,
       )
 
       VerticalSpacer(30.dp)

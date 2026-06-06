@@ -12,7 +12,7 @@ import aktual.core.nav.BackNavigator
 import aktual.core.nav.ListBudgetsNavigator
 import aktual.core.nav.ServerUrlNavigator
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -155,12 +155,12 @@ private fun Content(
       verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Top),
       horizontalAlignment = Alignment.Start,
     ) {
-      Text(text = Strings.loginTitle, style = AktualTypography.headlineLarge)
+      Text(text = Strings.loginTitle, style = typography.headlineLarge)
 
       Text(
         text = Strings.loginMessage,
         color = colors.tableRowHeaderText,
-        style = AktualTypography.bodyLarge,
+        style = typography.bodyLarge,
       )
 
       if (loginMethods.size > 1) {

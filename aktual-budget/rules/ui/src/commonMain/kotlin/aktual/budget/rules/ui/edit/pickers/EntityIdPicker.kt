@@ -9,7 +9,7 @@ import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ListBottomSheet
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -75,11 +75,11 @@ internal fun EntityIdPicker(
       modifier = Modifier.fillMaxWidth().border(Dp.Hairline, colors.buttonNormalBorder),
       value = selectedName.orEmpty(),
       onValueChange = {},
-      placeholder = { Text(Strings.editRuleConditionNothing, style = AktualTypography.bodySmall) },
+      placeholder = { Text(Strings.editRuleConditionNothing, style = typography.bodySmall) },
       readOnly = true,
       enabled = isEnabled,
       singleLine = true,
-      textStyle = AktualTypography.bodySmall,
+      textStyle = typography.bodySmall,
       trailingIcon = {
         if (selectedId != null && isEnabled) {
           IconButton(onClick = { onValueChange(JsonNull) }) {

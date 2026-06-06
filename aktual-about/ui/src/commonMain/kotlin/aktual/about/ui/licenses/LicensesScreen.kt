@@ -16,7 +16,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
@@ -136,7 +136,7 @@ private fun Title(isSearchActive: Boolean, loadedState: Loaded?, onAction: Licen
     transitionSpec = { fadeIn() togetherWith fadeOut() },
   ) { searching ->
     if (searching) {
-      CompositionLocalProvider(LocalTextStyle provides AktualTypography.bodyLarge) {
+      CompositionLocalProvider(LocalTextStyle provides typography.bodyLarge) {
         FilterInput(loadedState?.filterText, loadedState?.artifacts?.size, onAction)
       }
     } else {

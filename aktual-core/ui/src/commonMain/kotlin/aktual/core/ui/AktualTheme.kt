@@ -8,6 +8,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Typography
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.material3.ripple
@@ -30,6 +31,11 @@ object AktualTheme {
   @get:ReadOnlyComposable
   val colors: Colors
     get() = LocalColors.current
+
+  @get:Composable
+  @get:ReadOnlyComposable
+  val typography: Typography
+    get() = MaterialTheme.typography
 }
 
 @Composable

@@ -17,7 +17,7 @@ import aktual.core.l10n.Strings
 import aktual.core.theme.DarkColors
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.IconButtonColorProvider
 import aktual.core.ui.LocalCurrencyConfig
@@ -171,7 +171,7 @@ private fun LeadingContent(
       Text(
         modifier = Modifier.minimumInteractiveComponentSize(),
         text = config.currency.symbol,
-        style = AktualTypography.bodyMedium,
+        style = typography.bodyMedium,
         color = colors.pageTextSubdued,
       )
     }
@@ -203,7 +203,7 @@ private fun TrailingContent(
       Text(
         modifier = Modifier.minimumInteractiveComponentSize(),
         text = config.currency.symbol,
-        style = AktualTypography.bodyMedium,
+        style = typography.bodyMedium,
         color = colors.pageTextSubdued,
       )
     }

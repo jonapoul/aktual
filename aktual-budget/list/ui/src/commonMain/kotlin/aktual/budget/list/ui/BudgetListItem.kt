@@ -10,7 +10,7 @@ import aktual.core.l10n.Strings
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -82,7 +82,7 @@ internal fun BudgetListItem(
       Text(
         modifier = Modifier.padding(top = 4.dp),
         text = description,
-        style = AktualTypography.bodySmall,
+        style = typography.bodySmall,
         color = colors.pageTextSubdued,
         fontSize = 10.sp,
         lineHeight = 12.sp,

@@ -3,7 +3,7 @@ package aktual.account.ui.login
 import aktual.core.l10n.Strings
 import aktual.core.model.LoginMethod
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.NormalTextButton
@@ -50,7 +50,7 @@ internal fun HeaderLogin(
 
       Text(
         text = Strings.loginHeaderChecking,
-        style = AktualTypography.bodyMedium,
+        style = typography.bodyMedium,
         color = colors.tableRowHeaderText,
       )
     }

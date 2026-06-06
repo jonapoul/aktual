@@ -2,6 +2,7 @@ package aktual.core.ui
 
 import aktual.core.model.immutableList
 import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -187,9 +188,9 @@ private fun PreviewWeightedTableWithStylesAndPadding(
       textStyles =
         persistentListOf(
           LocalTextStyle.current,
-          AktualTypography.bodyMedium,
-          AktualTypography.headlineSmall,
-          AktualTypography.labelSmall,
+          typography.bodyMedium,
+          typography.headlineSmall,
+          typography.labelSmall,
         ),
     )
   }

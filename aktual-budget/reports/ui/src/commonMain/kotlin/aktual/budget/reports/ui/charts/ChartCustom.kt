@@ -5,7 +5,7 @@ import aktual.budget.reports.vm.DateRangeMode
 import aktual.budget.reports.vm.ReportTimeRange
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -46,7 +46,7 @@ internal fun CustomChart(
     Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
       Text(
         text = Strings.reportsCustomNoop,
-        style = AktualTypography.titleLarge,
+        style = typography.titleLarge,
         color = colors.warningText,
         textAlign = TextAlign.Center,
       )

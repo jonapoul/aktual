@@ -6,7 +6,7 @@ import aktual.budget.schedules.vm.ScheduleStatus
 import aktual.core.l10n.Strings
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParameters
@@ -83,7 +83,7 @@ internal fun ListSchedulesItem(
     ) {
       Text(
         text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
-        style = AktualTypography.bodyMedium,
+        style = typography.bodyMedium,
         fontWeight = FontWeight.SemiBold,
         color = if (schedule.name != null) colors.pageText else colors.pageTextSubdued,
         maxLines = 1,
@@ -134,8 +134,8 @@ private fun LabelValue(
     horizontalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    Text(label, style = AktualTypography.bodySmall, color = colors.pageTextSubdued)
-    Text(value, style = AktualTypography.bodySmall, color = valueColor)
+    Text(label, style = typography.bodySmall, color = colors.pageTextSubdued)
+    Text(value, style = typography.bodySmall, color = valueColor)
   }
 }
 
@@ -165,7 +165,7 @@ private fun ScheduleStatusBadge(
   Box(
     modifier = modifier.background(bgColor, CardShape).padding(ListSchedulesDS.statusBadgePadding)
   ) {
-    Text(text = label, style = AktualTypography.labelSmall, color = textColor, maxLines = 1)
+    Text(text = label, style = typography.labelSmall, color = textColor, maxLines = 1)
   }
 }
 

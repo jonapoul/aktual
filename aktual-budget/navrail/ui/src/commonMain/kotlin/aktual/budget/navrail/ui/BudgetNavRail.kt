@@ -25,7 +25,7 @@ import aktual.core.theme.Colors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameters
@@ -655,6 +655,6 @@ private fun PreviewSideNavRail(@PreviewParameter(ColoredParameters::class) color
 @Composable
 private fun PreviewContent(modifier: Modifier = Modifier) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    Text(text = "Content", style = AktualTypography.headlineMedium)
+    Text(text = "Content", style = typography.headlineMedium)
   }
 }

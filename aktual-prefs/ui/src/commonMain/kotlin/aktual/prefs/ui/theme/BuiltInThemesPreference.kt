@@ -9,7 +9,7 @@ import aktual.core.theme.DarkColors
 import aktual.core.theme.LightColors
 import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameters
 import aktual.core.ui.NormalIconButton
@@ -116,7 +116,7 @@ private fun BuiltInThemeItem(
       Text(
         modifier = Modifier.weight(1f),
         text = name,
-        style = AktualTypography.bodyLarge,
+        style = typography.bodyLarge,
         color = colors.buttonNormalText.disabledIf(!enabled),
       )
     }

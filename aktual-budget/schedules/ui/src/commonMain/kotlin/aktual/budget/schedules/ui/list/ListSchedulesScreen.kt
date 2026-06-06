@@ -19,7 +19,7 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.EditScheduleNavigator
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
@@ -157,7 +157,7 @@ private fun Title(
     transitionSpec = { fadeIn() togetherWith fadeOut() },
   ) { searching ->
     if (searching) {
-      CompositionLocalProvider(LocalTextStyle provides AktualTypography.bodyLarge) {
+      CompositionLocalProvider(LocalTextStyle provides typography.bodyLarge) {
         FilterInput(successState?.filterText, successState?.schedules?.size, onAction)
       }
     } else {

@@ -4,7 +4,7 @@ import aktual.core.l10n.Strings
 import aktual.core.model.LoginMethod
 import aktual.core.ui.AktualSlidingToggleButton
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.Dimens
 import aktual.core.ui.RounderCardShape
 import androidx.compose.foundation.background
@@ -42,7 +42,7 @@ internal fun LoginMethodPicker(
       text = Strings.loginMethodSelect,
       color = colors.tableRowHeaderText,
       textAlign = TextAlign.Start,
-      style = AktualTypography.bodyLarge,
+      style = typography.bodyLarge,
       fontWeight = FontWeight.Bold,
     )
 

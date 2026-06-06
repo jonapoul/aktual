@@ -11,7 +11,7 @@ import aktual.core.theme.LightColors
 import aktual.core.theme.MidnightColors
 import aktual.core.theme.isLight
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -199,7 +199,7 @@ private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modif
       modifier = Modifier.weight(1f),
       text = property.name,
       color = textColor,
-      style = AktualTypography.bodySmall,
+      style = typography.bodySmall,
       textAlign = TextAlign.Start,
       maxLines = 1,
     )
@@ -207,7 +207,7 @@ private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modif
     Text(
       text = property.color.toHexString(),
       color = textColor,
-      style = AktualTypography.labelMedium,
+      style = typography.labelMedium,
       textAlign = TextAlign.End,
       maxLines = 1,
     )

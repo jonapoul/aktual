@@ -13,7 +13,7 @@ import aktual.core.icons.material.SwapHoriz
 import aktual.core.l10n.Strings
 import aktual.core.nav.BudgetTab
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.disabled
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -66,7 +66,7 @@ internal fun NavSheetItem(
         modifier = Modifier.size(24.dp),
       )
     }
-    Text(text = label, style = AktualTypography.labelSmall, color = contentColor)
+    Text(text = label, style = typography.labelSmall, color = contentColor)
   }
 }
 

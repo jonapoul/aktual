@@ -1,6 +1,6 @@
 package aktual.prefs.ui
 
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -22,7 +22,7 @@ internal fun PreferenceGroup(
     enabled = enabled,
     includeBackground = true,
     rightContent = null,
-    headerStyle = AktualTypography.titleMedium,
+    headerStyle = typography.titleMedium,
     bottomContent = content,
   )
 }

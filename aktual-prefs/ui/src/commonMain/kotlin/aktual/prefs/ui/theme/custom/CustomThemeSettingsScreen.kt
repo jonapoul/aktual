@@ -20,7 +20,7 @@ import aktual.core.nav.BackNavigator
 import aktual.core.nav.InspectThemeNavigator
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
@@ -401,14 +401,14 @@ internal fun CustomThemeItem(
         Column(modifier = Modifier.weight(1f)) {
           Text(
             text = item.summary.name,
-            style = AktualTypography.bodyLarge,
+            style = typography.bodyLarge,
             color = colors.buttonNormalText.disabledIf(!enabled),
             overflow = TextOverflow.Ellipsis,
           )
 
           Text(
             text = item.summary.repo.toString(),
-            style = AktualTypography.labelMedium,
+            style = typography.labelMedium,
             color = colors.pageTextSubdued.disabledIf(!enabled),
             overflow = TextOverflow.Ellipsis,
           )

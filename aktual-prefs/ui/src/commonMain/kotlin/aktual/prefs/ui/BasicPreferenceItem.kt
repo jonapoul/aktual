@@ -3,7 +3,7 @@ package aktual.prefs.ui
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -51,7 +51,7 @@ internal fun BasicPreferenceItem(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   enabled: Boolean = true,
   includeBackground: Boolean = true,
-  headerStyle: TextStyle = AktualTypography.bodyLarge,
+  headerStyle: TextStyle = typography.bodyLarge,
   topRightContent: (@Composable BoxScope.() -> Unit)? = null,
   rightContent: (@Composable RowScope.() -> Unit)? = null,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
@@ -99,7 +99,7 @@ internal fun BasicPreferenceItem(
               text = subtitle,
               fontWeight = FontWeight.Light,
               textAlign = TextAlign.Start,
-              style = AktualTypography.bodyMedium,
+              style = typography.bodyMedium,
               color = if (enabled) colors.pageTextLight else colors.pageTextSubdued,
             )
           }
