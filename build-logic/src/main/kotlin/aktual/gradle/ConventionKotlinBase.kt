@@ -14,7 +14,10 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 class ConventionKotlinBase : Plugin<Project> {
   override fun apply(target: Project): Unit =
     with(target) {
-      pluginManager.apply(ConventionDi::class)
+      with(pluginManager) {
+        apply(ConventionAtlas::class)
+        apply(ConventionDi::class)
+      }
 
       extensions.configure(HasConfigurableKotlinCompilerOptions::class) {
         compilerOptions {

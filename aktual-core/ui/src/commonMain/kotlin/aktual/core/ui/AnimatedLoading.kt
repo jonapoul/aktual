@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -48,8 +49,11 @@ fun AnimatedLoading(modifier: Modifier = Modifier) {
       label = "rotation",
     )
 
+  val pageText = colors.pageText
+  val icon = remember(pageText) { loadingIcon(pageText) }
+
   Image(
-    imageVector = loadingIcon(colors.pageText),
+    imageVector = icon,
     contentDescription = null,
     modifier = modifier.rotate(rotation),
   )
