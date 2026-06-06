@@ -1,11 +1,11 @@
 package aktual.core.theme
 
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 
-val LocalTheme = compositionLocalOf<Theme> { Theme.Fallback }
+val LocalTheme = staticCompositionLocalOf<Theme> { Theme.Fallback }
 
 @Stable fun Color.isLight(): Boolean = luminance() > LUMINANCE_BOUNDARY
 
