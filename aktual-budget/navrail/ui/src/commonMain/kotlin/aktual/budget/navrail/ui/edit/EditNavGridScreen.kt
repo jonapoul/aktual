@@ -41,7 +41,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -212,11 +212,12 @@ private fun EditNavGridContent(
     modifier = modifier.fillMaxSize(),
     contentPadding = PaddingValues(8.dp),
   ) {
-    items(state.items, key = { it.name }) { tab ->
+    itemsIndexed(state.items, key = { _, tab -> tab.name }) { index, tab ->
       ReorderableItem(reorderState, key = tab.name) { isDragging ->
         // Even/odd items jiggle in opposite directions for a livelier "editable" feel; the
-        // actively-dragged item stops jiggling and lifts slightly instead
-        val rotation = if (isDragging) 0f else jiggle * if (tab.ordinal % 2 == 0) 1f else -1f
+        // actively-dragged item stops jiggling and lifts slightly instead. Use the visual grid
+        // index, not tab.ordinal, so the alternation tracks position after reordering
+        val rotation = if (isDragging) 0f else jiggle * if (index % 2 == 0) 1f else -1f
         val scale = if (isDragging) DRAG_SCALE else 1f
 
         // The item wraps its content, so center it within the wider grid cell
