@@ -1,6 +1,6 @@
 main:
   minSDK: 28
-  targetSDK: 36
+  targetSDK: 37
   permissions:
   - android.permission.ACCESS_NETWORK_STATE
   - android.permission.INTERNET
@@ -46,4 +46,4 @@ variants:
     namespace: dev.jonpoulton.aktual.app
     permissions:
     - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-fingerprint: 708238535463fbe2f49c0f5e4bb025f0
+fingerprint: 37658cde6d3156ef32c3b03f56050bdd
