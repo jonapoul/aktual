@@ -91,7 +91,7 @@ Default new code to `commonMain`; reach for `androidMain` / `jvmMain` only when 
 
 - **Config cache + git versions**: `gitVersionHash()` / `gitVersionCode()` are cached so builds stay sub-second — they do **not** refresh on commit. Use `./gradlew --rerun-tasks` when you need fresh values.
 - **Java version**: single source of truth is `.java-version` at repo root (read by `JavaVersionValueSource` and CI's `setup-java`). Don't hardcode it anywhere.
-- **SDK**: min 28, target/compile 36.
+- **SDK**: min 28, target/compile 37.
 - **Desktop release** goes through Proguard — mapping at `aktual-app/desktop/build/outputs/mapping.txt`. Android goes through R8.
 - **SQLDelight** is pinned to a snapshot for KMP features; see `gradle/libs.versions.toml`.
 
