@@ -20,6 +20,8 @@ import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.CardShape
+import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithTheme
@@ -31,9 +33,11 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -50,6 +54,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextOverflow
@@ -192,6 +197,7 @@ private fun EditNavGridContent(
   state: EditNavGridState,
   onAction: ActionHandler,
   modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
 ) {
   val lazyGridState = rememberLazyGridState()
   val reorderState =
@@ -212,18 +218,32 @@ private fun EditNavGridContent(
         // actively-dragged item stops jiggling and lifts slightly instead
         val rotation = if (isDragging) 0f else jiggle * if (tab.ordinal % 2 == 0) 1f else -1f
         val scale = if (isDragging) DRAG_SCALE else 1f
-        NavSheetItem(
+
+        // The item wraps its content, so center it within the wider grid cell
+        Box(
           modifier =
-            Modifier.longPressDraggableHandle().graphicsLayer {
-              rotationZ = rotation
-              scaleX = scale
-              scaleY = scale
-            },
-          icon = tab.icon(),
-          label = tab.label(),
-          selected = false,
-          onClick = {},
-        )
+            Modifier.padding(Dimens.Medium)
+              .fillMaxWidth()
+              .longPressDraggableHandle()
+              .background(
+                color = if (isDragging) theme.pillBackgroundSelected else theme.pillBackground,
+                shape = CardShape,
+              ),
+          contentAlignment = Alignment.Center,
+        ) {
+          NavSheetItem(
+            modifier =
+              Modifier.graphicsLayer {
+                rotationZ = rotation
+                scaleX = scale
+                scaleY = scale
+              },
+            icon = tab.icon(),
+            label = tab.label(),
+            selected = false,
+            onClick = null,
+          )
+        }
       }
     }
   }

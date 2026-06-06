@@ -40,14 +40,17 @@ internal fun NavSheetItem(
   icon: ImageVector,
   label: String,
   selected: Boolean,
-  onClick: () -> Unit,
+  onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
   val indicatorColor = if (selected) theme.sidebarItemTextSelected.disabled else Color.Transparent
   val contentColor = if (selected) theme.sidebarItemTextSelected else theme.sidebarItemText
   Column(
-    modifier = modifier.clickable(onClick = onClick).padding(vertical = 8.dp),
+    modifier =
+      modifier
+        .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
+        .padding(vertical = 8.dp),
     horizontalAlignment = Alignment.CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
