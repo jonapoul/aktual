@@ -2,11 +2,10 @@ package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
@@ -21,7 +20,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 internal fun LoginFailureText(
   result: LoginResult.Failure,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val errorMessage =
     when (result) {
@@ -35,7 +33,7 @@ internal fun LoginFailureText(
   Text(
     modifier = modifier.testTag(Tags.LoginFailureText),
     text = errorMessage,
-    color = theme.errorText,
+    color = colors.errorText,
     textAlign = TextAlign.Center,
   )
 }
@@ -43,11 +41,11 @@ internal fun LoginFailureText(
 @Preview
 @Composable
 private fun PreviewLoginFailureText(
-  @PreviewParameter(LoginFailureProvider::class) params: ThemedParams<LoginResult.Failure>
-) = PreviewWithTheme(params.theme) { LoginFailureText(params.data) }
+  @PreviewParameter(LoginFailureProvider::class) params: ColoredParams<LoginResult.Failure>
+) = PreviewWithColors(params.colors) { LoginFailureText(params.data) }
 
 private class LoginFailureProvider :
-  ThemedParameterProvider<LoginResult.Failure>(
+  ColoredParameterProvider<LoginResult.Failure>(
     LoginResult.InvalidPassword,
     LoginResult.TokenExpired,
     LoginResult.HttpFailure(code = 404, message = "Resource not found"),

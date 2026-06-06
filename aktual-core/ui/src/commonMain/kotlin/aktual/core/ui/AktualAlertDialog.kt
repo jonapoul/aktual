@@ -2,8 +2,8 @@
 
 package aktual.core.ui
 
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -63,8 +63,7 @@ fun AktualAlertDialog(
   modifier: Modifier = Modifier,
   buttons: (@Composable RowScope.() -> Unit)? = null,
   icon: ImageVector? = null,
-  theme: Theme = LocalTheme.current,
-  titleColor: Color = theme.pageTextPositive,
+  titleColor: Color = colors.pageTextPositive,
   properties: DialogProperties = DialogProperties(),
   content: @Composable ColumnScope.() -> Unit,
 ) {
@@ -77,7 +76,6 @@ fun AktualAlertDialog(
       title = title,
       buttons = buttons,
       icon = icon,
-      theme = theme,
       titleColor = titleColor,
       content = content,
     )
@@ -90,20 +88,19 @@ fun AktualAlertDialogContent(
   buttons: (@Composable RowScope.() -> Unit)?,
   modifier: Modifier = Modifier,
   icon: ImageVector? = null,
-  theme: Theme = LocalTheme.current,
-  titleColor: Color = theme.pageTextPositive,
+  titleColor: Color = colors.pageTextPositive,
   content: @Composable ColumnScope.() -> Unit,
 ) {
   Surface(
     modifier = modifier,
     shape = DialogShape,
-    color = theme.modalBackground,
+    color = colors.modalBackground,
     tonalElevation = AlertDialogDefaults.TonalElevation,
   ) {
     Column(
       modifier =
         Modifier.defaultMinSize(minWidth = 300.dp)
-          .background(theme.modalBackground)
+          .background(colors.modalBackground)
           .padding(Dimens.VeryLarge),
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(Dimens.Medium, alignment = Alignment.Top),
@@ -125,10 +122,10 @@ fun AktualAlertDialogContent(
         }
       }
 
-      CompositionLocalProvider(LocalContentColor provides theme.pageText) { content() }
+      CompositionLocalProvider(LocalContentColor provides colors.pageText) { content() }
 
       if (buttons != null) {
-        CompositionLocalProvider(LocalContentColor provides theme.pageTextPositive) {
+        CompositionLocalProvider(LocalContentColor provides colors.pageTextPositive) {
           Row(modifier = Modifier.align(Alignment.End), content = buttons)
         }
       }
@@ -139,13 +136,13 @@ fun AktualAlertDialogContent(
 @Preview
 @Composable
 private fun PreviewExampleContentWithButtons(
-  @PreviewParameter(ThemeParameters::class) theme: Theme
+  @PreviewParameter(ColoredParameters::class) colors: Colors
 ) =
-  PreviewWithTheme(theme) {
+  PreviewWithColors(colors) {
     AktualAlertDialogContent(
       title = "Hello world",
       buttons = {
-        TextButton(onClick = {}) { Text("Delete", color = theme.errorText) }
+        TextButton(onClick = {}) { Text("Delete", color = colors.errorText) }
         TextButton(onClick = {}) { Text("Dismiss") }
       },
       content = {
@@ -162,9 +159,9 @@ private fun PreviewExampleContentWithButtons(
 @Preview
 @Composable
 private fun PreviewExampleContentWithoutButtons(
-  @PreviewParameter(ThemeParameters::class) theme: Theme
+  @PreviewParameter(ColoredParameters::class) colors: Colors
 ) =
-  PreviewWithTheme(theme) {
+  PreviewWithColors(colors) {
     AktualAlertDialogContent(
       title = "Hello world",
       buttons = null,

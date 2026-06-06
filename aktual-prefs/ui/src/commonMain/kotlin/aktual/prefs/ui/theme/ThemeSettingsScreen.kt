@@ -4,18 +4,18 @@ import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.CustomThemesNavigator
 import aktual.core.nav.InspectThemeNavigator
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.LightTheme
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.MidnightTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.theme.DarkColors
+import aktual.core.theme.LightColors
+import aktual.core.theme.MidnightColors
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.blurredTopBarContentPadding
@@ -72,7 +72,6 @@ fun ThemeSettingsScreen(
 
 @Composable
 private fun ThemeSettingsScaffold(state: ThemeSettingsState, onAction: ThemeSettingsActionHandler) {
-  val theme = LocalTheme.current
   val listState = rememberLazyListState()
   val blurState = rememberBlurredTopBarState()
 
@@ -80,7 +79,7 @@ private fun ThemeSettingsScaffold(state: ThemeSettingsState, onAction: ThemeSett
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsThemeToolbar) },
       )
@@ -133,19 +132,19 @@ private fun ThemeSettingsContent(
 
 @PortraitPreview
 @Composable
-private fun PreviewThemeSettings(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewColorsSettings(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     ThemeSettingsScaffold(
       state =
         ThemeSettingsState(
           useSystemDefault = BooleanPreference(value = false, enabled = true),
           darkTheme =
             ListPreference(
-              value = DarkTheme.id,
-              options = persistentListOf(DarkTheme.id, MidnightTheme.id),
+              value = DarkColors.id,
+              options = persistentListOf(DarkColors.id, MidnightColors.id),
               enabled = false,
             ),
-          constantTheme = LightTheme.id,
+          constantTheme = LightColors.id,
         ),
       onAction = {},
     )

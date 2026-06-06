@@ -4,10 +4,10 @@ import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
+import aktual.core.ui.ColoredBooleanParameters
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.NormalIconButton
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedBooleanParameters
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.BasicPreferenceItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -34,6 +34,6 @@ internal fun ThemeSettingsItem(onClick: () -> Unit, modifier: Modifier = Modifie
 
 @Preview
 @Composable
-private fun PreviewThemeSettingsItem(
-  @PreviewParameter(ThemedBooleanParameters::class) params: ThemedParams<Boolean>
-) = PreviewWithTheme(params.theme) { ThemeSettingsItem(onClick = {}) }
+private fun PreviewColorsSettingsItem(
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
+) = PreviewWithColors(params.colors) { ThemeSettingsItem(onClick = {}) }

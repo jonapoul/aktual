@@ -5,13 +5,12 @@ import aktual.budget.reports.vm.CashFlowData
 import aktual.budget.reports.vm.CashFlowDatum
 import aktual.budget.reports.vm.CashFlowReportMeta
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
@@ -65,14 +64,13 @@ internal fun CashFlowChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
-  theme: Theme = LocalTheme.current,
 ) =
   Column(modifier = modifier) {
     if (includeHeader) {
       if (compact) {
-        CompactHeader(data, theme = theme)
+        CompactHeader(data)
       } else {
-        RegularHeader(data, theme = theme)
+        RegularHeader(data)
       }
     }
 
@@ -97,19 +95,19 @@ internal fun CashFlowChart(
         rememberCartesianChart(
           rememberColumnCartesianLayer(
             ColumnCartesianLayer.ColumnProvider.series(
-              rememberLineComponent(fill = Fill(theme.reportsBlue), thickness = 16.dp)
+              rememberLineComponent(fill = Fill(colors.reportsBlue), thickness = 16.dp)
             )
           ),
           rememberColumnCartesianLayer(
             ColumnCartesianLayer.ColumnProvider.series(
-              rememberLineComponent(fill = Fill(theme.reportsRed), thickness = 16.dp)
+              rememberLineComponent(fill = Fill(colors.reportsRed), thickness = 16.dp)
             )
           ),
           rememberLineCartesianLayer(
             lineProvider =
               LineCartesianLayer.LineProvider.series(
                 LineCartesianLayer.rememberLine(
-                  fill = LineCartesianLayer.LineFill.single(Fill(theme.pageTextLight)),
+                  fill = LineCartesianLayer.LineFill.single(Fill(colors.pageTextLight)),
                   stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 3.dp),
                 )
               )
@@ -177,7 +175,6 @@ private fun summaryData(data: CashFlowData): SummaryData {
 private fun RegularHeader(
   data: CashFlowData,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Row(modifier = modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp).fillMaxWidth()) {
     Text(
@@ -188,7 +185,7 @@ private fun RegularHeader(
 
     val padding = PaddingValues(horizontal = 2.dp)
     val normalStyle =
-      AktualTypography.labelMedium.copy(textAlign = TextAlign.Start, color = theme.pageText)
+      typography.labelMedium.copy(textAlign = TextAlign.Start, color = colors.pageText)
     val boldStyle = normalStyle.copy(textAlign = TextAlign.End, fontWeight = FontWeight.W600)
     val summaryData = summaryData(data)
 
@@ -217,7 +214,7 @@ private fun RegularHeader(
         text = summaryData.net.formattedString(includeSign = true),
         textAlign = TextAlign.End,
         style = boldStyle,
-        color = if (summaryData.net.isPositive()) theme.noticeText else theme.errorText,
+        color = if (summaryData.net.isPositive()) colors.noticeText else colors.errorText,
       )
     }
   }
@@ -226,23 +223,22 @@ private fun RegularHeader(
 private fun CompactHeader(
   data: CashFlowData,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Row(modifier = modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
     Column(modifier = Modifier.weight(1f)) {
-      Text(text = data.title, color = theme.pageText, overflow = TextOverflow.Ellipsis)
+      Text(text = data.title, color = colors.pageText, overflow = TextOverflow.Ellipsis)
       Text(
         text = dateRange(data.items.keys),
-        color = theme.pageTextSubdued,
+        color = colors.pageTextSubdued,
         overflow = TextOverflow.Ellipsis,
-        style = AktualTypography.labelMedium,
+        style = typography.labelMedium,
       )
     }
 
     val netFlow = calculateNetFlow(data)
     Text(
       text = netFlow.formattedString(includeSign = true),
-      color = if (netFlow.isPositive()) theme.noticeText else theme.errorText,
+      color = if (netFlow.isPositive()) colors.noticeText else colors.errorText,
       overflow = TextOverflow.Ellipsis,
     )
   }
@@ -267,12 +263,12 @@ private suspend fun CartesianChartModelProducer.populate(data: CashFlowData) =
 @Preview
 @Composable
 private fun PreviewCashFlowChart(
-  @PreviewParameter(CashFlowChartProvider::class) params: ThemedParams<CashFlowChartParams>
+  @PreviewParameter(CashFlowChartProvider::class) params: ColoredParams<CashFlowChartParams>
 ) =
-  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.isPrivacyEnabled) {
+  PreviewWithColors(params.colors, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CashFlowChart(
       modifier =
-        Modifier.background(LocalTheme.current.tableBackground, CardShape)
+        Modifier.background(colors.tableBackground, CardShape)
           .let { m -> if (params.data.compact) m.height(300.dp) else m }
           .width(WIDTH.dp)
           .padding(5.dp),
@@ -288,7 +284,7 @@ private data class CashFlowChartParams(
 )
 
 private class CashFlowChartProvider :
-  ThemedParameterProvider<CashFlowChartParams>(
+  ColoredParameterProvider<CashFlowChartParams>(
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = false),
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = false, isPrivacyEnabled = true),
     CashFlowChartParams(PREVIEW_CASH_FLOW_DATA, compact = true),

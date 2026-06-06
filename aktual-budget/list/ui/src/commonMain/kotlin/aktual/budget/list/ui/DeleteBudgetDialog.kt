@@ -3,15 +3,15 @@ package aktual.budget.list.ui
 import aktual.budget.list.vm.DeletingState
 import aktual.budget.model.Budget
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareTextButton
-import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.buttonTextStyle
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Box
@@ -78,7 +78,6 @@ internal fun Content(
   localFileExists: Boolean,
   onDeleteLocal: () -> Unit,
   onDeleteRemote: () -> Unit,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
     Text(text = annotatedString(), fontSize = 14.sp)
@@ -99,7 +98,7 @@ internal fun Content(
 
     LoadableBareTextButton(
       text = Strings.budgetDeleteDialogHostedButton,
-      colors = { pressed -> theme.errorPrimary(pressed) },
+      colors = { pressed -> colors.errorPrimary(pressed) },
       isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
       isLoading = deletingState is DeletingState.Active && deletingState.deletingRemote,
       onClick = {
@@ -113,7 +112,7 @@ internal fun Content(
 
       LoadableBareTextButton(
         text = Strings.budgetDeleteDialogLocalButton,
-        colors = { pressed -> theme.errorBare(pressed) },
+        colors = { pressed -> colors.errorBare(pressed) },
         isEnabled = isNotDeleting,
         isLoading = deletingState is DeletingState.Active && deletingState.deletingLocal,
         onClick = {
@@ -143,7 +142,7 @@ private fun LoadableBareTextButton(
       colors = colors,
       isEnabled = isEnabled,
       onClick = onClick,
-      style = if (isLoading) TextStyle(color = Transparent) else AktualTypography.buttonTextStyle,
+      style = if (isLoading) TextStyle(color = Transparent) else typography.buttonTextStyle,
     )
 
     Box(modifier = modifier.padding(IconPadding), contentAlignment = Alignment.Center) {
@@ -165,7 +164,7 @@ fun annotatedString() = buildAnnotatedString {
 
 @Stable
 @Composable
-private fun Theme.errorPrimary(isPressed: Boolean) =
+private fun Colors.errorPrimary(isPressed: Boolean) =
   ButtonDefaults.buttonColors(
     containerColor = if (isPressed) buttonPrimaryBackground else errorBackground,
     contentColor = if (isPressed) buttonPrimaryText else errorText,
@@ -173,7 +172,7 @@ private fun Theme.errorPrimary(isPressed: Boolean) =
 
 @Stable
 @Composable
-private fun Theme.errorBare(isPressed: Boolean) =
+private fun Colors.errorBare(isPressed: Boolean) =
   ButtonDefaults.outlinedButtonColors(
     containerColor = if (isPressed) buttonBareBackground else buttonBareBackgroundHover,
     contentColor = if (isPressed) buttonBareText else errorText,
@@ -183,9 +182,9 @@ private fun Theme.errorBare(isPressed: Boolean) =
 @Composable
 private fun PreviewDeleteBudgetDialog(
   @PreviewParameter(DeleteBudgetDialogProvider::class)
-  params: ThemedParams<DeleteBudgetDialogParams>
+  params: ColoredParams<DeleteBudgetDialogParams>
 ) {
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     Content(
       deletingState = state,
       localFileExists = localFileExists,
@@ -198,7 +197,7 @@ private fun PreviewDeleteBudgetDialog(
 private data class DeleteBudgetDialogParams(val state: DeletingState, val localFileExists: Boolean)
 
 private class DeleteBudgetDialogProvider :
-  ThemedParameterProvider<DeleteBudgetDialogParams>(
+  ColoredParameterProvider<DeleteBudgetDialogParams>(
     DeleteBudgetDialogParams(state = DeletingState.Inactive, localFileExists = true),
     DeleteBudgetDialogParams(
       state = DeletingState.Active(deletingLocal = true),

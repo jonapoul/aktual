@@ -1,8 +1,8 @@
 package aktual.core.ui
 
-import aktual.core.theme.LightTheme
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.theme.LightColors
+import aktual.core.ui.AktualTheme.colors
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -34,7 +33,7 @@ import androidx.compose.ui.unit.dp
 // packages/component-library/src/icons/AnimatedLoading.tsx
 // packages/component-library/src/icons/Loading.tsx
 @Composable
-fun AnimatedLoading(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) {
+fun AnimatedLoading(modifier: Modifier = Modifier) {
   val infiniteTransition = rememberInfiniteTransition(label = "spin")
 
   val rotation by
@@ -50,7 +49,7 @@ fun AnimatedLoading(modifier: Modifier = Modifier, theme: Theme = LocalTheme.cur
     )
 
   Image(
-    imageVector = remember(theme.pageText) { loadingIcon(theme.pageText) },
+    imageVector = loadingIcon(colors.pageText),
     contentDescription = null,
     modifier = modifier.rotate(rotation),
   )
@@ -116,15 +115,15 @@ private fun loadingIcon(color: Color): ImageVector =
 
 @Preview
 @Composable
-private fun PreviewCheckUpdatesContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewCheckUpdatesContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     Box(modifier = Modifier.size(50.dp), contentAlignment = Alignment.Center) { AnimatedLoading() }
   }
 
 @Preview
 @Composable
 private fun PreviewScaled() =
-  PreviewWithTheme(LightTheme) {
+  PreviewWithColors(LightColors) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
       AnimatedLoading(modifier = Modifier.size(20.dp))
       AnimatedLoading(modifier = Modifier.size(50.dp))

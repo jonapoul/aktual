@@ -5,7 +5,7 @@ import assertk.assertThat
 import assertk.assertions.isDataClassEqualTo
 import kotlin.test.Test
 
-class ParseThemeTest {
+class ParseColorsTest {
   @Test
   fun `Parse CSS as theme`() {
     assertThat(parseTheme(ShadesOfCoffeeThemeSummary, ThemeResponses.CUSTOM_THEME_200))

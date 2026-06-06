@@ -7,13 +7,12 @@ import aktual.budget.reports.vm.SpendingData
 import aktual.budget.reports.vm.SpendingDay
 import aktual.budget.reports.vm.SpendingDayNumber
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.WrapWidthTable
 import aktual.core.ui.formattedString
 import aktual.core.ui.isInPreview
@@ -100,7 +99,6 @@ private fun Chart(
   data: SpendingData,
   compact: Boolean,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val modelProducer = remember { CartesianChartModelProducer() }
 
@@ -125,10 +123,10 @@ private fun Chart(
           lineProvider =
             LineCartesianLayer.LineProvider.series(
               LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(theme.reportsGreen)),
+                fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsGreen)),
                 areaFill =
                   LineCartesianLayer.AreaFill.single(
-                    fill = Fill(theme.reportsGreen.copy(alpha = 0.2f))
+                    fill = Fill(colors.reportsGreen.copy(alpha = 0.2f))
                   ),
               )
             )
@@ -137,11 +135,11 @@ private fun Chart(
           lineProvider =
             LineCartesianLayer.LineProvider.series(
               LineCartesianLayer.rememberLine(
-                fill = LineCartesianLayer.LineFill.single(Fill(theme.reportsGray)),
+                fill = LineCartesianLayer.LineFill.single(Fill(colors.reportsGray)),
                 stroke = LineCartesianLayer.LineStroke.Dashed(thickness = 1.dp),
                 areaFill =
                   LineCartesianLayer.AreaFill.single(
-                    fill = Fill(theme.reportsGray.copy(alpha = 0.2f))
+                    fill = Fill(colors.reportsGray.copy(alpha = 0.2f))
                   ),
               )
             )
@@ -173,26 +171,25 @@ private fun Chart(
 private fun CompactHeader(
   data: SpendingData,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start) {
-      Text(text = data.title, color = theme.pageText, style = AktualTypography.bodyLarge)
+      Text(text = data.title, color = colors.pageText, style = typography.bodyLarge)
       Text(
         text =
           Strings.reportsSpendingDateRange(
             data.targetMonth.stringShort(),
             data.comparison.string(),
           ),
-        color = theme.pageTextSubdued,
-        style = AktualTypography.bodyMedium,
+        color = colors.pageTextSubdued,
+        style = typography.bodyMedium,
       )
     }
 
     Text(
       text = data.difference.formattedString(includeSign = true),
       fontWeight = FontWeight.Medium,
-      color = if (data.difference.isPositive()) theme.errorText else theme.noticeTextLight,
+      color = if (data.difference.isPositive()) colors.errorText else colors.noticeTextLight,
     )
   }
 
@@ -202,17 +199,16 @@ private fun CompactHeader(
 private fun RegularLegend(
   data: SpendingData,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     Column {
-      LegendItem(text = data.targetMonth.stringShort(), color = theme.reportsGreen)
-      LegendItem(text = data.comparison.string().capitalized(), color = theme.reportsGray)
+      LegendItem(text = data.targetMonth.stringShort(), color = colors.reportsGreen)
+      LegendItem(text = data.comparison.string().capitalized(), color = colors.reportsGray)
     }
 
     HorizontalSpacer(weight = 1f)
 
-    val style = AktualTypography.bodySmall.copy(textAlign = TextAlign.End)
+    val style = typography.bodySmall.copy(textAlign = TextAlign.End)
     val mtdSpending = calculateMtdSpending(data)
     val padding = PaddingValues(horizontal = 4.dp)
 
@@ -250,7 +246,7 @@ private fun LegendItem(text: String, color: Color, modifier: Modifier = Modifier
 
     HorizontalSpacer(4.dp)
 
-    Text(text = text, style = AktualTypography.bodySmall)
+    Text(text = text, style = typography.bodySmall)
   }
 
 @Composable
@@ -294,12 +290,12 @@ private fun xAxisFormatter() = remember {
 @Preview
 @Composable
 private fun PreviewSpendingChart(
-  @PreviewParameter(SpendingChartProvider::class) params: ThemedParams<SpendingChartParams>
+  @PreviewParameter(SpendingChartProvider::class) params: ColoredParams<SpendingChartParams>
 ) =
-  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
+  PreviewWithColors(params.colors, isPrivacyEnabled = params.data.private) {
     SpendingChart(
       modifier =
-        Modifier.background(LocalTheme.current.tableBackground, CardShape)
+        Modifier.background(colors.tableBackground, CardShape)
           .width(WIDTH.dp)
           .let { m -> if (params.data.compact) m.height(300.dp) else m }
           .padding(5.dp),
@@ -315,7 +311,7 @@ private data class SpendingChartParams(
 )
 
 private class SpendingChartProvider :
-  ThemedParameterProvider<SpendingChartParams>(
+  ColoredParameterProvider<SpendingChartParams>(
     SpendingChartParams(JUL_2025, compact = false),
     SpendingChartParams(JUL_2025, compact = true),
   )

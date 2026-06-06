@@ -1,10 +1,10 @@
 package aktual.about.ui.info
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -140,5 +140,5 @@ private val HORIZONTAL_SPACING = 8.dp
 @Preview(name = "Medium - small font", widthDp = 500, fontScale = 0.65f)
 @Preview(name = "Wide", widthDp = 800)
 @Preview(name = "Wide - big font", widthDp = 800, fontScale = 2f)
-private fun PreviewInfoButtons(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) { InfoButtons(onAction = {}) }
+private fun PreviewInfoButtons(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { InfoButtons(onAction = {}) }

@@ -1,12 +1,12 @@
 package aktual.core.ui
 
 import aktual.core.l10n.Drawables
-import aktual.core.theme.CustomTheme
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.LightTheme
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.MidnightTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.theme.CustomColors
+import aktual.core.theme.DarkColors
+import aktual.core.theme.LightColors
+import aktual.core.theme.MidnightColors
+import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -17,26 +17,26 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
-fun WavyBackground(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) =
+fun WavyBackground(modifier: Modifier = Modifier) =
   Image(
     modifier = modifier.fillMaxSize(),
-    painter = backgroundImage(theme),
+    painter = backgroundImage(colors),
     contentDescription = null,
     contentScale = ContentScale.Crop,
   )
 
 @Composable
-fun PageBackground(modifier: Modifier = Modifier, theme: Theme = LocalTheme.current) =
-  Box(modifier = modifier.fillMaxSize().background(theme.pageBackground))
+fun PageBackground(modifier: Modifier = Modifier) =
+  Box(modifier = modifier.fillMaxSize().background(colors.pageBackground))
 
 @Composable
-private fun backgroundImage(theme: Theme) =
-  when (theme) {
-    LightTheme -> Drawables.wavyBackgroundLight
-    DarkTheme -> Drawables.wavyBackgroundDark
-    MidnightTheme -> Drawables.wavyBackgroundMidnight
-    is CustomTheme ->
-      if (theme.isLight) {
+private fun backgroundImage(colors: Colors) =
+  when (colors) {
+    LightColors -> Drawables.wavyBackgroundLight
+    DarkColors -> Drawables.wavyBackgroundDark
+    MidnightColors -> Drawables.wavyBackgroundMidnight
+    is CustomColors ->
+      if (colors.isLight) {
         Drawables.wavyBackgroundLight
       } else {
         Drawables.wavyBackgroundDark
@@ -46,5 +46,5 @@ private fun backgroundImage(theme: Theme) =
 @LandscapePreview
 @PortraitPreview
 @Composable
-private fun PreviewWavyBackground(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  WavyBackground(theme = theme)
+private fun PreviewWavyBackground(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { WavyBackground() }

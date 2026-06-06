@@ -1,13 +1,13 @@
 package aktual.budget.list.ui
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButton
-import aktual.core.ui.ThemeParameters
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -28,7 +28,6 @@ import androidx.compose.ui.unit.sp
 internal fun ContentEmpty(
   onCreateBudgetInBrowser: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier = modifier.fillMaxWidth().padding(40.dp),
@@ -38,14 +37,14 @@ internal fun ContentEmpty(
     Text(
       text = Strings.budgetSuccessEmpty,
       textAlign = TextAlign.Center,
-      style = AktualTypography.headlineLarge,
+      style = typography.headlineLarge,
     )
 
     VerticalSpacer(20.dp)
 
     Text(
       text = Strings.budgetSuccessEmptySecond,
-      color = theme.pageText,
+      color = colors.pageText,
       textAlign = TextAlign.Center,
       fontSize = 20.sp,
     )
@@ -58,5 +57,5 @@ internal fun ContentEmpty(
 
 @PortraitPreview
 @Composable
-private fun PreviewContentEmpty(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) { ContentEmpty(onCreateBudgetInBrowser = {}) }
+private fun PreviewContentEmpty(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { ContentEmpty(onCreateBudgetInBrowser = {}) }
