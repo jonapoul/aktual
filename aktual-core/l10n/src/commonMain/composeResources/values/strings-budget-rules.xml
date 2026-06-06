@@ -17,11 +17,9 @@
   <string name="rules_header_text">Rules are always run in the order that you see them.</string>
   <string name="rules_header_learn_more">Learn more</string>
 
-  <string name="rules_stage_prefix">Stage: %1$s</string>
   <string name="rules_stage_pre">Pre</string>
   <string name="rules_stage_none">Default</string>
   <string name="rules_stage_post">Post</string>
-  <string name="rules_stage_count">%1$d rules</string>
 
   <!-- Rule action operations -->
   <string name="rules_op_set">set</string>
