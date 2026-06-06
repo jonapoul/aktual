@@ -48,6 +48,12 @@ class ModuleKotlin : Plugin<Project> {
           }
         }
 
+        // Pin Robolectric to a supported SDK via a shared robolectric.properties on the
+        // androidHostTest classpath (see gradle/robolectric/robolectric.properties)
+        sourceSets.named("androidHostTest") { ss ->
+          ss.resources.srcDir(rootProject.layout.projectDirectory.dir("gradle/robolectric"))
+        }
+
         compilerOptions {
           freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
         }
