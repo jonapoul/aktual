@@ -28,7 +28,7 @@ import dev.zacsweers.metrox.viewmodel.MetroViewModelFactory
 @ContributesIntoMap(AppScope::class, binding<Activity>())
 class AktualActivity(override val defaultViewModelProviderFactory: MetroViewModelFactory) :
   ComponentActivity() {
-  private val viewModel by viewModels<AktualActivityViewModel> { defaultViewModelProviderFactory }
+  private val viewModel by viewModels<AktualActivityViewModel>()
 
   override fun onDestroy() {
     super.onDestroy()

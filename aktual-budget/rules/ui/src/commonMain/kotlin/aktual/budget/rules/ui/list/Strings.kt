@@ -201,7 +201,6 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
   val fieldText = action.field?.string(options = null)
   val setToText = if (action.op == RuleAction.Op.Set) Strings.rulesActionSetTo else null
 
-  val dateFormat = LocalDateFormatter.current
   val numberFormat = LocalNumberFormatConfig.current
   val currency = LocalCurrencyConfig.current
   val privacy = LocalPrivacyEnabled.current
@@ -239,7 +238,6 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
     fieldText,
     setToText,
     fieldName,
-    dateFormat,
     numberFormat,
     currency,
     privacy,

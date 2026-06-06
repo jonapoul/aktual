@@ -130,6 +130,10 @@ androidComponents {
 
   onVariants(selector().withBuildType("release")) { variant ->
     variant.packaging.resources.excludes.add("META-INF/*")
+    variant.outputs.forEach { output ->
+      output.outputFileName =
+        output.versionName.map { version -> "aktual.$version.${variant.buildType}.apk" }
+    }
   }
 }
 

@@ -16,5 +16,6 @@ kotlin {
     implementation(libs.compose.navigation3.ui)
     implementation(libs.compose.savedstate)
     implementation(libs.compose.viewmodelNavigation3)
+    implementation(libs.reorderable)
   }
 }
