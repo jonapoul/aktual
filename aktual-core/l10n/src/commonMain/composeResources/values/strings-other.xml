@@ -14,7 +14,6 @@
   <string name="budget_nav_grid_reset_saved">Reset to last saved</string>
   <string name="budget_nav_grid_reset_default">Reset to default</string>
   <string name="budget_nav_grid_more_actions">More actions</string>
-  <string name="budget_nav_grid_reorder">Drag to reorder</string>
   <string name="budget_nav_grid_discard_title">Unsaved changes</string>
   <string name="budget_nav_grid_discard_message">You have unsaved changes to your layout. Save them before leaving?</string>
   <string name="budget_nav_grid_discard_save">Save</string>
