@@ -1,7 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -19,8 +18,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun SetStatusBarColors(theme: Theme = LocalTheme.current) =
-  SetStatusBarColors(statusBarColor = theme.pageBackground, navigationBarColor = Color.Transparent)
+fun SetStatusBarColors(colors: Colors) =
+  SetStatusBarColors(statusBarColor = colors.pageBackground, navigationBarColor = Color.Transparent)
 
 @Composable internal expect fun SetStatusBarColors(statusBarColor: Color, navigationBarColor: Color)
 

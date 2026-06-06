@@ -1,8 +1,7 @@
 package aktual.budget.rules.ui.list
 
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -13,12 +12,12 @@ import androidx.compose.ui.text.SpanStyle
 
 @Composable
 internal fun rememberRuleSpanStyles(
-  theme: Theme = LocalTheme.current,
-  typography: Typography = AktualTypography,
+  colors: Colors = AktualTheme.colors,
+  typography: Typography = AktualTheme.typography,
 ): RuleSpanStyles =
-  remember(theme, typography) {
+  remember(colors, typography) {
     RuleSpanStyles(
-      default = typography.labelMedium.copy(color = theme.pillText).toSpanStyle(),
-      highlighted = typography.labelMedium.copy(color = theme.pillTextHighlighted).toSpanStyle(),
+      default = typography.labelMedium.copy(color = colors.pillText).toSpanStyle(),
+      highlighted = typography.labelMedium.copy(color = colors.pillTextHighlighted).toSpanStyle(),
     )
   }

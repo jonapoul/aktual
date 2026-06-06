@@ -2,13 +2,12 @@ package aktual.prefs.ui
 
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import alakazam.kotlin.ifNotNull
 import alakazam.kotlin.ifTrue
 import androidx.compose.foundation.background
@@ -52,20 +51,19 @@ internal fun BasicPreferenceItem(
   interactionSource: MutableInteractionSource = remember { MutableInteractionSource() },
   enabled: Boolean = true,
   includeBackground: Boolean = true,
-  headerStyle: TextStyle = AktualTypography.bodyLarge,
-  theme: Theme = LocalTheme.current,
+  headerStyle: TextStyle = typography.bodyLarge,
   topRightContent: (@Composable BoxScope.() -> Unit)? = null,
   rightContent: (@Composable RowScope.() -> Unit)? = null,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
-  val contentColor = if (enabled) theme.pageText else theme.pageTextSubdued
+  val contentColor = if (enabled) colors.pageText else colors.pageTextSubdued
 
   Row(
     modifier =
       modifier
         .clip(CardShape)
-        .ifTrue(includeBackground) { background(theme.pillBackground, CardShape) }
-        .ifTrue(includeBackground) { border(Dp.Hairline, theme.pillBorderDark, CardShape) }
+        .ifTrue(includeBackground) { background(colors.pillBackground, CardShape) }
+        .ifTrue(includeBackground) { border(Dp.Hairline, colors.pillBorderDark, CardShape) }
         .ifNotNull(onClick) {
           clickable(enabled, onClick = it, interactionSource = interactionSource)
         }
@@ -101,8 +99,8 @@ internal fun BasicPreferenceItem(
               text = subtitle,
               fontWeight = FontWeight.Light,
               textAlign = TextAlign.Start,
-              style = AktualTypography.bodyMedium,
-              color = if (enabled) theme.pageTextLight else theme.pageTextSubdued,
+              style = typography.bodyMedium,
+              color = if (enabled) colors.pageTextLight else colors.pageTextSubdued,
             )
           }
         }
@@ -127,9 +125,9 @@ internal fun BasicPreferenceItem(
 @Composable
 private fun PreviewBasicPreferenceItem(
   @PreviewParameter(BasicPreferenceItemProvider::class)
-  params: ThemedParams<BasicPreferenceItemParams>
+  params: ColoredParams<BasicPreferenceItemParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     BasicPreferenceItem(
       title = params.data.title,
       subtitle = params.data.subtitle,
@@ -147,7 +145,7 @@ private data class BasicPreferenceItemParams(
 )
 
 private class BasicPreferenceItemProvider :
-  ThemedParameterProvider<BasicPreferenceItemParams>(
+  ColoredParameterProvider<BasicPreferenceItemParams>(
     BasicPreferenceItemParams(
       title = "Change the doodad",
       subtitle =

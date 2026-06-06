@@ -10,8 +10,7 @@ import aktual.core.l10n.inter_medium
 import aktual.core.l10n.inter_regular
 import aktual.core.l10n.inter_semibold
 import aktual.core.l10n.inter_thin
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -20,11 +19,9 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,11 +37,8 @@ import androidx.compose.ui.unit.sp
 import kotlinx.collections.immutable.persistentMapOf
 import org.jetbrains.compose.resources.Font
 
-val AktualTypography: Typography
-  @Composable @ReadOnlyComposable get() = MaterialTheme.typography
-
 @Composable
-internal fun aktualTypography(theme: Theme = LocalTheme.current): Typography {
+internal fun aktualTypography(colors: Colors = AktualTheme.colors): Typography {
   val font =
     FontFamily(
       Font(Res.font.inter_thin, FontWeight.W100),
@@ -64,20 +58,20 @@ internal fun aktualTypography(theme: Theme = LocalTheme.current): Typography {
       displayMedium = textStyle(weight = FontWeight.W600, size = 35.sp),
       displaySmall = textStyle(weight = FontWeight.W500, size = 30.sp),
       headlineLarge =
-        textStyle(weight = FontWeight.W700, size = 30.sp, color = theme.pageTextPositive),
+        textStyle(weight = FontWeight.W700, size = 30.sp, color = colors.pageTextPositive),
       headlineMedium =
-        textStyle(weight = FontWeight.W600, size = 25.sp, color = theme.pageTextPositive),
+        textStyle(weight = FontWeight.W600, size = 25.sp, color = colors.pageTextPositive),
       headlineSmall =
-        textStyle(weight = FontWeight.W500, size = 20.sp, color = theme.pageTextPositive),
+        textStyle(weight = FontWeight.W500, size = 20.sp, color = colors.pageTextPositive),
       titleLarge = textStyle(weight = FontWeight.W500, size = 25.sp),
       titleMedium = textStyle(weight = FontWeight.W400, size = 23.sp),
       titleSmall = textStyle(weight = FontWeight.W300, size = 22.sp),
       bodyLarge = textStyle(size = 16.sp, height = 22.4.sp),
       bodyMedium = textStyle(size = 15.sp, height = 21.4.sp),
       bodySmall = textStyle(size = 14.sp, height = 20.4.sp),
-      labelLarge = textStyle(size = 14.sp, color = theme.pageTextSubdued),
-      labelMedium = textStyle(size = 13.sp, color = theme.pageTextSubdued),
-      labelSmall = textStyle(size = 12.sp, color = theme.pageTextSubdued),
+      labelLarge = textStyle(size = 14.sp, color = colors.pageTextSubdued),
+      labelMedium = textStyle(size = 13.sp, color = colors.pageTextSubdued),
+      labelSmall = textStyle(size = 12.sp, color = colors.pageTextSubdued),
     )
   }
 }
@@ -98,8 +92,8 @@ private fun FontFamily.textStyle(
 
 @Preview(widthDp = 1200)
 @Composable
-private fun PreviewTypography(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewTypography(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     Column {
       for ((name, style) in styles()) {
         Row(

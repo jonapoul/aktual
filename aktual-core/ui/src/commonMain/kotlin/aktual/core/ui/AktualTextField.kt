@@ -3,8 +3,6 @@ package aktual.core.ui
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
@@ -47,19 +45,22 @@ fun AktualTextField(
   outputTransformation: OutputTransformation? = null,
   keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
   onKeyboardAction: KeyboardActionHandler? = null,
-  theme: Theme = LocalTheme.current,
-  colors: TextFieldColors = theme.textField(),
+  colors: TextFieldColors = AktualTheme.colors.textField(),
   clearable: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
   supportingText: (@Composable () -> Unit)? = null,
 ) {
   val isFocused by interactionSource.collectIsFocusedAsState()
   val borderColor =
-    if (isFocused) theme.formInputBorderSelected else theme.formInputBackgroundSelected
+    if (isFocused) {
+      AktualTheme.colors.formInputBorderSelected
+    } else {
+      AktualTheme.colors.formInputBackgroundSelected
+    }
 
   val shadowModifier =
     if (isFocused) {
-      Modifier.shadow(4.dp, shape, ambientColor = theme.formInputShadowSelected)
+      Modifier.shadow(4.dp, shape, ambientColor = AktualTheme.colors.formInputShadowSelected)
     } else {
       Modifier
     }
@@ -106,7 +107,7 @@ private fun ClearButton(tint: Color, onClick: () -> Unit, modifier: Modifier = M
 private data class TextInputPreviewParams(val initialText: String, val clearable: Boolean = false)
 
 private class TextInputPreviewProvider :
-  ThemedParameterProvider<TextInputPreviewParams>(
+  ColoredParameterProvider<TextInputPreviewParams>(
     TextInputPreviewParams(initialText = ""),
     TextInputPreviewParams(initialText = "I'm full"),
     TextInputPreviewParams(initialText = "I'm full", clearable = true),
@@ -115,9 +116,9 @@ private class TextInputPreviewProvider :
 @Preview
 @Composable
 private fun PreviewAktualTextField(
-  @PreviewParameter(TextInputPreviewProvider::class) params: ThemedParams<TextInputPreviewParams>
+  @PreviewParameter(TextInputPreviewProvider::class) params: ColoredParams<TextInputPreviewParams>
 ) =
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     AktualTextField(
       state = rememberTextFieldState(initialText = initialText),
       placeholderText = "Placeholder",

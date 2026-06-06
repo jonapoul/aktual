@@ -14,7 +14,7 @@ import aktual.budget.rules.vm.list.ListRulesViewModel
 import aktual.budget.schedules.vm.list.ListSchedulesViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
-import aktual.core.theme.DarkTheme
+import aktual.core.theme.DarkColors
 import aktual.metrics.vm.MetricsViewModel
 import aktual.prefs.vm.inspect.InspectThemeViewModel
 import aktual.prefs.vm.root.SettingsViewModel
@@ -119,7 +119,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test
   fun inspectTheme() =
-    testAssistedVM<InspectThemeViewModel, InspectThemeViewModel.Factory> { create(DarkTheme.id) }
+    testAssistedVM<InspectThemeViewModel, InspectThemeViewModel.Factory> { create(DarkColors.id) }
 
   @Test
   fun editRule() =

@@ -6,7 +6,7 @@ import androidx.compose.ui.graphics.Color
 
 @Immutable
 @Suppress("ComplexInterface")
-sealed interface Theme {
+sealed interface Colors {
   val id: ThemeId
   val isLight: Boolean
 
@@ -263,7 +263,7 @@ sealed interface Theme {
   val chartQual9: Color
 
   companion object {
-    val Fallback = LightTheme
-    val Defaults = setOf(LightTheme, DarkTheme, MidnightTheme)
+    val Fallback = LightColors
+    val Defaults = setOf(LightColors, DarkColors, MidnightColors)
   }
 }

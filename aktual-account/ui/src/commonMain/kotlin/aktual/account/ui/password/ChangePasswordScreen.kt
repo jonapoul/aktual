@@ -7,16 +7,15 @@ import aktual.core.model.AktualVersions
 import aktual.core.model.Password
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ListBudgetsNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
@@ -90,12 +89,10 @@ internal fun ChangePasswordScaffold(
   versions: AktualVersions,
   onAction: PasswordActionHandler,
 ) {
-  val theme = LocalTheme.current
-
   Scaffold(
     topBar = {
       TopAppBar(
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { /* empty */ },
       )
@@ -113,7 +110,6 @@ internal fun ChangePasswordScaffold(
         state = state,
         versions = versions,
         onAction = onAction,
-        theme = theme,
       )
     }
   }
@@ -130,7 +126,6 @@ private fun ChangePasswordContent(
   versions: AktualVersions,
   onAction: PasswordActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
     Column(
@@ -138,14 +133,14 @@ private fun ChangePasswordContent(
       verticalArrangement = Arrangement.Top,
       horizontalAlignment = Alignment.Start,
     ) {
-      Text(text = Strings.passwordTitle, style = AktualTypography.headlineLarge)
+      Text(text = Strings.passwordTitle, style = typography.headlineLarge)
 
       VerticalSpacer(20.dp)
 
       Text(
         text = Strings.passwordMessage,
-        color = theme.tableRowHeaderText,
-        style = AktualTypography.bodyLarge,
+        color = colors.tableRowHeaderText,
+        style = typography.bodyLarge,
       )
 
       VerticalSpacer(30.dp)
@@ -165,9 +160,10 @@ private fun ChangePasswordContent(
       when (state) {
         ChangePasswordState.Loading,
         null -> Unit
-        is ChangePasswordState.Failure -> Text(text = state.errorMessage(), color = theme.errorText)
+        is ChangePasswordState.Failure ->
+          Text(text = state.errorMessage(), color = colors.errorText)
         ChangePasswordState.Success ->
-          Text(text = Strings.passwordSuccess, color = theme.noticeText)
+          Text(text = Strings.passwordSuccess, color = colors.noticeText)
       }
     }
 
@@ -192,9 +188,9 @@ private fun ChangePasswordState.Failure.errorMessage(): String =
 @LandscapePreview
 @Composable
 private fun PreviewChangePassword(
-  @PreviewParameter(ChangePasswordProvider::class) params: ThemedParams<ChangePasswordParams>
+  @PreviewParameter(ChangePasswordProvider::class) params: ColoredParams<ChangePasswordParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     ChangePasswordScaffold(
       inputPassword1 = params.data.password1,
       inputPassword2 = params.data.password2,
@@ -215,7 +211,7 @@ private data class ChangePasswordParams(
 )
 
 private class ChangePasswordProvider :
-  ThemedParameterProvider<ChangePasswordParams>(
+  ColoredParameterProvider<ChangePasswordParams>(
     ChangePasswordParams(password1 = Empty, password2 = Empty),
     ChangePasswordParams(showPasswords = true, passwordsMatch = true),
     ChangePasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),

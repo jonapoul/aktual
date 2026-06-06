@@ -12,14 +12,13 @@ import aktual.core.icons.material.Delete
 import aktual.core.icons.material.Edit
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColoredParams
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
@@ -46,7 +45,6 @@ internal fun DashboardItem(
   observer: DashboardItemObserver,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   var showContextMenu by remember { mutableStateOf(false) }
 
@@ -58,7 +56,7 @@ internal fun DashboardItem(
       modifier
         .fillMaxWidth()
         .wrapContentHeight()
-        .background(theme.tableBackground, CardShape)
+        .background(colors.tableBackground, CardShape)
         .combinedClickable(
           enabled = chartData != null,
           onClick = { onAction(Action.OpenItem(item.id)) },
@@ -115,9 +113,9 @@ private fun ReportDropDownMenu(
 @Preview
 @Composable
 private fun PreviewReportDashboardItem(
-  @PreviewParameter(ReportDashboardItemProvider::class) params: ThemedParams<DashboardItemParams>
+  @PreviewParameter(ReportDashboardItemProvider::class) params: ColoredParams<DashboardItemParams>
 ) =
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     DashboardItem(
       item = item,
       onAction = {},
@@ -128,7 +126,7 @@ private fun PreviewReportDashboardItem(
 private data class DashboardItemParams(val item: DashboardItem, val chartData: ChartData?)
 
 private class ReportDashboardItemProvider :
-  ThemedParameterProvider<DashboardItemParams>(
+  ColoredParameterProvider<DashboardItemParams>(
     DashboardItemParams(PREVIEW_DASHBOARD_ITEM_1, PREVIEW_CASH_FLOW_DATA),
     DashboardItemParams(PREVIEW_DASHBOARD_ITEM_2, PREVIEW_NET_WORTH_DATA),
     DashboardItemParams(PREVIEW_DASHBOARD_ITEM_3, PER_TRANSACTION_DATA),

@@ -1,7 +1,7 @@
 package aktual.prefs
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.DarkTheme
+import aktual.core.theme.DarkColors
 import aktual.di.AppScope
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -18,7 +18,7 @@ class ThemePreferencesImpl(dataStore: DataStore<Preferences>) : ThemePreferences
     dataStore
       .translated(
         key = stringPreferencesKey("theme.nightTheme"),
-        default = DarkTheme.id,
+        default = DarkColors.id,
         translator = ThemeIdTranslator,
       )
       .required()

@@ -4,12 +4,11 @@ import aktual.budget.model.DateRangeType
 import aktual.budget.reports.vm.ChartDateConfig
 import aktual.budget.reports.vm.DateRangeMode
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualSlidingToggleButton
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.NormalTextButton
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.YearMonthPicker
 import alakazam.compose.HorizontalSpacer
 import alakazam.compose.VerticalSpacer
@@ -42,7 +41,6 @@ internal fun ChartDateConfig(
   onNewConfig: (ChartDateConfig) -> Unit,
   onDateRangeType: (DateRangeType) -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Column(
     modifier = modifier,
@@ -56,7 +54,6 @@ internal fun ChartDateConfig(
       options = modes,
       onSelect = { selected = it },
       selected = selected,
-      theme = theme,
       string = { type -> type.string() },
     )
 
@@ -71,7 +68,6 @@ internal fun ChartDateConfig(
         modifier = Modifier.weight(MONTH_PICKER_WEIGHT),
         value = config.start,
         range = config.range,
-        theme = theme,
         onValueChange = { onNewConfig(config.copy(start = it)) },
       )
     }
@@ -87,7 +83,6 @@ internal fun ChartDateConfig(
         modifier = Modifier.weight(MONTH_PICKER_WEIGHT),
         value = config.end,
         range = config.range,
-        theme = theme,
         onValueChange = { onNewConfig(config.copy(end = it)) },
       )
     }
@@ -124,8 +119,8 @@ private fun DateRangeMode.string() =
 
 @Preview
 @Composable
-private fun PreviewChartDateConfig(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewChartDateConfig(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     ChartDateConfig(
       modifier = Modifier.padding(8.dp),
       onNewConfig = {},

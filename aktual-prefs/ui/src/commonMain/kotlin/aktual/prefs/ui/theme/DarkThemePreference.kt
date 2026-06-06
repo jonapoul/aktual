@@ -4,12 +4,12 @@ import aktual.core.icons.material.DarkMode
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.MidnightTheme
+import aktual.core.theme.DarkColors
+import aktual.core.theme.MidnightColors
 import aktual.core.ui.AktualSlidingToggleButton
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.isCompactWidth
 import aktual.prefs.ui.BasicPreferenceItem
 import aktual.prefs.vm.ListPreference
@@ -63,8 +63,8 @@ private fun DarkThemeContent(
     onSelect = { id -> onAction(SetDarkTheme(id)) },
     string = { id ->
       when (id) {
-        DarkTheme.id -> Strings.settingsThemeDark
-        MidnightTheme.id -> Strings.settingsThemeMidnight
+        DarkColors.id -> Strings.settingsThemeDark
+        MidnightColors.id -> Strings.settingsThemeMidnight
         else -> error("No other IDs supported: $id")
       }
     },
@@ -73,17 +73,17 @@ private fun DarkThemeContent(
 
 @Preview
 @Composable
-private fun PreviewDarkThemePreference(
+private fun PreviewDarkColorsPreference(
   @PreviewParameter(DarkThemePreferenceProvider::class)
-  params: ThemedParams<DarkThemePreferenceParams>
+  params: ColoredParams<DarkThemePreferenceParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     DarkThemePreference(
       onAction = {},
       preference =
         ListPreference(
           value = params.data.selected,
-          options = persistentListOf(DarkTheme.id, MidnightTheme.id),
+          options = persistentListOf(DarkColors.id, MidnightColors.id),
           enabled = params.data.enabled,
         ),
     )
@@ -92,9 +92,9 @@ private fun PreviewDarkThemePreference(
 private data class DarkThemePreferenceParams(val selected: ThemeId, val enabled: Boolean)
 
 private class DarkThemePreferenceProvider :
-  ThemedParameterProvider<DarkThemePreferenceParams>(
-    DarkThemePreferenceParams(selected = DarkTheme.id, enabled = true),
-    DarkThemePreferenceParams(selected = DarkTheme.id, enabled = false),
-    DarkThemePreferenceParams(selected = MidnightTheme.id, enabled = true),
-    DarkThemePreferenceParams(selected = MidnightTheme.id, enabled = false),
+  ColoredParameterProvider<DarkThemePreferenceParams>(
+    DarkThemePreferenceParams(selected = DarkColors.id, enabled = true),
+    DarkThemePreferenceParams(selected = DarkColors.id, enabled = false),
+    DarkThemePreferenceParams(selected = MidnightColors.id, enabled = true),
+    DarkThemePreferenceParams(selected = MidnightColors.id, enabled = false),
   )

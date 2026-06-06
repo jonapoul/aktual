@@ -3,9 +3,9 @@ package aktual.prefs.ui.theme
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.ThemeRoutine
 import aktual.core.l10n.Strings
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedBooleanParameters
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredBooleanParameters
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.prefs.ui.BooleanPreferenceItem
 import aktual.prefs.vm.BooleanPreference
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -34,9 +34,9 @@ internal fun UseSystemDefaultPreference(
 @Preview
 @Composable
 private fun PreviewUseSystemDefaultPreference(
-  @PreviewParameter(ThemedBooleanParameters::class) params: ThemedParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     UseSystemDefaultPreference(
       preference = BooleanPreference(value = params.data, enabled = true),
       onAction = {},

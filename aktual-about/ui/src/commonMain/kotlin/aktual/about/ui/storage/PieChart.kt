@@ -1,9 +1,9 @@
 package aktual.about.ui.storage
 
 import aktual.core.model.Percent
-import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.theme.Colors
+import aktual.core.ui.ColoredParameters
+import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
@@ -138,14 +138,14 @@ private fun DrawScope.drawPie(
 
 @Preview
 @Composable
-private fun PreviewPieWithHole(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
-    val colors = rememberDistinctColors(count = 5)
+private fun PreviewPieWithHole(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
+    val pieColors = rememberDistinctColors(count = 5)
     PieChart(
       modifier = Modifier.size(240.dp),
       strokeWidth = Dp.Unspecified,
       slices =
-        colors
+        pieColors
           .mapIndexed { index, color -> PieSlice((index + 1).toFloat(), color) }
           .toImmutableList(),
     )
@@ -153,13 +153,13 @@ private fun PreviewPieWithHole(@PreviewParameter(ThemeParameters::class) theme: 
 
 @Preview
 @Composable
-private fun PreviewPieFull(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
-    val colors = rememberDistinctColors(count = 10)
+private fun PreviewPieFull(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
+    val pieColors = rememberDistinctColors(count = 10)
     PieChart(
       modifier = Modifier.size(240.dp),
       slices =
-        colors
+        pieColors
           .mapIndexed { index, color -> PieSlice((index + 1).toFloat(), color) }
           .toImmutableList(),
     )

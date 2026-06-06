@@ -4,7 +4,7 @@ import aktual.core.model.ThemeId
 import androidx.compose.runtime.Immutable
 
 @Immutable
-interface CustomTheme : Theme {
+interface CustomColors : Colors {
   val name: String
   val repo: CustomThemeRepo
 

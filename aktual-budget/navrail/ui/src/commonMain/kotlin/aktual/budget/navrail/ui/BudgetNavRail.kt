@@ -21,20 +21,20 @@ import aktual.core.nav.NavStack
 import aktual.core.nav.NavStackImpl
 import aktual.core.nav.ReportsListNavRoute
 import aktual.core.nav.TransactionsNavRoute
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SideSpacing
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.ThemeParameters
 import aktual.core.ui.blurredBottomBar
 import aktual.core.ui.disabled
 import aktual.core.ui.isCompactWidth
@@ -260,7 +260,6 @@ private fun SharedTransitionScope.CollapsedSheetContent(
   onChangeNavBarHeight: (Dp) -> Unit,
   animatedContentScope: AnimatedContentScope,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val density = LocalDensity.current
   NavigationBar(
@@ -269,7 +268,7 @@ private fun SharedTransitionScope.CollapsedSheetContent(
         onChangeNavBarHeight(with(density) { size.height.toDp() })
       },
     containerColor = Color.Transparent,
-    contentColor = theme.sidebarItemText,
+    contentColor = colors.sidebarItemText,
   ) {
     // The first row of the saved grid doubles as the collapsed bar's shortcuts
     for (tab in order.take(BudgetTab.tabs.size)) {
@@ -288,7 +287,7 @@ private fun SharedTransitionScope.CollapsedSheetContent(
       label = { Text(text = Strings.budgetNavExpand, color = LocalContentColor.current) },
       selected = false,
       onClick = onExpand,
-      colors = theme.navBarItem(),
+      colors = colors.navBarItem(),
     )
   }
 }
@@ -301,7 +300,6 @@ private fun RowScope.NavigationBarItem(
   onClick: () -> Unit,
   animatedContentScope: AnimatedContentScope,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   with(transitionScope) {
     NavigationBarItem(
@@ -315,7 +313,7 @@ private fun RowScope.NavigationBarItem(
       label = { Text(text = tab.label(), color = LocalContentColor.current) },
       selected = isSelected,
       onClick = onClick,
-      colors = theme.navBarItem(),
+      colors = colors.navBarItem(),
     )
   }
 }
@@ -329,7 +327,6 @@ private fun SharedTransitionScope.ExpandedSheetContent(
   onAction: BudgetNavActionHandler,
   animatedContentScope: AnimatedContentScope,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val collapsedCount = BudgetTab.tabs.size
   Column(modifier = modifier.fillMaxWidth()) {
@@ -377,7 +374,7 @@ private fun SharedTransitionScope.ExpandedSheetContent(
           Icon(
             imageVector = AktualIcons.ArrowThickDown,
             contentDescription = Strings.budgetNavCollapse,
-            tint = theme.sidebarItemText,
+            tint = colors.sidebarItemText,
           )
         },
       )
@@ -388,7 +385,7 @@ private fun SharedTransitionScope.ExpandedSheetContent(
           Icon(
             imageVector = MaterialIcons.Edit,
             contentDescription = Strings.budgetNavGridEdit,
-            tint = theme.sidebarItemText,
+            tint = colors.sidebarItemText,
           )
         },
       )
@@ -473,12 +470,11 @@ private fun SideNavRail(
   onSelectTab: (BudgetTab) -> Unit,
   onMenuClick: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   NavigationRail(
     modifier = modifier,
-    containerColor = theme.sidebarBackground,
-    contentColor = theme.sidebarItemText,
+    containerColor = colors.sidebarBackground,
+    contentColor = colors.sidebarItemText,
   ) {
     for (tab in BudgetTab.tabs) {
       NavigationRailItem(
@@ -487,7 +483,7 @@ private fun SideNavRail(
         alwaysShowLabel = true,
         selected = selectedTab == tab,
         onClick = { onSelectTab(tab) },
-        colors = theme.navRailItem(),
+        colors = colors.navRailItem(),
       )
     }
     NavigationRailItem(
@@ -496,13 +492,13 @@ private fun SideNavRail(
       alwaysShowLabel = true,
       selected = false,
       onClick = onMenuClick,
-      colors = theme.navRailItem(),
+      colors = colors.navRailItem(),
     )
   }
 }
 
 @Stable
-private fun Theme.navBarItem(): NavigationBarItemColors =
+private fun Colors.navBarItem(): NavigationBarItemColors =
   NavigationBarItemColors(
     selectedIconColor = sidebarItemTextSelected,
     selectedTextColor = sidebarItemTextSelected,
@@ -514,7 +510,7 @@ private fun Theme.navBarItem(): NavigationBarItemColors =
   )
 
 @Stable
-private fun Theme.navRailItem(): NavigationRailItemColors =
+private fun Colors.navRailItem(): NavigationRailItemColors =
   NavigationRailItemColors(
     selectedIconColor = sidebarItemTextSelected,
     selectedTextColor = sidebarItemTextSelected,
@@ -586,14 +582,14 @@ private fun BudgetMenu(
 
 @PortraitPreview
 @Composable
-private fun PreviewNavSheetCollapsed(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewNavSheetCollapsed(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     Column(modifier = Modifier.fillMaxSize()) {
       PreviewContent(modifier = Modifier.weight(1f))
       NavigationBar(
         modifier = Modifier.fillMaxWidth(),
         containerColor = Color.Transparent,
-        contentColor = theme.sidebarItemText,
+        contentColor = colors.sidebarItemText,
       ) {
         for (tab in BudgetTab.tabs) {
           NavigationBarItem(
@@ -607,7 +603,7 @@ private fun PreviewNavSheetCollapsed(@PreviewParameter(ThemeParameters::class) t
             },
             selected = tab == BudgetTab.Transactions,
             onClick = {},
-            colors = theme.navBarItem(),
+            colors = colors.navBarItem(),
           )
         }
         NavigationBarItem(
@@ -615,7 +611,7 @@ private fun PreviewNavSheetCollapsed(@PreviewParameter(ThemeParameters::class) t
           label = { Text(text = Strings.budgetNavExpand, color = LocalContentColor.current) },
           selected = false,
           onClick = {},
-          colors = theme.navBarItem(),
+          colors = colors.navBarItem(),
         )
       }
     }
@@ -623,8 +619,8 @@ private fun PreviewNavSheetCollapsed(@PreviewParameter(ThemeParameters::class) t
 
 @PortraitPreview
 @Composable
-private fun PreviewNavSheetExpanded(@PreviewParameter(ThemeParameters::class) theme: Theme) {
-  PreviewWithTheme(theme) {
+private fun PreviewNavSheetExpanded(@PreviewParameter(ColoredParameters::class) colors: Colors) {
+  PreviewWithColors(colors) {
     Column(modifier = Modifier.fillMaxSize()) {
       PreviewContent(modifier = Modifier.weight(1f))
       SharedTransitionLayout(modifier = Modifier.fillMaxWidth()) {
@@ -647,8 +643,8 @@ private fun PreviewNavSheetExpanded(@PreviewParameter(ThemeParameters::class) th
 
 @TabletPreview
 @Composable
-private fun PreviewSideNavRail(@PreviewParameter(ThemeParameters::class) theme: Theme) {
-  PreviewWithTheme(theme) {
+private fun PreviewSideNavRail(@PreviewParameter(ColoredParameters::class) colors: Colors) {
+  PreviewWithColors(colors) {
     Row(modifier = Modifier.fillMaxSize()) {
       SideNavRail(selectedTab = BudgetTab.Transactions, onSelectTab = {}, onMenuClick = {})
       PreviewContent(modifier = Modifier.weight(1f))
@@ -659,6 +655,6 @@ private fun PreviewSideNavRail(@PreviewParameter(ThemeParameters::class) theme: 
 @Composable
 private fun PreviewContent(modifier: Modifier = Modifier) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-    Text(text = "Content", style = AktualTypography.headlineMedium)
+    Text(text = "Content", style = typography.headlineMedium)
   }
 }

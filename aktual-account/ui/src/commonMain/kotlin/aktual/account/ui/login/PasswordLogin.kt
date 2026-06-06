@@ -2,14 +2,12 @@ package aktual.account.ui.login
 
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualTextField
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.PasswordTransformation
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButtonWithLoading
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import aktual.core.ui.keyboardFocusRequester
 import alakazam.compose.VerticalSpacer
 import androidx.compose.foundation.layout.Column
@@ -37,7 +35,6 @@ internal fun PasswordLogin(
   enteredPassword: Password,
   onAction: LoginActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(modifier = modifier) {
     val keyboard = LocalSoftwareKeyboardController.current
@@ -57,7 +54,6 @@ internal fun PasswordLogin(
       isEnabled = !isLoading,
       placeholderText = Strings.loginPasswordHint,
       outputTransformation = PasswordTransformation,
-      theme = theme,
       keyboardOptions =
         KeyboardOptions(
           autoCorrectEnabled = false,
@@ -86,16 +82,16 @@ internal fun PasswordLogin(
 @Preview
 @Composable
 private fun PreviewPasswordLogin(
-  @PreviewParameter(PasswordLoginProvider::class) params: ThemedParams<PasswordLoginParams>
+  @PreviewParameter(PasswordLoginProvider::class) params: ColoredParams<PasswordLoginParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     PasswordLogin(isLoading = false, enteredPassword = Password.Dummy, onAction = {})
   }
 
 private data class PasswordLoginParams(val isLoading: Boolean, val password: Password)
 
 private class PasswordLoginProvider :
-  ThemedParameterProvider<PasswordLoginParams>(
+  ColoredParameterProvider<PasswordLoginParams>(
     PasswordLoginParams(password = Password.Dummy, isLoading = true),
     PasswordLoginParams(password = Password.Dummy, isLoading = false),
     PasswordLoginParams(password = Password.Empty, isLoading = false),

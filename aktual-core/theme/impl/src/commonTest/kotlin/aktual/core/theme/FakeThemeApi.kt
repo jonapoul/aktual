@@ -2,7 +2,7 @@ package aktual.core.theme
 
 class FakeThemeApi : ThemeApi {
   var catalog: List<CustomThemeSummary> = emptyList()
-  val themes = mutableMapOf<CustomThemeSummary, CustomTheme>()
+  val themes = mutableMapOf<CustomThemeSummary, CustomColors>()
   var fetchCatalogException: Exception? = null
   var fetchThemeException: Exception? = null
 
@@ -11,7 +11,7 @@ class FakeThemeApi : ThemeApi {
     return catalog
   }
 
-  override suspend fun fetchTheme(summary: CustomThemeSummary): CustomTheme {
+  override suspend fun fetchTheme(summary: CustomThemeSummary): CustomColors {
     fetchThemeException?.let { throw it }
     return themes[summary] ?: error("No theme configured for $summary")
   }

@@ -224,8 +224,8 @@ internal fun List{Name}Item(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.tableBackground, RowShape)
-        .border(Dp.Hairline, theme.tableBorder, RowShape)
+        .background(colors.tableBackground, RowShape)
+        .border(Dp.Hairline, colors.tableBorder, RowShape)
         .padding(List{Name}DS.itemCardPadding)
         .clickable { /* TODO: onAction(Open(item.id)) */ },
     horizontalArrangement = Arrangement.spacedBy(List{Name}DS.itemContentSpacing, Alignment.Start),
@@ -248,8 +248,8 @@ internal fun ShimmerList{Name}Item(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.tableBackground, RowShape)
-        .border(Dp.Hairline, theme.tableBorder, RowShape)
+        .background(colors.tableBackground, RowShape)
+        .border(Dp.Hairline, colors.tableBorder, RowShape)
         .padding(List{Name}DS.itemCardPadding)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.spacedBy(List{Name}DS.itemContentSpacing),
@@ -259,7 +259,7 @@ internal fun ShimmerList{Name}Item(
       modifier =
         Modifier.fillMaxWidth(fraction = 0.55f)
           .height(List{Name}DS.shimmerItemTextHeight)
-          .background(theme.pageText, CardShape)
+          .background(colors.pageText, CardShape)
     )
   }
 }
@@ -338,7 +338,6 @@ private fun List{Name}Scaffold(
   onAction: List{Name}ActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
 
@@ -347,7 +346,7 @@ private fun List{Name}Scaffold(
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         title = { Text(Strings.list{Name}Title) },
       )
     },

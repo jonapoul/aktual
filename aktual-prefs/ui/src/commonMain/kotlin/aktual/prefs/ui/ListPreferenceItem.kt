@@ -2,13 +2,12 @@ package aktual.prefs.ui
 
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualTextField
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.ListBottomSheet
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.textField
 import aktual.prefs.vm.ListPreference
 import androidx.compose.foundation.clickable
@@ -41,7 +40,6 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   icon: ImageVector?,
   modifier: Modifier = Modifier,
   includeBackground: Boolean = true,
-  theme: Theme = LocalTheme.current,
 ) {
   ListPreferenceItem(
     value = preference.value,
@@ -55,7 +53,6 @@ internal fun <E : Enum<E>> ListPreferenceItem(
     icon = icon,
     modifier = modifier,
     includeBackground = includeBackground,
-    theme = theme,
   )
 }
 
@@ -73,7 +70,6 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   modifier: Modifier = Modifier,
   enabled: Boolean = true,
   includeBackground: Boolean = true,
-  theme: Theme = LocalTheme.current,
 ) {
   var showSheet by remember { mutableStateOf(false) }
   val sheetState = rememberModalBottomSheetState()
@@ -86,7 +82,6 @@ internal fun <E : Enum<E>> ListPreferenceItem(
     enabled = enabled,
     onClick = null,
     includeBackground = includeBackground,
-    theme = theme,
     bottomContent = {
       val displayText = optionString(value)
       val textState = rememberTextFieldState(initialText = displayText)
@@ -105,9 +100,9 @@ internal fun <E : Enum<E>> ListPreferenceItem(
           trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = false) },
           leadingIcon = optionSuffix?.let { suffix -> { suffix(value) } },
           colors =
-            theme.textField(
-              focusedContainer = theme.buttonNormalBackground,
-              border = theme.buttonNormalBorder,
+            colors.textField(
+              focusedContainer = colors.buttonNormalBackground,
+              border = colors.buttonNormalBorder,
             ),
         )
         Box(modifier = Modifier.matchParentSize().clickable(enabled) { showSheet = true })
@@ -125,7 +120,6 @@ internal fun <E : Enum<E>> ListPreferenceItem(
       string = optionString,
       trailingContent = optionSuffix,
       key = { it.ordinal },
-      theme = theme,
     )
   }
 }
@@ -140,9 +134,9 @@ private enum class PreviewOption {
 @Composable
 private fun PreviewListPreferenceItem(
   @PreviewParameter(ListPreferenceItemProvider::class)
-  params: ThemedParams<ListPreferenceItemParams>
+  params: ColoredParams<ListPreferenceItemParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     ListPreferenceItem(
       value = params.data.value,
       options = params.data.options,
@@ -166,7 +160,7 @@ private data class ListPreferenceItemParams(
 )
 
 private class ListPreferenceItemProvider :
-  ThemedParameterProvider<ListPreferenceItemParams>(
+  ColoredParameterProvider<ListPreferenceItemParams>(
     ListPreferenceItemParams(
       title = "Change the doodad",
       subtitle =

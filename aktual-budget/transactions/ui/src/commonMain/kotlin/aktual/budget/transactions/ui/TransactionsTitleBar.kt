@@ -5,14 +5,13 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Visibility
 import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BlurredTopBarState
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.transparentTopAppBarColors
@@ -34,7 +33,6 @@ internal fun TransactionsTitleBar(
   listState: LazyListState,
   loadedAccount: LoadedAccount,
   onAction: ActionListener,
-  theme: Theme = LocalTheme.current,
 ) {
   val title =
     when (loadedAccount) {
@@ -46,7 +44,7 @@ internal fun TransactionsTitleBar(
 
   TopAppBar(
     modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-    colors = theme.transparentTopAppBarColors(),
+    colors = colors.transparentTopAppBarColors(),
     navigationIcon = { NavBackIconButton { onAction(Action.NavBack) } },
     title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
     actions = {
@@ -68,9 +66,9 @@ internal fun TransactionsTitleBar(
 @Preview
 @Composable
 private fun PreviewTransactionsTitleBar(
-  @PreviewParameter(TransactionsTitleBarProvider::class) params: ThemedParams<LoadedAccount>
+  @PreviewParameter(TransactionsTitleBarProvider::class) params: ColoredParams<LoadedAccount>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     TransactionsTitleBar(
       blurState = rememberBlurredTopBarState(),
       listState = rememberLazyListState(),
@@ -80,7 +78,7 @@ private fun PreviewTransactionsTitleBar(
   }
 
 private class TransactionsTitleBarProvider :
-  ThemedParameterProvider<LoadedAccount>(
+  ColoredParameterProvider<LoadedAccount>(
     LoadedAccount.AllAccounts,
     LoadedAccount.Loading,
     LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),

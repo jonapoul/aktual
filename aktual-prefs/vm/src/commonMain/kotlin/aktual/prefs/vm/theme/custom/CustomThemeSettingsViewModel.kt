@@ -1,7 +1,7 @@
 package aktual.prefs.vm.theme.custom
 
 import aktual.core.model.ThemeId
-import aktual.core.theme.CustomTheme
+import aktual.core.theme.CustomColors
 import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.CustomThemeSummary
 import aktual.core.theme.ThemeApi
@@ -114,7 +114,9 @@ class CustomThemeSettingsViewModel(
     viewModelScope.launch {
       fetchThemeImpl(
         summary = summary,
-        onSuccess = { theme -> viewModelScope.launch { preferences.constantTheme.set(theme.id) } },
+        onSuccess = { colors ->
+          viewModelScope.launch { preferences.constantTheme.set(colors.id) }
+        },
         onFailure = { reason -> logcat.e { "Failed selecting theme: $reason" } },
       )
     }
@@ -132,7 +134,7 @@ class CustomThemeSettingsViewModel(
     viewModelScope.launch {
       fetchThemeImpl(
         summary = summary,
-        onSuccess = { theme -> mutableEvents.tryEmit(CustomThemeEvent.InspectTheme(theme.id)) },
+        onSuccess = { colors -> mutableEvents.tryEmit(CustomThemeEvent.InspectTheme(colors.id)) },
         onFailure = { reason ->
           mutableEvents.tryEmit(CustomThemeEvent.FailedFetching(reason, summary.name))
         },
@@ -142,7 +144,7 @@ class CustomThemeSettingsViewModel(
 
   private suspend fun fetchThemeImpl(
     summary: CustomThemeSummary,
-    onSuccess: (CustomTheme) -> Unit,
+    onSuccess: (CustomColors) -> Unit,
     onFailure: (String) -> Unit,
   ) {
     val themeId = summary.repo.toId()

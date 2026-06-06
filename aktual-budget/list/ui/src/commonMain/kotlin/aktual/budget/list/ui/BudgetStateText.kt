@@ -8,11 +8,11 @@ import aktual.core.icons.CloudUnknown
 import aktual.core.icons.CloudWarning
 import aktual.core.icons.FileDouble
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.size
@@ -33,11 +33,10 @@ import androidx.compose.ui.unit.sp
 internal fun BudgetStateText(
   state: BudgetState,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     val text = state.text()
-    val color = state.color(theme)
+    val color = state.color(colors)
 
     Icon(
       modifier = Modifier.size(18.dp),
@@ -75,20 +74,20 @@ private fun BudgetState.icon(): ImageVector =
   }
 
 @Stable
-private fun BudgetState.color(theme: Theme): Color =
+private fun BudgetState.color(colors: Colors): Color =
   when (this) {
-    BudgetState.Broken -> theme.errorText
-    BudgetState.Detached -> theme.warningText
-    BudgetState.Local -> theme.pageTextPositive
-    BudgetState.Remote -> theme.reportsBlue
-    BudgetState.Synced -> theme.reportsGreen
-    BudgetState.Unknown -> theme.reportsGray
+    BudgetState.Broken -> colors.errorText
+    BudgetState.Detached -> colors.warningText
+    BudgetState.Local -> colors.pageTextPositive
+    BudgetState.Remote -> colors.reportsBlue
+    BudgetState.Synced -> colors.reportsGreen
+    BudgetState.Unknown -> colors.reportsGray
   }
 
 @Preview
 @Composable
 private fun PreviewBudgetStateText(
-  @PreviewParameter(BudgetStateProvider::class) params: ThemedParams<BudgetState>
-) = PreviewWithTheme(params.theme) { BudgetStateText(params.data) }
+  @PreviewParameter(BudgetStateProvider::class) params: ColoredParams<BudgetState>
+) = PreviewWithColors(params.colors) { BudgetStateText(params.data) }
 
-private class BudgetStateProvider : ThemedParameterProvider<BudgetState>(BudgetState.entries)
+private class BudgetStateProvider : ColoredParameterProvider<BudgetState>(BudgetState.entries)

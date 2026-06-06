@@ -1,6 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -23,5 +23,5 @@ fun <T : Any> LoadingScreenIfNotNull(value: T?, content: @Composable (T) -> Unit
 
 @Preview
 @Composable
-private fun PreviewLoadingScreen(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) { LoadingScreen() }
+private fun PreviewLoadingScreen(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { LoadingScreen() }

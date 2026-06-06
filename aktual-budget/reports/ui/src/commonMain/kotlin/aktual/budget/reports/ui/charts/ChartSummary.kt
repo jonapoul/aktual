@@ -18,15 +18,14 @@ import aktual.core.icons.Sum
 import aktual.core.l10n.Strings
 import aktual.core.model.Percent
 import aktual.core.model.percent
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualExposedDropDownMenu
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.ScaleToFitText
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import aktual.core.ui.checkbox
 import aktual.core.ui.formattedString
 import aktual.core.ui.stringShort
@@ -128,17 +127,16 @@ internal fun SummaryChart(
 private fun Header(
   data: SummaryData,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
-    Text(text = data.title, color = theme.pageText, style = AktualTypography.bodyLarge)
+    Text(text = data.title, color = colors.pageText, style = typography.bodyLarge)
 
     data.start?.yearMonth?.let { start ->
       data.end?.yearMonth?.let { end ->
         Text(
           text = dateRange(start, end),
-          color = theme.pageTextSubdued,
-          style = AktualTypography.bodyMedium,
+          color = colors.pageTextSubdued,
+          style = typography.bodyMedium,
         )
       }
     }
@@ -148,12 +146,11 @@ private fun Header(
 private fun CompactAmount(
   amount: Amount,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   ScaleToFitText(
     modifier = modifier.padding(16.dp),
     style = summaryTextStyle(),
-    color = if (amount.isPositive()) theme.reportsNumberPositive else theme.reportsNumberNegative,
+    color = if (amount.isPositive()) colors.reportsNumberPositive else colors.reportsNumberNegative,
     text = amount.formattedString(includeSign = false),
   )
 }
@@ -162,13 +159,12 @@ private fun CompactAmount(
 private fun CompactPercent(
   percent: Percent,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   ScaleToFitText(
     modifier = modifier.padding(16.dp),
     style = summaryTextStyle(),
     color =
-      if (percent == Percent.Zero) theme.reportsNumberNeutral else theme.reportsNumberPositive,
+      if (percent == Percent.Zero) colors.reportsNumberNeutral else colors.reportsNumberPositive,
     text = percent.toString(decimalPlaces = 2),
   )
 }
@@ -184,7 +180,6 @@ private fun RegularPerMonth(
   data: SummaryData.AveragePerMonth,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
     ShowAs(data, onAction)
@@ -205,17 +200,17 @@ private fun RegularPerMonth(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           SumColumn(data)
-          FilterDisplay(theme)
+          FilterDisplay()
         }
 
-        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = Strings.reportsSummaryNumMonths,
           fontSize = 25.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
       }
 
@@ -233,17 +228,17 @@ private fun RegularPerMonth(
           text = data.total.formattedString(),
           fontSize = 30.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
 
-        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = "%.2f".format(data.numMonths),
           fontSize = 30.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
       }
 
@@ -251,7 +246,7 @@ private fun RegularPerMonth(
       Equals()
       HorizontalSpacer(10.dp)
 
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average, theme = theme) }
+      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average) }
     }
   }
 
@@ -260,7 +255,6 @@ private fun RegularPerYear(
   data: SummaryData.AveragePerYear,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
     ShowAs(data, onAction)
@@ -281,17 +275,17 @@ private fun RegularPerYear(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           SumColumn(data)
-          FilterDisplay(theme)
+          FilterDisplay()
         }
 
-        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = Strings.reportsSummaryNumYears,
           fontSize = 25.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
       }
 
@@ -309,17 +303,17 @@ private fun RegularPerYear(
           text = data.total.formattedString(),
           fontSize = 30.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
 
-        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = "%.2f".format(data.numYears),
           fontSize = 30.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
       }
 
@@ -327,7 +321,7 @@ private fun RegularPerYear(
       Equals()
       HorizontalSpacer(10.dp)
 
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average, theme = theme) }
+      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average) }
     }
   }
 
@@ -336,7 +330,6 @@ private fun RegularPerTransaction(
   data: SummaryData.AveragePerTransaction,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
     ShowAs(data, onAction)
@@ -357,17 +350,17 @@ private fun RegularPerTransaction(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           SumColumn(data)
-          FilterDisplay(theme)
+          FilterDisplay()
         }
 
-        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = Strings.reportsSummaryNumTransactions,
           fontSize = 25.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
       }
 
@@ -385,17 +378,17 @@ private fun RegularPerTransaction(
           text = data.total.formattedString(),
           fontSize = 30.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
 
-        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = data.numTransactions.toString(),
           fontSize = 30.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
       }
 
@@ -403,7 +396,7 @@ private fun RegularPerTransaction(
       Equals()
       HorizontalSpacer(10.dp)
 
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average, theme = theme) }
+      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.average) }
     }
   }
 
@@ -412,7 +405,6 @@ private fun RegularPercent(
   data: SummaryData.Percentage,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
     ShowAs(data, onAction)
@@ -434,10 +426,10 @@ private fun RegularPercent(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           SumColumn(data)
-          FilterDisplay(theme)
+          FilterDisplay()
         }
 
-        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
 
         Row(
           modifier = Modifier.fillMaxWidth(),
@@ -445,7 +437,7 @@ private fun RegularPercent(
           verticalAlignment = Alignment.CenterVertically,
         ) {
           SumColumn(data.divisor)
-          FilterDisplay(theme)
+          FilterDisplay()
         }
       }
 
@@ -463,17 +455,17 @@ private fun RegularPercent(
           text = data.numerator.toString(),
           fontSize = 30.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
 
-        HorizontalDivider(thickness = 2.dp, color = theme.pageText)
+        HorizontalDivider(thickness = 2.dp, color = colors.pageText)
 
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = data.denominator.toString(),
           fontSize = 30.sp,
           textAlign = TextAlign.Center,
-          color = theme.pageText,
+          color = colors.pageText,
         )
       }
 
@@ -481,7 +473,7 @@ private fun RegularPercent(
       Equals()
       HorizontalSpacer(10.dp)
 
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactPercent(data.percent, theme = theme) }
+      Box(modifier = Modifier.width(width = 250.dp)) { CompactPercent(data.percent) }
     }
   }
 
@@ -490,7 +482,6 @@ private fun RegularSum(
   data: SummaryData.Sum,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Column(modifier = modifier, horizontalAlignment = Alignment.Start) {
     ShowAs(data, onAction)
@@ -501,10 +492,10 @@ private fun RegularSum(
       verticalAlignment = Alignment.CenterVertically,
     ) {
       SumColumn(data)
-      FilterDisplay(theme)
+      FilterDisplay()
       Equals()
 
-      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.value, theme = theme) }
+      Box(modifier = Modifier.width(width = 250.dp)) { CompactAmount(data.value) }
     }
   }
 
@@ -513,7 +504,6 @@ private fun ShowAs(
   data: SummaryData,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Row(modifier = modifier.wrapContentSize(), verticalAlignment = Alignment.CenterVertically) {
     Text(text = Strings.reportsSummaryShowAs)
@@ -540,7 +530,6 @@ private fun ShowAs(
         val type = chartTypeMap.getValue(string)
         onAction(Action.SetSummaryType(type))
       },
-      theme = theme,
     )
   }
 
@@ -562,14 +551,13 @@ private fun DivisorCheckbox(
   data: SummaryData.Percentage,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     Checkbox(
       modifier = Modifier.minimumInteractiveComponentSize(),
       checked = data.divisor is PercentageDivisor.AllTime,
       onCheckedChange = { newValue -> onAction(Action.SetAllTimeDivisor(newValue)) },
-      colors = theme.checkbox(),
+      colors = colors.checkbox(),
     )
 
     HorizontalSpacer(4.dp)
@@ -579,7 +567,7 @@ private fun DivisorCheckbox(
 }
 
 @Composable
-private fun FilterDisplay(theme: Theme) =
+private fun FilterDisplay() =
   Row(modifier = Modifier.wrapContentSize(), verticalAlignment = Alignment.CenterVertically) {
     Icon(
       modifier = Modifier.size(50.dp),
@@ -588,7 +576,7 @@ private fun FilterDisplay(theme: Theme) =
     )
 
     // TODO handle filtering here https://github.com/jonapoul/aktual/issues/361
-    Text(text = Strings.reportsSummaryAll, fontSize = 25.sp, color = theme.pageTextPositive)
+    Text(text = Strings.reportsSummaryAll, fontSize = 25.sp, color = colors.pageTextPositive)
 
     Icon(
       modifier = Modifier.size(50.dp),
@@ -622,12 +610,12 @@ private fun string(type: SummaryChartType): String =
 @Preview
 @Composable
 private fun PreviewSummaryChart(
-  @PreviewParameter(SummaryChartProvider::class) params: ThemedParams<SummaryChartParams>
+  @PreviewParameter(SummaryChartProvider::class) params: ColoredParams<SummaryChartParams>
 ) =
-  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.private) {
+  PreviewWithColors(colors = params.colors, isPrivacyEnabled = params.data.private) {
     SummaryChart(
       modifier =
-        Modifier.background(LocalTheme.current.tableBackground, CardShape)
+        Modifier.background(colors.tableBackground, CardShape)
           .width(WIDTH.dp)
           .let { m -> if (params.data.compact) m.height(300.dp) else m }
           .padding(5.dp),
@@ -644,7 +632,7 @@ private data class SummaryChartParams(
 )
 
 private class SummaryChartProvider :
-  ThemedParameterProvider<SummaryChartParams>(
+  ColoredParameterProvider<SummaryChartParams>(
     SummaryChartParams(SUM_DATA, compact = true),
     SummaryChartParams(SUM_DATA, compact = false),
     SummaryChartParams(SUM_DATA, compact = false, private = true),

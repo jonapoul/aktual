@@ -1,12 +1,12 @@
 package aktual.about.ui.info
 
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualAlertDialogContent
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.ColoredParameters
+import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Text
@@ -27,7 +27,6 @@ internal fun UpdateFoundDialog(
   onDismiss: () -> Unit,
   onOpenUrl: (String) -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialog(
     modifier = modifier.testTag(Tags.UpdateFoundDialog),
@@ -39,7 +38,6 @@ internal fun UpdateFoundDialog(
         latestUrl = latestUrl,
         onDismiss = onDismiss,
         onOpenUrl = onOpenUrl,
-        theme = theme,
       )
     },
   )
@@ -53,13 +51,11 @@ internal fun UpdateFoundDialogContent(
   onOpenUrl: (String) -> Unit,
   onDismiss: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   AktualAlertDialogContent(
     modifier = modifier,
-    theme = theme,
     title = Strings.infoUpdateFoundTitle,
-    titleColor = theme.noticeText,
+    titleColor = colors.noticeText,
     content = {
       TextContent(
         Strings.infoUpdateFoundInstalled,
@@ -70,7 +66,7 @@ internal fun UpdateFoundDialogContent(
     },
     buttons = {
       TextButton(onClick = onDismiss) {
-        Text(text = Strings.infoUpdateFoundDismiss, color = theme.noticeText)
+        Text(text = Strings.infoUpdateFoundDismiss, color = colors.noticeText)
       }
       TextButton(
         modifier = Modifier.testTag(Tags.UpdateAvailableDownloadButton),
@@ -79,7 +75,7 @@ internal fun UpdateFoundDialogContent(
           onDismiss()
         },
       ) {
-        Text(text = Strings.infoUpdateFoundView, color = theme.noticeText)
+        Text(text = Strings.infoUpdateFoundView, color = colors.noticeText)
       }
     },
   )
@@ -109,8 +105,8 @@ private fun TextContent(
 
 @Preview
 @Composable
-private fun PreviewUpdateFoundContent(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewUpdateFoundContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     UpdateFoundDialogContent(
       currentVersion = "v1.2.3",
       latestVersion = "v2.3.4",

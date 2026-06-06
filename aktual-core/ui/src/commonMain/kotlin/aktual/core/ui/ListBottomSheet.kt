@@ -2,8 +2,8 @@ package aktual.core.ui
 
 import aktual.core.icons.material.Check
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,14 +41,13 @@ fun <T : Any> ListBottomSheet(
   trailingContent: (@Composable (T) -> Unit)? = null,
   key: ((T) -> Any)? = null,
   isEnabled: (T) -> Boolean = { true },
-  theme: Theme = LocalTheme.current,
 ) {
   ModalBottomSheet(
-    modifier = modifier.border(Dp.Hairline, theme.modalBorder),
+    modifier = modifier.border(Dp.Hairline, colors.modalBorder),
     onDismissRequest = onDismiss,
     sheetState = sheetState,
-    containerColor = theme.modalBackground,
-    contentColor = theme.pageText,
+    containerColor = colors.modalBackground,
+    contentColor = colors.pageText,
   ) {
     val listState = rememberLazyListState()
     LazyColumn(modifier = Modifier.scrollbar(listState), state = listState) {
@@ -77,7 +76,7 @@ fun <T : Any> ListBottomSheet(
             } else {
               null
             },
-          colors = theme.listItem(),
+          colors = colors.listItem(),
         )
       }
     }
@@ -85,7 +84,7 @@ fun <T : Any> ListBottomSheet(
 }
 
 @Composable
-private fun Theme.listItem(): ListItemColors =
+private fun Colors.listItem(): ListItemColors =
   ListItemDefaults.colors(
     containerColor = Color.Transparent,
     headlineColor = pageText,

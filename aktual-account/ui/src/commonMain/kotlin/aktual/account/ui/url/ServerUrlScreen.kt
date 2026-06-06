@@ -9,16 +9,15 @@ import aktual.core.model.AktualVersions
 import aktual.core.model.Protocol
 import aktual.core.nav.InfoNavigator
 import aktual.core.nav.LoginNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BasicIconButton
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.PrimaryTextButtonWithLoading
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.normalIconButton
@@ -103,12 +102,10 @@ private fun ServerUrlScaffold(
   errorMessage: String?,
   onAction: ServerUrlActionHandler,
 ) {
-  val theme = LocalTheme.current
-
   Scaffold(
     topBar = {
       TopAppBar(
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         title = {},
         actions = {
           BasicIconButton(
@@ -116,7 +113,7 @@ private fun ServerUrlScaffold(
             onClick = { onAction(OpenAbout) },
             imageVector = MaterialIcons.Info,
             contentDescription = Strings.serverUrlMenuAbout,
-            colors = { theme, isPressed -> theme.normalIconButton(isPressed) },
+            colors = { c, isPressed -> c.normalIconButton(isPressed) },
           )
         },
       )
@@ -134,7 +131,6 @@ private fun ServerUrlScaffold(
         isLoading = isLoading,
         errorMessage = errorMessage,
         onAction = onAction,
-        theme = theme,
       )
     }
   }
@@ -151,7 +147,6 @@ private fun ServerUrlContent(
   errorMessage: String?,
   onAction: ServerUrlActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier = modifier.padding(horizontal = 16.dp).wrapContentWidth().wrapContentHeight(),
@@ -159,12 +154,12 @@ private fun ServerUrlContent(
     horizontalAlignment = Alignment.Start,
   ) {
     Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-      Text(text = Strings.serverUrlTitle, style = AktualTypography.headlineLarge)
+      Text(text = Strings.serverUrlTitle, style = typography.headlineLarge)
 
       Text(
         text = Strings.serverUrlMessage,
-        color = theme.tableRowHeaderText,
-        style = AktualTypography.bodyLarge,
+        color = colors.tableRowHeaderText,
+        style = typography.bodyLarge,
       )
 
       InputFields(
@@ -172,7 +167,6 @@ private fun ServerUrlContent(
         url = url,
         protocol = protocol,
         onAction = onAction,
-        theme = theme,
       )
 
       PrimaryTextButtonWithLoading(
@@ -187,7 +181,7 @@ private fun ServerUrlContent(
         Text(
           modifier = Modifier.fillMaxWidth(),
           text = errorMessage,
-          color = theme.errorText,
+          color = colors.errorText,
           textAlign = TextAlign.Center,
         )
       }
@@ -206,9 +200,9 @@ private fun ServerUrlContent(
 @Composable
 @PortraitPreview
 private fun PreviewServerUrlScaffold(
-  @PreviewParameter(ServerUrlScaffoldProvider::class) params: ThemedParams<ServerUrlScaffoldParams>
+  @PreviewParameter(ServerUrlScaffoldProvider::class) params: ColoredParams<ServerUrlScaffoldParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     ServerUrlScaffold(
       url = params.data.url,
       protocol = params.data.protocol,
@@ -228,7 +222,7 @@ private data class ServerUrlScaffoldParams(
 )
 
 private class ServerUrlScaffoldProvider :
-  ThemedParameterProvider<ServerUrlScaffoldParams>(
+  ColoredParameterProvider<ServerUrlScaffoldParams>(
     ServerUrlScaffoldParams(
       url = "",
       protocol = Protocol.Https,

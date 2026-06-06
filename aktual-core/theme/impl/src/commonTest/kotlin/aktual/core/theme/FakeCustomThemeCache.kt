@@ -1,11 +1,11 @@
 package aktual.core.theme
 
 class FakeCustomThemeCache : CustomThemeCache {
-  private val storedThemes = mutableMapOf<CustomThemeRepo, CustomTheme>()
+  private val storedThemes = mutableMapOf<CustomThemeRepo, CustomColors>()
   private var storedSummaries: List<CustomThemeSummary> = emptyList()
-  val savedThemes = mutableListOf<CustomTheme>()
+  val savedThemes = mutableListOf<CustomColors>()
 
-  fun putTheme(theme: CustomTheme) {
+  fun putTheme(theme: CustomColors) {
     storedThemes[theme.repo] = theme
   }
 
@@ -17,13 +17,13 @@ class FakeCustomThemeCache : CustomThemeCache {
 
   override suspend fun summaries(): List<CustomThemeSummary> = storedSummaries
 
-  override suspend fun theme(repo: CustomThemeRepo): CustomTheme? = storedThemes[repo]
+  override suspend fun theme(repo: CustomThemeRepo): CustomColors? = storedThemes[repo]
 
   override suspend fun save(summaries: List<CustomThemeSummary>) {
     storedSummaries = summaries
   }
 
-  override suspend fun save(theme: CustomTheme) {
+  override suspend fun save(theme: CustomColors) {
     savedThemes += theme
     storedThemes[theme.repo] = theme
   }

@@ -17,12 +17,12 @@ import aktual.core.model.PingState.Failure
 import aktual.core.model.PingState.Success
 import aktual.core.model.PingState.Unknown
 import aktual.core.theme.BottomBarThemeAttrs
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.BottomBarState.Visible
-import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColoredParams
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -66,7 +66,6 @@ internal fun BottomStatusBar(
   onClickSync: () -> Unit,
   onMeasureHeight: (Dp) -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   density: Density = LocalDensity.current,
 ) {
   val onPositioned = { c: LayoutCoordinates ->
@@ -81,7 +80,7 @@ internal fun BottomStatusBar(
       Text(
         text = loadedString(name),
         fontSize = FONT_SIZE,
-        color = attrs.foreground(theme),
+        color = attrs.foreground(colors),
         maxLines = 1,
         overflow = Ellipsis,
       )
@@ -101,7 +100,6 @@ internal fun BottomStatusBar(
 private fun PingState(
   state: PingState,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Row(
     modifier = modifier,
@@ -109,7 +107,7 @@ private fun PingState(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     val text = state.text()
-    val tint = state.tint(theme)
+    val tint = state.tint(colors)
     Image(
       modifier = Modifier.size(ICON_SIZE),
       imageVector = state.icon(),
@@ -138,11 +136,11 @@ private fun PingState.text() =
   }
 
 @Stable
-private fun PingState.tint(theme: Theme) =
+private fun PingState.tint(colors: Colors) =
   when (this) {
-    Success -> theme.noticeText
-    Failure -> theme.warningText
-    Unknown -> theme.pageTextSubdued
+    Success -> colors.noticeText
+    Failure -> colors.warningText
+    Unknown -> colors.pageTextSubdued
   }
 
 @Composable
@@ -163,10 +161,9 @@ private fun SyncState(
   attrs: BottomBarThemeAttrs,
   onClickSync: () -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val text = state.text()
-  val tint = state.tint(theme, attrs)
+  val tint = state.tint(colors, attrs)
 
   Row(
     modifier =
@@ -206,20 +203,20 @@ private fun SyncState.text() =
   }
 
 @Stable
-private fun SyncState.tint(theme: Theme, attrs: BottomBarThemeAttrs) =
+private fun SyncState.tint(colors: Colors, attrs: BottomBarThemeAttrs) =
   when (this) {
-    NoToken -> theme.warningText
-    is SyncFailed -> theme.errorText
-    Syncing -> theme.reportsBlue
-    Inactive -> attrs.foreground(theme)
+    NoToken -> colors.warningText
+    is SyncFailed -> colors.errorText
+    Syncing -> colors.reportsBlue
+    Inactive -> attrs.foreground(colors)
   }
 
 @Preview
 @Composable
 private fun PreviewBottomBar(
-  @PreviewParameter(BottomBarProvider::class) params: ThemedParams<BottomBarParams>
+  @PreviewParameter(BottomBarProvider::class) params: ColoredParams<BottomBarParams>
 ) =
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     BottomStatusBar(
       modifier = Modifier.fillMaxWidth(),
       state = Visible(state, syncState, budgetName),
@@ -242,7 +239,7 @@ private data class BottomBarParams(
 
 @Suppress("StringLiteralDuplication")
 private class BottomBarProvider :
-  ThemedParameterProvider<BottomBarParams>(
+  ColoredParameterProvider<BottomBarParams>(
     BottomBarParams(state = Success, budgetName = "My Budget"),
     BottomBarParams(state = Success, syncState = NoToken, budgetName = "My Budget"),
     BottomBarParams(state = Success, syncState = SyncFailed("abc"), budgetName = "My Budget"),

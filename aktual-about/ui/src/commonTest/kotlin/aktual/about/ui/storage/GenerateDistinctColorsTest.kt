@@ -1,8 +1,8 @@
 package aktual.about.ui.storage
 
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.LightTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.theme.DarkColors
+import aktual.core.theme.LightColors
 import app.cash.burst.Burst
 import app.cash.burst.burstValues
 import assertk.assertThat
@@ -14,41 +14,41 @@ import kotlin.test.assertFailsWith
 @Burst
 class GenerateDistinctColorsTest {
   @Test
-  fun `single color is generated`(theme: Theme = burstValues(LightTheme, DarkTheme)) {
-    assertThat(generateDistinctColors(theme, count = 1)).hasSize(1)
+  fun `single color is generated`(colors: Colors = burstValues(LightColors, DarkColors)) {
+    assertThat(generateDistinctColors(colors, count = 1)).hasSize(1)
   }
 
   @Test
-  fun `requested count matches output size`(theme: Theme = burstValues(LightTheme, DarkTheme)) {
+  fun `requested count matches output size`(colors: Colors = burstValues(LightColors, DarkColors)) {
     for (count in 1..20) {
-      assertThat(generateDistinctColors(theme, count = count)).hasSize(count)
+      assertThat(generateDistinctColors(colors, count = count)).hasSize(count)
     }
   }
 
   @Test
-  fun `all colors are unique`(theme: Theme = burstValues(LightTheme, DarkTheme)) {
+  fun `all colors are unique`(colors: Colors = burstValues(LightColors, DarkColors)) {
     for (count in 2..20) {
-      val colors = generateDistinctColors(theme, count = count)
+      val colors = generateDistinctColors(colors, count = count)
       assertThat(colors.distinct().size).isEqualTo(count)
     }
   }
 
   @Test
   fun `different parameters produce different colors`(
-    theme: Theme = burstValues(LightTheme, DarkTheme)
+    colors: Colors = burstValues(LightColors, DarkColors)
   ) {
-    val default = generateDistinctColors(theme, count = 5)
-    val custom = generateDistinctColors(theme, count = 5, saturation = 0.5f, lightness = 0.25f)
+    val default = generateDistinctColors(colors, count = 5)
+    val custom = generateDistinctColors(colors, count = 5, saturation = 0.5f, lightness = 0.25f)
     assertThat(default != custom).isEqualTo(true)
   }
 
   @Test
-  fun `zero count throws`(theme: Theme = burstValues(LightTheme, DarkTheme)) {
-    assertFailsWith<IllegalArgumentException> { generateDistinctColors(theme, count = 0) }
+  fun `zero count throws`(colors: Colors = burstValues(LightColors, DarkColors)) {
+    assertFailsWith<IllegalArgumentException> { generateDistinctColors(colors, count = 0) }
   }
 
   @Test
-  fun `negative count throws`(theme: Theme = burstValues(LightTheme, DarkTheme)) {
-    assertFailsWith<IllegalArgumentException> { generateDistinctColors(theme, count = -1) }
+  fun `negative count throws`(colors: Colors = burstValues(LightColors, DarkColors)) {
+    assertFailsWith<IllegalArgumentException> { generateDistinctColors(colors, count = -1) }
   }
 }

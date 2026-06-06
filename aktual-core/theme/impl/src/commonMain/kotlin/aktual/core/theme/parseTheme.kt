@@ -5,7 +5,7 @@ package aktual.core.theme
 import androidx.compose.ui.graphics.Color
 import logcat.logcat
 
-internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomTheme {
+internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomColors {
   val attributes: MutableMap<String, Color> =
     css
       .lineSequence()
@@ -19,7 +19,7 @@ internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomTheme {
       "Key 'pageBackground' not found in CSS attributes: $attributes"
     }
 
-  val fallbackTheme = if (pageBackground.isLight()) LightTheme else DarkTheme
+  val fallbackTheme = if (pageBackground.isLight()) LightColors else DarkColors
 
   fun String.attr(fallback: Color): Color =
     attributes.remove(this)
@@ -30,7 +30,7 @@ internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomTheme {
 
   val theme =
     with(fallbackTheme) {
-      JsonCustomTheme(
+      JsonCustomColors(
         name = summary.name,
         repo = summary.repo,
         isLight = summary.mode == ThemeMode.Light,

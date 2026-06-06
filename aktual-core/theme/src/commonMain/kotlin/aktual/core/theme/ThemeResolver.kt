@@ -4,7 +4,7 @@ import aktual.core.model.ThemeId
 import kotlinx.coroutines.flow.Flow
 
 interface ThemeResolver {
-  fun activeTheme(isSystemInDarkTheme: Boolean): Flow<Theme>
+  fun activeColors(isSystemInDarkTheme: Boolean): Flow<Colors>
 
-  suspend fun resolve(id: ThemeId): Theme?
+  suspend fun resolve(id: ThemeId): Colors?
 }

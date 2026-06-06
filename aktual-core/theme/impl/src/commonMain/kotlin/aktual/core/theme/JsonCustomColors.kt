@@ -14,7 +14,7 @@ import kotlinx.serialization.UseSerializers
  * aktual/core/theme/JsonCustomTheme
  */
 @Serializable
-internal data class JsonCustomTheme(
+internal data class JsonCustomColors(
   @SerialName("name") override val name: String,
   @SerialName("repo") override val repo: CustomThemeRepo,
   @SerialName("page") val page: PageColors,
@@ -27,7 +27,7 @@ internal data class JsonCustomTheme(
   @SerialName("misc") val misc: MiscColors,
   @SerialName("chartQual") val chartQual: ChartQualColors,
   @SerialName("isLight") override val isLight: Boolean,
-) : CustomTheme {
+) : CustomColors {
 
   // Page
   override val pageBackground: Color

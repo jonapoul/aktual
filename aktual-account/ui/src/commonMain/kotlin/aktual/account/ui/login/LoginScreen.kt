@@ -11,16 +11,15 @@ import aktual.core.model.Password.Companion.Empty
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ListBudgetsNavigator
 import aktual.core.nav.ServerUrlNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.VersionsText
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.transparentTopAppBarColors
@@ -106,14 +105,13 @@ internal fun LoginScaffold(
   loginMethods: ImmutableList<LoginMethod>,
   selectedLoginMethod: LoginMethod,
   onAction: LoginActionHandler,
-  theme: Theme = LocalTheme.current,
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   Scaffold(
     modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
     topBar = {
       TopAppBar(
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = {},
         scrollBehavior = scrollBehavior,
@@ -132,7 +130,6 @@ internal fun LoginScaffold(
         loginMethods = loginMethods,
         selectedLoginMethod = selectedLoginMethod,
         onAction = onAction,
-        theme = theme,
       )
     }
   }
@@ -148,7 +145,6 @@ private fun Content(
   selectedLoginMethod: LoginMethod,
   onAction: LoginActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(
     modifier = modifier.fillMaxSize().padding(16.dp),
@@ -159,12 +155,12 @@ private fun Content(
       verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.Top),
       horizontalAlignment = Alignment.Start,
     ) {
-      Text(text = Strings.loginTitle, style = AktualTypography.headlineLarge)
+      Text(text = Strings.loginTitle, style = typography.headlineLarge)
 
       Text(
         text = Strings.loginMessage,
-        color = theme.tableRowHeaderText,
-        style = AktualTypography.bodyLarge,
+        color = colors.tableRowHeaderText,
+        style = typography.bodyLarge,
       )
 
       if (loginMethods.size > 1) {
@@ -219,9 +215,9 @@ private fun Content(
 @PortraitPreview
 @LandscapePreview
 private fun PreviewLoginScaffold(
-  @PreviewParameter(LoginScaffoldProvider::class) params: ThemedParams<LoginScaffoldParams>
+  @PreviewParameter(LoginScaffoldProvider::class) params: ColoredParams<LoginScaffoldParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     val data = params.data
     LoginScaffold(
       versions = data.versions,
@@ -246,7 +242,7 @@ private data class LoginScaffoldParams(
 private val ALL_METHODS = LoginMethod.entries.toImmutableList()
 
 private class LoginScaffoldProvider :
-  ThemedParameterProvider<LoginScaffoldParams>(
+  ColoredParameterProvider<LoginScaffoldParams>(
     LoginScaffoldParams(password = Empty, isLoading = false),
     LoginScaffoldParams(
       password = Dummy,

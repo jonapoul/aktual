@@ -10,13 +10,12 @@ import aktual.core.icons.AktualIcons
 import aktual.core.icons.ArrowThickDown
 import aktual.core.icons.ArrowThickUp
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.ScaleToFitText
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
 import aktual.core.ui.formattedString
 import aktual.core.ui.scrollbar
 import aktual.core.ui.stringLong
@@ -145,7 +144,6 @@ internal fun MonthHeader(
   month: CalendarMonth,
   compact: Boolean,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Row(
     modifier = modifier.fillMaxWidth(),
@@ -156,7 +154,7 @@ internal fun MonthHeader(
       modifier = Modifier.weight(1f),
       text = month.month.stringLong(),
       fontWeight = FontWeight.Bold,
-      color = theme.pageTextSubdued,
+      color = colors.pageTextSubdued,
     )
 
     if (compact) {
@@ -182,19 +180,18 @@ private fun Income(
   month: CalendarMonth,
   compact: Boolean,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     Icon(
       modifier = Modifier.size(iconSize(compact)),
       imageVector = AktualIcons.ArrowThickUp,
-      tint = theme.reportsBlue,
+      tint = colors.reportsBlue,
       contentDescription = null,
     )
     Text(
       modifier = if (compact) Modifier else Modifier.weight(1f),
       text = month.income.formattedString(),
-      color = theme.reportsBlue,
+      color = colors.reportsBlue,
       textAlign = TextAlign.End,
     )
   }
@@ -204,19 +201,18 @@ private fun Expenses(
   month: CalendarMonth,
   compact: Boolean,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     Icon(
       modifier = Modifier.size(iconSize(compact)),
       imageVector = AktualIcons.ArrowThickDown,
-      tint = theme.reportsRed,
+      tint = colors.reportsRed,
       contentDescription = null,
     )
     Text(
       modifier = if (compact) Modifier else Modifier.weight(1f),
       text = month.expenses.formattedString(),
-      color = theme.reportsRed,
+      color = colors.reportsRed,
       textAlign = TextAlign.End,
     )
   }
@@ -228,20 +224,19 @@ internal fun CalendarSummary(
   data: CalendarData,
   compact: Boolean,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ): Unit =
   Column(modifier = modifier.fillMaxWidth()) {
     Row(modifier = Modifier.fillMaxWidth()) {
       Text(
         modifier = Modifier.weight(1f),
         text = data.title,
-        color = theme.pageText,
+        color = colors.pageText,
         overflow = TextOverflow.Ellipsis,
       )
 
       Text(
         text = dateRange(data.start, data.end),
-        color = theme.pageTextSubdued,
+        color = colors.pageTextSubdued,
         overflow = TextOverflow.Ellipsis,
       )
     }
@@ -252,13 +247,13 @@ internal fun CalendarSummary(
       Text(
         modifier = Modifier.weight(1f),
         text = Strings.reportsCalendarIncome,
-        color = theme.pageText,
+        color = colors.pageText,
         textAlign = TextAlign.End,
       )
       Text(
         modifier = Modifier.weight(1f),
         text = data.income.formattedString(),
-        color = theme.reportsBlue,
+        color = colors.reportsBlue,
         textAlign = TextAlign.End,
       )
     }
@@ -267,13 +262,13 @@ internal fun CalendarSummary(
       Text(
         modifier = Modifier.weight(1f),
         text = Strings.reportsCalendarExpenses,
-        color = theme.pageText,
+        color = colors.pageText,
         textAlign = TextAlign.End,
       )
       Text(
         modifier = Modifier.weight(1f),
         text = data.expenses.formattedString(),
-        color = theme.reportsRed,
+        color = colors.reportsRed,
         textAlign = TextAlign.End,
       )
     }
@@ -286,7 +281,6 @@ internal fun DayButton(
   month: CalendarMonth,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   if (!day.isValid) return
 
@@ -294,7 +288,7 @@ internal fun DayButton(
     modifier =
       modifier
         .background(
-          if (!day.isValid) Color.Transparent else theme.calendarCellBackground,
+          if (!day.isValid) Color.Transparent else colors.calendarCellBackground,
           CardShape,
         )
         .clickable(enabled = day.isValid) { onAction(Action.ClickCalendarDay(day)) },
@@ -305,21 +299,21 @@ internal fun DayButton(
         modifier = Modifier.weight(1f).fillMaxHeight(),
         dayValue = day.income,
         monthValue = month.income,
-        color = theme.reportsBlue,
+        color = colors.reportsBlue,
       )
 
       DayBarChart(
         modifier = Modifier.weight(1f).fillMaxHeight(),
         dayValue = day.expenses,
         monthValue = month.expenses,
-        color = theme.reportsRed,
+        color = colors.reportsRed,
       )
     }
 
     ScaleToFitText(
       modifier = Modifier.padding(2.dp),
       text = day.day.toString(),
-      color = theme.tableText,
+      color = colors.tableText,
     )
   }
 }
@@ -363,13 +357,12 @@ internal fun CalendarMonth(
   compact: Boolean,
   onAction: ActionListener,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
   minSize: Dp = 300.dp,
 ) =
   Column(
     modifier =
       modifier
-        .background(theme.tableBackground, CardShape)
+        .background(colors.tableBackground, CardShape)
         .widthIn(min = minSize)
         .heightIn(min = minSize)
         .padding(10.dp)
@@ -388,7 +381,7 @@ internal fun CalendarMonth(
           modifier = Modifier.weight(1f),
           text = day.stringShort(),
           textAlign = TextAlign.Center,
-          color = theme.pageTextSubdued,
+          color = colors.pageTextSubdued,
         )
       }
     }
@@ -439,12 +432,12 @@ private val TABLE_SPACING = 2.dp
 @Preview
 @Composable
 private fun PreviewCalendarChart(
-  @PreviewParameter(CalendarChartProvider::class) params: ThemedParams<CalendarChartParams>
+  @PreviewParameter(CalendarChartProvider::class) params: ColoredParams<CalendarChartParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     CalendarChart(
       modifier =
-        Modifier.background(LocalTheme.current.tableBackground, CardShape)
+        Modifier.background(colors.tableBackground, CardShape)
           .width(WIDTH.dp)
           .height(HEIGHT.dp)
           .padding(5.dp),
@@ -457,7 +450,7 @@ private fun PreviewCalendarChart(
 private data class CalendarChartParams(val data: CalendarData, val compact: Boolean)
 
 private class CalendarChartProvider :
-  ThemedParameterProvider<CalendarChartParams>(
+  ColoredParameterProvider<CalendarChartParams>(
     CalendarChartParams(ONE_MONTH, compact = true),
     CalendarChartParams(THREE_MONTHS, compact = true),
     CalendarChartParams(ONE_MONTH, compact = false),
@@ -467,16 +460,16 @@ private class CalendarChartProvider :
 @Preview
 @Composable
 private fun PreviewMonthHeader(
-  @PreviewParameter(MonthHeaderProvider::class) params: ThemedParams<MonthHeaderParams>
+  @PreviewParameter(MonthHeaderProvider::class) params: ColoredParams<MonthHeaderParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     MonthHeader(month = params.data.month, compact = params.data.compact)
   }
 
 private data class MonthHeaderParams(val month: CalendarMonth, val compact: Boolean)
 
 private class MonthHeaderProvider :
-  ThemedParameterProvider<MonthHeaderParams>(
+  ColoredParameterProvider<MonthHeaderParams>(
     MonthHeaderParams(JAN_2025.copy(expenses = Amount.Zero), compact = false),
     MonthHeaderParams(JAN_2025, compact = true),
   )
@@ -484,16 +477,16 @@ private class MonthHeaderProvider :
 @Preview
 @Composable
 private fun PreviewCalendarSummary(
-  @PreviewParameter(CalendarSummaryProvider::class) params: ThemedParams<CalendarSummaryParams>
+  @PreviewParameter(CalendarSummaryProvider::class) params: ColoredParams<CalendarSummaryParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     CalendarSummary(data = params.data.data, compact = params.data.compact)
   }
 
 private data class CalendarSummaryParams(val data: CalendarData, val compact: Boolean)
 
 private class CalendarSummaryProvider :
-  ThemedParameterProvider<CalendarSummaryParams>(
+  ColoredParameterProvider<CalendarSummaryParams>(
     CalendarSummaryParams(ONE_MONTH, compact = false),
     CalendarSummaryParams(THREE_MONTHS, compact = false),
     CalendarSummaryParams(THREE_MONTHS, compact = true),
@@ -502,9 +495,9 @@ private class CalendarSummaryProvider :
 @Preview
 @Composable
 private fun PreviewDayButton(
-  @PreviewParameter(DayButtonProvider::class) params: ThemedParams<DayButtonParams>
+  @PreviewParameter(DayButtonProvider::class) params: ColoredParams<DayButtonParams>
 ) =
-  PreviewWithTheme(params.theme) {
+  PreviewWithColors(params.colors) {
     DayButton(
       modifier = Modifier.size(params.data.size),
       day = params.data.day,
@@ -520,7 +513,7 @@ private data class DayButtonParams(
 )
 
 private class DayButtonProvider :
-  ThemedParameterProvider<DayButtonParams>(
+  ColoredParameterProvider<DayButtonParams>(
     DayButtonParams(
       day = day(day = 26, income = 5345.67, expenses = 1234.56),
       month = JAN_2025.copy(income = Amount(value = 10345.89), expenses = Amount(value = 3456.90)),
@@ -534,9 +527,9 @@ private class DayButtonProvider :
 @Preview
 @Composable
 private fun PreviewCalendarMonth(
-  @PreviewParameter(CalendarMonthProvider::class) params: ThemedParams<CalendarMonthParams>
+  @PreviewParameter(CalendarMonthProvider::class) params: ColoredParams<CalendarMonthParams>
 ) =
-  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.isPrivacyEnabled) {
+  PreviewWithColors(colors = params.colors, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CalendarMonth(month = params.data.month, compact = params.data.compact, onAction = {})
   }
 
@@ -547,7 +540,7 @@ private data class CalendarMonthParams(
 )
 
 private class CalendarMonthProvider :
-  ThemedParameterProvider<CalendarMonthParams>(
+  ColoredParameterProvider<CalendarMonthParams>(
     CalendarMonthParams(month = JAN_2025, compact = false),
     CalendarMonthParams(month = JAN_2025, compact = false, isPrivacyEnabled = true),
     CalendarMonthParams(month = JAN_2025, compact = true),

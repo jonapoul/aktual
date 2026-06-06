@@ -2,10 +2,10 @@
 
 package aktual.core.ui
 
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.LightTheme
-import aktual.core.theme.MidnightTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.theme.DarkColors
+import aktual.core.theme.LightColors
+import aktual.core.theme.MidnightColors
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -68,50 +68,50 @@ open class PreviewParameters<T>(protected val data: List<T>) : PreviewParameterP
     labels.getOrNull(index) ?: data[index]?.toString()
 }
 
-@Immutable data class ThemedParams<T>(val theme: Theme, val data: T)
+@Immutable data class ColoredParams<T>(val colors: Colors, val data: T)
 
-open class ThemedParameterProvider<T>(collection: List<T>) :
-  PreviewParameterProvider<ThemedParams<T>> {
-  private val all: List<ThemedParams<T>> = collection.flatMap { data ->
-    Theme.Defaults.map { type -> ThemedParams(type, data) }
+open class ColoredParameterProvider<T>(collection: List<T>) :
+  PreviewParameterProvider<ColoredParams<T>> {
+  private val all: List<ColoredParams<T>> = collection.flatMap { data ->
+    Colors.Defaults.map { type -> ColoredParams(type, data) }
   }
 
-  override val values: Sequence<ThemedParams<T>>
+  override val values: Sequence<ColoredParams<T>>
     get() = all.asSequence()
 
   constructor(vararg values: T) : this(values.toList())
 
   override fun getDisplayName(index: Int): String? =
-    all.getOrNull(index)?.let { params -> "${params.theme::class.simpleName} - ${params.data}" }
+    all.getOrNull(index)?.let { params -> "${params.colors::class.simpleName} - ${params.data}" }
 }
 
-class ThemeParameters : PreviewParameters<Theme>(LightTheme, DarkTheme, MidnightTheme)
+class ColoredParameters : PreviewParameters<Colors>(LightColors, DarkColors, MidnightColors)
 
-class ThemedBooleanParameters : ThemedParameterProvider<Boolean>(true, false)
+class ColoredBooleanParameters : ColoredParameterProvider<Boolean>(true, false)
 
 @Composable
-fun PreviewWithTheme(
-  theme: Theme,
+fun PreviewWithColors(
+  colors: Colors,
   modifier: Modifier = Modifier,
   isPrivacyEnabled: Boolean = false,
   content: @Composable () -> Unit,
 ) =
   WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
-    AktualTheme(theme) {
-      Surface(modifier = modifier, color = theme.pageBackground, content = content)
+    AktualTheme(colors) {
+      Surface(modifier = modifier, color = colors.pageBackground, content = content)
     }
   }
 
 @Composable
-fun <T> PreviewWithThemedParams(
-  params: ThemedParams<T>,
+fun <T> PreviewWithColoredParams(
+  params: ColoredParams<T>,
   modifier: Modifier = Modifier,
   isPrivacyEnabled: Boolean = false,
   content: @Composable T.() -> Unit,
 ) {
   WithCompositionLocals(isPrivacyEnabled = isPrivacyEnabled) {
-    AktualTheme(params.theme) {
-      Surface(modifier = modifier, color = params.theme.pageBackground) {
+    AktualTheme(params.colors) {
+      Surface(modifier = modifier, color = params.colors.pageBackground) {
         with(params.data) { content() }
       }
     }

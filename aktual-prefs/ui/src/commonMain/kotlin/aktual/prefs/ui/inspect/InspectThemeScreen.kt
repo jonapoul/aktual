@@ -6,21 +6,20 @@ import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.model.ThemeId
 import aktual.core.nav.BackNavigator
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.LightTheme
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.MidnightTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.DarkColors
+import aktual.core.theme.LightColors
+import aktual.core.theme.MidnightColors
 import aktual.core.theme.isLight
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.blurredTopBarContentPadding
@@ -98,7 +97,6 @@ private fun metroViewModel(themeId: ThemeId) =
 
 @Composable
 private fun InspectThemeScaffold(state: InspectThemeState, onAction: InspectThemeActionHandler) {
-  val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
 
@@ -113,7 +111,7 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: InspectThem
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.isScrollInProgress),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(title) },
         actions = { if (state is Loaded && state.isCustom) OpenRepoButton(onAction) },
@@ -147,7 +145,6 @@ private fun InspectThemeContent(
   listState: LazyListState,
   onAction: InspectThemeActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   when (state) {
     is Loading -> {
@@ -161,7 +158,7 @@ private fun InspectThemeContent(
         modifier = modifier,
         title = Strings.settingsThemeInspectNotFound,
         reason = Strings.settingsThemeInspectNotFoundReason(state.id.value),
-        background = theme.tableBackground,
+        background = colors.tableBackground,
         action =
           FailureAction(
             text = { Strings.settingsThemeInspectRetry },
@@ -202,7 +199,7 @@ private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modif
       modifier = Modifier.weight(1f),
       text = property.name,
       color = textColor,
-      style = AktualTypography.bodySmall,
+      style = typography.bodySmall,
       textAlign = TextAlign.Start,
       maxLines = 1,
     )
@@ -210,7 +207,7 @@ private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modif
     Text(
       text = property.color.toHexString(),
       color = textColor,
-      style = AktualTypography.labelMedium,
+      style = typography.labelMedium,
       textAlign = TextAlign.End,
       maxLines = 1,
     )
@@ -233,15 +230,15 @@ private fun Color.toHexString(): String {
 
 @Preview
 @Composable
-private fun PreviewInspectTheme(
-  @PreviewParameter(InspectThemePreviewProvider::class) params: ThemedParams<InspectThemeState>
-) = PreviewWithTheme(params.theme) { InspectThemeScaffold(state = params.data, onAction = {}) }
+private fun PreviewInspectColors(
+  @PreviewParameter(InspectThemePreviewProvider::class) params: ColoredParams<InspectThemeState>
+) = PreviewWithColors(params.colors) { InspectThemeScaffold(state = params.data, onAction = {}) }
 
 private class InspectThemePreviewProvider :
-  ThemedParameterProvider<InspectThemeState>(
+  ColoredParameterProvider<InspectThemeState>(
     NotFound(id = ThemeId("username/repo")),
     Loading,
-    Loaded(LightTheme.id, false, LightTheme.properties()),
-    Loaded(DarkTheme.id, false, DarkTheme.properties()),
-    Loaded(MidnightTheme.id, true, MidnightTheme.properties()),
+    Loaded(LightColors.id, false, LightColors.properties()),
+    Loaded(DarkColors.id, false, DarkColors.properties()),
+    Loaded(MidnightColors.id, true, MidnightColors.properties()),
   )

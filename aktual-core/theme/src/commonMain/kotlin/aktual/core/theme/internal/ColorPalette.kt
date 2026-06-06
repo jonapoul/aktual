@@ -4,7 +4,7 @@ import androidx.compose.ui.graphics.Color
 
 /** actual/packages/component-library/src/themes/palette.css */
 @Suppress("unused")
-internal object AktualColors {
+internal object ColorPalette {
   val gray50 = Color(color = 0xFFF6F8FA)
   val gray80 = Color(color = 0xFFF0F4F6)
   val gray100 = Color(color = 0xFFE8ECF0)

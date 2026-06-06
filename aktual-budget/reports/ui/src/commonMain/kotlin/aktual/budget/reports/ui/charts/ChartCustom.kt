@@ -4,13 +4,12 @@ import aktual.budget.reports.vm.CustomData
 import aktual.budget.reports.vm.DateRangeMode
 import aktual.budget.reports.vm.ReportTimeRange
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.CardShape
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
+import aktual.core.ui.PreviewWithColors
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,18 +37,17 @@ internal fun CustomChart(
   compact: Boolean,
   modifier: Modifier = Modifier,
   includeHeader: Boolean = true,
-  theme: Theme = LocalTheme.current,
 ) =
   Column(modifier = modifier) {
     if (compact && includeHeader) {
-      Header(modifier = Modifier.padding(4.dp).fillMaxWidth(), data = data, theme = theme)
+      Header(modifier = Modifier.padding(4.dp).fillMaxWidth(), data = data)
     }
 
     Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
       Text(
         text = Strings.reportsCustomNoop,
-        style = AktualTypography.titleLarge,
-        color = theme.warningText,
+        style = typography.titleLarge,
+        color = colors.warningText,
         textAlign = TextAlign.Center,
       )
     }
@@ -59,19 +57,18 @@ internal fun CustomChart(
 private fun Header(
   data: CustomData,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   Row(modifier = modifier.fillMaxWidth()) {
     Text(
       modifier = Modifier.weight(1f),
       text = data.title,
-      color = theme.pageText,
+      color = colors.pageText,
       overflow = TextOverflow.Ellipsis,
     )
 
     Text(
       text = dateRange(data.range),
-      color = theme.pageTextSubdued,
+      color = colors.pageTextSubdued,
       overflow = TextOverflow.Ellipsis,
     )
   }
@@ -86,12 +83,12 @@ private fun dateRange(timeRange: ReportTimeRange): String =
 @Preview
 @Composable
 private fun PreviewCustomChart(
-  @PreviewParameter(CustomChartProvider::class) params: ThemedParams<CustomChartParams>
+  @PreviewParameter(CustomChartProvider::class) params: ColoredParams<CustomChartParams>
 ) =
-  PreviewWithTheme(theme = params.theme, isPrivacyEnabled = params.data.isPrivacyEnabled) {
+  PreviewWithColors(params.colors, isPrivacyEnabled = params.data.isPrivacyEnabled) {
     CustomChart(
       modifier =
-        Modifier.background(LocalTheme.current.tableBackground, CardShape)
+        Modifier.background(colors.tableBackground, CardShape)
           .width(WIDTH.dp)
           .let { m -> if (params.data.compact) m.height(300.dp) else m }
           .padding(5.dp),
@@ -107,7 +104,7 @@ private data class CustomChartParams(
 )
 
 private class CustomChartProvider :
-  ThemedParameterProvider<CustomChartParams>(
+  ColoredParameterProvider<CustomChartParams>(
     CustomChartParams(PREVIEW_CUSTOM_DATA, compact = false, isPrivacyEnabled = true),
     CustomChartParams(PREVIEW_CUSTOM_DATA, compact = false, isPrivacyEnabled = false),
     CustomChartParams(PREVIEW_CUSTOM_DATA, compact = true, isPrivacyEnabled = true),

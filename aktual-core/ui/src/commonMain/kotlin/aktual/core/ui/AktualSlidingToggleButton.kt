@@ -1,8 +1,8 @@
 package aktual.core.ui
 
 import aktual.budget.model.Interval
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -45,7 +45,6 @@ fun <T : Any> AktualSlidingToggleButton(
   onSelect: (T) -> Unit,
   modifier: Modifier = Modifier,
   isEnabled: Boolean = true,
-  theme: Theme = LocalTheme.current,
   string: @Composable (T) -> String = { it.toString() },
   fontSize: TextUnit = TextUnit.Unspecified,
   itemPadding: PaddingValues = PaddingValues(horizontal = 5.dp, vertical = 10.dp),
@@ -66,13 +65,13 @@ fun <T : Any> AktualSlidingToggleButton(
       modifier
         .fillMaxWidth()
         .clip(ButtonShape)
-        .background(theme.unselectedBackground(isEnabled), ButtonShape),
+        .background(colors.unselectedBackground(isEnabled), ButtonShape),
     content = {
       // Child 0: The Indicator
       Box(
         modifier =
           Modifier.fillMaxSize() // Will be constrained by the Layout logic
-            .background(theme.selectedBackground(isEnabled), ButtonShape)
+            .background(colors.selectedBackground(isEnabled), ButtonShape)
       )
 
       // Children 1 to N: The Labels
@@ -83,7 +82,7 @@ fun <T : Any> AktualSlidingToggleButton(
         ) {
           Text(
             text = string(option),
-            color = theme.textColor(isEnabled, isSelected = selectedIndex == index),
+            color = colors.textColor(isEnabled, isSelected = selectedIndex == index),
             fontWeight = FontWeight.Medium,
             fontSize = fontSize,
             textAlign = TextAlign.Center,
@@ -125,7 +124,7 @@ fun <T : Any> AktualSlidingToggleButton(
 }
 
 @Stable
-private fun Theme.textColor(isEnabled: Boolean, isSelected: Boolean): Color =
+private fun Colors.textColor(isEnabled: Boolean, isSelected: Boolean): Color =
   if (isSelected) {
     if (isEnabled) checkboxText else buttonPrimaryDisabledText
   } else {
@@ -133,19 +132,19 @@ private fun Theme.textColor(isEnabled: Boolean, isSelected: Boolean): Color =
   }
 
 @Stable
-private fun Theme.selectedBackground(isEnabled: Boolean): Color =
+private fun Colors.selectedBackground(isEnabled: Boolean): Color =
   if (isEnabled) checkboxToggleBackgroundSelected else buttonNormalDisabledBackground
 
 @Stable
-private fun Theme.unselectedBackground(isEnabled: Boolean): Color =
+private fun Colors.unselectedBackground(isEnabled: Boolean): Color =
   if (isEnabled) checkboxToggleBackground else buttonBareDisabledBackground
 
 @Preview
 @Composable
 private fun PreviewStrings(
-  @PreviewParameter(ThemedBooleanParameters::class) params: ThemedParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
 ) =
-  PreviewWithThemedParams(params) {
+  PreviewWithColoredParams(params) {
     var selected by remember { mutableStateOf("Option A") }
     AktualSlidingToggleButton(
       modifier = Modifier.padding(4.dp),
@@ -158,8 +157,8 @@ private fun PreviewStrings(
 
 @Preview
 @Composable
-private fun PreviewEnum(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewEnum(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     var selected by remember { mutableStateOf(Interval.Weekly) }
     AktualSlidingToggleButton(
       modifier = Modifier.padding(4.dp),

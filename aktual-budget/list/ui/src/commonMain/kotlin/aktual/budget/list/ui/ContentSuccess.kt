@@ -2,13 +2,12 @@ package aktual.budget.list.ui
 
 import aktual.budget.model.Budget
 import aktual.budget.model.directoryId
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemeParameters
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.scrollbar
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -31,7 +30,6 @@ internal fun ContentSuccess(
   modifier: Modifier = Modifier,
   contentPadding: PaddingValues = PaddingValues(),
   listState: LazyListState = rememberLazyListState(),
-  theme: Theme = LocalTheme.current,
 ) {
   LazyColumn(
     modifier = modifier.scrollbar(listState),
@@ -43,7 +41,6 @@ internal fun ContentSuccess(
       BudgetListItem(
         modifier = Modifier.animateItem(),
         budget = budget,
-        theme = theme,
         onClickOpen = { onClickOpen(budget) },
         onClickDelete = { onClickDelete(budget) },
       )
@@ -55,10 +52,10 @@ internal fun ContentSuccess(
 
 @PortraitPreview
 @Composable
-private fun PreviewContentSuccess(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewContentSuccess(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     ContentSuccess(
-      modifier = Modifier.background(LocalTheme.current.pageBackground),
+      modifier = Modifier.background(colors.pageBackground),
       budgets = persistentListOf(PreviewBudgetSynced, PreviewBudgetSynced, PreviewBudgetSynced),
       onClickOpen = {},
       onClickDelete = {},

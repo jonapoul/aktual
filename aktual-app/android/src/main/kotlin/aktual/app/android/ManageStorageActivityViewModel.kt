@@ -1,6 +1,6 @@
 package aktual.app.android
 
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.theme.ThemeResolver
 import aktual.di.AppScope
 import androidx.lifecycle.ViewModel
@@ -23,10 +23,10 @@ class ManageStorageActivityViewModel(private val themeResolver: ThemeResolver) :
   private val isSystemInDarkTheme = MutableStateFlow<Boolean?>(null)
 
   @OptIn(ExperimentalCoroutinesApi::class)
-  val theme: StateFlow<Theme?> =
+  val theme: StateFlow<Colors?> =
     isSystemInDarkTheme
       .filterNotNull()
-      .flatMapLatest { isDark -> themeResolver.activeTheme(isDark) }
+      .flatMapLatest { isDark -> themeResolver.activeColors(isDark) }
       .stateIn(viewModelScope, Eagerly, null)
 
   fun updateSystemDarkTheme(isSystemInDarkTheme: Boolean) {

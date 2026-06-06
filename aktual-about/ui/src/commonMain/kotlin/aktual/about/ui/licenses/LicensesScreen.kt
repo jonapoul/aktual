@@ -14,20 +14,19 @@ import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.BackNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
 import aktual.core.ui.AktualTextField
-import aktual.core.ui.AktualTypography
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.AnimatedLoading
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.BottomSpacing
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithThemedParams
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.blurredTopBarContent
@@ -94,7 +93,6 @@ fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroView
 
 @Composable
 private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandler) {
-  val theme = LocalTheme.current
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
   val loadedState = state as? Loaded
@@ -105,7 +103,7 @@ private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandl
     topBar = {
       TopAppBar(
         modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
-        colors = theme.transparentTopAppBarColors(),
+        colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Title(isSearchActive, loadedState, onAction) },
         actions = {
@@ -125,7 +123,6 @@ private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandl
         state = state,
         contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
         listState = listState,
-        theme = theme,
         onAction = onAction,
       )
     }
@@ -139,7 +136,7 @@ private fun Title(isSearchActive: Boolean, loadedState: Loaded?, onAction: Licen
     transitionSpec = { fadeIn() togetherWith fadeOut() },
   ) { searching ->
     if (searching) {
-      CompositionLocalProvider(LocalTextStyle provides AktualTypography.bodyLarge) {
+      CompositionLocalProvider(LocalTextStyle provides typography.bodyLarge) {
         FilterInput(loadedState?.filterText, loadedState?.artifacts?.size, onAction)
       }
     } else {
@@ -181,13 +178,12 @@ private fun LicensesContent(
   listState: LazyListState,
   onAction: LicensesActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   when (state) {
     Loading -> LoadingContent(modifier)
-    NoneFound -> NoneFoundContent(theme, modifier)
-    is Loaded -> LoadedContent(theme, state, contentPadding, listState, onAction, modifier)
-    is Error -> ErrorContent(theme, state.errorMessage, onAction, modifier)
+    NoneFound -> NoneFoundContent(modifier)
+    is Loaded -> LoadedContent(state, contentPadding, listState, onAction, modifier)
+    is Error -> ErrorContent(state.errorMessage, onAction, modifier)
   }
 
 @Composable
@@ -196,19 +192,18 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun NoneFoundContent(theme: Theme, modifier: Modifier = Modifier) {
+private fun NoneFoundContent(modifier: Modifier = Modifier) {
   FailureScreen(
     modifier = modifier,
     title = Strings.licensesError,
     reason = Strings.licensesNoneFound,
-    background = theme.tableBackground,
+    background = colors.tableBackground,
     action = null,
   )
 }
 
 @Composable
 private fun LoadedContent(
-  theme: Theme,
   state: Loaded,
   contentPadding: PaddingValues,
   listState: LazyListState,
@@ -221,7 +216,7 @@ private fun LoadedContent(
       title = Strings.licensesNoResults,
       reason = null,
       icon = null,
-      background = theme.tableBackground,
+      background = colors.tableBackground,
       action =
         FailureAction(
           text = { Strings.licensesFilterClear },
@@ -230,13 +225,12 @@ private fun LoadedContent(
         ),
     )
   } else {
-    ArtifactList(theme, state.artifacts, contentPadding, listState, onAction, modifier)
+    ArtifactList(state.artifacts, contentPadding, listState, onAction, modifier)
   }
 }
 
 @Composable
 private fun ArtifactList(
-  theme: Theme,
   artifacts: ImmutableList<ArtifactDetail>,
   contentPadding: PaddingValues,
   listState: LazyListState,
@@ -254,7 +248,6 @@ private fun ArtifactList(
         modifier = Modifier.animateItem(),
         artifact = artifact,
         onLaunchUrl = { onAction(LaunchUrl(it)) },
-        theme = theme,
       )
     }
 
@@ -264,7 +257,6 @@ private fun ArtifactList(
 
 @Composable
 private fun ErrorContent(
-  theme: Theme,
   errorMessage: String,
   onAction: LicensesActionHandler,
   modifier: Modifier = Modifier,
@@ -273,7 +265,7 @@ private fun ErrorContent(
     modifier = modifier,
     title = Strings.licensesError,
     reason = Strings.licensesFailed(errorMessage),
-    background = theme.tableBackground,
+    background = colors.tableBackground,
     action =
       FailureAction(
         text = { Strings.licensesFailedRetry },
@@ -286,9 +278,9 @@ private fun ErrorContent(
 @PortraitPreview
 @Composable
 private fun PreviewLicenses(
-  @PreviewParameter(LicensesParamsProvider::class) params: ThemedParams<LicensesState>
+  @PreviewParameter(LicensesParamsProvider::class) params: ColoredParams<LicensesState>
 ) {
-  PreviewWithThemedParams(params) { LicensesScaffold(state = this, onAction = {}) }
+  PreviewWithColoredParams(params) { LicensesScaffold(state = this, onAction = {}) }
 }
 
 private val LOADED_STATE =
@@ -302,7 +294,7 @@ private val LOADED_STATE =
   )
 
 private class LicensesParamsProvider :
-  ThemedParameterProvider<LicensesState>(
+  ColoredParameterProvider<LicensesState>(
     Error("Something broke lol! Here's some more shite to show how it looks"),
     NoneFound,
     Loading,

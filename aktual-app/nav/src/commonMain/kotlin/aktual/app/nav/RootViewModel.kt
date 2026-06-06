@@ -1,7 +1,7 @@
 package aktual.app.nav
 
 import aktual.core.nav.NavEntryContributor
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.core.theme.ThemeResolver
 import aktual.core.ui.BlurConfig
 import aktual.core.ui.BottomBarState
@@ -48,10 +48,10 @@ abstract class RootViewModel(
 
   private val isSystemInDarkTheme = MutableStateFlow<Boolean?>(null)
 
-  val theme: StateFlow<Theme?> =
+  val colors: StateFlow<Colors?> =
     isSystemInDarkTheme
       .filterNotNull()
-      .flatMapLatest { isDark -> themeResolver.activeTheme(isDark) }
+      .flatMapLatest { isDark -> themeResolver.activeColors(isDark) }
       .stateIn(viewModelScope, Eagerly, null)
 
   init {

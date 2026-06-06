@@ -2,7 +2,7 @@ package aktual.prefs.vm.inspect
 
 import aktual.core.model.ThemeId
 import aktual.core.model.UrlOpener
-import aktual.core.theme.CustomTheme
+import aktual.core.theme.CustomColors
 import aktual.core.theme.ThemeResolver
 import aktual.di.AppScope
 import aktual.prefs.vm.theme.properties
@@ -46,15 +46,15 @@ class InspectThemeViewModel(
   }
 
   private suspend fun loadTheme() {
-    val theme = themeResolver.resolve(themeId)
-    if (theme == null) {
+    val colors = themeResolver.resolve(themeId)
+    if (colors == null) {
       logcat.w { "Theme not found for id=$themeId" }
       mutableState.update { InspectThemeState.NotFound(themeId) }
       return
     }
 
-    val isCustom = theme is CustomTheme
-    mutableState.update { InspectThemeState.Loaded(themeId, isCustom, theme.properties()) }
+    val isCustom = colors is CustomColors
+    mutableState.update { InspectThemeState.Loaded(themeId, isCustom, colors.properties()) }
   }
 
   @AssistedFactory

@@ -4,14 +4,13 @@ import aktual.about.data.ArtifactDetail
 import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameterProvider
+import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.NormalIconButton
-import aktual.core.ui.PreviewWithTheme
-import aktual.core.ui.ThemedParameterProvider
-import aktual.core.ui.ThemedParams
+import aktual.core.ui.PreviewWithColors
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -51,15 +50,14 @@ internal fun ArtifactItem(
   artifact: ArtifactDetail,
   onLaunchUrl: (url: String) -> Unit,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   val interactionSource = remember { MutableInteractionSource() }
   Row(
     modifier =
       modifier
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
-        .background(theme.buttonNormalBackground, CardShape)
-        .border(Dp.Hairline, theme.pillBorderDark, CardShape)
+        .background(colors.buttonNormalBackground, CardShape)
+        .border(Dp.Hairline, colors.pillBorderDark, CardShape)
         .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
         .padding(Dimens.Large),
     verticalAlignment = Alignment.CenterVertically,
@@ -68,7 +66,7 @@ internal fun ArtifactItem(
       Text(
         text = artifact.name ?: artifact.artifactId,
         fontWeight = FontWeight.W700,
-        color = theme.pageTextPositive,
+        color = colors.pageTextPositive,
         fontSize = 15.sp,
       )
 
@@ -173,7 +171,6 @@ private fun LibraryTableRow(
   headerStyle: TextStyle,
   headerWidth: Dp,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   if (value.isNullOrEmpty()) {
     // Nothing to show
@@ -185,7 +182,7 @@ private fun LibraryTableRow(
       modifier = Modifier.width(headerWidth),
       text = title,
       textAlign = TextAlign.Start,
-      color = theme.pageTextLight,
+      color = colors.pageTextLight,
       lineHeight = LineHeight,
       style = headerStyle,
     )
@@ -196,7 +193,7 @@ private fun LibraryTableRow(
       modifier = Modifier.weight(1f),
       text = value,
       textAlign = TextAlign.Start,
-      color = theme.pageText,
+      color = colors.pageText,
       lineHeight = LineHeight,
       fontSize = TextSize,
     )
@@ -209,11 +206,11 @@ private val TextSize = 12.sp
 @Preview
 @Composable
 private fun PreviewArtifactItem(
-  @PreviewParameter(ArtifactItemProvider::class) params: ThemedParams<ArtifactDetail>
-) = PreviewWithTheme(params.theme) { ArtifactItem(artifact = params.data, onLaunchUrl = {}) }
+  @PreviewParameter(ArtifactItemProvider::class) params: ColoredParams<ArtifactDetail>
+) = PreviewWithColors(params.colors) { ArtifactItem(artifact = params.data, onLaunchUrl = {}) }
 
 private class ArtifactItemProvider :
-  ThemedParameterProvider<ArtifactDetail>(
+  ColoredParameterProvider<ArtifactDetail>(
     AlakazamAndroidCore,
     ComposeMaterialRipple,
     FragmentKtx,

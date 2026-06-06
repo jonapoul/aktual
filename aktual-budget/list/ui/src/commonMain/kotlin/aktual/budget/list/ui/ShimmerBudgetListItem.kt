@@ -1,13 +1,13 @@
 package aktual.budget.list.ui
 
-import aktual.core.theme.DarkTheme
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
+import aktual.core.theme.DarkColors
+import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.Dimens
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
-import aktual.core.ui.ThemeParameters
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -34,18 +34,14 @@ import com.valentinilk.shimmer.shimmer
 internal fun ShimmerBudgetList(
   numLoadingItems: Int,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) {
   Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Dimens.Medium)) {
-    repeat(numLoadingItems) { ShimmerBudgetListItem(theme = theme) }
+    repeat(numLoadingItems) { ShimmerBudgetListItem() }
   }
 }
 
 @Composable
-internal fun ShimmerBudgetListItem(
-  modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
-) {
+internal fun ShimmerBudgetListItem(modifier: Modifier = Modifier) {
   val shimmer = rememberShimmer(ShimmerBounds.Window)
 
   Row(
@@ -53,8 +49,8 @@ internal fun ShimmerBudgetListItem(
       modifier
         .fillMaxWidth()
         .clip(RowShape)
-        .background(theme.buttonNormalBackground, RowShape)
-        .border(Dp.Hairline, theme.pillBorderDark, RowShape)
+        .background(colors.buttonNormalBackground, RowShape)
+        .border(Dp.Hairline, colors.pillBorderDark, RowShape)
         .padding(horizontal = 15.dp, vertical = 12.dp)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
@@ -67,7 +63,7 @@ internal fun ShimmerBudgetListItem(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.55f)
             .height(20.dp)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
 
       // State text placeholder (real: 18dp icon row with 13sp text)
@@ -76,7 +72,7 @@ internal fun ShimmerBudgetListItem(
           Modifier.padding(top = 4.dp)
             .fillMaxWidth(fraction = 0.35f)
             .height(18.dp)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
 
       // Description placeholder (real: 10sp / 12sp lineHeight x ~2 for 2 lines)
@@ -85,7 +81,7 @@ internal fun ShimmerBudgetListItem(
           Modifier.padding(top = 4.dp)
             .fillMaxWidth(fraction = 0.45f)
             .height(20.dp)
-            .background(theme.pageText, CardShape)
+            .background(colors.pageText, CardShape)
       )
     }
   }
@@ -95,7 +91,7 @@ internal fun ShimmerBudgetListItem(
 @Preview(widthDp = 1000)
 @Composable
 private fun PreviewShimmerVsReal() =
-  PreviewWithTheme(DarkTheme) {
+  PreviewWithColors(DarkColors) {
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
       ShimmerBudgetListItem(modifier = Modifier.weight(1f))
 
@@ -110,5 +106,5 @@ private fun PreviewShimmerVsReal() =
 
 @Preview
 @Composable
-private fun PreviewShimmerBudgetList(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) { ShimmerBudgetList(numLoadingItems = 4) }
+private fun PreviewShimmerBudgetList(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) { ShimmerBudgetList(numLoadingItems = 4) }

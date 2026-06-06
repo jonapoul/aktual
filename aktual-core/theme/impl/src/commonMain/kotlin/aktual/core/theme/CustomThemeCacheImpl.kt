@@ -72,7 +72,7 @@ class CustomThemeCacheImpl(
     }
   }
 
-  override suspend fun theme(repo: CustomThemeRepo): CustomTheme? {
+  override suspend fun theme(repo: CustomThemeRepo): CustomColors? {
     val themeFile = repo.themeFile()
     val exists = withContext(contexts.io) { fileSystem.exists(themeFile) }
     if (!exists) {
@@ -102,8 +102,8 @@ class CustomThemeCacheImpl(
     }
   }
 
-  override suspend fun save(theme: CustomTheme) {
-    require(theme is JsonCustomTheme) { "Invalid custom theme: $theme" }
+  override suspend fun save(theme: CustomColors) {
+    require(theme is JsonCustomColors) { "Invalid custom theme: $theme" }
     val themeFile = theme.repo.themeFile()
 
     try {
@@ -142,6 +142,6 @@ class CustomThemeCacheImpl(
 
   private companion object {
     val SUMMARIES_SERIALIZER = ListSerializer(CustomThemeSummary.serializer())
-    val THEME_SERIALIZER = JsonCustomTheme.serializer()
+    val THEME_SERIALIZER = JsonCustomColors.serializer()
   }
 }

@@ -62,7 +62,7 @@ fun AktualAppContent(
   val isSystemDark = isSystemInDarkTheme()
   LaunchedEffect(isSystemDark) { viewModel.updateSystemDarkTheme(isSystemDark) }
 
-  val theme by viewModel.theme.collectAsStateWithLifecycle()
+  val colors by viewModel.colors.collectAsStateWithLifecycle()
   val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
   val formatConfig by viewModel.formatConfig.collectAsStateWithLifecycle()
   val blurConfig by viewModel.blurConfig.collectAsStateWithLifecycle()
@@ -80,7 +80,7 @@ fun AktualAppContent(
     hazeState = hazeState,
     blurConfig = blurConfig,
   ) {
-    AktualTheme(theme) {
+    AktualTheme(colors) {
       Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
         var bottomStatusBarHeight by remember { mutableStateOf(0.dp) }
 

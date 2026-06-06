@@ -13,18 +13,18 @@ import aktual.core.model.AktualVersions
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.LicensesNavigator
 import aktual.core.nav.ManageStorageNavigator
-import aktual.core.theme.LocalTheme
-import aktual.core.theme.Theme
-import aktual.core.ui.AktualTypography
+import aktual.core.theme.Colors
+import aktual.core.ui.AktualTheme.colors
+import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
+import aktual.core.ui.ColoredParameters
 import aktual.core.ui.Dimens
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
-import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.ThemeParameters
 import aktual.core.ui.WavyBackground
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.transparentTopAppBarColors
@@ -74,7 +74,6 @@ fun InfoScreen(
   toManageStorage: ManageStorageNavigator,
   viewModel: AboutViewModel = metroViewModel(),
 ) {
-  val theme = LocalTheme.current
   val buildState by viewModel.buildState.collectAsStateWithLifecycle()
 
   val onCancel = { viewModel.cancelUpdateCheck() }
@@ -83,11 +82,11 @@ fun InfoScreen(
   when (val state = checkUpdatesState) {
     CheckUpdatesState.Inactive -> noOp()
 
-    CheckUpdatesState.Checking -> CheckUpdatesLoadingDialog(onCancel, theme = theme)
+    CheckUpdatesState.Checking -> CheckUpdatesLoadingDialog(onCancel)
 
-    CheckUpdatesState.NoUpdateFound -> NoUpdateFoundDialog(onCancel, theme = theme)
+    CheckUpdatesState.NoUpdateFound -> NoUpdateFoundDialog(onCancel)
 
-    is CheckUpdatesState.Failed -> UpdateCheckFailedDialog(state.cause, onCancel, theme = theme)
+    is CheckUpdatesState.Failed -> UpdateCheckFailedDialog(state.cause, onCancel)
 
     is CheckUpdatesState.UpdateFound ->
       UpdateFoundDialog(
@@ -96,7 +95,6 @@ fun InfoScreen(
         latestUrl = state.url,
         onDismiss = onCancel,
         onOpenUrl = { url -> viewModel.openUrl(url) },
-        theme = theme,
       )
   }
 
@@ -121,24 +119,22 @@ internal fun InfoScaffold(
   onAction: InfoActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val theme = LocalTheme.current
-  Scaffold(modifier = modifier, topBar = { InfoTopBar(theme, onAction) }) { innerPadding ->
+  Scaffold(modifier = modifier, topBar = { InfoTopBar(onAction) }) { innerPadding ->
     Box {
       WavyBackground()
       InfoScreenContent(
         modifier = Modifier.padding(innerPadding),
         buildState = buildState,
         onAction = onAction,
-        theme = theme,
       )
     }
   }
 }
 
 @Composable
-private fun InfoTopBar(theme: Theme, onAction: InfoActionHandler) {
+private fun InfoTopBar(onAction: InfoActionHandler) {
   TopAppBar(
-    colors = theme.transparentTopAppBarColors(),
+    colors = colors.transparentTopAppBarColors(),
     navigationIcon = { NavBackIconButton { onAction(NavBack) } },
     title = {
       Text(text = Strings.infoToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
@@ -151,7 +147,6 @@ private fun InfoScreenContent(
   buildState: BuildState,
   onAction: InfoActionHandler,
   modifier: Modifier = Modifier,
-  theme: Theme = LocalTheme.current,
 ) =
   BoxWithConstraints(modifier = modifier.padding(Dimens.Huge)) {
     val contentMaxWidth = if (isCompactWidth()) maxWidth else maxWidth / 2
@@ -162,8 +157,8 @@ private fun InfoScreenContent(
       horizontalAlignment = Alignment.CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
     ) {
-      InfoHeader(buildState.year, theme, contentModifier)
-      InfoBuildState(buildState, theme, contentModifier)
+      InfoHeader(buildState.year, contentModifier)
+      InfoBuildState(buildState, contentModifier)
       InfoButtons(onAction, contentModifier)
 
       BottomSpacing()
@@ -171,13 +166,13 @@ private fun InfoScreenContent(
   }
 
 @Composable
-private fun InfoHeader(year: Int, theme: Theme, modifier: Modifier = Modifier) {
+private fun InfoHeader(year: Int, modifier: Modifier = Modifier) {
   Row(
     modifier =
       modifier
         .fillMaxWidth()
-        .background(theme.tableBackground, CardShape)
-        .border(Dp.Hairline, theme.tableBorder, CardShape)
+        .background(colors.tableBackground, CardShape)
+        .border(Dp.Hairline, colors.tableBorder, CardShape)
         .padding(horizontal = 20.dp, vertical = 10.dp),
     horizontalArrangement = Arrangement.Center,
     verticalAlignment = Alignment.CenterVertically,
@@ -200,28 +195,27 @@ private fun InfoHeader(year: Int, theme: Theme, modifier: Modifier = Modifier) {
         text = appName,
         fontSize = 25.sp,
         fontWeight = FontWeight.W700,
-        color = theme.pillTextHighlighted,
+        color = colors.pillTextHighlighted,
       )
-      Text(text = Strings.infoSubtitle1(year), color = theme.pillText)
-      Text(text = Strings.infoSubtitle2, color = theme.pillText)
+      Text(text = Strings.infoSubtitle1(year), color = colors.pillText)
+      Text(text = Strings.infoSubtitle2, color = colors.pillText)
     }
   }
 }
 
 @Composable
-private fun InfoBuildState(buildState: BuildState, theme: Theme, modifier: Modifier = Modifier) {
+private fun InfoBuildState(buildState: BuildState, modifier: Modifier = Modifier) {
   Column(
     modifier =
       modifier
-        .background(theme.tableBackground, CardShape)
-        .border(Dp.Hairline, theme.tableBorder, CardShape)
+        .background(colors.tableBackground, CardShape)
+        .border(Dp.Hairline, colors.tableBorder, CardShape)
   ) {
     BuildStateItem(
       modifier = Modifier.padding(ItemMargin).clip(CardShape),
       icon = MaterialIcons.Apps,
       title = Strings.infoAppVersion,
       subtitle = buildState.versions.app,
-      theme = theme,
     )
 
     BuildStateItem(
@@ -229,7 +223,6 @@ private fun InfoBuildState(buildState: BuildState, theme: Theme, modifier: Modif
       icon = MaterialIcons.Cloud,
       title = Strings.infoServerVersion,
       subtitle = buildState.versions.server ?: Strings.infoServerVersionUnknown,
-      theme = theme,
     )
 
     BuildStateItem(
@@ -237,7 +230,6 @@ private fun InfoBuildState(buildState: BuildState, theme: Theme, modifier: Modif
       icon = MaterialIcons.CalendarToday,
       title = Strings.infoDate,
       subtitle = buildState.buildDate,
-      theme = theme,
     )
   }
 }
@@ -247,7 +239,6 @@ private fun BuildStateItem(
   icon: ImageVector,
   title: String,
   subtitle: String,
-  theme: Theme,
   modifier: Modifier = Modifier,
   onClick: (() -> Unit)? = null,
 ) {
@@ -264,21 +255,21 @@ private fun BuildStateItem(
       modifier = Modifier.padding(ItemPadding),
       imageVector = icon,
       contentDescription = title,
-      tint = theme.pillText,
+      tint = colors.pillText,
     )
 
     Column(modifier = Modifier.weight(1f).padding(ItemPadding)) {
       Text(
         modifier = Modifier.testTag(Tags.BuildStateItemTitle),
         text = title,
-        style = AktualTypography.bodyLarge,
-        color = theme.pillText,
+        style = typography.bodyLarge,
+        color = colors.pillText,
       )
       Text(
         modifier = Modifier.testTag(Tags.BuildStateItemValue),
         text = subtitle,
-        style = AktualTypography.labelMedium,
-        color = theme.pillTextSubdued,
+        style = typography.labelMedium,
+        color = colors.pillTextSubdued,
       )
     }
   }
@@ -292,8 +283,8 @@ private val ItemHeight = 50.dp
 @LandscapePreview
 @TabletPreview
 @Composable
-private fun PreviewInfoScaffold(@PreviewParameter(ThemeParameters::class) theme: Theme) =
-  PreviewWithTheme(theme) {
+private fun PreviewInfoScaffold(@PreviewParameter(ColoredParameters::class) colors: Colors) =
+  PreviewWithColors(colors) {
     InfoScaffold(modifier = Modifier.fillMaxSize(), buildState = PreviewBuildState, onAction = {})
   }
 

@@ -1,12 +1,12 @@
 package aktual.prefs.vm.theme
 
-import aktual.core.theme.Theme
+import aktual.core.theme.Colors
 import aktual.prefs.vm.inspect.ThemeProperty
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 
 @Suppress("LongMethod")
-fun Theme.properties(): ImmutableList<ThemeProperty> =
+fun Colors.properties(): ImmutableList<ThemeProperty> =
   listOf(
       "pageBackground" to pageBackground,
       "pageBackgroundModalActive" to pageBackgroundModalActive,
