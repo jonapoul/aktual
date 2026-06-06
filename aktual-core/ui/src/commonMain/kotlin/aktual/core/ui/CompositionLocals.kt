@@ -63,6 +63,11 @@ val LocalBottomBarThemeAttrs =
 val LocalDateFormatter =
   compositionLocalOf<DateTimeFormat<LocalDate>> { error("No LocalDateFormat value provided") }
 
+@Stable
+@Composable
+fun LocalDate.formatted(formatter: DateTimeFormat<LocalDate> = LocalDateFormatter.current): String =
+  formatter.format(this)
+
 val LocalNumberFormatConfig =
   compositionLocalOf<NumberFormatConfig> { error("No NumberFormatConfig value provided") }
 

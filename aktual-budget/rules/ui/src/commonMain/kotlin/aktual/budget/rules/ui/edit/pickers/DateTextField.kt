@@ -12,8 +12,8 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.PreviewWithTheme
+import aktual.core.ui.formatted
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -67,8 +67,7 @@ internal fun DateTextField(
     }
 
   val localDate = recurConfig?.start
-  val formatter = LocalDateFormatter.current
-  val displayText = remember(localDate) { localDate?.let(formatter::format).orEmpty() }
+  val displayText = localDate?.formatted().orEmpty()
 
   val textState = rememberTextFieldState(initialText = displayText)
   LaunchedEffect(displayText) {

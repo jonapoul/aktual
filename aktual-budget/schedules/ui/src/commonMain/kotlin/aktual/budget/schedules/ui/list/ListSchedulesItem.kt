@@ -8,13 +8,13 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualTypography
 import aktual.core.ui.CardShape
-import aktual.core.ui.LocalDateFormatter
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.RowShape
 import aktual.core.ui.ThemeParameters
 import aktual.core.ui.ThemedParameterProvider
 import aktual.core.ui.ThemedParams
+import aktual.core.ui.formatted
 import aktual.core.ui.formattedString
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -52,14 +52,16 @@ internal fun ListSchedulesItem(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val dateFormatter = LocalDateFormatter.current
-
-  @Suppress("ElseCaseInsteadOfExhaustiveWhen")
   val amountPrefix =
     when (schedule.amountOp) {
-      is Operator.IsApprox,
-      is Operator.IsBetween -> "~"
-      else -> ""
+      Operator.IsApprox,
+      Operator.IsBetween -> "~"
+
+      Operator.GreaterThan,
+      Operator.GreaterThanOrEquals,
+      Operator.Is,
+      Operator.LessThan,
+      Operator.LessThanOrEquals -> ""
     }
   val amountStr = amountPrefix + schedule.amount.formattedString(includeSign = true)
 
@@ -115,7 +117,7 @@ internal fun ListSchedulesItem(
 
         LabelValue(
           label = Strings.listSchedulesLabelNext,
-          value = dateFormatter.format(schedule.nextDate),
+          value = schedule.nextDate.formatted(),
           theme = theme,
         )
       }

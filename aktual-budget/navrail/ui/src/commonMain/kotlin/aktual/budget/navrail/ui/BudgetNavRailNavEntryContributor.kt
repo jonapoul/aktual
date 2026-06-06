@@ -1,6 +1,7 @@
 package aktual.budget.navrail.ui
 
 import aktual.core.nav.BudgetNavRailNavRoute
+import aktual.core.nav.EditNavGridNavRoute
 import aktual.core.nav.InfoNavRoute
 import aktual.core.nav.ListBudgetsNavRoute
 import aktual.core.nav.NavEntryContributor
@@ -40,6 +41,7 @@ class BudgetNavRailNavEntryContributor(private val runLevelState: RunLevelState)
               SwitchFile -> stack.replaceAll(ListBudgetsNavRoute)
               Settings -> stack.push(SettingsNavRoute)
               About -> stack.push(InfoNavRoute)
+              EditNavGrid -> stack.push(EditNavGridNavRoute)
             }
           }
         )

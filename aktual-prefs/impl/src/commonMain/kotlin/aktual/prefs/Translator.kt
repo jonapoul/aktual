@@ -30,6 +30,15 @@ internal inline fun <reified T : Any> toStringTranslator(crossinline constructor
     override fun decode(value: String): T = constructor(value)
   }
 
+// Joins/splits a list of strings on a comma. Safe here because the values are enum names
+internal fun stringListTranslator(): Translator<String, List<String>> =
+  object : Translator<String, List<String>> {
+    override fun encode(value: List<String>): String = value.joinToString(separator = ",")
+
+    override fun decode(value: String): List<String> =
+      if (value.isEmpty()) emptyList() else value.split(",")
+  }
+
 internal class NoOpTranslator<T> : Translator<T, T> {
   override fun encode(value: T): T = value
 
