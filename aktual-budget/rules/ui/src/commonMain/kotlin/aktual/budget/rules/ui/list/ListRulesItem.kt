@@ -2,6 +2,7 @@ package aktual.budget.rules.ui.list
 
 import aktual.budget.model.Condition
 import aktual.budget.model.RuleAction
+import aktual.budget.model.RuleStage
 import aktual.budget.rules.ui.PreviewRule1
 import aktual.budget.rules.ui.PreviewRule2
 import aktual.budget.rules.vm.Rule
@@ -17,8 +18,10 @@ import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
 import aktual.core.ui.AktualDropdownMenu
 import aktual.core.ui.AktualDropdownMenuItem
+import aktual.core.ui.AktualTypography
 import aktual.core.ui.BareIconButton
 import aktual.core.ui.CardShape
+import aktual.core.ui.Dimens
 import aktual.core.ui.PreviewWithTheme
 import aktual.core.ui.PreviewWithThemedParams
 import aktual.core.ui.RowShape
@@ -82,53 +85,79 @@ internal fun ListRulesItem(
       null
     }
 
-  Row(
-    modifier =
-      modifier.ruleRow(theme, onOpen = { onAction(Edit(rule.id)) }, onToggle = toggleCheck),
-    horizontalArrangement = Arrangement.Start,
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    if (checkboxes is Active) {
-      Checkbox(
-        modifier = Modifier.minimumInteractiveComponentSize(),
-        checked = rule.id in checkboxes.ids,
-        onCheckedChange = { toggleCheck?.invoke() },
-        colors = theme.checkbox(),
-      )
-    }
-
-    ItemContent(rule)
-
-    var showMenu by remember { mutableStateOf(false) }
-
-    Box {
-      BareIconButton(
-        imageVector = MaterialIcons.MoreVert,
-        contentDescription = Strings.rulesItemMenu,
-        onClick = { showMenu = true },
-      )
-
-      val onDismiss = { showMenu = false }
-
-      AktualDropdownMenu(expanded = showMenu, onDismissRequest = onDismiss) {
-        AktualDropdownMenuItem(
-          text = Strings.rulesItemEdit,
-          leadingIcon = MaterialIcons.Edit,
-          onClick = {
-            onDismiss()
-            onAction(Edit(rule.id))
-          },
-        )
-        AktualDropdownMenuItem(
-          text = Strings.rulesItemDelete,
-          leadingIcon = MaterialIcons.DeleteForever,
-          onClick = {
-            onDismiss()
-            onAction(Delete(rule.id))
-          },
+  Box(modifier = modifier) {
+    Row(
+      modifier =
+        Modifier.ruleRow(theme, onOpen = { onAction(Edit(rule.id)) }, onToggle = toggleCheck),
+      horizontalArrangement = Arrangement.Start,
+      verticalAlignment = Alignment.CenterVertically,
+    ) {
+      if (checkboxes is Active) {
+        Checkbox(
+          modifier = Modifier.minimumInteractiveComponentSize(),
+          checked = rule.id in checkboxes.ids,
+          onCheckedChange = { toggleCheck?.invoke() },
+          colors = theme.checkbox(),
         )
       }
+
+      ItemContent(rule)
+
+      var showMenu by remember { mutableStateOf(false) }
+
+      Box {
+        BareIconButton(
+          imageVector = MaterialIcons.MoreVert,
+          contentDescription = Strings.rulesItemMenu,
+          onClick = { showMenu = true },
+        )
+
+        val onDismiss = { showMenu = false }
+
+        AktualDropdownMenu(expanded = showMenu, onDismissRequest = onDismiss) {
+          AktualDropdownMenuItem(
+            text = Strings.rulesItemEdit,
+            leadingIcon = MaterialIcons.Edit,
+            onClick = {
+              onDismiss()
+              onAction(Edit(rule.id))
+            },
+          )
+          AktualDropdownMenuItem(
+            text = Strings.rulesItemDelete,
+            leadingIcon = MaterialIcons.DeleteForever,
+            onClick = {
+              onDismiss()
+              onAction(Delete(rule.id))
+            },
+          )
+        }
+      }
     }
+
+    // Only Pre/Post rules force an explicit ordering worth flagging; Default is the implicit norm.
+    if (rule.stage == RuleStage.Pre || rule.stage == RuleStage.Post) {
+      RuleStageBadge(stage = rule.stage, modifier = Modifier.align(Alignment.TopStart))
+    }
+  }
+}
+
+@Composable
+private fun RuleStageBadge(
+  stage: RuleStage,
+  modifier: Modifier = Modifier,
+  theme: Theme = LocalTheme.current,
+) {
+  Box(
+    modifier =
+      modifier
+        .padding(Dimens.Large)
+        .clip(CardShape)
+        .background(theme.pillBackground, CardShape)
+        .border(Dp.Hairline, theme.pillBorder, CardShape)
+        .padding(horizontal = 6.dp, vertical = 2.dp)
+  ) {
+    Text(text = stage.string(), color = theme.pillText, style = AktualTypography.labelSmall)
   }
 }
 
@@ -308,6 +337,8 @@ private data class ListRulesItemParams(val item: Rule, val checkboxes: Checkboxe
 private class ListRulesItemProvider :
   ThemedParameterProvider<ListRulesItemParams>(
     ListRulesItemParams(item = PreviewRule1),
+    ListRulesItemParams(item = PreviewRule1.copy(stage = RuleStage.Pre)),
+    ListRulesItemParams(item = PreviewRule2.copy(stage = RuleStage.Post)),
     ListRulesItemParams(item = PreviewRule2, checkboxes = Active(persistentSetOf(PreviewRule2.id))),
   )
 
