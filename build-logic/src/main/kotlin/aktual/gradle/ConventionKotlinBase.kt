@@ -43,7 +43,7 @@ class ConventionKotlinBase : Plugin<Project> {
   private companion object {
     val FREE_COMPILER_ARGS =
       listOf(
-        "-Xcontext-parameters", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-parameters
+        "-Xcontext-parameters", // TODO: remove when the IDE supports kotlin 2.4
         "-Xcontext-sensitive-resolution", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-sensitive-resolution
         "-Xexpect-actual-classes",
         "-opt-in=kotlin.RequiresOptIn",
