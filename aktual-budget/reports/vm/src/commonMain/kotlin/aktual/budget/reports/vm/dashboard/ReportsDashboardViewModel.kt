@@ -4,6 +4,7 @@ import aktual.budget.db.Dashboard
 import aktual.budget.db.dao.CustomReportsDao
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.WidgetId
+import aktual.budget.model.WidgetType
 import aktual.budget.reports.vm.BudgetAnalysisReportMeta
 import aktual.budget.reports.vm.CalendarReportMeta
 import aktual.budget.reports.vm.CashFlowReportMeta
@@ -16,6 +17,7 @@ import aktual.budget.reports.vm.NetWorthReportMeta
 import aktual.budget.reports.vm.ReportMeta
 import aktual.budget.reports.vm.SpendingReportMeta
 import aktual.budget.reports.vm.SummaryReportMeta
+import aktual.budget.reports.vm.UnsupportedReportMeta
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -33,8 +35,10 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.encodeToJsonElement
 import kotlinx.serialization.json.jsonObject
+import logcat.logcat
 
 @Stable
 @ViewModelKey
@@ -70,6 +74,7 @@ internal constructor(
       is CalendarReportMeta -> flowOf()
       is CashFlowReportMeta -> chartDataLoader.cashFlow(meta)
       is CustomReportMeta -> flowOf()
+      is UnsupportedReportMeta -> flowOf()
       is FormulaReportMeta -> flowOf()
       is MarkdownReportMeta -> flowOf()
       is NetWorthReportMeta -> flowOf()
@@ -86,9 +91,20 @@ internal constructor(
       height = widget.height?.toInt() ?: 0,
       x = widget.x?.toInt() ?: 0,
       y = widget.y?.toInt() ?: 0,
-      meta = Json.decodeFromJsonElement(ReportMeta.serializer(type), meta),
+      meta = decodeMeta(type, meta),
     )
   }
+
+  // Decoding can fail on corrupt data or an upstream schema we don't model yet. Rather than let a
+  // single bad widget take down the whole dashboard, fall back to an UnsupportedReportMeta
+  // sentinel.
+  private fun decodeMeta(type: WidgetType, meta: JsonObject): ReportMeta =
+    try {
+      Json.decodeFromJsonElement(ReportMeta.serializer(type), meta)
+    } catch (e: Exception) {
+      logcat.e(e) { "Failed to deserialize $type report meta: $meta" }
+      UnsupportedReportMeta(type, meta, reason = e.message ?: e.toString())
+    }
 
   @Suppress("BracesOnWhenStatements")
   private suspend fun ReportMeta.renamed(name: String): ReportMeta? =
@@ -104,6 +120,7 @@ internal constructor(
 
       // Not nameable
       is MarkdownReportMeta -> null
+      is UnsupportedReportMeta -> null
 
       // Named, but it's stored in a separate table
       is CustomReportMeta -> {

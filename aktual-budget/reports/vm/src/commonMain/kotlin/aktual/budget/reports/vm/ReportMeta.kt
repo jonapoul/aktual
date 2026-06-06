@@ -8,10 +8,19 @@ import aktual.budget.model.WidgetType
 import alakazam.kotlin.SerializableByString
 import alakazam.kotlin.enumStringSerializer
 import androidx.compose.runtime.Immutable
+import kotlinx.datetime.LocalDate
 import kotlinx.datetime.YearMonth
+import kotlinx.datetime.yearMonth
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.descriptors.PrimitiveKind
+import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
+import kotlinx.serialization.json.JsonObject
+import logcat.logcat
 
 // From packages/loot-core/src/types/models/dashboard.ts
 @Immutable
@@ -31,6 +40,17 @@ sealed interface ReportMeta {
       }
   }
 }
+
+// Sentinel for a widget whose stored metadata couldn't be deserialized — corrupt data, or an
+// upstream schema change we don't model yet. Surfaced instead of crashing the whole dashboard.
+// It's never persisted, so it's intentionally not @Serializable; we keep the raw json around so
+// the original row isn't lost.
+@Immutable
+data class UnsupportedReportMeta(
+  val type: WidgetType,
+  val raw: JsonObject,
+  val reason: String,
+) : ReportMeta
 
 @Immutable
 @Serializable
@@ -131,10 +151,39 @@ data class FormulaQuery(
 @Immutable
 @Serializable
 data class TimeFrame(
-  @SerialName("start") val start: YearMonth,
-  @SerialName("end") val end: YearMonth,
+  @SerialName("start") @Serializable(LenientYearMonthSerializer::class) val start: YearMonth,
+  @SerialName("end") @Serializable(LenientYearMonthSerializer::class) val end: YearMonth,
   @SerialName("mode") val mode: TimeFrameMode,
 )
+
+// Upstream persists TimeFrame start/end as plain date strings, which may be either a year-month
+// ("2011-10") or a full ISO date ("2011-10-05"). The default YearMonth serializer only accepts
+// the former and crashes on the latter, so parse leniently and normalise both down to a YearMonth.
+internal object LenientYearMonthSerializer : KSerializer<YearMonth> {
+  override val descriptor =
+    PrimitiveSerialDescriptor("aktual.LenientYearMonth", PrimitiveKind.STRING)
+
+  override fun serialize(encoder: Encoder, value: YearMonth) =
+    encoder.encodeString(value.toString())
+
+  override fun deserialize(decoder: Decoder): YearMonth {
+    val raw = decoder.decodeString()
+    return raw.toYearMonthOrNull()
+      ?: throw SerializationException("Can't parse '$raw' as a year-month or date")
+  }
+}
+
+private fun String.toYearMonthOrNull(): YearMonth? =
+  try {
+    YearMonth.parse(this)
+  } catch (_: IllegalArgumentException) {
+    try {
+      LocalDate.parse(this).yearMonth
+    } catch (e: IllegalArgumentException) {
+      logcat.e(e) { "Failed decoding $this as YearMonth or LocalDate" }
+      null
+    }
+  }
 
 @Serializable(TimeFrameMode.Serializer::class)
 enum class TimeFrameMode(override val value: String) : SerializableByString {
