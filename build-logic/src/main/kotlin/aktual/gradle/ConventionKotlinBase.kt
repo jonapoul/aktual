@@ -48,7 +48,6 @@ class ConventionKotlinBase : Plugin<Project> {
         "-Xexpect-actual-classes",
         "-opt-in=kotlin.RequiresOptIn",
         "-opt-in=kotlin.contracts.ExperimentalContracts",
-        "-opt-in=kotlin.uuid.ExperimentalUuidApi",
       )
   }
 }
