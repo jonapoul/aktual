@@ -48,3 +48,8 @@ class EditScheduleNavigator(private val stack: NavStack<BudgetNavKey>) {
 
   operator fun invoke() = stack.push(CreateScheduleNavRoute)
 }
+
+@Immutable
+class ListTagsNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(ListTagsNavRoute)
+}

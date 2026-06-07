@@ -3,6 +3,7 @@ package aktual.budget.navrail.ui
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.Calendar3
 import aktual.core.icons.Reports
+import aktual.core.icons.Tag
 import aktual.core.icons.Tuning
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.LinearScale
@@ -77,6 +78,7 @@ internal fun BudgetTab.label(): String =
     BudgetTab.Reports -> Strings.reportsTitle
     BudgetTab.Schedules -> Strings.listSchedulesTitle
     BudgetTab.Rules -> Strings.rulesTitle
+    BudgetTab.Tags -> Strings.tagsTitle
     BudgetTab.SwitchBudget -> Strings.budgetNavMenuSwitchBudget
     BudgetTab.LogOut -> Strings.budgetNavMenuLogOut
     BudgetTab.Settings -> Strings.budgetNavMenuSettings
@@ -90,6 +92,7 @@ internal fun BudgetTab.icon(): ImageVector =
     BudgetTab.Reports -> AktualIcons.Reports
     BudgetTab.Schedules -> AktualIcons.Calendar3
     BudgetTab.Rules -> AktualIcons.Tuning
+    BudgetTab.Tags -> AktualIcons.Tag
     BudgetTab.SwitchBudget -> MaterialIcons.SwapHoriz
     BudgetTab.LogOut -> MaterialIcons.Logout
     BudgetTab.Settings -> MaterialIcons.Settings
@@ -106,5 +109,6 @@ internal fun BudgetTab.asNavAction(): BudgetNavAction? =
     BudgetTab.Transactions,
     BudgetTab.Reports,
     BudgetTab.Schedules,
-    BudgetTab.Rules -> null
+    BudgetTab.Rules,
+    BudgetTab.Tags -> null
   }
