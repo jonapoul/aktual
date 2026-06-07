@@ -13,7 +13,7 @@ buildConfig {
   buildConfigField("PAGING_SIZE", expect<Int>())
   sourceSets {
     named("androidMain") { buildConfigField("PAGING_SIZE", 20) }
-    named("jvmMain") { buildConfigField("PAGING_SIZE", 50) }
+    named("desktopMain") { buildConfigField("PAGING_SIZE", 50) }
   }
 }
 

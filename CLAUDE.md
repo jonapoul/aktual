@@ -81,11 +81,11 @@ See [aktual-app:nav](aktual-app/nav/CLAUDE.md).
 
 ## Dependency helpers
 
-Inside `kotlin { ... }`: `commonMainDependencies`, `jvmMainDependencies`, `androidMainDependencies`, `androidHostTestDependencies`, `jvmTestDependencies`. Use `api()` only for deps that leak into the public API.
+Inside `kotlin { ... }`: `commonMainDependencies`, `desktopMainDependencies`, `androidMainDependencies`, `androidHostTestDependencies`, `desktopTestDependencies`. Use `api()` only for deps that leak into the public API.
 
 ## Multiplatform
 
-Default new code to `commonMain`; reach for `androidMain` / `jvmMain` only when truly platform-specific.
+Default new code to `commonMain`; reach for `androidMain` / `desktopMain` only when truly platform-specific.
 
 ## Gotchas
 

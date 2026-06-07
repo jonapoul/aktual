@@ -1,5 +1,5 @@
+import aktual.gradle.dsl.desktopMainDependencies
 import blueprint.core.commonMainDependencies
-import blueprint.core.jvmMainDependencies
 
 plugins { id("aktual.module.compose") }
 
@@ -14,5 +14,5 @@ kotlin {
     api(libs.kotlinx.coroutines.test)
   }
 
-  jvmMainDependencies { api(compose.desktop.currentOs) }
+  desktopMainDependencies { api(compose.desktop.currentOs) }
 }

@@ -1,5 +1,5 @@
+import aktual.gradle.dsl.desktopMainDependencies
 import blueprint.core.commonMainDependencies
-import blueprint.core.jvmMainDependencies
 
 plugins { id("aktual.module.kotlin") }
 
@@ -11,5 +11,5 @@ kotlin {
     api(project(":aktual-core:model"))
   }
 
-  jvmMainDependencies { api(libs.compose.ui) }
+  desktopMainDependencies { api(libs.compose.ui) }
 }

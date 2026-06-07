@@ -18,9 +18,9 @@ Run the correct test task(s) for a Gradle module in this KMP project.
 Check which test source set directories exist for the module under `src/`:
 
 ```
-src/commonTest/     -> shared tests (run by both androidHostTest and jvmTest tasks)
+src/commonTest/     -> shared tests (run by both androidHostTest and desktopTest tasks)
 src/androidHostTest/ -> Android-specific tests (Robolectric, runs on host JVM)
-src/jvmTest/        -> JVM/Desktop-specific tests
+src/desktopTest/    -> JVM/Desktop-specific tests
 src/test/           -> Standard JVM test (JVM-only modules)
 ```
 
@@ -34,10 +34,10 @@ Check the module's `build.gradle.kts` for which convention plugin it uses:
 
 | Plugin | Module Type | Available Test Tasks |
 |--------|------------|---------------------|
-| `aktual.module.kotlin` | KMP | `allTests`, `testAndroidHostTest`, `jvmTest` |
-| `aktual.module.compose` | KMP + Compose | `allTests`, `testAndroidHostTest`, `jvmTest` |
-| `aktual.module.viewmodel` | KMP + Compose + VM | `allTests`, `testAndroidHostTest`, `jvmTest` |
-| `aktual.module.di` | KMP + DI | `allTests`, `testAndroidHostTest`, `jvmTest` |
+| `aktual.module.kotlin` | KMP | `allTests`, `testAndroidHostTest`, `desktopTest` |
+| `aktual.module.compose` | KMP + Compose | `allTests`, `testAndroidHostTest`, `desktopTest` |
+| `aktual.module.viewmodel` | KMP + Compose + VM | `allTests`, `testAndroidHostTest`, `desktopTest` |
+| `aktual.module.di` | KMP + DI | `allTests`, `testAndroidHostTest`, `desktopTest` |
 | `aktual.module.jvm` | JVM-only | `test` |
 
 ### 3. Choose the right task
@@ -46,11 +46,11 @@ For **KMP modules** (kotlin/compose/viewmodel/di plugins):
 
 | Source Sets Present | Recommended Task | Why |
 |-------------------|-----------------|-----|
-| Only `commonTest` | `testAndroidHostTest` | commonTest is compiled into both androidHostTest and jvmTest; pick one to avoid running twice. androidHostTest is preferred as it includes Robolectric support. |
+| Only `commonTest` | `testAndroidHostTest` | commonTest is compiled into both androidHostTest and desktopTest; pick one to avoid running twice. androidHostTest is preferred as it includes Robolectric support. |
 | Only `androidHostTest` (with or without `commonTest`) | `testAndroidHostTest` | Runs commonTest + androidHostTest together |
-| Only `jvmTest` (with or without `commonTest`) | `jvmTest` | Runs commonTest + jvmTest together |
-| Both `androidHostTest` and `jvmTest` | `allTests` | Need both targets to cover all tests |
-| `commonTest` + `androidHostTest` + `jvmTest` | `allTests` | Need both targets |
+| Only `desktopTest` (with or without `commonTest`) | `desktopTest` | Runs commonTest + desktopTest together |
+| Both `androidHostTest` and `desktopTest` | `allTests` | Need both targets to cover all tests |
+| `commonTest` + `androidHostTest` + `desktopTest` | `allTests` | Need both targets |
 
 For **JVM-only modules** (`aktual.module.jvm`):
 - Always use `test`
@@ -79,5 +79,5 @@ After running, report:
 ## Important Notes
 
 - NEVER run `allTests` or `testAll` at the project root level - this runs all tests across all modules and will overload the system
-- When only `commonTest` exists, prefer `testAndroidHostTest` over `jvmTest` since it has Robolectric available for any Android-dependent code
+- When only `commonTest` exists, prefer `testAndroidHostTest` over `desktopTest` since it has Robolectric available for any Android-dependent code
 - The `testAll` task (defined in ConventionTest.kt) is a convenience alias that depends on all `Test`-type tasks in the module - equivalent to `allTests` for KMP modules

@@ -36,7 +36,7 @@ class ModuleKotlin : Plugin<Project> {
       kotlin {
         applyDefaultHierarchyTemplate()
 
-        jvm()
+        jvm("desktop")
 
         extensions.configure(KotlinMultiplatformAndroidLibraryTarget::class) {
           namespace = buildNamespace()

@@ -9,7 +9,7 @@ Catches DI wiring breakages at compile/test time rather than at runtime. Each te
 ## Structure
 
 - `ViewModelSmokeTest` (commonTest) — abstract base with all shared VM tests. Uses Burst's `@InterceptTest` for `TemporaryFolder` lifecycle.
-- `JvmViewModelSmokeTest` (jvmTest) — desktop target, creates `TestJvmAppGraph`.
+- `JvmViewModelSmokeTest` (desktopTest) — desktop target, creates `TestJvmAppGraph`.
 - `AndroidViewModelSmokeTest` (androidHostTest) — android target via Robolectric, creates `TestAndroidAppGraph`.
 - `TestContainer` — `@BindingContainer` providing test-specific bindings (e.g. `BudgetFiles` with a temp directory).
 - `TestAppGraph` — common interface extending `AppGraph`, exposing `RunLevelController` and `RunLevelState`, plus an empty `navEntryContributors` multibinding so the graph builds without UI modules.
