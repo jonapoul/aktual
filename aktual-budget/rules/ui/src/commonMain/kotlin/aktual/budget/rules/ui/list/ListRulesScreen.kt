@@ -42,6 +42,7 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
+import aktual.core.ui.topBarBlurOffset
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -65,9 +66,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -132,17 +131,18 @@ private fun ListRulesScaffold(
   // down, and back in as it scrolls up (enter-always behaviour).
   val headerState = rememberCollapsingHeaderState()
 
-  // Blur the bar as soon as content slips behind it. The header eats the first slice of scroll to
-  // collapse itself, so the list won't report canScrollBackward yet — treat a collapsing header as
-  // "scrolled" too, otherwise small scrolls leave a dead zone with no blur.
-  val isScrolled by remember {
-    derivedStateOf { listState.canScrollBackward || headerState.isCollapsing }
-  }
-
   Scaffold(
     modifier = modifier.fillMaxSize().nestedScroll(headerState.nestedScrollConnection),
     topBar = {
-      Column(modifier = Modifier.blurredTopBar(blurState, isScrolled = isScrolled)) {
+      // The header eats the first slice of scroll as it collapses, so fold its collapse distance
+      // into the offset — otherwise small scrolls leave a dead zone with no blur.
+      Column(
+        modifier =
+          Modifier.blurredTopBar(
+            blurState,
+            scrollOffset = { -headerState.offset + listState.topBarBlurOffset() },
+          )
+      ) {
         TopAppBar(
           colors = colors.transparentTopAppBarColors(),
           title = { Text(Strings.rulesToolbar) },

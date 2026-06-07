@@ -111,7 +111,7 @@ private fun ListSchedulesScaffold(
     modifier = modifier.fillMaxSize().imePadding(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
+        modifier = Modifier.blurredTopBar(blurState, listState),
         colors = colors.transparentTopAppBarColors(),
         title = { Title(isSearchActive, successState, onAction) },
         actions = {

@@ -43,7 +43,7 @@ internal fun TransactionsTitleBar(
     }
 
   TopAppBar(
-    modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
+    modifier = Modifier.blurredTopBar(blurState, listState),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = { NavBackIconButton { onAction(Action.NavBack) } },
     title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
