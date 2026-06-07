@@ -148,7 +148,7 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: ListBudgetsA
     modifier = Modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
+        modifier = Modifier.blurredTopBar(blurState, listState),
         colors = colors.transparentTopAppBarColors(),
         title = { ScaffoldTitle() },
         actions = { TopBarActions(onAction) },

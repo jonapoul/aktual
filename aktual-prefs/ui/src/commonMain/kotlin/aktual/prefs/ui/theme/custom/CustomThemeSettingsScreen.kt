@@ -165,7 +165,7 @@ private fun CustomThemeSettingsScaffold(
   Scaffold(
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
+        modifier = Modifier.blurredTopBar(blurState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsThemeCustomTitle) },

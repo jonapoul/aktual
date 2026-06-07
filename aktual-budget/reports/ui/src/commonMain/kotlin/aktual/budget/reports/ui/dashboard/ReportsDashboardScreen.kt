@@ -92,7 +92,7 @@ internal fun ReportsDashboardScaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
+        modifier = Modifier.blurredTopBar(blurState, listState),
         colors = colors.transparentTopAppBarColors(),
         title = { Text(Strings.reportsDashboardTitle) },
         actions = {

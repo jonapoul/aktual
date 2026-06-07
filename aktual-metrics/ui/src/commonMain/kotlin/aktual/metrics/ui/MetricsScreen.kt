@@ -107,7 +107,7 @@ internal fun MetricsScaffold(
   Scaffold(
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, isScrolled = false),
+        modifier = Modifier.blurredTopBar(blurState, scrollOffset = { 0f }),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.metricsToolbar) },
