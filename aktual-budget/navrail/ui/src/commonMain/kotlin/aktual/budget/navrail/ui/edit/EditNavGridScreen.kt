@@ -212,7 +212,7 @@ private fun EditNavGridContent(
     contentPadding = PaddingValues(8.dp),
   ) {
     itemsIndexed(state.items, key = { _, tab -> tab }) { index, tab ->
-      ReorderableItem(reorderState, key = tab.name) { isDragging ->
+      ReorderableItem(reorderState, key = tab) { isDragging ->
         // Even/odd items jiggle in opposite directions for a livelier "editable" feel; the
         // actively-dragged item stops jiggling and lifts slightly instead. Use the visual grid
         // index, not tab.ordinal, so the alternation tracks position after reordering
