@@ -82,7 +82,11 @@ class AboutViewModel(
     return when (restored) {
       null -> CheckUpdatesState.Inactive
       is CheckUpdatesState.Checking -> CheckUpdatesState.Inactive
-      else -> restored
+
+      CheckUpdatesState.Inactive,
+      CheckUpdatesState.NoUpdateFound,
+      is CheckUpdatesState.Failed,
+      is CheckUpdatesState.UpdateFound -> restored
     }
   }
 
