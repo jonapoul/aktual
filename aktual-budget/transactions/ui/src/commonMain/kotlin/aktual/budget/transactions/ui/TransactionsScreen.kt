@@ -37,7 +37,7 @@ fun TransactionsScreen(
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
   val format by viewModel.format.collectAsStateWithLifecycle()
 
-  @Suppress("ComposeViewModelForwarding")
+  @Suppress("ComposeViewModelForwarding", "ViewModelForwarding")
   TransactionsScaffold(
     transactionIdSource = viewModel,
     loadedAccount = loadedAccount,
