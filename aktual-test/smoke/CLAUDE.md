@@ -27,5 +27,8 @@ Robolectric's native runtime loader hits a zip filesystem conflict on SDK 35. Th
 
 ## Adding a New ViewModel
 
-1. Add a `@Test` function in `ViewModelSmokeTest` using `testVm<YourViewModel>()` or `testAssistedVM<YourVM, YourVM.Factory> { create(...) }`.
+1. Add a `@Test` function in `ViewModelSmokeTest`:
+   - Plain VM → `testVm<YourViewModel>()`
+   - Manual assisted factory (takes a NavKey/spec) → `testAssistedVM<YourVM, YourVM.Factory> { create(...) }`
+   - VM that takes a `SavedStateHandle` (a `ViewModelAssistedFactory` calling `createSavedStateHandle()`) → `testSavedStateVM<YourViewModel>()`, which supplies `CreationExtras` carrying the saved-state plumbing.
 2. Add the VM module as a `commonTestDependencies` implementation dependency in `build.gradle.kts`.

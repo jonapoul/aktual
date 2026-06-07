@@ -7,6 +7,7 @@ import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
 import aktual.core.model.UrlOpener
 import aktual.test.assertThatNextEmissionIsEqualTo
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.TurbineTestContext
 import app.cash.turbine.test
 import io.mockk.coEvery
@@ -151,7 +152,12 @@ class LicensesViewModelTest {
   }
 
   private fun buildViewModel() {
-    viewModel = LicensesViewModel(licensesRepository = repository, urlOpener = urlOpener)
+    viewModel =
+      LicensesViewModel(
+        savedState = SavedStateHandle(),
+        licensesRepository = repository,
+        urlOpener = urlOpener,
+      )
   }
 
   private suspend fun TurbineTestContext<LicensesState>.assertLoaded(
