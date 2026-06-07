@@ -29,7 +29,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 
 @Composable
-@Suppress("ViewModelForwarding")
 fun TransactionsScreen(
   back: BackNavigator,
   spec: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
@@ -38,6 +37,7 @@ fun TransactionsScreen(
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
   val format by viewModel.format.collectAsStateWithLifecycle()
 
+  @Suppress("ComposeViewModelForwarding")
   TransactionsScaffold(
     transactionIdSource = viewModel,
     loadedAccount = loadedAccount,
