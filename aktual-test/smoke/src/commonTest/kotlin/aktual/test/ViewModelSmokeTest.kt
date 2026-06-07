@@ -13,6 +13,7 @@ import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.list.ListRulesViewModel
 import aktual.budget.schedules.vm.list.ListSchedulesViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
+import aktual.budget.tags.vm.list.ListTagsViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.theme.DarkColors
 import aktual.metrics.vm.MetricsViewModel
@@ -102,6 +103,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun listRules() = testSavedStateVM<ListRulesViewModel>()
 
   @Test fun listSchedules() = testSavedStateVM<ListSchedulesViewModel>()
+
+  @Test fun listTags() = testVm<ListTagsViewModel>()
 
   @Test fun login() = testVm<LoginViewModel>()
 

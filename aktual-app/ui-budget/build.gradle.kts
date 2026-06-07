@@ -9,6 +9,7 @@ kotlin {
     api(project(":aktual-budget:reports:ui"))
     api(project(":aktual-budget:rules:ui"))
     api(project(":aktual-budget:schedules:ui"))
+    api(project(":aktual-budget:tags:ui"))
     api(project(":aktual-budget:transactions:ui"))
   }
 }

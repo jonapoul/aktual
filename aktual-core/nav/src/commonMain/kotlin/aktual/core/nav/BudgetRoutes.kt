@@ -34,3 +34,5 @@ value class EditRuleNavRoute(val id: RuleId) : BudgetNavKey.Rules
 @Immutable
 @Serializable
 value class EditScheduleNavRoute(val id: ScheduleId) : BudgetNavKey.Schedules
+
+@Immutable @Serializable data object ListTagsNavRoute : BudgetNavKey.Tags

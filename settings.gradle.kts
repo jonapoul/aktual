@@ -85,6 +85,8 @@ include(
   ":aktual-budget:sync:domain",
   ":aktual-budget:sync:ui",
   ":aktual-budget:sync:vm",
+  ":aktual-budget:tags:ui",
+  ":aktual-budget:tags:vm",
   ":aktual-budget:transactions:ui",
   ":aktual-budget:transactions:vm",
   ":aktual-core:api",

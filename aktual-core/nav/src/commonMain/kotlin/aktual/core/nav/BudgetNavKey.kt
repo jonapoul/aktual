@@ -32,4 +32,10 @@ sealed interface BudgetNavKey : NavKey {
     override val tab: BudgetTab
       get() = BudgetTab.Schedules
   }
+
+  @Immutable
+  sealed interface Tags : BudgetNavKey {
+    override val tab: BudgetTab
+      get() = BudgetTab.Tags
+  }
 }

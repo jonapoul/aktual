@@ -8,6 +8,7 @@ enum class BudgetTab(val category: Category) {
   Reports(Category.Tab),
   Schedules(Category.Tab),
   Rules(Category.Tab),
+  Tags(Category.Tab),
   SwitchBudget(Category.Action),
   LogOut(Category.Action),
   Settings(Category.Action),
