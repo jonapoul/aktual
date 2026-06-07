@@ -91,7 +91,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.util.fastForEachIndexed
+import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.zIndex
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.entryProvider
@@ -107,9 +107,9 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.json.Json
 
 // Max number of cells across the collapsed bottom bar. The last slot is always the expand button,
-// so the bar shows at most NavGridColumns - 1 tab shortcuts; remaining tabs live only in the
+// so the bar shows at most NAV_GRID_COLUMNS - 1 tab shortcuts; remaining tabs live only in the
 // expanded grid. The expanded sheet and edit grid use the same width
-internal const val NavGridColumns = 4
+internal const val NAV_GRID_COLUMNS = 4
 
 @Composable
 internal fun BudgetNavRail(
@@ -280,7 +280,7 @@ private fun SharedTransitionScope.CollapsedSheetContent(
   ) {
     // The first row of the saved grid doubles as the collapsed bar's shortcuts, minus its last
     // slot which is the expand button
-    for (tab in order.take(NavGridColumns - 1)) {
+    for (tab in order.take(NAV_GRID_COLUMNS - 1)) {
       val action = tab.asNavAction()
       NavigationBarItem(
         tab = tab,
@@ -337,35 +337,57 @@ private fun SharedTransitionScope.ExpandedSheetContent(
   animatedContentScope: AnimatedContentScope,
   modifier: Modifier = Modifier,
 ) {
+  val onTabClick: (BudgetTab) -> Unit = { tab ->
+    val action = tab.asNavAction()
+    if (action != null) {
+      onAction(action)
+    } else {
+      onSelectTab(tab)
+      onCollapse()
+    }
+  }
+
   Column(modifier = modifier.fillMaxWidth()) {
-    FlowRow(modifier = Modifier.fillMaxWidth(), maxItemsInEachRow = NavGridColumns) {
-      order.fastForEachIndexed { index, tab ->
-        val action = tab.asNavAction()
-        // The collapsed bar mirrors the first NavGridColumns - 1 grid items (its last slot is the
-        // expand button), so those keep the shared-element transition; the rest just fade in
-        val itemModifier =
-          if (index < NavGridColumns - 1) {
-            Modifier.weight(1f)
+    FlowRow(
+      modifier = Modifier.fillMaxWidth(),
+      maxItemsInEachRow = NAV_GRID_COLUMNS,
+      horizontalArrangement = Arrangement.Start,
+    ) {
+      // The first NAV_GRID_COLUMNS - 1 items mirror the collapsed bar's shortcuts, so they keep the
+      // shared-element transition
+      order.take(NAV_GRID_COLUMNS - 1).fastForEach { tab ->
+        NavSheetItem(
+          modifier =
+            Modifier.fillMaxWidth(1f / NAV_GRID_COLUMNS)
               .sharedBounds(
                 sharedContentState = rememberSharedContentState(key = "nav_tab_${tab.name}"),
                 animatedVisibilityScope = animatedContentScope,
-              )
-          } else {
-            Modifier.weight(1f)
-          }
-        NavSheetItem(
-          modifier = itemModifier,
+              ),
           icon = tab.icon(),
           label = tab.label(),
-          selected = action == null && selectedTab == tab,
-          onClick = {
-            if (action != null) {
-              onAction(action)
-            } else {
-              onSelectTab(tab)
-              onCollapse()
-            }
-          },
+          selected = tab.asNavAction() == null && selectedTab == tab,
+          onClick = { onTabClick(tab) },
+        )
+      }
+
+      // The collapse toggle takes the last cell of the first row, mirroring the expand button's
+      // slot in the collapsed bar
+      NavSheetItem(
+        modifier = Modifier.fillMaxWidth(1f / NAV_GRID_COLUMNS),
+        icon = AktualIcons.ArrowThickDown,
+        label = Strings.budgetNavCollapse,
+        selected = false,
+        onClick = onCollapse,
+      )
+
+      // Remaining items have no counterpart in the collapsed bar, so they just fade in
+      order.drop(NAV_GRID_COLUMNS - 1).fastForEach { tab ->
+        NavSheetItem(
+          modifier = Modifier.fillMaxWidth(1f / NAV_GRID_COLUMNS),
+          icon = tab.icon(),
+          label = tab.label(),
+          selected = tab.asNavAction() == null && selectedTab == tab,
+          onClick = { onTabClick(tab) },
         )
       }
     }
@@ -375,17 +397,6 @@ private fun SharedTransitionScope.ExpandedSheetContent(
       horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
       verticalAlignment = Alignment.CenterVertically,
     ) {
-      NormalTextButton(
-        text = Strings.budgetNavCollapse,
-        onClick = onCollapse,
-        prefix = {
-          Icon(
-            imageVector = AktualIcons.ArrowThickDown,
-            contentDescription = Strings.budgetNavCollapse,
-            tint = colors.sidebarItemText,
-          )
-        },
-      )
       NormalTextButton(
         text = Strings.budgetNavGridEdit,
         onClick = { onAction(EditNavGrid) },
@@ -599,7 +610,7 @@ private fun PreviewNavSheetCollapsed(@PreviewParameter(ColoredParameters::class)
         containerColor = Color.Transparent,
         contentColor = colors.sidebarItemText,
       ) {
-        for (tab in BudgetTab.tabs.take(NavGridColumns - 1)) {
+        for (tab in BudgetTab.tabs.take(NAV_GRID_COLUMNS - 1)) {
           NavigationBarItem(
             icon = { Icon(tab.icon(), contentDescription = tab.label()) },
             label = {

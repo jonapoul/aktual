@@ -20,7 +20,9 @@ internal fun reconcileNavGridOrder(names: List<String>): ImmutableList<BudgetTab
         val insertAt = ordered.indexOfLast { it.category == BudgetTab.Category.Tab } + 1
         ordered.add(insertAt, tab)
       }
-      BudgetTab.Category.Action -> ordered.add(tab)
+      BudgetTab.Category.Action -> {
+        ordered.add(tab)
+      }
     }
   }
   return ordered.toImmutableList()
