@@ -14,6 +14,7 @@ import blueprint.core.get
 import blueprint.core.intProperty
 import blueprint.core.libs
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
+import com.android.build.gradle.LintPlugin
 import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -29,6 +30,7 @@ class ModuleKotlin : Plugin<Project> {
         apply(ConventionIdea::class)
         apply(ConventionStyle::class)
         apply(ConventionTest::class)
+        apply(LintPlugin::class)
       }
 
       kotlin {

@@ -63,6 +63,9 @@ fun AktualExposedDropDownMenu(
     textStyle = textStyle,
   )
 
+// `string` is a pure value-to-text formatter, not a stateful content slot, so invoking it for both
+// the selected value and each option doesn't risk the lifecycle issues SlotReused guards against
+@Suppress("SlotReused")
 @Composable
 fun <T> AktualExposedDropDownMenu(
   value: T,
