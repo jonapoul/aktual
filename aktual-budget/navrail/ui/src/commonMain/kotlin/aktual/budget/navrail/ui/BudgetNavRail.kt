@@ -17,6 +17,7 @@ import aktual.core.nav.BudgetNavKey
 import aktual.core.nav.BudgetTab
 import aktual.core.nav.ListRulesNavRoute
 import aktual.core.nav.ListSchedulesNavRoute
+import aktual.core.nav.ListTagsNavRoute
 import aktual.core.nav.NavStack
 import aktual.core.nav.NavStackImpl
 import aktual.core.nav.ReportsListNavRoute
@@ -118,14 +119,16 @@ internal fun BudgetNavRail(
   val reportsStack = stackWithDefault(ReportsListNavRoute)
   val schedulesStack = stackWithDefault(ListSchedulesNavRoute)
   val rulesStack = stackWithDefault(ListRulesNavRoute)
+  val tagsStack = stackWithDefault(ListTagsNavRoute)
 
   val tabStacks =
-    remember(transactionsStack, reportsStack, rulesStack) {
+    remember(transactionsStack, reportsStack, schedulesStack, rulesStack, tagsStack) {
       persistentMapOf(
         BudgetTab.Transactions to transactionsStack,
         BudgetTab.Reports to reportsStack,
         BudgetTab.Schedules to schedulesStack,
         BudgetTab.Rules to rulesStack,
+        BudgetTab.Tags to tagsStack,
       )
     }
 

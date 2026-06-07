@@ -28,6 +28,7 @@ kotlin {
     implementation(project(":aktual-budget:rules:vm"))
     implementation(project(":aktual-budget:schedules:vm"))
     implementation(project(":aktual-budget:sync:vm"))
+    implementation(project(":aktual-budget:tags:vm"))
     implementation(project(":aktual-budget:transactions:vm"))
     implementation(project(":aktual-metrics:vm"))
     implementation(project(":aktual-prefs:vm"))
