@@ -15,6 +15,7 @@ kotlin {
     implementation(project(":aktual-core:model"))
     implementation(project(":aktual-di:bindings"))
     implementation(project(":aktual-test"))
+    implementation(libs.androidx.lifecycle.viewmodel.savedstate)
 
     // nav use cases needed by the root VMs
     implementation(project(":aktual-app:nav"))
