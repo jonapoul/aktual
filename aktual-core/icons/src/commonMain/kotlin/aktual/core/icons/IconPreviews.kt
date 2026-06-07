@@ -42,6 +42,7 @@ private val aktualIcons =
       Reports,
       Subtract,
       Sum,
+      Tag,
       Tuning,
     )
   }
