@@ -102,7 +102,7 @@ private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandl
     modifier = Modifier.fillMaxSize().imePadding(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
+        modifier = Modifier.blurredTopBar(blurState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Title(isSearchActive, loadedState, onAction) },

@@ -110,7 +110,7 @@ private fun InspectThemeScaffold(state: InspectThemeState, onAction: InspectThem
   Scaffold(
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.isScrollInProgress),
+        modifier = Modifier.blurredTopBar(blurState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(title) },
