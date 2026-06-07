@@ -106,6 +106,11 @@ import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.serialization.json.Json
 
+// Max number of cells across the collapsed bottom bar. The last slot is always the expand button,
+// so the bar shows at most NavGridColumns - 1 tab shortcuts; remaining tabs live only in the
+// expanded grid. The expanded sheet and edit grid use the same width
+internal const val NavGridColumns = 4
+
 @Composable
 internal fun BudgetNavRail(
   onAction: BudgetNavActionHandler,
@@ -273,8 +278,9 @@ private fun SharedTransitionScope.CollapsedSheetContent(
     containerColor = Color.Transparent,
     contentColor = colors.sidebarItemText,
   ) {
-    // The first row of the saved grid doubles as the collapsed bar's shortcuts
-    for (tab in order.take(BudgetTab.tabs.size)) {
+    // The first row of the saved grid doubles as the collapsed bar's shortcuts, minus its last
+    // slot which is the expand button
+    for (tab in order.take(NavGridColumns - 1)) {
       val action = tab.asNavAction()
       NavigationBarItem(
         tab = tab,
@@ -331,15 +337,14 @@ private fun SharedTransitionScope.ExpandedSheetContent(
   animatedContentScope: AnimatedContentScope,
   modifier: Modifier = Modifier,
 ) {
-  val collapsedCount = BudgetTab.tabs.size
   Column(modifier = modifier.fillMaxWidth()) {
-    FlowRow(modifier = Modifier.fillMaxWidth(), maxItemsInEachRow = collapsedCount) {
+    FlowRow(modifier = Modifier.fillMaxWidth(), maxItemsInEachRow = NavGridColumns) {
       order.fastForEachIndexed { index, tab ->
         val action = tab.asNavAction()
-        // The first row mirrors the collapsed bar, so those items keep the shared-element
-        // transition; later rows have no counterpart there and just fade in
+        // The collapsed bar mirrors the first NavGridColumns - 1 grid items (its last slot is the
+        // expand button), so those keep the shared-element transition; the rest just fade in
         val itemModifier =
-          if (index < collapsedCount) {
+          if (index < NavGridColumns - 1) {
             Modifier.weight(1f)
               .sharedBounds(
                 sharedContentState = rememberSharedContentState(key = "nav_tab_${tab.name}"),
@@ -594,7 +599,7 @@ private fun PreviewNavSheetCollapsed(@PreviewParameter(ColoredParameters::class)
         containerColor = Color.Transparent,
         contentColor = colors.sidebarItemText,
       ) {
-        for (tab in BudgetTab.tabs) {
+        for (tab in BudgetTab.tabs.take(NavGridColumns - 1)) {
           NavigationBarItem(
             icon = { Icon(tab.icon(), contentDescription = tab.label()) },
             label = {

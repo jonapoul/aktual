@@ -1,5 +1,6 @@
 package aktual.budget.navrail.ui.edit
 
+import aktual.budget.navrail.ui.NavGridColumns
 import aktual.budget.navrail.ui.NavSheetItem
 import aktual.budget.navrail.ui.icon
 import aktual.budget.navrail.ui.label
@@ -34,6 +35,7 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -207,9 +209,11 @@ private fun EditNavGridContent(
 
   LazyVerticalGrid(
     state = lazyGridState,
-    columns = GridCells.Fixed(BudgetTab.tabs.size),
+    columns = GridCells.Fixed(NavGridColumns),
     modifier = modifier.fillMaxSize(),
     contentPadding = PaddingValues(8.dp),
+    // Left-pack so a partial final row (e.g. a lone trailing item) sits at the start, not centered
+    horizontalArrangement = Arrangement.Start,
   ) {
     itemsIndexed(state.items, key = { _, tab -> tab }) { index, tab ->
       ReorderableItem(reorderState, key = tab) { isDragging ->
