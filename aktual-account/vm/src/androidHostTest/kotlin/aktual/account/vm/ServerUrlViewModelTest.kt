@@ -31,10 +31,13 @@ import io.ktor.http.HttpStatusCode
 import java.io.IOException
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -51,9 +54,11 @@ class ServerUrlViewModelTest {
   fun after() {
     mockEngine.close()
     appGraph.close()
+    Dispatchers.resetMain()
   }
 
   private suspend fun TestScope.before() {
+    Dispatchers.setMain(standardDispatcher)
     mockEngine = emptyMockEngine()
 
     val contexts = TestCoroutineContexts(standardDispatcher)
