@@ -1,6 +1,6 @@
 import aktual.gradle.dsl.androidHostTestDependencies
+import aktual.gradle.dsl.desktopTestDependencies
 import blueprint.core.commonTestDependencies
-import blueprint.core.jvmTestDependencies
 
 plugins {
   id("aktual.module.kotlin")
@@ -32,7 +32,7 @@ kotlin {
     implementation(project(":aktual-prefs:vm"))
   }
 
-  jvmTestDependencies { implementation(project(":aktual-app:desktop")) }
+  desktopTestDependencies { implementation(project(":aktual-app:desktop")) }
 
   androidHostTestDependencies {
     implementation(project(":aktual-app:android"))
