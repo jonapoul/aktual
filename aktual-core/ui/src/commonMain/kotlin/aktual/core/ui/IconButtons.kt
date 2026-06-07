@@ -167,7 +167,7 @@ fun interface IconButtonColorProvider {
 }
 
 @Composable
-@Suppress("ModifierMissing")
+@Suppress("ComposeModifierMissing")
 fun NavBackIconButton(onClick: () -> Unit) {
   NavBackIconButton(modifier = Modifier, onClick = onClick)
 }
