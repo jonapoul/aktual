@@ -7,12 +7,19 @@ import aktual.di.AppScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,22 +28,32 @@ import kotlinx.coroutines.launch
 import logcat.logcat
 
 @Stable
-@ViewModelKey
-@ContributesIntoMap(AppScope::class)
-class LicensesViewModel
-internal constructor(
+@AssistedInject
+class LicensesViewModel(
+  @Assisted private val savedState: SavedStateHandle,
   private val licensesRepository: LicensesRepository,
   private val urlOpener: UrlOpener,
 ) : ViewModel() {
+  @AssistedFactory
+  @ViewModelAssistedFactoryKey(LicensesViewModel::class)
+  @ContributesIntoMap(AppScope::class)
+  fun interface Factory : ViewModelAssistedFactory {
+    override fun create(extras: CreationExtras): LicensesViewModel =
+      create(extras.createSavedStateHandle())
+
+    fun create(@Assisted savedState: SavedStateHandle): LicensesViewModel
+  }
+
   private val mutableState = MutableStateFlow<LicensesState>(LicensesState.Loading)
-  private val mutableIsSearchActive = MutableStateFlow(value = false)
-  private val searchTerm = MutableStateFlow(value = "")
+
+  private val searchTerm = savedState.getStateFlow(KEY_SEARCH_TERM, "")
+  private val isSearchActive = savedState.getStateFlow(KEY_IS_SEARCH_ACTIVE, false)
 
   val licensesState: StateFlow<LicensesState> =
     viewModelScope.launchMolecule(Immediate) {
       val licensesState by mutableState.collectAsState()
       val searchTerm by searchTerm.collectAsState()
-      val isSearchActive by mutableIsSearchActive.collectAsState()
+      val isSearchActive by isSearchActive.collectAsState()
 
       when (val licenses = licensesState) {
         is LicensesState.Loaded -> licenses.filteredBy(searchTerm, isSearchActive)
@@ -80,17 +97,22 @@ internal constructor(
 
   fun openSearch() {
     logcat.d { "openSearch" }
-    mutableIsSearchActive.update { true }
+    savedState[KEY_IS_SEARCH_ACTIVE] = true
   }
 
   fun clearFilter() {
     logcat.d { "clearFilter" }
-    searchTerm.update { "" }
-    mutableIsSearchActive.update { false }
+    savedState[KEY_SEARCH_TERM] = ""
+    savedState[KEY_IS_SEARCH_ACTIVE] = false
   }
 
   fun setFilterText(text: String) {
     logcat.d { "setFilterText $text" }
-    searchTerm.update { text }
+    savedState[KEY_SEARCH_TERM] = text
+  }
+
+  private companion object {
+    const val KEY_SEARCH_TERM = "search_term"
+    const val KEY_IS_SEARCH_ACTIVE = "is_search_active"
   }
 }

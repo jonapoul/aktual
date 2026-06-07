@@ -8,6 +8,7 @@ import aktual.core.model.UrlOpener
 import aktual.test.TestBuildConfig
 import aktual.test.TestInstant
 import aktual.test.assertThatNextEmissionIsEqualTo
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import io.mockk.coEvery
 import io.mockk.confirmVerified
@@ -37,6 +38,7 @@ class AboutViewModelTest {
 
     viewModel =
       AboutViewModel(
+        savedState = SavedStateHandle(),
         buildConfig = TestBuildConfig,
         githubRepository = repository,
         urlOpener = urlOpener,

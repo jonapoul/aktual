@@ -22,12 +22,19 @@ import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.CreationExtras
 import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
-import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactory
+import dev.zacsweers.metrox.viewmodel.ViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
@@ -48,27 +55,38 @@ import kotlinx.serialization.json.JsonPrimitive
 import logcat.logcat
 
 @Stable
-@ViewModelKey
-@ContributesIntoMap(BudgetScope::class)
+@AssistedInject
 class ListSchedulesViewModel(
+  @Assisted private val savedState: SavedStateHandle,
   private val scheduleDao: ScheduleDao,
   private val accountDao: AccountDao,
   private val payeeDao: PayeeDao,
   private val calendar: Calendar,
 ) : ViewModel() {
+  @AssistedFactory
+  @ViewModelAssistedFactoryKey(ListSchedulesViewModel::class)
+  @ContributesIntoMap(BudgetScope::class)
+  fun interface Factory : ViewModelAssistedFactory {
+    override fun create(extras: CreationExtras): ListSchedulesViewModel =
+      create(extras.createSavedStateHandle())
+
+    fun create(@Assisted savedState: SavedStateHandle): ListSchedulesViewModel
+  }
+
   private val mutableSchedules = MutableStateFlow<ImmutableList<Schedule>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableFailure = MutableStateFlow<String?>(null)
-  private val mutableFilterText = MutableStateFlow("")
-  private val mutableIsSearchActive = MutableStateFlow(false)
+
+  private val filterText = savedState.getStateFlow(KEY_FILTER_TEXT, "")
+  private val isSearchActive = savedState.getStateFlow(KEY_IS_SEARCH_ACTIVE, false)
 
   val state: StateFlow<ListSchedulesState> =
     viewModelScope.launchMolecule(Immediate) {
       val schedules by mutableSchedules.collectAsState()
       val isLoading by mutableIsLoading.collectAsState()
       val failure by mutableFailure.collectAsState()
-      val filterText by mutableFilterText.collectAsState()
-      val isSearchActive by mutableIsSearchActive.collectAsState()
+      val filterText by filterText.collectAsState()
+      val isSearchActive by isSearchActive.collectAsState()
       @Suppress("BracesOnWhenStatements")
       when {
         isLoading -> Loading
@@ -91,16 +109,16 @@ class ListSchedulesViewModel(
   }
 
   fun openSearch() {
-    mutableIsSearchActive.update { true }
+    savedState[KEY_IS_SEARCH_ACTIVE] = true
   }
 
   fun setFilterText(text: String) {
-    mutableFilterText.update { text }
+    savedState[KEY_FILTER_TEXT] = text
   }
 
   fun clearFilter() {
-    mutableFilterText.update { "" }
-    mutableIsSearchActive.update { false }
+    savedState[KEY_FILTER_TEXT] = ""
+    savedState[KEY_IS_SEARCH_ACTIVE] = false
   }
 
   fun reload() {
@@ -237,5 +255,10 @@ class ListSchedulesViewModel(
     return name?.contains(q, ignoreCase = true) == true ||
       payeeName.contains(q, ignoreCase = true) ||
       accountName.contains(q, ignoreCase = true)
+  }
+
+  private companion object {
+    const val KEY_FILTER_TEXT = "filter_text"
+    const val KEY_IS_SEARCH_ACTIVE = "is_search_active"
   }
 }
