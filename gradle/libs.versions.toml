@@ -79,7 +79,7 @@ detekt-testJunit = { module = "dev.detekt:detekt-test-junit", version.ref = "det
 detekt-testUtils = { module = "dev.detekt:detekt-test-utils", version.ref = "detekt" }
 detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.9" }
 detektGradle = { module = "dev.jonpoulton.blueprint:detekt-rules", version.ref = "blueprint" }
-haze = { module = "dev.chrisbanes.haze:haze-blur", version = "2.0.0-alpha02" }
+haze = { module = "dev.chrisbanes.haze:haze-blur", version = "2.0.0-SNAPSHOT" }
 junit = { module = "junit:junit", version = "4.13.2" }
 junitPlatformLauncher = { module = "org.junit.platform:junit-platform-launcher", version = "6.1.0" }
 kermit = { module = "co.touchlab:kermit", version = "2.1.0" }
