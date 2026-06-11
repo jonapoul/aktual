@@ -77,7 +77,7 @@ detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
 detekt-test = { module = "dev.detekt:detekt-test", version.ref = "detekt" }
 detekt-testJunit = { module = "dev.detekt:detekt-test-junit", version.ref = "detekt" }
 detekt-testUtils = { module = "dev.detekt:detekt-test-utils", version.ref = "detekt" }
-detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.9" }
+detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.6.0" }
 detektGradle = { module = "dev.jonpoulton.blueprint:detekt-rules", version.ref = "blueprint" }
 haze = { module = "dev.chrisbanes.haze:haze-blur", version = "2.0.0-SNAPSHOT" }
 junit = { module = "junit:junit", version = "4.13.2" }
