@@ -4,6 +4,8 @@
 Compose:
   CompositionLocalAllowlist:
     active: false
+  ComposableNestingDepth:
+    composableNestingDepthThreshold: 5
   Material2:
     active: true
   PreviewNaming:
