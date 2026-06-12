@@ -477,7 +477,7 @@ private fun BudgetNavDisplay(
     entryProvider =
       entryProvider {
         for (contributor in contributors) {
-          contributor.contribute(scope = this, activeStack)
+          with(contributor) { contribute(activeStack) }
         }
       },
   )
