@@ -496,7 +496,7 @@ import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(NavScope::class)
 class {Name}NavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
+  override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
     scope.entry<{Name}NavRoute> { List{Name}Screen(BackNavigator(stack)) }
   }
 }
