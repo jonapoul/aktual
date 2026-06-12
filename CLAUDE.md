@@ -12,6 +12,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 - **IMPORTANT**: After any architectural/structural change, grep `**/CLAUDE.md` for references that need updating (scopes, annotations, module paths, DI patterns). Don't wait to be asked.
 - Prefer `kotlinx.immutable` collections in the UI layer, not plain `List`/`Set`.
 - Prefer `stateFlow.update { x }` over `stateFlow.value = x`.
+- `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` — add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
 - Wrap comments to the `max_line_length` in `.editorconfig` (currently 120).
 
 ## Build commands

@@ -11,13 +11,16 @@ CREATE TABLE IF NOT EXISTS tags(
 );
 
 insert:
-  INSERT INTO tags VALUES ?;
+  INSERT OR REPLACE INTO tags (id, tag, color, description)
+  VALUES (?, ?, ?, ?);
 
 delete:
   DELETE FROM tags WHERE id = ?;
 
-getById:
-  SELECT * FROM tags WHERE id = ?;
+getTags:
+  SELECT id, tag, color, description, hidden
+  FROM tags
+  WHERE tombstone = 0;
 
 getHidden:
   SELECT hidden FROM tags WHERE id = ?;
