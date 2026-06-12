@@ -12,7 +12,6 @@ import blueprint.core.libs
 import dev.detekt.gradle.Detekt
 import dev.detekt.gradle.extensions.DetektExtension
 import dev.detekt.gradle.plugin.DetektPlugin
-import dev.detekt.gradle.report.ReportMergeTask
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.language.base.plugins.LifecycleBasePlugin.VERIFICATION_GROUP
@@ -38,14 +37,6 @@ class ConventionDetekt : Plugin<Project> {
       tasks.register("detektCheck") { t ->
         t.group = VERIFICATION_GROUP
         t.dependsOn(detektTasks)
-      }
-
-      val detektReportMergeSarif =
-        rootProject.tasks.named("detektReportMergeSarif", ReportMergeTask::class.java)
-
-      @Suppress("NoNameShadowing")
-      detektReportMergeSarif.configure { t ->
-        t.input.from(detektTasks.map { it.reports.sarif.outputLocation })
       }
 
       detektTasks.configureEach { t ->
