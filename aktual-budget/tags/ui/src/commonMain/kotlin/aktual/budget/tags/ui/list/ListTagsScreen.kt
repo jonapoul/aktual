@@ -6,9 +6,9 @@ import aktual.budget.tags.vm.list.ListTagsViewModel
 import aktual.budget.tags.vm.list.Loading
 import aktual.budget.tags.vm.list.Success
 import aktual.budget.tags.vm.list.TagItem
-import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
+import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -188,7 +188,7 @@ private fun TagItem(
 
     NormalIconButton(
       modifier = Modifier.alpha(contentAlpha),
-      imageVector = MaterialIcons.ArrowRight,
+      imageVector = MaterialIcons.Search,
       contentDescription = Strings.tagsViewTransactions,
       onClick = onViewTransactions,
     )
