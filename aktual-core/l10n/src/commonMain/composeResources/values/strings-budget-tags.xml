@@ -2,4 +2,7 @@
   <string name="tags_title">Tags</string>
   <string name="tags_no_description">No description</string>
   <string name="tags_view_transactions">View Transactions</string>
+  <string name="tags_failure_prefix">Failed loading tags</string>
+  <string name="tags_failure_default_message">Unknown cause</string>
+  <string name="tags_empty">No tags yet</string>
 </resources>

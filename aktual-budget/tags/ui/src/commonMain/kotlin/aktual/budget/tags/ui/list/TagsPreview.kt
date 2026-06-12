@@ -34,5 +34,15 @@ internal object TagsPreview {
       hidden = true,
     )
 
-  val all: ImmutableList<TagItem> = persistentListOf(groceries, rent, archived)
+  // no explicit color — exercises the theme note-tag fallback
+  val uncolored =
+    TagItem(
+      id = TagId("tag-4"),
+      tag = "misc",
+      color = null,
+      description = "",
+      hidden = false,
+    )
+
+  val all: ImmutableList<TagItem> = persistentListOf(groceries, rent, archived, uncolored)
 }
