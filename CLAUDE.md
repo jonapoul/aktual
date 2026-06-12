@@ -42,7 +42,8 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./scripts/ktfmt.sh check      # check-only
 ./scripts/ktfmt.sh --force    # all files
 
-# Run a Gradle task on only the modules with Kotlin changes since main (append --dry-run to preview)
+# Run a Gradle task on only the modules with changes since main (append --dry-run to preview).
+# A change to the root build file, .github/, build-logic/, or libs.versions.toml runs all modules.
 ./scripts/detekt.sh           # detektCheck on changed modules
 ./scripts/lint.sh             # lint on changed modules
 ./scripts/test.sh             # testAll on changed modules
