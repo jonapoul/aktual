@@ -11,8 +11,12 @@ CREATE TABLE IF NOT EXISTS tags(
 );
 
 insert:
-  INSERT OR REPLACE INTO tags (id, tag, color, description)
-  VALUES (?, ?, ?, ?);
+  INSERT INTO tags (id, tag, color, description)
+  VALUES (?, ?, ?, ?)
+  ON CONFLICT(id) DO UPDATE SET
+    tag = excluded.tag,
+    color = excluded.color,
+    description = excluded.description;
 
 delete:
   DELETE FROM tags WHERE id = ?;

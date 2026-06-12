@@ -12,8 +12,5 @@ internal object ListTagsDS {
   val itemContentSpacing = 6.dp
   val chipShape = RoundedCornerShape(size = 16.dp)
   val chipPadding = PaddingValues(horizontal = 7.dp, vertical = 3.dp)
-  val buttonPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp)
-  val buttonContentSpacing = 4.dp
-  val buttonIconSize = 14.dp
   const val HIDDEN_ALPHA = 0.5f
 }

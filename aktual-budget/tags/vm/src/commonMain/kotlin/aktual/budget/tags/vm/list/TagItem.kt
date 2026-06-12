@@ -8,7 +8,8 @@ import androidx.compose.ui.graphics.Color
 data class TagItem(
   val id: TagId,
   val tag: String,
-  val color: Color,
+  // null when the tag has no explicit color — the UI falls back to the theme's note-tag colors
+  val color: Color?,
   val description: String,
   val hidden: Boolean,
 )

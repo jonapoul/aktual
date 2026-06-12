@@ -1,21 +1,26 @@
 package aktual.budget.tags.ui.list
 
+import aktual.budget.tags.vm.list.Failure
+import aktual.budget.tags.vm.list.ListTagsState
 import aktual.budget.tags.vm.list.ListTagsViewModel
+import aktual.budget.tags.vm.list.Loading
+import aktual.budget.tags.vm.list.Success
 import aktual.budget.tags.vm.list.TagItem
-import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Refresh
+import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
-import aktual.core.ui.ColoredParameters
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.FailureAction
+import aktual.core.ui.FailureScreen
+import aktual.core.ui.LoadingScreen
+import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
@@ -30,11 +35,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -54,24 +58,27 @@ import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun ListTagsScreen(
   modifier: Modifier = Modifier,
-  @Suppress("UNUSED_PARAMETER") viewModel: ListTagsViewModel = metroViewModel(),
+  viewModel: ListTagsViewModel = metroViewModel(),
 ) {
-  val tags by viewModel.tags.collectAsStateWithLifecycle()
+  val state by viewModel.state.collectAsStateWithLifecycle()
 
   ListTagsScaffold(
     modifier = modifier,
-    tags = tags,
+    state = state,
+    onReload = viewModel::reload,
   )
 }
 
 @Composable
 private fun ListTagsScaffold(
-  tags: ImmutableList<TagItem>,
+  state: ListTagsState,
   modifier: Modifier = Modifier,
+  onReload: () -> Unit = {},
 ) {
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
@@ -86,22 +93,59 @@ private fun ListTagsScaffold(
       )
     },
   ) { innerPadding ->
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
       PageBackground()
 
-      LazyColumn(
-        modifier = Modifier.fillMaxSize().padding(innerPadding),
-        contentPadding = ListTagsDS.listContentPadding,
-        verticalArrangement = Arrangement.spacedBy(ListTagsDS.listItemSpacing),
-        state = listState,
-      ) {
-        items(tags, key = { it.id.value }) { tag ->
-          TagItem(
-            modifier = Modifier.animateItem(),
-            tag = tag,
+      when (state) {
+        Loading -> LoadingScreen()
+
+        is Failure ->
+          FailureScreen(
+            title = Strings.tagsFailurePrefix,
+            reason = state.cause ?: Strings.tagsFailureDefaultMessage,
+            background = colors.tableBackground,
+            action =
+              FailureAction(
+                text = { Strings.syncRetry },
+                icon = MaterialIcons.Refresh,
+                onClick = onReload,
+              ),
           )
-        }
+
+        is Success ->
+          if (state.tags.isEmpty()) {
+            FailureScreen(
+              title = Strings.tagsEmpty,
+              reason = null,
+              icon = null,
+              action = null,
+              background = colors.tableBackground,
+            )
+          } else {
+            TagsList(tags = state.tags, listState = listState)
+          }
       }
+    }
+  }
+}
+
+@Composable
+private fun TagsList(
+  tags: ImmutableList<TagItem>,
+  listState: LazyListState,
+  modifier: Modifier = Modifier,
+) {
+  LazyColumn(
+    modifier = modifier.fillMaxSize(),
+    state = listState,
+    contentPadding = ListTagsDS.listContentPadding,
+    verticalArrangement = Arrangement.spacedBy(ListTagsDS.listItemSpacing),
+  ) {
+    items(tags, key = { it.id.value }) { tag ->
+      TagItem(
+        modifier = Modifier.animateItem(),
+        tag = tag,
+      )
     }
   }
 }
@@ -142,8 +186,10 @@ private fun TagItem(
       )
     }
 
-    ViewTransactionsButton(
+    NormalIconButton(
       modifier = Modifier.alpha(contentAlpha),
+      imageVector = MaterialIcons.Search,
+      contentDescription = Strings.tagsViewTransactions,
       onClick = onViewTransactions,
     )
   }
@@ -152,52 +198,26 @@ private fun TagItem(
 @Composable
 private fun TagChip(
   text: String,
-  color: Color,
+  color: Color?,
   modifier: Modifier = Modifier,
 ) {
+  // upstream falls back to the theme's note-tag colors when a tag has no explicit color
+  val background = color ?: colors.noteTagBackground
+  val textColor = color?.contrastingTextColor() ?: colors.noteTagText
+
   Text(
     text = "#$text",
     modifier =
       modifier
         .clip(ListTagsDS.chipShape)
-        .background(color, ListTagsDS.chipShape)
+        .background(background, ListTagsDS.chipShape)
         .padding(ListTagsDS.chipPadding),
     style = typography.bodyMedium,
     fontWeight = FontWeight.SemiBold,
-    color = color.contrastingTextColor(),
+    color = textColor,
     maxLines = 1,
     overflow = TextOverflow.Ellipsis,
   )
-}
-
-@Composable
-private fun ViewTransactionsButton(
-  modifier: Modifier = Modifier,
-  onClick: () -> Unit = {},
-) {
-  Row(
-    modifier =
-      modifier
-        .clip(CardShape)
-        .background(colors.noticeBackground, CardShape)
-        .clickable(onClick = onClick)
-        .padding(ListTagsDS.buttonPadding),
-    horizontalArrangement = Arrangement.spacedBy(ListTagsDS.buttonContentSpacing),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Text(
-      text = Strings.tagsViewTransactions,
-      style = typography.labelMedium,
-      color = colors.noticeTextDark,
-      maxLines = 1,
-    )
-    Icon(
-      imageVector = MaterialIcons.ArrowRight,
-      contentDescription = null,
-      tint = colors.noticeTextDark,
-      modifier = Modifier.size(ListTagsDS.buttonIconSize),
-    )
-  }
 }
 
 // pick black or white text for legibility on [this], using the brightness formula from
@@ -217,7 +237,16 @@ private fun PreviewTagItem(
   @PreviewParameter(TagItemProvider::class) params: ColoredParams<TagItem>
 ) = PreviewWithColoredParams(params) { TagItem(tag = this) }
 
+private class ListTagsStateProvider :
+  ColoredParameterProvider<ListTagsState>(
+    Success(TagsPreview.all),
+    Success(persistentListOf()),
+    Loading,
+    Failure("Database connection lost"),
+  )
+
 @PortraitPreview
 @Composable
-private fun PreviewListTagsScaffold(@PreviewParameter(ColoredParameters::class) colors: Colors) =
-  PreviewWithColors(colors) { ListTagsScaffold(tags = TagsPreview.all) }
+private fun PreviewListTagsScaffold(
+  @PreviewParameter(ListTagsStateProvider::class) params: ColoredParams<ListTagsState>
+) = PreviewWithColoredParams(params) { ListTagsScaffold(state = this) }

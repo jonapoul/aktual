@@ -1,6 +1,10 @@
+import aktual.gradle.dsl.androidHostTestDependencies
 import blueprint.core.commonMainDependencies
 
-plugins { id("aktual.module.viewmodel") }
+plugins {
+  id("aktual.module.viewmodel")
+  id("aktual.convention.db-test")
+}
 
 kotlin {
   commonMainDependencies {
@@ -8,4 +12,6 @@ kotlin {
     api(project(":aktual-budget:model"))
     api(project(":aktual-budget:data:db"))
   }
+
+  androidHostTestDependencies { implementation(project(":aktual-test")) }
 }
