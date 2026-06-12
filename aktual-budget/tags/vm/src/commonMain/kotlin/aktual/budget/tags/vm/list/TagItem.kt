@@ -2,7 +2,7 @@ package aktual.budget.tags.vm.list
 
 import aktual.budget.model.TagId
 import androidx.compose.runtime.Immutable
-import java.awt.Color
+import androidx.compose.ui.graphics.Color
 
 @Immutable
 data class TagItem(
