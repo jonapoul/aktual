@@ -7,7 +7,6 @@ import atlas.graphviz.LinkStyle.Solid
 import atlas.graphviz.NodeStyle.Filled
 import atlas.graphviz.RankDir.TopToBottom
 import atlas.graphviz.Shape.Box
-import dev.detekt.gradle.report.ReportMergeTask
 
 plugins {
   alias(libs.plugins.agp.app) apply false
