@@ -1,8 +1,10 @@
+# shellcheck shell=bash
 # Helpers for mapping changed files to Gradle modules and running a per-module task.
 # Source from a bash script (`. "$SCRIPT_DIR/lib/modules.sh"`); uses associative arrays,
 # so this is bash-only, not POSIX sh. Pulls in git.sh for the change-detection helpers.
 
 MODULES_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=git.sh
 . "$MODULES_LIB_DIR/git.sh"
 
 # Print every Gradle module path (e.g. :aktual-core:ui) declared in settings.gradle.kts, sorted.

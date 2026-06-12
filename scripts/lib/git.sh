@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Shared git helpers for scripts that operate on files changed vs a base branch.
 # Source this file (`. "$SCRIPT_DIR/lib/git.sh"`); don't execute it directly.
 # Kept POSIX-compatible so both /bin/sh and bash callers can use it.

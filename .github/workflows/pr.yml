@@ -74,11 +74,7 @@ jobs:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
         with:
           fetch-depth: 0
-      - run: |
-          mapfile -t files < <(git diff --name-only --diff-filter=ACMR origin/main -- '*.sh')
-          if [[ ${#files[@]} -gt 0 ]]; then
-            shellcheck "${files[@]}"
-          fi
+      - run: shellcheck scripts/*.sh scripts/lib/*.sh
 
   betterleaks:
     runs-on: ubuntu-latest

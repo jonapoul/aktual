@@ -3,6 +3,7 @@
 SCRIPT_DIR="$(dirname "$0")"
 cd "$SCRIPT_DIR/.." || exit
 
+# shellcheck source=lib/git.sh
 . "$SCRIPT_DIR/lib/git.sh"
 
 JAR_DIR="$SCRIPT_DIR/../build/ktfmt"
@@ -117,8 +118,11 @@ fi
 # Run ktfmt
 if [ "$USE_SYSTEM_KTFMT" = true ]; then
     echo "Using system ktfmt v$SYSTEM_VERSION (mode: $MODE)"
+    # KTFMT_ARGS holds multiple space-separated flags that must word-split
+    # shellcheck disable=SC2086
     run_ktfmt ktfmt $KTFMT_ARGS
 else
     echo "Using cached ktfmt v$KTFMT_VERSION JAR (mode: $MODE)"
+    # shellcheck disable=SC2086
     run_ktfmt java -jar "$KTFMT_JAR" $KTFMT_ARGS
 fi
