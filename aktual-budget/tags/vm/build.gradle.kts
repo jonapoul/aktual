@@ -6,6 +6,6 @@ kotlin {
   commonMainDependencies {
     api(libs.compose.uiGraphics)
     api(project(":aktual-budget:model"))
-    api(project(":aktual-di:core"))
+    api(project(":aktual-budget:data:db"))
   }
 }
