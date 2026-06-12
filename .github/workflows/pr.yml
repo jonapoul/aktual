@@ -166,14 +166,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew detektReportMergeSarif
-      - uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
-        if: ${{ !cancelled() }}
-        with:
-          sarif_file: build/reports/detekt/merge.sarif.json
+      - run: ./scripts/detekt.sh origin/main
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
 
@@ -184,10 +182,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew lint
+      - run: ./scripts/lint.sh origin/main
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
 
@@ -198,15 +198,12 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+        with:
+          fetch-depth: 0
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew testAll koverHtmlReport koverVerify -Pkover
-      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
-        if: ${{ !cancelled() }}
-        with:
-          name: kover-report
-          path: build/reports/kover/html
+      - run: ./scripts/test.sh origin/main
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
 

@@ -37,13 +37,6 @@ plugins {
   id("aktual.convention.idea")
 }
 
-val detektReportMergeSarif =
-  tasks.register("detektReportMergeSarif", ReportMergeTask::class) {
-    output = layout.buildDirectory.file("reports/detekt/merge.sarif.json")
-  }
-
-tasks.check.configure { dependsOn(detektReportMergeSarif) }
-
 doctor {
   javaHome {
     ensureJavaHomeMatches = true
