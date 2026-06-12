@@ -246,7 +246,7 @@ class SyncBudgetViewModel(
 
   @Suppress("ExplicitCollectionElementAccessMethod")
   private fun setStepState(step: SyncStep, state: SyncStepState) {
-    mutableSteps.update { stepStates -> stepStates.put(step, state) }
+    mutableSteps.update { stepStates -> stepStates.putting(step, state) }
   }
 
   private suspend fun handleDecryptResult(

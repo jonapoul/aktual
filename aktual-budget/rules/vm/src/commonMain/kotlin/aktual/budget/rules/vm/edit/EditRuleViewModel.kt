@@ -192,7 +192,7 @@ class EditRuleViewModel(
     updateCondition(index) { c -> c.copy(value = value) }
 
   fun deleteCondition(index: Int) = updateRule { r ->
-    val conditions = r.conditions.toPersistentList().removeAt(index)
+    val conditions = r.conditions.toPersistentList().removingAt(index)
     r.copy(conditions = conditions)
   }
 

@@ -5,7 +5,7 @@ import androidx.compose.runtime.Immutable
 import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentMapOf
-import kotlinx.collections.immutable.putAll
+import kotlinx.collections.immutable.puttingAll
 import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.datetime.LocalDate
 import kotlinx.serialization.KSerializer
@@ -69,22 +69,22 @@ data class DbMetadata(val data: PersistentMap<Key<*>, Any> = persistentMapOf()) 
   }
 
   operator fun <T : Any> set(key: Key<T>, value: T?): DbMetadata =
-    DbMetadata(if (value == null) data.remove(key) else data.put(key, value))
+    DbMetadata(if (value == null) data.removing(key) else data.putting(key, value))
 
   operator fun plus(other: Map<Key<*>, Any?>): DbMetadata = plus(other.toList())
 
   operator fun plus(other: Iterable<Pair<Key<*>, Any?>>): DbMetadata {
     val toRemove = other.mapNotNull { (k, v) -> if (v == null) k else null }
     val toAdd = other.mapNotNull { (k, v) -> v?.let { k to it } }
-    return DbMetadata(data.putAll(toAdd).minus(toRemove))
+    return DbMetadata(data.puttingAll(toAdd).minus(toRemove))
   }
 
   operator fun plus(other: Pair<Key<*>, Any?>): DbMetadata {
     val (k, v) = other
-    return if (v == null) this else DbMetadata(data.put(k, v))
+    return if (v == null) this else DbMetadata(data.putting(k, v))
   }
 
-  operator fun minus(key: Key<*>): DbMetadata = DbMetadata(data.remove(key))
+  operator fun minus(key: Key<*>): DbMetadata = DbMetadata(data.removing(key))
 
   operator fun minus(keys: Collection<Key<*>>): DbMetadata = DbMetadata(data.minus(keys))
 
