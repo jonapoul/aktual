@@ -42,6 +42,11 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./scripts/ktfmt.sh check      # check-only
 ./scripts/ktfmt.sh --force    # all files
 
+# Run a Gradle task on only the modules with Kotlin changes since main (append --dry-run to preview)
+./scripts/detekt.sh           # detektCheck on changed modules
+./scripts/lint.sh             # lint on changed modules
+./scripts/test.sh             # testAll on changed modules
+
 # Dependency graph — rerun only when module deps change
 ./gradlew atlasGenerate
 
@@ -49,7 +54,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./gradlew --rerun-tasks
 ```
 
-Don't run detekt locally (user handles it); `./scripts/detekt.sh` covers changed modules if asked.
+Don't run detekt locally (user handles it); `./scripts/detekt.sh` covers changed modules if asked. `lint.sh` and `test.sh` share the same change-detection logic (extracted into `scripts/lib/`).
 
 ## Architecture
 
