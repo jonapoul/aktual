@@ -30,7 +30,9 @@ internal object TagsPreview {
       id = TagId("tag-3"),
       tag = "archived",
       color = Color(0xFFFFEB3B),
-      description = "No longer used",
+      description =
+        "A deliberately long description to check how the item wraps and truncates when the text " +
+          "runs well beyond the available width of the row",
       hidden = true,
     )
 

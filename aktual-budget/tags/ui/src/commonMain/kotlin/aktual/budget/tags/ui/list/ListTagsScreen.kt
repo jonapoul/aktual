@@ -12,13 +12,12 @@ import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BareIconButton
-import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
+import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
@@ -36,12 +35,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -189,7 +186,7 @@ private fun TagItem(
       )
     }
 
-    BareIconButton(
+    NormalIconButton(
       modifier = Modifier.alpha(contentAlpha),
       imageVector = MaterialIcons.ArrowRight,
       contentDescription = Strings.tagsViewTransactions,
@@ -221,36 +218,6 @@ private fun TagChip(
     maxLines = 1,
     overflow = TextOverflow.Ellipsis,
   )
-}
-
-@Composable
-private fun ViewTransactionsButton(
-  modifier: Modifier = Modifier,
-  onClick: () -> Unit = {},
-) {
-  Row(
-    modifier =
-      modifier
-        .clip(CardShape)
-        .background(colors.noticeBackground, CardShape)
-        .clickable(onClick = onClick)
-        .padding(ListTagsDS.buttonPadding),
-    horizontalArrangement = Arrangement.spacedBy(ListTagsDS.buttonContentSpacing),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Text(
-      text = Strings.tagsViewTransactions,
-      style = typography.labelMedium,
-      color = colors.noticeTextDark,
-      maxLines = 1,
-    )
-    Icon(
-      imageVector = MaterialIcons.ArrowRight,
-      contentDescription = null,
-      tint = colors.noticeTextDark,
-      modifier = Modifier.size(ListTagsDS.buttonIconSize),
-    )
-  }
 }
 
 // pick black or white text for legibility on [this], using the brightness formula from
