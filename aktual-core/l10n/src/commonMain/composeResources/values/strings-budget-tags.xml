@@ -1,3 +1,5 @@
 <resources>
   <string name="tags_title">Tags</string>
+  <string name="tags_no_description">No description</string>
+  <string name="tags_view_transactions">View Transactions</string>
 </resources>

@@ -4,6 +4,8 @@ plugins { id("aktual.module.viewmodel") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-di:core"))
+    api(libs.compose.uiGraphics)
+    api(project(":aktual-budget:model"))
+    api(project(":aktual-budget:data:db"))
   }
 }
