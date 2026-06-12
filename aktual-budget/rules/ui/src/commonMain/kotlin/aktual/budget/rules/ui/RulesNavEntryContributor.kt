@@ -17,13 +17,13 @@ import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(BudgetScope::class)
 class RulesNavEntryContributor : BudgetNavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<BudgetNavKey>, stack: NavStack<BudgetNavKey>) {
-    scope.budgetEntry<ListRulesNavRoute> { ListRulesScreen(EditRuleNavigator(stack)) }
+  override fun EntryProviderScope<BudgetNavKey>.contribute(stack: NavStack<BudgetNavKey>) {
+    budgetEntry<ListRulesNavRoute> { ListRulesScreen(EditRuleNavigator(stack)) }
 
-    scope.budgetEntry<EditRuleNavRoute> { route ->
+    budgetEntry<EditRuleNavRoute> { route ->
       EditRuleScreen(id = route.id, back = BackNavigator(stack))
     }
 
-    scope.budgetEntry<CreateRuleNavRoute> { EditRuleScreen(id = null, back = BackNavigator(stack)) }
+    budgetEntry<CreateRuleNavRoute> { EditRuleScreen(id = null, back = BackNavigator(stack)) }
   }
 }

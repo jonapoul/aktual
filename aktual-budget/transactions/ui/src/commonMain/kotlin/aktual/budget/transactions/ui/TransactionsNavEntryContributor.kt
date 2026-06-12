@@ -12,7 +12,7 @@ import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(BudgetScope::class)
 class TransactionsNavEntryContributor : BudgetNavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<BudgetNavKey>, stack: NavStack<BudgetNavKey>) {
-    scope.budgetEntry<TransactionsNavRoute> { TransactionsScreen(BackNavigator(stack)) }
+  override fun EntryProviderScope<BudgetNavKey>.contribute(stack: NavStack<BudgetNavKey>) {
+    budgetEntry<TransactionsNavRoute> { TransactionsScreen(BackNavigator(stack)) }
   }
 }

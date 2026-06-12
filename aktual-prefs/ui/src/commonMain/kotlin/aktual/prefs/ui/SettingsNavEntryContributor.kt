@@ -21,12 +21,12 @@ import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(AppScope::class)
 class SettingsNavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
-    scope.entry<SettingsNavRoute> {
+  override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
+    entry<SettingsNavRoute> {
       SettingsScreen(BackNavigator(stack), ThemeSettingsNavigator(stack))
     }
 
-    scope.entry<ThemeSettingsNavRoute> {
+    entry<ThemeSettingsNavRoute> {
       ThemeSettingsScreen(
         back = BackNavigator(stack),
         toCustomThemes = CustomThemesNavigator(stack),
@@ -34,11 +34,11 @@ class SettingsNavEntryContributor : NavEntryContributor {
       )
     }
 
-    scope.entry<CustomThemeSettingsNavRoute> {
+    entry<CustomThemeSettingsNavRoute> {
       CustomThemeSettingsScreen(BackNavigator(stack), InspectThemeNavigator(stack))
     }
 
-    scope.entry<InspectThemeNavRoute> { route ->
+    entry<InspectThemeNavRoute> { route ->
       InspectThemeScreen(BackNavigator(stack), route.id)
     }
   }

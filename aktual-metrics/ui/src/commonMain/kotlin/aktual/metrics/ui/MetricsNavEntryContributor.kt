@@ -11,7 +11,7 @@ import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(AppScope::class)
 class MetricsNavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
-    scope.entry<MetricsNavRoute> { MetricsScreen(BackNavigator(stack)) }
+  override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
+    entry<MetricsNavRoute> { MetricsScreen(BackNavigator(stack)) }
   }
 }

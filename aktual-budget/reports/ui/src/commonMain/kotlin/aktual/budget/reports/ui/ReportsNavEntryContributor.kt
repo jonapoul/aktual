@@ -18,8 +18,8 @@ import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(BudgetScope::class)
 class ReportsNavEntryContributor : BudgetNavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<BudgetNavKey>, stack: NavStack<BudgetNavKey>) {
-    scope.budgetEntry<ReportsListNavRoute> {
+  override fun EntryProviderScope<BudgetNavKey>.contribute(stack: NavStack<BudgetNavKey>) {
+    budgetEntry<ReportsListNavRoute> {
       ReportsDashboardScreen(
         back = BackNavigator(stack),
         toReport = ReportNavigator(stack),
@@ -27,11 +27,11 @@ class ReportsNavEntryContributor : BudgetNavEntryContributor {
       )
     }
 
-    scope.budgetEntry<ReportNavRoute> {
+    budgetEntry<ReportNavRoute> {
       // TBC
     }
 
-    scope.budgetEntry<CreateReportNavRoute> {
+    budgetEntry<CreateReportNavRoute> {
       ChooseReportTypeScreen(back = BackNavigator(stack), toReport = ReportNavigator(stack))
     }
   }

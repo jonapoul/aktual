@@ -47,7 +47,7 @@ fun AktualNavHost(
     entryProvider =
       entryProvider {
         for (contributor in contributors) {
-          contributor.contribute(scope = this, navStack)
+          with(contributor) { contribute(navStack) }
         }
       },
   )

@@ -13,7 +13,7 @@ import dev.zacsweers.metro.ContributesIntoSet
 // budget nav rail. It is therefore registered by its own contributor rather than the nav rail's
 @ContributesIntoSet(AppScope::class)
 class EditNavGridNavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
-    scope.entry<EditNavGridNavRoute> { EditNavGridScreen(back = BackNavigator(stack)) }
+  override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
+    entry<EditNavGridNavRoute> { EditNavGridScreen(back = BackNavigator(stack)) }
   }
 }

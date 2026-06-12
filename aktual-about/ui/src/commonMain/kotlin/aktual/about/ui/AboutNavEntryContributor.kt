@@ -20,8 +20,8 @@ import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(AppScope::class)
 class AboutNavEntryContributor : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
-    scope.entry<InfoNavRoute> {
+  override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
+    entry<InfoNavRoute> {
       InfoScreen(
         back = BackNavigator(stack),
         toLicenses = LicensesNavigator(stack),
@@ -29,9 +29,9 @@ class AboutNavEntryContributor : NavEntryContributor {
       )
     }
 
-    scope.entry<LicensesNavRoute> { LicensesScreen(BackNavigator(stack)) }
+    entry<LicensesNavRoute> { LicensesScreen(BackNavigator(stack)) }
 
-    scope.entry<ManageStorageNavRoute> {
+    entry<ManageStorageNavRoute> {
       ManageStorageScreen(
         navBack = BackNavigator(stack),
         onStorageNavEvent = { event -> adjustStackIfInvalidated(stack, event) },
