@@ -114,8 +114,8 @@ class TransactionsViewModel(
   }
 
   @Suppress("ExplicitCollectionElementAccessMethod")
-  fun setChecked(id: TransactionId, isChecked: Boolean) = checkedTransactionIds.update {
-    it.put(id, isChecked)
+  fun setChecked(id: TransactionId, isChecked: Boolean) = checkedTransactionIds.update { map ->
+    map.putting(id, isChecked)
   }
 
   fun setPrivacyMode(privacyMode: Boolean) {

@@ -154,7 +154,7 @@ class CustomThemeSettingsViewModel(
         updateFetchState(themeId, CacheState.Cached(summary))
         onSuccess(cached)
       } else {
-        mutableCachedThemes.update { states -> states.put(themeId, CacheState.Fetching) }
+        mutableCachedThemes.update { states -> states.putting(themeId, CacheState.Fetching) }
         val theme = themeApi.fetchTheme(summary)
         cache.save(theme)
         updateFetchState(themeId, CacheState.Cached(summary))
@@ -240,7 +240,7 @@ class CustomThemeSettingsViewModel(
   }
 
   private fun updateFetchState(themeId: ThemeId, fetchState: CacheState) {
-    mutableCachedThemes.update { themes -> themes.put(themeId, fetchState) }
+    mutableCachedThemes.update { themes -> themes.putting(themeId, fetchState) }
   }
 
   private fun byThemeMode(filter: ThemeFilter, summary: CustomThemeSummary): Boolean =
