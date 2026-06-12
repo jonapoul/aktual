@@ -5,6 +5,7 @@ plugins {
   id("aktual.module.kotlin")
   id("aktual.convention.db-test")
   alias(libs.plugins.sqldelight)
+  idea
 }
 
 sqldelight {
@@ -19,6 +20,11 @@ sqldelight {
       module(libs.sqldelight.json)
     }
   }
+}
+
+// Run SQLDelight interface generation on every IDE sync
+tasks.named("prepareKotlinIdeaImport") {
+  dependsOn("generateSqlDelightInterface")
 }
 
 kotlin {
