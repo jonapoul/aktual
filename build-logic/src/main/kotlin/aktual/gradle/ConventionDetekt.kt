@@ -52,8 +52,6 @@ class ConventionDetekt : Plugin<Project> {
         t.exclude { node ->
           !node.isDirectory && node.file.absolutePath.contains("generated", ignoreCase = true)
         }
-
-        t.finalizedBy(detektReportMergeSarif)
       }
 
       dependencies { "detektPlugins"(libs["detektCompose"]) }
