@@ -64,7 +64,7 @@ internal fun TagItem(
         style = typography.bodySmall,
         color = if (tag.description.isEmpty()) colors.tableTextLight else colors.tableText,
         fontStyle = if (tag.description.isEmpty()) FontStyle.Italic else FontStyle.Normal,
-        maxLines = 2,
+        maxLines = 5,
         overflow = TextOverflow.Ellipsis,
       )
     }
