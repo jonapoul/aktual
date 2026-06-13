@@ -24,6 +24,12 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
 import alakazam.compose.HorizontalSpacer
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +44,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -165,6 +172,25 @@ private fun SyncState(
   val text = state.text()
   val tint = state.tint(colors, attrs)
 
+  val rotation =
+    if (state is Syncing) {
+      val transition = rememberInfiniteTransition(label = "sync")
+      transition
+        .animateFloat(
+          initialValue = 0f,
+          targetValue = -360f,
+          animationSpec =
+            infiniteRepeatable(
+              animation = tween(durationMillis = 1000, easing = LinearEasing),
+              repeatMode = RepeatMode.Restart,
+            ),
+          label = "sync-rotation",
+        )
+        .value
+    } else {
+      0f
+    }
+
   Row(
     modifier =
       modifier
@@ -174,7 +200,7 @@ private fun SyncState(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Image(
-      modifier = Modifier.size(ICON_SIZE),
+      modifier = Modifier.size(ICON_SIZE).rotate(rotation),
       imageVector = state.icon(),
       contentDescription = text,
       colorFilter = ColorFilter.tint(tint),
