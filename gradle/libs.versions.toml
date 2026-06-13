@@ -18,7 +18,7 @@ kotlinx-serialization = "1.11.0"
 ktor = "3.5.0"
 markdown = "0.41.0"
 metro = "1.1.1"
-detekt = "2.0.0-alpha.3"
+detekt = "2.0.0-alpha.4"
 redacted = "1.16.0"
 sqldelight = "2.3.2"
 
