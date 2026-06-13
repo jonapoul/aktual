@@ -3,6 +3,9 @@
 SCRIPT_DIR="$(dirname "$0")"
 cd "$SCRIPT_DIR/.." || exit
 
+# shellcheck source=lib/git.sh
+. "$SCRIPT_DIR/lib/git.sh"
+
 JAR_DIR="$SCRIPT_DIR/../build/ktfmt"
 KTFMT_JAR="$JAR_DIR/ktfmt.jar"
 KTFMT_VERSION_FILE="$JAR_DIR/ktfmt.version"
@@ -95,16 +98,10 @@ if [ "$FORCE" = true ]; then
     }
 else
     BASE_BRANCH="main"
-    MERGE_BASE=$(git merge-base "$BASE_BRANCH" HEAD 2>/dev/null || git rev-parse HEAD)
-    MERGE_BASE_SHORT=$(git rev-parse --short "$MERGE_BASE" 2>/dev/null || echo "unknown")
-    CHANGED_FILES=$(
-        {
-            git diff --name-only "$MERGE_BASE" -- '*.kt' '*.kts' 2>/dev/null
-            git ls-files --others --exclude-standard -- '*.kt' '*.kts' 2>/dev/null
-        } | sort -u | while IFS= read -r file; do
-            [ -f "$file" ] && printf '%s\n' "$file"
-        done
-    )
+    MERGE_BASE=$(git_merge_base "$BASE_BRANCH")
+    MERGE_BASE_SHORT=$(git_short_sha "$MERGE_BASE")
+    # Shared change detection returns all files; ktfmt only formats Kotlin sources
+    CHANGED_FILES=$(git_changed_files "$MERGE_BASE" | grep -E '\.kts?$' || true)
     FILE_COUNT=$(echo "$CHANGED_FILES" | grep -c . || true)
 
     if [ "$FILE_COUNT" -eq 0 ]; then
@@ -121,8 +118,11 @@ fi
 # Run ktfmt
 if [ "$USE_SYSTEM_KTFMT" = true ]; then
     echo "Using system ktfmt v$SYSTEM_VERSION (mode: $MODE)"
+    # KTFMT_ARGS holds multiple space-separated flags that must word-split
+    # shellcheck disable=SC2086
     run_ktfmt ktfmt $KTFMT_ARGS
 else
     echo "Using cached ktfmt v$KTFMT_VERSION JAR (mode: $MODE)"
+    # shellcheck disable=SC2086
     run_ktfmt java -jar "$KTFMT_JAR" $KTFMT_ARGS
 fi

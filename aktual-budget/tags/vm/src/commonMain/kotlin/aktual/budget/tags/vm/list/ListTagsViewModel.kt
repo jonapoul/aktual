@@ -16,6 +16,7 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
@@ -29,6 +30,7 @@ class ListTagsViewModel(private val tagsDao: TagsDao) : ViewModel() {
   private val mutableTags = MutableStateFlow<ImmutableList<TagItem>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
   private val mutableFailure = MutableStateFlow<String?>(null)
+  private var reloadJob: Job? = null
 
   val state: StateFlow<ListTagsState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -48,17 +50,19 @@ class ListTagsViewModel(private val tagsDao: TagsDao) : ViewModel() {
 
   fun reload() {
     mutableIsLoading.update { true }
-    viewModelScope.launch {
+    reloadJob?.cancel()
+    reloadJob = viewModelScope.launch {
       try {
         val tags = tagsDao.getTags().mapNotNull { it.toTagItem() }.toImmutableList()
         mutableTags.update { tags }
         mutableFailure.update { null }
+        mutableIsLoading.update { false }
       } catch (e: CancellationException) {
+        // a newer reload() cancelled us — leave the flows alone so it can finish
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed loading tags" }
         mutableFailure.update { e.requireMessage() }
-      } finally {
         mutableIsLoading.update { false }
       }
     }

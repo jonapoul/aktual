@@ -4,14 +4,12 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.TagId
 import aktual.test.runDatabaseTest
 import androidx.compose.ui.graphics.Color
-import androidx.lifecycle.viewModelScope
 import app.cash.turbine.test
 import assertk.assertThat
 import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.isEmpty
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
-import kotlinx.coroutines.cancel
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -61,8 +59,6 @@ class ListTagsViewModelTest {
         )
       cancelAndIgnoreRemainingEvents()
     }
-
-    viewModel.viewModelScope.cancel()
   }
 
   @Test
@@ -75,7 +71,5 @@ class ListTagsViewModelTest {
       assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).isEmpty()
       cancelAndIgnoreRemainingEvents()
     }
-
-    viewModel.viewModelScope.cancel()
   }
 }

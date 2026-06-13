@@ -1,0 +1,3 @@
+# Follow `source`/`.` directives into sibling library scripts (scripts/lib/*).
+external-sources=true
+source-path=SCRIPTDIR
