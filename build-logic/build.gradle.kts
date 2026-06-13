@@ -13,7 +13,6 @@ kotlin {
   jvmToolchain(jdkVersion.get())
   compilerOptions {
     allWarningsAsErrors.set(true)
-    freeCompilerArgs.addAll("-Xcontext-parameters")
   }
 }
 
