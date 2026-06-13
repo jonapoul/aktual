@@ -104,7 +104,7 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
 
   @Test fun listSchedules() = testSavedStateVM<ListSchedulesViewModel>()
 
-  @Test fun listTags() = testVm<ListTagsViewModel>()
+  @Test fun listTags() = testSavedStateVM<ListTagsViewModel>()
 
   @Test fun login() = testVm<LoginViewModel>()
 

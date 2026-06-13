@@ -48,6 +48,7 @@ fun AktualTextField(
   colors: TextFieldColors = AktualTheme.colors.textField(),
   clearable: Boolean = false,
   textStyle: TextStyle = LocalTextStyle.current,
+  showBorder: Boolean = true,
   supportingText: (@Composable () -> Unit)? = null,
 ) {
   val isFocused by interactionSource.collectIsFocusedAsState()
@@ -58,8 +59,15 @@ fun AktualTextField(
       AktualTheme.colors.formInputBackgroundSelected
     }
 
+  val borderModifier =
+    if (showBorder) {
+      Modifier.border(1.dp, borderColor, shape)
+    } else {
+      Modifier
+    }
+
   val shadowModifier =
-    if (isFocused) {
+    if (isFocused && showBorder) {
       Modifier.shadow(4.dp, shape, ambientColor = AktualTheme.colors.formInputShadowSelected)
     } else {
       Modifier
@@ -78,7 +86,7 @@ fun AktualTextField(
     }
 
   TextField(
-    modifier = modifier.border(1.dp, borderColor, shape).then(shadowModifier),
+    modifier = modifier.then(borderModifier).then(shadowModifier),
     state = state,
     placeholder = placeholderText?.let { { Text(text = it) } },
     shape = shape,

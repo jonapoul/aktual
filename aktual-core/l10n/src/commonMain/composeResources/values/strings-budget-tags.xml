@@ -5,4 +5,12 @@
   <string name="tags_failure_prefix">Failed loading tags</string>
   <string name="tags_failure_default_message">Unknown cause</string>
   <string name="tags_empty">No tags yet</string>
+  <string name="tags_no_results">No tags match</string>
+  <string name="tags_filter">Filter</string>
+  <string name="tags_filter_placeholder">Filter tags…</string>
+  <string name="tags_filter_clear">Clear filter</string>
+  <plurals name="tags_num_results">
+    <item quantity="one">%1$d match</item>
+    <item quantity="other">%1$d matches</item>
+  </plurals>
 </resources>
