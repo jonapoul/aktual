@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Runs testAll on all modules where Kotlin files have changed on the current branch (vs main).
+# Runs testAll on all modules where files have changed on the current branch (vs main).
 #
 # Usage:
 #   ./scripts/test.sh              # Run testAll on changed modules
