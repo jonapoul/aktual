@@ -11,13 +11,20 @@ CREATE TABLE IF NOT EXISTS tags(
 );
 
 insert:
-  INSERT INTO tags VALUES ?;
+  INSERT INTO tags (id, tag, color, description)
+  VALUES (?, ?, ?, ?)
+  ON CONFLICT(id) DO UPDATE SET
+    tag = excluded.tag,
+    color = excluded.color,
+    description = excluded.description;
 
 delete:
   DELETE FROM tags WHERE id = ?;
 
-getById:
-  SELECT * FROM tags WHERE id = ?;
+getTags:
+  SELECT id, tag, color, description, hidden
+  FROM tags
+  WHERE tombstone = 0;
 
 getHidden:
   SELECT hidden FROM tags WHERE id = ?;

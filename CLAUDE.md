@@ -12,6 +12,8 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 - **IMPORTANT**: After any architectural/structural change, grep `**/CLAUDE.md` for references that need updating (scopes, annotations, module paths, DI patterns). Don't wait to be asked.
 - Prefer `kotlinx.immutable` collections in the UI layer, not plain `List`/`Set`.
 - Prefer `stateFlow.update { x }` over `stateFlow.value = x`.
+- `Strings.xyz` (user-facing text) is generated from XML in `aktual-core:l10n` — add the string there and regenerate, don't hardcode. See [aktual-core/l10n](aktual-core/l10n/CLAUDE.md).
+- In tests, observe `Flow`/`StateFlow` emissions with Turbine (`flow.test { awaitItem() }`), not by reading `.value` or manual collectors.
 - Wrap comments to the `max_line_length` in `.editorconfig` (currently 120).
 
 ## Build commands
@@ -40,6 +42,12 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./scripts/ktfmt.sh check      # check-only
 ./scripts/ktfmt.sh --force    # all files
 
+# Run a Gradle task on only the modules with changes since main (append --dry-run to preview).
+# A change to the root build file, .github/, build-logic/, or libs.versions.toml runs all modules.
+./scripts/detekt.sh           # detektCheck on changed modules
+./scripts/lint.sh             # lint on changed modules
+./scripts/test.sh             # testAll on changed modules
+
 # Dependency graph — rerun only when module deps change
 ./gradlew atlasGenerate
 
@@ -47,7 +55,7 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./gradlew --rerun-tasks
 ```
 
-Don't run detekt locally (user handles it); `./scripts/detekt.sh` covers changed modules if asked.
+Don't run detekt locally (user handles it); `./scripts/detekt.sh` covers changed modules if asked. `lint.sh` and `test.sh` share the same change-detection logic (extracted into `scripts/lib/`).
 
 ## Architecture
 
@@ -81,11 +89,11 @@ See [aktual-app:nav](aktual-app/nav/CLAUDE.md).
 
 ## Dependency helpers
 
-Inside `kotlin { ... }`: `commonMainDependencies`, `jvmMainDependencies`, `androidMainDependencies`, `androidHostTestDependencies`, `jvmTestDependencies`. Use `api()` only for deps that leak into the public API.
+Inside `kotlin { ... }`: `commonMainDependencies`, `desktopMainDependencies`, `androidMainDependencies`, `androidHostTestDependencies`, `desktopTestDependencies`. Use `api()` only for deps that leak into the public API.
 
 ## Multiplatform
 
-Default new code to `commonMain`; reach for `androidMain` / `jvmMain` only when truly platform-specific.
+Default new code to `commonMain`; reach for `androidMain` / `desktopMain` only when truly platform-specific.
 
 ## Gotchas
 

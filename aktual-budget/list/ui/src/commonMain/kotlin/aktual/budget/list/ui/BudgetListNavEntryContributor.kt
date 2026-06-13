@@ -22,8 +22,8 @@ import dev.zacsweers.metro.ContributesIntoSet
 @ContributesIntoSet(AppScope::class)
 class BudgetListNavEntryContributor(private val runLevelState: RunLevelState) :
   NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
-    scope.entry<ListBudgetsNavRoute> {
+  override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
+    entry<ListBudgetsNavRoute> {
       val loggedInGraph by remember { runLevelState.loggedIn() }.collectAsState(initial = null)
 
       LoadingScreenIfNotNull(loggedInGraph) {

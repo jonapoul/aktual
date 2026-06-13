@@ -1,10 +1,13 @@
 package aktual.budget.navrail.ui.edit
 
+import aktual.budget.navrail.ui.NAV_GRID_COLUMNS
 import aktual.budget.navrail.ui.NavSheetItem
 import aktual.budget.navrail.ui.icon
 import aktual.budget.navrail.ui.label
 import aktual.budget.navrail.vm.edit.EditNavGridState
 import aktual.budget.navrail.vm.edit.EditNavGridViewModel
+import aktual.core.icons.AktualIcons
+import aktual.core.icons.ArrowThickDown
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.MoreVert
@@ -34,12 +37,14 @@ import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridItemScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
@@ -64,6 +69,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.toImmutableList
 import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.ReorderableLazyGridState
 import sh.calvin.reorderable.rememberReorderableLazyGridState
 
 @Composable
@@ -201,53 +207,108 @@ private fun EditNavGridContent(
   val lazyGridState = rememberLazyGridState()
   val reorderState =
     rememberReorderableLazyGridState(lazyGridState) { from, to ->
-      onAction(Move(from.index, to.index))
+      // The non-draggable toggle slot sits at grid index NAV_GRID_COLUMNS - 1 and is never a drag
+      // source or target, so shift any index past it back to the items-list index
+      onAction(Move(from.index.toItemIndex(), to.index.toItemIndex()))
     }
   val jiggle = rememberJiggleAngle()
 
   LazyVerticalGrid(
     state = lazyGridState,
-    columns = GridCells.Fixed(BudgetTab.tabs.size),
+    columns = GridCells.Fixed(NAV_GRID_COLUMNS),
     modifier = modifier.fillMaxSize(),
     contentPadding = PaddingValues(8.dp),
+    // Left-pack so a partial final row (e.g. a lone trailing item) sits at the start, not centered
+    horizontalArrangement = Arrangement.Start,
   ) {
-    itemsIndexed(state.items, key = { _, tab -> tab.name }) { index, tab ->
-      ReorderableItem(reorderState, key = tab.name) { isDragging ->
-        // Even/odd items jiggle in opposite directions for a livelier "editable" feel; the
-        // actively-dragged item stops jiggling and lifts slightly instead. Use the visual grid
-        // index, not tab.ordinal, so the alternation tracks position after reordering
-        val rotation = if (isDragging) 0f else jiggle * if (index % 2 == 0) 1f else -1f
-        val scale = if (isDragging) DRAG_SCALE else 1f
+    val firstRow = state.items.take(NAV_GRID_COLUMNS - 1)
+    val rest = state.items.drop(NAV_GRID_COLUMNS - 1)
 
-        // The item wraps its content, so center it within the wider grid cell
-        Box(
-          modifier =
-            Modifier.padding(Dimens.Medium)
-              .fillMaxWidth()
-              .longPressDraggableHandle()
-              .background(
-                color = if (isDragging) colors.pillBackgroundSelected else colors.pillBackground,
-                shape = CardShape,
-              ),
-          contentAlignment = Alignment.Center,
-        ) {
-          NavSheetItem(
-            modifier =
-              Modifier.graphicsLayer {
-                rotationZ = rotation
-                scaleX = scale
-                scaleY = scale
-              },
-            icon = tab.icon(),
-            label = tab.label(),
-            selected = false,
-            onClick = null,
-          )
-        }
-      }
+    itemsIndexed(firstRow, key = { _, tab -> tab }) { index, tab ->
+      ReorderableNavGridItem(reorderState, tab = tab, gridIndex = index, jiggle = jiggle)
+    }
+
+    // A fixed, non-draggable slot pinned to the last cell of the first row, mirroring the
+    // collapse/expand toggle that always lives in this position in the nav bar
+    item(key = TOGGLE_SLOT_KEY, contentType = "toggle") { ToggleNavGridItem() }
+
+    itemsIndexed(rest, key = { _, tab -> tab }) { index, tab ->
+      // +1 for the toggle slot occupying the last cell of the first row
+      ReorderableNavGridItem(
+        reorderState,
+        tab = tab,
+        gridIndex = NAV_GRID_COLUMNS + index,
+        jiggle = jiggle,
+      )
     }
   }
 }
+
+@Composable
+private fun LazyGridItemScope.ReorderableNavGridItem(
+  reorderState: ReorderableLazyGridState,
+  tab: BudgetTab,
+  gridIndex: Int,
+  jiggle: Float,
+) {
+  ReorderableItem(reorderState, key = tab) { isDragging ->
+    // Even/odd items jiggle in opposite directions for a livelier "editable" feel; the actively-
+    // dragged item stops jiggling and lifts slightly instead. Use the visual grid index, not
+    // tab.ordinal, so the alternation tracks position after reordering
+    val rotation = if (isDragging) 0f else jiggle * if (gridIndex % 2 == 0) 1f else -1f
+    val scale = if (isDragging) DRAG_SCALE else 1f
+
+    // The item wraps its content, so center it within the wider grid cell
+    Box(
+      modifier =
+        Modifier.padding(Dimens.Medium)
+          .fillMaxWidth()
+          .longPressDraggableHandle()
+          .background(
+            color = if (isDragging) colors.pillBackgroundSelected else colors.pillBackground,
+            shape = CardShape,
+          ),
+      contentAlignment = Alignment.Center,
+    ) {
+      NavSheetItem(
+        modifier =
+          Modifier.graphicsLayer {
+            rotationZ = rotation
+            scaleX = scale
+            scaleY = scale
+          },
+        icon = tab.icon(),
+        label = tab.label(),
+        selected = false,
+        onClick = null,
+      )
+    }
+  }
+}
+
+@Composable
+private fun ToggleNavGridItem(modifier: Modifier = Modifier) {
+  // Dimmed and non-interactive to signal it can't be moved or reordered
+  Box(
+    modifier =
+      modifier
+        .padding(Dimens.Medium)
+        .fillMaxWidth()
+        .background(color = colors.pillBackground, shape = CardShape),
+    contentAlignment = Alignment.Center,
+  ) {
+    NavSheetItem(
+      modifier = Modifier.graphicsLayer { alpha = TOGGLE_SLOT_ALPHA },
+      icon = AktualIcons.ArrowThickDown,
+      label = Strings.budgetNavCollapse,
+      selected = false,
+      onClick = null,
+    )
+  }
+}
+
+// Maps a grid layout index to its index in the items list, accounting for the fixed toggle slot
+private fun Int.toItemIndex(): Int = if (this < NAV_GRID_COLUMNS - 1) this else this - 1
 
 @Composable
 private fun DiscardChangesDialog(
@@ -284,6 +345,8 @@ private fun rememberJiggleAngle(): Float {
 private const val JIGGLE_DEGREES = 2.5f
 private const val JIGGLE_PERIOD_MS = 140
 private const val DRAG_SCALE = 1.05f
+private const val TOGGLE_SLOT_ALPHA = 0.5f
+private const val TOGGLE_SLOT_KEY = "toggle"
 
 private val JIGGLE_ANIMATION_SPEC =
   infiniteRepeatable<Float>(

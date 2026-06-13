@@ -23,8 +23,8 @@ import dev.zacsweers.metro.ContributesIntoSet
 @ContributesIntoSet(AppScope::class)
 class BudgetNavRailNavEntryContributor(private val runLevelState: RunLevelState) :
   NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
-    scope.entry<BudgetNavRailNavRoute> {
+  override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
+    entry<BudgetNavRailNavRoute> {
       val themeAttrsStack = LocalBottomBarThemeAttrs.current
       DisposableEffect(themeAttrsStack) {
         themeAttrsStack.push(BudgetNavRailThemeAttrs)

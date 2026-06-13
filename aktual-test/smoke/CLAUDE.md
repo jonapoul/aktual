@@ -9,7 +9,7 @@ Catches DI wiring breakages at compile/test time rather than at runtime. Each te
 ## Structure
 
 - `ViewModelSmokeTest` (commonTest) — abstract base with all shared VM tests. Uses Burst's `@InterceptTest` for `TemporaryFolder` lifecycle.
-- `JvmViewModelSmokeTest` (jvmTest) — desktop target, creates `TestJvmAppGraph`.
+- `JvmViewModelSmokeTest` (desktopTest) — desktop target, creates `TestJvmAppGraph`.
 - `AndroidViewModelSmokeTest` (androidHostTest) — android target via Robolectric, creates `TestAndroidAppGraph`.
 - `TestContainer` — `@BindingContainer` providing test-specific bindings (e.g. `BudgetFiles` with a temp directory).
 - `TestAppGraph` — common interface extending `AppGraph`, exposing `RunLevelController` and `RunLevelState`, plus an empty `navEntryContributors` multibinding so the graph builds without UI modules.
@@ -27,5 +27,8 @@ Robolectric's native runtime loader hits a zip filesystem conflict on SDK 35. Th
 
 ## Adding a New ViewModel
 
-1. Add a `@Test` function in `ViewModelSmokeTest` using `testVm<YourViewModel>()` or `testAssistedVM<YourVM, YourVM.Factory> { create(...) }`.
+1. Add a `@Test` function in `ViewModelSmokeTest`:
+   - Plain VM → `testVm<YourViewModel>()`
+   - Manual assisted factory (takes a NavKey/spec) → `testAssistedVM<YourVM, YourVM.Factory> { create(...) }`
+   - VM that takes a `SavedStateHandle` (a `ViewModelAssistedFactory` calling `createSavedStateHandle()`) → `testSavedStateVM<YourViewModel>()`, which supplies `CreationExtras` carrying the saved-state plumbing.
 2. Add the VM module as a `commonTestDependencies` implementation dependency in `build.gradle.kts`.

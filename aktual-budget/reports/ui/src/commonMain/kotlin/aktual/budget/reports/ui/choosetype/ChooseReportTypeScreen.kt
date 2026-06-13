@@ -103,7 +103,7 @@ internal fun ChooseReportTypeScaffold(
     modifier = modifier,
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, isScrolled = lazyListState.canScrollBackward),
+        modifier = Modifier.blurredTopBar(blurState, lazyListState),
         colors = colors.transparentTopAppBarColors(),
         title = { Text(Strings.reportsChooseTypeTitle) },
       )

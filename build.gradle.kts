@@ -7,7 +7,6 @@ import atlas.graphviz.LinkStyle.Solid
 import atlas.graphviz.NodeStyle.Filled
 import atlas.graphviz.RankDir.TopToBottom
 import atlas.graphviz.Shape.Box
-import dev.detekt.gradle.report.ReportMergeTask
 
 plugins {
   alias(libs.plugins.agp.app) apply false
@@ -36,13 +35,6 @@ plugins {
 
   id("aktual.convention.idea")
 }
-
-val detektReportMergeSarif =
-  tasks.register("detektReportMergeSarif", ReportMergeTask::class) {
-    output = layout.buildDirectory.file("reports/detekt/merge.sarif.json")
-  }
-
-tasks.check.configure { dependsOn(detektReportMergeSarif) }
 
 doctor {
   javaHome {

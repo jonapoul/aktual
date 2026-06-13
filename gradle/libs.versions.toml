@@ -77,9 +77,9 @@ detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
 detekt-test = { module = "dev.detekt:detekt-test", version.ref = "detekt" }
 detekt-testJunit = { module = "dev.detekt:detekt-test-junit", version.ref = "detekt" }
 detekt-testUtils = { module = "dev.detekt:detekt-test-utils", version.ref = "detekt" }
-detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.5.9" }
+detektCompose = { module = "io.nlopez.compose.rules:detekt", version = "0.6.0" }
 detektGradle = { module = "dev.jonpoulton.blueprint:detekt-rules", version.ref = "blueprint" }
-haze = { module = "dev.chrisbanes.haze:haze-blur", version = "2.0.0-alpha02" }
+haze = { module = "dev.chrisbanes.haze:haze-blur", version = "2.0.0-SNAPSHOT" }
 junit = { module = "junit:junit", version = "4.13.2" }
 junitPlatformLauncher = { module = "org.junit.platform:junit-platform-launcher", version = "6.1.0" }
 kermit = { module = "co.touchlab:kermit", version = "2.1.0" }
@@ -87,7 +87,7 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinx-coroutines" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version = "0.8.0" }
-kotlinx-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.4.0" }
+kotlinx-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version = "0.5.0" }
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 ktfmt = { module = "com.facebook:ktfmt", version = "0.63" } # only used in ktfmt.sh

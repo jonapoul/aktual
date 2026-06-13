@@ -8,5 +8,5 @@ import androidx.navigation3.runtime.EntryProviderScope
  */
 @Immutable
 fun interface BudgetNavEntryContributor {
-  fun contribute(scope: EntryProviderScope<BudgetNavKey>, stack: NavStack<BudgetNavKey>)
+  fun EntryProviderScope<BudgetNavKey>.contribute(stack: NavStack<BudgetNavKey>)
 }

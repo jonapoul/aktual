@@ -25,15 +25,15 @@ import dev.zacsweers.metro.ContributesIntoSet
 
 @ContributesIntoSet(AppScope::class)
 class AccountNavEntryContributor(private val runLevelState: RunLevelState) : NavEntryContributor {
-  override fun contribute(scope: EntryProviderScope<NavKey>, stack: NavStack<NavKey>) {
-    scope.entry<ChangePasswordNavRoute> {
+  override fun EntryProviderScope<NavKey>.contribute(stack: NavStack<NavKey>) {
+    entry<ChangePasswordNavRoute> {
       ChangePasswordScreen(
         navBack = BackNavigator(stack),
         toListBudgets = ListBudgetsNavigator(stack),
       )
     }
 
-    scope.entry<LoginNavRoute> {
+    entry<LoginNavRoute> {
       val serverChosenGraph by
         remember { runLevelState.serverChosen() }.collectAsState(initial = null)
 
@@ -46,7 +46,7 @@ class AccountNavEntryContributor(private val runLevelState: RunLevelState) : Nav
       }
     }
 
-    scope.entry<ServerUrlNavRoute> {
+    entry<ServerUrlNavRoute> {
       ServerUrlScreen(toLogin = LoginNavigator(stack), toInfo = InfoNavigator(stack))
     }
   }

@@ -14,12 +14,16 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
@@ -29,6 +33,7 @@ import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
@@ -81,26 +86,47 @@ fun rememberBlurredTopBarState(): BlurredTopBarState {
 
 @Stable data class BlurredTopBarState(val hazeState: HazeState, val blurEnabled: Boolean)
 
-/** Variant that animates between transparent and blurred based on [isScrolled]. */
+/**
+ * Variant that scales the blur with the scroll position. The blur ramps from fully transparent to
+ * fully blurred as [scrollOffset] (in pixels) grows from zero to the top bar's own measured height,
+ * which is captured from the bar's layout pass.
+ */
 @Composable
 fun Modifier.blurredTopBar(
   state: BlurredTopBarState,
-  isScrolled: Boolean,
+  scrollOffset: () -> Float,
   config: BlurConfig = LocalBlurConfig.current,
 ): Modifier {
   if (!state.blurEnabled) return this
 
-  val progress by
-    animateFloatAsState(
-      targetValue = if (isScrolled) 1f else 0f,
-      animationSpec = DefaultAnimationSpec,
-    )
+  var barHeightPx by remember { mutableIntStateOf(0) }
+  val measured = onSizeChanged { barHeightPx = it.height }
 
-  if (progress == 0f) return this
+  val progress by remember {
+    derivedStateOf {
+      val height = barHeightPx
+      if (height <= 0) 0f else (scrollOffset() / height).coerceIn(0f, 1f)
+    }
+  }
+
+  if (progress <= 0f) return measured
 
   val blurStyle = rememberAnimatedHazeStyle(config, progress)
-  return hazeEffect(state.hazeState) { blurEffect { style = blurStyle } }
+  return measured.hazeEffect(state.hazeState) { blurEffect { style = blurStyle } }
 }
+
+/** Convenience overload that derives the scroll offset straight from [listState]. */
+@Composable
+fun Modifier.blurredTopBar(
+  state: BlurredTopBarState,
+  listState: LazyListState,
+  config: BlurConfig = LocalBlurConfig.current,
+): Modifier = blurredTopBar(state, scrollOffset = { listState.topBarBlurOffset() }, config = config)
+
+// Pixels the list content has scrolled up behind the top bar. Once we're past the first item we're
+// definitely fully scrolled, so report a saturating value to hold the blur at max.
+fun LazyListState.topBarBlurOffset(): Float =
+  if (firstVisibleItemIndex > 0) Float.MAX_VALUE else firstVisibleItemScrollOffset.toFloat()
 
 @Composable
 fun Modifier.blurredTopBarContent(
