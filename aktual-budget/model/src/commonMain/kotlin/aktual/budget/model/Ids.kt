@@ -103,6 +103,7 @@ value class ScheduleNextDateId(val value: String) : Comparable<ScheduleNextDateI
 }
 
 @JvmInline
+@Serializable
 value class TagId(val value: String) : Comparable<TagId> {
   override fun toString(): String = value
 

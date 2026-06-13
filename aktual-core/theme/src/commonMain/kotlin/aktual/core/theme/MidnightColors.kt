@@ -196,7 +196,7 @@ data object MidnightColors : DefaultColors {
   override val formInputBorderSelected = ColorPalette.purple300
   override val formInputText = ColorPalette.gray150
   override val formInputTextSelected = ColorPalette.black
-  override val formInputTextPlaceholder = ColorPalette.gray150
+  override val formInputTextPlaceholder = ColorPalette.gray400
   override val formInputTextPlaceholderSelected = ColorPalette.gray100
   override val formInputTextReadOnlySelection = ColorPalette.gray800
   override val formInputTextSelection = ColorPalette.gray800

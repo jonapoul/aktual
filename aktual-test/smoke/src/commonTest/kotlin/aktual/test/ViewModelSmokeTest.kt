@@ -13,6 +13,7 @@ import aktual.budget.rules.vm.edit.EditRuleViewModel
 import aktual.budget.rules.vm.list.ListRulesViewModel
 import aktual.budget.schedules.vm.list.ListSchedulesViewModel
 import aktual.budget.sync.vm.SyncBudgetViewModel
+import aktual.budget.tags.vm.edit.EditTagViewModel
 import aktual.budget.tags.vm.list.ListTagsViewModel
 import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.theme.DarkColors
@@ -121,6 +122,8 @@ abstract class ViewModelSmokeTest<G : TestAppGraph> {
   @Test fun themeSettings() = testVm<ThemeSettingsViewModel>()
 
   @Test fun url() = testVm<ServerUrlViewModel>()
+
+  @Test fun editTag() = testAssistedVM<EditTagViewModel, EditTagViewModel.Factory> { create(null) }
 
   @Test
   fun syncBudget() =

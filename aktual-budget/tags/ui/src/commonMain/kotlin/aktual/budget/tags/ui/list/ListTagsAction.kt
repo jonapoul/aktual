@@ -11,9 +11,11 @@ internal data object OpenSearch : ListTagsAction
 
 internal data object ClearFilter : ListTagsAction
 
+internal data object CreateTag : ListTagsAction
+
 @JvmInline internal value class EditFilterText(val text: String) : ListTagsAction
 
-@JvmInline internal value class ViewTransactions(val id: TagId) : ListTagsAction
+@JvmInline internal value class EditTag(val id: TagId) : ListTagsAction
 
 @Immutable
 internal fun interface ListTagsActionHandler {
