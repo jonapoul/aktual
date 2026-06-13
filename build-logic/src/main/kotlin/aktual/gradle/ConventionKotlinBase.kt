@@ -46,12 +46,12 @@ class ConventionKotlinBase : Plugin<Project> {
   private companion object {
     val FREE_COMPILER_ARGS =
       listOf(
-        "-Xcontext-parameters", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-parameters
+        "-Xcollection-literals", // https://kotlinlang.org/docs/whatsnew24.html#support-for-collection-literals
         "-Xcontext-sensitive-resolution", // https://kotlinlang.org/docs/whatsnew22.html#preview-of-context-sensitive-resolution
         "-Xexpect-actual-classes",
+        "-Xintrinsic-const-evaluation", // https://kotlinlang.org/docs/whatsnew24.html#improved-compile-time-constants
         "-opt-in=kotlin.RequiresOptIn",
         "-opt-in=kotlin.contracts.ExperimentalContracts",
-        "-opt-in=kotlin.uuid.ExperimentalUuidApi",
       )
   }
 }
