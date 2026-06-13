@@ -28,6 +28,7 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
@@ -253,7 +254,7 @@ private fun TagsList(
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
-    modifier = modifier.fillMaxSize(),
+    modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
     contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ListTagsDS.listItemSpacing),
