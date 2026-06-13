@@ -1,8 +1,8 @@
 package aktual.budget.tags.ui.list
 
 import aktual.budget.tags.vm.list.TagItem
+import aktual.core.icons.material.ArrowRight
 import aktual.core.icons.material.MaterialIcons
-import aktual.core.icons.material.Search
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -36,8 +36,8 @@ import androidx.compose.ui.unit.Dp
 @Composable
 internal fun TagItem(
   tag: TagItem,
+  onViewTransactions: () -> Unit,
   modifier: Modifier = Modifier,
-  onViewTransactions: () -> Unit = {},
 ) {
   val contentAlpha = if (tag.hidden) ListTagsDS.HIDDEN_ALPHA else 1f
 
@@ -71,7 +71,7 @@ internal fun TagItem(
 
     NormalIconButton(
       modifier = Modifier.alpha(contentAlpha),
-      imageVector = MaterialIcons.Search,
+      imageVector = MaterialIcons.ArrowRight,
       contentDescription = Strings.tagsViewTransactions,
       onClick = onViewTransactions,
     )
@@ -118,4 +118,4 @@ private class TagItemProvider : ColoredParameterProvider<TagItem>(TagsPreview.al
 @Composable
 private fun PreviewTagItem(
   @PreviewParameter(TagItemProvider::class) params: ColoredParams<TagItem>
-) = PreviewWithColoredParams(params) { TagItem(tag = this) }
+) = PreviewWithColoredParams(params) { TagItem(tag = this, onViewTransactions = {}) }

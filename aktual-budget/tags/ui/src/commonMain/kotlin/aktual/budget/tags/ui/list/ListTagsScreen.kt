@@ -81,6 +81,8 @@ internal fun ListTagsScreen(
         OpenSearch -> viewModel.openSearch()
         is EditFilterText -> viewModel.setFilterText(action.text)
         ClearFilter -> viewModel.clearFilter()
+        // TODO: navigate to the transactions screen filtered by action.id
+        is ViewTransactions -> Unit
       }
     },
   )
@@ -184,7 +186,12 @@ private fun ListTagsContent(
             ),
         )
       } else {
-        TagsList(tags = state.tags, listState = listState, contentPadding = padding)
+        TagsList(
+          tags = state.tags,
+          listState = listState,
+          contentPadding = padding,
+          onAction = onAction,
+        )
       }
   }
 }
@@ -242,6 +249,7 @@ private fun TagsList(
   tags: ImmutableList<TagItem>,
   listState: LazyListState,
   contentPadding: PaddingValues,
+  onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
@@ -254,6 +262,7 @@ private fun TagsList(
       TagItem(
         modifier = Modifier.animateItem(),
         tag = tag,
+        onViewTransactions = { onAction(ViewTransactions(tag.id)) },
       )
     }
   }
