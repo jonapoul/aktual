@@ -60,7 +60,7 @@ changed_gradle_modules() {
   fi
 }
 
-# Run a per-module Gradle task on every module with changed Kotlin files (vs a base branch).
+# Run a per-module Gradle task on every module with changed files (vs a base branch).
 # Args: $1 = Gradle task suffix (e.g. detektCheck), $2 = base branch, $3 = dry-run (true/false).
 run_changed_module_task() {
   local task_suffix="$1"

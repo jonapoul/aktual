@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Runs lint on all modules where Kotlin files have changed on the current branch (vs main).
+# Runs lint on all modules where files have changed on the current branch (vs main).
 #
 # Usage:
 #   ./scripts/lint.sh              # Run lint on changed modules
