@@ -111,10 +111,14 @@ class EditTagViewModel(
       }
 
       val existing =
-        runCatching { tagsDao.getTag(tagId) }
-          .onFailure { e -> logcat.e(e) { "Failed loading tag $tagId" } }
-          .getOrNull()
-          ?.toTagItem()
+        try {
+          tagsDao.getTag(tagId)?.toTagItem()
+        } catch (e: CancellationException) {
+          throw e
+        } catch (e: Exception) {
+          logcat.e(e) { "Failed loading tag $tagId" }
+          null
+        }
 
       if (existing == null) {
         reset(Loaded(isNew = true))

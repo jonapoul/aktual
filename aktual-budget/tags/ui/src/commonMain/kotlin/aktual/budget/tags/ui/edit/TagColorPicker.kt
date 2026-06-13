@@ -44,6 +44,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -63,6 +64,7 @@ import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import kotlin.math.roundToInt
 import kotlinx.collections.immutable.persistentListOf
 
+@Suppress("LongMethod")
 @Composable
 internal fun TagColorPicker(
   color: Color?,
@@ -76,9 +78,11 @@ internal fun TagColorPicker(
   val hexInteraction = remember { MutableInteractionSource() }
   val hexFocused by hexInteraction.collectIsFocusedAsState()
 
-  // true when the field holds a non-empty value that isn't a valid hex colour
+  val currentOnColorChange by rememberUpdatedState(onColorChange)
+  val currentOnErrorChange by rememberUpdatedState(onErrorChange)
+
   var hexError by remember { mutableStateOf(false) }
-  LaunchedEffect(hexError) { onErrorChange(hexError) }
+  LaunchedEffect(hexError) { currentOnErrorChange(hexError) }
 
   // when the colour changes from elsewhere (wheel, slider, preset), reflect it in the field.
   // Skip only when the field already represents this colour — i.e. the user just typed it — so we
@@ -100,17 +104,16 @@ internal fun TagColorPicker(
       .collect { text ->
         if (!hexFocused) return@collect
         val trimmed = text.trim()
-        when {
-          trimmed.isEmpty() -> hexError = false
-          else -> {
-            val parsed = trimmed.toColorOrNull()
-            if (parsed == null) {
-              hexError = true
-            } else {
-              hexError = false
-              onColorChange(parsed)
-              controller.selectByColor(parsed, fromUser = false)
-            }
+        if (trimmed.isEmpty()) {
+          hexError = false
+        } else {
+          val parsed = trimmed.toColorOrNull()
+          if (parsed == null) {
+            hexError = true
+          } else {
+            hexError = false
+            currentOnColorChange(parsed)
+            controller.selectByColor(parsed, fromUser = false)
           }
         }
       }
@@ -336,12 +339,15 @@ internal fun Color.toHexRgb(): String {
   return "#${r.hex2}${g.hex2}${b.hex2}".uppercase()
 }
 
+private const val RGB_HEX_LENGTH = 6
+private const val ARGB_HEX_LENGTH = 8
+
 // parses "#rrggbb" / "#aarrggbb" (with or without the leading '#') into a Color, or null if invalid
 internal fun String.toColorOrNull(): Color? {
   val hex = trim().removePrefix("#")
-  if (hex.length != 6 && hex.length != 8) return null
+  if (hex.length != RGB_HEX_LENGTH && hex.length != ARGB_HEX_LENGTH) return null
   val value = hex.toLongOrNull(radix = 16) ?: return null
-  val argb = if (hex.length == 6) value or 0xFF000000L else value
+  val argb = if (hex.length == RGB_HEX_LENGTH) value or 0xFF000000L else value
   return Color(argb.toInt())
 }
 

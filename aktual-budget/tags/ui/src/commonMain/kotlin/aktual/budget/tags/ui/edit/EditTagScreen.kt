@@ -350,6 +350,7 @@ private fun PreviewEditTagScreen(
     EditTagScaffold(state = this, hasChanges = false, canSave = true, onAction = {})
   }
 
+@Suppress("MagicNumber")
 private class EditTagStateProvider :
   ColoredParameterProvider<EditTagState>(
     EditTagState.Loading,
