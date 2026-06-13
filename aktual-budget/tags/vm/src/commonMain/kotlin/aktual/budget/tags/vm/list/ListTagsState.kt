@@ -9,4 +9,11 @@ data object Loading : ListTagsState
 
 @JvmInline value class Failure(val cause: String?) : ListTagsState
 
-@Immutable @JvmInline value class Success(val tags: ImmutableList<TagItem>) : ListTagsState
+data object Empty : ListTagsState
+
+@Immutable
+data class Success(
+  val tags: ImmutableList<TagItem>,
+  val filterText: String,
+  val isSearchActive: Boolean,
+) : ListTagsState
