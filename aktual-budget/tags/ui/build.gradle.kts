@@ -12,5 +12,6 @@ kotlin {
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
     implementation(project(":aktual-core:l10n"))
+    implementation(libs.colorpicker)
   }
 }

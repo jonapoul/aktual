@@ -2,6 +2,7 @@ package aktual.core.nav
 
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
+import aktual.budget.model.TagId
 import aktual.budget.model.WidgetId
 import androidx.compose.runtime.Immutable
 
@@ -52,4 +53,11 @@ class EditScheduleNavigator(private val stack: NavStack<BudgetNavKey>) {
 @Immutable
 class ListTagsNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke() = stack.push(ListTagsNavRoute)
+}
+
+@Immutable
+class EditTagNavigator(private val stack: NavStack<BudgetNavKey>) {
+  operator fun invoke() = stack.push(CreateTagNavRoute)
+
+  operator fun invoke(id: TagId) = stack.push(EditTagNavRoute(id))
 }

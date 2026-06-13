@@ -1,14 +1,12 @@
 package aktual.budget.tags.ui.list
 
+import aktual.budget.tags.ui.contrastingTextColor
 import aktual.budget.tags.vm.list.TagItem
-import aktual.core.icons.material.ArrowRight
-import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
-import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.RowShape
 import androidx.compose.foundation.background
@@ -36,11 +34,9 @@ import androidx.compose.ui.unit.Dp
 @Composable
 internal fun TagItem(
   tag: TagItem,
-  onViewTransactions: () -> Unit,
+  onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val contentAlpha = if (tag.hidden) ListTagsDS.HIDDEN_ALPHA else 1f
-
   Row(
     modifier =
       modifier
@@ -48,13 +44,13 @@ internal fun TagItem(
         .clip(RowShape)
         .background(colors.tableBackground, RowShape)
         .border(Dp.Hairline, colors.tableBorder, RowShape)
-        .clickable(onClick = onViewTransactions)
+        .clickable { onAction(EditTag(tag.id)) }
         .padding(ListTagsDS.itemPadding),
     horizontalArrangement = Arrangement.spacedBy(ListTagsDS.itemHorizontalSpacing),
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Column(
-      modifier = Modifier.weight(1f).alpha(contentAlpha),
+      modifier = Modifier.weight(1f).alpha(if (tag.hidden) ListTagsDS.HIDDEN_ALPHA else 1f),
       verticalArrangement = Arrangement.spacedBy(ListTagsDS.itemContentSpacing),
     ) {
       TagChip(text = tag.tag, color = tag.color)
@@ -68,13 +64,6 @@ internal fun TagItem(
         overflow = TextOverflow.Ellipsis,
       )
     }
-
-    NormalIconButton(
-      modifier = Modifier.alpha(contentAlpha),
-      imageVector = MaterialIcons.ArrowRight,
-      contentDescription = Strings.tagsViewTransactions,
-      onClick = onViewTransactions,
-    )
   }
 }
 
@@ -103,19 +92,10 @@ private fun TagChip(
   )
 }
 
-// pick black or white text for legibility on [this], using the brightness formula from
-// https://www.w3.org/TR/AERT/#color-contrast — adapted from upstream's getTagCSSColors in
-// packages/desktop-client/src/hooks/useTagCSS.ts
-@Suppress("MagicNumber")
-private fun Color.contrastingTextColor(): Color {
-  val brightness = (red * 299 + green * 587 + blue * 114) * 255 / 1000
-  return if (brightness >= 125) Color.Black else Color.White
-}
-
 private class TagItemProvider : ColoredParameterProvider<TagItem>(TagsPreview.all)
 
 @Preview
 @Composable
 private fun PreviewTagItem(
   @PreviewParameter(TagItemProvider::class) params: ColoredParams<TagItem>
-) = PreviewWithColoredParams(params) { TagItem(tag = this, onViewTransactions = {}) }
+) = PreviewWithColoredParams(params) { TagItem(tag = this, onAction = {}) }

@@ -41,6 +41,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -162,6 +163,12 @@ private fun loadedString(budgetName: String): AnnotatedString {
   }
 }
 
+private val SyncAnimationSpec =
+  infiniteRepeatable<Float>(
+    animation = tween(durationMillis = 1000, easing = LinearEasing),
+    repeatMode = RepeatMode.Restart,
+  )
+
 @Composable
 private fun SyncState(
   state: SyncState,
@@ -172,24 +179,8 @@ private fun SyncState(
   val text = state.text()
   val tint = state.tint(colors, attrs)
 
-  val rotation =
-    if (state is Syncing) {
-      val transition = rememberInfiniteTransition(label = "sync")
-      transition
-        .animateFloat(
-          initialValue = 0f,
-          targetValue = -360f,
-          animationSpec =
-            infiniteRepeatable(
-              animation = tween(durationMillis = 1000, easing = LinearEasing),
-              repeatMode = RepeatMode.Restart,
-            ),
-          label = "sync-rotation",
-        )
-        .value
-    } else {
-      0f
-    }
+  val transition = rememberInfiniteTransition(label = "sync")
+  val rotation by transition.animateFloat(0f, -360f, SyncAnimationSpec, "sync-rotation")
 
   Row(
     modifier =
@@ -200,7 +191,7 @@ private fun SyncState(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     Image(
-      modifier = Modifier.size(ICON_SIZE).rotate(rotation),
+      modifier = Modifier.size(ICON_SIZE).rotate(if (state is Syncing) rotation else 0f),
       imageVector = state.icon(),
       contentDescription = text,
       colorFilter = ColorFilter.tint(tint),

@@ -6,6 +6,7 @@ import aktual.core.l10n.Strings
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.OutputTransformation
@@ -88,7 +89,10 @@ fun AktualTextField(
   TextField(
     modifier = modifier.then(borderModifier).then(shadowModifier),
     state = state,
-    placeholder = placeholderText?.let { { Text(text = it) } },
+    placeholder =
+      placeholderText?.let {
+        { Text(text = it, textAlign = textStyle.textAlign, modifier = Modifier.fillMaxWidth()) }
+      },
     shape = shape,
     colors = colors,
     readOnly = readOnly,

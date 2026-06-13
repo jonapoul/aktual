@@ -58,6 +58,7 @@ androidx-test-runner = { module = "androidx.test:runner", version = "1.7.0" }
 assertk = { module = "com.willowtreeapps.assertk:assertk", version = "0.28.1" }
 burst = { module = "app.cash.burst:burst", version.ref = "burst" }
 burstCoroutines = { module = "app.cash.burst:burst-coroutines", version.ref = "burst" }
+colorpicker = { module = "com.github.skydoves:colorpicker-compose", version = "1.2.0" }
 compose-animation = { module = "org.jetbrains.compose.animation:animation", version.ref = "compose" }
 compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMaterial3" }

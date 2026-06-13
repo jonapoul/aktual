@@ -15,6 +15,8 @@ flowchart TD
     reportsDashboard["Reports Dashboard"]
     report["Report"]
     createReport["Create Report"]
+    listTags["List Tags"]
+    createTag["Create Tag"]
   end
 
   app --valid token--> budgetList
@@ -43,3 +45,5 @@ flowchart TD
 
   reportsDashboard --tap report--> report
   reportsDashboard --tap create--> createReport
+
+  listTags --tap add--> createTag

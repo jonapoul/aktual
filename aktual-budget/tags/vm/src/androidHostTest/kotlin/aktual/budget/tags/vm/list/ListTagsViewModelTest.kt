@@ -3,6 +3,7 @@ package aktual.budget.tags.vm.list
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.TagId
+import aktual.budget.tags.vm.insertTag
 import aktual.test.runDatabaseTest
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
@@ -102,11 +103,4 @@ class ListTagsViewModelTest {
 
   private fun BudgetDatabase.createViewModel() =
     ListTagsViewModel(SavedStateHandle(), TagsDao(this))
-
-  private suspend fun BudgetDatabase.insertTag(
-    id: String,
-    tag: String,
-    color: String? = null,
-    description: String? = null,
-  ) = tagsQueries.insert(id = TagId(id), tag = tag, color = color, description = description)
 }

@@ -7,12 +7,14 @@ import aktual.budget.tags.vm.list.ListTagsViewModel
 import aktual.budget.tags.vm.list.Loading
 import aktual.budget.tags.vm.list.Success
 import aktual.budget.tags.vm.list.TagItem
+import aktual.core.icons.material.Add
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
+import aktual.core.nav.EditTagNavigator
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -68,6 +70,7 @@ import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 internal fun ListTagsScreen(
+  toEdit: EditTagNavigator,
   modifier: Modifier = Modifier,
   viewModel: ListTagsViewModel = metroViewModel(),
 ) {
@@ -82,8 +85,8 @@ internal fun ListTagsScreen(
         OpenSearch -> viewModel.openSearch()
         is EditFilterText -> viewModel.setFilterText(action.text)
         ClearFilter -> viewModel.clearFilter()
-        // TODO: navigate to the transactions screen filtered by action.id
-        is ViewTransactions -> Unit
+        CreateTag -> toEdit()
+        is EditTag -> toEdit(action.id)
       }
     },
   )
@@ -113,6 +116,11 @@ private fun ListTagsScaffold(
             imageVector = if (isSearchActive) MaterialIcons.SearchOff else MaterialIcons.Search,
             contentDescription = Strings.tagsFilter,
             onClick = { onAction(if (isSearchActive) ClearFilter else OpenSearch) },
+          )
+          BareIconButton(
+            imageVector = MaterialIcons.Add,
+            contentDescription = Strings.tagsCreate,
+            onClick = { onAction(CreateTag) },
           )
         },
       )
@@ -168,8 +176,13 @@ private fun ListTagsContent(
         title = Strings.tagsEmpty,
         reason = null,
         icon = null,
-        action = null,
         background = colors.tableBackground,
+        action =
+          FailureAction(
+            text = { Strings.tagsCreate },
+            icon = MaterialIcons.Add,
+            onClick = { onAction(CreateTag) },
+          ),
       )
 
     is Success ->
@@ -263,7 +276,7 @@ private fun TagsList(
       TagItem(
         modifier = Modifier.animateItem(),
         tag = tag,
-        onViewTransactions = { onAction(ViewTransactions(tag.id)) },
+        onAction = onAction,
       )
     }
   }

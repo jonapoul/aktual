@@ -2,6 +2,7 @@ package aktual.core.nav
 
 import aktual.budget.model.RuleId
 import aktual.budget.model.ScheduleId
+import aktual.budget.model.TagId
 import aktual.budget.model.WidgetId
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.Serializable
@@ -36,3 +37,7 @@ value class EditRuleNavRoute(val id: RuleId) : BudgetNavKey.Rules
 value class EditScheduleNavRoute(val id: ScheduleId) : BudgetNavKey.Schedules
 
 @Immutable @Serializable data object ListTagsNavRoute : BudgetNavKey.Tags
+
+@Immutable @Serializable data object CreateTagNavRoute : BudgetNavKey.Tags
+
+@JvmInline @Immutable @Serializable value class EditTagNavRoute(val id: TagId) : BudgetNavKey.Tags

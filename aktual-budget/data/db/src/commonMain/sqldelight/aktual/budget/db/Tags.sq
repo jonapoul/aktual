@@ -26,5 +26,11 @@ getTags:
   FROM tags
   WHERE tombstone = 0;
 
+getTag:
+  SELECT id, tag, color, description, hidden
+  FROM tags
+  WHERE tombstone = 0 AND id = ?
+  LIMIT 1;
+
 getHidden:
   SELECT hidden FROM tags WHERE id = ?;

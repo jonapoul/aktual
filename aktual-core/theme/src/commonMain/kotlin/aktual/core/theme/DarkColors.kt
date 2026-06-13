@@ -196,7 +196,7 @@ data object DarkColors : DefaultColors {
   override val formInputBorderSelected = ColorPalette.purple400
   override val formInputText = ColorPalette.navy150
   override val formInputTextSelected = ColorPalette.black
-  override val formInputTextPlaceholder = ColorPalette.navy150
+  override val formInputTextPlaceholder = ColorPalette.navy400
   override val formInputTextPlaceholderSelected = ColorPalette.navy100
   override val formInputTextReadOnlySelection = ColorPalette.navy800
   override val formInputTextSelection = ColorPalette.navy800
