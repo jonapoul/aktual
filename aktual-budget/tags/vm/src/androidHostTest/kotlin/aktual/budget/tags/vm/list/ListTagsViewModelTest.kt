@@ -88,12 +88,13 @@ class ListTagsViewModelTest {
       viewModel.openSearch()
       viewModel.setFilterText("food")
 
-      // then only the matching tag remains
-      assertThat(awaitItem())
-        .isInstanceOf(Success::class)
-        .prop(Success::tags)
-        .extracting(TagItem::tag)
-        .containsExactly("groceries")
+      // then only the matching tag remains - drain past the intermediate emission produced
+      // when search opens but the filter text hasn't been set yet
+      var success = awaitItem() as Success
+      while (success.filterText != "food") {
+        success = awaitItem() as Success
+      }
+      assertThat(success).prop(Success::tags).extracting(TagItem::tag).containsExactly("groceries")
 
       cancelAndIgnoreRemainingEvents()
     }

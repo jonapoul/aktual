@@ -17,16 +17,15 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
+import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
-import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.RowShape
 import aktual.core.ui.blurredTopBar
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.transparentTopAppBarColors
@@ -34,13 +33,9 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
@@ -62,17 +57,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -128,53 +115,77 @@ private fun ListTagsScaffold(
       )
     },
   ) { innerPadding ->
-    Box(modifier = Modifier.fillMaxSize().padding(innerPadding)) {
+    Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
 
-      when (state) {
-        Loading -> LoadingScreen()
-
-        is Failure ->
-          FailureScreen(
-            title = Strings.tagsFailurePrefix,
-            reason = state.cause ?: Strings.tagsFailureDefaultMessage,
-            background = colors.tableBackground,
-            action =
-              FailureAction(
-                text = { Strings.syncRetry },
-                icon = MaterialIcons.Refresh,
-                onClick = { onAction(Reload) },
-              ),
-          )
-
-        Empty ->
-          FailureScreen(
-            title = Strings.tagsEmpty,
-            reason = null,
-            icon = null,
-            action = null,
-            background = colors.tableBackground,
-          )
-
-        is Success ->
-          if (state.tags.isEmpty()) {
-            FailureScreen(
-              title = Strings.tagsNoResults,
-              reason = null,
-              icon = null,
-              background = colors.tableBackground,
-              action =
-                FailureAction(
-                  text = { Strings.tagsFilterClear },
-                  icon = MaterialIcons.SearchOff,
-                  onClick = { onAction(ClearFilter) },
-                ),
-            )
-          } else {
-            TagsList(tags = state.tags, listState = listState)
-          }
+      BlurredPullToRefreshBox(
+        modifier = Modifier.padding(ListTagsDS.listPadding),
+        contentAlignment = Alignment.Center,
+        onRefresh = { onAction(Reload) },
+        isRefreshing = state is Loading,
+        blurState = blurState,
+        innerPadding = innerPadding,
+      ) { padding ->
+        ListTagsContent(
+          state = state,
+          onAction = onAction,
+          listState = listState,
+          padding = padding,
+        )
       }
     }
+  }
+}
+
+@Composable
+private fun ListTagsContent(
+  state: ListTagsState,
+  onAction: ListTagsActionHandler,
+  listState: LazyListState,
+  padding: PaddingValues,
+) {
+  when (state) {
+    Loading -> LoadingScreen()
+
+    is Failure ->
+      FailureScreen(
+        title = Strings.tagsFailurePrefix,
+        reason = state.cause ?: Strings.tagsFailureDefaultMessage,
+        background = colors.tableBackground,
+        action =
+          FailureAction(
+            text = { Strings.syncRetry },
+            icon = MaterialIcons.Refresh,
+            onClick = { onAction(Reload) },
+          ),
+      )
+
+    Empty ->
+      FailureScreen(
+        title = Strings.tagsEmpty,
+        reason = null,
+        icon = null,
+        action = null,
+        background = colors.tableBackground,
+      )
+
+    is Success ->
+      if (state.tags.isEmpty()) {
+        FailureScreen(
+          title = Strings.tagsNoResults,
+          reason = null,
+          icon = null,
+          background = colors.tableBackground,
+          action =
+            FailureAction(
+              text = { Strings.tagsFilterClear },
+              icon = MaterialIcons.SearchOff,
+              onClick = { onAction(ClearFilter) },
+            ),
+        )
+      } else {
+        TagsList(tags = state.tags, listState = listState, contentPadding = padding)
+      }
   }
 }
 
@@ -183,8 +194,10 @@ private fun Title(
   isSearchActive: Boolean,
   successState: Success?,
   onAction: ListTagsActionHandler,
+  modifier: Modifier = Modifier,
 ) {
   AnimatedContent(
+    modifier = modifier,
     targetState = isSearchActive,
     transitionSpec = { fadeIn() togetherWith fadeOut() },
   ) { searching ->
@@ -228,12 +241,13 @@ private fun FilterInput(
 private fun TagsList(
   tags: ImmutableList<TagItem>,
   listState: LazyListState,
+  contentPadding: PaddingValues,
   modifier: Modifier = Modifier,
 ) {
   LazyColumn(
     modifier = modifier.fillMaxSize(),
     state = listState,
-    contentPadding = ListTagsDS.listContentPadding,
+    contentPadding = contentPadding,
     verticalArrangement = Arrangement.spacedBy(ListTagsDS.listItemSpacing),
   ) {
     items(tags, key = { it.id.value }) { tag ->
@@ -244,93 +258,6 @@ private fun TagsList(
     }
   }
 }
-
-@Composable
-private fun TagItem(
-  tag: TagItem,
-  modifier: Modifier = Modifier,
-  onViewTransactions: () -> Unit = {},
-) {
-  val contentAlpha = if (tag.hidden) ListTagsDS.HIDDEN_ALPHA else 1f
-
-  Row(
-    modifier =
-      modifier
-        .fillMaxWidth()
-        .clip(RowShape)
-        .background(colors.tableBackground, RowShape)
-        .border(Dp.Hairline, colors.tableBorder, RowShape)
-        .clickable(onClick = onViewTransactions)
-        .padding(ListTagsDS.itemPadding),
-    horizontalArrangement = Arrangement.spacedBy(ListTagsDS.itemHorizontalSpacing),
-    verticalAlignment = Alignment.CenterVertically,
-  ) {
-    Column(
-      modifier = Modifier.weight(1f).alpha(contentAlpha),
-      verticalArrangement = Arrangement.spacedBy(ListTagsDS.itemContentSpacing),
-    ) {
-      TagChip(text = tag.tag, color = tag.color)
-
-      Text(
-        text = tag.description.ifEmpty { Strings.tagsNoDescription },
-        style = typography.bodySmall,
-        color = if (tag.description.isEmpty()) colors.tableTextLight else colors.tableText,
-        fontStyle = if (tag.description.isEmpty()) FontStyle.Italic else FontStyle.Normal,
-        maxLines = 2,
-        overflow = TextOverflow.Ellipsis,
-      )
-    }
-
-    NormalIconButton(
-      modifier = Modifier.alpha(contentAlpha),
-      imageVector = MaterialIcons.Search,
-      contentDescription = Strings.tagsViewTransactions,
-      onClick = onViewTransactions,
-    )
-  }
-}
-
-@Composable
-private fun TagChip(
-  text: String,
-  color: Color?,
-  modifier: Modifier = Modifier,
-) {
-  // upstream falls back to the theme's note-tag colors when a tag has no explicit color
-  val background = color ?: colors.noteTagBackground
-  val textColor = color?.contrastingTextColor() ?: colors.noteTagText
-
-  Text(
-    text = "#$text",
-    modifier =
-      modifier
-        .clip(ListTagsDS.chipShape)
-        .background(background, ListTagsDS.chipShape)
-        .padding(ListTagsDS.chipPadding),
-    style = typography.bodyMedium,
-    fontWeight = FontWeight.SemiBold,
-    color = textColor,
-    maxLines = 1,
-    overflow = TextOverflow.Ellipsis,
-  )
-}
-
-// pick black or white text for legibility on [this], using the brightness formula from
-// https://www.w3.org/TR/AERT/#color-contrast — adapted from upstream's getTagCSSColors in
-// packages/desktop-client/src/hooks/useTagCSS.ts
-@Suppress("MagicNumber")
-private fun Color.contrastingTextColor(): Color {
-  val brightness = (red * 299 + green * 587 + blue * 114) * 255 / 1000
-  return if (brightness >= 125) Color.Black else Color.White
-}
-
-private class TagItemProvider : ColoredParameterProvider<TagItem>(TagsPreview.all)
-
-@Preview
-@Composable
-private fun PreviewTagItem(
-  @PreviewParameter(TagItemProvider::class) params: ColoredParams<TagItem>
-) = PreviewWithColoredParams(params) { TagItem(tag = this) }
 
 private class ListTagsStateProvider :
   ColoredParameterProvider<ListTagsState>(
