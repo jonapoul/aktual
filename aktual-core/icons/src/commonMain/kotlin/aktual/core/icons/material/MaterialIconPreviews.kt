@@ -80,6 +80,7 @@ private val materialIcons =
       ThemeRoutine,
       Timer,
       TransitionDissolve,
+      Tune,
       Visibility,
       VisibilityOff,
       Warning,
