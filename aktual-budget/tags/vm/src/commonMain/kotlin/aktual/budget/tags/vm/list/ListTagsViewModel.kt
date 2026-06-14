@@ -104,8 +104,12 @@ class ListTagsViewModel(
     savedState[KEY_IS_SEARCH_ACTIVE] = false
   }
 
-  fun reload() {
-    mutableIsLoading.update { true }
+  // showLoading = false does a silent refresh (no loading screen), used when returning to the
+  // list after editing a tag elsewhere
+  fun reload(showLoading: Boolean = true) {
+    if (showLoading) {
+      mutableIsLoading.update { true }
+    }
     reloadJob?.cancel()
     reloadJob = viewModelScope.launch {
       try {
@@ -140,6 +144,7 @@ class ListTagsViewModel(
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed deleting tag $id" }
+        mutableEvents.tryEmit(ListTagsEvent.DeleteFailed(name))
       }
     }
   }

@@ -17,6 +17,8 @@ import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.tags_delete_failed
+import aktual.core.l10n.tags_delete_failed_unknown
 import aktual.core.l10n.tags_deleted
 import aktual.core.nav.EditTagNavigator
 import aktual.core.ui.AktualTextField
@@ -29,10 +31,12 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.blurredTopBar
+import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -71,6 +75,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
@@ -86,11 +91,22 @@ internal fun ListTagsScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val snackbar = remember { SnackbarHostState() }
 
+  // refresh on return (e.g. after creating or editing a tag) so the list reflects the changes
+  LifecycleResumeEffect(viewModel) {
+    viewModel.reload(showLoading = false)
+    onPauseOrDispose {}
+  }
+
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
         is ListTagsEvent.Deleted ->
           snackbar.showSnackbar(getString(Res.string.tags_deleted, event.tag))
+        is ListTagsEvent.DeleteFailed ->
+          snackbar.showSnackbar(
+            event.tag?.let { getString(Res.string.tags_delete_failed, it) }
+              ?: getString(Res.string.tags_delete_failed_unknown)
+          )
       }
     }
   }
@@ -147,7 +163,12 @@ private fun ListTagsScaffold(
         },
       )
     },
-    snackbarHost = { SnackbarHost(snackbarHostState) },
+    snackbarHost = {
+      SnackbarHost(
+        hostState = snackbarHostState,
+        modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
+      )
+    },
   ) { innerPadding ->
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()

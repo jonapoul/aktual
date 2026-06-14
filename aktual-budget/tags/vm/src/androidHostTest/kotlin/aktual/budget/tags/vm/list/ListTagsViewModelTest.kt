@@ -140,6 +140,41 @@ class ListTagsViewModelTest {
     }
   }
 
+  @Test
+  fun `Delete failure emits a DeleteFailed event and keeps the tag`() = runDatabaseTest {
+    insertTag(id = "groceries-id", tag = "groceries")
+
+    val viewModel = createViewModel(sync = FailingSyncController())
+
+    // wait for the initial load
+    viewModel.state.test {
+      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(1)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    // a failing sync surfaces a DeleteFailed event rather than failing silently
+    viewModel.events.test {
+      viewModel.delete(TagId("groceries-id"))
+      assertThat(awaitItem()).isEqualTo(ListTagsEvent.DeleteFailed("groceries"))
+    }
+
+    // and the tag is still present since the delete didn't go through
+    viewModel.state.test {
+      assertThat(awaitItem())
+        .isInstanceOf(Success::class)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("groceries")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private fun BudgetDatabase.createViewModel(sync: BudgetSyncController = TestSyncController()) =
     ListTagsViewModel(SavedStateHandle(), TagsDao(this), sync)
+
+  private class FailingSyncController : BudgetSyncController {
+    override suspend fun syncChanges(changes: List<LocalChange>): Unit = error("sync failed")
+
+    override fun schedule() = Unit
+  }
 }
