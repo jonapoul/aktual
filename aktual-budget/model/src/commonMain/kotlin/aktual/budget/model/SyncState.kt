@@ -22,7 +22,7 @@ sealed interface SyncState {
 @Inject @SingleIn(AppScope::class) class SyncStateHolder : StateHolder<SyncState>(Inactive)
 
 interface BudgetSyncController {
-  suspend fun syncChanges(vararg changes: LocalChange)
+  suspend fun syncChanges(vararg changes: LocalChange) = syncChanges(changes.toList())
 
   suspend fun syncChanges(changes: List<LocalChange>)
 

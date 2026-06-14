@@ -167,10 +167,6 @@ class EditTagViewModelTest {
   private class RecordingSyncController : BudgetSyncController {
     val changes = mutableListOf<LocalChange>()
 
-    override suspend fun syncChanges(vararg changes: LocalChange) {
-      this.changes += changes
-    }
-
     override suspend fun syncChanges(changes: List<LocalChange>) {
       this.changes += changes
     }
