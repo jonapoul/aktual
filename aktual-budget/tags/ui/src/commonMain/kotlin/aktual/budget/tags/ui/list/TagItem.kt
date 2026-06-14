@@ -19,6 +19,8 @@ import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
+import androidx.compose.foundation.interaction.DragInteraction
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -85,6 +87,15 @@ internal fun TagItem(
       .collect { settled -> currentOnOpenChange(settled == SwipeState.Open) }
   }
 
+  // claim the "open" slot the moment a drag begins, so any other open row closes straight
+  // away rather than waiting for this drag to finish
+  val interactionSource = remember { MutableInteractionSource() }
+  LaunchedEffect(interactionSource) {
+    interactionSource.interactions.collect { interaction ->
+      if (interaction is DragInteraction.Start) currentOnOpenChange(true)
+    }
+  }
+
   // when another row becomes the open one, slide this row shut
   LaunchedEffect(isOpen) {
     if (!isOpen && swipeState.currentValue != SwipeState.Closed) {
@@ -109,7 +120,11 @@ internal fun TagItem(
             val x = swipeState.offset
             IntOffset(x = if (x.isNaN()) 0 else x.roundToInt(), y = 0)
           }
-          .anchoredDraggable(state = swipeState, orientation = Orientation.Horizontal),
+          .anchoredDraggable(
+            state = swipeState,
+            orientation = Orientation.Horizontal,
+            interactionSource = interactionSource,
+          ),
     )
   }
 }
