@@ -5,8 +5,8 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
 import aktual.budget.model.TagId
-import aktual.budget.tags.vm.RecordingSyncController
 import aktual.budget.tags.vm.insertTag
+import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
@@ -109,7 +109,7 @@ class ListTagsViewModelTest {
     insertTag(id = "groceries-id", tag = "groceries")
     insertTag(id = "rent-id", tag = "rent")
 
-    val sync = RecordingSyncController()
+    val sync = TestSyncController()
     val viewModel = createViewModel(sync)
 
     // wait for the initial load with both tags
@@ -140,7 +140,6 @@ class ListTagsViewModelTest {
     }
   }
 
-  private fun BudgetDatabase.createViewModel(
-    sync: BudgetSyncController = RecordingSyncController()
-  ) = ListTagsViewModel(SavedStateHandle(), TagsDao(this), sync)
+  private fun BudgetDatabase.createViewModel(sync: BudgetSyncController = TestSyncController()) =
+    ListTagsViewModel(SavedStateHandle(), TagsDao(this), sync)
 }

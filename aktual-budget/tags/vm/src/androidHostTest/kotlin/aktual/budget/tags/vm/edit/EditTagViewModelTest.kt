@@ -6,10 +6,10 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
 import aktual.budget.model.TagId
-import aktual.budget.tags.vm.RecordingSyncController
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.tombstoneTag
 import aktual.core.model.UuidGenerator
+import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmission
 import aktual.test.runDatabaseTest
 import androidx.compose.ui.graphics.Color
@@ -152,7 +152,7 @@ class EditTagViewModelTest {
   @Test
   fun `Saving a new tag persists it, syncs the change and emits the saved event`() =
     runDatabaseTest {
-      val sync = RecordingSyncController()
+      val sync = TestSyncController()
       val viewModel = createViewModel(id = null, sync = sync)
       viewModel.awaitLoaded()
 
@@ -184,7 +184,7 @@ class EditTagViewModelTest {
       description = "Weekly food shopping",
     )
 
-    val sync = RecordingSyncController()
+    val sync = TestSyncController()
     val viewModel = createViewModel(id = TagId("groceries-id"), sync = sync)
     viewModel.awaitLoaded()
 
@@ -217,7 +217,7 @@ class EditTagViewModelTest {
       // tombstone it, as a delete-sync would
       tombstoneTag("old-id")
 
-      val sync = RecordingSyncController()
+      val sync = TestSyncController()
       val viewModel = createViewModel(id = null, sync = sync)
       viewModel.awaitLoaded()
 
@@ -274,7 +274,7 @@ class EditTagViewModelTest {
   private fun BudgetDatabase.createViewModel(
     id: TagId?,
     uuid: UuidGenerator = UuidGenerator { GENERATED_ID },
-    sync: BudgetSyncController = RecordingSyncController(),
+    sync: BudgetSyncController = TestSyncController(),
   ): EditTagViewModel {
     tagsDao = TagsDao(this)
     return EditTagViewModel(

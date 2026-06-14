@@ -1,5 +1,6 @@
 package aktual.budget.tags.ui.list
 
+import aktual.budget.model.TagId
 import aktual.budget.tags.vm.list.Empty
 import aktual.budget.tags.vm.list.Failure
 import aktual.budget.tags.vm.list.ListTagsEvent
@@ -61,7 +62,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -286,6 +289,9 @@ private fun TagsList(
   onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
 ) {
+  // only one row may be swiped open at a time — opening another closes the previous one
+  var openTagId by remember { mutableStateOf<TagId?>(null) }
+
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
@@ -296,6 +302,15 @@ private fun TagsList(
       TagItem(
         modifier = Modifier.animateItem(),
         tag = tag,
+        isOpen = openTagId == tag.id,
+        onOpenChange = { open ->
+          openTagId =
+            when {
+              open -> tag.id
+              openTagId == tag.id -> null
+              else -> openTagId
+            }
+        },
         onAction = onAction,
       )
     }

@@ -18,6 +18,7 @@ import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
+import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -55,6 +60,8 @@ private enum class SwipeState {
 @Composable
 internal fun TagItem(
   tag: TagItem,
+  isOpen: Boolean,
+  onOpenChange: (Boolean) -> Unit,
   onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
 ) {
@@ -70,6 +77,20 @@ internal fun TagItem(
         )
       }
     }
+
+  // tell the parent when this row settles open or closed, so it can keep only one row open
+  val currentOnOpenChange by rememberUpdatedState(onOpenChange)
+  LaunchedEffect(swipeState) {
+    snapshotFlow { swipeState.settledValue }
+      .collect { settled -> currentOnOpenChange(settled == SwipeState.Open) }
+  }
+
+  // when another row becomes the open one, slide this row shut
+  LaunchedEffect(isOpen) {
+    if (!isOpen && swipeState.currentValue != SwipeState.Closed) {
+      swipeState.animateTo(SwipeState.Closed)
+    }
+  }
 
   Box(modifier = modifier.fillMaxWidth().clip(RowShape)) {
     // the red delete button sits behind the row, revealed as it's dragged left
@@ -178,4 +199,7 @@ private class TagItemProvider : ColoredParameterProvider<TagItem>(TagsPreview.al
 @Composable
 private fun PreviewTagItem(
   @PreviewParameter(TagItemProvider::class) params: ColoredParams<TagItem>
-) = PreviewWithColoredParams(params) { TagItem(tag = this, onAction = {}) }
+) =
+  PreviewWithColoredParams(params) {
+    TagItem(tag = this, isOpen = false, onOpenChange = {}, onAction = {})
+  }
