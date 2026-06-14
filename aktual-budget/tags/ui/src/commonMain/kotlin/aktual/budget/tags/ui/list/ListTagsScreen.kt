@@ -92,6 +92,7 @@ internal fun ListTagsScreen(
   val snackbar = remember { SnackbarHostState() }
 
   // refresh on return (e.g. after creating or editing a tag) so the list reflects the changes
+  @Suppress("ComposeViewModelForwarding")
   LifecycleResumeEffect(viewModel) {
     viewModel.reload(showLoading = false)
     onPauseOrDispose {}
