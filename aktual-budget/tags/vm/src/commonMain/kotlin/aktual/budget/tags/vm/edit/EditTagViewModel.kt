@@ -202,8 +202,9 @@ class EditTagViewModel(
         val tag = mutableTag.value.trim()
         val description = mutableDescription.value.trim()
         val color = mutableColor.value?.toHex()
-        // creating a tag reuses any existing row with the same name — even a tombstoned one — so the
-        // old id is resurrected rather than colliding with the UNIQUE constraint (matches createTag)
+        // creating a tag reuses any existing row with the same name — even a tombstoned one — so
+        // the old id is resurrected rather than colliding with the UNIQUE constraint (matches
+        // createTag)
         val id = tagId ?: tagsDao.getTagIdByName(tag) ?: uuidGenerator(::TagId)
         tagsDao.insert(id = id, tag = tag, color = color, description = description)
         syncController.syncChanges(insertChanges(id, tag, color, description))

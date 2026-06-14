@@ -228,7 +228,7 @@ class EditTagViewModelTest {
 
       // the old row's id is reused rather than the freshly generated uuid
       assertThat(tagsDao.getTagIdByName("groceries")).isEqualTo(TagId("old-id"))
-      assertThat(sync.changes.map { it.row }.distinct()).containsExactly("old-id")
+      assertThat(sync.changes.map(LocalChange::row).distinct()).containsExactly("old-id")
     }
 
   @Test
