@@ -9,11 +9,11 @@ sealed interface EditTagState {
 
   @Immutable
   data class Editing(
-    // seed values for the text fields, applied once when the form first composes
     val initialTag: String = "",
     val initialDescription: String = "",
-    // the working colour selection, owned by the view model so it survives config changes
     val color: Color? = null,
     val isNew: Boolean = true,
   ) : EditTagState
+
+  @Immutable @JvmInline value class Failure(val cause: String?) : EditTagState
 }

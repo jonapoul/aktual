@@ -11,6 +11,7 @@ import aktual.budget.tags.vm.list.toHex
 import aktual.budget.tags.vm.list.toTagItem
 import aktual.core.model.UuidGenerator
 import aktual.di.BudgetScope
+import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -25,6 +26,9 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -32,6 +36,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -45,16 +50,18 @@ class EditTagViewModel(
   private val syncController: BudgetSyncController,
 ) : ViewModel() {
   private val mutableLoaded = MutableStateFlow<Loaded?>(null)
-
-  // the working edits live here so they survive recomposition and config changes
+  private val mutableFailure = MutableStateFlow<EditTagState.Failure?>(null)
+  private val mutableExistingNames = MutableStateFlow(persistentSetOf<String>())
   private val mutableTag = MutableStateFlow("")
   private val mutableDescription = MutableStateFlow("")
   private val mutableColor = MutableStateFlow<Color?>(null)
-
-  // set by the UI when the colour field holds an invalid hex code, which blocks saving
   private val mutableColorError = MutableStateFlow(false)
 
-  // emitted once the tag has been persisted, so the screen can navigate away
+  // non-null when the last save attempt failed; drives an error dialog so the user isn't left
+  // guessing
+  private val mutableSaveError = MutableStateFlow<String?>(null)
+  val saveError: StateFlow<String?> = mutableSaveError.asStateFlow()
+
   private val mutableEvents =
     MutableSharedFlow<EditTagEvent>(
       replay = 0,
@@ -66,7 +73,11 @@ class EditTagViewModel(
   val state: StateFlow<EditTagState> =
     viewModelScope.launchMolecule(Immediate) {
       val loaded by mutableLoaded.collectAsState()
+      val failure by mutableFailure.collectAsState()
       val color by mutableColor.collectAsState()
+      failure?.let {
+        return@launchMolecule it
+      }
       when (val l = loaded) {
         null -> EditTagState.Loading
         else ->
@@ -90,12 +101,23 @@ class EditTagViewModel(
       l != null && (tag != l.tag || description != l.description || color != l.color)
     }
 
-  // a tag is saveable when it has a non-blank name and the colour field isn't in an error state
+  // true when the entered name already belongs to another tag
+  val isDuplicateName: StateFlow<Boolean> =
+    viewModelScope.launchMolecule(Immediate) {
+      val tag by mutableTag.collectAsState()
+      val existingNames by mutableExistingNames.collectAsState()
+      tag.trim() in existingNames
+    }
+
+  // a tag is saveable when its name is non-blank, unique, and the colour field isn't in an error
+  // state
   val canSave: StateFlow<Boolean> =
     viewModelScope.launchMolecule(Immediate) {
       val tag by mutableTag.collectAsState()
       val colorError by mutableColorError.collectAsState()
-      tag.isNotBlank() && !colorError
+      val existingNames by mutableExistingNames.collectAsState()
+      val trimmed = tag.trim()
+      trimmed.isNotBlank() && !colorError && trimmed !in existingNames
     }
 
   init {
@@ -104,8 +126,9 @@ class EditTagViewModel(
 
   private fun load() {
     viewModelScope.launch {
+      mutableExistingNames.update { loadOtherTagNames() }
+
       if (tagId == null) {
-        // creating a fresh tag — nothing to load
         reset(Loaded(isNew = true))
         return@launch
       }
@@ -117,11 +140,13 @@ class EditTagViewModel(
           throw e
         } catch (e: Exception) {
           logcat.e(e) { "Failed loading tag $tagId" }
-          null
+          mutableFailure.update { EditTagState.Failure(cause = e.requireMessage()) }
+          return@launch
         }
 
       if (existing == null) {
-        reset(Loaded(isNew = true))
+        // the tag was requested but doesn't exist — don't pretend it's a new one
+        mutableFailure.update { EditTagState.Failure(cause = null) }
       } else {
         reset(
           Loaded(
@@ -134,6 +159,23 @@ class EditTagViewModel(
       }
     }
   }
+
+  // the active tag names other than the one being edited, so renaming a tag to itself stays allowed
+  private suspend fun loadOtherTagNames(): PersistentSet<String> =
+    try {
+      tagsDao
+        .getTags()
+        .asSequence()
+        .mapNotNull { it.toTagItem() }
+        .filter { it.id != tagId }
+        .map { it.tag }
+        .toPersistentSet()
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      logcat.e(e) { "Failed loading existing tag names" }
+      persistentSetOf()
+    }
 
   // seed the working edits from the loaded values, so there are initially no unsaved changes
   private fun reset(loaded: Loaded) {
@@ -151,13 +193,19 @@ class EditTagViewModel(
 
   fun setColorError(isError: Boolean) = mutableColorError.update { isError }
 
+  fun dismissSaveError() = mutableSaveError.update { null }
+
   fun save() {
     viewModelScope.launch {
+      mutableSaveError.update { null }
       try {
-        val id = tagId ?: uuidGenerator(::TagId)
         val tag = mutableTag.value.trim()
         val description = mutableDescription.value.trim()
         val color = mutableColor.value?.toHex()
+        // creating a tag reuses any existing row with the same name — even a tombstoned one — so
+        // the old id is resurrected rather than colliding with the UNIQUE constraint (matches
+        // createTag)
+        val id = tagId ?: tagsDao.getTagIdByName(tag) ?: uuidGenerator(::TagId)
         tagsDao.insert(id = id, tag = tag, color = color, description = description)
         syncController.syncChanges(insertChanges(id, tag, color, description))
         mutableEvents.tryEmit(EditTagEvent.FinishedSaving)
@@ -165,6 +213,7 @@ class EditTagViewModel(
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed saving tag $tagId" }
+        mutableSaveError.update { e.requireMessage() }
       }
     }
   }

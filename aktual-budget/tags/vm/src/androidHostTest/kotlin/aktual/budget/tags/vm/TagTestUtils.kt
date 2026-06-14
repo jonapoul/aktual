@@ -9,3 +9,6 @@ internal suspend fun BudgetDatabase.insertTag(
   color: String? = null,
   description: String? = null,
 ) = tagsQueries.insert(id = TagId(id), tag = tag, color = color, description = description)
+
+internal suspend fun BudgetDatabase.tombstoneTag(id: String) =
+  tagsQueries.setTombstone(tombstone = true, id = TagId(id))

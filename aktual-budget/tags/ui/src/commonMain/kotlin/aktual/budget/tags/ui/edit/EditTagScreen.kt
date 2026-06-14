@@ -4,6 +4,7 @@ import aktual.budget.model.TagId
 import aktual.budget.tags.vm.edit.EditTagEvent
 import aktual.budget.tags.vm.edit.EditTagState
 import aktual.budget.tags.vm.edit.EditTagViewModel
+import aktual.core.icons.material.ArrowBack
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
@@ -19,6 +20,8 @@ import aktual.core.ui.BlurredTopBarState
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.FailureAction
+import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -79,6 +82,8 @@ fun EditTagScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val hasUnsavedChanges by viewModel.hasUnsavedChanges.collectAsStateWithLifecycle()
   val canSave by viewModel.canSave.collectAsStateWithLifecycle()
+  val isDuplicateName by viewModel.isDuplicateName.collectAsStateWithLifecycle()
+  val saveError by viewModel.saveError.collectAsStateWithLifecycle()
 
   // navigate away only once the tag has actually been persisted
   LaunchedEffect(viewModel) {
@@ -94,6 +99,8 @@ fun EditTagScreen(
     state = state,
     hasChanges = hasUnsavedChanges,
     canSave = canSave,
+    isDuplicateName = isDuplicateName,
+    saveError = saveError,
     onAction = { action ->
       when (action) {
         SaveTag -> viewModel.save()
@@ -101,6 +108,7 @@ fun EditTagScreen(
         is SetDescription -> viewModel.setDescription(action.description)
         is SetColor -> viewModel.setColor(action.color)
         is SetColorError -> viewModel.setColorError(action.isError)
+        DismissSaveError -> viewModel.dismissSaveError()
         NavigateBack -> back()
       }
     },
@@ -120,6 +128,8 @@ private fun EditTagScaffold(
   canSave: Boolean,
   onAction: EditTagActionHandler,
   modifier: Modifier = Modifier,
+  isDuplicateName: Boolean = false,
+  saveError: String? = null,
 ) {
   val editing = state as? EditTagState.Editing
 
@@ -168,16 +178,31 @@ private fun EditTagScaffold(
 
       when (state) {
         EditTagState.Loading -> LoadingScreen(modifier = Modifier.padding(innerPadding))
+
         is EditTagState.Editing ->
           EditTagContent(
             modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
             tagState = tagState,
             descriptionState = descriptionState,
             color = state.color,
+            isDuplicateName = isDuplicateName,
             onColorChange = { onAction(SetColor(it)) },
             onColorError = { onAction(SetColorError(it)) },
             scrollState = scrollState,
             contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+          )
+
+        is EditTagState.Failure ->
+          FailureScreen(
+            modifier = Modifier.padding(innerPadding),
+            title = Strings.tagsEditFailurePrefix,
+            reason = state.cause ?: Strings.tagsEditNotFound,
+            action =
+              FailureAction(
+                text = { Strings.navBack },
+                icon = MaterialIcons.ArrowBack,
+                onClick = { onAction(NavigateBack) },
+              ),
           )
       }
 
@@ -189,6 +214,10 @@ private fun EditTagScaffold(
           },
           onCancel = { showDiscardDialog = false },
         )
+      }
+
+      if (saveError != null) {
+        SaveErrorDialog(onDismiss = { onAction(DismissSaveError) })
       }
     }
   }
@@ -248,10 +277,21 @@ private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
 }
 
 @Composable
+private fun SaveErrorDialog(onDismiss: () -> Unit) {
+  AktualAlertDialog(
+    title = Strings.tagsSaveFailureTitle,
+    onDismissRequest = onDismiss,
+    buttons = { TextButton(onClick = onDismiss) { Text(Strings.tagsSaveFailureDismiss) } },
+    content = { Text(Strings.tagsSaveFailureMessage) },
+  )
+}
+
+@Composable
 private fun EditTagContent(
   tagState: TextFieldState,
   descriptionState: TextFieldState,
   color: Color?,
+  isDuplicateName: Boolean,
   onColorChange: (Color) -> Unit,
   onColorError: (Boolean) -> Unit,
   scrollState: ScrollState,
@@ -269,17 +309,18 @@ private fun EditTagContent(
   ) {
     Field(label = Strings.tagsCreateTagLabel, required = true) {
       val isBlank = tagState.text.isBlank()
+      val error =
+        when {
+          isBlank -> Strings.tagsCreateTagRequired
+          isDuplicateName -> Strings.tagsCreateTagDuplicate
+          else -> null
+        }
       AktualTextField(
         modifier = Modifier.fillMaxWidth(),
         state = tagState,
         singleLine = true,
         placeholderText = Strings.tagsCreateTagPlaceholder,
-        supportingText =
-          if (isBlank) {
-            { Text(text = Strings.tagsCreateTagRequired, color = colors.errorText) }
-          } else {
-            null
-          },
+        supportingText = error?.let { { Text(text = it, color = colors.errorText) } },
       )
     }
 
@@ -362,4 +403,5 @@ private class EditTagStateProvider :
       color = Color(0xFF388E3C),
       isNew = false,
     ),
+    EditTagState.Failure(cause = null),
   )
