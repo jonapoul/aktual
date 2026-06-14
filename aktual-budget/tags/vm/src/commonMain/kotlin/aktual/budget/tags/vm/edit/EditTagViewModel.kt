@@ -159,6 +159,7 @@ class EditTagViewModel(
     try {
       tagsDao
         .getTags()
+        .asSequence()
         .mapNotNull { it.toTagItem() }
         .filter { it.id != tagId }
         .map { it.tag }
