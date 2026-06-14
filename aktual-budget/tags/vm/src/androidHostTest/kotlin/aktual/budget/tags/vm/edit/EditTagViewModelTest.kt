@@ -8,12 +8,14 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
 import aktual.core.model.UuidGenerator
+import aktual.test.assertThatNextEmission
 import aktual.test.runDatabaseTest
 import androidx.compose.ui.graphics.Color
 import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotEmpty
@@ -26,6 +28,8 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class EditTagViewModelTest {
+  private lateinit var tagsDao: TagsDao
+
   @Test
   fun `New tag starts as an empty editing state`() = runDatabaseTest {
     val viewModel = createViewModel(id = null)
@@ -78,14 +82,14 @@ class EditTagViewModelTest {
     viewModel.awaitLoaded()
 
     viewModel.hasUnsavedChanges.test {
-      assertThat(awaitItem()).isFalse()
+      assertThatNextEmission().isFalse()
 
       viewModel.setTag("groceries-changed")
-      assertThat(awaitItem()).isTrue()
+      assertThatNextEmission().isTrue()
 
       // editing back to the original value clears the unsaved-changes flag
       viewModel.setTag("groceries")
-      assertThat(awaitItem()).isFalse()
+      assertThatNextEmission().isFalse()
     }
   }
 
@@ -95,13 +99,49 @@ class EditTagViewModelTest {
     viewModel.awaitLoaded()
 
     viewModel.canSave.test {
-      assertThat(awaitItem()).isFalse()
+      assertThatNextEmission().isFalse()
 
       viewModel.setTag("groceries")
-      assertThat(awaitItem()).isTrue()
+      assertThatNextEmission().isTrue()
 
       viewModel.setColorError(isError = true)
-      assertThat(awaitItem()).isFalse()
+      assertThatNextEmission().isFalse()
+    }
+  }
+
+  @Test
+  fun `Cannot save a new tag whose name already exists`() = runDatabaseTest {
+    insertTag(id = "groceries-id", tag = "groceries")
+    val viewModel = createViewModel(id = null)
+    viewModel.awaitLoaded()
+
+    viewModel.canSave.test {
+      assertThatNextEmission().isFalse()
+
+      // a fresh, unused name is saveable
+      viewModel.setTag("food")
+      assertThatNextEmission().isTrue()
+
+      // an existing name blocks saving
+      viewModel.setTag("groceries")
+      assertThatNextEmission().isFalse()
+    }
+  }
+
+  @Test
+  fun `Editing a tag without renaming it doesn't count as a duplicate`() = runDatabaseTest {
+    insertTag(id = "groceries-id", tag = "groceries")
+    insertTag(id = "food-id", tag = "food")
+    val viewModel = createViewModel(id = TagId("groceries-id"))
+    viewModel.awaitLoaded()
+
+    viewModel.isDuplicateName.test {
+      // keeping its own name is fine
+      assertThatNextEmission().isFalse()
+
+      // renaming onto another existing tag is blocked
+      viewModel.setTag("food")
+      assertThatNextEmission().isTrue()
     }
   }
 
@@ -118,10 +158,10 @@ class EditTagViewModelTest {
 
       viewModel.events.test {
         viewModel.save()
-        assertThat(awaitItem()).isEqualTo(EditTagEvent.FinishedSaving)
+        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
       }
 
-      val saved = TagsDao(this).getTag(TagId(GENERATED_ID))
+      val saved = tagsDao.getTag(TagId(GENERATED_ID))
       assertThat(saved).isNotNull().all {
         prop(GetTag::tag).isEqualTo("groceries")
         prop(GetTag::color).isEqualTo("#aabbcc")
@@ -130,6 +170,41 @@ class EditTagViewModelTest {
 
       assertThat(sync.changes).isNotEmpty()
     }
+
+  @Test
+  fun `Saving edits to an existing tag updates the row and syncs the change`() = runDatabaseTest {
+    insertTag(
+      id = "groceries-id",
+      tag = "groceries",
+      color = "#aabbcc",
+      description = "Weekly food shopping",
+    )
+
+    val sync = RecordingSyncController()
+    val viewModel = createViewModel(id = TagId("groceries-id"), sync = sync)
+    viewModel.awaitLoaded()
+
+    viewModel.setTag("food")
+    viewModel.setDescription("Food and household")
+    viewModel.setColor(Color(0xFF112233))
+
+    viewModel.events.test {
+      viewModel.save()
+      assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+    }
+
+    // the existing row is updated in place rather than duplicated or rejected
+    val tags = tagsDao.getTags()
+    assertThat(tags).hasSize(1)
+    val saved = tagsDao.getTag(TagId("groceries-id"))
+    assertThat(saved).isNotNull().all {
+      prop(GetTag::tag).isEqualTo("food")
+      prop(GetTag::color).isEqualTo("#112233")
+      prop(GetTag::description).isEqualTo("Food and household")
+    }
+
+    assertThat(sync.changes).isNotEmpty()
+  }
 
   private suspend fun EditTagViewModel.awaitLoaded() {
     state.test {
@@ -156,13 +231,15 @@ class EditTagViewModelTest {
     id: TagId?,
     uuid: UuidGenerator = UuidGenerator { GENERATED_ID },
     sync: BudgetSyncController = RecordingSyncController(),
-  ) =
-    EditTagViewModel(
+  ): EditTagViewModel {
+    tagsDao = TagsDao(this)
+    return EditTagViewModel(
       tagId = id,
-      tagsDao = TagsDao(this),
+      tagsDao = tagsDao,
       uuidGenerator = uuid,
       syncController = sync,
     )
+  }
 
   private class RecordingSyncController : BudgetSyncController {
     val changes = mutableListOf<LocalChange>()

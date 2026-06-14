@@ -82,6 +82,7 @@ fun EditTagScreen(
   val state by viewModel.state.collectAsStateWithLifecycle()
   val hasUnsavedChanges by viewModel.hasUnsavedChanges.collectAsStateWithLifecycle()
   val canSave by viewModel.canSave.collectAsStateWithLifecycle()
+  val isDuplicateName by viewModel.isDuplicateName.collectAsStateWithLifecycle()
 
   // navigate away only once the tag has actually been persisted
   LaunchedEffect(viewModel) {
@@ -97,6 +98,7 @@ fun EditTagScreen(
     state = state,
     hasChanges = hasUnsavedChanges,
     canSave = canSave,
+    isDuplicateName = isDuplicateName,
     onAction = { action ->
       when (action) {
         SaveTag -> viewModel.save()
@@ -123,6 +125,7 @@ private fun EditTagScaffold(
   canSave: Boolean,
   onAction: EditTagActionHandler,
   modifier: Modifier = Modifier,
+  isDuplicateName: Boolean = false,
 ) {
   val editing = state as? EditTagState.Editing
 
@@ -178,6 +181,7 @@ private fun EditTagScaffold(
             tagState = tagState,
             descriptionState = descriptionState,
             color = state.color,
+            isDuplicateName = isDuplicateName,
             onColorChange = { onAction(SetColor(it)) },
             onColorError = { onAction(SetColorError(it)) },
             scrollState = scrollState,
@@ -269,6 +273,7 @@ private fun EditTagContent(
   tagState: TextFieldState,
   descriptionState: TextFieldState,
   color: Color?,
+  isDuplicateName: Boolean,
   onColorChange: (Color) -> Unit,
   onColorError: (Boolean) -> Unit,
   scrollState: ScrollState,
@@ -286,17 +291,18 @@ private fun EditTagContent(
   ) {
     Field(label = Strings.tagsCreateTagLabel, required = true) {
       val isBlank = tagState.text.isBlank()
+      val error =
+        when {
+          isBlank -> Strings.tagsCreateTagRequired
+          isDuplicateName -> Strings.tagsCreateTagDuplicate
+          else -> null
+        }
       AktualTextField(
         modifier = Modifier.fillMaxWidth(),
         state = tagState,
         singleLine = true,
         placeholderText = Strings.tagsCreateTagPlaceholder,
-        supportingText =
-          if (isBlank) {
-            { Text(text = Strings.tagsCreateTagRequired, color = colors.errorText) }
-          } else {
-            null
-          },
+        supportingText = error?.let { { Text(text = it, color = colors.errorText) } },
       )
     }
 

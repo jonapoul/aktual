@@ -14,6 +14,7 @@
   <string name="tags_create_tag_label">Tag</string>
   <string name="tags_create_tag_placeholder">e.g. groceries</string>
   <string name="tags_create_tag_required">Required</string>
+  <string name="tags_create_tag_duplicate">A tag with this name already exists</string>
   <string name="tags_create_description_label">Description</string>
   <string name="tags_create_description_placeholder">What is this tag for?</string>
   <string name="tags_create_color_label">Color</string>

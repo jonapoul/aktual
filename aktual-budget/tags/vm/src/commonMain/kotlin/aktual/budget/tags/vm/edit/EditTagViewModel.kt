@@ -26,6 +26,9 @@ import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactory
 import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
+import kotlinx.collections.immutable.PersistentSet
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toPersistentSet
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -47,11 +50,10 @@ class EditTagViewModel(
 ) : ViewModel() {
   private val mutableLoaded = MutableStateFlow<Loaded?>(null)
   private val mutableFailure = MutableStateFlow<EditTagState.Failure?>(null)
-
+  private val mutableExistingNames = MutableStateFlow(persistentSetOf<String>())
   private val mutableTag = MutableStateFlow("")
   private val mutableDescription = MutableStateFlow("")
   private val mutableColor = MutableStateFlow<Color?>(null)
-
   private val mutableColorError = MutableStateFlow(false)
 
   private val mutableEvents =
@@ -67,11 +69,11 @@ class EditTagViewModel(
       val loaded by mutableLoaded.collectAsState()
       val failure by mutableFailure.collectAsState()
       val color by mutableColor.collectAsState()
-      val l = loaded
-      val f = failure
-      when {
-        f != null -> f
-        l == null -> EditTagState.Loading
+      failure?.let {
+        return@launchMolecule it
+      }
+      when (val l = loaded) {
+        null -> EditTagState.Loading
         else ->
           EditTagState.Editing(
             initialTag = l.tag,
@@ -93,12 +95,23 @@ class EditTagViewModel(
       l != null && (tag != l.tag || description != l.description || color != l.color)
     }
 
-  // a tag is saveable when it has a non-blank name and the colour field isn't in an error state
+  // true when the entered name already belongs to another tag
+  val isDuplicateName: StateFlow<Boolean> =
+    viewModelScope.launchMolecule(Immediate) {
+      val tag by mutableTag.collectAsState()
+      val existingNames by mutableExistingNames.collectAsState()
+      tag.trim() in existingNames
+    }
+
+  // a tag is saveable when its name is non-blank, unique, and the colour field isn't in an error
+  // state
   val canSave: StateFlow<Boolean> =
     viewModelScope.launchMolecule(Immediate) {
       val tag by mutableTag.collectAsState()
       val colorError by mutableColorError.collectAsState()
-      tag.isNotBlank() && !colorError
+      val existingNames by mutableExistingNames.collectAsState()
+      val trimmed = tag.trim()
+      trimmed.isNotBlank() && !colorError && trimmed !in existingNames
     }
 
   init {
@@ -107,6 +120,8 @@ class EditTagViewModel(
 
   private fun load() {
     viewModelScope.launch {
+      mutableExistingNames.update { loadOtherTagNames() }
+
       if (tagId == null) {
         reset(Loaded(isNew = true))
         return@launch
@@ -138,6 +153,22 @@ class EditTagViewModel(
       }
     }
   }
+
+  // the active tag names other than the one being edited, so renaming a tag to itself stays allowed
+  private suspend fun loadOtherTagNames(): PersistentSet<String> =
+    try {
+      tagsDao
+        .getTags()
+        .mapNotNull { it.toTagItem() }
+        .filter { it.id != tagId }
+        .map { it.tag }
+        .toPersistentSet()
+    } catch (e: CancellationException) {
+      throw e
+    } catch (e: Exception) {
+      logcat.e(e) { "Failed loading existing tag names" }
+      persistentSetOf()
+    }
 
   // seed the working edits from the loaded values, so there are initially no unsaved changes
   private fun reset(loaded: Loaded) {
