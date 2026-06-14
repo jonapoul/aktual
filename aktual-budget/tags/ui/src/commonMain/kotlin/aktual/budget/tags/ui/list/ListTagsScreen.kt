@@ -2,6 +2,7 @@ package aktual.budget.tags.ui.list
 
 import aktual.budget.tags.vm.list.Empty
 import aktual.budget.tags.vm.list.Failure
+import aktual.budget.tags.vm.list.ListTagsEvent
 import aktual.budget.tags.vm.list.ListTagsState
 import aktual.budget.tags.vm.list.ListTagsViewModel
 import aktual.budget.tags.vm.list.Loading
@@ -13,7 +14,9 @@ import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Plurals
+import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.tags_deleted
 import aktual.core.nav.EditTagNavigator
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -50,6 +53,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -67,6 +72,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.getString
 
 @Composable
 internal fun ListTagsScreen(
@@ -75,10 +81,21 @@ internal fun ListTagsScreen(
   viewModel: ListTagsViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val snackbar = remember { SnackbarHostState() }
+
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { event ->
+      when (event) {
+        is ListTagsEvent.Deleted ->
+          snackbar.showSnackbar(getString(Res.string.tags_deleted, event.tag))
+      }
+    }
+  }
 
   ListTagsScaffold(
     modifier = modifier,
     state = state,
+    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         Reload -> viewModel.reload()
@@ -87,6 +104,7 @@ internal fun ListTagsScreen(
         ClearFilter -> viewModel.clearFilter()
         CreateTag -> toEdit()
         is EditTag -> toEdit(action.id)
+        is DeleteTag -> viewModel.delete(action.id)
       }
     },
   )
@@ -97,6 +115,7 @@ private fun ListTagsScaffold(
   state: ListTagsState,
   onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
+  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
@@ -125,6 +144,7 @@ private fun ListTagsScaffold(
         },
       )
     },
+    snackbarHost = { SnackbarHost(snackbarHostState) },
   ) { innerPadding ->
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()

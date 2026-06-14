@@ -6,6 +6,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
 import aktual.budget.model.TagId
+import aktual.budget.tags.vm.RecordingSyncController
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.tombstoneTag
 import aktual.core.model.UuidGenerator
@@ -282,16 +283,6 @@ class EditTagViewModelTest {
       uuidGenerator = uuid,
       syncController = sync,
     )
-  }
-
-  private class RecordingSyncController : BudgetSyncController {
-    val changes = mutableListOf<LocalChange>()
-
-    override suspend fun syncChanges(changes: List<LocalChange>) {
-      this.changes += changes
-    }
-
-    override fun schedule() = Unit
   }
 
   private companion object {

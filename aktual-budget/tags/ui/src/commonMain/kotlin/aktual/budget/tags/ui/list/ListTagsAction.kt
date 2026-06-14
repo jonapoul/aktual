@@ -17,6 +17,8 @@ internal data object CreateTag : ListTagsAction
 
 @JvmInline internal value class EditTag(val id: TagId) : ListTagsAction
 
+@JvmInline internal value class DeleteTag(val id: TagId) : ListTagsAction
+
 @Immutable
 internal fun interface ListTagsActionHandler {
   operator fun invoke(action: ListTagsAction)

@@ -2,7 +2,10 @@ package aktual.budget.tags.vm.list
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.TagsDao
+import aktual.budget.model.BudgetSyncController
+import aktual.budget.model.LocalChange
 import aktual.budget.model.TagId
+import aktual.budget.tags.vm.RecordingSyncController
 import aktual.budget.tags.vm.insertTag
 import aktual.test.runDatabaseTest
 import androidx.compose.ui.graphics.Color
@@ -101,6 +104,43 @@ class ListTagsViewModelTest {
     }
   }
 
-  private fun BudgetDatabase.createViewModel() =
-    ListTagsViewModel(SavedStateHandle(), TagsDao(this))
+  @Test
+  fun `Delete tombstones the tag, removes it, and emits an event`() = runDatabaseTest {
+    insertTag(id = "groceries-id", tag = "groceries")
+    insertTag(id = "rent-id", tag = "rent")
+
+    val sync = RecordingSyncController()
+    val viewModel = createViewModel(sync)
+
+    // wait for the initial load with both tags
+    viewModel.state.test {
+      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(2)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    // deleting one tag emits a confirmation event for it
+    viewModel.events.test {
+      viewModel.delete(TagId("groceries-id"))
+      assertThat(awaitItem()).isEqualTo(ListTagsEvent.Deleted("groceries"))
+    }
+
+    // a tombstone change was queued for sync
+    assertThat(sync.changes)
+      .extracting(LocalChange::row, LocalChange::column)
+      .containsExactly("groceries-id" to "tombstone")
+
+    // and only the remaining tag is shown
+    viewModel.state.test {
+      assertThat(awaitItem())
+        .isInstanceOf(Success::class)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("rent")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  private fun BudgetDatabase.createViewModel(
+    sync: BudgetSyncController = RecordingSyncController()
+  ) = ListTagsViewModel(SavedStateHandle(), TagsDao(this), sync)
 }

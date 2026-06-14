@@ -8,6 +8,7 @@ internal object ListTagsDS {
   val listPadding = PaddingValues(horizontal = 16.dp)
   val listItemSpacing = 8.dp
   val itemPadding = PaddingValues(horizontal = 12.dp, vertical = 10.dp)
+  val deleteButtonWidth = 80.dp
   val itemHorizontalSpacing = 8.dp
   val itemContentSpacing = 6.dp
   val chipShape = RoundedCornerShape(size = 16.dp)

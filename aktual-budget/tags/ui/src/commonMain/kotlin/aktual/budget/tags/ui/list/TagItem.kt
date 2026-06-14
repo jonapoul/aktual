@@ -2,6 +2,8 @@ package aktual.budget.tags.ui.list
 
 import aktual.budget.tags.ui.contrastingTextColor
 import aktual.budget.tags.vm.list.TagItem
+import aktual.core.icons.material.Delete
+import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -12,27 +14,87 @@ import aktual.core.ui.RowShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.AnchoredDraggableState
+import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import kotlin.math.roundToInt
+
+// the two resting positions of a swipeable row: closed, or swiped left to reveal the delete button
+private enum class SwipeState {
+  Closed,
+  Open,
+}
 
 @Composable
 internal fun TagItem(
+  tag: TagItem,
+  onAction: ListTagsActionHandler,
+  modifier: Modifier = Modifier,
+) {
+  val buttonWidthPx = with(LocalDensity.current) { ListTagsDS.deleteButtonWidth.toPx() }
+  val swipeState =
+    remember(buttonWidthPx) {
+      AnchoredDraggableState(initialValue = SwipeState.Closed).apply {
+        updateAnchors(
+          DraggableAnchors {
+            SwipeState.Closed at 0f
+            SwipeState.Open at -buttonWidthPx
+          }
+        )
+      }
+    }
+
+  Box(modifier = modifier.fillMaxWidth().clip(RowShape)) {
+    // the red delete button sits behind the row, revealed as it's dragged left
+    Row(modifier = Modifier.matchParentSize(), horizontalArrangement = Arrangement.End) {
+      DeleteButton(
+        modifier = Modifier.fillMaxHeight().width(ListTagsDS.deleteButtonWidth),
+        onClick = { onAction(DeleteTag(tag.id)) },
+      )
+    }
+
+    TagItemRow(
+      tag = tag,
+      onAction = onAction,
+      modifier =
+        Modifier.offset {
+            val x = swipeState.offset
+            IntOffset(x = if (x.isNaN()) 0 else x.roundToInt(), y = 0)
+          }
+          .anchoredDraggable(state = swipeState, orientation = Orientation.Horizontal),
+    )
+  }
+}
+
+@Composable
+private fun TagItemRow(
   tag: TagItem,
   onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
@@ -64,6 +126,24 @@ internal fun TagItem(
         overflow = TextOverflow.Ellipsis,
       )
     }
+  }
+}
+
+@Composable
+private fun DeleteButton(
+  onClick: () -> Unit,
+  modifier: Modifier = Modifier,
+) {
+  val background = colors.errorText
+  Box(
+    modifier = modifier.background(background).clickable(onClick = onClick),
+    contentAlignment = Alignment.Center,
+  ) {
+    Icon(
+      imageVector = MaterialIcons.Delete,
+      contentDescription = Strings.tagsDelete,
+      tint = background.contrastingTextColor(),
+    )
   }
 }
 
