@@ -83,6 +83,7 @@ fun EditTagScreen(
   val hasUnsavedChanges by viewModel.hasUnsavedChanges.collectAsStateWithLifecycle()
   val canSave by viewModel.canSave.collectAsStateWithLifecycle()
   val isDuplicateName by viewModel.isDuplicateName.collectAsStateWithLifecycle()
+  val saveError by viewModel.saveError.collectAsStateWithLifecycle()
 
   // navigate away only once the tag has actually been persisted
   LaunchedEffect(viewModel) {
@@ -99,6 +100,7 @@ fun EditTagScreen(
     hasChanges = hasUnsavedChanges,
     canSave = canSave,
     isDuplicateName = isDuplicateName,
+    saveError = saveError,
     onAction = { action ->
       when (action) {
         SaveTag -> viewModel.save()
@@ -106,6 +108,7 @@ fun EditTagScreen(
         is SetDescription -> viewModel.setDescription(action.description)
         is SetColor -> viewModel.setColor(action.color)
         is SetColorError -> viewModel.setColorError(action.isError)
+        DismissSaveError -> viewModel.dismissSaveError()
         NavigateBack -> back()
       }
     },
@@ -126,6 +129,7 @@ private fun EditTagScaffold(
   onAction: EditTagActionHandler,
   modifier: Modifier = Modifier,
   isDuplicateName: Boolean = false,
+  saveError: String? = null,
 ) {
   val editing = state as? EditTagState.Editing
 
@@ -211,6 +215,10 @@ private fun EditTagScaffold(
           onCancel = { showDiscardDialog = false },
         )
       }
+
+      if (saveError != null) {
+        SaveErrorDialog(onDismiss = { onAction(DismissSaveError) })
+      }
     }
   }
 }
@@ -265,6 +273,16 @@ private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
       TextButton(onClick = onDiscard) { Text(Strings.tagsDiscardConfirm) }
     },
     content = { Text(Strings.tagsDiscardMessage) },
+  )
+}
+
+@Composable
+private fun SaveErrorDialog(onDismiss: () -> Unit) {
+  AktualAlertDialog(
+    title = Strings.tagsSaveFailureTitle,
+    onDismissRequest = onDismiss,
+    buttons = { TextButton(onClick = onDismiss) { Text(Strings.tagsSaveFailureDismiss) } },
+    content = { Text(Strings.tagsSaveFailureMessage) },
   )
 }
 

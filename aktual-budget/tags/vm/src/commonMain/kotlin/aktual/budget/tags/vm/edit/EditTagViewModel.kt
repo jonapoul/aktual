@@ -36,6 +36,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -55,6 +56,11 @@ class EditTagViewModel(
   private val mutableDescription = MutableStateFlow("")
   private val mutableColor = MutableStateFlow<Color?>(null)
   private val mutableColorError = MutableStateFlow(false)
+
+  // non-null when the last save attempt failed; drives an error dialog so the user isn't left
+  // guessing
+  private val mutableSaveError = MutableStateFlow<String?>(null)
+  val saveError: StateFlow<String?> = mutableSaveError.asStateFlow()
 
   private val mutableEvents =
     MutableSharedFlow<EditTagEvent>(
@@ -187,13 +193,18 @@ class EditTagViewModel(
 
   fun setColorError(isError: Boolean) = mutableColorError.update { isError }
 
+  fun dismissSaveError() = mutableSaveError.update { null }
+
   fun save() {
     viewModelScope.launch {
+      mutableSaveError.update { null }
       try {
-        val id = tagId ?: uuidGenerator(::TagId)
         val tag = mutableTag.value.trim()
         val description = mutableDescription.value.trim()
         val color = mutableColor.value?.toHex()
+        // creating a tag reuses any existing row with the same name — even a tombstoned one — so the
+        // old id is resurrected rather than colliding with the UNIQUE constraint (matches createTag)
+        val id = tagId ?: tagsDao.getTagIdByName(tag) ?: uuidGenerator(::TagId)
         tagsDao.insert(id = id, tag = tag, color = color, description = description)
         syncController.syncChanges(insertChanges(id, tag, color, description))
         mutableEvents.tryEmit(EditTagEvent.FinishedSaving)
@@ -201,6 +212,7 @@ class EditTagViewModel(
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed saving tag $tagId" }
+        mutableSaveError.update { e.requireMessage() }
       }
     }
   }

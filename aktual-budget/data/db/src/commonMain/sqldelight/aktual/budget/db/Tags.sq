@@ -21,6 +21,9 @@ insert:
 delete:
   DELETE FROM tags WHERE id = ?;
 
+setTombstone:
+  UPDATE tags SET tombstone = ? WHERE id = ?;
+
 getTags:
   SELECT id, tag, color, description, hidden
   FROM tags
@@ -31,6 +34,10 @@ getTag:
   FROM tags
   WHERE tombstone = 0 AND id = ?
   LIMIT 1;
+
+-- deliberately ignores tombstone so a re-created name resurrects the old row (see upstream createTag)
+getTagIdByName:
+  SELECT id FROM tags WHERE tag = ? LIMIT 1;
 
 getHidden:
   SELECT hidden FROM tags WHERE id = ?;

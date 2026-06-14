@@ -22,6 +22,9 @@
   <string name="tags_create_color_advanced">Advanced color options</string>
   <string name="tags_create_color_invalid">Invalid color code</string>
   <string name="tags_create_save">Save</string>
+  <string name="tags_save_failure_title">Couldn\'t save tag</string>
+  <string name="tags_save_failure_message">Something went wrong while saving. Please try again.</string>
+  <string name="tags_save_failure_dismiss">OK</string>
   <string name="tags_edit_failure_prefix">Failed loading tag</string>
   <string name="tags_edit_not_found">This tag no longer exists</string>
   <string name="tags_discard_title">Discard changes?</string>

@@ -7,6 +7,7 @@ import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
+import aktual.budget.tags.vm.tombstoneTag
 import aktual.core.model.UuidGenerator
 import aktual.test.assertThatNextEmission
 import aktual.test.runDatabaseTest
@@ -15,11 +16,13 @@ import app.cash.turbine.ReceiveTurbine
 import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
+import assertk.assertions.containsExactly
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotEmpty
 import assertk.assertions.isNotNull
+import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
 import org.junit.Test
@@ -204,6 +207,46 @@ class EditTagViewModelTest {
     }
 
     assertThat(sync.changes).isNotEmpty()
+  }
+
+  @Test
+  fun `Creating a tag whose name matches a tombstoned tag resurrects the old id`() =
+    runDatabaseTest {
+      insertTag(id = "old-id", tag = "groceries")
+      // tombstone it, as a delete-sync would
+      tombstoneTag("old-id")
+
+      val sync = RecordingSyncController()
+      val viewModel = createViewModel(id = null, sync = sync)
+      viewModel.awaitLoaded()
+
+      viewModel.setTag("groceries")
+      viewModel.events.test {
+        viewModel.save()
+        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+      }
+
+      // the old row's id is reused rather than the freshly generated uuid
+      assertThat(tagsDao.getTagIdByName("groceries")).isEqualTo(TagId("old-id"))
+      assertThat(sync.changes.map { it.row }.distinct()).containsExactly("old-id")
+    }
+
+  @Test
+  fun `A failed save surfaces an error instead of finishing`() = runDatabaseTest {
+    insertTag(id = "groceries-id", tag = "groceries")
+    insertTag(id = "food-id", tag = "food")
+    val viewModel = createViewModel(id = TagId("groceries-id"))
+    viewModel.awaitLoaded()
+
+    // renaming onto another tag's name trips the UNIQUE(tag) constraint; calling save() directly
+    // bypasses the disabled button, so the error must surface rather than be silently swallowed
+    viewModel.setTag("food")
+
+    viewModel.saveError.test {
+      assertThatNextEmission().isNull()
+      viewModel.save()
+      assertThatNextEmission().isNotNull()
+    }
   }
 
   private suspend fun EditTagViewModel.awaitLoaded() {
