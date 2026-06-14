@@ -217,7 +217,7 @@ private fun EditTagScaffold(
       }
 
       if (saveError != null) {
-        SaveErrorDialog(onDismiss = { onAction(DismissSaveError) })
+        SaveErrorDialog(message = saveError, onDismiss = { onAction(DismissSaveError) })
       }
     }
   }
@@ -277,12 +277,12 @@ private fun DiscardChangesDialog(onDiscard: () -> Unit, onCancel: () -> Unit) {
 }
 
 @Composable
-private fun SaveErrorDialog(onDismiss: () -> Unit) {
+private fun SaveErrorDialog(message: String, onDismiss: () -> Unit) {
   AktualAlertDialog(
     title = Strings.tagsSaveFailureTitle,
     onDismissRequest = onDismiss,
     buttons = { TextButton(onClick = onDismiss) { Text(Strings.tagsSaveFailureDismiss) } },
-    content = { Text(Strings.tagsSaveFailureMessage) },
+    content = { Text(message) },
   )
 }
 

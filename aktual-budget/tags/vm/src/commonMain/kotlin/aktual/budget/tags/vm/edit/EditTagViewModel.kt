@@ -57,7 +57,7 @@ class EditTagViewModel(
   private val mutableColor = MutableStateFlow<Color?>(null)
   private val mutableColorError = MutableStateFlow(false)
 
-  // non-null when the last save attempt failed; drives an error dialog so the user isn't left
+  // the reason the last save attempt failed, shown in an error dialog so the user isn't left
   // guessing
   private val mutableSaveError = MutableStateFlow<String?>(null)
   val saveError: StateFlow<String?> = mutableSaveError.asStateFlow()

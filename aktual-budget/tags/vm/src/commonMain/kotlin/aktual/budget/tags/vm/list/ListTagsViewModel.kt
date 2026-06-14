@@ -1,6 +1,10 @@
 package aktual.budget.tags.vm.list
 
+import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.TagsDao
+import aktual.budget.model.BudgetSyncController
+import aktual.budget.model.TagId
+import aktual.budget.model.tombstone
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
@@ -24,8 +28,12 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -35,6 +43,7 @@ import logcat.logcat
 class ListTagsViewModel(
   @Assisted private val savedState: SavedStateHandle,
   private val tagsDao: TagsDao,
+  private val syncController: BudgetSyncController,
 ) : ViewModel() {
   @AssistedFactory
   @ViewModelAssistedFactoryKey(ListTagsViewModel::class)
@@ -53,6 +62,14 @@ class ListTagsViewModel(
 
   private val filterText = savedState.getStateFlow(KEY_FILTER_TEXT, initialValue = "")
   private val isSearchActive = savedState.getStateFlow(KEY_IS_SEARCH_ACTIVE, initialValue = false)
+
+  private val mutableEvents =
+    MutableSharedFlow<ListTagsEvent>(
+      replay = 0,
+      extraBufferCapacity = 1,
+      onBufferOverflow = DROP_OLDEST,
+    )
+  val events: SharedFlow<ListTagsEvent> = mutableEvents.asSharedFlow()
 
   val state: StateFlow<ListTagsState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -87,8 +104,12 @@ class ListTagsViewModel(
     savedState[KEY_IS_SEARCH_ACTIVE] = false
   }
 
-  fun reload() {
-    mutableIsLoading.update { true }
+  // showLoading = false does a silent refresh (no loading screen), used when returning to the
+  // list after editing a tag elsewhere
+  fun reload(showLoading: Boolean = true) {
+    if (showLoading) {
+      mutableIsLoading.update { true }
+    }
     reloadJob?.cancel()
     reloadJob = viewModelScope.launch {
       try {
@@ -103,6 +124,27 @@ class ListTagsViewModel(
         logcat.e(e) { "Failed loading tags" }
         mutableFailure.update { e.requireMessage() }
         mutableIsLoading.update { false }
+      }
+    }
+  }
+
+  fun delete(id: TagId) {
+    viewModelScope.launch {
+      val name = mutableTags.value.firstOrNull { it.id == id }?.tag
+      try {
+        // syncChanges applies the tombstone to the local db and queues it for sync
+        syncController.syncChanges(tombstone(dataset = TAGS, row = id.toString()))
+        // optimistically drop the row so it animates out without a loading flash
+        mutableTags.update { tags -> tags.filterNot { it.id == id }.toImmutableList() }
+        if (name != null) {
+          mutableEvents.tryEmit(ListTagsEvent.Deleted(name))
+        }
+        logcat.d { "Tombstoned tag $id" }
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed deleting tag $id" }
+        mutableEvents.tryEmit(ListTagsEvent.DeleteFailed(name))
       }
     }
   }

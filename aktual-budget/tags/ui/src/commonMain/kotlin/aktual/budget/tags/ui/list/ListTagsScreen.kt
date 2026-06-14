@@ -1,7 +1,9 @@
 package aktual.budget.tags.ui.list
 
+import aktual.budget.model.TagId
 import aktual.budget.tags.vm.list.Empty
 import aktual.budget.tags.vm.list.Failure
+import aktual.budget.tags.vm.list.ListTagsEvent
 import aktual.budget.tags.vm.list.ListTagsState
 import aktual.budget.tags.vm.list.ListTagsViewModel
 import aktual.budget.tags.vm.list.Loading
@@ -13,7 +15,11 @@ import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Plurals
+import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
+import aktual.core.l10n.tags_delete_failed
+import aktual.core.l10n.tags_delete_failed_unknown
+import aktual.core.l10n.tags_deleted
 import aktual.core.nav.EditTagNavigator
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -25,10 +31,12 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
+import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.blurredTopBar
+import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
@@ -50,23 +58,29 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.tooling.preview.PreviewParameter
+import androidx.lifecycle.compose.LifecycleResumeEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
+import org.jetbrains.compose.resources.getString
 
 @Composable
 internal fun ListTagsScreen(
@@ -75,10 +89,33 @@ internal fun ListTagsScreen(
   viewModel: ListTagsViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val snackbar = remember { SnackbarHostState() }
+
+  // refresh on return (e.g. after creating or editing a tag) so the list reflects the changes
+  @Suppress("ComposeViewModelForwarding")
+  LifecycleResumeEffect(viewModel) {
+    viewModel.reload(showLoading = false)
+    onPauseOrDispose {}
+  }
+
+  LaunchedEffect(viewModel) {
+    viewModel.events.collect { event ->
+      when (event) {
+        is ListTagsEvent.Deleted ->
+          snackbar.showSnackbar(getString(Res.string.tags_deleted, event.tag))
+        is ListTagsEvent.DeleteFailed ->
+          snackbar.showSnackbar(
+            event.tag?.let { getString(Res.string.tags_delete_failed, it) }
+              ?: getString(Res.string.tags_delete_failed_unknown)
+          )
+      }
+    }
+  }
 
   ListTagsScaffold(
     modifier = modifier,
     state = state,
+    snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         Reload -> viewModel.reload()
@@ -87,6 +124,7 @@ internal fun ListTagsScreen(
         ClearFilter -> viewModel.clearFilter()
         CreateTag -> toEdit()
         is EditTag -> toEdit(action.id)
+        is DeleteTag -> viewModel.delete(action.id)
       }
     },
   )
@@ -97,6 +135,7 @@ private fun ListTagsScaffold(
   state: ListTagsState,
   onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
+  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val blurState = rememberBlurredTopBarState()
   val listState = rememberLazyListState()
@@ -123,6 +162,12 @@ private fun ListTagsScaffold(
             onClick = { onAction(CreateTag) },
           )
         },
+      )
+    },
+    snackbarHost = {
+      SnackbarHost(
+        hostState = snackbarHostState,
+        modifier = Modifier.padding(bottom = LocalBottomSpacing.current + bottomNavBarPadding()),
       )
     },
   ) { innerPadding ->
@@ -266,6 +311,9 @@ private fun TagsList(
   onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
 ) {
+  // only one row may be swiped open at a time — opening another closes the previous one
+  var openTagId by remember { mutableStateOf<TagId?>(null) }
+
   LazyColumn(
     modifier = modifier.fillMaxSize().scrollbar(listState),
     state = listState,
@@ -276,6 +324,15 @@ private fun TagsList(
       TagItem(
         modifier = Modifier.animateItem(),
         tag = tag,
+        isOpen = openTagId == tag.id,
+        onOpenChange = { open ->
+          openTagId =
+            when {
+              open -> tag.id
+              openTagId == tag.id -> null
+              else -> openTagId
+            }
+        },
         onAction = onAction,
       )
     }

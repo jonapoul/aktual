@@ -2,8 +2,11 @@ package aktual.budget.tags.vm.list
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.TagsDao
+import aktual.budget.model.BudgetSyncController
+import aktual.budget.model.LocalChange
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
+import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
@@ -101,6 +104,77 @@ class ListTagsViewModelTest {
     }
   }
 
-  private fun BudgetDatabase.createViewModel() =
-    ListTagsViewModel(SavedStateHandle(), TagsDao(this))
+  @Test
+  fun `Delete tombstones the tag, removes it, and emits an event`() = runDatabaseTest {
+    insertTag(id = "groceries-id", tag = "groceries")
+    insertTag(id = "rent-id", tag = "rent")
+
+    val sync = TestSyncController()
+    val viewModel = createViewModel(sync)
+
+    // wait for the initial load with both tags
+    viewModel.state.test {
+      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(2)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    // deleting one tag emits a confirmation event for it
+    viewModel.events.test {
+      viewModel.delete(TagId("groceries-id"))
+      assertThat(awaitItem()).isEqualTo(ListTagsEvent.Deleted("groceries"))
+    }
+
+    // a tombstone change was queued for sync
+    assertThat(sync.changes)
+      .extracting(LocalChange::row, LocalChange::column)
+      .containsExactly("groceries-id" to "tombstone")
+
+    // and only the remaining tag is shown
+    viewModel.state.test {
+      assertThat(awaitItem())
+        .isInstanceOf(Success::class)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("rent")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Delete failure emits a DeleteFailed event and keeps the tag`() = runDatabaseTest {
+    insertTag(id = "groceries-id", tag = "groceries")
+
+    val viewModel = createViewModel(sync = FailingSyncController())
+
+    // wait for the initial load
+    viewModel.state.test {
+      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(1)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    // a failing sync surfaces a DeleteFailed event rather than failing silently
+    viewModel.events.test {
+      viewModel.delete(TagId("groceries-id"))
+      assertThat(awaitItem()).isEqualTo(ListTagsEvent.DeleteFailed("groceries"))
+    }
+
+    // and the tag is still present since the delete didn't go through
+    viewModel.state.test {
+      assertThat(awaitItem())
+        .isInstanceOf(Success::class)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("groceries")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  private fun BudgetDatabase.createViewModel(sync: BudgetSyncController = TestSyncController()) =
+    ListTagsViewModel(SavedStateHandle(), TagsDao(this), sync)
+
+  private class FailingSyncController : BudgetSyncController {
+    override suspend fun syncChanges(changes: List<LocalChange>): Unit = error("sync failed")
+
+    override fun schedule() = Unit
+  }
 }
