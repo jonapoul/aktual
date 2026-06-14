@@ -17,6 +17,10 @@ class TagsDao(database: BudgetDatabase) {
 
   suspend fun getTag(id: TagId): GetTag? = queries.withResult { getTag(id).awaitAsOneOrNull() }
 
+  suspend fun getTagIdByName(name: String): TagId? = queries.withResult {
+    getTagIdByName(name).awaitAsOneOrNull()
+  }
+
   suspend fun insert(id: TagId, tag: String, color: String?, description: String?): Long =
     queries.withResult {
       insert(id = id, tag = tag, color = color, description = description)

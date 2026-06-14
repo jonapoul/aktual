@@ -9,6 +9,8 @@ internal data object NavigateBack : EditTagAction
 
 internal data object SaveTag : EditTagAction
 
+internal data object DismissSaveError : EditTagAction
+
 @JvmInline internal value class SetTag(val tag: String) : EditTagAction
 
 @JvmInline internal value class SetDescription(val description: String) : EditTagAction
