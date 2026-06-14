@@ -4,6 +4,7 @@ import aktual.budget.model.TagId
 import aktual.budget.tags.vm.edit.EditTagEvent
 import aktual.budget.tags.vm.edit.EditTagState
 import aktual.budget.tags.vm.edit.EditTagViewModel
+import aktual.core.icons.material.ArrowBack
 import aktual.core.icons.material.Clear
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Save
@@ -19,6 +20,8 @@ import aktual.core.ui.BlurredTopBarState
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.FailureAction
+import aktual.core.ui.FailureScreen
 import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
@@ -168,6 +171,7 @@ private fun EditTagScaffold(
 
       when (state) {
         EditTagState.Loading -> LoadingScreen(modifier = Modifier.padding(innerPadding))
+
         is EditTagState.Editing ->
           EditTagContent(
             modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
@@ -178,6 +182,19 @@ private fun EditTagScaffold(
             onColorError = { onAction(SetColorError(it)) },
             scrollState = scrollState,
             contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+          )
+
+        is EditTagState.Failure ->
+          FailureScreen(
+            modifier = Modifier.padding(innerPadding),
+            title = Strings.tagsEditFailurePrefix,
+            reason = state.cause ?: Strings.tagsEditNotFound,
+            action =
+              FailureAction(
+                text = { Strings.navBack },
+                icon = MaterialIcons.ArrowBack,
+                onClick = { onAction(NavigateBack) },
+              ),
           )
       }
 
@@ -362,4 +379,5 @@ private class EditTagStateProvider :
       color = Color(0xFF388E3C),
       isNew = false,
     ),
+    EditTagState.Failure(cause = null),
   )

@@ -62,6 +62,16 @@ class EditTagViewModelTest {
   }
 
   @Test
+  fun `Requesting a tag that doesn't exist surfaces a failure`() = runDatabaseTest {
+    val viewModel = createViewModel(id = TagId("missing-id"))
+
+    viewModel.state.test {
+      assertThat(awaitFailure()).isEqualTo(EditTagState.Failure(cause = null))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
   fun `Tracks unsaved changes against the loaded values`() = runDatabaseTest {
     insertTag(id = "groceries-id", tag = "groceries")
     val viewModel = createViewModel(id = TagId("groceries-id"))
@@ -132,6 +142,13 @@ class EditTagViewModelTest {
     while (true) {
       val item = awaitItem()
       if (item is EditTagState.Editing) return item
+    }
+  }
+
+  private suspend fun ReceiveTurbine<EditTagState>.awaitFailure(): EditTagState.Failure {
+    while (true) {
+      val item = awaitItem()
+      if (item is EditTagState.Failure) return item
     }
   }
 

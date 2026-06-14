@@ -11,6 +11,7 @@ import aktual.budget.tags.vm.list.toHex
 import aktual.budget.tags.vm.list.toTagItem
 import aktual.core.model.UuidGenerator
 import aktual.di.BudgetScope
+import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,16 +46,14 @@ class EditTagViewModel(
   private val syncController: BudgetSyncController,
 ) : ViewModel() {
   private val mutableLoaded = MutableStateFlow<Loaded?>(null)
+  private val mutableFailure = MutableStateFlow<EditTagState.Failure?>(null)
 
-  // the working edits live here so they survive recomposition and config changes
   private val mutableTag = MutableStateFlow("")
   private val mutableDescription = MutableStateFlow("")
   private val mutableColor = MutableStateFlow<Color?>(null)
 
-  // set by the UI when the colour field holds an invalid hex code, which blocks saving
   private val mutableColorError = MutableStateFlow(false)
 
-  // emitted once the tag has been persisted, so the screen can navigate away
   private val mutableEvents =
     MutableSharedFlow<EditTagEvent>(
       replay = 0,
@@ -66,9 +65,13 @@ class EditTagViewModel(
   val state: StateFlow<EditTagState> =
     viewModelScope.launchMolecule(Immediate) {
       val loaded by mutableLoaded.collectAsState()
+      val failure by mutableFailure.collectAsState()
       val color by mutableColor.collectAsState()
-      when (val l = loaded) {
-        null -> EditTagState.Loading
+      val l = loaded
+      val f = failure
+      when {
+        f != null -> f
+        l == null -> EditTagState.Loading
         else ->
           EditTagState.Editing(
             initialTag = l.tag,
@@ -105,7 +108,6 @@ class EditTagViewModel(
   private fun load() {
     viewModelScope.launch {
       if (tagId == null) {
-        // creating a fresh tag — nothing to load
         reset(Loaded(isNew = true))
         return@launch
       }
@@ -117,11 +119,13 @@ class EditTagViewModel(
           throw e
         } catch (e: Exception) {
           logcat.e(e) { "Failed loading tag $tagId" }
-          null
+          mutableFailure.update { EditTagState.Failure(cause = e.requireMessage()) }
+          return@launch
         }
 
       if (existing == null) {
-        reset(Loaded(isNew = true))
+        // the tag was requested but doesn't exist — don't pretend it's a new one
+        mutableFailure.update { EditTagState.Failure(cause = null) }
       } else {
         reset(
           Loaded(
