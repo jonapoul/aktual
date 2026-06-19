@@ -152,6 +152,7 @@ private fun LoadableBareTextButton(
 
 @Stable
 @Composable
+@Suppress("UnnecessaryComposable")
 fun annotatedString() = buildAnnotatedString {
   append(Strings.budgetDeleteDialogHostedTxt1)
   append(" ")
