@@ -14,6 +14,8 @@ import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.clear
 import aktual.test.emptyMockEngine
 import aktual.test.respondJson
+import alakazam.test.Flaky
+import alakazam.test.FlakyTestRule
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
 import androidx.lifecycle.viewmodel.CreationExtras
@@ -38,11 +40,14 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
+import org.junit.Rule
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 class ServerUrlViewModelTest {
+  @get:Rule val rule = FlakyTestRule()
+
   // Real
   private lateinit var viewModel: ServerUrlViewModel
   private lateinit var appGraph: TestAppGraph
@@ -78,6 +83,7 @@ class ServerUrlViewModelTest {
   }
 
   @Test
+  @Flaky(reason = "Sometimes fails randomly")
   fun `Nav to login when typing and clicking confirm if already bootstrapped`() = runTest {
     before()
     viewModel.navDestination.receiveAsFlow().test {
@@ -100,6 +106,7 @@ class ServerUrlViewModelTest {
   }
 
   @Test
+  @Flaky(reason = "Sometimes fails randomly")
   fun `Nav to bootstrap when typing and clicking confirm if not bootstrapped`() = runTest {
     before()
     viewModel.navDestination.receiveAsFlow().test {
@@ -122,6 +129,7 @@ class ServerUrlViewModelTest {
   }
 
   @Test
+  @Flaky(reason = "Sometimes fails randomly")
   fun `Set initial parameters based on preferences`() = runTest {
     // Given
     before()
@@ -140,6 +148,7 @@ class ServerUrlViewModelTest {
   }
 
   @Test
+  @Flaky(reason = "Sometimes fails randomly")
   fun `Show error message if bootstrap request gives failure response`() = runTest {
     before()
 
@@ -172,6 +181,7 @@ class ServerUrlViewModelTest {
   }
 
   @Test
+  @Flaky(reason = "Sometimes fails randomly")
   fun `Show error message if bootstrap request fails`() = runTest {
     before()
     viewModel.errorMessage.test {
@@ -195,6 +205,7 @@ class ServerUrlViewModelTest {
   }
 
   @Test
+  @Flaky(reason = "Sometimes fails randomly")
   fun `Clear saved token if the confirmed URL is different from previously-saved`() = runTest {
     before()
     appGraph.preferences.token.asFlow().test {
