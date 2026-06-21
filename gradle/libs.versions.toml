@@ -122,7 +122,7 @@ sqldelight-json = { module = "app.cash.sqldelight:sqlite-json-module", version.r
 sqldelight-primitive = { module = "app.cash.sqldelight:primitive-adapters", version.ref = "sqldelight" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
 turbine = { module = "app.cash.turbine:turbine", version = "1.2.1" }
-vico = { module = "com.patrykandpatrick.vico:multiplatform", version = "2.5.1" }
+vico = { module = "com.patrykandpatrick.vico:multiplatform", version = "2.5.2" }
 
 [plugins]
 agp-app = { id = "com.android.application", version.ref = "agp" }
