@@ -44,7 +44,7 @@ class ConventionDetekt : Plugin<Project> {
 
         t.reports { r ->
           r.html.required.set(true)
-          r.sarif.required.set(true)
+          r.sarif.required.set(false)
           r.checkstyle.required.set(false)
           r.markdown.required.set(false)
         }
