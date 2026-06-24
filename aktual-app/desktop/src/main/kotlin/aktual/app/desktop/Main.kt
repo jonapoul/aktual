@@ -75,8 +75,10 @@ private fun composeApp(graph: JvmAppGraph, viewModelStoreOwner: JvmViewModelStor
       )
 
     val backStack = rememberBackStack(viewModel)
-    val viewModelFactory by
-      remember { graph.runLevelState.viewModelFactory() }.collectAsState(initial = null)
+    val viewModelFactory by remember {
+      graph.runLevelState.viewModelFactory()
+    }
+      .collectAsState(initial = null)
 
     if (backStack != null) {
       val keyHandler = remember { KeyboardEventHandler(backStack) }

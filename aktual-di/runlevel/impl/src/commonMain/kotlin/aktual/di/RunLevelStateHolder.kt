@@ -25,20 +25,26 @@ class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
   Closeable,
   RunLevelState,
   RunLevelController {
-  override fun viewModelFactory(): Flow<MetroViewModelFactory> =
-    mapNotNull { it.lastOrNull()?.let(::AktualViewModelFactory) }.distinctUntilChanged()
+  override fun viewModelFactory(): Flow<MetroViewModelFactory> = mapNotNull {
+    it.lastOrNull()?.let(::AktualViewModelFactory)
+  }
+    .distinctUntilChanged()
 
   @Suppress("UNCHECKED_CAST")
   override fun <G : AktualGraph> get(type: KClass<G>): G? =
     value.firstOrNull(type::isInstance) as? G
 
-  private inline fun <reified G : AktualGraph> observeNullable(): Flow<G?> =
-    map { levels -> levels.filterIsInstance<G>().singleOrNull() }.distinctUntilChanged()
+  private inline fun <reified G : AktualGraph> observeNullable(): Flow<G?> = map { levels ->
+    levels.filterIsInstance<G>().singleOrNull()
+  }
+    .distinctUntilChanged()
 
   override fun all(): Flow<List<AktualGraph>> = this
 
-  override fun app(): Flow<AppGraph> =
-    map { levels -> levels.filterIsInstance<AppGraph>().single() }.distinctUntilChanged()
+  override fun app(): Flow<AppGraph> = map { levels ->
+    levels.filterIsInstance<AppGraph>().single()
+  }
+    .distinctUntilChanged()
 
   override fun serverChosen(): Flow<ServerChosenGraph?> = observeNullable<ServerChosenGraph>()
 

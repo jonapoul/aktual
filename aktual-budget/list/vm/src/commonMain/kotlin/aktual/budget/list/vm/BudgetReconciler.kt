@@ -129,16 +129,15 @@ internal constructor(
     )
 }
 
-private fun List<UserWithAccess>.toModelList(): ImmutableList<BudgetUserWithAccess> =
-  map { user ->
-      BudgetUserWithAccess(
-        userId = user.userId,
-        userName = user.userName,
-        displayName = user.displayName,
-        isOwner = user.isOwner,
-      )
-    }
-    .toImmutableList()
+private fun List<UserWithAccess>.toModelList(): ImmutableList<BudgetUserWithAccess> = map { user ->
+  BudgetUserWithAccess(
+    userId = user.userId,
+    userName = user.userName,
+    displayName = user.displayName,
+    isOwner = user.isOwner,
+  )
+}
+  .toImmutableList()
 
 private val DbMetadata.cloudFileIdOrNull: BudgetId?
   get() = get(DbMetadata.CloudFileId)
