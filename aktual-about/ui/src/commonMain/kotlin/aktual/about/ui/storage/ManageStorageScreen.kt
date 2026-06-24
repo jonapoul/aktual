@@ -365,22 +365,22 @@ private fun rememberSlices(
 ): ImmutableList<PieSlice> =
   remember(state, colors) {
     buildList {
-        state.budgets.forEachIndexed { index, budget ->
-          add(PieSlice(value = budget.size.numBytes.toFloat(), color = colors[index]))
-        }
-        add(
-          PieSlice(
-            value = state.cacheSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
-            color = colors[state.budgets.size],
-          )
-        )
-        add(
-          PieSlice(
-            value = state.otherSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
-            color = colors[state.budgets.size + 1],
-          )
-        )
+      state.budgets.forEachIndexed { index, budget ->
+        add(PieSlice(value = budget.size.numBytes.toFloat(), color = colors[index]))
       }
+      add(
+        PieSlice(
+          value = state.cacheSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
+          color = colors[state.budgets.size],
+        )
+      )
+      add(
+        PieSlice(
+          value = state.otherSize.numBytes.toFloat().coerceAtLeast(minimumValue = 0.001f),
+          color = colors[state.budgets.size + 1],
+        )
+      )
+    }
       .toImmutableList()
   }
 

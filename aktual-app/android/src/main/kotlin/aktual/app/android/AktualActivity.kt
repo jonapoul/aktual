@@ -53,8 +53,10 @@ class AktualActivity(override val defaultViewModelProviderFactory: MetroViewMode
 @Suppress("ViewModelForwarding")
 @SuppressLint("ComposeViewModelForwarding")
 private fun Content(viewModel: AktualActivityViewModel) {
-  val viewModelFactory by
-    remember { viewModel.runLevels.viewModelFactory() }.collectAsState(initial = null)
+  val viewModelFactory by remember {
+    viewModel.runLevels.viewModelFactory()
+  }
+    .collectAsState(initial = null)
 
   LoadingScreenIfNotNull(viewModelFactory) { vmf ->
     CompositionLocalProvider(LocalMetroViewModelFactory provides vmf) {
