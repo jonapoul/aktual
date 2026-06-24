@@ -28,8 +28,10 @@ class BudgetFileDownloader(
   private val syncApi: SyncApi,
   private val token: Token,
 ) {
-  fun download(budgetId: BudgetId): Flow<DownloadState> =
-    flow { emitState(budgetId) }.flowOn(contexts.io)
+  fun download(budgetId: BudgetId): Flow<DownloadState> = flow {
+    emitState(budgetId)
+  }
+    .flowOn(contexts.io)
 
   private suspend fun FlowCollector<DownloadState>.emitState(id: BudgetId) {
     val destinationPath = budgetFiles.encryptedZip(id, mkdirs = true)

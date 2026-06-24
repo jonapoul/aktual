@@ -44,46 +44,45 @@ value class Amount(private val value: Long) : Comparable<Amount> {
     currencyConfig: CurrencyConfig,
     includeSign: Boolean,
     isPrivacyEnabled: Boolean,
-  ): String =
-    buildString {
-        val (currency, position, addSpace) = currencyConfig
-        if (position == CurrencySymbolPosition.BeforeAmount && currency != Currency.None) {
-          append(currency.symbol)
-          if (addSpace) append(" ")
-        }
+  ): String = buildString {
+    val (currency, position, addSpace) = currencyConfig
+    if (position == CurrencySymbolPosition.BeforeAmount && currency != Currency.None) {
+      append(currency.symbol)
+      if (addSpace) append(" ")
+    }
 
-        if (includeSign && value > 0) append("+")
-        if (value < 0) append("-")
+    if (includeSign && value > 0) append("+")
+    if (value < 0) append("-")
 
-        val (format, hideFraction) = numberFormatConfig
+    val (format, hideFraction) = numberFormatConfig
 
-        val locale =
-          when (format) {
-            NumberFormat.CommaDot -> Locale.US
-            NumberFormat.DotComma -> Locale.GERMANY
-            NumberFormat.SpaceComma -> enSe
-            NumberFormat.ApostropheDot -> deCh
-            NumberFormat.CommaDotIn -> enIn
-          }
-
-        val numDp = if (hideFraction) 0 else currency.decimalPlaces
-        val numberFormat =
-          JNumberFormat.getNumberInstance(locale).apply {
-            minimumFractionDigits = numDp
-            maximumFractionDigits = numDp
-          }
-
-        append(numberFormat.format(toDouble().absoluteValue))
-
-        if (position == CurrencySymbolPosition.AfterAmount && currency != Currency.None) {
-          if (addSpace) append(" ")
-          append(currency.symbol)
-        }
+    val locale =
+      when (format) {
+        NumberFormat.CommaDot -> Locale.US
+        NumberFormat.DotComma -> Locale.GERMANY
+        NumberFormat.SpaceComma -> enSe
+        NumberFormat.ApostropheDot -> deCh
+        NumberFormat.CommaDotIn -> enIn
       }
-      .let { string ->
-        val numberCount = string.count { it.isDigit() }
-        if (isPrivacyEnabled) "~".repeat(numberCount) else string
+
+    val numDp = if (hideFraction) 0 else currency.decimalPlaces
+    val numberFormat =
+      JNumberFormat.getNumberInstance(locale).apply {
+        minimumFractionDigits = numDp
+        maximumFractionDigits = numDp
       }
+
+    append(numberFormat.format(toDouble().absoluteValue))
+
+    if (position == CurrencySymbolPosition.AfterAmount && currency != Currency.None) {
+      if (addSpace) append(" ")
+      append(currency.symbol)
+    }
+  }
+    .let { string ->
+      val numberCount = string.count { it.isDigit() }
+      if (isPrivacyEnabled) "~".repeat(numberCount) else string
+    }
 
   companion object {
     private const val FACTOR = 100.0

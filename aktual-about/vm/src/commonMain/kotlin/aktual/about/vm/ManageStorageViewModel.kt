@@ -156,27 +156,26 @@ class ManageStorageViewModel(
     val themesDir = root / "themes"
     val tmpDir = files.tmp()
 
-    val budgetItems =
-      buildList {
-          if (files.fileSystem.exists(budgetsDir)) {
-            for (entry in files.fileSystem.list(budgetsDir)) {
-              val metadata = files.fileSystem.metadataOrNull(entry)
-              if (entry == tmpDir || metadata?.isDirectory != true) continue
+    val budgetItems = buildList {
+      if (files.fileSystem.exists(budgetsDir)) {
+        for (entry in files.fileSystem.list(budgetsDir)) {
+          val metadata = files.fileSystem.metadataOrNull(entry)
+          if (entry == tmpDir || metadata?.isDirectory != true) continue
 
-              val budgetId = BudgetId(entry.name)
-              val name =
-                try {
-                  files.readMetadata(budgetId)[DbMetadata.BudgetName] ?: entry.name
-                } catch (_: Exception) {
-                  entry.name
-                }
-              val size = directorySize(entry)
-              add(BudgetStorageItem(id = budgetId, name = name, size = size))
+          val budgetId = BudgetId(entry.name)
+          val name =
+            try {
+              files.readMetadata(budgetId)[DbMetadata.BudgetName] ?: entry.name
+            } catch (_: Exception) {
+              entry.name
             }
-          }
+          val size = directorySize(entry)
+          add(BudgetStorageItem(id = budgetId, name = name, size = size))
         }
-        .sortedByDescending { it.size }
-        .toImmutableList()
+      }
+    }
+      .sortedByDescending { it.size }
+      .toImmutableList()
 
     val budgetsTotal = budgetItems.sumOf { it.size.numBytes }.bytes
     val cacheSize = (directorySize(tmpDir).numBytes + directorySize(themesDir).numBytes).bytes

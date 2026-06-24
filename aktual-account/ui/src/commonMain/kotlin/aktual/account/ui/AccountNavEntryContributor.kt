@@ -34,8 +34,10 @@ class AccountNavEntryContributor(private val runLevelState: RunLevelState) : Nav
     }
 
     entry<LoginNavRoute> {
-      val serverChosenGraph by
-        remember { runLevelState.serverChosen() }.collectAsState(initial = null)
+      val serverChosenGraph by remember {
+        runLevelState.serverChosen()
+      }
+        .collectAsState(initial = null)
 
       LoadingScreenIfNotNull(serverChosenGraph) {
         LoginScreen(
