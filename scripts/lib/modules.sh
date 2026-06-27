@@ -12,10 +12,25 @@ all_gradle_modules() {
   grep -oP '":aktual[^"]*' settings.gradle.kts | tr -d '"' | sort
 }
 
-# Regex of repo-root-relative paths that, when changed, affect every module and so should
-# trigger a run across all of them: the root build file, anything under .github/ or
-# build-logic/, and the version catalog.
-GLOBAL_TRIGGER_RE='^build\.gradle\.kts$|^\.github/|^build-logic/|(^|/)libs\.versions\.toml$'
+# List of repo-root-relative patterns (in .gitignore syntax) that, when changed, affect
+# every module and so should trigger a run across all of them.
+GITIGNORE_TRIGGERS="$MODULES_LIB_DIR/.global-triggers"
+
+# Return 0 if any of the newline-separated paths on stdin match a pattern in
+# .global-triggers. Matching is delegated to `git check-ignore` against a throwaway
+# repo whose only ignore source is that file, so the repo's own .gitignore can't interfere.
+matches_gitignore_triggers() {
+  [[ -f "$GITIGNORE_TRIGGERS" ]] || return 1
+  local tmp rc=1
+  tmp="$(mktemp -d)"
+  git init -q "$tmp"
+  cp "$GITIGNORE_TRIGGERS" "$tmp/.gitignore"
+  if git -C "$tmp" -c core.excludesFile=/dev/null check-ignore --no-index --quiet --stdin; then
+    rc=0
+  fi
+  rm -rf "$tmp"
+  return "$rc"
+}
 
 # Print the Gradle module paths (e.g. :aktual-core:ui) that own the given changed files.
 # Reads module paths from settings.gradle.kts in the current working directory.
@@ -79,7 +94,7 @@ run_changed_module_task() {
   fi
 
   local modules
-  if echo "$changed_files" | grep -qE "$GLOBAL_TRIGGER_RE"; then
+  if printf '%s\n' "$changed_files" | matches_gitignore_triggers; then
     echo "Build/config files changed since $base_branch ($merge_base_short) — running on all modules."
     modules=$(all_gradle_modules)
   else
