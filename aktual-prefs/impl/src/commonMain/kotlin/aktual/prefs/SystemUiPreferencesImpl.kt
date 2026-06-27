@@ -23,4 +23,9 @@ class SystemUiPreferencesImpl(dataStore: DataStore<Preferences>) : SystemUiPrefe
 
   override val blurAlpha: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("blurAlpha"), default = 0.35f).required()
+
+  override val hidePreviewInAppSwitcher: Preference<Boolean> =
+    dataStore
+      .boolean(key = booleanPreferencesKey("hidePreviewInAppSwitcher"), default = true)
+      .required()
 }
