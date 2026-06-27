@@ -1,5 +1,6 @@
 package aktual.budget.db
 
+import aktual.budget.db.test.transactionIndexNames
 import aktual.budget.model.AccountId
 import aktual.budget.model.BudgetFiles
 import aktual.budget.model.BudgetId
@@ -8,6 +9,7 @@ import aktual.budget.model.CustomReportId
 import aktual.budget.model.ScheduleId
 import aktual.budget.model.TagId
 import aktual.test.CoTemporaryFolder
+import aktual.test.contains
 import aktual.test.testBudgetFiles
 import alakazam.test.getResourceAsStream
 import app.cash.burst.InterceptTest
@@ -67,6 +69,7 @@ class DatabaseMigrationTest {
     checkMigration1780099200000(db)
     checkMigration1780327681000(db)
     checkMigration1780606215000(db)
+    checkMigration1780606215001()
   }
 
   // Verify that the file was opened at all
@@ -109,6 +112,14 @@ class DatabaseMigrationTest {
     val bankSyncStatus =
       db.accountsQueries.getBankSyncStatus(id = AccountId("account-id")).awaitAsOneOrNull()
     assertNull(bankSyncStatus)
+  }
+
+  // Adds idx_transactions_acct_tombstone and idx_transactions_schedule indexes to transactions.
+  // These aren't visible in the typed schema, so query the indexes via PRAGMA against the driver.
+  private suspend fun checkMigration1780606215001() {
+    assertThat(driver.transactionIndexNames())
+      .contains("idx_transactions_acct_tombstone")
+      .contains("idx_transactions_schedule")
   }
 
   private fun loadDatabaseIntoFile(): File {

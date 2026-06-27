@@ -2,6 +2,7 @@ package aktual.test
 
 import assertk.Assert
 import assertk.assertFailure
+import assertk.assertions.contains as coreContains
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.support.expected
@@ -12,6 +13,11 @@ import okio.Path
 
 fun <C : Collection<T>, T> Assert<C>.hasSize(size: Int): Assert<C> = transform { actual ->
   assertThat(actual.size).isEqualTo(size)
+  actual
+}
+
+fun <C : Collection<T>, T> Assert<C>.contains(element: Any): Assert<C> = transform { actual ->
+  assertThat(actual).coreContains(element)
   actual
 }
 

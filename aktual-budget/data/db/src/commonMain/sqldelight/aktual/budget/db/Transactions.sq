@@ -40,6 +40,8 @@ CREATE INDEX IF NOT EXISTS trans_category ON transactions(category);
 CREATE INDEX IF NOT EXISTS trans_date ON transactions(date);
 CREATE INDEX IF NOT EXISTS trans_parent_id ON transactions(parent_id);
 CREATE INDEX IF NOT EXISTS trans_sorted ON transactions(date DESC, starting_balance_flag, sort_order DESC, id);
+CREATE INDEX IF NOT EXISTS idx_transactions_acct_tombstone ON transactions(acct, tombstone);
+CREATE INDEX IF NOT EXISTS idx_transactions_schedule ON transactions(schedule);
 
 CREATE VIEW IF NOT EXISTS v_transactions_internal AS
 SELECT
