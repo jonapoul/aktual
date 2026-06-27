@@ -56,6 +56,13 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
 
     // packages/loot-core/migrations/1780606215000_add_bank_sync_status.sql
     1780606215000L to listOf("ALTER TABLE accounts ADD COLUMN bank_sync_status TEXT DEFAULT NULL"),
+
+    // packages/loot-core/migrations/1780606215001_add_performance_indexes.sql
+    1780606215001L to
+      listOf(
+        "CREATE INDEX IF NOT EXISTS idx_transactions_acct_tombstone ON transactions(acct, tombstone)",
+        "CREATE INDEX IF NOT EXISTS idx_transactions_schedule ON transactions(schedule)",
+      ),
   )
 
 private const val TAG = "MigrateDatabase"
