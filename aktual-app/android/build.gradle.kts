@@ -21,8 +21,8 @@ plugins {
   id("aktual.convention.test")
 }
 
-val gitVersionCode = providers.gitVersionCode()
-val gitVersionName = providers.gitVersionDate()
+val gitVersionCode = gitVersionCode()
+val gitVersionName = gitVersionDate()
 
 android {
   namespace = "aktual.app.android"

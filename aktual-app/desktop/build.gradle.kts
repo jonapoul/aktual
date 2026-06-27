@@ -18,7 +18,7 @@ plugins {
 
 // Same as gitVersionDate in blueprint, but with the year stripped from 2026 -> 26
 val gitVersionDate =
-  providers.gitVersionCode().map { seconds ->
+  gitVersionCode().map { seconds ->
     val date = Instant.ofEpochSecond(seconds.toLong()).atZone(ZoneOffset.UTC).toLocalDate()
     "%02d.%02d.%02d".format(Locale.ROOT, date.year % 100, date.monthValue, date.dayOfMonth)
   }
