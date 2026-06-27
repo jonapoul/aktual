@@ -30,9 +30,9 @@ buildConfig {
   useKotlinOutput { topLevelConstants = true }
 
   buildConfigField("BUILD_TIME_MS", providers.provider { System.currentTimeMillis() })
-  buildConfigField("GIT_HASH", providers.gitVersionHash())
-  buildConfigField("VERSION_CODE", providers.gitVersionCode())
-  buildConfigField("VERSION_NAME", providers.gitVersionDate())
+  buildConfigField("GIT_HASH", gitVersionHash())
+  buildConfigField("VERSION_CODE", gitVersionCode())
+  buildConfigField("VERSION_NAME", gitVersionDate())
 
   with(localProperties()) {
     buildConfigField("DEFAULT_PASSWORD", getOptional("aktual.defaultPassword"))
