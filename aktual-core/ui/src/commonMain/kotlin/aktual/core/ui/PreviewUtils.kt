@@ -4,6 +4,7 @@ package aktual.core.ui
 
 import aktual.core.theme.Colors
 import aktual.core.theme.DarkColors
+import aktual.core.theme.DefaultColors
 import aktual.core.theme.LightColors
 import aktual.core.theme.MidnightColors
 import androidx.compose.material3.Surface
@@ -68,7 +69,7 @@ open class PreviewParameters<T>(protected val data: List<T>) : PreviewParameterP
     labels.getOrNull(index) ?: data[index]?.toString()
 }
 
-@Immutable data class ColoredParams<T>(val colors: Colors, val data: T)
+@Immutable data class ColoredParams<T>(val colors: DefaultColors, val data: T)
 
 open class ColoredParameterProvider<T>(collection: List<T>) :
   PreviewParameterProvider<ColoredParams<T>> {
@@ -82,10 +83,16 @@ open class ColoredParameterProvider<T>(collection: List<T>) :
   constructor(vararg values: T) : this(values.toList())
 
   override fun getDisplayName(index: Int): String? =
-    all.getOrNull(index)?.let { params -> "${params.colors::class.simpleName} - ${params.data}" }
+    all.getOrNull(index)?.let { params -> "${prefix(params.colors)}: ${params.data}" }
+
+  private fun prefix(colors: DefaultColors): String = when (colors) {
+    DarkColors -> "D"
+    LightColors -> "L"
+    MidnightColors -> "M"
+  }
 }
 
-class ColoredParameters : PreviewParameters<Colors>(LightColors, DarkColors, MidnightColors)
+class ColoredParameters : PreviewParameters<Colors>(Colors.Defaults.toList())
 
 class ColoredBooleanParameters : ColoredParameterProvider<Boolean>(true, false)
 
