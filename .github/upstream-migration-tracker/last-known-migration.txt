@@ -1,1 +1,1 @@
-1780606215000_add_bank_sync_status.sql
+1780606215001_add_performance_indexes.sql
