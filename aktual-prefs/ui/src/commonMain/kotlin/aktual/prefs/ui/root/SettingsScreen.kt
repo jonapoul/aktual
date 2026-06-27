@@ -135,6 +135,7 @@ private fun PreviewSettingsScaffold(@PreviewParameter(ColoredParameters::class) 
               blurDialogs = BooleanPreference(true),
               blurRadiusDp = BlurRadiusPreference(5f),
               blurAlpha = BlurAlphaPreference(0.5f),
+              hidePreviewInAppSwitcher = BooleanPreference(true),
             ),
           format =
             FormatConfigState(
