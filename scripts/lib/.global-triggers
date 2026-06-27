@@ -1,0 +1,10 @@
+/.editorconfig
+/.github/
+/.java-version
+/build-logic/
+/build.gradle.kts
+/config/
+/detekt-rules/
+/gradle.properties
+/gradle/
+/settings.gradle.kts
