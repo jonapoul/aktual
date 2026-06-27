@@ -62,14 +62,20 @@ class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
   override fun onServerChosen(url: ServerUrl): ServerChosenGraph {
     val serverChosenGraph = value[AppGraph::class].serverChosenGraphFactory.create(url)
     serverChosenGraph.initialize()
-    update { levels -> (levels + serverChosenGraph).also(::assertAllDistinct).sorted() }
+    // Replace any existing server-chosen level (and everything below it) so re-entering this level
+    // - e.g. logging out and back in - doesn't stack a second graph of the same type
+    update { levels ->
+      (levels.popTo<AppGraph>() + serverChosenGraph).also(::assertAllDistinct).sorted()
+    }
     return serverChosenGraph
   }
 
   override fun onLoggedIn(token: Token): LoggedInGraph {
     val loggedInGraph = value[ServerChosenGraph::class].loggedInGraphFactory.create(token)
     loggedInGraph.initialize()
-    update { levels -> (levels + loggedInGraph).also(::assertAllDistinct).sorted() }
+    update { levels ->
+      (levels.popTo<ServerChosenGraph>() + loggedInGraph).also(::assertAllDistinct).sorted()
+    }
     return loggedInGraph
   }
 
@@ -80,7 +86,10 @@ class RunLevelStateHolder(private val driverFactory: SqlDriverFactory) :
         .budgetGraphFactory
         .create(id = metadata.cloudFileId, metadata, driver)
     budgetGraph.initialize()
-    update { levels -> (levels + budgetGraph).also(::assertAllDistinct).sorted() }
+    // Replace any currently-open budget so switching budgets doesn't stack a second BudgetGraph
+    update { levels ->
+      (levels.popTo<LoggedInGraph>() + budgetGraph).also(::assertAllDistinct).sorted()
+    }
     return budgetGraph
   }
 
