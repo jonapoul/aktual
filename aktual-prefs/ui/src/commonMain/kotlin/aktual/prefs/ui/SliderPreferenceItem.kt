@@ -40,6 +40,7 @@ internal fun SliderPreferenceItem(
   modifier: Modifier = Modifier,
   includeBackground: Boolean = true,
 ) {
+  if (!preference.visible) return
   SliderPreferenceItem(
     value = preference.value,
     range = preference.range,

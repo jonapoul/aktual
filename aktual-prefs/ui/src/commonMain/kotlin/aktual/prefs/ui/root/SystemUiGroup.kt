@@ -4,6 +4,7 @@ import aktual.core.icons.material.BlurOn
 import aktual.core.icons.material.Dialogs
 import aktual.core.icons.material.LinearScale
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Security
 import aktual.core.icons.material.TransitionDissolve
 import aktual.core.icons.material.Visibility
 import aktual.core.icons.material.VisibilityOff
@@ -60,6 +61,14 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
       title = Strings.settingsUiBlurAlpha,
       subtitle = null,
       icon = MaterialIcons.TransitionDissolve,
+      includeBackground = false,
+    )
+
+    BooleanPreferenceItem(
+      preference = state.hidePreviewInAppSwitcher,
+      title = Strings.settingsUiHidePreview,
+      subtitle = Strings.settingsUiHidePreviewDesc,
+      icon = MaterialIcons.Security,
       includeBackground = false,
     )
   }

@@ -70,6 +70,7 @@ private val materialIcons =
       SaveAs,
       Search,
       SearchOff,
+      Security,
       SelectAll,
       Settings,
       Sort,

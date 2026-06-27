@@ -28,6 +28,7 @@ internal fun BooleanPreferenceItem(
   includeBackground: Boolean = true,
   bottomContent: (@Composable ColumnScope.() -> Unit)? = null,
 ) {
+  if (!preference.visible) return
   BooleanPreferenceItem(
     value = preference.value,
     onValueChange = preference.onChange,

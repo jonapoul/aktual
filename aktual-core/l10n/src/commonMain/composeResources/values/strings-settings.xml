@@ -59,4 +59,6 @@
   <string name="settings_ui_blur_dialogs">Blur behind dialogs</string>
   <string name="settings_ui_blur_radius">Blur radius</string>
   <string name="settings_ui_blur_alpha">Blur alpha</string>
+  <string name="settings_ui_hide_preview">Hide preview in app switcher</string>
+  <string name="settings_ui_hide_preview_desc">Hide app contents in the recents screen. Also blocks screenshots and screen recording.</string>
 </resources>

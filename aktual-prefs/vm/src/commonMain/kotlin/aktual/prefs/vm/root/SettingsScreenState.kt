@@ -24,6 +24,7 @@ data class SystemUiConfigState(
   val blurDialogs: BooleanPreference,
   val blurRadiusDp: SliderPreference,
   val blurAlpha: SliderPreference,
+  val hidePreviewInAppSwitcher: BooleanPreference,
 )
 
 fun BlurRadiusPreference(

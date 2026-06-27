@@ -6,4 +6,5 @@ interface SystemUiPreferences {
   val blurDialogs: Preference<Boolean>
   val blurRadius: Preference<Float>
   val blurAlpha: Preference<Float>
+  val hidePreviewInAppSwitcher: Preference<Boolean>
 }

@@ -48,6 +48,8 @@ class SettingsViewModel(
     val blurDialogs by systemUiPreferences.blurDialogs.collectAsStateFlow()
     val blurRadius by systemUiPreferences.blurRadius.collectAsStateFlow()
     val blurAlpha by systemUiPreferences.blurAlpha.collectAsStateFlow()
+    val hidePreviewInAppSwitcher by
+      systemUiPreferences.hidePreviewInAppSwitcher.collectAsStateFlow()
     val anyBlurEnabled = blurAppBars || blurDialogs
     return SystemUiConfigState(
       showStatusBar =
@@ -76,6 +78,12 @@ class SettingsViewModel(
           value = blurAlpha,
           enabled = anyBlurEnabled,
           onChange = { systemUiPreferences.blurAlpha.launchAndSet(it) },
+        ),
+      hidePreviewInAppSwitcher =
+        BooleanPreference(
+          value = hidePreviewInAppSwitcher,
+          visible = ShouldShowHidePreviewInAppSwitcher,
+          onChange = { systemUiPreferences.hidePreviewInAppSwitcher.launchAndSet(it) },
         ),
     )
   }

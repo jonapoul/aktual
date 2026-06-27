@@ -41,6 +41,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
   modifier: Modifier = Modifier,
   includeBackground: Boolean = true,
 ) {
+  if (!preference.visible) return
   ListPreferenceItem(
     value = preference.value,
     options = preference.options,
