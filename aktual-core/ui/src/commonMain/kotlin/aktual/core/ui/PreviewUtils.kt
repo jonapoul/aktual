@@ -85,11 +85,12 @@ open class ColoredParameterProvider<T>(collection: List<T>) :
   override fun getDisplayName(index: Int): String? =
     all.getOrNull(index)?.let { params -> "${prefix(params.colors)}: ${params.data}" }
 
-  private fun prefix(colors: DefaultColors): String = when (colors) {
-    DarkColors -> "D"
-    LightColors -> "L"
-    MidnightColors -> "M"
-  }
+  private fun prefix(colors: DefaultColors): String =
+    when (colors) {
+      DarkColors -> "D"
+      LightColors -> "L"
+      MidnightColors -> "M"
+    }
 }
 
 class ColoredParameters : PreviewParameters<Colors>(Colors.Defaults.toList())
