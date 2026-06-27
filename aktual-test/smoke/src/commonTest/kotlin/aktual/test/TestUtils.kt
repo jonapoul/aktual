@@ -16,3 +16,8 @@ internal val BUDGET_ID = BudgetId("abc-123")
 internal val TRANSACTIONS_SPEC = TransactionsSpec(AccountSpec.AllAccounts)
 
 internal val DB_METADATA = DbMetadata(budgetName = "My Budget", cloudFileId = BUDGET_ID)
+
+internal val SECOND_BUDGET_ID = BudgetId("def-456")
+
+internal val SECOND_DB_METADATA =
+  DbMetadata(budgetName = "Other Budget", cloudFileId = SECOND_BUDGET_ID)
