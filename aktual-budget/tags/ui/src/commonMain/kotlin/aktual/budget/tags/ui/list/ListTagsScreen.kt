@@ -119,6 +119,7 @@ internal fun ListTagsScreen(
     onAction = { action ->
       when (action) {
         Reload -> viewModel.reload()
+        Refresh -> viewModel.reload(showLoading = false)
         OpenSearch -> viewModel.openSearch()
         is EditFilterText -> viewModel.setFilterText(action.text)
         ClearFilter -> viewModel.clearFilter()
@@ -177,7 +178,7 @@ private fun ListTagsScaffold(
       BlurredPullToRefreshBox(
         modifier = Modifier.padding(ListTagsDS.listPadding),
         contentAlignment = Alignment.Center,
-        onRefresh = { onAction(Reload) },
+        onRefresh = { onAction(Refresh) },
         isRefreshing = state is Loading,
         blurState = blurState,
         innerPadding = innerPadding,
