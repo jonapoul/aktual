@@ -5,6 +5,7 @@ import aktual.budget.db.GetTag
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
+import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.tombstoneTag
@@ -264,6 +265,15 @@ class EditTagViewModelTest {
         .containsExactlyInAnyOrder("food-id", "old-id")
       assertThat(sync.changes.filter { it.row == "food-id" }.map(LocalChange::column))
         .containsExactly("tombstone")
+      // the resurrected row gets a full insert — the edits must not be dropped, and tombstone is
+      // cleared to bring it back
+      assertThat(sync.changes.filter { it.row == "old-id" }.map(LocalChange::column))
+        .containsExactlyInAnyOrder("id", "tag", "color", "description", "tombstone")
+      val oldIdChanges = sync.changes.filter { it.row == "old-id" }.associateBy(LocalChange::column)
+      assertThat(oldIdChanges["tag"]?.value).isEqualTo(MessageValue.String("groceries"))
+      assertThat(oldIdChanges["description"]?.value)
+        .isEqualTo(MessageValue.String("Weekly food shopping"))
+      assertThat(oldIdChanges["tombstone"]?.value).isEqualTo(MessageValue.Number(0))
     }
 
   @Test
