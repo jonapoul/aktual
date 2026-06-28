@@ -11,7 +11,11 @@ kotlin {
     api(libs.compose.uiGraphics)
     api(project(":aktual-budget:model"))
     api(project(":aktual-budget:data:db"))
+    implementation(project(":aktual-prefs"))
   }
 
-  androidHostTestDependencies { implementation(project(":aktual-test")) }
+  androidHostTestDependencies {
+    implementation(project(":aktual-prefs:impl"))
+    implementation(project(":aktual-test"))
+  }
 }

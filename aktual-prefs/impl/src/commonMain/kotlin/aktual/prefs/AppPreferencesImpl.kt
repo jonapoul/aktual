@@ -48,4 +48,7 @@ class AppPreferencesImpl(dataStore: DataStore<Preferences>) : AppPreferences {
         translator = stringListTranslator(),
       )
       .required()
+
+  override val lastUsedTagColor: NullablePreference<String> =
+    dataStore.string(key = stringPreferencesKey("lastUsedTagColor"), default = null)
 }

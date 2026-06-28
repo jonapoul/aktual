@@ -54,6 +54,30 @@ class AppPreferencesTest {
   }
 
   @Test
+  fun `Last used tag colour`() = runTest {
+    before()
+    with(preferences.lastUsedTagColor) {
+      asFlow().test {
+        // Given nothing has been stored yet
+        assertThatNextEmissionIsEqualTo(null)
+
+        // When a colour is stored
+        set("#AABBCC")
+
+        // Then it round-trips
+        assertThatNextEmissionIsEqualTo("#AABBCC")
+
+        // When cleared
+        delete()
+
+        // Then it's back to null
+        assertThatNextEmissionIsEqualTo(null)
+        cancelAndIgnoreRemainingEvents()
+      }
+    }
+  }
+
+  @Test
   fun `Nav grid order`() = runTest {
     before()
     with(preferences.navGridOrder) {

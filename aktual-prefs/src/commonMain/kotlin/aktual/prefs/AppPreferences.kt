@@ -14,4 +14,8 @@ interface AppPreferences {
 
   // Ordered BudgetTab names for the nav grid; empty means "not customised"
   val navGridOrder: Preference<List<String>>
+
+  // The "#RRGGBB" colour last applied to a tag, used to seed the colour for the next new tag.
+  // Null until the user has saved a coloured tag
+  val lastUsedTagColor: NullablePreference<String>
 }

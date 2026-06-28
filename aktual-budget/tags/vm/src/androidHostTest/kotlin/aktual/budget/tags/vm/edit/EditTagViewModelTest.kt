@@ -10,8 +10,11 @@ import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.tombstoneTag
 import aktual.core.model.UuidGenerator
+import aktual.prefs.AppPreferences
+import aktual.prefs.AppPreferencesImpl
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmission
+import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
 import androidx.compose.ui.graphics.Color
 import app.cash.turbine.ReceiveTurbine
@@ -28,6 +31,7 @@ import assertk.assertions.isNotNull
 import assertk.assertions.isNull
 import assertk.assertions.isTrue
 import assertk.assertions.prop
+import kotlinx.coroutines.test.TestScope
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -37,8 +41,8 @@ class EditTagViewModelTest {
   private lateinit var tagsDao: TagsDao
 
   @Test
-  fun `New tag starts as an empty editing state`() = runDatabaseTest {
-    val viewModel = createViewModel(id = null)
+  fun `New tag starts as an empty editing state`() = runDatabaseTest { scope ->
+    val viewModel = createViewModel(scope, id = null)
 
     viewModel.state.test {
       assertThat(awaitEditing()).isEqualTo(EditTagState.Editing(isNew = true))
@@ -47,7 +51,21 @@ class EditTagViewModelTest {
   }
 
   @Test
-  fun `Loads an existing tag from the database`() = runDatabaseTest {
+  fun `New tag seeds its colour from the last used colour`() = runDatabaseTest { scope ->
+    val preferences = AppPreferencesImpl(scope.buildPreferences())
+    preferences.lastUsedTagColor.set("#AABBCC")
+
+    val viewModel = createViewModel(scope, id = null, preferences = preferences)
+
+    viewModel.state.test {
+      assertThat(awaitEditing())
+        .isEqualTo(EditTagState.Editing(color = Color(0xFFAABBCC), isNew = true))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Loads an existing tag from the database`() = runDatabaseTest { scope ->
     insertTag(
       id = "groceries-id",
       tag = "groceries",
@@ -55,7 +73,7 @@ class EditTagViewModelTest {
       description = "Weekly food shopping",
     )
 
-    val viewModel = createViewModel(id = TagId("groceries-id"))
+    val viewModel = createViewModel(scope, id = TagId("groceries-id"))
 
     viewModel.state.test {
       assertThat(awaitEditing())
@@ -72,8 +90,8 @@ class EditTagViewModelTest {
   }
 
   @Test
-  fun `Requesting a tag that doesn't exist surfaces a failure`() = runDatabaseTest {
-    val viewModel = createViewModel(id = TagId("missing-id"))
+  fun `Requesting a tag that doesn't exist surfaces a failure`() = runDatabaseTest { scope ->
+    val viewModel = createViewModel(scope, id = TagId("missing-id"))
 
     viewModel.state.test {
       assertThat(awaitFailure()).isEqualTo(EditTagState.Failure(cause = null))
@@ -82,9 +100,9 @@ class EditTagViewModelTest {
   }
 
   @Test
-  fun `Tracks unsaved changes against the loaded values`() = runDatabaseTest {
+  fun `Tracks unsaved changes against the loaded values`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries")
-    val viewModel = createViewModel(id = TagId("groceries-id"))
+    val viewModel = createViewModel(scope, id = TagId("groceries-id"))
     viewModel.awaitLoaded()
 
     viewModel.hasUnsavedChanges.test {
@@ -100,8 +118,8 @@ class EditTagViewModelTest {
   }
 
   @Test
-  fun `Cannot save a blank tag or one with an invalid colour`() = runDatabaseTest {
-    val viewModel = createViewModel(id = null)
+  fun `Cannot save a blank tag or one with an invalid colour`() = runDatabaseTest { scope ->
+    val viewModel = createViewModel(scope, id = null)
     viewModel.awaitLoaded()
 
     viewModel.canSave.test {
@@ -116,9 +134,9 @@ class EditTagViewModelTest {
   }
 
   @Test
-  fun `Cannot save a new tag whose name already exists`() = runDatabaseTest {
+  fun `Cannot save a new tag whose name already exists`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries")
-    val viewModel = createViewModel(id = null)
+    val viewModel = createViewModel(scope, id = null)
     viewModel.awaitLoaded()
 
     viewModel.canSave.test {
@@ -135,27 +153,28 @@ class EditTagViewModelTest {
   }
 
   @Test
-  fun `Editing a tag without renaming it doesn't count as a duplicate`() = runDatabaseTest {
-    insertTag(id = "groceries-id", tag = "groceries")
-    insertTag(id = "food-id", tag = "food")
-    val viewModel = createViewModel(id = TagId("groceries-id"))
-    viewModel.awaitLoaded()
+  fun `Editing a tag without renaming it doesn't count as a duplicate`() =
+    runDatabaseTest { scope ->
+      insertTag(id = "groceries-id", tag = "groceries")
+      insertTag(id = "food-id", tag = "food")
+      val viewModel = createViewModel(scope, id = TagId("groceries-id"))
+      viewModel.awaitLoaded()
 
-    viewModel.isDuplicateName.test {
-      // keeping its own name is fine
-      assertThatNextEmission().isFalse()
+      viewModel.isDuplicateName.test {
+        // keeping its own name is fine
+        assertThatNextEmission().isFalse()
 
-      // renaming onto another existing tag is blocked
-      viewModel.setTag("food")
-      assertThatNextEmission().isTrue()
+        // renaming onto another existing tag is blocked
+        viewModel.setTag("food")
+        assertThatNextEmission().isTrue()
+      }
     }
-  }
 
   @Test
   fun `Saving a new tag persists it, syncs the change and emits the saved event`() =
-    runDatabaseTest {
+    runDatabaseTest { scope ->
       val sync = TestSyncController()
-      val viewModel = createViewModel(id = null, sync = sync)
+      val viewModel = createViewModel(scope, id = null, sync = sync)
       viewModel.awaitLoaded()
 
       viewModel.setTag("groceries")
@@ -178,49 +197,68 @@ class EditTagViewModelTest {
     }
 
   @Test
-  fun `Saving edits to an existing tag updates the row and syncs the change`() = runDatabaseTest {
-    insertTag(
-      id = "groceries-id",
-      tag = "groceries",
-      color = "#aabbcc",
-      description = "Weekly food shopping",
-    )
+  fun `Saving a coloured tag remembers the colour for the next new tag`() =
+    runDatabaseTest { scope ->
+      val preferences = AppPreferencesImpl(scope.buildPreferences())
+      val viewModel = createViewModel(scope, id = null, preferences = preferences)
+      viewModel.awaitLoaded()
 
-    val sync = TestSyncController()
-    val viewModel = createViewModel(id = TagId("groceries-id"), sync = sync)
-    viewModel.awaitLoaded()
+      viewModel.setTag("groceries")
+      viewModel.setColor(Color(0xFFAABBCC))
 
-    viewModel.setTag("food")
-    viewModel.setDescription("Food and household")
-    viewModel.setColor(Color(0xFF112233))
+      viewModel.events.test {
+        viewModel.save()
+        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+      }
 
-    viewModel.events.test {
-      viewModel.save()
-      assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+      assertThat(preferences.lastUsedTagColor.get()).isEqualTo("#AABBCC")
     }
 
-    // the existing row is updated in place rather than duplicated or rejected
-    val tags = tagsDao.getTags()
-    assertThat(tags).hasSize(1)
-    val saved = tagsDao.getTag(TagId("groceries-id"))
-    assertThat(saved).isNotNull().all {
-      prop(GetTag::tag).isEqualTo("food")
-      prop(GetTag::color).isEqualTo("#112233")
-      prop(GetTag::description).isEqualTo("Food and household")
-    }
+  @Test
+  fun `Saving edits to an existing tag updates the row and syncs the change`() =
+    runDatabaseTest { scope ->
+      insertTag(
+        id = "groceries-id",
+        tag = "groceries",
+        color = "#aabbcc",
+        description = "Weekly food shopping",
+      )
 
-    assertThat(sync.changes).isNotEmpty()
-  }
+      val sync = TestSyncController()
+      val viewModel = createViewModel(scope, id = TagId("groceries-id"), sync = sync)
+      viewModel.awaitLoaded()
+
+      viewModel.setTag("food")
+      viewModel.setDescription("Food and household")
+      viewModel.setColor(Color(0xFF112233))
+
+      viewModel.events.test {
+        viewModel.save()
+        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+      }
+
+      // the existing row is updated in place rather than duplicated or rejected
+      val tags = tagsDao.getTags()
+      assertThat(tags).hasSize(1)
+      val saved = tagsDao.getTag(TagId("groceries-id"))
+      assertThat(saved).isNotNull().all {
+        prop(GetTag::tag).isEqualTo("food")
+        prop(GetTag::color).isEqualTo("#112233")
+        prop(GetTag::description).isEqualTo("Food and household")
+      }
+
+      assertThat(sync.changes).isNotEmpty()
+    }
 
   @Test
   fun `Creating a tag whose name matches a tombstoned tag resurrects the old id`() =
-    runDatabaseTest {
+    runDatabaseTest { scope ->
       insertTag(id = "old-id", tag = "groceries")
       // tombstone it, as a delete-sync would
       tombstoneTag("old-id")
 
       val sync = TestSyncController()
-      val viewModel = createViewModel(id = null, sync = sync)
+      val viewModel = createViewModel(scope, id = null, sync = sync)
       viewModel.awaitLoaded()
 
       viewModel.setTag("groceries")
@@ -236,14 +274,14 @@ class EditTagViewModelTest {
 
   @Test
   fun `Renaming a tag onto a tombstoned name resurrects the old row and retires the edited one`() =
-    runDatabaseTest { _ ->
+    runDatabaseTest { scope ->
       insertTag(id = "old-id", tag = "groceries")
       // tombstone "groceries", as a delete-sync would, so it still owns the UNIQUE name
       tombstoneTag("old-id")
       insertTag(id = "food-id", tag = "food")
 
       val sync = TestSyncController()
-      val viewModel = createViewModel(id = TagId("food-id"), sync = sync)
+      val viewModel = createViewModel(scope, id = TagId("food-id"), sync = sync)
       viewModel.awaitLoaded()
 
       // renaming onto the deleted name must not trip the UNIQUE(tag) constraint — before the fix
@@ -277,10 +315,10 @@ class EditTagViewModelTest {
     }
 
   @Test
-  fun `A failed save surfaces an error instead of finishing`() = runDatabaseTest {
+  fun `A failed save surfaces an error instead of finishing`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries")
     insertTag(id = "food-id", tag = "food")
-    val viewModel = createViewModel(id = TagId("groceries-id"))
+    val viewModel = createViewModel(scope, id = TagId("groceries-id"))
     viewModel.awaitLoaded()
 
     // renaming onto another tag's name trips the UNIQUE(tag) constraint; calling save() directly
@@ -316,9 +354,11 @@ class EditTagViewModelTest {
   }
 
   private fun BudgetDatabase.createViewModel(
+    scope: TestScope,
     id: TagId?,
     uuid: UuidGenerator = UuidGenerator { GENERATED_ID },
     sync: BudgetSyncController = TestSyncController(),
+    preferences: AppPreferences = AppPreferencesImpl(scope.buildPreferences()),
   ): EditTagViewModel {
     tagsDao = TagsDao(this)
     return EditTagViewModel(
@@ -326,6 +366,7 @@ class EditTagViewModelTest {
       tagsDao = tagsDao,
       uuidGenerator = uuid,
       syncController = sync,
+      preferences = preferences,
     )
   }
 
