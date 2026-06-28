@@ -1,6 +1,7 @@
 package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
+import aktual.account.vm.LoginEvent
 import aktual.account.vm.LoginViewModel
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
@@ -32,6 +33,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -40,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -63,19 +67,26 @@ fun LoginScreen(
   val enteredPassword by viewModel.enteredPassword.collectAsStateWithLifecycle()
   val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
   val loginFailure by viewModel.loginFailure.collectAsStateWithLifecycle()
-  val redirectUrl by viewModel.redirectUrl.collectAsStateWithLifecycle()
   val loginMethods by viewModel.loginMethods.collectAsStateWithLifecycle()
   val selectedLoginMethod by viewModel.selectedLoginMethod.collectAsStateWithLifecycle()
 
   LaunchedEffect(viewModel.token) { viewModel.token.collect { toListBudgets() } }
 
   val uriHandler = LocalUriHandler.current
-  LaunchedEffect(redirectUrl) {
-    val url = redirectUrl ?: return@LaunchedEffect
-    uriHandler.openUri(url)
+  val snackbarHostState = remember { SnackbarHostState() }
+  val timeoutMessage = Strings.loginTimeout
+  LaunchedEffect(viewModel.events) {
+    viewModel.events.collect { event ->
+      when (event) {
+        LoginEvent.Timeout -> snackbarHostState.showSnackbar(timeoutMessage)
+        is LoginEvent.Redirect -> uriHandler.openUri(event.url)
+      }
+    }
   }
 
-  DisposableEffect(Unit) { onDispose { viewModel.clearState() } }
+  DisposableEffect(Unit) {
+    onDispose(viewModel::clearState)
+  }
 
   LoginScaffold(
     versions = versions,
@@ -84,6 +95,7 @@ fun LoginScreen(
     loginFailure = loginFailure,
     loginMethods = loginMethods,
     selectedLoginMethod = selectedLoginMethod,
+    snackbarHostState = snackbarHostState,
     onAction = { action ->
       when (action) {
         ChangeServer -> toServerUrl()
@@ -105,6 +117,7 @@ internal fun LoginScaffold(
   loginMethods: ImmutableList<LoginMethod>,
   selectedLoginMethod: LoginMethod,
   onAction: LoginActionHandler,
+  snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(rememberTopAppBarState())
   Scaffold(
@@ -117,6 +130,7 @@ internal fun LoginScaffold(
         scrollBehavior = scrollBehavior,
       )
     },
+    snackbarHost = { SnackbarHost(snackbarHostState) },
   ) { innerPadding ->
     Box {
       WavyBackground()

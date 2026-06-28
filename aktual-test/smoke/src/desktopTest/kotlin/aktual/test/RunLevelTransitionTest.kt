@@ -80,4 +80,21 @@ class RunLevelTransitionTest {
       cancelAndIgnoreRemainingEvents()
     }
   }
+
+  // Re-authenticating while a budget is open should pop the open budget and replace the logged-in
+  // level, rather than stacking a second LoggedInGraph
+  @Test
+  fun reLoggingInCollapsesToSingleLoggedInLevel() = runTest {
+    appGraph.runLevelState.all().test {
+      assertEmissionSize(4) // app, server-chosen, logged-in, budget
+
+      appGraph.runLevelController.onLoggedIn(LOGIN_TOKEN)
+
+      val levels = awaitItem()
+      assertThat(levels).hasSize(3) // collapsed back to app, server-chosen, logged-in
+      assertThat(levels.filterIsInstance<LoggedInGraph>()).hasSize(1)
+      assertThat(levels.filterIsInstance<BudgetGraph>()).isEmpty()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
 }
