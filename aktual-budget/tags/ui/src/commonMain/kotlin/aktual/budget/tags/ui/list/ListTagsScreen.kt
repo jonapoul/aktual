@@ -89,6 +89,7 @@ internal fun ListTagsScreen(
   viewModel: ListTagsViewModel = metroViewModel(),
 ) {
   val state by viewModel.state.collectAsStateWithLifecycle()
+  val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
   val snackbar = remember { SnackbarHostState() }
 
   // refresh on return (e.g. after creating or editing a tag) so the list reflects the changes
@@ -115,10 +116,12 @@ internal fun ListTagsScreen(
   ListTagsScaffold(
     modifier = modifier,
     state = state,
+    isRefreshing = isRefreshing,
     snackbarHostState = snackbar,
     onAction = { action ->
       when (action) {
         Reload -> viewModel.reload()
+        Refresh -> viewModel.refresh()
         OpenSearch -> viewModel.openSearch()
         is EditFilterText -> viewModel.setFilterText(action.text)
         ClearFilter -> viewModel.clearFilter()
@@ -135,6 +138,7 @@ private fun ListTagsScaffold(
   state: ListTagsState,
   onAction: ListTagsActionHandler,
   modifier: Modifier = Modifier,
+  isRefreshing: Boolean = false,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val blurState = rememberBlurredTopBarState()
@@ -177,8 +181,8 @@ private fun ListTagsScaffold(
       BlurredPullToRefreshBox(
         modifier = Modifier.padding(ListTagsDS.listPadding),
         contentAlignment = Alignment.Center,
-        onRefresh = { onAction(Reload) },
-        isRefreshing = state is Loading,
+        onRefresh = { onAction(Refresh) },
+        isRefreshing = isRefreshing,
         blurState = blurState,
         innerPadding = innerPadding,
       ) { padding ->

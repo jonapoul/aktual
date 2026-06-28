@@ -34,6 +34,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import logcat.logcat
@@ -57,6 +58,7 @@ class ListTagsViewModel(
 
   private val mutableTags = MutableStateFlow<ImmutableList<TagItem>>(persistentListOf())
   private val mutableIsLoading = MutableStateFlow(true)
+  private val mutableIsRefreshing = MutableStateFlow(false)
   private val mutableFailure = MutableStateFlow<String?>(null)
   private var reloadJob: Job? = null
 
@@ -70,6 +72,8 @@ class ListTagsViewModel(
       onBufferOverflow = DROP_OLDEST,
     )
   val events: SharedFlow<ListTagsEvent> = mutableEvents.asSharedFlow()
+
+  val isRefreshing: StateFlow<Boolean> = mutableIsRefreshing.asStateFlow()
 
   val state: StateFlow<ListTagsState> =
     viewModelScope.launchMolecule(Immediate) {
@@ -104,26 +108,28 @@ class ListTagsViewModel(
     savedState[KEY_IS_SEARCH_ACTIVE] = false
   }
 
-  // showLoading = false does a silent refresh (no loading screen), used when returning to the
-  // list after editing a tag elsewhere
-  fun reload(showLoading: Boolean = true) {
-    if (showLoading) {
-      mutableIsLoading.update { true }
-    }
+  fun reload(showLoading: Boolean = true) = load(loading = showLoading, refreshing = false)
+
+  fun refresh() = load(loading = false, refreshing = true)
+
+  private fun load(loading: Boolean, refreshing: Boolean) {
+    mutableIsLoading.update { loading }
+    mutableIsRefreshing.update { refreshing }
     reloadJob?.cancel()
     reloadJob = viewModelScope.launch {
       try {
         val tags = tagsDao.getTags().mapNotNull { it.toTagItem() }.toImmutableList()
         mutableTags.update { tags }
         mutableFailure.update { null }
-        mutableIsLoading.update { false }
       } catch (e: CancellationException) {
-        // a newer reload() cancelled us — leave the flows alone so it can finish
+        // a newer load() cancelled us — leave the flows alone so it can finish
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed loading tags" }
         mutableFailure.update { e.requireMessage() }
+      } finally {
         mutableIsLoading.update { false }
+        mutableIsRefreshing.update { false }
       }
     }
   }
