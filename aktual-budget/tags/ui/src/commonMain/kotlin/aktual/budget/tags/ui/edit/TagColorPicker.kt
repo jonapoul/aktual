@@ -1,6 +1,8 @@
 package aktual.budget.tags.ui.edit
 
 import aktual.budget.tags.ui.contrastingTextColor
+import aktual.budget.tags.vm.toColorOrNull
+import aktual.budget.tags.vm.toHex
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Tune
 import aktual.core.l10n.Strings
@@ -61,7 +63,6 @@ import androidx.compose.ui.util.fastForEach
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
-import kotlin.math.roundToInt
 import kotlinx.collections.immutable.persistentListOf
 
 @Suppress("LongMethod")
@@ -91,7 +92,7 @@ internal fun TagColorPicker(
     val fieldAlreadyMatches = hexState.text.toString().trim().toColorOrNull() == color
     if (hexFocused && fieldAlreadyMatches) return@LaunchedEffect
 
-    val hex = color?.toHexRgb().orEmpty()
+    val hex = color?.toHex().orEmpty()
     if (!hexState.text.contentEquals(hex, ignoreCase = true)) {
       hexState.setTextAndPlaceCursorAtEnd(hex)
     }
@@ -327,29 +328,6 @@ private fun Modifier.rotateVertically(): Modifier =
       )
     }
   }
-
-private val Int.hex2
-  get() = toString(radix = 16).padStart(length = 2, padChar = '0')
-
-// formats a Color as "#RRGGBB" (upper case), matching upstream's stored colour format
-internal fun Color.toHexRgb(): String {
-  val r = (red * 255f).roundToInt().coerceIn(0, 255)
-  val g = (green * 255f).roundToInt().coerceIn(0, 255)
-  val b = (blue * 255f).roundToInt().coerceIn(0, 255)
-  return "#${r.hex2}${g.hex2}${b.hex2}".uppercase()
-}
-
-private const val RGB_HEX_LENGTH = 6
-private const val ARGB_HEX_LENGTH = 8
-
-// parses "#rrggbb" / "#aarrggbb" (with or without the leading '#') into a Color, or null if invalid
-internal fun String.toColorOrNull(): Color? {
-  val hex = trim().removePrefix("#")
-  if (hex.length != RGB_HEX_LENGTH && hex.length != ARGB_HEX_LENGTH) return null
-  val value = hex.toLongOrNull(radix = 16) ?: return null
-  val argb = if (hex.length == RGB_HEX_LENGTH) value or 0xFF000000L else value
-  return Color(argb.toInt())
-}
 
 @Preview
 @Composable
