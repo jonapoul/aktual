@@ -4,6 +4,7 @@ import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
+import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
 import aktual.test.TestSyncController
@@ -118,10 +119,11 @@ class ListTagsViewModelTest {
       cancelAndIgnoreRemainingEvents()
     }
 
-    // deleting one tag emits a confirmation event for it
+    // deleting one tag emits a confirmation event carrying the removed item
     viewModel.events.test {
       viewModel.delete(TagId("groceries-id"))
-      assertThat(awaitItem()).isEqualTo(ListTagsEvent.Deleted("groceries"))
+      val event = assertThat(awaitItem()).isInstanceOf(ListTagsEvent.Deleted::class)
+      event.prop(ListTagsEvent.Deleted::item).prop(TagItem::tag).isEqualTo("groceries")
     }
 
     // a tombstone change was queued for sync
@@ -138,6 +140,49 @@ class ListTagsViewModelTest {
         .containsExactly("rent")
       cancelAndIgnoreRemainingEvents()
     }
+  }
+
+  @Test
+  fun `Undo restores a deleted tag at its original position`() = runDatabaseTest {
+    insertTag(id = "groceries-id", tag = "groceries")
+    insertTag(id = "rent-id", tag = "rent")
+
+    val sync = TestSyncController()
+    val viewModel = createViewModel(sync)
+
+    // wait for the initial load with both tags
+    viewModel.state.test {
+      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(2)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    // delete the first tag, capturing the event we'd hand back to undo
+    lateinit var deleted: ListTagsEvent.Deleted
+    viewModel.events.test {
+      viewModel.delete(TagId("groceries-id"))
+      val event = awaitItem()
+      assertThat(event).isInstanceOf(ListTagsEvent.Deleted::class)
+      deleted = event as ListTagsEvent.Deleted
+    }
+
+    // undoing puts it back where it was
+    viewModel.undoDelete(deleted.item, deleted.index)
+    viewModel.state.test {
+      assertThat(awaitItem())
+        .isInstanceOf(Success::class)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("groceries", "rent")
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    // the delete tombstone and its reversal were both queued for sync
+    assertThat(sync.changes)
+      .extracting(LocalChange::row, LocalChange::column, LocalChange::value)
+      .containsExactly(
+        Triple("groceries-id", "tombstone", MessageValue.Number(1)),
+        Triple("groceries-id", "tombstone", MessageValue.Number(0)),
+      )
   }
 
   @Test
