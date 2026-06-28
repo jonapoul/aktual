@@ -209,7 +209,7 @@ class EditTagViewModel(
         // squatting on the name. Only the rename path needs the extra lookup, so skip it on create
         val owner = tagsDao.getTagIdByName(tag)
         val tombstonedOwner =
-          if (tagId != null) owner?.takeIf { it != tagId && tagsDao.getTag(it) == null } else null
+          tagId?.let { id -> owner?.takeIf { it != id && tagsDao.getTag(it) == null } }
 
         if (tagId != null && tombstonedOwner != null) {
           // renaming onto a deleted tag's name: writing the name onto our row would trip the
