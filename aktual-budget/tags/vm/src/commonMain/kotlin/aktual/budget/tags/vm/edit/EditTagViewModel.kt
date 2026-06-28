@@ -8,8 +8,8 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
-import aktual.budget.tags.vm.list.toHex
 import aktual.budget.tags.vm.list.toTagItem
+import aktual.budget.tags.vm.toHex
 import aktual.core.model.UuidGenerator
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
@@ -206,9 +206,10 @@ class EditTagViewModel(
 
         // another row may already own this name — the tag column is UNIQUE. getTag returns null
         // for tombstoned rows, so a non-null owner that getTag can't see is a deleted tag still
-        // squatting on the name
+        // squatting on the name. Only the rename path needs the extra lookup, so skip it on create
         val owner = tagsDao.getTagIdByName(tag)
-        val tombstonedOwner = owner?.takeIf { it != tagId && tagsDao.getTag(it) == null }
+        val tombstonedOwner =
+          if (tagId != null) owner?.takeIf { it != tagId && tagsDao.getTag(it) == null } else null
 
         if (tagId != null && tombstonedOwner != null) {
           // renaming onto a deleted tag's name: writing the name onto our row would trip the

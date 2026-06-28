@@ -235,7 +235,7 @@ class EditTagViewModelTest {
 
   @Test
   fun `Renaming a tag onto a tombstoned name resurrects the old row and retires the edited one`() =
-    runDatabaseTest {
+    runDatabaseTest { _ ->
       insertTag(id = "old-id", tag = "groceries")
       // tombstone "groceries", as a delete-sync would, so it still owns the UNIQUE name
       tombstoneTag("old-id")
