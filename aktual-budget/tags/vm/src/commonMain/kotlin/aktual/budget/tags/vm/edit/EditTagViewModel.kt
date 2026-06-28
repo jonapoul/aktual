@@ -8,8 +8,8 @@ import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
-import aktual.budget.tags.vm.list.toHex
 import aktual.budget.tags.vm.list.toTagItem
+import aktual.budget.tags.vm.toHex
 import aktual.core.model.UuidGenerator
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
