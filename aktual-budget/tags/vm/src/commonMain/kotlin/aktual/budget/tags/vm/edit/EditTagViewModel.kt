@@ -9,9 +9,11 @@ import aktual.budget.model.TagId
 import aktual.budget.model.messageValue
 import aktual.budget.model.tombstone
 import aktual.budget.tags.vm.list.toTagItem
+import aktual.budget.tags.vm.toColorOrNull
 import aktual.budget.tags.vm.toHex
 import aktual.core.model.UuidGenerator
 import aktual.di.BudgetScope
+import aktual.prefs.AppPreferences
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -49,6 +51,7 @@ class EditTagViewModel(
   private val tagsDao: TagsDao,
   private val uuidGenerator: UuidGenerator,
   private val syncController: BudgetSyncController,
+  private val preferences: AppPreferences,
 ) : ViewModel() {
   private val mutableLoaded = MutableStateFlow<Loaded?>(null)
   private val mutableFailure = MutableStateFlow<EditTagState.Failure?>(null)
@@ -130,7 +133,10 @@ class EditTagViewModel(
       mutableExistingNames.update { loadOtherTagNames() }
 
       if (tagId == null) {
-        reset(Loaded(isNew = true))
+        // seed a brand new tag with the colour last applied to a tag, so the user doesn't have to
+        // re-pick the same colour every time
+        val lastColor = preferences.lastUsedTagColor.get()?.toColorOrNull()
+        reset(Loaded(isNew = true, color = lastColor))
         return@launch
       }
 
@@ -229,6 +235,8 @@ class EditTagViewModel(
           tagsDao.insert(id = id, tag = tag, color = color, description = description)
           syncController.syncChanges(insertChanges(id, tag, color, description))
         }
+        // remember the colour so the next new tag can default to it
+        color?.let { preferences.lastUsedTagColor.set(it) }
         mutableEvents.tryEmit(EditTagEvent.FinishedSaving)
       } catch (e: CancellationException) {
         throw e
