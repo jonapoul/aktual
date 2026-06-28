@@ -7,6 +7,8 @@ import androidx.compose.runtime.Immutable
 
 internal data object Reload : ListTagsAction
 
+internal data object Refresh : ListTagsAction
+
 internal data object OpenSearch : ListTagsAction
 
 internal data object ClearFilter : ListTagsAction
