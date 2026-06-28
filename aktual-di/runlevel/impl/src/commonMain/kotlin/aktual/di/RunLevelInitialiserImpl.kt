@@ -40,9 +40,10 @@ class RunLevelInitialiserImpl(
     val budgetId = preferences.lastOpenedBudgetId.get()
     if (budgetId != null) {
       val driver = driverFactory.create(budgetId)
-      val metadata = files.readMetadata(budgetId)
-      val budgetGraph = graph.budgetGraphFactory.create(budgetId, metadata, driver)
-      add(budgetGraph)
+      files.readMetadata(budgetId)?.let { metadata ->
+        val budgetGraph = graph.budgetGraphFactory.create(budgetId, metadata, driver)
+        add(budgetGraph)
+      }
     }
   }
 }

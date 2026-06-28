@@ -2,7 +2,6 @@ package aktual.budget.model
 
 import aktual.di.Closeable
 import kotlinx.serialization.json.Json
-import okio.FileNotFoundException
 import okio.FileSystem
 import okio.Path
 import okio.buffer
@@ -34,9 +33,9 @@ class BudgetFiles(val fileSystem: FileSystem, val directoryPath: Path) : Closeab
     fileSystem.sink(path).buffer().use { sink -> sink.writeUtf8(json) }
   }
 
-  fun readMetadata(id: BudgetId): DbMetadata {
+  fun readMetadata(id: BudgetId): DbMetadata? {
     val path = metadata(id, mkdirs = false)
-    if (!fileSystem.exists(path)) throw FileNotFoundException("$path doesn't exist")
+    if (!fileSystem.exists(path)) return null
     val json = fileSystem.source(path).buffer().use { source -> source.readUtf8() }
     return Json.decodeFromString(DbMetadata.serializer(), json)
   }
@@ -48,7 +47,7 @@ class BudgetFiles(val fileSystem: FileSystem, val directoryPath: Path) : Closeab
       .filter { it.name != "tmp" && fileSystem.metadataOrNull(it)?.isDirectory == true }
       .map { dir ->
         val id = BudgetId(dir.name)
-        val metadata = runCatching { readMetadata(id) }.getOrNull()
+        val metadata = readMetadata(id)
         LocalBudget(id = id, metadata = metadata)
       }
   }
