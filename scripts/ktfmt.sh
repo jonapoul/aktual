@@ -115,6 +115,13 @@ else
     }
 fi
 
+# Resolve the java binary: prefer JAVA_HOME, fall back to PATH
+if [ -n "$JAVA_HOME" ] && [ -x "$JAVA_HOME/bin/java" ]; then
+    JAVA_BIN="$JAVA_HOME/bin/java"
+else
+    JAVA_BIN="java"
+fi
+
 # Run ktfmt
 if [ "$USE_SYSTEM_KTFMT" = true ]; then
     echo "Using system ktfmt v$SYSTEM_VERSION (mode: $MODE)"
@@ -124,5 +131,5 @@ if [ "$USE_SYSTEM_KTFMT" = true ]; then
 else
     echo "Using cached ktfmt v$KTFMT_VERSION JAR (mode: $MODE)"
     # shellcheck disable=SC2086
-    run_ktfmt java -jar "$KTFMT_JAR" $KTFMT_ARGS
+    run_ktfmt "$JAVA_BIN" -jar "$KTFMT_JAR" $KTFMT_ARGS
 fi

@@ -170,7 +170,7 @@ class EditTagViewModelTest {
       val saved = tagsDao.getTag(TagId(GENERATED_ID))
       assertThat(saved).isNotNull().all {
         prop(GetTag::tag).isEqualTo("groceries")
-        prop(GetTag::color).isEqualTo("#aabbcc")
+        prop(GetTag::color).isEqualTo("#AABBCC")
         prop(GetTag::description).isEqualTo("Weekly food shopping")
       }
 
