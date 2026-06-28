@@ -23,5 +23,6 @@ private fun toTagItem(
     color = color?.toColorOrNull(),
     description = description.orEmpty(),
     hidden = hidden == true,
+    numTransactions = 0 // TOOD: actually implement
   )
 }

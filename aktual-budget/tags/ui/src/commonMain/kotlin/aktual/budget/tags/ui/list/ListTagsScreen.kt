@@ -17,6 +17,7 @@ import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditTagNavigator
+import aktual.core.nav.TransactionsNavigator
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -80,6 +81,7 @@ import kotlinx.collections.immutable.persistentListOf
 @Composable
 internal fun ListTagsScreen(
   toEdit: EditTagNavigator,
+  toTransactions: TransactionsNavigator,
   modifier: Modifier = Modifier,
   viewModel: ListTagsViewModel = metroViewModel(),
 ) {
@@ -119,6 +121,7 @@ internal fun ListTagsScreen(
         CreateTag -> toEdit()
         is EditTag -> toEdit(action.id)
         is DeleteTag -> viewModel.delete(action.id)
+        is ViewTransactions -> toTransactions(action.id)
       }
     },
   )

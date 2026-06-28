@@ -9,6 +9,8 @@ import androidx.compose.runtime.Immutable
 @Immutable
 class TransactionsNavigator(private val stack: NavStack<BudgetNavKey>) {
   operator fun invoke() = stack.replaceAll(TransactionsNavRoute)
+
+  operator fun invoke(id: TagId) = stack.replaceAll(TransactionsWithTagNavRoute(id))
 }
 
 @Immutable

@@ -53,6 +53,7 @@ class ListTagsViewModelTest {
             color = Color(0xFFAABBCC),
             description = "Weekly food shopping",
             hidden = false,
+            numTransactions = 0,
           ),
           TagItem(
             id = TagId("rent-id"),
@@ -60,6 +61,7 @@ class ListTagsViewModelTest {
             color = null,
             description = "",
             hidden = false,
+            numTransactions = 0,
           ),
         )
       cancelAndIgnoreRemainingEvents()
@@ -234,6 +236,7 @@ class ListTagsViewModelTest {
         color = null,
         description = "",
         hidden = false,
+        numTransactions = 0,
       )
     viewModel.events.test {
       viewModel.undoDelete(deleted, index = 0)

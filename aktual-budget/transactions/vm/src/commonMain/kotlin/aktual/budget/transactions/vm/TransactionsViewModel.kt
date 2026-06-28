@@ -90,6 +90,8 @@ class TransactionsViewModel(
         }
     }
 
+    // TODO: also handle tag spec
+
     // Invalidate PagingSource when transaction data changes.
     // Ignore the first item from the flow, that'll be the initial table state.
     viewModelScope.launch {

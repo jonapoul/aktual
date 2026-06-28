@@ -14,6 +14,7 @@ internal object TagsPreview {
       color = Color(0xFF4CAF50),
       description = "Weekly food shopping",
       hidden = false,
+      numTransactions = 0,
     )
 
   val rent =
@@ -23,6 +24,7 @@ internal object TagsPreview {
       color = Color(0xFFE91E63),
       description = "",
       hidden = false,
+      numTransactions = 1,
     )
 
   val archived =
@@ -34,6 +36,7 @@ internal object TagsPreview {
         "A deliberately long description to check how the item wraps and truncates when the text " +
           "runs well beyond the available width of the row",
       hidden = true,
+      numTransactions = 10,
     )
 
   // no explicit color — exercises the theme note-tag fallback
@@ -44,6 +47,7 @@ internal object TagsPreview {
       color = null,
       description = "",
       hidden = false,
+      numTransactions = 0,
     )
 
   val all: ImmutableList<TagItem> = persistentListOf(groceries, rent, archived, uncolored)

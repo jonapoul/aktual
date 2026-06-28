@@ -40,4 +40,8 @@
     <item quantity="one">%1$d match</item>
     <item quantity="other">%1$d matches</item>
   </plurals>
+  <plurals name="tags_num_transactions">
+    <item quantity="one">%1$d transaction</item>
+    <item quantity="other">%1$d transactions</item>
+  </plurals>
 </resources>
