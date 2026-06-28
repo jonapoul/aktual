@@ -39,10 +39,12 @@ class RunLevelInitialiserImpl(
   private suspend fun MutableList<AktualGraph>.addFrom(graph: LoggedInGraph) {
     val budgetId = preferences.lastOpenedBudgetId.get()
     if (budgetId != null) {
-      val driver = driverFactory.create(budgetId)
-      val metadata = files.readMetadata(budgetId)
-      val budgetGraph = graph.budgetGraphFactory.create(budgetId, metadata, driver)
-      add(budgetGraph)
+      files.readMetadata(budgetId)?.let { metadata ->
+        // only open the driver once we know the metadata exists, otherwise it would leak
+        val driver = driverFactory.create(budgetId)
+        val budgetGraph = graph.budgetGraphFactory.create(budgetId, metadata, driver)
+        add(budgetGraph)
+      }
     }
   }
 }

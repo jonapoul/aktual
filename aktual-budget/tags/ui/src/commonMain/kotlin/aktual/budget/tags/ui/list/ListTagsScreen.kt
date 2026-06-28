@@ -15,11 +15,7 @@ import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
 import aktual.core.l10n.Plurals
-import aktual.core.l10n.Res
 import aktual.core.l10n.Strings
-import aktual.core.l10n.tags_delete_failed
-import aktual.core.l10n.tags_delete_failed_unknown
-import aktual.core.l10n.tags_deleted
 import aktual.core.nav.EditTagNavigator
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
@@ -80,7 +76,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
-import org.jetbrains.compose.resources.getString
 
 @Composable
 internal fun ListTagsScreen(
@@ -102,13 +97,9 @@ internal fun ListTagsScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        is ListTagsEvent.Deleted ->
-          snackbar.showSnackbar(getString(Res.string.tags_deleted, event.tag))
-        is ListTagsEvent.DeleteFailed ->
-          snackbar.showSnackbar(
-            event.tag?.let { getString(Res.string.tags_delete_failed, it) }
-              ?: getString(Res.string.tags_delete_failed_unknown)
-          )
+        is ListTagsEvent.Deleted -> snackbar.showDeleted(event, onUndo = viewModel::undoDelete)
+        is ListTagsEvent.DeleteFailed -> snackbar.showDeleteFailed(event)
+        is ListTagsEvent.RestoreFailed -> snackbar.showRestoreFailed(event)
       }
     }
   }

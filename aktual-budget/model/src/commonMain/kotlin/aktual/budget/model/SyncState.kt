@@ -42,3 +42,6 @@ data class LocalChange(
 
 fun tombstone(dataset: String, row: String): LocalChange =
   LocalChange(dataset, row, column = "tombstone", value = MessageValue.Number(1))
+
+fun untombstone(dataset: String, row: String): LocalChange =
+  LocalChange(dataset, row, column = "tombstone", value = MessageValue.Number(0))

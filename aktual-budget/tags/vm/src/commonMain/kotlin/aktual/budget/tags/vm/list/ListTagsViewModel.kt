@@ -5,6 +5,7 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.TagId
 import aktual.budget.model.tombstone
+import aktual.budget.model.untombstone
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
@@ -136,21 +137,46 @@ class ListTagsViewModel(
 
   fun delete(id: TagId) {
     viewModelScope.launch {
-      val name = mutableTags.value.firstOrNull { it.id == id }?.tag
+      val index = mutableTags.value.indexOfFirst { it.id == id }
+      val item = mutableTags.value.getOrNull(index)
       try {
         // syncChanges applies the tombstone to the local db and queues it for sync
         syncController.syncChanges(tombstone(dataset = TAGS, row = id.toString()))
         // optimistically drop the row so it animates out without a loading flash
         mutableTags.update { tags -> tags.filterNot { it.id == id }.toImmutableList() }
-        if (name != null) {
-          mutableEvents.tryEmit(ListTagsEvent.Deleted(name))
+        if (item != null) {
+          mutableEvents.tryEmit(ListTagsEvent.Deleted(item, index))
         }
         logcat.d { "Tombstoned tag $id" }
       } catch (e: CancellationException) {
         throw e
       } catch (e: Exception) {
         logcat.e(e) { "Failed deleting tag $id" }
-        mutableEvents.tryEmit(ListTagsEvent.DeleteFailed(name))
+        mutableEvents.tryEmit(ListTagsEvent.DeleteFailed(item?.tag))
+      }
+    }
+  }
+
+  fun undoDelete(item: TagItem, index: Int) {
+    viewModelScope.launch {
+      try {
+        // reverse the tombstone in the local db and queue the reversal for sync. The row's other
+        // columns were never touched by the delete, so clearing the tombstone fully restores it
+        syncController.syncChanges(untombstone(dataset = TAGS, row = item.id.toString()))
+        // optimistically slot the row back where it was so it animates in
+        mutableTags.update { tags ->
+          if (tags.any { it.id == item.id }) {
+            tags
+          } else {
+            tags.toMutableList().apply { add(index.coerceIn(0, size), item) }.toImmutableList()
+          }
+        }
+        logcat.d { "Restored tag ${item.id}" }
+      } catch (e: CancellationException) {
+        throw e
+      } catch (e: Exception) {
+        logcat.e(e) { "Failed restoring tag ${item.id}" }
+        mutableEvents.tryEmit(ListTagsEvent.RestoreFailed(item.tag))
       }
     }
   }
