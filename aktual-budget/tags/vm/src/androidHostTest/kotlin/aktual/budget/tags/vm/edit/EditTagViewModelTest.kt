@@ -18,6 +18,7 @@ import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -230,6 +231,39 @@ class EditTagViewModelTest {
       // the old row's id is reused rather than the freshly generated uuid
       assertThat(tagsDao.getTagIdByName("groceries")).isEqualTo(TagId("old-id"))
       assertThat(sync.changes.map(LocalChange::row).distinct()).containsExactly("old-id")
+    }
+
+  @Test
+  fun `Renaming a tag onto a tombstoned name resurrects the old row and retires the edited one`() =
+    runDatabaseTest {
+      insertTag(id = "old-id", tag = "groceries")
+      // tombstone "groceries", as a delete-sync would, so it still owns the UNIQUE name
+      tombstoneTag("old-id")
+      insertTag(id = "food-id", tag = "food")
+
+      val sync = TestSyncController()
+      val viewModel = createViewModel(id = TagId("food-id"), sync = sync)
+      viewModel.awaitLoaded()
+
+      // renaming onto the deleted name must not trip the UNIQUE(tag) constraint — before the fix
+      // this insert threw and save() surfaced an error instead of finishing. FinishedSaving is only
+      // emitted on the happy path, so receiving it proves the save succeeded
+      viewModel.setTag("groceries")
+      viewModel.setDescription("Weekly food shopping")
+
+      viewModel.events.test {
+        viewModel.save()
+        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+      }
+
+      // the name now resolves to the resurrected row rather than the one we were editing
+      assertThat(tagsDao.getTagIdByName("groceries")).isEqualTo(TagId("old-id"))
+
+      // the sync log retires the edited row and rewrites the deleted one under its original id
+      assertThat(sync.changes.map(LocalChange::row).distinct())
+        .containsExactlyInAnyOrder("food-id", "old-id")
+      assertThat(sync.changes.filter { it.row == "food-id" }.map(LocalChange::column))
+        .containsExactly("tombstone")
     }
 
   @Test
