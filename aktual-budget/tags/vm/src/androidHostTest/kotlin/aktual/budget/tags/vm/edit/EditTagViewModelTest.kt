@@ -5,6 +5,7 @@ import aktual.budget.db.GetTag
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
+import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.tombstoneTag
@@ -18,6 +19,7 @@ import app.cash.turbine.test
 import assertk.all
 import assertk.assertThat
 import assertk.assertions.containsExactly
+import assertk.assertions.containsExactlyInAnyOrder
 import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
@@ -230,6 +232,48 @@ class EditTagViewModelTest {
       // the old row's id is reused rather than the freshly generated uuid
       assertThat(tagsDao.getTagIdByName("groceries")).isEqualTo(TagId("old-id"))
       assertThat(sync.changes.map(LocalChange::row).distinct()).containsExactly("old-id")
+    }
+
+  @Test
+  fun `Renaming a tag onto a tombstoned name resurrects the old row and retires the edited one`() =
+    runDatabaseTest { _ ->
+      insertTag(id = "old-id", tag = "groceries")
+      // tombstone "groceries", as a delete-sync would, so it still owns the UNIQUE name
+      tombstoneTag("old-id")
+      insertTag(id = "food-id", tag = "food")
+
+      val sync = TestSyncController()
+      val viewModel = createViewModel(id = TagId("food-id"), sync = sync)
+      viewModel.awaitLoaded()
+
+      // renaming onto the deleted name must not trip the UNIQUE(tag) constraint — before the fix
+      // this insert threw and save() surfaced an error instead of finishing. FinishedSaving is only
+      // emitted on the happy path, so receiving it proves the save succeeded
+      viewModel.setTag("groceries")
+      viewModel.setDescription("Weekly food shopping")
+
+      viewModel.events.test {
+        viewModel.save()
+        assertThatNextEmission().isEqualTo(EditTagEvent.FinishedSaving)
+      }
+
+      // the name now resolves to the resurrected row rather than the one we were editing
+      assertThat(tagsDao.getTagIdByName("groceries")).isEqualTo(TagId("old-id"))
+
+      // the sync log retires the edited row and rewrites the deleted one under its original id
+      assertThat(sync.changes.map(LocalChange::row).distinct())
+        .containsExactlyInAnyOrder("food-id", "old-id")
+      assertThat(sync.changes.filter { it.row == "food-id" }.map(LocalChange::column))
+        .containsExactly("tombstone")
+      // the resurrected row gets a full insert — the edits must not be dropped, and tombstone is
+      // cleared to bring it back
+      assertThat(sync.changes.filter { it.row == "old-id" }.map(LocalChange::column))
+        .containsExactlyInAnyOrder("id", "tag", "color", "description", "tombstone")
+      val oldIdChanges = sync.changes.filter { it.row == "old-id" }.associateBy(LocalChange::column)
+      assertThat(oldIdChanges["tag"]?.value).isEqualTo(MessageValue.String("groceries"))
+      assertThat(oldIdChanges["description"]?.value)
+        .isEqualTo(MessageValue.String("Weekly food shopping"))
+      assertThat(oldIdChanges["tombstone"]?.value).isEqualTo(MessageValue.Number(0))
     }
 
   @Test

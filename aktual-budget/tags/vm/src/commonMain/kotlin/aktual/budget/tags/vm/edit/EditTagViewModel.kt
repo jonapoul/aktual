@@ -7,6 +7,7 @@ import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.model.messageValue
+import aktual.budget.model.tombstone
 import aktual.budget.tags.vm.list.toHex
 import aktual.budget.tags.vm.list.toTagItem
 import aktual.core.model.UuidGenerator
@@ -202,12 +203,32 @@ class EditTagViewModel(
         val tag = mutableTag.value.trim()
         val description = mutableDescription.value.trim()
         val color = mutableColor.value?.toHex()
-        // creating a tag reuses any existing row with the same name — even a tombstoned one — so
-        // the old id is resurrected rather than colliding with the UNIQUE constraint (matches
-        // createTag)
-        val id = tagId ?: tagsDao.getTagIdByName(tag) ?: uuidGenerator(::TagId)
-        tagsDao.insert(id = id, tag = tag, color = color, description = description)
-        syncController.syncChanges(insertChanges(id, tag, color, description))
+
+        // another row may already own this name — the tag column is UNIQUE. getTag returns null
+        // for tombstoned rows, so a non-null owner that getTag can't see is a deleted tag still
+        // squatting on the name. Only the rename path needs the extra lookup, so skip it on create
+        val owner = tagsDao.getTagIdByName(tag)
+        val tombstonedOwner = tagId?.let { id ->
+          owner?.takeIf { it != id && tagsDao.getTag(it) == null }
+        }
+
+        if (tagId != null && tombstonedOwner != null) {
+          // renaming onto a deleted tag's name: writing the name onto our row would trip the
+          // UNIQUE constraint, so retire the row we were editing and merge the edits onto the
+          // deleted row, resurrecting it under its original id
+          tagsDao.insert(id = tombstonedOwner, tag = tag, color = color, description = description)
+          syncController.syncChanges(
+            listOf(tombstone(dataset = TAGS, row = tagId.toString())) +
+              insertChanges(tombstonedOwner, tag, color, description)
+          )
+        } else {
+          // creating a tag reuses any existing row with the same name — even a tombstoned one —
+          // so the old id is resurrected rather than colliding with the UNIQUE constraint
+          // (matches createTag)
+          val id = tagId ?: owner ?: uuidGenerator(::TagId)
+          tagsDao.insert(id = id, tag = tag, color = color, description = description)
+          syncController.syncChanges(insertChanges(id, tag, color, description))
+        }
         mutableEvents.tryEmit(EditTagEvent.FinishedSaving)
       } catch (e: CancellationException) {
         throw e
