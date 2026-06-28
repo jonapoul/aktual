@@ -85,6 +85,16 @@ internal fun TagColorPicker(
   var hexError by remember { mutableStateOf(false) }
   LaunchedEffect(hexError) { currentOnErrorChange(hexError) }
 
+  // keep the advanced wheel + brightness slider tracking the current colour, wherever it came from
+  // (a preset, the hex field, or the colour the editor seeded). HsvColorPicker's initialColor only
+  // applies on first composition, so later changes have to be pushed onto the controller here. The
+  // equality guard avoids fighting the wheel mid-drag, where the colour already matches
+  LaunchedEffect(color) {
+    if (color != null && controller.selectedColor.value != color) {
+      controller.selectByColor(color, fromUser = false)
+    }
+  }
+
   // when the colour changes from elsewhere (wheel, slider, preset), reflect it in the field.
   // Skip only when the field already represents this colour — i.e. the user just typed it — so we
   // don't reformat their input mid-edit. The canonical value is always valid, so clear any error
@@ -114,7 +124,6 @@ internal fun TagColorPicker(
           } else {
             hexError = false
             currentOnColorChange(parsed)
-            controller.selectByColor(parsed, fromUser = false)
           }
         }
       }
@@ -165,10 +174,7 @@ internal fun TagColorPicker(
           PresetSwatch(
             color = preset,
             selected = preset == color,
-            onClick = {
-              onColorChange(preset)
-              controller.selectByColor(preset, fromUser = false)
-            },
+            onClick = { onColorChange(preset) },
           )
         }
       }
