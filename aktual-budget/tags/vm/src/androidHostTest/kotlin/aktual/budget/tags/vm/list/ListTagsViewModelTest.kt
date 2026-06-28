@@ -214,6 +214,43 @@ class ListTagsViewModelTest {
     }
   }
 
+  @Test
+  fun `Undo failure emits a RestoreFailed event and doesn't re-insert the tag`() = runDatabaseTest {
+    insertTag(id = "rent-id", tag = "rent")
+
+    val viewModel = createViewModel(sync = FailingSyncController())
+
+    // wait for the initial load
+    viewModel.state.test {
+      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(1)
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    // a failing sync while undoing surfaces a RestoreFailed event rather than failing silently
+    val deleted =
+      TagItem(
+        id = TagId("groceries-id"),
+        tag = "groceries",
+        color = null,
+        description = "",
+        hidden = false,
+      )
+    viewModel.events.test {
+      viewModel.undoDelete(deleted, index = 0)
+      assertThat(awaitItem()).isEqualTo(ListTagsEvent.RestoreFailed("groceries"))
+    }
+
+    // and the tag wasn't re-inserted since the restore didn't go through
+    viewModel.state.test {
+      assertThat(awaitItem())
+        .isInstanceOf(Success::class)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("rent")
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
   private fun BudgetDatabase.createViewModel(sync: BudgetSyncController = TestSyncController()) =
     ListTagsViewModel(SavedStateHandle(), TagsDao(this), sync)
 
