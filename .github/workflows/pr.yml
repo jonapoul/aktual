@@ -262,15 +262,14 @@ jobs:
           fi
 
   claude-review:
-    if: ${{ !cancelled() && !startsWith(github.head_ref, 'renovate/') }}
-    needs: finish
+    needs: validation
+    if: ${{ !cancelled() && needs.validation.result == 'success' && !startsWith(github.head_ref, 'renovate/') }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
       issues: read
       id-token: write
-      actions: read
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
@@ -281,21 +280,13 @@ jobs:
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
-            CI RESULT: ${{ needs.finish.outputs.result || 'failure' }}
 
-            You have two tasks:
-
-            1. **CI Failure Analysis** (only if CI RESULT is "failure"):
-               Use `gh run view ${{ github.run_id }} --json jobs` to inspect which jobs failed.
-               For each failed job, use `gh run view ${{ github.run_id }} --log-failed` to get the failure logs.
-               Identify the root cause and summarize it CONCISELY.
-
-            2. **Code Review**:
-               Use `gh pr diff $PR_NUMBER` to get the diff, then submit a review with inline comments on specific lines where you find:
-               - Potential bugs or issues
-               - Performance concerns
-               - Security concerns
-               - Missing test coverage
+            **Code Review**:
+            Use `gh pr diff $PR_NUMBER` to get the diff, then submit a review with inline comments on specific lines where you find:
+            - Potential bugs or issues
+            - Performance concerns
+            - Security concerns
+            - Missing test coverage
 
             Submit a review using:
                gh api repos/$REPO/pulls/$PR_NUMBER/reviews -f event=COMMENT -f body="Review summary" -f 'comments[][path]=file.kt' -f 'comments[][line]=42' -f 'comments[][body]=Your comment'
@@ -304,7 +295,5 @@ jobs:
 
             *IMPORTANT* Only leave a comment if something should be addressed — don't leave praise or nitpicks. To clarify: if you have nothing to say besides "LGTM", **DO NOT LEAVE A COMMENT AT ALL**
 
-            If CI failed, include the failure analysis in the review summary.
-
             Use the repository's CLAUDE.md for guidance on style and conventions.
-          claude_args: '--allowed-tools "Bash(gh api:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*),Bash(gh run view:*)"'
+          claude_args: '--allowed-tools "Bash(gh api:*),Bash(gh pr diff:*),Bash(gh pr view:*),Bash(gh pr comment:*)"'
