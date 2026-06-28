@@ -165,7 +165,7 @@ class ManageStorageViewModel(
           val budgetId = BudgetId(entry.name)
           val name =
             try {
-              files.readMetadata(budgetId)[DbMetadata.BudgetName] ?: entry.name
+              files.readMetadata(budgetId)?.get(DbMetadata.BudgetName) ?: entry.name
             } catch (_: Exception) {
               entry.name
             }

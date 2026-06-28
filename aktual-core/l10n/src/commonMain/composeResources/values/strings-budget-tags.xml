@@ -11,8 +11,10 @@
   <string name="tags_create">Create tag</string>
   <string name="tags_delete">Delete</string>
   <string name="tags_deleted">Deleted #%1$s</string>
+  <string name="tags_deleted_undo">Undo</string>
   <string name="tags_delete_failed">Couldn\'t delete #%1$s</string>
   <string name="tags_delete_failed_unknown">Couldn\'t delete tag</string>
+  <string name="tags_restore_failed">Couldn\'t restore #%1$s</string>
   <string name="tags_create_title">New tag</string>
   <string name="tags_edit_title">Edit tag</string>
   <string name="tags_create_tag_label">Tag</string>
