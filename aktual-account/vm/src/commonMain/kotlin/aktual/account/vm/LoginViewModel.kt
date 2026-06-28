@@ -16,13 +16,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
+import kotlin.time.Duration.Companion.seconds
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
@@ -43,14 +50,23 @@ class LoginViewModel(
   private val mutableEnteredPassword = ResettableStateFlow(buildConfig.defaultPassword)
   private val mutableIsLoading = ResettableStateFlow(false)
   private val mutableLoginFailure = ResettableStateFlow<LoginResult.Failure?>(null)
-  private val mutableRedirectUrl = ResettableStateFlow<String?>(null)
   private val mutableLoginMethods = MutableStateFlow<ImmutableList<LoginMethod>>(persistentListOf())
   private val mutableSelectedLoginMethod = MutableStateFlow(LoginMethod.Password)
 
+  private val mutableEvents =
+    MutableSharedFlow<LoginEvent>(
+      replay = 0,
+      extraBufferCapacity = 1,
+      onBufferOverflow = DROP_OLDEST,
+    )
+
+  private var loginJob: Job? = null
+  private var timeoutJob: Job? = null
+
+  val events: SharedFlow<LoginEvent> = mutableEvents.asSharedFlow()
   val enteredPassword: StateFlow<Password> = mutableEnteredPassword.asStateFlow()
   val versions: StateFlow<AktualVersions> = versionsStateHolder.asStateFlow()
   val isLoading: StateFlow<Boolean> = mutableIsLoading.asStateFlow()
-  val redirectUrl: StateFlow<String?> = mutableRedirectUrl.asStateFlow()
   val loginMethods: StateFlow<ImmutableList<LoginMethod>> = mutableLoginMethods.asStateFlow()
   val selectedLoginMethod: StateFlow<LoginMethod> = mutableSelectedLoginMethod.asStateFlow()
 
@@ -76,7 +92,6 @@ class LoginViewModel(
     mutableEnteredPassword.reset()
     mutableIsLoading.reset()
     mutableLoginFailure.reset()
-    mutableRedirectUrl.reset()
   }
 
   fun onEnterPassword(password: String) {
@@ -94,7 +109,9 @@ class LoginViewModel(
     if (loginMethod == LoginMethod.Password && password == Password.Empty) return
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
-    viewModelScope.launch {
+
+    cancelJobs()
+    loginJob = viewModelScope.launch {
       val result = loginRequester.logIn(password, loginMethod)
 
       logcat.d { "Login result = $result" }
@@ -102,9 +119,23 @@ class LoginViewModel(
 
       when (result) {
         is LoginResult.Failure -> mutableLoginFailure.update { result }
-        is LoginResult.Redirect -> mutableRedirectUrl.update { result.url }
+        is LoginResult.Redirect -> mutableEvents.tryEmit(LoginEvent.Redirect(result.url))
         is LoginResult.Success -> Unit // handled via token flow
       }
     }
+    timeoutJob = viewModelScope.launch {
+      delay(5.seconds)
+      logcat.w { "Login timed out" }
+      mutableIsLoading.update { false }
+      mutableEvents.tryEmit(LoginEvent.Timeout)
+      cancelJobs()
+    }
+  }
+
+  private fun cancelJobs() {
+    loginJob?.cancel()
+    loginJob = null
+    timeoutJob?.cancel()
+    timeoutJob = null
   }
 }
