@@ -114,6 +114,9 @@ class LoginViewModel(
     loginJob = viewModelScope.launch {
       val result = loginRequester.logIn(password, loginMethod)
 
+      timeoutJob?.cancel()
+      timeoutJob = null
+
       logcat.d { "Login result = $result" }
       mutableIsLoading.update { false }
 
