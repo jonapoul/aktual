@@ -243,37 +243,35 @@ val Typography.buttonTextStyle: TextStyle
 @Preview
 @Composable
 private fun PreviewBare(
-  @PreviewParameter(BoolColorSchemeParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
 ) =
-  PreviewWithColors(params.colors) {
-    BareTextButton(text = "Bare", isEnabled = params.data, onClick = {})
+  PreviewWithColoredParams(params) {
+    BareTextButton(text = "Bare", isEnabled = this, onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewPrimary(
-  @PreviewParameter(BoolColorSchemeParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
 ) =
-  PreviewWithColors(params.colors) {
-    PrimaryTextButton(text = "Primary", isEnabled = params.data, onClick = {})
+  PreviewWithColoredParams(params) {
+    PrimaryTextButton(text = "Primary", isEnabled = this, onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewNormal(
-  @PreviewParameter(BoolColorSchemeParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
 ) =
-  PreviewWithColors(params.colors) {
-    NormalTextButton(text = "Normal", isEnabled = params.data, onClick = {})
+  PreviewWithColoredParams(params) {
+    NormalTextButton(text = "Normal", isEnabled = this, onClick = {})
   }
 
 @Preview
 @Composable
 private fun PreviewPrimaryWithLoadingNotLoading(
-  @PreviewParameter(BoolColorSchemeParameters::class) params: ColoredParams<Boolean>
+  @PreviewParameter(ColoredBooleanParameters::class) params: ColoredParams<Boolean>
 ) =
-  PreviewWithColors(params.colors) {
-    PrimaryTextButtonWithLoading(text = "OK", isLoading = params.data, onClick = {})
+  PreviewWithColoredParams(params) {
+    PrimaryTextButtonWithLoading(text = "OK", isLoading = this, onClick = {})
   }
-
-private class BoolColorSchemeParameters : ColoredParameterProvider<Boolean>(true, false)
