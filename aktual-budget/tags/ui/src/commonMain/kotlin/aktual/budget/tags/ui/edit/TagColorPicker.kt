@@ -333,8 +333,10 @@ internal val TAG_COLOR_PRESETS =
     Color(0xFFDADADA),
   )
 
+private const val HEX = 256
+
 private fun randomColor(): Color =
-  Color(red = Random.nextInt(256), green = Random.nextInt(256), blue = Random.nextInt(256))
+  Color(red = Random.nextInt(HEX), green = Random.nextInt(HEX), blue = Random.nextInt(HEX))
 
 // Rotates a composable 90° and swaps its measured bounds so it occupies the rotated footprint.
 // Modifiers chained after this describe the composable in its original (horizontal) orientation.
