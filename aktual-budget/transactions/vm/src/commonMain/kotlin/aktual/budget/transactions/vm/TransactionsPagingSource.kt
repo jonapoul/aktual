@@ -31,7 +31,10 @@ internal class TransactionsPagingSource(
 
       val transactionIds =
         when (val tagSpec = spec.tagSpec) {
-          TagSpec.AllTags -> loadPage(limit, offset)
+          TagSpec.AllTags -> {
+            loadPage(limit, offset)
+          }
+
           is TagSpec.SpecificTag -> {
             val ids = filteredIds ?: loadFilteredIds(tagSpec.id).also { filteredIds = it }
             val from = offset.toInt().coerceIn(0, ids.size)
