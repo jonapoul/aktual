@@ -191,7 +191,7 @@ internal fun TagColorPicker(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         HsvColorPicker(
-          modifier = Modifier.weight(1f).height(EditTagDS.colorWheelHeight),
+          modifier = Modifier.weight(1f).size(EditTagDS.colorWheelSize),
           controller = controller,
           initialColor = color ?: TAG_COLOR_PRESETS.first(),
           onColorChanged = { envelope -> if (envelope.fromUser) onColorChange(envelope.color) },
@@ -200,7 +200,7 @@ internal fun TagColorPicker(
         BrightnessSlider(
           modifier =
             Modifier.rotateVertically()
-              .width(EditTagDS.colorWheelHeight)
+              .width(EditTagDS.colorWheelSize)
               .height(EditTagDS.brightnessSliderHeight)
               .clip(CardShape)
               .border(1.dp, colors.pageText, CardShape),

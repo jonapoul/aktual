@@ -24,7 +24,7 @@
   <string name="tags_create_description_label">Description</string>
   <string name="tags_create_description_placeholder">What is this tag for?</string>
   <string name="tags_create_color_label">Color</string>
-  <string name="tags_create_color_placeholder">#aabbcc</string>
+  <string name="tags_create_color_placeholder">#AABBCC</string>
   <string name="tags_create_color_advanced">Advanced color options</string>
   <string name="tags_create_color_invalid">Invalid color code</string>
   <string name="tags_create_save">Save</string>
