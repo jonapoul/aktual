@@ -2,6 +2,7 @@ package aktual.budget.tags.vm.list
 
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.TagsDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
@@ -9,6 +10,8 @@ import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
 import aktual.test.TestSyncController
 import aktual.test.runDatabaseTest
+import alakazam.test.TestCoroutineContexts
+import alakazam.test.standardDispatcher
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
@@ -20,6 +23,7 @@ import assertk.assertions.hasSize
 import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.prop
+import kotlinx.coroutines.test.TestScope
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -27,7 +31,7 @@ import org.robolectric.RobolectricTestRunner
 @RunWith(RobolectricTestRunner::class)
 class ListTagsViewModelTest {
   @Test
-  fun `Loads and maps tags from the database`() = runDatabaseTest {
+  fun `Loads and maps tags from the database`() = runDatabaseTest { scope ->
     // given a couple of tags - one with an explicit hex color, one with neither color nor
     // description
     insertTag(
@@ -39,7 +43,7 @@ class ListTagsViewModelTest {
     insertTag(id = "rent-id", tag = "rent")
 
     // when the VM loads
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(scope)
 
     // then the state settles on the mapped tags
     viewModel.state.test {
@@ -69,9 +73,9 @@ class ListTagsViewModelTest {
   }
 
   @Test
-  fun `Empty database yields the empty state`() = runDatabaseTest {
+  fun `Empty database yields the empty state`() = runDatabaseTest { scope ->
     // when the VM loads with no tags in the database
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(scope)
 
     // then we get the empty state rather than a failure
     viewModel.state.test {
@@ -81,11 +85,11 @@ class ListTagsViewModelTest {
   }
 
   @Test
-  fun `Filter matches against tag name and description`() = runDatabaseTest {
+  fun `Filter matches against tag name and description`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries", description = "Weekly food shopping")
     insertTag(id = "rent-id", tag = "rent", description = "Monthly housing")
 
-    val viewModel = createViewModel()
+    val viewModel = createViewModel(scope)
 
     viewModel.state.test {
       // wait for the initial unfiltered load
@@ -108,12 +112,12 @@ class ListTagsViewModelTest {
   }
 
   @Test
-  fun `Delete tombstones the tag, removes it, and emits an event`() = runDatabaseTest {
+  fun `Delete tombstones the tag, removes it, and emits an event`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries")
     insertTag(id = "rent-id", tag = "rent")
 
     val sync = TestSyncController()
-    val viewModel = createViewModel(sync)
+    val viewModel = createViewModel(scope, sync)
 
     // wait for the initial load with both tags
     viewModel.state.test {
@@ -145,12 +149,12 @@ class ListTagsViewModelTest {
   }
 
   @Test
-  fun `Undo restores a deleted tag at its original position`() = runDatabaseTest {
+  fun `Undo restores a deleted tag at its original position`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries")
     insertTag(id = "rent-id", tag = "rent")
 
     val sync = TestSyncController()
-    val viewModel = createViewModel(sync)
+    val viewModel = createViewModel(scope, sync)
 
     // wait for the initial load with both tags
     viewModel.state.test {
@@ -188,10 +192,10 @@ class ListTagsViewModelTest {
   }
 
   @Test
-  fun `Delete failure emits a DeleteFailed event and keeps the tag`() = runDatabaseTest {
+  fun `Delete failure emits a DeleteFailed event and keeps the tag`() = runDatabaseTest { scope ->
     insertTag(id = "groceries-id", tag = "groceries")
 
-    val viewModel = createViewModel(sync = FailingSyncController())
+    val viewModel = createViewModel(scope, sync = FailingSyncController())
 
     // wait for the initial load
     viewModel.state.test {
@@ -217,45 +221,55 @@ class ListTagsViewModelTest {
   }
 
   @Test
-  fun `Undo failure emits a RestoreFailed event and doesn't re-insert the tag`() = runDatabaseTest {
-    insertTag(id = "rent-id", tag = "rent")
+  fun `Undo failure emits a RestoreFailed event and doesn't re-insert the tag`() =
+    runDatabaseTest { scope ->
+      insertTag(id = "rent-id", tag = "rent")
 
-    val viewModel = createViewModel(sync = FailingSyncController())
+      val viewModel = createViewModel(scope, sync = FailingSyncController())
 
-    // wait for the initial load
-    viewModel.state.test {
-      assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(1)
-      cancelAndIgnoreRemainingEvents()
+      // wait for the initial load
+      viewModel.state.test {
+        assertThat(awaitItem()).isInstanceOf(Success::class).prop(Success::tags).hasSize(1)
+        cancelAndIgnoreRemainingEvents()
+      }
+
+      // a failing sync while undoing surfaces a RestoreFailed event rather than failing silently
+      val deleted =
+        TagItem(
+          id = TagId("groceries-id"),
+          tag = "groceries",
+          color = null,
+          description = "",
+          hidden = false,
+          numTransactions = 0,
+        )
+      viewModel.events.test {
+        viewModel.undoDelete(deleted, index = 0)
+        assertThat(awaitItem()).isEqualTo(ListTagsEvent.RestoreFailed("groceries"))
+      }
+
+      // and the tag wasn't re-inserted since the restore didn't go through
+      viewModel.state.test {
+        assertThat(awaitItem())
+          .isInstanceOf(Success::class)
+          .prop(Success::tags)
+          .extracting(TagItem::tag)
+          .containsExactly("rent")
+        cancelAndIgnoreRemainingEvents()
+      }
     }
 
-    // a failing sync while undoing surfaces a RestoreFailed event rather than failing silently
-    val deleted =
-      TagItem(
-        id = TagId("groceries-id"),
-        tag = "groceries",
-        color = null,
-        description = "",
-        hidden = false,
-        numTransactions = 0,
-      )
-    viewModel.events.test {
-      viewModel.undoDelete(deleted, index = 0)
-      assertThat(awaitItem()).isEqualTo(ListTagsEvent.RestoreFailed("groceries"))
-    }
-
-    // and the tag wasn't re-inserted since the restore didn't go through
-    viewModel.state.test {
-      assertThat(awaitItem())
-        .isInstanceOf(Success::class)
-        .prop(Success::tags)
-        .extracting(TagItem::tag)
-        .containsExactly("rent")
-      cancelAndIgnoreRemainingEvents()
-    }
-  }
-
-  private fun BudgetDatabase.createViewModel(sync: BudgetSyncController = TestSyncController()) =
-    ListTagsViewModel(SavedStateHandle(), TagsDao(this), sync)
+  private fun BudgetDatabase.createViewModel(
+    scope: TestScope,
+    sync: BudgetSyncController = TestSyncController(),
+  ) =
+    ListTagsViewModel(
+      savedState = SavedStateHandle(),
+      tagsDao = TagsDao(this),
+      transactionDao =
+        TransactionDao(database = this, contexts = TestCoroutineContexts(scope.standardDispatcher)),
+      syncController = sync,
+    )
 
   private class FailingSyncController : BudgetSyncController {
     override suspend fun syncChanges(changes: List<LocalChange>): Unit = error("sync failed")
