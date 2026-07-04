@@ -167,8 +167,7 @@ private fun TagItemRow(
       if (tag.numTransactions > 0) {
         Box(
           modifier =
-            Modifier
-              .background(colors.pillBackgroundSelected, CardShape)
+            Modifier.background(colors.pillBackgroundSelected, CardShape)
               .clickable { onAction(ViewTransactions(tag.id)) }
               .padding(ListTagsDS.numTransactionsPadding),
           contentAlignment = Alignment.Center,

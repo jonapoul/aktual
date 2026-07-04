@@ -167,6 +167,17 @@ WHERE account = :account
 ORDER BY date DESC
 LIMIT :limit OFFSET :offset;
 
+-- id + notes for every live transaction, for in-memory #tag filtering (no SQL regex available)
+getIdsAndNotes:
+SELECT id, notes FROM v_transactions ORDER BY date DESC;
+
+getIdsAndNotesByAccount:
+SELECT id, notes FROM v_transactions WHERE account = :account ORDER BY date DESC;
+
+-- notes of every live transaction containing a '#', for aggregating per-tag transaction counts
+notesContainingHash:
+SELECT notes FROM v_transactions WHERE notes LIKE '%#%';
+
 getIdsCount:
 SELECT COUNT(*) FROM v_transactions;
 
