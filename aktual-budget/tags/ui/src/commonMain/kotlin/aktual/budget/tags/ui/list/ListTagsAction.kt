@@ -1,6 +1,7 @@
 package aktual.budget.tags.ui.list
 
 import aktual.budget.model.TagId
+import aktual.budget.model.TagSort
 import androidx.compose.runtime.Immutable
 
 @Immutable internal sealed interface ListTagsAction
@@ -22,6 +23,8 @@ internal data object CreateTag : ListTagsAction
 @JvmInline internal value class ViewTransactions(val id: TagId) : ListTagsAction
 
 @JvmInline internal value class DeleteTag(val id: TagId) : ListTagsAction
+
+@JvmInline internal value class SetSort(val sort: TagSort) : ListTagsAction
 
 @Immutable
 internal fun interface ListTagsActionHandler {

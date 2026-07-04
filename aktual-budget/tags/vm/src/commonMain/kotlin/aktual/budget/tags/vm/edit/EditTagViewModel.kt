@@ -13,7 +13,7 @@ import aktual.budget.tags.vm.toColorOrNull
 import aktual.budget.tags.vm.toHex
 import aktual.core.model.UuidGenerator
 import aktual.di.BudgetScope
-import aktual.prefs.AppPreferences
+import aktual.prefs.TagPreferences
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -51,7 +51,7 @@ class EditTagViewModel(
   private val tagsDao: TagsDao,
   private val uuidGenerator: UuidGenerator,
   private val syncController: BudgetSyncController,
-  private val preferences: AppPreferences,
+  private val preferences: TagPreferences,
 ) : ViewModel() {
   private val mutableLoaded = MutableStateFlow<Loaded?>(null)
   private val mutableFailure = MutableStateFlow<EditTagState.Failure?>(null)

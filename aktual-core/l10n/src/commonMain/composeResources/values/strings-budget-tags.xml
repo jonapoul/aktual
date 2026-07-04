@@ -9,6 +9,14 @@
   <string name="tags_filter_placeholder">Filter tags…</string>
   <string name="tags_filter_clear">Clear filter</string>
   <string name="tags_create">Create tag</string>
+  <string name="tags_sort">Sort</string>
+  <string name="tags_sort_field">Sort by</string>
+  <string name="tags_sort_field_name">Name</string>
+  <string name="tags_sort_field_usage">Number of transactions</string>
+  <string name="tags_sort_direction">Order</string>
+  <string name="tags_sort_direction_ascending">Ascending</string>
+  <string name="tags_sort_direction_descending">Descending</string>
+  <string name="tags_sort_apply">Apply</string>
   <string name="tags_delete">Delete</string>
   <string name="tags_deleted">Deleted #%1$s</string>
   <string name="tags_deleted_undo">Undo</string>
