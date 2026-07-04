@@ -5,10 +5,12 @@ import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.TagId
+import aktual.budget.model.TagSort
 import aktual.budget.model.tagsInNotes
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.di.BudgetScope
+import aktual.prefs.TagPreferences
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -49,6 +51,7 @@ class ListTagsViewModel(
   private val tagsDao: TagsDao,
   private val transactionDao: TransactionDao,
   private val syncController: BudgetSyncController,
+  private val preferences: TagPreferences,
 ) : ViewModel() {
   @AssistedFactory
   @ViewModelAssistedFactoryKey(ListTagsViewModel::class)
@@ -86,12 +89,16 @@ class ListTagsViewModel(
       val failure by mutableFailure.collectAsState()
       val filterText by filterText.collectAsState()
       val isSearchActive by isSearchActive.collectAsState()
+      val sortField by preferences.sortField.asFlow().collectAsState(TagSort.Field.Default)
+      val sortDirection by
+        preferences.sortDirection.asFlow().collectAsState(TagSort.Direction.Default)
       @Suppress("BracesOnWhenStatements")
       when {
         isLoading -> Loading
         failure != null -> Failure(failure)
         tags.isEmpty() -> Empty
-        else -> buildSuccessState(isSearchActive, tags, filterText)
+        else ->
+          buildSuccessState(isSearchActive, tags, filterText, TagSort(sortField, sortDirection))
       }
     }
 
@@ -201,18 +208,45 @@ class ListTagsViewModel(
     }
   }
 
+  fun setSort(sort: TagSort) {
+    viewModelScope.launch {
+      preferences.sortField.set(sort.field)
+      preferences.sortDirection.set(sort.direction)
+    }
+  }
+
   private fun buildSuccessState(
     isSearchActive: Boolean,
     tags: ImmutableList<TagItem>,
     filterText: String,
+    sort: TagSort,
   ): Success {
     val filtered =
       if (isSearchActive) {
-        tags.filter { tag -> filterText in tag }.toImmutableList()
+        tags.filter { tag -> filterText in tag }
       } else {
         tags
       }
-    return Success(tags = filtered, filterText = filterText, isSearchActive = isSearchActive)
+    val sorted = filtered.sortedWith(sort.comparator()).toImmutableList()
+    return Success(
+      tags = sorted,
+      filterText = filterText,
+      isSearchActive = isSearchActive,
+      sort = sort,
+    )
+  }
+
+  private fun TagSort.comparator(): Comparator<TagItem> {
+    val byField =
+      when (field) {
+        TagSort.Field.Name -> compareBy { it.tag.lowercase() }
+        TagSort.Field.Usage ->
+          compareBy<TagItem> { it.numTransactions }.thenBy { it.tag.lowercase() }
+      }
+    return when (direction) {
+      TagSort.Direction.Ascending -> byField
+      TagSort.Direction.Descending -> byField.reversed()
+    }
   }
 
   private operator fun TagItem.contains(query: String): Boolean {
