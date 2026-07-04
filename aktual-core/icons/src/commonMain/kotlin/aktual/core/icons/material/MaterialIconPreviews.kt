@@ -73,6 +73,7 @@ private val materialIcons =
       Security,
       SelectAll,
       Settings,
+      Shuffle,
       Sort,
       SpaceBar,
       Speed125,

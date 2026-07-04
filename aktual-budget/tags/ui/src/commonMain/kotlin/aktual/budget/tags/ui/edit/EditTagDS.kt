@@ -8,7 +8,7 @@ internal object EditTagDS {
   val labelSpacing = 4.dp
 
   val colorPickerSectionSpacing = 12.dp
-  val colorWheelHeight = 220.dp
+  val colorWheelSize = 220.dp
   val brightnessSliderHeight = 28.dp
   val colorPresetSpacing = 4.dp
   val colorPresetSize = 30.dp

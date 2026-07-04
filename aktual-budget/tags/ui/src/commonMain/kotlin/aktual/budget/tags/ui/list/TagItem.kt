@@ -4,9 +4,11 @@ import aktual.budget.tags.ui.contrastingTextColor
 import aktual.budget.tags.vm.list.TagItem
 import aktual.core.icons.material.Delete
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
+import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PreviewWithColoredParams
@@ -161,6 +163,22 @@ private fun TagItemRow(
         maxLines = 5,
         overflow = TextOverflow.Ellipsis,
       )
+
+      if (tag.numTransactions > 0) {
+        Box(
+          modifier =
+            Modifier.background(colors.pillBackgroundSelected, CardShape)
+              .clickable { onAction(ViewTransactions(tag.id)) }
+              .padding(ListTagsDS.numTransactionsPadding),
+          contentAlignment = Alignment.Center,
+        ) {
+          Text(
+            text = Plurals.tagsNumTransactions(tag.numTransactions, tag.numTransactions),
+            style = typography.bodySmall,
+            color = colors.pillText,
+          )
+        }
+      }
     }
   }
 }

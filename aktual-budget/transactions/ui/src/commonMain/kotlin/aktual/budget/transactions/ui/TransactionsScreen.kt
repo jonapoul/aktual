@@ -1,6 +1,5 @@
 package aktual.budget.transactions.ui
 
-import aktual.budget.model.AccountSpec
 import aktual.budget.model.TransactionsFormat
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount
@@ -10,6 +9,7 @@ import aktual.budget.transactions.vm.TransactionsViewModel
 import aktual.core.nav.BackNavigator
 import aktual.core.theme.Colors
 import aktual.core.ui.ColoredParameters
+import aktual.core.ui.DesktopPreview
 import aktual.core.ui.LandscapePreview
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
@@ -31,7 +31,7 @@ import dev.zacsweers.metrox.viewmodel.assistedMetroViewModel
 @Composable
 fun TransactionsScreen(
   back: BackNavigator,
-  spec: TransactionsSpec = TransactionsSpec(AccountSpec.AllAccounts),
+  spec: TransactionsSpec,
   viewModel: TransactionsViewModel = metroViewModel(spec),
 ) {
   val loadedAccount by viewModel.loadedAccount.collectAsStateWithLifecycle()
@@ -100,6 +100,7 @@ internal fun TransactionsScaffold(
 @PortraitPreview
 @LandscapePreview
 @TabletPreview
+@DesktopPreview
 private fun PreviewTransactionsScaffold(
   @PreviewParameter(ColoredParameters::class) colors: Colors
 ) =

@@ -40,6 +40,7 @@ internal fun TransactionsTitleBar(
       LoadedAccount.Loading -> Strings.transactionsTitleLoading
       is LoadedAccount.SpecificAccount ->
         loadedAccount.account.name ?: Strings.transactionsTitleNone
+      is LoadedAccount.SpecificTag -> "#${loadedAccount.tag}"
     }
 
   TopAppBar(
@@ -82,4 +83,5 @@ private class TransactionsTitleBarProvider :
     LoadedAccount.AllAccounts,
     LoadedAccount.Loading,
     LoadedAccount.SpecificAccount(PREVIEW_ACCOUNT),
+    LoadedAccount.SpecificTag("groceries"),
   )

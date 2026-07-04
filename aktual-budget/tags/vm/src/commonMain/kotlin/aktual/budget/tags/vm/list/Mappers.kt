@@ -5,9 +5,11 @@ import aktual.budget.db.GetTags
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.toColorOrNull
 
-internal fun GetTags.toTagItem(): TagItem? = toTagItem(id, tag, color, description, hidden)
+internal fun GetTags.toTagItem(numTransactions: Int = 0): TagItem? =
+  toTagItem(id, tag, color, description, hidden, numTransactions)
 
-internal fun GetTag.toTagItem(): TagItem? = toTagItem(id, tag, color, description, hidden)
+internal fun GetTag.toTagItem(numTransactions: Int = 0): TagItem? =
+  toTagItem(id, tag, color, description, hidden, numTransactions)
 
 private fun toTagItem(
   id: TagId,
@@ -15,6 +17,7 @@ private fun toTagItem(
   color: String?,
   description: String?,
   hidden: Boolean?,
+  numTransactions: Int,
 ): TagItem? {
   val name = tag ?: return null
   return TagItem(
@@ -23,5 +26,6 @@ private fun toTagItem(
     color = color?.toColorOrNull(),
     description = description.orEmpty(),
     hidden = hidden == true,
+    numTransactions = numTransactions,
   )
 }
