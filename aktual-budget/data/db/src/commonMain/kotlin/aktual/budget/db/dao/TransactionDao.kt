@@ -1,6 +1,7 @@
 package aktual.budget.db.dao
 
 import aktual.budget.db.BudgetDatabase
+import aktual.budget.db.NotesContainingHash
 import aktual.budget.db.Transactions
 import aktual.budget.db.transactions.GetById
 import aktual.budget.db.withResult
@@ -21,6 +22,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.datetime.LocalDate
 
+data class TransactionNotes(val id: TransactionId, val notes: String?)
+
 @Inject
 class TransactionDao(database: BudgetDatabase, private val contexts: CoroutineContexts) {
   private val queries = database.transactionsQueries
@@ -38,6 +41,19 @@ class TransactionDao(database: BudgetDatabase, private val contexts: CoroutineCo
     offset: Long,
   ): List<TransactionId> = queries.withResult {
     getIdsByAccountPaged(account, limit, offset).awaitAsList()
+  }
+
+  suspend fun getIdsAndNotes(): List<TransactionNotes> = queries.withResult {
+    getIdsAndNotes().awaitAsList().map { TransactionNotes(it.id, it.notes) }
+  }
+
+  suspend fun getIdsAndNotesByAccount(account: AccountId): List<TransactionNotes> =
+    queries.withResult {
+      getIdsAndNotesByAccount(account).awaitAsList().map { TransactionNotes(it.id, it.notes) }
+    }
+
+  suspend fun getNotesContainingHash(): List<String> = queries.withResult {
+    notesContainingHash().awaitAsList().mapNotNull(NotesContainingHash::notes)
   }
 
   fun observeCount(): Flow<Long> =

@@ -2,6 +2,7 @@ package aktual.budget.transactions.vm
 
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.PreferencesDao
+import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.transactions.GetById
 import aktual.budget.model.AccountSpec
@@ -9,12 +10,14 @@ import aktual.budget.model.Amount
 import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
+import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsFormat
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.transactions.vm.LoadedAccount.AllAccounts
 import aktual.budget.transactions.vm.LoadedAccount.Loading
 import aktual.budget.transactions.vm.LoadedAccount.SpecificAccount
+import aktual.budget.transactions.vm.LoadedAccount.SpecificTag
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
@@ -51,6 +54,7 @@ class TransactionsViewModel(
   private val prefs: BudgetLocalPreferences,
   private val accountDao: AccountDao,
   private val transactionDao: TransactionDao,
+  private val tagsDao: TagsDao,
   private val preferencesDao: PreferencesDao,
 ) : ViewModel(), TransactionStateSource, TransactionIdSource {
   @AssistedFactory
@@ -80,13 +84,23 @@ class TransactionsViewModel(
       .cachedIn(viewModelScope)
 
   init {
-    when (val s = spec.accountSpec) {
-      is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }
-
-      is AccountSpec.SpecificAccount ->
+    // A tag-filtered screen titles itself after the tag; otherwise the title follows the account.
+    when (val tagSpec = spec.tagSpec) {
+      is TagSpec.SpecificTag ->
         viewModelScope.launch {
-          val account = accountDao[s.id] ?: error("No account matching $s")
-          mutableLoadedAccount.update { SpecificAccount(account) }
+          val name = tagsDao.getTag(tagSpec.id)?.tag
+          mutableLoadedAccount.update { if (name != null) SpecificTag(name) else AllAccounts }
+        }
+
+      is TagSpec.AllTags ->
+        when (val s = spec.accountSpec) {
+          is AccountSpec.AllAccounts -> mutableLoadedAccount.update { AllAccounts }
+
+          is AccountSpec.SpecificAccount ->
+            viewModelScope.launch {
+              val account = accountDao[s.id] ?: error("No account matching $s")
+              mutableLoadedAccount.update { SpecificAccount(account) }
+            }
         }
     }
 
@@ -149,7 +163,7 @@ class TransactionsViewModel(
   }
 
   private fun buildPagingSource() =
-    TransactionsPagingSource(transactionDao, spec.accountSpec).also { currentPagingSource = it }
+    TransactionsPagingSource(transactionDao, tagsDao, spec).also { currentPagingSource = it }
 
   private companion object {
     val TransactionFormatKey = DbMetadata.enumKey<TransactionsFormat>("transactionFormat")

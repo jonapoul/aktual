@@ -1,7 +1,7 @@
 import aktual.budget.model.CleanupGroupId;
 import kotlin.Boolean;
 
-CREATE TABLE cleanup_groups(
+CREATE TABLE IF NOT EXISTS cleanup_groups(
   id TEXT AS CleanupGroupId PRIMARY KEY,
   name TEXT NOT NULL,
   tombstone INTEGER AS Boolean DEFAULT 0

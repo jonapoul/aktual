@@ -3,6 +3,7 @@ package aktual.budget.transactions.vm
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.CategoryDao
 import aktual.budget.db.dao.PayeeDao
+import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSpec
@@ -10,6 +11,8 @@ import aktual.budget.model.AccountSpec.AllAccounts
 import aktual.budget.model.AccountSpec.SpecificAccount
 import aktual.budget.model.CategoryId
 import aktual.budget.model.PayeeId
+import aktual.budget.model.TagId
+import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionsSpec
 import aktual.core.model.ServerUrl
 import aktual.di.AppGraph
@@ -52,6 +55,7 @@ class TransactionsViewModelTest {
   private lateinit var transactions: TransactionDao
   private lateinit var payees: PayeeDao
   private lateinit var categories: CategoryDao
+  private lateinit var tags: TagsDao
 
   // fake
   private lateinit var appGraph: TestAppGraph
@@ -86,6 +90,7 @@ class TransactionsViewModelTest {
       transactions = budgetGraph[TransactionDao::class]
       payees = budgetGraph[PayeeDao::class]
       categories = budgetGraph[CategoryDao::class]
+      tags = budgetGraph[TagsDao::class]
     }
 
     // add some utility entities
@@ -113,7 +118,12 @@ class TransactionsViewModelTest {
   fun `Empty transaction list from all accounts`() = runTest {
     // given
     buildViewModel(AllAccounts)
-    val source = TransactionsPagingSource(transactions, spec = AllAccounts)
+    val source =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(AllAccounts),
+      )
 
     // when
     val result =
@@ -134,7 +144,12 @@ class TransactionsViewModelTest {
     }
     advanceUntilIdle()
 
-    val source = TransactionsPagingSource(transactions, AllAccounts)
+    val source =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(AllAccounts),
+      )
 
     // when
     val result =
@@ -160,7 +175,11 @@ class TransactionsViewModelTest {
     advanceUntilIdle()
 
     val source =
-      TransactionsPagingSource(dao = transactions, spec = SpecificAccount(AccountId("a")))
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(SpecificAccount(AccountId("a"))),
+      )
 
     // when
     val result =
@@ -172,6 +191,38 @@ class TransactionsViewModelTest {
       .withData(ID_A)
       .withPrevKey(null)
       .withNextKey(null) // No more pages since we loaded fewer items than page size
+  }
+
+  @Test
+  fun `Transactions for a specific tag`() = runTest {
+    // given
+    buildViewModel(AllAccounts)
+    tags.insert(id = TagId("food"), tag = "food", color = null, description = null)
+    with(transactions) {
+      insertTransaction(id = "a", account = "a", category = "a", payee = "a", notes = "lunch #food")
+      insertTransaction(id = "b", account = "b", category = "b", payee = "b", notes = "no tag here")
+      insertTransaction(id = "c", account = "c", category = "c", payee = "c", notes = "#foodie")
+      insertTransaction(id = "d", account = "c", category = "c", payee = "c", notes = "#FOOD again")
+    }
+    advanceUntilIdle()
+
+    val source =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(tagSpec = TagSpec.SpecificTag(TagId("food"))),
+      )
+
+    // when
+    val result =
+      source.load(LoadParams.Refresh(key = null, loadSize = 50, placeholdersEnabled = false))
+
+    // then - only the two exact, case-insensitive #food matches; #foodie is excluded
+    assertThat(result)
+      .isPage()
+      .withData(ID_D, ID_A)
+      .withPrevKey(expected = null)
+      .withNextKey(expected = null)
   }
 
   @Test
@@ -188,7 +239,12 @@ class TransactionsViewModelTest {
     }
     advanceUntilIdle()
 
-    val pagingSource = TransactionsPagingSource(transactions, AllAccounts)
+    val pagingSource =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(AllAccounts),
+      )
 
     // when
     val result =
@@ -216,7 +272,12 @@ class TransactionsViewModelTest {
     }
     advanceUntilIdle()
 
-    val source = TransactionsPagingSource(transactions, AllAccounts)
+    val source =
+      TransactionsPagingSource(
+        transactionDao = transactions,
+        tagsDao = tags,
+        spec = TransactionsSpec(AllAccounts),
+      )
 
     // when - load first page with size 2
     val firstPage =

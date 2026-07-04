@@ -19,6 +19,8 @@ internal data object CreateTag : ListTagsAction
 
 @JvmInline internal value class EditTag(val id: TagId) : ListTagsAction
 
+@JvmInline internal value class ViewTransactions(val id: TagId) : ListTagsAction
+
 @JvmInline internal value class DeleteTag(val id: TagId) : ListTagsAction
 
 @Immutable

@@ -4,16 +4,17 @@ import aktual.budget.tags.ui.contrastingTextColor
 import aktual.budget.tags.vm.toColorOrNull
 import aktual.budget.tags.vm.toHex
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Shuffle
 import aktual.core.icons.material.Tune
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BareIconButton
 import aktual.core.ui.ButtonShape
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredBooleanParameters
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.IconButtonColorProvider
+import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.textField
 import androidx.compose.animation.AnimatedVisibility
@@ -63,6 +64,7 @@ import androidx.compose.ui.util.fastForEach
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+import kotlin.random.Random
 import kotlinx.collections.immutable.persistentListOf
 
 @Suppress("LongMethod")
@@ -150,12 +152,21 @@ internal fun TagColorPicker(
         isError = hexError,
       )
 
-      BareIconButton(
+      NormalIconButton(
+        imageVector = MaterialIcons.Shuffle,
+        contentDescription = Strings.tagsCreateColorRandom,
+        // grid: pick from the presets; advanced: any colour is fair game
+        onClick = {
+          onColorChange(if (advancedVisible) randomColor() else TAG_COLOR_PRESETS.random())
+        },
+      )
+
+      NormalIconButton(
         imageVector = MaterialIcons.Tune,
         contentDescription = Strings.tagsCreateColorAdvanced,
         onClick = { advancedVisible = !advancedVisible },
         colors =
-          if (advancedVisible) IconButtonColorProvider.Primary else IconButtonColorProvider.Bare,
+          if (advancedVisible) IconButtonColorProvider.Primary else IconButtonColorProvider.Normal,
       )
     }
 
@@ -191,7 +202,7 @@ internal fun TagColorPicker(
         verticalAlignment = Alignment.CenterVertically,
       ) {
         HsvColorPicker(
-          modifier = Modifier.weight(1f).height(EditTagDS.colorWheelHeight),
+          modifier = Modifier.weight(1f).size(EditTagDS.colorWheelSize),
           controller = controller,
           initialColor = color ?: TAG_COLOR_PRESETS.first(),
           onColorChanged = { envelope -> if (envelope.fromUser) onColorChange(envelope.color) },
@@ -200,7 +211,7 @@ internal fun TagColorPicker(
         BrightnessSlider(
           modifier =
             Modifier.rotateVertically()
-              .width(EditTagDS.colorWheelHeight)
+              .width(EditTagDS.colorWheelSize)
               .height(EditTagDS.brightnessSliderHeight)
               .clip(CardShape)
               .border(1.dp, colors.pageText, CardShape),
@@ -321,6 +332,11 @@ internal val TAG_COLOR_PRESETS =
     Color(0xFFE4D3C3),
     Color(0xFFDADADA),
   )
+
+private const val HEX = 256
+
+private fun randomColor(): Color =
+  Color(red = Random.nextInt(HEX), green = Random.nextInt(HEX), blue = Random.nextInt(HEX))
 
 // Rotates a composable 90° and swaps its measured bounds so it occupies the rotated footprint.
 // Modifiers chained after this describe the composable in its original (horizontal) orientation.

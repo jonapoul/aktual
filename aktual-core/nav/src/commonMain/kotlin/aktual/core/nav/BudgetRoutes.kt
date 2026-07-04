@@ -9,6 +9,11 @@ import kotlinx.serialization.Serializable
 
 @Immutable @Serializable data object TransactionsNavRoute : BudgetNavKey.Transactions
 
+@Immutable
+@Serializable
+@JvmInline
+value class TransactionsWithTagNavRoute(val id: TagId) : BudgetNavKey.Transactions
+
 @Immutable @Serializable data object ReportsListNavRoute : BudgetNavKey.Reports
 
 @JvmInline

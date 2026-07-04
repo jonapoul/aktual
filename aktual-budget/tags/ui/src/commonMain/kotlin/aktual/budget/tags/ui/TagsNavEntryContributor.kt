@@ -10,6 +10,7 @@ import aktual.core.nav.EditTagNavRoute
 import aktual.core.nav.EditTagNavigator
 import aktual.core.nav.ListTagsNavRoute
 import aktual.core.nav.NavStack
+import aktual.core.nav.TransactionsNavigator
 import aktual.core.nav.budgetEntry
 import aktual.di.BudgetScope
 import androidx.navigation3.runtime.EntryProviderScope
@@ -18,7 +19,12 @@ import dev.zacsweers.metro.ContributesIntoSet
 @ContributesIntoSet(BudgetScope::class)
 class TagsNavEntryContributor : BudgetNavEntryContributor {
   override fun EntryProviderScope<BudgetNavKey>.contribute(stack: NavStack<BudgetNavKey>) {
-    budgetEntry<ListTagsNavRoute> { ListTagsScreen(toEdit = EditTagNavigator(stack)) }
+    budgetEntry<ListTagsNavRoute> {
+      ListTagsScreen(
+        toEdit = EditTagNavigator(stack),
+        toTransactions = TransactionsNavigator(stack),
+      )
+    }
 
     budgetEntry<CreateTagNavRoute> { EditTagScreen(id = null, back = BackNavigator(stack)) }
 

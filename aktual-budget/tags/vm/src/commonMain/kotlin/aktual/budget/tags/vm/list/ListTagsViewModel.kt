@@ -2,8 +2,10 @@ package aktual.budget.tags.vm.list
 
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.TagsDao
+import aktual.budget.db.dao.TransactionDao
 import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.TagId
+import aktual.budget.model.tagsInNotes
 import aktual.budget.model.tombstone
 import aktual.budget.model.untombstone
 import aktual.di.BudgetScope
@@ -45,6 +47,7 @@ import logcat.logcat
 class ListTagsViewModel(
   @Assisted private val savedState: SavedStateHandle,
   private val tagsDao: TagsDao,
+  private val transactionDao: TransactionDao,
   private val syncController: BudgetSyncController,
 ) : ViewModel() {
   @AssistedFactory
@@ -119,7 +122,12 @@ class ListTagsViewModel(
     reloadJob?.cancel()
     reloadJob = viewModelScope.launch {
       try {
-        val tags = tagsDao.getTags().mapNotNull { it.toTagItem() }.toImmutableList()
+        val counts = transactionCountsByTag()
+        val tags =
+          tagsDao
+            .getTags()
+            .mapNotNull { row -> row.toTagItem(counts[row.tag?.lowercase()] ?: 0) }
+            .toImmutableList()
         mutableTags.update { tags }
         mutableFailure.update { null }
       } catch (e: CancellationException) {
@@ -133,6 +141,18 @@ class ListTagsViewModel(
         mutableIsRefreshing.update { false }
       }
     }
+  }
+
+  // Counts, per lowercased tag name, how many transactions reference that tag in their notes.
+  // A single transaction counts once even if it mentions the tag multiple times.
+  private suspend fun transactionCountsByTag(): Map<String, Int> {
+    val counts = HashMap<String, Int>()
+    for (notes in transactionDao.getNotesContainingHash()) {
+      for (name in tagsInNotes(notes)) {
+        counts[name] = (counts[name] ?: 0) + 1
+      }
+    }
+    return counts
   }
 
   fun delete(id: TagId) {

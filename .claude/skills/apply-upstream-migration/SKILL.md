@@ -31,7 +31,7 @@ For each statement:
 | Statement | Actions needed |
 |-----------|---------------|
 | `ALTER TABLE t ADD COLUMN c` | Update `.sq` file + possible adapter |
-| `CREATE TABLE t` | New `.sq` file + adapter + `BuildDatabase.kt` + possible ID type |
+| `CREATE TABLE t` | New `.sq` file + adapter + `BuildDatabase.kt` + possible ID type. Emit as `CREATE TABLE IF NOT EXISTS` in the migration (never bare `CREATE TABLE`) |
 | `CREATE INDEX` | Add to the relevant `.sq` file (no adapter) |
 
 Also check if new column types need new model classes (sealed interfaces, value class IDs).
@@ -112,7 +112,7 @@ private suspend fun Migrator.migrate1778510362740() =
 
 Rules:
 - **One String per DDL statement** — `driver.execute()` doesn't support semicolon-separated multi-statement strings
-- **`CREATE TABLE IF NOT EXISTS`** — always use; fresh databases already have the table from the schema
+- **`CREATE TABLE IF NOT EXISTS`** — always emit this form, even when upstream wrote a bare `CREATE TABLE`; fresh databases already have the table from the schema
 - **`ALTER TABLE ... ADD COLUMN`** — use as-is; the `version !in previousMigrations` guard handles idempotency for existing databases
 - Never call `BudgetDatabase.Schema.migrate()` — upstream doesn't use `user_version`
 
