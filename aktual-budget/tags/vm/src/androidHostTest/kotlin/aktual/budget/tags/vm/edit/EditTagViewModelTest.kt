@@ -10,8 +10,8 @@ import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.tombstoneTag
 import aktual.core.model.UuidGenerator
-import aktual.prefs.AppPreferences
-import aktual.prefs.AppPreferencesImpl
+import aktual.prefs.TagPreferences
+import aktual.prefs.TagPreferencesImpl
 import aktual.test.TestSyncController
 import aktual.test.assertThatNextEmission
 import aktual.test.buildPreferences
@@ -52,7 +52,7 @@ class EditTagViewModelTest {
 
   @Test
   fun `New tag seeds its colour from the last used colour`() = runDatabaseTest { scope ->
-    val preferences = AppPreferencesImpl(scope.buildPreferences())
+    val preferences = TagPreferencesImpl(scope.buildPreferences())
     preferences.lastUsedTagColor.set("#AABBCC")
 
     val viewModel = createViewModel(scope, id = null, preferences = preferences)
@@ -199,7 +199,7 @@ class EditTagViewModelTest {
   @Test
   fun `Saving a coloured tag remembers the colour for the next new tag`() =
     runDatabaseTest { scope ->
-      val preferences = AppPreferencesImpl(scope.buildPreferences())
+      val preferences = TagPreferencesImpl(scope.buildPreferences())
       val viewModel = createViewModel(scope, id = null, preferences = preferences)
       viewModel.awaitLoaded()
 
@@ -358,7 +358,7 @@ class EditTagViewModelTest {
     id: TagId?,
     uuid: UuidGenerator = UuidGenerator { GENERATED_ID },
     sync: BudgetSyncController = TestSyncController(),
-    preferences: AppPreferences = AppPreferencesImpl(scope.buildPreferences()),
+    preferences: TagPreferences = TagPreferencesImpl(scope.buildPreferences()),
   ): EditTagViewModel {
     tagsDao = TagsDao(this)
     return EditTagViewModel(

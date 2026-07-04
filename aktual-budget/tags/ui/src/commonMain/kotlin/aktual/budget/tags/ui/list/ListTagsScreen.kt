@@ -1,6 +1,7 @@
 package aktual.budget.tags.ui.list
 
 import aktual.budget.model.TagId
+import aktual.budget.model.TagSort
 import aktual.budget.tags.vm.list.Empty
 import aktual.budget.tags.vm.list.Failure
 import aktual.budget.tags.vm.list.ListTagsEvent
@@ -14,6 +15,7 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
 import aktual.core.icons.material.Search
 import aktual.core.icons.material.SearchOff
+import aktual.core.icons.material.Sort
 import aktual.core.l10n.Plurals
 import aktual.core.l10n.Strings
 import aktual.core.nav.EditTagNavigator
@@ -122,6 +124,7 @@ internal fun ListTagsScreen(
         is EditTag -> toEdit(action.id)
         is DeleteTag -> viewModel.delete(action.id)
         is ViewTransactions -> toTransactions(action.id)
+        is SetSort -> viewModel.setSort(action.sort)
       }
     },
   )
@@ -140,6 +143,18 @@ private fun ListTagsScaffold(
   val successState = state as? Success
 
   val isSearchActive = successState?.isSearchActive == true
+  var showSortDialog by remember { mutableStateOf(false) }
+
+  if (showSortDialog) {
+    TagSortDialog(
+      sort = successState?.sort ?: TagSort.Default,
+      onConfirm = { sort ->
+        onAction(SetSort(sort))
+        showSortDialog = false
+      },
+      onDismiss = { showSortDialog = false },
+    )
+  }
 
   Scaffold(
     modifier = modifier.fillMaxSize().imePadding(),
@@ -149,6 +164,13 @@ private fun ListTagsScaffold(
         colors = colors.transparentTopAppBarColors(),
         title = { Title(isSearchActive, successState, onAction) },
         actions = {
+          if (successState != null) {
+            BareIconButton(
+              imageVector = MaterialIcons.Sort,
+              contentDescription = Strings.tagsSort,
+              onClick = { showSortDialog = true },
+            )
+          }
           BareIconButton(
             imageVector = if (isSearchActive) MaterialIcons.SearchOff else MaterialIcons.Search,
             contentDescription = Strings.tagsFilter,
@@ -339,9 +361,24 @@ private fun TagsList(
 
 private class ListTagsStateProvider :
   ColoredParameterProvider<ListTagsState>(
-    Success(tags = TagsPreview.all, filterText = "", isSearchActive = false),
-    Success(tags = TagsPreview.all, filterText = "gro", isSearchActive = true),
-    Success(tags = persistentListOf(), filterText = "xyz", isSearchActive = true),
+    Success(
+      tags = TagsPreview.all,
+      filterText = "",
+      isSearchActive = false,
+      sort = TagSort.Default,
+    ),
+    Success(
+      tags = TagsPreview.all,
+      filterText = "gro",
+      isSearchActive = true,
+      sort = TagSort.Default,
+    ),
+    Success(
+      tags = persistentListOf(),
+      filterText = "xyz",
+      isSearchActive = true,
+      sort = TagSort.Default,
+    ),
     Empty,
     Loading,
     Failure("Database connection lost"),

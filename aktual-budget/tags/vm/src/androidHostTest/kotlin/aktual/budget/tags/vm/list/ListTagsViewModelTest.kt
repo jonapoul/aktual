@@ -7,8 +7,12 @@ import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
+import aktual.budget.model.TagSort
 import aktual.budget.tags.vm.insertTag
+import aktual.prefs.TagPreferences
+import aktual.prefs.TagPreferencesImpl
 import aktual.test.TestSyncController
+import aktual.test.buildPreferences
 import aktual.test.runDatabaseTest
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher
@@ -259,9 +263,63 @@ class ListTagsViewModelTest {
       }
     }
 
+  @Test
+  fun `Sorts alphabetically by name ascending by default`() = runDatabaseTest { scope ->
+    insertTag(id = "rent-id", tag = "rent")
+    insertTag(id = "apple-id", tag = "apple")
+    insertTag(id = "mango-id", tag = "Mango")
+
+    val viewModel = createViewModel(scope)
+
+    viewModel.state.test {
+      val success = awaitItem() as Success
+      // case-insensitive A-Z, regardless of insertion order
+      assertThat(success)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("apple", "Mango", "rent")
+      assertThat(success.sort).isEqualTo(TagSort(TagSort.Field.Name, TagSort.Direction.Ascending))
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `setSort persists the choice and re-sorts the list`() = runDatabaseTest { scope ->
+    insertTag(id = "apple-id", tag = "apple")
+    insertTag(id = "rent-id", tag = "rent")
+
+    val preferences = TagPreferencesImpl(scope.buildPreferences())
+    val viewModel = createViewModel(scope, preferences = preferences)
+
+    viewModel.state.test {
+      // starts ascending
+      assertThat(awaitItem() as Success)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("apple", "rent")
+
+      // switching to descending flips the order
+      viewModel.setSort(TagSort(TagSort.Field.Name, TagSort.Direction.Descending))
+      var success = awaitItem() as Success
+      while (success.sort.direction != TagSort.Direction.Descending) {
+        success = awaitItem() as Success
+      }
+      assertThat(success)
+        .prop(Success::tags)
+        .extracting(TagItem::tag)
+        .containsExactly("rent", "apple")
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    // and the choice is remembered
+    assertThat(preferences.sortField.get()).isEqualTo(TagSort.Field.Name)
+    assertThat(preferences.sortDirection.get()).isEqualTo(TagSort.Direction.Descending)
+  }
+
   private fun BudgetDatabase.createViewModel(
     scope: TestScope,
     sync: BudgetSyncController = TestSyncController(),
+    preferences: TagPreferences = TagPreferencesImpl(scope.buildPreferences()),
   ) =
     ListTagsViewModel(
       savedState = SavedStateHandle(),
@@ -269,6 +327,7 @@ class ListTagsViewModelTest {
       transactionDao =
         TransactionDao(database = this, contexts = TestCoroutineContexts(scope.standardDispatcher)),
       syncController = sync,
+      preferences = preferences,
     )
 
   private class FailingSyncController : BudgetSyncController {
