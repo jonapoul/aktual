@@ -4,6 +4,7 @@ import aktual.budget.tags.ui.contrastingTextColor
 import aktual.budget.tags.vm.toColorOrNull
 import aktual.budget.tags.vm.toHex
 import aktual.core.icons.material.MaterialIcons
+import aktual.core.icons.material.Shuffle
 import aktual.core.icons.material.Tune
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTextField
@@ -14,6 +15,7 @@ import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredBooleanParameters
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.IconButtonColorProvider
+import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.textField
 import androidx.compose.animation.AnimatedVisibility
@@ -63,6 +65,7 @@ import androidx.compose.ui.util.fastForEach
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+import kotlin.random.Random
 import kotlinx.collections.immutable.persistentListOf
 
 @Suppress("LongMethod")
@@ -150,12 +153,21 @@ internal fun TagColorPicker(
         isError = hexError,
       )
 
-      BareIconButton(
+      NormalIconButton(
+        imageVector = MaterialIcons.Shuffle,
+        contentDescription = Strings.tagsCreateColorRandom,
+        // grid: pick from the presets; advanced: any colour is fair game
+        onClick = {
+          onColorChange(if (advancedVisible) randomColor() else TAG_COLOR_PRESETS.random())
+        },
+      )
+
+      NormalIconButton(
         imageVector = MaterialIcons.Tune,
         contentDescription = Strings.tagsCreateColorAdvanced,
         onClick = { advancedVisible = !advancedVisible },
         colors =
-          if (advancedVisible) IconButtonColorProvider.Primary else IconButtonColorProvider.Bare,
+          if (advancedVisible) IconButtonColorProvider.Primary else IconButtonColorProvider.Normal,
       )
     }
 
@@ -321,6 +333,9 @@ internal val TAG_COLOR_PRESETS =
     Color(0xFFE4D3C3),
     Color(0xFFDADADA),
   )
+
+private fun randomColor(): Color =
+  Color(red = Random.nextInt(256), green = Random.nextInt(256), blue = Random.nextInt(256))
 
 // Rotates a composable 90° and swaps its measured bounds so it occupies the rotated footprint.
 // Modifiers chained after this describe the composable in its original (horizontal) orientation.
