@@ -155,6 +155,7 @@ dependencies {
   implementation(libs.androidx.splash)
   implementation(libs.haze)
   implementation(libs.kotlinx.coroutines.core)
+  debugImplementation(libs.leakcanary)
   implementation(libs.logcat)
   implementation(libs.material)
   implementation(libs.metrox.android)
