@@ -113,7 +113,7 @@ proguard = { module = "com.guardsquare:proguard-gradle ", version = "7.9.1" }
 redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version = "3.1.0" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version = "1.5.0-beta02" }
+shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version = "1.5.0" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-dialect = { module = "app.cash.sqldelight:sqlite-3-38-dialect", version.ref = "sqldelight" }
 sqldelight-driver-androidx = { module = "com.eygraber:sqldelight-androidx-driver", version = "0.2.1" }
