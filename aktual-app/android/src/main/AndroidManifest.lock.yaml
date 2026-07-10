@@ -41,9 +41,17 @@ variants:
   debug:
     namespace: dev.jonpoulton.aktual.app.dev
     permissions:
+    - android.permission.POST_NOTIFICATIONS
+    - android.permission.READ_EXTERNAL_STORAGE
+    - android.permission.WRITE_EXTERNAL_STORAGE
     - dev.jonpoulton.aktual.app.dev.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
+    exports:
+      activity:
+      - leakcanary.internal.activity.LeakActivity
+      activity-alias:
+      - leakcanary.internal.activity.LeakLauncherActivity
   release:
     namespace: dev.jonpoulton.aktual.app
     permissions:
     - dev.jonpoulton.aktual.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION
-fingerprint: 37658cde6d3156ef32c3b03f56050bdd
+fingerprint: be3ea39f51dec81588ac87d1e940d43b
