@@ -27,7 +27,7 @@ jobs:
       shell: ${{ steps.filter.outputs.shell }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
-      - uses: dorny/paths-filter@fbd0ab8f3e69293af611ebaee6363fc25e6d187d # v4
+      - uses: dorny/paths-filter@7b450fff21473bca461d4b92ce414b9d0420d706 # v4
         id: filter
         with:
           filters: |
@@ -89,7 +89,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           config: ./config/betterleaks.toml
           fail-on-leak: 'true'
-      - uses: github/codeql-action/upload-sarif@8aad20d150bbac5944a9f9d289da16a4b0d87c1e # v4
+      - uses: github/codeql-action/upload-sarif@99df26d4f13ea111d4ec1a7dddef6063f76b97e9 # v4
         if: always()
         with:
           sarif_file: ${{ steps.betterleaks.outputs.sarif-path }}
@@ -273,7 +273,7 @@ jobs:
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7
 
-      - uses: anthropics/claude-code-action@a92e7c70a4da9793dc164451d829089dc057a464 # v1
+      - uses: anthropics/claude-code-action@536f2c32a39763739000b0e1ac69ca2647d97ce9 # v1
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed_bots: 'renovate'
