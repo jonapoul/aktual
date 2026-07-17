@@ -72,7 +72,7 @@ compose-uiTest = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "c
 compose-uiTooling = { module = "org.jetbrains.compose.ui:ui-tooling", version.ref = "compose" }
 compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-preview", version.ref = "compose" }
 compose-uiUtil = { module = "org.jetbrains.compose.ui:ui-util", version.ref = "compose" }
-compose-viewmodelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.10.0" }
+compose-viewmodelNavigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version = "2.11.0" }
 detekt-api = { module = "dev.detekt:detekt-api", version.ref = "detekt" }
 detekt-test = { module = "dev.detekt:detekt-test", version.ref = "detekt" }
 detekt-testJunit = { module = "dev.detekt:detekt-test-junit", version.ref = "detekt" }
