@@ -68,6 +68,7 @@ checkboxText
 checkboxToggleBackground
 checkboxToggleBackgroundSelected
 checkboxToggleDisabled
+datePickerRangeBackground
 errorBackground
 errorBorder
 errorText

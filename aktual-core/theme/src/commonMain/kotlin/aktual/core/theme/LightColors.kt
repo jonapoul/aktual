@@ -154,6 +154,7 @@ data object LightColors : DefaultColors {
   override val calendarItemBackground = ColorPalette.navy800
   override val calendarSelectedBackground = ColorPalette.navy500
   override val calendarCellBackground = ColorPalette.navy100
+  override val datePickerRangeBackground = ColorPalette.purple150
 
   override val buttonBareText = buttonNormalText
   override val buttonBareTextHover = buttonNormalText
