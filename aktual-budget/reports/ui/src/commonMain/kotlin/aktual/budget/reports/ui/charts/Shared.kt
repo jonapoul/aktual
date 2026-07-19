@@ -128,7 +128,6 @@ internal fun amountYAxisFormatter(
   }
 
 @Composable
-@Suppress("UnnecessaryComposable")
 internal fun monthStringsMap(): ImmutableMap<Month, String> =
   Month.entries.associateWith { month -> month.stringShort() }.toImmutableMap()
 
