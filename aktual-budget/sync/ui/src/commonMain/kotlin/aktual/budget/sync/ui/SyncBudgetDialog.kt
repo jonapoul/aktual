@@ -340,7 +340,6 @@ private fun PasswordEntryLayout(
 
 @Stable
 @Composable
-@Suppress("UnnecessaryComposable")
 private fun buildPasswordText(colors: Colors, onAction: SyncBudgetActionHandler): AnnotatedString =
   buildAnnotatedString {
     append(Strings.syncPasswordText)
