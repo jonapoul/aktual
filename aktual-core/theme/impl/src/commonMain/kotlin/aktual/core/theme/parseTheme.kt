@@ -192,8 +192,7 @@ internal fun parseTheme(summary: CustomThemeSummary, css: String): CustomColors 
             calendarSelectedBackground =
               "calendarSelectedBackground".attr(calendarSelectedBackground),
             calendarCellBackground = "calendarCellBackground".attr(calendarCellBackground),
-            datePickerRangeBackground =
-              "datePickerRangeBackground".attr(datePickerRangeBackground),
+            datePickerRangeBackground = "datePickerRangeBackground".attr(datePickerRangeBackground),
             buttonBareText = "buttonBareText".attr(buttonBareText),
             buttonBareTextHover = "buttonBareTextHover".attr(buttonBareTextHover),
             buttonBareBackground = "buttonBareBackground".attr(buttonBareBackground),
