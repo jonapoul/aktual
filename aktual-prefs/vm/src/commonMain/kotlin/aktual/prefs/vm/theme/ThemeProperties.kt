@@ -128,6 +128,7 @@ fun Colors.properties(): ImmutableList<ThemeProperty> =
       "calendarItemBackground" to calendarItemBackground,
       "calendarSelectedBackground" to calendarSelectedBackground,
       "calendarCellBackground" to calendarCellBackground,
+      "datePickerRangeBackground" to datePickerRangeBackground,
       "buttonBareText" to buttonBareText,
       "buttonBareTextHover" to buttonBareTextHover,
       "buttonBareBackground" to buttonBareBackground,

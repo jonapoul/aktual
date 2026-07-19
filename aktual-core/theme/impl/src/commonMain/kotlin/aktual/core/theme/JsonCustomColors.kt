@@ -397,6 +397,9 @@ internal data class JsonCustomColors(
   override val calendarCellBackground: Color
     get() = button.calendarCellBackground
 
+  override val datePickerRangeBackground: Color
+    get() = button.datePickerRangeBackground
+
   override val buttonBareText: Color
     get() = button.buttonBareText
 
@@ -855,6 +858,7 @@ internal data class ButtonColors(
   @SerialName("calendarItemBackground") val calendarItemBackground: Color,
   @SerialName("calendarSelectedBackground") val calendarSelectedBackground: Color,
   @SerialName("calendarCellBackground") val calendarCellBackground: Color,
+  @SerialName("datePickerRangeBackground") val datePickerRangeBackground: Color,
   @SerialName("buttonBareText") val buttonBareText: Color,
   @SerialName("buttonBareTextHover") val buttonBareTextHover: Color,
   @SerialName("buttonBareBackground") val buttonBareBackground: Color,

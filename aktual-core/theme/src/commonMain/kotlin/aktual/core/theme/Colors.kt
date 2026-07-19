@@ -154,6 +154,7 @@ sealed interface Colors {
   val calendarItemBackground: Color
   val calendarSelectedBackground: Color
   val calendarCellBackground: Color
+  val datePickerRangeBackground: Color
 
   val buttonBareText: Color
   val buttonBareTextHover: Color

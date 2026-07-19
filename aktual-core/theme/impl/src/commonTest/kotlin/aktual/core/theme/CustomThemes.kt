@@ -160,6 +160,7 @@ internal val ShadesOfCoffeeTheme =
         calendarItemBackground = Color(0xFF243B53),
         calendarSelectedBackground = Color(0xFF627d98),
         calendarCellBackground = Color(0xFFe8ecf0),
+        datePickerRangeBackground = Color(0xFFDAC4FF),
         buttonBareText = Color(0xFF102A43),
         buttonBareTextHover = Color(0xFF102A43),
         buttonBareBackground = Color.Transparent,

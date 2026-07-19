@@ -35,7 +35,9 @@ Aktual is an **unofficial** Kotlin Multiplatform client for [Actual personal bud
 ./gradlew :aktual-app:desktop:run
 
 # Tests — always module-specific. `./gradlew allTests` pegs the machine; don't run it.
-./gradlew :aktual-account:vm:test
+# Never pass a bare `:module:test` — it's ambiguous for KMP modules. Use `testAll` (both
+# targets), `testAndroidHostTest`, or `desktopTest`; run the `run-module-tests` skill to pick.
+./gradlew :aktual-account:vm:testAll
 
 # Formatting
 ./scripts/ktfmt.sh            # format files changed since main
