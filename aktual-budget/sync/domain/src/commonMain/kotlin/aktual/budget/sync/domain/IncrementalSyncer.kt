@@ -10,12 +10,12 @@ import aktual.budget.model.MerkleOperations
 import aktual.budget.model.Timestamp
 import aktual.budget.proto.SyncRequestEncoder
 import dev.zacsweers.metro.Inject
-import io.ktor.utils.io.CancellationException
 import kotlin.time.Clock
 import kotlin.time.Duration.Companion.minutes
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.update
-import kotlinx.io.IOException
 import logcat.logcat
+import okio.IOException
 
 @Inject
 internal class IncrementalSyncer(

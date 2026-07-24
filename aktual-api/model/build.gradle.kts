@@ -11,8 +11,8 @@ kotlin {
   commonMainDependencies {
     api(libs.compose.runtime)
     api(libs.kotlinx.serialization.json)
+    api(libs.okio)
     api(project(":aktual-budget:data:encryption"))
-    api(project(":aktual-core:theme:model"))
   }
 
   commonTestDependencies {

@@ -10,6 +10,7 @@ kotlin {
     api(libs.alakazam.test)
     api(libs.androidx.datastore.core)
     api(libs.androidx.datastore.prefs)
+    api(libs.androidx.datastore.prefsCore)
     api(libs.assertk)
     api(libs.burst)
     api(libs.burstCoroutines)
@@ -20,8 +21,13 @@ kotlin {
     api(libs.okio)
     api(libs.turbine)
     api(project(":aktual-budget:data:db"))
+    api(project(":aktual-budget:model"))
     api(project(":aktual-core"))
+    api(project(":aktual-di:core"))
+    implementation(libs.kotlinx.immutable)
+    implementation(libs.sqldelight.async)
     implementation(libs.sqldelight.driver.sqlite)
+    implementation(libs.sqldelight.runtime)
   }
 
   androidMainDependencies {

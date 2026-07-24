@@ -5,7 +5,9 @@ package aktual.gradle
 import aktual.gradle.dsl.apply
 import aktual.gradle.dsl.configure
 import aktual.gradle.dsl.dependencies
+import aktual.gradle.dsl.desktopMainDependencies
 import aktual.gradle.dsl.invoke
+import aktual.gradle.dsl.kotlin
 import blueprint.core.get
 import blueprint.core.libs
 import blueprint.core.withAnyId
@@ -54,6 +56,20 @@ class ConventionCompose : Plugin<Project> {
 
       plugins.withAnyId("com.android.lint", "com.android.base") {
         dependencies { "lintChecks"(libs["androidx.compose.lint"]) }
+      }
+
+      pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+        dependencies {
+          "androidRuntimeClasspath"(libs["compose.uiTooling"])
+        }
+
+        kotlin {
+          desktopMainDependencies {
+            implementation(
+              extensions.getByType(ComposePlugin.Dependencies::class.java).desktop.currentOs
+            )
+          }
+        }
       }
     }
 }

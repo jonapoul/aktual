@@ -8,6 +8,7 @@ optIn(EXPERIMENTAL_MATERIAL_3)
 
 kotlin {
   commonMainDependencies {
+    api(libs.compose.foundation)
     api(project(":aktual-budget:transactions:vm"))
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))

@@ -13,7 +13,6 @@ kotlin {
     api(libs.kotlinx.datetime)
     implementation(project(":aktual-api"))
     implementation(project(":aktual-prefs"))
-    implementation(libs.kotlinx.serialization.core)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.ktor.core)
     implementation(libs.okio)

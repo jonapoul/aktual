@@ -9,14 +9,20 @@ optIn(EXPERIMENTAL_MATERIAL_3)
 
 kotlin {
   commonMainDependencies {
+    api(libs.compose.foundation)
+    api(libs.compose.material3)
     api(libs.compose.material3WindowSize)
+    api(libs.compose.ui)
+    api(libs.compose.uiToolingPreview)
     api(libs.haze)
     api(libs.kotlinx.datetime)
+    api(libs.kotlinx.immutable)
     api(libs.shimmer)
     api(project(":aktual-budget:model"))
     api(project(":aktual-core"))
     api(project(":aktual-core:icons"))
     api(project(":aktual-core:theme"))
+    implementation(libs.compose.resources)
     implementation(project(":aktual-core:l10n"))
   }
 

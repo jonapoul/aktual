@@ -6,11 +6,39 @@ rootProject.name = "aktual"
 
 apply(from = "gradle/repositories.gradle.kts")
 
-pluginManagement { includeBuild("build-logic") }
+pluginManagement {
+  includeBuild("build-logic")
+
+  // Repositories for resolving the plugins {} block below must be declared in a literal
+  // pluginManagement block. Gradle evaluates that block before it runs apply(from = ...), so the
+  // repos in gradle/repositories.gradle.kts aren't visible here. Only the repos those plugins need:
+  // google() for AGP, the portal for everything else.
+  repositories {
+    google {
+      mavenContent {
+        includeGroupByRegex(".*android.*")
+        includeGroupByRegex(".*google.*")
+      }
+    }
+    gradlePluginPortal()
+  }
+}
+
+// https://github.com/autonomousapps/dependency-analysis-gradle-plugin/issues/1661#issue-4167340036
+buildscript {
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.10")
+  }
+}
 
 plugins {
-  id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+  id("com.android.application") version "9.3.0" apply false
+  id("com.android.kotlin.multiplatform.library") version "9.3.0" apply false
+  id("com.autonomousapps.build-health") version "3.17.0"
   id("com.gradle.develocity") version "4.5.0"
+  id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+  id("org.jetbrains.kotlin.jvm") version "2.4.10" apply false
+  id("org.jetbrains.kotlin.multiplatform") version "2.4.10" apply false
   id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.9"
 }
 

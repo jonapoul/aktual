@@ -9,8 +9,11 @@ plugins { id("aktual.module.di") }
 
 kotlin {
   commonMainDependencies {
+    api(libs.alakazam.kotlin)
     api(libs.androidx.datastore.core)
     api(libs.androidx.datastore.prefs)
+    api(libs.androidx.datastore.prefsCore)
+    api(libs.kotlinx.coroutines.core)
     api(libs.ktor.core)
     api(libs.sqldelight.runtime)
     api(project(":aktual-about:data"))
@@ -22,6 +25,8 @@ kotlin {
     api(project(":aktual-di:bindings"))
     api(project(":aktual-di:runlevel:impl"))
     api(project(":aktual-prefs:impl"))
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.okio)
   }
 }
 

@@ -9,9 +9,12 @@ plugins {
 
 kotlin {
   commonMainDependencies {
+    api(libs.androidx.datastore.core)
+    api(libs.androidx.datastore.prefsCore)
+    api(libs.kotlinx.coroutines.core)
+    api(libs.okio)
     api(project(":aktual-core:theme:model"))
     api(project(":aktual-prefs"))
-    implementation(libs.androidx.datastore.core)
     implementation(libs.androidx.datastore.prefs)
   }
 

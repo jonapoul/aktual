@@ -125,21 +125,25 @@ val copyLicenseeReportToResources =
 
 tasks.processResources.configure { dependsOn(copyLicenseeReportToResources) }
 
-// Can't remove this afterEvaluate because apparently the compose plugin doesn't create the task in
-// a normal way
 afterEvaluate {
+  // Can't remove this afterEvaluate because apparently the compose plugin doesn't create the task
+  // in a normal way
   tasks.named("proguardReleaseJars").configure {
     // Proguard won't create the path for us...
     val outputsDir = layout.buildDirectory.dir("outputs")
     doFirst { outputsDir.get().asFile.mkdirs() }
   }
+
+  // DAGP is added from settings file, so it won't exist at configure time. So we have to do this in
+  // afterEvaluate
+  tasks.named("explodeCodeSourceMain").configure {
+    dependsOn(copyLicenseeReportToResources)
+  }
 }
 
 dependencies {
   implementation(compose.desktop.currentOs)
-  implementation(libs.androidx.lifecycle.runtime.compose)
   implementation(libs.androidx.lifecycle.viewmodel)
-  implementation(libs.compose.material3)
   implementation(libs.kotlinx.coroutines.swing)
   implementation(libs.metrox.viewmodel)
   implementation(libs.metrox.viewmodel.compose)

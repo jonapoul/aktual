@@ -4,7 +4,14 @@ import blueprint.core.commonTestDependencies
 plugins { id("aktual.module.viewmodel") }
 
 kotlin {
-  commonMainDependencies { api(project(":aktual-api")) }
+  commonMainDependencies {
+    api(libs.alakazam.kotlin)
+    api(project(":aktual-api"))
+    api(project(":aktual-di:core"))
+    implementation(libs.kotlinx.serialization.core)
+  }
 
-  commonTestDependencies { implementation(project(":aktual-test")) }
+  commonTestDependencies {
+    implementation(project(":aktual-test"))
+  }
 }
