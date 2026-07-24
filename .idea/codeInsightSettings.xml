@@ -14,14 +14,18 @@
       <name>androidx.core.content.pm.ShortcutInfoCompat.Surface</name>
       <name>com.sun.tools.javac.comp.Flow</name>
       <name>dev.zacsweers.metro.AppScope</name>
+      <name>io.ktor.utils.io.CancellationException</name>
       <name>jakarta.inject.Inject</name>
+      <name>java.io.IOException</name>
       <name>java.lang.reflect.Modifier</name>
       <name>java.nio.file.WatchEvent.Modifier</name>
       <name>java.time.format.TextStyle</name>
       <name>java.util.Calendar</name>
+      <name>java.util.concurrent.CancellationException</name>
       <name>java.util.concurrent.Flow</name>
       <name>javax.annotation.concurrent.Immutable</name>
       <name>jdk.internal.org.jline.utils.Colors</name>
+      <name>kotlin.coroutines.cancellation.CancellationException</name>
       <name>org.gradle.internal.impldep.org.apache.maven.artifact.repository.metadata.Plugin</name>
       <name>org.gradle.internal.impldep.org.apache.maven.model.Plugin</name>
       <name>org.intellij.lang.annotations.Flow</name>

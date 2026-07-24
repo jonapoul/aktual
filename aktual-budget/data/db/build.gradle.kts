@@ -29,22 +29,21 @@ tasks.named("prepareKotlinIdeaImport") {
 
 kotlin {
   commonMainDependencies {
+    api(libs.alakazam.kotlin)
+    api(libs.kotlinx.coroutines.core)
     api(libs.kotlinx.datetime)
+    api(libs.kotlinx.serialization.json)
     api(libs.okio)
     api(project(":aktual-budget"))
-    api(project(":aktual-core:model"))
     api(project(":aktual-di:core"))
     implementation(libs.androidx.sqliteBundled)
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.coroutines)
     implementation(libs.sqldelight.driver.androidx)
-    implementation(libs.sqldelight.primitive)
     implementation(libs.sqldelight.runtime)
     implementation(project(":aktual-core:logging"))
   }
 
   commonTestDependencies {
-    implementation(libs.sqldelight.driver.sqlite)
     implementation(project(":aktual-test"))
   }
 }

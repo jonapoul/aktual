@@ -23,7 +23,6 @@ kotlin {
     api(libs.alakazam.kotlin)
     api(libs.androidx.paging.common)
     api(libs.kotlinx.datetime)
-    implementation(project(":aktual-prefs"))
   }
 
   androidHostTestDependencies {

@@ -34,6 +34,6 @@ kotlin {
   commonMainDependencies {
     api(libs.compose.resources)
     api(libs.compose.runtime)
-    api(libs.compose.ui)
+    api(libs.compose.uiGraphics)
   }
 }

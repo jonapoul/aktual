@@ -5,7 +5,7 @@ import aktual.core.model.ThemeId
 import aktual.di.AppScope
 import aktual.prefs.ThemePreferences
 import dev.zacsweers.metro.ContributesBinding
-import kotlin.coroutines.cancellation.CancellationException
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
