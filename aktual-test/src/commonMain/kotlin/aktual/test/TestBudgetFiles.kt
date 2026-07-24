@@ -1,6 +1,6 @@
 package aktual.test
 
-import aktual.budget.model.BudgetFiles
+import aktual.budget.BudgetFiles
 import okio.FileSystem
 import okio.Path
 

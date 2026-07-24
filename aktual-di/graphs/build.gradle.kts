@@ -6,7 +6,7 @@ kotlin {
   commonMainDependencies {
     api(libs.metrox.viewmodel)
     api(libs.sqldelight.runtime)
-    api(project(":aktual-budget:model"))
+    api(project(":aktual-budget"))
     api(project(":aktual-core:model"))
     api(project(":aktual-di:core"))
   }

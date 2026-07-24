@@ -1,6 +1,6 @@
 package aktual.core.ui
 
-import aktual.core.model.AppCloser
+import aktual.core.AppCloser
 import android.app.Activity
 import androidx.activity.compose.BackHandler as AndroidBackHandler
 import androidx.compose.runtime.Composable

@@ -1,9 +1,9 @@
 package aktual.budget.proto
 
+import aktual.budget.BudgetLocalPreferences
 import aktual.budget.encryption.BufferEncrypter
 import aktual.budget.encryption.EncryptResult
 import aktual.budget.model.BudgetId
-import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Message
 import aktual.budget.model.Timestamp

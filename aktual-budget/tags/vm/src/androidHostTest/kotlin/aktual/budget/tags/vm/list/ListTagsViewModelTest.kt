@@ -1,9 +1,9 @@
 package aktual.budget.tags.vm.list
 
+import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
-import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId

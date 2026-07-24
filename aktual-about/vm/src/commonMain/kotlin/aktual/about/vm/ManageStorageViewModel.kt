@@ -1,9 +1,9 @@
 package aktual.about.vm
 
-import aktual.budget.model.BudgetFiles
+import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
-import aktual.core.model.AppDirectory
+import aktual.core.AppDirectory
 import aktual.core.model.Bytes
 import aktual.core.model.Percent
 import aktual.core.model.bytes

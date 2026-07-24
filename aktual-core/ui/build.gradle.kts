@@ -14,6 +14,7 @@ kotlin {
     api(libs.kotlinx.datetime)
     api(libs.shimmer)
     api(project(":aktual-budget:model"))
+    api(project(":aktual-core"))
     api(project(":aktual-core:icons"))
     api(project(":aktual-core:theme"))
     implementation(project(":aktual-core:l10n"))

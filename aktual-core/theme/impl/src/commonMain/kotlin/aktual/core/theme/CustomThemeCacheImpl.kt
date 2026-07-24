@@ -1,6 +1,6 @@
 package aktual.core.theme
 
-import aktual.core.model.AppDirectory
+import aktual.core.AppDirectory
 import aktual.di.AppScope
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.ContributesBinding

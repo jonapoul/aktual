@@ -1,8 +1,8 @@
 package aktual.budget.tags.vm.edit
 
+import aktual.budget.BudgetSyncController
 import aktual.budget.db.dao.DatabaseTables.TAGS
 import aktual.budget.db.dao.TagsDao
-import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
@@ -11,7 +11,7 @@ import aktual.budget.model.tombstone
 import aktual.budget.tags.vm.list.toTagItem
 import aktual.budget.tags.vm.toColorOrNull
 import aktual.budget.tags.vm.toHex
-import aktual.core.model.UuidGenerator
+import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
 import aktual.prefs.TagPreferences
 import alakazam.kotlin.requireMessage

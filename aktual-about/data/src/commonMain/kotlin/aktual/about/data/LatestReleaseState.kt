@@ -1,5 +1,7 @@
 package aktual.about.data
 
+import github.api.model.GithubRelease
+
 sealed interface LatestReleaseState {
   // Releases found, but nothing newer than the one installed
   data object NoNewUpdate : LatestReleaseState

@@ -1,10 +1,10 @@
 package aktual.budget.rules.vm.edit
 
+import aktual.budget.BudgetSyncController
 import aktual.budget.db.DbJson
 import aktual.budget.db.Rules
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.RulesDao
-import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.ConditionType
@@ -21,7 +21,7 @@ import aktual.budget.rules.vm.EntityListFetcher
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.edit.EditRuleState.Failure
-import aktual.core.model.UuidGenerator
+import aktual.core.UuidGenerator
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable

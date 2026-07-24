@@ -20,6 +20,7 @@ kotlin {
     api(libs.okio)
     api(libs.turbine)
     api(project(":aktual-budget:data:db"))
+    api(project(":aktual-core"))
     implementation(libs.sqldelight.driver.sqlite)
   }
 

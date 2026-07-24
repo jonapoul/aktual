@@ -1,0 +1,9 @@
+package aktual.api.client
+
+import dev.zacsweers.metro.Qualifier
+
+@Qualifier annotation class AktualClient
+
+@Qualifier annotation class ThemeClient
+
+@Qualifier annotation class GithubClient

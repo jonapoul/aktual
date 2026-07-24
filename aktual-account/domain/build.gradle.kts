@@ -6,7 +6,7 @@ plugins { id("aktual.module.kotlin") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-core:api"))
+    api(project(":aktual-api"))
     api(project(":aktual-di:runlevel"))
     api(project(":aktual-prefs"))
     implementation(project(":aktual-core:logging"))
@@ -15,5 +15,5 @@ kotlin {
 
   commonTestDependencies { implementation(project(":aktual-test:api")) }
 
-  androidHostTestDependencies { implementation(project(":aktual-core:api:impl")) }
+  androidHostTestDependencies { implementation(project(":aktual-api:impl")) }
 }

@@ -1,6 +1,6 @@
 package aktual.test
 
-import aktual.budget.model.BudgetSyncController
+import aktual.budget.BudgetSyncController
 import aktual.budget.model.LocalChange
 
 class TestSyncController : BudgetSyncController {

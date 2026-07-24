@@ -1,5 +1,7 @@
 package aktual.core.theme
 
+import aktual.api.client.ThemeApi
+import aktual.api.client.ThemeApiImpl
 import aktual.test.ThemeResponses
 import aktual.test.emptyMockEngine
 import aktual.test.latestRequest

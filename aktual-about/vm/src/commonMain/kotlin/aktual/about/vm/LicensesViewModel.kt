@@ -2,7 +2,7 @@ package aktual.about.vm
 
 import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
-import aktual.core.model.UrlOpener
+import aktual.core.UrlOpener
 import aktual.di.AppScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState

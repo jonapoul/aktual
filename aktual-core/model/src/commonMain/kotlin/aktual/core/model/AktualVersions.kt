@@ -1,10 +1,7 @@
 package aktual.core.model
 
-import aktual.di.AppScope
 import alakazam.kotlin.StateHolder
 import androidx.compose.runtime.Immutable
-import dev.zacsweers.metro.Inject
-import dev.zacsweers.metro.SingleIn
 import kotlinx.coroutines.flow.update
 
 @Immutable
@@ -23,8 +20,6 @@ data class AktualVersions(val app: String, val server: String?) {
   }
 }
 
-@Inject
-@SingleIn(AppScope::class)
 class AktualVersionsStateHolder(private val buildConfig: BuildConfig) :
   StateHolder<AktualVersions>(from(buildConfig, server = null)) {
   fun set(serverVersion: String?) = update { from(buildConfig, serverVersion) }

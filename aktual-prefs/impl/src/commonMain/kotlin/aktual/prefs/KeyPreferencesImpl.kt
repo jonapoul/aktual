@@ -1,6 +1,6 @@
 package aktual.prefs
 
-import aktual.core.model.EncryptionKeys
+import aktual.core.EncryptionKeys
 import aktual.core.model.KeyId
 import aktual.core.model.base64
 import aktual.di.AppScope

@@ -8,7 +8,8 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.compose.uiGraphics)
-    api(project(":aktual-core:model"))
+    api(project(":aktual-core:theme:model"))
     compileOnly(libs.compose.runtime)
+    implementation(project(":aktual-core:logging"))
   }
 }

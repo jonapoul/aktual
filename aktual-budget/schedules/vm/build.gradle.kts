@@ -2,4 +2,9 @@ import blueprint.core.commonMainDependencies
 
 plugins { id("aktual.module.viewmodel") }
 
-kotlin { commonMainDependencies { api(project(":aktual-budget:data:db")) } }
+kotlin {
+  commonMainDependencies {
+    api(project(":aktual-budget:data:db"))
+    api(project(":aktual-core"))
+  }
+}

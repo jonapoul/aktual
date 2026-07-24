@@ -12,7 +12,7 @@ kotlin {
     api(libs.compose.resources)
     api(libs.compose.runtime)
     api(libs.molecule)
-    api(project(":aktual-core:api"))
+    api(project(":aktual-core"))
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
     api(project(":aktual-di:runlevel"))

@@ -1,7 +1,7 @@
 package aktual.di
 
+import aktual.budget.BudgetFiles
 import aktual.budget.db.SqlDriverFactory
-import aktual.budget.model.BudgetFiles
 import aktual.prefs.AppPreferences
 import dev.zacsweers.metro.ContributesBinding
 

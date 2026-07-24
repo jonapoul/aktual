@@ -2,7 +2,7 @@ package aktual.budget.sync.vm
 
 import aktual.api.model.sync.UserFile
 import aktual.api.model.sync.UserWithAccess
-import aktual.budget.model.BudgetFiles
+import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Timestamp

@@ -16,7 +16,7 @@ import aktual.budget.model.UpcomingLength
 import aktual.budget.model.upcomingDays
 import aktual.budget.schedules.vm.Schedule
 import aktual.budget.schedules.vm.ScheduleStatus
-import aktual.core.model.Calendar
+import aktual.core.Calendar
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable

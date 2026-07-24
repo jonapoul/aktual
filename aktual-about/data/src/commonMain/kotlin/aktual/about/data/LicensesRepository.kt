@@ -1,6 +1,6 @@
 package aktual.about.data
 
-import aktual.core.model.Assets
+import aktual.core.Assets
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
 import dev.zacsweers.metro.Inject

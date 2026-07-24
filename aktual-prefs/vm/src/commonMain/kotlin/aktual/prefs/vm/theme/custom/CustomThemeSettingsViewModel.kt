@@ -1,12 +1,12 @@
 package aktual.prefs.vm.theme.custom
 
+import aktual.api.client.ThemeApi
 import aktual.core.model.ThemeId
 import aktual.core.theme.CustomColors
 import aktual.core.theme.CustomThemeCache
+import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.CustomThemeSummary
-import aktual.core.theme.ThemeApi
 import aktual.core.theme.ThemeMode
-import aktual.core.theme.toId
 import aktual.di.AppScope
 import aktual.prefs.ThemePreferences
 import aktual.prefs.asStateFlow
@@ -249,4 +249,6 @@ class CustomThemeSettingsViewModel(
       ThemeFilter.Light -> summary.mode == ThemeMode.Light
       ThemeFilter.Dark -> summary.mode == ThemeMode.Dark
     }
+
+  private fun CustomThemeRepo.toId() = ThemeId(id)
 }

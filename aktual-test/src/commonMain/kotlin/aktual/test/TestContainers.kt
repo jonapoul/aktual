@@ -1,7 +1,7 @@
 package aktual.test
 
-import aktual.budget.model.BudgetFiles
-import aktual.core.model.AppDirectory
+import aktual.budget.BudgetFiles
+import aktual.core.AppDirectory
 import alakazam.kotlin.CoroutineContexts
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.standardDispatcher

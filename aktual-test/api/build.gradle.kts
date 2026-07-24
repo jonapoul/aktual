@@ -12,7 +12,7 @@ kotlin {
     api(libs.ktor.core)
     api(libs.ktor.test)
     api(project(":aktual-test"))
-    implementation(project(":aktual-core:api:impl"))
+    implementation(project(":aktual-api:impl"))
     implementation(project(":aktual-core:model"))
   }
 }

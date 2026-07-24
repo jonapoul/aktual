@@ -1,0 +1,23 @@
+package aktual.app.di
+
+import aktual.core.TokenExpiredEvent
+import aktual.core.TokenExpiredNotifier
+import aktual.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.SingleIn
+import dev.zacsweers.metro.binding
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+
+@SingleIn(AppScope::class)
+@ContributesBinding(AppScope::class, binding<TokenExpiredEvent>())
+@ContributesBinding(AppScope::class, binding<TokenExpiredNotifier>())
+class TokenExpiredManager : TokenExpiredEvent, TokenExpiredNotifier {
+  private val mutableTokenExpired = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
+  override val event: Flow<Unit> = mutableTokenExpired.asSharedFlow()
+
+  override fun invoke() {
+    mutableTokenExpired.tryEmit(Unit)
+  }
+}

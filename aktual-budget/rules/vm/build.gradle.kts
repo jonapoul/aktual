@@ -5,4 +5,9 @@ plugins {
   alias(libs.plugins.kotlin.serialization)
 }
 
-kotlin { commonMainDependencies { api(project(":aktual-budget:data:db")) } }
+kotlin {
+  commonMainDependencies {
+    api(project(":aktual-budget:data:db"))
+    api(project(":aktual-core"))
+  }
+}
