@@ -11,8 +11,10 @@ wire { kotlin {} }
 kotlin {
   commonMainDependencies {
     api(libs.okio)
+    api(project(":aktual-budget"))
     api(project(":aktual-budget:data:encryption"))
     api(project(":aktual-budget:data:proto"))
+    api(project(":aktual-core"))
     implementation(project(":aktual-core:logging"))
   }
 

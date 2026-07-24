@@ -1,0 +1,16 @@
+package aktual.core
+
+import aktual.di.AppScope
+import android.content.Context
+import android.content.Intent
+import androidx.core.net.toUri
+import dev.zacsweers.metro.ContributesBinding
+
+@ContributesBinding(AppScope::class)
+class AndroidUrlOpener(private val context: Context) : UrlOpener {
+  override fun invoke(url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+    context.startActivity(intent, null)
+  }
+}

@@ -2,10 +2,10 @@ package aktual.about.vm
 
 import aktual.about.data.GithubRepository
 import aktual.about.data.LatestReleaseState
+import aktual.core.UrlOpener
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.core.model.BuildConfig
-import aktual.core.model.UrlOpener
 import aktual.di.AppScope
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState

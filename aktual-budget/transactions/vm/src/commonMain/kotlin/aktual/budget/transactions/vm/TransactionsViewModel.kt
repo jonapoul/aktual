@@ -1,5 +1,6 @@
 package aktual.budget.transactions.vm
 
+import aktual.budget.BudgetLocalPreferences
 import aktual.budget.db.dao.AccountDao
 import aktual.budget.db.dao.PreferencesDao
 import aktual.budget.db.dao.TagsDao
@@ -7,7 +8,6 @@ import aktual.budget.db.dao.TransactionDao
 import aktual.budget.db.transactions.GetById
 import aktual.budget.model.AccountSpec
 import aktual.budget.model.Amount
-import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.SyncedPrefKey
 import aktual.budget.model.TagSpec

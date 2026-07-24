@@ -1,6 +1,6 @@
 package aktual.app.nav
 
-import aktual.budget.model.SyncStateHolder
+import aktual.budget.SyncStateHolder
 import aktual.core.model.PingState.Failure
 import aktual.core.model.PingState.Success
 import aktual.core.model.PingState.Unknown

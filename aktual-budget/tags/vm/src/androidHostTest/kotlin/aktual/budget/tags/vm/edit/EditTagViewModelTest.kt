@@ -1,15 +1,15 @@
 package aktual.budget.tags.vm.edit
 
+import aktual.budget.BudgetSyncController
 import aktual.budget.db.BudgetDatabase
 import aktual.budget.db.GetTag
 import aktual.budget.db.dao.TagsDao
-import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.LocalChange
 import aktual.budget.model.MessageValue
 import aktual.budget.model.TagId
 import aktual.budget.tags.vm.insertTag
 import aktual.budget.tags.vm.tombstoneTag
-import aktual.core.model.UuidGenerator
+import aktual.core.UuidGenerator
 import aktual.prefs.TagPreferences
 import aktual.prefs.TagPreferencesImpl
 import aktual.test.TestSyncController

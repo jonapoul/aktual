@@ -1,9 +1,9 @@
 package aktual.budget.rules.vm.list
 
+import aktual.budget.BudgetSyncController
 import aktual.budget.db.Rules
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.RulesDao
-import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.Condition
 import aktual.budget.model.ConditionOp
 import aktual.budget.model.Operator.Is

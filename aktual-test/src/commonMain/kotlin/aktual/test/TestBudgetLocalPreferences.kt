@@ -2,7 +2,7 @@
 
 package aktual.test
 
-import aktual.budget.model.BudgetLocalPreferences
+import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata
 import kotlinx.coroutines.ExperimentalForInheritanceCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,6 +1,6 @@
 package aktual.about.data
 
-import aktual.core.model.Assets
+import aktual.core.Assets
 import alakazam.test.TestCoroutineContexts
 import alakazam.test.getResourceAsStream
 import alakazam.test.standardDispatcher
