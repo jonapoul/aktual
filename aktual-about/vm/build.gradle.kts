@@ -9,12 +9,15 @@ plugins {
 kotlin {
   commonMainDependencies {
     api(libs.alakazam.kotlin)
+    api(libs.androidx.datastore.core)
+    api(libs.androidx.datastore.prefsCore)
+    api(libs.kotlinx.serialization.core)
     api(project(":aktual-about:data"))
     api(project(":aktual-budget"))
+    api(project(":aktual-core:theme"))
+    api(project(":aktual-di:core"))
     api(project(":aktual-di:runlevel"))
-    implementation(libs.androidx.datastore.core)
-    implementation(libs.androidx.datastore.prefs)
-    implementation(project(":aktual-core:theme"))
+    implementation(libs.okio)
   }
 
   commonTestDependencies { implementation(project(":aktual-test")) }

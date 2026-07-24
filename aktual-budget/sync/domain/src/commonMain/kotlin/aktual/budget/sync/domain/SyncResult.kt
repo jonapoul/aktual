@@ -1,6 +1,6 @@
 package aktual.budget.sync.domain
 
-import kotlinx.io.IOException
+import okio.IOException
 
 internal sealed interface SyncResult {
   data class Success(val affectedTables: Set<String>) : SyncResult

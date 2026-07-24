@@ -6,11 +6,13 @@ plugins { id("aktual.module.kotlin") }
 
 kotlin {
   commonMainDependencies {
+    api(libs.alakazam.kotlin)
     api(project(":aktual-api"))
     api(project(":aktual-di:runlevel"))
     api(project(":aktual-prefs"))
-    implementation(project(":aktual-core:logging"))
     compileOnly(libs.androidx.compose.annotation)
+    implementation(libs.ktor.core)
+    implementation(project(":aktual-core:logging"))
   }
 
   commonTestDependencies { implementation(project(":aktual-test:api")) }

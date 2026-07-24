@@ -4,9 +4,7 @@ package aktual.gradle
 
 import aktual.gradle.dsl.androidHostTestDependencies
 import aktual.gradle.dsl.apply
-import aktual.gradle.dsl.dependencies
-import aktual.gradle.dsl.desktopMainDependencies
-import aktual.gradle.dsl.invoke
+import aktual.gradle.dsl.composeLibraries
 import aktual.gradle.dsl.kotlin
 import blueprint.core.androidMainDependencies
 import blueprint.core.commonMainDependencies
@@ -15,7 +13,6 @@ import blueprint.core.get
 import blueprint.core.libs
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 
 class ModuleCompose : Plugin<Project> {
@@ -29,17 +26,7 @@ class ModuleCompose : Plugin<Project> {
       kotlin {
         commonMainDependencies {
           api(libs["compose.runtime"])
-          implementation(libs["alakazam.compose"])
-          implementation(libs["androidx.lifecycle.runtime.compose"])
-          implementation(libs["androidx.lifecycle.viewmodel.compose"])
-          implementation(libs["compose.animation"])
-          implementation(libs["compose.foundation"])
-          implementation(libs["compose.material3"])
-          implementation(libs["compose.ui"])
-          implementation(libs["compose.uiToolingPreview"])
-          implementation(libs["compose.uiUtil"])
-          implementation(libs["kotlinx.immutable"])
-          implementation(libs["metrox.viewmodel.compose"])
+          composeLibraries.forEach { implementation(it) }
         }
 
         commonTestDependencies {
@@ -50,17 +37,13 @@ class ModuleCompose : Plugin<Project> {
           }
         }
 
-        androidMainDependencies { implementation(libs["androidx.poolingcontainer"]) }
+        androidMainDependencies {
+          implementation(libs["androidx.poolingcontainer"])
+        }
 
-        androidHostTestDependencies { implementation(libs["androidx.test.composeJunit4"]) }
-
-        desktopMainDependencies {
-          implementation(
-            extensions.getByType(ComposePlugin.Dependencies::class.java).desktop.currentOs
-          )
+        androidHostTestDependencies {
+          implementation(libs["androidx.test.composeJunit4"])
         }
       }
-
-      dependencies { "androidRuntimeClasspath"(libs["compose.uiTooling"]) }
     }
 }

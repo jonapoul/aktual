@@ -10,6 +10,8 @@ wire { kotlin {} }
 
 kotlin {
   commonMainDependencies {
+    api(libs.alakazam.kotlin)
+    api(libs.kotlinx.coroutines.core)
     api(libs.okio)
     api(project(":aktual-budget"))
     api(project(":aktual-budget:data:encryption"))
