@@ -3,8 +3,8 @@ package aktual.budget.reports.vm.choosetype
 import aktual.budget.db.dao.DashboardDao
 import aktual.budget.model.WidgetId
 import aktual.budget.model.WidgetType
+import aktual.core.UuidGenerator
 import aktual.core.model.Empty
-import aktual.core.model.UuidGenerator
 import aktual.di.BudgetScope
 import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel

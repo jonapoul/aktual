@@ -5,7 +5,7 @@ import aktual.about.data.ArtifactDetail
 import aktual.about.data.ArtifactScm
 import aktual.about.data.LicensesLoadState
 import aktual.about.data.LicensesRepository
-import aktual.core.model.UrlOpener
+import aktual.core.UrlOpener
 import aktual.test.assertThatNextEmissionIsEqualTo
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.TurbineTestContext

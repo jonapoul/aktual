@@ -8,7 +8,7 @@ Run the correct test task(s) for a Gradle module in this KMP project.
 
 ## Arguments
 
-- `$ARGUMENTS` should be the Gradle module path (e.g., `aktual-core:api`, `aktual-account:vm`, `aktual-app:desktop`)
+- `$ARGUMENTS` should be the Gradle module path (e.g., `aktual-api`, `aktual-account:vm`, `aktual-app:desktop`)
   - If omitted, infer it from the most recently discussed or edited module in conversation context
 
 ## Step-by-Step Process
@@ -26,7 +26,7 @@ src/test/           -> Standard JVM test (JVM-only modules)
 
 Use Glob to check: `<module-path>/src/*test*/` and `<module-path>/src/*Test*/`
 
-The module path on disk uses `/` separators (e.g., `aktual-core/api/src/commonTest`), but the Gradle path uses `:` (e.g., `:aktual-core:api`).
+The module path on disk uses `/` separators (e.g., `aktual-core/api/src/commonTest`), but the Gradle path uses `:` (e.g., `:aktual-api`).
 
 ### 2. Determine the module type
 
@@ -64,7 +64,7 @@ Execute the Gradle task:
 ```
 
 For example:
-- `./gradlew :aktual-core:api:testAndroidHostTest`
+- `./gradlew :aktual-api:testAndroidHostTest`
 - `./gradlew :aktual-account:vm:testAndroidHostTest`
 - `./gradlew :aktual-budget:sync:vm:allTests`
 - `./gradlew :aktual-app:desktop:test`

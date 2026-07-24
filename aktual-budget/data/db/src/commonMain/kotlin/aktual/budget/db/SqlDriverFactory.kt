@@ -1,6 +1,6 @@
 package aktual.budget.db
 
-import aktual.budget.model.BudgetFiles
+import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.di.AppScope
 import androidx.sqlite.driver.bundled.BundledSQLiteDriver

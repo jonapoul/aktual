@@ -1,5 +1,6 @@
 package aktual.core.theme
 
+import aktual.api.client.ThemeApi
 import aktual.core.model.ThemeId
 import aktual.di.AppScope
 import aktual.prefs.ThemePreferences

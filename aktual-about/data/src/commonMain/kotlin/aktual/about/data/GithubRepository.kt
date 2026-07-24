@@ -3,6 +3,8 @@ package aktual.about.data
 import aktual.core.model.BuildConfig
 import alakazam.kotlin.CoroutineContexts
 import dev.zacsweers.metro.Inject
+import github.api.GithubApi
+import github.api.model.GithubRelease
 import io.ktor.client.plugins.ResponseException
 import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
@@ -12,8 +14,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 
 @Inject
-class GithubRepository
-internal constructor(
+class GithubRepository(
   private val contexts: CoroutineContexts,
   private val githubApi: GithubApi,
   private val buildConfig: BuildConfig,

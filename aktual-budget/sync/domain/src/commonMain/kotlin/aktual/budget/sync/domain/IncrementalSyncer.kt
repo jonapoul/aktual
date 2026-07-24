@@ -1,8 +1,8 @@
 package aktual.budget.sync.domain
 
 import aktual.api.client.BudgetSyncApi
+import aktual.budget.BudgetLocalPreferences
 import aktual.budget.db.dao.SyncDao
-import aktual.budget.model.BudgetLocalPreferences
 import aktual.budget.model.DbMetadata.Companion.CloudFileId
 import aktual.budget.model.DbMetadata.Companion.GroupId
 import aktual.budget.model.DbMetadata.Companion.LastSyncedTimestamp

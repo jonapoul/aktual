@@ -1,7 +1,7 @@
 package aktual.prefs.vm.inspect
 
+import aktual.core.UrlOpener
 import aktual.core.model.ThemeId
-import aktual.core.model.UrlOpener
 import aktual.core.theme.CustomColors
 import aktual.core.theme.ThemeResolver
 import aktual.di.AppScope

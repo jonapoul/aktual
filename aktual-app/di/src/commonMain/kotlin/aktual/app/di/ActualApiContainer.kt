@@ -2,8 +2,9 @@ package aktual.app.di
 
 import aktual.api.buildKtorClient
 import aktual.api.client.AktualClient
-import aktual.api.client.TokenExpiredNotifier
+import aktual.api.client.ThemeClient
 import aktual.api.model.account.FailureReason
+import aktual.core.TokenExpiredNotifier
 import aktual.core.model.AktualJson
 import aktual.core.model.BuildConfig
 import aktual.di.AppScope
@@ -26,10 +27,10 @@ object ActualApiContainer {
   @Provides
   @SingleIn(AppScope::class)
   @AktualClient
-  fun client(
+  fun aktualClient(
     buildConfig: BuildConfig,
     engine: HttpClientEngine,
-    notifier: TokenExpiredNotifier,
+    notifyTokenExpired: TokenExpiredNotifier,
     preferences: AppPreferences,
   ): HttpClient =
     buildKtorClient(AktualJson, tag = "ACTUAL", engine, buildConfig.isDebug) {
@@ -43,7 +44,7 @@ object ActualApiContainer {
                 // Only notify for authenticated-session failures, not login-time failures.
                 // During login, there's no stored token, so firing the global handler would
                 // clear the backstack and push LoginNavRoute while already on the login screen.
-                notifier.notifyExpired()
+                notifyTokenExpired()
               }
             } catch (e: CancellationException) {
               throw e
@@ -56,6 +57,11 @@ object ActualApiContainer {
         }
       }
     }
+
+  @Provides
+  @ThemeClient
+  fun themeClient(buildConfig: BuildConfig, engine: HttpClientEngine): HttpClient =
+    buildKtorClient(AktualJson, tag = "THEME", engine, buildConfig.isDebug)
 }
 
 @Serializable private data class ErrorBody(val reason: String? = null)

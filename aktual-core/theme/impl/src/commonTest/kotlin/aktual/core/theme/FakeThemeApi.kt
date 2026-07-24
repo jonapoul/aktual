@@ -1,5 +1,7 @@
 package aktual.core.theme
 
+import aktual.api.client.ThemeApi
+
 class FakeThemeApi : ThemeApi {
   var catalog: List<CustomThemeSummary> = emptyList()
   val themes = mutableMapOf<CustomThemeSummary, CustomColors>()

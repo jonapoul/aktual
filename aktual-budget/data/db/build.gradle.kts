@@ -31,8 +31,9 @@ kotlin {
   commonMainDependencies {
     api(libs.kotlinx.datetime)
     api(libs.okio)
-    api(project(":aktual-budget:model"))
+    api(project(":aktual-budget"))
     api(project(":aktual-core:model"))
+    api(project(":aktual-di:core"))
     implementation(libs.androidx.sqliteBundled)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.sqldelight.coroutines)

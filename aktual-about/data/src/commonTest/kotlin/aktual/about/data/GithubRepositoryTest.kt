@@ -13,6 +13,9 @@ import assertk.assertions.isEqualTo
 import assertk.assertions.isInstanceOf
 import assertk.assertions.matchesPredicate
 import assertk.assertions.prop
+import github.api.client.GithubApiImpl
+import github.api.client.GithubJson
+import github.api.model.GithubRelease
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respondError
 import io.ktor.http.HttpStatusCode
@@ -170,7 +173,7 @@ class GithubRepositoryTest {
       GithubRepository(
         contexts = TestCoroutineContexts(standardDispatcher),
         buildConfig = TestBuildConfig,
-        githubApi = GithubApi(client = testHttpClient(mockEngine, GithubJson)),
+        githubApi = GithubApiImpl(client = testHttpClient(mockEngine, GithubJson)),
       )
   }
 }

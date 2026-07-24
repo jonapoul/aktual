@@ -1,0 +1,17 @@
+package aktual.core
+
+import aktual.di.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import java.awt.Desktop
+import java.net.URI
+
+@ContributesBinding(AppScope::class)
+class JvmUrlOpener : UrlOpener {
+  override fun invoke(url: String) {
+    if (Desktop.isDesktopSupported()) {
+      Desktop.getDesktop().browse(URI(url))
+    } else {
+      error("Opening URLs not supported on this device - tried to open $url")
+    }
+  }
+}

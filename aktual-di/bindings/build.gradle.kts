@@ -4,9 +4,10 @@ plugins { id("aktual.module.di") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-budget:model"))
-    api(project(":aktual-core:model"))
+    api(project(":aktual-budget"))
+    api(project(":aktual-core"))
     api(libs.ktor.core)
+    implementation(project(":aktual-di:core"))
     implementation(libs.ktor.cio)
   }
 }

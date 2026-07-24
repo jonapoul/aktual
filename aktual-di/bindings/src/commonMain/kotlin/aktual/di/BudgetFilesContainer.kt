@@ -1,7 +1,7 @@
 package aktual.di
 
-import aktual.budget.model.BudgetFiles
-import aktual.core.model.AppDirectory
+import aktual.budget.BudgetFiles
+import aktual.core.AppDirectory
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides

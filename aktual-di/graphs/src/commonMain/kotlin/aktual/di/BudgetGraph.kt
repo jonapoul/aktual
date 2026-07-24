@@ -1,8 +1,8 @@
 package aktual.di
 
+import aktual.budget.BudgetLocalPreferences
+import aktual.budget.BudgetSyncController
 import aktual.budget.model.BudgetId
-import aktual.budget.model.BudgetLocalPreferences
-import aktual.budget.model.BudgetSyncController
 import aktual.budget.model.DbMetadata
 import app.cash.sqldelight.db.SqlDriver
 import dev.zacsweers.metro.BindingContainer
