@@ -9,6 +9,27 @@
   "minimumReleaseAge": "3 days",
   "packageRules": [
     {
+      // AGP versions are hardcoded in settings.gradle.kts as well as the version catalog, so
+      // force them into the same group as the catalog's "agp" version ref
+      "matchDepNames": [
+        "com.android.application",
+        "com.android.kotlin.multiplatform.library",
+        "com.android.lint"
+      ],
+      "groupName": "agp"
+    },
+    {
+      // Same for Kotlin
+      "matchDepNames": [
+        "org.jetbrains.kotlin.jvm",
+        "org.jetbrains.kotlin.multiplatform",
+        "org.jetbrains.kotlin.plugin.compose",
+        "org.jetbrains.kotlin.plugin.serialization",
+        "org.jetbrains.kotlin:kotlin-metadata-jvm"
+      ],
+      "groupName": "kotlin"
+    },
+    {
       // Check for GitHub Actions updates once a week (Sunday morning),
       // grouped into a single PR
       "matchManagers": [

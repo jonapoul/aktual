@@ -32,8 +32,8 @@ buildscript {
 }
 
 plugins {
-  id("com.android.application") version "9.3.0" apply false
-  id("com.android.kotlin.multiplatform.library") version "9.3.0" apply false
+  id("com.android.application") version "9.3.1" apply false
+  id("com.android.kotlin.multiplatform.library") version "9.3.1" apply false
   id("com.autonomousapps.build-health") version "3.17.0"
   id("com.gradle.develocity") version "4.5.0"
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
