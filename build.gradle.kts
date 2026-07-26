@@ -32,6 +32,7 @@ plugins {
   alias(libs.plugins.nucleus) apply false
   alias(libs.plugins.redacted) apply false
   alias(libs.plugins.sqldelight) apply false
+  alias(libs.plugins.straitjacket) apply false
   alias(libs.plugins.wire) apply false
 
   alias(libs.plugins.atlas)

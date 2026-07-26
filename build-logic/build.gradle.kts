@@ -49,6 +49,7 @@ dependencies {
   compileOnlyPlugin(libs.plugins.kotlin.serialization)
   compileOnlyPlugin(libs.plugins.licensee)
   compileOnlyPlugin(libs.plugins.metro)
+  compileOnlyPlugin(libs.plugins.straitjacket)
 
   detektPlugins(libs.detektGradle)
 }
