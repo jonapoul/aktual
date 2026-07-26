@@ -17,6 +17,7 @@ class ConventionKotlinBase : Plugin<Project> {
       with(pluginManager) {
         apply(ConventionAtlas::class)
         apply(ConventionDi::class)
+        apply(ConventionStraitjacket::class)
       }
 
       extensions.configure(HasConfigurableKotlinCompilerOptions::class) {
