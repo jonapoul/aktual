@@ -112,7 +112,7 @@ metrox-viewmodel = { module = "dev.zacsweers.metro:metrox-viewmodel", version.re
 metrox-viewmodel-compose = { module = "dev.zacsweers.metro:metrox-viewmodel-compose", version.ref = "metro" }
 mockk = { module = "io.mockk:mockk", version = "1.14.11" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
-okio = { module = "com.squareup.okio:okio", version = "3.18.0" }
+okio = { module = "com.squareup.okio:okio", version = "3.18.1" }
 proguard = { module = "com.guardsquare:proguard-gradle ", version = "7.9.1" }
 redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version = "3.1.0" }
