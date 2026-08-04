@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS schedules(
   posts_transaction INTEGER AS Boolean DEFAULT 0,
   tombstone INTEGER AS Boolean DEFAULT 0,
   name TEXT DEFAULT NULL,
-  custom_upcoming_length TEXT AS UpcomingLength DEFAULT NULL
+  custom_upcoming_length TEXT AS UpcomingLength DEFAULT NULL,
+  sort_order REAL DEFAULT 0
 );
 
 CREATE VIEW IF NOT EXISTS v_schedules AS
@@ -86,3 +87,5 @@ WHERE s.tombstone = 0;
 getName: SELECT name FROM schedules WHERE id = ?;
 
 getCustomUpcomingLength: SELECT custom_upcoming_length FROM schedules WHERE id = ?;
+
+getSortOrder: SELECT sort_order FROM schedules WHERE id = ?;
