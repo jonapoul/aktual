@@ -202,11 +202,17 @@ jobs:
       - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew -p build-logic check
       - run: ./gradlew licensee androidManifestLock :aktual-core:l10n:catalog straitjacketCheck
+      - name: Check manifest lock is up to date
+        run: |
+          if ! git diff --exit-code -- '*AndroidManifest.lock.yaml'; then
+            echo "::error::androidManifestLock produced changes that were not committed. Please run './gradlew :aktual-app:android:androidManifestLock' locally and commit the results."
+            exit 1
+          fi
       - run: ./scripts/unusedStrings.sh
       - run: ./gradlew atlasGenerate
-      - name: Check for uncommitted changes
+      - name: Check dependency graphs are up to date
         run: |
-          if ! git diff --exit-code; then
+          if ! git diff --exit-code -- '*atlas.png'; then
             echo "::error::atlasGenerate produced changes that were not committed. Please run './gradlew atlasGenerate' locally and commit the results."
             exit 1
           fi
