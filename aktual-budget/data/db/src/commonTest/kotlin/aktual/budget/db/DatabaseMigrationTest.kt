@@ -70,6 +70,7 @@ class DatabaseMigrationTest {
     checkMigration1780327681000(db)
     checkMigration1780606215000(db)
     checkMigration1780606215001()
+    checkMigration1783004650757(db)
   }
 
   // Verify that the file was opened at all
@@ -120,6 +121,13 @@ class DatabaseMigrationTest {
     assertThat(driver.transactionIndexNames())
       .contains("idx_transactions_acct_tombstone")
       .contains("idx_transactions_schedule")
+  }
+
+  // Adds sort_order column to schedules. migration sets to 0 by default
+  private suspend fun checkMigration1783004650757(db: BudgetDatabase) {
+    val sortOrder =
+      db.schedulesQueries.getSortOrder(id = ScheduleId("schedule-id")).awaitAsOneOrNull()
+    assertNull(sortOrder)
   }
 
   private fun loadDatabaseIntoFile(): File {

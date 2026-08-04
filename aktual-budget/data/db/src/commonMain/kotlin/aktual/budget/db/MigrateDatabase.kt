@@ -63,6 +63,9 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
         "CREATE INDEX IF NOT EXISTS idx_transactions_acct_tombstone ON transactions(acct, tombstone)",
         "CREATE INDEX IF NOT EXISTS idx_transactions_schedule ON transactions(schedule)",
       ),
+
+    // packages/loot-core/migrations/1783004650757_schedule_sort_order.sql
+    1783004650757L to listOf("ALTER TABLE schedules ADD COLUMN sort_order REAL DEFAULT 0"),
   )
 
 private const val TAG = "MigrateDatabase"
