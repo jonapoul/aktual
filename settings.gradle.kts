@@ -24,13 +24,6 @@ pluginManagement {
   }
 }
 
-// https://github.com/autonomousapps/dependency-analysis-gradle-plugin/issues/1661#issue-4167340036
-buildscript {
-  dependencies {
-    classpath("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.10")
-  }
-}
-
 plugins {
   id("com.android.application") version "9.3.1" apply false
   id("com.android.kotlin.multiplatform.library") version "9.3.1" apply false
