@@ -113,20 +113,6 @@ jobs:
             exit 1
           fi
 
-  check-build-logic:
-    needs: validation
-    if: ${{ !cancelled() && needs.validation.result == 'success' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: ./.github/actions/setup-java
-      - uses: ./.github/actions/setup-gradle
-      - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew -p build-logic check
-      - uses: ./.github/actions/report-build-results
-        if: ${{ !cancelled() }}
-
   assemble-android:
     needs: validation
     if: ${{ !cancelled() && needs.validation.result == 'success' }}
@@ -210,43 +196,39 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: ./.github/actions/setup-java
-      - uses: ./.github/actions/setup-gradle
-      - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew licensee androidManifestLock :aktual-core:l10n:catalog straitjacketCheck
-      - run: ./scripts/unusedStrings.sh
-
-  atlas:
-    needs: validation
-    if: ${{ !cancelled() && needs.validation.result == 'success' }}
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - run: sudo apt-get update && sudo apt-get install -y graphviz
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
-      - run: ./gradlew atlasGenerate
-      - name: Check for uncommitted changes
+      - run: ./gradlew -p build-logic check
+      - run: ./gradlew licensee androidManifestLock :aktual-core:l10n:catalog straitjacketCheck
+      - name: Check manifest lock is up to date
         run: |
-          if ! git diff --exit-code; then
+          if ! git diff --exit-code -- '*AndroidManifest.lock.yaml'; then
+            echo "::error::androidManifestLock produced changes that were not committed. Please run './gradlew :aktual-app:android:androidManifestLock' locally and commit the results."
+            exit 1
+          fi
+      - run: ./scripts/unusedStrings.sh
+      - run: ./gradlew atlasGenerate
+      - name: Check dependency graphs are up to date
+        run: |
+          if ! git diff --exit-code -- '*atlas.png'; then
             echo "::error::atlasGenerate produced changes that were not committed. Please run './gradlew atlasGenerate' locally and commit the results."
             exit 1
           fi
+      - uses: ./.github/actions/report-build-results
+        if: ${{ !cancelled() }}
 
   finish:
     if: ${{ !cancelled() }}
     needs:
       - validation
-      - check-build-logic
       - assemble-android
       - assemble-desktop
       - detekt
       - lint
       - tests
       - other-checks
-      - atlas
     runs-on: ubuntu-latest
     outputs:
       result: ${{ steps.check.outputs.result }}
