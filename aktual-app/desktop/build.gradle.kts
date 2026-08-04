@@ -136,8 +136,8 @@ afterEvaluate {
 
   // DAGP is added from settings file, so it won't exist at configure time. So we have to do this in
   // afterEvaluate
-  tasks.named("explodeCodeSourceMain").configure {
-    dependsOn(copyLicenseeReportToResources)
+  listOf("explodeCodeSourceMain", "abiAnalysisMain").forEach { name ->
+    tasks.named(name).configure { dependsOn(copyLicenseeReportToResources) }
   }
 }
 
