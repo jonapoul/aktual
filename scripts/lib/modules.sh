@@ -8,8 +8,11 @@ MODULES_LIB_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 . "$MODULES_LIB_DIR/git.sh"
 
 # Print every Gradle module path (e.g. :aktual-core:ui) declared in settings.gradle.kts, sorted.
+# Only matches lines that are exactly a quoted module path (the include() block) so other
+# quoted ":aktual..." strings elsewhere in the file (kover excludedProjects, atlas
+# pathTransforms, etc.) aren't picked up as phantom or duplicate modules.
 all_gradle_modules() {
-  grep -oP '":aktual[^"]*' settings.gradle.kts | tr -d '"' | sort
+  grep -oP '^\s*"\K:aktual[^"]+(?=",?\s*$)' settings.gradle.kts | sort
 }
 
 # List of repo-root-relative patterns (in .gitignore syntax) that, when changed, affect
@@ -47,7 +50,7 @@ changed_gradle_modules() {
     disk_path="${gradle_path#:}"
     disk_path="${disk_path//:/\/}"
     module_map["$disk_path"]="$gradle_path"
-  done < <(grep -oP '":aktual[^"]*' settings.gradle.kts | tr -d '"')
+  done < <(grep -oP '^\s*"\K:aktual[^"]+(?=",?\s*$)' settings.gradle.kts)
 
   # Sort module disk paths longest-first so deeper modules match before their parents
   local sorted_disk_paths
