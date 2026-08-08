@@ -66,7 +66,7 @@ nucleus {
       packageVersion = gitVersionDate.get()
       description = "Desktop app for the Actual budgeting software"
       homepage = "https://github.com/jonapoul/aktual"
-      licenseFile = rootProject.layout.projectDirectory.file("LICENSE")
+      licenseFile = rootProject.isolated.projectDirectory.file("LICENSE")
 
       // JDK modules
       modules("java.sql")

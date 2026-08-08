@@ -177,7 +177,7 @@ dependencies {
   implementation(project(":aktual-prefs"))
 }
 
-val readme = rootProject.layout.projectDirectory.file("README.md")
+val readme = rootProject.isolated.projectDirectory.file("README.md")
 val exportMinSdk =
   tasks.register("exportMinSdk", ExportMinSdkTask::class) {
     minSdk = providers.intProperty(key = "aktual.android.minSdk")
