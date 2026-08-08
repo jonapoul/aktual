@@ -35,6 +35,8 @@ plugins {
   alias(libs.plugins.straitjacket) apply false
   alias(libs.plugins.wire) apply false
 
+  alias(libs.plugins.atlas)
+
   // TODO: reapply. See https://github.com/runningcode/gradle-doctor/issues/481
   // alias(libs.plugins.doctor)
 
