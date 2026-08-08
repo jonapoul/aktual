@@ -27,7 +27,7 @@ import kotlinx.coroutines.flow.update
 @Stable
 @Suppress("AbstractClassCanBeConcreteClass")
 abstract class RootViewModel(
-  private val themeResolver: ThemeResolver,
+  themeResolver: ThemeResolver,
   private val appLifecycleManager: AppLifecycleManager,
   navEntryContributors: Set<NavEntryContributor>,
   formatConfigUseCase: FormatConfigUseCase,

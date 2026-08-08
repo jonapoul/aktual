@@ -76,6 +76,8 @@ changed_gradle_modules() {
 }
 
 # Run a per-module Gradle task on every module with changed files (vs a base branch).
+# Runs with --continue so one failing module doesn't stop the rest, then prints a summary
+# of the tasks that failed.
 # Args: $1 = Gradle task suffix (e.g. detektCheck), $2 = base branch, $3 = dry-run (true/false).
 run_changed_module_task() {
   local task_suffix="$1"
@@ -118,8 +120,34 @@ run_changed_module_task() {
   echo ""
 
   if [[ "$dry_run" == true ]]; then
-    echo "./gradlew ${tasks[*]}"
-  else
-    exec ./gradlew "${tasks[@]}"
+    echo "./gradlew --continue ${tasks[*]}"
+    return 0
   fi
+
+  # Stream the build but keep a copy, so the failures can be picked back out of it afterwards.
+  # `set -e` is off around the pipeline so a failing build doesn't abort before the summary;
+  # PIPESTATUS[0] is gradlew's own status rather than tee's.
+  local log status
+  log=$(mktemp)
+  set +e
+  ./gradlew --continue "${tasks[@]}" 2>&1 | tee "$log"
+  status=${PIPESTATUS[0]}
+  set -e
+
+  if [[ "$status" -ne 0 ]]; then
+    # Gradle reports each failure as "Execution failed for task ':foo:bar'", spread over
+    # separate blocks at the end of the build. Collect the task paths into one short list.
+    local failed
+    failed=$(grep -oP "Execution failed for task '\K[^']+" "$log" | sort -u)
+    if [[ -n "$failed" ]]; then
+      echo ""
+      echo "Failed task(s):"
+      while IFS= read -r task; do
+        echo "  $task"
+      done <<< "$failed"
+    fi
+  fi
+
+  rm -f "$log"
+  return "$status"
 }
