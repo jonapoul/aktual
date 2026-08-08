@@ -1,12 +1,10 @@
 import atlas.core.LinkStyle.Dashed
 import atlas.core.LinkStyle.Solid
-import atlas.graphviz.ArrowType.None
-import atlas.graphviz.ArrowType.Normal
-import atlas.graphviz.FileFormat.Png
-import atlas.graphviz.LayoutEngine.Dot
-import atlas.graphviz.NodeStyle.Filled
-import atlas.graphviz.RankDir.TopToBottom
-import atlas.graphviz.Shape.Box
+import atlas.d2.ArrowType.Arrow
+import atlas.d2.Direction.Down
+import atlas.d2.FileFormat.Svg
+import atlas.d2.Theme.DarkFlagshipTerrastruct
+import atlas.d2.tasks.SvgToPng.Converter.ImageMagick6
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
@@ -111,27 +109,32 @@ atlas {
     "commonMainImplementation"(style = Dashed, color = "aqua", displayName = "implementation")
   }
 
-  graphviz {
-    fileFormat = Png
-    layoutEngine = Dot
+  d2 {
+    center = true
+    direction = Down
+    fileFormat = Svg
+    pad = 3
+    sketch = false
+    theme = DarkFlagshipTerrastruct
 
-    graph {
-      bgColor = "#00000A"
-      rankDir = TopToBottom
-      rankSep = 1.5
+    convertSvgToPng(ImageMagick6)
+
+    layoutEngine {
+      elk {
+        edgeNodeBetweenLayers = 20
+        nodeSelfLoop = 10
+        padding = "[top=20,left=20,bottom=20,right=20]"
+      }
     }
 
-    node {
-      style = Filled
-      shape = Box
-      fontColor = "white"
-      fillColor = "black"
+    rootStyle {
+      fill = "#00000A"
     }
 
-    edge {
-      arrowHead = Normal
-      arrowTail = None
-      linkColor = "white"
+    globalProps {
+      arrowType = Arrow
+      fillArrowHeads = true
+      fontSize = 25
     }
   }
 }

@@ -1,8 +1,7 @@
 import aktual.gradle.dsl.androidTestLibraries
 import aktual.gradle.dsl.composeLibraries
 import aktual.gradle.dsl.testLibraries
-import atlas.graphviz.tasks.ExecGraphviz
-import atlas.graphviz.tasks.WriteGraphvizLegend
+import atlas.d2.tasks.WriteD2Classes
 import com.autonomousapps.extension.Issue
 
 plugins {
@@ -37,9 +36,7 @@ plugins {
 
 val atlasDir = layout.projectDirectory.dir("atlas")
 
-tasks.withType<WriteGraphvizLegend>().configureEach { outputFile = atlasDir.file("legend.dot") }
-
-tasks.withType<ExecGraphviz>().configureEach { outputFile = atlasDir.file("legend.png") }
+tasks.withType<WriteD2Classes>().configureEach { outputFile = atlasDir.file("classes.d2") }
 
 // doctor {
 //   javaHome {
