@@ -230,10 +230,10 @@ jobs:
             echo "::error::atlasGenerate produced changes that were not committed. Please run './gradlew atlasGenerate' locally and commit the results."
             exit 1
           fi
-      - name: Zip atlas.png files
+      - name: Zip atlas.png and chart.svg files
         if: failure()
-        run: find . -iname 'atlas.png' -print0 | xargs -0 zip atlas-pngs.zip
-      - name: Upload atlas.png files
+        run: find . \( -iname 'atlas.png' -o -iname 'chart.svg' \) -print0 | xargs -0 zip atlas-pngs.zip
+      - name: Upload atlas.png and chart.svg files
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
         with:
