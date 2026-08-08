@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.update
 
 @ViewModelKey
 @ContributesIntoMap(AppScope::class, binding<ViewModel>())
-class ManageStorageActivityViewModel(private val themeResolver: ThemeResolver) : ViewModel() {
+class ManageStorageActivityViewModel(themeResolver: ThemeResolver) : ViewModel() {
   private val isSystemInDarkTheme = MutableStateFlow<Boolean?>(null)
 
   @OptIn(ExperimentalCoroutinesApi::class)

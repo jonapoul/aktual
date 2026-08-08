@@ -44,7 +44,7 @@ class AboutViewModel(
   private val buildConfig: BuildConfig,
   private val githubRepository: GithubRepository,
   private val urlOpener: UrlOpener,
-  private val aktualVersionsStateHolder: AktualVersionsStateHolder,
+  aktualVersionsStateHolder: AktualVersionsStateHolder,
 ) : ViewModel() {
   @AssistedFactory
   @ViewModelAssistedFactoryKey(AboutViewModel::class)
