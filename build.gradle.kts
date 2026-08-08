@@ -36,7 +36,9 @@ plugins {
 
 val atlasDir = layout.buildDirectory.dir("atlas")
 
-tasks.withType<WriteD2Classes>().configureEach { outputFile = atlasDir.map { it.file("classes.d2") } }
+tasks.withType<WriteD2Classes>().configureEach {
+  outputFile = atlasDir.map { it.file("classes.d2") }
+}
 
 // doctor {
 //   javaHome {
