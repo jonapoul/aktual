@@ -1,3 +1,12 @@
+import atlas.core.LinkStyle.Dashed
+import atlas.core.LinkStyle.Solid
+import atlas.graphviz.ArrowType.None
+import atlas.graphviz.ArrowType.Normal
+import atlas.graphviz.FileFormat.Png
+import atlas.graphviz.LayoutEngine.Dot
+import atlas.graphviz.NodeStyle.Filled
+import atlas.graphviz.RankDir.TopToBottom
+import atlas.graphviz.Shape.Box
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
@@ -21,19 +30,27 @@ pluginManagement {
       }
     }
     gradlePluginPortal()
+    maven("https://central.sonatype.com/repository/maven-snapshots/") {
+      mavenContent { snapshotsOnly() }
+    }
   }
 }
 
 plugins {
   id("com.android.application") version "9.3.1" apply false
   id("com.android.kotlin.multiplatform.library") version "9.3.1" apply false
-  id("com.autonomousapps.build-health") version "3.18.0"
-  id("com.gradle.develocity") version "4.5.0"
-  id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+  id("dev.jonpoulton.blueprint") version "2.3.0" apply false
   id("org.jetbrains.kotlin.jvm") version "2.4.10" apply false
   id("org.jetbrains.kotlin.multiplatform") version "2.4.10" apply false
+
+  id("com.autonomousapps.build-health") version "3.18.0"
+  id("com.gradle.develocity") version "4.5.0"
+  id("dev.jonpoulton.atlas") version "0.5.1"
+  id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
   id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.9"
 }
+
+enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
 
 develocity.buildScan {
   if (!gradle.startParameter.isBuildScan) {
@@ -73,7 +90,51 @@ kover {
   }
 }
 
-enableFeaturePreview("STABLE_CONFIGURATION_CACHE")
+atlas {
+  checkOutputs = false
+  ignoredConfigs = setOf("debug", "kover", "test", "classpath", "detekt")
+
+  pathTransforms { remove(":aktual-") }
+
+  projectTypes {
+    hasPluginId(name = "ViewModel", pluginId = "aktual.module.viewmodel", color = "#914141") // pink
+    hasPluginId(name = "DI", pluginId = "aktual.module.di", color = "#a17103") // orange
+    hasPluginId(name = "UI", pluginId = "aktual.module.compose", color = "#6b6b01") // yellow
+    hasPluginId(name = "Kotlin", pluginId = "aktual.module.kotlin", color = "#160185") // indigo
+    pathContains(name = "App", pathContains = ":aktual-app:", color = "#7a0101") // red
+    hasPluginId(name = "JVM", pluginId = "aktual.module.jvm", color = "#2f015c") // violet
+    other(color = "#808080") // grey
+  }
+
+  linkTypes {
+    "commonMainApi"(style = Solid, displayName = "api")
+    "commonMainImplementation"(style = Dashed, color = "aqua", displayName = "implementation")
+  }
+
+  graphviz {
+    fileFormat = Png
+    layoutEngine = Dot
+
+    graph {
+      bgColor = "#00000A"
+      rankDir = TopToBottom
+      rankSep = 1.5
+    }
+
+    node {
+      style = Filled
+      shape = Box
+      fontColor = "white"
+      fillColor = "black"
+    }
+
+    edge {
+      arrowHead = Normal
+      arrowTail = None
+      linkColor = "white"
+    }
+  }
+}
 
 include(
   ":aktual-about:data",

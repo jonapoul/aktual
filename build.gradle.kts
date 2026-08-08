@@ -1,15 +1,8 @@
 import aktual.gradle.dsl.androidTestLibraries
 import aktual.gradle.dsl.composeLibraries
 import aktual.gradle.dsl.testLibraries
-import atlas.graphviz.ArrowType.None
-import atlas.graphviz.ArrowType.Normal
-import atlas.graphviz.FileFormat.Png
-import atlas.graphviz.LayoutEngine.Dot
-import atlas.graphviz.LinkStyle.Dashed
-import atlas.graphviz.LinkStyle.Solid
-import atlas.graphviz.NodeStyle.Filled
-import atlas.graphviz.RankDir.TopToBottom
-import atlas.graphviz.Shape.Box
+import atlas.graphviz.tasks.ExecGraphviz
+import atlas.graphviz.tasks.WriteGraphvizLegend
 import com.autonomousapps.extension.Issue
 
 plugins {
@@ -35,13 +28,18 @@ plugins {
   alias(libs.plugins.straitjacket) apply false
   alias(libs.plugins.wire) apply false
 
-  alias(libs.plugins.atlas)
-
   // TODO: reapply. See https://github.com/runningcode/gradle-doctor/issues/481
   // alias(libs.plugins.doctor)
 
+  id("aktual.convention.atlas")
   id("aktual.convention.idea")
 }
+
+val atlasDir = layout.projectDirectory.dir("atlas")
+
+tasks.withType<WriteGraphvizLegend>().configureEach { outputFile = atlasDir.file("legend.dot") }
+
+tasks.withType<ExecGraphviz>().configureEach { outputFile = atlasDir.file("legend.png") }
 
 // doctor {
 //   javaHome {
@@ -50,52 +48,6 @@ plugins {
 //     failOnError = true
 //   }
 // }
-
-atlas {
-  checkOutputs = false
-  ignoredConfigs = setOf("debug", "kover", "test", "classpath", "detekt")
-
-  pathTransforms { remove(":aktual-") }
-
-  projectTypes {
-    hasPluginId(name = "ViewModel", pluginId = "aktual.module.viewmodel", color = "#914141") // pink
-    hasPluginId(name = "DI", pluginId = "aktual.module.di", color = "#a17103") // orange
-    hasPluginId(name = "UI", pluginId = "aktual.module.compose", color = "#6b6b01") // yellow
-    hasPluginId(name = "Kotlin", pluginId = "aktual.module.kotlin", color = "#160185") // indigo
-    pathContains(name = "App", pathContains = ":aktual-app:", color = "#7a0101") // red
-    hasPluginId(name = "JVM", pluginId = "aktual.module.jvm", color = "#2f015c") // violet
-    other(color = "#808080") // grey
-  }
-
-  linkTypes {
-    "commonMainApi"(style = Solid, displayName = "api")
-    "commonMainImplementation"(style = Dashed, color = "aqua", displayName = "implementation")
-  }
-
-  graphviz {
-    fileFormat = Png
-    layoutEngine = Dot
-
-    graph {
-      bgColor = "#00000A"
-      rankDir = TopToBottom
-      rankSep = 1.5
-    }
-
-    node {
-      style = Filled
-      shape = Box
-      fontColor = "white"
-      fillColor = "black"
-    }
-
-    edge {
-      arrowHead = Normal
-      arrowTail = None
-      linkColor = "white"
-    }
-  }
-}
 
 dependencyAnalysis {
   useTypesafeProjectAccessors(false)
