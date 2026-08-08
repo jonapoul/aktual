@@ -43,7 +43,7 @@ plugins {
 
   id("com.autonomousapps.build-health") version "3.18.0"
   id("com.gradle.develocity") version "4.5.0"
-  id("dev.jonpoulton.atlas") version "0.5.1"
+  id("dev.jonpoulton.atlas") version "0.5.2"
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
   id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.9"
 }
@@ -117,7 +117,7 @@ atlas {
     sketch = false
     theme = DarkFlagshipTerrastruct
 
-    convertSvgToPng(ImageMagick6)
+    convertSvgToPng(converter = ImageMagick6, scale = 0.5f)
 
     layoutEngine {
       elk {
