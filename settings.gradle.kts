@@ -4,7 +4,7 @@ import atlas.d2.ArrowType.Arrow
 import atlas.d2.Direction.Down
 import atlas.d2.FileFormat.Svg
 import atlas.d2.Theme.DarkFlagshipTerrastruct
-import atlas.d2.tasks.SvgToPng.Converter.ImageMagick6
+import atlas.d2.tasks.SvgToPng.Converter.LibRsvg
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
@@ -117,7 +117,7 @@ atlas {
     sketch = false
     theme = DarkFlagshipTerrastruct
 
-    convertSvgToPng(converter = ImageMagick6, scale = 0.5f)
+    convertSvgToPng(converter = LibRsvg, scale = 0.5f)
 
     layoutEngine {
       elk {

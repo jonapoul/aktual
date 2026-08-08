@@ -14,7 +14,7 @@ class ConventionAtlas : Plugin<Project> {
       val atlasBuildDir = layout.buildDirectory.dir("atlas")
 
       tasks.withType(WriteD2Chart::class.java) { t ->
-        t.outputFile.set(atlasBuildDir.map { d -> d.file("atlas.d2") })
+        t.outputFile.set(atlasBuildDir.map { d -> d.file("chart.d2") })
       }
 
       tasks.withType(ExecD2::class.java) { t ->
