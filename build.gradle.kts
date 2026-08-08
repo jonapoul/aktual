@@ -35,19 +35,19 @@ plugins {
   alias(libs.plugins.straitjacket) apply false
   alias(libs.plugins.wire) apply false
 
-  alias(libs.plugins.atlas)
-  alias(libs.plugins.doctor)
+  // TODO: reapply. See https://github.com/runningcode/gradle-doctor/issues/481
+  // alias(libs.plugins.doctor)
 
   id("aktual.convention.idea")
 }
 
-doctor {
-  javaHome {
-    ensureJavaHomeMatches = true
-    ensureJavaHomeIsSet = true
-    failOnError = true
-  }
-}
+// doctor {
+//   javaHome {
+//     ensureJavaHomeMatches = true
+//     ensureJavaHomeIsSet = true
+//     failOnError = true
+//   }
+// }
 
 atlas {
   checkOutputs = false
