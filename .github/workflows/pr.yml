@@ -196,7 +196,6 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - run: sudo apt-get update && sudo apt-get install -y graphviz
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
@@ -209,13 +208,37 @@ jobs:
             exit 1
           fi
       - run: ./scripts/unusedStrings.sh
+      - uses: ./.github/actions/report-build-results
+        if: ${{ !cancelled() }}
+
+  atlas:
+    needs: validation
+    if: ${{ !cancelled() && needs.validation.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - run: curl -fsSL https://d2lang.com/install.sh | sh -s --
+      - run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
+      - uses: ./.github/actions/setup-java
+      - uses: ./.github/actions/setup-gradle
+      - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew atlasGenerate
-      - name: Check dependency graphs are up to date
+      - name: Check module graphs are up to date
         run: |
           if ! git diff --exit-code -- '*atlas.png'; then
             echo "::error::atlasGenerate produced changes that were not committed. Please run './gradlew atlasGenerate' locally and commit the results."
             exit 1
           fi
+      - name: Zip Atlas generated files
+        if: failure()
+        run: find . \( -iname 'atlas.png' -o -iname 'chart.svg' -o -iname 'chart.d2' \) -print0 | xargs -0 zip atlas-outputs.zip
+      - name: Upload Atlas generated files
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: atlas-outputs
+          path: atlas-outputs.zip
       - uses: ./.github/actions/report-build-results
         if: ${{ !cancelled() }}
 
@@ -229,6 +252,7 @@ jobs:
       - lint
       - tests
       - other-checks
+      - atlas
     runs-on: ubuntu-latest
     outputs:
       result: ${{ steps.check.outputs.result }}

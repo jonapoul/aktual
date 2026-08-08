@@ -1,7 +1,9 @@
 package aktual.gradle
 
-import atlas.graphviz.tasks.ExecGraphviz
-import atlas.graphviz.tasks.WriteGraphvizChart
+import atlas.d2.tasks.ExecD2
+import atlas.d2.tasks.SvgToPng
+import atlas.d2.tasks.WriteD2Chart
+import atlas.d2.tasks.WriteD2Classes
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -11,11 +13,25 @@ class ConventionAtlas : Plugin<Project> {
     with(target) {
       val atlasBuildDir = layout.buildDirectory.dir("atlas")
 
-      tasks.withType(WriteGraphvizChart::class.java) { t ->
-        t.outputFile.set(atlasBuildDir.map { d -> d.file("atlas.dot") })
+      tasks.withType(WriteD2Chart::class.java) { t ->
+        t.outputFile.set(atlasBuildDir.map { d -> d.file("chart.d2") })
       }
 
-      tasks.withType(ExecGraphviz::class.java) { t ->
+      tasks.withType(ExecD2::class.java) { t ->
+        t.outputFile.set(
+          t.outputFormat.flatMap { format ->
+            atlasBuildDir.map { dir ->
+              dir.file("chart.${format.string}")
+            }
+          }
+        )
+      }
+
+      tasks.withType(WriteD2Classes::class.java) { t ->
+        t.outputFile.set(atlasBuildDir.map { dir -> dir.file("classes.d2") })
+      }
+
+      tasks.withType(SvgToPng::class.java) { t ->
         t.outputFile.set(layout.projectDirectory.file("atlas.png"))
       }
     }
