@@ -16,10 +16,10 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.blurredTopBar
-import aktual.core.ui.blurredTopBarContent
-import aktual.core.ui.blurredTopBarContentPadding
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.prefs.vm.BooleanPreference
@@ -73,12 +73,12 @@ fun ThemeSettingsScreen(
 @Composable
 private fun ThemeSettingsScaffold(state: ThemeSettingsState, onAction: ThemeSettingsActionHandler) {
   val listState = rememberLazyListState()
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
 
   Scaffold(
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, listState),
+        modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsThemeToolbar) },
@@ -88,8 +88,8 @@ private fun ThemeSettingsScaffold(state: ThemeSettingsState, onAction: ThemeSett
     Box {
       PageBackground()
       ThemeSettingsContent(
-        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
-        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
         state = state,
         listState = listState,
         onAction = onAction,

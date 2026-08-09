@@ -22,7 +22,6 @@ import aktual.core.theme.CustomThemeSummary
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
@@ -30,6 +29,7 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalIconButton
@@ -37,11 +37,11 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.RowShape
-import aktual.core.ui.blurredTopBar
 import aktual.core.ui.bottomNavBarPadding
 import aktual.core.ui.disabledIf
+import aktual.core.ui.hazedTopBar
 import aktual.core.ui.radioButton
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.prefs.vm.theme.custom.CacheState
@@ -159,13 +159,13 @@ private fun CustomThemeSettingsScaffold(
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
   val listState = rememberLazyListState()
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
   val sheetState = rememberModalBottomSheetState()
 
   Scaffold(
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, listState),
+        modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsThemeCustomTitle) },
@@ -185,12 +185,12 @@ private fun CustomThemeSettingsScaffold(
     Box {
       PageBackground()
 
-      BlurredPullToRefreshBox(
+      HazedPullToRefreshBox(
         modifier = Modifier.padding(horizontal = 8.dp),
         onRefresh = { onAction(RetryFetchCatalog) },
         isRefreshing = state is CatalogState.Loading,
         contentAlignment = Alignment.Center,
-        blurState = blurState,
+        hazeState = hazeState,
         innerPadding = innerPadding,
       ) { padding ->
         CustomThemeSettingsContent(

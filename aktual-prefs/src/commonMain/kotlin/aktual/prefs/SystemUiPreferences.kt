@@ -2,9 +2,9 @@ package aktual.prefs
 
 interface SystemUiPreferences {
   val showBottomBar: Preference<Boolean>
-  val blurAppBars: Preference<Boolean>
-  val blurDialogs: Preference<Boolean>
-  val blurRadius: Preference<Float>
-  val blurAlpha: Preference<Float>
+  val hazeAppBars: Preference<Boolean>
+  val hazeDialogs: Preference<Boolean>
+  val hazeRadius: Preference<Float>
+  val hazeAlpha: Preference<Float>
   val hidePreviewInAppSwitcher: Preference<Boolean>
 }

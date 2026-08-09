@@ -17,18 +17,18 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.blurredTopBar
-import aktual.core.ui.blurredTopBarContent
-import aktual.core.ui.blurredTopBarContentPadding
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.prefs.vm.BooleanPreference
 import aktual.prefs.vm.ListPreference
-import aktual.prefs.vm.root.BlurAlphaPreference
-import aktual.prefs.vm.root.BlurRadiusPreference
 import aktual.prefs.vm.root.CurrencyConfigState
 import aktual.prefs.vm.root.FormatConfigState
+import aktual.prefs.vm.root.HazeAlphaPreference
+import aktual.prefs.vm.root.HazeRadiusPreference
 import aktual.prefs.vm.root.SettingsScreenState
 import aktual.prefs.vm.root.SettingsViewModel
 import aktual.prefs.vm.root.SystemUiConfigState
@@ -73,12 +73,12 @@ fun SettingsScreen(
 @Composable
 private fun SettingsScaffold(state: SettingsScreenState, onAction: SettingsActionHandler) {
   val listState = rememberLazyListState()
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
 
   Scaffold(
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, listState),
+        modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.settingsToolbar) },
@@ -88,8 +88,8 @@ private fun SettingsScaffold(state: SettingsScreenState, onAction: SettingsActio
     Box {
       PageBackground()
       SettingsContent(
-        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
-        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
         listState = listState,
         state = state,
         onAction = onAction,
@@ -131,10 +131,10 @@ private fun PreviewSettingsScaffold(@PreviewParameter(ColoredParameters::class) 
           systemUi =
             SystemUiConfigState(
               showStatusBar = BooleanPreference(true),
-              blurAppBars = BooleanPreference(true),
-              blurDialogs = BooleanPreference(true),
-              blurRadiusDp = BlurRadiusPreference(5f),
-              blurAlpha = BlurAlphaPreference(0.5f),
+              hazeAppBars = BooleanPreference(true),
+              hazeDialogs = BooleanPreference(true),
+              hazeRadiusDp = HazeRadiusPreference(5f),
+              hazeAlpha = HazeAlphaPreference(0.5f),
               hidePreviewInAppSwitcher = BooleanPreference(true),
             ),
           format =

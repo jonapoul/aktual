@@ -16,21 +16,21 @@ import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BackHandler
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.BlurredTopBarState
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LoadingScreen
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.blurredTopBar
-import aktual.core.ui.blurredTopBarContent
-import aktual.core.ui.blurredTopBarContentPadding
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -156,7 +156,7 @@ private fun EditTagScaffold(
   // intercept the system back so unsaved changes prompt a confirmation first
   BackHandler(enabled = hasChanges) { showDiscardDialog = true }
 
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
   val scrollState = rememberScrollState()
 
   Scaffold(
@@ -166,7 +166,7 @@ private fun EditTagScaffold(
         editing = editing,
         hasChanges = hasChanges,
         saveEnabled = canSave,
-        blurState = blurState,
+        hazeState = hazeState,
         scrollState = scrollState,
         onAction = onAction,
         onRequestDiscard = { showDiscardDialog = true },
@@ -181,7 +181,7 @@ private fun EditTagScaffold(
 
         is EditTagState.Editing ->
           EditTagContent(
-            modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+            modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
             tagState = tagState,
             descriptionState = descriptionState,
             color = state.color,
@@ -189,7 +189,7 @@ private fun EditTagScaffold(
             onColorChange = { onAction(SetColor(it)) },
             onColorError = { onAction(SetColorError(it)) },
             scrollState = scrollState,
-            contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+            contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
           )
 
         is EditTagState.Failure ->
@@ -228,13 +228,13 @@ private fun EditTagTopBar(
   editing: EditTagState.Editing?,
   hasChanges: Boolean,
   saveEnabled: Boolean,
-  blurState: BlurredTopBarState,
+  hazeState: HazedTopBarState,
   scrollState: ScrollState,
   onAction: EditTagActionHandler,
   onRequestDiscard: () -> Unit,
 ) {
   TopAppBar(
-    modifier = Modifier.blurredTopBar(blurState, scrollOffset = { scrollState.value.toFloat() }),
+    modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { scrollState.value.toFloat() }),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = {
       if (hasChanges) {

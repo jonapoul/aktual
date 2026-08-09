@@ -28,10 +28,10 @@ import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.blurredTopBar
-import aktual.core.ui.blurredTopBarContent
-import aktual.core.ui.blurredTopBarContentPadding
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedContent
@@ -93,7 +93,7 @@ fun LicensesScreen(back: BackNavigator, viewModel: LicensesViewModel = metroView
 
 @Composable
 private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandler) {
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
   val loadedState = state as? Loaded
   val isSearchActive = loadedState?.isSearchActive == true
@@ -102,7 +102,7 @@ private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandl
     modifier = Modifier.fillMaxSize().imePadding(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, listState),
+        modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Title(isSearchActive, loadedState, onAction) },
@@ -119,9 +119,9 @@ private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandl
     Box {
       WavyBackground()
       LicensesContent(
-        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
+        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
         state = state,
-        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
         listState = listState,
         onAction = onAction,
       )

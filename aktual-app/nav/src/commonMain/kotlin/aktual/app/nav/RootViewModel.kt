@@ -3,8 +3,8 @@ package aktual.app.nav
 import aktual.core.nav.NavEntryContributor
 import aktual.core.theme.Colors
 import aktual.core.theme.ThemeResolver
-import aktual.core.ui.BlurConfig
 import aktual.core.ui.BottomBarState
+import aktual.core.ui.HazeConfig
 import aktual.di.BudgetGraph
 import aktual.di.RunLevelState
 import androidx.compose.runtime.Stable
@@ -31,7 +31,7 @@ abstract class RootViewModel(
   private val appLifecycleManager: AppLifecycleManager,
   navEntryContributors: Set<NavEntryContributor>,
   formatConfigUseCase: FormatConfigUseCase,
-  blurConfigUseCase: BlurConfigUseCase,
+  hazeConfigUseCase: HazeConfigUseCase,
   initialRouteUseCase: InitialRouteUseCase,
   bottomBarStateUseCase: BottomBarStateUseCase,
   private val runLevels: RunLevelState,
@@ -39,7 +39,7 @@ abstract class RootViewModel(
   val navEntryContributors: ImmutableSet<NavEntryContributor> =
     navEntryContributors.toImmutableSet()
   val formatConfig: StateFlow<FormatConfig> = formatConfigUseCase(viewModelScope)
-  val blurConfig: StateFlow<BlurConfig> = blurConfigUseCase(viewModelScope)
+  val hazeConfig: StateFlow<HazeConfig> = hazeConfigUseCase(viewModelScope)
   val initialRoute: StateFlow<NavKey?> = initialRouteUseCase(viewModelScope)
   val bottomBarState: StateFlow<BottomBarState> = bottomBarStateUseCase(viewModelScope)
   val tokenExpired: Flow<Unit> = appLifecycleManager.tokenExpired

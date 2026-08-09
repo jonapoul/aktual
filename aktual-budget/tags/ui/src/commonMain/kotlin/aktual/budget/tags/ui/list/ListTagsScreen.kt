@@ -24,19 +24,19 @@ import aktual.core.ui.AktualTextField
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.LoadingScreen
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.blurredTopBar
 import aktual.core.ui.bottomNavBarPadding
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedContent
@@ -138,7 +138,7 @@ private fun ListTagsScaffold(
   isRefreshing: Boolean = false,
   snackbarHostState: SnackbarHostState = remember { SnackbarHostState() },
 ) {
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
   val successState = state as? Success
 
@@ -160,7 +160,7 @@ private fun ListTagsScaffold(
     modifier = modifier.fillMaxSize().imePadding(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, listState),
+        modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         title = { Title(isSearchActive, successState, onAction) },
         actions = {
@@ -194,12 +194,12 @@ private fun ListTagsScaffold(
     Box(modifier = Modifier.fillMaxSize()) {
       PageBackground()
 
-      BlurredPullToRefreshBox(
+      HazedPullToRefreshBox(
         modifier = Modifier.padding(ListTagsDS.listPadding),
         contentAlignment = Alignment.Center,
         onRefresh = { onAction(Refresh) },
         isRefreshing = isRefreshing,
-        blurState = blurState,
+        hazeState = hazeState,
         innerPadding = innerPadding,
       ) { padding ->
         ListTagsContent(

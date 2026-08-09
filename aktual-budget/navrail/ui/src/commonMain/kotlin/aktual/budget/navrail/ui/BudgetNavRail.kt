@@ -36,8 +36,8 @@ import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.SideSpacing
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.blurredBottomBar
 import aktual.core.ui.disabled
+import aktual.core.ui.hazedBottomBar
 import aktual.core.ui.isCompactWidth
 import aktual.core.ui.isMobileLandscape
 import aktual.core.ui.rememberAppCloser
@@ -220,9 +220,7 @@ private fun BottomNavLayout(
 
     Column(
       modifier =
-        Modifier.align(Alignment.BottomCenter)
-          .fillMaxWidth()
-          .blurredBottomBar(state = localHazeState)
+        Modifier.align(Alignment.BottomCenter).fillMaxWidth().hazedBottomBar(state = localHazeState)
     ) {
       SharedTransitionLayout(modifier = Modifier.fillMaxWidth()) {
         AnimatedContent(

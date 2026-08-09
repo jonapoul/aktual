@@ -10,7 +10,7 @@ import aktual.core.ui.DialogBlurOverlay
 import aktual.core.ui.LocalBottomBarThemeAttrs
 import aktual.core.ui.LocalBottomSpacing
 import aktual.core.ui.WithCompositionLocals
-import aktual.core.ui.blurredBottomBar
+import aktual.core.ui.hazedBottomBar
 import aktual.core.ui.rememberAppCloser
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
@@ -65,7 +65,7 @@ fun AktualAppContent(
   val colors by viewModel.colors.collectAsStateWithLifecycle()
   val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()
   val formatConfig by viewModel.formatConfig.collectAsStateWithLifecycle()
-  val blurConfig by viewModel.blurConfig.collectAsStateWithLifecycle()
+  val hazeConfig by viewModel.hazeConfig.collectAsStateWithLifecycle()
 
   val hazeState = rememberHazeState()
 
@@ -78,7 +78,7 @@ fun AktualAppContent(
     addCurrencySpace = formatConfig.spaceBetweenAmountAndSymbol,
     dateFormat = formatConfig.dateFormat,
     hazeState = hazeState,
-    blurConfig = blurConfig,
+    hazeConfig = hazeConfig,
   ) {
     AktualTheme(colors) {
       Box(modifier = modifier, contentAlignment = Alignment.BottomCenter) {
@@ -99,7 +99,7 @@ fun AktualAppContent(
 
         val attrs = LocalBottomBarThemeAttrs.current.current
         val bottomModifier =
-          if (attrs.shouldBlurOnRootLevel) Modifier.blurredBottomBar(attrs) else Modifier
+          if (attrs.shouldHazeOnRootLevel) Modifier.hazedBottomBar(attrs) else Modifier
         Column(modifier = bottomModifier) {
           val bbs = bottomBarState
           if (bbs is BottomBarState.Visible) {

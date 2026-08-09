@@ -30,7 +30,7 @@ val LocalPrivacyEnabled = compositionLocalOf { false }
 
 internal val DefaultBottomBarThemeAttrs =
   BottomBarThemeAttrs(
-    shouldBlurOnRootLevel = true,
+    shouldHazeOnRootLevel = true,
     background = { cardBackground },
     foreground = { pageText },
   )
@@ -76,7 +76,7 @@ val LocalCurrencyConfig =
 
 val LocalHazeState = compositionLocalOf<HazeState> { error("No HazeState value provided") }
 
-val LocalBlurConfig = compositionLocalOf<BlurConfig> { error("No BlurConfig value provided") }
+val LocalHazeConfig = compositionLocalOf<HazeConfig> { error("No BlurConfig value provided") }
 
 val LocalDialogBlurState = compositionLocalOf { DialogBlurState() }
 
@@ -114,7 +114,7 @@ fun WithCompositionLocals(
   addCurrencySpace: Boolean = true,
   dateFormat: DateFormat = DateFormat.Default,
   hazeState: HazeState = rememberHazeState(),
-  blurConfig: BlurConfig = remember { BlurConfig() },
+  hazeConfig: HazeConfig = remember { HazeConfig() },
   dialogBlurState: DialogBlurState = remember { DialogBlurState() },
   bottomBarThemeAttrs: BottomBarThemeAttrsStack = remember { BottomBarThemeAttrsStack() },
   content: @Composable () -> Unit,
@@ -125,7 +125,7 @@ fun WithCompositionLocals(
     LocalCurrencyConfig provides CurrencyConfig(currency, currencyPosition, addCurrencySpace),
     LocalPrivacyEnabled provides isPrivacyEnabled,
     LocalHazeState provides hazeState,
-    LocalBlurConfig provides blurConfig,
+    LocalHazeConfig provides hazeConfig,
     LocalDialogBlurState provides dialogBlurState,
     LocalBottomBarThemeAttrs provides bottomBarThemeAttrs,
     content = content,
