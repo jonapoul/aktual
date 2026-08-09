@@ -12,16 +12,16 @@ class SystemUiPreferencesImpl(dataStore: DataStore<Preferences>) : SystemUiPrefe
   override val showBottomBar: Preference<Boolean> =
     dataStore.boolean(key = booleanPreferencesKey("showBottomBar"), default = true).required()
 
-  override val blurAppBars: Preference<Boolean> =
+  override val hazeAppBars: Preference<Boolean> =
     dataStore.boolean(key = booleanPreferencesKey("blurAppBars"), default = true).required()
 
-  override val blurDialogs: Preference<Boolean> =
+  override val hazeDialogs: Preference<Boolean> =
     dataStore.boolean(key = booleanPreferencesKey("blurDialogs"), default = true).required()
 
-  override val blurRadius: Preference<Float> =
+  override val hazeRadius: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("blurRadius"), default = 5f).required()
 
-  override val blurAlpha: Preference<Float> =
+  override val hazeAlpha: Preference<Float> =
     dataStore.float(key = floatPreferencesKey("blurAlpha"), default = 0.35f).required()
 
   override val hidePreviewInAppSwitcher: Preference<Boolean> =

@@ -33,7 +33,7 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     )
 
     BooleanPreferenceItem(
-      preference = state.blurAppBars,
+      preference = state.hazeAppBars,
       title = Strings.settingsUiBlurBars,
       subtitle = null,
       icon = MaterialIcons.BlurOn,
@@ -41,7 +41,7 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     )
 
     BooleanPreferenceItem(
-      preference = state.blurDialogs,
+      preference = state.hazeDialogs,
       title = Strings.settingsUiBlurDialogs,
       subtitle = null,
       icon = MaterialIcons.Dialogs,
@@ -49,7 +49,7 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     )
 
     SliderPreferenceItem(
-      preference = state.blurRadiusDp,
+      preference = state.hazeRadiusDp,
       title = Strings.settingsUiBlurRadius,
       subtitle = null,
       icon = MaterialIcons.LinearScale,
@@ -57,7 +57,7 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     )
 
     SliderPreferenceItem(
-      preference = state.blurAlpha,
+      preference = state.hazeAlpha,
       title = Strings.settingsUiBlurAlpha,
       subtitle = null,
       icon = MaterialIcons.TransitionDissolve,
