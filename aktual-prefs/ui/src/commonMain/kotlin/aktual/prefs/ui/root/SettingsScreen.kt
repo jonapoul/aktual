@@ -1,5 +1,6 @@
 package aktual.prefs.ui.root
 
+import aktual.budget.model.BarEffect
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
@@ -131,7 +132,7 @@ private fun PreviewSettingsScaffold(@PreviewParameter(ColoredParameters::class) 
           systemUi =
             SystemUiConfigState(
               showStatusBar = BooleanPreference(true),
-              hazeAppBars = BooleanPreference(true),
+              appBarEffect = ListPreference(BarEffect.Blur),
               hazeDialogs = BooleanPreference(true),
               hazeRadiusDp = HazeRadiusPreference(5f),
               hazeAlpha = HazeAlphaPreference(0.5f),

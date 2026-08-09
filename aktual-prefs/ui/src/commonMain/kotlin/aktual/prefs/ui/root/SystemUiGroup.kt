@@ -1,5 +1,6 @@
 package aktual.prefs.ui.root
 
+import aktual.budget.model.BarEffect
 import aktual.core.icons.material.BlurOn
 import aktual.core.icons.material.Dialogs
 import aktual.core.icons.material.LinearScale
@@ -10,6 +11,7 @@ import aktual.core.icons.material.Visibility
 import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.prefs.ui.BooleanPreferenceItem
+import aktual.prefs.ui.ListPreferenceItem
 import aktual.prefs.ui.PreferenceGroup
 import aktual.prefs.ui.SliderPreferenceItem
 import aktual.prefs.vm.root.SystemUiConfigState
@@ -32,9 +34,11 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
         if (state.showStatusBar.value) MaterialIcons.Visibility else MaterialIcons.VisibilityOff,
     )
 
-    BooleanPreferenceItem(
-      preference = state.hazeAppBars,
-      title = Strings.settingsUiBlurBars,
+    ListPreferenceItem(
+      preference = state.appBarEffect,
+      optionString = { it.string() },
+      optionSuffix = null,
+      title = Strings.settingsUiBarEffect,
       subtitle = null,
       icon = MaterialIcons.BlurOn,
       includeBackground = false,
@@ -73,3 +77,11 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     )
   }
 }
+
+@Composable
+private fun BarEffect.string(): String =
+  when (this) {
+    BarEffect.None -> Strings.settingsUiBarEffectNone
+    BarEffect.Blur -> Strings.settingsUiBarEffectBlur
+    BarEffect.Glass -> Strings.settingsUiBarEffectGlass
+  }
