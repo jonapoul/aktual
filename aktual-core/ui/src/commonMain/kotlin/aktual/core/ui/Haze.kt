@@ -1,7 +1,7 @@
 package aktual.core.ui
 
+import aktual.budget.model.BarEffect
 import aktual.core.theme.BottomBarThemeAttrs
-import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
 import alakazam.compose.VerticalSpacer
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,6 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PathFillType
@@ -41,11 +43,14 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import dev.chrisbanes.haze.HazeInput
 import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.blur.HazeBlurStyle
 import dev.chrisbanes.haze.blur.HazeColorEffect
-import dev.chrisbanes.haze.blur.blurEffect
-import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.blur.hazeBlur
+import dev.chrisbanes.haze.glass.GlassOptics
+import dev.chrisbanes.haze.glass.GlassStyle
+import dev.chrisbanes.haze.glass.hazeGlass
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.rememberHazeState
 
@@ -56,42 +61,38 @@ fun Modifier.hazedBottomBar(
   config: HazeConfig = LocalHazeConfig.current,
 ): Modifier {
   val color = attrs.background(colors)
-
-  return if (config.appBars) {
-    val blurStyle =
-      remember(config, color) {
-        HazeBlurStyle(
-          blurRadius = config.radius,
-          backgroundColor = color,
-          colorEffect = HazeColorEffect.tint(color.copy(alpha = config.alpha)),
-        )
-      }
-    hazeEffect(state) { blurEffect { style = blurStyle } }
-  } else {
-    // when blur is off, fall back to a flat fill with the same color, so the bar still matches
-    // what the blurred variant would have shown
-    background(color)
+  val input = HazeInput.Sources(state)
+  return when (config.appBarEffect) {
+    // when the effect is off, fall back to a flat fill with the same color, so the bar still
+    // matches what the blurred/glass variant would have shown
+    BarEffect.None -> background(color)
+    BarEffect.Blur -> hazeBlur(input = input, style = barBlurStyle(color, config))
+    BarEffect.Glass -> hazeGlass(input = input, style = barGlassStyle(color, config))
   }
 }
 
 /**
- * Creates a [HazedTopBarState] for use with a transparent, blurred TopAppBar. When blur is
- * enabled, the content scrolls behind the TopAppBar with a blur effect. When disabled, normal
- * Scaffold padding behavior is used.
+ * Creates a [HazedTopBarState] for use with a transparent TopAppBar that applies the configured
+ * [BarEffect]. When the effect is enabled, the content scrolls behind the TopAppBar with a
+ * blur/glass effect. When disabled, normal Scaffold padding behavior is used.
  */
 @Composable
 fun rememberHazedTopBarState(): HazedTopBarState {
   val hazeState = rememberHazeState()
-  val enabled = LocalHazeConfig.current.appBars
-  return remember(hazeState, enabled) { HazedTopBarState(hazeState, enabled) }
+  val effect = LocalHazeConfig.current.appBarEffect
+  return remember(hazeState, effect) { HazedTopBarState(hazeState, effect) }
 }
 
-@Stable data class HazedTopBarState(val hazeState: HazeState, val enabled: Boolean)
+@Stable
+data class HazedTopBarState(val hazeState: HazeState, val effect: BarEffect) {
+  val enabled: Boolean
+    get() = effect != BarEffect.None
+}
 
 /**
- * Variant that scales the blur with the scroll position. The blur ramps from fully transparent to
- * fully blurred as [scrollOffset] (in pixels) grows from zero to the top bar's own measured height,
- * which is captured from the bar's layout pass.
+ * Variant that scales the effect with the scroll position. Intensity ramps from fully transparent
+ * to fully applied as [scrollOffset] (in pixels) grows from zero to the top bar's own measured
+ * height, which is captured from the bar's layout pass.
  */
 @Composable
 fun Modifier.hazedTopBar(
@@ -113,8 +114,16 @@ fun Modifier.hazedTopBar(
 
   if (progress <= 0f) return measured
 
-  val hazeStyle = rememberAnimatedHazeStyle(config, progress)
-  return measured.hazeEffect(state.hazeState) { blurEffect { style = hazeStyle } }
+  val color = colors.cardBackground
+  val input = HazeInput.Sources(state.hazeState)
+  return when (state.effect) {
+    BarEffect.None -> measured
+    BarEffect.Blur ->
+      measured.hazeBlur(input = input, style = barBlurStyle(color, config, progress))
+
+    BarEffect.Glass ->
+      measured.hazeGlass(input = input, style = barGlassStyle(color, config, progress))
+  }
 }
 
 /** Convenience overload that derives the scroll offset straight from [listState]. */
@@ -132,10 +141,7 @@ fun LazyListState.topBarHazeOffset(): Float =
 
 @Composable
 @ReadOnlyComposable
-fun Modifier.hazedTopBarContent(
-  state: HazedTopBarState,
-  innerPadding: PaddingValues,
-): Modifier {
+fun Modifier.hazedTopBarContent(state: HazedTopBarState, innerPadding: PaddingValues): Modifier {
   val layoutDirection = LocalLayoutDirection.current
   return if (state.enabled) {
     hazeSource(state.hazeState)
@@ -151,17 +157,16 @@ fun Modifier.hazedTopBarContent(
   }
 }
 
-fun hazedTopBarContentPadding(
-  state: HazedTopBarState,
-  innerPadding: PaddingValues,
-): PaddingValues =
+fun hazedTopBarContentPadding(state: HazedTopBarState, innerPadding: PaddingValues): PaddingValues =
   if (state.enabled) {
     PaddingValues(top = innerPadding.calculateTopPadding())
   } else {
     PaddingValues()
   }
 
-/** Spacer that fills the height of the blurred TopAppBar, or emits nothing when blur is off. */
+/**
+ * Spacer that fills the height of the blurred TopAppBar, or emits nothing when the effect is off.
+ */
 @Composable
 fun HazedTopBarSpacing(state: HazedTopBarState, innerPadding: PaddingValues) {
   if (state.enabled) {
@@ -195,14 +200,14 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
   }
 
   if (progress > 0f) {
-    val blurStyle = rememberAnimatedHazeStyle(blurConfig, progress)
+    val blurStyle = barBlurStyle(colors.cardBackground, blurConfig, progress)
     val excluded = dialogBlurState.excludedFromBlur
     Box(
       modifier =
         modifier
           .fillMaxSize()
           .then(if (excluded.isEmpty()) Modifier else Modifier.clip(HoledShape(excluded)))
-          .hazeEffect(hazeState) { blurEffect { style = blurStyle } }
+          .hazeBlur(input = HazeInput.Sources(hazeState), style = blurStyle)
     )
   }
 }
@@ -228,25 +233,35 @@ private class HoledShape(private val holes: SnapshotStateMap<Any, Rect>) : Shape
 
 private val DefaultAnimationSpec = tween<Float>(durationMillis = 200, easing = FastOutSlowInEasing)
 
+// Bars are full-width rectangles, not floating cards, so glass renders with square corners.
+private val BarGlassShape = RoundedCornerShape(0.dp)
+
 @Composable
-private fun rememberAnimatedHazeStyle(
-  config: HazeConfig,
-  progress: Float,
-  colors: Colors = AktualTheme.colors,
-  backgroundAlpha: Float = progress,
-  tintAlpha: Float = config.alpha * progress,
-): HazeBlurStyle =
-  remember(config, colors, progress, backgroundAlpha, tintAlpha) {
-    HazeBlurStyle(
-      blurRadius = config.radius * progress,
-      backgroundColor = colors.cardBackground.copy(alpha = backgroundAlpha),
-      colorEffect = HazeColorEffect.tint(colors.cardBackground.copy(alpha = tintAlpha)),
-    )
+private fun barBlurStyle(color: Color, config: HazeConfig, progress: Float = 1f): HazeBlurStyle =
+  remember(color, config, progress) {
+    HazeBlurStyle {
+      blurRadius(config.radius * progress)
+      backgroundColor(color.copy(alpha = color.alpha * progress))
+      colorEffects(listOf(HazeColorEffect.tint(color.copy(alpha = config.alpha * progress))))
+    }
+  }
+
+@Composable
+private fun barGlassStyle(color: Color, config: HazeConfig, progress: Float = 1f): GlassStyle =
+  remember(color, config, progress) {
+    GlassStyle {
+      shape(BarGlassShape)
+      edgeSoftness(0.dp)
+      tint(color.copy(alpha = config.alpha * progress))
+      optics(blurRadius = config.radius)
+      optics(GlassOptics.Adaptive)
+      alpha(progress)
+    }
   }
 
 @Immutable
 data class HazeConfig(
-  val appBars: Boolean = true,
+  val appBarEffect: BarEffect = BarEffect.Default,
   val dialogs: Boolean = true,
   val radius: Dp = 5.dp,
   val alpha: Float = 0.5f,

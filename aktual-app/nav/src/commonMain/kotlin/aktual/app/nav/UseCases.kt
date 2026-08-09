@@ -54,12 +54,12 @@ import logcat.logcat
 class HazeConfigUseCase(private val preferences: SystemUiPreferences) {
   operator fun invoke(scope: CoroutineScope): StateFlow<HazeConfig> =
     scope.launchMolecule(Immediate) {
-      val hazeAppBars by preferences.hazeAppBars.collectAsStateFlow(scope)
+      val appBarEffect by preferences.appBarEffect.collectAsStateFlow(scope)
       val hazeDialogs by preferences.hazeDialogs.collectAsStateFlow(scope)
       val hazeRadius by preferences.hazeRadius.collectAsStateFlow(scope)
       val hazeAlpha by preferences.hazeAlpha.collectAsStateFlow(scope)
       HazeConfig(
-        appBars = hazeAppBars,
+        appBarEffect = appBarEffect,
         dialogs = hazeDialogs,
         radius = hazeRadius.dp,
         alpha = hazeAlpha,

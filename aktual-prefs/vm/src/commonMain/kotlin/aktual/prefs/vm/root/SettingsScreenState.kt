@@ -1,5 +1,6 @@
 package aktual.prefs.vm.root
 
+import aktual.budget.model.BarEffect
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
@@ -20,7 +21,7 @@ data class SettingsScreenState(
 @Immutable
 data class SystemUiConfigState(
   val showStatusBar: BooleanPreference,
-  val hazeAppBars: BooleanPreference,
+  val appBarEffect: ListPreference<BarEffect>,
   val hazeDialogs: BooleanPreference,
   val hazeRadiusDp: SliderPreference,
   val hazeAlpha: SliderPreference,

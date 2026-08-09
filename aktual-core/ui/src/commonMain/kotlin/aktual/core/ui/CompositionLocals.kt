@@ -1,3 +1,5 @@
+@file:Suppress("ComposeCompositionLocalUsage")
+
 package aktual.core.ui
 
 import aktual.budget.model.Amount
@@ -76,7 +78,7 @@ val LocalCurrencyConfig =
 
 val LocalHazeState = compositionLocalOf<HazeState> { error("No HazeState value provided") }
 
-val LocalHazeConfig = compositionLocalOf<HazeConfig> { error("No BlurConfig value provided") }
+val LocalHazeConfig = compositionLocalOf<HazeConfig> { error("No HazeConfig value provided") }
 
 val LocalDialogBlurState = compositionLocalOf { DialogBlurState() }
 

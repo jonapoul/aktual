@@ -1,5 +1,6 @@
 package aktual.prefs.vm.root
 
+import aktual.budget.model.BarEffect
 import aktual.budget.model.Currency
 import aktual.di.AppScope
 import aktual.prefs.CurrencyPreferences
@@ -44,23 +45,23 @@ class SettingsViewModel(
   @Composable
   private fun systemUiState(): SystemUiConfigState {
     val showBottomBar by systemUiPreferences.showBottomBar.collectAsStateFlow()
-    val hazeAppBars by systemUiPreferences.hazeAppBars.collectAsStateFlow()
+    val appBarEffect by systemUiPreferences.appBarEffect.collectAsStateFlow()
     val hazeDialogs by systemUiPreferences.hazeDialogs.collectAsStateFlow()
     val hazeRadius by systemUiPreferences.hazeRadius.collectAsStateFlow()
     val hazeAlpha by systemUiPreferences.hazeAlpha.collectAsStateFlow()
     val hidePreviewInAppSwitcher by
       systemUiPreferences.hidePreviewInAppSwitcher.collectAsStateFlow()
-    val anyHazeEnabled = hazeAppBars || hazeDialogs
+    val anyHazeEnabled = appBarEffect != BarEffect.None || hazeDialogs
     return SystemUiConfigState(
       showStatusBar =
         BooleanPreference(
           value = showBottomBar,
           onChange = { systemUiPreferences.showBottomBar.launchAndSet(it) },
         ),
-      hazeAppBars =
-        BooleanPreference(
-          value = hazeAppBars,
-          onChange = { systemUiPreferences.hazeAppBars.launchAndSet(it) },
+      appBarEffect =
+        ListPreference(
+          value = appBarEffect,
+          onChange = { systemUiPreferences.appBarEffect.launchAndSet(it) },
         ),
       hazeDialogs =
         BooleanPreference(
