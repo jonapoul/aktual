@@ -150,6 +150,7 @@ manifestLock = { id = "io.github.gmazzo.android.manifest.lock", version = "1.4.0
 metro = { id = "dev.zacsweers.metro", version.ref = "metro" }
 nucleus = { id = "dev.nucleusframework", version = "2.4.2" }
 redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
+sortDependencies = { id = "com.squareup.sort-dependencies", version = "0.20.1-SNAPSHOT" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 straitjacket = { id = "dev.jonpoulton.straitjacket", version = "0.1.0" }
 wire = { id = "com.squareup.wire", version = "6.4.5" }
