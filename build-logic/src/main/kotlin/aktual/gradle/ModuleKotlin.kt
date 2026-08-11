@@ -16,61 +16,59 @@ import blueprint.core.libs
 import com.android.build.api.dsl.KotlinMultiplatformAndroidLibraryTarget
 import com.android.build.gradle.LintPlugin
 import com.android.build.gradle.api.KotlinMultiplatformAndroidPlugin
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.jetbrains.kotlin.gradle.plugin.KotlinMultiplatformPluginWrapper
 
-class ModuleKotlin : Plugin<Project> {
-  override fun apply(target: Project): Unit =
-    with(target) {
-      with(pluginManager) {
-        apply(KotlinMultiplatformPluginWrapper::class)
-        apply(KotlinMultiplatformAndroidPlugin::class)
-        apply(ConventionKotlinBase::class)
-        apply(ConventionIdea::class)
-        apply(ConventionStyle::class)
-        apply(ConventionTest::class)
-        apply(LintPlugin::class)
-      }
-
-      kotlin {
-        applyDefaultHierarchyTemplate()
-
-        jvm("desktop")
-
-        extensions.configure(KotlinMultiplatformAndroidLibraryTarget::class) {
-          namespace = buildNamespace()
-          minSdk = providers.intProperty("aktual.android.minSdk").get()
-          compileSdk = providers.intProperty("aktual.android.compileSdk").get()
-          packaging.resources.excludes.add("META-INF/*")
-          lint.commonConfigure(target)
-          withHostTest {
-            // For Robolectric
-            isIncludeAndroidResources = true
-          }
-        }
-
-        // Pin Robolectric to a supported SDK via a shared robolectric.properties on the
-        // androidHostTest classpath (see gradle/robolectric/robolectric.properties)
-        sourceSets.named("androidHostTest") { ss ->
-          ss.resources.srcDir(rootProject.isolated.projectDirectory.dir("gradle/robolectric"))
-        }
-
-        compilerOptions {
-          freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
-        }
-
-        commonMainDependencies {
-          implementation(libs["alakazam.kotlin"])
-          implementation(libs["kotlinx.coroutines.core"])
-        }
-
-        commonTestDependencies {
-          implementation(kotlin("test"))
-          testLibraries.forEach { lib -> implementation(lib) }
-        }
-
-        androidHostTestDependencies { androidTestLibraries.forEach { lib -> implementation(lib) } }
-      }
+class ModuleKotlin : ProjectPlugin {
+  override fun Project.applyTo() {
+    with(pluginManager) {
+      apply(KotlinMultiplatformPluginWrapper::class)
+      apply(KotlinMultiplatformAndroidPlugin::class)
+      apply(ConventionKotlinBase::class)
+      apply(ConventionIdea::class)
+      apply(ConventionStyle::class)
+      apply(ConventionTest::class)
+      apply(LintPlugin::class)
     }
+
+    kotlin {
+      applyDefaultHierarchyTemplate()
+
+      jvm("desktop")
+
+      extensions.configure(KotlinMultiplatformAndroidLibraryTarget::class) {
+        namespace = buildNamespace()
+        minSdk = providers.intProperty("aktual.android.minSdk").get()
+        compileSdk = providers.intProperty("aktual.android.compileSdk").get()
+        packaging.resources.excludes.add("META-INF/*")
+        lint.commonConfigure(this@applyTo)
+        withHostTest {
+          // For Robolectric
+          isIncludeAndroidResources = true
+        }
+      }
+
+      // Pin Robolectric to a supported SDK via a shared robolectric.properties on the
+      // androidHostTest classpath (see gradle/robolectric/robolectric.properties)
+      sourceSets.named("androidHostTest") { ss ->
+        ss.resources.srcDir(rootProject.isolated.projectDirectory.dir("gradle/robolectric"))
+      }
+
+      compilerOptions {
+        freeCompilerArgs.addAll("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
+      }
+
+      commonMainDependencies {
+        implementation(libs["alakazam.kotlin"])
+        implementation(libs["kotlinx.coroutines.core"])
+      }
+
+      commonTestDependencies {
+        implementation(kotlin("test"))
+        testLibraries.forEach { lib -> implementation(lib) }
+      }
+
+      androidHostTestDependencies { androidTestLibraries.forEach { lib -> implementation(lib) } }
+    }
+  }
 }
