@@ -241,7 +241,7 @@ private fun PreviewBottomBar(
       onClickSync = {},
       attrs =
         BottomBarThemeAttrs(
-          shouldBlurOnRootLevel = true,
+          shouldHazeOnRootLevel = true,
           background = { cardBackground },
           foreground = { pageText },
         ),

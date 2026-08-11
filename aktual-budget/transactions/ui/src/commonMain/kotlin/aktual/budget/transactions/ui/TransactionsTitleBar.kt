@@ -6,14 +6,14 @@ import aktual.core.icons.material.Visibility
 import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
-import aktual.core.ui.BlurredTopBarState
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
+import aktual.core.ui.HazedTopBarState
 import aktual.core.ui.LocalPrivacyEnabled
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PreviewWithColors
-import aktual.core.ui.blurredTopBar
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.PreviewParameter
 
 @Composable
 internal fun TransactionsTitleBar(
-  blurState: BlurredTopBarState,
+  hazeState: HazedTopBarState,
   listState: LazyListState,
   loadedAccount: LoadedAccount,
   onAction: ActionListener,
@@ -44,7 +44,7 @@ internal fun TransactionsTitleBar(
     }
 
   TopAppBar(
-    modifier = Modifier.blurredTopBar(blurState, listState),
+    modifier = Modifier.hazedTopBar(hazeState, listState),
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = { NavBackIconButton { onAction(Action.NavBack) } },
     title = { Text(text = title, maxLines = 1, overflow = Ellipsis) },
@@ -71,7 +71,7 @@ private fun PreviewTransactionsTitleBar(
 ) =
   PreviewWithColors(params.colors) {
     TransactionsTitleBar(
-      blurState = rememberBlurredTopBarState(),
+      hazeState = rememberHazedTopBarState(),
       listState = rememberLazyListState(),
       loadedAccount = params.data,
       onAction = {},

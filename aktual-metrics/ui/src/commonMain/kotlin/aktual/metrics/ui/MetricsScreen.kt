@@ -12,7 +12,6 @@ import aktual.core.model.kB
 import aktual.core.nav.BackNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
@@ -20,14 +19,15 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.RowShape
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.blurredTopBar
-import aktual.core.ui.blurredTopBarContent
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import aktual.metrics.vm.MetricsState
@@ -102,12 +102,12 @@ internal fun MetricsScaffold(
   state: MetricsState,
   onAction: MetricsActionHandler,
 ) {
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
 
   Scaffold(
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, scrollOffset = { 0f }),
+        modifier = Modifier.hazedTopBar(hazeState, scrollOffset = { 0f }),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.metricsToolbar) },
@@ -117,8 +117,8 @@ internal fun MetricsScaffold(
     Box {
       WavyBackground()
 
-      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
-        BlurredTopBarSpacing(blurState, innerPadding)
+      Column(modifier = Modifier.hazedTopBarContent(hazeState, innerPadding)) {
+        HazedTopBarSpacing(hazeState, innerPadding)
         PullToRefreshBox(
           modifier = Modifier.padding(8.dp),
           contentAlignment = Alignment.Center,

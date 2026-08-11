@@ -15,8 +15,8 @@ import aktual.core.nav.BudgetNavRailNavRoute
 import aktual.core.nav.ListBudgetsNavRoute
 import aktual.core.nav.LoginNavRoute
 import aktual.core.nav.ServerUrlNavRoute
-import aktual.core.ui.BlurConfig
 import aktual.core.ui.BottomBarState
+import aktual.core.ui.HazeConfig
 import aktual.di.AppGraph
 import aktual.di.BudgetGraph
 import aktual.di.LoggedInGraph
@@ -51,18 +51,18 @@ import kotlinx.coroutines.launch
 import logcat.logcat
 
 @Inject
-class BlurConfigUseCase(private val preferences: SystemUiPreferences) {
-  operator fun invoke(scope: CoroutineScope): StateFlow<BlurConfig> =
+class HazeConfigUseCase(private val preferences: SystemUiPreferences) {
+  operator fun invoke(scope: CoroutineScope): StateFlow<HazeConfig> =
     scope.launchMolecule(Immediate) {
-      val blurAppBars by preferences.blurAppBars.collectAsStateFlow(scope)
-      val blurDialogs by preferences.blurDialogs.collectAsStateFlow(scope)
-      val blurRadius by preferences.blurRadius.collectAsStateFlow(scope)
-      val blurAlpha by preferences.blurAlpha.collectAsStateFlow(scope)
-      BlurConfig(
-        blurAppBars = blurAppBars,
-        blurDialogs = blurDialogs,
-        blurRadius = blurRadius.dp,
-        blurAlpha = blurAlpha,
+      val appBarEffect by preferences.appBarEffect.collectAsStateFlow(scope)
+      val hazeDialogs by preferences.hazeDialogs.collectAsStateFlow(scope)
+      val hazeRadius by preferences.hazeRadius.collectAsStateFlow(scope)
+      val hazeAlpha by preferences.hazeAlpha.collectAsStateFlow(scope)
+      HazeConfig(
+        appBarEffect = appBarEffect,
+        dialogs = hazeDialogs,
+        radius = hazeRadius.dp,
+        alpha = hazeAlpha,
       )
     }
 }

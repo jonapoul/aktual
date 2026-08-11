@@ -1,5 +1,6 @@
 package aktual.prefs.ui.root
 
+import aktual.budget.model.BarEffect
 import aktual.core.icons.material.BlurOn
 import aktual.core.icons.material.Dialogs
 import aktual.core.icons.material.LinearScale
@@ -10,6 +11,7 @@ import aktual.core.icons.material.Visibility
 import aktual.core.icons.material.VisibilityOff
 import aktual.core.l10n.Strings
 import aktual.prefs.ui.BooleanPreferenceItem
+import aktual.prefs.ui.ListPreferenceItem
 import aktual.prefs.ui.PreferenceGroup
 import aktual.prefs.ui.SliderPreferenceItem
 import aktual.prefs.vm.root.SystemUiConfigState
@@ -32,16 +34,18 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
         if (state.showStatusBar.value) MaterialIcons.Visibility else MaterialIcons.VisibilityOff,
     )
 
-    BooleanPreferenceItem(
-      preference = state.blurAppBars,
-      title = Strings.settingsUiBlurBars,
+    ListPreferenceItem(
+      preference = state.appBarEffect,
+      optionString = { it.string() },
+      optionSuffix = null,
+      title = Strings.settingsUiBarEffect,
       subtitle = null,
       icon = MaterialIcons.BlurOn,
       includeBackground = false,
     )
 
     BooleanPreferenceItem(
-      preference = state.blurDialogs,
+      preference = state.hazeDialogs,
       title = Strings.settingsUiBlurDialogs,
       subtitle = null,
       icon = MaterialIcons.Dialogs,
@@ -49,7 +53,7 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     )
 
     SliderPreferenceItem(
-      preference = state.blurRadiusDp,
+      preference = state.hazeRadiusDp,
       title = Strings.settingsUiBlurRadius,
       subtitle = null,
       icon = MaterialIcons.LinearScale,
@@ -57,7 +61,7 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     )
 
     SliderPreferenceItem(
-      preference = state.blurAlpha,
+      preference = state.hazeAlpha,
       title = Strings.settingsUiBlurAlpha,
       subtitle = null,
       icon = MaterialIcons.TransitionDissolve,
@@ -73,3 +77,11 @@ internal fun SystemUiGroup(state: SystemUiConfigState, modifier: Modifier = Modi
     )
   }
 }
+
+@Composable
+private fun BarEffect.string(): String =
+  when (this) {
+    BarEffect.None -> Strings.settingsUiBarEffectNone
+    BarEffect.Blur -> Strings.settingsUiBarEffectBlur
+    BarEffect.Glass -> Strings.settingsUiBarEffectGlass
+  }

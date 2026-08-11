@@ -18,10 +18,10 @@ import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.blurredTopBar
-import aktual.core.ui.blurredTopBarContent
-import aktual.core.ui.blurredTopBarContentPadding
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.foundation.layout.Arrangement
@@ -85,14 +85,14 @@ internal fun ReportsDashboardScaffold(
   observer: DashboardItemObserver,
   onAction: ActionListener,
 ) {
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
 
   Scaffold(
     modifier = Modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, listState),
+        modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         title = { Text(Strings.reportsDashboardTitle) },
         actions = {
@@ -109,8 +109,8 @@ internal fun ReportsDashboardScaffold(
     Box {
       PageBackground()
       ReportsDashboardContent(
-        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
-        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
         items = items,
         observer = observer,
         listState = listState,

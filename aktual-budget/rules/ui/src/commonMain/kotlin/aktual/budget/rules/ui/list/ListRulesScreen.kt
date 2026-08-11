@@ -27,7 +27,6 @@ import aktual.core.nav.EditRuleNavigator
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
 import aktual.core.ui.BareIconButton
-import aktual.core.ui.BlurredPullToRefreshBox
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
@@ -35,14 +34,15 @@ import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
+import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.NormalIconButton
 import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColoredParams
-import aktual.core.ui.blurredTopBar
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
-import aktual.core.ui.topBarBlurOffset
+import aktual.core.ui.topBarHazeOffset
 import aktual.core.ui.transparentTopAppBarColors
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
@@ -124,7 +124,7 @@ private fun ListRulesScaffold(
   onAction: ListRulesActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
 
   // Drives the collapsing header below the toolbar: it fades + slides out as the list scrolls
@@ -135,12 +135,12 @@ private fun ListRulesScaffold(
     modifier = modifier.fillMaxSize().nestedScroll(headerState.nestedScrollConnection),
     topBar = {
       // The header eats the first slice of scroll as it collapses, so fold its collapse distance
-      // into the offset — otherwise small scrolls leave a dead zone with no blur.
+      // into the offset — otherwise small scrolls leave a dead zone with no haze.
       Column(
         modifier =
-          Modifier.blurredTopBar(
-            blurState,
-            scrollOffset = { -headerState.offset + listState.topBarBlurOffset() },
+          Modifier.hazedTopBar(
+            hazeState,
+            scrollOffset = { -headerState.offset + listState.topBarHazeOffset() },
           )
       ) {
         TopAppBar(
@@ -154,12 +154,12 @@ private fun ListRulesScaffold(
   ) { innerPadding ->
     Box {
       PageBackground()
-      BlurredPullToRefreshBox(
+      HazedPullToRefreshBox(
         modifier = Modifier.padding(horizontal = 8.dp),
         contentAlignment = Alignment.Center,
         onRefresh = { onAction(Reload) },
         isRefreshing = state is Loading,
-        blurState = blurState,
+        hazeState = hazeState,
         innerPadding = innerPadding,
       ) { padding ->
         ListRulesContent(
@@ -336,7 +336,7 @@ private fun ContentSuccess(
 ) {
   Column(modifier) {
     // Pass the top inset as the LazyColumn's contentPadding (not Modifier.padding on the Column)
-    // so items rest below the bar but scroll up *behind* it, which is what reveals the blur.
+    // so items rest below the bar but scroll up *behind* it, which is what reveals the haze.
     LazyColumn(
       modifier = Modifier.scrollbar(listState).weight(1f),
       state = listState,

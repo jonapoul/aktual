@@ -1,10 +1,12 @@
 package aktual.prefs
 
+import aktual.budget.model.BarEffect
+
 interface SystemUiPreferences {
   val showBottomBar: Preference<Boolean>
-  val blurAppBars: Preference<Boolean>
-  val blurDialogs: Preference<Boolean>
-  val blurRadius: Preference<Float>
-  val blurAlpha: Preference<Float>
+  val appBarEffect: Preference<BarEffect>
+  val hazeDialogs: Preference<Boolean>
+  val hazeRadius: Preference<Float>
+  val hazeAlpha: Preference<Float>
   val hidePreviewInAppSwitcher: Preference<Boolean>
 }

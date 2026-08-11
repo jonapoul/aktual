@@ -17,12 +17,12 @@ import aktual.core.ui.AktualAlertDialog
 import aktual.core.ui.AktualTheme
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
-import aktual.core.ui.BlurredTopBarSpacing
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.CardShape
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
 import aktual.core.ui.Dimens
+import aktual.core.ui.HazedTopBarSpacing
 import aktual.core.ui.NavBackIconButton
 import aktual.core.ui.NormalTextButton
 import aktual.core.ui.PortraitPreview
@@ -30,11 +30,11 @@ import aktual.core.ui.PreviewWithColoredParams
 import aktual.core.ui.PrimaryTextButton
 import aktual.core.ui.TabletPreview
 import aktual.core.ui.WavyBackground
-import aktual.core.ui.blurredTopBar
-import aktual.core.ui.blurredTopBarContent
 import aktual.core.ui.disabled
+import aktual.core.ui.hazedTopBar
+import aktual.core.ui.hazedTopBarContent
 import aktual.core.ui.isCompactWidth
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.rememberHazedTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
 import alakazam.compose.HorizontalSpacer
@@ -120,14 +120,14 @@ private fun ManageStorageScaffold(
   onAction: ManageStorageActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
 
   Scaffold(
     modifier = modifier,
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, listState),
+        modifier = Modifier.hazedTopBar(hazeState, listState),
         colors = colors.transparentTopAppBarColors(),
         navigationIcon = { NavBackIconButton { onAction(NavBack) } },
         title = { Text(Strings.storageToolbar) },
@@ -137,8 +137,8 @@ private fun ManageStorageScaffold(
     Box {
       WavyBackground()
 
-      Column(modifier = Modifier.blurredTopBarContent(blurState, innerPadding)) {
-        BlurredTopBarSpacing(blurState, innerPadding)
+      Column(modifier = Modifier.hazedTopBarContent(hazeState, innerPadding)) {
+        HazedTopBarSpacing(hazeState, innerPadding)
         PullToRefreshBox(
           modifier = Modifier.padding(8.dp),
           contentAlignment = Alignment.Center,

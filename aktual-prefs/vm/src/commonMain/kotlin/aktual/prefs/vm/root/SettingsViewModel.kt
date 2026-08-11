@@ -1,5 +1,6 @@
 package aktual.prefs.vm.root
 
+import aktual.budget.model.BarEffect
 import aktual.budget.model.Currency
 import aktual.di.AppScope
 import aktual.prefs.CurrencyPreferences
@@ -44,40 +45,40 @@ class SettingsViewModel(
   @Composable
   private fun systemUiState(): SystemUiConfigState {
     val showBottomBar by systemUiPreferences.showBottomBar.collectAsStateFlow()
-    val blurAppBars by systemUiPreferences.blurAppBars.collectAsStateFlow()
-    val blurDialogs by systemUiPreferences.blurDialogs.collectAsStateFlow()
-    val blurRadius by systemUiPreferences.blurRadius.collectAsStateFlow()
-    val blurAlpha by systemUiPreferences.blurAlpha.collectAsStateFlow()
+    val appBarEffect by systemUiPreferences.appBarEffect.collectAsStateFlow()
+    val hazeDialogs by systemUiPreferences.hazeDialogs.collectAsStateFlow()
+    val hazeRadius by systemUiPreferences.hazeRadius.collectAsStateFlow()
+    val hazeAlpha by systemUiPreferences.hazeAlpha.collectAsStateFlow()
     val hidePreviewInAppSwitcher by
       systemUiPreferences.hidePreviewInAppSwitcher.collectAsStateFlow()
-    val anyBlurEnabled = blurAppBars || blurDialogs
+    val anyHazeEnabled = appBarEffect != BarEffect.None || hazeDialogs
     return SystemUiConfigState(
       showStatusBar =
         BooleanPreference(
           value = showBottomBar,
           onChange = { systemUiPreferences.showBottomBar.launchAndSet(it) },
         ),
-      blurAppBars =
+      appBarEffect =
+        ListPreference(
+          value = appBarEffect,
+          onChange = { systemUiPreferences.appBarEffect.launchAndSet(it) },
+        ),
+      hazeDialogs =
         BooleanPreference(
-          value = blurAppBars,
-          onChange = { systemUiPreferences.blurAppBars.launchAndSet(it) },
+          value = hazeDialogs,
+          onChange = { systemUiPreferences.hazeDialogs.launchAndSet(it) },
         ),
-      blurDialogs =
-        BooleanPreference(
-          value = blurDialogs,
-          onChange = { systemUiPreferences.blurDialogs.launchAndSet(it) },
+      hazeRadiusDp =
+        HazeRadiusPreference(
+          value = hazeRadius,
+          enabled = anyHazeEnabled,
+          onChange = { systemUiPreferences.hazeRadius.launchAndSet(it) },
         ),
-      blurRadiusDp =
-        BlurRadiusPreference(
-          value = blurRadius,
-          enabled = anyBlurEnabled,
-          onChange = { systemUiPreferences.blurRadius.launchAndSet(it) },
-        ),
-      blurAlpha =
-        BlurAlphaPreference(
-          value = blurAlpha,
-          enabled = anyBlurEnabled,
-          onChange = { systemUiPreferences.blurAlpha.launchAndSet(it) },
+      hazeAlpha =
+        HazeAlphaPreference(
+          value = hazeAlpha,
+          enabled = anyHazeEnabled,
+          onChange = { systemUiPreferences.hazeAlpha.launchAndSet(it) },
         ),
       hidePreviewInAppSwitcher =
         BooleanPreference(
