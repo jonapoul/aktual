@@ -7,24 +7,22 @@ import aktual.gradle.dsl.testLibraries
 import blueprint.core.get
 import blueprint.core.libs
 import com.android.build.gradle.api.AndroidBasePlugin
-import org.gradle.api.Plugin
 import org.gradle.api.Project
 
-class ConventionTestDependencies : Plugin<Project> {
-  override fun apply(target: Project): Unit =
-    with(target) {
-      val testImplementation = configurations.findByName("testImplementation")
-      val isAndroid = project.plugins.any { it is AndroidBasePlugin }
+class ConventionTestDependencies : ProjectPlugin {
+  override fun Project.applyTo() {
+    val testImplementation = configurations.findByName("testImplementation")
+    val isAndroid = project.plugins.any { it is AndroidBasePlugin }
 
-      dependencies {
-        testImplementation?.let { testImplementation ->
-          testLibraries.forEach { lib -> testImplementation(lib) }
+    dependencies {
+      testImplementation?.let { testImplementation ->
+        testLibraries.forEach { lib -> testImplementation(lib) }
 
-          if (isAndroid) {
-            androidTestLibraries.forEach { lib -> testImplementation(lib) }
-            "debugImplementation"(libs["androidx.test.monitor"])
-          }
+        if (isAndroid) {
+          androidTestLibraries.forEach { lib -> testImplementation(lib) }
+          "debugImplementation"(libs["androidx.test.monitor"])
         }
       }
     }
+  }
 }
