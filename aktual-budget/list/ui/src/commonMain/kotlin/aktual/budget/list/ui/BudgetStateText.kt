@@ -20,7 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -34,7 +34,7 @@ internal fun BudgetStateText(
   state: BudgetState,
   modifier: Modifier = Modifier,
 ) {
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     val text = state.text()
     val color = state.color(colors)
 

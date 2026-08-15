@@ -13,7 +13,7 @@ import aktual.core.l10n.inter_thin
 import aktual.core.theme.Colors
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.material3.Typography
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -93,8 +93,8 @@ private fun PreviewTypography(@PreviewParameter(ColoredParameters::class) colors
     Column {
       for ((name, style) in styles()) {
         Row(
-          modifier = Modifier.height(IntrinsicSize.Min),
-          verticalAlignment = Alignment.CenterVertically,
+          modifier = Modifier.height(Min),
+          verticalAlignment = CenterVertically,
         ) {
           Box(
             modifier = Modifier.fillMaxHeight().width(150.dp),

@@ -53,6 +53,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusRequester
@@ -190,7 +192,7 @@ private fun ColumnScope.SyncBudgetDialogContent(
 
   Row(
     modifier = modifier.padding(12.dp).fillMaxWidth(),
-    horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally),
+    horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = CenterHorizontally),
     verticalAlignment = Alignment.Top,
   ) {
     stateList.fastForEach { (_, state) ->
@@ -224,7 +226,7 @@ private val ITEM_SIZE = 24.dp
 private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {
   Column(
     modifier = modifier,
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.Top,
   ) {
     when (state) {
@@ -281,7 +283,7 @@ private fun PasswordEntryLayout(
   onAction: SyncBudgetActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+  Column(modifier = modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
     Text(
       modifier = Modifier.padding(horizontal = 20.dp),
       text = buildPasswordText(colors, onAction),
@@ -322,7 +324,7 @@ private fun PasswordEntryLayout(
 
     Row(
       modifier = Modifier.clickable { passwordVisible = !passwordVisible },
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       Checkbox(
         modifier = Modifier.minimumInteractiveComponentSize(),

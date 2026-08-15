@@ -81,6 +81,7 @@ import androidx.compose.runtime.saveable.Saver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -391,7 +392,7 @@ private fun SharedTransitionScope.ExpandedSheetContent(
     Row(
       modifier = Modifier.fillMaxWidth().padding(8.dp),
       horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.End),
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       NormalTextButton(
         text = Strings.budgetNavGridEdit,

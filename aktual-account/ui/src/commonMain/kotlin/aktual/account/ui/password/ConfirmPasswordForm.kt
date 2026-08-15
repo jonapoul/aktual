@@ -21,7 +21,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.focusRequester
@@ -85,7 +85,7 @@ internal fun ConfirmPasswordForm(
             enabled = true,
             onClick = { onAction(SetPasswordsVisible(!showPasswords)) },
           ),
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       Checkbox(
         checked = showPasswords,

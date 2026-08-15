@@ -31,9 +31,8 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -222,9 +221,9 @@ private fun CompactHeader(
   data: CashFlowData,
   modifier: Modifier = Modifier,
 ) =
-  Row(modifier = modifier.padding(4.dp), verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier.padding(4.dp), verticalAlignment = CenterVertically) {
     Column(modifier = Modifier.weight(1f)) {
-      Text(text = data.title, color = colors.pageText, overflow = TextOverflow.Ellipsis)
+      Text(text = data.title, color = colors.pageText, overflow = Ellipsis)
       Text(
         text = dateRange(data.items.keys),
         color = colors.pageTextSubdued,

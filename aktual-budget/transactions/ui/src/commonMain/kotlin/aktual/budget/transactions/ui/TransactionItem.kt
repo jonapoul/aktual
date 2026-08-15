@@ -25,7 +25,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,7 +40,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
@@ -103,7 +103,7 @@ private fun LoadingItem(
         .clip(CardShape)
         .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal)
         .shimmer(shimmer),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     when (format) {
       List -> LoadingTransactionListItem(dimens)
@@ -184,7 +184,7 @@ private fun FailedItem(
         .height(LocalMinimumInteractiveComponentSize.current)
         .clip(CardShape)
         .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     // Checkbox placeholder
     Box(modifier = Modifier.minimumInteractiveComponentSize())
@@ -214,10 +214,10 @@ private fun LoadedItem(
     modifier =
       modifier
         .fillMaxWidth()
-        .height(IntrinsicSize.Min)
+        .height(Min)
         .clip(CardShape)
         .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     when (format) {
       List ->

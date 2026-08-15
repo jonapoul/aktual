@@ -28,7 +28,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.IntrinsicSize.Max
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,6 +51,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -144,7 +145,7 @@ internal fun MonthHeader(
 ) =
   Row(
     modifier = modifier.fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.End,
   ) {
     Text(
@@ -162,7 +163,7 @@ internal fun MonthHeader(
       Expenses(modifier = Modifier.wrapContentWidth(), compact = true, month = month)
     } else {
       Column(
-        modifier = Modifier.width(IntrinsicSize.Max),
+        modifier = Modifier.width(Max),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center,
       ) {
@@ -178,7 +179,7 @@ private fun Income(
   compact: Boolean,
   modifier: Modifier = Modifier,
 ) =
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     Icon(
       modifier = Modifier.size(iconSize(compact)),
       imageVector = AktualIcons.ArrowThickUp,
@@ -199,7 +200,7 @@ private fun Expenses(
   compact: Boolean,
   modifier: Modifier = Modifier,
 ) =
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     Icon(
       modifier = Modifier.size(iconSize(compact)),
       imageVector = AktualIcons.ArrowThickDown,

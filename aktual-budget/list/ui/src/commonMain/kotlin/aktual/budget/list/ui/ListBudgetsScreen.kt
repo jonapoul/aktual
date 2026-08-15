@@ -46,7 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -208,7 +208,7 @@ private fun StateContent(
     Column(
       modifier = Modifier.fillMaxSize().padding(contentPadding),
       verticalArrangement = Arrangement.Top,
-      horizontalAlignment = Alignment.CenterHorizontally,
+      horizontalAlignment = CenterHorizontally,
     ) {
       when (state) {
         is Loading -> {

@@ -67,7 +67,8 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.graphicsLayer
@@ -240,7 +241,7 @@ private fun ListRulesContent(
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Top,
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
   ) {
     when (state) {
       is Loading -> {
@@ -302,7 +303,7 @@ private fun CheckboxSelectionBar(
     modifier =
       modifier.fillMaxWidth().background(colors.modalBackground, CardShape).padding(Dimens.Large),
     horizontalArrangement = Arrangement.spacedBy(Dimens.Medium),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     val count = selectedIds.size
     Text(modifier = Modifier.weight(1f), text = Plurals.rulesCheckboxCounter(count, count))

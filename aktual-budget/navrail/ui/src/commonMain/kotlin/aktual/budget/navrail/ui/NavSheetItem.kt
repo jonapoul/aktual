@@ -28,7 +28,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -49,7 +49,7 @@ internal fun NavSheetItem(
       modifier
         .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
         .padding(vertical = 8.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
     Box(

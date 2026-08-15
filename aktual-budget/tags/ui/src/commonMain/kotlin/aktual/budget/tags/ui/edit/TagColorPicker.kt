@@ -50,7 +50,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
@@ -135,12 +136,12 @@ internal fun TagColorPicker(
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing),
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
   ) {
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing),
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       // always visible: the hex field
       ColorPickerTextField(
@@ -198,7 +199,7 @@ internal fun TagColorPicker(
       Row(
         modifier = Modifier.fillMaxWidth(fraction = EditTagDS.COLOR_PICKER_HORIZ_WEIGHT),
         horizontalArrangement = Arrangement.spacedBy(EditTagDS.colorPickerSectionSpacing),
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
       ) {
         HsvColorPicker(
           modifier = Modifier.weight(1f).size(EditTagDS.colorWheelSize),

@@ -53,7 +53,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -136,7 +137,7 @@ private fun MetricsContent(
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Top,
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
   ) {
     when (state) {
       Loading -> LoadingContent()
@@ -170,7 +171,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier) {
         .padding(horizontal = 15.dp, vertical = 12.dp)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     Column(modifier = Modifier.weight(1f)) {
       Box(
@@ -329,7 +330,7 @@ private fun formatted(instant: Instant): String {
 
 @Composable
 private fun SuccessContentRow(title: String, value: String, modifier: Modifier = Modifier) {
-  Row(modifier = modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier.fillMaxWidth(), verticalAlignment = CenterVertically) {
     Text(
       modifier = Modifier.weight(1f),
       text = title,

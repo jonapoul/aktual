@@ -37,6 +37,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -169,7 +170,7 @@ private fun CompactHeader(
   data: SpendingData,
   modifier: Modifier = Modifier,
 ) =
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.Start) {
       Text(text = data.title, color = colors.pageText, style = typography.bodyLarge)
       Text(
@@ -197,7 +198,7 @@ private fun RegularLegend(
   data: SpendingData,
   modifier: Modifier = Modifier,
 ) =
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     Column {
       LegendItem(text = data.targetMonth.stringShort(), color = colors.reportsGreen)
       LegendItem(text = data.comparison.string().capitalized(), color = colors.reportsGray)
@@ -238,7 +239,7 @@ private fun calculateMtdSpending(data: SpendingData): MtdSpending {
 
 @Composable
 private fun LegendItem(text: String, color: Color, modifier: Modifier = Modifier) =
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     Box(modifier = Modifier.size(12.dp).background(color, CircleShape))
 
     HorizontalSpacer(4.dp)

@@ -35,8 +35,9 @@ import aktual.prefs.vm.inspect.ThemeProperty
 import aktual.prefs.vm.theme.properties
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,7 +58,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -188,10 +189,9 @@ private fun InspectThemeContent(
 @Composable
 private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modifier) {
   Row(
-    modifier =
-      modifier.fillMaxWidth().height(IntrinsicSize.Min).background(property.color).padding(4.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
-    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier.fillMaxWidth().height(Min).background(property.color).padding(4.dp),
+    horizontalArrangement = SpaceBetween,
+    verticalAlignment = CenterVertically,
   ) {
     val textColor = remember(property.color) { if (property.color.isLight()) Black else White }
     Text(

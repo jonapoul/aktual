@@ -82,7 +82,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -292,7 +292,7 @@ private fun LoadingItem(modifier: Modifier = Modifier) {
         .padding(ITEM_PADDING)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     // Checkbox
     Box(
@@ -377,7 +377,7 @@ internal fun CustomThemeItem(
         .clickable(enabled) { onAction(SelectTheme(item.summary)) }
         .padding(ITEM_PADDING),
     horizontalArrangement = Arrangement.Start,
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     RadioButton(
       modifier = Modifier.padding(8.dp),
@@ -391,7 +391,7 @@ internal fun CustomThemeItem(
       modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
       verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
+      Row(verticalAlignment = CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
           Text(
             text = item.summary.name,

@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -128,7 +129,7 @@ private fun LabelValue(
   Row(
     modifier = modifier,
     horizontalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     Text(label, style = typography.bodySmall, color = colors.pageTextSubdued)
     Text(value, style = typography.bodySmall, color = valueColor)

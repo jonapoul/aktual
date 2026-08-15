@@ -52,7 +52,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -150,7 +151,7 @@ private fun InfoScreenContent(
 
     Column(
       modifier = Modifier.fillMaxWidth().verticalScrollWithBar(),
-      horizontalAlignment = Alignment.CenterHorizontally,
+      horizontalAlignment = CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
     ) {
       InfoHeader(buildState.year, contentModifier)
@@ -171,7 +172,7 @@ private fun InfoHeader(year: Int, modifier: Modifier = Modifier) {
         .border(Hairline, colors.tableBorder, CardShape)
         .padding(horizontal = 20.dp, vertical = 10.dp),
     horizontalArrangement = Arrangement.Center,
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     val appName = Strings.appName
 
@@ -184,7 +185,7 @@ private fun InfoHeader(year: Int, modifier: Modifier = Modifier) {
     HorizontalSpacer(10.dp)
 
     Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
+      horizontalAlignment = CenterHorizontally,
       verticalArrangement = Arrangement.Center,
     ) {
       Text(
@@ -245,7 +246,7 @@ private fun BuildStateItem(
         .height(ItemHeight)
         .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
         .padding(horizontal = ItemPadding),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     Icon(
       modifier = Modifier.padding(ItemPadding),

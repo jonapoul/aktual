@@ -20,7 +20,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
@@ -74,7 +74,7 @@ internal fun SliderPreferenceItem(
     includeBackground = includeBackground,
     onClick = null,
     bottomContent = {
-      Row(verticalAlignment = Alignment.CenterVertically) {
+      Row(verticalAlignment = CenterVertically) {
         Slider(
           modifier = Modifier.weight(1f),
           value = currentValue,

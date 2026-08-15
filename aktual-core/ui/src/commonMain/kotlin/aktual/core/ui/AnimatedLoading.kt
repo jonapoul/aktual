@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
@@ -128,7 +128,7 @@ private fun PreviewCheckUpdatesContent(@PreviewParameter(ColoredParameters::clas
 @Composable
 private fun PreviewScaled() =
   PreviewWithColors(LightColors) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(horizontalAlignment = CenterHorizontally) {
       AnimatedLoading(modifier = Modifier.size(20.dp))
       AnimatedLoading(modifier = Modifier.size(50.dp))
       AnimatedLoading(modifier = Modifier.size(150.dp))

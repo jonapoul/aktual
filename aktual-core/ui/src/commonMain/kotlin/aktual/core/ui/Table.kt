@@ -15,7 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
@@ -67,7 +67,7 @@ fun WeightedTable(
 
   LazyColumn(modifier = modifier) {
     items(data) { cells ->
-      Row(verticalAlignment = Alignment.CenterVertically) {
+      Row(verticalAlignment = CenterVertically) {
         cells.fastForEachIndexed { index, cell ->
           val columnWidth = columnWidths.getOrNull(index) ?: 0
           val weight = if (totalWidth > 0) columnWidth.toFloat() / totalWidth else 1f
@@ -146,7 +146,7 @@ fun WrapWidthTable(
 
   LazyColumn(modifier = modifier) {
     items(data) { row ->
-      Row(verticalAlignment = Alignment.CenterVertically) {
+      Row(verticalAlignment = CenterVertically) {
         row.fastForEachIndexed { index, cell ->
           Text(
             modifier = Modifier.padding(paddings[index]).width(columnWidths[index]),

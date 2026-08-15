@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,7 +52,7 @@ internal fun ShimmerBudgetListItem(modifier: Modifier = Modifier) {
         .padding(horizontal = 15.dp, vertical = 12.dp)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     // Mimics the text column in BudgetListItem
     Column(modifier = Modifier.weight(1f)) {

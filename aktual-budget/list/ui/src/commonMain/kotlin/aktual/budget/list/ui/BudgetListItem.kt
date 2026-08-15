@@ -34,7 +34,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
@@ -64,7 +64,7 @@ internal fun BudgetListItem(
         .clickable(onClick = onClickOpen)
         .padding(horizontal = 15.dp, vertical = 12.dp),
     horizontalArrangement = Arrangement.Start,
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     val description = budgetDescription(budget)
 
@@ -89,7 +89,7 @@ internal fun BudgetListItem(
     }
 
     Row(
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
       horizontalArrangement = Arrangement.Center,
     ) {
       if (budget.encryptKeyId != null) {

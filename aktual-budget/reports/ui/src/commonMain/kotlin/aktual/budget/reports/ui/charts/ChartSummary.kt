@@ -34,7 +34,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.IntrinsicSize.Max
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -52,6 +52,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -77,7 +79,7 @@ internal fun SummaryChart(
 ) =
   Column(
     modifier = modifier,
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.Center,
   ) {
     if (compact && includeHeader) {
@@ -185,17 +187,17 @@ private fun RegularPerMonth(
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.Center,
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(IntrinsicSize.Max),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.CenterVertically,
+          verticalAlignment = CenterVertically,
         ) {
           SumColumn(data)
           FilterDisplay()
@@ -217,8 +219,8 @@ private fun RegularPerMonth(
       HorizontalSpacer(10.dp)
 
       Column(
-        modifier = Modifier.width(IntrinsicSize.Max),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
         Text(
@@ -260,17 +262,17 @@ private fun RegularPerYear(
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.Center,
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(IntrinsicSize.Max),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.CenterVertically,
+          verticalAlignment = CenterVertically,
         ) {
           SumColumn(data)
           FilterDisplay()
@@ -292,8 +294,8 @@ private fun RegularPerYear(
       HorizontalSpacer(10.dp)
 
       Column(
-        modifier = Modifier.width(IntrinsicSize.Max),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
         Text(
@@ -335,17 +337,17 @@ private fun RegularPerTransaction(
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.Center,
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(IntrinsicSize.Max),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.CenterVertically,
+          verticalAlignment = CenterVertically,
         ) {
           SumColumn(data)
           FilterDisplay()
@@ -367,8 +369,8 @@ private fun RegularPerTransaction(
       HorizontalSpacer(10.dp)
 
       Column(
-        modifier = Modifier.width(IntrinsicSize.Max),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
         Text(
@@ -411,17 +413,17 @@ private fun RegularPercent(
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.Center,
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       Column(
-        modifier = Modifier.width(IntrinsicSize.Max),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.CenterVertically,
+          verticalAlignment = CenterVertically,
         ) {
           SumColumn(data)
           FilterDisplay()
@@ -432,7 +434,7 @@ private fun RegularPercent(
         Row(
           modifier = Modifier.fillMaxWidth(),
           horizontalArrangement = Arrangement.Center,
-          verticalAlignment = Alignment.CenterVertically,
+          verticalAlignment = CenterVertically,
         ) {
           SumColumn(data.divisor)
           FilterDisplay()
@@ -444,8 +446,8 @@ private fun RegularPercent(
       HorizontalSpacer(10.dp)
 
       Column(
-        modifier = Modifier.width(IntrinsicSize.Max),
-        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.width(Max),
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(10.dp),
       ) {
         Text(
@@ -487,7 +489,7 @@ private fun RegularSum(
     Row(
       modifier = Modifier.fillMaxWidth(),
       horizontalArrangement = Arrangement.Center,
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       SumColumn(data)
       FilterDisplay()
@@ -503,7 +505,7 @@ private fun ShowAs(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) =
-  Row(modifier = modifier.wrapContentSize(), verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier.wrapContentSize(), verticalAlignment = CenterVertically) {
     Text(text = Strings.reportsSummaryShowAs)
 
     HorizontalSpacer(5.dp)
@@ -535,7 +537,7 @@ private fun ShowAs(
 private fun SumColumn(range: DateRange) =
   Column(
     modifier = Modifier.wrapContentSize(),
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
   ) {
     range.start?.let { Text(text = string(it)) }
 
@@ -550,7 +552,7 @@ private fun DivisorCheckbox(
   onAction: ActionListener,
   modifier: Modifier = Modifier,
 ) {
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     Checkbox(
       modifier = Modifier.minimumInteractiveComponentSize(),
       checked = data.divisor is AllTime,
@@ -566,7 +568,7 @@ private fun DivisorCheckbox(
 
 @Composable
 private fun FilterDisplay() =
-  Row(modifier = Modifier.wrapContentSize(), verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = Modifier.wrapContentSize(), verticalAlignment = CenterVertically) {
     Icon(
       modifier = Modifier.size(50.dp),
       imageVector = AktualIcons.OpenBracket,

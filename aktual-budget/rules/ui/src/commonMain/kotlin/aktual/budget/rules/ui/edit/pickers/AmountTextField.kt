@@ -43,7 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -155,7 +155,7 @@ private fun LeadingContent(
   modifier: Modifier = Modifier,
   config: CurrencyConfig = LocalCurrencyConfig.current,
 ) {
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     BareIconButton(
       enabled = isEnabled,
       imageVector = if (isPositive) AktualIcons.Add else AktualIcons.Subtract,
@@ -196,7 +196,7 @@ private fun TrailingContent(
   modifier: Modifier = Modifier,
   config: CurrencyConfig = LocalCurrencyConfig.current,
 ) {
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     if (config.currency != Currency.None && config.position == AfterAmount) {
       Text(
         modifier = Modifier.minimumInteractiveComponentSize(),

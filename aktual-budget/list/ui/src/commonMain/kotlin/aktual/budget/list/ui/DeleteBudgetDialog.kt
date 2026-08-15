@@ -31,7 +31,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.SpanStyle
@@ -77,7 +77,7 @@ internal fun Content(
   onDeleteLocal: () -> Unit,
   onDeleteRemote: () -> Unit,
 ) {
-  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
     Text(text = annotatedString(), fontSize = 14.sp)
 
     var hasPressedDeleteButton by remember { mutableStateOf(false) }

@@ -37,7 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
@@ -74,7 +74,7 @@ internal fun BottomStatusBar(
 
   Row(
     modifier = modifier.padding(PADDING).fillMaxWidth().onGloballyPositioned(onPositioned),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     state.budgetName?.let { name ->
       Text(
@@ -104,7 +104,7 @@ private fun PingState(
   Row(
     modifier = modifier,
     horizontalArrangement = Arrangement.spacedBy(5.dp),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     val text = state.text()
     val tint = state.tint(colors)
@@ -180,7 +180,7 @@ private fun SyncState(
         .padding(horizontal = 4.dp)
         .clickable(enabled = state is Inactive, onClick = onClickSync),
     horizontalArrangement = Arrangement.spacedBy(5.dp),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     Image(
       modifier = Modifier.size(ICON_SIZE).rotate(if (state is Syncing) rotation else 0f),
