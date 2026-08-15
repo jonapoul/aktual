@@ -16,9 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable
@@ -32,7 +29,7 @@ internal fun LoginMethodPicker(
     modifier =
       modifier
         .fillMaxWidth()
-        .border(Dp.Hairline, colors.pillBorderDark, RounderCardShape)
+        .border(Hairline, colors.pillBorderDark, RounderCardShape)
         .background(colors.pillBackgroundLight, RounderCardShape)
         .padding(Dimens.Large),
     horizontalAlignment = Alignment.CenterHorizontally,
@@ -41,9 +38,9 @@ internal fun LoginMethodPicker(
       modifier = Modifier.fillMaxWidth().padding(Dimens.VeryLarge),
       text = Strings.loginMethodSelect,
       color = colors.tableRowHeaderText,
-      textAlign = TextAlign.Start,
+      textAlign = Start,
       style = typography.bodyLarge,
-      fontWeight = FontWeight.Bold,
+      fontWeight = Bold,
     )
 
     AktualSlidingToggleButton(
@@ -59,7 +56,7 @@ internal fun LoginMethodPicker(
 @Composable
 private fun LoginMethod.string(): String =
   when (this) {
-    LoginMethod.Password -> Strings.loginMethodPassword
-    LoginMethod.Header -> Strings.loginMethodHeader
-    LoginMethod.OpenId -> Strings.loginMethodOpenid
+    Password -> Strings.loginMethodPassword
+    Header -> Strings.loginMethodHeader
+    OpenId -> Strings.loginMethodOpenid
   }

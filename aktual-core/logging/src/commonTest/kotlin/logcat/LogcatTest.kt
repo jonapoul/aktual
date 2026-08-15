@@ -6,12 +6,6 @@ import assertk.assertions.isEqualTo
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
-import logcat.LogPriority.ASSERT
-import logcat.LogPriority.DEBUG
-import logcat.LogPriority.ERROR
-import logcat.LogPriority.INFO
-import logcat.LogPriority.VERBOSE
-import logcat.LogPriority.WARN
 
 class LogcatTest {
   private lateinit var logger: TestLogcatLogger

@@ -30,7 +30,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.Dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -72,7 +71,7 @@ internal fun EntityIdPicker(
 
   Box(modifier = modifier) {
     TextField(
-      modifier = Modifier.fillMaxWidth().border(Dp.Hairline, colors.buttonNormalBorder),
+      modifier = Modifier.fillMaxWidth().border(Hairline, colors.buttonNormalBorder),
       value = selectedName.orEmpty(),
       onValueChange = {},
       placeholder = { Text(Strings.editRuleConditionNothing, style = typography.bodySmall) },

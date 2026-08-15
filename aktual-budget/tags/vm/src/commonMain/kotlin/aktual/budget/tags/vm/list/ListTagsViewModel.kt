@@ -20,7 +20,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -33,7 +32,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -239,13 +237,12 @@ class ListTagsViewModel(
   private fun TagSort.comparator(): Comparator<TagItem> {
     val byField =
       when (field) {
-        TagSort.Field.Name -> compareBy { it.tag.lowercase() }
-        TagSort.Field.Usage ->
-          compareBy<TagItem> { it.numTransactions }.thenBy { it.tag.lowercase() }
+        Name -> compareBy { it.tag.lowercase() }
+        Usage -> compareBy<TagItem> { it.numTransactions }.thenBy { it.tag.lowercase() }
       }
     return when (direction) {
-      TagSort.Direction.Ascending -> byField
-      TagSort.Direction.Descending -> byField.reversed()
+      Ascending -> byField
+      Descending -> byField.reversed()
     }
   }
 

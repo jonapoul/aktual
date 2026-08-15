@@ -1,7 +1,6 @@
 package aktual.about.vm
 
 import aktual.about.data.GithubRepository
-import aktual.about.data.LatestReleaseState
 import aktual.core.UrlOpener
 import aktual.core.model.AktualVersions
 import aktual.core.model.AktualVersionsStateHolder
@@ -18,7 +17,6 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.savedstate.SavedState
 import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
-import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -80,13 +78,13 @@ class AboutViewModel(
       }
 
     return when (restored) {
-      null -> CheckUpdatesState.Inactive
-      is CheckUpdatesState.Checking -> CheckUpdatesState.Inactive
+      null -> Inactive
+      is Checking -> Inactive
 
-      CheckUpdatesState.Inactive,
-      CheckUpdatesState.NoUpdateFound,
-      is CheckUpdatesState.Failed,
-      is CheckUpdatesState.UpdateFound -> restored
+      Inactive,
+      NoUpdateFound,
+      is Failed,
+      is UpdateFound -> restored
     }
   }
 
@@ -106,21 +104,21 @@ class AboutViewModel(
   fun fetchLatestRelease() {
     logcat.d { "fetchLatestRelease" }
     checkUpdatesJob?.cancel()
-    mutableCheckUpdatesState.update { CheckUpdatesState.Checking }
+    mutableCheckUpdatesState.update { Checking }
 
     checkUpdatesJob = viewModelScope.launch {
       val state = githubRepository.fetchLatestRelease()
       mutableCheckUpdatesState.update {
         when (state) {
-          LatestReleaseState.NoNewUpdate -> CheckUpdatesState.NoUpdateFound
+          NoNewUpdate -> CheckUpdatesState.NoUpdateFound
 
-          LatestReleaseState.NoReleases -> CheckUpdatesState.NoUpdateFound
+          NoReleases -> CheckUpdatesState.NoUpdateFound
 
-          LatestReleaseState.PrivateRepo -> CheckUpdatesState.Failed(cause = "Repo inaccessible")
+          PrivateRepo -> CheckUpdatesState.Failed(cause = "Repo inaccessible")
 
-          is LatestReleaseState.Failure -> CheckUpdatesState.Failed(state.errorMessage)
+          is Failure -> CheckUpdatesState.Failed(state.errorMessage)
 
-          is LatestReleaseState.UpdateAvailable ->
+          is UpdateAvailable ->
             CheckUpdatesState.UpdateFound(
               version = state.release.versionName,
               url = state.release.htmlUrl,
@@ -134,7 +132,7 @@ class AboutViewModel(
     logcat.d { "cancelUpdateCheck" }
     checkUpdatesJob?.cancel()
     checkUpdatesJob = null
-    mutableCheckUpdatesState.update { CheckUpdatesState.Inactive }
+    mutableCheckUpdatesState.update { Inactive }
   }
 
   private fun buildState(versions: AktualVersions): BuildState {

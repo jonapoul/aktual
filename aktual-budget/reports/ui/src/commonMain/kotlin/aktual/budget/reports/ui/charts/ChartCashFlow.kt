@@ -1,6 +1,7 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
+import aktual.budget.model.Amount.Companion.Zero
 import aktual.budget.reports.vm.CashFlowData
 import aktual.budget.reports.vm.CashFlowDatum
 import aktual.budget.reports.vm.CashFlowReportMeta
@@ -32,8 +33,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -141,7 +140,7 @@ internal fun CashFlowChart(
 
 @Stable
 private fun calculateNetFlow(data: CashFlowData): Amount {
-  var total = Amount.Zero
+  var total = Zero
   for ((_, value) in data.items) {
     total += value.income + value.expenses
   }
@@ -158,9 +157,9 @@ private data class SummaryData(
 
 @Stable
 private fun summaryData(data: CashFlowData): SummaryData {
-  var income = Amount.Zero
-  var expenses = Amount.Zero
-  var transfers = Amount.Zero
+  var income = Zero
+  var expenses = Zero
+  var transfers = Zero
 
   for ((_, item) in data.items) {
     income += item.income
@@ -180,13 +179,12 @@ private fun RegularHeader(
     Text(
       modifier = Modifier.weight(1f),
       text = dateRange(data.items.keys),
-      overflow = TextOverflow.Ellipsis,
+      overflow = Ellipsis,
     )
 
     val padding = PaddingValues(horizontal = 2.dp)
-    val normalStyle =
-      typography.labelMedium.copy(textAlign = TextAlign.Start, color = colors.pageText)
-    val boldStyle = normalStyle.copy(textAlign = TextAlign.End, fontWeight = FontWeight.W600)
+    val normalStyle = typography.labelMedium.copy(textAlign = Start, color = colors.pageText)
+    val boldStyle = normalStyle.copy(textAlign = End, fontWeight = W600)
     val summaryData = summaryData(data)
 
     Column {
@@ -212,7 +210,7 @@ private fun RegularHeader(
       Text(
         modifier = Modifier.padding(padding),
         text = summaryData.net.formattedString(includeSign = true),
-        textAlign = TextAlign.End,
+        textAlign = End,
         style = boldStyle,
         color = if (summaryData.net.isPositive()) colors.noticeText else colors.errorText,
       )
@@ -230,7 +228,7 @@ private fun CompactHeader(
       Text(
         text = dateRange(data.items.keys),
         color = colors.pageTextSubdued,
-        overflow = TextOverflow.Ellipsis,
+        overflow = Ellipsis,
         style = typography.labelMedium,
       )
     }
@@ -239,7 +237,7 @@ private fun CompactHeader(
     Text(
       text = netFlow.formattedString(includeSign = true),
       color = if (netFlow.isPositive()) colors.noticeText else colors.errorText,
-      overflow = TextOverflow.Ellipsis,
+      overflow = Ellipsis,
     )
   }
 

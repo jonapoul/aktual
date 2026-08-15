@@ -56,29 +56,29 @@ class LoginRequester(
       }
 
     return when (response) {
-      is LoginResponse.Failure -> response.reason.toLoginResult()
-      is LoginResponse.Success -> response.data.toLoginResult()
+      is Failure -> response.reason.toLoginResult()
+      is Success -> response.data.toLoginResult()
     }
   }
 
   private fun FailureReason.toLoginResult(): LoginResult.Failure =
     when (this) {
-      FailureReason.TokenExpired -> LoginResult.TokenExpired
-      FailureReason.InvalidPassword -> LoginResult.InvalidPassword
+      TokenExpired -> LoginResult.TokenExpired
+      InvalidPassword -> LoginResult.InvalidPassword
       else -> LoginResult.OtherFailure(reason)
     }
 
   private suspend fun LoginResponse.Data.toLoginResult(): LoginResult =
     when (this) {
-      is LoginResponse.Data.Invalid -> {
+      is Invalid -> {
         LoginResult.InvalidPassword
       }
 
-      is LoginResponse.Data.Redirect -> {
+      is Redirect -> {
         LoginResult.Redirect(returnUrl)
       }
 
-      is LoginResponse.Data.Valid -> {
+      is Valid -> {
         runLevelController.onLoggedIn(token)
         preferences.token.set(token)
         LoginResult.Success(token)

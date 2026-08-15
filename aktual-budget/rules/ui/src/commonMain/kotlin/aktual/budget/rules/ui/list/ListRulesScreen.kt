@@ -73,7 +73,6 @@ import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -156,7 +155,7 @@ private fun ListRulesScaffold(
       PageBackground()
       BlurredPullToRefreshBox(
         modifier = Modifier.padding(horizontal = 8.dp),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Center,
         onRefresh = { onAction(Reload) },
         isRefreshing = state is Loading,
         blurState = blurState,
@@ -196,7 +195,7 @@ private fun CollapsingHeader(
         .graphicsLayer { alpha = state.alpha }
         .padding(horizontal = Dimens.Medium)
         .padding(bottom = Dimens.Medium),
-    textAlign = TextAlign.Start,
+    textAlign = Start,
     text = headerText(onAction),
     style = typography.bodySmall,
   )

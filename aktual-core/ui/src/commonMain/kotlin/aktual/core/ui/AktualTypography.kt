@@ -28,7 +28,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.TextUnit
@@ -41,31 +40,28 @@ import org.jetbrains.compose.resources.Font
 internal fun aktualTypography(colors: Colors = AktualTheme.colors): Typography {
   val font =
     FontFamily(
-      Font(Res.font.inter_thin, FontWeight.W100),
-      Font(Res.font.inter_extralight, FontWeight.W200),
-      Font(Res.font.inter_light, FontWeight.W300),
-      Font(Res.font.inter_regular, FontWeight.W400),
-      Font(Res.font.inter_medium, FontWeight.W500),
-      Font(Res.font.inter_semibold, FontWeight.W600),
-      Font(Res.font.inter_bold, FontWeight.W700),
-      Font(Res.font.inter_extrabold, FontWeight.W800),
-      Font(Res.font.inter_black, FontWeight.W900),
+      Font(Res.font.inter_thin, W100),
+      Font(Res.font.inter_extralight, W200),
+      Font(Res.font.inter_light, W300),
+      Font(Res.font.inter_regular, W400),
+      Font(Res.font.inter_medium, W500),
+      Font(Res.font.inter_semibold, W600),
+      Font(Res.font.inter_bold, W700),
+      Font(Res.font.inter_extrabold, W800),
+      Font(Res.font.inter_black, W900),
     )
 
   return with(font) {
     Typography(
-      displayLarge = textStyle(weight = FontWeight.W700, size = 40.sp),
-      displayMedium = textStyle(weight = FontWeight.W600, size = 35.sp),
-      displaySmall = textStyle(weight = FontWeight.W500, size = 30.sp),
-      headlineLarge =
-        textStyle(weight = FontWeight.W700, size = 30.sp, color = colors.pageTextPositive),
-      headlineMedium =
-        textStyle(weight = FontWeight.W600, size = 25.sp, color = colors.pageTextPositive),
-      headlineSmall =
-        textStyle(weight = FontWeight.W500, size = 20.sp, color = colors.pageTextPositive),
-      titleLarge = textStyle(weight = FontWeight.W500, size = 25.sp),
-      titleMedium = textStyle(weight = FontWeight.W400, size = 23.sp),
-      titleSmall = textStyle(weight = FontWeight.W300, size = 22.sp),
+      displayLarge = textStyle(weight = W700, size = 40.sp),
+      displayMedium = textStyle(weight = W600, size = 35.sp),
+      displaySmall = textStyle(weight = W500, size = 30.sp),
+      headlineLarge = textStyle(weight = W700, size = 30.sp, color = colors.pageTextPositive),
+      headlineMedium = textStyle(weight = W600, size = 25.sp, color = colors.pageTextPositive),
+      headlineSmall = textStyle(weight = W500, size = 20.sp, color = colors.pageTextPositive),
+      titleLarge = textStyle(weight = W500, size = 25.sp),
+      titleMedium = textStyle(weight = W400, size = 23.sp),
+      titleSmall = textStyle(weight = W300, size = 22.sp),
       bodyLarge = textStyle(size = 16.sp, height = 22.4.sp),
       bodyMedium = textStyle(size = 15.sp, height = 21.4.sp),
       bodySmall = textStyle(size = 14.sp, height = 20.4.sp),
@@ -102,9 +98,9 @@ private fun PreviewTypography(@PreviewParameter(ColoredParameters::class) colors
         ) {
           Box(
             modifier = Modifier.fillMaxHeight().width(150.dp),
-            contentAlignment = Alignment.Center,
+            contentAlignment = Center,
           ) {
-            Text(modifier = Modifier.fillMaxWidth(), text = name, textAlign = TextAlign.Start)
+            Text(modifier = Modifier.fillMaxWidth(), text = name, textAlign = Start)
           }
 
           Text(

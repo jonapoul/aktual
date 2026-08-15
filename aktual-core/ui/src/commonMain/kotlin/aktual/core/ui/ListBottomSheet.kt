@@ -22,9 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import kotlinx.collections.immutable.ImmutableList
 
@@ -43,7 +41,7 @@ fun <T : Any> ListBottomSheet(
   isEnabled: (T) -> Boolean = { true },
 ) {
   ModalBottomSheet(
-    modifier = modifier.border(Dp.Hairline, colors.modalBorder),
+    modifier = modifier.border(Hairline, colors.modalBorder),
     onDismissRequest = onDismiss,
     sheetState = sheetState,
     containerColor = colors.modalBackground,
@@ -86,7 +84,7 @@ fun <T : Any> ListBottomSheet(
 @Composable
 private fun Colors.listItem(): ListItemColors =
   ListItemDefaults.colors(
-    containerColor = Color.Transparent,
+    containerColor = Transparent,
     headlineColor = pageText,
     leadingIconColor = pageText,
     trailingIconColor = pageText,

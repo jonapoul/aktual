@@ -37,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
@@ -61,7 +60,7 @@ internal fun BudgetListItem(
       modifier
         .clip(RowShape)
         .background(colors.buttonNormalBackground, RowShape)
-        .border(Dp.Hairline, colors.pillBorderDark, RowShape)
+        .border(Hairline, colors.pillBorderDark, RowShape)
         .clickable(onClick = onClickOpen)
         .padding(horizontal = 15.dp, vertical = 12.dp),
     horizontalArrangement = Arrangement.Start,
@@ -73,7 +72,7 @@ internal fun BudgetListItem(
       Text(
         text = budget.name,
         fontSize = 16.sp,
-        fontWeight = FontWeight.W700,
+        fontWeight = W700,
         color = colors.pageText,
       )
 
@@ -141,7 +140,7 @@ private fun DeleteMenu(expanded: Boolean, onDismiss: () -> Unit, onClickDelete: 
 @Composable
 private fun budgetDescription(budget: Budget) =
   when {
-    budget is Budget.Unknown -> Strings.listBudgetsOffline
+    budget is Unknown -> Strings.listBudgetsOffline
     budget.encryptKeyId == null -> Strings.listBudgetsUnencrypted
     budget.hasKey -> Strings.listBudgetsEncryptedWithKey
     else -> Strings.listBudgetsEncryptedWithoutKey

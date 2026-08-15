@@ -28,47 +28,47 @@ fun YearMonth.stringShort(): String {
 @Composable
 fun DayOfWeek.stringShort() =
   when (this) {
-    DayOfWeek.MONDAY -> Strings.weekMon
-    DayOfWeek.TUESDAY -> Strings.weekTue
-    DayOfWeek.WEDNESDAY -> Strings.weekWed
-    DayOfWeek.THURSDAY -> Strings.weekThu
-    DayOfWeek.FRIDAY -> Strings.weekFri
-    DayOfWeek.SATURDAY -> Strings.weekSat
-    DayOfWeek.SUNDAY -> Strings.weekSun
+    MONDAY -> Strings.weekMon
+    TUESDAY -> Strings.weekTue
+    WEDNESDAY -> Strings.weekWed
+    THURSDAY -> Strings.weekThu
+    FRIDAY -> Strings.weekFri
+    SATURDAY -> Strings.weekSat
+    SUNDAY -> Strings.weekSun
   }
 
 @Composable
 fun Month.stringShort() =
   when (this) {
-    Month.JANUARY -> Strings.monthJanShort
-    Month.FEBRUARY -> Strings.monthFebShort
-    Month.MARCH -> Strings.monthMarShort
-    Month.APRIL -> Strings.monthAprShort
-    Month.MAY -> Strings.monthMayShort
-    Month.JUNE -> Strings.monthJunShort
-    Month.JULY -> Strings.monthJulShort
-    Month.AUGUST -> Strings.monthAugShort
-    Month.SEPTEMBER -> Strings.monthSepShort
-    Month.OCTOBER -> Strings.monthOctShort
-    Month.NOVEMBER -> Strings.monthNovShort
-    Month.DECEMBER -> Strings.monthDecShort
+    JANUARY -> Strings.monthJanShort
+    FEBRUARY -> Strings.monthFebShort
+    MARCH -> Strings.monthMarShort
+    APRIL -> Strings.monthAprShort
+    MAY -> Strings.monthMayShort
+    JUNE -> Strings.monthJunShort
+    JULY -> Strings.monthJulShort
+    AUGUST -> Strings.monthAugShort
+    SEPTEMBER -> Strings.monthSepShort
+    OCTOBER -> Strings.monthOctShort
+    NOVEMBER -> Strings.monthNovShort
+    DECEMBER -> Strings.monthDecShort
   }
 
 @Composable
 fun Month.stringLong() =
   when (this) {
-    Month.JANUARY -> Strings.monthJanLong
-    Month.FEBRUARY -> Strings.monthFebLong
-    Month.MARCH -> Strings.monthMarLong
-    Month.APRIL -> Strings.monthAprLong
-    Month.MAY -> Strings.monthMayLong
-    Month.JUNE -> Strings.monthJunLong
-    Month.JULY -> Strings.monthJulLong
-    Month.AUGUST -> Strings.monthAugLong
-    Month.SEPTEMBER -> Strings.monthSepLong
-    Month.OCTOBER -> Strings.monthOctLong
-    Month.NOVEMBER -> Strings.monthNovLong
-    Month.DECEMBER -> Strings.monthDecLong
+    JANUARY -> Strings.monthJanLong
+    FEBRUARY -> Strings.monthFebLong
+    MARCH -> Strings.monthMarLong
+    APRIL -> Strings.monthAprLong
+    MAY -> Strings.monthMayLong
+    JUNE -> Strings.monthJunLong
+    JULY -> Strings.monthJulLong
+    AUGUST -> Strings.monthAugLong
+    SEPTEMBER -> Strings.monthSepLong
+    OCTOBER -> Strings.monthOctLong
+    NOVEMBER -> Strings.monthNovLong
+    DECEMBER -> Strings.monthDecLong
   }
 
 @Stable

@@ -1,10 +1,7 @@
 package aktual.app.nav
 
 import aktual.budget.model.SyncState
-import aktual.budget.model.SyncState.Inactive
-import aktual.budget.model.SyncState.NoToken
 import aktual.budget.model.SyncState.SyncFailed
-import aktual.budget.model.SyncState.Syncing
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudCheck
 import aktual.core.icons.CloudWarning
@@ -13,9 +10,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Sync
 import aktual.core.l10n.Strings
 import aktual.core.model.PingState
-import aktual.core.model.PingState.Failure
-import aktual.core.model.PingState.Success
-import aktual.core.model.PingState.Unknown
 import aktual.core.theme.BottomBarThemeAttrs
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
@@ -53,8 +47,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -158,7 +150,7 @@ private fun loadedString(budgetName: String): AnnotatedString {
     buildAnnotatedString {
       append(budgetLoaded)
       append("  ")
-      withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(budgetName) }
+      withStyle(SpanStyle(fontWeight = Bold)) { append(budgetName) }
     }
   }
 }

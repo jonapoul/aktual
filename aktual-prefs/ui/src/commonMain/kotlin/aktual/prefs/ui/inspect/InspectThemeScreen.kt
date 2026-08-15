@@ -60,7 +60,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -148,7 +148,7 @@ private fun InspectThemeContent(
 ) {
   when (state) {
     is Loading -> {
-      Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+      Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) {
         CircularProgressIndicator()
       }
     }
@@ -193,14 +193,13 @@ private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modif
     horizontalArrangement = Arrangement.SpaceBetween,
     verticalAlignment = Alignment.CenterVertically,
   ) {
-    val textColor =
-      remember(property.color) { if (property.color.isLight()) Color.Black else Color.White }
+    val textColor = remember(property.color) { if (property.color.isLight()) Black else White }
     Text(
       modifier = Modifier.weight(1f),
       text = property.name,
       color = textColor,
       style = typography.bodySmall,
-      textAlign = TextAlign.Start,
+      textAlign = Start,
       maxLines = 1,
     )
 
@@ -208,7 +207,7 @@ private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modif
       text = property.color.toHexString(),
       color = textColor,
       style = typography.labelMedium,
-      textAlign = TextAlign.End,
+      textAlign = End,
       maxLines = 1,
     )
   }

@@ -17,9 +17,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Gray
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
@@ -37,11 +37,11 @@ fun ScaleToFitText(
   modifier: Modifier = Modifier,
   style: TextStyle = LocalTextStyle.current,
   maxLines: Int = 1,
-  color: Color = Color.Unspecified,
+  color: Color = Unspecified,
   minTextSize: TextUnit = 0.sp,
   maxTextSize: TextUnit = 100.sp,
 ) {
-  BoxWithConstraints(modifier = modifier, contentAlignment = Alignment.Center) {
+  BoxWithConstraints(modifier = modifier, contentAlignment = Center) {
     val density = LocalDensity.current
     val maxWidthPx = with(density) { maxWidth.toPx().roundToInt() }
     val maxHeightPx = with(density) { maxHeight.toPx().roundToInt() }
@@ -104,19 +104,13 @@ private fun PreviewScaleToFitText() {
   Column {
     ScaleToFitText(
       modifier =
-        Modifier.height(100.dp)
-          .width(500.dp)
-          .background(Color.Gray)
-          .border(width = 1.dp, color = Color.Blue),
+        Modifier.height(100.dp).width(500.dp).background(Gray).border(width = 1.dp, color = Blue),
       text = "Hello world 100x500",
     )
 
     ScaleToFitText(
       modifier =
-        Modifier.height(30.dp)
-          .width(500.dp)
-          .background(Color.Gray)
-          .border(width = 1.dp, color = Color.Red),
+        Modifier.height(30.dp).width(500.dp).background(Gray).border(width = 1.dp, color = Red),
       text = "Hello world 30x500",
     )
 
@@ -125,21 +119,17 @@ private fun PreviewScaleToFitText() {
         modifier =
           Modifier.height(100.dp)
             .width(100.dp)
-            .background(Color.Gray)
-            .border(width = 1.dp, color = Color.Green),
+            .background(Gray)
+            .border(width = 1.dp, color = Green),
         text = "Hello world 100x100",
       )
       ScaleToFitText(
-        modifier =
-          Modifier.size(12.dp).background(Color.Gray).border(width = 1.dp, color = Color.Yellow),
+        modifier = Modifier.size(12.dp).background(Gray).border(width = 1.dp, color = Yellow),
         text = "15.dp",
       )
       ScaleToFitText(
         modifier =
-          Modifier.height(100.dp)
-            .weight(1f)
-            .background(Color.Gray)
-            .border(width = 1.dp, color = Color.Cyan),
+          Modifier.height(100.dp).weight(1f).background(Gray).border(width = 1.dp, color = Cyan),
         text = "Hello world weighted but loads more text here and here's some more",
       )
     }

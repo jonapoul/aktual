@@ -1,7 +1,6 @@
 package aktual.budget.tags.ui.edit
 
 import aktual.budget.model.TagId
-import aktual.budget.tags.vm.edit.EditTagEvent
 import aktual.budget.tags.vm.edit.EditTagState
 import aktual.budget.tags.vm.edit.EditTagViewModel
 import aktual.core.icons.material.ArrowBack
@@ -66,7 +65,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -89,7 +87,7 @@ fun EditTagScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        EditTagEvent.FinishedSaving -> back()
+        FinishedSaving -> back()
       }
     }
   }
@@ -131,7 +129,7 @@ private fun EditTagScaffold(
   isDuplicateName: Boolean = false,
   saveError: String? = null,
 ) {
-  val editing = state as? EditTagState.Editing
+  val editing = state as? Editing
 
   val tagState = rememberTextFieldState()
   val descriptionState = rememberTextFieldState()
@@ -177,9 +175,9 @@ private fun EditTagScaffold(
       PageBackground()
 
       when (state) {
-        EditTagState.Loading -> LoadingScreen(modifier = Modifier.padding(innerPadding))
+        Loading -> LoadingScreen(modifier = Modifier.padding(innerPadding))
 
-        is EditTagState.Editing ->
+        is Editing ->
           EditTagContent(
             modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
             tagState = tagState,
@@ -192,7 +190,7 @@ private fun EditTagScaffold(
             contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
           )
 
-        is EditTagState.Failure ->
+        is Failure ->
           FailureScreen(
             modifier = Modifier.padding(innerPadding),
             title = Strings.tagsEditFailurePrefix,
@@ -329,7 +327,7 @@ private fun EditTagContent(
         modifier = Modifier.fillMaxWidth(),
         state = descriptionState,
         placeholderText = Strings.tagsCreateDescriptionPlaceholder,
-        keyboardOptions = KeyboardOptions(capitalization = KeyboardCapitalization.Sentences),
+        keyboardOptions = KeyboardOptions(capitalization = Sentences),
       )
     }
 

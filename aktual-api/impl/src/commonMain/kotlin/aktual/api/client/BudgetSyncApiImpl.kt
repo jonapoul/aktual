@@ -3,7 +3,6 @@ package aktual.api.client
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.model.SyncResponse
 import aktual.budget.proto.SyncResponseDecoder
-import aktual.core.model.Protocol
 import aktual.core.model.ServerUrl
 import aktual.core.model.Token
 import aktual.di.BudgetScope
@@ -14,7 +13,6 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.ContentType
-import io.ktor.http.URLProtocol
 import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.utils.io.jvm.javaio.toInputStream
@@ -30,11 +28,7 @@ class BudgetSyncApiImpl(
   private val prefs: BudgetLocalPreferences,
   private val decoder: SyncResponseDecoder,
 ) : BudgetSyncApi {
-  private val urlProtocol =
-    when (serverUrl.protocol) {
-      Protocol.Http -> URLProtocol.HTTP
-      Protocol.Https -> URLProtocol.HTTPS
-    }
+  private val urlProtocol = serverUrl.protocol()
 
   override suspend fun syncBudget(requestBody: ByteString): SyncResponse {
     val response = client.post {

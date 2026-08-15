@@ -13,7 +13,7 @@ class KermitFileLogger(
   override val minPriority: LogPriority,
   clock: Clock = Clock.System,
   timeZone: TimeZoneProvider = TimeZoneProvider.Default,
-  fileSystem: FileSystem = FileSystem.SYSTEM,
+  fileSystem: FileSystem = SYSTEM,
 ) : MinPriorityLogger {
   private val fileWriter =
     FileLogWriter(storage = storage, clock = clock, timeZone = timeZone, fileSystem = fileSystem)
@@ -23,12 +23,12 @@ class KermitFileLogger(
   private val LogPriority.severity: Severity
     get() =
       when (this) {
-        LogPriority.VERBOSE -> Severity.Verbose
-        LogPriority.DEBUG -> Severity.Debug
-        LogPriority.INFO -> Severity.Info
-        LogPriority.WARN -> Severity.Warn
-        LogPriority.ERROR -> Severity.Error
-        LogPriority.ASSERT -> Severity.Assert
+        VERBOSE -> Severity.Verbose
+        DEBUG -> Severity.Debug
+        INFO -> Severity.Info
+        WARN -> Severity.Warn
+        ERROR -> Severity.Error
+        ASSERT -> Severity.Assert
       }
 
   override fun log(priority: LogPriority, tag: String, message: String) =

@@ -1,7 +1,6 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.model.Amount
-import aktual.budget.reports.vm.DateRangeMode
 import aktual.budget.reports.vm.SpendingComparison
 import aktual.budget.reports.vm.SpendingData
 import aktual.budget.reports.vm.SpendingDay
@@ -40,8 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -188,7 +185,7 @@ private fun CompactHeader(
 
     Text(
       text = data.difference.formattedString(includeSign = true),
-      fontWeight = FontWeight.Medium,
+      fontWeight = Medium,
       color = if (data.difference.isPositive()) colors.errorText else colors.noticeTextLight,
     )
   }
@@ -208,7 +205,7 @@ private fun RegularLegend(
 
     HorizontalSpacer(weight = 1f)
 
-    val style = typography.bodySmall.copy(textAlign = TextAlign.End)
+    val style = typography.bodySmall.copy(textAlign = End)
     val mtdSpending = calculateMtdSpending(data)
     val padding = PaddingValues(horizontal = 4.dp)
 
@@ -226,7 +223,7 @@ private fun RegularLegend(
             mtdSpending.comparison.formattedString(),
           ),
         ),
-      textStyles = persistentListOf(style, style.copy(fontWeight = FontWeight.W600)),
+      textStyles = persistentListOf(style, style.copy(fontWeight = W600)),
       paddings = persistentListOf(padding, padding),
     )
   }
@@ -252,9 +249,9 @@ private fun LegendItem(text: String, color: Color, modifier: Modifier = Modifier
 @Composable
 private fun SpendingComparison.string() =
   when (this) {
-    SpendingComparison.Average -> Strings.reportsSpendingAverage
-    SpendingComparison.Budgeted -> Strings.reportsSpendingBudgeted
-    is SpendingComparison.SingleMonth -> value.stringShort()
+    Average -> Strings.reportsSpendingAverage
+    Budgeted -> Strings.reportsSpendingBudgeted
+    is SingleMonth -> value.stringShort()
   }
 
 private const val END_DAY = 28
@@ -264,8 +261,8 @@ private suspend fun CartesianChartModelProducer.populate(data: SpendingData) =
   with(data) {
     val xValues = days.map { day ->
       when (val number = day.number) {
-        is SpendingDayNumber.Specific -> number.number
-        SpendingDayNumber.End -> END_DAY
+        is Specific -> number.number
+        End -> END_DAY
       }
     }
 
@@ -319,9 +316,9 @@ private class SpendingChartProvider :
 internal val JUL_2025 =
   SpendingData(
     title = "Monthly Spending",
-    mode = DateRangeMode.Live,
+    mode = Live,
     targetMonth = YearMonth(2025, Month.JULY),
-    comparison = SpendingComparison.Average,
+    comparison = Average,
     difference = Amount(534.88),
     days =
       persistentListOf(
@@ -352,7 +349,7 @@ internal val JUL_2025 =
         day(25, null, 570.39),
         day(26, null, 590.48),
         day(27, null, 543.64),
-        SpendingDay(SpendingDayNumber.End, target = null, Amount(876.26)),
+        SpendingDay(End, target = null, Amount(876.26)),
       ),
   )
 

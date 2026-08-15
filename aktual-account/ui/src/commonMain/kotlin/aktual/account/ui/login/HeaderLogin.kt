@@ -23,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
@@ -39,7 +38,7 @@ internal fun HeaderLogin(
     modifier =
       modifier
         .fillMaxWidth()
-        .border(Dp.Hairline, colors.pillBorderDark, RounderCardShape)
+        .border(Hairline, colors.pillBorderDark, RounderCardShape)
         .background(colors.pillBackgroundLight, RounderCardShape)
         .padding(8.dp),
     horizontalAlignment = Alignment.CenterHorizontally,

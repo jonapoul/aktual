@@ -39,7 +39,7 @@ fun Colors.topAppBarColors(
 @Composable
 fun Colors.transparentTopAppBarColors(): TopAppBarColors =
   topAppBarColors(
-    containerColor = Color.Transparent,
+    containerColor = Transparent,
     navigationIconContentColor = pageText,
     actionIconContentColor = pageText,
     titleContentColor = pageText,
@@ -203,12 +203,12 @@ fun Colors.slider(): SliderColors =
 fun Colors.checkbox(): CheckboxColors =
   CheckboxDefaults.colors(
     checkedCheckmarkColor = checkboxText,
-    uncheckedCheckmarkColor = Color.Transparent,
+    uncheckedCheckmarkColor = Transparent,
     disabledCheckmarkColor = checkboxText,
     checkedBoxColor = checkboxBackgroundSelected,
-    uncheckedBoxColor = Color.Transparent,
+    uncheckedBoxColor = Transparent,
     disabledCheckedBoxColor = checkboxBackgroundSelected.disabled,
-    disabledUncheckedBoxColor = Color.Transparent,
+    disabledUncheckedBoxColor = Transparent,
     disabledIndeterminateBoxColor = checkboxBackgroundSelected.disabled,
     checkedBorderColor = checkboxBorderSelected,
     uncheckedBorderColor = pageText.disabled,

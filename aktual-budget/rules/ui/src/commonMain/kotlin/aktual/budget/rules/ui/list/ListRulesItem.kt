@@ -55,14 +55,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
-import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableList
@@ -161,7 +158,7 @@ private fun RuleStageBadge(
         .padding(Dimens.Large)
         .clip(CardShape)
         .background(colors.pillBackgroundSelected, CardShape)
-        .border(Dp.Hairline, colors.pillBorder, CardShape)
+        .border(Hairline, colors.pillBorder, CardShape)
         .padding(horizontal = 6.dp, vertical = 2.dp)
   ) {
     Text(text = stage.string(), color = colors.pillText, style = typography.labelSmall)
@@ -253,7 +250,7 @@ internal fun ShimmerListRulesItem(
   checkboxes: CheckboxesState,
   modifier: Modifier = Modifier,
 ) {
-  val shimmer = rememberShimmer(ShimmerBounds.Window)
+  val shimmer = rememberShimmer(Window)
 
   Row(
     modifier =
@@ -265,7 +262,7 @@ internal fun ShimmerListRulesItem(
     if (checkboxes is Active) {
       Box(
         modifier = Modifier.size(LocalMinimumInteractiveComponentSize.current),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Center,
       ) {
         Box(
           modifier =
@@ -302,7 +299,7 @@ internal fun ShimmerListRulesItem(
 
     Box(
       modifier = Modifier.size(LocalMinimumInteractiveComponentSize.current),
-      contentAlignment = Alignment.Center,
+      contentAlignment = Center,
     ) {
       Box(
         modifier =
@@ -322,7 +319,7 @@ private fun Modifier.ruleRow(
   return fillMaxWidth()
     .clip(RowShape)
     .background(colors.tableBackground, RowShape)
-    .border(Dp.Hairline, colors.tableBorder, RowShape)
+    .border(Hairline, colors.tableBorder, RowShape)
     .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
     .padding(horizontal = 15.dp, vertical = 12.dp)
 }

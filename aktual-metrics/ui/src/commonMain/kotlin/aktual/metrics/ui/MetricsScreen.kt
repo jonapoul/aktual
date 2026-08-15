@@ -56,13 +56,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -121,9 +117,9 @@ internal fun MetricsScaffold(
         BlurredTopBarSpacing(blurState, innerPadding)
         PullToRefreshBox(
           modifier = Modifier.padding(8.dp),
-          contentAlignment = Alignment.Center,
+          contentAlignment = Center,
           onRefresh = { onAction(Refresh) },
-          isRefreshing = state is MetricsState.Loading,
+          isRefreshing = state is Loading,
           content = { MetricsContent(state, onAction) },
         )
       }
@@ -143,10 +139,10 @@ private fun MetricsContent(
     horizontalAlignment = Alignment.CenterHorizontally,
   ) {
     when (state) {
-      MetricsState.Loading -> LoadingContent()
-      MetricsState.Disconnected -> FailureContent(Strings.metricsDisconnected, onAction)
-      is MetricsState.Failure -> FailureContent(state.cause, onAction)
-      is MetricsState.Success -> SuccessContent(state)
+      Loading -> LoadingContent()
+      Disconnected -> FailureContent(Strings.metricsDisconnected, onAction)
+      is Failure -> FailureContent(state.cause, onAction)
+      is Success -> SuccessContent(state)
     }
 
     BottomSpacing()
@@ -162,7 +158,7 @@ private fun LoadingContent(modifier: Modifier = Modifier) {
 
 @Composable
 internal fun LoadingItem(modifier: Modifier = Modifier) {
-  val shimmer = rememberShimmer(ShimmerBounds.Window)
+  val shimmer = rememberShimmer(Window)
 
   Row(
     modifier =
@@ -170,7 +166,7 @@ internal fun LoadingItem(modifier: Modifier = Modifier) {
         .fillMaxWidth()
         .clip(RowShape)
         .background(colors.buttonNormalBackground, RowShape)
-        .border(Dp.Hairline, colors.pillBorderDark, RowShape)
+        .border(Hairline, colors.pillBorderDark, RowShape)
         .padding(horizontal = 15.dp, vertical = 12.dp)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
@@ -234,7 +230,7 @@ private fun SuccessContent(
     Modifier.fillMaxWidth()
       .clip(CardShape)
       .background(colors.buttonNormalBackground, CardShape)
-      .border(Dp.Hairline, colors.pillBorderDark, CardShape)
+      .border(Hairline, colors.pillBorderDark, CardShape)
       .padding(Dimens.VeryLarge)
 
   LazyColumn(
@@ -262,7 +258,7 @@ private fun SuccessContent(
       Column(modifier = dataModifier) {
         Text(
           text = Strings.metricsMemory,
-          fontWeight = FontWeight.Bold,
+          fontWeight = Bold,
           style = typography.titleLarge,
         )
 
@@ -338,15 +334,15 @@ private fun SuccessContentRow(title: String, value: String, modifier: Modifier =
       modifier = Modifier.weight(1f),
       text = title,
       style = typography.bodyLarge,
-      fontWeight = FontWeight.Bold,
-      textAlign = TextAlign.Start,
+      fontWeight = Bold,
+      textAlign = Start,
     )
     Text(
       modifier = Modifier.weight(1f),
       text = value,
       style = typography.bodyMedium,
-      fontWeight = FontWeight.Normal,
-      textAlign = TextAlign.End,
+      fontWeight = Normal,
+      textAlign = End,
     )
   }
 }
@@ -360,8 +356,8 @@ private fun PreviewMetricsScaffold(
 @Suppress("MagicNumber")
 private class MetricsStateProvider :
   ColoredParameterProvider<MetricsState>(
-    MetricsState.Loading,
-    MetricsState.Disconnected,
+    Loading,
+    Disconnected,
     MetricsState.Failure("Something broke"),
     MetricsState.Success(
       memory =

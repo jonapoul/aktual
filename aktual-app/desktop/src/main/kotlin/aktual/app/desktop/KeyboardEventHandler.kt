@@ -1,7 +1,6 @@
 package aktual.app.desktop
 
 import aktual.core.nav.NavStack
-import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEvent
 import androidx.compose.ui.input.key.isAltPressed
 import androidx.compose.ui.input.key.isCtrlPressed
@@ -29,7 +28,7 @@ internal class KeyboardEventHandler(private val backStack: NavStack<NavKey>) {
   fun onPreviewKeyEvent(event: KeyEvent): Boolean =
     with(event) {
       logcat.v { "onPreviewKeyEvent = ${event.string()}" }
-      if (isAltPressed && key == Key.DirectionLeft) {
+      if (isAltPressed && key == DirectionLeft) {
         logcat.d { "Navigating back" }
         if (backStack.size > 1) {
           backStack.removeLast()

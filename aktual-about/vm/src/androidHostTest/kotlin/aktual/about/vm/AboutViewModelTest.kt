@@ -1,7 +1,8 @@
 package aktual.about.vm
 
 import aktual.about.data.GithubRepository
-import aktual.about.data.LatestReleaseState
+import aktual.about.data.LatestReleaseState.UpdateAvailable
+import aktual.about.vm.CheckUpdatesState.UpdateFound
 import aktual.core.UrlOpener
 import aktual.core.model.AktualVersionsStateHolder
 import aktual.test.TestBuildConfig
@@ -58,23 +59,23 @@ class AboutViewModelTest {
         htmlUrl = url,
         tagName = "v1.2.3",
       )
-    coEvery { repository.fetchLatestRelease() } returns LatestReleaseState.UpdateAvailable(model)
+    coEvery { repository.fetchLatestRelease() } returns UpdateAvailable(model)
 
     viewModel.checkUpdatesState.test {
-      assertThatNextEmissionIsEqualTo(CheckUpdatesState.Inactive)
+      assertThatNextEmissionIsEqualTo(Inactive)
 
       // When we fetch updates
       viewModel.fetchLatestRelease()
-      assertThatNextEmissionIsEqualTo(CheckUpdatesState.Checking)
+      assertThatNextEmissionIsEqualTo(Checking)
 
       // Then an update is returned
-      assertThatNextEmissionIsEqualTo(CheckUpdatesState.UpdateFound(version, url))
+      assertThatNextEmissionIsEqualTo(UpdateFound(version, url))
 
       // When we cancel the dialog
       viewModel.cancelUpdateCheck()
 
       // Then the dialog is dismissed
-      assertThatNextEmissionIsEqualTo(CheckUpdatesState.Inactive)
+      assertThatNextEmissionIsEqualTo(Inactive)
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }

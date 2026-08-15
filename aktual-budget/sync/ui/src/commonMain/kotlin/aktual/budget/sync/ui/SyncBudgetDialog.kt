@@ -6,6 +6,7 @@ import aktual.budget.sync.vm.SyncBudgetViewModel
 import aktual.budget.sync.vm.SyncOverallState
 import aktual.budget.sync.vm.SyncStep
 import aktual.budget.sync.vm.SyncStepState
+import aktual.budget.sync.vm.SyncStepState.InProgress
 import aktual.core.icons.material.Error
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.l10n.Strings
@@ -61,11 +62,7 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
@@ -145,7 +142,7 @@ private fun SyncBudgetDialog(
       buttons = {
         TextButton(onClick = { onAction(Cancel) }, content = { Text(text = Strings.syncCancel) })
         when {
-          passwordState is KeyPasswordState.Active -> {
+          passwordState is Active -> {
             val enabled = passwordState.input.isNotEmpty()
             val color =
               if (enabled) colors.buttonPrimaryText else colors.buttonNormalDisabledText.disabled
@@ -155,11 +152,11 @@ private fun SyncBudgetDialog(
               content = { Text(text = Strings.syncPasswordConfirm, color = color) },
             )
           }
-          overallState == SyncOverallState.Failed -> {
+          overallState == Failed -> {
             TextButton(onClick = { onAction(Retry) }, content = { Text(text = Strings.syncRetry) })
           }
           else -> {
-            val enabled = overallState == SyncOverallState.Succeeded
+            val enabled = overallState == Succeeded
             val color =
               if (enabled) colors.reportsGreen else colors.buttonNormalDisabledText.disabled
             TextButton(
@@ -203,20 +200,20 @@ private fun ColumnScope.SyncBudgetDialogContent(
 
   val activeStep =
     remember(stepStates) {
-      stepStates.entries.lastOrNull { it.value !is SyncStepState.NotStarted }?.key
+      stepStates.entries.lastOrNull { it.value !is NotStarted }?.key
     }
 
-  if (activeStep != null && passwordState !is KeyPasswordState.Active) {
+  if (activeStep != null && passwordState !is Active) {
     Text(
       text = activeStep.label(),
       style = MaterialTheme.typography.labelSmall,
       color = colors.pageTextSubdued,
-      textAlign = TextAlign.Center,
+      textAlign = Center,
       modifier = Modifier.fillMaxWidth(),
     )
   }
 
-  if (passwordState is KeyPasswordState.Active) {
+  if (passwordState is Active) {
     PasswordEntryLayout(password = passwordState.input, onAction = onAction)
   }
 }
@@ -231,15 +228,15 @@ private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {
     verticalArrangement = Arrangement.Top,
   ) {
     when (state) {
-      is SyncStepState.NotStarted -> {
+      is NotStarted -> {
         TintedDot(size = 6.dp, color = colors.reportsNumberNeutral)
       }
 
-      is SyncStepState.InProgress.Indefinite -> {
+      is InProgress.Indefinite -> {
         CircularProgressIndicator(modifier = Modifier.size(ITEM_SIZE), color = colors.reportsBlue)
       }
 
-      is SyncStepState.InProgress.Definite -> {
+      is InProgress.Definite -> {
         CircularProgressIndicator(
           progress = { state.progress.floatValue / 100f },
           modifier = Modifier.size(ITEM_SIZE),
@@ -247,11 +244,11 @@ private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {
         )
       }
 
-      is SyncStepState.Succeeded -> {
+      is Succeeded -> {
         TintedDot(size = 12.dp, color = colors.reportsNumberPositive)
       }
 
-      is SyncStepState.Failed -> {
+      is Failed -> {
         Icon(
           imageVector = MaterialIcons.Error,
           contentDescription = state.moreInfo,
@@ -265,7 +262,7 @@ private fun SyncStepState(state: SyncStepState, modifier: Modifier = Modifier) {
 
 @Composable
 private fun TintedDot(size: Dp, color: Color) {
-  Box(modifier = Modifier.size(ITEM_SIZE), contentAlignment = Alignment.Center) {
+  Box(modifier = Modifier.size(ITEM_SIZE), contentAlignment = Center) {
     Box(modifier = Modifier.size(size).clip(CircleShape).background(color, CircleShape))
   }
 }
@@ -273,9 +270,9 @@ private fun TintedDot(size: Dp, color: Color) {
 @Composable
 private fun SyncStep.label(): String =
   when (this) {
-    SyncStep.FetchingFileInfo -> Strings.syncStepFetchingInfo
-    SyncStep.DownloadingDatabase -> Strings.syncStepDownloading
-    SyncStep.ValidatingDatabase -> Strings.syncStepValidating
+    FetchingFileInfo -> Strings.syncStepFetchingInfo
+    DownloadingDatabase -> Strings.syncStepDownloading
+    ValidatingDatabase -> Strings.syncStepValidating
   }
 
 @Composable
@@ -313,9 +310,9 @@ private fun PasswordEntryLayout(
       keyboardOptions =
         KeyboardOptions(
           autoCorrectEnabled = false,
-          capitalization = KeyboardCapitalization.None,
+          capitalization = None,
           keyboardType = KeyboardType.Password,
-          imeAction = ImeAction.Go,
+          imeAction = Go,
         ),
       onKeyboardAction = { _ ->
         keyboard?.hide()
@@ -345,7 +342,7 @@ private fun buildPasswordText(colors: Colors, onAction: SyncBudgetActionHandler)
     append(Strings.syncPasswordText)
     append(" ")
 
-    val style = SpanStyle(color = colors.pageTextLink, textDecoration = TextDecoration.Underline)
+    val style = SpanStyle(color = colors.pageTextLink, textDecoration = Underline)
     val link =
       LinkAnnotation.Clickable(
         tag = Tags.KeyPasswordDialogLearnMore,

@@ -113,8 +113,8 @@ private val SPACING = 8.dp
 @Composable
 private fun DateRangeMode.string() =
   when (this) {
-    DateRangeMode.Live -> Strings.reportsDateConfigLive
-    DateRangeMode.Static -> Strings.reportsDateConfigStatic
+    Live -> Strings.reportsDateConfigLive
+    Static -> Strings.reportsDateConfigStatic
   }
 
 @Preview
@@ -127,7 +127,7 @@ private fun PreviewChartDateConfig(@PreviewParameter(ColoredParameters::class) c
       onDateRangeType = {},
       config =
         ChartDateConfig(
-          mode = DateRangeMode.Static,
+          mode = Static,
           start = YearMonth(2025, Month.FEBRUARY),
           end = YearMonth(2025, Month.JULY),
           range =

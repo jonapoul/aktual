@@ -43,8 +43,6 @@ import aktual.core.ui.isMobileLandscape
 import aktual.core.ui.rememberAppCloser
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedContentScope
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.End
-import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Start
 import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.SharedTransitionLayout
@@ -84,10 +82,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -153,8 +149,8 @@ internal fun BudgetNavRail(
 
   val closeApp = rememberAppCloser()
   val onPopBackToTransactions: () -> Unit = {
-    if (selectedTab != BudgetTab.Transactions) {
-      selectedTab = BudgetTab.Transactions
+    if (selectedTab != Transactions) {
+      selectedTab = Transactions
     } else {
       closeApp()
     }
@@ -275,7 +271,7 @@ private fun SharedTransitionScope.CollapsedSheetContent(
       modifier.fillMaxWidth().onSizeChanged { size ->
         onChangeNavBarHeight(with(density) { size.height.toDp() })
       },
-    containerColor = Color.Transparent,
+    containerColor = Transparent,
     contentColor = colors.sidebarItemText,
   ) {
     // The first row of the saved grid doubles as the collapsed bar's shortcuts, minus its last
@@ -607,7 +603,7 @@ private fun PreviewNavSheetCollapsed(@PreviewParameter(ColoredParameters::class)
       PreviewContent(modifier = Modifier.weight(1f))
       NavigationBar(
         modifier = Modifier.fillMaxWidth(),
-        containerColor = Color.Transparent,
+        containerColor = Transparent,
         contentColor = colors.sidebarItemText,
       ) {
         for (tab in BudgetTab.tabs.take(NAV_GRID_COLUMNS - 1)) {
@@ -617,10 +613,10 @@ private fun PreviewNavSheetCollapsed(@PreviewParameter(ColoredParameters::class)
               Text(
                 text = tab.label(),
                 color = LocalContentColor.current,
-                textAlign = TextAlign.Center,
+                textAlign = Center,
               )
             },
-            selected = tab == BudgetTab.Transactions,
+            selected = tab == Transactions,
             onClick = {},
             colors = colors.navBarItem(),
           )
@@ -647,7 +643,7 @@ private fun PreviewNavSheetExpanded(@PreviewParameter(ColoredParameters::class) 
           if (expanded) {
             ExpandedSheetContent(
               order = BudgetTab.entries.toImmutableList(),
-              selectedTab = BudgetTab.Transactions,
+              selectedTab = Transactions,
               onSelectTab = {},
               onCollapse = {},
               onAction = {},
@@ -673,7 +669,7 @@ private fun PreviewSideNavRail(@PreviewParameter(ColoredParameters::class) color
 
 @Composable
 private fun PreviewContent(modifier: Modifier = Modifier) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) {
     Text(text = "Content", style = typography.headlineMedium)
   }
 }

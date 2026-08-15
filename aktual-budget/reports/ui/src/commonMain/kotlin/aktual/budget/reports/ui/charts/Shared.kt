@@ -22,12 +22,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patrykandpatrick.vico.multiplatform.cartesian.axis.HorizontalAxis
@@ -61,7 +58,7 @@ internal fun axisLineComponent(compact: Boolean) =
   if (compact) {
     null
   } else {
-    rememberAxisLineComponent(strokeThickness = Dp.Hairline)
+    rememberAxisLineComponent(strokeThickness = Hairline)
   }
 
 @Composable
@@ -75,7 +72,7 @@ internal fun axisGuidelineComponent(compact: Boolean) =
 @Composable
 internal fun axisTickComponent(compact: Boolean) =
   if (compact) {
-    rememberAxisTickComponent(fill = Fill(Color.Transparent))
+    rememberAxisTickComponent(fill = Fill(Transparent))
   } else {
     rememberAxisTickComponent()
   }
@@ -141,7 +138,7 @@ internal fun rememberMarker(
 ): CartesianMarker {
   val label =
     rememberTextComponent(
-      style = TextStyle(color = colors.pageText, textAlign = TextAlign.Center),
+      style = TextStyle(color = colors.pageText, textAlign = Center),
       padding = Insets(8.dp, 4.dp),
       minWidth = TextComponent.MinWidth.fixed(40.dp),
     )
@@ -193,7 +190,7 @@ internal fun dateRange(months: ImmutableCollection<YearMonth>): String =
 @Composable
 internal fun Footer(title: String, text: String, modifier: Modifier = Modifier) =
   Column(modifier = modifier.fillMaxWidth().padding(8.dp)) {
-    Text(text = title, fontWeight = FontWeight.Bold, style = typography.bodyMedium)
+    Text(text = title, fontWeight = Bold, style = typography.bodyMedium)
 
     VerticalSpacer(4.dp)
 

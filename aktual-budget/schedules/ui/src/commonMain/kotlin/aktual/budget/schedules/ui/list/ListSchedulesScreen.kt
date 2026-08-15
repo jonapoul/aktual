@@ -129,7 +129,7 @@ private fun ListSchedulesScaffold(
 
       BlurredPullToRefreshBox(
         modifier = Modifier.padding(ListSchedulesDS.listPadding),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Center,
         onRefresh = { onAction(Reload) },
         isRefreshing = state is Loading,
         blurState = blurState,

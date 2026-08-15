@@ -4,18 +4,11 @@ import aktual.budget.db.Accounts
 import aktual.budget.db.CustomReports
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
-import aktual.budget.model.BalanceType
 import aktual.budget.model.Condition
-import aktual.budget.model.ConditionOp
 import aktual.budget.model.CustomReportId
-import aktual.budget.model.CustomReportMode
 import aktual.budget.model.DateRangeType
-import aktual.budget.model.GraphType
-import aktual.budget.model.GroupBy
-import aktual.budget.model.Interval
 import aktual.budget.model.ReportDate
 import aktual.budget.model.SelectedCategory
-import aktual.budget.model.SortBy
 import kotlin.uuid.Uuid
 import kotlinx.datetime.Month
 import kotlinx.datetime.YearMonth
@@ -28,7 +21,7 @@ internal fun buildAccount(
   officialName: String = "Jonathan Doe",
   bank: Uuid = BANK_ID,
   offBudget: Boolean = false,
-  syncSource: AccountSyncSource = AccountSyncSource.GoCardless,
+  syncSource: AccountSyncSource = GoCardless,
 ) =
   Accounts(
     id = id,
@@ -57,7 +50,7 @@ internal fun buildCustomReport(
   name: String? = "My report",
   startDate: ReportDate = ReportDate.Month(YearMonth(1999, Month.JANUARY)),
   endDate: ReportDate = ReportDate.Month(YearMonth(2025, Month.DECEMBER)),
-  range: DateRangeType = DateRangeType.Last12Months,
+  range: DateRangeType = Last12Months,
   selectedCategories: List<SelectedCategory> = emptyList(),
   conditions: List<Condition> = emptyList(),
   metadata: JsonObject? = null,
@@ -69,23 +62,23 @@ internal fun buildCustomReport(
     end_date = endDate,
     date_static = false,
     date_range = range,
-    mode = CustomReportMode.Total,
-    group_by = GroupBy.Category,
-    balance_type = BalanceType.Expense,
+    mode = Total,
+    group_by = Category,
+    balance_type = Expense,
     show_empty = false,
     show_offbudget = false,
     show_hidden = false,
     show_uncategorized = false,
     selected_categories = selectedCategories,
-    graph_type = GraphType.BarGraph,
+    graph_type = BarGraph,
     conditions = conditions,
-    conditions_op = ConditionOp.And,
+    conditions_op = And,
     metadata = metadata,
-    interval = Interval.Monthly,
+    interval = Monthly,
     color_scheme = null,
     tombstone = false,
     include_current = false,
-    sort_by = SortBy.Desc,
+    sort_by = Desc,
     trim_intervals = false,
     show_trend_lines = false,
   )

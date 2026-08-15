@@ -35,8 +35,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -99,14 +97,14 @@ private fun Header(
     Column(modifier = Modifier.weight(1f)) {
       Text(
         text = data.title,
-        overflow = TextOverflow.Ellipsis,
+        overflow = Ellipsis,
         color = colors.pageText,
         style = typography.bodyLarge,
       )
 
       Text(
         text = dateRange(data.items.keys),
-        overflow = TextOverflow.Ellipsis,
+        overflow = Ellipsis,
         color = colors.pageTextSubdued,
         style = typography.bodyMedium,
       )
@@ -116,7 +114,7 @@ private fun Header(
       val netWorthLatest = remember(data) { data.items.maxBy { (month, _) -> month }.value }
       Text(
         text = netWorthLatest.formattedString(includeSign = false),
-        textAlign = TextAlign.End,
+        textAlign = End,
         style = typography.bodyLarge,
         color = colors.pageText,
       )
@@ -130,7 +128,7 @@ private fun Header(
         }
       Text(
         text = netWorthChange.formattedString(includeSign = true),
-        textAlign = TextAlign.End,
+        textAlign = End,
         style = typography.bodySmall,
         color = if (netWorthChange.isPositive()) colors.noticeText else colors.errorText,
       )

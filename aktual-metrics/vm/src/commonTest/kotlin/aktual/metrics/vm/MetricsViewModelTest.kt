@@ -3,6 +3,8 @@ package aktual.metrics.vm
 import aktual.api.client.MetricsApi
 import aktual.api.model.metrics.GetMetricsResponse
 import aktual.core.model.bytes
+import aktual.metrics.vm.MetricsState.Failure
+import aktual.metrics.vm.MetricsState.Success
 import aktual.test.assertThatNextEmissionIsEqualTo
 import alakazam.test.TestClock
 import alakazam.test.TestCoroutineContexts
@@ -54,10 +56,8 @@ class MetricsViewModelTest {
     buildViewModel()
     viewModel.state.test {
       // then
-      assertThatNextEmissionIsEqualTo(MetricsState.Loading)
-      assertThatNextEmissionIsEqualTo(
-        MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT)
-      )
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThatNextEmissionIsEqualTo(Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT))
       coVerify(exactly = 1) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
 
@@ -65,10 +65,8 @@ class MetricsViewModelTest {
       viewModel.refresh()
 
       // then
-      assertThatNextEmissionIsEqualTo(MetricsState.Loading)
-      assertThatNextEmissionIsEqualTo(
-        MetricsState.Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT)
-      )
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThatNextEmissionIsEqualTo(Success(EXAMPLE_MEMORY, EXAMPLE_UPTIME, EXAMPLE_INSTANT))
       coVerify(exactly = 2) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
 
@@ -89,8 +87,8 @@ class MetricsViewModelTest {
     buildViewModel()
     viewModel.state.test {
       // then
-      assertThatNextEmissionIsEqualTo(MetricsState.Loading)
-      assertThatNextEmissionIsEqualTo(MetricsState.Disconnected)
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThatNextEmissionIsEqualTo(Disconnected)
       ensureAllEventsConsumed()
       cancelAndIgnoreRemainingEvents()
     }
@@ -107,8 +105,8 @@ class MetricsViewModelTest {
     buildViewModel()
     viewModel.state.test {
       // then
-      assertThatNextEmissionIsEqualTo(MetricsState.Loading)
-      assertThatNextEmissionIsEqualTo(MetricsState.Failure(cause = "Failed lol"))
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThatNextEmissionIsEqualTo(Failure(cause = "Failed lol"))
       coVerify(exactly = 1) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
 
@@ -117,8 +115,8 @@ class MetricsViewModelTest {
       viewModel.refresh()
 
       // then
-      assertThatNextEmissionIsEqualTo(MetricsState.Loading)
-      assertThatNextEmissionIsEqualTo(MetricsState.Disconnected)
+      assertThatNextEmissionIsEqualTo(Loading)
+      assertThatNextEmissionIsEqualTo(Disconnected)
       coVerify(exactly = 2) { metricsApi.getMetrics() }
       ensureAllEventsConsumed()
 

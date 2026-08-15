@@ -55,12 +55,12 @@ class SyncApiTest {
   @BeforeTest
   fun before() {
     mockEngine = emptyMockEngine()
-    fileSystem = FileSystem.SYSTEM
+    fileSystem = SYSTEM
     destinationPath = temporaryFolder / "my-file.txt"
     syncApi =
       SyncApiImpl(
         client = testHttpClient(mockEngine, AktualJson),
-        fileSystem = FileSystem.SYSTEM, // unused
+        fileSystem = SYSTEM, // unused
         serverUrl = SERVER_URL,
       )
   }
@@ -337,7 +337,7 @@ class SyncApiTest {
 
     syncApi.downloadUserFile(TOKEN, BUDGET_ID, destinationPath).test {
       var state: SyncDownloadState = awaitItem()
-      while (state is SyncDownloadState.InProgress) {
+      while (state is InProgress) {
         assertThat(state.contentLength).isEqualTo(length)
         assert(state.bytesSentTotal > 0)
         assert(state.bytesSentTotal <= state.contentLength)
@@ -361,7 +361,7 @@ class SyncApiTest {
 
     syncApi.downloadUserFile(TOKEN, BUDGET_ID, destinationPath).test {
       var state: SyncDownloadState = awaitItem()
-      while (state is SyncDownloadState.InProgress) {
+      while (state is InProgress) {
         assertThat(state.contentLength).isEqualTo(length)
         assert(state.bytesSentTotal > 0)
         assert(state.bytesSentTotal <= state.contentLength)

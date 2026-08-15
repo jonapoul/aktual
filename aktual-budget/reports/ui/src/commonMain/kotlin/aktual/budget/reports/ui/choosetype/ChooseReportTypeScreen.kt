@@ -60,7 +60,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -161,7 +160,7 @@ private fun WidgetType(
       modifier
         .clip(CardShape)
         .background(colors.tableBackground.disabledIf(!enabled), CardShape)
-        .border(Dp.Hairline, colors.pillBorderDark, CardShape)
+        .border(Hairline, colors.pillBorderDark, CardShape)
         .clickable(enabled) { onAction(Create(type)) }
         .padding(8.dp)
   ) {

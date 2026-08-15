@@ -20,7 +20,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
@@ -59,7 +58,7 @@ internal fun CategoryHeader(modifier: Modifier = Modifier) =
     HorizontalSpacer(dimens.interColumn)
 
     // amount
-    CategoryHeaderText(Strings.transactionsHeaderAmount, textAlign = TextAlign.End)
+    CategoryHeaderText(Strings.transactionsHeaderAmount, textAlign = End)
     HorizontalSpacer(dimens.interColumn)
 
     // button
@@ -70,7 +69,7 @@ internal fun CategoryHeader(modifier: Modifier = Modifier) =
 private fun RowScope.CategoryHeaderText(
   text: String,
   modifier: Modifier = Modifier,
-  textAlign: TextAlign = TextAlign.Start,
+  textAlign: TextAlign = Start,
 ) =
   Text(
     modifier = modifier.weight(1f),
@@ -78,7 +77,7 @@ private fun RowScope.CategoryHeaderText(
     textAlign = textAlign,
     fontSize = 14.sp,
     color = colors.tableHeaderText,
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
     maxLines = 1,
   )
 

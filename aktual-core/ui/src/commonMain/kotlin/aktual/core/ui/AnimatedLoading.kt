@@ -76,7 +76,7 @@ private fun loadingIcon(color: Color): ImageVector =
         path(
           stroke =
             Brush.linearGradient(
-              0.0f to Color.Transparent,
+              0.0f to Transparent,
               0.631f to color.copy(alpha = 0.631f),
               1.0f to color,
               start = Offset(3.05f, 0f),
@@ -121,7 +121,7 @@ private fun loadingIcon(color: Color): ImageVector =
 @Composable
 private fun PreviewCheckUpdatesContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    Box(modifier = Modifier.size(50.dp), contentAlignment = Alignment.Center) { AnimatedLoading() }
+    Box(modifier = Modifier.size(50.dp), contentAlignment = Center) { AnimatedLoading() }
   }
 
 @Preview

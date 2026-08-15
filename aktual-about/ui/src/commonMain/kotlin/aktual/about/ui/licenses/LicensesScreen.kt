@@ -2,10 +2,6 @@ package aktual.about.ui.licenses
 
 import aktual.about.data.ArtifactDetail
 import aktual.about.vm.LicensesState
-import aktual.about.vm.LicensesState.Error
-import aktual.about.vm.LicensesState.Loaded
-import aktual.about.vm.LicensesState.Loading
-import aktual.about.vm.LicensesState.NoneFound
 import aktual.about.vm.LicensesViewModel
 import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Refresh
@@ -60,11 +56,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -130,7 +124,11 @@ private fun LicensesScaffold(state: LicensesState, onAction: LicensesActionHandl
 }
 
 @Composable
-private fun Title(isSearchActive: Boolean, loadedState: Loaded?, onAction: LicensesActionHandler) {
+private fun Title(
+  isSearchActive: Boolean,
+  loadedState: LicensesState.Loaded?,
+  onAction: LicensesActionHandler,
+) {
   AnimatedContent(
     targetState = isSearchActive,
     transitionSpec = { fadeIn() togetherWith fadeOut() },
@@ -140,7 +138,7 @@ private fun Title(isSearchActive: Boolean, loadedState: Loaded?, onAction: Licen
         FilterInput(loadedState?.filterText, loadedState?.artifacts?.size, onAction)
       }
     } else {
-      Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+      Text(text = Strings.licensesToolbarTitle, maxLines = 1, overflow = Ellipsis)
     }
   }
 }
@@ -183,12 +181,12 @@ private fun LicensesContent(
     Loading -> LoadingContent(modifier)
     NoneFound -> NoneFoundContent(modifier)
     is Loaded -> LoadedContent(state, contentPadding, listState, onAction, modifier)
-    is Error -> ErrorContent(state.errorMessage, onAction, modifier)
+    is LicensesState.Error -> ErrorContent(state.errorMessage, onAction, modifier)
   }
 
 @Composable
 private fun LoadingContent(modifier: Modifier = Modifier) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) { AnimatedLoading() }
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) { AnimatedLoading() }
 }
 
 @Composable
@@ -204,7 +202,7 @@ private fun NoneFoundContent(modifier: Modifier = Modifier) {
 
 @Composable
 private fun LoadedContent(
-  state: Loaded,
+  state: LicensesState.Loaded,
   contentPadding: PaddingValues,
   listState: LazyListState,
   onAction: LicensesActionHandler,
@@ -284,7 +282,7 @@ private fun PreviewLicenses(
 }
 
 private val LOADED_STATE =
-  Loaded(
+  LicensesState.Loaded(
     artifacts =
       List(size = 5) { listOf(AlakazamAndroidCore, ComposeMaterialRipple, FragmentKtx, Slf4jApi) }
         .flatten()
@@ -295,7 +293,7 @@ private val LOADED_STATE =
 
 private class LicensesParamsProvider :
   ColoredParameterProvider<LicensesState>(
-    Error("Something broke lol! Here's some more shite to show how it looks"),
+    LicensesState.Error("Something broke lol! Here's some more shite to show how it looks"),
     NoneFound,
     Loading,
     LOADED_STATE,

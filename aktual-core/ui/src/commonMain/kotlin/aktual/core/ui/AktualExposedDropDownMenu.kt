@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.ExposedDropdownMenuAnchorType.Companion.PrimaryNotEditable
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
@@ -232,9 +231,9 @@ private fun PreviewDropDownMenuEnum(@PreviewParameter(ColoredParameters::class) 
       options = options,
       string = { t ->
         when (t) {
-          DateRangeType.YearToDate -> "YTD"
-          DateRangeType.LastYear -> "Last Year"
-          DateRangeType.AllTime -> "All Time with some more text"
+          YearToDate -> "YTD"
+          LastYear -> "Last Year"
+          AllTime -> "All Time with some more text"
           else -> t.name
         }
       },

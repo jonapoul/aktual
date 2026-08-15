@@ -26,7 +26,6 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import okio.FileSystem
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 
@@ -50,7 +49,7 @@ class KeyFetcherTest {
     keyPreferences = KeyPreferencesImpl(prefs)
     decrypter = BufferDecrypterImpl(contexts, keyPreferences)
 
-    syncApi = SyncApiImpl(testHttpClient(mockEngine), FileSystem.SYSTEM, SERVER_URL)
+    syncApi = SyncApiImpl(testHttpClient(mockEngine), SYSTEM, SERVER_URL)
 
     keyFetcher =
       KeyFetcher(

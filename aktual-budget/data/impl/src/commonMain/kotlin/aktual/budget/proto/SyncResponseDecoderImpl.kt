@@ -1,7 +1,6 @@
 package aktual.budget.proto
 
 import aktual.budget.encryption.BufferDecrypter
-import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.DefaultMeta
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Merkle
@@ -48,7 +47,7 @@ class SyncResponseDecoderImpl(private val decrypter: BufferDecrypter) : SyncResp
     buffer.write(encryptedData.data_)
     val meta = meta(encryptedData, encryptKeyId)
     val result = decrypter(meta, buffer)
-    check(result is DecryptResult.DecryptedBuffer) { "Failed decrypting buffer: $result" }
+    check(result is DecryptedBuffer) { "Failed decrypting buffer: $result" }
     return result.buffer.readByteString()
   }
 

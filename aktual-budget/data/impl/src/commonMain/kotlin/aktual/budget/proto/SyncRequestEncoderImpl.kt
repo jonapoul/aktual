@@ -2,7 +2,6 @@ package aktual.budget.proto
 
 import aktual.budget.BudgetLocalPreferences
 import aktual.budget.encryption.BufferEncrypter
-import aktual.budget.encryption.EncryptResult
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
 import aktual.budget.model.Message
@@ -52,7 +51,7 @@ class SyncRequestEncoderImpl(
     return if (keyId != null) {
       val messageBuffer = Buffer().apply { write(encodedMessage) }
       val result = encrypter(keyId, messageBuffer)
-      require(result is EncryptResult.EncryptedBuffer) { "Failed encrypting message: $message" }
+      require(result is EncryptedBuffer) { "Failed encrypting message: $message" }
 
       val encryptedData =
         ProtoEncryptedData(

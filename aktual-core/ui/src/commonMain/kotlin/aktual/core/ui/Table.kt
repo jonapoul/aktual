@@ -21,7 +21,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -77,7 +76,7 @@ fun WeightedTable(
             text = cell,
             style = textStyles[index],
             maxLines = 1,
-            overflow = if (ellipsize) TextOverflow.Ellipsis else TextOverflow.Clip,
+            overflow = if (ellipsize) Ellipsis else Clip,
           )
         }
       }
@@ -154,7 +153,7 @@ fun WrapWidthTable(
             text = cell,
             style = textStyles[index],
             maxLines = 1,
-            overflow = if (ellipsize) TextOverflow.Ellipsis else TextOverflow.Clip,
+            overflow = if (ellipsize) Ellipsis else Clip,
           )
         }
       }

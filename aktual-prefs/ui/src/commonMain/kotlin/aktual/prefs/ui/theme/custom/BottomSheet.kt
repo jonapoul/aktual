@@ -69,29 +69,29 @@ internal fun ThemeFilterBottomSheet(
 @Composable
 private fun ThemeSorting.string(): String =
   when (this) {
-    ThemeSorting.ByName -> Strings.settingsThemeSortByName
-    ThemeSorting.ByRepo -> Strings.settingsThemeSortByRepo
+    ByName -> Strings.settingsThemeSortByName
+    ByRepo -> Strings.settingsThemeSortByRepo
   }
 
 @Stable
 private fun ThemeSorting.icon(): ImageVector =
   when (this) {
-    ThemeSorting.ByName -> MaterialIcons.Badge
-    ThemeSorting.ByRepo -> AktualIcons.Git
+    ByName -> MaterialIcons.Badge
+    ByRepo -> AktualIcons.Git
   }
 
 @Composable
 private fun ThemeFilter.string(): String =
   when (this) {
-    ThemeFilter.All -> Strings.settingsThemeFilterAll
-    ThemeFilter.Light -> Strings.settingsThemeFilterLight
-    ThemeFilter.Dark -> Strings.settingsThemeFilterDark
+    All -> Strings.settingsThemeFilterAll
+    Light -> Strings.settingsThemeFilterLight
+    Dark -> Strings.settingsThemeFilterDark
   }
 
 @Stable
 private fun ThemeFilter.icon(): ImageVector =
   when (this) {
-    ThemeFilter.All -> MaterialIcons.ThemeRoutine
-    ThemeFilter.Light -> MaterialIcons.LightMode
-    ThemeFilter.Dark -> MaterialIcons.DarkMode
+    All -> MaterialIcons.ThemeRoutine
+    Light -> MaterialIcons.LightMode
+    Dark -> MaterialIcons.DarkMode
   }

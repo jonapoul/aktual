@@ -46,7 +46,7 @@ internal class LoginRequesterTest {
   @BeforeTest
   fun before() {
     mockEngine = emptyMockEngine()
-    fileSystem = FileSystem.SYSTEM
+    fileSystem = SYSTEM
     accountApi = AccountApiImpl(client = testHttpClient(mockEngine), serverUrl = EXAMPLE_URL)
   }
 

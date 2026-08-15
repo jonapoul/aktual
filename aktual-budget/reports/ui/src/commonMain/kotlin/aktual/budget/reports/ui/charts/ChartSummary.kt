@@ -54,7 +54,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -86,35 +85,35 @@ internal fun SummaryChart(
     }
 
     when (data) {
-      is SummaryData.AveragePerMonth ->
+      is AveragePerMonth ->
         if (compact) {
           CompactAmount(data.average)
         } else {
           RegularPerMonth(data, onAction)
         }
 
-      is SummaryData.AveragePerYear ->
+      is AveragePerYear ->
         if (compact) {
           CompactAmount(data.average)
         } else {
           RegularPerYear(data, onAction)
         }
 
-      is SummaryData.AveragePerTransaction ->
+      is AveragePerTransaction ->
         if (compact) {
           CompactAmount(data.average)
         } else {
           RegularPerTransaction(data, onAction)
         }
 
-      is SummaryData.Percentage ->
+      is Percentage ->
         if (compact) {
           CompactPercent(data.percent)
         } else {
           RegularPercent(data, onAction)
         }
 
-      is SummaryData.Sum ->
+      is Sum ->
         if (compact) {
           CompactAmount(data.value)
         } else {
@@ -163,8 +162,7 @@ private fun CompactPercent(
   ScaleToFitText(
     modifier = modifier.padding(16.dp),
     style = summaryTextStyle(),
-    color =
-      if (percent == Percent.Zero) colors.reportsNumberNeutral else colors.reportsNumberPositive,
+    color = if (percent == Zero) colors.reportsNumberNeutral else colors.reportsNumberPositive,
     text = percent.toString(decimalPlaces = 2),
   )
 }
@@ -209,7 +207,7 @@ private fun RegularPerMonth(
           modifier = Modifier.fillMaxWidth(),
           text = Strings.reportsSummaryNumMonths,
           fontSize = 25.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
       }
@@ -227,7 +225,7 @@ private fun RegularPerMonth(
           modifier = Modifier.fillMaxWidth(),
           text = data.total.formattedString(),
           fontSize = 30.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
 
@@ -237,7 +235,7 @@ private fun RegularPerMonth(
           modifier = Modifier.fillMaxWidth(),
           text = "%.2f".format(data.numMonths),
           fontSize = 30.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
       }
@@ -284,7 +282,7 @@ private fun RegularPerYear(
           modifier = Modifier.fillMaxWidth(),
           text = Strings.reportsSummaryNumYears,
           fontSize = 25.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
       }
@@ -302,7 +300,7 @@ private fun RegularPerYear(
           modifier = Modifier.fillMaxWidth(),
           text = data.total.formattedString(),
           fontSize = 30.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
 
@@ -312,7 +310,7 @@ private fun RegularPerYear(
           modifier = Modifier.fillMaxWidth(),
           text = "%.2f".format(data.numYears),
           fontSize = 30.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
       }
@@ -359,7 +357,7 @@ private fun RegularPerTransaction(
           modifier = Modifier.fillMaxWidth(),
           text = Strings.reportsSummaryNumTransactions,
           fontSize = 25.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
       }
@@ -377,7 +375,7 @@ private fun RegularPerTransaction(
           modifier = Modifier.fillMaxWidth(),
           text = data.total.formattedString(),
           fontSize = 30.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
 
@@ -387,7 +385,7 @@ private fun RegularPerTransaction(
           modifier = Modifier.fillMaxWidth(),
           text = data.numTransactions.toString(),
           fontSize = 30.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
       }
@@ -454,7 +452,7 @@ private fun RegularPercent(
           modifier = Modifier.fillMaxWidth(),
           text = data.numerator.toString(),
           fontSize = 30.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
 
@@ -464,7 +462,7 @@ private fun RegularPercent(
           modifier = Modifier.fillMaxWidth(),
           text = data.denominator.toString(),
           fontSize = 30.sp,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageText,
         )
       }
@@ -515,11 +513,11 @@ private fun ShowAs(
 
     val currentType =
       when (data) {
-        is SummaryData.AveragePerMonth -> SummaryChartType.AveragePerMonth
-        is SummaryData.AveragePerYear -> SummaryChartType.AveragePerYear
-        is SummaryData.AveragePerTransaction -> SummaryChartType.AveragePerTransaction
-        is SummaryData.Percentage -> SummaryChartType.Percentage
-        is SummaryData.Sum -> SummaryChartType.Sum
+        is AveragePerMonth -> SummaryChartType.AveragePerMonth
+        is AveragePerYear -> SummaryChartType.AveragePerYear
+        is AveragePerTransaction -> SummaryChartType.AveragePerTransaction
+        is Percentage -> SummaryChartType.Percentage
+        is Sum -> SummaryChartType.Sum
       }
 
     AktualExposedDropDownMenu(
@@ -555,7 +553,7 @@ private fun DivisorCheckbox(
   Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
     Checkbox(
       modifier = Modifier.minimumInteractiveComponentSize(),
-      checked = data.divisor is PercentageDivisor.AllTime,
+      checked = data.divisor is AllTime,
       onCheckedChange = { newValue -> onAction(Action.SetAllTimeDivisor(newValue)) },
       colors = colors.checkbox(),
     )
@@ -600,11 +598,11 @@ private fun string(date: LocalDate): String {
 @Composable
 private fun string(type: SummaryChartType): String =
   when (type) {
-    SummaryChartType.Sum -> Strings.reportsSummarySum
-    SummaryChartType.AveragePerMonth -> Strings.reportsSummaryPerMonth
-    SummaryChartType.AveragePerYear -> Strings.reportsSummaryPerYear
-    SummaryChartType.AveragePerTransaction -> Strings.reportsSummaryPerTransaction
-    SummaryChartType.Percentage -> Strings.reportsSummaryPercentage
+    Sum -> Strings.reportsSummarySum
+    AveragePerMonth -> Strings.reportsSummaryPerMonth
+    AveragePerYear -> Strings.reportsSummaryPerYear
+    AveragePerTransaction -> Strings.reportsSummaryPerTransaction
+    Percentage -> Strings.reportsSummaryPercentage
   }
 
 @Preview
@@ -641,7 +639,7 @@ private class SummaryChartProvider :
     SummaryChartParams(PER_TRANSACTION_DATA, compact = false),
     SummaryChartParams(PER_TRANSACTION_DATA, compact = false, private = true),
     SummaryChartParams(
-      PERCENT_DATA.copy(divisor = PercentageDivisor.AllTime),
+      PERCENT_DATA.copy(divisor = AllTime),
       compact = false,
       private = true,
     ),
@@ -683,7 +681,7 @@ private val PERCENT_DATA =
     numerator = Amount(6198.55),
     denominator = Amount(4043.87),
     percent = 153.28.percent,
-    divisor = PercentageDivisor.AllTime,
+    divisor = AllTime,
   )
 
 internal val PER_TRANSACTION_META =

@@ -19,14 +19,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.Layout
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Constraints
@@ -78,15 +74,15 @@ fun <T : Any> AktualSlidingToggleButton(
       options.fastForEachIndexed { index, option ->
         Box(
           modifier = Modifier.clickable(isEnabled) { onSelect(option) }.padding(itemPadding),
-          contentAlignment = Alignment.Center,
+          contentAlignment = Center,
         ) {
           Text(
             text = string(option),
             color = colors.textColor(isEnabled, isSelected = selectedIndex == index),
-            fontWeight = FontWeight.Medium,
+            fontWeight = Medium,
             fontSize = fontSize,
-            textAlign = TextAlign.Center,
-            overflow = TextOverflow.Ellipsis,
+            textAlign = Center,
+            overflow = Ellipsis,
             maxLines = 2,
           )
         }
@@ -167,10 +163,10 @@ private fun PreviewEnum(@PreviewParameter(ColoredParameters::class) colors: Colo
       onSelect = { value -> selected = value },
       string = { interval ->
         when (interval) {
-          Interval.Daily -> "Daily"
-          Interval.Weekly -> "Weekly"
-          Interval.Monthly -> "Monthly"
-          Interval.Yearly -> "Yearly with loads more text clipped off"
+          Daily -> "Daily"
+          Weekly -> "Weekly"
+          Monthly -> "Monthly"
+          Yearly -> "Yearly with loads more text clipped off"
         }
       },
     )

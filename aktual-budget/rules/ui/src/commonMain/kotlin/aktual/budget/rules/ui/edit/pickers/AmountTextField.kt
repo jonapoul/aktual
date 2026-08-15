@@ -45,8 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
@@ -73,8 +71,8 @@ internal fun AmountTextField(
     LocalTextStyle.current.copy(
       textAlign =
         when (currencyConfig.position) {
-          BeforeAmount -> TextAlign.Start
-          AfterAmount -> TextAlign.End
+          BeforeAmount -> Start
+          AfterAmount -> End
         }
     )
 
@@ -133,7 +131,7 @@ internal fun AmountTextField(
         onClear = { rememberOnValueChange(JsonNull) },
       )
     },
-    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+    keyboardOptions = KeyboardOptions(keyboardType = Phone),
     singleLine = true,
     textStyle = textStyle,
     outputTransformation =
@@ -146,7 +144,7 @@ internal fun AmountTextField(
 private fun JsonPrimitive.isPositive(): Boolean {
   if (this is JsonNull) return true
   val amount = content.amountOrNull() ?: return true
-  return amount >= Amount.Zero
+  return amount >= Zero
 }
 
 @Composable
@@ -227,7 +225,7 @@ private class NumberOutputTransformation(
   override fun TextFieldBuffer.transformOutput() {
     val rawText = toString()
     if (rawText.isEmpty()) return
-    val amount = rawText.amountOrNull() ?: Amount.Zero
+    val amount = rawText.amountOrNull() ?: Zero
     val formatted =
       amount.toString(
         numberFormatConfig = numberFormatConfig,

@@ -48,7 +48,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -84,7 +83,7 @@ fun ListBudgetsScreen(
     DeleteBudgetDialog(
       budget = budget,
       deletingState = deletingState,
-      localFileExists = budget !is Budget.Remote,
+      localFileExists = budget !is Remote,
       onAction = { action ->
         when (action) {
           DeleteLocal -> {
@@ -92,7 +91,7 @@ fun ListBudgetsScreen(
           }
 
           DeleteRemote -> {
-            if (budget is Budget.Cloud) viewModel.deleteRemote(budget.cloudFileId)
+            if (budget is Cloud) viewModel.deleteRemote(budget.cloudFileId)
           }
 
           Dismiss -> {
@@ -161,8 +160,8 @@ internal fun ListBudgetsScaffold(state: ListBudgetsState, onAction: ListBudgetsA
       BlurredPullToRefreshBox(
         modifier = Modifier.padding(horizontal = 8.dp),
         onRefresh = { onAction(Reload) },
-        isRefreshing = state is ListBudgetsState.Loading,
-        contentAlignment = Alignment.Center,
+        isRefreshing = state is Loading,
+        contentAlignment = Center,
         blurState = blurState,
         innerPadding = innerPadding,
       ) { padding ->
@@ -182,7 +181,7 @@ private fun ScaffoldTitle() {
   Text(
     text = Strings.listBudgetsToolbar,
     maxLines = 1,
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
     color = colors.pageText,
   )
 }
@@ -194,7 +193,7 @@ private fun StateContent(
   listState: LazyListState,
   contentPadding: PaddingValues,
 ) {
-  if (state is ListBudgetsState.Success && state.budgets.isNotEmpty()) {
+  if (state is Success && state.budgets.isNotEmpty()) {
     // Scroll-under path: LazyColumn fills the full PullToRefreshBox (which extends behind
     // the top bar), and applies contentPadding at the top so items rest below the bar but
     // can scroll up through it.
@@ -212,11 +211,11 @@ private fun StateContent(
       horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       when (state) {
-        is ListBudgetsState.Loading -> {
+        is Loading -> {
           ShimmerBudgetList(state.numLoadingItems)
         }
 
-        is ListBudgetsState.Failure -> {
+        is Failure -> {
           FailureScreen(
             title = Strings.budgetFailureMessage,
             reason = state.reason ?: Strings.budgetFailureDefaultMessage,
@@ -230,7 +229,7 @@ private fun StateContent(
           )
         }
 
-        is ListBudgetsState.Success -> {
+        is Success -> {
           // Empty-budgets case
           ContentEmpty(onCreateBudgetInBrowser = { onAction(OpenInBrowser) })
         }

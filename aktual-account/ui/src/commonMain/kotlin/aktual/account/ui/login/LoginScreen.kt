@@ -1,14 +1,11 @@
 package aktual.account.ui.login
 
 import aktual.account.domain.LoginResult
-import aktual.account.vm.LoginEvent
 import aktual.account.vm.LoginViewModel
 import aktual.core.l10n.Strings
 import aktual.core.model.AktualVersions
 import aktual.core.model.LoginMethod
 import aktual.core.model.Password
-import aktual.core.model.Password.Companion.Dummy
-import aktual.core.model.Password.Companion.Empty
 import aktual.core.nav.BackNavigator
 import aktual.core.nav.ListBudgetsNavigator
 import aktual.core.nav.ServerUrlNavigator
@@ -78,8 +75,8 @@ fun LoginScreen(
   LaunchedEffect(viewModel.events) {
     viewModel.events.collect { event ->
       when (event) {
-        LoginEvent.Timeout -> snackbarHostState.showSnackbar(timeoutMessage)
-        is LoginEvent.Redirect -> uriHandler.openUri(event.url)
+        Timeout -> snackbarHostState.showSnackbar(timeoutMessage)
+        is Redirect -> uriHandler.openUri(event.url)
       }
     }
   }
@@ -206,7 +203,7 @@ private fun Content(
         }
 
         LoginMethod.OpenId -> {
-          Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+          Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Center) {
             OpenIdLogin()
           }
         }

@@ -118,15 +118,15 @@ private fun SortOptionRow(isSelected: Boolean, onClick: () -> Unit, name: String
 @Composable
 private fun TagSort.Field.label(): String =
   when (this) {
-    TagSort.Field.Name -> Strings.tagsSortFieldName
-    TagSort.Field.Usage -> Strings.tagsSortFieldUsage
+    Name -> Strings.tagsSortFieldName
+    Usage -> Strings.tagsSortFieldUsage
   }
 
 @Composable
 private fun TagSort.Direction.label(): String =
   when (this) {
-    TagSort.Direction.Ascending -> Strings.tagsSortDirectionAscending
-    TagSort.Direction.Descending -> Strings.tagsSortDirectionDescending
+    Ascending -> Strings.tagsSortDirectionAscending
+    Descending -> Strings.tagsSortDirectionDescending
   }
 
 @Preview

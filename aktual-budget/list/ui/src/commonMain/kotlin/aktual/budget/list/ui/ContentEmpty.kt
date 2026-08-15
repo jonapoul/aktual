@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -36,7 +35,7 @@ internal fun ContentEmpty(
   ) {
     Text(
       text = Strings.budgetSuccessEmpty,
-      textAlign = TextAlign.Center,
+      textAlign = Center,
       style = typography.headlineLarge,
     )
 
@@ -45,7 +44,7 @@ internal fun ContentEmpty(
     Text(
       text = Strings.budgetSuccessEmptySecond,
       color = colors.pageText,
-      textAlign = TextAlign.Center,
+      textAlign = Center,
       fontSize = 20.sp,
     )
 

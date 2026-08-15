@@ -49,9 +49,9 @@ internal class CleanupTemplateSerializer :
     val string = element.jsonObject["role"]?.jsonPrimitive?.contentOrNull
     val role = CleanupTemplate.Role.entries.firstOrNull { it.value == string }
     return when (role) {
-      CleanupTemplate.Role.Source -> CleanupTemplate.Source.serializer()
-      CleanupTemplate.Role.Sink -> CleanupTemplate.Sink.serializer()
-      CleanupTemplate.Role.Overspend -> CleanupTemplate.Overspend.serializer()
+      Source -> CleanupTemplate.Source.serializer()
+      Sink -> CleanupTemplate.Sink.serializer()
+      Overspend -> CleanupTemplate.Overspend.serializer()
       null -> throw SerializationException("No role found in $element")
     }
   }

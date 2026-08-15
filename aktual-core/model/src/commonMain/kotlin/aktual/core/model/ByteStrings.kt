@@ -2,7 +2,6 @@ package aktual.core.model
 
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -15,7 +14,7 @@ fun String.base64(): ByteString =
 typealias SerializableByteString = @Serializable(ByteStringSerializer::class) ByteString
 
 object ByteStringSerializer : KSerializer<ByteString> {
-  override val descriptor = PrimitiveSerialDescriptor("ByteString", PrimitiveKind.STRING)
+  override val descriptor = PrimitiveSerialDescriptor("ByteString", STRING)
 
   override fun deserialize(decoder: Decoder): ByteString = decoder.decodeString().base64()
 

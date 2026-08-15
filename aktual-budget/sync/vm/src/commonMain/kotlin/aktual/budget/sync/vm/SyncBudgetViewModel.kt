@@ -21,7 +21,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -61,7 +60,7 @@ class SyncBudgetViewModel(
 ) : ViewModel() {
   private var cachedData: CachedEncryptedData? = null
 
-  private val mutablePasswordState = MutableStateFlow<KeyPasswordState>(KeyPasswordState.Inactive)
+  private val mutablePasswordState = MutableStateFlow<KeyPasswordState>(Inactive)
   val passwordState: StateFlow<KeyPasswordState> = mutablePasswordState.asStateFlow()
 
   private val mutableSteps =
@@ -73,11 +72,11 @@ class SyncBudgetViewModel(
       val stepStates by mutableSteps.collectAsState()
       val states = stepStates.values
       when {
-        states.all { it == SyncStepState.NotStarted } -> SyncOverallState.NotStarted
-        states.all { it == SyncStepState.Succeeded } -> SyncOverallState.Succeeded
-        states.any { it is SyncStepState.InProgress } -> SyncOverallState.InProgress
-        states.any { it is SyncStepState.Failed } -> SyncOverallState.Failed
-        else -> SyncOverallState.InProgress
+        states.all { it == NotStarted } -> NotStarted
+        states.all { it == Succeeded } -> Succeeded
+        states.any { it is InProgress } -> InProgress
+        states.any { it is Failed } -> Failed
+        else -> InProgress
       }
     }
 
@@ -90,7 +89,6 @@ class SyncBudgetViewModel(
   }
 
   override fun onCleared() {
-    super.onCleared()
     syncJob?.cancel()
     logStatesJob?.cancel()
 
@@ -109,7 +107,7 @@ class SyncBudgetViewModel(
     KeyPasswordState.Active(input)
   }
 
-  fun dismissKeyPasswordDialog() = mutablePasswordState.update { KeyPasswordState.Inactive }
+  fun dismissKeyPasswordDialog() = mutablePasswordState.update { Inactive }
 
   fun learnMore() {
     logcat.v { "learnMore" }
@@ -125,7 +123,7 @@ class SyncBudgetViewModel(
     val keyId = meta?.keyId
 
     @Suppress("ComplexCondition")
-    if (state !is KeyPasswordState.Active || cachedData == null || meta == null || keyId == null) {
+    if (state !is Active || cachedData == null || meta == null || keyId == null) {
       error("Should never happen? state=$state, cachedData=$cachedData, meta=$meta, keyId=$keyId")
     }
 
@@ -205,13 +203,13 @@ class SyncBudgetViewModel(
   private suspend fun fetchUserFileInfo(): UserFile? {
     setStepState(FetchingFileInfo, SyncStepState.InProgress.Indefinite)
     return when (val result = infoFetcher.fetch(budgetId)) {
-      is BudgetInfoFetcher.Result.Failure -> {
+      is Failure -> {
         setStepState(FetchingFileInfo, SyncStepState.Failed(result.reason))
         null
       }
 
-      is BudgetInfoFetcher.Result.Success -> {
-        setStepState(FetchingFileInfo, SyncStepState.Succeeded)
+      is Success -> {
+        setStepState(FetchingFileInfo, Succeeded)
         result.userFile
       }
     }
@@ -234,7 +232,7 @@ class SyncBudgetViewModel(
 
           is DownloadState.Done -> {
             downloadedDbPath = state.path
-            SyncStepState.Succeeded
+            Succeeded
           }
         }
       setStepState(DownloadingDatabase, stepState)
@@ -257,10 +255,10 @@ class SyncBudgetViewModel(
   ) {
     logcat.i { "decryptResult=$result" }
     when (result) {
-      is DecryptResult.Failure -> handleDecryptFailure(result, encryptedPath, userFile, meta)
-      is DecryptResult.DecryptedFile -> importDatabase(result.path, userFile)
-      is DecryptResult.NotNeeded -> importDatabase(result.path, userFile)
-      is DecryptResult.DecryptedBuffer -> error("Should never happen!")
+      is Failure -> handleDecryptFailure(result, encryptedPath, userFile, meta)
+      is DecryptedFile -> importDatabase(result.path, userFile)
+      is NotNeeded -> importDatabase(result.path, userFile)
+      is DecryptedBuffer -> error("Should never happen!")
     }
   }
 
@@ -272,19 +270,19 @@ class SyncBudgetViewModel(
   ) {
     val message =
       when (result) {
-        is DecryptResult.FailedFetchingKey -> {
+        is FailedFetchingKey -> {
           "Fetching key"
         }
 
-        is DecryptResult.UnknownAlgorithm -> {
+        is UnknownAlgorithm -> {
           "Unknown algorithm: ${result.algorithm}"
         }
 
-        is DecryptResult.OtherFailure -> {
+        is OtherFailure -> {
           "Other failure: ${result.message}"
         }
 
-        DecryptResult.MissingKey -> {
+        MissingKey -> {
           cachedData = CachedEncryptedData(encryptedPath, userFile, meta)
 
           // wait a little before showing the dialog
@@ -304,11 +302,11 @@ class SyncBudgetViewModel(
     logcat.i { "importResult=$result" }
 
     when (result) {
-      is ImportResult.Failure -> {
+      is Failure -> {
         setStepState(ValidatingDatabase, SyncStepState.Failed(result.toString()))
       }
 
-      is ImportResult.Success -> {
+      is Success -> {
         runLevelController.onBudget(result.meta)
         logcat.i { "Built new budget component from $budgetId" }
         setStepState(ValidatingDatabase, SyncStepState.Succeeded)

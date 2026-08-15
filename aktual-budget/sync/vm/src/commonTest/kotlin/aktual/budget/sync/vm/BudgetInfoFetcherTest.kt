@@ -27,7 +27,6 @@ import kotlin.test.Test
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import okio.FileSystem
 
 class BudgetInfoFetcherTest {
   private lateinit var budgetInfoFetcher: BudgetInfoFetcher
@@ -43,7 +42,7 @@ class BudgetInfoFetcherTest {
     val syncApi =
       SyncApiImpl(
         client = testHttpClient(mockEngine, AktualJson),
-        fileSystem = FileSystem.SYSTEM,
+        fileSystem = SYSTEM,
         serverUrl = SERVER_URL,
       )
 

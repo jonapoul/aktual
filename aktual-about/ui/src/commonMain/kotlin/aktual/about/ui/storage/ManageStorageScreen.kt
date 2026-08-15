@@ -71,9 +71,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -141,9 +139,9 @@ private fun ManageStorageScaffold(
         BlurredTopBarSpacing(blurState, innerPadding)
         PullToRefreshBox(
           modifier = Modifier.padding(8.dp),
-          contentAlignment = Alignment.Center,
+          contentAlignment = Center,
           onRefresh = { onAction(Reload) },
-          isRefreshing = state is ManageStorageState.Loading,
+          isRefreshing = state is Loading,
           content = { ManageStorageContent(state, listState, onAction) },
         )
       }
@@ -160,15 +158,15 @@ private fun ManageStorageContent(
 ) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     when (state) {
-      ManageStorageState.Loading -> {
+      Loading -> {
         Box(
           modifier = Modifier.fillMaxSize(),
-          contentAlignment = Alignment.Center,
+          contentAlignment = Center,
           content = { CircularProgressIndicator() },
         )
       }
 
-      is ManageStorageState.Loaded -> {
+      is Loaded -> {
         ManageStorageLoadedContent(state, listState, onAction)
         StorageDialogs(state.dialog, onAction)
       }
@@ -272,7 +270,7 @@ private fun CacheSummary(
     modifier =
       Modifier.fillMaxWidth()
         .background(AktualTheme.colors.pillBackground.disabled, CardShape)
-        .border(Dp.Hairline, AktualTheme.colors.pillBorderDark, CardShape)
+        .border(Hairline, AktualTheme.colors.pillBorderDark, CardShape)
         .padding(Dimens.Large),
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
@@ -300,7 +298,7 @@ private fun BudgetsSummary(
     modifier =
       Modifier.fillMaxWidth()
         .background(AktualTheme.colors.pillBackground.disabled, CardShape)
-        .border(Dp.Hairline, AktualTheme.colors.pillBorderDark, CardShape)
+        .border(Hairline, AktualTheme.colors.pillBorderDark, CardShape)
         .padding(Dimens.Large),
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
@@ -308,7 +306,7 @@ private fun BudgetsSummary(
       text = Strings.storageBudgets,
       style = typography.bodyLarge,
       color = AktualTheme.colors.pageText,
-      fontWeight = FontWeight.Bold,
+      fontWeight = Bold,
       modifier = Modifier.padding(bottom = Dimens.Medium),
     )
 
