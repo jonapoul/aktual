@@ -28,10 +28,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
@@ -43,14 +42,14 @@ internal fun NavSheetItem(
   onClick: (() -> Unit)?,
   modifier: Modifier = Modifier,
 ) {
-  val indicatorColor = if (selected) colors.sidebarItemTextSelected.disabled else Color.Transparent
+  val indicatorColor = if (selected) colors.sidebarItemTextSelected.disabled else Transparent
   val contentColor = if (selected) colors.sidebarItemTextSelected else colors.sidebarItemText
   Column(
     modifier =
       modifier
         .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
         .padding(vertical = 8.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(4.dp),
   ) {
     Box(
@@ -58,7 +57,7 @@ internal fun NavSheetItem(
         Modifier.size(width = 64.dp, height = 32.dp)
           .clip(RoundedCornerShape(percent = 50))
           .background(indicatorColor),
-      contentAlignment = Alignment.Center,
+      contentAlignment = Center,
     ) {
       Icon(
         imageVector = icon,

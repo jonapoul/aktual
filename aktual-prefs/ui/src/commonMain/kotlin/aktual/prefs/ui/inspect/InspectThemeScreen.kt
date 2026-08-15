@@ -35,8 +35,9 @@ import aktual.prefs.vm.inspect.ThemeProperty
 import aktual.prefs.vm.theme.properties
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Arrangement.SpaceBetween
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -57,10 +58,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -148,7 +149,7 @@ private fun InspectThemeContent(
 ) {
   when (state) {
     is Loading -> {
-      Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+      Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) {
         CircularProgressIndicator()
       }
     }
@@ -188,19 +189,17 @@ private fun InspectThemeContent(
 @Composable
 private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modifier) {
   Row(
-    modifier =
-      modifier.fillMaxWidth().height(IntrinsicSize.Min).background(property.color).padding(4.dp),
-    horizontalArrangement = Arrangement.SpaceBetween,
-    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier.fillMaxWidth().height(Min).background(property.color).padding(4.dp),
+    horizontalArrangement = SpaceBetween,
+    verticalAlignment = CenterVertically,
   ) {
-    val textColor =
-      remember(property.color) { if (property.color.isLight()) Color.Black else Color.White }
+    val textColor = remember(property.color) { if (property.color.isLight()) Black else White }
     Text(
       modifier = Modifier.weight(1f),
       text = property.name,
       color = textColor,
       style = typography.bodySmall,
-      textAlign = TextAlign.Start,
+      textAlign = Start,
       maxLines = 1,
     )
 
@@ -208,7 +207,7 @@ private fun ThemePropertyRow(property: ThemeProperty, modifier: Modifier = Modif
       text = property.color.toHexString(),
       color = textColor,
       style = typography.labelMedium,
-      textAlign = TextAlign.End,
+      textAlign = End,
       maxLines = 1,
     )
   }

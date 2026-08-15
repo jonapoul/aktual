@@ -26,7 +26,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -107,7 +107,7 @@ private fun SortOptionRow(isSelected: Boolean, onClick: () -> Unit, name: String
       Modifier.fillMaxWidth()
         .selectable(selected = isSelected, onClick = onClick, role = null)
         .padding(vertical = 4.dp),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     RadioButton(selected = isSelected, onClick = null, colors = colors.radioButton())
@@ -118,15 +118,15 @@ private fun SortOptionRow(isSelected: Boolean, onClick: () -> Unit, name: String
 @Composable
 private fun TagSort.Field.label(): String =
   when (this) {
-    TagSort.Field.Name -> Strings.tagsSortFieldName
-    TagSort.Field.Usage -> Strings.tagsSortFieldUsage
+    Name -> Strings.tagsSortFieldName
+    Usage -> Strings.tagsSortFieldUsage
   }
 
 @Composable
 private fun TagSort.Direction.label(): String =
   when (this) {
-    TagSort.Direction.Ascending -> Strings.tagsSortDirectionAscending
-    TagSort.Direction.Descending -> Strings.tagsSortDirectionDescending
+    Ascending -> Strings.tagsSortDirectionAscending
+    Descending -> Strings.tagsSortDirectionDescending
   }
 
 @Preview

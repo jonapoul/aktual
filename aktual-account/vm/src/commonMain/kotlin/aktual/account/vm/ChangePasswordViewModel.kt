@@ -1,6 +1,5 @@
 package aktual.account.vm
 
-import aktual.account.domain.ChangePasswordResult
 import aktual.account.domain.LoginRequester
 import aktual.account.domain.LoginResult
 import aktual.account.domain.PasswordChanger
@@ -69,25 +68,25 @@ class ChangePasswordViewModel(
     val password2 = mutablePassword2.value
     logcat.d { "submit $password $password2" }
     if (password2 != password) {
-      mutableState.update { ChangePasswordState.PasswordsDontMatch }
+      mutableState.update { PasswordsDontMatch }
       return
     }
 
-    mutableState.update { ChangePasswordState.Loading }
+    mutableState.update { Loading }
     viewModelScope.launch {
       val changePasswordResult = passwordChanger.submit(password)
       logcat.d { "result = $changePasswordResult" }
       val newState =
         when (changePasswordResult) {
-          ChangePasswordResult.Success -> ChangePasswordState.Success
-          ChangePasswordResult.InvalidPassword -> ChangePasswordState.InvalidPassword
-          ChangePasswordResult.NetworkFailure -> ChangePasswordState.NetworkFailure
-          is ChangePasswordResult.HttpFailure -> ChangePasswordState.OtherFailure
-          is ChangePasswordResult.OtherFailure -> ChangePasswordState.OtherFailure
+          Success -> ChangePasswordState.Success
+          InvalidPassword -> ChangePasswordState.InvalidPassword
+          NetworkFailure -> ChangePasswordState.NetworkFailure
+          is HttpFailure -> ChangePasswordState.OtherFailure
+          is OtherFailure -> ChangePasswordState.OtherFailure
         }
       mutableState.update { newState }
 
-      if (changePasswordResult is ChangePasswordResult.Success) {
+      if (changePasswordResult is Success) {
         logcat.d { "Logging in..." }
         val loginResult = loginRequester.logIn(password)
         handleLoginResult(loginResult)
@@ -97,7 +96,7 @@ class ChangePasswordViewModel(
 
   private suspend fun handleLoginResult(loginResult: LoginResult) {
     logcat.d { "loginResult = $loginResult" }
-    if (loginResult is LoginResult.Success) {
+    if (loginResult is Success) {
       // wait for a second before triggering the navigation, so the user gets the success
       // message
       delay(SUCCESS_DELAY)

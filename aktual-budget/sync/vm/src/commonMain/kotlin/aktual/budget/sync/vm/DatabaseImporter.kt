@@ -40,7 +40,7 @@ class DatabaseImporter(
         ImportResult.OtherFailure(e.requireMessage())
       }
 
-    if (result is ImportResult.Failure) {
+    if (result is Failure) {
       fileSystem.deleteRecursively(directory)
     }
 
@@ -66,12 +66,12 @@ class DatabaseImporter(
       }
     } catch (e: ZipException) {
       logcat.e(e) { "Failed getting zip entries: dbPath='$nullableDbPath', meta='$nullableMeta'" }
-      return ImportResult.NotZipFile
+      return NotZipFile
     }
 
     val metaJson = nullableMeta
     if (metaJson == null || nullableDbPath == null) {
-      return ImportResult.InvalidZipFile
+      return InvalidZipFile
     }
 
     val meta =
@@ -79,7 +79,7 @@ class DatabaseImporter(
         AktualJson.decodeFromString(DbMetadata.serializer(), metaJson)
       } catch (e: SerializationException) {
         logcat.e(e) { "Failed deserializing DbMetadata: '$metaJson'" }
-        return ImportResult.InvalidMetaFile
+        return InvalidMetaFile
       }
 
     // Update the metadata. The stored file on the server might be out-of-date with a few keys

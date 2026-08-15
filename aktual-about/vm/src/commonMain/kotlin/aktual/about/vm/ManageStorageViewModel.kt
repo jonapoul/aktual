@@ -1,5 +1,7 @@
 package aktual.about.vm
 
+import aktual.about.vm.ManageStorageState.Loaded
+import aktual.about.vm.StorageNavEvent.ActiveBudgetCleared
 import aktual.budget.BudgetFiles
 import aktual.budget.model.BudgetId
 import aktual.budget.model.DbMetadata
@@ -49,7 +51,7 @@ class ManageStorageViewModel(
   private val dataStore: DataStore<Preferences>,
 ) : ViewModel() {
 
-  private val mutableState = MutableStateFlow<ManageStorageState>(ManageStorageState.Loading)
+  private val mutableState = MutableStateFlow<ManageStorageState>(Loading)
   val state: StateFlow<ManageStorageState> = mutableState.asStateFlow()
 
   private val navEventChannel = Channel<StorageNavEvent>(BUFFERED)
@@ -65,14 +67,14 @@ class ManageStorageViewModel(
 
   fun showDialog(dialog: StorageDialog) {
     mutableState.update { current ->
-      if (current is ManageStorageState.Loaded) current.copy(dialog = dialog) else current
+      if (current is Loaded) current.copy(dialog = dialog) else current
     }
   }
 
   fun dismissDialog() {
     mutableState.update { current ->
-      if (current is ManageStorageState.Loaded) {
-        current.copy(dialog = StorageDialog.None)
+      if (current is Loaded) {
+        current.copy(dialog = None)
       } else {
         current
       }
@@ -88,7 +90,7 @@ class ManageStorageViewModel(
         with(files.fileSystem) { list(root).forEach { deleteRecursively(it) } }
       }
       logcat.d { "Cleared all files" }
-      navEventChannel.send(StorageNavEvent.AllFilesCleared)
+      navEventChannel.send(AllFilesCleared)
       loadStorageInfo()
     }
   }
@@ -108,7 +110,7 @@ class ManageStorageViewModel(
       }
       logcat.d { "Cleared budget $id" }
       if (wasActiveBudget) {
-        navEventChannel.send(StorageNavEvent.ActiveBudgetCleared(id))
+        navEventChannel.send(ActiveBudgetCleared(id))
       }
       loadStorageInfo()
     }
@@ -135,7 +137,7 @@ class ManageStorageViewModel(
       dismissDialog()
       dataStore.edit { it.clear() }
       logcat.d { "Cleared preferences" }
-      navEventChannel.send(StorageNavEvent.PreferencesCleared)
+      navEventChannel.send(PreferencesCleared)
       loadStorageInfo()
     }
   }
@@ -144,13 +146,13 @@ class ManageStorageViewModel(
     viewModelScope.launch {
       val loaded = withContext(contexts.io) { computeStorageInfo() }
       mutableState.update { current ->
-        val dialog = (current as? ManageStorageState.Loaded)?.dialog ?: StorageDialog.None
+        val dialog = (current as? Loaded)?.dialog ?: None
         loaded.copy(dialog = dialog)
       }
     }
   }
 
-  private fun computeStorageInfo(): ManageStorageState.Loaded {
+  private fun computeStorageInfo(): Loaded {
     val root = appDirectory.get()
     val budgetsDir = files.directoryPath
     val themesDir = root / "themes"
@@ -184,7 +186,7 @@ class ManageStorageViewModel(
       (totalSize.numBytes - budgetsTotal.numBytes - cacheSize.numBytes).coerceAtLeast(0L).bytes
     val deviceTotalStorage = File(root.toString()).totalSpace.bytes
 
-    return ManageStorageState.Loaded(
+    return Loaded(
       totalSize = totalSize,
       percentTotalStorage =
         Percent(numerator = totalSize.numBytes, denominator = deviceTotalStorage.numBytes),

@@ -46,7 +46,7 @@ value class Amount(private val value: Long) : Comparable<Amount> {
     isPrivacyEnabled: Boolean,
   ): String = buildString {
     val (currency, position, addSpace) = currencyConfig
-    if (position == CurrencySymbolPosition.BeforeAmount && currency != Currency.None) {
+    if (position == BeforeAmount && currency != None) {
       append(currency.symbol)
       if (addSpace) append(" ")
     }
@@ -58,11 +58,11 @@ value class Amount(private val value: Long) : Comparable<Amount> {
 
     val locale =
       when (format) {
-        NumberFormat.CommaDot -> Locale.US
-        NumberFormat.DotComma -> Locale.GERMANY
-        NumberFormat.SpaceComma -> enSe
-        NumberFormat.ApostropheDot -> deCh
-        NumberFormat.CommaDotIn -> enIn
+        CommaDot -> US
+        DotComma -> GERMANY
+        SpaceComma -> enSe
+        ApostropheDot -> deCh
+        CommaDotIn -> enIn
       }
 
     val numDp = if (hideFraction) 0 else currency.decimalPlaces
@@ -74,7 +74,7 @@ value class Amount(private val value: Long) : Comparable<Amount> {
 
     append(numberFormat.format(toDouble().absoluteValue))
 
-    if (position == CurrencySymbolPosition.AfterAmount && currency != Currency.None) {
+    if (position == AfterAmount && currency != None) {
       if (addSpace) append(" ")
       append(currency.symbol)
     }

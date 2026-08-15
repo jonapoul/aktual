@@ -102,12 +102,12 @@ class EditRuleViewModel(
       try {
         val rule = rulesDao[ruleId]
         if (rule == null) {
-          mutableFailure.update { Failure.NoMatch }
+          mutableFailure.update { NoMatch }
         } else {
           val model =
             Rule(
               id = rule.id,
-              stage = rule.stage ?: RuleStage.Default,
+              stage = rule.stage ?: Default,
               conditions = rule.conditions.orEmpty().toImmutableList(),
               conditionsOp = rule.conditions_op ?: ConditionOp.Default,
               actions = rule.actions.orEmpty().toImmutableList(),
@@ -130,7 +130,7 @@ class EditRuleViewModel(
     viewModelScope.launch {
       try {
         rulesDao.tombstone(setOf(id))
-        mutableEvents.tryEmit(EditRuleEvent.DeletedRule)
+        mutableEvents.tryEmit(DeletedRule)
         val change = tombstone(dataset = RULES, row = id.toString())
         syncController.syncChanges(change)
       } catch (e: CancellationException) {
@@ -216,7 +216,7 @@ class EditRuleViewModel(
   private fun emptyRule() =
     Rule(
       id = uuidGenerator(::RuleId),
-      stage = RuleStage.Default,
+      stage = Default,
       conditionsOp = ConditionOp.Default,
       conditions = persistentListOf(emptyCondition()),
       actions = persistentListOf(emptyAction()),

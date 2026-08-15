@@ -1,6 +1,5 @@
 package aktual.budget.reports.ui.dashboard
 
-import aktual.budget.reports.ui.Action
 import aktual.budget.reports.ui.ActionListener
 import aktual.budget.reports.ui.charts.PREVIEW_CASH_FLOW_DATA
 import aktual.budget.reports.vm.ChartData
@@ -40,7 +39,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -65,15 +63,15 @@ fun ReportsDashboardScreen(
     observer = viewModel::observeChartData,
     onAction = { action ->
       when (action) {
-        Action.NavBack -> back()
-        is Action.OpenItem -> toReport(action.id)
-        is Action.Rename -> viewModel.renameReport(action.item, action.name)
-        is Action.Delete -> viewModel.deleteReport(action.id)
-        is Action.SetSummaryType -> TODO()
-        is Action.SetAllTimeDivisor -> TODO()
-        is Action.ClickCalendarDay -> TODO()
-        is Action.SaveTextContent -> TODO()
-        Action.CreateNewReport -> toCreateReport()
+        NavBack -> back()
+        is OpenItem -> toReport(action.id)
+        is Rename -> viewModel.renameReport(action.item, action.name)
+        is Delete -> viewModel.deleteReport(action.id)
+        is SetSummaryType -> TODO()
+        is SetAllTimeDivisor -> TODO()
+        is ClickCalendarDay -> TODO()
+        is SaveTextContent -> TODO()
+        CreateNewReport -> toCreateReport()
       }
     },
   )
@@ -96,7 +94,7 @@ internal fun ReportsDashboardScaffold(
         colors = colors.transparentTopAppBarColors(),
         title = { Text(Strings.reportsDashboardTitle) },
         actions = {
-          IconButton(onClick = { onAction(Action.CreateNewReport) }) {
+          IconButton(onClick = { onAction(CreateNewReport) }) {
             Icon(
               imageVector = MaterialIcons.Add,
               contentDescription = Strings.reportsDashboardCreate,
@@ -145,7 +143,7 @@ private fun ReportsDashboardContent(
 
 @Composable
 private fun ContentEmpty(modifier: Modifier = Modifier) =
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) {
     Text(text = Strings.reportsDashboardEmpty, color = colors.pageText)
   }
 

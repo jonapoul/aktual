@@ -1,7 +1,6 @@
 package aktual.budget.reports.vm
 
 import aktual.budget.model.ConditionOp
-import aktual.budget.model.WidgetType
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
@@ -25,7 +24,7 @@ class ReportMetaSerializationTest {
 
     assertThat(decoded.start).isEqualTo(YearMonth(2011, OCTOBER))
     assertThat(decoded.end).isEqualTo(YearMonth(2025, JULY))
-    assertThat(decoded.mode).isEqualTo(TimeFrameMode.Static)
+    assertThat(decoded.mode).isEqualTo(Static)
   }
 
   @Test
@@ -37,7 +36,7 @@ class ReportMetaSerializationTest {
       )
 
     assertThat(decoded.start).isEqualTo(YearMonth(2011, OCTOBER))
-    assertThat(decoded.mode).isEqualTo(TimeFrameMode.SlidingWindow)
+    assertThat(decoded.mode).isEqualTo(SlidingWindow)
   }
 
   @Test
@@ -60,7 +59,7 @@ class ReportMetaSerializationTest {
           .trimIndent()
       )
 
-    val decoded = json.decodeFromJsonElement(ReportMeta.serializer(WidgetType.Formula), element)
+    val decoded = json.decodeFromJsonElement(ReportMeta.serializer(Formula), element)
 
     val formula = decoded as FormulaReportMeta
     assertThat(formula.queries.getValue("a").timeFrame?.start).isEqualTo(YearMonth(2011, OCTOBER))

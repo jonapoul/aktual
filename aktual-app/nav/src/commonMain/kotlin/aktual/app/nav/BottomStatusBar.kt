@@ -1,10 +1,7 @@
 package aktual.app.nav
 
 import aktual.budget.model.SyncState
-import aktual.budget.model.SyncState.Inactive
-import aktual.budget.model.SyncState.NoToken
 import aktual.budget.model.SyncState.SyncFailed
-import aktual.budget.model.SyncState.Syncing
 import aktual.core.icons.AktualIcons
 import aktual.core.icons.CloudCheck
 import aktual.core.icons.CloudWarning
@@ -13,9 +10,6 @@ import aktual.core.icons.material.MaterialIcons
 import aktual.core.icons.material.Sync
 import aktual.core.l10n.Strings
 import aktual.core.model.PingState
-import aktual.core.model.PingState.Failure
-import aktual.core.model.PingState.Success
-import aktual.core.model.PingState.Unknown
 import aktual.core.theme.BottomBarThemeAttrs
 import aktual.core.theme.Colors
 import aktual.core.ui.AktualTheme.colors
@@ -43,7 +37,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.ColorFilter
@@ -53,8 +47,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -82,7 +74,7 @@ internal fun BottomStatusBar(
 
   Row(
     modifier = modifier.padding(PADDING).fillMaxWidth().onGloballyPositioned(onPositioned),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     state.budgetName?.let { name ->
       Text(
@@ -112,7 +104,7 @@ private fun PingState(
   Row(
     modifier = modifier,
     horizontalArrangement = Arrangement.spacedBy(5.dp),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     val text = state.text()
     val tint = state.tint(colors)
@@ -158,7 +150,7 @@ private fun loadedString(budgetName: String): AnnotatedString {
     buildAnnotatedString {
       append(budgetLoaded)
       append("  ")
-      withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(budgetName) }
+      withStyle(SpanStyle(fontWeight = Bold)) { append(budgetName) }
     }
   }
 }
@@ -188,7 +180,7 @@ private fun SyncState(
         .padding(horizontal = 4.dp)
         .clickable(enabled = state is Inactive, onClick = onClickSync),
     horizontalArrangement = Arrangement.spacedBy(5.dp),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     Image(
       modifier = Modifier.size(ICON_SIZE).rotate(if (state is Syncing) rotation else 0f),

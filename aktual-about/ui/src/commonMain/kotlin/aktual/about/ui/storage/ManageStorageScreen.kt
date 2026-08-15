@@ -68,12 +68,12 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -141,9 +141,9 @@ private fun ManageStorageScaffold(
         BlurredTopBarSpacing(blurState, innerPadding)
         PullToRefreshBox(
           modifier = Modifier.padding(8.dp),
-          contentAlignment = Alignment.Center,
+          contentAlignment = Center,
           onRefresh = { onAction(Reload) },
-          isRefreshing = state is ManageStorageState.Loading,
+          isRefreshing = state is Loading,
           content = { ManageStorageContent(state, listState, onAction) },
         )
       }
@@ -160,15 +160,15 @@ private fun ManageStorageContent(
 ) {
   Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
     when (state) {
-      ManageStorageState.Loading -> {
+      Loading -> {
         Box(
           modifier = Modifier.fillMaxSize(),
-          contentAlignment = Alignment.Center,
+          contentAlignment = Center,
           content = { CircularProgressIndicator() },
         )
       }
 
-      is ManageStorageState.Loaded -> {
+      is Loaded -> {
         ManageStorageLoadedContent(state, listState, onAction)
         StorageDialogs(state.dialog, onAction)
       }
@@ -190,7 +190,7 @@ private fun ManageStorageLoadedContent(
     LazyColumn(
       modifier = modifier.scrollbar(listState),
       state = listState,
-      horizontalAlignment = Alignment.CenterHorizontally,
+      horizontalAlignment = CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
       item {
@@ -213,7 +213,7 @@ private fun ManageStorageLoadedContent(
     }
   } else {
     Row(modifier = modifier, horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-      Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+      Column(modifier = Modifier.weight(1f), horizontalAlignment = CenterHorizontally) {
         PieChart(state, colors, modifier = Modifier.padding(20.dp).weight(1f).aspectRatio(1f))
 
         TotalStorageText(state)
@@ -224,7 +224,7 @@ private fun ManageStorageLoadedContent(
       LazyColumn(
         modifier = Modifier.weight(1f).scrollbar(listState),
         state = listState,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp),
       ) {
         item { BudgetsSummary(state, colors, onAction) }
@@ -241,7 +241,7 @@ private fun ManageStorageLoadedContent(
 
 @Composable
 private fun ActionButtons(onAction: ManageStorageActionHandler) {
-  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
     NormalTextButton(
       text = Strings.storageClearCache,
       onClick = { onAction(RequestClearCache) },
@@ -272,7 +272,7 @@ private fun CacheSummary(
     modifier =
       Modifier.fillMaxWidth()
         .background(AktualTheme.colors.pillBackground.disabled, CardShape)
-        .border(Dp.Hairline, AktualTheme.colors.pillBorderDark, CardShape)
+        .border(Hairline, AktualTheme.colors.pillBorderDark, CardShape)
         .padding(Dimens.Large),
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
@@ -300,7 +300,7 @@ private fun BudgetsSummary(
     modifier =
       Modifier.fillMaxWidth()
         .background(AktualTheme.colors.pillBackground.disabled, CardShape)
-        .border(Dp.Hairline, AktualTheme.colors.pillBorderDark, CardShape)
+        .border(Hairline, AktualTheme.colors.pillBorderDark, CardShape)
         .padding(Dimens.Large),
     verticalArrangement = Arrangement.spacedBy(Dimens.Medium),
   ) {
@@ -308,7 +308,7 @@ private fun BudgetsSummary(
       text = Strings.storageBudgets,
       style = typography.bodyLarge,
       color = AktualTheme.colors.pageText,
-      fontWeight = FontWeight.Bold,
+      fontWeight = Bold,
       modifier = Modifier.padding(bottom = Dimens.Medium),
     )
 
@@ -332,7 +332,7 @@ private fun BudgetsSummary(
 
 @Composable
 private fun TotalStorageText(state: ManageStorageState.Loaded) {
-  Column(horizontalAlignment = Alignment.CenterHorizontally) {
+  Column(horizontalAlignment = CenterHorizontally) {
     Text(
       text = "${Strings.storageTotal}: ${state.totalSize}",
       style = typography.titleMedium,
@@ -386,7 +386,7 @@ private fun rememberSlices(
 
 @Composable
 private fun BudgetRow(budget: BudgetStorageItem, color: Color, onDelete: () -> Unit) {
-  Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = CenterVertically) {
     Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(color))
     HorizontalSpacer(Dimens.Large)
     Text(
@@ -417,7 +417,7 @@ private fun LegendRow(label: String, size: String, color: Color) {
     modifier =
       Modifier.fillMaxWidth()
         .padding(end = 32.dp), // align with budget rows that have delete button
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     Box(modifier = Modifier.size(12.dp).clip(CircleShape).background(color))
     HorizontalSpacer(Dimens.Large)

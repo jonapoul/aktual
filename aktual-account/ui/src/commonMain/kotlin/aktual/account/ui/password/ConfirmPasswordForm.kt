@@ -3,7 +3,6 @@ package aktual.account.ui.password
 import aktual.account.vm.ChangePasswordState
 import aktual.core.l10n.Strings
 import aktual.core.model.Password
-import aktual.core.model.Password.Companion.Empty
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.ColoredParameterProvider
 import aktual.core.ui.ColoredParams
@@ -22,13 +21,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -46,9 +44,9 @@ internal fun ConfirmPasswordForm(
 ) {
   val keyboard = LocalSoftwareKeyboardController.current
   val focusManager = LocalFocusManager.current
-  val isLoading = state is ChangePasswordState.Loading
+  val isLoading = state is Loading
 
-  if (state is ChangePasswordState.Success) {
+  if (state is Success) {
     keyboard?.hide()
   }
 
@@ -58,7 +56,7 @@ internal fun ConfirmPasswordForm(
       password = inputPassword1,
       placeholderText = Strings.passwordInput,
       showPassword = showPasswords,
-      imeAction = ImeAction.Next,
+      imeAction = Next,
       onValueChange = { pw -> onAction(SetPassword1(pw)) },
       onGo = { focusManager.moveFocus(FocusDirection.Next) },
     )
@@ -68,7 +66,7 @@ internal fun ConfirmPasswordForm(
       password = inputPassword2,
       placeholderText = Strings.passwordInputConfirm,
       showPassword = showPasswords,
-      imeAction = ImeAction.Go,
+      imeAction = Go,
       onValueChange = { pw -> onAction(SetPassword2(pw)) },
       onGo = {
         if (passwordsMatch) onAction(Submit)
@@ -87,7 +85,7 @@ internal fun ConfirmPasswordForm(
             enabled = true,
             onClick = { onAction(SetPasswordsVisible(!showPasswords)) },
           ),
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       Checkbox(
         checked = showPasswords,
@@ -137,5 +135,5 @@ private class ConfirmPasswordProvider :
   ColoredParameterProvider<ConfirmPasswordParams>(
     ConfirmPasswordParams(password1 = Empty, password2 = Empty, showPasswords = false),
     ConfirmPasswordParams(showPasswords = true, passwordsMatch = true),
-    ConfirmPasswordParams(state = ChangePasswordState.Loading, passwordsMatch = true),
+    ConfirmPasswordParams(state = Loading, passwordsMatch = true),
   )

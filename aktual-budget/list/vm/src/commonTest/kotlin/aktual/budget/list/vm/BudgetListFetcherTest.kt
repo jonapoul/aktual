@@ -28,7 +28,6 @@ import kotlin.test.Test
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import okio.FileSystem
 
 class BudgetListFetcherTest {
   private lateinit var budgetListFetcher: BudgetListFetcher
@@ -40,7 +39,7 @@ class BudgetListFetcherTest {
   }
 
   private fun TestScope.before(
-    syncApi: SyncApi = SyncApiImpl(testHttpClient(mockEngine), FileSystem.SYSTEM, SERVER_URL)
+    syncApi: SyncApi = SyncApiImpl(testHttpClient(mockEngine), SYSTEM, SERVER_URL)
   ) {
     budgetListFetcher =
       BudgetListFetcher(syncApi = syncApi, contexts = TestCoroutineContexts(standardDispatcher))

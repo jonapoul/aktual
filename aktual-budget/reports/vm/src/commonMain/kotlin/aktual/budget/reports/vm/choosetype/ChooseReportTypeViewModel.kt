@@ -38,7 +38,6 @@ class ChooseReportTypeViewModel(
   val dialog: StateFlow<ChooseReportTypeDialog?> = mutableDialog.asStateFlow()
 
   override fun onCleared() {
-    super.onCleared()
     job?.cancel()
   }
 
@@ -51,7 +50,7 @@ class ChooseReportTypeViewModel(
   }
 
   fun createReport(type: WidgetType) {
-    if (type == WidgetType.Custom) {
+    if (type == Custom) {
       logcat.w { "Can't create a custom report yet" }
       return
     }

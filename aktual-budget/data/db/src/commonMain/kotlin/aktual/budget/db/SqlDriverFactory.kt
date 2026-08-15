@@ -9,7 +9,6 @@ import com.eygraber.sqldelight.androidx.driver.AndroidxSqliteConfiguration
 import com.eygraber.sqldelight.androidx.driver.AndroidxSqliteDatabaseType
 import com.eygraber.sqldelight.androidx.driver.AndroidxSqliteDriver
 import com.eygraber.sqldelight.androidx.driver.File
-import com.eygraber.sqldelight.androidx.driver.SqliteJournalMode
 import dev.zacsweers.metro.ContributesBinding
 import java.io.File
 import logcat.logcat
@@ -32,7 +31,7 @@ class AndroidxSqlDriverFactory(private val files: BudgetFiles) : SqlDriverFactor
       configuration =
         AndroidxSqliteConfiguration(
           isForeignKeyConstraintsEnabled = true,
-          journalMode = SqliteJournalMode.WAL,
+          journalMode = WAL,
         ),
       migrateEmptySchema = false,
       onConfigure = { logcat.d(TAG) { "onConfigure $dbFile" } },

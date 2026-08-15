@@ -2,7 +2,6 @@ package aktual.about.ui.info
 
 import aktual.about.vm.AboutViewModel
 import aktual.about.vm.BuildState
-import aktual.about.vm.CheckUpdatesState
 import aktual.core.icons.material.Apps
 import aktual.core.icons.material.CalendarToday
 import aktual.core.icons.material.Cloud
@@ -53,15 +52,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -80,15 +77,15 @@ fun InfoScreen(
 
   val checkUpdatesState by viewModel.checkUpdatesState.collectAsStateWithLifecycle()
   when (val state = checkUpdatesState) {
-    CheckUpdatesState.Inactive -> noOp()
+    Inactive -> noOp()
 
-    CheckUpdatesState.Checking -> CheckUpdatesLoadingDialog(onCancel)
+    Checking -> CheckUpdatesLoadingDialog(onCancel)
 
-    CheckUpdatesState.NoUpdateFound -> NoUpdateFoundDialog(onCancel)
+    NoUpdateFound -> NoUpdateFoundDialog(onCancel)
 
-    is CheckUpdatesState.Failed -> UpdateCheckFailedDialog(state.cause, onCancel)
+    is Failed -> UpdateCheckFailedDialog(state.cause, onCancel)
 
-    is CheckUpdatesState.UpdateFound ->
+    is UpdateFound ->
       UpdateFoundDialog(
         currentVersion = buildState.versions.app,
         latestVersion = state.version,
@@ -137,7 +134,7 @@ private fun InfoTopBar(onAction: InfoActionHandler) {
     colors = colors.transparentTopAppBarColors(),
     navigationIcon = { NavBackIconButton { onAction(NavBack) } },
     title = {
-      Text(text = Strings.infoToolbarTitle, maxLines = 1, overflow = TextOverflow.Ellipsis)
+      Text(text = Strings.infoToolbarTitle, maxLines = 1, overflow = Ellipsis)
     },
   )
 }
@@ -154,7 +151,7 @@ private fun InfoScreenContent(
 
     Column(
       modifier = Modifier.fillMaxWidth().verticalScrollWithBar(),
-      horizontalAlignment = Alignment.CenterHorizontally,
+      horizontalAlignment = CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(Dimens.Huge),
     ) {
       InfoHeader(buildState.year, contentModifier)
@@ -172,10 +169,10 @@ private fun InfoHeader(year: Int, modifier: Modifier = Modifier) {
       modifier
         .fillMaxWidth()
         .background(colors.tableBackground, CardShape)
-        .border(Dp.Hairline, colors.tableBorder, CardShape)
+        .border(Hairline, colors.tableBorder, CardShape)
         .padding(horizontal = 20.dp, vertical = 10.dp),
     horizontalArrangement = Arrangement.Center,
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     val appName = Strings.appName
 
@@ -188,13 +185,13 @@ private fun InfoHeader(year: Int, modifier: Modifier = Modifier) {
     HorizontalSpacer(10.dp)
 
     Column(
-      horizontalAlignment = Alignment.CenterHorizontally,
+      horizontalAlignment = CenterHorizontally,
       verticalArrangement = Arrangement.Center,
     ) {
       Text(
         text = appName,
         fontSize = 25.sp,
-        fontWeight = FontWeight.W700,
+        fontWeight = W700,
         color = colors.pillTextHighlighted,
       )
       Text(text = Strings.infoSubtitle1(year), color = colors.pillText)
@@ -209,7 +206,7 @@ private fun InfoBuildState(buildState: BuildState, modifier: Modifier = Modifier
     modifier =
       modifier
         .background(colors.tableBackground, CardShape)
-        .border(Dp.Hairline, colors.tableBorder, CardShape)
+        .border(Hairline, colors.tableBorder, CardShape)
   ) {
     BuildStateItem(
       modifier = Modifier.padding(ItemMargin).clip(CardShape),
@@ -249,7 +246,7 @@ private fun BuildStateItem(
         .height(ItemHeight)
         .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
         .padding(horizontal = ItemPadding),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     Icon(
       modifier = Modifier.padding(ItemPadding),

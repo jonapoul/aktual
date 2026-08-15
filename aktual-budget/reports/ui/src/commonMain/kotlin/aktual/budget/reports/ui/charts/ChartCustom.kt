@@ -1,7 +1,6 @@
 package aktual.budget.reports.ui.charts
 
 import aktual.budget.reports.vm.CustomData
-import aktual.budget.reports.vm.DateRangeMode
 import aktual.budget.reports.vm.ReportTimeRange
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
@@ -20,10 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -43,12 +39,12 @@ internal fun CustomChart(
       Header(modifier = Modifier.padding(4.dp).fillMaxWidth(), data = data)
     }
 
-    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Center) {
       Text(
         text = Strings.reportsCustomNoop,
         style = typography.titleLarge,
         color = colors.warningText,
-        textAlign = TextAlign.Center,
+        textAlign = Center,
       )
     }
   }
@@ -63,21 +59,21 @@ private fun Header(
       modifier = Modifier.weight(1f),
       text = data.title,
       color = colors.pageText,
-      overflow = TextOverflow.Ellipsis,
+      overflow = Ellipsis,
     )
 
     Text(
       text = dateRange(data.range),
       color = colors.pageTextSubdued,
-      overflow = TextOverflow.Ellipsis,
+      overflow = Ellipsis,
     )
   }
 
 @Composable
 private fun dateRange(timeRange: ReportTimeRange): String =
   when (timeRange) {
-    is ReportTimeRange.Relative -> timeRange.type.string()
-    is ReportTimeRange.Specific -> dateRange(timeRange.range.start, timeRange.range.endInclusive)
+    is Relative -> timeRange.type.string()
+    is Specific -> dateRange(timeRange.range.start, timeRange.range.endInclusive)
   }
 
 @Preview
@@ -114,7 +110,7 @@ private class CustomChartProvider :
 internal val PREVIEW_CUSTOM_DATA =
   CustomData(
     title = "My Custom Report",
-    mode = DateRangeMode.Live,
+    mode = Live,
     range =
       ReportTimeRange.Specific(
         range =

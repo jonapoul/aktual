@@ -23,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -102,11 +104,11 @@ fun AktualAlertDialogContent(
         Modifier.defaultMinSize(minWidth = 300.dp)
           .background(colors.modalBackground)
           .padding(Dimens.VeryLarge),
-      horizontalAlignment = Alignment.CenterHorizontally,
+      horizontalAlignment = CenterHorizontally,
       verticalArrangement = Arrangement.spacedBy(Dimens.Medium, alignment = Alignment.Top),
     ) {
       Row(
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
       ) {
         if (icon != null) {
@@ -166,7 +168,7 @@ private fun PreviewExampleContentWithoutButtons(
       title = "Hello world",
       buttons = null,
       content = {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(horizontalAlignment = CenterHorizontally) {
           Text("This is some text")
           PrimaryTextButton(text = "Click me", onClick = {})
           Text("This is some text")

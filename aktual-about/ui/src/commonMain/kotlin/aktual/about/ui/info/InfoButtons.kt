@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.testTag
@@ -81,7 +81,7 @@ private fun ManageStorageButton(onAction: InfoActionHandler, modifier: Modifier 
 
 @Composable
 private fun InfoButtonsColumn(onAction: InfoActionHandler) =
-  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
     val buttonModifier = Modifier.fillMaxWidth()
     SourceCodeButton(onAction, buttonModifier)
     CheckUpdatesButton(onAction, buttonModifier)
@@ -94,7 +94,7 @@ private fun InfoButtonsColumn(onAction: InfoActionHandler) =
 private fun InfoButtonsGrid(onAction: InfoActionHandler) =
   Column(
     modifier = Modifier.fillMaxWidth(),
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(0.dp),
   ) {
     Row(

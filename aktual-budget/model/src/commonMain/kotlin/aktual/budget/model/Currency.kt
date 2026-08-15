@@ -1,12 +1,5 @@
 package aktual.budget.model
 
-import aktual.budget.model.CurrencySymbolPosition.AfterAmount
-import aktual.budget.model.CurrencySymbolPosition.BeforeAmount
-import aktual.budget.model.NumberFormat.ApostropheDot
-import aktual.budget.model.NumberFormat.CommaDot
-import aktual.budget.model.NumberFormat.CommaDotIn
-import aktual.budget.model.NumberFormat.DotComma
-import aktual.budget.model.NumberFormat.SpaceComma
 import androidx.compose.runtime.Immutable
 
 enum class Currency(

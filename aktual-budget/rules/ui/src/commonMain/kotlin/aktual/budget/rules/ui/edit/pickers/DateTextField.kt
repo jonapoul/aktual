@@ -35,7 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.datasource.CollectionPreviewParameterProvider
-import androidx.compose.ui.unit.Dp
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.toJavaLocalDate
 import kotlinx.datetime.toKotlinLocalDate
@@ -74,7 +73,7 @@ internal fun DateTextField(
 
   Box(modifier = modifier) {
     AktualTextField(
-      modifier = Modifier.fillMaxWidth().border(Dp.Hairline, colors.buttonNormalBorder),
+      modifier = Modifier.fillMaxWidth().border(Hairline, colors.buttonNormalBorder),
       state = textState,
       placeholderText = Strings.editRuleConditionNothing,
       readOnly = true,

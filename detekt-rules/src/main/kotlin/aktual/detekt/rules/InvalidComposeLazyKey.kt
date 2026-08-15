@@ -6,7 +6,6 @@ import dev.detekt.api.Finding
 import dev.detekt.api.RequiresAnalysisApi
 import dev.detekt.api.Rule
 import org.jetbrains.kotlin.analysis.api.analyze
-import org.jetbrains.kotlin.analysis.api.symbols.KaClassKind
 import org.jetbrains.kotlin.analysis.api.symbols.KaClassSymbol
 import org.jetbrains.kotlin.analysis.api.types.KaClassType
 import org.jetbrains.kotlin.psi.KtCallExpression
@@ -40,7 +39,7 @@ internal class InvalidComposeLazyKey(config: Config) :
       val fqName = classType.classId.asSingleFqName().asString()
 
       if (fqName in PRIMITIVE_TYPES) return@analyze
-      if ((classType.symbol as? KaClassSymbol)?.classKind == KaClassKind.ENUM_CLASS) return@analyze
+      if ((classType.symbol as? KaClassSymbol)?.classKind == ENUM_CLASS) return@analyze
 
       report(Finding(entity = Entity.from(keyArg), message = description))
     }

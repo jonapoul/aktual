@@ -14,8 +14,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
@@ -92,13 +90,13 @@ private fun TextContent(
     Text(
       modifier = Modifier.weight(1f),
       text = text,
-      textAlign = TextAlign.Start,
-      fontWeight = FontWeight.Bold,
+      textAlign = Start,
+      fontWeight = Bold,
     )
     Text(
       modifier = Modifier.weight(1f).testTag(valueNodeTag),
       text = value,
-      textAlign = TextAlign.End,
+      textAlign = End,
     )
   }
 }

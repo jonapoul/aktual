@@ -7,7 +7,7 @@ import aktual.core.ui.ColoredParameters
 import aktual.core.ui.PreviewWithColors
 import alakazam.compose.HorizontalSpacer
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -17,10 +17,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.sp
@@ -28,9 +27,8 @@ import androidx.compose.ui.unit.sp
 @Composable
 internal fun CategoryHeader(modifier: Modifier = Modifier) =
   Row(
-    modifier =
-      modifier.height(IntrinsicSize.Min).fillMaxWidth().background(colors.tableHeaderBackground),
-    verticalAlignment = Alignment.CenterVertically,
+    modifier = modifier.height(Min).fillMaxWidth().background(colors.tableHeaderBackground),
+    verticalAlignment = CenterVertically,
   ) {
     val dimens = LocalTableDimens.current
 
@@ -59,7 +57,7 @@ internal fun CategoryHeader(modifier: Modifier = Modifier) =
     HorizontalSpacer(dimens.interColumn)
 
     // amount
-    CategoryHeaderText(Strings.transactionsHeaderAmount, textAlign = TextAlign.End)
+    CategoryHeaderText(Strings.transactionsHeaderAmount, textAlign = End)
     HorizontalSpacer(dimens.interColumn)
 
     // button
@@ -70,7 +68,7 @@ internal fun CategoryHeader(modifier: Modifier = Modifier) =
 private fun RowScope.CategoryHeaderText(
   text: String,
   modifier: Modifier = Modifier,
-  textAlign: TextAlign = TextAlign.Start,
+  textAlign: TextAlign = Start,
 ) =
   Text(
     modifier = modifier.weight(1f),
@@ -78,7 +76,7 @@ private fun RowScope.CategoryHeaderText(
     textAlign = textAlign,
     fontSize = 14.sp,
     color = colors.tableHeaderText,
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
     maxLines = 1,
   )
 

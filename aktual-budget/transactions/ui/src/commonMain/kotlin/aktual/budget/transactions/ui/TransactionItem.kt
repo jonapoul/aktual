@@ -25,7 +25,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,17 +40,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 
@@ -96,7 +93,7 @@ private fun LoadingItem(
   modifier: Modifier = Modifier,
 ) {
   val dimens = LocalTableDimens.current
-  val shimmer = rememberShimmer(ShimmerBounds.Window)
+  val shimmer = rememberShimmer(Window)
 
   Row(
     modifier =
@@ -106,7 +103,7 @@ private fun LoadingItem(
         .clip(CardShape)
         .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal)
         .shimmer(shimmer),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     when (format) {
       List -> LoadingTransactionListItem(dimens)
@@ -187,7 +184,7 @@ private fun FailedItem(
         .height(LocalMinimumInteractiveComponentSize.current)
         .clip(CardShape)
         .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     // Checkbox placeholder
     Box(modifier = Modifier.minimumInteractiveComponentSize())
@@ -217,10 +214,10 @@ private fun LoadedItem(
     modifier =
       modifier
         .fillMaxWidth()
-        .height(IntrinsicSize.Min)
+        .height(Min)
         .clip(CardShape)
         .padding(vertical = dimens.rowVertical, horizontal = dimens.rowHorizontal),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     when (format) {
       List ->
@@ -263,36 +260,36 @@ private fun RowScope.TransactionListItem(
   Column(modifier = Modifier.weight(1f)) {
     Text(
       text = transaction.account.orEmpty(),
-      overflow = TextOverflow.Ellipsis,
+      overflow = Ellipsis,
       maxLines = 1,
-      textAlign = TextAlign.Start,
+      textAlign = Start,
       fontSize = dimens.textSize,
       color = colors.tableText,
     )
 
     Text(
       text = transaction.payee.orEmpty(),
-      overflow = TextOverflow.Ellipsis,
+      overflow = Ellipsis,
       maxLines = 1,
-      textAlign = TextAlign.Start,
+      textAlign = Start,
       fontSize = dimens.textSize,
       color = colors.tableText,
     )
 
     Text(
       text = transaction.notes.orEmpty(),
-      overflow = TextOverflow.Ellipsis,
+      overflow = Ellipsis,
       maxLines = 1,
-      textAlign = TextAlign.Start,
+      textAlign = Start,
       fontSize = dimens.textSize,
       color = colors.tableText,
     )
 
     Text(
       text = transaction.category.orEmpty(),
-      overflow = TextOverflow.Ellipsis,
+      overflow = Ellipsis,
       maxLines = 1,
-      textAlign = TextAlign.Start,
+      textAlign = Start,
       fontSize = dimens.textSize,
       color = colors.tableText,
     )
@@ -300,9 +297,9 @@ private fun RowScope.TransactionListItem(
 
   Text(
     text = transaction.amount.formattedString(),
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
     maxLines = 1,
-    textAlign = TextAlign.End,
+    textAlign = End,
     fontSize = dimens.textSize,
     color = colors.tableText,
   )
@@ -338,9 +335,9 @@ private fun RowScope.TransactionTableItem(
   Text(
     modifier = Modifier.weight(1f),
     text = transaction.date.toString(),
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
     maxLines = 1,
-    textAlign = TextAlign.Start,
+    textAlign = Start,
     fontSize = dimens.textSize,
     color = colors.tableText,
   )
@@ -350,9 +347,9 @@ private fun RowScope.TransactionTableItem(
   Text(
     modifier = Modifier.weight(1f),
     text = transaction.account.orEmpty(),
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
     maxLines = 1,
-    textAlign = TextAlign.Start,
+    textAlign = Start,
     fontSize = dimens.textSize,
     color = colors.tableText,
   )
@@ -362,9 +359,9 @@ private fun RowScope.TransactionTableItem(
   Text(
     modifier = Modifier.weight(1f),
     text = transaction.payee.orEmpty(),
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
     maxLines = 1,
-    textAlign = TextAlign.Start,
+    textAlign = Start,
     fontSize = dimens.textSize,
     color = colors.tableText,
   )
@@ -374,9 +371,9 @@ private fun RowScope.TransactionTableItem(
   Text(
     modifier = Modifier.weight(1f),
     text = transaction.notes.orEmpty(),
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
     maxLines = 1,
-    textAlign = TextAlign.Start,
+    textAlign = Start,
     fontSize = dimens.textSize,
     color = colors.tableText,
   )
@@ -386,9 +383,9 @@ private fun RowScope.TransactionTableItem(
   Text(
     modifier = Modifier.weight(1f),
     text = transaction.category.orEmpty(),
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
     maxLines = 1,
-    textAlign = TextAlign.Start,
+    textAlign = Start,
     fontSize = dimens.textSize,
     color = colors.tableText,
   )
@@ -398,9 +395,9 @@ private fun RowScope.TransactionTableItem(
   Text(
     modifier = Modifier.weight(1f),
     text = transaction.amount.formattedString(),
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
     maxLines = 1,
-    textAlign = TextAlign.End,
+    textAlign = End,
     fontSize = dimens.textSize,
     color = colors.tableText,
   )

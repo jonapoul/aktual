@@ -28,7 +28,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.IntrinsicSize.Max
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -51,11 +51,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Dp
@@ -147,13 +145,13 @@ internal fun MonthHeader(
 ) =
   Row(
     modifier = modifier.fillMaxWidth(),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
     horizontalArrangement = Arrangement.End,
   ) {
     Text(
       modifier = Modifier.weight(1f),
       text = month.month.stringLong(),
-      fontWeight = FontWeight.Bold,
+      fontWeight = Bold,
       color = colors.pageTextSubdued,
     )
 
@@ -165,7 +163,7 @@ internal fun MonthHeader(
       Expenses(modifier = Modifier.wrapContentWidth(), compact = true, month = month)
     } else {
       Column(
-        modifier = Modifier.width(IntrinsicSize.Max),
+        modifier = Modifier.width(Max),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.Center,
       ) {
@@ -181,7 +179,7 @@ private fun Income(
   compact: Boolean,
   modifier: Modifier = Modifier,
 ) =
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     Icon(
       modifier = Modifier.size(iconSize(compact)),
       imageVector = AktualIcons.ArrowThickUp,
@@ -192,7 +190,7 @@ private fun Income(
       modifier = if (compact) Modifier else Modifier.weight(1f),
       text = month.income.formattedString(),
       color = colors.reportsBlue,
-      textAlign = TextAlign.End,
+      textAlign = End,
     )
   }
 
@@ -202,7 +200,7 @@ private fun Expenses(
   compact: Boolean,
   modifier: Modifier = Modifier,
 ) =
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     Icon(
       modifier = Modifier.size(iconSize(compact)),
       imageVector = AktualIcons.ArrowThickDown,
@@ -213,7 +211,7 @@ private fun Expenses(
       modifier = if (compact) Modifier else Modifier.weight(1f),
       text = month.expenses.formattedString(),
       color = colors.reportsRed,
-      textAlign = TextAlign.End,
+      textAlign = End,
     )
   }
 
@@ -231,13 +229,13 @@ internal fun CalendarSummary(
         modifier = Modifier.weight(1f),
         text = data.title,
         color = colors.pageText,
-        overflow = TextOverflow.Ellipsis,
+        overflow = Ellipsis,
       )
 
       Text(
         text = dateRange(data.start, data.end),
         color = colors.pageTextSubdued,
-        overflow = TextOverflow.Ellipsis,
+        overflow = Ellipsis,
       )
     }
 
@@ -248,13 +246,13 @@ internal fun CalendarSummary(
         modifier = Modifier.weight(1f),
         text = Strings.reportsCalendarIncome,
         color = colors.pageText,
-        textAlign = TextAlign.End,
+        textAlign = End,
       )
       Text(
         modifier = Modifier.weight(1f),
         text = data.income.formattedString(),
         color = colors.reportsBlue,
-        textAlign = TextAlign.End,
+        textAlign = End,
       )
     }
 
@@ -263,13 +261,13 @@ internal fun CalendarSummary(
         modifier = Modifier.weight(1f),
         text = Strings.reportsCalendarExpenses,
         color = colors.pageText,
-        textAlign = TextAlign.End,
+        textAlign = End,
       )
       Text(
         modifier = Modifier.weight(1f),
         text = data.expenses.formattedString(),
         color = colors.reportsRed,
-        textAlign = TextAlign.End,
+        textAlign = End,
       )
     }
   }
@@ -288,11 +286,11 @@ internal fun DayButton(
     modifier =
       modifier
         .background(
-          if (!day.isValid) Color.Transparent else colors.calendarCellBackground,
-          CardShape,
+          color = if (!day.isValid) Transparent else colors.calendarCellBackground,
+          shape = CardShape,
         )
         .clickable(enabled = day.isValid) { onAction(Action.ClickCalendarDay(day)) },
-    contentAlignment = Alignment.Center,
+    contentAlignment = Center,
   ) {
     Row(modifier = Modifier.fillMaxSize()) {
       DayBarChart(
@@ -330,7 +328,7 @@ private fun DayBarChart(
   modifier: Modifier = Modifier,
 ): Unit =
   Column(modifier = modifier, verticalArrangement = Arrangement.Bottom) {
-    if (dayValue == Amount.Zero) return
+    if (dayValue == Zero) return
 
     val fraction = (dayValue / monthValue).coerceIn(0f, 1f)
 
@@ -380,7 +378,7 @@ internal fun CalendarMonth(
         Text(
           modifier = Modifier.weight(1f),
           text = day.stringShort(),
-          textAlign = TextAlign.Center,
+          textAlign = Center,
           color = colors.pageTextSubdued,
         )
       }
@@ -470,7 +468,7 @@ private data class MonthHeaderParams(val month: CalendarMonth, val compact: Bool
 
 private class MonthHeaderProvider :
   ColoredParameterProvider<MonthHeaderParams>(
-    MonthHeaderParams(JAN_2025.copy(expenses = Amount.Zero), compact = false),
+    MonthHeaderParams(JAN_2025.copy(expenses = Zero), compact = false),
     MonthHeaderParams(JAN_2025, compact = true),
   )
 

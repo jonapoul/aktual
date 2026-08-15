@@ -33,15 +33,15 @@ class ConditionTest {
     val data =
       listOf(
         Condition(
-          field = Field.Account,
-          operator = Operator.Is,
-          type = ConditionType.Id,
+          field = Account,
+          operator = Is,
+          type = Id,
           value = JsonPrimitive("eb08ea4f-bbb0-437f-873a-1fdee4154683"),
         ),
         Condition(
-          field = Field.Payee,
-          operator = Operator.Is,
-          type = ConditionType.Id,
+          field = Payee,
+          operator = Is,
+          type = Id,
           value = JsonPrimitive("92ac5221-2605-419d-821a-6ec04ea38b57"),
         ),
       )
@@ -81,9 +81,9 @@ class ConditionTest {
     val data =
       listOf(
         Condition(
-          field = Field.Category,
-          operator = Operator.OneOf,
-          type = ConditionType.Id,
+          field = Category,
+          operator = OneOf,
+          type = Id,
           value =
             JsonArray(
               content =

@@ -36,7 +36,6 @@ import dev.zacsweers.metrox.viewmodel.ManualViewModelAssistedFactoryKey
 import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -72,8 +71,8 @@ class TransactionsViewModel(
 
   val format: StateFlow<TransactionsFormat> =
     prefs
-      .map { meta -> meta[TransactionFormatKey] ?: TransactionsFormat.Default }
-      .stateIn(viewModelScope, Eagerly, initialValue = TransactionsFormat.Default)
+      .map { meta -> meta[TransactionFormatKey] ?: Default }
+      .stateIn(viewModelScope, Eagerly, initialValue = Default)
 
   override val pagingData: Flow<PagingData<TransactionId>> =
     Pager(

@@ -15,7 +15,6 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -27,7 +26,7 @@ internal fun PasswordEntryText(
   showPassword: Boolean,
   onValueChange: (Password) -> Unit,
   modifier: Modifier = Modifier,
-  imeAction: ImeAction = ImeAction.Go,
+  imeAction: ImeAction = Go,
   onGo: (() -> Unit)? = null,
 ) {
   val textState = rememberTextFieldState(initialText = password.value)
@@ -46,7 +45,7 @@ internal fun PasswordEntryText(
     keyboardOptions =
       KeyboardOptions(
         autoCorrectEnabled = false,
-        capitalization = KeyboardCapitalization.None,
+        capitalization = None,
         keyboardType = KeyboardType.Password,
         imeAction = imeAction,
       ),

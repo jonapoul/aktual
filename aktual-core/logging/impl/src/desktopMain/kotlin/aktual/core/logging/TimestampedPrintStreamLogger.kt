@@ -21,12 +21,12 @@ class TimestampedPrintStreamLogger(
 
   private fun LogPriority.char() =
     when (this) {
-      LogPriority.VERBOSE -> 'V'
-      LogPriority.DEBUG -> 'D'
-      LogPriority.INFO -> 'I'
-      LogPriority.WARN -> 'W'
-      LogPriority.ERROR -> 'E'
-      LogPriority.ASSERT -> 'A'
+      VERBOSE -> 'V'
+      DEBUG -> 'D'
+      INFO -> 'I'
+      WARN -> 'W'
+      ERROR -> 'E'
+      ASSERT -> 'A'
     }
 
   private companion object {

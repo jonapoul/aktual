@@ -18,7 +18,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -37,7 +36,7 @@ import kotlinx.collections.immutable.toImmutableList
 internal fun PieChart(
   slices: ImmutableList<PieSlice>,
   modifier: Modifier = Modifier,
-  strokeWidth: Dp = Dp.Unspecified, // use Unspecified for 18% of chart size, 0.dp for filled pie
+  strokeWidth: Dp = Unspecified, // use Unspecified for 18% of chart size, 0.dp for filled pie
   fontSize: TextUnit = 12.sp,
 ) {
   require(slices.isNotEmpty()) { "slices must not be empty" }
@@ -54,7 +53,7 @@ internal fun PieChart(
       slices = slices,
       total = total,
       strokeWidthPx =
-        if (strokeWidth == Dp.Unspecified) {
+        if (strokeWidth == Unspecified) {
           min(size.width, size.height) * 0.18f
         } else {
           strokeWidth.toPx()
@@ -124,7 +123,7 @@ private fun DrawScope.drawPie(
     val layout =
       textMeasurer.measure(
         text = percent.toString(decimalPlaces = 0),
-        style = TextStyle(color = Color.Black, fontSize = fontSize, fontWeight = FontWeight.Normal),
+        style = TextStyle(color = Black, fontSize = fontSize, fontWeight = Normal),
       )
 
     drawText(
@@ -143,7 +142,7 @@ private fun PreviewPieWithHole(@PreviewParameter(ColoredParameters::class) color
     val pieColors = rememberDistinctColors(count = 5)
     PieChart(
       modifier = Modifier.size(240.dp),
-      strokeWidth = Dp.Unspecified,
+      strokeWidth = Unspecified,
       slices =
         pieColors
           .mapIndexed { index, color -> PieSlice((index + 1).toFloat(), color) }

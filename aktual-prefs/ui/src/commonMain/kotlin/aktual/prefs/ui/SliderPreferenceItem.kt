@@ -20,13 +20,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -76,7 +74,7 @@ internal fun SliderPreferenceItem(
     includeBackground = includeBackground,
     onClick = null,
     bottomContent = {
-      Row(verticalAlignment = Alignment.CenterVertically) {
+      Row(verticalAlignment = CenterVertically) {
         Slider(
           modifier = Modifier.weight(1f),
           value = currentValue,
@@ -95,9 +93,9 @@ internal fun SliderPreferenceItem(
         Text(
           modifier = Modifier.padding(horizontal = 8.dp).width(width),
           text = remember(currentValue) { "%.1f".format(currentValue) },
-          textAlign = TextAlign.End,
+          textAlign = End,
           maxLines = 1,
-          overflow = TextOverflow.Ellipsis,
+          overflow = Ellipsis,
           style = style,
           color = colors.pageText.disabledIf(!enabled),
         )

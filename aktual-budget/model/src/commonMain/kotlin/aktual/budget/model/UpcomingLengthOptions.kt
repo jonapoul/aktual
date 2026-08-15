@@ -2,15 +2,12 @@
 
 package aktual.budget.model
 
-import kotlinx.datetime.DateTimeUnit.Companion.DAY
-import kotlinx.datetime.DateTimeUnit.Companion.MONTH
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
 import kotlinx.datetime.until
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -82,18 +79,17 @@ fun UpcomingLength.upcomingDays(today: LocalDate): Int {
   val startOfMonth = LocalDate(today.year, today.month, 1)
   val startOfNextMonth = startOfMonth.plus(1, MONTH)
   return when (this) {
-    UpcomingLength.CurrentMonth -> startOfNextMonth.minus(1, DAY).day - today.day
-    UpcomingLength.OneMonth -> startOfMonth.until(startOfNextMonth, DAY).toInt()
-    is UpcomingLength.Days -> count
-    is UpcomingLength.Weeks -> count * 7
-    is UpcomingLength.Months -> startOfMonth.until(startOfMonth.plus(count, MONTH), DAY).toInt() + 1
-    is UpcomingLength.Years ->
-      startOfMonth.until(startOfMonth.plus(count * 12, MONTH), DAY).toInt() + 1
+    CurrentMonth -> startOfNextMonth.minus(1, DAY).day - today.day
+    OneMonth -> startOfMonth.until(startOfNextMonth, DAY).toInt()
+    is Days -> count
+    is Weeks -> count * 7
+    is Months -> startOfMonth.until(startOfMonth.plus(count, MONTH), DAY).toInt() + 1
+    is Years -> startOfMonth.until(startOfMonth.plus(count * 12, MONTH), DAY).toInt() + 1
   }
 }
 
 internal object UpcomingLengthSerializer : KSerializer<UpcomingLength> {
-  override val descriptor = PrimitiveSerialDescriptor("UpcomingLength", PrimitiveKind.STRING)
+  override val descriptor = PrimitiveSerialDescriptor("UpcomingLength", STRING)
 
   override fun deserialize(decoder: Decoder): UpcomingLength =
     UpcomingLength.decode(decoder.decodeString())

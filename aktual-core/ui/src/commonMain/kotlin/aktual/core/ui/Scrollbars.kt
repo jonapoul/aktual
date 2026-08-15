@@ -27,7 +27,6 @@ import androidx.compose.ui.graphics.drawscope.ContentDrawScope
 import androidx.compose.ui.graphics.drawscope.Fill
 import androidx.compose.ui.input.pointer.PointerEvent
 import androidx.compose.ui.input.pointer.PointerEventPass
-import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.node.CompositionLocalConsumerModifierNode
 import androidx.compose.ui.node.DrawModifierNode
 import androidx.compose.ui.node.ModifierNodeElement
@@ -69,7 +68,7 @@ fun Modifier.verticalScrollbar(
   autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
 ): Modifier =
   scrollbar(
-    state = remember(state) { ScrollbarState(state, Orientation.Vertical) },
+    state = remember(state) { ScrollbarState(state, Vertical) },
     autoHide = autoHide,
   )
 
@@ -90,7 +89,7 @@ fun Modifier.horizontalScrollbar(
   autoHide: Boolean = SCROLLBAR_AUTO_HIDE_DEFAULT,
 ): Modifier =
   scrollbar(
-    state = remember(state) { ScrollbarState(state, Orientation.Horizontal) },
+    state = remember(state) { ScrollbarState(state, Horizontal) },
     autoHide = autoHide,
   )
 
@@ -156,19 +155,19 @@ private class ScrollbarNode(
 
   override fun onPointerEvent(pointerEvent: PointerEvent, pass: PointerEventPass, bounds: IntSize) {
     if (!interactionEnabled) {
-      if (pointerEvent.type == PointerEventType.Press && pass == PointerEventPass.Initial) {
+      if (pointerEvent.type == Press && pass == Initial) {
         showAndStartAutoFadeIfEnabled()
       }
       return
     }
 
-    if (pass != PointerEventPass.Initial) return
+    if (pass != Initial) return
 
     when (pointerEvent.type) {
-      PointerEventType.Press -> handlePress(pointerEvent, bounds)
-      PointerEventType.Move -> handleMove(pointerEvent, bounds)
-      PointerEventType.Release -> handleRelease()
-      PointerEventType.Exit -> handlePointerExit()
+      Press -> handlePress(pointerEvent, bounds)
+      Move -> handleMove(pointerEvent, bounds)
+      Release -> handleRelease()
+      Exit -> handlePointerExit()
     }
   }
 
@@ -178,7 +177,7 @@ private class ScrollbarNode(
 
     if (isPointerOnThumb(position, bounds)) {
       event.changes.forEach { it.consume() }
-      gestureState = GestureState.CLICKING
+      gestureState = CLICKING
       dragStartOffset = position
       showAndStartAutoFadeIfEnabled()
     } else if (isPointerOnScrollbar(position, bounds)) {
@@ -192,22 +191,22 @@ private class ScrollbarNode(
     val position = event.changes.firstOrNull()?.position ?: return
     updateHoverState(position, bounds)
 
-    if (gestureState == GestureState.IDLE) return
+    if (gestureState == IDLE) return
 
     event.changes.forEach { it.consume() }
 
-    if (gestureState == GestureState.CLICKING) {
-      gestureState = GestureState.DRAGGING
+    if (gestureState == CLICKING) {
+      gestureState = DRAGGING
       updateWidthMultiplier() // Ensure scrollbar stays expanded when dragging starts
     }
 
-    if (gestureState == GestureState.DRAGGING) {
+    if (gestureState == DRAGGING) {
       scrollToPosition(position, bounds, animated = false)
     }
   }
 
   private fun handleRelease() {
-    gestureState = GestureState.IDLE
+    gestureState = IDLE
     dragStartOffset = null
     updateWidthMultiplier() // Shrink scrollbar if not hovering
     if (!isHovered) {
@@ -224,7 +223,7 @@ private class ScrollbarNode(
       if (isHovered) {
         // Cancel fade when hovering
         fadeJob?.cancel()
-      } else if (gestureState == GestureState.IDLE) {
+      } else if (gestureState == IDLE) {
         // Only restart fade when un-hovering if we're not dragging
         showAndStartAutoFadeIfEnabled()
       }
@@ -232,7 +231,7 @@ private class ScrollbarNode(
   }
 
   private fun updateWidthMultiplier() {
-    val shouldBeExpanded = isHovered || gestureState == GestureState.DRAGGING
+    val shouldBeExpanded = isHovered || gestureState == DRAGGING
     coroutineScope.launch {
       widthMultiplier.animateTo(
         targetValue = if (shouldBeExpanded) SCROLLBAR_HOVER_WIDTH_MULTIPLIER else 1f,
@@ -245,7 +244,7 @@ private class ScrollbarNode(
     if (isHovered) {
       isHovered = false
       updateWidthMultiplier() // Will stay expanded if dragging
-      if (gestureState == GestureState.IDLE) {
+      if (gestureState == IDLE) {
         // Only restart fade when pointer exits if we're not dragging
         showAndStartAutoFadeIfEnabled()
       }
@@ -255,7 +254,7 @@ private class ScrollbarNode(
   private fun isPointerNearScrollbar(position: Offset, bounds: IntSize): Boolean {
     val density = currentValueOf(LocalDensity)
     val proximityThresholdPx = with(density) { SCROLLBAR_HOVER_PROXIMITY.toPx() }
-    return if (scrollbarState.orientation == Orientation.Vertical) {
+    return if (scrollbarState.orientation == Vertical) {
       position.x >= bounds.width - proximityThresholdPx
     } else {
       position.y >= bounds.height - proximityThresholdPx
@@ -263,7 +262,7 @@ private class ScrollbarNode(
   }
 
   override fun onCancelPointerInput() {
-    gestureState = GestureState.IDLE
+    gestureState = IDLE
     dragStartOffset = null
     updateWidthMultiplier() // Shrink scrollbar if not hovering
     if (!isHovered) {
@@ -297,7 +296,7 @@ private class ScrollbarNode(
     val density = currentValueOf(LocalDensity)
     val baseStrokeWidthPx = with(density) { SCROLLBAR_STROKE_WIDTH.toPx() }
     val strokeWidthPx = baseStrokeWidthPx * widthMultiplier.value
-    return if (scrollbarState.orientation == Orientation.Vertical) {
+    return if (scrollbarState.orientation == Vertical) {
       position.x >= bounds.width - strokeWidthPx
     } else {
       position.y >= bounds.height - strokeWidthPx
@@ -308,7 +307,7 @@ private class ScrollbarNode(
     if (!isPointerOnScrollbar(position, bounds)) return false
 
     val normalizedPosition =
-      if (scrollbarState.orientation == Orientation.Vertical) {
+      if (scrollbarState.orientation == Vertical) {
         position.y / bounds.height
       } else {
         position.x / bounds.width
@@ -322,7 +321,7 @@ private class ScrollbarNode(
 
   private fun calculateTargetScroll(position: Offset, bounds: IntSize): Int {
     val normalizedPosition =
-      if (scrollbarState.orientation == Orientation.Vertical) {
+      if (scrollbarState.orientation == Vertical) {
         (position.y / bounds.height).coerceIn(0f, 1f)
       } else {
         (position.x / bounds.width).coerceIn(0f, 1f)
@@ -353,13 +352,13 @@ private class ScrollbarNode(
     val baseStrokeWidthPx = SCROLLBAR_STROKE_WIDTH.toPx()
     val strokeWidthPx = baseStrokeWidthPx * widthMultiplier.value
     val scrollbarPosition =
-      if (scrollbarState.orientation == Orientation.Vertical) {
+      if (scrollbarState.orientation == Vertical) {
         Offset(size.width - strokeWidthPx, size.height * scrollbarState.scrollPosition)
       } else {
         Offset(size.width * scrollbarState.scrollPosition, size.height - strokeWidthPx)
       }
     val scrollbarSize =
-      if (scrollbarState.orientation == Orientation.Vertical) {
+      if (scrollbarState.orientation == Vertical) {
         Size(strokeWidthPx, size.height * scrollbarState.scrollbarSize)
       } else {
         Size(size.width * scrollbarState.scrollbarSize, strokeWidthPx)
@@ -439,7 +438,7 @@ private data class LazyListStateScrollableDelegate(private val lazyListState: La
 
   override val viewportSize by derivedStateOf {
     with(lazyListState.layoutInfo) {
-      if (orientation == Orientation.Vertical) viewportSize.height else viewportSize.width
+      if (orientation == Vertical) viewportSize.height else viewportSize.width
     }
   }
 

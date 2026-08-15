@@ -15,7 +15,6 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -28,15 +27,15 @@ sealed interface ReportMeta {
   companion object {
     fun serializer(type: WidgetType): KSerializer<out ReportMeta> =
       when (type) {
-        WidgetType.BudgetAnalysis -> BudgetAnalysisReportMeta.serializer()
-        WidgetType.Calendar -> CalendarReportMeta.serializer()
-        WidgetType.CashFlow -> CashFlowReportMeta.serializer()
-        WidgetType.Custom -> CustomReportMeta.serializer()
-        WidgetType.Markdown -> MarkdownReportMeta.serializer()
-        WidgetType.NetWorth -> NetWorthReportMeta.serializer()
-        WidgetType.Spending -> SpendingReportMeta.serializer()
-        WidgetType.Summary -> SummaryReportMeta.serializer()
-        WidgetType.Formula -> FormulaReportMeta.serializer()
+        BudgetAnalysis -> BudgetAnalysisReportMeta.serializer()
+        Calendar -> CalendarReportMeta.serializer()
+        CashFlow -> CashFlowReportMeta.serializer()
+        Custom -> CustomReportMeta.serializer()
+        Markdown -> MarkdownReportMeta.serializer()
+        NetWorth -> NetWorthReportMeta.serializer()
+        Spending -> SpendingReportMeta.serializer()
+        Summary -> SummaryReportMeta.serializer()
+        Formula -> FormulaReportMeta.serializer()
       }
   }
 }
@@ -160,8 +159,7 @@ data class TimeFrame(
 // ("2011-10") or a full ISO date ("2011-10-05"). The default YearMonth serializer only accepts
 // the former and crashes on the latter, so parse leniently and normalise both down to a YearMonth.
 internal object LenientYearMonthSerializer : KSerializer<YearMonth> {
-  override val descriptor =
-    PrimitiveSerialDescriptor("aktual.LenientYearMonth", PrimitiveKind.STRING)
+  override val descriptor = PrimitiveSerialDescriptor("aktual.LenientYearMonth", STRING)
 
   override fun serialize(encoder: Encoder, value: YearMonth) =
     encoder.encodeString(value.toString())

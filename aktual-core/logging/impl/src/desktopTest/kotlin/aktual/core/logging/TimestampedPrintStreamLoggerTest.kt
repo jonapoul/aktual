@@ -9,7 +9,6 @@ import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.time.Instant
-import logcat.LogPriority
 import logcat.LogcatLogger
 import logcat.logcat
 
@@ -31,8 +30,7 @@ class TimestampedPrintStreamLoggerTest {
     val byteArrayOutputStream = ByteArrayOutputStream()
     val stream = PrintStream(byteArrayOutputStream)
     val clock = TestClock { Instant.fromEpochMilliseconds(timeMs) }
-    LogcatLogger.loggers +=
-      TimestampedPrintStreamLogger(stream, clock, minPriority = LogPriority.DEBUG)
+    LogcatLogger.loggers += TimestampedPrintStreamLogger(stream, clock, minPriority = DEBUG)
 
     // when
     logcat.i { "Hello world" }

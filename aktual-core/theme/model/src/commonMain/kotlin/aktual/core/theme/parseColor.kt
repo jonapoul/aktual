@@ -15,7 +15,7 @@ private val HslaRegex = """hsla\(\s*([\d.]+),\s*([\d.]+)%,\s*([\d.]+)%,\s*([\d.]
 
 fun String.parseColor(): Color =
   when {
-    this == "transparent" -> Color.Transparent
+    this == "transparent" -> Transparent
     matches(HexRegex) -> parseHex()
     matches(RgbRegex) -> parseRgb()
     matches(RgbaRegex) -> parseRgba()

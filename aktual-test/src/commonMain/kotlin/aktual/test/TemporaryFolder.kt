@@ -11,7 +11,7 @@ import okio.Path.Companion.toOkioPath
 import okio.Sink
 import okio.Source
 
-class TemporaryFolder(override val fileSystem: FileSystem = FileSystem.SYSTEM) :
+class TemporaryFolder(override val fileSystem: FileSystem = SYSTEM) :
   ITemporaryFolder, TestInterceptor {
   private lateinit var mutableRoot: Path
   override val root: Path
@@ -26,7 +26,7 @@ class TemporaryFolder(override val fileSystem: FileSystem = FileSystem.SYSTEM) :
     }
 }
 
-class CoTemporaryFolder(override val fileSystem: FileSystem = FileSystem.SYSTEM) :
+class CoTemporaryFolder(override val fileSystem: FileSystem = SYSTEM) :
   ITemporaryFolder, CoroutineTestInterceptor {
   private lateinit var mutableRoot: Path
   override val root: Path

@@ -20,7 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -34,7 +34,7 @@ internal fun BudgetStateText(
   state: BudgetState,
   modifier: Modifier = Modifier,
 ) {
-  Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+  Row(modifier = modifier, verticalAlignment = CenterVertically) {
     val text = state.text()
     val color = state.color(colors)
 
@@ -54,34 +54,34 @@ internal fun BudgetStateText(
 @Composable
 private fun BudgetState.text(): String =
   when (this) {
-    BudgetState.Local -> Strings.budgetStateLocal
-    BudgetState.Remote -> Strings.budgetStateRemote
-    BudgetState.Synced -> Strings.budgetStateSynced
-    BudgetState.Detached -> Strings.budgetStateDetached
-    BudgetState.Broken -> Strings.budgetStateBroken
-    BudgetState.Unknown -> Strings.budgetStateUnknown
+    Local -> Strings.budgetStateLocal
+    Remote -> Strings.budgetStateRemote
+    Synced -> Strings.budgetStateSynced
+    Detached -> Strings.budgetStateDetached
+    Broken -> Strings.budgetStateBroken
+    Unknown -> Strings.budgetStateUnknown
   }
 
 @Stable
 private fun BudgetState.icon(): ImageVector =
   when (this) {
-    BudgetState.Local -> AktualIcons.FileDouble
-    BudgetState.Remote -> AktualIcons.CloudDownload
-    BudgetState.Synced -> AktualIcons.CloudCheck
-    BudgetState.Detached -> AktualIcons.CloudWarning
-    BudgetState.Broken -> AktualIcons.CloudWarning
-    BudgetState.Unknown -> AktualIcons.CloudUnknown
+    Local -> AktualIcons.FileDouble
+    Remote -> AktualIcons.CloudDownload
+    Synced -> AktualIcons.CloudCheck
+    Detached -> AktualIcons.CloudWarning
+    Broken -> AktualIcons.CloudWarning
+    Unknown -> AktualIcons.CloudUnknown
   }
 
 @Stable
 private fun BudgetState.color(colors: Colors): Color =
   when (this) {
-    BudgetState.Broken -> colors.errorText
-    BudgetState.Detached -> colors.warningText
-    BudgetState.Local -> colors.pageTextPositive
-    BudgetState.Remote -> colors.reportsBlue
-    BudgetState.Synced -> colors.reportsGreen
-    BudgetState.Unknown -> colors.reportsGray
+    Broken -> colors.errorText
+    Detached -> colors.warningText
+    Local -> colors.pageTextPositive
+    Remote -> colors.reportsBlue
+    Synced -> colors.reportsGreen
+    Unknown -> colors.reportsGray
   }
 
 @Preview

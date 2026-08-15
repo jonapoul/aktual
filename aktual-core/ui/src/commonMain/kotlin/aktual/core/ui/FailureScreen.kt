@@ -17,12 +17,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -39,7 +37,7 @@ fun FailureCard(
 ) {
   Column(
     modifier = modifier.padding(30.dp).background(background, CardShape).padding(30.dp),
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
   ) {
     if (icon != null) {
       Icon(
@@ -55,9 +53,9 @@ fun FailureCard(
     Text(
       text = title,
       color = colors.warningText,
-      textAlign = TextAlign.Center,
+      textAlign = Center,
       fontSize = 20.sp,
-      fontWeight = FontWeight.Bold,
+      fontWeight = Bold,
     )
 
     if (reason != null) {
@@ -67,7 +65,7 @@ fun FailureCard(
         text = reason,
         color = colors.warningTextDark,
         fontSize = 16.sp,
-        textAlign = TextAlign.Center,
+        textAlign = Center,
       )
     }
 
@@ -91,9 +89,9 @@ fun FailureScreen(
   action: FailureAction?,
   modifier: Modifier = Modifier,
   icon: ImageVector? = AktualIcons.CloudWarning,
-  background: Color = Color.Transparent,
+  background: Color = Transparent,
 ) {
-  Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+  Box(modifier = modifier.fillMaxSize(), contentAlignment = Center) {
     Column {
       FailureCard(
         title = title,

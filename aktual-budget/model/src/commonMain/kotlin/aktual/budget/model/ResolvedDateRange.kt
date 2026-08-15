@@ -1,8 +1,6 @@
 package aktual.budget.model
 
 import androidx.compose.runtime.Immutable
-import kotlinx.datetime.DateTimeUnit.Companion.DAY
-import kotlinx.datetime.DateTimeUnit.Companion.MONTH
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 

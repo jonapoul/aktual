@@ -2,8 +2,10 @@ package aktual.metrics.vm
 
 import aktual.api.client.MetricsApi
 import aktual.di.LoggedInScope
+import aktual.metrics.vm.MetricsState.Failure
 import alakazam.kotlin.CoroutineContexts
 import alakazam.kotlin.requireMessage
+import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.zacsweers.metro.ContributesIntoMap
@@ -21,6 +23,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import logcat.logcat
 
+@Stable
 @ViewModelKey
 @ContributesIntoMap(LoggedInScope::class)
 class MetricsViewModel(
@@ -29,7 +32,7 @@ class MetricsViewModel(
   private val clock: Clock,
 ) : ViewModel() {
   private val fetchCount = MutableStateFlow(value = 0)
-  private val mutableState = MutableStateFlow<MetricsState>(MetricsState.Loading)
+  private val mutableState = MutableStateFlow<MetricsState>(Loading)
 
   val state: StateFlow<MetricsState> = mutableState.asStateFlow()
 
@@ -43,7 +46,7 @@ class MetricsViewModel(
 
   private suspend fun fetchMetrics(counter: Int) {
     logcat.d { "fetchMetrics counter=$counter" }
-    mutableState.update { MetricsState.Loading }
+    mutableState.update { Loading }
     try {
       val response = withContext(contexts.io) { metricsApi.getMetrics() }
       logcat.v { "fetchMetrics success: $response" }
@@ -53,13 +56,13 @@ class MetricsViewModel(
       throw e
     } catch (e: IOException) {
       logcat.e(e) { "Failed I/O when fetching metrics" }
-      mutableState.update { MetricsState.Disconnected }
+      mutableState.update { Disconnected }
     } catch (e: SerializationException) {
       logcat.e(e) { "Failed deserializing metrics response" }
-      mutableState.update { MetricsState.Failure(e.requireMessage()) }
+      mutableState.update { Failure(e.requireMessage()) }
     } catch (e: Exception) {
       logcat.e(e) { "Failed fetching metrics" }
-      mutableState.update { MetricsState.Failure(e.requireMessage()) }
+      mutableState.update { Failure(e.requireMessage()) }
     }
   }
 }

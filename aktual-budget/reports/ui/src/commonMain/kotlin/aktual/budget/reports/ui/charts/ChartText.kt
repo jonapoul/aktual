@@ -32,9 +32,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -71,9 +68,9 @@ internal fun TextChart(
           keyboardOptions =
             KeyboardOptions(
               autoCorrectEnabled = true,
-              capitalization = KeyboardCapitalization.Sentences,
-              keyboardType = KeyboardType.Text,
-              imeAction = ImeAction.None,
+              capitalization = Sentences,
+              keyboardType = Text,
+              imeAction = None,
             ),
         )
       } else {

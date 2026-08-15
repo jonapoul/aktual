@@ -3,7 +3,6 @@ package aktual.budget.model
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -19,7 +18,7 @@ data class CsvMappings(
 )
 
 private object StringIntSerializer : KSerializer<Int> {
-  override val descriptor = PrimitiveSerialDescriptor(serialName = "Int", PrimitiveKind.STRING)
+  override val descriptor = PrimitiveSerialDescriptor(serialName = "Int", STRING)
 
   override fun deserialize(decoder: Decoder): Int = decoder.decodeString().toInt()
 

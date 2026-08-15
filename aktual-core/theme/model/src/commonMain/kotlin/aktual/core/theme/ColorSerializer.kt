@@ -3,13 +3,12 @@ package aktual.core.theme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
 
 internal object ColorSerializer : KSerializer<Color> {
-  override val descriptor = PrimitiveSerialDescriptor("Color", PrimitiveKind.STRING)
+  override val descriptor = PrimitiveSerialDescriptor("Color", STRING)
 
   @Suppress("MagicNumber")
   override fun serialize(encoder: Encoder, value: Color) {

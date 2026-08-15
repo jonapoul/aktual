@@ -11,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 
@@ -23,18 +22,18 @@ internal fun LoginFailureText(
 ) {
   val errorMessage =
     when (result) {
-      is LoginResult.InvalidPassword -> Strings.loginFailurePassword
-      is LoginResult.TokenExpired -> Strings.loginFailureTokenExpired
-      is LoginResult.HttpFailure -> Strings.loginFailureHttp(result.code, result.message)
-      is LoginResult.NetworkFailure -> Strings.loginFailureNetwork(result.reason)
-      is LoginResult.OtherFailure -> Strings.loginFailureOther(result.reason)
+      is InvalidPassword -> Strings.loginFailurePassword
+      is TokenExpired -> Strings.loginFailureTokenExpired
+      is HttpFailure -> Strings.loginFailureHttp(result.code, result.message)
+      is NetworkFailure -> Strings.loginFailureNetwork(result.reason)
+      is OtherFailure -> Strings.loginFailureOther(result.reason)
     }
 
   Text(
     modifier = modifier.testTag(Tags.LoginFailureText),
     text = errorMessage,
     color = colors.errorText,
-    textAlign = TextAlign.Center,
+    textAlign = Center,
   )
 }
 

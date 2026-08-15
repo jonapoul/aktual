@@ -225,7 +225,7 @@ internal fun List{Name}Item(
         .fillMaxWidth()
         .clip(RowShape)
         .background(colors.tableBackground, RowShape)
-        .border(Dp.Hairline, colors.tableBorder, RowShape)
+        .border(Hairline, colors.tableBorder, RowShape)
         .padding(List{Name}DS.itemCardPadding)
         .clickable { /* TODO: onAction(Open(item.id)) */ },
     horizontalArrangement = Arrangement.spacedBy(List{Name}DS.itemContentSpacing, Alignment.Start),
@@ -242,14 +242,14 @@ internal fun ShimmerList{Name}Item(
   modifier: Modifier = Modifier,
   theme: Theme = LocalTheme.current,
 ) {
-  val shimmer = rememberShimmer(ShimmerBounds.Window)
+  val shimmer = rememberShimmer(Window)
   Row(
     modifier =
       modifier
         .fillMaxWidth()
         .clip(RowShape)
         .background(colors.tableBackground, RowShape)
-        .border(Dp.Hairline, colors.tableBorder, RowShape)
+        .border(Hairline, colors.tableBorder, RowShape)
         .padding(List{Name}DS.itemCardPadding)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.spacedBy(List{Name}DS.itemContentSpacing),

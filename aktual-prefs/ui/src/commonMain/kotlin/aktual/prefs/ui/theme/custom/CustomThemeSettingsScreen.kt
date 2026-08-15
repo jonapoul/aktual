@@ -44,12 +44,10 @@ import aktual.core.ui.radioButton
 import aktual.core.ui.rememberBlurredTopBarState
 import aktual.core.ui.scrollbar
 import aktual.core.ui.transparentTopAppBarColors
-import aktual.prefs.vm.theme.custom.CacheState
 import aktual.prefs.vm.theme.custom.CatalogItem
 import aktual.prefs.vm.theme.custom.CatalogState
 import aktual.prefs.vm.theme.custom.CustomThemeEvent
 import aktual.prefs.vm.theme.custom.CustomThemeSettingsViewModel
-import aktual.prefs.vm.theme.custom.ThemeFilter
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -84,15 +82,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import dev.zacsweers.metrox.viewmodel.metroViewModel
@@ -112,7 +107,7 @@ fun CustomThemeSettingsScreen(
   var bottomSheet by remember { mutableStateOf<BottomSheet?>(null) }
 
   LaunchedEffect(state) {
-    if (state !is CatalogState.Success) {
+    if (state !is Success) {
       bottomSheet = null
     }
   }
@@ -188,8 +183,8 @@ private fun CustomThemeSettingsScaffold(
       BlurredPullToRefreshBox(
         modifier = Modifier.padding(horizontal = 8.dp),
         onRefresh = { onAction(RetryFetchCatalog) },
-        isRefreshing = state is CatalogState.Loading,
-        contentAlignment = Alignment.Center,
+        isRefreshing = state is Loading,
+        contentAlignment = Center,
         blurState = blurState,
         innerPadding = innerPadding,
       ) { padding ->
@@ -203,7 +198,7 @@ private fun CustomThemeSettingsScaffold(
     }
   }
 
-  if (state is CatalogState.Success) {
+  if (state is Success) {
     when (bottomSheet) {
       is ThemeFilterBottomSheet -> ThemeFilterBottomSheet(bottomSheet.value, onAction, sheetState)
       is ThemeSortingBottomSheet -> ThemeSortingBottomSheet(bottomSheet.value, onAction, sheetState)
@@ -217,7 +212,7 @@ private fun FilterButton(state: CatalogState, onAction: CustomThemeSettingsActio
   BareIconButton(
     imageVector = MaterialIcons.FilterList,
     contentDescription = Strings.settingsThemeFilter,
-    enabled = state !is CatalogState.Loading,
+    enabled = state !is Loading,
     onClick = { onAction(ShowFilterSheet) },
   )
 }
@@ -227,7 +222,7 @@ private fun SortButton(state: CatalogState, onAction: CustomThemeSettingsActionH
   BareIconButton(
     imageVector = MaterialIcons.Sort,
     contentDescription = Strings.settingsThemeSort,
-    enabled = state !is CatalogState.Loading,
+    enabled = state !is Loading,
     onClick = { onAction(ShowSortSheet) },
   )
 }
@@ -241,10 +236,9 @@ private fun CustomThemeSettingsContent(
   modifier: Modifier = Modifier,
 ) {
   when (state) {
-    CatalogState.Loading -> LoadingContent(contentPadding, modifier)
-    is CatalogState.Failed -> FailedContent(state, onAction, modifier)
-    is CatalogState.Success ->
-      SuccessContent(state.items, listState, contentPadding, onAction, modifier)
+    Loading -> LoadingContent(contentPadding, modifier)
+    is Failed -> FailedContent(state, onAction, modifier)
+    is Success -> SuccessContent(state.items, listState, contentPadding, onAction, modifier)
   }
 }
 
@@ -256,7 +250,7 @@ private fun FailedContent(
 ) {
   val cause =
     when (state) {
-      CatalogState.Failed.FetchingCatalog -> Strings.settingsThemeRefreshFailure
+      FetchingCatalog -> Strings.settingsThemeRefreshFailure
     }
 
   FailureScreen(
@@ -286,7 +280,7 @@ private fun LoadingContent(contentPadding: PaddingValues, modifier: Modifier = M
 
 @Composable
 private fun LoadingItem(modifier: Modifier = Modifier) {
-  val shimmer = rememberShimmer(ShimmerBounds.Window)
+  val shimmer = rememberShimmer(Window)
 
   Row(
     modifier =
@@ -294,11 +288,11 @@ private fun LoadingItem(modifier: Modifier = Modifier) {
         .fillMaxWidth()
         .clip(RowShape)
         .background(colors.cardBackground, RowShape)
-        .border(Dp.Hairline, colors.pillBorderDark, RowShape)
+        .border(Hairline, colors.pillBorderDark, RowShape)
         .padding(ITEM_PADDING)
         .shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     // Checkbox
     Box(
@@ -372,18 +366,18 @@ internal fun CustomThemeItem(
   onAction: CustomThemeSettingsActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val enabled = item.state !is CacheState.Fetching
+  val enabled = item.state !is Fetching
   Row(
     modifier =
       modifier
         .fillMaxWidth()
         .clip(RowShape)
         .background(colors.cardBackground, RowShape)
-        .border(Dp.Hairline, colors.pillBorderDark, RowShape)
+        .border(Hairline, colors.pillBorderDark, RowShape)
         .clickable(enabled) { onAction(SelectTheme(item.summary)) }
         .padding(ITEM_PADDING),
     horizontalArrangement = Arrangement.Start,
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     RadioButton(
       modifier = Modifier.padding(8.dp),
@@ -397,20 +391,20 @@ internal fun CustomThemeItem(
       modifier = Modifier.weight(1f).padding(horizontal = 4.dp),
       verticalArrangement = Arrangement.spacedBy(6.dp),
     ) {
-      Row(verticalAlignment = Alignment.CenterVertically) {
+      Row(verticalAlignment = CenterVertically) {
         Column(modifier = Modifier.weight(1f)) {
           Text(
             text = item.summary.name,
             style = typography.bodyLarge,
             color = colors.buttonNormalText.disabledIf(!enabled),
-            overflow = TextOverflow.Ellipsis,
+            overflow = Ellipsis,
           )
 
           Text(
             text = item.summary.repo.toString(),
             style = typography.labelMedium,
             color = colors.pageTextSubdued.disabledIf(!enabled),
-            overflow = TextOverflow.Ellipsis,
+            overflow = Ellipsis,
           )
         }
 
@@ -418,17 +412,17 @@ internal fun CustomThemeItem(
           modifier = Modifier.padding(4.dp).size(25.dp),
           imageVector =
             when (item.state) {
-              is CacheState.Cached -> MaterialIcons.OfflinePin
-              is CacheState.Failed -> AktualIcons.CloudWarning
-              CacheState.Fetching -> MaterialIcons.Sync
-              CacheState.Remote -> AktualIcons.Cloud
+              is Cached -> MaterialIcons.OfflinePin
+              is Failed -> AktualIcons.CloudWarning
+              Fetching -> MaterialIcons.Sync
+              Remote -> AktualIcons.Cloud
             },
           tint =
             when (item.state) {
-              is CacheState.Cached -> colors.pageText
-              is CacheState.Failed -> colors.errorText
-              CacheState.Fetching -> colors.pageTextSubdued
-              CacheState.Remote -> colors.pageText
+              is Cached -> colors.pageText
+              is Failed -> colors.errorText
+              Fetching -> colors.pageTextSubdued
+              Remote -> colors.pageText
             },
           contentDescription = null,
         )
@@ -488,11 +482,11 @@ private val SUCCESS_STATE =
 
 private class CatalogStateProvider :
   ColoredParameterProvider<CustomThemeSettingsParams>(
-    CustomThemeSettingsParams(CatalogState.Loading),
+    CustomThemeSettingsParams(Loading),
     CustomThemeSettingsParams(CatalogState.Failed.FetchingCatalog),
     CustomThemeSettingsParams(SUCCESS_STATE),
     CustomThemeSettingsParams(
       SUCCESS_STATE,
-      bottomSheet = ThemeFilterBottomSheet(ThemeFilter.Dark),
+      bottomSheet = ThemeFilterBottomSheet(Dark),
     ),
   )

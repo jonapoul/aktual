@@ -3,8 +3,11 @@ package aktual.about.vm
 import aktual.about.data.Apache2
 import aktual.about.data.ArtifactDetail
 import aktual.about.data.ArtifactScm
-import aktual.about.data.LicensesLoadState
+import aktual.about.data.LicensesLoadState.Failure
+import aktual.about.data.LicensesLoadState.Success
 import aktual.about.data.LicensesRepository
+import aktual.about.vm.LicensesState.Error
+import aktual.about.vm.LicensesState.Loaded
 import aktual.core.UrlOpener
 import aktual.test.assertThatNextEmissionIsEqualTo
 import androidx.lifecycle.SavedStateHandle
@@ -40,23 +43,23 @@ class LicensesViewModelTest {
   fun `Reload data after failure`() = runTest {
     // Given the repository data access fails
     val message = "something broke"
-    coEvery { repository.loadLicenses() } returns LicensesLoadState.Failure(message)
+    coEvery { repository.loadLicenses() } returns Failure(message)
 
     // When
     buildViewModel()
 
     viewModel.licensesState.test {
       // Then an error state is returned
-      assertThatNextEmissionIsEqualTo(LicensesState.Error(message))
+      assertThatNextEmissionIsEqualTo(Error(message))
 
       // Given the repo now fetches successfully
-      coEvery { repository.loadLicenses() } returns LicensesLoadState.Success(listOf(EXAMPLE_MODEL))
+      coEvery { repository.loadLicenses() } returns Success(listOf(EXAMPLE_MODEL))
 
       // When
       viewModel.load()
 
       // Then a success state is returned
-      assertThatNextEmissionIsEqualTo(LicensesState.Loading)
+      assertThatNextEmissionIsEqualTo(Loading)
       assertLoaded(EXAMPLE_MODEL)
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
@@ -66,14 +69,14 @@ class LicensesViewModelTest {
   @Test
   fun `Handle empty licenses list`() = runTest {
     // Given the repo now fetches successfully, but nothing is in the list
-    coEvery { repository.loadLicenses() } returns LicensesLoadState.Success(emptyList())
+    coEvery { repository.loadLicenses() } returns Success(emptyList())
 
     // When
     buildViewModel()
 
     viewModel.licensesState.test {
       // Then
-      assertThatNextEmissionIsEqualTo(LicensesState.NoneFound)
+      assertThatNextEmissionIsEqualTo(NoneFound)
       expectNoEvents()
       cancelAndIgnoreRemainingEvents()
     }
@@ -95,7 +98,7 @@ class LicensesViewModelTest {
   fun `Open and close search`() = runTest {
     // Given the repo fetches a library successfully
     val models = listOf(EXAMPLE_MODEL)
-    coEvery { repository.loadLicenses() } returns LicensesLoadState.Success(models)
+    coEvery { repository.loadLicenses() } returns Success(models)
 
     // When
     buildViewModel()
@@ -122,7 +125,7 @@ class LicensesViewModelTest {
     val urlLib = EXAMPLE_MODEL.copy(scm = ArtifactScm("www.url.com"))
     val licenseLib = EXAMPLE_MODEL.copy(spdxLicenses = setOf(Apache2.copy(identifier = "MIT")))
     val allLibraries = listOf(basicLib, projectLib, versionLib, urlLib, licenseLib)
-    coEvery { repository.loadLicenses() } returns LicensesLoadState.Success(allLibraries)
+    coEvery { repository.loadLicenses() } returns Success(allLibraries)
 
     buildViewModel()
 
@@ -172,7 +175,7 @@ class LicensesViewModelTest {
     isSearchActive: Boolean = false,
   ) {
     assertThatNextEmissionIsEqualTo(
-      LicensesState.Loaded(
+      Loaded(
         artifacts = models.toImmutableList(),
         filterText = filterText,
         isSearchActive = isSearchActive,
