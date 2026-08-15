@@ -6,7 +6,6 @@ import dev.zacsweers.metro.Inject
 import github.api.GithubApi
 import github.api.model.GithubRelease
 import io.ktor.client.plugins.ResponseException
-import io.ktor.http.HttpStatusCode
 import io.ktor.serialization.JsonConvertException
 import java.io.IOException
 import kotlinx.coroutines.CancellationException
@@ -56,8 +55,8 @@ class GithubRepository(
     val errorMessage =
       when (this) {
         is ResponseException ->
-          if (response.status == HttpStatusCode.NotFound) {
-            return LatestReleaseState.PrivateRepo
+          if (response.status == NotFound) {
+            return PrivateRepo
           } else {
             with(response.status) { "HTTP error $value: $description" }
           }

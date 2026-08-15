@@ -33,7 +33,7 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
       JsonCustomColors(
         name = summary.name,
         repo = summary.repo,
-        isLight = summary.mode == ThemeMode.Light,
+        isLight = summary.mode == Light,
         page =
           PageColors(
             pageBackground = pageBackground,

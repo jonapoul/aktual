@@ -17,7 +17,7 @@ sealed interface ManageStorageState {
     val budgets: ImmutableList<BudgetStorageItem>,
     val cacheSize: Bytes,
     val otherSize: Bytes,
-    val dialog: StorageDialog = StorageDialog.None,
+    val dialog: StorageDialog = None,
   ) : ManageStorageState
 }
 

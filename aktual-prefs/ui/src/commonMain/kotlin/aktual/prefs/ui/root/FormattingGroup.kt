@@ -80,33 +80,33 @@ internal fun FormattingGroup(state: FormatConfigState, modifier: Modifier = Modi
 @Stable
 private fun NumberFormat.string(): String =
   when (this) {
-    NumberFormat.CommaDot -> "123,456.78"
-    NumberFormat.DotComma -> "123.456,78"
-    NumberFormat.SpaceComma -> "123 456,78"
-    NumberFormat.ApostropheDot -> "123'456.78"
-    NumberFormat.CommaDotIn -> "1,23,456.78"
+    CommaDot -> "123,456.78"
+    DotComma -> "123.456,78"
+    SpaceComma -> "123 456,78"
+    ApostropheDot -> "123'456.78"
+    CommaDotIn -> "1,23,456.78"
   }
 
 @Composable
 private fun DateFormat.label(): String =
   when (this) {
-    DateFormat.MmDdYyyy -> Strings.settingsDateFormatMmDdYyyy
-    DateFormat.DdMmYyyy -> Strings.settingsDateFormatDdMmYyyy
-    DateFormat.YyyyMmDd -> Strings.settingsDateFormatYyyyMmDd
-    DateFormat.MmDdYyyyDot -> Strings.settingsDateFormatMmDdYyyyDot
-    DateFormat.DdMmYyyyDot -> Strings.settingsDateFormatDdMmYyyyDot
+    MmDdYyyy -> Strings.settingsDateFormatMmDdYyyy
+    DdMmYyyy -> Strings.settingsDateFormatDdMmYyyy
+    YyyyMmDd -> Strings.settingsDateFormatYyyyMmDd
+    MmDdYyyyDot -> Strings.settingsDateFormatMmDdYyyyDot
+    DdMmYyyyDot -> Strings.settingsDateFormatDdMmYyyyDot
   }
 
 @Composable
 private fun FirstDayOfWeek.string(): String =
   when (this) {
-    FirstDayOfWeek.Sunday -> Strings.weekSunday
-    FirstDayOfWeek.Monday -> Strings.weekMonday
-    FirstDayOfWeek.Tuesday -> Strings.weekTuesday
-    FirstDayOfWeek.Wednesday -> Strings.weekWednesday
-    FirstDayOfWeek.Thursday -> Strings.weekThursday
-    FirstDayOfWeek.Friday -> Strings.weekFriday
-    FirstDayOfWeek.Saturday -> Strings.weekSaturday
+    Sunday -> Strings.weekSunday
+    Monday -> Strings.weekMonday
+    Tuesday -> Strings.weekTuesday
+    Wednesday -> Strings.weekWednesday
+    Thursday -> Strings.weekThursday
+    Friday -> Strings.weekFriday
+    Saturday -> Strings.weekSaturday
   }
 
 @Preview
@@ -135,9 +135,9 @@ private data class FormattingGroupState(
 private class FormattingGroupProvider :
   ColoredParameterProvider<FormattingGroupState>(
     FormattingGroupState(
-      numberFormat = NumberFormat.CommaDot,
+      numberFormat = CommaDot,
       hideFraction = true,
-      dateFormat = DateFormat.MmDdYyyy,
-      firstDayOfWeek = FirstDayOfWeek.Monday,
+      dateFormat = MmDdYyyy,
+      firstDayOfWeek = Monday,
     )
   )

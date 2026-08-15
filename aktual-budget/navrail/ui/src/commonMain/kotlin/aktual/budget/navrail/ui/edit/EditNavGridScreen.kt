@@ -59,10 +59,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -134,7 +132,7 @@ private fun EditNavGridScaffold(
           Text(
             text = Strings.budgetNavGridEditTitle,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+            overflow = Ellipsis,
           )
         },
         actions = {
@@ -268,7 +266,7 @@ private fun LazyGridItemScope.ReorderableNavGridItem(
             color = if (isDragging) colors.pillBackgroundSelected else colors.pillBackground,
             shape = CardShape,
           ),
-      contentAlignment = Alignment.Center,
+      contentAlignment = Center,
     ) {
       NavSheetItem(
         modifier =
@@ -295,7 +293,7 @@ private fun ToggleNavGridItem(modifier: Modifier = Modifier) {
         .padding(Dimens.Medium)
         .fillMaxWidth()
         .background(color = colors.pillBackground, shape = CardShape),
-    contentAlignment = Alignment.Center,
+    contentAlignment = Center,
   ) {
     NavSheetItem(
       modifier = Modifier.graphicsLayer { alpha = TOGGLE_SLOT_ALPHA },

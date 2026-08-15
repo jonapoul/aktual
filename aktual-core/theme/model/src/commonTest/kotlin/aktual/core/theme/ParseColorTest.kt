@@ -67,7 +67,7 @@ class ParseColorTest {
   @Test
   fun transparent() {
     // --color-buttonMenuBackground: transparent
-    assertThat("transparent".parseColor()).isEqualTo(Color.Transparent)
+    assertThat("transparent".parseColor()).isEqualTo(Transparent)
   }
 
   // --- errors ---

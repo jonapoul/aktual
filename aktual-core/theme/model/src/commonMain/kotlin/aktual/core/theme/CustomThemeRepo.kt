@@ -3,7 +3,6 @@ package aktual.core.theme
 import androidx.compose.runtime.Immutable
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -29,7 +28,7 @@ fun CustomThemeRepo(string: String): CustomThemeRepo {
 
 // E.g. "Juulz/simple-dark"
 internal object CustomThemeRepoSerializer : KSerializer<CustomThemeRepo> {
-  override val descriptor = PrimitiveSerialDescriptor("ThemeRepo", PrimitiveKind.STRING)
+  override val descriptor = PrimitiveSerialDescriptor("ThemeRepo", STRING)
 
   override fun serialize(encoder: Encoder, value: CustomThemeRepo) =
     encoder.encodeString(value.toString())

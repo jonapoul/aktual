@@ -31,14 +31,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color.Companion.Transparent
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -79,11 +77,11 @@ internal fun Content(
   onDeleteLocal: () -> Unit,
   onDeleteRemote: () -> Unit,
 ) {
-  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
+  Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = CenterHorizontally) {
     Text(text = annotatedString(), fontSize = 14.sp)
 
     var hasPressedDeleteButton by remember { mutableStateOf(false) }
-    val isNotDeleting = deletingState is DeletingState.Inactive
+    val isNotDeleting = deletingState is Inactive
 
     var firstCheckbox by remember { mutableStateOf(false) }
     var secondCheckbox by remember { mutableStateOf(false) }
@@ -100,7 +98,7 @@ internal fun Content(
       text = Strings.budgetDeleteDialogHostedButton,
       colors = { pressed -> colors.errorPrimary(pressed) },
       isEnabled = isNotDeleting && firstCheckbox && secondCheckbox,
-      isLoading = deletingState is DeletingState.Active && deletingState.deletingRemote,
+      isLoading = deletingState is Active && deletingState.deletingRemote,
       onClick = {
         hasPressedDeleteButton = true
         onDeleteRemote()
@@ -114,7 +112,7 @@ internal fun Content(
         text = Strings.budgetDeleteDialogLocalButton,
         colors = { pressed -> colors.errorBare(pressed) },
         isEnabled = isNotDeleting,
-        isLoading = deletingState is DeletingState.Active && deletingState.deletingLocal,
+        isLoading = deletingState is Active && deletingState.deletingLocal,
         onClick = {
           hasPressedDeleteButton = true
           onDeleteLocal()
@@ -136,7 +134,7 @@ private fun LoadableBareTextButton(
   colors: @Composable (Boolean) -> ButtonColors,
   modifier: Modifier = Modifier,
 ) =
-  Box(modifier = modifier, contentAlignment = Alignment.Center) {
+  Box(modifier = modifier, contentAlignment = Center) {
     BareTextButton(
       text = text,
       colors = colors,
@@ -145,7 +143,7 @@ private fun LoadableBareTextButton(
       style = if (isLoading) TextStyle(color = Transparent) else typography.buttonTextStyle,
     )
 
-    Box(modifier = modifier.padding(IconPadding), contentAlignment = Alignment.Center) {
+    Box(modifier = modifier.padding(IconPadding), contentAlignment = Center) {
       AnimatedLoading(modifier = Modifier.size(IconSize).alpha(if (isLoading) 1f else 0f))
     }
   }
@@ -155,7 +153,7 @@ private fun LoadableBareTextButton(
 fun annotatedString() = buildAnnotatedString {
   append(Strings.budgetDeleteDialogHostedTxt1)
   append(" ")
-  withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+  withStyle(SpanStyle(fontWeight = Bold)) {
     append(Strings.budgetDeleteDialogHostedTxt2)
   }
   append(" ")
@@ -198,7 +196,7 @@ private data class DeleteBudgetDialogParams(val state: DeletingState, val localF
 
 private class DeleteBudgetDialogProvider :
   ColoredParameterProvider<DeleteBudgetDialogParams>(
-    DeleteBudgetDialogParams(state = DeletingState.Inactive, localFileExists = true),
+    DeleteBudgetDialogParams(state = Inactive, localFileExists = true),
     DeleteBudgetDialogParams(
       state = DeletingState.Active(deletingLocal = true),
       localFileExists = true,

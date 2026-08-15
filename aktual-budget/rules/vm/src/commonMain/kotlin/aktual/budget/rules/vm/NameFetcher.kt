@@ -43,15 +43,15 @@ class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
   override fun name(field: Field, id: String): Flow<String?> = flow {
     emit(
       when (field) {
-        Field.Acct,
-        Field.Account -> accounts.name(AccountId(id))
+        Acct,
+        Account -> accounts.name(AccountId(id))
 
-        Field.Category -> categories.name(CategoryId(id))
+        Category -> categories.name(CategoryId(id))
 
-        Field.CategoryGroup -> categoryGroups.name(CategoryGroupId(id))
+        CategoryGroup -> categoryGroups.name(CategoryGroupId(id))
 
-        Field.Description,
-        Field.Payee -> payees.name(PayeeId(id))
+        Description,
+        Payee -> payees.name(PayeeId(id))
 
         else -> "NOT HANDLED YET: $field - $id"
       }
@@ -63,15 +63,15 @@ class NameFetcherImpl(database: BudgetDatabase) : NameFetcher {
   override fun names(field: Field, ids: List<String>): Flow<JsonArray> = flow {
     emit(
       when (field) {
-        Field.Acct,
-        Field.Account -> accounts.names(ids.map(::AccountId)).toJsonArray()
+        Acct,
+        Account -> accounts.names(ids.map(::AccountId)).toJsonArray()
 
-        Field.Category -> categories.names(ids.map(::CategoryId)).toJsonArray()
+        Category -> categories.names(ids.map(::CategoryId)).toJsonArray()
 
-        Field.CategoryGroup -> categoryGroups.names(ids.map(::CategoryGroupId)).toJsonArray()
+        CategoryGroup -> categoryGroups.names(ids.map(::CategoryGroupId)).toJsonArray()
 
-        Field.Description,
-        Field.Payee -> payees.names(ids.map(::PayeeId)).toJsonArray()
+        Description,
+        Payee -> payees.names(ids.map(::PayeeId)).toJsonArray()
 
         else -> buildJsonArray { add(JsonPrimitive("NOT HANDLED YET: $field - $ids")) }
       }

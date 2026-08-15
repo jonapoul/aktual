@@ -4,7 +4,6 @@ import aktual.budget.model.TagId
 import aktual.budget.model.TagSort
 import aktual.budget.tags.vm.list.Empty
 import aktual.budget.tags.vm.list.Failure
-import aktual.budget.tags.vm.list.ListTagsEvent
 import aktual.budget.tags.vm.list.ListTagsState
 import aktual.budget.tags.vm.list.ListTagsViewModel
 import aktual.budget.tags.vm.list.Loading
@@ -69,7 +68,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -101,9 +99,9 @@ internal fun ListTagsScreen(
   LaunchedEffect(viewModel) {
     viewModel.events.collect { event ->
       when (event) {
-        is ListTagsEvent.Deleted -> snackbar.showDeleted(event, onUndo = viewModel::undoDelete)
-        is ListTagsEvent.DeleteFailed -> snackbar.showDeleteFailed(event)
-        is ListTagsEvent.RestoreFailed -> snackbar.showRestoreFailed(event)
+        is Deleted -> snackbar.showDeleted(event, onUndo = viewModel::undoDelete)
+        is DeleteFailed -> snackbar.showDeleteFailed(event)
+        is RestoreFailed -> snackbar.showRestoreFailed(event)
       }
     }
   }
@@ -196,7 +194,7 @@ private fun ListTagsScaffold(
 
       BlurredPullToRefreshBox(
         modifier = Modifier.padding(ListTagsDS.listPadding),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Center,
         onRefresh = { onAction(Refresh) },
         isRefreshing = isRefreshing,
         blurState = blurState,

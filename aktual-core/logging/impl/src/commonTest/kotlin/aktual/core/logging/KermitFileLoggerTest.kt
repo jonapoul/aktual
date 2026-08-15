@@ -30,7 +30,7 @@ class KermitFileLoggerTest {
   fun before() {
     LogcatLogger.uninstall()
     LogcatLogger.install()
-    fileSystem = FileSystem.SYSTEM
+    fileSystem = SYSTEM
     logStorage = TestLogStorage(temporaryFolder.newFolder("log"))
 
     // Sat Feb 07 2026 16:15:22.572

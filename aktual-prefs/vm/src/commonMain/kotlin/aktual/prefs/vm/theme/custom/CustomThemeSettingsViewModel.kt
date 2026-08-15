@@ -6,10 +6,11 @@ import aktual.core.theme.CustomColors
 import aktual.core.theme.CustomThemeCache
 import aktual.core.theme.CustomThemeRepo
 import aktual.core.theme.CustomThemeSummary
-import aktual.core.theme.ThemeMode
 import aktual.di.AppScope
 import aktual.prefs.ThemePreferences
 import aktual.prefs.asStateFlow
+import aktual.prefs.vm.theme.custom.CustomThemeEvent.FailedFetching
+import aktual.prefs.vm.theme.custom.CustomThemeEvent.InspectTheme
 import alakazam.kotlin.requireMessage
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.collectAsState
@@ -17,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
@@ -28,7 +28,6 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -47,8 +46,8 @@ class CustomThemeSettingsViewModel(
   private val cache: CustomThemeCache,
 ) : ViewModel() {
   private val mutableIsFetchingCatalog = MutableStateFlow(false)
-  private val mutableFilter = MutableStateFlow(ThemeFilter.All)
-  private val mutableSorting = MutableStateFlow(ThemeSorting.ByName)
+  private val mutableFilter = MutableStateFlow<ThemeFilter>(All)
+  private val mutableSorting = MutableStateFlow<ThemeSorting>(ByName)
   private val mutableFailure = MutableStateFlow<CatalogState.Failed?>(null)
   private val mutableSummaries = MutableStateFlow(persistentListOf<CustomThemeSummary>())
   private val mutableCachedThemes = MutableStateFlow(persistentMapOf<ThemeId, CacheState>())
@@ -134,10 +133,8 @@ class CustomThemeSettingsViewModel(
     viewModelScope.launch {
       fetchThemeImpl(
         summary = summary,
-        onSuccess = { colors -> mutableEvents.tryEmit(CustomThemeEvent.InspectTheme(colors.id)) },
-        onFailure = { reason ->
-          mutableEvents.tryEmit(CustomThemeEvent.FailedFetching(reason, summary.name))
-        },
+        onSuccess = { colors -> mutableEvents.tryEmit(InspectTheme(colors.id)) },
+        onFailure = { reason -> mutableEvents.tryEmit(FailedFetching(reason, summary.name)) },
       )
     }
   }
@@ -154,7 +151,7 @@ class CustomThemeSettingsViewModel(
         updateFetchState(themeId, CacheState.Cached(summary))
         onSuccess(cached)
       } else {
-        mutableCachedThemes.update { states -> states.putting(themeId, CacheState.Fetching) }
+        mutableCachedThemes.update { states -> states.putting(themeId, Fetching) }
         val theme = themeApi.fetchTheme(summary)
         cache.save(theme)
         updateFetchState(themeId, CacheState.Cached(summary))
@@ -182,8 +179,8 @@ class CustomThemeSettingsViewModel(
       .filter { summary -> byThemeMode(filter, summary) }
       .sortedBy { summary ->
         when (sorting) {
-          ThemeSorting.ByName -> summary.name.lowercase()
-          ThemeSorting.ByRepo -> summary.repo.toString().lowercase()
+          ByName -> summary.name.lowercase()
+          ByRepo -> summary.repo.toString().lowercase()
         }
       }
       .map { summary -> toCatalogItem(summary, selected, cachedThemes) }
@@ -199,7 +196,7 @@ class CustomThemeSettingsViewModel(
       id = themeId,
       summary = summary,
       isSelected = selected == themeId,
-      state = cachedThemes[themeId] ?: CacheState.Remote,
+      state = cachedThemes[themeId] ?: Remote,
     )
   }
 
@@ -236,7 +233,7 @@ class CustomThemeSettingsViewModel(
     mutableCachedThemes.value[summary.repo.toId()]?.let {
       return it
     }
-    return if (cache.theme(summary.repo) != null) CacheState.Cached(summary) else CacheState.Remote
+    return if (cache.theme(summary.repo) != null) CacheState.Cached(summary) else Remote
   }
 
   private fun updateFetchState(themeId: ThemeId, fetchState: CacheState) {
@@ -245,9 +242,9 @@ class CustomThemeSettingsViewModel(
 
   private fun byThemeMode(filter: ThemeFilter, summary: CustomThemeSummary): Boolean =
     when (filter) {
-      ThemeFilter.All -> true
-      ThemeFilter.Light -> summary.mode == ThemeMode.Light
-      ThemeFilter.Dark -> summary.mode == ThemeMode.Dark
+      All -> true
+      Light -> summary.mode == Light
+      Dark -> summary.mode == Dark
     }
 
   private fun CustomThemeRepo.toId() = ThemeId(id)

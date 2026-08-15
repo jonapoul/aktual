@@ -21,7 +21,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metrox.viewmodel.ViewModelKey
@@ -31,7 +30,6 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.ReceiveChannel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
@@ -73,7 +71,7 @@ class ServerUrlViewModel(
     viewModelScope.launchMolecule(Immediate) {
       val confirmResult by mutableConfirmResult.collectAsState()
       val result = confirmResult
-      if (result is ConfirmResult.Failed) {
+      if (result is Failed) {
         "Failed: ${result.reason}"
       } else {
         null
@@ -99,7 +97,6 @@ class ServerUrlViewModel(
   }
 
   override fun onCleared() {
-    super.onCleared()
     clearState()
   }
 
@@ -166,10 +163,8 @@ class ServerUrlViewModel(
       logcat.v { "response = $response" }
       val confirmResult =
         when (response) {
-          is NeedsBootstrapResponse.Success ->
-            ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
-
-          is NeedsBootstrapResponse.Failure -> ConfirmResult.Failed(reason = response.reason.reason)
+          is Success -> ConfirmResult.Succeeded(isBootstrapped = response.data.bootstrapped)
+          is Failure -> ConfirmResult.Failed(reason = response.reason.reason)
         }
       mutableConfirmResult.update { confirmResult }
     } catch (e: CancellationException) {
@@ -186,21 +181,9 @@ class ServerUrlViewModel(
 
   private fun ConfirmResult?.navDestination(): NavDestination? =
     when (this) {
-      null -> {
-        null
-      }
-
-      is ConfirmResult.Failed -> {
-        null
-      }
-
-      is ConfirmResult.Succeeded -> {
-        if (isBootstrapped) {
-          NavDestination.ToLogin
-        } else {
-          NavDestination.ToBootstrap
-        }
-      }
+      null -> null
+      is Failed -> null
+      is Succeeded -> if (isBootstrapped) ToLogin else ToBootstrap
     }
 }
 

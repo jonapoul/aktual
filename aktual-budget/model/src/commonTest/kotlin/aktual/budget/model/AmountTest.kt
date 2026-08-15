@@ -1,8 +1,5 @@
 package aktual.budget.model
 
-import aktual.budget.model.NumberFormat.ApostropheDot
-import aktual.budget.model.NumberFormat.DotComma
-import aktual.budget.model.NumberFormat.SpaceComma
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import kotlin.test.Test
@@ -12,14 +9,14 @@ class AmountTest {
     get() = Amount(this)
 
   private fun Amount.toString(
-    format: NumberFormat = NumberFormat.CommaDot,
+    format: NumberFormat = CommaDot,
     hideFraction: Boolean = false,
     includeSign: Boolean = false,
     isPrivacyEnabled: Boolean = false,
   ) =
     toString(
       numberFormatConfig = NumberFormatConfig(format, hideFraction),
-      currencyConfig = CurrencyConfig(Currency.None, CurrencySymbolPosition.BeforeAmount, false),
+      currencyConfig = CurrencyConfig(None, BeforeAmount, false),
       includeSign = includeSign,
       isPrivacyEnabled = isPrivacyEnabled,
     )

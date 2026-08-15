@@ -21,7 +21,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.IntrinsicSize.Min
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
@@ -29,7 +29,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.tooling.preview.Preview
@@ -90,7 +90,7 @@ private fun BuiltInThemeItem(
   onAction: ThemeSettingsActionHandler,
 ) {
   Row(
-    modifier = Modifier.height(IntrinsicSize.Min),
+    modifier = Modifier.height(Min),
     horizontalArrangement = Arrangement.spacedBy(2.dp),
   ) {
     val isSelected = selectedId == id
@@ -103,7 +103,7 @@ private fun BuiltInThemeItem(
           onAction(SelectTheme(id))
         },
       horizontalArrangement = Arrangement.spacedBy(8.dp),
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       RadioButton(
         modifier = Modifier.padding(8.dp),

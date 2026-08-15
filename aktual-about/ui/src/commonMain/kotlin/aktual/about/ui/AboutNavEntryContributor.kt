@@ -41,12 +41,12 @@ class AboutNavEntryContributor : NavEntryContributor {
 
   private fun adjustStackIfInvalidated(stack: NavStack<NavKey>, event: StorageNavEvent) {
     when (event) {
-      is StorageNavEvent.ActiveBudgetCleared -> {
+      is ActiveBudgetCleared -> {
         stack.removeIf { it is BudgetNavRailNavRoute }
       }
 
-      is StorageNavEvent.PreferencesCleared,
-      is StorageNavEvent.AllFilesCleared -> {
+      is PreferencesCleared,
+      is AllFilesCleared -> {
         // remove all backstack screens, because we don't have a token or server URL any more
         for (i in stack.lastIndex - 1 downTo 0) {
           stack.removeAt(i)

@@ -17,7 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
@@ -76,7 +76,7 @@ private fun loadingIcon(color: Color): ImageVector =
         path(
           stroke =
             Brush.linearGradient(
-              0.0f to Color.Transparent,
+              0.0f to Transparent,
               0.631f to color.copy(alpha = 0.631f),
               1.0f to color,
               start = Offset(3.05f, 0f),
@@ -121,14 +121,14 @@ private fun loadingIcon(color: Color): ImageVector =
 @Composable
 private fun PreviewCheckUpdatesContent(@PreviewParameter(ColoredParameters::class) colors: Colors) =
   PreviewWithColors(colors) {
-    Box(modifier = Modifier.size(50.dp), contentAlignment = Alignment.Center) { AnimatedLoading() }
+    Box(modifier = Modifier.size(50.dp), contentAlignment = Center) { AnimatedLoading() }
   }
 
 @Preview
 @Composable
 private fun PreviewScaled() =
   PreviewWithColors(LightColors) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(horizontalAlignment = CenterHorizontally) {
       AnimatedLoading(modifier = Modifier.size(20.dp))
       AnimatedLoading(modifier = Modifier.size(50.dp))
       AnimatedLoading(modifier = Modifier.size(150.dp))

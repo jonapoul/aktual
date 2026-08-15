@@ -18,7 +18,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.anchoredDraggable
 import androidx.compose.foundation.gestures.animateTo
 import androidx.compose.foundation.interaction.DragInteraction
@@ -40,18 +39,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import kotlin.math.roundToInt
 
@@ -86,7 +81,7 @@ internal fun TagItem(
   val currentOnOpenChange by rememberUpdatedState(onOpenChange)
   LaunchedEffect(swipeState) {
     snapshotFlow { swipeState.settledValue }
-      .collect { settled -> currentOnOpenChange(settled == SwipeState.Open) }
+      .collect { settled -> currentOnOpenChange(settled == Open) }
   }
 
   // claim the "open" slot the moment a drag begins, so any other open row closes straight
@@ -100,8 +95,8 @@ internal fun TagItem(
 
   // when another row becomes the open one, slide this row shut
   LaunchedEffect(isOpen) {
-    if (!isOpen && swipeState.currentValue != SwipeState.Closed) {
-      swipeState.animateTo(SwipeState.Closed)
+    if (!isOpen && swipeState.currentValue != Closed) {
+      swipeState.animateTo(Closed)
     }
   }
 
@@ -124,7 +119,7 @@ internal fun TagItem(
           }
           .anchoredDraggable(
             state = swipeState,
-            orientation = Orientation.Horizontal,
+            orientation = Horizontal,
             interactionSource = interactionSource,
           ),
     )
@@ -143,11 +138,11 @@ private fun TagItemRow(
         .fillMaxWidth()
         .clip(RowShape)
         .background(colors.tableBackground, RowShape)
-        .border(Dp.Hairline, colors.tableBorder, RowShape)
+        .border(Hairline, colors.tableBorder, RowShape)
         .clickable { onAction(EditTag(tag.id)) }
         .padding(ListTagsDS.itemPadding),
     horizontalArrangement = Arrangement.spacedBy(ListTagsDS.itemHorizontalSpacing),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     Column(
       modifier = Modifier.weight(1f).alpha(if (tag.hidden) ListTagsDS.HIDDEN_ALPHA else 1f),
@@ -159,9 +154,9 @@ private fun TagItemRow(
         text = tag.description.ifEmpty { Strings.tagsNoDescription },
         style = typography.bodySmall,
         color = if (tag.description.isEmpty()) colors.tableTextLight else colors.tableText,
-        fontStyle = if (tag.description.isEmpty()) FontStyle.Italic else FontStyle.Normal,
+        fontStyle = if (tag.description.isEmpty()) Italic else Normal,
         maxLines = 5,
-        overflow = TextOverflow.Ellipsis,
+        overflow = Ellipsis,
       )
 
       if (tag.numTransactions > 0) {
@@ -170,7 +165,7 @@ private fun TagItemRow(
             Modifier.background(colors.pillBackgroundSelected, CardShape)
               .clickable { onAction(ViewTransactions(tag.id)) }
               .padding(ListTagsDS.numTransactionsPadding),
-          contentAlignment = Alignment.Center,
+          contentAlignment = Center,
         ) {
           Text(
             text = Plurals.tagsNumTransactions(tag.numTransactions, tag.numTransactions),
@@ -191,7 +186,7 @@ private fun DeleteButton(
   val background = colors.errorText
   Box(
     modifier = modifier.background(background).clickable(onClick = onClick),
-    contentAlignment = Alignment.Center,
+    contentAlignment = Center,
   ) {
     Icon(
       imageVector = MaterialIcons.Delete,
@@ -219,10 +214,10 @@ private fun TagChip(
         .background(background, ListTagsDS.chipShape)
         .padding(ListTagsDS.chipPadding),
     style = typography.bodyMedium,
-    fontWeight = FontWeight.SemiBold,
+    fontWeight = SemiBold,
     color = textColor,
     maxLines = 1,
-    overflow = TextOverflow.Ellipsis,
+    overflow = Ellipsis,
   )
 }
 

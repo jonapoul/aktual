@@ -21,7 +21,6 @@ import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -106,7 +105,7 @@ class LoginViewModel(
   fun onClickSignIn(loginMethod: LoginMethod = mutableSelectedLoginMethod.value) {
     logcat.v { "onClickSignIn with method=$loginMethod" }
     val password = mutableEnteredPassword.value
-    if (loginMethod == LoginMethod.Password && password == Password.Empty) return
+    if (loginMethod == LoginMethod.Password && password == Empty) return
     mutableIsLoading.update { true }
     mutableLoginFailure.reset()
 
@@ -121,9 +120,9 @@ class LoginViewModel(
       mutableIsLoading.update { false }
 
       when (result) {
-        is LoginResult.Failure -> mutableLoginFailure.update { result }
-        is LoginResult.Redirect -> mutableEvents.tryEmit(LoginEvent.Redirect(result.url))
-        is LoginResult.Success -> Unit // handled via token flow
+        is Failure -> mutableLoginFailure.update { result }
+        is Redirect -> mutableEvents.tryEmit(LoginEvent.Redirect(result.url))
+        is Success -> Unit // handled via token flow
       }
     }
     timeoutJob = viewModelScope.launch {

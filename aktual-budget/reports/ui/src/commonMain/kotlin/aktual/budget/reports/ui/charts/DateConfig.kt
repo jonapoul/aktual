@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -59,7 +60,7 @@ internal fun ChartDateConfig(
 
     VerticalSpacer(SPACING)
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = CenterVertically) {
       Text(modifier = Modifier.weight(1f), text = Strings.reportsDateConfigStart)
 
       HorizontalSpacer(SPACING)
@@ -74,7 +75,7 @@ internal fun ChartDateConfig(
 
     VerticalSpacer(SPACING)
 
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = CenterVertically) {
       Text(modifier = Modifier.weight(1f), text = Strings.reportsDateConfigEnd)
 
       HorizontalSpacer(SPACING)
@@ -91,7 +92,7 @@ internal fun ChartDateConfig(
 
     FlowRow(
       modifier = Modifier.fillMaxWidth(),
-      itemVerticalAlignment = Alignment.CenterVertically,
+      itemVerticalAlignment = CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(SPACING),
     ) {
       DateRangeType.entries.fastForEach { type ->
@@ -113,8 +114,8 @@ private val SPACING = 8.dp
 @Composable
 private fun DateRangeMode.string() =
   when (this) {
-    DateRangeMode.Live -> Strings.reportsDateConfigLive
-    DateRangeMode.Static -> Strings.reportsDateConfigStatic
+    Live -> Strings.reportsDateConfigLive
+    Static -> Strings.reportsDateConfigStatic
   }
 
 @Preview
@@ -127,7 +128,7 @@ private fun PreviewChartDateConfig(@PreviewParameter(ColoredParameters::class) c
       onDateRangeType = {},
       config =
         ChartDateConfig(
-          mode = DateRangeMode.Static,
+          mode = Static,
           start = YearMonth(2025, Month.FEBRUARY),
           end = YearMonth(2025, Month.JULY),
           range =

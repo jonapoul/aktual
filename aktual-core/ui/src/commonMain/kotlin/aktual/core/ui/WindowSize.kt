@@ -4,7 +4,6 @@ package aktual.core.ui
 
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
@@ -15,9 +14,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.toSize
 
-@Composable
-fun isCompactWidth(): Boolean =
-  rememberWindowSizeClass().widthSizeClass == WindowWidthSizeClass.Compact
+@Composable fun isCompactWidth(): Boolean = rememberWindowSizeClass().widthSizeClass == Compact
 
 @Stable
 @Composable

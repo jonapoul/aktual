@@ -21,6 +21,11 @@ fun <C : Collection<T>, T> Assert<C>.contains(element: Any): Assert<C> = transfo
   actual
 }
 
+fun Assert<String>.contains(element: String): Assert<String> = transform { actual ->
+  assertThat(actual).coreContains(element)
+  actual
+}
+
 fun <L : List<T>, T> Assert<L>.atIndex(index: Int, subAssertion: Assert<T>.() -> Unit): Assert<L> =
   transform { actual ->
     assertThat(actual[index], name = "line index $index").subAssertion()

@@ -1,6 +1,5 @@
 package aktual.account.ui.url
 
-import aktual.account.vm.NavDestination
 import aktual.account.vm.ServerUrlViewModel
 import aktual.core.icons.material.Info
 import aktual.core.icons.material.MaterialIcons
@@ -40,7 +39,6 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -66,9 +64,9 @@ fun ServerUrlScreen(
     // Don't consumeEach here, it'll cancel the channel when we nav forward
     for (destination in viewModel.navDestination) {
       when (destination) {
-        NavDestination.ToBootstrap -> logcat.w { "Not implemented bootstrap yet!" }
-        NavDestination.ToLogin -> toLogin()
-        NavDestination.ToAbout -> toInfo()
+        ToBootstrap -> logcat.w { "Not implemented bootstrap yet!" }
+        ToLogin -> toLogin()
+        ToAbout -> toInfo()
       }
     }
   }
@@ -182,7 +180,7 @@ private fun ServerUrlContent(
           modifier = Modifier.fillMaxWidth(),
           text = errorMessage,
           color = colors.errorText,
-          textAlign = TextAlign.Center,
+          textAlign = Center,
         )
       }
     }

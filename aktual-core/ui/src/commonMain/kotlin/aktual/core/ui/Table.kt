@@ -15,13 +15,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -68,7 +67,7 @@ fun WeightedTable(
 
   LazyColumn(modifier = modifier) {
     items(data) { cells ->
-      Row(verticalAlignment = Alignment.CenterVertically) {
+      Row(verticalAlignment = CenterVertically) {
         cells.fastForEachIndexed { index, cell ->
           val columnWidth = columnWidths.getOrNull(index) ?: 0
           val weight = if (totalWidth > 0) columnWidth.toFloat() / totalWidth else 1f
@@ -77,7 +76,7 @@ fun WeightedTable(
             text = cell,
             style = textStyles[index],
             maxLines = 1,
-            overflow = if (ellipsize) TextOverflow.Ellipsis else TextOverflow.Clip,
+            overflow = if (ellipsize) Ellipsis else Clip,
           )
         }
       }
@@ -147,14 +146,14 @@ fun WrapWidthTable(
 
   LazyColumn(modifier = modifier) {
     items(data) { row ->
-      Row(verticalAlignment = Alignment.CenterVertically) {
+      Row(verticalAlignment = CenterVertically) {
         row.fastForEachIndexed { index, cell ->
           Text(
             modifier = Modifier.padding(paddings[index]).width(columnWidths[index]),
             text = cell,
             style = textStyles[index],
             maxLines = 1,
-            overflow = if (ellipsize) TextOverflow.Ellipsis else TextOverflow.Clip,
+            overflow = if (ellipsize) Ellipsis else Clip,
           )
         }
       }

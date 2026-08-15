@@ -29,10 +29,7 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -69,11 +66,11 @@ private fun TransactionsEmpty(modifier: Modifier = Modifier) {
   Column(modifier = modifier.fillMaxHeight()) {
     CategoryHeader(modifier = Modifier.fillMaxWidth())
 
-    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier.fillMaxWidth().weight(1f), contentAlignment = Center) {
       Text(
         text = Strings.transactionsEmpty,
-        textAlign = TextAlign.Center,
-        fontStyle = FontStyle.Italic,
+        textAlign = Center,
+        fontStyle = Italic,
         color = colors.tableText,
       )
     }

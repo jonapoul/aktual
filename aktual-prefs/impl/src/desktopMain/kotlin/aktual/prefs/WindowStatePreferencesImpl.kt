@@ -22,7 +22,7 @@ class WindowStatePreferencesImpl(dataStore: DataStore<Preferences>) : WindowStat
     dataStore
       .translated(
         key = stringPreferencesKey("window.position"),
-        default = WindowPosition.PlatformDefault,
+        default = PlatformDefault,
         translator = WindowPositionTranslator,
       )
       .required()
@@ -59,7 +59,7 @@ class WindowStatePreferencesImpl(dataStore: DataStore<Preferences>) : WindowStat
     private const val PLATFORM_DEFAULT = "PlatformDefault"
 
     override fun encode(value: WindowPosition): String =
-      if (value is WindowPosition.Absolute) {
+      if (value is Absolute) {
         Json.encodeToString(Position(value.x.value, value.y.value))
       } else {
         PLATFORM_DEFAULT
@@ -70,7 +70,7 @@ class WindowStatePreferencesImpl(dataStore: DataStore<Preferences>) : WindowStat
         val pos = Json.decodeFromString<Position>(value)
         WindowPosition.Absolute(pos.x.dp, pos.y.dp)
       } catch (_: SerializationException) {
-        WindowPosition.PlatformDefault
+        PlatformDefault
       }
   }
 

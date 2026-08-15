@@ -39,7 +39,7 @@ internal class SyncBudgetDialogProvider :
         ),
     ),
     SyncBudgetDialogParams(
-      overallState = SyncOverallState.InProgress,
+      overallState = InProgress,
       passwordState = Inactive,
       stepStates =
         persistentMapOf(

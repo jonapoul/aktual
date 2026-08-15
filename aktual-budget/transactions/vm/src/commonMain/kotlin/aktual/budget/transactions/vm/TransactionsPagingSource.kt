@@ -2,9 +2,7 @@ package aktual.budget.transactions.vm
 
 import aktual.budget.db.dao.TagsDao
 import aktual.budget.db.dao.TransactionDao
-import aktual.budget.model.AccountSpec
 import aktual.budget.model.TagId
-import aktual.budget.model.TagSpec
 import aktual.budget.model.TransactionId
 import aktual.budget.model.TransactionsSpec
 import aktual.budget.model.notesContainTag
@@ -31,11 +29,11 @@ internal class TransactionsPagingSource(
 
       val transactionIds =
         when (val tagSpec = spec.tagSpec) {
-          TagSpec.AllTags -> {
+          AllTags -> {
             loadPage(limit, offset)
           }
 
-          is TagSpec.SpecificTag -> {
+          is SpecificTag -> {
             val ids = filteredIds ?: loadFilteredIds(tagSpec.id).also { filteredIds = it }
             val from = offset.toInt().coerceIn(0, ids.size)
             val to = (from + limit.toInt()).coerceAtMost(ids.size)
@@ -56,17 +54,16 @@ internal class TransactionsPagingSource(
 
   private suspend fun loadPage(limit: Long, offset: Long): List<TransactionId> =
     when (val accountSpec = spec.accountSpec) {
-      AccountSpec.AllAccounts -> transactionDao.getIdsPaged(limit, offset)
-      is AccountSpec.SpecificAccount ->
-        transactionDao.getIdsByAccountPaged(accountSpec.id, limit, offset)
+      AllAccounts -> transactionDao.getIdsPaged(limit, offset)
+      is SpecificAccount -> transactionDao.getIdsByAccountPaged(accountSpec.id, limit, offset)
     }
 
   private suspend fun loadFilteredIds(id: TagId): List<TransactionId> {
     val tagName = tagsDao.getTag(id)?.tag ?: return emptyList()
     val rows =
       when (val accountSpec = spec.accountSpec) {
-        AccountSpec.AllAccounts -> transactionDao.getIdsAndNotes()
-        is AccountSpec.SpecificAccount -> transactionDao.getIdsAndNotesByAccount(accountSpec.id)
+        AllAccounts -> transactionDao.getIdsAndNotes()
+        is SpecificAccount -> transactionDao.getIdsAndNotesByAccount(accountSpec.id)
       }
     return rows.mapNotNull { row ->
       val notes = row.notes

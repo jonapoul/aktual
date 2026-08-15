@@ -16,11 +16,11 @@ internal fun reconcileNavGridOrder(names: List<String>): ImmutableList<BudgetTab
   val missing = BudgetTab.entries.filter { it !in ordered }
   for (tab in missing) {
     when (tab.category) {
-      BudgetTab.Category.Tab -> {
-        val insertAt = ordered.indexOfLast { it.category == BudgetTab.Category.Tab } + 1
+      Tab -> {
+        val insertAt = ordered.indexOfLast { it.category == Tab } + 1
         ordered.add(insertAt, tab)
       }
-      BudgetTab.Category.Action -> {
+      Action -> {
         ordered.add(tab)
       }
     }

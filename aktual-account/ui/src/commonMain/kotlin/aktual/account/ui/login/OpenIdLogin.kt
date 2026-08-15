@@ -13,13 +13,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
 internal fun OpenIdLogin(modifier: Modifier = Modifier) {
   FailureCard(
-    modifier = modifier.border(Dp.Hairline, colors.pillBorderDark, RounderCardShape).padding(8.dp),
+    modifier = modifier.border(Hairline, colors.pillBorderDark, RounderCardShape).padding(8.dp),
     title = Strings.loginOpenidUnsupported,
     reason = null,
     action = null,

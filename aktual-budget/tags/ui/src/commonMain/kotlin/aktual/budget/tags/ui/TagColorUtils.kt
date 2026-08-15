@@ -8,5 +8,5 @@ import androidx.compose.ui.graphics.Color
 @Suppress("MagicNumber")
 internal fun Color.contrastingTextColor(): Color {
   val brightness = (red * 299 + green * 587 + blue * 114) * 255 / 1000
-  return if (brightness >= 125) Color.Black else Color.White
+  return if (brightness >= 125) Black else White
 }

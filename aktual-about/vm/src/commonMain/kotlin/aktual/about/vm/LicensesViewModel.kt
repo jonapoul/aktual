@@ -12,7 +12,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -44,7 +43,7 @@ class LicensesViewModel(
     fun create(@Assisted savedState: SavedStateHandle): LicensesViewModel
   }
 
-  private val mutableState = MutableStateFlow<LicensesState>(LicensesState.Loading)
+  private val mutableState = MutableStateFlow<LicensesState>(Loading)
 
   private val searchTerm = savedState.getStateFlow(KEY_SEARCH_TERM, "")
   private val isSearchActive = savedState.getStateFlow(KEY_IS_SEARCH_ACTIVE, false)
@@ -56,7 +55,7 @@ class LicensesViewModel(
       val isSearchActive by isSearchActive.collectAsState()
 
       when (val licenses = licensesState) {
-        is LicensesState.Loaded -> licenses.filteredBy(searchTerm, isSearchActive)
+        is Loaded -> licenses.filteredBy(searchTerm, isSearchActive)
         else -> licenses
       }
     }
@@ -67,12 +66,12 @@ class LicensesViewModel(
 
   fun load() {
     logcat.d { "load" }
-    mutableState.update { LicensesState.Loading }
+    mutableState.update { Loading }
     viewModelScope.launch {
       val licensesState =
         when (val loadState = licensesRepository.loadLicenses()) {
-          is LicensesLoadState.Failure -> LicensesState.Error(loadState.cause)
-          is LicensesLoadState.Success -> loadState.toLicensesState()
+          is Failure -> LicensesState.Error(loadState.cause)
+          is Success -> loadState.toLicensesState()
         }
 
       mutableState.update { licensesState }

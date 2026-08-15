@@ -7,8 +7,8 @@ import aktual.budget.db.schedules.GetAllActive
 import aktual.budget.model.AccountId
 import aktual.budget.model.Amount
 import aktual.budget.model.AmountOperator
-import aktual.budget.model.Field
 import aktual.budget.model.Operator
+import aktual.budget.model.Operator.IsApprox
 import aktual.budget.model.PayeeId
 import aktual.budget.model.RecurConfig
 import aktual.budget.model.ScheduleId
@@ -27,7 +27,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
-import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -43,7 +42,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.datetime.DateTimeUnit.Companion.DAY
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.minus
 import kotlinx.datetime.plus
@@ -170,15 +168,14 @@ class ListSchedulesViewModel(
     val payeeName = payeeNames[payeeId] ?: return null
     val accountName = accountNames[accountId].orEmpty()
 
-    val amount = row._amount?.toLongOrNull()?.let { Amount(it) } ?: Amount.Zero
+    val amount = row._amount?.toLongOrNull()?.let { Amount(it) } ?: Zero
     val amountOp =
       row._amountOp?.let { runCatching { Operator.parse(it) as? AmountOperator }.getOrNull() }
-        ?: Operator.IsApprox
+        ?: IsApprox
 
     // Fixed date (op = 'is'): check from next_date; recurring: look back 2 days
-    val dateCondOp = row._conditions?.firstOrNull { it.field == Field.Date }?.operator
-    val txFromDate =
-      if (dateCondOp == Operator.Is) nextDate else nextDate.minus(value = 2, unit = DAY)
+    val dateCondOp = row._conditions?.firstOrNull { it.field == Date }?.operator
+    val txFromDate = if (dateCondOp == Is) nextDate else nextDate.minus(value = 2, unit = DAY)
     val hasTransaction = latestTxDates[row.id]?.let { it >= txFromDate } == true
 
     val customUpcomingLength = row.custom_upcoming_length
@@ -220,13 +217,12 @@ class ListSchedulesViewModel(
     val length = customUpcomingLength ?: UpcomingLength.Days(7)
     val upcomingDays = length.upcomingDays(today)
     return when {
-      isCompleted -> ScheduleStatus.Completed
-      hasTransaction -> ScheduleStatus.Paid
-      nextDate == today -> ScheduleStatus.Due
-      nextDate > today && nextDate <= today.plus(value = upcomingDays, unit = DAY) ->
-        ScheduleStatus.Upcoming
-      nextDate < today -> ScheduleStatus.Missed
-      else -> ScheduleStatus.Scheduled
+      isCompleted -> Completed
+      hasTransaction -> Paid
+      nextDate == today -> Due
+      nextDate > today && nextDate <= today.plus(value = upcomingDays, unit = DAY) -> Upcoming
+      nextDate < today -> Missed
+      else -> Scheduled
     }
   }
 

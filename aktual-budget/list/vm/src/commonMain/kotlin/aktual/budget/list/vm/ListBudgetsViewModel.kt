@@ -63,7 +63,7 @@ class ListBudgetsViewModel(
 
   val state: StateFlow<ListBudgetsState> = mutableState.asStateFlow()
 
-  private val mutableDeletingState = MutableStateFlow<DeletingState>(DeletingState.Inactive)
+  private val mutableDeletingState = MutableStateFlow<DeletingState>(Inactive)
   val deletingState: StateFlow<DeletingState> = mutableDeletingState.asStateFlow()
 
   private val mutableCloseDialog = MutableSharedFlow<Boolean>()
@@ -92,7 +92,7 @@ class ListBudgetsViewModel(
   fun onSyncComplete(id: BudgetId) {
     viewModelScope.launch {
       appPreferences.lastOpenedBudgetId.set(id)
-      mutableEvent.emit(ListBudgetsEvent.NavToBudget)
+      mutableEvent.emit(NavToBudget)
     }
   }
 
@@ -158,7 +158,7 @@ class ListBudgetsViewModel(
     viewModelScope.launch {
       preferences.token.delete()
       runLevels.onLoggedOut()
-      mutableEvent.emit(ListBudgetsEvent.LogOut)
+      mutableEvent.emit(LogOut)
     }
   }
 

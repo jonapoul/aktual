@@ -53,16 +53,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEach
 import androidx.compose.ui.util.fastForEachIndexed
-import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 import kotlinx.collections.immutable.ImmutableList
@@ -90,7 +89,7 @@ internal fun ListRulesItem(
       modifier =
         Modifier.ruleRow(colors, onOpen = { onAction(Edit(rule.id)) }, onToggle = toggleCheck),
       horizontalArrangement = Arrangement.Start,
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       if (checkboxes is Active) {
         Checkbox(
@@ -161,7 +160,7 @@ private fun RuleStageBadge(
         .padding(Dimens.Large)
         .clip(CardShape)
         .background(colors.pillBackgroundSelected, CardShape)
-        .border(Dp.Hairline, colors.pillBorder, CardShape)
+        .border(Hairline, colors.pillBorder, CardShape)
         .padding(horizontal = 6.dp, vertical = 2.dp)
   ) {
     Text(text = stage.string(), color = colors.pillText, style = typography.labelSmall)
@@ -175,7 +174,7 @@ private fun RowScope.ItemContent(rule: Rule) {
     Column(
       modifier = Modifier.weight(1f),
       verticalArrangement = Arrangement.Center,
-      horizontalAlignment = Alignment.CenterHorizontally,
+      horizontalAlignment = CenterHorizontally,
     ) {
       ListRulesItemConditions(rule.conditions, styles)
       Text("↓", color = colors.tableText)
@@ -185,7 +184,7 @@ private fun RowScope.ItemContent(rule: Rule) {
     Row(
       modifier = Modifier.weight(1f),
       horizontalArrangement = Arrangement.Center,
-      verticalAlignment = Alignment.CenterVertically,
+      verticalAlignment = CenterVertically,
     ) {
       ListRulesItemConditions(rule.conditions, styles, modifier = Modifier.weight(1f))
       Text("→", color = colors.tableText)
@@ -202,7 +201,7 @@ private fun ListRulesItemConditions(
 ) {
   Column(
     modifier = modifier,
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
   ) {
     conditions.fastForEachIndexed { index, condition ->
@@ -231,7 +230,7 @@ private fun ListRulesItemActions(
 ) {
   Column(
     modifier = modifier,
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
     verticalArrangement = Arrangement.spacedBy(2.dp, Alignment.Top),
   ) {
     actions.fastForEach { action ->
@@ -253,19 +252,19 @@ internal fun ShimmerListRulesItem(
   checkboxes: CheckboxesState,
   modifier: Modifier = Modifier,
 ) {
-  val shimmer = rememberShimmer(ShimmerBounds.Window)
+  val shimmer = rememberShimmer(Window)
 
   Row(
     modifier =
       modifier.fillMaxWidth().ruleRow(colors, onOpen = null, onToggle = null).shimmer(shimmer),
     horizontalArrangement = Arrangement.Start,
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     // checkbox
     if (checkboxes is Active) {
       Box(
         modifier = Modifier.size(LocalMinimumInteractiveComponentSize.current),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Center,
       ) {
         Box(
           modifier =
@@ -275,7 +274,7 @@ internal fun ShimmerListRulesItem(
       }
     }
 
-    Column(modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier.weight(1f), horizontalAlignment = CenterHorizontally) {
       Box(
         modifier =
           Modifier.fillMaxWidth(fraction = 0.55f)
@@ -302,7 +301,7 @@ internal fun ShimmerListRulesItem(
 
     Box(
       modifier = Modifier.size(LocalMinimumInteractiveComponentSize.current),
-      contentAlignment = Alignment.Center,
+      contentAlignment = Center,
     ) {
       Box(
         modifier =
@@ -322,7 +321,7 @@ private fun Modifier.ruleRow(
   return fillMaxWidth()
     .clip(RowShape)
     .background(colors.tableBackground, RowShape)
-    .border(Dp.Hairline, colors.tableBorder, RowShape)
+    .border(Hairline, colors.tableBorder, RowShape)
     .clickable(enabled = onClick != null, onClick = { onClick?.invoke() })
     .padding(horizontal = 15.dp, vertical = 12.dp)
 }

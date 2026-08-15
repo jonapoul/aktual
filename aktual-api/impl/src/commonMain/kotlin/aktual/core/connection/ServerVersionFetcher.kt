@@ -2,7 +2,6 @@ package aktual.core.connection
 
 import aktual.api.client.BaseApi
 import aktual.core.model.AktualVersionsStateHolder
-import aktual.core.model.PingState
 import aktual.core.model.PingStateHolder
 import aktual.di.Closeable
 import aktual.di.Initializable
@@ -42,7 +41,7 @@ class ServerVersionFetcher(
     job = scope.launch {
       pingStateHolder.collectLatest { state ->
         logcat.v { "ServerVersionFetcher collected $state" }
-        if (state == PingState.Success) {
+        if (state == Success) {
           fetchVersionUntilSuccess()
         } else {
           versionsStateHolder.set(null)

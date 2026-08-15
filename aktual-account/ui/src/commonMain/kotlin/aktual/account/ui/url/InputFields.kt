@@ -20,9 +20,6 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -68,9 +65,9 @@ internal fun InputFields(
       keyboardOptions =
         KeyboardOptions(
           autoCorrectEnabled = false,
-          capitalization = KeyboardCapitalization.None,
-          keyboardType = KeyboardType.Uri,
-          imeAction = ImeAction.Go,
+          capitalization = None,
+          keyboardType = Uri,
+          imeAction = Go,
         ),
       onKeyboardAction = { _ ->
         keyboard?.hide()

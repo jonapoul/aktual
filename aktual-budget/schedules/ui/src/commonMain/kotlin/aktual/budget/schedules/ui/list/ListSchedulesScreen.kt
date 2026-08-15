@@ -60,7 +60,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -129,7 +129,7 @@ private fun ListSchedulesScaffold(
 
       BlurredPullToRefreshBox(
         modifier = Modifier.padding(ListSchedulesDS.listPadding),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Center,
         onRefresh = { onAction(Reload) },
         isRefreshing = state is Loading,
         blurState = blurState,
@@ -204,7 +204,7 @@ private fun ListSchedulesContent(
   Column(
     modifier = modifier.fillMaxSize(),
     verticalArrangement = Arrangement.Top,
-    horizontalAlignment = Alignment.CenterHorizontally,
+    horizontalAlignment = CenterHorizontally,
   ) {
     when (state) {
       Loading -> {

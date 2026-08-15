@@ -5,7 +5,6 @@ import kotlinx.collections.immutable.ImmutableSet
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -135,7 +134,7 @@ sealed interface SavedOperator : Operator
 sealed interface TransferOperator : Operator
 
 internal object OperatorSerializer : KSerializer<Operator> {
-  override val descriptor = PrimitiveSerialDescriptor("Operator", PrimitiveKind.STRING)
+  override val descriptor = PrimitiveSerialDescriptor("Operator", STRING)
 
   override fun deserialize(decoder: Decoder): Operator = Operator.parse(decoder.decodeString())
 
@@ -144,21 +143,21 @@ internal object OperatorSerializer : KSerializer<Operator> {
 
 private val OperatorMap: ImmutableSet<Pair<String, Operator>> by lazy {
   persistentSetOf(
-    "contains" to Operator.Contains,
-    "doesNotContain" to Operator.DoesNotContain,
-    "gt" to Operator.GreaterThan,
-    "gte" to Operator.GreaterThanOrEquals,
-    "hasTags" to Operator.HasTags,
-    "is" to Operator.Is,
-    "isapprox" to Operator.IsApprox,
-    "isbetween" to Operator.IsBetween,
-    "isNot" to Operator.IsNot,
-    "lt" to Operator.LessThan,
-    "lte" to Operator.LessThanOrEquals,
-    "matches" to Operator.Matches,
-    "notOneOf" to Operator.NotOneOf,
-    "offBudget" to Operator.OffBudget,
-    "onBudget" to Operator.OnBudget,
-    "oneOf" to Operator.OneOf,
+    "contains" to Contains,
+    "doesNotContain" to DoesNotContain,
+    "gt" to GreaterThan,
+    "gte" to GreaterThanOrEquals,
+    "hasTags" to HasTags,
+    "is" to Is,
+    "isapprox" to IsApprox,
+    "isbetween" to IsBetween,
+    "isNot" to IsNot,
+    "lt" to LessThan,
+    "lte" to LessThanOrEquals,
+    "matches" to Matches,
+    "notOneOf" to NotOneOf,
+    "offBudget" to OffBudget,
+    "onBudget" to OnBudget,
+    "oneOf" to OneOf,
   )
 }

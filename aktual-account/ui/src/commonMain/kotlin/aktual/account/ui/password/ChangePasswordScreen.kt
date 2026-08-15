@@ -158,12 +158,10 @@ private fun ChangePasswordContent(
       VerticalSpacer(20.dp)
 
       when (state) {
-        ChangePasswordState.Loading,
+        Loading,
         null -> Unit
-        is ChangePasswordState.Failure ->
-          Text(text = state.errorMessage(), color = colors.errorText)
-        ChangePasswordState.Success ->
-          Text(text = Strings.passwordSuccess, color = colors.noticeText)
+        is Failure -> Text(text = state.errorMessage(), color = colors.errorText)
+        Success -> Text(text = Strings.passwordSuccess, color = colors.noticeText)
       }
     }
 
@@ -178,10 +176,10 @@ private fun ChangePasswordContent(
 @Composable
 private fun ChangePasswordState.Failure.errorMessage(): String =
   when (this) {
-    ChangePasswordState.InvalidPassword -> Strings.passwordFailureEmpty
-    ChangePasswordState.NetworkFailure -> Strings.passwordFailureNetwork
-    ChangePasswordState.OtherFailure -> Strings.passwordFailureOther
-    ChangePasswordState.PasswordsDontMatch -> Strings.passwordFailureMatch
+    InvalidPassword -> Strings.passwordFailureEmpty
+    NetworkFailure -> Strings.passwordFailureNetwork
+    OtherFailure -> Strings.passwordFailureOther
+    PasswordsDontMatch -> Strings.passwordFailureMatch
   }
 
 @PortraitPreview

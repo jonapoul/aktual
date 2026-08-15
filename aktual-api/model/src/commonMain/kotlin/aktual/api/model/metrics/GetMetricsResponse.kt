@@ -6,7 +6,6 @@ import kotlin.time.Duration.Companion.seconds
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.descriptors.PrimitiveKind
 import kotlinx.serialization.descriptors.PrimitiveSerialDescriptor
 import kotlinx.serialization.encoding.Decoder
 import kotlinx.serialization.encoding.Encoder
@@ -30,7 +29,7 @@ data class GetMetricsResponse(
 // Takes output from https://www.geeksforgeeks.org/node-js/node-js-process-uptime-method/
 private object DurationAsDoubleSerializer : KSerializer<Duration> {
   private const val NANOSECS_PER_SEC = 1e9
-  override val descriptor = PrimitiveSerialDescriptor("Duration", PrimitiveKind.DOUBLE)
+  override val descriptor = PrimitiveSerialDescriptor("Duration", DOUBLE)
 
   override fun deserialize(decoder: Decoder) = decoder.decodeDouble().seconds
 

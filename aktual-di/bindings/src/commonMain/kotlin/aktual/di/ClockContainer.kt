@@ -11,5 +11,5 @@ import kotlin.time.Clock
 object ClockContainer {
   @Provides fun clock(): Clock = Clock.System
 
-  @Provides fun timeZones(): TimeZoneProvider = TimeZoneProvider.Default
+  @Provides fun timeZones(): TimeZoneProvider = Default
 }

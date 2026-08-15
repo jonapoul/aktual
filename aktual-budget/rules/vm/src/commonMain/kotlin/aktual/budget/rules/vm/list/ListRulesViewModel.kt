@@ -5,21 +5,21 @@ import aktual.budget.db.Rules
 import aktual.budget.db.dao.DatabaseTables.RULES
 import aktual.budget.db.dao.RulesDao
 import aktual.budget.model.Condition
-import aktual.budget.model.ConditionOp
 import aktual.budget.model.Operator.Is
 import aktual.budget.model.Operator.IsApprox
 import aktual.budget.model.Operator.IsNot
 import aktual.budget.model.Operator.NotOneOf
 import aktual.budget.model.Operator.OneOf
 import aktual.budget.model.RuleId
-import aktual.budget.model.RuleStage
 import aktual.budget.model.tombstone
 import aktual.budget.rules.vm.NameFetcher
 import aktual.budget.rules.vm.Rule
 import aktual.budget.rules.vm.list.CheckboxesState.Active
 import aktual.budget.rules.vm.list.CheckboxesState.Inactive
 import aktual.budget.rules.vm.list.ListRulesState.Empty
+import aktual.budget.rules.vm.list.ListRulesState.Failure
 import aktual.budget.rules.vm.list.ListRulesState.Loading
+import aktual.budget.rules.vm.list.ListRulesState.Success
 import aktual.budget.rules.vm.score
 import aktual.di.BudgetScope
 import alakazam.kotlin.requireMessage
@@ -34,7 +34,6 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.savedstate.SavedState
 import androidx.savedstate.serialization.decodeFromSavedState
 import androidx.savedstate.serialization.encodeToSavedState
-import app.cash.molecule.RecompositionMode.Immediate
 import app.cash.molecule.launchMolecule
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
@@ -89,9 +88,9 @@ class ListRulesViewModel(
       val failure by mutableFailure.collectAsState()
       when {
         isLoading -> Loading
-        failure != null -> ListRulesState.Failure(failure)
+        failure != null -> Failure(failure)
         rules.isEmpty() -> Empty
-        else -> ListRulesState.Success(rules)
+        else -> Success(rules)
       }
     }
 
@@ -149,9 +148,9 @@ class ListRulesViewModel(
   private fun toRule(rule: Rules): Rule =
     Rule(
       id = rule.id,
-      stage = rule.stage ?: RuleStage.Default,
+      stage = rule.stage ?: Default,
       conditions = rule.conditions.orEmpty().toImmutableList(),
-      conditionsOp = rule.conditions_op ?: ConditionOp.And,
+      conditionsOp = rule.conditions_op ?: And,
       actions = rule.actions.orEmpty().toImmutableList(),
     )
 

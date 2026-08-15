@@ -1,6 +1,5 @@
 package aktual.prefs
 
-import aktual.budget.model.TagSort
 import aktual.test.assertThatNextEmissionIsEqualTo
 import aktual.test.buildPreferences
 import alakazam.test.unconfinedDispatcher
@@ -49,13 +48,13 @@ class TagPreferencesTest {
     with(preferences.sortField) {
       asFlow().test {
         // Given the default sort field
-        assertThatNextEmissionIsEqualTo(TagSort.Field.Default)
+        assertThatNextEmissionIsEqualTo(Default)
 
         // When a different field is stored
-        set(TagSort.Field.Usage)
+        set(Usage)
 
         // Then it round-trips
-        assertThatNextEmissionIsEqualTo(TagSort.Field.Usage)
+        assertThatNextEmissionIsEqualTo(Usage)
         cancelAndIgnoreRemainingEvents()
       }
     }
@@ -67,13 +66,13 @@ class TagPreferencesTest {
     with(preferences.sortDirection) {
       asFlow().test {
         // Given the default sort direction
-        assertThatNextEmissionIsEqualTo(TagSort.Direction.Default)
+        assertThatNextEmissionIsEqualTo(Default)
 
         // When a different direction is stored
-        set(TagSort.Direction.Descending)
+        set(Descending)
 
         // Then it round-trips
-        assertThatNextEmissionIsEqualTo(TagSort.Direction.Descending)
+        assertThatNextEmissionIsEqualTo(Descending)
         cancelAndIgnoreRemainingEvents()
       }
     }

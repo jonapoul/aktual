@@ -5,10 +5,7 @@ import aktual.budget.SyncStateHolder
 import aktual.budget.db.dao.SyncDao
 import aktual.budget.model.LocalChange
 import aktual.budget.model.SyncState
-import aktual.budget.model.SyncState.Inactive
-import aktual.budget.model.SyncState.NoToken
 import aktual.budget.model.SyncState.SyncFailed
-import aktual.budget.model.SyncState.Syncing
 import aktual.di.BudgetScope
 import aktual.di.Closeable
 import aktual.prefs.AppPreferences

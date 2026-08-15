@@ -1,11 +1,5 @@
 package aktual.budget.model
 
-import aktual.budget.model.Field.Account
-import aktual.budget.model.Field.Acct
-import aktual.budget.model.Field.Category
-import aktual.budget.model.Field.CategoryGroup
-import aktual.budget.model.Field.Description
-import aktual.budget.model.Field.Payee
 import alakazam.kotlin.SerializableByString
 import alakazam.kotlin.enumStringSerializer
 import kotlin.contracts.contract
@@ -41,4 +35,5 @@ fun Field?.isIdField(): Boolean {
 }
 
 // Make sure this stays in sync with [aktual.budget.rules.vm.NameFetcherImpl.name]
-private val FIELDS_WITH_IDS = setOf(Acct, Account, Category, CategoryGroup, Payee, Description)
+private val FIELDS_WITH_IDS =
+  setOf<Field>(Acct, Account, Category, CategoryGroup, Payee, Description)

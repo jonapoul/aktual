@@ -10,7 +10,6 @@ import aktual.core.l10n.tags_deleted_undo
 import aktual.core.l10n.tags_restore_failed
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.SnackbarResult
 import org.jetbrains.compose.resources.getString
 
 // shows the delete confirmation with an undo action, invoking onUndo if the user taps it
@@ -24,7 +23,7 @@ internal suspend fun SnackbarHostState.showDeleted(
       actionLabel = getString(Res.string.tags_deleted_undo),
       duration = SnackbarDuration.Long,
     )
-  if (result == SnackbarResult.ActionPerformed) {
+  if (result == ActionPerformed) {
     onUndo(event.item, event.index)
   }
 }

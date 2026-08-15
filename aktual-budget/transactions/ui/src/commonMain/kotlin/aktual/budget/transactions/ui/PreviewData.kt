@@ -12,7 +12,6 @@ import androidx.compose.runtime.Immutable
 import androidx.paging.PagingData
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.datetime.DateTimeUnit.Companion.DAY
 import kotlinx.datetime.LocalDate
 import kotlinx.datetime.Month.JUNE
 import kotlinx.datetime.plus

@@ -4,8 +4,8 @@ import androidx.compose.runtime.Immutable
 
 @Immutable
 data class TransactionsSpec(
-  val accountSpec: AccountSpec = AccountSpec.AllAccounts,
-  val tagSpec: TagSpec = TagSpec.AllTags,
+  val accountSpec: AccountSpec = AllAccounts,
+  val tagSpec: TagSpec = AllTags,
 )
 
 @Immutable

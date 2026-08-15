@@ -31,16 +31,13 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
 
@@ -70,7 +67,7 @@ internal fun ListSchedulesItem(
         .fillMaxWidth()
         .clip(RowShape)
         .background(colors.tableBackground, RowShape)
-        .border(Dp.Hairline, colors.tableBorder, RowShape)
+        .border(Hairline, colors.tableBorder, RowShape)
         .clickable { onAction(Open(schedule.id)) }
         .padding(ListSchedulesDS.itemCardPadding),
     horizontalArrangement =
@@ -84,10 +81,10 @@ internal fun ListSchedulesItem(
       Text(
         text = schedule.name ?: Strings.listSchedulesUnnamedSchedule,
         style = typography.bodyMedium,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = SemiBold,
         color = if (schedule.name != null) colors.pageText else colors.pageTextSubdued,
         maxLines = 1,
-        overflow = TextOverflow.Ellipsis,
+        overflow = Ellipsis,
       )
 
       FlowRow(horizontalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemMetaGroupSpacing)) {
@@ -132,7 +129,7 @@ private fun LabelValue(
   Row(
     modifier = modifier,
     horizontalArrangement = Arrangement.spacedBy(ListSchedulesDS.itemContentSpacing),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     Text(label, style = typography.bodySmall, color = colors.pageTextSubdued)
     Text(value, style = typography.bodySmall, color = valueColor)
@@ -172,14 +169,14 @@ private fun ScheduleStatusBadge(
 /** Keep in sync with [ListSchedulesItem] */
 @Composable
 internal fun ShimmerListSchedulesItem(modifier: Modifier = Modifier) {
-  val shimmer = rememberShimmer(ShimmerBounds.Window)
+  val shimmer = rememberShimmer(Window)
   Row(
     modifier =
       modifier
         .fillMaxWidth()
         .clip(RowShape)
         .background(colors.tableBackground, RowShape)
-        .border(Dp.Hairline, colors.tableBorder, RowShape)
+        .border(Hairline, colors.tableBorder, RowShape)
         .padding(ListSchedulesDS.itemCardPadding)
         .shimmer(shimmer),
     horizontalArrangement =

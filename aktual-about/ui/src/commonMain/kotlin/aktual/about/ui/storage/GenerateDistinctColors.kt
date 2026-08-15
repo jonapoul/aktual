@@ -13,11 +13,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
@@ -92,13 +90,13 @@ private fun PreviewDistinctColors(
       colors.fastForEach { color ->
         Box(
           modifier = Modifier.height(20.dp).width(40.dp).background(color),
-          contentAlignment = Alignment.Center,
+          contentAlignment = Center,
         ) {
           Text(
             text = "#%06X".format(color.toArgb() and 0xFFFFFF),
             color = params.colors.formInputTextSelected,
             fontSize = 8.sp,
-            textAlign = TextAlign.Center,
+            textAlign = Center,
           )
         }
       }

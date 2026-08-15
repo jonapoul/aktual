@@ -97,7 +97,7 @@ internal fun EditRuleScreen(
   ) {
     EditRuleScaffold(
       modifier = modifier,
-      mode = if (id == null) Mode.Create else Mode.Edit,
+      mode = if (id == null) Create else Edit,
       state = state,
       onAction = { action ->
         when (action) {
@@ -278,9 +278,9 @@ private val Failure.reason: String
   @Composable
   get() =
     when (this) {
-      Failure.NoMatch -> Strings.editRuleFailedNoMatch
-      is Failure.Saving -> Strings.editRuleFailedSaving(reason)
-      is Failure.Other -> Strings.editRuleFailedOther(reason)
+      NoMatch -> Strings.editRuleFailedNoMatch
+      is Saving -> Strings.editRuleFailedSaving(reason)
+      is Other -> Strings.editRuleFailedOther(reason)
     }
 
 /** Make sure this stays in sync with [LoadedContent] */

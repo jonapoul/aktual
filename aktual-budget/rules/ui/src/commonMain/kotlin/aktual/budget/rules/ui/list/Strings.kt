@@ -5,21 +5,20 @@ package aktual.budget.rules.ui.list
 import aktual.budget.model.Amount
 import aktual.budget.model.Condition
 import aktual.budget.model.CurrencyConfig
-import aktual.budget.model.Field
+import aktual.budget.model.Field.Amount
 import aktual.budget.model.NumberFormatConfig
 import aktual.budget.model.RecurConfig
-import aktual.budget.model.RecurEndMode
-import aktual.budget.model.RecurFrequency
 import aktual.budget.model.RecurPattern
 import aktual.budget.model.RecurType
 import aktual.budget.model.RuleAction
+import aktual.budget.model.RuleAction.Op.Set
 import aktual.budget.model.RuleStage
 import aktual.budget.model.ScheduleId
-import aktual.budget.model.WeekendSolveMode
 import aktual.budget.model.isIdField
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.displayString
 import aktual.budget.rules.ui.string
+import aktual.budget.rules.vm.NameFetcher
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -34,11 +33,11 @@ import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.TextLinkStyles
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -48,6 +47,7 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -57,9 +57,9 @@ import kotlinx.serialization.json.jsonPrimitive
 @Composable
 internal fun RuleStage.string(): String =
   when (this) {
-    RuleStage.Pre -> Strings.rulesStagePre
-    RuleStage.Default -> Strings.rulesStageNone
-    RuleStage.Post -> Strings.rulesStagePost
+    Pre -> Strings.rulesStagePre
+    Default -> Strings.rulesStageNone
+    Post -> Strings.rulesStagePost
   }
 
 @Composable
@@ -92,7 +92,6 @@ private const val LEARN_MORE_URL = "https://actualbudget.org/docs/budgeting/rule
 private fun JsonArray.toList(): List<String> = map { it.jsonPrimitive.content }
 
 @Composable
-@Suppress("ElseCaseInsteadOfExhaustiveWhen")
 internal fun rememberConditionText(
   prefix: String,
   condition: Condition,
@@ -107,25 +106,7 @@ internal fun rememberConditionText(
   val privacy = LocalPrivacyEnabled.current
 
   val nameFetcher = LocalNameFetcher.current
-  val fieldNamesFlow =
-    remember(nameFetcher, condition) {
-      when (condition.field) {
-        Field.Acct,
-        Field.Account,
-        Field.Category,
-        Field.CategoryGroup,
-        Field.Description,
-        Field.Payee ->
-          when (val value = condition.value) {
-            is JsonArray -> nameFetcher.names(condition.field, value.toList())
-            is JsonPrimitive ->
-              nameFetcher.name(condition.field, value.content).filterNotNull().map(::JsonPrimitive)
-            else -> flowOf(null)
-          }
-        else -> flowOf(null)
-      }
-    }
-
+  val fieldNamesFlow = remember(nameFetcher, condition) { fieldNamesFlow(condition, nameFetcher) }
   val fieldNames by fieldNamesFlow.collectAsStateWithLifecycle(initialValue = null)
 
   return remember(
@@ -150,7 +131,7 @@ internal fun rememberConditionText(
       when (val value = fieldNames ?: condition.value) {
         is JsonPrimitive -> {
           withStyle(styles.highlighted) {
-            if (condition.field == Field.Amount) {
+            if (condition.field == Amount) {
               append(
                 Amount(value.int)
                   .toString(
@@ -182,7 +163,7 @@ internal fun rememberConditionText(
         }
 
         is JsonObject -> {
-          if (condition.field != Field.Date) {
+          if (condition.field != Date) {
             error("Should only see a JSON object in a condition value for a date: $condition")
           }
           val recurConfig = Json.decodeFromJsonElement(RecurConfig.serializer(), value)
@@ -193,12 +174,41 @@ internal fun rememberConditionText(
   }
 }
 
+private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow<JsonElement?> =
+  when (condition.field) {
+    Acct,
+    Account,
+    Category,
+    CategoryGroup,
+    Description,
+    Payee ->
+      when (val value = condition.value) {
+        is JsonArray -> nameFetcher.names(condition.field, value.toList())
+        is JsonPrimitive ->
+          nameFetcher.name(condition.field, value.content).filterNotNull().map(::JsonPrimitive)
+
+        else -> flowOf(null)
+      }
+
+    Amount,
+    Cleared,
+    Date,
+    ImportedDescription,
+    ImportedPayee,
+    Notes,
+    Parent,
+    PayeeName,
+    Reconciled,
+    Saved,
+    Transfer -> flowOf(null)
+  }
+
 @Composable
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
 internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): AnnotatedString {
   val opText = action.opString()
   val fieldText = action.field?.string(options = null)
-  val setToText = if (action.op == RuleAction.Op.Set) Strings.rulesActionSetTo else null
+  val setToText = if (action.op == Set) Strings.rulesActionSetTo else null
 
   val numberFormat = LocalNumberFormatConfig.current
   val currency = LocalCurrencyConfig.current
@@ -209,7 +219,7 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
     remember(nameFetcher, action) {
       val value = action.value
       when (action.op) {
-        RuleAction.Op.Set -> {
+        Set -> {
           val field = action.field
           if (field.isIdField() && value != null) {
             nameFetcher.name(field, value.content)
@@ -218,7 +228,7 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
           }
         }
 
-        RuleAction.Op.LinkSchedule -> {
+        LinkSchedule -> {
           value?.let { nameFetcher.name(ScheduleId(it.content)) } ?: flowOf(null)
         }
 
@@ -244,31 +254,31 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
     buildAnnotatedString {
       val content = action.value?.content.orEmpty()
       when (action.op) {
-        RuleAction.Op.AppendNotes -> {
+        AppendNotes -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
           }
           withStyle(styles.highlighted) { append(content) }
         }
-        RuleAction.Op.DeleteTransaction -> {
+        DeleteTransaction -> {
           withStyle(styles.default) { append(opText) }
         }
-        RuleAction.Op.LinkSchedule -> {
+        LinkSchedule -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
           }
           withStyle(styles.highlighted) { append(fieldName) }
         }
-        RuleAction.Op.PrependNotes -> {
+        PrependNotes -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
           }
           withStyle(styles.highlighted) { append(content) }
         }
-        RuleAction.Op.Set -> {
+        Set -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
@@ -276,7 +286,7 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
           withStyle(styles.highlighted) { append(fieldText) }
           withStyle(styles.default) { append(setToText) }
           withStyle(styles.highlighted) {
-            if (action.field == Field.Amount) {
+            if (action.field == Amount) {
               append(formatAmount(action, numberFormat, currency, privacy))
             } else if (fieldName != null) {
               append(fieldName)
@@ -285,7 +295,7 @@ internal fun rememberActionText(action: RuleAction, styles: RuleSpanStyles): Ann
             }
           }
         }
-        RuleAction.Op.SetSplitAmount -> {
+        SetSplitAmount -> {
           withStyle(styles.default) {
             append(opText)
             append(" ")
@@ -316,28 +326,28 @@ private fun formatAmount(
 @Composable
 private fun RuleAction.opString(): String =
   when (op) {
-    RuleAction.Op.AppendNotes -> Strings.rulesOpAppendNotes
-    RuleAction.Op.DeleteTransaction -> Strings.rulesOpDeleteTransaction
-    RuleAction.Op.LinkSchedule -> Strings.rulesOpLinkSchedule
-    RuleAction.Op.PrependNotes -> Strings.rulesOpPrependNotes
-    RuleAction.Op.Set -> Strings.rulesOpSet
-    RuleAction.Op.SetSplitAmount -> Strings.rulesOpSetSplitAmount
+    AppendNotes -> Strings.rulesOpAppendNotes
+    DeleteTransaction -> Strings.rulesOpDeleteTransaction
+    LinkSchedule -> Strings.rulesOpLinkSchedule
+    PrependNotes -> Strings.rulesOpPrependNotes
+    Set -> Strings.rulesOpSet
+    SetSplitAmount -> Strings.rulesOpSetSplitAmount
   }
 
 // From getRecurringDescription in packages/loot-core/src/shared/schedules.ts
 internal fun RecurConfig.string(dateFormat: DateTimeFormat<LocalDate>): String {
   val endModeSuffix =
     when (endMode) {
-      RecurEndMode.AfterNOccurrences -> if (endOccurrences == 1) "once" else "$endOccurrences times"
-      RecurEndMode.OnDate -> "until ${endDate?.let(dateFormat::format)}"
-      RecurEndMode.Never -> null
+      AfterNOccurrences -> if (endOccurrences == 1) "once" else "$endOccurrences times"
+      OnDate -> "until ${endDate?.let(dateFormat::format)}"
+      Never -> null
       null -> null
     }
 
   val weekendSolveSuffix =
     when (weekendSolveMode) {
-        WeekendSolveMode.After -> "(after weekend)"
-        WeekendSolveMode.Before -> "(before weekend)"
+        After -> "(after weekend)"
+        Before -> "(before weekend)"
         null -> ""
       }
       .takeIf { skipWeekend == true }
@@ -348,24 +358,24 @@ internal fun RecurConfig.string(dateFormat: DateTimeFormat<LocalDate>): String {
   val dt = interval ?: 1
   val desc =
     when (frequency) {
-      RecurFrequency.Daily -> {
+      Daily -> {
         if (dt != 1) {
           "Every $dt days"
         } else {
           "Every day"
         }
       }
-      RecurFrequency.Weekly -> {
+      Weekly -> {
         if (dt != 1) {
           "Every $dt weeks on ${start.dayOfWeek.nice}"
         } else {
           "Every week on ${start.dayOfWeek.nice}"
         }
       }
-      RecurFrequency.Monthly -> {
+      Monthly -> {
         monthlyRecurConfigDesc()
       }
-      RecurFrequency.Yearly -> {
+      Yearly -> {
         val dateStr = "${start.month.nice} ${numberSuffix(start.day)}"
         if (dt != 1) "Every $dt years on $dateStr" else "Every year on $dateStr"
       }
@@ -390,10 +400,10 @@ private fun RecurConfig.monthlyRecurConfigDesc(): String {
 
     val strings = mutableListOf<String>()
     val uniqueDays = sortedPatterns.fastMap { it.type }.distinct()
-    val isSameDay = uniqueDays.size == 1 && RecurType.Day !in uniqueDays
+    val isSameDay = uniqueDays.size == 1 && Day !in uniqueDays
     sortedPatterns.forEach { p ->
       strings +=
-        if (p.type == RecurType.Day) {
+        if (p.type == Day) {
           if (p.value == -1) "last day" else numberSuffix(p.value)
         } else if (isSameDay) {
           if (p.value == -1) "last" else numberSuffix(p.value)
@@ -436,7 +446,7 @@ private fun RecurConfig.monthlyRecurConfigDesc(): String {
 
 private object RecurPatternComparator : Comparator<RecurPattern> {
   private val RecurType.sortValue
-    get() = if (this == RecurType.Day) 1 else 0
+    get() = if (this == Day) 1 else 0
 
   override fun compare(p1: RecurPattern, p2: RecurPattern): Int {
     val typeOrder = p1.type.sortValue - p2.type.sortValue
@@ -457,41 +467,41 @@ private fun numberSuffix(number: Int): String {
 
 private fun dayName(type: RecurType): String =
   when (type) {
-    RecurType.Sunday -> "Sunday"
-    RecurType.Monday -> "Monday"
-    RecurType.Tuesday -> "Tuesday"
-    RecurType.Wednesday -> "Wednesday"
-    RecurType.Thursday -> "Thursday"
-    RecurType.Friday -> "Friday"
-    RecurType.Saturday -> "Saturday"
-    RecurType.Day -> error("Should never happen")
+    Sunday -> "Sunday"
+    Monday -> "Monday"
+    Tuesday -> "Tuesday"
+    Wednesday -> "Wednesday"
+    Thursday -> "Thursday"
+    Friday -> "Friday"
+    Saturday -> "Saturday"
+    Day -> error("Should never happen")
   }
 
 private val DayOfWeek.nice: String
   get() =
     when (this) {
-      DayOfWeek.SUNDAY -> "Sunday"
-      DayOfWeek.MONDAY -> "Monday"
-      DayOfWeek.TUESDAY -> "Tuesday"
-      DayOfWeek.WEDNESDAY -> "Wednesday"
-      DayOfWeek.THURSDAY -> "Thursday"
-      DayOfWeek.FRIDAY -> "Friday"
-      DayOfWeek.SATURDAY -> "Saturday"
+      SUNDAY -> "Sunday"
+      MONDAY -> "Monday"
+      TUESDAY -> "Tuesday"
+      WEDNESDAY -> "Wednesday"
+      THURSDAY -> "Thursday"
+      FRIDAY -> "Friday"
+      SATURDAY -> "Saturday"
     }
 
 private val Month.nice: String
   get() =
     when (this) {
-      Month.JANUARY -> "January"
-      Month.FEBRUARY -> "February"
-      Month.MARCH -> "March"
-      Month.APRIL -> "April"
-      Month.MAY -> "May"
-      Month.JUNE -> "June"
-      Month.JULY -> "July"
-      Month.AUGUST -> "August"
-      Month.SEPTEMBER -> "September"
-      Month.OCTOBER -> "October"
-      Month.NOVEMBER -> "November"
-      Month.DECEMBER -> "December"
+      JANUARY -> "January"
+      FEBRUARY -> "February"
+      MARCH -> "March"
+      APRIL -> "April"
+      MAY -> "May"
+      JUNE -> "June"
+      JULY -> "July"
+      AUGUST -> "August"
+      SEPTEMBER -> "September"
+      OCTOBER -> "October"
+      NOVEMBER -> "November"
+      DECEMBER -> "December"
     }

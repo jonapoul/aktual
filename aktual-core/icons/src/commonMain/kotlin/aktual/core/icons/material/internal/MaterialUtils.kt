@@ -1,10 +1,7 @@
 package aktual.core.icons.material.internal
 
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathFillType
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.vector.DefaultFillType
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.PathBuilder
@@ -35,13 +32,13 @@ internal inline fun ImageVector.Builder.materialPath(
   pathBuilder: PathBuilder.() -> Unit,
 ) =
   path(
-    fill = SolidColor(Color.Black),
+    fill = SolidColor(Black),
     fillAlpha = fillAlpha,
     stroke = null,
     strokeAlpha = strokeAlpha,
     strokeLineWidth = 1f,
-    strokeLineCap = StrokeCap.Butt,
-    strokeLineJoin = StrokeJoin.Bevel,
+    strokeLineCap = Butt,
+    strokeLineJoin = Bevel,
     strokeLineMiter = 1f,
     pathFillType = pathFillType,
     pathBuilder = pathBuilder,

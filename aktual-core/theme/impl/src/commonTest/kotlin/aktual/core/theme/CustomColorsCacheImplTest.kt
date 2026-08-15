@@ -14,7 +14,6 @@ import assertk.assertions.isNull
 import kotlin.test.Test
 import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
-import okio.FileSystem
 
 class CustomColorsCacheImplTest {
   @InterceptTest val temporaryFolder = TemporaryFolder()
@@ -25,7 +24,7 @@ class CustomColorsCacheImplTest {
     cache =
       CustomThemeCacheImpl(
         appDirectory = { temporaryFolder.root },
-        fileSystem = FileSystem.SYSTEM,
+        fileSystem = SYSTEM,
         contexts = TestCoroutineContexts(standardDispatcher),
       )
     block()

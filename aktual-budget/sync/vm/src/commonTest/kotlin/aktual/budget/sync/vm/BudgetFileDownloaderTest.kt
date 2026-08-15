@@ -52,7 +52,7 @@ class BudgetFileDownloaderTest {
       SyncApiImpl(
         serverUrl = SERVER_URL,
         client = testHttpClient(mockEngine),
-        fileSystem = FileSystem.SYSTEM,
+        fileSystem = SYSTEM,
       )
   ) {
     budgetFiles = testBudgetFiles(temporaryFolder)
@@ -94,7 +94,7 @@ class BudgetFileDownloaderTest {
 
       // and it contains all our data, nothing more or less
       val path = budgetFiles.encryptedZip(BUDGET_ID)
-      assertThat(path).existsOn(FileSystem.SYSTEM)
+      assertThat(path).existsOn(SYSTEM)
       val downloadedData = FileSystem.SYSTEM.read(path) { readByteArray() }
       assertThat(downloadedData).isEqualTo(data)
 

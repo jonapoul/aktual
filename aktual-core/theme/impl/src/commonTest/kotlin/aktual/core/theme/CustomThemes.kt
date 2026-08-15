@@ -126,7 +126,7 @@ internal val ShadesOfCoffeeTheme =
       ButtonColors(
         buttonMenuText = Color(0xFFe8ecf0),
         buttonMenuTextHover = Color(0xFFF7FAFC),
-        buttonMenuBackground = Color.Transparent,
+        buttonMenuBackground = Transparent,
         buttonMenuBackgroundHover = Color(0x40c8c8c8),
         buttonMenuBorder = Color(0xFF627d98),
         buttonMenuSelectedText = Color(0xFF0C6B58),
@@ -163,11 +163,11 @@ internal val ShadesOfCoffeeTheme =
         datePickerRangeBackground = Color(0xFFDAC4FF),
         buttonBareText = Color(0xFF102A43),
         buttonBareTextHover = Color(0xFF102A43),
-        buttonBareBackground = Color.Transparent,
+        buttonBareBackground = Transparent,
         buttonBareBackgroundHover = Color(0x26646464),
         buttonBareBackgroundActive = Color(0x40646464),
         buttonBareDisabledText = Color(0xFF9fb3c8),
-        buttonBareDisabledBackground = Color.Transparent,
+        buttonBareDisabledBackground = Transparent,
       ),
     status =
       StatusColors(

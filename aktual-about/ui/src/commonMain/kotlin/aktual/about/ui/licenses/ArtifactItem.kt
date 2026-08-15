@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
@@ -36,8 +37,6 @@ import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.text.ParagraphIntrinsics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.Density
@@ -57,21 +56,20 @@ internal fun ArtifactItem(
       modifier
         .padding(horizontal = Dimens.Large, vertical = Dimens.Small)
         .background(colors.buttonNormalBackground, CardShape)
-        .border(Dp.Hairline, colors.pillBorderDark, CardShape)
+        .border(Hairline, colors.pillBorderDark, CardShape)
         .clickableIfNeeded(artifact, onLaunchUrl, interactionSource)
         .padding(Dimens.Large),
-    verticalAlignment = Alignment.CenterVertically,
+    verticalAlignment = CenterVertically,
   ) {
     Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.Top) {
       Text(
         text = artifact.name ?: artifact.artifactId,
-        fontWeight = FontWeight.W700,
+        fontWeight = W700,
         color = colors.pageTextPositive,
         fontSize = 15.sp,
       )
 
-      val headerStyle =
-        LocalTextStyle.current.copy(fontWeight = FontWeight.Bold, fontSize = TextSize)
+      val headerStyle = LocalTextStyle.current.copy(fontWeight = Bold, fontSize = TextSize)
 
       val headerWidth =
         persistentListOf(
@@ -121,7 +119,7 @@ private fun estimateTextWidth(
   resolver: FontFamily.Resolver = LocalFontFamilyResolver.current,
   style: TextStyle = LocalTextStyle.current,
 ): Dp {
-  val textStyle = remember(style) { style.copy(fontSize = TextSize, fontWeight = FontWeight.Bold) }
+  val textStyle = remember(style) { style.copy(fontSize = TextSize, fontWeight = Bold) }
   val widthInPx =
     remember(text, textStyle, density, resolver) {
       ParagraphIntrinsics(
@@ -181,7 +179,7 @@ private fun LibraryTableRow(
     Text(
       modifier = Modifier.width(headerWidth),
       text = title,
-      textAlign = TextAlign.Start,
+      textAlign = Start,
       color = colors.pageTextLight,
       lineHeight = LineHeight,
       style = headerStyle,
@@ -192,7 +190,7 @@ private fun LibraryTableRow(
     Text(
       modifier = Modifier.weight(1f),
       text = value,
-      textAlign = TextAlign.Start,
+      textAlign = Start,
       color = colors.pageText,
       lineHeight = LineHeight,
       fontSize = TextSize,

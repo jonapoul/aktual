@@ -93,6 +93,6 @@ sealed interface Budget {
 val Budget.directoryId: BudgetId
   get() =
     when (this) {
-      is Budget.Cloud -> cloudFileId
-      is Budget.Local -> id
+      is Cloud -> cloudFileId
+      is Local -> id
     }

@@ -4,7 +4,6 @@ import aktual.api.client.SyncApi
 import aktual.api.model.sync.GetUserKeyRequest
 import aktual.api.model.sync.GetUserKeyResponse
 import aktual.budget.encryption.BufferDecrypter
-import aktual.budget.encryption.DecryptResult
 import aktual.budget.encryption.generateKeyFromPassword
 import aktual.budget.model.BudgetId
 import aktual.core.model.Password
@@ -55,7 +54,7 @@ class KeyFetcher(
       val buffer = Buffer()
       buffer.write(test.value)
       val decrypted = decrypter(test.meta, buffer)
-      if (decrypted is DecryptResult.Failure) {
+      if (decrypted is Failure) {
         error("Invalid password ${keyPassword.value}: $decrypted")
       }
 
