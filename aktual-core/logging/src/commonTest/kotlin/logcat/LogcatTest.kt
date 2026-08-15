@@ -1,7 +1,7 @@
 package logcat
 
+import aktual.test.contains
 import assertk.assertThat
-import assertk.assertions.contains
 import assertk.assertions.isEqualTo
 import kotlin.test.AfterTest
 import kotlin.test.BeforeTest
@@ -32,8 +32,9 @@ class LogcatTest {
     assertThat(log?.priority).isEqualTo(ERROR)
     assertThat(log?.tag).isEqualTo("LogcatTest")
     val msg = log?.message.orEmpty()
-    assertThat(msg).contains("java.lang.IllegalStateException: SOMETHING BROKE")
-    assertThat(msg).contains("at logcat.LogcatTest.logException(LogcatTest.kt:35)")
+    assertThat(msg)
+      .contains("java.lang.IllegalStateException: SOMETHING BROKE")
+      .contains("at logcat.LogcatTest.logException(LogcatTest.kt:29)")
   }
 
   @Test
