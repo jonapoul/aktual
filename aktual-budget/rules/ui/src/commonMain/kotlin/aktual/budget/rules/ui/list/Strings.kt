@@ -18,6 +18,7 @@ import aktual.budget.model.isIdField
 import aktual.budget.rules.ui.LocalNameFetcher
 import aktual.budget.rules.ui.displayString
 import aktual.budget.rules.ui.string
+import aktual.budget.rules.vm.NameFetcher
 import aktual.core.l10n.Strings
 import aktual.core.ui.AktualTheme.colors
 import aktual.core.ui.AktualTheme.typography
@@ -36,6 +37,7 @@ import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.util.fastMap
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
@@ -45,6 +47,7 @@ import kotlinx.datetime.Month
 import kotlinx.datetime.format.DateTimeFormat
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
+import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
@@ -103,36 +106,7 @@ internal fun rememberConditionText(
   val privacy = LocalPrivacyEnabled.current
 
   val nameFetcher = LocalNameFetcher.current
-  val fieldNamesFlow =
-    remember(nameFetcher, condition) {
-      when (condition.field) {
-        Acct,
-        Account,
-        Category,
-        CategoryGroup,
-        Description,
-        Payee ->
-          when (val value = condition.value) {
-            is JsonArray -> nameFetcher.names(condition.field, value.toList())
-            is JsonPrimitive ->
-              nameFetcher.name(condition.field, value.content).filterNotNull().map(::JsonPrimitive)
-            else -> flowOf(null)
-          }
-
-        Amount,
-        Cleared,
-        Date,
-        ImportedDescription,
-        ImportedPayee,
-        Notes,
-        Parent,
-        PayeeName,
-        Reconciled,
-        Saved,
-        Transfer -> flowOf(null)
-      }
-    }
-
+  val fieldNamesFlow = remember(nameFetcher, condition) { fieldNamesFlow(condition, nameFetcher) }
   val fieldNames by fieldNamesFlow.collectAsStateWithLifecycle(initialValue = null)
 
   return remember(
@@ -199,6 +173,35 @@ internal fun rememberConditionText(
     }
   }
 }
+
+private fun fieldNamesFlow(condition: Condition, nameFetcher: NameFetcher): Flow<JsonElement?> =
+  when (condition.field) {
+    Acct,
+    Account,
+    Category,
+    CategoryGroup,
+    Description,
+    Payee ->
+      when (val value = condition.value) {
+        is JsonArray -> nameFetcher.names(condition.field, value.toList())
+        is JsonPrimitive ->
+          nameFetcher.name(condition.field, value.content).filterNotNull().map(::JsonPrimitive)
+
+        else -> flowOf(null)
+      }
+
+    Amount,
+    Cleared,
+    Date,
+    ImportedDescription,
+    ImportedPayee,
+    Notes,
+    Parent,
+    PayeeName,
+    Reconciled,
+    Saved,
+    Transfer -> flowOf(null)
+  }
 
 @Composable
 @Suppress("ElseCaseInsteadOfExhaustiveWhen")
