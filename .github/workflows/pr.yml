@@ -201,7 +201,7 @@ jobs:
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew -p build-logic check
-      - run: ./gradlew licensee androidManifestLock :aktual-core:l10n:catalog straitjacketCheck
+      - run: ./gradlew licensee androidManifestLock :aktual-core:l10n:catalog straitjacketCheck checkSortDependencies
       - name: Check manifest lock is up to date
         run: |
           if ! git diff --exit-code -- '*AndroidManifest.lock.yaml'; then

@@ -143,8 +143,14 @@ licensee {
 }
 
 dependencies {
-  coreLibraryDesugaring(libs.android.desugaring)
-  debugImplementation(libs.leakcanary)
+  implementation(project(":aktual-about:ui"))
+  implementation(project(":aktual-app:di"))
+  implementation(project(":aktual-app:nav"))
+  implementation(project(":aktual-app:ui-app"))
+  implementation(project(":aktual-app:ui-budget"))
+  implementation(project(":aktual-core:nav"))
+  implementation(project(":aktual-di:graphs"))
+  implementation(project(":aktual-prefs"))
   implementation(libs.alakazam.kotlin)
   implementation(libs.androidx.activity.compose)
   implementation(libs.androidx.activity.core)
@@ -167,14 +173,8 @@ dependencies {
   implementation(libs.metrox.viewmodel.compose)
   implementation(libs.okio)
   implementation(libs.sqldelight.runtime)
-  implementation(project(":aktual-about:ui"))
-  implementation(project(":aktual-app:di"))
-  implementation(project(":aktual-app:nav"))
-  implementation(project(":aktual-app:ui-app"))
-  implementation(project(":aktual-app:ui-budget"))
-  implementation(project(":aktual-core:nav"))
-  implementation(project(":aktual-di:graphs"))
-  implementation(project(":aktual-prefs"))
+  debugImplementation(libs.leakcanary)
+  coreLibraryDesugaring(libs.android.desugaring)
 }
 
 val readme = rootProject.isolated.projectDirectory.file("README.md")

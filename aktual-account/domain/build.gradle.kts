@@ -15,7 +15,11 @@ kotlin {
     implementation(project(":aktual-core:logging"))
   }
 
-  commonTestDependencies { implementation(project(":aktual-test:api")) }
+  commonTestDependencies {
+    implementation(project(":aktual-test:api"))
+  }
 
-  androidHostTestDependencies { implementation(project(":aktual-api:impl")) }
+  androidHostTestDependencies {
+    implementation(project(":aktual-api:impl"))
+  }
 }

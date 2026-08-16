@@ -18,7 +18,11 @@ kotlin {
     implementation(libs.androidx.datastore.prefs)
   }
 
-  commonTestDependencies { implementation(project(":aktual-test")) }
+  commonTestDependencies {
+    implementation(project(":aktual-test"))
+  }
 
-  desktopMainDependencies { api(libs.compose.ui) }
+  desktopMainDependencies {
+    api(libs.compose.ui)
+  }
 }
