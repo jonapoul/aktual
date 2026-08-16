@@ -12,5 +12,7 @@ kotlin {
     implementation(libs.kotlinx.datetime)
   }
 
-  commonTestDependencies { implementation(project(":aktual-test")) }
+  commonTestDependencies {
+    implementation(project(":aktual-test"))
+  }
 }

@@ -20,5 +20,7 @@ kotlin {
     implementation(libs.okio)
   }
 
-  commonTestDependencies { implementation(project(":aktual-test")) }
+  commonTestDependencies {
+    implementation(project(":aktual-test"))
+  }
 }

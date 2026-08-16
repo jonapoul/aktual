@@ -5,13 +5,13 @@ plugins { id("aktual.module.viewmodel") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-di:runlevel"))
     api(libs.alakazam.kotlin)
-    implementation(project(":aktual-api"))
-    implementation(project(":aktual-prefs"))
+    api(project(":aktual-di:runlevel"))
     implementation(libs.ktor.core)
     implementation(libs.ktor.serialization.core)
     implementation(libs.okio)
+    implementation(project(":aktual-api"))
+    implementation(project(":aktual-prefs"))
   }
 
   commonTestDependencies {
