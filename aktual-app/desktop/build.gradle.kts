@@ -115,11 +115,24 @@ tasks.withType<AbstractJPackageTask>().configureEach {
   doLast {
     val ext = targetFormat.fileExt
     val destDir = destinationDir.get().asFile
-    val produced =
-      destDir.listFiles { f -> f.extension.equals(ext, ignoreCase = true) }?.singleOrNull()
-        ?: return@doLast
+    val candidates = destDir.listFiles { f -> f.extension.equals(ext, ignoreCase = true) }.orEmpty()
+    val produced = candidates.singleOrNull()
+    if (produced == null) {
+      logger.warn(
+        "Skipping artifact rename for {}: expected exactly one .{} file in {}, found {}",
+        name,
+        ext,
+        destDir,
+        candidates.size,
+      )
+      return@doLast
+    }
+
     val artifactName = "aktual-desktop-${gitVersionDate.get()}-$artifactOs-$artifactArch.$ext"
-    produced.renameTo(destDir.resolve(artifactName))
+    val renamed = produced.renameTo(destDir.resolve(artifactName))
+    if (!renamed) {
+      logger.warn("Failed to rename artifact {} to {} for {}", produced, artifactName, name)
+    }
   }
 }
 
