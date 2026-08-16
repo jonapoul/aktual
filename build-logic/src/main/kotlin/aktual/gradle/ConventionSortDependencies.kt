@@ -8,11 +8,6 @@ import org.gradle.api.Project
 
 class ConventionSortDependencies : ProjectPlugin {
   override fun Project.applyTo() {
-    if (path == ":aktual-app:desktop") {
-      // Dependency Sorter fails parsing when we have the Nucleus config in the build file
-      return
-    }
-
     pluginManager.apply(SortDependenciesPlugin::class)
 
     extensions.configure(SortDependenciesExtension::class) {
