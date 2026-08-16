@@ -17,6 +17,14 @@ class ConventionSortDependencies : ProjectPlugin {
 
     extensions.configure(SortDependenciesExtension::class) {
       insertBlankLines.set(false)
+      blocks(
+        "androidHostTestDependencies",
+        "androidMainDependencies",
+        "commonMainDependencies",
+        "commonTestDependencies",
+        "desktopMainDependencies",
+        "desktopTestDependencies",
+      )
     }
   }
 }

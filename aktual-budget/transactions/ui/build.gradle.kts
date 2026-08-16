@@ -12,9 +12,9 @@ kotlin {
     api(project(":aktual-budget:transactions:vm"))
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
-    implementation(project(":aktual-core:l10n"))
     implementation(libs.androidx.paging.compose)
     implementation(libs.kotlinx.datetime)
     implementation(libs.shimmer)
+    implementation(project(":aktual-core:l10n"))
   }
 }

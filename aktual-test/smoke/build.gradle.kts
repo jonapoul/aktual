@@ -9,35 +9,32 @@ plugins {
 
 kotlin {
   commonTestDependencies {
-    // utils
-    implementation(project(":aktual-app:di"))
-    implementation(project(":aktual-budget:model"))
-    implementation(project(":aktual-core:model"))
-    implementation(project(":aktual-di:bindings"))
-    implementation(project(":aktual-test"))
     implementation(libs.androidx.lifecycle.viewmodel.savedstate)
-
-    // nav use cases needed by the root VMs
-    implementation(project(":aktual-app:nav"))
-
-    // the actual ViewModels
     implementation(project(":aktual-about:vm"))
     implementation(project(":aktual-account:vm"))
+    implementation(project(":aktual-app:di"))
+    implementation(project(":aktual-app:nav"))
     implementation(project(":aktual-budget:list:vm"))
+    implementation(project(":aktual-budget:model"))
     implementation(project(":aktual-budget:reports:vm"))
     implementation(project(":aktual-budget:rules:vm"))
     implementation(project(":aktual-budget:schedules:vm"))
     implementation(project(":aktual-budget:sync:vm"))
     implementation(project(":aktual-budget:tags:vm"))
     implementation(project(":aktual-budget:transactions:vm"))
+    implementation(project(":aktual-core:model"))
+    implementation(project(":aktual-di:bindings"))
     implementation(project(":aktual-metrics:vm"))
     implementation(project(":aktual-prefs:vm"))
+    implementation(project(":aktual-test"))
   }
 
-  desktopTestDependencies { implementation(project(":aktual-app:desktop")) }
+  desktopTestDependencies {
+    implementation(project(":aktual-app:desktop"))
+  }
 
   androidHostTestDependencies {
-    implementation(project(":aktual-app:android"))
     implementation(libs.metrox.android)
+    implementation(project(":aktual-app:android"))
   }
 }

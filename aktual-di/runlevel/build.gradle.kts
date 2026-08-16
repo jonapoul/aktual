@@ -4,7 +4,7 @@ plugins { id("aktual.module.kotlin") }
 
 kotlin {
   commonMainDependencies {
-    api(project(":aktual-di:graphs"))
     api(libs.alakazam.kotlin)
+    api(project(":aktual-di:graphs"))
   }
 }

@@ -12,10 +12,10 @@ kotlin {
     api(project(":aktual-budget:reports:vm"))
     api(project(":aktual-core:nav"))
     api(project(":aktual-core:ui"))
-    implementation(project(":aktual-core:l10n"))
     implementation(libs.kotlinx.datetime)
     implementation(libs.markdown.core)
     implementation(libs.markdown.m3)
     implementation(libs.vico)
+    implementation(project(":aktual-core:l10n"))
   }
 }
