@@ -22,7 +22,6 @@ plugins {
   alias(libs.plugins.licensee) apply false
   alias(libs.plugins.manifestLock) apply false
   alias(libs.plugins.metro) apply false
-  alias(libs.plugins.nucleus) apply false
   alias(libs.plugins.redacted) apply false
   alias(libs.plugins.sortDependencies) apply false
   alias(libs.plugins.sqldelight) apply false
