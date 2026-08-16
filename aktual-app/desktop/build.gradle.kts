@@ -2,18 +2,18 @@
 
 import aktual.gradle.ConventionLicensee.Companion.LICENSEE_REPORT_ASSET_NAME
 import blueprint.core.gitVersionCode
-import dev.nucleusframework.desktop.application.dsl.CompressionLevel
-import dev.nucleusframework.desktop.application.dsl.TargetFormat
 import java.time.Instant
 import java.time.ZoneOffset
 import java.util.Locale
+import org.gradle.internal.os.OperatingSystem
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.compose.desktop.application.tasks.AbstractJPackageTask
 
 plugins {
   id("aktual.module.jvm")
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.kotlin.compose)
   id("aktual.convention.compose")
-  alias(libs.plugins.nucleus)
 }
 
 // Same as gitVersionDate in blueprint, but with the year stripped from 2026 -> 26
@@ -23,16 +23,15 @@ val gitVersionDate =
     "%02d.%02d.%02d".format(Locale.ROOT, date.year % 100, date.monthValue, date.dayOfMonth)
   }
 
-nucleus {
+compose.desktop {
   application {
     mainClass = "aktual.app.desktop.MainKt"
 
-    jvmArgs +=
-      listOf(
-        // Make sure java.sql.DriverManager is included
-        "--add-modules",
-        "java.sql",
-      )
+    jvmArgs(
+      // Make sure java.sql.DriverManager is included
+      "--add-modules",
+      "java.sql",
+    )
 
     buildTypes.release.proguard {
       version = libs.proguard.map { it.version }
@@ -44,39 +43,26 @@ nucleus {
     nativeDistributions {
       targetFormats(
         // windows
-        TargetFormat.AppX,
+        TargetFormat.Exe,
         TargetFormat.Msi,
-        TargetFormat.Nsis,
-        TargetFormat.Portable,
 
         // mac
         TargetFormat.Dmg,
         TargetFormat.Pkg,
 
         // linux
-        TargetFormat.AppImage,
         TargetFormat.Deb,
-        TargetFormat.Flatpak,
         TargetFormat.Rpm,
-        TargetFormat.Snap,
       )
 
       // Package metadata
       packageName = "Aktual Desktop"
       packageVersion = gitVersionDate.get()
       description = "Desktop app for the Actual budgeting software"
-      homepage = "https://github.com/jonapoul/aktual"
       licenseFile = rootProject.isolated.projectDirectory.file("LICENSE")
 
       // JDK modules
       modules("java.sql")
-
-      // Nucleus features
-      cleanupNativeLibs = true
-      // enableAotCache = true // requires JDK25
-      // splashImage = "splash.png"
-      compressionLevel = CompressionLevel.Maximum
-      artifactName = $$"${name}-${version}-${os}-${arch}.${ext}"
 
       val icon =
         rootProject.isolated.projectDirectory.file(
@@ -88,12 +74,6 @@ nucleus {
         // see https://wixtoolset.org/documentation/manual/v3/howtos/general/generate_guids.html
         upgradeUuid = "a61b72be-1b0c-4de5-9607-791c17687428"
         iconFile = icon
-        nsis {
-          oneClick = false
-          allowToChangeInstallationDirectory = true
-          createDesktopShortcut = true
-          createStartMenuShortcut = true
-        }
       }
 
       macOS {
@@ -110,9 +90,36 @@ nucleus {
       }
     }
   }
+}
 
-  nativeApplication {
-    // TBC
+// jpackage's own output filenames don't include os/arch, so distributables for different
+// platforms all end up with the same name. Rename them after packaging.
+val os = OperatingSystem.current()
+val artifactOs =
+  when {
+    os.isWindows -> "windows"
+    os.isMacOsX -> "macos"
+    else -> "linux"
+  }
+
+val artifactArch =
+  when (val arch = System.getProperty("os.arch")) {
+    "x86_64",
+    "amd64" -> "x64"
+    "aarch64",
+    "arm64" -> "arm64"
+    else -> arch ?: "unknown"
+  }
+
+tasks.withType<AbstractJPackageTask>().configureEach {
+  doLast {
+    val ext = targetFormat.fileExt
+    val destDir = destinationDir.get().asFile
+    val produced =
+      destDir.listFiles { f -> f.extension.equals(ext, ignoreCase = true) }?.singleOrNull()
+        ?: return@doLast
+    val artifactName = "aktual-desktop-${gitVersionDate.get()}-$artifactOs-$artifactArch.$ext"
+    produced.renameTo(destDir.resolve(artifactName))
   }
 }
 
@@ -142,11 +149,6 @@ afterEvaluate {
 }
 
 dependencies {
-  implementation(compose.desktop.currentOs)
-  implementation(libs.androidx.lifecycle.viewmodel)
-  implementation(libs.kotlinx.coroutines.swing)
-  implementation(libs.metrox.viewmodel)
-  implementation(libs.metrox.viewmodel.compose)
   implementation(project(":aktual-app:di"))
   implementation(project(":aktual-app:nav"))
   implementation(project(":aktual-app:ui-app"))
@@ -154,6 +156,9 @@ dependencies {
   implementation(project(":aktual-core:l10n"))
   implementation(project(":aktual-di:graphs"))
   implementation(project(":aktual-prefs"))
-
-  nucleus {}
+  implementation(compose.desktop.currentOs)
+  implementation(libs.androidx.lifecycle.viewmodel)
+  implementation(libs.kotlinx.coroutines.swing)
+  implementation(libs.metrox.viewmodel)
+  implementation(libs.metrox.viewmodel.compose)
 }
