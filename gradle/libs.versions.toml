@@ -152,4 +152,4 @@ redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
 sortDependencies = { id = "com.squareup.sort-dependencies", version = "0.21.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 straitjacket = { id = "dev.jonpoulton.straitjacket", version = "0.1.0" }
-wire = { id = "com.squareup.wire", version = "6.4.5" }
+wire = { id = "com.squareup.wire", version = "6.4.6" }
