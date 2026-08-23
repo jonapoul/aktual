@@ -4,9 +4,8 @@
     "dependencies"
   ],
   "extends": [
-    "config:best-practices"
+    "github>jonapoul/renovate-config"
   ],
-  "minimumReleaseAge": "3 days",
   "packageRules": [
     {
       // AGP versions are hardcoded in settings.gradle.kts as well as the version catalog, so
@@ -28,17 +27,6 @@
         "org.jetbrains.kotlin:kotlin-metadata-jvm"
       ],
       "groupName": "kotlin"
-    },
-    {
-      // Check for GitHub Actions updates once a week (Sunday morning),
-      // grouped into a single PR
-      "matchManagers": [
-        "github-actions"
-      ],
-      "groupName": "github-actions",
-      "schedule": [
-        "* 0-8 * * 0"
-      ]
     }
   ]
 }

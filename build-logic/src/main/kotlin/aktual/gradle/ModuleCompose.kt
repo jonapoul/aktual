@@ -30,7 +30,7 @@ class ModuleCompose : ProjectPlugin {
       commonTestDependencies {
         implementation(project(":aktual-test"))
 
-        if (name != ":aktual-test:compose") {
+        if (project.path != ":aktual-test:compose") {
           implementation(project(":aktual-test:compose"))
         }
       }

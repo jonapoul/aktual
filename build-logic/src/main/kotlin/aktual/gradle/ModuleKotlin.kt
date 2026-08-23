@@ -68,7 +68,9 @@ class ModuleKotlin : ProjectPlugin {
         testLibraries.forEach { lib -> implementation(lib) }
       }
 
-      androidHostTestDependencies { androidTestLibraries.forEach { lib -> implementation(lib) } }
+      androidHostTestDependencies {
+        androidTestLibraries.forEach(::implementation)
+      }
     }
   }
 }
