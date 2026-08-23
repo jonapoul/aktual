@@ -23,6 +23,8 @@ class ModuleJvm : ProjectPlugin {
 
     extensions.configure(Lint::class.java) { lint -> lint.commonConfigure(this@applyTo) }
 
-    dependencies { testLibraries.forEach { lib -> "testImplementation"(lib) } }
+    dependencies {
+      testLibraries.forEach { lib -> "testImplementation"(lib) }
+    }
   }
 }
