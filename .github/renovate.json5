@@ -4,7 +4,7 @@
     "dependencies"
   ],
   "extends": [
-    "github>jonapoul/renovate-config"
+    "github>jonapoul/renovate-config:default.json5"
   ],
   "packageRules": [
     {
