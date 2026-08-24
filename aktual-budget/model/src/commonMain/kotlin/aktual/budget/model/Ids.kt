@@ -2,6 +2,8 @@ package aktual.budget.model
 
 import kotlinx.serialization.Serializable
 
+annotation class Id
+
 @JvmInline
 @Serializable
 value class AccountId(val value: String) : Comparable<AccountId> {
