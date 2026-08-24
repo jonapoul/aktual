@@ -2,6 +2,7 @@ package aktual.budget.db
 
 import aktual.budget.BudgetFiles
 import aktual.budget.db.test.transactionIndexNames
+import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.BudgetId
 import aktual.budget.model.CleanupGroupId
@@ -71,6 +72,7 @@ class DatabaseMigrationTest {
     checkMigration1780606215000(db)
     checkMigration1780606215001()
     checkMigration1783004650757(db)
+    checkMigration1787013118115(db)
   }
 
   // Verify that the file was opened at all
@@ -128,6 +130,18 @@ class DatabaseMigrationTest {
     val sortOrder =
       db.schedulesQueries.getSortOrder(id = ScheduleId("schedule-id")).awaitAsOneOrNull()
     assertNull(sortOrder)
+  }
+
+  // Adds account_groups table and account_group_id column to accounts. migration sets to null by
+  // default
+  private suspend fun checkMigration1787013118115(db: BudgetDatabase) {
+    val accountGroup =
+      db.accountGroupsQueries.getById(AccountGroupId("account-group")).awaitAsOneOrNull()
+    assertNull(accountGroup)
+
+    val accountGroupId =
+      db.accountsQueries.getAccountGroupId(id = AccountId("account-id")).awaitAsOneOrNull()
+    assertNull(accountGroupId)
   }
 
   private fun loadDatabaseIntoFile(): File {
