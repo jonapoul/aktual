@@ -42,7 +42,7 @@ androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmode
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-viewmodel-savedstate = { module = "androidx.lifecycle:lifecycle-viewmodel-savedstate", version.ref = "androidx-lifecycle" }
 androidx-savedstate = { module = "androidx.savedstate:savedstate", version = "1.5.0" }
-androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version = "1.1.6" }
+androidx-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version = "1.1.7" }
 androidx-paging-common = { module = "androidx.paging:paging-common", version.ref = "androidx-paging" }
 androidx-paging-compose = { module = "androidx.paging:paging-compose", version.ref = "androidx-paging" }
 androidx-poolingcontainer = { module = "androidx.customview:customview-poolingcontainer", version = "1.1.0" }
@@ -113,7 +113,7 @@ metrox-viewmodel-compose = { module = "dev.zacsweers.metro:metrox-viewmodel-comp
 mockk = { module = "io.mockk:mockk", version = "1.14.11" }
 molecule = { module = "app.cash.molecule:molecule-runtime", version = "2.2.0" }
 okio = { module = "com.squareup.okio:okio", version = "3.18.1" }
-proguard = { module = "com.guardsquare:proguard-gradle ", version = "7.9.1" }
+proguard = { module = "com.guardsquare:proguard-gradle ", version = "7.10.0" }
 redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version = "3.1.0" }
 robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
@@ -152,4 +152,4 @@ redacted = { id = "dev.zacsweers.redacted", version.ref = "redacted" }
 sortDependencies = { id = "com.squareup.sort-dependencies", version = "0.21.0" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 straitjacket = { id = "dev.jonpoulton.straitjacket", version = "0.1.0" }
-wire = { id = "com.squareup.wire", version = "6.4.6" }
+wire = { id = "com.squareup.wire", version = "6.4.7" }
