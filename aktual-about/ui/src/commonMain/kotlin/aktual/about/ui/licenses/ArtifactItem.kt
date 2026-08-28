@@ -128,6 +128,8 @@ private fun estimateTextWidth(
           annotations = emptyList(),
           density = density,
           fontFamilyResolver = resolver,
+          placeholders = emptyList(),
+          softWrap = true,
         )
         .maxIntrinsicWidth
     }

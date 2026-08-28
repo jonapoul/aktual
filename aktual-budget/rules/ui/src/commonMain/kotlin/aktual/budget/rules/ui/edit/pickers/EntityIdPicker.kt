@@ -19,9 +19,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -60,7 +61,7 @@ internal fun EntityIdPicker(
 
   var showSheet by remember { mutableStateOf(false) }
   var entities by remember { mutableStateOf<ImmutableList<EntitySummary>?>(null) }
-  val sheetState = rememberModalBottomSheetState()
+  val sheetState = rememberBottomSheetState(initialValue = Hidden)
 
   val fetchEntitiesState by rememberUpdatedState(fetchEntities)
   LaunchedEffect(showSheet, entityListFetcher) {

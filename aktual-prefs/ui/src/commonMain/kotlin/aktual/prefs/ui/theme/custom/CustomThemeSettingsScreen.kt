@@ -70,12 +70,13 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.minimumInteractiveComponentSize
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -155,7 +156,7 @@ private fun CustomThemeSettingsScaffold(
 ) {
   val listState = rememberLazyListState()
   val blurState = rememberBlurredTopBarState()
-  val sheetState = rememberModalBottomSheetState()
+  val sheetState = rememberBottomSheetState(initialValue = Hidden)
 
   Scaffold(
     topBar = {
