@@ -9,22 +9,27 @@
   "packageRules": [
     {
       // AGP versions are hardcoded in settings.gradle.kts as well as the version catalog, so
-      // force them into the same group as the catalog's "agp" version ref
+      // force them into the same group as the catalog's "agp" version ref. Listed explicitly
+      // because com.android.* would also swallow com.android.tools:desugar_jdk_libs
       "matchDepNames": [
         "com.android.application",
         "com.android.kotlin.multiplatform.library",
         "com.android.lint"
       ],
-      "groupName": "agp"
+      "groupName": "AGP"
     },
     {
-      // Same for Kotlin
+      // Same for blueprint, which is also referenced by the detekt-rules artifact in the catalog
       "matchDepNames": [
-        "org.jetbrains.kotlin.jvm",
-        "org.jetbrains.kotlin.multiplatform",
-        "org.jetbrains.kotlin.plugin.compose",
-        "org.jetbrains.kotlin.plugin.serialization",
-        "org.jetbrains.kotlin:kotlin-metadata-jvm"
+        "dev.jonpoulton.blueprint*"
+      ],
+      "groupName": "blueprint"
+    },
+    {
+      // Same for Kotlin. Two globs so we catch plugin IDs and artifacts, but not org.jetbrains.kotlinx
+      "matchDepNames": [
+        "org.jetbrains.kotlin.*",
+        "org.jetbrains.kotlin:*"
       ],
       "groupName": "kotlin"
     }
