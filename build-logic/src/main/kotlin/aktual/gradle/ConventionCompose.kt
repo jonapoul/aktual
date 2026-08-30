@@ -51,7 +51,7 @@ class ConventionCompose : ProjectPlugin {
       extensions.configure(ResourcesExtension::class) { generateResClass = never }
     }
 
-    plugins.withAnyId("com.android.lint", "com.android.base") {
+    pluginManager.withAnyId("com.android.lint", "com.android.base") {
       dependencies { "lintChecks"(libs["androidx.compose.lint"]) }
     }
 
