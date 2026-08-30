@@ -6,18 +6,19 @@ import aktual.gradle.dsl.invoke
 import aktual.gradle.dsl.testLibraries
 import blueprint.core.get
 import blueprint.core.libs
-import com.android.build.gradle.api.AndroidBasePlugin
+import blueprint.core.withAnyId
 import org.gradle.api.Project
 
 class ConventionTestDependencies : ProjectPlugin {
   override fun Project.applyTo() {
-    if ("testImplementation" !in configurations.names) return
-    val isAndroid = project.plugins.any { it is AndroidBasePlugin }
+    pluginManager.withAnyId("org.jetbrains.kotlin.jvm", "org.jetbrains.kotlin.android") {
+      dependencies {
+        testLibraries.forEach { lib -> "testImplementation"(lib) }
+      }
+    }
 
-    dependencies {
-      testLibraries.forEach { lib -> "testImplementation"(lib) }
-
-      if (isAndroid) {
+    pluginManager.withPlugin("com.android.base") {
+      dependencies {
         androidTestLibraries.forEach { lib -> "testImplementation"(lib) }
         "debugImplementation"(libs["androidx.test.monitor"])
       }
