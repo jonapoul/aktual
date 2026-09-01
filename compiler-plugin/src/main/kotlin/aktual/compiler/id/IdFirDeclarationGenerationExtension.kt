@@ -21,9 +21,8 @@ internal class IdFirDeclarationGenerationExtension(session: FirSession) :
   }
 
   // Property types aren't resolved yet at this stage, so whether the wrapped type is actually
-  // Comparable can't be
-  // checked here; IdComparableChecker reports a compile error for that case instead, once types are
-  // resolved.
+  // Comparable can't be checked here; IdComparableChecker reports a compile error for that case
+  // instead, once types are resolved.
   override fun getCallableNamesForClass(
     classSymbol: FirClassSymbol<*>,
     context: MemberGenerationContext,

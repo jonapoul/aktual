@@ -7,5 +7,5 @@ import org.jetbrains.kotlin.name.FqName
 internal object IdPluginKey : GeneratedDeclarationKey()
 
 internal val IdPredicate = DeclarationPredicate.create {
-  annotated(FqName("aktual.budget.model.Id"))
+  annotated(FqName("aktual.budget.model.IdType"))
 }

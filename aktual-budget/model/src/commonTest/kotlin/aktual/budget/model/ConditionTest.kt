@@ -35,13 +35,13 @@ class ConditionTest {
         Condition(
           field = Account,
           operator = Is,
-          type = ConditionType.Id,
+          type = Id,
           value = JsonPrimitive("eb08ea4f-bbb0-437f-873a-1fdee4154683"),
         ),
         Condition(
           field = Payee,
           operator = Is,
-          type = ConditionType.Id,
+          type = Id,
           value = JsonPrimitive("92ac5221-2605-419d-821a-6ec04ea38b57"),
         ),
       )
@@ -83,7 +83,7 @@ class ConditionTest {
         Condition(
           field = Category,
           operator = OneOf,
-          type = ConditionType.Id,
+          type = Id,
           value =
             JsonArray(
               content =

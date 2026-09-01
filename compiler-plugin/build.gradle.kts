@@ -3,6 +3,7 @@ plugins {
 }
 
 group = "aktual.compiler"
+
 version = "1.0.0"
 
 val javaFile = layout.projectDirectory.file("../.java-version")
