@@ -10,11 +10,16 @@ import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 class AktualCompilerGradlePlugin : KotlinCompilerPluginSupportPlugin {
   override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean = true
 
-  override fun applyToCompilation(kotlinCompilation: KotlinCompilation<*>): Provider<List<SubpluginOption>> =
-    kotlinCompilation.target.project.provider { emptyList() }
+  override fun applyToCompilation(
+    kotlinCompilation: KotlinCompilation<*>
+  ): Provider<List<SubpluginOption>> = kotlinCompilation.target.project.provider { emptyList() }
 
   override fun getCompilerPluginId(): String = AktualCommandLineProcessor.PLUGIN_ID
 
   override fun getPluginArtifact(): SubpluginArtifact =
-    SubpluginArtifact(groupId = "aktual.compiler", artifactId = "compiler-plugin", version = "1.0.0")
+    SubpluginArtifact(
+      groupId = "aktual.compiler",
+      artifactId = "compiler-plugin",
+      version = "1.0.0",
+    )
 }

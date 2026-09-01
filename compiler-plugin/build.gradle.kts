@@ -12,6 +12,7 @@ kotlin {
   jvmToolchain(jdkVersion.get())
   compilerOptions {
     allWarningsAsErrors.set(true)
+    freeCompilerArgs.add("-opt-in=org.jetbrains.kotlin.compiler.plugin.ExperimentalCompilerApi")
   }
 }
 

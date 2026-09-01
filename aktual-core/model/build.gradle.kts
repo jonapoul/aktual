@@ -2,7 +2,6 @@ import blueprint.core.commonMainDependencies
 
 plugins {
   id("aktual.module.kotlin")
-  id("aktual.compiler")
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.redacted)
 }
