@@ -36,6 +36,11 @@ pluginManagement {
   }
 }
 
+// Included again here (outside pluginManagement) so its artifact is substitutable as a regular
+// dependency, not just resolvable as a plugin — needed for build-logic's aktual.compiler Gradle
+// plugin, which adds it to consumers' kotlinCompilerPluginClasspath.
+includeBuild("compiler-plugin")
+
 plugins {
   id("com.android.application") version "9.3.2" apply false
   id("com.android.kotlin.multiplatform.library") version "9.3.2" apply false

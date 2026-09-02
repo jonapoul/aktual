@@ -36,6 +36,8 @@ dependencies {
       plugin.map { "${it.pluginId}:${it.pluginId}.gradle.plugin:${it.version.requiredVersion}" }
     )
 
+  compileOnly("aktual.compiler:compiler-plugin")
+
   compileOnlyPlugin(libs.plugins.agp.app)
   compileOnlyPlugin(libs.plugins.atlas)
   compileOnlyPlugin(libs.plugins.blueprint)
@@ -67,6 +69,8 @@ gradlePlugin {
         id = this@invoke
         implementationClass = impl
       }
+
+    "aktual.compiler"(impl = "aktual.gradle.AktualCompilerGradlePlugin")
 
     "aktual.convention.atlas"(impl = "aktual.gradle.ConventionAtlas")
     "aktual.convention.compose"(impl = "aktual.gradle.ConventionCompose")
