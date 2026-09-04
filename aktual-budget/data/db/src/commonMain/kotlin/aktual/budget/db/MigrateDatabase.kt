@@ -66,6 +66,21 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
 
     // packages/loot-core/migrations/1783004650757_schedule_sort_order.sql
     1783004650757L to listOf("ALTER TABLE schedules ADD COLUMN sort_order REAL DEFAULT 0"),
+
+    // packages/loot-core/migrations/1787013118115_add_account_groups.sql
+    1787013118115L to
+      listOf(
+        """
+        CREATE TABLE IF NOT EXISTS account_groups(
+          id TEXT PRIMARY KEY,
+          name TEXT,
+          sort_order REAL,
+          tombstone INTEGER DEFAULT 0
+        )
+        """
+          .trimIndent(),
+        "ALTER TABLE accounts ADD COLUMN account_group_id TEXT DEFAULT NULL",
+      ),
   )
 
 private const val TAG = "MigrateDatabase"

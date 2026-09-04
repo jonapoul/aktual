@@ -1,5 +1,6 @@
 package aktual.budget.db
 
+import aktual.budget.model.AccountGroupId
 import aktual.budget.model.AccountId
 import aktual.budget.model.AccountSyncSource
 import aktual.budget.model.Amount
@@ -153,6 +154,7 @@ private val yearMonth =
 private val upcomingLengthAdapter =
   stringAdapter(decode = UpcomingLength::decode, encode = UpcomingLength::encode)
 
+private val accountGroupId = stringAdapter(::AccountGroupId)
 private val accountId = stringAdapter(::AccountId)
 private val accountSyncSource = stringAdapter(AccountSyncSource::fromString)
 private val bankId = stringAdapter(::BankId)
@@ -190,6 +192,8 @@ private val sortBy = enumStringAdapter<SortBy>()
 private val ruleStage = enumStringAdapter<RuleStage>()
 private val widgetType = enumStringAdapter<WidgetType>()
 
+internal val AccountGroupsAdapter = Account_groups.Adapter(idAdapter = accountGroupId)
+
 internal val AccountsAdapter =
   Accounts.Adapter(
     idAdapter = accountId,
@@ -201,6 +205,7 @@ internal val AccountsAdapter =
     last_syncAdapter = instantMsFromString,
     last_reconciledAdapter = instantMsFromString,
     bank_sync_statusAdapter = bankSyncStatus,
+    account_group_idAdapter = accountGroupId,
   )
 
 internal val BanksAdapter = Banks.Adapter(idAdapter = uuid, bank_idAdapter = bankId)

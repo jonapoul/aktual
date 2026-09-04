@@ -1,0 +1,16 @@
+import aktual.budget.model.AccountGroupId;
+import kotlin.Boolean;
+
+CREATE TABLE IF NOT EXISTS account_groups(
+  id TEXT AS AccountGroupId PRIMARY KEY,
+  name TEXT,
+  sort_order REAL,
+  tombstone INTEGER AS Boolean DEFAULT 0
+);
+
+insert:
+  INSERT OR REPLACE
+    INTO account_groups(id, name, sort_order, tombstone)
+    VALUES (?, ?, ?, ?);
+
+getById: SELECT * FROM account_groups WHERE id = ?;

@@ -107,4 +107,5 @@ internal val PREVIEW_ACCOUNT =
     last_sync = null,
     last_reconciled = null,
     bank_sync_status = null,
+    account_group_id = null,
   )
