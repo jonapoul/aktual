@@ -15,7 +15,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,7 +43,7 @@ fun YearMonthPicker(
   var selected by remember { mutableStateOf(value) }
   val displayText = selected.stringLong()
   val textState = rememberTextFieldState(initialText = displayText)
-  LaunchedEffect(displayText) {
+  SideEffect(displayText) {
     if (textState.text.toString() != displayText) {
       textState.edit { replace(0, length, displayText) }
     }

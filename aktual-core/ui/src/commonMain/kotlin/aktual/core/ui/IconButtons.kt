@@ -139,7 +139,8 @@ fun BasicIconButton(
 }
 
 @Composable
-fun NavBackIconButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+@Suppress("LambdaParameterEventTrailing")
+fun NavBackIconButton(modifier: Modifier = Modifier, onClick: () -> Unit) {
   IconButton(modifier = modifier, onClick = onClick) {
     Icon(imageVector = MaterialIcons.ArrowBack, contentDescription = Strings.navBack)
   }
@@ -164,12 +165,6 @@ fun interface IconButtonColorProvider {
         )
     }
   }
-}
-
-@Composable
-@Suppress("ComposeModifierMissing", "ModifierMissing")
-fun NavBackIconButton(onClick: () -> Unit) {
-  NavBackIconButton(modifier = Modifier, onClick = onClick)
 }
 
 @Composable

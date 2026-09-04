@@ -37,6 +37,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -86,7 +87,7 @@ internal fun AmountTextField(
   var isPositive by remember { mutableStateOf(value.isPositive()) }
 
   // Sync text field from external value changes (field type change, condition reset)
-  LaunchedEffect(value) {
+  SideEffect(value) {
     if (value != lastEmittedValue) {
       val newText =
         when (value) {

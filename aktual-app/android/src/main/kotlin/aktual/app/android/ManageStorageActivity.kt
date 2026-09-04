@@ -22,7 +22,7 @@ import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -60,7 +60,7 @@ class ManageStorageActivity(override val defaultViewModelProviderFactory: MetroV
 
       val hazeState = rememberHazeState()
       val isSystemDark = isSystemInDarkTheme()
-      LaunchedEffect(isSystemDark) { viewModel.updateSystemDarkTheme(isSystemDark) }
+      SideEffect(isSystemDark) { viewModel.updateSystemDarkTheme(isSystemDark) }
       val theme by viewModel.theme.collectAsStateWithLifecycle()
 
       WithCompositionLocals(
