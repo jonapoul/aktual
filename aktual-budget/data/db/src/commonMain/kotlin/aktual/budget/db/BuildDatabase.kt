@@ -5,6 +5,7 @@ import app.cash.sqldelight.db.SqlDriver
 fun buildDatabase(driver: SqlDriver): BudgetDatabase =
   BudgetDatabase(
     driver = driver,
+    account_groupsAdapter = AccountGroupsAdapter,
     accountsAdapter = AccountsAdapter,
     banksAdapter = BanksAdapter,
     categoriesAdapter = CategoriesAdapter,

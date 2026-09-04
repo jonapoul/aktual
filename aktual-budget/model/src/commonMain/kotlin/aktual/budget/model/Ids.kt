@@ -8,6 +8,8 @@ import kotlinx.serialization.MetaSerializable
 
 @JvmInline @IdType value class AccountId(val value: String)
 
+@JvmInline @IdType value class AccountGroupId(val value: String)
+
 @JvmInline @IdType value class BankId(val value: String)
 
 @JvmInline @IdType value class BudgetId(val value: String)
