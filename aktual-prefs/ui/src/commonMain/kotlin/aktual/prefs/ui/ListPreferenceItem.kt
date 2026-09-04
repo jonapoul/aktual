@@ -19,7 +19,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.SheetValue.Hidden
 import androidx.compose.material3.rememberBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -88,7 +88,7 @@ internal fun <E : Enum<E>> ListPreferenceItem(
     bottomContent = {
       val displayText = optionString(value)
       val textState = rememberTextFieldState(initialText = displayText)
-      LaunchedEffect(displayText) {
+      SideEffect(displayText) {
         if (textState.text.toString() != displayText) {
           textState.edit { replace(0, length, displayText) }
         }

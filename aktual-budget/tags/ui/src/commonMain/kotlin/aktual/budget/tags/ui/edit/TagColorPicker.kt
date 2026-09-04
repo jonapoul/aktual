@@ -44,6 +44,7 @@ import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -85,13 +86,13 @@ internal fun TagColorPicker(
   val currentOnErrorChange by rememberUpdatedState(onErrorChange)
 
   var hexError by remember { mutableStateOf(false) }
-  LaunchedEffect(hexError) { currentOnErrorChange(hexError) }
+  SideEffect(hexError) { currentOnErrorChange(hexError) }
 
   // keep the advanced wheel + brightness slider tracking the current colour, wherever it came from
   // (a preset, the hex field, or the colour the editor seeded). HsvColorPicker's initialColor only
   // applies on first composition, so later changes have to be pushed onto the controller here. The
   // equality guard avoids fighting the wheel mid-drag, where the colour already matches
-  LaunchedEffect(color) {
+  SideEffect(color) {
     if (color != null && controller.selectedColor.value != color) {
       controller.selectByColor(color, fromUser = false)
     }
@@ -100,9 +101,9 @@ internal fun TagColorPicker(
   // when the colour changes from elsewhere (wheel, slider, preset), reflect it in the field.
   // Skip only when the field already represents this colour — i.e. the user just typed it — so we
   // don't reformat their input mid-edit. The canonical value is always valid, so clear any error
-  LaunchedEffect(color, hexFocused) {
+  SideEffect(color, hexFocused) {
     val fieldAlreadyMatches = hexState.text.toString().trim().toColorOrNull() == color
-    if (hexFocused && fieldAlreadyMatches) return@LaunchedEffect
+    if (hexFocused && fieldAlreadyMatches) return@SideEffect
 
     val hex = color?.toHex().orEmpty()
     if (!hexState.text.contentEquals(hex, ignoreCase = true)) {

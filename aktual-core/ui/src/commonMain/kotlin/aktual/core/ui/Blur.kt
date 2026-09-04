@@ -17,7 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -182,7 +182,7 @@ fun DialogBlurOverlay(modifier: Modifier = Modifier) {
       animationSpec = DefaultAnimationSpec,
     )
 
-  LaunchedEffect(progress) {
+  SideEffect(progress) {
     // Only clear this from the root overlay, because we only want to stop excluding these areas
     // when the blur effect
     // is totally gone

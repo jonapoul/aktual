@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,7 +60,7 @@ fun AktualAppContent(
   }
 
   val isSystemDark = isSystemInDarkTheme()
-  LaunchedEffect(isSystemDark) { viewModel.updateSystemDarkTheme(isSystemDark) }
+  SideEffect(isSystemDark) { viewModel.updateSystemDarkTheme(isSystemDark) }
 
   val colors by viewModel.colors.collectAsStateWithLifecycle()
   val bottomBarState by viewModel.bottomBarState.collectAsStateWithLifecycle()

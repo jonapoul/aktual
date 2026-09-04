@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,7 +32,7 @@ internal fun HeaderLogin(
   onAction: LoginActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  LaunchedEffect(Unit) { onAction(SignIn) }
+  SideEffect(Unit) { onAction(SignIn) }
 
   Column(
     modifier =
