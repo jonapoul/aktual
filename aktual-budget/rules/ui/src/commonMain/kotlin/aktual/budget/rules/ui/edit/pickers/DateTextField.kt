@@ -26,7 +26,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.getSelectedDate
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,7 +67,7 @@ internal fun DateTextField(
   val displayText = localDate?.formatted().orEmpty()
 
   val textState = rememberTextFieldState(initialText = displayText)
-  LaunchedEffect(displayText) {
+  SideEffect(displayText) {
     if (textState.text.toString() != displayText) textState.edit { replace(0, length, displayText) }
   }
 

@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,7 +82,7 @@ fun ScaleToFitText(
     if (isInPreview()) {
       runBlocking { resizingText() }
     } else {
-      LaunchedEffect(text, maxWidthPx, maxHeightPx) { resizingText() }
+      SideEffect(text, maxWidthPx, maxHeightPx) { resizingText() }
     }
 
     Text(

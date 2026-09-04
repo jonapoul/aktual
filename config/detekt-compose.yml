@@ -10,5 +10,9 @@ Compose:
     active: true
   PreviewNaming:
     previewNamingStrategy: prefix
+  UnnecessaryLaunchedEffect:
+    # SideEffect runs before layout, so requestFocus needs to stay in a LaunchedEffect
+    allowedCallReceiverTypes:
+      - androidx.compose.ui.focus.FocusRequester
   UnstableCollections:
     active: true

@@ -14,6 +14,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -167,6 +168,7 @@ fun interface IconButtonColorProvider {
 }
 
 @Composable
+@NonRestartableComposable
 @Suppress("ComposeModifierMissing", "ModifierMissing")
 fun NavBackIconButton(onClick: () -> Unit) {
   NavBackIconButton(modifier = Modifier, onClick = onClick)

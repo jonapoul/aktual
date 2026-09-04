@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
@@ -46,7 +47,7 @@ internal fun InputFields(
     val textState = rememberTextFieldState(initialText = url)
 
     // Sync from parent when URL changes externally (async prefs load)
-    LaunchedEffect(url) {
+    SideEffect(url) {
       if (textState.text.toString() != url) {
         textState.edit { replace(0, length, url) }
       }
