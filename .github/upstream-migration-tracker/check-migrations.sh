@@ -40,25 +40,34 @@ git -C "$tmp_dir" sparse-checkout set "$MIGRATIONS_PATH"
 
 mapfile -t all_migrations < <(find "$tmp_dir/$MIGRATIONS_PATH" -maxdepth 1 -type f -printf '%f\n' | sort)
 
-new_migrations=()
-found_last=false
-for migration in "${all_migrations[@]}"; do
-  if [[ "$found_last" == true ]]; then
-    new_migrations+=("$migration")
-  elif [[ "$migration" == "$last_known" ]]; then
-    found_last=true
-  fi
-done
+# Populates the new_migrations array with everything upstream has after the given migration
+compute_new_migrations() {
+  local baseline="$1"
+  local found_last=false
+  local migration
 
-if [[ "$found_last" == false ]]; then
-  echo "WARNING: Last known migration '$last_known' was not found in upstream."
-  echo "This may mean it was renamed or removed. Listing all migrations after it alphabetically."
+  new_migrations=()
   for migration in "${all_migrations[@]}"; do
-    if [[ "$migration" > "$last_known" ]]; then
+    if [[ "$found_last" == true ]]; then
       new_migrations+=("$migration")
+    elif [[ "$migration" == "$baseline" ]]; then
+      found_last=true
     fi
   done
-fi
+
+  if [[ "$found_last" == false ]]; then
+    echo "WARNING: Last known migration '$baseline' was not found in upstream."
+    echo "This may mean it was renamed or removed. Listing all migrations after it alphabetically."
+    for migration in "${all_migrations[@]}"; do
+      if [[ "$migration" > "$baseline" ]]; then
+        new_migrations+=("$migration")
+      fi
+    done
+  fi
+}
+
+new_migrations=()
+compute_new_migrations "$last_known"
 
 if [[ ${#new_migrations[@]} -eq 0 ]]; then
   echo "No new migrations found."
@@ -112,9 +121,6 @@ if [[ -z "$GITHUB_REPOSITORY" ]]; then
   exit 1
 fi
 
-# Update the tracker file to the newest migration
-echo "$newest_migration" > "$TRACKER_FILE"
-
 # Set up git for committing
 git config user.name "Jon Poulton"
 git config user.email "jpoulton@pm.me"
@@ -137,6 +143,23 @@ if [[ -n "$existing_pr" ]]; then
   # Check out the existing PR branch and update the tracker file
   git fetch origin "$PR_BRANCH"
   git checkout "$PR_BRANCH"
+
+  # The tracker on main lags behind while the PR is open, so recompute against the branch's own
+  # tracker. Otherwise every run re-reports the same migrations and tries to make an empty commit.
+  branch_last_known="$(tr -d '[:space:]' < "$TRACKER_FILE")"
+  compute_new_migrations "$branch_last_known"
+
+  if [[ ${#new_migrations[@]} -eq 0 ]]; then
+    echo "PR #$pr_number already covers every upstream migration. Nothing to do."
+    exit 0
+  fi
+
+  echo "Found ${#new_migrations[@]} migration(s) not yet listed in PR #$pr_number:"
+  printf '  %s\n' "${new_migrations[@]}"
+
+  new_rows="$(build_table_rows "${new_migrations[@]}")"
+  newest_migration="${new_migrations[${#new_migrations[@]}-1]}"
+
   echo "$newest_migration" > "$TRACKER_FILE"
   git add "$TRACKER_FILE"
   git commit -m "Update last known upstream migration to $newest_migration"
@@ -189,6 +212,7 @@ EOF
 
   # Create branch, commit, and push
   git checkout -B "$PR_BRANCH"
+  echo "$newest_migration" > "$TRACKER_FILE"
   git add "$TRACKER_FILE"
   git commit -m "Update last known upstream migration to $newest_migration"
   git push -u origin "$PR_BRANCH"

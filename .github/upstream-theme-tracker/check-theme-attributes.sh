@@ -124,9 +124,6 @@ if [[ -z "$GITHUB_REPOSITORY" ]]; then
   exit 1
 fi
 
-# Update the tracker file to the current upstream state
-cp "$tmp_dir/all_attrs.txt" "$TRACKER_FILE"
-
 # Set up git for committing
 git config user.name "Jon Poulton"
 git config user.email "jpoulton@pm.me"
@@ -189,6 +186,32 @@ if [[ -n "$existing_pr" ]]; then
   # Check out the existing PR branch and update the tracker file
   git fetch origin "$PR_BRANCH"
   git checkout "$PR_BRANCH"
+
+  # The tracker on main lags behind while the PR is open, so recompute against the branch's own
+  # tracker. Otherwise every run re-reports the same attributes and tries to make an empty commit.
+  branch_attrs="$(sort < "$TRACKER_FILE")"
+  new_attrs="$(comm -23 "$tmp_dir/all_attrs.txt" <(echo "$branch_attrs"))"
+  removed_attrs="$(comm -13 "$tmp_dir/all_attrs.txt" <(echo "$branch_attrs"))"
+
+  if [[ -z "$new_attrs" && -z "$removed_attrs" ]]; then
+    echo "PR #$pr_number already covers every upstream theme attribute. Nothing to do."
+    exit 0
+  fi
+
+  new_rows=""
+  if [[ -n "$new_attrs" ]]; then
+    echo "$(echo "$new_attrs" | wc -l) added attribute(s) not yet listed in PR #$pr_number:"
+    echo "  ${new_attrs//$'\n'/$'\n'  }"
+    new_rows="$(build_new_rows "$new_attrs")"
+  fi
+
+  removed_rows=""
+  if [[ -n "$removed_attrs" ]]; then
+    echo "$(echo "$removed_attrs" | wc -l) removed attribute(s) not yet listed in PR #$pr_number:"
+    echo "  ${removed_attrs//$'\n'/$'\n'  }"
+    removed_rows="$(build_removed_rows "$removed_attrs")"
+  fi
+
   cp "$tmp_dir/all_attrs.txt" "$TRACKER_FILE"
   git add "$TRACKER_FILE"
   git commit -m "Update known upstream theme attributes"
@@ -232,6 +255,7 @@ else
 
   # Create branch, commit, and push
   git checkout -B "$PR_BRANCH"
+  cp "$tmp_dir/all_attrs.txt" "$TRACKER_FILE"
   git add "$TRACKER_FILE"
   git commit -m "Update known upstream theme attributes"
   git push -u origin "$PR_BRANCH"
