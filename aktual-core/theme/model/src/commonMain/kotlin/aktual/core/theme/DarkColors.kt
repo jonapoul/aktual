@@ -68,10 +68,31 @@ data object DarkColors : DefaultColors {
   override val sidebarItemBackgroundFailed = ColorPalette.red300
   override val sidebarItemAccentSelected = ColorPalette.purple200
   override val sidebarItemBackgroundHover = ColorPalette.navy700
+  override val sidebarItemBackgroundSelected = sidebarItemAccentSelected.copy(alpha = 0.22f)
   override val sidebarItemText = ColorPalette.navy150
   override val sidebarItemTextUpdated = sidebarItemText
   override val sidebarItemTextSelected = ColorPalette.purple200
   override val sidebarBudgetName = ColorPalette.navy300
+  override val sidebarHeaderText = ColorPalette.white
+  override val sidebarTextSubdued = ColorPalette.navy300
+  override val sidebarTextMuted = ColorPalette.navy500
+  override val sidebarTextPositive = sidebarItemBackgroundPositive
+  override val sidebarTextFailed = sidebarItemBackgroundFailed
+  override val sidebarBackgroundFailedSubtle = sidebarItemBackgroundFailed.copy(alpha = 0.16f)
+  override val sidebarBorder = sidebarItemBackgroundHover
+  override val sidebarControlBackground = sidebarItemBackgroundHover
+  override val sidebarBrand = sidebarItemAccentSelected
+
+  override val sidebarRedesignBackground = sidebarBackground
+  override val sidebarRedesignItemText = sidebarItemText
+  override val sidebarRedesignItemBackgroundHover = sidebarItemBackgroundHover
+  override val sidebarRedesignItemAccentSelected = sidebarItemAccentSelected
+  override val sidebarRedesignItemTextSelected = sidebarItemTextSelected
+  override val sidebarRedesignItemBackgroundSelected = sidebarItemBackgroundSelected
+  override val sidebarRedesignItemBackgroundFailed = sidebarItemBackgroundFailed
+  override val sidebarRedesignHeaderText = sidebarHeaderText
+  override val sidebarRedesignTextSubdued = sidebarTextSubdued
+  override val sidebarRedesignTextMuted = sidebarTextMuted
 
   override val menuBackground = ColorPalette.navy800
   override val menuItemBackground = ColorPalette.navy800
