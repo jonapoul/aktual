@@ -1,9 +1,9 @@
 package aktual.app.android
 
 import aktual.app.nav.AppLifecycleManager
-import aktual.app.nav.BlurConfigUseCase
 import aktual.app.nav.BottomBarStateUseCase
 import aktual.app.nav.FormatConfigUseCase
+import aktual.app.nav.HazeConfigUseCase
 import aktual.app.nav.InitialRouteUseCase
 import aktual.app.nav.RootViewModel
 import aktual.core.nav.NavEntryContributor
@@ -28,7 +28,7 @@ class AktualActivityViewModel(
   appLifecycleManager: AppLifecycleManager,
   navEntryContributors: Set<NavEntryContributor>,
   formatConfigUseCase: FormatConfigUseCase,
-  blurConfigUseCase: BlurConfigUseCase,
+  hazeConfigUseCase: HazeConfigUseCase,
   initialRouteUseCase: InitialRouteUseCase,
   bottomBarStateUseCase: BottomBarStateUseCase,
   systemUiPreferences: SystemUiPreferences,
@@ -39,7 +39,7 @@ class AktualActivityViewModel(
     appLifecycleManager = appLifecycleManager,
     navEntryContributors = navEntryContributors,
     formatConfigUseCase = formatConfigUseCase,
-    blurConfigUseCase = blurConfigUseCase,
+    hazeConfigUseCase = hazeConfigUseCase,
     initialRouteUseCase = initialRouteUseCase,
     bottomBarStateUseCase = bottomBarStateUseCase,
     runLevels = runLevels,
