@@ -99,6 +99,34 @@ fun parseColors(summary: CustomThemeSummary, css: String): CustomColors {
             sidebarItemTextUpdated = "sidebarItemTextUpdated".attr(sidebarItemTextUpdated),
             sidebarItemTextSelected = "sidebarItemTextSelected".attr(sidebarItemTextSelected),
             sidebarBudgetName = "sidebarBudgetName".attr(sidebarBudgetName),
+            sidebarItemBackgroundSelected =
+              "sidebarItemBackgroundSelected".attr(sidebarItemBackgroundSelected),
+            sidebarHeaderText = "sidebarHeaderText".attr(sidebarHeaderText),
+            sidebarTextSubdued = "sidebarTextSubdued".attr(sidebarTextSubdued),
+            sidebarTextMuted = "sidebarTextMuted".attr(sidebarTextMuted),
+            sidebarTextPositive = "sidebarTextPositive".attr(sidebarTextPositive),
+            sidebarTextFailed = "sidebarTextFailed".attr(sidebarTextFailed),
+            sidebarBackgroundFailedSubtle =
+              "sidebarBackgroundFailedSubtle".attr(sidebarBackgroundFailedSubtle),
+            sidebarBorder = "sidebarBorder".attr(sidebarBorder),
+            sidebarControlBackground = "sidebarControlBackground".attr(sidebarControlBackground),
+            sidebarBrand = "sidebarBrand".attr(sidebarBrand),
+            sidebarRedesignBackground = "sidebarRedesignBackground".attr(sidebarRedesignBackground),
+            sidebarRedesignItemText = "sidebarRedesignItemText".attr(sidebarRedesignItemText),
+            sidebarRedesignItemBackgroundHover =
+              "sidebarRedesignItemBackgroundHover".attr(sidebarRedesignItemBackgroundHover),
+            sidebarRedesignItemAccentSelected =
+              "sidebarRedesignItemAccentSelected".attr(sidebarRedesignItemAccentSelected),
+            sidebarRedesignItemTextSelected =
+              "sidebarRedesignItemTextSelected".attr(sidebarRedesignItemTextSelected),
+            sidebarRedesignItemBackgroundSelected =
+              "sidebarRedesignItemBackgroundSelected".attr(sidebarRedesignItemBackgroundSelected),
+            sidebarRedesignItemBackgroundFailed =
+              "sidebarRedesignItemBackgroundFailed".attr(sidebarRedesignItemBackgroundFailed),
+            sidebarRedesignHeaderText = "sidebarRedesignHeaderText".attr(sidebarRedesignHeaderText),
+            sidebarRedesignTextSubdued =
+              "sidebarRedesignTextSubdued".attr(sidebarRedesignTextSubdued),
+            sidebarRedesignTextMuted = "sidebarRedesignTextMuted".attr(sidebarRedesignTextMuted),
             menuBackground = "menuBackground".attr(menuBackground),
             menuItemBackground = "menuItemBackground".attr(menuItemBackground),
             menuItemBackgroundHover = "menuItemBackgroundHover".attr(menuItemBackgroundHover),

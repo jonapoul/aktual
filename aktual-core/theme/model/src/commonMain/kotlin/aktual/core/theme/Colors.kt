@@ -69,10 +69,31 @@ sealed interface Colors {
   val sidebarItemBackgroundFailed: Color
   val sidebarItemBackgroundHover: Color
   val sidebarItemAccentSelected: Color
+  val sidebarItemBackgroundSelected: Color
   val sidebarItemText: Color
   val sidebarItemTextUpdated: Color
   val sidebarItemTextSelected: Color
   val sidebarBudgetName: Color
+  val sidebarHeaderText: Color
+  val sidebarTextSubdued: Color
+  val sidebarTextMuted: Color
+  val sidebarTextPositive: Color
+  val sidebarTextFailed: Color
+  val sidebarBackgroundFailedSubtle: Color
+  val sidebarBorder: Color
+  val sidebarControlBackground: Color
+  val sidebarBrand: Color
+
+  val sidebarRedesignBackground: Color
+  val sidebarRedesignItemText: Color
+  val sidebarRedesignItemBackgroundHover: Color
+  val sidebarRedesignItemAccentSelected: Color
+  val sidebarRedesignItemTextSelected: Color
+  val sidebarRedesignItemBackgroundSelected: Color
+  val sidebarRedesignItemBackgroundFailed: Color
+  val sidebarRedesignHeaderText: Color
+  val sidebarRedesignTextSubdued: Color
+  val sidebarRedesignTextMuted: Color
 
   val menuBackground: Color
   val menuItemBackground: Color
