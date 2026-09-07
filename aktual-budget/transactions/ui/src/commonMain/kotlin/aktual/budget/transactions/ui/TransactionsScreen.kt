@@ -15,9 +15,9 @@ import aktual.core.ui.PageBackground
 import aktual.core.ui.PortraitPreview
 import aktual.core.ui.PreviewWithColors
 import aktual.core.ui.TabletPreview
-import aktual.core.ui.blurredTopBarContent
-import aktual.core.ui.blurredTopBarContentPadding
-import aktual.core.ui.rememberBlurredTopBarState
+import aktual.core.ui.hazedTopBarContent
+import aktual.core.ui.hazedTopBarContentPadding
+import aktual.core.ui.rememberHazedTopBarState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
@@ -68,13 +68,13 @@ internal fun TransactionsScaffold(
   source: TransactionStateSource,
   onAction: ActionListener,
 ) {
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
 
   Scaffold(
     topBar = {
       TransactionsTitleBar(
-        blurState = blurState,
+        hazeState = hazeState,
         listState = listState,
         loadedAccount = loadedAccount,
         onAction = onAction,
@@ -84,8 +84,8 @@ internal fun TransactionsScaffold(
     Box {
       PageBackground()
       Transactions(
-        modifier = Modifier.blurredTopBarContent(blurState, innerPadding),
-        contentPadding = blurredTopBarContentPadding(blurState, innerPadding),
+        modifier = Modifier.hazedTopBarContent(hazeState, innerPadding),
+        contentPadding = hazedTopBarContentPadding(hazeState, innerPadding),
         listState = listState,
         transactionIdSource = transactionIdSource,
         format = format,

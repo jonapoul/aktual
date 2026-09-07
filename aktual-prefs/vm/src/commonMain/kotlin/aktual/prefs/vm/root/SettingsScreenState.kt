@@ -1,5 +1,6 @@
 package aktual.prefs.vm.root
 
+import aktual.budget.model.BarEffect
 import aktual.budget.model.Currency
 import aktual.budget.model.CurrencySymbolPosition
 import aktual.budget.model.DateFormat
@@ -20,21 +21,21 @@ data class SettingsScreenState(
 @Immutable
 data class SystemUiConfigState(
   val showStatusBar: BooleanPreference,
-  val blurAppBars: BooleanPreference,
-  val blurDialogs: BooleanPreference,
-  val blurRadiusDp: SliderPreference,
-  val blurAlpha: SliderPreference,
+  val appBarEffect: ListPreference<BarEffect>,
+  val hazeDialogs: BooleanPreference,
+  val hazeRadiusDp: SliderPreference,
+  val hazeAlpha: SliderPreference,
   val hidePreviewInAppSwitcher: BooleanPreference,
 )
 
-fun BlurRadiusPreference(
+fun HazeRadiusPreference(
   value: Float,
   enabled: Boolean = true,
   onChange: (Float) -> Unit = {},
 ): SliderPreference =
   SliderPreference(value = value, range = 0f..20f, enabled = enabled, onChange = onChange)
 
-fun BlurAlphaPreference(
+fun HazeAlphaPreference(
   value: Float,
   enabled: Boolean = true,
   onChange: (Float) -> Unit = {},

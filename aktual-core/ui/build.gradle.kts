@@ -5,7 +5,7 @@ import blueprint.core.commonMainDependencies
 
 plugins { id("aktual.module.compose") }
 
-optIn(EXPERIMENTAL_MATERIAL_3)
+optIn(EXPERIMENTAL_MATERIAL_3, "dev.chrisbanes.haze.ExperimentalHazeApi")
 
 kotlin {
   commonMainDependencies {
@@ -14,7 +14,8 @@ kotlin {
     api(libs.compose.material3WindowSize)
     api(libs.compose.ui)
     api(libs.compose.uiToolingPreview)
-    api(libs.haze)
+    api(libs.haze.blur)
+    api(libs.haze.glass)
     api(libs.kotlinx.datetime)
     api(libs.kotlinx.immutable)
     api(libs.shimmer)
