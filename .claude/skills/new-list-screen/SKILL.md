@@ -282,7 +282,7 @@ import aktual.core.icons.material.Refresh
 import aktual.core.l10n.Strings
 import aktual.core.theme.LocalTheme
 import aktual.core.theme.Theme
-import aktual.core.ui.BlurredPullToRefreshBox
+import aktual.core.ui.HazedPullToRefreshBox
 import aktual.core.ui.BottomSpacing
 import aktual.core.ui.FailureAction
 import aktual.core.ui.FailureScreen
@@ -338,14 +338,14 @@ private fun List{Name}Scaffold(
   onAction: List{Name}ActionHandler,
   modifier: Modifier = Modifier,
 ) {
-  val blurState = rememberBlurredTopBarState()
+  val hazeState = rememberHazedTopBarState()
   val listState = rememberLazyListState()
 
   Scaffold(
     modifier = modifier.fillMaxSize(),
     topBar = {
       TopAppBar(
-        modifier = Modifier.blurredTopBar(blurState, isScrolled = listState.canScrollBackward),
+        modifier = Modifier.hazedTopBar(hazeState, isScrolled = listState.canScrollBackward),
         colors = colors.transparentTopAppBarColors(),
         title = { Text(Strings.list{Name}Title) },
       )
@@ -354,12 +354,12 @@ private fun List{Name}Scaffold(
     Box {
       PageBackground()
 
-      BlurredPullToRefreshBox(
+      HazedPullToRefreshBox(
         modifier = Modifier.padding(List{Name}DS.listPadding),
         contentAlignment = Alignment.Center,
         onRefresh = { onAction(Reload) },
         isRefreshing = state is Loading,
-        blurState = blurState,
+        hazeState = hazeState,
         innerPadding = innerPadding,
       ) { padding ->
         List{Name}Content(

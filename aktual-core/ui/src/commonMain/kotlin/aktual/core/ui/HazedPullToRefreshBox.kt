@@ -12,8 +12,8 @@ import androidx.compose.ui.Modifier
 
 /** To help align the content of the PTR box with the content underneath a scaffold's top bar. */
 @Composable
-fun BlurredPullToRefreshBox(
-  blurState: BlurredTopBarState,
+fun HazedPullToRefreshBox(
+  hazeState: HazedTopBarState,
   innerPadding: PaddingValues,
   isRefreshing: Boolean,
   onRefresh: () -> Unit,
@@ -24,7 +24,7 @@ fun BlurredPullToRefreshBox(
 ) {
   val state = rememberPullToRefreshState()
   PullToRefreshBox(
-    modifier = modifier.blurredTopBarContent(blurState, innerPadding),
+    modifier = modifier.hazedTopBarContent(hazeState, innerPadding),
     isRefreshing = isRefreshing,
     onRefresh = onRefresh,
     state = state,
@@ -39,7 +39,7 @@ fun BlurredPullToRefreshBox(
       )
     },
     content = {
-      val contentPadding = blurredTopBarContentPadding(blurState, innerPadding)
+      val contentPadding = hazedTopBarContentPadding(hazeState, innerPadding)
       content(contentPadding)
     },
   )

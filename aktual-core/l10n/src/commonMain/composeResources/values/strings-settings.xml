@@ -55,7 +55,10 @@
   <string name="settings_ui_group">System UI</string>
   <string name="settings_ui_desc">Configure various aspects of the app's global UI.</string>
   <string name="settings_ui_show_status">Show bottom status bar</string>
-  <string name="settings_ui_blur_bars">Blur status bar and app bar</string>
+  <string name="settings_ui_bar_effect">Status bar and app bar effect</string>
+  <string name="settings_ui_bar_effect_none">None</string>
+  <string name="settings_ui_bar_effect_blur">Blur</string>
+  <string name="settings_ui_bar_effect_glass">Glass</string>
   <string name="settings_ui_blur_dialogs">Blur behind dialogs</string>
   <string name="settings_ui_blur_radius">Blur radius</string>
   <string name="settings_ui_blur_alpha">Blur alpha</string>
