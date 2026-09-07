@@ -182,6 +182,66 @@ data class JsonCustomColors(
   override val sidebarBudgetName: Color
     get() = navigation.sidebarBudgetName
 
+  override val sidebarItemBackgroundSelected: Color
+    get() = navigation.sidebarItemBackgroundSelected
+
+  override val sidebarHeaderText: Color
+    get() = navigation.sidebarHeaderText
+
+  override val sidebarTextSubdued: Color
+    get() = navigation.sidebarTextSubdued
+
+  override val sidebarTextMuted: Color
+    get() = navigation.sidebarTextMuted
+
+  override val sidebarTextPositive: Color
+    get() = navigation.sidebarTextPositive
+
+  override val sidebarTextFailed: Color
+    get() = navigation.sidebarTextFailed
+
+  override val sidebarBackgroundFailedSubtle: Color
+    get() = navigation.sidebarBackgroundFailedSubtle
+
+  override val sidebarBorder: Color
+    get() = navigation.sidebarBorder
+
+  override val sidebarControlBackground: Color
+    get() = navigation.sidebarControlBackground
+
+  override val sidebarBrand: Color
+    get() = navigation.sidebarBrand
+
+  override val sidebarRedesignBackground: Color
+    get() = navigation.sidebarRedesignBackground
+
+  override val sidebarRedesignItemText: Color
+    get() = navigation.sidebarRedesignItemText
+
+  override val sidebarRedesignItemBackgroundHover: Color
+    get() = navigation.sidebarRedesignItemBackgroundHover
+
+  override val sidebarRedesignItemAccentSelected: Color
+    get() = navigation.sidebarRedesignItemAccentSelected
+
+  override val sidebarRedesignItemTextSelected: Color
+    get() = navigation.sidebarRedesignItemTextSelected
+
+  override val sidebarRedesignItemBackgroundSelected: Color
+    get() = navigation.sidebarRedesignItemBackgroundSelected
+
+  override val sidebarRedesignItemBackgroundFailed: Color
+    get() = navigation.sidebarRedesignItemBackgroundFailed
+
+  override val sidebarRedesignHeaderText: Color
+    get() = navigation.sidebarRedesignHeaderText
+
+  override val sidebarRedesignTextSubdued: Color
+    get() = navigation.sidebarRedesignTextSubdued
+
+  override val sidebarRedesignTextMuted: Color
+    get() = navigation.sidebarRedesignTextMuted
+
   override val menuBackground: Color
     get() = navigation.menuBackground
 
@@ -779,6 +839,27 @@ data class NavigationColors(
   @SerialName("sidebarItemTextUpdated") val sidebarItemTextUpdated: Color,
   @SerialName("sidebarItemTextSelected") val sidebarItemTextSelected: Color,
   @SerialName("sidebarBudgetName") val sidebarBudgetName: Color,
+  @SerialName("sidebarItemBackgroundSelected") val sidebarItemBackgroundSelected: Color,
+  @SerialName("sidebarHeaderText") val sidebarHeaderText: Color,
+  @SerialName("sidebarTextSubdued") val sidebarTextSubdued: Color,
+  @SerialName("sidebarTextMuted") val sidebarTextMuted: Color,
+  @SerialName("sidebarTextPositive") val sidebarTextPositive: Color,
+  @SerialName("sidebarTextFailed") val sidebarTextFailed: Color,
+  @SerialName("sidebarBackgroundFailedSubtle") val sidebarBackgroundFailedSubtle: Color,
+  @SerialName("sidebarBorder") val sidebarBorder: Color,
+  @SerialName("sidebarControlBackground") val sidebarControlBackground: Color,
+  @SerialName("sidebarBrand") val sidebarBrand: Color,
+  @SerialName("sidebarRedesignBackground") val sidebarRedesignBackground: Color,
+  @SerialName("sidebarRedesignItemText") val sidebarRedesignItemText: Color,
+  @SerialName("sidebarRedesignItemBackgroundHover") val sidebarRedesignItemBackgroundHover: Color,
+  @SerialName("sidebarRedesignItemAccentSelected") val sidebarRedesignItemAccentSelected: Color,
+  @SerialName("sidebarRedesignItemTextSelected") val sidebarRedesignItemTextSelected: Color,
+  @SerialName("sidebarRedesignItemBackgroundSelected")
+  val sidebarRedesignItemBackgroundSelected: Color,
+  @SerialName("sidebarRedesignItemBackgroundFailed") val sidebarRedesignItemBackgroundFailed: Color,
+  @SerialName("sidebarRedesignHeaderText") val sidebarRedesignHeaderText: Color,
+  @SerialName("sidebarRedesignTextSubdued") val sidebarRedesignTextSubdued: Color,
+  @SerialName("sidebarRedesignTextMuted") val sidebarRedesignTextMuted: Color,
   @SerialName("menuBackground") val menuBackground: Color,
   @SerialName("menuItemBackground") val menuItemBackground: Color,
   @SerialName("menuItemBackgroundHover") val menuItemBackgroundHover: Color,
