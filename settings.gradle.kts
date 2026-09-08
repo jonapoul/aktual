@@ -1,12 +1,10 @@
 import atlas.core.LinkStyle.Dashed
 import atlas.core.LinkStyle.Solid
-import atlas.graphviz.ArrowType.None
-import atlas.graphviz.ArrowType.Normal
-import atlas.graphviz.FileFormat.Png
-import atlas.graphviz.LayoutEngine.Dot
-import atlas.graphviz.NodeStyle.Filled
-import atlas.graphviz.RankDir.TopToBottom
-import atlas.graphviz.Shape.Box
+import atlas.d2.ArrowType.Arrow
+import atlas.d2.Direction.Down
+import atlas.d2.ElkAlgorithm.Layered
+import atlas.d2.FileFormat.Png
+import atlas.d2.Theme.DarkFlagshipTerrastruct
 import kotlinx.kover.gradle.plugin.dsl.AggregationType
 import kotlinx.kover.gradle.plugin.dsl.CoverageUnit
 import kotlinx.kover.gradle.plugin.dsl.GroupingEntityType
@@ -50,7 +48,7 @@ plugins {
 
   id("com.autonomousapps.build-health") version "3.19.1"
   id("com.gradle.develocity") version "4.5.0"
-  id("dev.jonpoulton.atlas") version "0.5.2"
+  id("dev.jonpoulton.atlas") version "0.6.0"
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
   id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.9"
 }
@@ -116,27 +114,28 @@ atlas {
     "commonMainImplementation"(style = Dashed, color = "aqua", displayName = "implementation")
   }
 
-  graphviz {
+  d2 {
+    center = true
+    direction = Down
     fileFormat = Png
-    layoutEngine = Dot
+    pad = 3
+    sketch = false
+    theme = DarkFlagshipTerrastruct
 
-    graph {
-      bgColor = "#00000A"
-      rankDir = TopToBottom
-      rankSep = 1.5
+    layoutEngine {
+      elk {
+        algorithm = Layered
+      }
     }
 
-    node {
-      style = Filled
-      shape = Box
-      fontColor = "white"
-      fillColor = "black"
+    rootStyle {
+      fill = "#00000A"
     }
 
-    edge {
-      arrowHead = Normal
-      arrowTail = None
-      linkColor = "white"
+    globalProps {
+      arrowType = Arrow
+      fillArrowHeads = true
+      fontSize = 25
     }
   }
 }

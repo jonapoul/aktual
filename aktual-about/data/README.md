@@ -1,7 +1,5 @@
 # aktual-about:data
 
 <!--region chart-->
-![chart](atlas.png)
-
-![legend](../../atlas/legend.png)
+![chart](chart.png)
 <!--endregion-->
