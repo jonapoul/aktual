@@ -48,7 +48,6 @@ import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.blur.HazeBlurStyle
 import dev.chrisbanes.haze.blur.HazeColorEffect
 import dev.chrisbanes.haze.blur.hazeBlur
-import dev.chrisbanes.haze.glass.GlassOptics
 import dev.chrisbanes.haze.glass.GlassStyle
 import dev.chrisbanes.haze.glass.hazeGlass
 import dev.chrisbanes.haze.hazeSource
@@ -252,9 +251,9 @@ private fun barGlassStyle(color: Color, config: HazeConfig, progress: Float = 1f
     GlassStyle {
       shape(BarGlassShape)
       edgeSoftness(0.dp)
+      backgroundColor(color.copy(alpha = color.alpha * progress))
       tint(color.copy(alpha = config.alpha * progress))
       optics(blurRadius = config.radius)
-      optics(GlassOptics.Adaptive)
       alpha(progress)
     }
   }
