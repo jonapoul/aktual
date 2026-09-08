@@ -222,20 +222,21 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - run: curl -fsSL https://d2lang.com/install.sh | sh -s -- --version $D2_VERSION
-      - run: sudo apt-get update && sudo apt-get install -y librsvg2-bin
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/setup-gradle
       - uses: ./.github/actions/setup-gradle-properties
       - run: ./gradlew atlasGenerate
       - name: Check module graphs are up to date
         run: |
-          if ! git diff --exit-code -- '*atlas.png'; then
+          changes=$(git status --porcelain -uall -- '*chart.png')
+          if [[ -n "$changes" ]]; then
+            echo "$changes"
             echo "::error::atlasGenerate produced changes that were not committed. Please run './gradlew atlasGenerate' locally and commit the results."
             exit 1
           fi
       - name: Zip Atlas generated files
         if: failure()
-        run: find . \( -iname 'atlas.png' -o -iname 'chart.svg' -o -iname 'chart.d2' \) -print0 | xargs -0 zip atlas-outputs.zip
+        run: find . \( -iname 'chart.png' -o -iname 'chart.d2' -o -iname 'classes.d2' \) -print0 | xargs -0r zip atlas-outputs.zip
       - name: Upload Atlas generated files
         if: failure()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
