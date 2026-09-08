@@ -50,7 +50,7 @@ plugins {
 
   id("com.autonomousapps.build-health") version "3.19.1"
   id("com.gradle.develocity") version "4.5.0"
-  id("dev.jonpoulton.atlas") version "0.5.2"
+  id("dev.jonpoulton.atlas") version "0.6.0"
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
   id("org.jetbrains.kotlinx.kover.aggregation") version "0.9.9"
 }
