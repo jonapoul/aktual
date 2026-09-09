@@ -6,6 +6,20 @@
   "extends": [
     "github>jonapoul/renovate-config:default.json5"
   ],
+  "customManagers": [
+    {
+      // d2 is installed from a shell script rather than a package manager, so its version is pinned in the workflow
+      // and read from here. Left unpinned, a CI run silently changes the PNGs that CI diffs the committed graphs
+      // against.
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^\\.github/workflows/pr\\.yml$/",
+      ],
+      "matchStrings": [
+        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+D2_VERSION: (?<currentValue>\\S+)",
+      ],
+    },
+  ],
   "packageRules": [
     // TBC
   ]

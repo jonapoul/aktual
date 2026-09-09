@@ -1,7 +1,5 @@
 # aktual-budget:transactions:ui
 
 <!--region chart-->
-![chart](atlas.png)
-
-![legend](../../../atlas/legend.png)
+![chart](chart.png)
 <!--endregion-->
