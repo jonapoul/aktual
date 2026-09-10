@@ -43,8 +43,8 @@ plugins {
   id("com.android.application") version "9.3.2" apply false
   id("com.android.kotlin.multiplatform.library") version "9.3.2" apply false
   id("dev.jonpoulton.blueprint") version "2.4.2" apply false
-  id("org.jetbrains.kotlin.jvm") version "2.4.10" apply false
-  id("org.jetbrains.kotlin.multiplatform") version "2.4.10" apply false
+  id("org.jetbrains.kotlin.jvm") version "2.4.20" apply false
+  id("org.jetbrains.kotlin.multiplatform") version "2.4.20" apply false
 
   id("com.autonomousapps.build-health") version "3.19.1"
   id("com.gradle.develocity") version "4.5.0"
