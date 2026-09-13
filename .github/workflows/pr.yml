@@ -89,7 +89,7 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           config: ./config/betterleaks.toml
           fail-on-leak: 'true'
-      - uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+      - uses: github/codeql-action/upload-sarif@b96794f015dfd88f77b49b1c93e0fa7110f94c63 # v4.38.0
         if: always()
         with:
           sarif_file: ${{ steps.betterleaks.outputs.sarif-path }}
@@ -239,7 +239,7 @@ jobs:
         run: find . \( -iname 'chart.png' -o -iname 'chart.d2' -o -iname 'classes.d2' \) -print0 | xargs -0r zip atlas-outputs.zip
       - name: Upload Atlas generated files
         if: failure()
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: atlas-outputs
           path: atlas-outputs.zip
@@ -283,7 +283,7 @@ jobs:
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: anthropics/claude-code-action@fa2b2666b747000bf42767d1f332065b375e3c8f # v1.0.214
+      - uses: anthropics/claude-code-action@19dda84776b3518d98b8798e591daee763049ed3 # v1.0.220
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           allowed_bots: 'renovate'
