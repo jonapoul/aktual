@@ -142,7 +142,6 @@ burst = { id = "app.cash.burst", version.ref = "burst" }
 catalog = { id = "dev.jonpoulton.catalog", version = "0.5.1" }
 compose = { id = "org.jetbrains.compose", version.ref = "compose" }
 detekt = { id = "dev.detekt", version.ref = "detekt" }
-doctor = { id = "com.osacky.doctor", version = "0.12.1" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

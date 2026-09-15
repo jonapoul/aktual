@@ -27,9 +27,6 @@ plugins {
   alias(libs.plugins.straitjacket) apply false
   alias(libs.plugins.wire) apply false
 
-  // TODO: reapply. See https://github.com/runningcode/gradle-doctor/issues/481
-  // alias(libs.plugins.doctor)
-
   id("aktual.convention.atlas")
   id("aktual.convention.idea")
 }
@@ -39,14 +36,6 @@ val atlasDir = layout.buildDirectory.dir("atlas")
 tasks.withType<WriteD2Classes>().configureEach {
   outputFile = atlasDir.map { it.file("classes.d2") }
 }
-
-// doctor {
-//   javaHome {
-//     ensureJavaHomeMatches = true
-//     ensureJavaHomeIsSet = true
-//     failOnError = true
-//   }
-// }
 
 dependencyAnalysis {
   useTypesafeProjectAccessors(false)
