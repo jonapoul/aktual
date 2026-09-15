@@ -118,7 +118,7 @@ okio = { module = "com.squareup.okio:okio", version = "3.18.2" }
 proguard = { module = "com.guardsquare:proguard-gradle ", version = "7.10.0" }
 redacted-annotations = { module = "dev.zacsweers.redacted:redacted-compiler-plugin-annotations", version.ref = "redacted" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version = "3.1.0" }
-robolectric = { module = "org.robolectric:robolectric", version = "4.16.1" }
+robolectric = { module = "org.robolectric:robolectric", version = "4.17" }
 shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version = "1.5.0" }
 sqldelight-async = { module = "app.cash.sqldelight:async-extensions", version.ref = "sqldelight" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
