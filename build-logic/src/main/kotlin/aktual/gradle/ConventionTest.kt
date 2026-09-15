@@ -55,7 +55,8 @@ class ConventionTest : ProjectPlugin {
       // Suppresses mockk warning - see https://github.com/mockk/mockk/issues/1171
       t.jvmArgs("-XX:+EnableDynamicAgentLoading")
 
-      // Robolectric 4.17 reflects into jdk.internal.access.SharedSecrets for FileDescriptor interception
+      // Robolectric 4.17 reflects into jdk.internal.access.SharedSecrets for FileDescriptor
+      // interception
       t.jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED")
 
       // To work around https://github.com/gradle/gradle/issues/33619
