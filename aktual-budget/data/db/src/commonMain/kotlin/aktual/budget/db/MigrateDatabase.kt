@@ -81,6 +81,22 @@ internal val DatabaseMigrations: List<Pair<Long, List<String>>> =
           .trimIndent(),
         "ALTER TABLE accounts ADD COLUMN account_group_id TEXT DEFAULT NULL",
       ),
+
+    // packages/loot-core/migrations/1788468782000_add_messages_pending.js
+    1788468782000L to
+      listOf(
+        """
+        CREATE TABLE IF NOT EXISTS messages_pending(
+          dataset TEXT NOT NULL,
+          row TEXT NOT NULL,
+          column TEXT NOT NULL,
+          timestamp TEXT NOT NULL,
+          value TEXT NOT NULL,
+          PRIMARY KEY (dataset, row, column)
+        )
+        """
+          .trimIndent()
+      ),
   )
 
 private const val TAG = "MigrateDatabase"

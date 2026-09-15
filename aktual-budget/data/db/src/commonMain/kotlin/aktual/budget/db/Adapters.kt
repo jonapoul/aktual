@@ -275,6 +275,8 @@ internal val MessagesClockAdapter = Messages_clock.Adapter(clockAdapter = jsonOb
 
 internal val MessagesCrdtAdapter = Messages_crdt.Adapter(timestampAdapter = timestamp)
 
+internal val MessagesPendingAdapter = Messages_pending.Adapter(timestampAdapter = timestamp)
+
 internal val PayeeLocationsAdapter =
   Payee_locations.Adapter(
     idAdapter = payeeLocationId,

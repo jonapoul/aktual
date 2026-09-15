@@ -1,0 +1,20 @@
+import aktual.budget.model.Timestamp;
+
+CREATE TABLE IF NOT EXISTS messages_pending(
+  dataset TEXT NOT NULL,
+  row TEXT NOT NULL,
+  column TEXT NOT NULL,
+  timestamp TEXT AS Timestamp NOT NULL,
+  value TEXT NOT NULL,
+  PRIMARY KEY (dataset, row, column)
+);
+
+insert:
+  INSERT OR REPLACE
+    INTO messages_pending(dataset, row, column, timestamp, value)
+    VALUES (?, ?, ?, ?, ?);
+
+get:
+  SELECT *
+    FROM messages_pending
+    WHERE dataset = ? AND row = ? AND column = ?;

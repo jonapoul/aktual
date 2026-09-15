@@ -38,7 +38,7 @@ echo "Cloning upstream migrations (sparse checkout)..."
 git clone --depth 1 --filter=blob:none --sparse --quiet "$UPSTREAM_REPO" "$tmp_dir"
 git -C "$tmp_dir" sparse-checkout set "$MIGRATIONS_PATH"
 
-mapfile -t all_migrations < <(find "$tmp_dir/$MIGRATIONS_PATH" -maxdepth 1 -type f -printf '%f\n' | sort)
+mapfile -t all_migrations < <(find "$tmp_dir/$MIGRATIONS_PATH" -maxdepth 1 -type f \( -name '*.sql' -o -name '*.js' \) -printf '%f\n' | sort)
 
 # Populates the new_migrations array with everything upstream has after the given migration
 compute_new_migrations() {
