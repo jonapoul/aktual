@@ -73,6 +73,7 @@ class DatabaseMigrationTest {
     checkMigration1780606215001()
     checkMigration1783004650757(db)
     checkMigration1787013118115(db)
+    checkMigration1788468782000(db)
   }
 
   // Verify that the file was opened at all
@@ -142,6 +143,15 @@ class DatabaseMigrationTest {
     val accountGroupId =
       db.accountsQueries.getAccountGroupId(id = AccountId("account-id")).awaitAsOneOrNull()
     assertNull(accountGroupId)
+  }
+
+  // Adds messages_pending table
+  private suspend fun checkMigration1788468782000(db: BudgetDatabase) {
+    val pending =
+      db.messagesPendingQueries
+        .get(dataset = "dataset", row = "row", column = "column")
+        .awaitAsOneOrNull()
+    assertNull(pending)
   }
 
   private fun loadDatabaseIntoFile(): File {
