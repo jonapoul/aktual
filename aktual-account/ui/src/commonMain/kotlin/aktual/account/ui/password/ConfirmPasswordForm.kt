@@ -124,8 +124,8 @@ private fun PreviewConfirmPassword(
   }
 
 private data class ConfirmPasswordParams(
-  val password1: Password = Password.Dummy,
-  val password2: Password = Password.Dummy,
+  val password1: Password = Dummy,
+  val password2: Password = Dummy,
   val showPasswords: Boolean = true,
   val state: ChangePasswordState? = null,
   val passwordsMatch: Boolean = false,

@@ -72,7 +72,7 @@ private data class PasswordEntryParams(val password: Password, val showPassword:
 
 private class PasswordEntryProvider :
   ColoredParameterProvider<PasswordEntryParams>(
-    PasswordEntryParams(password = Password.Empty, showPassword = false),
-    PasswordEntryParams(password = Password.Dummy, showPassword = false),
-    PasswordEntryParams(password = Password.Dummy, showPassword = true),
+    PasswordEntryParams(password = Empty, showPassword = false),
+    PasswordEntryParams(password = Dummy, showPassword = false),
+    PasswordEntryParams(password = Dummy, showPassword = true),
   )

@@ -1,7 +1,6 @@
 package aktual.test
 
 import aktual.core.model.BuildConfig
-import aktual.core.model.Password
 import aktual.di.AppScope
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo
@@ -17,7 +16,7 @@ val TestBuildConfig =
     gitHash = "abcd1234",
     versionCode = 123,
     versionName = "1.2.3",
-    defaultPassword = Password.Empty,
+    defaultPassword = Empty,
     defaultServerUrl = null,
   )
 
