@@ -71,7 +71,7 @@ internal fun PasswordLogin(
       modifier = Modifier.testTag(Tags.PasswordLoginButton).padding(5.dp).fillMaxWidth(),
       text = Strings.loginSignIn,
       isLoading = isLoading,
-      isEnabled = enteredPassword != Password.Empty,
+      isEnabled = enteredPassword != Empty,
       onClick = { onAction(SignIn) },
     )
   }
@@ -83,14 +83,14 @@ private fun PreviewPasswordLogin(
   @PreviewParameter(PasswordLoginProvider::class) params: ColoredParams<PasswordLoginParams>
 ) =
   PreviewWithColors(params.colors) {
-    PasswordLogin(isLoading = false, enteredPassword = Password.Dummy, onAction = {})
+    PasswordLogin(isLoading = false, enteredPassword = Dummy, onAction = {})
   }
 
 private data class PasswordLoginParams(val isLoading: Boolean, val password: Password)
 
 private class PasswordLoginProvider :
   ColoredParameterProvider<PasswordLoginParams>(
-    PasswordLoginParams(password = Password.Dummy, isLoading = true),
-    PasswordLoginParams(password = Password.Dummy, isLoading = false),
-    PasswordLoginParams(password = Password.Empty, isLoading = false),
+    PasswordLoginParams(password = Dummy, isLoading = true),
+    PasswordLoginParams(password = Dummy, isLoading = false),
+    PasswordLoginParams(password = Empty, isLoading = false),
   )

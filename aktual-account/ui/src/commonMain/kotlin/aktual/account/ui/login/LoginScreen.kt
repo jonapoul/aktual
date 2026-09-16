@@ -194,7 +194,7 @@ private fun Content(
           )
         }
 
-        LoginMethod.Header -> {
+        Header -> {
           HeaderLogin(
             modifier = Modifier.fillMaxWidth(),
             isLoading = isLoading,
@@ -203,7 +203,7 @@ private fun Content(
           )
         }
 
-        LoginMethod.OpenId -> {
+        OpenId -> {
           Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Center) {
             OpenIdLogin()
           }

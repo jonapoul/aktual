@@ -43,8 +43,8 @@ class LoginRequester(
         withContext(contexts.io) {
           when (loginMethod) {
             LoginMethod.Password -> accountApi.login(LoginRequest.Password(password))
-            LoginMethod.Header -> accountApi.login(LoginRequest.Header(), password)
-            LoginMethod.OpenId -> accountApi.login(LoginRequest.OpenId(password, returnUrl = ""))
+            Header -> accountApi.login(LoginRequest.Header(), password)
+            OpenId -> accountApi.login(LoginRequest.OpenId(password, returnUrl = ""))
           }
         }
       } catch (e: CancellationException) {

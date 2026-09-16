@@ -84,7 +84,7 @@ class LoginScreenTest {
     preferences = AppPreferencesImpl(prefs)
   }
 
-  private fun buildViewModel(password: Password = Password.Empty) {
+  private fun buildViewModel(password: Password = Empty) {
     viewModel =
       LoginViewModel(
         loginRequester = loginRequester,
@@ -97,7 +97,7 @@ class LoginScreenTest {
   @Test
   fun `Login success`() = composeRule.runTest {
     // given initial state with empty password
-    buildViewModel(password = Password.Empty)
+    buildViewModel(password = Empty)
     setAndroidThemedContent {
       LoginScreen(
         back = BackNavigator(mockk(relaxed = true)),

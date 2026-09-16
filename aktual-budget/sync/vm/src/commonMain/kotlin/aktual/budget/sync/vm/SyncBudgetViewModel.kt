@@ -288,7 +288,7 @@ class SyncBudgetViewModel(
           // wait a little before showing the dialog
           viewModelScope.launch {
             delay(500.milliseconds)
-            mutablePasswordState.update { KeyPasswordState.Active(Password.Empty) }
+            mutablePasswordState.update { KeyPasswordState.Active(Empty) }
           }
 
           "Missing key"
