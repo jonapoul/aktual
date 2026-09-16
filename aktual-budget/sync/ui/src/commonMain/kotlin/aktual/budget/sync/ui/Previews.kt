@@ -14,7 +14,6 @@ import aktual.budget.sync.vm.SyncStepState.InProgress.Definite
 import aktual.budget.sync.vm.SyncStepState.InProgress.Indefinite
 import aktual.budget.sync.vm.SyncStepState.NotStarted
 import aktual.budget.sync.vm.SyncStepState.Succeeded
-import aktual.core.model.Password
 import aktual.core.model.percent
 import aktual.core.ui.ColoredParameterProvider
 import kotlinx.collections.immutable.ImmutableMap
@@ -73,7 +72,7 @@ internal class SyncBudgetDialogProvider :
     ),
     SyncBudgetDialogParams(
       overallState = SyncOverallState.Failed,
-      passwordState = Active(input = Password.Empty),
+      passwordState = Active(input = Empty),
       stepStates =
         persistentMapOf(
           FetchingFileInfo to Succeeded,

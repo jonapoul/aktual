@@ -201,8 +201,8 @@ private fun PreviewChangePassword(
   }
 
 private data class ChangePasswordParams(
-  val password1: Password = Password.Dummy,
-  val password2: Password = Password.Dummy,
+  val password1: Password = Dummy,
+  val password2: Password = Dummy,
   val showPasswords: Boolean = false,
   val passwordsMatch: Boolean = false,
   val state: ChangePasswordState? = null,

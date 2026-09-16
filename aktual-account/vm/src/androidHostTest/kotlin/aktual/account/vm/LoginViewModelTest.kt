@@ -1,9 +1,7 @@
 package aktual.account.vm
 
 import aktual.account.domain.LoginRequester
-import aktual.account.domain.LoginResult
 import aktual.core.model.AktualVersionsStateHolder
-import aktual.core.model.Password
 import aktual.core.model.Token
 import aktual.prefs.AppPreferences
 import aktual.prefs.AppPreferencesImpl
@@ -54,7 +52,7 @@ internal class LoginViewModelTest {
         versionsStateHolder = versionsStateHolder,
         loginRequester = loginRequester,
         preferences = preferences,
-        buildConfig = TestBuildConfig.copy(defaultPassword = Password.Empty),
+        buildConfig = TestBuildConfig.copy(defaultPassword = Empty),
       )
   }
 
@@ -90,7 +88,7 @@ internal class LoginViewModelTest {
       assertThat(loading1).isFalse()
 
       // When we make the failing request
-      coEvery { loginRequester.logIn(any(), any()) } returns LoginResult.InvalidPassword
+      coEvery { loginRequester.logIn(any(), any()) } returns InvalidPassword
       viewModel.onEnterPassword("password")
       viewModel.onClickSignIn()
 
@@ -106,7 +104,7 @@ internal class LoginViewModelTest {
 
       // Then failed
       val (failure4, loading4) = awaitItem()
-      assertThat(failure4).isEqualTo(LoginResult.InvalidPassword)
+      assertThat(failure4).isEqualTo(InvalidPassword)
       assertThat(loading4).isFalse()
 
       expectNoEvents()
@@ -124,7 +122,7 @@ internal class LoginViewModelTest {
       assertThat(loading1).isFalse()
 
       // When we make the failing request
-      coEvery { loginRequester.logIn(any(), any()) } returns LoginResult.TokenExpired
+      coEvery { loginRequester.logIn(any(), any()) } returns TokenExpired
       viewModel.onEnterPassword("password")
       viewModel.onClickSignIn()
 
@@ -140,7 +138,7 @@ internal class LoginViewModelTest {
 
       // Then failed with token expired
       val (failure4, loading4) = awaitItem()
-      assertThat(failure4).isEqualTo(LoginResult.TokenExpired)
+      assertThat(failure4).isEqualTo(TokenExpired)
       assertThat(loading4).isFalse()
 
       expectNoEvents()
