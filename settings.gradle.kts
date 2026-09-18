@@ -46,7 +46,7 @@ plugins {
   id("org.jetbrains.kotlin.jvm") version "2.4.20" apply false
   id("org.jetbrains.kotlin.multiplatform") version "2.4.20" apply false
 
-  id("com.autonomousapps.build-health") version "3.19.1"
+  id("com.autonomousapps.build-health") version "3.19.2"
   id("com.gradle.develocity") version "4.5.1"
   id("dev.jonpoulton.atlas") version "0.6.0"
   id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
