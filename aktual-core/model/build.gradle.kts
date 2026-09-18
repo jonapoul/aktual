@@ -2,6 +2,7 @@ import blueprint.core.commonMainDependencies
 
 plugins {
   id("aktual.module.kotlin")
+  alias(libs.plugins.fallbackSerializer)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.redacted)
 }
