@@ -2,6 +2,7 @@ package aktual.account.vm
 
 import aktual.account.domain.LoginRequester
 import aktual.core.model.AktualVersionsStateHolder
+import aktual.core.model.AvailableLoginMethod
 import aktual.core.model.Token
 import aktual.prefs.AppPreferences
 import aktual.prefs.AppPreferencesImpl
@@ -12,6 +13,7 @@ import alakazam.test.standardDispatcher
 import alakazam.test.unconfinedDispatcher
 import app.cash.turbine.test
 import assertk.assertThat
+import assertk.assertions.isEmpty
 import assertk.assertions.isEqualTo
 import assertk.assertions.isFalse
 import assertk.assertions.isNotNull
@@ -21,6 +23,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlin.test.AfterTest
 import kotlin.test.Test
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -142,6 +145,27 @@ internal class LoginViewModelTest {
       assertThat(loading4).isFalse()
 
       expectNoEvents()
+      cancelAndIgnoreRemainingEvents()
+    }
+  }
+
+  @Test
+  fun `Unknown login methods are filtered out`() = runTest {
+    before()
+    coEvery { loginRequester.fetchLoginMethods() } returns
+      listOf(
+        AvailableLoginMethod(method = Unknown, displayName = "SAML", isActive = true),
+        AvailableLoginMethod(method = Header, displayName = "Header", isActive = true),
+      )
+
+    viewModel.loginMethods.test {
+      assertThat(awaitItem()).isEmpty()
+      assertThat(awaitItem()).isEqualTo(persistentListOf(Header))
+      cancelAndIgnoreRemainingEvents()
+    }
+
+    viewModel.selectedLoginMethod.test {
+      assertThat(awaitItem()).isEqualTo(Header)
       cancelAndIgnoreRemainingEvents()
     }
   }

@@ -16,6 +16,7 @@
   <string name="login_method_password">Password</string>
   <string name="login_method_header">Header</string>
   <string name="login_method_openid">OpenID</string>
+  <string name="login_method_unknown">Unknown</string>
 
   <string name="password_title">Change Password</string>
   <string name="password_message">This will change the password for this server instance. All existing sessions will stay logged in.</string>

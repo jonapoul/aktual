@@ -45,6 +45,7 @@ class LoginRequester(
             LoginMethod.Password -> accountApi.login(LoginRequest.Password(password))
             Header -> accountApi.login(LoginRequest.Header(), password)
             OpenId -> accountApi.login(LoginRequest.OpenId(password, returnUrl = ""))
+            Unknown -> error("Unsupported login method")
           }
         }
       } catch (e: CancellationException) {

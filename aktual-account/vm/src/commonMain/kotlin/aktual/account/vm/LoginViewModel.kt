@@ -77,7 +77,7 @@ class LoginViewModel(
 
   init {
     viewModelScope.launch {
-      val availableLoginMethods = loginRequester.fetchLoginMethods()
+      val availableLoginMethods = loginRequester.fetchLoginMethods().filter { it.method != Unknown }
       val loginMethods = availableLoginMethods.map { it.method }.toImmutableList()
       mutableLoginMethods.update { loginMethods }
       val firstActive = availableLoginMethods.firstOrNull { it.isActive }
