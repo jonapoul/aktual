@@ -16,10 +16,6 @@ apply(from = "gradle/repositories.gradle.kts")
 pluginManagement {
   includeBuild("build-logic")
 
-  // Repositories for resolving the plugins {} block below must be declared in a literal
-  // pluginManagement block. Gradle evaluates that block before it runs apply(from = ...), so the
-  // repos in gradle/repositories.gradle.kts aren't visible here. Only the repos those plugins need:
-  // google() for AGP, the portal for everything else.
   repositories {
     google {
       mavenContent {
@@ -34,9 +30,6 @@ pluginManagement {
   }
 }
 
-// Included again here (outside pluginManagement) so its artifact is substitutable as a regular
-// dependency, not just resolvable as a plugin — needed for build-logic's aktual.compiler Gradle
-// plugin, which adds it to consumers' kotlinCompilerPluginClasspath.
 includeBuild("compiler-plugin")
 
 plugins {

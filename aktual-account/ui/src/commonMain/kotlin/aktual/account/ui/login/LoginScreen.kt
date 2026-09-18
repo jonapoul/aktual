@@ -208,6 +208,10 @@ private fun Content(
             OpenIdLogin()
           }
         }
+
+        Unknown -> {
+          // No-op
+        }
       }
 
       if (loginFailure != null) {
@@ -251,7 +255,7 @@ private data class LoginScaffoldParams(
   val selectedLoginMethod: LoginMethod = LoginMethod.Password,
 )
 
-private val ALL_METHODS = LoginMethod.entries.toImmutableList()
+private val ALL_METHODS = (LoginMethod.entries - LoginMethod.Unknown).toImmutableList()
 
 private class LoginScaffoldProvider :
   ColoredParameterProvider<LoginScaffoldParams>(
