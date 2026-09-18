@@ -27,7 +27,6 @@ val gitVersionName = gitVersionDate()
 android {
   namespace = "aktual.app.android"
   compileSdk = providers.intProperty(key = "aktual.android.compileSdk").get()
-  compileSdkMinor = providers.intProperty(key = "aktual.android.compileSdkMinor").get()
 
   defaultConfig {
     applicationId = "dev.jonpoulton.aktual.app"
