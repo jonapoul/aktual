@@ -23,9 +23,8 @@ import io.ktor.http.contentLength
 import io.ktor.http.contentType
 import io.ktor.http.path
 import io.ktor.utils.io.ByteReadChannel
-import io.ktor.utils.io.core.remaining
 import io.ktor.utils.io.exhausted
-import io.ktor.utils.io.readRemaining
+import io.ktor.utils.io.readBuffer
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.channelFlow
 import kotlinx.io.Source as KxSource
@@ -65,8 +64,8 @@ class SyncApiImpl(
       var count = 0L
       sink.use { s ->
         while (!channel.exhausted()) {
-          val chunk = channel.readRemaining(CHANNEL_BUFFER_SIZE)
-          count += chunk.remaining
+          val chunk = channel.readBuffer(CHANNEL_BUFFER_SIZE)
+          count += chunk.size
           chunk.transferTo(s)
           send(SyncDownloadState.InProgress(count, contentLength))
         }
