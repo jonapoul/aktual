@@ -8,7 +8,7 @@ kotlin {
     api(libs.okio)
     api(project(":aktual-budget"))
     api(project(":aktual-core"))
-    implementation(libs.ktor.cio)
+    implementation(libs.ktor.engineDefaults)
     implementation(project(":aktual-di:core"))
   }
 }
