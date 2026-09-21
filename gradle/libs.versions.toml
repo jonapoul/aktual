@@ -20,7 +20,7 @@ ktor = "3.6.0"
 markdown = "0.45.0"
 metro = "1.4.4"
 redacted = "1.18.0"
-sqldelight = "2.3.2"
+sqldelight = "2.4.0"
 
 [libraries]
 alakazam-compose = { module = "dev.jonpoulton.alakazam:compose", version.ref = "alakazam" }

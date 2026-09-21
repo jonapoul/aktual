@@ -107,7 +107,6 @@ Default new code to `commonMain`; reach for `androidMain` / `desktopMain` only w
 - **Java version**: single source of truth is `.java-version` at repo root (read by `JavaVersionValueSource` and CI's `setup-java`). Don't hardcode it anywhere.
 - **SDK**: min 28, target/compile 37.
 - **Desktop release** goes through Proguard — mapping at `aktual-app/desktop/build/outputs/mapping.txt`. Android goes through R8.
-- **SQLDelight** is pinned to a snapshot for KMP features; see `gradle/libs.versions.toml`.
 - **Android manifest lock**: `aktual-app/android` locks its merged manifest (`AndroidManifest.lock.yaml`) via the manifest-lock plugin with `failOnLockChange = true`, so adding/changing an Android dependency that touches the manifest (permissions, components) fails the build until the lock is regenerated. Run `./gradlew :aktual-app:android:androidManifestLock` to update it, then commit the change.
 
 ## Sub-CLAUDE.mds
