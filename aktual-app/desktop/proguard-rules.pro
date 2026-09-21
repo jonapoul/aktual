@@ -56,3 +56,11 @@
 -keep class org.sqlite.JDBC { *; }
 -keep class org.sqlite.** { *; }
 -keepclassmembers class org.sqlite.** { *; }
+
+# OkHttp (Ktor's default JVM engine) probes for optional TLS providers and GraalVM at runtime
+-dontwarn okhttp3.internal.graal.**
+-dontwarn org.conscrypt.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.openjsse.**
+# The public suffix resource path is built from this class's simple name
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
