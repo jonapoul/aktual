@@ -5,7 +5,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 /** https://github.com/actualbudget/actual-server/blob/master/src/config-types.ts#L3 */
-@Serializable(with = LoginMethod.FallbackSerializer::class)
+@Serializable
 enum class LoginMethod {
   @SerialName("password") Password,
   @SerialName("header") Header,
