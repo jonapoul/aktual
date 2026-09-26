@@ -8,16 +8,18 @@
   ],
   "customManagers": [
     {
-      // d2 is installed from a shell script rather than a package manager, so its version is pinned in the workflow
-      // and read from here. Left unpinned, a CI run silently changes the PNGs that CI diffs the committed graphs
-      // against.
+      // Atlas downloads this d2 version. Pinned so CI renders the same PNGs that were committed.
       "customType": "regex",
       "managerFilePatterns": [
-        "/^\\.github/workflows/pr\\.yml$/",
+        "/^gradle\\.properties$/",
       ],
       "matchStrings": [
-        "# renovate: datasource=(?<datasource>\\S+) depName=(?<depName>\\S+)\\s+D2_VERSION: (?<currentValue>\\S+)",
+        "atlas\\.d2\\.version=(?<currentValue>\\S+)",
       ],
+      "datasourceTemplate": "github-releases",
+      "depNameTemplate": "d2lang/d2",
+      // D2 tags its releases with a v prefix
+      "extractVersionTemplate": "^v(?<version>.+)$",
     },
   ],
   "packageRules": [
