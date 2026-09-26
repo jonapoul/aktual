@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.datetime.YearMonth
 import kotlinx.datetime.minusMonth
 import kotlinx.datetime.yearMonth
@@ -98,6 +99,44 @@ internal class ChartDataLoader(private val dao: ReportsDao, private val calendar
             balance
           }
         NetWorthData(title = meta.name, items = items.toImmutableMap())
+      }
+    }
+  }
+
+  // packages/desktop-client/src/components/reports/spreadsheets/age-of-money-spreadsheet.ts
+  // createAgeOfMoneySpreadsheet()
+  fun ageOfMoney(meta: AgeOfMoneyReportMeta): Flow<ChartData> {
+    if (meta.conditions.hasFilters()) return unsupported(meta, Filters)
+
+    val granularity = meta.granularity?.takeIf { it != Unknown } ?: AgeOfMoneyGranularity.Monthly
+    return dao.observeTransactionDateBounds().flatMapLatest { bounds ->
+      val today = calendar.today()
+      val range =
+        resolveTimeRange(
+          timeFrame = meta.timeFrame,
+          default = null,
+          today = today,
+          latestTransaction = bounds.latest,
+        )
+      val start = range.start
+      val end = range.endInclusive
+
+      // FIFO needs all the history, not just the displayed range
+      dao.observeAgeOfMoneyTransactions(minOf(end.lastDay, today)).map { rows ->
+        val transactions = rows.map { AgeOfMoneyTransaction(it.date, it.amount) }
+        val (ages, insufficientData) = calculateAges(transactions)
+        val displayed = ages.filter { it.date >= start.firstDay }
+        val items = calculateGraphData(displayed, start, end, granularity, today)
+        AgeOfMoneyData(
+          title = meta.name,
+          start = start,
+          end = end,
+          granularity = granularity,
+          items = items,
+          currentAge = averageAge(displayed.map { it.age }),
+          trend = calculateTrend(items.values.toList()),
+          insufficientData = insufficientData,
+        )
       }
     }
   }

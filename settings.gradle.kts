@@ -63,7 +63,7 @@ if (url.isPresent && cacheBucket.isPresent) {
     region = "auto"
     forcePathStyle = true
     isReducedRedundancy = false
-    isPush = providers.environmentVariable("CI").isPresent
+    isPush = true
   }
 } else {
   logger.warn("Remote caching disabled!")

@@ -138,9 +138,10 @@ data class CalendarReportMeta(
 data class FormulaReportMeta(
   @SerialName("name") val name: String? = null,
   @SerialName("formula") val formula: String? = null,
-  @SerialName("fontSize") val fontSize: Int? = null,
+  @SerialName("fontSize") val fontSize: Double? = null,
   @SerialName("fontSizeMode") val fontSizeMode: FontSizeMode? = null,
-  @SerialName("staticFontSize") val staticFontSize: Int? = null,
+  @SerialName("staticFontSize") val staticFontSize: Double? = null,
+  @SerialName("showTitle") val showTitle: Boolean? = null,
   @SerialName("colorFormula") val colorFormula: String? = null,
   @SerialName("queriesVersion") val queriesVersion: Int? = null,
   @SerialName("queries") val queries: Map<String, FormulaQuery> = emptyMap(),
