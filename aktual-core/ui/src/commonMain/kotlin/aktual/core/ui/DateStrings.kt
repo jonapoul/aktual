@@ -79,6 +79,7 @@ fun DateFormat.formatter(): DateTimeFormat<LocalDate> =
     DateFormat.YyyyMmDd -> YyyyMmDd
     DateFormat.MmDdYyyyDot -> MmDdYyyyDot
     DateFormat.DdMmYyyyDot -> DdMmYyyyDot
+    DateFormat.DdMmYyyyDash -> DdMmYyyyDash
   }
 
 private val MmDdYyyy = LocalDate.Format {
@@ -114,5 +115,12 @@ private val DdMmYyyyDot = LocalDate.Format {
   char('.')
   monthNumber()
   char('.')
+  year()
+}
+private val DdMmYyyyDash = LocalDate.Format {
+  day()
+  char('-')
+  monthNumber()
+  char('-')
   year()
 }

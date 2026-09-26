@@ -8,6 +8,7 @@ import kotlinx.serialization.Serializable
 enum class GraphType {
   @SerialName("AreaGraph") AreaGraph,
   @SerialName("BarGraph") BarGraph,
+  @SerialName("BarLineGraph") BarLineGraph,
   @SerialName("DonutGraph") DonutGraph,
   @SerialName("LineGraph") LineGraph,
   @SerialName("StackedBarGraph") StackedBarGraph,

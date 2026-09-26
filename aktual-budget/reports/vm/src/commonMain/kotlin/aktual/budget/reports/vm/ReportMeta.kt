@@ -35,6 +35,11 @@ sealed interface ReportMeta {
         Spending -> SpendingReportMeta.serializer()
         Summary -> SummaryReportMeta.serializer()
         Formula -> FormulaReportMeta.serializer()
+        Crossover,
+        Sankey,
+        BalanceForecast,
+        AgeOfMoney,
+        MonteCarlo -> error("https://github.com/jonapoul/aktual/issues/1545")
         Unknown -> error("Unknown widget type")
       }
   }
