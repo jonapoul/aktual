@@ -51,8 +51,7 @@ fun ReportScreen(
     state = state,
     onAction = { action ->
       when (action) {
-        @Suppress("UseIfInsteadOfWhen")
-        NavBack -> back()
+        @Suppress("UseIfInsteadOfWhen") NavBack -> back()
         else -> Unit
       }
     },
